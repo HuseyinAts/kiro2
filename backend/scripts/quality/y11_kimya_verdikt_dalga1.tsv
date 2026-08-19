@@ -1,0 +1,1501 @@
+etiket	id	sinif	yargic	db_anahtar	guven	sebep
+KIMYA-1	e485d0f9-1188-53ca-b628-35ce3443c10b	COP	C	C	orta	Metin bozuk: 'notralizasyon potansiyeli buhurun' anlamsiz; B
+KIMYA-10	240769ad-94d3-54c3-a7a9-f30f3c6fef50	KABUL	C	C	yuksek
+KIMYA-100	cf4fb975-c0af-5fa2-9c23-3f3c324da05f	KABUL	C	C	yuksek
+KIMYA-1000	24247566-c0d6-5797-acf3-2c6d8839be12	KABUL	E	E	yuksek
+KIMYA-1001	05b7a417-9fbe-59c3-910f-733ddc083f24	KABUL	E	E	yuksek
+KIMYA-1002	3ccaf383-3624-5c9e-82fe-8ed079ddb548	KABUL	E	E	yuksek
+KIMYA-1003	8e2b8658-1e1f-5c50-a207-dedcdb7271dc	COP		E	yuksek	Bozuk/anlamsiz OCR metni; soru govdesi ve secenekler tutarsi
+KIMYA-1004	2afe1f46-f6d5-559e-8cbd-cfd7b86abb64	COP		C	yuksek	Veri/grafik icerigi metinde yok, soru kimya disi ve eksik
+KIMYA-1005	703aa8f9-da05-5529-ab2b-ebedbad3789a	KUYRUK_DUSUK_GUVEN	D	D	dusuk
+KIMYA-1006	672fc065-1509-5c5f-836b-12aa305c4a20	KABUL	C	C	yuksek
+KIMYA-1007	890afc19-2776-5d6e-9bcf-0b3845164462	KABUL	B	B	yuksek
+KIMYA-1008	9033b4e0-04ef-58da-a28c-c732038c2709	COP	C	C	dusuk	'Yukaridaki tepkime' metinde yok; denklem eksik, soru kendin
+KIMYA-1009	22e24767-a602-5faa-856c-d0ae40b6a806	KABUL	C	C	yuksek
+KIMYA-101	18f8a2a1-899b-587c-b877-5a97739282cb	COP		E	yuksek	Metin anlamsiz ('tam olarak cozulemeyi'), icerik kimya degil
+KIMYA-1010	0f9a0bf7-0407-51a4-85e7-fd28ce9c2eed	KABUL	E	E	yuksek
+KIMYA-1011	9d064b9d-af15-5c2f-a3eb-cb4f2d91492e	KABUL	A	A	yuksek
+KIMYA-1012	9b64782f-7c2b-5ff3-8a0d-5ee9b89ec96a	KABUL	C	C	yuksek
+KIMYA-1013	9e8d5a49-e271-5876-b500-729b15656e95	KABUL	B	B	orta
+KIMYA-1014	00f6711c-92ca-5784-b85b-a83b87e2d50b	KABUL	B	B	yuksek
+KIMYA-1015	09e842c0-37e1-5c89-a931-d1174e5ef327	KABUL	C	C	yuksek
+KIMYA-1016	ec58ccd6-59e0-5cf7-951e-5892b0bd59ca	KABUL	E	E	yuksek
+KIMYA-1017	aa8aed4a-c26f-5f03-9293-4e6f6070099c	KABUL	C	C	yuksek
+KIMYA-1018	35219c9c-a1ac-589b-8cd9-8f4610732862	KABUL	A	A	yuksek
+KIMYA-1019	cc84de52-4033-52b3-b975-310dcf70bfe3	KABUL	C	C	yuksek
+KIMYA-102	b41f81ff-9f24-5390-9f76-d0dfad0dd980	KABUL	A	A	orta
+KIMYA-1020	24a04eb2-4e8a-5a2b-8922-c7ce4cab1cfc	KABUL	D	D	yuksek
+KIMYA-1021	9f6abea1-b921-51c3-93ad-279d1bd19799	KABUL	E	E	yuksek
+KIMYA-1022	716a9777-c5bd-5041-aa6b-c07c126e193d	KABUL	A	A	orta
+KIMYA-1023	83ddb96e-890c-5e7f-b21c-c9a0b9e94990	COP		B	yuksek	Konu dışı geometri sorusu ve hiçbir seçenek doğru değil
+KIMYA-1024	19383ca0-32b4-5847-8943-6ce9d4986b0d	KABUL	C	C	yuksek
+KIMYA-1025	679b73c4-80b9-5e19-bab4-45bf20274c41	KABUL	A	A	yuksek
+KIMYA-1026	f7871fcf-c028-5f2a-9169-8f985694b05d	KABUL	A	A	yuksek
+KIMYA-1027	1f6af74d-b753-5238-96ae-296d28321b22	KABUL	E	E	yuksek
+KIMYA-1028	ff67990e-93e9-5899-a194-25839faf6438	KABUL	B	B	orta
+KIMYA-1029	a1a3368c-5ece-5fec-80fc-6e667e80efdd	COP		A	yuksek	Metin bozuk/anlamsız, uydurma ifadeler ve tutarsız veri
+KIMYA-103	195840ed-866c-50c1-9e49-2a6a810e4493	KABUL	B	B	yuksek
+KIMYA-1030	63acf46d-e5cd-5a2f-a6c2-297e521a45c4	KABUL	C	C	yuksek
+KIMYA-1031	b6bb8dc0-99ac-5eba-821f-ca035d6f9e01	KABUL	D	D	yuksek
+KIMYA-1032	1e22d799-a225-5328-95a9-7ae8567d0ccb	KABUL	E	E	yuksek
+KIMYA-1033	872bcfd7-783a-5f6b-ae4f-c21757b4b8b7	KABUL	E	E	yuksek
+KIMYA-1034	519fac5b-8c67-5717-a09c-b612f4028e88	KABUL	E	E	yuksek
+KIMYA-1035	b01221a0-8e79-5ce6-87cf-4e1ad65ec2d4	KABUL	A	A	yuksek
+KIMYA-1036	b9f56659-34ee-51bc-99f3-b049ae0798a6	KABUL	D	D	yuksek
+KIMYA-1037	c4f576a9-ed65-53b2-ae47-795e52cf7d13	COP		A	yuksek	Anlamsız metin, gerçek bir soru değil
+KIMYA-1038	6baa4e53-2a06-5e9b-a40a-f464c92324d9	KABUL	C	C	yuksek
+KIMYA-1039	6dc858fa-0f17-58d9-b915-b84f0f40aeb8	KABUL	A	A	yuksek
+KIMYA-104	6b46582c-9200-527b-9b51-1c005082027f	KABUL	D	D	yuksek
+KIMYA-1040	2e203d43-6979-5c30-9079-17ec651d3899	KABUL	A	A	yuksek
+KIMYA-1041	30d0ffbc-ef6a-5b39-99a3-d5c9a4402459	KABUL	B	B	yuksek
+KIMYA-1042	f1473e9a-948b-5b38-9959-8ac32316c238	KABUL	D	D	yuksek
+KIMYA-1043	1240564a-fe52-5d16-b457-99f6b09c33a9	KABUL	C	C	yuksek
+KIMYA-1044	ce9f54d4-09ab-58cc-a7fd-c3cb69761b22	KABUL	A	A	yuksek
+KIMYA-1045	d2c2a41b-5131-597e-822f-17d2b4b7d861	COP		A	yuksek	Metin bozuk/anlamsız, veri tanımsız
+KIMYA-1046	0f821308-e09c-54a2-9342-360e85b969df	KABUL	A	A	yuksek
+KIMYA-1047	4298dcbf-9ee6-5f37-901f-ff554bbac6f4	COP		C	yuksek	Metin bozuk, kendisiyle çelişen veri
+KIMYA-1048	01908cda-4771-5292-a453-8fbe387b77c6	KABUL	D	D	yuksek
+KIMYA-1049	64860883-640e-5335-aaeb-0d1cf546d0c4	KABUL	E	E	yuksek
+KIMYA-105	2f9449c5-0290-5560-b74a-6887e9249727	KABUL	E	E	orta
+KIMYA-1050	7968f5db-c110-5e69-bace-7ae97ee16009	KABUL	E	E	yuksek
+KIMYA-1051	5db7e5a6-3790-51ce-a2c3-eb586d9995d9	KABUL	C	C	yuksek
+KIMYA-1052	3291775a-cb55-5cf0-a57e-03b5a0631c4f	KABUL	A	A	orta
+KIMYA-1053	ca6dddfb-f501-511b-a59a-739dc4ac1c5c	KABUL	E	E	orta
+KIMYA-1054	b8a4d594-e4d8-5271-ab18-6b7925da5137	KABUL	B	B	yuksek
+KIMYA-1055	56e9e1a4-562f-56f0-8d73-2ddfa338aa12	KABUL	A	A	yuksek
+KIMYA-1056	069ccfd4-37f5-5aef-842e-4e87fc66f530	KABUL	B	B	orta
+KIMYA-1057	3ecf07b6-092d-5e1a-98d4-e9d08b042222	KABUL	B	B	yuksek
+KIMYA-1058	f0758347-286c-5422-9b7e-e844244e7bf8	KABUL	A	A	yuksek
+KIMYA-1059	e993a615-40dd-5d10-8fc7-74f780acc7cf	KABUL	B	B	yuksek
+KIMYA-106	d26fcb3c-e2ef-534d-bdc9-0b1b59ad114d	COP		E	yuksek	Ders notu/baslik metni ('Kuttenin', 'varden yok olmaz'); sor
+KIMYA-1060	928c5590-f108-5450-a1bc-a8618d61255c	KABUL	C	C	yuksek
+KIMYA-1061	b45fd450-25fd-5b08-a70d-830a70f3c468	KABUL	C	C	yuksek
+KIMYA-1062	505ef80c-5c90-5f42-a71f-8cdcd0c52125	KABUL	B	B	yuksek
+KIMYA-1063	0a153147-2d10-5506-a1f0-c508a9c645ca	COP		C	orta	Iki secenek birden yanlis; tek dogru cevap yok. OCR alt indi
+KIMYA-1064	ab40fa42-6d32-50cd-8981-33cf8148c36a	COP		E	yuksek	Gercek bir soru degil; secenekler arasinda ayirt edici olcut
+KIMYA-1065	56116b99-0fd7-5b6f-8f90-eb9fb93a1b5e	KABUL	E	E	yuksek
+KIMYA-1066	6f31f8ed-ad1e-5211-922f-fe203a78e2cf	KABUL	D	D	yuksek
+KIMYA-1067	68493e83-6780-52f2-ada6-4e73995f997a	KABUL	E	E	yuksek
+KIMYA-1068	f9145757-ba1c-50dd-885d-66b849930926	KABUL	B	B	yuksek
+KIMYA-1069	b94dc4df-f22a-5a46-b0b3-fb23a99c80f3	COP		E	orta	Denklestirme tutarsiz: C3H8 ise cevap E, C3H6 ise C. Iki far
+KIMYA-107	729f6dd8-359a-500b-be8a-a428ca0ad6f6	FIGUR		D	yuksek	FIGUR: I/II/III formulleri ve a/b/c adlari tabloda, metinde
+KIMYA-1070	3f538559-51cc-5e5d-b3e9-b6f0fcf9a9fa	KABUL	D	D	yuksek
+KIMYA-1071	4f731beb-2324-548c-8e9e-fe9734cea374	KABUL	C	C	yuksek
+KIMYA-1072	118d1701-048a-5dcc-9268-d7117cbb6066	KABUL	C	C	yuksek
+KIMYA-1073	e7068bee-553b-5491-89f4-132a525c7c7f	KABUL	E	E	yuksek
+KIMYA-1074	99739cca-744f-5ef0-9dbf-b7276b667369	KABUL	C	C	yuksek
+KIMYA-1075	4e0f7208-9d70-5d9f-95c7-b588533d5ee6	COP		B	yuksek	Metin bozuk ve Turkcesi anlamsiz; ne sorulduğu cikarilamiyor
+KIMYA-1076	4f8cda3f-7e17-5bf4-98ac-8e986a17a17e	KUYRUK_ANAHTAR	E	D	yuksek
+KIMYA-1077	5328a756-40d9-5eb9-ba0b-18f8555fc036	KABUL	B	B	yuksek
+KIMYA-1078	96f1fd42-dceb-578e-84d2-d563a27bb29a	KABUL	A	A	yuksek
+KIMYA-1079	23c1cff5-48da-58d9-9b33-f46a38d202d9	KABUL	C	C	yuksek
+KIMYA-108	beb56525-838d-569d-abc2-0d7de0c023c7	KABUL	E	E	yuksek
+KIMYA-1080	392eab67-c0bb-5adc-9516-88927a818bad	KABUL	C	C	yuksek
+KIMYA-1081	042cb09d-8817-5720-b1d0-e95d4c3909c4	KABUL	B	B	yuksek
+KIMYA-1082	0fea7671-6469-5190-bb9e-40e96c837bd0	KABUL	E	E	yuksek
+KIMYA-1083	00b2d325-3839-5a85-97e6-87260b5d82ce	KABUL	D	D	yuksek
+KIMYA-1084	fd2cc713-d87a-50f9-8b1c-7f91d62fb931	KABUL	A	A	yuksek
+KIMYA-1085	20c0b763-9000-55a1-920a-a7881efe8ec2	KABUL	D	D	orta
+KIMYA-1086	be748aab-5087-5ba1-8fa6-c828a66557b5	KABUL	C	C	yuksek
+KIMYA-1087	dae13708-bce6-567d-9ee9-618df384444e	COP		D	yuksek	Soru koku ve secenekler tutarsiz/anlamsiz; kimya icerigi yok
+KIMYA-1088	994f0701-3680-5dc5-acfe-7e94359270dd	KABUL	B	B	yuksek
+KIMYA-1089	7089b1e8-e29a-5bbb-94e9-72959e4777eb	KABUL	C	C	yuksek
+KIMYA-109	ca429f10-4789-5706-9175-50d0e754db25	KABUL	E	E	orta
+KIMYA-1090	24fd7689-bdfe-5fd5-97b3-b9408013fd3c	KABUL	D	D	yuksek
+KIMYA-1091	2e819a16-feb3-5fbd-9c87-b6894c5909b2	FIGUR	C	C	dusuk	FIGUR — 'Yukarida verilen pil sistemi' semasi yok; elektrot
+KIMYA-1092	5230b6c6-57a9-5adb-aba1-4c785e64caf7	KABUL	C	C	yuksek
+KIMYA-1093	3265dbb5-25b1-594b-9660-f61dc3fd1013	KABUL	D	D	yuksek
+KIMYA-1094	5dea8e6f-cd5f-5c2b-9cd7-e5864871c103	COP	C	C	orta	II. onculde uydurma kelime ('Iyma yapabilir') — anlami belir
+KIMYA-1095	1e943891-bb8e-5899-bd40-859a5843d676	KABUL	D	D	yuksek
+KIMYA-1096	7d972654-a4f5-5c00-851f-70e556948be9	COP		D	yuksek	Metin bozuk ('performan spesifikleri grafiklerine gore hangi
+KIMYA-1097	c5ded385-de2a-5157-8575-755f2ef85058	KABUL	A	A	yuksek
+KIMYA-1098	fd5e8446-d3f9-5808-a4fc-c13a1e6b346d	KABUL	E	E	yuksek
+KIMYA-1099	24c47637-65a1-5aaa-8fd7-c0a93cc7b8db	KABUL	A	A	yuksek
+KIMYA-11	3519261d-dcb6-5876-b7bb-be497ee1811d	KABUL	A	A	yuksek
+KIMYA-110	e52d702d-7c49-5375-b898-6ade40780454	COP		A	yuksek	OCR curuk: '2-veb 3-vebli birin 8-vebli alkanlarin' — Turkce
+KIMYA-1100	986e0cb2-4110-573b-878a-a841e05badc3	KABUL	E	E	yuksek
+KIMYA-1101	29417b4f-7ab2-5f61-a0fa-438253f29fb0	KABUL	B	B	yuksek
+KIMYA-1102	d3a67e92-9751-57e9-a4c1-2036fd9c933c	KABUL	B	B	yuksek
+KIMYA-1103	b129203b-931e-5ea6-8ab7-5a1190b65a42	KABUL	B	B	yuksek
+KIMYA-1104	1bd75049-04cd-5f79-8191-f3e8ce073522	KABUL	C	C	yuksek
+KIMYA-1105	a5d45fd9-82eb-5eb1-b370-f42d65f710ac	KABUL	E	E	yuksek
+KIMYA-1106	148a7d0a-c04b-5c3f-aea3-4e153c358407	KABUL	D	D	orta
+KIMYA-1107	106907dc-5f48-52a6-bed4-8ce4f85c82b7	COP		A	yuksek	Soru koku tutarsiz ve kimya icerigi yok; dogru sik belirlene
+KIMYA-1108	8ee45f0f-696a-516a-9650-d371689bf2f6	KABUL	E	E	yuksek
+KIMYA-1109	3e572603-2214-503e-b092-e4ffda7ba2f2	FIGUR	B	B	dusuk	FIGUR — 'Yapi formulu verilen bilesik' gorseli yok; bilesik
+KIMYA-111	5d6d92be-daa8-5113-a81d-5396040967e9	KABUL	E	E	yuksek
+KIMYA-1110	9297d30a-f53d-59a9-a4e8-65454bf3f6e2	KABUL	C	C	yuksek
+KIMYA-1111	c2fdcd74-3519-5d33-97b4-ed85b18192a7	KABUL	A	A	yuksek
+KIMYA-1112	b63fbffc-016d-5f9b-85b4-51036a12dac5	KABUL	C	C	yuksek
+KIMYA-1113	4317ff5f-7240-5ac8-bad0-79db4db79065	KABUL	A	A	yuksek
+KIMYA-1114	215a7850-f623-5c83-b432-0b0d0fe1e7e7	KABUL	A	A	yuksek
+KIMYA-1115	652c2213-3adb-52ca-a7c0-dccdc8192e35	KABUL	B	B	yuksek
+KIMYA-1116	430ca306-6d26-53ae-90d9-87c99371aa7d	KUYRUK_ANAHTAR	D	E	yuksek
+KIMYA-1117	643325cb-6ea8-56e7-bc31-61bc98c0b9f7	KABUL	E	E	yuksek
+KIMYA-1118	7d3407ee-487e-5f43-8830-89095ab75301	KABUL	D	D	yuksek
+KIMYA-1119	798153d9-dd9f-584c-9090-0ece26b99337	KABUL	C	C	yuksek
+KIMYA-112	d0f075b7-a73d-5415-ae31-dd4cdd872c12	COP		E	yuksek	'10 gruplara bolunmus toplama egrisi' anlamsiz; soru-secenek
+KIMYA-1120	9ad21ed8-82ad-5226-b467-3cd41d0b05fe	KABUL	E	E	orta
+KIMYA-1121	244fd504-155a-5c93-a178-d1c8bdbb573a	COP		B	yuksek	Soru koku bozuk/eksik; bes secenegin hepsi ayni olcutu saglı
+KIMYA-1122	0de6b892-444e-56ce-8f86-0bb79a0cb5f9	KABUL	C	C	yuksek
+KIMYA-1123	bff4db9c-102a-5a67-be8e-a33a5615950f	FIGUR		E	yuksek	FIGUR: 'Yukarida verilen bilesik' ifadesi var, bilesigin yap
+KIMYA-1124	e80d9f3b-432a-5d91-91a3-72a9d75e5bad	KABUL	B	B	yuksek
+KIMYA-1125	515e03b2-041f-5feb-9745-d960540f623a	COP	D	D	dusuk	Hicbir secenek tam dogru degil: atom capi siralamasi (Mg>S>C
+KIMYA-1126	26cc50f0-5a3a-5ff2-8def-ca924199b1ec	KABUL	E	E	yuksek
+KIMYA-1127	ac66c80e-7ef1-5070-90f1-73b065db3cce	KABUL	D	D	yuksek
+KIMYA-1128	38c4d9fb-a0bb-5633-97df-1f8c54fee9a9	KABUL	D	D	yuksek
+KIMYA-1129	7ceda6b6-9202-5ccd-8312-45a2e96dc370	KABUL	B	B	yuksek
+KIMYA-113	34010e0e-9efc-5892-bc50-14ac996bc175	COP		D	yuksek	Tekrarlanan sik (B=E) nedeniyle tek dogru yok; icerik biyoki
+KIMYA-1130	56b816a1-bdba-5aa4-87fe-ee3e0ee506c6	KABUL	D	D	yuksek
+KIMYA-1131	fc9867b6-3888-5865-b3d9-6e8a92b90da5	KABUL	D	D	yuksek
+KIMYA-1132	27d70916-e1c3-5deb-9e94-3cb249b59077	KABUL	A	A	yuksek
+KIMYA-1133	c258c185-5894-55aa-a509-4d7de32ff1f6	KABUL	A	A	yuksek
+KIMYA-1134	f4bc36c4-5294-5390-96a8-89a03e2fcf7d	KABUL	D	D	yuksek
+KIMYA-1135	5a9b045a-1727-5126-b90e-c3c74d93d3da	KABUL	D	D	yuksek
+KIMYA-1136	0233e4c8-591b-5db8-a220-b8d7101c2be6	KABUL	C	C	yuksek
+KIMYA-1137	30deaf76-c610-5f02-8f26-927f4f0b45cc	KABUL	A	A	orta
+KIMYA-1138	4a865065-484b-51e5-a2fa-e44fd5b71011	KABUL	C	C	orta
+KIMYA-1139	aaccbe94-10c8-5593-b247-16dc2e639df3	COP		A	yuksek	Metin bozuk/anlamsiz: kimya icerigi yok, soru koku baglamsiz
+KIMYA-114	f8933380-9df3-5690-be85-a1edd2fd5542	KABUL	D	D	yuksek
+KIMYA-1140	92558d85-3461-57de-8577-3cb5a25c390f	KABUL	C	C	orta
+KIMYA-1141	26c20ff1-be34-53ec-8500-90d0da924ab1	KUYRUK_ANAHTAR	E	B	orta
+KIMYA-1142	e4121452-ea73-5aab-bd32-b090c3cebe2f	COP		C	yuksek	Bozuk/anlamsiz soru govdesi; hicbir sik kimyasal olarak dogr
+KIMYA-1143	77c24ee0-31de-5e90-9356-97a4f1c8d702	KABUL	B	B	yuksek
+KIMYA-1144	51736c49-0379-5427-9b20-34c72a41bc67	KABUL	A	A	yuksek
+KIMYA-1145	61250ad4-f06e-526d-89d3-44112498501b	KABUL	B	B	yuksek
+KIMYA-1146	7b327d48-1783-5386-8fcd-17840402005d	KABUL	B	B	yuksek
+KIMYA-1147	f322a1c6-89f2-5e92-a8a1-63dc0c775367	KABUL	C	C	yuksek
+KIMYA-1148	0e888a89-a4e2-50ab-a4a9-029d5417fa06	KABUL	C	C	orta
+KIMYA-1149	917513f6-223a-5b11-b1a8-905bc928b767	FIGUR		E	yuksek	FIGUR: 'Yukaridakilerden' atfi var, oncul madde listesi/gors
+KIMYA-115	c40a1400-a6a8-58c1-b01d-6578a2a2c163	KABUL	A	A	yuksek
+KIMYA-1150	938d13be-5832-5d22-bb6b-313ad43d9ecd	KABUL	E	E	yuksek
+KIMYA-1151	49a87993-312d-52b7-acc0-a548f52d52f1	COP		C	yuksek	Bozuk/konu disi soru; dogru cevap (9) sik listesinde bulunmu
+KIMYA-1152	3e7c5d8f-ed76-5973-89b5-9ba680f388ed	KABUL	E	E	orta
+KIMYA-1153	ad048641-2614-5500-a631-46cc154c7bd7	KABUL	B	B	yuksek
+KIMYA-1154	c345816b-5d72-5ea7-b976-b5c33ae9516e	KABUL	D	D	yuksek
+KIMYA-1155	3b0c00cf-02b0-5571-bdca-ed19bb1780d0	KABUL	B	B	yuksek
+KIMYA-1156	64ece9d8-e04e-5a1e-99eb-9bd3933dc5a0	KABUL	B	B	yuksek
+KIMYA-1157	fa9c578a-d36a-5c44-9ae2-fe637c568806	KABUL	D	D	yuksek
+KIMYA-1158	27f1d847-edbf-5738-bc45-581b0f33547d	KABUL	B	B	orta
+KIMYA-1159	4b822831-50e0-594c-adce-021a42c2bce7	KABUL	D	D	yuksek
+KIMYA-116	e7c79a1d-a070-5255-ad3f-0c82b72d970a	KABUL	D	D	yuksek
+KIMYA-1160	bea8ee1a-69dd-5b95-9ea6-0a45b1216afe	KABUL	C	C	yuksek
+KIMYA-1161	aef88b35-16b8-5234-939b-72a74aa95251	KABUL	A	A	yuksek
+KIMYA-1162	e57cb73e-6761-5a65-aea0-b9745f81f2eb	KABUL	C	C	yuksek
+KIMYA-1163	5dc6bd53-be24-5101-bfaa-ab92b16f0c66	KABUL	E	E	yuksek
+KIMYA-1164	9ea6c8dc-2c0b-5854-94af-5458945f8b3f	KABUL	E	E	yuksek
+KIMYA-1165	a72ccda8-7235-54f1-bf32-84d3538c6d6d	KABUL	B	B	yuksek
+KIMYA-1166	ab18b43f-6392-5e0a-a425-f4fee4c0efee	KABUL	B	B	yuksek
+KIMYA-1167	3d5a384b-16de-53b2-832e-5622dc9eefb5	KABUL	C	C	yuksek
+KIMYA-1168	146c0590-60e2-5335-9982-7599e6bfd441	KABUL	D	D	yuksek
+KIMYA-1169	44a1b60e-cc97-5bb0-81c5-6b8f0f256af2	COP		B	yuksek	Bozuk/celiskili soru metni; tek dogru sik belirlenemez.
+KIMYA-117	b18f5b23-5e04-5b32-9ece-4b9e83290ef9	FIGUR		C	yuksek	FIGUR: 'grafikleri verilmistir' — grafik olmadan uretim topl
+KIMYA-1170	28136196-b751-5e30-a248-a1a8272d190b	KABUL	E	E	yuksek
+KIMYA-1171	0ec2a1c7-759d-5432-b53e-eaa40e1c3389	KABUL	B	B	yuksek
+KIMYA-1172	faf2fefe-2231-5273-beeb-227134a99f8a	COP		A	yuksek	Soru cumlesi ('cozeltis olarak donduruluyor') ve secenekler
+KIMYA-1173	003d08d0-7746-5c73-a542-d5421e6aed8a	KABUL	D	D	yuksek
+KIMYA-1174	aab40f0b-84ea-5401-8669-484f642d060e	KABUL	C	C	yuksek
+KIMYA-1175	ea326acb-9102-593c-9b6c-541db98eab10	KABUL	B	B	yuksek
+KIMYA-1176	0da8d506-2519-5fc4-9775-27e58ffb6693	COP		C	yuksek	Metin anlamsiz ('kesmesigi', 'seritler'); kimya icerigi yok.
+KIMYA-1177	e68b544f-90e7-5a78-aff3-85436d355f98	KABUL	B	B	yuksek
+KIMYA-1178	18a0ffab-cc6d-57e1-a1e3-351ab01e2b3d	KABUL	E	E	yuksek
+KIMYA-1179	b3bb3f05-365a-5879-94ac-0e4a1160f031	KABUL	B	B	yuksek
+KIMYA-118	1230cce2-eaf4-566c-a5a5-cf0a1c1146de	KABUL	E	E	yuksek
+KIMYA-1180	15786070-07a5-5015-b729-d78bad13b440	KABUL	E	E	yuksek
+KIMYA-1181	b07de10b-a333-5e55-b5e7-2ac31ac8a8d4	COP		B	yuksek	OCR bozuk; soru cumlesi yok, B-C-D-E secenekleri ayni.
+KIMYA-1182	3f3ee57b-60a5-5238-8ab8-ea82ec2c8248	KABUL	E	E	yuksek
+KIMYA-1183	9f1b8167-4457-5ec7-be75-0df96a64935a	KABUL	D	D	yuksek
+KIMYA-1184	54dbae21-33c2-5674-a0a3-238f95f082c6	KABUL	B	B	yuksek
+KIMYA-1185	1b117e12-d848-5f47-8e1a-26f9311cc13e	KABUL	D	D	yuksek
+KIMYA-1186	ede0011f-593d-5cf0-aa87-63f440c702d9	COP		B	yuksek	CH3OH, C2H5OH, C3H7OH, C4H9OH, C5H11OH hepsi alkol - tek dog
+KIMYA-1187	58ba146d-989a-521a-8a1f-cc43860cfb13	COP		B	yuksek	'100 gram KCl 100 gram KCl cozeltisi' tekrarli bozuk ifade;
+KIMYA-1188	e87dd713-4d01-5279-8d62-344c8e4af6ad	KABUL	C	C	yuksek
+KIMYA-1189	a1470ec9-d91f-56e2-9286-36f9f00e07bc	KABUL	B	B	yuksek
+KIMYA-119	9bca5cec-081c-53fd-9c31-9b53caec2bca	KABUL	B	B	yuksek
+KIMYA-1190	0fc27aa3-ecfb-5051-b18e-f2c4f588bfbc	KABUL	E	E	yuksek
+KIMYA-1191	3bd75526-4cb4-5493-8abc-7711f4aca37c	KABUL	E	E	yuksek
+KIMYA-1192	316a60d2-284e-5264-90b0-446ce2165517	KABUL	B	B	yuksek
+KIMYA-1193	f4bb2de2-443d-5104-ae13-847102d5ec52	KABUL	E	E	yuksek
+KIMYA-1194	0611d1b3-f36c-5e91-963c-3ea438eab3fb	KABUL	D	D	yuksek
+KIMYA-1195	c87972e5-fb62-5686-8cfd-08bb9cfcc838	KABUL	A	A	yuksek
+KIMYA-1196	3af341c6-ad45-550a-bfad-8a835b63e5a9	KABUL	D	D	yuksek
+KIMYA-1197	36cdb89f-4899-5326-a5a9-77019c5ca595	KABUL	C	C	yuksek
+KIMYA-1198	e3076f30-4543-5e69-a16e-d4488357d09b	KUYRUK_ANAHTAR	E	C	orta
+KIMYA-1199	609bc678-bb2e-52bc-b4ba-ca7745606a0b	KABUL	E	E	yuksek
+KIMYA-12	c181bd6c-61cf-5fd4-9f43-7b07960fd603	COP		C	yuksek	373/298=1,25 kat; hicbir secenek dogru degil, hacim sabitlig
+KIMYA-120	c178a64f-4c61-5c5b-a500-da1ed45c9ee5	KABUL	D	D	yuksek
+KIMYA-1200	b6c44d53-c93f-57be-87bc-8b568924bcbe	KABUL	E	E	yuksek
+KIMYA-1201	5d6cdf16-126a-55f8-af14-5d67556fa2d6	KABUL	B	B	yuksek
+KIMYA-1202	73e8f055-a51b-5723-9098-7a682c9a10ce	COP		C	yuksek	Tekrarlı/bozuk seçenekler (D=E), soru gövdesi bozuk
+KIMYA-1203	f0abf63d-65f6-5d00-a125-276abd167b1b	KABUL	A	A	yuksek
+KIMYA-1204	955e7db5-42e9-5c1b-83f8-ebc171401059	FIGUR		D	yuksek	FIGUR — kavram haritası olmadan I-IV bilinmiyor
+KIMYA-1205	9a923784-7ed8-5983-815c-ac85b1459626	COP		B	yuksek	Bozuk/anlamsız metin, kimya sorusu değil
+KIMYA-1206	bf89161b-9c56-51f8-b7eb-0fe79e59768a	KABUL	B	B	yuksek
+KIMYA-1207	9f93aae6-4251-5aa1-94da-dc797c6a640c	KABUL	E	E	yuksek
+KIMYA-1208	e9a765f6-0380-5294-88ca-931fff1e771d	KABUL	E	E	yuksek
+KIMYA-1209	73b9f9a2-93c1-5927-b9a3-85b5d169212c	KUYRUK_ANAHTAR	C	A	orta
+KIMYA-121	a0a9ff45-c40b-57e5-836f-330c8c68f05c	KABUL	C	C	yuksek
+KIMYA-1210	3e01aeb7-24d0-55e0-a8a8-aea4e05abdc9	KABUL	B	B	yuksek
+KIMYA-1211	50f9e052-602d-5512-bfee-24545568f869	KABUL	A	A	yuksek
+KIMYA-1212	874ad7a8-adcb-54cf-80f1-fecc5d22601b	KABUL	B	B	yuksek
+KIMYA-1213	1c163aa0-b57b-54c4-9a0a-5a40eb5a17e1	KABUL	B	B	yuksek
+KIMYA-1214	c556f361-205c-5636-b771-293e983b3ec1	KABUL	D	D	yuksek
+KIMYA-1215	f82312aa-379d-5ccc-bc39-f1bb9b73dda4	COP		A	orta	Birden fazla seçenek yanlış; 'atom' yerine iyon karışıklığı
+KIMYA-1216	67a9936c-0b39-5f61-9194-ad798e6d5cba	KABUL	D	D	orta
+KIMYA-1217	89c7922d-9f44-5cfe-b4cb-b854f91769b9	COP		B	yuksek	Bozuk/anlamsız metin, kimya sorusu değil
+KIMYA-1218	f91a14a4-0426-5554-a06a-2fa9a7b0a324	KABUL	D	D	yuksek
+KIMYA-1219	2329e653-7133-51f2-ba38-91281d823571	KABUL	B	B	orta
+KIMYA-122	24f0168b-e36e-5e8f-bb50-680e3ac62963	KABUL	E	E	yuksek
+KIMYA-1220	82f1192a-4f48-52f2-a5bc-a72e85c6431f	KABUL	D	D	yuksek
+KIMYA-1221	a420ec7d-ce84-5e85-b98e-5f1d62d0340b	KABUL	C	C	orta
+KIMYA-1222	e7216759-e6d9-5b4e-b61d-eea0839fe528	KABUL	D	D	yuksek
+KIMYA-1223	54cf25f5-1990-5ac9-bde4-f45961cf3ab0	KABUL	A	A	yuksek
+KIMYA-1224	3d449354-24b5-5a82-9042-c97a02b93624	KABUL	B	B	yuksek
+KIMYA-1225	efe95778-5832-55f2-aaf3-0481ce34386e	KABUL	B	B	yuksek
+KIMYA-1226	26a81fc6-8416-507a-876d-d158582eac59	KABUL	A	A	yuksek
+KIMYA-1227	f78b6d0f-349a-58eb-a41a-1b5fe43533f5	KABUL	A	A	orta
+KIMYA-1228	1ca8adf8-455a-5aae-ab40-ce4eb70afcfc	COP		E	yuksek	Bozuk/anlamsız metin, kimya sorusu değil
+KIMYA-1229	b9dc65df-c0b9-5a17-bbd7-c1abf5ab3f1a	COP		A	yuksek	Bozuk metin + tekrarlı seçenek (D=E)
+KIMYA-123	b1a53d8c-de5c-5a51-8b61-cedba06871a1	KABUL	E	E	yuksek
+KIMYA-1230	916dc7fb-6e70-5cb1-90e7-bc51cf3f48c3	KABUL	C	C	yuksek
+KIMYA-1231	d9469052-add4-5529-8d12-30e5c45fe9ee	KABUL	B	B	yuksek
+KIMYA-1232	0a15caa5-4d5a-5f4c-814d-5a6fc0e5b0ed	COP		A	yuksek	Uydurma terimler ('kovalanen', 'yan elektron e+'); soru dong
+KIMYA-1233	bdb1d8b2-bf39-5d94-8b27-9472a6131bd7	KABUL	D	D	yuksek
+KIMYA-1234	f50b4633-5ad9-568e-84bc-8c749061caf9	KABUL	D	D	yuksek
+KIMYA-1235	533d1a4d-c479-5e26-a24b-42b258a340fa	KABUL	D	D	yuksek
+KIMYA-1236	c32d2044-6447-524b-bd03-e1e71e4a1e37	KABUL	B	B	yuksek
+KIMYA-1237	419fd26a-b01a-5661-828d-ff7db690342b	KABUL	D	D	yuksek
+KIMYA-1238	80353637-63de-5001-b644-558bb447ddcf	KABUL	D	D	yuksek
+KIMYA-1239	a6af622c-3f04-5430-9e38-723dfc09a630	KABUL	D	D	yuksek
+KIMYA-124	721cde14-99ee-5673-a390-1f2312a44298	KABUL	C	C	yuksek
+KIMYA-1240	652935ab-339d-593f-a0c0-d8e3e3aa7ba8	KABUL	C	C	yuksek
+KIMYA-1241	d03ee8af-138d-59ee-882d-486e1a1d5db6	COP		A	yuksek	Uydurma ifade ('dihydrogenen', '14 atomlu izotop'); secenekt
+KIMYA-1242	eae94e15-a79d-5d94-b6fe-3f4bad925342	KABUL	C	C	yuksek
+KIMYA-1243	7d79e0a7-b452-5397-b6db-bbcc50a8f782	KABUL	C	C	yuksek
+KIMYA-1244	fa118eaa-de49-595e-a142-a273d1cd2af3	KABUL	B	B	yuksek
+KIMYA-1245	f26c452c-de83-5e68-8f5d-a096acc0d174	KABUL	C	C	yuksek
+KIMYA-1246	fe74f3d7-c7d7-5ba8-b9fc-01f2f1ad4c66	KABUL	C	C	orta
+KIMYA-1247	465fc1a5-5b10-5b48-8995-a1384347d76f	KABUL	C	C	yuksek
+KIMYA-1248	856f0cd8-64a3-5f87-945b-6f08cab2fdb9	KABUL	E	E	yuksek
+KIMYA-1249	91e96d98-fd07-5a04-a038-41ed68174ca1	KABUL	E	E	orta
+KIMYA-125	7bf3ecaf-bc66-5711-8923-6c790087674f	KABUL	B	B	yuksek
+KIMYA-1250	938510b2-e600-549f-a9f0-d37546272b9c	KABUL	E	E	yuksek
+KIMYA-1251	0467ea6f-a907-5dac-a40c-c0e560d89a69	KABUL	B	B	orta
+KIMYA-1252	7776e76b-edc8-53d2-bb2e-74c76ac62592	KABUL	C	C	yuksek
+KIMYA-1253	fdeffef1-556f-5bb4-8aef-6ae9f139a3d1	KABUL	E	E	yuksek
+KIMYA-1254	5138ca38-f456-5c08-b999-f2f81a7cc6c2	KABUL	B	B	yuksek
+KIMYA-1255	1a82adc3-2af8-5b70-baee-dcedf8c10f13	KUYRUK_ANAHTAR	C	B	orta
+KIMYA-1256	b9a6c8e5-d163-5303-9496-2ba9419ded1e	KABUL	E	E	yuksek
+KIMYA-1257	5561a64b-8da5-5269-bcea-3e71f06cbe5f	KABUL	D	D	yuksek
+KIMYA-1258	34256789-840d-5f77-b6c6-b90d81d419e9	KABUL	C	C	yuksek
+KIMYA-1259	f4511e4a-7892-55f8-8554-315e99b91b4f	KABUL	C	C	yuksek
+KIMYA-126	69e92ccf-3992-599b-a676-926f535f93f2	KABUL	E	E	yuksek
+KIMYA-1260	6b711dfb-db9a-5a96-93f8-692515cf8267	KABUL	C	C	yuksek
+KIMYA-1261	1ed1bf18-a526-5449-bb8c-1da75eef33eb	KABUL	C	C	yuksek
+KIMYA-1262	c2df4314-47e5-51a3-a014-03f1c47ae974	KABUL	D	D	yuksek
+KIMYA-1263	55204b4d-f7c9-5003-8d10-ac63fae64b23	KABUL	D	D	yuksek
+KIMYA-1264	6a940f22-9d63-5d5b-98c7-3a333b6730ea	KABUL	E	E	yuksek
+KIMYA-1265	35920fc3-8995-513f-8436-a85a6b8daccd	KABUL	C	C	yuksek
+KIMYA-1266	bf47dde6-084d-5dd4-bb65-575b6af3d559	KABUL	E	E	yuksek
+KIMYA-1267	a7564518-29a1-5555-b9b4-506ee5a16f4f	KABUL	E	E	yuksek
+KIMYA-1268	3bade824-93cc-53b6-ba21-8d8ea9b1a53b	COP		B	yuksek	'Yalıçif' uydurma kelime; soru anlamsız, fizik potansiyel if
+KIMYA-1269	6ce3f9a8-c010-50f0-8411-5572a59818a2	KABUL	D	D	yuksek
+KIMYA-127	cbda5c98-85cf-5dc2-abb3-f3492e41adbc	KABUL	A	A	yuksek
+KIMYA-1270	b9703315-47a1-5738-b41f-97261de27e3a	KABUL	E	E	yuksek
+KIMYA-1271	3facd187-99ab-5697-beca-4c9819017f6f	KABUL	D	D	yuksek
+KIMYA-1272	26981852-98ee-564e-85fb-7a30c8158703	KABUL	B	B	yuksek
+KIMYA-1273	fe5666a9-1520-5f3d-84c7-925c00f113b8	KABUL	E	E	yuksek
+KIMYA-1274	8f8a1b24-d7a1-5890-bc54-6360883ddcef	KABUL	D	D	yuksek
+KIMYA-1275	1f22e6d5-8fd2-5bc3-89fe-7593840c1b24	KABUL	C	C	yuksek
+KIMYA-1276	0e765b6c-9241-5631-9896-617e1570ced5	KABUL	D	D	yuksek
+KIMYA-1277	28f5cc92-bb90-53a9-965b-b016df91b09f	KABUL	C	C	yuksek
+KIMYA-1278	86021e60-d5e9-5bbe-8edf-69d367810576	COP		B	yuksek	Seçenekler denklem tekrarı/saçma birleşimler; soru kökü beli
+KIMYA-1279	1cd35dc8-3c52-5a41-bcb0-74247cf6c5fb	KABUL	B	B	yuksek
+KIMYA-128	956766d2-78b7-5669-897a-bac69ef90ca9	KABUL	D	D	yuksek
+KIMYA-1280	29827081-4918-5a80-aa58-d017c838e2b0	KABUL	C	C	yuksek
+KIMYA-1281	1fbed9db-0ece-5776-a9cd-26d17c936a08	KABUL	B	B	orta
+KIMYA-1282	5ca39799-bc64-57f1-b211-fc2bee626e91	COP		A	yuksek	'Bir tane nesne bir suyun 1 m3'te...', 'Buna göre doğru dene
+KIMYA-1283	fd3bff5c-e399-51c2-a98d-033c4ece9d45	KABUL	D	D	yuksek
+KIMYA-1284	07f9c551-0b3c-5018-a7af-f42ef51e4fe0	KABUL	E	E	orta
+KIMYA-1285	6d667cf9-8d4f-5106-8443-bb6a0d9da225	KABUL	B	B	yuksek
+KIMYA-1286	7c088e59-a37c-5ff5-bc91-a57858f90776	KABUL	B	B	yuksek
+KIMYA-1287	a74e8011-c2e8-5640-9b67-c1f76c789d8d	KABUL	C	C	yuksek
+KIMYA-1288	7110ec4c-7b6a-53b2-a839-f640cdb645ef	KABUL	D	D	yuksek
+KIMYA-1289	b475c0e0-2ee9-5f6c-a50c-64eff66972e5	KABUL	A	A	yuksek
+KIMYA-129	a88c26df-229f-551a-9689-206822376477	KABUL	E	E	yuksek
+KIMYA-1290	b33fca47-3ad0-50e9-b84d-14695dcc68e6	KABUL	E	E	yuksek
+KIMYA-1291	1aa3c8cc-c641-5401-9ca0-5e8532ede5b5	KABUL	C	C	yuksek
+KIMYA-1292	ad91cc30-1b35-5aea-b5b0-30561f8c5c69	KABUL	E	E	yuksek
+KIMYA-1293	64e2088d-027c-5d04-a8e8-bddf1db5eff4	KABUL	E	E	yuksek
+KIMYA-1294	652feb8a-dd7e-5a3f-ba2c-4014f1140e1c	KABUL	A	A	yuksek
+KIMYA-1295	abfcc0d1-e979-53a2-b679-6eeb84eb111f	KABUL	A	A	yuksek
+KIMYA-1296	1c465de6-7959-5623-afd8-8c339e45c15f	KABUL	D	D	yuksek
+KIMYA-1297	422c37d4-0508-5710-8c01-da40db5684d9	KABUL	C	C	yuksek
+KIMYA-1298	c9577690-01b6-560c-8605-e3638227a962	KABUL	E	E	yuksek
+KIMYA-1299	d6d670ac-f2a3-5816-8a70-8df23482414d	COP		D	yuksek	Uydurma ifadeler ('Esit hucresi','artaryor'), veriler tutars
+KIMYA-13	0bf517f5-4491-5152-a492-7222841da7bf	KABUL	C	C	yuksek
+KIMYA-130	7465422d-cffa-5b21-9fea-a54d00c25bf9	KABUL	A	A	yuksek
+KIMYA-1300	022dd89e-bfb8-5755-aaf7-4e05cca7518f	KABUL	C	C	yuksek
+KIMYA-1301	7df2ba43-b748-5ede-a25d-83a59ef5830f	KABUL	E	E	yuksek
+KIMYA-1302	92cfb62e-dd96-5740-9155-87ae5b5922fc	COP		A	yuksek	Cumle bozuk, soru kokunde anlam yok; kimya icerigi yok
+KIMYA-1303	298ec8e3-0376-5711-9636-301899e86932	KABUL	A	A	yuksek
+KIMYA-1304	59e34ac9-990b-5372-9216-723c5e3db51c	KABUL	E	E	yuksek
+KIMYA-1305	15922bd8-bc19-5d0d-a7b7-ac05562a0c09	COP		E	yuksek	'2 ordanin olagan sayilari' uydurma; matematik gorunumlu tut
+KIMYA-1306	5bdb2705-86fe-5c29-9f4e-4ce302efcbde	KABUL	D	D	yuksek
+KIMYA-1307	10301214-d170-5e84-8f81-ae63dd6d4488	KABUL	C	C	yuksek
+KIMYA-1308	7e295f92-542e-5f69-94a5-d90693b3f856	COP		C	yuksek	Cumle bozuk, cozunme/hacim iliskisi tanimsiz
+KIMYA-1309	e85c022f-5d36-5867-807d-ad1066142892	KABUL	D	D	yuksek
+KIMYA-131	922a02fe-6909-5667-a73a-269867629f8f	KABUL	B	B	yuksek
+KIMYA-1310	56c782ca-49ea-5ba5-adc8-b63e0dad3dd0	COP		E	yuksek	Metin bozuk ('kasimda gecirenimiz'), toplam sure verilmemis
+KIMYA-1311	20c0ef58-2326-5e3d-8c61-fbc98b87a9b7	FIGUR		B	orta	FIGUR - soru bir yapi formulu gorseline atif yapiyor, moleku
+KIMYA-1312	d80cb683-19ed-59df-b5b1-6474bbbe9fc0	KABUL	C	C	yuksek
+KIMYA-1313	09cfeef0-30ba-5a00-99a9-3017e4005320	KUYRUK_ANAHTAR	D	E	yuksek
+KIMYA-1314	edb7014e-1cac-5cb0-a5e1-5bf4c1604d66	FIGUR		B	orta	FIGUR - 'figurdeki devre' atfi var; ayrica kimya disi, secen
+KIMYA-1315	d0463bea-540f-531f-9fd7-5e89865c9a7b	KABUL	B	B	yuksek
+KIMYA-1316	a43403f7-ddbe-507a-95ce-821d223848cf	KABUL	E	E	yuksek
+KIMYA-1317	f3654aea-4c0b-54b2-b0f6-bd357523889b	KABUL	D	D	yuksek
+KIMYA-1318	73544715-ba67-5c47-bf69-f0d19858fdd5	KABUL	B	B	yuksek
+KIMYA-1319	e4c7e48e-369b-5715-aa0f-eb7d225838d0	KABUL	E	E	yuksek
+KIMYA-132	5b0dbf58-cd17-5275-bb38-dd473e75fa35	KABUL	A	A	yuksek
+KIMYA-1320	b0c86a5a-f4fb-5091-88fb-13c4d8150aff	KABUL	C	C	yuksek
+KIMYA-1321	653d3acd-97e7-5a9a-9add-625dfac0c88b	KABUL	D	D	yuksek
+KIMYA-1322	e972efb8-afae-5a27-ada2-a5714f3c1d9e	KABUL	D	D	yuksek
+KIMYA-1323	63dab622-51ca-5e4a-b53f-0575fcfbd1ae	COP		D	yuksek	Bozuk/anlamsız metin, çözülebilir veri içermiyor
+KIMYA-1324	d6571390-e769-5cda-a335-1a4a1d8f6305	KABUL	D	D	yuksek
+KIMYA-1325	5a2a99cc-f1d5-5ddb-b633-1d3841334c5b	KABUL	E	E	yuksek
+KIMYA-1326	29868938-b887-55c9-b1c1-339f8192ef2a	COP		A	yuksek	Tamamen bozuk/anlamsız metin, kimya içeriği yok
+KIMYA-1327	582b5a00-3680-5942-baf9-7132e994c719	KABUL	A	A	yuksek
+KIMYA-1328	75a9b15b-a538-5f08-ba86-6cfab16a0bda	KABUL	E	E	yuksek
+KIMYA-1329	26ffa2b2-31c2-56f8-9d0c-08e89ca8b8eb	KABUL	B	B	yuksek
+KIMYA-133	5c243d0f-175e-54e9-905c-6d7178d1d5b7	KABUL	E	E	yuksek
+KIMYA-1330	8ff92201-48b9-55dd-bfc8-913ec90efb31	KABUL	C	C	yuksek
+KIMYA-1331	4e2b31f9-169e-5ce1-b3a3-1d026576013d	COP		A	yuksek	Bozuk/anlamsız metin, iç çelişkili veri
+KIMYA-1332	113c17dc-934b-5b05-9cda-5638cb96b9a9	KABUL	C	C	yuksek
+KIMYA-1333	6cdd5ac0-3efa-5f68-aeea-6ba3c3c61692	FIGUR		D	orta	FIGUR - tablo başlıkları (basınç/sıcaklık/hacim) metinde yok
+KIMYA-1334	18acbcbf-3804-58a4-a0ed-db7d7d004868	KABUL	A	A	yuksek
+KIMYA-1335	2a4e67a3-d453-5e2d-bc6e-35803c719604	KABUL	B	B	yuksek
+KIMYA-1336	b3beb77e-d017-570b-90dd-0283885ef742	KABUL	A	A	yuksek
+KIMYA-1337	25a6c0a3-b667-5676-a8fc-418bf00819a0	KABUL	A	A	yuksek
+KIMYA-1338	31d68c59-d796-5fc6-b80d-c28fd63ea3be	KABUL	C	C	yuksek
+KIMYA-1339	af2ddfce-7dfb-53ba-9efa-7d050e56072c	KABUL	B	B	yuksek
+KIMYA-134	23d30f0f-7dc9-5cdf-9feb-36906d7aaf99	KABUL	E	E	yuksek
+KIMYA-1340	a945500c-9bf2-52c8-add6-2a2ceb358354	COP		C	yuksek	Bozuk/uydurma metin, kimya içeriği yok
+KIMYA-1341	34309db2-83e2-52ea-a43e-be87b286612d	KABUL	C	C	yuksek
+KIMYA-1342	1922e652-4133-5f30-a295-fcfd8573258c	FIGUR		D	yuksek	FIGUR - iki türün gösterimi metinde bulunmuyor
+KIMYA-1343	700643a2-2cfe-5239-861d-0400f1bbfd87	COP		C	yuksek	Bozuk/eksik soru cümlesi
+KIMYA-1344	b9abc9ed-cc9c-53cf-9dcb-697f9b6c8fda	KABUL	E	E	yuksek
+KIMYA-1345	4165528c-4a18-5ea1-bf47-91bd379a8108	KABUL	C	C	yuksek
+KIMYA-1346	b5285fa1-a055-52e5-8de5-cde4e69633ab	KABUL	B	B	yuksek
+KIMYA-1347	1c470e21-f51f-5d7c-95a4-ca905bdcd14c	KABUL	E	E	yuksek
+KIMYA-1348	ce64f48e-950b-57e6-8c41-6a39195a396d	KABUL	A	A	yuksek
+KIMYA-1349	6f5e3219-5002-529f-a248-ea2df872ac46	KABUL	D	D	yuksek
+KIMYA-135	d35fdd66-24b1-5bdb-ac79-6e58911a911d	KABUL	E	E	yuksek
+KIMYA-1350	7b9fc43f-b029-5abd-8b41-ec99ea407d36	KABUL	D	D	yuksek
+KIMYA-1351	dad62a65-aca3-51fc-9d44-0724f89ce83e	COP	D	D	dusuk	OCR formul hatasi: verilen formulle bes secenek de yanlis, t
+KIMYA-1352	ef005546-9a0f-54b6-8fb6-b1b206b685e6	KABUL	E	E	yuksek
+KIMYA-1353	2394188f-5ad8-58b8-b133-941cbf901fd7	COP		C	yuksek	Uydurma/bozuk metin; gercek soru degil
+KIMYA-1354	d21935ad-7a93-5223-8112-3c99737daa58	KABUL	C	C	yuksek
+KIMYA-1355	96f0bc09-b544-520b-9f6f-28eb8e194216	COP		A	yuksek	Anlamsiz/uydurma metin; cozulebilir soru degil
+KIMYA-1356	f5385500-112f-59b2-8ef4-c8717c7ef62e	KABUL	B	B	yuksek
+KIMYA-1357	43694471-58a9-52e3-ad93-c7d9eb48c06d	KABUL	E	E	yuksek
+KIMYA-1358	7ea7dcf9-068f-5011-b24b-03379b9099be	KABUL	C	C	yuksek
+KIMYA-1359	2957ddeb-e418-519e-895c-eb3e3131a3d4	KABUL	A	A	yuksek
+KIMYA-136	f29c6883-81fe-5265-870a-ca42aca27eb1	KABUL	D	D	yuksek
+KIMYA-1360	40493f2d-b56b-5bc0-8919-4d1b38b74bcc	COP		A	yuksek	Uydurma/bozuk metin; gercek soru degil
+KIMYA-1361	5975abc0-0717-561c-8b73-68ba7f609482	KABUL	B	B	yuksek
+KIMYA-1362	30ab7521-e067-5381-990e-7460ea61966c	KABUL	E	E	yuksek
+KIMYA-1363	4f521899-9b94-5f09-a5d3-74f6eff0e86a	KABUL	C	C	yuksek
+KIMYA-1364	82c81002-e214-51ef-8e85-ed10837b3dbc	COP		A	yuksek	Veri eksik ve ifade tutarsiz; seceneklerden biri belirlenemi
+KIMYA-1365	b5596707-046b-5826-9991-66dd0529b3c0	KABUL	E	E	yuksek
+KIMYA-1366	705c94d1-863e-5b4c-8565-f9ca3b046594	KABUL	C	C	yuksek
+KIMYA-1367	312eb68a-9d14-5382-a3a5-4af19f9a615d	KABUL	B	B	yuksek
+KIMYA-1368	1262fb99-900c-57f9-a554-ffe3573433eb	KABUL	E	E	yuksek
+KIMYA-1369	83e52448-6e4e-54ad-b4b1-daf25e84bc3c	KABUL	E	E	yuksek
+KIMYA-137	2489a693-b462-5ec8-8991-cd7ce88a83a9	COP		D	yuksek	OCR bozuk: 'cozesi', 'titrestirilmistir', 'normaliteli' deri
+KIMYA-1370	f0a782b4-079c-5bc9-acf9-d890d4daa643	KABUL	A	A	yuksek
+KIMYA-1371	0985681e-8456-5fb1-9b97-a6f911657b46	KABUL	D	D	yuksek
+KIMYA-1372	51035735-1c69-53e8-a3ef-b9d7b5076975	KABUL	A	A	yuksek
+KIMYA-1373	e6ad9cd9-f377-5fa4-9c63-9dc41e0e79e1	KABUL	C	C	yuksek
+KIMYA-1374	52433829-9b7f-5623-a950-bba37dfa1f57	KABUL	C	C	yuksek
+KIMYA-1375	1f5062e0-76e3-55d1-b0f6-b7e3d6e94928	KABUL	B	B	yuksek
+KIMYA-1376	cb525976-c3ce-56e0-823a-6ebc5cfec00d	KABUL	A	A	yuksek
+KIMYA-1377	d6896e97-3608-5a4f-b925-0e61d112d26d	KABUL	E	E	yuksek
+KIMYA-1378	f257655e-7d26-5476-98b5-97be59dd2446	KABUL	E	E	orta
+KIMYA-1379	9aa2ee05-47b8-5dfc-a4c0-bb9aba6fc969	KABUL	E	E	yuksek
+KIMYA-138	297bc7cc-5b4b-5f1b-a79f-c16d02394e4f	KUYRUK_ANAHTAR	C	B	yuksek
+KIMYA-1380	65bb69a2-3213-5943-a0c4-f44806ca9f80	KABUL	C	C	yuksek
+KIMYA-1381	42c54387-1e5f-5cc3-81ac-0601746f4860	KABUL	C	C	yuksek
+KIMYA-1382	5a81feae-2194-5a77-b20f-0bf193a90e2f	KABUL	D	D	yuksek
+KIMYA-1383	8726fc59-7f86-58e7-9d97-a30e694692ae	COP	A	A	dusuk	1000 molekulun 1000'i CO2 ve 900'u O2 olamaz — icsel celiski
+KIMYA-1384	9cf1553e-0b8f-5264-be31-99bcc0d64924	KABUL	D	D	yuksek
+KIMYA-1385	72a92569-fd7f-561c-81bd-3428eb21bab9	KABUL	D	D	yuksek
+KIMYA-1386	5f8a703c-5b09-53d7-9af4-e23eeb1326b9	COP		A	yuksek	Doner lokanta/para metni anlamsiz, kimya icerigi yok
+KIMYA-1387	56a666f6-6000-5113-b7a5-f304b281baed	KABUL	C	C	yuksek
+KIMYA-1388	c1959dee-4545-5a05-b021-c7b12abf9017	KABUL	C	C	yuksek
+KIMYA-1389	124d7afd-2e05-5324-8114-804ed1fdf4eb	KABUL	E	E	yuksek
+KIMYA-139	1446f71d-b92f-56a1-addc-d922cfa76e18	KABUL	E	E	yuksek
+KIMYA-1390	1793ba3d-1b73-56d3-b585-b0124c525c82	COP	B	B	dusuk	Kaynak sicakligi soruda verilmis ve ayni sey soruluyor — tot
+KIMYA-1391	9abaf6b6-70b7-550b-8dab-c08a1c0f4586	KABUL	C	C	yuksek
+KIMYA-1392	1c887e20-9f26-52e9-a0cb-fb43bbe18909	COP	B	D	dusuk	Secenek yapi formullerinde dallanmalar/valanslar kayip, hicb
+KIMYA-1393	931f0d4c-4877-5eff-8e1e-8d762ff776ae	FIGUR		A	yuksek	FIGUR: madde modelleri gorseli olmadan cozulemez; ayrica sor
+KIMYA-1394	a7d8d95e-1a21-5045-b91f-8e5485e13a91	COP		C	yuksek	Unite basligi metne karismis, bozuk kelime, soru-secenek uyu
+KIMYA-1395	448ce5b9-b814-5721-bf93-a192d1f645eb	KABUL	A	A	yuksek
+KIMYA-1396	7495db8f-ca19-5a24-9191-41dcc40a4584	KABUL	C	C	yuksek
+KIMYA-1397	2c92bb17-ea09-5a64-a594-0b45957aa0df	KABUL	C	C	yuksek
+KIMYA-1398	77d4757a-1eb6-574a-8107-673da96336ff	KABUL	E	E	yuksek
+KIMYA-1399	f699ba94-130e-5da1-915e-21d347571b53	KABUL	C	C	yuksek
+KIMYA-14	db523c7e-31a6-5429-95de-de9c6a1d6b59	KABUL	A	A	yuksek
+KIMYA-140	2eb46d34-5bbc-5e58-a93d-37c85a9bc15d	KABUL	B	B	yuksek
+KIMYA-1400	3979016b-8314-57f3-a89c-f95fdefdea3e	KABUL	C	C	yuksek
+KIMYA-1401	a0d9e097-a3ee-564d-b8ad-edc4bf9f86bd	COP		D	yuksek	Harf listesi + logaritma ifadeleri anlamsiz, soru kurulmamis
+KIMYA-1402	4e0d0307-c257-5c42-ac4a-65f21770f8a9	KABUL	C	C	yuksek
+KIMYA-1403	54c9cb8c-b20c-5681-a6d0-b77d53cd5852	KUYRUK_ANAHTAR	D	B	yuksek
+KIMYA-1404	6a9d0bae-f138-584e-96b9-81dc67bd9bd2	KABUL	C	C	yuksek
+KIMYA-1405	906f33e3-3476-57ad-872e-414066f2877b	KABUL	D	D	yuksek
+KIMYA-1406	106b58e6-aba5-5999-8362-d69743e79b39	KABUL	B	B	yuksek
+KIMYA-1407	b4439720-027c-5684-b43a-dbe7837d29f9	KABUL	B	B	yuksek
+KIMYA-1408	a889a8e6-7cc1-525e-afca-b4524924fe86	FIGUR		E	yuksek	FIGUR: A/B/C karisim gorseli olmadan kaynama sicakliklari ka
+KIMYA-1409	db43968f-5a24-58bc-9ea5-8ae39bbc8f1a	KABUL	D	D	yuksek
+KIMYA-141	2cfe7cb6-1350-57c7-b865-106eb2be1785	KABUL	B	B	yuksek
+KIMYA-1410	f9ec7792-5fd7-5ad3-87ba-1b763790e3cc	COP	C	C	dusuk	Hesap sonucu (9,6x10^-14 mg) hicbir secenekle birebir uyusmu
+KIMYA-1411	740c3ab7-b234-54d8-934b-d048913af823	KABUL	D	D	yuksek
+KIMYA-1412	ed09ff89-a4c5-5db2-b4b2-34843e1534f3	KABUL	A	A	orta
+KIMYA-1413	ae2a081d-4223-51cf-95e4-444b381196dc	FIGUR		A	yuksek	FIGUR: HF etkileşim şeması (a, b) verilmemiş
+KIMYA-1414	ef3ca295-3605-57ab-8211-1b11ada460ce	KABUL	B	B	yuksek
+KIMYA-1415	1b88abc4-92c1-5a07-bc18-65c3c0d4b7b9	KABUL	B	B	yuksek
+KIMYA-1416	7937e6ef-9f1b-5807-bd9b-f00d59d97560	KABUL	E	E	yuksek
+KIMYA-1417	f24a7b51-1862-598b-9a0f-d4f38246e9d4	KABUL	E	E	yuksek
+KIMYA-1418	7e08b61b-35f0-59fd-a08c-0f548ff42e8a	KABUL	A	A	yuksek
+KIMYA-1419	d543707d-a4ae-5744-9dd8-1b0c3fa38b02	FIGUR		E	yuksek	FIGUR: Lewis formülü çizimleri eksik
+KIMYA-142	714085ff-b970-5e6b-ab2f-b9fee26a6bb6	KABUL	B	B	yuksek
+KIMYA-1420	c00ae239-d677-50ab-a462-1e252dead99e	KABUL	E	E	yuksek
+KIMYA-1421	a52725bb-d6de-555e-a7b4-ba422f33edd4	KABUL	A	A	yuksek
+KIMYA-1422	83d9e838-ca8c-5f2f-a417-a27f3e81d0c0	KABUL	B	B	yuksek
+KIMYA-1423	923dd794-65eb-5dab-9b1a-a1a295969ae2	KABUL	C	C	yuksek
+KIMYA-1424	2811c487-ac1c-5d72-999d-a7a45201236e	KABUL	A	A	yuksek
+KIMYA-1425	8a63cbf5-7a37-55c6-bc91-5f3d8a377ffb	KABUL	E	E	yuksek
+KIMYA-1426	79b09e3c-bafa-5658-ab24-7468569be20c	KUYRUK_DUSUK_GUVEN	C	C	dusuk
+KIMYA-1427	9e390c9c-d645-56a7-9fc2-d37113de1605	COP		E	yuksek	Bozuk/uydurma metin, çözülebilir soru değil
+KIMYA-1428	286d65bb-7211-5b4f-817e-610c4ccd34e6	KABUL	D	D	yuksek
+KIMYA-1429	48d7ade0-cb3b-5c19-9df7-7785a5855854	KABUL	C	C	yuksek
+KIMYA-143	5bd2fa1c-1e0a-5a5d-bc4e-a4cd161833a6	KABUL	E	E	yuksek
+KIMYA-1430	f35dce55-a3c0-5b22-8fee-f775a79aa55c	KABUL	B	B	orta
+KIMYA-1431	7d6429a5-a060-57a8-934a-b00033bfe46f	KABUL	A	A	yuksek
+KIMYA-1432	67ebe101-e2b6-5494-8b04-13124c8b05ed	COP		D	yuksek	Bozuk/uydurma içerik, seçenekler ayırt edici değil
+KIMYA-1433	959f267a-7dbb-518a-a400-6c5a738f1e83	KABUL	A	A	yuksek
+KIMYA-1434	7e97b698-c003-55bd-8a3d-23b68e92af67	KABUL	B	B	yuksek
+KIMYA-1435	74b7f09f-6e9c-5503-8f46-8cfa054546b6	KABUL	E	E	yuksek
+KIMYA-1436	11f0bd81-be36-5d0f-a7ff-e18dacb69d29	COP		A	yuksek	Bozuk OCR metni, çözülebilir soru değil
+KIMYA-1437	742a3883-9695-589a-946b-5cdd73908437	KABUL	B	B	orta
+KIMYA-1438	4d3e1ab7-f1e2-5335-ac49-5aaa2cb93ad3	KABUL	D	D	yuksek
+KIMYA-1439	4eef441c-9756-50e3-b1f9-ec9f94b68e29	KABUL	E	E	yuksek
+KIMYA-144	d919f14d-4d3e-5ae3-b161-83b4fa26a61a	KUYRUK_ANAHTAR	B	D	yuksek
+KIMYA-1440	5ff8a3b9-ac6c-5f97-9723-5367ca43bc93	KUYRUK_DUSUK_GUVEN	C	C	dusuk
+KIMYA-1441	b2b16df8-95a0-5c80-bb08-cc09d66c3a90	KABUL	E	E	yuksek
+KIMYA-1442	36dc9efe-2cea-5b41-ad7d-b6c99d685e13	KABUL	C	C	yuksek
+KIMYA-1443	2721c048-5d49-5fda-89a4-4eedec2cd880	KABUL	C	C	yuksek
+KIMYA-1444	6404393e-5835-5f12-82a8-8a22305c9495	KABUL	C	C	yuksek
+KIMYA-1445	fd91fae7-6e41-57b1-9f8a-406226b10097	KABUL	C	C	yuksek
+KIMYA-1446	4829ec7d-6556-5148-8f17-fa673c7aac5d	KABUL	A	A	yuksek
+KIMYA-1447	48f39015-c78a-5f60-bf18-b247158ab2dd	KABUL	D	D	yuksek
+KIMYA-1448	6fa849d9-59ed-56ff-acb7-9b32c0e52ad0	KABUL	D	D	yuksek
+KIMYA-1449	e8547116-5f03-56e5-ae81-bf85ff14fa28	KABUL	E	E	yuksek
+KIMYA-145	c37f1a98-d66b-58f9-b4c1-2ca6b23d1f1f	KABUL	A	A	yuksek
+KIMYA-1450	7757c86b-ba0f-58f0-9aa6-c54ca2980a97	KABUL	A	A	yuksek
+KIMYA-1451	c79a71c4-0d15-55c8-b950-a93a5ea23688	KABUL	B	B	orta
+KIMYA-1452	9b8125c5-14cd-5bda-807e-218251b82511	COP		B	yuksek	Celiskili oncul; hacim hem sabit hem degisken, tek dogru sik
+KIMYA-1453	de9e1e70-d239-5936-a2f2-bef517ef5bed	KABUL	A	A	yuksek
+KIMYA-1454	5eee376e-f9a6-59a1-8814-87ed6711cfd2	COP		B	yuksek	Konu disi/bozuk kayit; secenek etiketleri cift, A=E
+KIMYA-1455	0dcb5677-d19f-5115-9c21-814866c845d2	KABUL	B	B	yuksek
+KIMYA-1456	c522224b-f286-52d4-9aa0-0e4b3f2cf008	KABUL	C	C	yuksek
+KIMYA-1457	d4f767a4-f7d1-557e-a747-005df09efc42	KABUL	D	D	yuksek
+KIMYA-1458	fe75f2a5-d5b5-505e-b0eb-966f94c304a7	KABUL	A	A	yuksek
+KIMYA-1459	4da2d86e-dcf2-5677-9606-fc1b5052cc99	KABUL	E	E	yuksek
+KIMYA-146	77610fc0-41ba-5976-b07d-e0a5c03dee9c	KABUL	C	C	yuksek
+KIMYA-1460	393dfcfe-7b3f-5ddd-a717-5c78b1d07b2c	KABUL	D	D	yuksek
+KIMYA-1461	d8c38901-5ebf-5a1f-aa27-dcc38deb8d0b	KABUL	D	D	yuksek
+KIMYA-1462	c0bd0301-1a86-59fa-bc8a-f3a64fcb4f42	KABUL	C	C	yuksek
+KIMYA-1463	7657fb16-20bc-5693-8f41-92d7ca6d8c19	KABUL	D	D	yuksek
+KIMYA-1464	37c4e39a-0ff9-512d-9a63-1f4d3b2a59ea	FIGUR		C	yuksek	FIGUR mol sayisi-zaman grafigi verilmemis, cozum grafige bag
+KIMYA-1465	5b916af5-7c4d-53fe-8512-9f1999fe7257	KABUL	B	B	yuksek
+KIMYA-1466	6c20c24d-7c9a-545e-b448-864d80081e01	KABUL	A	A	yuksek
+KIMYA-1467	0d4a4989-09c9-5342-9a7c-327bc00af365	KABUL	A	A	yuksek
+KIMYA-1468	fef14893-600f-5353-9dd2-8b4f19395210	KABUL	D	D	yuksek
+KIMYA-1469	3ed1d773-c56d-5154-a125-d56c8877e0ec	FIGUR		C	orta	FIGUR kavram haritasi; I-IV numaralari metinde yok, eslestir
+KIMYA-147	be41ae2e-bcea-55fa-ad70-be7a9d6f662d	KABUL	E	E	yuksek
+KIMYA-1470	237c8224-b61f-5fdb-9f9c-084ff9cb62e5	KABUL	E	E	yuksek
+KIMYA-1471	61ff634e-36eb-5b39-91ee-5e2fdf1f7cd6	KABUL	A	A	yuksek
+KIMYA-1472	3a5cdd38-afea-561f-a390-f209cb08f3d6	KABUL	A	A	yuksek
+KIMYA-1473	f7a95960-4008-53ae-a786-0e662def7b50	KABUL	E	E	yuksek
+KIMYA-1474	567144b1-9ac0-56da-b3d9-4ee7711b8e23	KABUL	B	B	yuksek
+KIMYA-1475	04b18b53-b6b3-5cc2-9382-949ff78a72bc	KABUL	B	B	yuksek
+KIMYA-1476	a35695a6-7ff8-53cf-b41a-ce7a8ffe79b8	KABUL	C	C	yuksek
+KIMYA-1477	f1e02ff3-771b-55ba-9afd-1d0d5962fb52	KABUL	C	C	yuksek
+KIMYA-1478	dd36e5cc-8158-5d8a-b6d4-fb973a16f639	KABUL	C	C	yuksek
+KIMYA-1479	19da3351-b31e-5f4d-a997-840dcf1b3dc4	KABUL	B	B	yuksek
+KIMYA-148	6e9c6b21-36d8-5105-a21a-128509da78bb	KABUL	C	C	yuksek
+KIMYA-1480	48c1d68c-176d-5229-b315-2085e830d6e9	KABUL	C	C	yuksek
+KIMYA-1481	48c652d8-abd4-5071-aa50-d9f6e2438972	KABUL	D	D	orta
+KIMYA-1482	0ab8c226-be5e-59e0-b475-e16116c14473	KABUL	E	E	yuksek
+KIMYA-1483	0286b133-684f-5811-bf53-b17e0750673f	KABUL	E	E	yuksek
+KIMYA-1484	e237e76d-e074-55a9-b4e6-fe0eb264df97	KABUL	B	B	yuksek
+KIMYA-1485	0889df57-f46c-58ed-b9d8-b6be61d5d840	KABUL	B	B	yuksek
+KIMYA-1486	8ffc937f-5d65-59c2-9a2d-ec5fb6d1eb5a	KABUL	C	C	yuksek
+KIMYA-1487	593218d3-fe12-5188-b58c-3e645e43fe5e	KABUL	A	A	yuksek
+KIMYA-1488	13539204-ce4f-50c8-afe2-619ab82c3b49	KABUL	E	E	yuksek
+KIMYA-1489	8d251485-5924-5f0d-a8b1-20d1c4abd0ec	KABUL	D	D	yuksek
+KIMYA-149	1fcdfd23-20ad-5d43-9230-8dab969a387d	KABUL	C	C	yuksek
+KIMYA-1490	9c0f23b9-efca-597c-9964-cd79f55fe075	KABUL	A	A	yuksek
+KIMYA-1491	c06bdf73-0141-5d48-9b15-1cf0d105a6ca	KABUL	E	E	yuksek
+KIMYA-1492	b1773eb5-2f23-5f84-9c2e-59105955cb6a	KABUL	A	A	yuksek
+KIMYA-1493	96da0da1-1335-5cd7-b383-66f745d390cc	KABUL	A	A	yuksek
+KIMYA-1494	990a224c-8174-5bd2-b82e-a0ca48dcff4b	KABUL	C	C	yuksek
+KIMYA-1495	2d4ac976-c891-5a56-a7b2-092ddb98185d	FIGUR		C	yuksek	FIGUR: secenekler carpisma geometrisi cizimleri, metne aktar
+KIMYA-1496	1b7a84df-740c-556e-84ee-0659ee07902a	KABUL	D	D	yuksek
+KIMYA-1497	85143422-895b-50a1-a258-942e7bb6b87c	FIGUR		A	orta	FIGUR: periyodik sistem kesiti gerekli; metindeki tablo yer
+KIMYA-1498	c0583b4b-13cd-5ded-b1fa-7d2bd7d13a41	KABUL	A	A	yuksek
+KIMYA-1499	925465f8-8962-5dbd-b2cd-170994a98be3	KABUL	D	D	yuksek
+KIMYA-15	60f32740-79c4-56f4-85de-29deed015d72	FIGUR		E	yuksek	FIGUR: 'Yukaridaki periyodik sistemde belirtilen yonler' gor
+KIMYA-150	4704595b-0292-5fc8-a4af-40c09ad11751	KABUL	E	E	yuksek
+KIMYA-1500	7fb4170f-4666-578b-910b-463f19716a84	COP		E	yuksek	Bozuk/anlamsiz metin: 'kare dikdortgen' celiskisi, cevre 120
+KIMYA-151	333f0a32-a486-5a53-987f-b1ade22f4fb4	KABUL	C	C	yuksek
+KIMYA-152	29bcaa0e-c5c2-565c-b21b-6f4b8c1cf5ad	KABUL	C	C	yuksek
+KIMYA-153	587e1a82-f97c-558a-8305-c090a817b89d	KABUL	E	E	yuksek
+KIMYA-154	ec75e22f-eaaa-5568-a7eb-790a3f4ba332	KABUL	A	A	yuksek
+KIMYA-155	3eac76bf-d91c-573a-b0dd-ff31658f0065	KABUL	A	A	yuksek
+KIMYA-156	1a088896-b8d3-5e31-998a-3796a194ca9e	KABUL	B	B	yuksek
+KIMYA-157	9c90c0ef-ef11-58df-a4b3-436a23f098fe	KABUL	E	E	yuksek
+KIMYA-158	b02f44c2-9246-5ad0-bdb1-e532b4c42ce7	KABUL	E	E	yuksek
+KIMYA-159	de13e9d8-fe8b-5251-8c21-a92dedaf639b	KABUL	C	C	yuksek
+KIMYA-16	ab8be506-8ed0-598b-bdfe-d75fbf0db818	KABUL	A	A	yuksek
+KIMYA-160	e38c746e-057e-549e-abef-25702679b462	KABUL	C	C	yuksek
+KIMYA-161	ee64641b-807c-5269-b6cb-bca19398f64f	KABUL	E	E	yuksek
+KIMYA-162	421811ea-99fe-5c46-8560-f5661d79388b	KABUL	C	C	yuksek
+KIMYA-163	669d0db7-e919-5b29-8802-933d971a2897	KABUL	E	E	yuksek
+KIMYA-164	f7b18a99-fe41-565b-ac00-377be5c3c619	KABUL	B	B	yuksek
+KIMYA-165	46c6fdb3-f311-5865-a0a8-40397b4e74cc	KABUL	A	A	yuksek
+KIMYA-166	aa375ac9-3c65-55f4-88e6-25310279da03	KABUL	C	C	orta
+KIMYA-167	3a619d24-0161-5832-9b30-8d91a2ab6787	KABUL	B	B	orta
+KIMYA-168	2a01ae64-fcc3-5f28-aa60-361f4118c65e	FIGUR		E	yuksek	FIGUR: 'yukarida verilen grafik' entalpi diyagrami olmadan c
+KIMYA-169	45558503-9975-5d98-bf83-42f8076102dc	COP		A	yuksek	Birden fazla secenek denk (OCR katsayi bozulmasi), tek dogru
+KIMYA-17	eaa4b8b6-87be-505f-a670-6cc809a15729	COP		E	yuksek	Kimya sorusu degil; 'esdegerdir' ciftsiz sorulmus, C ve D ik
+KIMYA-170	21a5a8b4-36db-5a3f-aaf5-52ba70862db0	KABUL	E	E	yuksek
+KIMYA-171	4b3c5106-65df-532b-b40a-d2d121deb2cf	COP		E	yuksek	Agir OCR bozulmasi: 'Haka sonucu', 'Korumali sonucu' gibi uy
+KIMYA-172	6e93be63-ee09-5c26-b19b-d8709b1ec7a3	KABUL	D	D	yuksek
+KIMYA-173	514e43cb-2d70-5a05-a565-a5ab3f7452f4	KABUL	C	C	yuksek
+KIMYA-174	0b411070-34dd-5b12-a1e1-436b956a81e8	COP		A	yuksek	Agir OCR bozulmasi; cumleler baglantisiz, soru kimya degil
+KIMYA-175	10274f56-74ae-59fb-9af6-efe4a6f0f32e	COP		E	yuksek	Agir OCR bozulmasi: uydurma terim 'UPMC', soru cozulemez
+KIMYA-176	57b547b8-a058-5130-a04e-bae1d47b11a9	KABUL	C	C	yuksek
+KIMYA-177	e0d73595-ee3f-5d5f-9c4e-9a28adf3bfe1	KABUL	B	B	yuksek
+KIMYA-178	2ad6fa29-52fe-5c01-8db9-bfb6c82e9f67	KABUL	B	B	yuksek
+KIMYA-179	693cd20d-14b6-552d-90c4-2a61eeb88f0b	KABUL	A	A	yuksek
+KIMYA-18	d8046ebc-b5e3-5703-bfef-82e8fabc92c7	COP		E	yuksek	Hangi element oldugu belirtilmemis; tum secenekler gecerli o
+KIMYA-180	56069b80-4a6d-58d8-8378-7c34eb28dc56	KABUL	D	D	yuksek
+KIMYA-181	2d0e0c26-dac7-519e-824c-442f8377155b	KUYRUK_ANAHTAR	B	D	dusuk
+KIMYA-182	ff72c042-e9a8-53b8-90c4-92cfe0d55c3d	KABUL	B	B	yuksek
+KIMYA-183	a0488e24-2a8f-5ffe-8ecc-f81092dbf81a	KABUL	D	D	yuksek
+KIMYA-184	678bd313-8325-527a-8ef5-dcb2a0e35eba	KABUL	B	B	yuksek
+KIMYA-185	c00f1ed4-f9bd-564f-84eb-23eb3057fc4d	KABUL	B	B	yuksek
+KIMYA-186	a751c01e-c201-5dcb-a675-e712fa651bf9	KABUL	B	B	yuksek
+KIMYA-187	7c1ec0cf-a9b4-57c0-8b61-2ebb9a03c7fc	KABUL	D	D	yuksek
+KIMYA-188	5721212b-0157-5543-a165-9c6f5a95645b	COP		C	yuksek	Kimya disi + celiskili kurgu: 16+3=19 saat, 1/3 kurali secen
+KIMYA-189	2267606d-b539-5983-8a25-c6911f26358c	KABUL	D	D	yuksek
+KIMYA-19	03a8c4d5-e7de-50e7-9c0b-71f30d44029b	KABUL	B	B	yuksek
+KIMYA-190	7da6c3aa-6c82-5118-a14d-aaddbacc1de8	KABUL	E	E	yuksek
+KIMYA-191	59b1bb4c-8701-51b1-a6ac-bd6b14c5f02a	KABUL	B	B	yuksek
+KIMYA-192	d554c1fe-693d-5e1a-af2a-2d9648a7ceb6	KABUL	C	C	yuksek
+KIMYA-193	b4c9cf8d-46aa-53d6-a5f6-af6e10ba44b0	KABUL	B	B	orta
+KIMYA-194	a0961020-cc7b-5960-b13f-4661f7a2f3f5	KABUL	E	E	yuksek
+KIMYA-195	55af7827-c6ae-5610-a6cf-eff4e055273f	KABUL	A	A	yuksek
+KIMYA-196	3e396442-5dee-58d0-b1d6-6e6c80e990ab	KABUL	E	E	yuksek
+KIMYA-197	74dd39fa-c2b2-5f3b-85b7-2a0ac30e9551	KABUL	D	D	yuksek
+KIMYA-198	c345da0c-3791-57fc-814e-b43080854471	KABUL	B	B	yuksek
+KIMYA-199	a37d070c-6f1b-558b-9a15-dffe6b75534f	KABUL	E	E	yuksek
+KIMYA-2	6a138f70-856d-5d36-aca3-e3bc5d72c89c	KABUL	A	A	yuksek
+KIMYA-20	38f5b522-f4f7-5aa2-86b9-39b5fabb7cb2	KABUL	D	D	yuksek
+KIMYA-200	e0079e5b-7559-56ac-8551-7c957ec3484a	KABUL	D	D	yuksek
+KIMYA-201	0c0c7796-9c5b-54d1-a097-9919bc38e982	KABUL	C	C	yuksek
+KIMYA-202	2a488940-66ff-5aa3-9c62-a2efd3c9802f	KABUL	A	A	yuksek
+KIMYA-203	70689ec9-9742-5a9e-b353-73c384d3ce9f	KABUL	C	C	yuksek
+KIMYA-204	a0d439b4-5bbf-5129-89cf-0c16fd4cbac7	KABUL	E	E	yuksek
+KIMYA-205	92ae1ec5-c605-5dca-bda3-76ec311c143d	KABUL	D	D	yuksek
+KIMYA-206	b7b32c22-26ce-5f71-8a11-c1e012a5c469	KABUL	E	E	orta
+KIMYA-207	ece09fd2-e2fb-5e5a-9ea2-005d753790de	KABUL	A	A	yuksek
+KIMYA-208	5f81900c-6044-59c6-a93b-ef08f2cc4f3c	KABUL	C	C	yuksek
+KIMYA-209	f4cc144b-aeff-5aca-a8a2-faf5756431b8	KABUL	B	B	yuksek
+KIMYA-21	4794c9ab-4708-51a8-b109-537dc41bd2db	KABUL	A	A	yuksek
+KIMYA-210	4b8eff17-68af-5fe6-9879-7ccf97c2752b	KABUL	A	A	yuksek
+KIMYA-211	3105f27e-0db8-5931-83ed-fd61ad7e44f3	KABUL	A	A	yuksek
+KIMYA-212	a5b61084-fb96-550d-b45c-ae4ad57fe069	KABUL	C	C	yuksek
+KIMYA-213	07d05c11-4274-5f19-b492-bf889b01c973	COP		A	yuksek	Bozuk metin: 'normal kapasite notasyonu EPC 7' anlamsiz, sor
+KIMYA-214	fad815e4-0e8d-5089-bac4-abef97296341	KABUL	D	D	yuksek
+KIMYA-215	6a7d36e4-35ad-5024-a04e-4ec1648234eb	COP		B	yuksek	Bozuk/uydurma metin: 'nobetleri arasinda aralik' ifadesi anl
+KIMYA-216	bb85cafc-f6fd-51a5-bb02-78ffbde78a1c	COP		A	yuksek	Bozuk metin: 'alinan alim eki' anlamsiz, kimya sorusu degil.
+KIMYA-217	3a636a29-d6d5-5409-a4b8-fd238554df5d	KABUL	C	C	yuksek
+KIMYA-218	d6f28491-9e69-5db1-afd6-09242859cbb6	COP		C	yuksek	Bozuk metin: 'has hipermetabolizmada artan degerler' anlamsi
+KIMYA-219	cfefccec-78b9-5f3d-bbd7-cf5423819a99	KABUL	B	B	orta
+KIMYA-22	35644260-8563-50e9-99fc-f55b198b9c20	KABUL	B	B	yuksek
+KIMYA-220	8d36a78d-f1eb-547d-a956-3f500dc53d3b	KABUL	D	D	yuksek
+KIMYA-221	7b9d30ec-cee2-55e6-877d-bb529829500b	KABUL	B	B	yuksek
+KIMYA-222	6ffbc737-dd02-5f2b-925b-90a19ae6db1b	KABUL	D	D	yuksek
+KIMYA-223	64316c0f-08fc-5b31-88f0-a4adab3e8ae7	KABUL	C	C	yuksek
+KIMYA-224	516a6e42-c8c8-50bf-982a-42541492f79c	COP		A	yuksek	Bozuk/konu disi: 'dogrudan bir polinomun koklerini ifade ede
+KIMYA-225	334d0f2b-c3e9-560b-bd6f-3bd6dc07992a	KABUL	C	C	yuksek
+KIMYA-226	9ffb4b14-b989-5981-8e18-2423d9ae2573	KABUL	C	C	yuksek
+KIMYA-227	cba548a9-2e3c-5981-b852-25f0b1186450	KABUL	E	E	yuksek
+KIMYA-228	70e00ef1-901f-5d51-ba14-30e9ca92bcda	KABUL	C	C	yuksek
+KIMYA-229	1d693b46-439d-55a8-8f54-99a4a5c04cec	KABUL	B	B	orta
+KIMYA-23	03f252f2-9271-5064-9ce0-1ebd622918ff	KABUL	D	D	yuksek
+KIMYA-230	9819629d-47ed-5170-b4b2-dce7e8ae028d	KABUL	B	B	yuksek
+KIMYA-231	7c43d4b2-bb5f-5f9c-bb0c-e5ca77f8dae0	KABUL	A	A	yuksek
+KIMYA-232	499d6246-d7f0-59c1-bff8-78d3e2bcca75	KABUL	E	E	yuksek
+KIMYA-233	5bdc451d-7a7c-5242-a541-a7cb272102ef	KABUL	E	E	yuksek
+KIMYA-234	cb22132c-92bb-5349-96a8-0ce18b8d8439	KABUL	C	C	yuksek
+KIMYA-235	a279f845-0b8b-5e36-87a0-2a062c4de1d7	KABUL	A	A	orta
+KIMYA-236	514069b8-9540-5561-b93c-5c69445e6f51	KABUL	C	C	yuksek
+KIMYA-237	3ca84e93-25f4-54c6-85f3-35064d30af44	KABUL	B	B	yuksek
+KIMYA-238	7e720b2c-2800-57e5-89d7-cf743dfea753	KABUL	B	B	orta
+KIMYA-239	d7498dc3-aafe-5109-8a8e-f0bdd10e4f15	KABUL	C	C	yuksek
+KIMYA-24	e80c64a9-28de-5c32-b5f5-de5bcca26cd4	KABUL	E	E	yuksek
+KIMYA-240	82a0ea57-8d2b-5362-a374-c19d4c9f8a5b	KABUL	D	D	yuksek
+KIMYA-241	4de59ed3-c240-5471-97c7-383edd8f693e	KABUL	C	C	yuksek
+KIMYA-242	16ced86d-0cb5-54b7-9d30-9148a8f0f254	KABUL	E	E	yuksek
+KIMYA-243	8e0400d5-abec-5bb3-9c7b-11c3cf1d2e79	KABUL	E	E	yuksek
+KIMYA-244	e8b2f6c0-c1ca-5867-8c72-0cc6b798b1bc	KABUL	C	C	yuksek
+KIMYA-245	c81fb0cf-a12b-5b78-a862-9a8017035a09	KABUL	E	E	orta
+KIMYA-246	a9a68276-5190-54b8-926a-f473280e2a54	KABUL	E	E	orta
+KIMYA-247	0daed2ae-3536-593f-afe9-cb8459e3169c	KABUL	B	B	orta
+KIMYA-248	cf27d48a-db5a-5d0d-ad7f-c4fbc7939473	KABUL	D	D	yuksek
+KIMYA-249	f0a4647f-d845-5acc-bee3-8e302d391843	KABUL	B	B	yuksek
+KIMYA-25	a656fca6-f31b-52e0-902f-5f688d74993a	KABUL	D	D	yuksek
+KIMYA-250	6c38c515-5129-5ed6-bf79-d01894ae829a	KABUL	C	C	yuksek
+KIMYA-251	99b6974f-e95a-5c0b-9683-38a171226d89	KABUL	B	B	orta
+KIMYA-252	c484caea-96f5-5dec-87e4-813b57374c58	KABUL	D	D	yuksek
+KIMYA-253	9ee3eb4b-b959-5e77-b2f4-3c000d97ae81	KABUL	C	C	yuksek
+KIMYA-254	bc41139d-fea1-5605-b7f3-2d7e601eb1e6	KABUL	D	D	yuksek
+KIMYA-255	d675fa7b-c087-56c9-88f9-a3e50e3fcd29	KABUL	C	C	yuksek
+KIMYA-256	ddb295c0-dbe2-587f-9bea-dc2b48448850	KABUL	E	E	yuksek
+KIMYA-257	f671b73d-c2cd-5aad-a999-2f383b90f8c0	KABUL	C	C	yuksek
+KIMYA-258	55b26a12-d72a-56fd-850e-87be43a54de6	KABUL	A	A	yuksek
+KIMYA-259	a43273a4-61c8-581f-8568-0a7421103262	FIGUR		B	yuksek	FIGUR - soru iki sekle dogrudan atif yapiyor, gorsel yok
+KIMYA-26	e5f36516-a216-5d34-b99a-a0ca1618aa18	KABUL	C	C	yuksek
+KIMYA-260	dd52c14e-5104-59e1-9718-704ebbec0e34	KABUL	D	D	yuksek
+KIMYA-261	ddcf1d95-5965-5317-9c97-6c4e5b99742b	FIGUR		B	yuksek	FIGUR - 'grafik yukarida verilmistir' atfi var, grafik yok
+KIMYA-262	d4316d23-06e9-5f69-b609-36d741ef3e89	COP		D	yuksek	Metin bozuk: 'iki farkli cozeltiye a gore' anlamsiz, secenek
+KIMYA-263	109bf6fe-8155-552f-b5f6-a085627deaf3	KABUL	D	D	yuksek
+KIMYA-264	4baf4b13-e71a-50b2-beb9-27c825b7a74a	KABUL	A	A	yuksek
+KIMYA-265	e7913eab-6d68-5a6d-8dbf-9041e7205366	KABUL	E	E	yuksek
+KIMYA-266	7d16d1a0-764e-51c0-a450-fd2e443ce17e	KABUL	C	C	yuksek
+KIMYA-267	5a2ed9a1-b0b7-51d2-8d30-3e7e43095c45	KUYRUK_ANAHTAR	D	B	orta
+KIMYA-268	9cbac38f-1330-5f24-8f61-4f2d7a28f3a7	KABUL	D	D	yuksek
+KIMYA-269	488a5bab-6de9-5520-8251-530d5ebf0e33	COP		C	yuksek	Metin eksik + veri tutarsiz: H'nin kutlesi 10 degil, hicbir
+KIMYA-27	12e09fc9-cc6f-589a-a111-6994749c57e9	COP	E	E	dusuk	Denklem denk degil (4CO2/4H2O); D sivi suyu verdigi icin hem
+KIMYA-270	47f4149e-f078-5feb-884f-62b09a7d1fdc	KABUL	B	B	yuksek
+KIMYA-271	cbbd6024-ffe1-5fa6-ac2e-bd053c0cd19c	KABUL	E	E	yuksek
+KIMYA-272	ea932b9b-da04-50ea-91b9-6123a9117687	KABUL	C	C	yuksek
+KIMYA-273	4880c39f-3cf8-534f-a89e-0aec534f04ff	KABUL	A	A	yuksek
+KIMYA-274	438283f5-15da-5375-ba3f-20d82d404c25	KABUL	D	D	yuksek
+KIMYA-275	6220c551-1adc-56ac-8b78-e16117aeb9d8	KUYRUK_DUSUK_GUVEN	A	A	dusuk
+KIMYA-276	7ac2ce32-df4d-5510-9544-00707b903e00	KABUL	D	D	yuksek
+KIMYA-277	7743125b-e036-5c29-939f-be930b3409b1	FIGUR		A	yuksek	FIGUR: 'Yukaridaki sistemde M muslugu' — sekil zorunlu
+KIMYA-278	97a447fc-3d73-574b-84b8-03b9d59438ee	KABUL	C	C	yuksek
+KIMYA-279	d3f83ef2-f264-5ca4-9045-7fffe10d4f33	KABUL	E	E	yuksek
+KIMYA-28	2521b399-16f0-5f40-a247-dcc400acd86e	KUYRUK_ANAHTAR	A	B	orta
+KIMYA-280	047aad8d-46aa-5703-8eee-e30ac7615521	FIGUR		E	yuksek	FIGUR: 'yandaki guvenlik uyari isareti' gorseli zorunlu
+KIMYA-281	0b93e667-98df-5bd4-a9ce-3df1d0dcb3f2	KABUL	A	A	yuksek
+KIMYA-282	0c8b0f2b-077d-59b5-9d59-24d62c58d7ed	KABUL	C	C	yuksek
+KIMYA-283	fcb576c2-ad22-558c-a83e-0d437ad947d5	KABUL	E	E	yuksek
+KIMYA-284	70a8a13a-535f-5b3c-a961-34c5680b706d	KABUL	D	D	yuksek
+KIMYA-285	b43ef7ae-e713-5018-9f5c-7a52c26b9957	KABUL	B	B	yuksek
+KIMYA-286	b89d4cc3-7569-58b5-a2ce-a84509a81975	KABUL	A	A	yuksek
+KIMYA-287	9f7cfed9-a827-570c-8bb2-b4239e54f91b	KABUL	E	E	yuksek
+KIMYA-288	b3819e66-b6cc-54fe-85c1-85f0d76d7f68	KABUL	A	A	yuksek
+KIMYA-289	41b7e800-17d0-58d0-96d5-d76bf4fb27e7	KABUL	B	B	yuksek
+KIMYA-29	31689fa6-8a09-5e84-abe8-8a0fdf7a991a	KABUL	B	B	yuksek
+KIMYA-290	1212655f-f4a1-5887-922f-49b8808f210b	KABUL	C	C	yuksek
+KIMYA-291	488a9c4b-1e0d-5ef6-b309-8fcdc25b3d3d	COP		B	yuksek	Bozuk/ilgisiz metin: golge soru kokur, tek dogru sik yok
+KIMYA-292	fea001bf-4034-55a0-818a-5122e3b3119c	COP		E	yuksek	Bozuk OCR metni: soru cumlesi anlamsiz, ayrica model gorseli
+KIMYA-293	0f29969d-e88e-574f-a67f-315f8316d3a3	KABUL	B	B	yuksek
+KIMYA-294	5a446772-dcde-5176-afe5-62f62098b8eb	KABUL	B	B	yuksek
+KIMYA-295	c8d21eb1-880d-5fd1-a4a9-1319004c9572	KABUL	D	D	yuksek
+KIMYA-296	6879c8f6-92ff-5d60-b26b-6eb63f70737c	KABUL	A	A	yuksek
+KIMYA-297	c9cb0b94-db92-5ba7-a047-4b291d9b2391	KABUL	D	D	yuksek
+KIMYA-298	04d89b01-b0b9-5f03-ab10-d8b0b59981aa	FIGUR		A	yuksek	FIGUR: 'Yukarida cizgi-bag formulu verilen molekul' gorseli
+KIMYA-299	12f23e9d-7aa7-53b5-a938-05cf802b2c71	KABUL	C	C	yuksek
+KIMYA-3	335b5c62-b7d6-58f2-9e80-692e766aa868	KABUL	B	B	yuksek
+KIMYA-30	2cc9649e-6912-52d0-85a4-fc71b227944f	KABUL	A	A	yuksek
+KIMYA-300	adb8640c-52c7-5acd-99b2-caf4330df8b5	KABUL	D	D	yuksek
+KIMYA-301	488ffdfa-fe92-54f4-9839-a2deb6c94150	KABUL	C	C	yuksek
+KIMYA-302	a0aa7ad1-3833-5aed-9948-31adee293b97	KABUL	A	A	yuksek
+KIMYA-303	aa77773a-03b5-5560-a429-5e520886646c	KABUL	C	C	yuksek
+KIMYA-304	f05d5f73-9892-5754-831a-9279974020bb	KABUL	C	C	yuksek
+KIMYA-305	84d401c0-af90-5e4c-9817-9e7c4ab3e769	COP		B	yuksek	Anlamsiz/bozuk metin; kimya sorusu degil, dogru sik yok.
+KIMYA-306	eab8de72-712b-55e7-81a3-fea3eed881a8	KABUL	E	E	yuksek
+KIMYA-307	69b26690-46c3-5f42-9332-ddb60700b5ee	KABUL	B	B	yuksek
+KIMYA-308	993c424b-1dfd-5927-8e00-afe5f3421267	KABUL	B	B	yuksek
+KIMYA-309	5194d64e-bc34-5b5f-b01e-06193804897b	COP		E	yuksek	Tamamen bozuk/uydurma metin; kimya sorusu degil.
+KIMYA-31	eebba9de-aed7-5eee-8fc8-2e10f3061a67	COP		E	yuksek	Bozuk/anlamsiz OCR metni, gercek soru degil
+KIMYA-310	1fe143e8-8833-5752-8c35-2800f7b3f115	KABUL	A	A	yuksek
+KIMYA-311	29d13fa2-a009-5bf0-9358-c769acd382d7	KABUL	A	A	yuksek
+KIMYA-312	997b95f1-5be6-57eb-96e6-0a5ea27984fe	COP		A	yuksek	Bozuk metin ve tekrarli siklar; tek dogru secenek yok.
+KIMYA-313	e1163d0e-79ef-5ca5-9d69-a7402ea40a67	KABUL	C	C	yuksek
+KIMYA-314	857c8690-2e85-5cea-bd62-71153ff18acd	KABUL	A	A	yuksek
+KIMYA-315	b276ea44-f261-5714-a411-26653f9391f5	KABUL	B	B	yuksek
+KIMYA-316	a95c8bb4-c807-5745-9969-86ee84b1741b	KABUL	B	B	yuksek
+KIMYA-317	a0450d75-e9a5-54d8-8370-a5d44fe78ac2	FIGUR		E	yuksek	FIGUR: Sekil-I/Sekil-II grafikleri metinde yok, gorsel zorun
+KIMYA-318	c465af37-d951-574c-9b2d-70e519fb7483	KABUL	D	D	yuksek
+KIMYA-319	91d43dc6-0ef0-5083-8e2e-d04c289043b7	KABUL	E	E	orta
+KIMYA-32	88e4202c-2487-53d2-94a5-eb8139648ce7	KABUL	D	D	yuksek
+KIMYA-320	6b3d5a83-4057-5d68-b898-872df290207e	KABUL	E	E	yuksek
+KIMYA-321	4dad0620-1500-5c49-8225-bdb6a544c671	KABUL	D	D	yuksek
+KIMYA-322	8450178b-57e5-5619-9403-2ea20383e554	COP		B	yuksek	Bozuk/uydurma metin; cozulebilir soru icermiyor.
+KIMYA-323	5c406e56-c099-5952-b518-ba7225a280b9	KABUL	C	C	orta
+KIMYA-324	4f5a5a4a-ee0e-520b-9f4d-d70d54c371d2	COP		A	yuksek	Kimya disi ve bozuk ceviri; dogru secenek yok (F~1/d^2 yok).
+KIMYA-325	b873f945-7c26-524a-afa2-2205101dc8ce	KABUL	C	C	yuksek
+KIMYA-326	886e7965-eac9-59ce-bae6-599b14fae527	COP		A	yuksek	Bozuk metin, uydurma ifadeler; cozulebilir soru yok.
+KIMYA-327	45f5e7e6-e748-56f8-89c5-c24c67f2987f	KABUL	C	C	yuksek
+KIMYA-328	7c9cf5d4-8162-593e-948a-b7f5109b2c13	KABUL	D	D	yuksek
+KIMYA-329	9498ae05-1237-5de3-9613-1a4496b2fca2	KABUL	D	D	yuksek
+KIMYA-33	45928c59-b8b3-5860-b3a4-5b51fa50b050	FIGUR		B	yuksek	FIGUR: numarali bolgeleri gosteren harita gerekli
+KIMYA-330	e7a52dc3-f84f-5aa7-8183-f620c4a9610e	COP		C	yuksek	Dogru bileske (I ve III) siklar arasinda yok; tek dogru sece
+KIMYA-331	baf867bf-a2a2-5e67-8165-fb733f7db95f	KABUL	E	E	yuksek
+KIMYA-332	19c5b303-a498-5caf-b2dd-35451218544b	KABUL	B	B	yuksek
+KIMYA-333	fd4d38d6-a880-5bdf-b333-20e599b8b379	KABUL	C	C	yuksek
+KIMYA-334	cd8ac714-f0ca-5f79-bff3-b42cc761b8f6	KABUL	C	C	yuksek
+KIMYA-335	450c2a98-5851-5a48-b8dc-d538f5e87c08	COP	E	B	dusuk	Soru cumlesi eksik: dogru mu yanlis mi sorulacagi belirsiz,
+KIMYA-336	8df8dd7c-a54d-5333-9874-782f46d5f9f0	KABUL	A	A	yuksek
+KIMYA-337	224f748a-4b05-5a71-b75a-16e835fc2f61	KABUL	D	D	yuksek
+KIMYA-338	54c48560-8c9d-566e-a4d1-7b987afc1a8b	KABUL	C	C	yuksek
+KIMYA-339	10a4c0d2-faad-5bb2-809d-33696c04a1fb	KABUL	E	E	yuksek
+KIMYA-34	af1faf9e-e396-577f-b65e-0b24be115b51	KABUL	C	C	yuksek
+KIMYA-340	f41c75ba-a840-5d2e-9bc8-9e9b3390c2f8	KABUL	C	C	yuksek
+KIMYA-341	11c16ccb-8794-5035-8433-1fcc81d3aa34	KABUL	E	E	yuksek
+KIMYA-342	06ae05b5-f1d0-5f2f-9db0-c7438dc5d57a	KABUL	D	D	yuksek
+KIMYA-343	39573c56-742f-5bb4-8561-331f9b19624f	KABUL	D	D	yuksek
+KIMYA-344	609aefa4-68f0-5750-8013-fd0ab11470c0	KABUL	D	D	yuksek
+KIMYA-345	a65efa54-ebae-560b-aac9-bcb50382c400	KABUL	D	D	yuksek
+KIMYA-346	fc69045d-6c85-5d7a-bbe3-9c5b97339e05	KABUL	B	B	yuksek
+KIMYA-347	a6e2072f-f836-5938-a2c4-0c5fd98a01a5	FIGUR	D	D	dusuk	FIGUR: sicaklik-isi grafigi 'yukarida verilmistir' deniyor,
+KIMYA-348	53e9d85e-7205-5da0-9f82-c7f3ac8f984d	COP	E	C	dusuk	Kaynama noktasi (100-2a) yani saf sudan DUSUK verilmis: coze
+KIMYA-349	c52860db-12fc-5763-8156-058ff7e739e0	KABUL	E	E	yuksek
+KIMYA-35	fef5c27b-8692-543c-90cf-5416b73a952e	KABUL	C	C	yuksek
+KIMYA-350	d495083e-d548-5ccd-b85e-7f21af63bfeb	KABUL	C	C	yuksek
+KIMYA-351	2bba68a7-17aa-5edc-8e2a-1f4f5b481d8a	KABUL	C	C	yuksek
+KIMYA-352	0a55fbb8-e885-5db5-a7b5-ec06f1dcf12e	KABUL	A	A	yuksek
+KIMYA-353	c618bd5a-c08f-5d2a-ab6e-8df558092526	KUYRUK_DUSUK_GUVEN	D	D	dusuk
+KIMYA-354	d6ae9ad9-1de0-5c42-a1dc-88eac9a79ffe	KABUL	C	C	yuksek
+KIMYA-355	e82e0ee3-3bbf-5871-a37b-7145563a062c	COP		A	yuksek	Anlamsiz/uydurma metin: 'Galileo atom modeli', 'Rubensten',
+KIMYA-356	7b22a3a3-6040-5239-b82d-f3b294f23117	KABUL	E	E	yuksek
+KIMYA-357	28ac691a-1362-5bf0-908a-a6054a5b0099	KABUL	C	C	yuksek
+KIMYA-358	819d55d4-9486-544b-b319-e2c3ed495988	KABUL	E	E	yuksek
+KIMYA-359	18228dd2-7ffb-5f34-b2b1-2c9171a6b2a3	KABUL	E	E	yuksek
+KIMYA-36	032ce376-a89c-5127-8fa6-df99102849ef	KABUL	D	D	yuksek
+KIMYA-360	172ffdd7-550e-519c-ae40-8a7ab1c3bd04	COP		B	yuksek	Bozuk metin: '20 C'den nefes alir, sonra 40 C'ye duser' celi
+KIMYA-361	d52dacec-b248-533a-a88c-239d9aa6c1d2	KABUL	D	D	yuksek
+KIMYA-362	fccf981c-e620-50f7-a6e0-7dc3cfa617ac	KABUL	E	E	yuksek
+KIMYA-363	690df135-86d0-5fc2-b200-d715c5b902d4	COP		D	yuksek	Metin bozuk/anlamsiz, sikların hicbiri dogru sonuc vermiyor
+KIMYA-364	e7b7d3d2-49ac-57b1-8740-f23478650409	KABUL	D	D	yuksek
+KIMYA-365	e1c3c5eb-9073-58ce-bc48-94dc568be021	KABUL	D	D	yuksek
+KIMYA-366	35c63c79-e2ac-5e3f-aeb6-0ea81ee92212	COP		B	yuksek	Soru govdesi bozuk/eksik, hangi sistem sorulduğu belirsiz
+KIMYA-367	0bdd75a2-da90-56ba-acac-e67429c3b32c	KABUL	E	E	yuksek
+KIMYA-368	4e9140f8-e9d5-5fed-85ba-74eed4ae2579	KABUL	E	E	yuksek
+KIMYA-369	6b0cf85b-96ec-5c40-ac4b-83eeba4fc1e6	KABUL	B	B	yuksek
+KIMYA-37	4e48fefe-f5e0-5e9f-8a61-6adf90fc0f1c	KABUL	E	E	yuksek
+KIMYA-370	e4ff4da6-e780-55bc-8146-df3511de5313	KABUL	D	D	yuksek
+KIMYA-371	535575a7-7d5e-5966-9f78-6d4ebc4f7fc6	KABUL	C	C	yuksek
+KIMYA-372	81e1da1e-2baa-519b-ba25-e53cb44a0b19	KABUL	A	A	yuksek
+KIMYA-373	38ee4dfc-987e-5fca-a8d9-610a519b3d35	KABUL	A	A	yuksek
+KIMYA-374	351800b9-54ff-59a1-aab0-df9ff01b1ff9	KABUL	A	A	yuksek
+KIMYA-375	3cf5c36e-203b-5fa0-8ec2-05e45852a373	KABUL	A	A	orta
+KIMYA-376	7645e06d-7d2e-5267-bec5-cbe8d99ad8d6	KABUL	B	B	yuksek
+KIMYA-377	c7b3b921-f4e1-56d8-9e92-5651e9b6ee17	KABUL	D	D	yuksek
+KIMYA-378	c5f764ef-baa7-5e1a-a84f-bd711e1a808e	KABUL	B	B	orta
+KIMYA-379	5d42cec4-ad42-5515-9132-d481d332e55a	KABUL	C	C	yuksek
+KIMYA-38	28349fbd-44ab-54a1-b0da-c5dede50a783	KUYRUK_DUSUK_GUVEN	A	A	dusuk
+KIMYA-380	51f4fc1f-ddb4-56a7-8ff9-75fa64a973b9	KABUL	C	C	orta
+KIMYA-381	8dab8e1f-3a7d-5be6-8061-d26d54588a60	KABUL	C	C	yuksek
+KIMYA-382	5f2148d5-bc3b-5e1a-abc6-ddebbbd7b615	KABUL	C	C	yuksek
+KIMYA-383	a5e6f866-8834-563e-b1da-e779e44186c6	KABUL	E	E	yuksek
+KIMYA-384	9f22e07f-4657-5656-9121-9f9b4341cd0c	KABUL	D	D	yuksek
+KIMYA-385	20c5e10b-cbb2-524b-a45c-a322683a2a22	KABUL	A	A	yuksek
+KIMYA-386	1486b631-97b3-55df-91aa-52fb2a828777	KABUL	A	A	yuksek
+KIMYA-387	df8dbe0a-988a-5591-880e-85f4d92a9dcf	KABUL	D	D	yuksek
+KIMYA-388	0f635f69-5fc1-54d4-9ba4-9296dd3193a9	KABUL	E	E	yuksek
+KIMYA-389	0e1504cd-6dd3-5361-86d2-026d46279cbf	KABUL	B	B	yuksek
+KIMYA-39	bca59d67-0144-580e-9666-064873eddc36	KABUL	D	D	yuksek
+KIMYA-390	a3011302-3b41-5f64-aaa9-2739ad938a97	KABUL	C	C	yuksek
+KIMYA-391	7f38b6b3-4606-5a11-a814-fa95e797af1d	KABUL	C	C	yuksek
+KIMYA-392	69c7b35a-eed1-5563-8286-e954152b057a	KABUL	E	E	yuksek
+KIMYA-393	65d27662-28f6-506f-a1af-dff9ef9b458e	KABUL	A	A	yuksek
+KIMYA-394	f9276d05-52db-57d0-b46a-8fb24cecc8c0	KABUL	E	E	yuksek
+KIMYA-395	839c3a3f-aacc-5583-b943-4ec3f5f8e554	KABUL	C	C	yuksek
+KIMYA-396	5ef24fc1-6d3f-534d-a77b-e246d5fe8890	KABUL	B	B	yuksek
+KIMYA-397	068f3eaa-574b-598d-abfc-b87279c67fb0	KABUL	E	E	yuksek
+KIMYA-398	f621b31e-31a4-5940-b3c3-3e47703378fe	KABUL	E	E	yuksek
+KIMYA-399	99dddd90-40d9-5392-b173-8449daea55bc	KABUL	D	D	yuksek
+KIMYA-4	8584ca16-a100-537f-ad77-526eb7061d00	COP		D	yuksek	Soru anlamsiz, kimya icerigi yok; secenekler ilgisiz kelimel
+KIMYA-40	97e6214b-fc9e-5d59-9f35-88bd3907673f	KABUL	C	C	orta
+KIMYA-400	f2e0d70a-d82f-5e3e-819b-f336e57572f1	KABUL	D	D	yuksek
+KIMYA-401	574e111c-e2b6-5031-8e0c-20214be2b2b3	KABUL	B	B	orta
+KIMYA-402	93ca28d8-5d80-5f09-b074-dc510834ffbc	KABUL	D	D	yuksek
+KIMYA-403	0e9bc5ee-46db-5021-951b-22aae168bb1f	KUYRUK_ANAHTAR	B	D	yuksek
+KIMYA-404	e389da21-21f1-516d-bc01-17340f9e347e	KABUL	D	D	yuksek
+KIMYA-405	1378d1f9-b1ef-5ae6-9c6c-27be5fafe5bc	KABUL	D	D	yuksek
+KIMYA-406	d88829e4-0c2e-5263-9368-268da9807938	KABUL	B	B	yuksek
+KIMYA-407	d7ce4d99-2479-5cdd-a444-a798b1b1cd8d	KABUL	D	D	yuksek
+KIMYA-408	ccd965f8-926f-5831-8e0e-8683fca3c993	KABUL	B	B	yuksek
+KIMYA-409	794e1e33-ed90-52b9-922b-5f758554febd	KABUL	D	D	orta
+KIMYA-41	881e4705-9d19-5804-8e56-4db627e5c396	FIGUR		B	yuksek	FIGUR: cozunurluk-sicaklik grafigi gerekli
+KIMYA-410	a7a0a0ca-ac8b-5590-b9a2-f3877eb63c26	KABUL	B	B	yuksek
+KIMYA-411	b324d844-8525-5e86-9345-60886dc1ff84	KABUL	D	D	yuksek
+KIMYA-412	382464b6-5198-53ba-9f1c-3a0d6facfdcf	KABUL	E	E	yuksek
+KIMYA-413	57d05cc4-85d4-50cf-91f2-b53405f30e4e	KABUL	E	E	yuksek
+KIMYA-414	605b5cbc-ff60-5050-ae80-01e5f2e7b428	KABUL	B	B	yuksek
+KIMYA-415	8d81934b-d498-5ac1-8cb6-9643c5989810	KABUL	E	E	yuksek
+KIMYA-416	31526d49-6068-50a4-8184-bfc228bbdabb	KABUL	B	B	yuksek
+KIMYA-417	f4bb0d59-b2de-5d7e-afa0-7c2ec8cd1b2e	KABUL	E	E	yuksek
+KIMYA-418	d9d8f5f3-8c44-576d-9db3-8772a8555918	KABUL	E	E	yuksek
+KIMYA-419	50dd7005-adac-5d8b-b3c2-39291eb4b781	KABUL	A	A	yuksek
+KIMYA-42	1f1bc423-0f1d-58f2-8dcf-185f2749c86c	KABUL	C	C	yuksek
+KIMYA-420	21f99460-496b-5fe3-b06c-c0758d7ccf5d	KABUL	B	B	yuksek
+KIMYA-421	b6610196-c2c8-5680-aa7f-f204011170fe	KABUL	B	B	yuksek
+KIMYA-422	f45997b5-6a37-59cc-8d12-6fec1e083a55	KABUL	D	D	yuksek
+KIMYA-423	797f7a09-d87a-5250-a3ca-d5e6b2128a06	KABUL	E	E	yuksek
+KIMYA-424	30f0f4d9-5899-5d24-97b4-d113faef8aef	KABUL	E	E	yuksek
+KIMYA-425	08ca9c46-14c9-5d1f-983d-9a3532a8c63c	KABUL	D	D	yuksek
+KIMYA-426	e1a9d3bf-cea6-57d8-908c-cbcd792ec8a7	KABUL	A	A	yuksek
+KIMYA-427	2e72c1c3-2259-576d-ac3d-bf2284f26b49	KABUL	C	C	yuksek
+KIMYA-428	2e70d37c-da38-56dc-864b-b547741cf924	KABUL	D	D	yuksek
+KIMYA-429	b1b47537-4940-5b85-b369-6648a54568c0	KABUL	C	C	yuksek
+KIMYA-43	bc5f24bf-ad64-550b-891f-36abb42250a1	KABUL	D	D	yuksek
+KIMYA-430	6646b74a-b0ff-5c3f-8134-64b633997ccc	KABUL	D	D	orta
+KIMYA-431	55d056a0-7da6-5d5b-852f-243abd36d294	COP		E	yuksek	Anlamsiz/bilimsel olarak gecersiz soru, veri eksik
+KIMYA-432	6d183bac-64b9-582b-8d3b-be9a1528e6e0	KABUL	B	B	yuksek
+KIMYA-433	1e6508a5-984e-51bf-b211-ba92f021f1ef	FIGUR		C	yuksek	FIGUR - 'Yukaridaki organik bilesik' gorseli olmadan cozulem
+KIMYA-434	8b1ea61a-e515-58e7-82ac-e9a835e03cfc	COP		A	yuksek	Bozuk soru, tekrarli secenekler, konu disi
+KIMYA-435	8d337e5a-dfd0-56cc-823b-b9fab5cba17b	KABUL	D	D	yuksek
+KIMYA-436	a4b08a9d-c4c8-57ea-86f3-7bc59909a657	KABUL	E	E	yuksek
+KIMYA-437	5014bc7b-908d-5f4a-93c9-4812d9b9d1bc	KABUL	A	A	yuksek
+KIMYA-438	e0606c9e-aa05-5864-901f-ccef9e4353bd	KABUL	A	A	yuksek
+KIMYA-439	f0f65abf-ba58-5316-9194-419db27a71a3	KABUL	E	E	yuksek
+KIMYA-44	e9bf2b01-9d4b-5c36-84f5-83f8f4e02939	KABUL	A	A	yuksek
+KIMYA-440	f4d83db4-8b51-550a-bece-697d241473a3	COP		A	yuksek	Soru degil, tanim/baslik parcasi; secenekler baglantisiz
+KIMYA-441	3ceb4a65-ab42-50f6-8ea9-79182cabc2b9	KABUL	A	A	yuksek
+KIMYA-442	aa90041c-9ff0-5b1f-b4ed-2a1ab019c2f9	KABUL	E	E	yuksek
+KIMYA-443	dd06a647-afc1-5497-9110-f3ffa508727a	KABUL	D	D	yuksek
+KIMYA-444	a6d7fe13-d43e-5e7d-b308-72b608ef00cb	COP		A	yuksek	Bozuk/uydurma soru; denklem eksik ve konu disi (matematik)
+KIMYA-445	c3038052-8f78-5ed2-bf3d-8cb5fdd28a37	KABUL	D	D	yuksek
+KIMYA-446	d05549fb-7ed4-5932-a60a-c73fb37863a8	KABUL	D	D	yuksek
+KIMYA-447	26a8a804-0c44-5c8f-ae46-d4f7fb420707	FIGUR		A	yuksek	FIGUR - Lewis formulu gorseli olmadan cozulemez; metin de bo
+KIMYA-448	a35eed3e-a666-5047-b21e-3d6b37904c67	KABUL	A	A	yuksek
+KIMYA-449	61e3fb94-a286-57b3-8c0e-4b8eae12ba6c	KABUL	D	D	yuksek
+KIMYA-45	68d18762-705b-5658-96bd-796e96824425	COP		D	yuksek	Hicbir secenek dogru degil; secenekler bozuk/anlamsiz
+KIMYA-450	07611f79-f48c-510e-88a7-ccc58c4657f2	COP		B	yuksek	Bozuk OCR metni, anlamsiz; soru tamamlanmamis
+KIMYA-451	2f62d5af-8427-51a9-9c4f-c915e7cba42d	KABUL	B	B	yuksek
+KIMYA-452	0c5da01d-2d2c-5347-9d0f-e96330e29e24	KABUL	D	D	yuksek
+KIMYA-453	82b6e7a1-1db4-5c2c-9ca5-c79681e3d8ea	KABUL	A	A	yuksek
+KIMYA-454	e5c55d3a-5750-5e7d-bc39-dda392411aa7	KABUL	D	D	yuksek
+KIMYA-455	fe819be0-712c-5359-8ee1-74a522a4c007	KABUL	D	D	yuksek
+KIMYA-456	8b003c47-8680-5f80-a73a-27cd8f50ec71	KABUL	E	E	yuksek
+KIMYA-457	7370e319-d7ae-52c0-9fcc-e84bd6876759	KABUL	B	B	yuksek
+KIMYA-458	8418de90-c16e-5e77-9ab5-2cf1ed820097	KABUL	A	A	yuksek
+KIMYA-459	93b3a502-52cd-52ab-aea9-c3ae521c487a	KABUL	E	E	orta
+KIMYA-46	67cccee8-af13-5f5e-950a-d41e69bdb7af	KABUL	E	E	yuksek
+KIMYA-460	e277c99b-7e4c-5c46-ac46-0fa2fd066cff	KABUL	E	E	orta
+KIMYA-461	4463f29b-ad06-5cf9-a64c-1c2ff044d3d2	KABUL	C	C	yuksek
+KIMYA-462	71ceb6a1-b8e2-5888-ae4d-9429dc37c67f	KABUL	B	B	yuksek
+KIMYA-463	a1f0f2e0-669c-5668-866d-fd980c09a555	KABUL	E	E	yuksek
+KIMYA-464	b3b63065-fe1c-50aa-bee1-e4b6d27fe7dc	KABUL	E	E	yuksek
+KIMYA-465	256ac7b3-3f05-55a4-8daa-3fca1ebba8b3	KABUL	C	C	yuksek
+KIMYA-466	3938405a-8131-53f3-8642-723e636ebfa8	KABUL	B	B	yuksek
+KIMYA-467	93ab3377-46fa-5f96-bb0c-857ff8426c36	KABUL	E	E	orta
+KIMYA-468	594c78cf-ccb9-5620-abb9-f60f9ff017f0	KABUL	C	C	orta
+KIMYA-469	caeecf7c-1657-5259-a6ac-258a159fc652	KUYRUK_ANAHTAR	A	D	dusuk
+KIMYA-47	e3cea6b6-7439-51ed-ba1e-726d0a4dbbf8	KABUL	D	D	yuksek
+KIMYA-470	cd24c407-4b1a-59e2-94af-02c84d46895c	KABUL	D	D	yuksek
+KIMYA-471	4703174d-2c72-5a12-b422-3b58eb4e59c3	KABUL	D	D	yuksek
+KIMYA-472	54e37892-87b2-5014-9f8e-a3e38dfdc295	KABUL	E	E	yuksek
+KIMYA-473	8bc0f12e-5b24-51a1-94dc-49abd15a7ac2	KUYRUK_DUSUK_GUVEN	C	C	dusuk
+KIMYA-474	b72014bf-26f3-50f1-b3d6-cab5e3589bf1	KABUL	E	E	yuksek
+KIMYA-475	f6d582d6-9bd1-5a79-b539-e61d2f48a94b	KABUL	E	E	yuksek
+KIMYA-476	6a9cc475-c2b1-53c8-91ea-54b9bd7db744	COP		A	yuksek	OCR bozuk: '4. Baska bir 20. C numarali Zn bilesik' anlamsiz
+KIMYA-477	a8da2f0c-fd36-56cb-a205-04dd0caf5f7c	KABUL	C	C	yuksek
+KIMYA-478	76a17909-7da5-50ac-bbf2-e8b76a0c357c	KABUL	C	C	yuksek
+KIMYA-479	9c5876de-3383-5081-aa65-c7c39d58783a	KABUL	C	C	yuksek
+KIMYA-48	20838468-58a5-55b4-bb91-821637ef8954	KABUL	C	C	yuksek
+KIMYA-480	d2912492-5c46-557c-a4e3-ea26a84140dc	KABUL	A	A	yuksek
+KIMYA-481	17615d4c-9a5a-55f2-b30f-48b85783bdbc	KABUL	A	A	yuksek
+KIMYA-482	90111f65-70c2-5450-8a58-610d6e778002	KABUL	B	B	yuksek
+KIMYA-483	400454a1-b82b-52ba-97df-b17b025df3aa	KABUL	E	E	yuksek
+KIMYA-484	f8991406-c883-5396-b681-58b9e4bfb7dc	KABUL	B	B	yuksek
+KIMYA-485	9c5c9998-b697-5360-bb8a-6dbc72ffdee9	KABUL	D	D	yuksek
+KIMYA-486	c37f44ab-5cda-5181-ac06-4fee14bab7f5	KABUL	C	C	yuksek
+KIMYA-487	52563627-ca71-5fb4-a323-a1968ac968ad	KABUL	E	E	yuksek
+KIMYA-488	5c92013a-d204-5fd6-a80b-c1f21710e245	KABUL	E	E	yuksek
+KIMYA-489	8cd25fe2-4b2d-5b59-9454-e92a41299c8c	KABUL	D	D	yuksek
+KIMYA-49	13bc6262-efb9-582b-b20d-cc604e23c0f7	COP		D	yuksek	Bozuk/anlamsiz metin, soru sorulmamis
+KIMYA-490	e4d298ba-45b7-518f-9f4e-339ef53daf0b	KABUL	B	B	yuksek
+KIMYA-491	71aa34ed-99ee-5995-8ad7-a52c56d6fd39	KABUL	E	E	orta
+KIMYA-492	33e30406-a847-5df2-863d-bf39b26e8164	KABUL	A	A	orta
+KIMYA-493	028ab719-3432-5ba4-8c82-48622c664417	KABUL	C	C	yuksek
+KIMYA-494	cfef7603-a4da-5fa1-a57f-b458a66c53a4	KABUL	D	D	yuksek
+KIMYA-495	811be1a6-a6d0-5f86-9332-e82646e989e4	KABUL	A	A	yuksek
+KIMYA-496	bfd53648-5332-5757-870d-e6d114295438	KABUL	C	C	yuksek
+KIMYA-497	f23a8a27-9766-5fd8-9027-ea783a72ffb4	KABUL	D	D	yuksek
+KIMYA-498	01e9632b-8d70-5328-b7f1-e72935e3ba71	COP		C	yuksek	OCR bozuk govde ('3 gergi, 100 g capraz kapli'); P orani hes
+KIMYA-499	0f87816b-fe00-5f9b-abac-5f4e5f377729	KABUL	D	D	yuksek
+KIMYA-5	b7840996-c261-5f94-8f52-cbcbf67b9c29	KABUL	E	E	yuksek
+KIMYA-50	0de8a00a-2039-5510-a9a5-2b1eb721e863	KABUL	D	D	yuksek
+KIMYA-500	31c7df53-7851-5139-99be-11b78c690a00	KABUL	B	B	yuksek
+KIMYA-501	aabc9a88-26bf-592e-be7e-63beff039915	KABUL	C	C	yuksek
+KIMYA-502	0fa85046-d3fb-5215-ac57-f5db4314bd4c	KABUL	B	B	yuksek
+KIMYA-503	6d1b5711-b45d-5487-b4f3-3aa627d3e308	KABUL	C	C	yuksek
+KIMYA-504	b6c64332-f69d-5783-9192-881900091b6c	KABUL	C	C	yuksek
+KIMYA-505	12ce8b99-ebb3-5336-85c9-27a7ece01b15	COP		D	yuksek	Govde eksik/anlamsiz: 'g, b ve d harflerindeki karakterler'
+KIMYA-506	6fe5b6e1-9081-524b-b138-567209a2b784	COP		A	orta	Govde bozuk ('reaktiflerin reaksiyon hizlari'); hem basinc h
+KIMYA-507	c5a06f74-9cfa-5698-8037-fc53272f66ec	KABUL	D	D	yuksek
+KIMYA-508	616d53f8-9398-5170-a8d5-dccfcb285ec8	KABUL	C	C	yuksek
+KIMYA-509	4690491d-b26f-5386-b4cb-4237135a3a19	COP		C	yuksek	'Yalincak metodun ile ilgili:' anlamsiz OCR cikti; soru cuml
+KIMYA-51	2de0ba37-30f7-5c3d-8d39-bd07b813c14d	KABUL	A	A	yuksek
+KIMYA-510	39663faa-d3f5-5cc8-baa4-91f9bc62c633	KABUL	A	A	yuksek
+KIMYA-511	042d8cab-d48f-58a0-ab57-02fd891767ce	KABUL	E	E	yuksek
+KIMYA-512	8bd6a1a6-1139-5372-b4e0-51be6bce58c9	KABUL	D	D	yuksek
+KIMYA-513	ab1bc8ca-f911-5035-940b-e32bfb426ceb	KABUL	B	B	yuksek
+KIMYA-514	6e8b781c-f0c9-539c-be2f-c6e2b1cb69f7	KABUL	D	D	orta
+KIMYA-515	828aa8ef-68b0-5c4b-b73d-9422ee8303e6	KABUL	B	B	yuksek
+KIMYA-516	822bce43-c26f-542f-a6db-dbe08e45a328	COP		C	yuksek	Seceneklerde dogru cevap yok: II=III>I siralamasi listede bu
+KIMYA-517	39765ca1-0375-5c60-a5d3-5395d11653da	KABUL	C	C	yuksek
+KIMYA-518	b07be1b5-c723-570c-9fb9-565e50f5c761	KABUL	D	D	yuksek
+KIMYA-519	203d7b95-e687-5c40-b5d8-b7fd3251f34b	KABUL	B	B	yuksek
+KIMYA-52	e5518296-3026-5b44-9786-a6c37219711a	KABUL	A	A	yuksek
+KIMYA-520	d485c089-d42e-52cc-a316-a0c4f29e997d	COP		A	orta	Metin celiskili: NO2'nin tamami N2O4'e donuserse toplam mol
+KIMYA-521	1fae4d3e-3878-5be0-a23e-cc63f883888d	KABUL	C	C	yuksek
+KIMYA-522	0de57e20-e97c-515f-a6fc-4005d1521c3e	KABUL	D	D	yuksek
+KIMYA-523	c0344c9e-e7ca-519c-b855-c6c779949aab	KABUL	B	B	yuksek
+KIMYA-524	1e141e4f-5d39-5525-98d7-98ff88ca18d7	KABUL	C	C	yuksek
+KIMYA-525	4242c1d0-9eb8-52b8-ab73-2d42614afef6	KABUL	C	C	yuksek
+KIMYA-526	2478b389-6f7b-59f4-90cc-990503eac6b6	KUYRUK_DUSUK_GUVEN	E	E	dusuk
+KIMYA-527	640316df-120e-56ad-8c61-4e8be906d623	KABUL	D	D	yuksek
+KIMYA-528	43a10f93-7ccd-5958-8ad4-6cb9415ba4db	KABUL	A	A	yuksek
+KIMYA-529	8e4d8b03-2e83-5853-bba5-44227268c3db	KABUL	C	C	yuksek
+KIMYA-53	cdaa8eab-4638-5d01-806d-c52774014eac	KABUL	C	C	yuksek
+KIMYA-530	0f61feef-a662-52f8-a261-84a44e9a88c8	KABUL	C	C	yuksek
+KIMYA-531	192c1387-6592-54e2-a9b9-df1f11d33b8e	KABUL	E	E	yuksek
+KIMYA-532	783913a9-384c-541a-ab11-0a331d69e8d0	KABUL	D	D	yuksek
+KIMYA-533	93b8a559-99e3-5550-962f-50d4ba90cfa1	KABUL	E	E	yuksek
+KIMYA-534	e6b0f95c-5cca-5b8a-8e7c-a249f1070452	KABUL	B	B	yuksek
+KIMYA-535	a7a095f7-5599-5f46-b7d3-0bbc7c3a2b20	KABUL	B	B	yuksek
+KIMYA-536	4ccc2b3f-77cb-5b34-9a97-26123f7e50fe	KABUL	C	C	yuksek
+KIMYA-537	f6f5de54-fa4f-51ef-b890-80a171827ae6	KABUL	E	E	yuksek
+KIMYA-538	4ddb7267-5416-5a0d-ac9c-2cd97e571d0d	KABUL	B	B	yuksek
+KIMYA-539	87581c35-13bf-5c93-b89e-c7fabf73ab96	KABUL	D	D	yuksek
+KIMYA-54	17f94036-baa5-5ec0-afb3-7af0287c58d6	KABUL	A	A	yuksek
+KIMYA-540	c1bed832-cd0c-5bb1-ba5a-99d86514b05e	KABUL	A	A	yuksek
+KIMYA-541	03db9fcd-230c-5fa2-b7d5-bd77333583c0	KABUL	C	C	yuksek
+KIMYA-542	a8e8b63f-93e1-5cbb-90ee-333b3def1caa	KABUL	E	E	yuksek
+KIMYA-543	8311a9e9-b343-5951-b159-8acf937b2791	KABUL	C	C	yuksek
+KIMYA-544	dcda45a8-05f1-5a5e-894d-19c5fff06c2b	KABUL	D	D	yuksek
+KIMYA-545	25cf3a64-c045-55c6-9aa3-b65d170933d3	KABUL	D	D	yuksek
+KIMYA-546	650da8f2-6311-5c6f-a74a-3a7e673cdb90	KABUL	D	D	yuksek
+KIMYA-547	6262d5cc-c6cd-5555-aee8-fab873d37c73	KABUL	A	A	yuksek
+KIMYA-548	4a6b0542-60d7-56a0-838c-3423e0edd2e2	KABUL	C	C	yuksek
+KIMYA-549	30768661-fba5-5e43-bbe1-dc3f1a06173f	KABUL	C	C	yuksek
+KIMYA-55	cea5b383-2066-5fb8-a77e-5d9064c4603a	KABUL	E	E	yuksek
+KIMYA-550	fe3ff450-2843-5434-8640-d2b0478b4b5d	KABUL	A	A	orta
+KIMYA-551	e90f1b0e-986d-56ea-a932-167a05ca583f	KABUL	C	C	yuksek
+KIMYA-552	c8ce65c2-4e18-5afb-876f-beb13d25eb95	KABUL	E	E	yuksek
+KIMYA-553	fcadc184-bfe2-5d65-8cd7-2cf43db86ec6	KABUL	D	D	yuksek
+KIMYA-554	80df38d7-99fd-5003-9ac2-65aeedda0463	KABUL	C	C	yuksek
+KIMYA-555	d007a2a4-e77d-530f-b824-fe1355360760	KUYRUK_ANAHTAR	E	C	dusuk
+KIMYA-556	6fb60574-90e3-56c2-9258-e4abd9287814	COP		C	yuksek	Bozuk uretim: mukerrer sik harfleri, esdeger secenekler, tek
+KIMYA-557	64203eb7-f54e-563f-b0c0-3f5639b51952	KABUL	C	C	orta
+KIMYA-558	a0930b99-c90a-57e6-97a2-1628883db1a2	KABUL	D	D	orta
+KIMYA-559	8881b62d-68fb-568a-b598-7c4b7dcf1b3d	COP		A	yuksek	Konu disi ve anlamsiz metin; gecerli bir kimya sorusu degil
+KIMYA-56	ef194c7c-f09b-5bec-a633-fc88c4801529	KUYRUK_ANAHTAR	A	B	yuksek
+KIMYA-560	cac394ab-709d-563f-9f16-4a7bb2e6c41e	KABUL	A	A	yuksek
+KIMYA-561	49b812a6-d665-5219-8afa-0d8761922bf9	KABUL	C	C	yuksek
+KIMYA-562	63c7157d-845f-5d21-bafe-2030dfe503f3	KABUL	C	C	yuksek
+KIMYA-563	292d61b6-a585-5883-8762-ffdd1c20f69b	KABUL	B	B	yuksek
+KIMYA-564	b3139e6b-0e72-56b1-a7d9-b4c389f75641	FIGUR		E	yuksek	FIGUR: kavram haritasi gorseli ve yargilar eksik, metin tek
+KIMYA-565	553e0894-790b-5424-91bb-e9594a603d9b	KABUL	D	D	yuksek
+KIMYA-566	09623062-8cb6-5a2d-ac4f-4382473d7476	KABUL	C	C	yuksek
+KIMYA-567	a295ffda-bcb5-5bdb-bbff-fc1f9ebcc7cf	KABUL	E	E	yuksek
+KIMYA-568	6a6420b6-cddf-5915-9872-b5eba2d57370	COP		C	yuksek	Konu disi ve bozuk ifade; 'iki basamak arasindaki dogrusal f
+KIMYA-569	679e935f-b650-5333-a10d-f3190aae7e83	KUYRUK_DUSUK_GUVEN	A	A	dusuk
+KIMYA-57	4506ca1e-3df8-5a65-8804-7f11c53cd14e	KABUL	A	A	yuksek
+KIMYA-570	b3d2551c-8fa3-50df-9a8c-ccf186c00699	KABUL	C	C	yuksek
+KIMYA-571	76c37ad6-8ee2-5c45-991e-854c6100082d	KABUL	B	B	yuksek
+KIMYA-572	a3735ba8-b30b-5b12-a30b-a1c600268b1a	KUYRUK_ANAHTAR	D	E	yuksek
+KIMYA-573	05adc7f2-6409-5c77-a78a-ba707afad49e	KABUL	D	D	yuksek
+KIMYA-574	8acb7be1-d7be-5300-bcdd-43fb0c3f4a0f	COP		E	yuksek	Belirsiz/bozuk metin: 'ozel bir kategori' tanimsiz, secenekl
+KIMYA-575	b538660a-6350-58bf-890c-f316c0b5b128	KABUL	C	C	yuksek
+KIMYA-576	4f2b4d38-7c20-5a21-bfb0-2aac6c9ac39c	KABUL	E	E	orta
+KIMYA-577	8a367a9f-885b-58be-be01-e61893ca5227	COP		B	yuksek	Bozuk/anlamsiz metin: 'programlardan hangisinin dogru oldugu
+KIMYA-578	ad001655-4909-599a-8d6d-5d1795fb8a7f	KABUL	A	A	yuksek
+KIMYA-579	e3216578-1525-5d67-882d-9145035c1220	KABUL	E	E	yuksek
+KIMYA-58	905f8f3e-3e41-5700-8b08-e450f60b5bd9	KABUL	B	B	yuksek
+KIMYA-580	d9cc9faa-5db8-5667-a67d-b173017473ba	COP		E	yuksek	Bozuk metin: soru kokü yok, matematik konusu tarifi, kimya d
+KIMYA-581	30be4cba-573f-5717-89d3-129b48ceaf65	COP		A	yuksek	Anlamsiz/uydurma metin: 'kuslar-kuscular' dongusel ifade, so
+KIMYA-582	dc7fcda6-66a4-51e8-bafc-ce644f60d368	KABUL	E	E	yuksek
+KIMYA-583	80c7b033-0f6e-562f-8714-cc88381039d3	KABUL	B	B	yuksek
+KIMYA-584	5438aa06-36b6-55e8-b7b8-88853808d79b	COP		E	yuksek	Bozuk/anlamsiz metin: 'yabanci dildeki bilgiler' ifadesi tan
+KIMYA-585	817be286-47c9-50d3-a18e-c812c5ea1b01	KABUL	D	D	yuksek
+KIMYA-586	1444e6b4-54c7-5cd7-81c4-2b339b3a25ed	KABUL	C	C	yuksek
+KIMYA-587	3db9ed48-dfee-5ca0-9c87-718449871954	KABUL	C	C	yuksek
+KIMYA-588	561ab803-236d-5fe3-ac55-0030b4985e05	KABUL	A	A	yuksek
+KIMYA-589	1d86044d-70f9-51de-8b40-9b3cb3c51244	KABUL	E	E	yuksek
+KIMYA-59	0b109095-4dc1-5d74-8055-c60582c789d6	KABUL	E	E	orta
+KIMYA-590	aaa992b8-9e8f-5e73-9ee7-50712d5a4b29	KABUL	E	E	yuksek
+KIMYA-591	fe11ae48-d802-5676-8621-db82f433862e	KABUL	C	C	yuksek
+KIMYA-592	9c623d45-dfd0-5b7b-8d71-3d8206862974	KABUL	C	C	yuksek
+KIMYA-593	9c814a6a-18a7-50cc-bbc0-dd78541d06ed	KABUL	E	E	yuksek
+KIMYA-594	44d7326f-ca4c-547b-9d91-0a8ecc13f9d1	KABUL	C	C	yuksek
+KIMYA-595	0957b983-e2c7-526d-bac7-49084329a936	KABUL	E	E	yuksek
+KIMYA-596	dec83645-eed0-5dbd-bf87-10eab0c73b6e	KABUL	E	E	yuksek
+KIMYA-597	0f2569cb-6bad-5865-92b8-0d571dc1934b	KABUL	A	A	yuksek
+KIMYA-598	ffd588f0-7025-515e-94bc-2f15503abb9a	KABUL	A	A	orta
+KIMYA-599	4f3c7255-a695-5908-875d-52cd6fb3df25	KABUL	D	D	yuksek
+KIMYA-6	894b43e5-37bd-5fbe-8cce-c598e8ad177d	COP	A	A	orta	III. tanecik yuku bozuk (Z^2), isaret yok; metin eksik
+KIMYA-60	a2f9e421-7e2a-54e9-b2be-d36f0b793dc7	KABUL	B	B	yuksek
+KIMYA-600	1d54e839-0253-5b82-a14e-133d4ff38826	KABUL	A	A	yuksek
+KIMYA-601	e1595294-3c10-5788-bbff-20abbc310831	FIGUR		B	yuksek	FIGUR: 'Yukarida yapi formulu verilen molekul' gorseli olmad
+KIMYA-602	305b2575-0c53-556a-b336-3d5af2355393	KUYRUK_ANAHTAR	D	E	orta
+KIMYA-603	3af9e838-0ac3-56a7-aff5-4b3a7d7267db	KABUL	A	A	yuksek
+KIMYA-604	4c7f7166-88e0-5f32-8d87-e53eda6c10d6	KABUL	B	B	yuksek
+KIMYA-605	6f5b0ad0-f857-5b4b-b87b-ab7723e0c616	KABUL	C	C	yuksek
+KIMYA-606	f2f7323e-89d4-5799-a76a-5dba99f21e03	KABUL	C	C	yuksek
+KIMYA-607	6d14dda1-3248-5775-b3c4-ee79a94111fe	KUYRUK_DUSUK_GUVEN	E	E	dusuk
+KIMYA-608	beb33b5c-ff0d-5943-884a-696b48845d24	KABUL	C	C	orta
+KIMYA-609	e8fca1e9-bf56-5c6e-ac1c-96648a14226a	KABUL	A	A	yuksek
+KIMYA-61	fb243b2c-b0e6-5bce-814d-edb3980143a8	KABUL	D	D	yuksek
+KIMYA-610	ef27a918-8ee6-56b4-89ef-659289c01891	KABUL	E	E	yuksek
+KIMYA-611	7243b4a4-98c7-58dd-9d8c-93c6e13492f4	KABUL	A	A	yuksek
+KIMYA-612	7c1bd18a-b64c-53b6-91ed-7e4fcefdbd44	KABUL	B	B	yuksek
+KIMYA-613	d50c7edd-2d74-5e88-93ad-96f6de8f541c	KABUL	E	E	yuksek
+KIMYA-614	c5b5a4cc-fc52-5f0b-8822-4ddeb36fa04c	KABUL	D	D	yuksek
+KIMYA-615	5cb0083e-226d-5702-81dd-59ad11acb116	KABUL	B	B	yuksek
+KIMYA-616	aec5386f-d9ca-5c81-924b-a743aa75e2de	KABUL	D	D	yuksek
+KIMYA-617	a214b7b8-9933-5f5f-8dbe-b13a4eeb64e9	KABUL	E	E	yuksek
+KIMYA-618	67b15ebb-9eb9-5a58-97d4-b2bd3a19856b	KABUL	B	B	yuksek
+KIMYA-619	837fceaa-5207-5148-8e46-ff9904b9d614	KABUL	A	A	yuksek
+KIMYA-62	6d271f5b-5efe-50eb-91e9-d37d8f41cd1c	KABUL	B	B	yuksek
+KIMYA-620	1a629639-84f2-56d4-9732-54c90f814231	KABUL	E	E	yuksek
+KIMYA-621	102216f9-0032-5091-b3e1-93a09a16090e	KABUL	B	B	yuksek
+KIMYA-622	19c10cfe-b044-5bb6-a544-861a10fecc82	KABUL	C	C	orta
+KIMYA-623	0c156e73-e6d2-5c2b-9566-f62405bdd820	KABUL	B	B	yuksek
+KIMYA-624	4caf63d4-14a8-5443-b94b-23c488bc5cbc	KABUL	C	C	yuksek
+KIMYA-625	b6256f7a-2511-5978-8523-4b968921ec04	KABUL	B	B	orta
+KIMYA-626	774a7d86-09da-5317-97f4-fdfab3fc2332	KABUL	A	A	yuksek
+KIMYA-627	b2e4c1b5-a189-50d9-a40e-048618767bfa	KABUL	C	C	yuksek
+KIMYA-628	958419b8-740c-5cfd-8068-3f8f14f23c62	KABUL	C	C	yuksek
+KIMYA-629	92d327b1-e7be-5e87-9a66-21ec3beb1e18	KABUL	C	C	yuksek
+KIMYA-63	d4e677af-f667-5abf-b469-cbad10208d6b	KABUL	E	E	yuksek
+KIMYA-630	37dd2426-3d20-5295-9df4-d4fd7e955467	KABUL	D	D	yuksek
+KIMYA-631	8f80fd94-8cb4-54dd-8480-4953db26b922	KABUL	B	B	yuksek
+KIMYA-632	df8b293b-77b3-55bc-9188-f602afbb71a9	KABUL	D	D	yuksek
+KIMYA-633	cc072734-5d86-5f7e-80fe-59584c367b0d	KABUL	A	A	yuksek
+KIMYA-634	7eb027db-bccb-5062-b3ce-1bee51055c32	KABUL	E	E	orta
+KIMYA-635	6bc854d8-02c3-53cb-a151-80c90236123b	KABUL	B	B	yuksek
+KIMYA-636	cc79bd87-cfa1-5ade-a4f7-0091ee397c1e	KABUL	E	E	yuksek
+KIMYA-637	2ba8c138-0465-5c03-8d00-705003655789	KABUL	A	A	yuksek
+KIMYA-638	b6dd4246-fc64-5a3e-95e4-d8a53e3a8d5c	KABUL	C	C	yuksek
+KIMYA-639	2b6123f2-5485-573a-aad7-437ee6fa4c13	COP		A	yuksek	Soru metni tamamen kayip; sadece kaynak basligi var, secenek
+KIMYA-64	3ff9dfb2-db96-517f-8e8d-58e7a262f29e	KABUL	E	E	yuksek
+KIMYA-640	68020f98-6e70-54e7-a9de-ce6b228b97d1	KABUL	E	E	yuksek
+KIMYA-641	299aae9b-3f98-593e-b4c6-b652233c4480	KABUL	C	C	yuksek
+KIMYA-642	9a5fea33-f818-5183-a8bf-c6121b8f7445	COP		A	yuksek	OCR govdesi anlamsiz; sefer/yil ifadeleri kimyayla ilgisiz,
+KIMYA-643	c09264ca-901f-50d6-b731-482e034261f4	KABUL	C	C	yuksek
+KIMYA-644	f501531d-1ad1-5b20-85d8-baa642e733c1	KABUL	C	C	orta
+KIMYA-645	ada2157c-f663-58d2-a04c-c5ea5ac53c8c	KABUL	D	D	yuksek
+KIMYA-646	7c61ea14-eaba-5c24-842e-71bbdcd3b7f9	KUYRUK_ANAHTAR	B	E	orta
+KIMYA-647	1f579166-afdc-5adc-a4de-9f7a77dddf49	KUYRUK_ANAHTAR	A	C	dusuk
+KIMYA-648	a9345c11-16e8-51b3-a71f-21fcd0da3a11	KABUL	A	A	yuksek
+KIMYA-649	ed2894c3-09ec-55aa-b16e-a815700f2dd0	KABUL	A	A	yuksek
+KIMYA-65	c7fb0c5c-fde7-541e-83f5-166b4cbe4020	KABUL	D	D	yuksek
+KIMYA-650	6d71ff62-4d91-5ac9-a40d-72b7c76e8105	KABUL	B	B	yuksek
+KIMYA-651	34b2e741-9dd5-5319-b2fb-1443a1e4abf3	KABUL	E	E	yuksek
+KIMYA-652	9bc61001-8415-51ce-9f1f-b9930119b61e	KABUL	C	C	yuksek
+KIMYA-653	04c3dfa0-b3be-5fb3-a9d1-be61ac8a4544	KABUL	D	D	yuksek
+KIMYA-654	ef459f66-85d3-5bda-92ee-e28977a6d84a	KABUL	B	B	yuksek
+KIMYA-655	251d01bb-4aeb-59b7-a2b0-7a05e6a7de58	KABUL	B	B	yuksek
+KIMYA-656	61ac7ab8-7f7f-540d-9721-be1e3541ef81	KUYRUK_ANAHTAR	B	E	dusuk
+KIMYA-657	d7b6b100-0258-57ea-b742-f8ef85634ceb	KABUL	A	A	yuksek
+KIMYA-658	dc358ab2-2295-5c0c-98df-c50fca4d9f23	KABUL	B	B	yuksek
+KIMYA-659	92c40ae4-6646-513f-ac73-cc6f8cd9e848	KUYRUK_DUSUK_GUVEN	E	E	dusuk
+KIMYA-66	fe4987a2-c687-5a49-85e2-4227c047522d	KABUL	E	E	yuksek
+KIMYA-660	e3be053f-508a-5ce9-8174-5fd75b8e0222	KABUL	B	B	orta
+KIMYA-661	130d6f92-acf9-5eca-b8b3-49dbc3ac1e81	KABUL	E	E	yuksek
+KIMYA-662	d4c8518a-5cc8-5d1e-8470-d74a42e4e543	COP		B	yuksek	Uydurma kelimeler (Asapbaldelerin, pilifer, olgun golber); s
+KIMYA-663	dbadc565-c006-5722-ae1c-f237332cf18a	KABUL	A	A	yuksek
+KIMYA-664	7d050b5e-ac99-5cc8-bd03-e0d0c080a063	KABUL	C	C	yuksek
+KIMYA-665	fbb478bf-8d35-5712-b8bc-ceb7c4310815	KABUL	E	E	yuksek
+KIMYA-666	2b2a1b52-bf25-57a8-9529-441dc64ca057	KABUL	C	C	yuksek
+KIMYA-667	2466d5f3-9725-5ba0-934a-574604a49c89	KABUL	E	E	yuksek
+KIMYA-668	9b720f82-0c02-5e14-9a90-c031519a66bb	KABUL	E	E	yuksek
+KIMYA-669	d7dcee29-9bb9-5fcb-a4c6-a8156739222f	KABUL	C	C	yuksek
+KIMYA-67	10218bb4-bcc3-5ed6-bd74-a91bd37bbfe6	KABUL	E	E	orta
+KIMYA-670	7968e7fa-7f73-576f-95f7-bb157e22c2d9	KABUL	E	E	orta
+KIMYA-671	e2b8826d-6759-5fb7-8b7d-d14ce426a560	KABUL	C	C	yuksek
+KIMYA-672	f974c2ec-7ea3-5a94-a5bd-59d775532536	KABUL	D	D	yuksek
+KIMYA-673	ea8c10bc-2cc6-57d8-b556-0dd02ef290a0	KABUL	B	B	yuksek
+KIMYA-674	cc2ad592-929d-5aaf-9c7a-d51d724dabb5	KABUL	E	E	yuksek
+KIMYA-675	0bc0676b-14c8-5dcd-a997-23c9be31fa05	COP		D	orta	LaTeX'te bag isaretleri kaybolmus; hem C hem D (1 COOH + 1 p
+KIMYA-676	a9dcf091-6a3f-56f3-9b28-d78d86f46739	KABUL	B	B	yuksek
+KIMYA-677	4bfb0238-6100-565f-8038-130d87b9d513	KABUL	E	E	yuksek
+KIMYA-678	7dc49cb8-3f13-542b-ba2d-eafaff1650f5	KABUL	D	D	yuksek
+KIMYA-679	bd6547fa-23da-5f4f-821f-909776859b89	KABUL	B	B	yuksek
+KIMYA-68	745c0e06-8d8d-59a1-83bf-fdd8fb86000d	KABUL	A	A	yuksek
+KIMYA-680	0bf99906-211a-5991-b6fa-8d708c6eb3c3	KABUL	D	D	yuksek
+KIMYA-681	190d1ee1-a459-5f28-a520-16424be89c17	KABUL	D	D	yuksek
+KIMYA-682	df15ca28-1ed6-5547-900e-30990086228f	KABUL	E	E	yuksek
+KIMYA-683	68c57c12-2540-5b6e-a0b7-ecb10d5c47e0	KABUL	E	E	yuksek
+KIMYA-684	1754477d-1a9d-5af3-bcd9-e27caf0711c8	COP		A	orta	Uydurma ifadeler (hidroksit natrium, mol/litrel); 0,05 M NaO
+KIMYA-685	9bc0a3f7-0e25-5bc1-8ea1-4aea72d60e6a	KABUL	D	D	yuksek
+KIMYA-686	fcbb0f1c-fd0b-5aae-8117-537c69d781e2	KABUL	D	D	orta
+KIMYA-687	599e4c43-4877-5d5a-b65b-9394713dbabd	KABUL	D	D	yuksek
+KIMYA-688	4fc422b4-4b67-5bd3-bcef-0b4afc841dce	KABUL	E	E	yuksek
+KIMYA-689	3c41395f-086e-5cba-be08-ada02b63fe75	KUYRUK_DUSUK_GUVEN	A	A	dusuk
+KIMYA-69	7a203f87-494d-5d05-8266-3d8820365e43	KABUL	B	B	yuksek
+KIMYA-690	a57a95ed-a4fe-51a0-a301-f7ef0dcec885	KABUL	C	C	yuksek
+KIMYA-691	f94c4c82-d29d-589c-9f76-3938f0bc0e78	KABUL	C	C	yuksek
+KIMYA-692	1b1cb193-04dd-5930-b79b-f6ee175df4cc	KABUL	A	A	yuksek
+KIMYA-693	89712a41-84a5-5f0d-843a-7640a1406e5e	KABUL	B	B	yuksek
+KIMYA-694	9631f025-cfbf-5c69-8175-f49589b9bab7	KABUL	B	B	yuksek
+KIMYA-695	e6ffd5b5-2ea2-55e5-95c9-007369041a02	KABUL	E	E	yuksek
+KIMYA-696	838027fd-8096-5fd6-b280-d8a7ce80440d	COP		A	yuksek	'Kromatik suyu çabuklatan formasyon reaksiyonu' anlamsız; se
+KIMYA-697	73b034ab-f6fb-5ce1-94ee-12a600dcbc62	KABUL	B	B	orta
+KIMYA-698	1522c319-d43b-525d-9d29-03d84fddca5a	KABUL	D	D	yuksek
+KIMYA-699	8f3445b4-1d9c-5b56-98cb-4356057b524f	KABUL	C	C	yuksek
+KIMYA-7	bf136b7c-68dd-578b-a32d-40d719f0b2a8	KABUL	A	A	yuksek
+KIMYA-70	f92bf036-f5d0-5724-8271-89a4bb136b1d	KABUL	D	D	yuksek
+KIMYA-700	b0f08611-0c2b-5b6a-981e-2d5ca73d4238	KABUL	B	B	yuksek
+KIMYA-701	92186c43-b21b-502c-8fa4-2ed949c334e1	KABUL	B	B	yuksek
+KIMYA-702	2e4ac3bc-ce9c-5618-ad17-d3ff46e95394	KABUL	E	E	yuksek
+KIMYA-703	6e7ae3bb-eb6a-552e-9e37-0979e2902289	KABUL	A	A	yuksek
+KIMYA-704	f02e05a7-f992-5597-aba9-50ee72511d65	COP		B	yuksek	'Asığında ... komplere?' uydurma/bozuk Türkçe; ne sorulduğu
+KIMYA-705	2bfa8f43-9232-5e83-bd03-956642e2b9a9	COP		E	yuksek	Metin eksik/bozuk; hesap için hiçbir veri verilmemiş, şıklar
+KIMYA-706	f9424b30-b4c9-5117-82d3-9d974fbd0f64	KABUL	E	E	yuksek
+KIMYA-707	bbbdf2e3-ceec-5c67-a627-114f6f38f956	KABUL	C	C	yuksek
+KIMYA-708	a6ce5d4b-55fb-5b16-927e-8283458ff470	KABUL	C	C	yuksek
+KIMYA-709	68187c1b-e864-5f46-a30a-424b2b500f4f	KABUL	B	B	yuksek
+KIMYA-71	88fcf8d3-1cde-544b-b428-1b7cf1ce997e	KABUL	B	B	yuksek
+KIMYA-710	60396bf5-380b-5a91-b9f3-52d44010e66b	KABUL	C	C	yuksek
+KIMYA-711	e901a1d7-95f7-5bd9-9237-d8615e9fecbf	KABUL	A	A	yuksek
+KIMYA-712	a0ed2fc2-794c-5c98-9ed1-c953d71d5a68	KABUL	B	B	orta
+KIMYA-713	e2e54850-3086-5f01-b72a-1121e7e202aa	KABUL	B	B	yuksek
+KIMYA-714	e191c5c8-c82b-5332-9f32-c98f7d375c4a	KABUL	B	B	orta
+KIMYA-715	95c3272a-dd05-5472-9dcd-2aa27ed17a1b	COP		C	yuksek	'hizini' bozuk; seçenekler iç içe kapsayan saçma zincir, tam
+KIMYA-716	b719abab-31b7-58d8-8086-b9b2eb209fc1	KUYRUK_ANAHTAR	C	B	yuksek
+KIMYA-717	50a07d7d-1621-58a4-a389-9baa3709cc7b	COP		D	yuksek	'200 g su ve 50 g tereyağı ... 100 g su ve 50 g tereyağı' çe
+KIMYA-718	e5a13931-e300-526a-91be-b47e8f62d1fb	KABUL	D	D	yuksek
+KIMYA-719	4268f705-cac8-5bd8-a1b6-7cfc3c4ac50d	KABUL	D	D	yuksek
+KIMYA-72	d393f9c6-0527-55d0-a987-825346c349d9	KABUL	D	D	yuksek
+KIMYA-720	e828fcf0-1842-5083-85f6-ef7af9614cd0	KABUL	B	B	yuksek
+KIMYA-721	945d0c59-ba71-513f-899c-ed40d5de6561	COP		A	yuksek	Metin eksik: koklerin verildigi polinom yok, kimya sorusu de
+KIMYA-722	5927ab48-12b7-5003-bc4c-684ddd3581be	KABUL	B	B	yuksek
+KIMYA-723	5f15ab24-951b-5619-8fa3-f931e5a2d51b	COP		A	yuksek	Anlamsiz metin (Tesel Kandallari, dizmozomik); soru degil, k
+KIMYA-724	b180fd0a-54d4-5c4f-96b0-345fac0f9be8	KABUL	A	A	yuksek
+KIMYA-725	37543ba0-f7d9-59b0-af77-74d59dbc30a6	COP		B	yuksek	Kimya ile ilgisiz, veriler tutarsiz, secenek listesi cift ba
+KIMYA-726	765cf700-ab57-50b3-9859-1cbc0733f1f3	KABUL	C	C	yuksek
+KIMYA-727	d7807ceb-503c-5824-8bb9-0749d4519410	KABUL	D	D	yuksek
+KIMYA-728	3036ef73-a7be-5aa5-883a-fc3cea70d347	COP		A	yuksek	Metin kesik ('Benzine ekonomiklik saglayan:'), soru tamamlan
+KIMYA-729	5118ad62-bf5b-5097-a295-dce177e1fc6c	KABUL	D	D	orta
+KIMYA-73	14cf9a0a-68bd-51fe-b911-886b74ee7479	KABUL	E	E	yuksek
+KIMYA-730	ce0575ff-0282-5130-acaf-86fe7343eb95	KUYRUK_DUSUK_GUVEN	C	C	dusuk
+KIMYA-731	5f7ed38d-10c0-53d0-bc68-73da4fcd05fa	KABUL	E	E	yuksek
+KIMYA-732	e524a856-90a3-59a1-a8d7-2a1ea6331974	KABUL	C	C	yuksek
+KIMYA-733	2558856a-83af-57c2-9160-a8cfb211a3ef	COP		A	yuksek	Anlamsiz metin ('sutlendirli gazlari'); Turkce degil, soru a
+KIMYA-734	1648cfd1-e073-5ede-a817-2d1476c05d78	KABUL	E	E	yuksek
+KIMYA-735	e4006689-87a6-55b9-ac6c-58aef489a343	KABUL	C	C	yuksek
+KIMYA-736	e380b0e7-cb39-5fa2-8016-fa81705a2fa8	KABUL	E	E	yuksek
+KIMYA-737	9927e6bc-83ba-5f78-a34c-3d5f6a2ff159	KABUL	A	A	yuksek
+KIMYA-738	58c6be33-a4d7-5ef2-bcff-6be69e164483	KABUL	A	A	yuksek
+KIMYA-739	62a56aed-c2df-5524-a8b9-af4a238722d8	FIGUR		E	orta	FIGUR: 'Yukarida verilen bilesik' yapi formulu metinde yok
+KIMYA-74	0e471504-abbf-53de-a04b-6c232f243f7f	KABUL	E	E	yuksek
+KIMYA-740	f70b8121-b577-5949-950d-1b935e66597e	KABUL	E	E	yuksek
+KIMYA-741	44f62dd8-1d53-5372-be80-61379ffcb559	KABUL	B	B	yuksek
+KIMYA-742	e3f70888-42b6-59c5-b10d-f24907f12c75	KABUL	E	E	yuksek
+KIMYA-743	689093df-14ef-5d17-a304-6dd2a65791cf	KABUL	E	E	yuksek
+KIMYA-744	854868ad-83e6-5c28-8d38-a3577ab94621	KABUL	C	C	yuksek
+KIMYA-745	b719f223-9c60-550f-a98d-61ac15b38fd4	KABUL	E	E	yuksek
+KIMYA-746	d39f6ae3-65a5-5b4c-9573-919ba02851f3	FIGUR		C	yuksek	FIGUR: 'Yukaridaki periyodik sistem kesiti' gorseli yok
+KIMYA-747	193df639-6e2c-5891-959b-102f5ffd5d7b	KABUL	B	B	yuksek
+KIMYA-748	21ccf6da-e3db-57c1-9bc0-676e1baa58a6	KABUL	C	C	yuksek
+KIMYA-749	633447f8-3a11-5944-96b1-75dc67c02116	KABUL	C	C	yuksek
+KIMYA-75	61d41405-c957-5f18-b4d9-8f755b24f915	KABUL	E	E	yuksek
+KIMYA-750	450da69b-c34e-5935-90e5-8c62c9069302	KABUL	D	D	yuksek
+KIMYA-751	a210fd3b-82c7-5faf-bbde-f3eef610d069	KABUL	C	C	yuksek
+KIMYA-752	45ba5897-44a5-5484-a699-03b601c4cb81	KABUL	E	E	yuksek
+KIMYA-753	7e474544-41fe-56bc-937e-367384c5de1a	KABUL	C	C	yuksek
+KIMYA-754	106c6a81-b4c7-51f5-9f84-de4d31fd3047	KABUL	E	E	yuksek
+KIMYA-755	9f1b44a7-d0c9-59d6-9e1f-b62770bb4166	KABUL	B	B	yuksek
+KIMYA-756	27b698fa-d5c4-5bf5-bbe1-15a43d087621	KABUL	C	C	yuksek
+KIMYA-757	30003079-d6cb-5652-ada4-81aa47953892	KABUL	B	B	yuksek
+KIMYA-758	a78d4c06-3c2a-557d-a31e-dfe2801afffc	COP	A	A	orta	Hicbir secenek dogru degil: hesap 4x10^-10, en yakin secenek
+KIMYA-759	3178a07b-374e-591c-a6ad-8e9200024519	KABUL	E	E	yuksek
+KIMYA-76	bf0e2879-1cad-585b-9c27-c3a645f666ab	KABUL	D	D	yuksek
+KIMYA-760	e9a5ce50-53df-5732-a74c-b9cc707cb388	KABUL	C	C	yuksek
+KIMYA-761	1d2820b1-d34e-52f5-8d1d-3e1071c337dc	KABUL	E	E	yuksek
+KIMYA-762	bdf0c174-a9d4-5388-99b6-1569fd2b855e	COP		A	yuksek	Bozuk/anlamsiz metin: kimya sorusu degil, cumle kurulusu tut
+KIMYA-763	8cef8247-9407-5a10-af56-32d70f74a769	COP		B	yuksek
+KIMYA-764	1235ce0c-8987-581a-a7e7-c5ea49293a9f	KABUL	D	D	yuksek
+KIMYA-765	a0c97e5b-2599-58fa-b174-4bd57f2ecf0b	KABUL	D	D	yuksek
+KIMYA-766	5b6fbc56-8214-5be6-90be-1607a9a91244	KABUL	D	D	yuksek
+KIMYA-767	0b197a53-c008-5e95-902c-b89d5c4413d9	KABUL	D	D	yuksek
+KIMYA-768	2cb46845-90c7-5d89-ae5c-f09d3280c862	KABUL	E	E	orta
+KIMYA-769	d37d3b6d-4729-5401-baf5-e54e0284b35f	KABUL	D	D	yuksek
+KIMYA-77	cccfb6ff-346e-51c7-bafc-c33bbda15665	KUYRUK_DUSUK_GUVEN	B	B	dusuk
+KIMYA-770	94c39a56-04ca-5196-bfb9-03da8b5a4a15	KABUL	B	B	yuksek
+KIMYA-771	ec875b02-8a2e-5917-bea5-5d848872ccd6	KABUL	A	A	yuksek
+KIMYA-772	7f374f46-7451-552f-a31c-2276f8c92609	KABUL	A	A	yuksek
+KIMYA-773	c651e870-02c4-5637-bece-0a280f07e266	KABUL	C	C	yuksek
+KIMYA-774	a2d6834a-e347-5b98-9dab-b920fb4f560d	KABUL	A	A	yuksek
+KIMYA-775	11763db7-44e2-5732-b1e8-6c6db361b6f0	KABUL	C	C	yuksek
+KIMYA-776	d831475f-563b-5134-816c-1a48c7da9eb3	KABUL	D	D	yuksek
+KIMYA-777	d7645faf-3261-5ff1-b1e4-95af66b47b8d	KABUL	B	B	yuksek
+KIMYA-778	90a29152-6196-5df6-b32e-eb9bf90f4110	KABUL	B	B	yuksek
+KIMYA-779	b69b2145-6c21-5d4e-97c8-0039fb6ba866	KABUL	C	C	yuksek
+KIMYA-78	ca22b325-a131-519b-8f73-ad7f2756aabd	KABUL	B	B	yuksek
+KIMYA-780	35581545-9b44-54d7-98e4-35c41e82b8a1	KABUL	C	C	yuksek
+KIMYA-781	b1fcaefa-b60a-5ad2-9a1c-20b8b23534c2	KABUL	B	B	yuksek
+KIMYA-782	905838c3-6cd7-5f71-996a-0521063c2f7d	COP		E	yuksek	Uydurma/anlamsiz kelimeler ('HACIT nakti plazma'), soru cozu
+KIMYA-783	288e79f0-6fd2-5b73-a777-b7f824b8ae45	KABUL	D	D	yuksek
+KIMYA-784	43a84ba1-7fcd-59c5-b930-e01cbc1be226	KABUL	E	E	yuksek
+KIMYA-785	61989968-15ab-56ce-9146-5d79e9765c35	KABUL	C	C	yuksek
+KIMYA-786	8d5ce26c-de6d-5587-b7b3-64bbf3a99843	KABUL	A	A	yuksek
+KIMYA-787	4a50d0b4-18d6-50d4-a139-3d7c1ca80f46	KABUL	E	E	yuksek
+KIMYA-788	a8c903e9-9b03-5841-8bc0-b537ef700809	KABUL	E	E	yuksek
+KIMYA-789	74384f13-bbb8-5e59-8e34-3896e1f57672	KABUL	D	D	yuksek
+KIMYA-79	919a9c41-8b3c-5c44-b878-8cf241282800	KABUL	C	C	yuksek
+KIMYA-790	47185620-87a8-5911-8476-038ae8ef1d6e	KABUL	E	E	yuksek
+KIMYA-791	b8e94267-1398-510a-adfa-dd3f47baceae	KABUL	C	C	yuksek
+KIMYA-792	c04da873-0162-55c3-944d-b4787f08df48	KABUL	B	B	yuksek
+KIMYA-793	7d6026ac-f6e2-5530-a8fb-55857956fc0b	KABUL	A	A	yuksek
+KIMYA-794	99dcfdfb-855a-5b7e-ac29-c10869f2bcd7	KABUL	C	C	yuksek
+KIMYA-795	bf8e4deb-98f2-51f8-8d83-a437c3807d2a	KABUL	E	E	yuksek
+KIMYA-796	1448e8fe-41ba-5ae4-8108-9c5cdd519a10	KABUL	A	A	orta
+KIMYA-797	4af495e3-3624-5965-8ae8-f29422f9d5af	KABUL	B	B	yuksek
+KIMYA-798	c661c926-158b-5936-ab0b-0418f72a58fc	KABUL	C	C	yuksek
+KIMYA-799	292f5ede-1e9b-54cc-8478-0f9ddaaa75d4	KABUL	E	E	yuksek
+KIMYA-8	cc92eea9-ae7c-5d84-b6af-5338f036ed76	KABUL	A	A	yuksek
+KIMYA-80	8fc17e3f-7ec1-5fd9-ab03-f1feabebf904	KABUL	B	B	yuksek
+KIMYA-800	6b882258-0b53-5baf-8b79-211482fc23e7	KABUL	E	E	orta
+KIMYA-801	e2894596-620c-5945-a0a4-1f5d7b4fbd49	KABUL	A	A	orta
+KIMYA-802	d6e719d0-6fc6-51ae-b084-87ebe7e137a6	KABUL	C	C	yuksek
+KIMYA-803	e4cbb556-13be-5f0d-af88-6ebede959e00	KABUL	A	A	yuksek
+KIMYA-804	e5f59345-c84a-50aa-ab50-36e80eab38af	KABUL	B	B	yuksek
+KIMYA-805	8d95b99c-a7f6-5a70-97e5-a54db00faeed	KABUL	A	A	orta
+KIMYA-806	04fc270a-ae77-5e77-a085-ed76459e03b6	KABUL	A	A	yuksek
+KIMYA-807	0628f5af-41ce-515f-81d9-34abf959631c	KABUL	B	B	yuksek
+KIMYA-808	b96be598-43be-5105-b6d8-d079aff882eb	KABUL	D	D	yuksek
+KIMYA-809	cbfc6f95-4c42-5a52-b6a2-805b91366e99	KABUL	B	B	yuksek
+KIMYA-81	e638c41b-0105-538d-9e33-dba9159b3e84	KABUL	D	D	yuksek
+KIMYA-810	3de682a9-ffe3-5c9e-bdc4-eb33a6bdad9e	KABUL	D	D	yuksek
+KIMYA-811	7d1326a0-9260-5064-8c62-8354a1ea5c84	COP	A	A	orta	'Buna gore' oncul metin yok; 'cozumlenir' anlamsiz soru kokü
+KIMYA-812	e6a3df00-3689-5c35-b329-470c28fa97f9	KABUL	D	D	yuksek
+KIMYA-813	f87142e3-fa20-56c7-b2c6-f2b8fe878a1e	COP	E	A	dusuk	C7H14 siklohekzanla (C6H12) izomer degil; tam dogru secenek
+KIMYA-814	2b3beea2-9f27-562d-9449-565fcca69046	COP		B	dusuk	Anlamsiz OCR metni: 'kati pistonlu hava kapisi'; secenekler
+KIMYA-815	807caf9c-a53d-5e84-a211-b99dbdf96fe9	COP	D	D	dusuk	Lewis nokta gosterimi bozuk; deger elektron sayisi okunamiyo
+KIMYA-816	e27b6ddf-5b25-5d3b-8cfa-fd8803bdde81	KABUL	C	C	yuksek
+KIMYA-817	33b8533d-d6de-5346-93cf-1b330fc57b21	KABUL	C	C	yuksek
+KIMYA-818	5b31848f-e33d-5265-a595-91d13aa2d255	COP	E	E	dusuk	Metin bozuk: 'olimits', X1/X2 tutarsiz, denklemler denksiz
+KIMYA-819	735d8498-d714-5169-8b60-783d199d9286	KABUL	C	C	yuksek
+KIMYA-82	d539be3e-592b-530b-82ea-2e255960b751	KABUL	D	D	yuksek
+KIMYA-820	013d2125-d5f2-59fe-ad62-4d09606cac90	KABUL	B	B	yuksek
+KIMYA-821	0f0bfe66-09c1-56be-be27-23699271b9b6	KABUL	C	C	yuksek
+KIMYA-822	a0aa1d67-6140-5540-a91e-05b8237da012	KABUL	E	E	yuksek
+KIMYA-823	cb52ebc6-ec65-5900-95a1-fe58572ef74f	KABUL	D	D	yuksek
+KIMYA-824	47da24ea-e410-54df-8d21-a353891cdd53	KABUL	E	E	yuksek
+KIMYA-825	260db838-1ab6-53b0-a43e-62b914ccfca0	KABUL	D	D	yuksek
+KIMYA-826	7979af5a-0acc-5c30-886a-0d913af429a9	KABUL	E	E	yuksek
+KIMYA-827	0fe67c2c-f5ea-5820-900b-bb5ff52bcae9	COP		B	dusuk	Kimya sorusu degil (matematik) ve dogru secenek yok
+KIMYA-828	333d50f7-228e-5a99-9676-46e95b3d9774	KABUL	D	D	yuksek
+KIMYA-829	d47d905d-89ee-56e0-9c69-4e8efd29fce9	KABUL	A	A	orta
+KIMYA-83	118a2a68-432a-524b-90f5-ccbe4fbc2c82	KABUL	A	A	orta
+KIMYA-830	04f5e3a2-bb2d-59fd-a41c-c111ef381ca6	KABUL	E	E	yuksek
+KIMYA-831	ba3ce880-e93e-539e-99a2-183acbcb0491	COP		D	dusuk	Tamamen bozuk OCR metni: 'sudun hapi hidrojen hidrati'
+KIMYA-832	56064c0d-3b0e-5f5c-80af-acbdd4a4ad1e	KABUL	D	D	yuksek
+KIMYA-833	63f58489-bf84-5f88-9d69-e29d85f0ef7b	KABUL	B	B	yuksek
+KIMYA-834	669802bf-cbc4-5354-b37b-abb56b883065	KABUL	E	E	yuksek
+KIMYA-835	7cb1020b-656f-56ae-b4aa-2591ec4d504d	COP	C	C	orta	Soru kokü anlamsiz ('su masifi', 'metinlerden alinmistir')
+KIMYA-836	a95f73ab-635d-5dd8-8630-1492e8b5a3a6	KABUL	D	D	yuksek
+KIMYA-837	9fa284b7-7452-5564-aff0-5393f77e0efd	COP		C	dusuk	Dejenere madde: 'aciklayin' kokü, atif yapilan hucre verisi
+KIMYA-838	5085ff91-4486-5fbe-98c0-1717c22b6a47	KABUL	E	E	yuksek
+KIMYA-839	919c9dad-c5ba-5128-9fc7-71d12b8d1610	KABUL	A	A	yuksek
+KIMYA-84	1936e575-ce0b-55ea-8c61-34a7f4623d83	KABUL	C	C	yuksek
+KIMYA-840	0554240b-09c9-51ed-b081-0a61a08c10ac	KABUL	E	E	yuksek
+KIMYA-841	c1054c82-ce34-5c89-af32-8fa4f1fbdd4b	COP		A	yuksek	Reaktifler verilmemis; soru kendi kendine yetersiz
+KIMYA-842	87b5ed1a-ff1a-5940-bbca-b9e9c8a4c76d	COP		E	yuksek	Uydurma/bozuk metin, kimyayla ilgisiz
+KIMYA-843	958c61e1-2b6b-58a3-9c44-ce2cfdff3df4	KABUL	D	D	yuksek
+KIMYA-844	a856686c-1aa1-5461-a226-fa684a06372e	KABUL	B	B	yuksek
+KIMYA-845	8fa01e4e-66c2-5e4d-8bd9-383cc1d13284	KABUL	A	A	yuksek
+KIMYA-846	979c83f3-40f2-5e69-8e20-7a727f32fd18	KABUL	E	E	yuksek
+KIMYA-847	4117dad2-8a50-5d71-8611-2176d6a4809e	KABUL	C	C	yuksek
+KIMYA-848	2a05c9e6-b2e4-51eb-b904-83b05c4bb2b6	COP		B	yuksek	Bozuk OCR metni, tutarsiz veri
+KIMYA-849	0dda0fc9-826f-5bf3-b935-0873b69fa730	KABUL	C	C	yuksek
+KIMYA-85	920bef02-ac60-5b9e-bd4b-8260441f2bed	KABUL	C	C	yuksek
+KIMYA-850	64aa20c3-8d68-545c-9660-5b86a2a09840	KABUL	B	B	yuksek
+KIMYA-851	8513078e-4f5b-5288-86df-25ca8f6f3ab3	KABUL	B	B	yuksek
+KIMYA-852	4e07991d-62e6-5532-b86a-0194658a2672	KABUL	B	B	yuksek
+KIMYA-853	4403ae9a-7ebc-532c-8369-b061e510c4e9	KABUL	B	B	yuksek
+KIMYA-854	2855ce9a-7521-531b-981c-28ff088f9c2d	KABUL	B	B	yuksek
+KIMYA-855	2601d9c5-51da-59f9-bab6-e032eb34e4e8	KABUL	C	C	yuksek
+KIMYA-856	af55616e-f41c-54fb-a2a9-43948b70a317	KABUL	D	D	yuksek
+KIMYA-857	0619f608-15e6-5d63-8f36-836603b3f791	KABUL	E	E	yuksek
+KIMYA-858	2cb6e9cc-d53a-5d72-a8a1-4cea1da575fe	KABUL	B	B	yuksek
+KIMYA-859	b4a0b16b-9419-564b-90b7-594031931eb4	KABUL	C	C	yuksek
+KIMYA-86	f3684ec6-97f5-5d29-9566-38edfaa441d8	COP		D	yuksek	'atiksivap' uydurma kelime; soru cumlesi dairesel ve anlamsi
+KIMYA-860	821c5f19-4f4b-563b-b413-d40dbd8a6768	KABUL	D	D	orta
+KIMYA-861	e6c6b563-518d-50f0-8c75-17db6fdb9aee	COP		E	yuksek	Bozuk OCR, soru govdesi yok
+KIMYA-862	0ecb045a-1a9a-51db-81b7-63395b5cf251	KABUL	E	E	yuksek
+KIMYA-863	08390e01-4db2-5784-99da-537697c24178	KABUL	C	C	yuksek
+KIMYA-864	6cb636d0-aff7-5c1f-9d85-0aa90176ac38	COP		E	yuksek	Bozuk OCR, anlamsiz soru ve secenekler
+KIMYA-865	7462e015-d94a-5ad9-91fa-b928792f5370	KABUL	A	A	yuksek
+KIMYA-866	fac2b601-2640-5636-8bf2-ba39004d4440	KABUL	B	B	yuksek
+KIMYA-867	31ae98a3-55de-5215-8f1d-c087f3e39153	KABUL	B	B	orta
+KIMYA-868	5667797f-79b0-5e89-970d-6e59fd5e4708	FIGUR		D	yuksek	FIGUR: Lewis yapisi/polarlik tablosu metinde yok
+KIMYA-869	5d9ec677-c89f-58fa-b077-0c8c32e855ad	KABUL	D	D	yuksek
+KIMYA-87	ef4aebaf-e467-55a7-b090-c068a16de82f	KABUL	C	C	yuksek
+KIMYA-870	da340792-ca64-5da8-9a83-65892476b680	KABUL	D	D	yuksek
+KIMYA-871	1f5082f4-7bc9-566f-af7a-bc602d2d96ee	KABUL	D	D	yuksek
+KIMYA-872	8623e514-5c37-58ce-987f-ce2296a80f33	KABUL	E	E	orta
+KIMYA-873	0c6e3df2-6f62-5536-96cb-1415cd92e37d	KABUL	C	C	yuksek
+KIMYA-874	8da315e9-3767-5bdc-bd93-f9b72723bd70	KABUL	C	C	yuksek
+KIMYA-875	51b8d1df-1f47-5f04-875d-98457798e2e3	KABUL	E	E	yuksek
+KIMYA-876	60ef2405-7beb-52c7-996a-521c5553f692	KABUL	E	E	yuksek
+KIMYA-877	a772c4b7-b1ff-5daf-8cd2-f6ea31680b26	KABUL	B	B	yuksek
+KIMYA-878	540265bd-94a8-5a5e-851d-7a3c54d1b58f	KABUL	E	E	yuksek
+KIMYA-879	ccaa2949-7a9d-5ded-91bc-561bc3143463	KABUL	E	E	yuksek
+KIMYA-88	09f8293c-4c4c-58c8-8e20-1c5baf42b559	KABUL	B	B	yuksek
+KIMYA-880	8577da02-3518-541c-9300-d3d51c9fdcca	KUYRUK_DUSUK_GUVEN	E	E	dusuk
+KIMYA-881	eae722ed-48f1-5e57-acc4-d885e344b375	KABUL	C	C	yuksek
+KIMYA-882	cca15d72-0081-5c62-a9cd-70ecd29dc4bb	KABUL	E	E	yuksek
+KIMYA-883	b0ca91aa-0ecf-5f78-86e8-f847a22ae43c	FIGUR		B	yuksek	FIGUR: 'Yukarida verilen bilesik' yapisi mevcut degil
+KIMYA-884	e7f5454b-ce09-526d-99c9-f04b5c810685	KABUL	A	A	yuksek
+KIMYA-885	31e4f17a-f6bd-5b7d-8c90-9d38be18c3a7	KABUL	C	C	yuksek
+KIMYA-886	ece68228-de50-5a62-867f-99a77db2b05c	COP		A	yuksek	Bozuk OCR: 'Yalincasi - numera', secenekler anlamsiz
+KIMYA-887	abfb7c78-2eec-55b2-b1dc-d3336f8fab06	KABUL	C	C	yuksek
+KIMYA-888	fa55ac5c-dafb-5095-bbcf-270596183a41	KABUL	E	E	yuksek
+KIMYA-889	d61ca9bc-da52-54b8-82be-1798f2ecc65b	COP		B	yuksek	Bozuk OCR: 'hidrojen spreyi', 'bloglu' anlamsiz
+KIMYA-89	1612a0b7-7c3d-5a4e-bd64-e24adf4dfbcf	KABUL	A	A	yuksek
+KIMYA-890	e057892b-96fd-5848-b7a7-6b7d1a396717	KABUL	E	E	yuksek
+KIMYA-891	913156b0-c16f-5974-9f8c-9ba5b43b20cc	KABUL	B	B	yuksek
+KIMYA-892	504d74f8-8162-54ac-81f9-a35de6b7da3b	KABUL	B	B	yuksek
+KIMYA-893	0dfe5565-853f-58b0-a2cc-80e154959504	KABUL	A	A	yuksek
+KIMYA-894	814d4240-2524-506c-894c-64758c59d285	KABUL	C	C	yuksek
+KIMYA-895	2f8edef6-b9d0-5999-89c7-9fdf536519c0	KABUL	A	A	yuksek
+KIMYA-896	6fe86300-155a-522b-9857-75b5642d18e6	KABUL	B	B	yuksek
+KIMYA-897	8b1d4d41-59fb-5e4e-9346-d60b00dd6a0c	KABUL	A	A	yuksek
+KIMYA-898	492bbeba-1a2c-56d5-a5f6-80c9512e004b	KABUL	B	B	yuksek
+KIMYA-899	f11752f0-27a9-508d-8331-a3d92faab4ef	FIGUR		A	yuksek	FIGUR: potansiyel enerji - tepkime koordinati grafigi eksik
+KIMYA-9	85ed6291-dcac-5920-93e2-7d3e45353a1c	COP		A	yuksek	Denklem denk degil, metin bozuk; hicbir secenek 100 g CO2 ic
+KIMYA-90	f88c39a6-4458-53dc-8d78-52934c8074a0	COP		C	orta	'Elektronik sistemde kullanlan kapali kati ve sivi ... H2O2
+KIMYA-900	7ef36ee2-56f8-586b-9cbe-e72f0f11f2df	KABUL	D	D	yuksek
+KIMYA-901	59438808-c23c-5af5-8f40-aab109448957	KABUL	D	D	yuksek
+KIMYA-902	4f2c447f-0df6-5926-9a02-98990a77c982	KABUL	E	E	yuksek
+KIMYA-903	1d81fd00-4533-569a-a6bf-a93846ac2f79	KABUL	C	C	yuksek
+KIMYA-904	e2770081-ed02-5feb-b296-ce832d464498	KABUL	C	C	yuksek
+KIMYA-905	3ca691a2-abb6-594d-b784-c3c00513fd3f	COP		C	yuksek	Metin bozuk/uydurma: 'Tüm karusunun yapısında' — soru kökü y
+KIMYA-906	d32cc3d6-1948-5513-8c0e-65f7a8927cbe	KABUL	D	D	yuksek
+KIMYA-907	4152893e-280b-5e63-acca-d8a2cb8264d5	KABUL	D	D	yuksek
+KIMYA-908	d6bb6bb3-95e1-537a-bf8f-167b303efa7e	COP		A	yuksek	Konu dışı (polinom/türev) ve seçenekler ayırt edilemez — tek
+KIMYA-909	ccfc94de-ea69-584b-b761-e31b1971297a	KABUL	D	D	yuksek
+KIMYA-91	c8fb8bad-f2a3-53c7-9e45-4fbc11708f71	KABUL	E	E	yuksek
+KIMYA-910	cf65dc0a-c5ce-573a-aba5-52d91275337b	COP	A	A	orta	'ikişerleme' uydurma kelime iki kez geçiyor; soru kökü ('den
+KIMYA-911	ea6ceb1d-4878-53b6-9416-23d92d7d6ed5	KABUL	A	A	yuksek
+KIMYA-912	00a72a72-8fd4-5e1b-a667-45628e08a1f9	COP	D	A	dusuk	Elektron dağılımı tutarsız (2p3 azot, ama seçenekler karbonu
+KIMYA-913	aafbfec5-75f3-554d-a3aa-d82a143cdc26	KABUL	A	A	yuksek
+KIMYA-914	75e5c7f3-5868-5919-855c-7d70a4f207d8	KABUL	A	A	orta
+KIMYA-915	451b631d-89f2-5c98-97c8-b8a5f903fb83	KABUL	C	C	yuksek
+KIMYA-916	9e1feadf-a475-52b8-b9f5-788fb3e4f132	COP		A	yuksek	Konu dışı ve anlamsız metin ('takımlaren bir ligi kazanmıştı
+KIMYA-917	c6281d8b-f80a-56bb-b3bc-24184b1d6a63	KABUL	A	A	yuksek
+KIMYA-918	3e96f085-96d4-52c5-aa55-7a1411bacebf	COP		A	yuksek	Konu dışı ve mantıksız: beş seçenek de birer saatlik, ayırt
+KIMYA-919	a5ca5c41-f144-57fe-b419-8dafb1bd29b1	KABUL	A	A	yuksek
+KIMYA-92	74554932-e1f6-5fbb-827d-b0928f7bf18e	KABUL	C	C	yuksek
+KIMYA-920	285eda55-cf46-5c2a-8493-b97c9c9acf26	KABUL	E	E	orta
+KIMYA-921	32c2c27a-7c4f-5771-8c0b-62fa930a0b70	KABUL	C	C	yuksek
+KIMYA-922	c234622a-9a3c-59f5-b611-4d7dc805a0d3	KABUL	E	E	yuksek
+KIMYA-923	a6c01f2f-5929-5ab4-8b43-19873cdf7607	KABUL	D	D	yuksek
+KIMYA-924	4eef775c-a0df-56d1-927b-9d12c19c676e	KABUL	D	D	yuksek
+KIMYA-925	ee56ce28-4160-50ab-8948-5dc2a58fcf49	FIGUR		D	yuksek	FIGUR — 'Yukarıdaki kavram haritası' olmadan öncüller okunam
+KIMYA-926	e44bdbcf-295d-5352-8091-751b6d5faa12	KABUL	B	B	yuksek
+KIMYA-927	975d9b2b-da4f-5347-8a4e-5b4239e5356c	KABUL	C	C	yuksek
+KIMYA-928	fcdcfbe7-a28d-5098-9875-ad9c1c895a08	KABUL	E	E	yuksek
+KIMYA-929	bd853fc5-496a-50cb-ae5c-9819bd219007	KABUL	B	B	yuksek
+KIMYA-93	08330d77-9faf-5d1b-bbd2-75a0ab772909	KABUL	A	A	orta
+KIMYA-930	c98abd27-9f11-56f5-9680-f24c63825f08	KABUL	B	B	yuksek
+KIMYA-931	3fffe988-f111-549e-8cbb-5ddea6333d41	KABUL	C	C	yuksek
+KIMYA-932	bd6ddf9e-d09c-534f-b77c-21dc94e066d2	COP		B	dusuk	OCR bozuk: III eksik özne, IV 'polioleter' uydurma kelime
+KIMYA-933	33886f59-cfc8-522b-be8f-da3cf1d0193b	KABUL	E	E	yuksek
+KIMYA-934	656054c9-c5c8-50b5-8061-c7e593147e2d	KABUL	A	A	yuksek
+KIMYA-935	63034ef9-888a-52d5-a04c-ee38acc95cfe	KABUL	D	D	yuksek
+KIMYA-936	ad75ba65-4193-5ffe-a57b-896e50b8f7bc	KABUL	C	C	yuksek
+KIMYA-937	8a47cf37-e8f1-5bd0-a037-a74230941d96	KABUL	D	D	yuksek
+KIMYA-938	5055e507-a35c-52f9-b6e2-902ec2335ca5	KABUL	D	D	yuksek
+KIMYA-939	5f977187-b542-555c-8bd6-7fddb2b24777	KABUL	D	D	yuksek
+KIMYA-94	613d355e-8c06-5b24-ae83-fe7fe0fc0423	KUYRUK_ANAHTAR	D	E	yuksek
+KIMYA-940	f5527705-c9ab-594a-8f70-186f903fbe7b	COP		A	yuksek	Tamamen bozuk metin: '量子力学' Çince karakterler, seçenekler an
+KIMYA-941	1616f9c5-438a-5906-b987-80e6625724bb	COP		A	yuksek	Uydurma terim 'planoğrafi'; kimya içeriği yok, metin anlamsı
+KIMYA-942	234a5222-5d9f-5edb-a5dc-c5a889364d77	KABUL	A	A	yuksek
+KIMYA-943	49c30c5b-14aa-5358-a6ff-1e59fd9d124f	KABUL	D	D	yuksek
+KIMYA-944	1083c273-f019-5e04-8919-6ece5d001572	KABUL	E	E	yuksek
+KIMYA-945	2aea32a7-354d-5e60-a8d6-60ae9e50f2ec	KABUL	C	C	yuksek
+KIMYA-946	59b8cefb-3617-50a9-90c9-02cca10e32a3	KABUL	A	A	yuksek
+KIMYA-947	b72c60de-d55b-5ddd-8e8a-98c9d3f7af18	COP		E	orta	Seçeneklerin hiçbiri doğru değil: doğru yanıt 'Yalnız III',
+KIMYA-948	e39cffb7-499b-5817-9dd7-acda51eb163d	KABUL	E	E	yuksek
+KIMYA-949	c9f10d60-c5d0-5442-98b4-53b72acc917a	KABUL	D	D	yuksek
+KIMYA-95	21dbde28-8042-5f9c-8a29-7ff73a429998	KABUL	C	C	yuksek
+KIMYA-950	96374a40-fb4c-57d5-aa70-e88acc0ff107	KABUL	E	E	yuksek
+KIMYA-951	9ce01b33-a20f-535b-b606-d51155dcda08	KABUL	E	E	yuksek
+KIMYA-952	50d13e20-a42e-595b-875f-8aab154b5ca7	KABUL	B	B	yuksek
+KIMYA-953	9ecf8913-17ef-59d4-9322-efaaf0912dbd	KABUL	E	E	yuksek
+KIMYA-954	52cc8a6f-8282-5558-98d2-d4bd8af0f16f	KABUL	E	E	yuksek
+KIMYA-955	b3d858e7-bb05-5951-8215-81224d318be8	KABUL	D	D	yuksek
+KIMYA-956	248aa3f2-edd1-5404-95a4-c4aa4ea18016	KABUL	C	C	yuksek
+KIMYA-957	d9dc7ad1-2402-5914-b9b8-f814b293224c	COP		D	yuksek	Metin bozuk/uydurma: 'sıvıların denizliği' anlamsız, seçenek
+KIMYA-958	322f179b-637f-5397-a082-7b37e7a654e6	KABUL	E	E	yuksek
+KIMYA-959	49390cde-1464-5112-98fc-1b23f47b0b4e	KABUL	D	D	yuksek
+KIMYA-96	0db2a9c5-5ddf-507f-8658-c6046025bf74	KABUL	C	C	orta
+KIMYA-960	b7020f36-f6df-525c-96b7-eeeb693eb633	KABUL	B	B	yuksek
+KIMYA-961	62b2b7dd-7723-5739-8d0f-b2d9df6f829c	COP		A	yuksek	Metin bozuk: cevap anahtari soru govdesine sizmis, ayrica ko
+KIMYA-962	9dc0a976-0d22-57e5-820a-d5c8a3f4e0ee	KABUL	C	C	yuksek
+KIMYA-963	8d24698d-d30c-5ab3-9784-04e37f668b74	KABUL	D	D	yuksek
+KIMYA-964	7d7704ec-48d2-5bad-a80a-7e23dc30f877	COP		C	yuksek	Soru koku anlamsiz ve birden fazla dogru secenek var; yazim
+KIMYA-965	368797a8-5016-595b-ba06-181222624844	KABUL	A	A	yuksek
+KIMYA-966	11e6b1b4-13e6-54e5-8de3-90d658e4c6a2	KABUL	B	B	yuksek
+KIMYA-967	61a6a998-1f31-587e-98ec-636f478a8157	KABUL	E	E	yuksek
+KIMYA-968	bfa33d5d-857d-5f7a-a368-90318ca4a4d8	KABUL	C	C	yuksek
+KIMYA-969	1afbf8b3-9880-5d79-a0e9-c7f857ac5754	KABUL	A	A	orta
+KIMYA-97	393bff72-548d-53a4-9aa8-a084f690d323	KABUL	C	C	yuksek
+KIMYA-970	41def78a-7059-56e3-bd46-10acb0fa7a2c	KABUL	E	E	orta
+KIMYA-971	d18f9e85-6c51-568d-bdd1-36521883ae98	KABUL	E	E	yuksek
+KIMYA-972	1270570d-f035-5c3e-9644-cfea5ec429dc	KABUL	C	C	yuksek
+KIMYA-973	5125cc3a-d138-5a86-adb8-069f329980b5	KABUL	D	D	yuksek
+KIMYA-974	f1e66b73-b443-502e-93de-b686b88ce936	KABUL	E	E	orta
+KIMYA-975	350f9b74-5de6-5fe1-8795-171ec841a229	KABUL	C	C	yuksek
+KIMYA-976	fb01df88-2085-515a-b07c-9b8a2928bbe3	KABUL	C	C	yuksek
+KIMYA-977	748872fe-9a20-5a38-bba1-003624d4eb44	KABUL	A	A	yuksek
+KIMYA-978	bc31b6e0-caab-5066-bab6-7b16d5e48017	KABUL	E	E	orta
+KIMYA-979	e3a3641c-4706-513d-8fe7-37557469b478	KABUL	D	D	yuksek
+KIMYA-98	eb688195-b84e-54f7-89ca-742e64a893f1	KABUL	A	A	yuksek
+KIMYA-980	dc0942fa-a41c-51df-99c7-5f51924e144c	KABUL	C	C	yuksek
+KIMYA-981	ef7ce92f-f30a-5aa3-aaad-2ce0155cf7d1	KABUL	E	E	yuksek
+KIMYA-982	b71d9aaa-b88a-51f3-8d00-39e0dba8d768	KABUL	C	C	yuksek
+KIMYA-983	31ba3375-23f3-5d1f-99f4-5899724e9389	KABUL	E	E	yuksek
+KIMYA-984	dee78258-ceda-54e0-8a46-a0436b39087b	COP		D	yuksek	Konu disi ve secenekler tekrarli; tam bir dogru secenek beli
+KIMYA-985	c9ae1f09-8aa6-5424-ad35-46091dd0f099	KABUL	E	E	yuksek
+KIMYA-986	5b20ee62-ffab-5eba-970f-8faa182b7886	KABUL	E	E	yuksek
+KIMYA-987	567c40ff-9ea7-57ab-8078-2a3a9bafdb3b	KABUL	B	B	yuksek
+KIMYA-988	58619989-3940-576f-8569-c76f5deace6c	KABUL	B	B	yuksek
+KIMYA-989	dbafb751-4d94-5438-9a67-e20655ae94ba	KABUL	E	E	yuksek
+KIMYA-99	3588a23c-3d6c-533e-84e6-c49d2e7436aa	KABUL	B	B	orta
+KIMYA-990	afe719c8-927a-5d14-abde-0bcce4b63cdf	KABUL	D	D	yuksek
+KIMYA-991	8a0a7d44-f4f1-5dd3-929a-7f3d5ecce943	KABUL	D	D	yuksek
+KIMYA-992	e9ca44f0-0ce1-503b-bcf5-017a6abf9722	COP		C	yuksek	Bozuk OCR metni, uydurma bilesik CO3S, hesap kurulamiyor
+KIMYA-993	18cd93a4-73b8-595d-8c8b-cdc36819896d	KABUL	D	D	yuksek
+KIMYA-994	ddef9c78-1240-5839-809b-3678f1d06ce3	KABUL	A	A	yuksek
+KIMYA-995	f811aeb1-0040-54e7-92ed-e467d57de5c1	KABUL	C	C	yuksek
+KIMYA-996	1d1e394d-f86f-5de4-a46f-d8c8193c062c	KABUL	A	A	yuksek
+KIMYA-997	bd01368a-53f8-5b5e-8fe1-259e80a1ba85	KABUL	C	C	yuksek
+KIMYA-998	62dd0610-ea8e-5562-a636-0ec0b8887b55	KABUL	D	D	yuksek
+KIMYA-999	8dc5e895-2d3a-5996-96f6-8dfa4e9582af	KABUL	C	C	orta
