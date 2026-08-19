@@ -1804,3 +1804,91 @@ B2C'nin içerik-dışı blokerlerine dönülmesi.
 Y3 · Y8 · Y9 · Y10 · Y2-kalan · `test_question_bank_invariants.py` pre-push'a bağlanma
 kararı (Y11 sonrasına ertelendi) · `kiro2-api-import-smoke` kırık · host `pytest` uçtan
 uca koşamıyor
+
+---
+
+## Session Handoff — 2026-08-19 (S232-C…F · KIMYA KAPANDI, ④ ölçüldü) ✅
+
+**Branch:** feature/self-evolution-optimization · **Takipli-kirli:** 1 (devralınan `semantic_cache.pkl`)
+**Commit'ler:** `31fb83367` (pilot) · `4e0cf59bc` (dalga1 + kuyruk + mükerrer düzeltme) ·
+`cfcaca52d` (KIMYA tam tur) · `7c1cf66eb` (④ ön ölçüm)
+
+### Kullanıcı kararı: ① → ② → ⑤ → ④, ③ ④'ün içinde
+Dördü de bu turda yürütüldü. **Hiçbir veri değiştirilmedi (salt okunur).**
+
+### ⑤ KIMYA TAM TUR — 4.419 soru
+| Sınıf | Adet | Oran |
+|---|---|---|
+| **KABUL** | **3.666** | **%83,0** |
+| Çöp | 542 | %12,3 |
+| Figür (görseli mevcut) | 93 | %2,1 |
+| Kuyruk — anahtar | 80 | %1,8 |
+| Kuyruk — düşük güven | 38 | %0,9 |
+
+Verim 3 ölçekte tutarlı: pilot %86 (n=42) → dalga1 %82,6 (n=1.500) → **%83,0** (n=4.419).
+Maliyet 3 ölçekte tutarlı: 4.035 → 3.920 → **3.956** token/yargı. KIMYA toplam **17,4M**.
+Verdikt: `backend/scripts/quality/y11_kimya_verdikt_TAM.tsv` (4.419 satır).
+
+**Güven kapısı** nokta-kontrolle eklendi: 3 yüksek-güvenli 3/3 doğru, 2 **düşük**-güvenli
+sorunun ikisi de **kusurlu soru** çıktı. `düşük` → kuyruk (bedel %1,2). `orta` ATILMADI
+(aleyhine kanıt yok, bedel %9,2 olurdu — #451 deseni).
+
+### ② UYUŞMAZLIK ÇÖZÜCÜ — kalibre edildi, KONTROL KOLU (Claude) DÜŞTÜ
+24 uyuşmazlık iki çerçevede çözüldü (A: tamamen kör · B: iki aday gösterilerek).
+- A ve B mutabık: **22/24 = %91,7** · A≠B → kuyruk: 2
+- Claude'un elle verdiği yargılarla örtüşme: **17/22 — 5'inde CLAUDE YANILDI**
+- Mutabakatın yönü: **21 "anahtar yanlış" / 1 "yargıç yanlış"**
+
+Beş hatanın deseni tek: **çözmeden yargılamak** (3'ünde DB anahtarına yaslandım,
+2'sinde "belirsiz" deyip kaçtım). Örnek: `KIMYA-181` — "**kesinlikle** artar"
+niteleyicisi atlandı; 3. periyotta iyonlaşma enerjisi Mg(738)→Al(578) ve
+P(1012)→S(1000) **düşer**.
+
+→ Uyuşmazlıklarda kitap anahtarı hata oranı %66,7 **değil %87,5**.
+→ Kurtarılabilir içerik 250 → **~350 soru** (sayısal derslerde).
+→ **Oturumun önceki ölçümü tersine döndü:** alt-ajan yargıç ana bağlamdan zayıf (%0,4 vs
+  %9,4) **kabul** sınıfı içindi (iş: doğrulama). **Uyuşmazlık** sınıfında iş *sıfırdan
+  çözme* ve orada iki bağımsız çerçeve tek insandan güvenilir.
+
+### ① MÜKERRER — kendi ölçüm aletimde kusur, iki iddia ÇÜRÜDÜ
+| İddiam | Doğrusu |
+|---|---|
+| 669 mükerrer | **153** — 516 meşru soru silinecekti (%77) |
+| 118 kendi-kendini çelen | **0** — tamamen fantom |
+| "bedava anahtar dedektörü" | **YOK** |
+
+Kök neden: normalizasyon yalnız `question_text`'e bakıyordu. `correct_answer` bir
+**değer değil, şık listesine konumsal referans**. Çift kontrolü: aynı üçgen sorusunun
+iki satırı (`A)24 B)30…` anahtar=B) ve (`A)30 B)40…` anahtar=A) **ikisi de 30'u**
+işaret ediyor. Gerçek mükerrer 151 grup / 153 satır, anahtar çelişkisi **0**.
+
+### ④ GÖÇ MEKANİZMASI — ön ölçüm TAMAM, kod YAZILMADI
+- **44 zorunlu kolonun 44'ü** kaynakta var; kabul edilen 3.666 satırda **NULL 0/41**
+- R1 enum casing ✅ · R3 hash çarpışma ✅ · R4 id çarpışma ✅
+- 🔴 **R2 konu FK:** kaynakta 17 konu, canlıda 12, **örtüşme 0**
+  → çözülebilir: `kiro2_temp.topic_hierarchy` **141 satır**, kolon kümeleri **aynı**,
+    17 konunun 17'si tanımlı ve gerçek granüler (Kimyasal Denge 1.361, Asitler-Bazlar
+    507, Organik 416…) — canlının tek "Genel"ine karşı
+- Yan kazanç: KIMYA'da `difficulty_level` **5 seviye** → göç **Y4'ün blokerini kaldırıyor**
+- Tasarım: `docs/audits/2026-08-19_y11_goc_mekanizmasi_tasarim.md` (ADIM 0-4)
+
+⚠️ Ölçümler **yalnız KIMYA** için. Diğer derslerden önce R1-R4 **her ders için** tekrar.
+
+### Ders defteri 135 → **141** · bekçi 9/9
+`L-s232-kurtarma-kaynagi-da-olculur` · `L-s232-kendi-yargin-da-bir-olcum-aletidir` ·
+`L-s232-mekanik-siralamayi-insan-yargisiyla-dogrula` · `L-s232-tur-kimligi-sonuc-semasinda-olmali` ·
+`L-s232-cevap-harfi-sik-listesi-olmadan-anlamsizdir` · `L-s232-bulguyu-degil-aleti-sina`
+
+### Sonraki oturum — ④ ADIM 0'dan başla
+1. **ADIM 0-1:** yedek tabloları + eksik `topic_hierarchy` satırlarını kopyala
+   (parent_id zinciri dahil — `level>1` konuların ebeveyni de gelmeli)
+2. **ADIM 2:** 50 satırlık pilot, 4 tabloya dağıt, doğrula, **geri al**
+3. **ADIM 3-4:** 3.666 satır parti parti + matview REFRESH + Y12 `xfail` kaldır
+
+⚠️ Göç kapısında **insan tek karar mercii olmayacak** — iki çerçeve + insan tahkimi.
+⚠️ `git add -A` bu turda kapsam dışı süpürme yaptı (148 çalışma dosyası + 2 devralınan
+script); geri alındı. Stage'i **dosya dosya** yap.
+
+### Kalan sayısal dersler (④ kapandıktan sonra)
+MATEMATIK 14.119 · FIZIK 3.468 · GEOMETRI 2.948 — tahmini ~81M token, beklenen
+~%75-85 verim (GEOMETRI pilotta %55, ayrı ele alınmalı).
