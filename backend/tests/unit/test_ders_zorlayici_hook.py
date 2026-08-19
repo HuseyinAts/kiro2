@@ -36,8 +36,17 @@ sys.path.insert(0, str(DEPO_KOKU / "backend" / "hooks"))
 from ders_zorlayici_kos import (  # noqa: E402
     DEFTER,
     bicim_gecersizleri,
+    dsn_maskele,
+    dsn_ortami_uret,
     zorlayicilari_topla,
 )
+
+# Testlerde kullanilan SAHTE DSN'ler — gercek kimlik bilgisi DEGIL.
+# (Gercek deger `backend/.env`'den runtime'da okunur, koda GOMULMEZ.)
+_SAHTE_PG = (
+    "postgresql://kullanici:parola@localhost:5434/kiro2"  # pragma: allowlist secret
+)
+_SAHTE_SQLITE = "sqlite+aiosqlite:///:memory:"
 
 # ---------------------------------------------------------------------------
 # BICIM KAPISI — pytest ARGV'sine gitmesi guvenli olmayan degerler
@@ -153,3 +162,100 @@ def test_defter_gercek_dosya_ve_okunabilir():
     """Hook'un okudugu defter, bu depodaki gercek defter olmali."""
     assert DEFTER.exists(), f"ders defteri yok: {DEFTER}"
     assert DEFTER.name == "ders_kaydi.yaml"
+
+
+# ---------------------------------------------------------------------------
+# DSN ENJEKSIYONU — A3 (19 Agu 2026)
+#
+# OLCULEN KUSUR: kapi 19 bekci dosyasi kosuyordu ama
+# `tests/db/test_question_bank_invariants.py` her push'ta **3/3 SKIP** veriyordu:
+#
+#     pytest tests/db/test_question_bank_invariants.py -q -rs   ->  sss / EXIT=0
+#     SKIPPED :102  Gevsek mod (KIRO2_STRICT_DB_INVARIANTS yok)
+#     SKIPPED :138  Gercek PostgreSQL yok (DSN yok)
+#     SKIPPED :169  ayni
+#
+# Yani "19 bekci her push'ta kosuyor" bir DOSYA sayimiydi, ASSERT sayimi degil.
+# Hacim ve benzersizlik invaryantlari -- tam da Y11 gocu sirasinda ihtiyac
+# duyulacak olanlar -- kapali duruyordu.
+#
+# NEDEN STRICT VARSAYILAN ACIK DEGIL: dosyanin kendi docstring'i (12 Agu) taze
+# bir gelistirme makinesinde icerigin OLMAMASININ mesru oldugunu belgeliyor.
+# O karar korunuyor: STRICT yalnizca GERCEK bir postgres DSN cozulebildiginde
+# aciliyor. Cozulemezse hook gurultulu uyarir ama push'u bloklamaz.
+# ---------------------------------------------------------------------------
+
+
+def test_env_dosyasindaki_postgres_dsni_cozulur():
+    """Kapi DSN'i `backend/.env`'den okumali — koda GOMULMEMELI."""
+    ortam = dsn_ortami_uret({}, f"DATABASE_URL={_SAHTE_PG}\n")
+    assert ortam.get("KVKK_VERIFY_DSN") == _SAHTE_PG
+
+
+def test_dsn_cozulunce_strict_mod_da_acilir():
+    """DSN tek basina YETMEZ: `test_invaryant_olculebilir_olmali` STRICT ister.
+
+    Ikisinden biri eksikse bekci yine skip eder ve kapi yalan soyler.
+    """
+    ortam = dsn_ortami_uret({}, f"DATABASE_URL={_SAHTE_PG}\n")
+    assert ortam.get("KIRO2_STRICT_DB_INVARIANTS") == "1"
+
+
+def test_sqlite_dsni_reddedilir():
+    """Sessizce sqlite'a DUSULMEZ (`L-s229-test-dsn-sessizce-sqlite-olur`).
+
+    S229'da 11 test `no such table: information_schema.columns` ile dustu:
+    cozucu `DATABASE_URL`e guvenmisti, test ortami onu sqlite'a eziyordu.
+    Burada sqlite gorulurse DSN YOK sayilir -- yanlis bir DB'yi olcmektense
+    olcmemek yeglenir.
+    """
+    ortam = dsn_ortami_uret({}, f"DATABASE_URL={_SAHTE_SQLITE}\n")
+    assert ortam == {}, f"sqlite DSN kabul edildi: {ortam}"
+
+
+def test_dsn_yoksa_strict_acilmaz():
+    """Taze makinede icerik olmamasi MESRU — her push'u kirmak gurultu olur.
+
+    Kontrol kolu niteliginde: bu assert olmazsa `dsn_ortami_uret` her zaman
+    STRICT dondurup DB'siz makinelerde push'u bloklardi.
+    """
+    assert dsn_ortami_uret({}, None) == {}
+    assert dsn_ortami_uret({}, "BASKA_ANAHTAR=1\n") == {}
+
+
+def test_mevcut_ortam_env_dosyasindan_oncelikli():
+    """Operator elle DSN verdiyse dosya onu EZMEMELI."""
+    elle = "postgresql://x:y@baska-host:5555/baska_db"
+    ortam = dsn_ortami_uret({"KVKK_VERIFY_DSN": elle}, f"DATABASE_URL={_SAHTE_PG}\n")
+    assert ortam.get("KVKK_VERIFY_DSN") == elle
+
+
+def test_sqlite_database_url_postgres_kvkk_yi_golgelemez():
+    """Dosyada ikisi de varsa postgres olan kazanir.
+
+    `backend/conftest.py` DATABASE_URL'i sqlite'a eziyor; bu satir gercek
+    bir DSN'i golgeleyebilecek tek yer.
+    """
+    icerik = f"DATABASE_URL={_SAHTE_SQLITE}\nKVKK_VERIFY_DSN={_SAHTE_PG}\n"
+    assert dsn_ortami_uret({}, icerik).get("KVKK_VERIFY_DSN") == _SAHTE_PG
+
+
+def test_dsn_asyncpg_ye_cevrilmez():
+    """Surucu donusumu tuketicinin isi (`tests/e2e/pg_dsn.py::resolve_pg_dsn`).
+
+    Burada da cevirmek ikinci bir tanim olurdu; iki tanim ayrisirsa hangisinin
+    kosulmakta oldugu olculemez hale gelir.
+    """
+    ortam = dsn_ortami_uret({}, f"DATABASE_URL={_SAHTE_PG}\n")
+    assert "asyncpg" not in ortam["KVKK_VERIFY_DSN"]
+
+
+def test_dsn_loglanirken_parola_maskelenir():
+    """Kapi her push'ta stdout'a yaziyor — DSN parolasi oraya DUSMEMELI.
+
+    Bu depoda bir kez yasandi: celery logunda duz-metin DB parolasi (#475).
+    Ayni sinif, farkli kanal.
+    """
+    maskeli = dsn_maskele(_SAHTE_PG)
+    assert "parola" not in maskeli, f"parola sizdi: {maskeli}"
+    assert "localhost:5434" in maskeli, "maske teshis degerini de yok etmemeli"

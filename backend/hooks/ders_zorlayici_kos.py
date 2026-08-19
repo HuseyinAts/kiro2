@@ -25,11 +25,18 @@ KAPI DAVRANIŞI
 - pytest kırmızıysa                 -> HATA (push bloke)
 - `xfail` beklenen kırmızılar geçer (Y11 gibi açık işler xfail ile işaretli)
 
-Ölçülen maliyet (19 Ağu 2026): 18 dosya / 162 passed + 8 xfailed.
+Ölçülen maliyet (19 Ağu 2026, A3 sonrası): **19 dosya / 191 toplanan /
+182 passed + 9 xfailed + 0 skipped**, ~45 sn.
+
+⚠️ Bu sayı BAYATLAR. Yeni bir derse `zorlayici` yazmak listeyi büyütür ve
+buradaki rakam sessizce yanlışlaşır — nitekim bir kez oldu ("18 dosya /
+162 passed", `ae830d67d` ile 19'a çıkmıştı). Yük taşıyan sayı burada değil,
+`test_ders_kaydi.py::ZORLAYICI_TABANI` cırcırında.
 """
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess  # nosec B404 - yollar dogrulaniyor, shell=False; asagiya bak
 import sys
@@ -79,6 +86,91 @@ def bicim_gecersizleri(yollar: list[str]) -> list[str]:
     ]
 
 
+# ---------------------------------------------------------------------------
+# DSN ENJEKSIYONU — A3 (19 Agu 2026)
+#
+# OLCULDU: kapi 19 dosya kosuyordu ama `tests/db/test_question_bank_invariants.py`
+# her push'ta `sss` (3 skipped, EXIT=0) veriyordu — DSN ve STRICT bayragi yoktu.
+# Yani "19 bekci her push'ta" bir DOSYA sayimiydi, ASSERT sayimi degil; hacim ve
+# benzersizlik invaryantlari kapaliydi.
+#
+# STRICT'i KOSULSUZ acmiyoruz: o dosyanin docstring'i (12 Agu) taze bir makinede
+# icerik olmamasinin MESRU oldugunu belgeliyor ve her kosumu kirmak gurultu olur.
+# Bu yuzden ikisi de yalnizca GERCEK bir postgres DSN cozulunce set edilir.
+# ---------------------------------------------------------------------------
+
+# sqlite/aiosqlite: `backend/conftest.py` DATABASE_URL'i buna eziyor. Boyle bir
+# DSN'i kabul etmek YANLIS bir DB'yi olcmek olur (`L-s229-test-dsn-sessizce-sqlite-olur`).
+_SAHTE_MOTOR_ISARETLERI = ("sqlite", ":memory:")
+
+# `tests/e2e/pg_dsn.py::resolve_pg_dsn` ile AYNI oncelik sirasi.
+_DSN_ANAHTARLARI = ("KVKK_VERIFY_DSN", "DATABASE_URL_SYNC", "DATABASE_URL")
+
+
+def _postgres_mu(dsn: str | None) -> bool:
+    """Gercek bir PostgreSQL DSN'i mi — taklit motor DEGIL."""
+    if not dsn:
+        return False
+    d = dsn.strip().strip("\"'").lower()
+    if any(m in d for m in _SAHTE_MOTOR_ISARETLERI):
+        return False
+    return d.startswith("postgresql")
+
+
+def _env_dosyasi_ayristir(metin: str | None) -> dict[str, str]:
+    """`KEY=VALUE` satirlarini oku. Yorum/bos satir atlanir, tirnak soyulur."""
+    if not metin:
+        return {}
+    cikti: dict[str, str] = {}
+    for satir in metin.splitlines():
+        s = satir.strip()
+        if not s or s.startswith("#") or "=" not in s:
+            continue
+        anahtar, _, deger = s.partition("=")
+        cikti[anahtar.strip()] = deger.strip().strip("\"'")
+    return cikti
+
+
+def dsn_maskele(dsn: str) -> str:
+    """Parolayi gizle ama teshis degerini (host/port/db) KORU.
+
+    Kapi her push'ta stdout'a yaziyor; DSN parolasi oraya dusmemeli. Bu depoda
+    ayni sinif bir kez yasandi: celery logunda duz-metin DB parolasi (#475).
+    """
+    if "@" not in dsn or "://" not in dsn:
+        return dsn
+    sema, _, kalan = dsn.partition("://")
+    kimlik, _, adres = kalan.rpartition("@")
+    if ":" in kimlik:
+        kullanici = kimlik.split(":", 1)[0]
+        kimlik = f"{kullanici}:***"
+    return f"{sema}://{kimlik}@{adres}"
+
+
+def dsn_ortami_uret(
+    mevcut_env: dict[str, str], env_dosyasi_metni: str | None
+) -> dict[str, str]:
+    """pytest alt surecine eklenecek ortam degiskenlerini uret.
+
+    Once mevcut ortam (operator elle verdiyse EZILMEZ), sonra `backend/.env`.
+    Gercek postgres DSN bulunamazsa BOS dondurur — sessizce sqlite'a DUSULMEZ
+    ve STRICT acilmaz (DB'siz makinede push bloklanmaz).
+    """
+    dosya = _env_dosyasi_ayristir(env_dosyasi_metni)
+    for kaynak in (mevcut_env, dosya):
+        for anahtar in _DSN_ANAHTARLARI:
+            aday = kaynak.get(anahtar)
+            if _postgres_mu(aday):
+                # Surucu donusumu (postgresql:// -> postgresql+asyncpg://) BURADA
+                # YAPILMAZ; tek tanim tuketicide (`tests/e2e/pg_dsn.py`). Ikinci
+                # bir tanim ayrisirsa hangisinin kostugu olculemez hale gelir.
+                return {
+                    "KVKK_VERIFY_DSN": aday.strip().strip("\"'"),
+                    "KIRO2_STRICT_DB_INVARIANTS": "1",
+                }
+    return {}
+
+
 def main() -> int:
     if not DEFTER.exists():
         print(f"HATA: ders defteri yok: {DEFTER}", file=sys.stderr)
@@ -117,6 +209,29 @@ def main() -> int:
     goreli = [str(Path(y).relative_to("backend")) for y in yollar]
     print(f"[ders-zorlayici] defterden {len(goreli)} bekci dosyasi turetildi")
 
+    env_dosyasi = BACKEND / ".env"
+    metin = (
+        env_dosyasi.read_text(encoding="utf-8", errors="replace")
+        if env_dosyasi.exists()
+        else None
+    )
+    ek_ortam = dsn_ortami_uret(dict(os.environ), metin)
+    if ek_ortam:
+        print(
+            "[ders-zorlayici] DB invaryantlari OLCULECEK — DSN: "
+            f"{dsn_maskele(ek_ortam['KVKK_VERIFY_DSN'])}"
+        )
+    else:
+        # Sessiz skip bu deponun tekrar eden kusuru: olcmeyen bekci koruma
+        # SAGLAMAZ ama yesil gorunur. Push'u bloklamiyoruz (taze makine mesru),
+        # ama durum GORUNUR olmali.
+        print(
+            "[ders-zorlayici] UYARI: gercek postgres DSN cozulemedi -> "
+            "question_bank invaryant bekcileri SKIP edecek. Bu makinede icerik "
+            "OLMASI gerekiyorsa backend/.env icindeki DSN'i kontrol et.",
+            file=sys.stderr,
+        )
+
     # noqa/nosec gerekcesi: shell=False + liste arguman (kabuk enjeksiyonu YOK),
     # ikili `sys.executable` (PATH'ten cozulmuyor), ve her yol yukaridaki bicim
     # kapisindan gecti. Girdi "untrusted" degil: depo icindeki bir defter satiri.
@@ -133,6 +248,7 @@ def main() -> int:
         ],
         cwd=BACKEND,
         check=False,
+        env={**os.environ, **ek_ortam},
     )
     if sonuc.returncode != 0:
         print(
