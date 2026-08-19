@@ -1,0 +1,2147 @@
+--- [FIZIK-1]  id=97abc371-9c23-561c-b08b-1c53a74728ec  sinav=TYT
+SORU: Bohr atom modeline göre, temel hâlden üst yörüngeye uyarılan bir elektronun, I. Çizgisel hızı azalır. II. Açısal momentumu artar. III. Dolanım periyodu artar. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-2]  id=b0805b38-8c27-5a5d-8f56-95a2882cb1a8  sinav=AYT
+SORU: Michelson - Morley deneyinin sonucunda ışık hızının eylemlili ve eylemsiz sistemler için aynı olduğu ortaya çıkmıştır.
+
+Ortaya çıkan bu sonucun modern fizikte en büyük katkısı aşağıdakilerden hangisidir?
+  A) Einstein'ın özel görelilik teorisi
+  B) Lazer ışınının bulunması
+  C) Elektronun kütlesinin bulunması
+  D) Siyah cisim ışınması
+  E) Fotoelektrik olay
+
+--- [FIZIK-3]  id=bd7b52e3-a02d-5fcf-bbfc-3f1cdc72d472  sinav=TYT
+SORU: Günlük hayattaki;
+I. dekoratif amaçlı kullanılan lav lambaları,
+II. içi su dolu bir kaba bırakılan demir bilyenin tamamen batması,
+III. bazı böceklerin suya batmadan su üzerinde durabilmesi
+örneklerinden hangileri doğrudan özkütle ile ilişkilidir?
+  A) Yalnız I
+  B) Yalnız III
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-4]  id=31a16a8c-cf4f-5dd4-a647-560c9b6c6342  sinav=TYT
+SORU: Bir dalga leğeninde oluşturulan su dalgalarının dalga boyu; I. kaynağın frekansı II. kaynağın titreşim genliği III. leğendeki su derinliği niceliklerinden hangilerine bağlıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-5]  id=06244cae-2d97-58a7-9c11-28e9f203a809  sinav=AYT
+SORU: Bir işteki çalışanların yaşları şunlardır: 25, 28, 30, 32, 35, 38, 40, 42, 45, 48. Bu çalışanların yaşlarının ortalamasını bulmak için hangi formül kullanılmalıdır?
+  A) 25 + 28 + 30 + 32 + 35 + 38 + 40 + 42 + 45 + 48
+  B) 25 + 28 + 30 + 32 + 35 + 38 + 40 + 42 + 45 + 48 ÷ 10
+  C) 25 + 28 + 30 + 32 + 35 + 38 + 40 + 42 + 45 + 48 ÷ 100
+  D) 25 + 28 + 30 + 32 + 35 + 38 + 40 + 42 + 45 + 48 ÷ 1000
+  E) 25 + 28 + 30 + 32 + 35 + 38 + 40 + 42 + 45 + 48 ÷ 10000
+
+--- [FIZIK-6]  id=b426daa9-365e-5b30-8081-925243863d86  sinav=TYT
+SORU: Bilgi: Modern tıpta hastalıkların tanısında ve tedavisinde kullanılan görüntüleme cihazlarına biyomedikal cihazlar denir. Buna göre, I. Termal kameralar II. Bilgisayarlı tomografi III. MR (Manyetik Rezonans) IV. Sonar V. PET (Pozitron Emisyon Tomografisi) cihazlarından hangileri, biyomedikal cihazlara örnek olarak gösterilebilir?
+  A) II ve III
+  B) I ve IV
+  C) II ve V
+  D) II, III ve V
+  E) I, II ve V
+
+--- [FIZIK-7]  id=59a6ec46-5741-5fb6-a990-ead2f7b422f3  sinav=TYT
+SORU: Özcan, bir küreye ip bağlayarak oluşturduğu sarkacın periyodunun, bir saatin sarkacının periyodundan büyük olduğunu gözlemliyor. Buna göre Özcan yaptığı sarkacın periyodunun saatin sarkacının periyoduna eşitlenmesi için; I. sarkacı daha küçük genlikte titreştirme. II. daha küçük bir küre kullanma. III. daha kısa bir ip kullanma. değişikliklerinden hangileri yapması yeterli olabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+--- [FIZIK-8]  id=19fc679c-49f6-5d94-b4ee-54555fc5f1ae  sinav=TYT
+SORU: Bir fotoselin katodunda bulunan metalinden elektron sökebilmek için gerekli olan en küçük enerjiye eşik enerjisi denir. Buna göre eşik enerjisini değiştirmek için aşağıdakilerden hangisini değiştirmek gerekir?
+  A) Katoda düşürülen ışığın şiddeti
+  B) Katodun yüzey alanı
+  C) Katodun yapıldığı maddenin cinsi
+  D) Katodun metaline düşen ışığın frekansı
+  E) Katot metaline düşen ışığın dalga boyu
+
+--- [FIZIK-9]  id=515b4b89-745a-51c4-a568-3e6aa42759a7  sinav=AYT
+SORU: Sekil 1'de verilen dik üçgenlerdeki köşelerin uzunlukları verilmiştir. Bu dik üçgenlerin benzerlik oranları eşit olduğuna göre, Şekil 2'de verilen dik üçgenin köşelerinin uzunlukları aşağıdaki kilerden hangisinde doğru verilmiştir?
+  A) 10, 15, 20
+  B) 10, 15, 25
+  C) 10, 20, 25
+  D) 15, 20, 25
+  E) 20, 25, 30
+
+--- [FIZIK-10]  id=cdcddc35-b16a-5f28-874c-02c98e7277d1  sinav=TYT
+SORU: Aşağıdakilerden hangisi elektrik alanı ve elektriksel kuvvet için doğru bir tanımlamadır?
+  A) Elektrik alanı vektörel bir büyüklük, elektriksel kuvvet ise skaler bir büyüklüktür.
+  B) Elektrik alanının olmadığı bir noktadaki yüklü cisme etki eden elektriksel kuvvet sıfırdır.
+  C) Elektrik alan vektörü ile elektriksel kuvvet vektörü her zaman aynı yönlüdür.
+  D) Elektriksel kuvvet vektörü ile elektriksel alan vektörü her zaman zıt yönlüdür.
+  E) Yüklü bir cisme etki eden elektriksel kuvvet cismin etki ettiği elektrik alandan bağımsızdır.
+
+--- [FIZIK-11]  id=ceac7111-ba19-56d2-bf23-c703bf83846a  sinav=TYT
+SORU: Hava sürtünmesinin önemsiz olduğu bir ortamda yerden $h$ kadar yükseklikte bulunan bir cisim $v$ büyüklüğündeki hızla yatay olarak fırlatılıyor.
+Buna göre cismin hızı ve ivmesine ilişkin aşağıda verilenlerden hangisi doğrudur?
+  A) Yatay ve düşey hızı birlikte artar, ivmesi değişmez.
+  B) Yatay hızı değişmez, ivmesi ve düşey hızı artar.
+  C) İvmesi değişmez, yatay hızı artar, düşey hızı azalır.
+  D) Yatay hızı ve ivmesi değişmez, düşey hızı artar.
+  E) Üçü de artar.
+
+--- [FIZIK-12]  id=1b33b84c-04ed-5657-9c6b-8604dcd94062  sinav=TYT
+SORU: Bir aracın hareketi süresince hareketi ile ilgili, I. Sabit hızlı hareket yapmaktadır. II. Sabit süratli hareket yapmaktadır. III. Düzgün hızlanan hareket yapmaktadır. bilgileri veriliyor. Buna göre, araç hangi durumlarda ivmeli hareket yapmış olabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+--- [FIZIK-13]  id=44151e96-7b43-5d1b-b32b-e0ea7c6a8b4e  sinav=AYT
+SORU: Aşağıda günlük hayatta kullanılan bazı aletler verilmiştir.
+
+I. Lunaparkta çalıştırılan bir gondol
+II. Çembersel pistte dönen bir otomobil
+III. Hareket eden bir trenin bir vagonunun hareketi
+
+Buna göre, bu aletlerden hangilerinin yaptığı hareket salınım hareketine örnek olarak gösterilebilir?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-14]  id=ffdda26f-6b0e-55b7-a1c5-dbfbe61824af  sinav=TYT
+SORU: Dengelenmiş kuvvetlerin etkisinde kalan cisimlerle ilgili olarak,
+I. Hareketsiz kalabilirler.
+II. Sabit hızla hareket edebilirler.
+III. Hızlanarak hareket edebilirler.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+--- [FIZIK-15]  id=a284a994-1bf8-517e-977e-c58445a1415c  sinav=TYT
+SORU: Biyokütle enerjisi ile ilgili,
+I. Ham madde ihtiyacı için karakavak, söğüt, okaliptüs gibi hızlı yetişen ağaçlardan enerji ormanları oluşturulur.
+II. Enerji tarımı yapılarak şeker kamışı, tatlı darı, şeker pancarı, mısır gibi yüksek enerji bitkileri yetiştirilir.
+III. Üretim tesislerinde elektrik ve kimyasal yakıt üretilir.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+--- [FIZIK-16]  id=e1aecbbc-63a0-5a4b-9a9f-c9567acd2e06  sinav=TYT
+SORU: Compton saçılmasında gelen foton ile saçılan fotonun I. momentum II. sürat III. enerji niceliklerinden hangileri aynıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) II ve III
+  D) I ve II
+  E) I, II ve III
+
+--- [FIZIK-17]  id=3e7aff59-294d-5235-945e-5d7e4dde2ba8  sinav=TYT
+SORU: Bir evde bulunan gücü $2000 \text{ Watt}$ olan elektrikli soba günde $2 \text{ saat}$ çalıştırılmaktadır. Elektrik enerjisinin $1 \text{ kWh}$ lik bedeli $75 \text{ kuruş}$ olduğuna göre $30 \text{ günde}$ elektrikli sobanın elektriksel faturasına etkisi kaç Lira olur?
+  A) 30
+  B) 60
+  C) 90
+  D) 120
+  E) 140
+
+--- [FIZIK-18]  id=240c7bcf-e044-5bae-80c1-e6544f551d6b  sinav=TYT
+SORU: Karanlık bir ortamda perde, mum ve yakınsak mercek ile görseldeki deney düzeni kurulmuştur.
+
+Buna göre mum ve perdenin yeri değiştirilmeden mumun görüntüsünün tekrar perde üzerinde oluşması için;
+
+I. merceği sistemden alarak aynı noktaya kalın kenarlı mercek koyma,
+II. merceği sistemden alarak mumun sağ tarafına tümsek ayna koyma,
+III. merceği sistemden alarak mumun sağ tarafına çukur ayna koyma,
+
+işlemlerinden hangileri tek başına yapılabilir?
+  A) Yalnız I
+  B) Yalnız III
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-19]  id=4f1229ad-eaa3-5260-b599-16e448e6f194  sinav=TYT
+SORU: Fotoelektrik olay ve Compton saçılmasının ortak özelliklerine;
+I. Radyo dalgaları ile gerçekleşmesi
+II. Fotonun enerjisinin sabit kalması
+III. Işığın tanecik modeliyle açıklanmaları
+ile verilenlerden hangileri örnek olarak gösterilebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) Yalnız III
+  E) I, II ve III
+
+--- [FIZIK-20]  id=6a2c5cba-f6f4-5dec-b9fc-55e156ae7e18  sinav=TYT
+SORU: Elektriğin oluşturabileceği tehlikelere karşı alınacak güvenlik önlemleri ile ilgili aşağıda verilen; I. Islak elle elektrik prizlerine fiş takılmamalıdır. II. Elektrik tesisatlarındaki arızaları gidermek için kullanılan tornavida ve pense gibi aletlerin elle tutulan yerleri yalıtkan madde olan plastiklerden yapılmalıdır. III. Binalarda, toprak hattı olmayan prizler kullanılmamalıdır. tavsiyelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-21]  id=9bee8882-f821-5bea-a498-8591b71a45db  sinav=TYT
+SORU: Olası valen 7'den kalın kareli mermerin drene edilmesi durumunda, drene edilen mermerin toplam ağırlığı 100 gr'dan az olduğuna göre, drene edilen mermerin toplam ağırlığı kaç gr'dır?
+  A) 50 gr
+  B) 60 gr
+  C) 70 gr
+  D) 80 gr
+  E) 90 gr
+
+--- [FIZIK-22]  id=a67accf2-67b3-511f-b390-c1595a956912  sinav=TYT
+SORU: Kalınlıkları ihmal edilen doğrusal K ve L çubuklarının ilk boyları eşit olup, çubuklar bir başlangıç anından itibaren sadece kendi aralarında ısıl etkileşime girerek bir süre sonra ısıl dengeye ulaşmıştır.
+Denge durumunda K çubuğunun boyu L çubuğunun boyundan daha uzun olduğuna göre, K çubuğuna ait;
+I. sıcaklıktaki değişim miktarı,
+II. iç enerjideki değişim miktarı,
+III. başlangıç sıcaklığı
+niceliklerinden hangileri L çubuğunun aynı niceliğinden kesinlikle daha küçüktür?
+  A) Yalnız I
+  B) Yalnız III
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+--- [FIZIK-23]  id=5999066a-c648-503e-b35d-c1d63089c345  sinav=AYT
+SORU: Bu matematiksel alan ve cember konusunda bir soru verilmiştir. Çemberin çevresi 20 cm'dir. Çemberin içine bir dörtgen çizilmiştir. Dörtgen her köşesinin uzunluğu 5 cm'dir. Çemberin içine dörtgenin alanını bulmak istenmektedir.
+  A) 100 cm²
+  B) 125 cm²
+  C) 150 cm²
+  D) 175 cm²
+  E) 200 cm²
+
+--- [FIZIK-24]  id=302e0013-cf1a-5068-b211-075003b717ef  sinav=TYT
+SORU: Aşağıda bazı cisimler arasındaki etkileşimler verilmiştir.
+I. Güneş ile Güneş'in etrafında dönen yerküre arasındaki etkileşim
+II. Yerküre ile yerkürenin etrafında dönen Ay arasındaki etkileşim
+III. Masa üzerinde duran kitap ile yerküre arasındaki etkileşim
+Buna göre hangi etkileşimlerde kütle çekim kuvveti sıfır değildir?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) Yalnız II
+  E) I, II ve III
+
+--- [FIZIK-25]  id=b3746c3b-a2e3-5f61-87d1-11b6945a91de  sinav=TYT
+SORU: Düyeyi modeli verilen gibi olan yarım çemberin çevresi 12 cm'dir. Bu yarım çemberin içine çapı 2 cm olan bir kare nasıl doldurulabilir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm
+
+--- [FIZIK-26]  id=c4a45c8e-3b02-5e33-b3a1-3b48cc143059  sinav=TYT
+SORU: Güneş panelleri ışık enerjisi ile elektrik enerjisi elde etmek için kullanılan ve kullanım alanları sürekli genişleyen çevre dostu bir enerji kaynağıdır. $1 \text{ m}^2$'lik bir güneş panelinde yaklaşık 60 adet güneş pili bulunur. Bir güneş pili $0,6 \text{ volt}$ gerilim üretirken güneş panelinin ürettiği gerilim $36 \text{ volttur}$.
+Buna göre güneş panellerindeki hücreler birbirine nasıl bağlanmıştır?
+  A) Paralel
+  B) Seri
+  C) Karışık
+  D) Her bir hücrenin P tipi ucu, diğer hücrenin P tipi ucuna bağlanır.
+  E) Güneş panellerinde bağlantı şekli önemli değildir. Kullanılan yarı iletken malzeme önemlidir.
+
+--- [FIZIK-27]  id=a9a14ad9-ff89-575d-922f-fd746653fa67  sinav=TYT
+SORU: Basit harmonik hareket yapan bir cismin aşağıdaki hangi niceliği zamanla değişmez?
+  A) İvmesi
+  B) Net kuvveti
+  C) Hızı
+  D) Uzanımı
+  E) Genliği
+
+--- [FIZIK-28]  id=67e47117-5944-5959-944d-7b90cec8ead0  sinav=TYT
+SORU: Bu soru, fiziksel sistemdeki enerji ve momentum kavramlarını kullanarak çözülmelidir. Sistemdeki etkileşimler ve hareketler, enerji ve momentum kuralarına göre analiz edilmelidir.
+  A) Enerji ve momentum kuralarına göre analiz edilmez
+  B) Sistemdeki etkileşimler ve hareketler, enerji ve momentum kuralarına göre analiz edilirmez
+  C) Sistemdeki etkileşimler ve hareketler, enerji ve momentum kuralarına göre analiz edilirir
+  D) Sistemdeki etkileşimler ve hareketler, enerji ve momentum kuralarına göre analiz edilmez
+  E) Sistemdeki etkileşimler ve hareketler, enerji ve momentum kuralarına göre analiz edilir
+
+--- [FIZIK-29]  id=3d3ca2b5-b1c5-5a36-831c-3aaa766b7429  sinav=TYT
+SORU: Erime olayı ile ilgili olarak; I. Hava sıcaklığı $0^{\circ}C$'nin biraz altında olsa bile, araçların geçtiği yollarda tekerleklerin temas ettiği yerlerdeki buzun erimesi, II. Avuç içinde sıkılan bir kar topundan, sıkma anında su damlaması, III. Yüksek dağ zirvelerindeki karların, daha alçak bölgelerdekine göre geç erimesi olaylarından hangileri dış basınçtaki artışın buzun erime sıcaklığını düşürmesiyle az da olsa ilişkilidir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [FIZIK-30]  id=4f82a163-1942-55fd-b9ea-1d9fb5f011d1  sinav=TYT
+SORU: Nanoteknoloji ile geliştirilen tekstil ürünleri, su geçirmezlik, antibakteriyel özellikler ve dayanıklılık gibi önemli avantajlar sunmaktadır. Bu tür özelliklerin kazanılması, tekstil sektöründe yenilikçi malzemelerin kullanımını artırmıştır.
+Buna göre, aşağıdakilerden hangisi nanoteknoloji kullanılarak üretilen tekstil ürünlerinin özelliklerinden biridir?
+  A) Elektrik enerjisi depolama kapasitesi
+  B) Yüksek sıcaklıklara dayanıklılık
+  C) Antibakteriyel yüzey kaplamaları
+  D) Hava geçişini tamamen engelleme
+  E) Kimyasal maddelere karşı dirençli yapı
+
+--- [FIZIK-31]  id=7c3c1645-87d6-5599-968c-63d74db97915  sinav=TYT
+SORU: Aşağıda bazı dalga çeşitlerine örnek verilmiştir. 1. Güneş'ten çıkıp Dünya'ya gelen görünür ışık dalgaları 2. Radyo verici istasyonundan çıkıp alıcı antene ulaşan dalgalar 3. Termal kameralarda görüntü elde etmek için kullanılan dalgalar. Buna göre, 1, 2 ve 3 ile verilen örneklerde kullanılan dalgaların, elektromanyetik spektrumdaki yerlerine göre düşünüldüğünde, sahip oldukları dalga boyları, $\lambda_1$, $\lambda_2$, $\lambda_3$ arasındaki sıralama aşağıdakilerden hangisi gibi olabilir?
+  A) $\lambda_1 = \lambda_2 = \lambda_3$
+  B) $\lambda_2 > \lambda_1 > \lambda_3$
+  C) $\lambda_3 > \lambda_2 > \lambda_1$
+  D) $\lambda_1 > \lambda_3 > \lambda_2$
+  E) $\lambda_2 > \lambda_3 > \lambda_1$
+
+--- [FIZIK-32]  id=066459df-de78-5098-a632-69ce4475bdbc  sinav=TYT
+SORU: Dalgalar yayan bir kaynak ile gözlemci arasında uzaklık sabit ise kaynaktan yayılan dalgaların frekansı ile gözlemcinin algıladığı frekans birbirine eşittir. Dalga kaynağı ile gözlemci arasındaki uzaklık artıyor ya da azalıyor ise gözlemci dalgaların frekansını kaynağın frekansından farklı algılar. Bu olaya doppler olayı denir. Buna göre; I. ses dalgaları, II. su dalgaları, III. elektromanyetik dalgalar ile belirtilen dalgalardan hangilerinde doppler olayı gözlemlenebilir?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [FIZIK-33]  id=01ccd991-1ebc-5f1e-8029-ee8e229e021d  sinav=AYT
+SORU: Çizgisel hız vektörü verilen cisimlere, büyüklüğü sabit olan ve hız vektörüyle yaptığı açı değişmeyen kuvvetler sürekli etki etmektedir. Buna göre aşağıda verilen cisimlerden hangisi düzgün çembersel hareket yapabilir?
+  A) Görsel: F vektörü sağ yukarı, v vektörü sağa doğru. Aralarında dar açı var.
+  B) Görsel: F vektörü sola, v vektörü sağa doğru. Zıt yönler.
+  C) Görsel: F vektörü yukarı, v vektörü sağa doğru. Dik açılı.
+  D) Görsel: F vektörü sol yukarı, v vektörü sağa doğru. Geniş açı var.
+  E) Görsel: F vektörü sağa, v vektörü sağa doğru. Aynı yönlü.
+
+--- [GEOMETRI-1]  id=c3a64d99-310f-523e-a9fd-5b54c6eb0667  sinav=TYT
+SORU: Dik koordinat düzleminde $2x + 3y - 5 = 0$ doğrusunun orijin etrafında pozitif yönde $270^\circ$ döndürülmesi ile oluşan doğrunun denklemi $ax + by + c = 0$ olduğuna göre, $a + b - c$ kaçtır?
+  A) -6
+  B) 0
+  C) 2
+  D) 4
+  E) 6
+
+--- [GEOMETRI-2]  id=a6220094-0e1b-58bf-a490-f62542ef4b31  sinav=TYT
+SORU: ABC üçgenünde (BC) = (CF) olduğuna göre, ACF açısının ölçüsü kaç derecedir?
+  A) 45°
+  B) 60°
+  C) 75°
+  D) 90°
+  E) 120°
+
+--- [GEOMETRI-3]  id=4193ec17-043c-5274-9cad-43ebb235850e  sinav=AYT
+SORU: Dik koordinat düzleminde köşe noktalarının koordinatları A(2, 0), B($-\sqrt{3}$, -1) ve C($\sqrt{3}$, -1) olan ABC eşkenar üçgeni aşağıda verilmiştir.
+Bu eşkenar üçgen için,
+I. O noktası etrafında saat yönünün tersine $30^\circ$ döndürüldüğünde [AB] kenarı y eksenine paralel olur.
+II. O noktası etrafında saat yönünde $60^\circ$ döndürüldüğünde C noktasının yeni koordinatları (0, -2) olur.
+III. Sırasıyla x ile y eksenine göre simetriği alındığında A noktasının koordinatları aynı kalır.
+ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [GEOMETRI-4]  id=a642f45f-129c-583e-998f-971db7b5e45d  sinav=TYT
+SORU: Bir dik üçgenin dik açıları arasındaki açılar 30° ve 60° olduğuna göre, bu dik üçgenin dik açıları arasındaki açıların ölçülerinin toplamı kaç derecedir?
+  A) 90°
+  B) 120°
+  C) 150°
+  D) 180°
+  E) 210°
+
+--- [GEOMETRI-5]  id=77e97be2-b2f3-5fef-815d-5c7b0dd232b1  sinav=TYT
+SORU: ABCD eşkenar dörtgen
+[AC] köşegen
+[ED] ⊥ [DC]
+|AE| = |DE|
+olduğuna göre, m(ABC̆) = x kaç derecedir?
+  A) 105
+  B) 110
+  C) 120
+  D) 135
+  E) 150
+
+--- [GEOMETRI-6]  id=aa5e2fe5-530d-5831-85b3-f724ce364f93  sinav=TYT
+SORU: Bir üçgenin bir kenarı 6 cm, bir köşegeni 10 cm uzunluğunda ise üçgenin alanı kaç cm²'dir?
+  A) 30
+  B) 40
+  C) 50
+  D) 60
+  E) 70
+
+--- [GEOMETRI-7]  id=b22814fa-3971-5b44-99ce-4c3e0ba27967  sinav=AYT
+SORU: ABCDE beşgen
+EA ⊥ AB
+m(∠AED) = 150°
+m(∠EDC) = 110°
+m(∠DCB) = 80°
+
+Verilenlere göre, m(∠ABC) = x kaç derecedir?
+  A) 100
+  B) 110
+  C) 120
+  D) 130
+  E) 140
+
+--- [GEOMETRI-8]  id=7842ee24-221a-5de0-b8e9-2c1646c6f9aa  sinav=TYT
+SORU: Tegetler açıları konusunda aşağıdaki ifadelerden hangisi doğrudur?
+  A) Tegetler açıları 90° dir.
+  B) Tegetler açıları 180° dir.
+  C) Tegetler açıları 180° - 2α dir.
+  D) Tegetler açıları 90° - α dir.
+  E) Tegetler açıları 90° + α dir.
+
+--- [GEOMETRI-9]  id=7a946a2e-a68a-5f38-b992-c3988d1405c8  sinav=TYT
+SORU: ABC üçgenünden origine göre çevrimsel döndürme uygulandığında A(-1, 1) noktasının yeni konumunu belirleyiniz.
+  A) A(-1, 1)
+  B) A(1, -1)
+  C) A(-1, -1)
+  D) A(1, 1)
+  E) A(0, 0)
+
+--- [GEOMETRI-10]  id=8e5ebdeb-da44-5129-a752-6c55df11d360  sinav=TYT
+SORU: ABCD dikdörtgenindeki 30 cm kare metrekarelik birliklerin (BBLK) sayısı 100'dür. BBLK kağıt, cm² birim
+  A) 100
+  B) 200
+  C) 300
+  D) 400
+  E) 500
+
+--- [GEOMETRI-11]  id=aa430d0b-cc17-5a48-99de-776623502cf0  sinav=TYT
+SORU: Analitik düzlemde $A(3, 4)$ noktasının $B(8, 16)$ noktasına olan uzaklığı kaç birimdir?
+  A) 5
+  B) 8
+  C) 10
+  D) 12
+  E) 13
+
+--- [GEOMETRI-12]  id=95ad3144-a84f-54d4-8142-0bbdc704a42f  sinav=TYT
+SORU: A ve B noktaları A(0,0), B(10,0) noktaları arasında yer alıyor. A ve B noktaları arasında geçen doğru parçasının uzunluğu kaç birimdir?
+  A) 10
+  B) 5
+  C) 15
+  D) 20
+  E) 25
+
+--- [GEOMETRI-13]  id=f2a3cd14-a6a4-5c7a-ad5b-6af6349d1cb9  sinav=TYT
+SORU: ABC üçgenünde, ABD üçgenü eşkenar üçgendir. Bu durumda, ABD üçgenünün alanı kaç cm² dir?
+  A) 4 cm²
+  B) 8 cm²
+  C) 16 cm²
+  D) 32 cm²
+  E) 64 cm²
+
+--- [GEOMETRI-14]  id=75b1720b-4a6e-5c72-b211-b45fc4533cfc  sinav=AYT
+SORU: Sekilde verilen genelikle (C) ve çemberin (D) alanları birbirine eşit olan bir dikdörtgenli prizanın boyutları verilmiştir. Bu prizanın yüksekliği 6 cm ve tabanı 4 cm olan dikdörtgenli prizanın hacmi kaç cm³'dür?
+  A) 120
+  B) 144
+  C) 160
+  D) 180
+  E) 200
+
+--- [GEOMETRI-15]  id=179a9818-89fb-500b-bc9f-b727ce954f3b  sinav=TYT
+SORU: Bir dik üçgenin dik açıları 90° ve diğer iki açısı x ve y olsun. Bu dik üçgenin dik açıları toplamı 90° olduğuna göre, x + y kaç derecedir?
+  A) 180°
+  B) 90°
+  C) 45°
+  D) 30°
+  E) 120°
+
+--- [GEOMETRI-16]  id=1bce23af-6f40-50a8-926e-f63c495ea3bc  sinav=TYT
+SORU: Dik koordinat düzleminde, ağırlık merkezi orijin üzerinde olan bir ABCD paralelkenarında A(-3,-4) ve B(7,-2)'dir. Buna göre, $|CD|$'nin orta noktasının orijine uzaklığı kaç birimdir?
+  A) 2
+  B) 3
+  C) $\sqrt{5}$
+  D) $\sqrt{13}$
+  E) $\sqrt{19}$
+
+--- [GEOMETRI-17]  id=fe18bf82-6391-5643-a49d-15964094a373  sinav=TYT
+SORU: Bir dikdörtgenin bir köşesinden geçen bir çemberin içine alınan en büyük üçgen ABO olduğuna göre, ABO üçgenünün alanını bulalım.
+  A) 20 cm²
+  B) 25 cm²
+  C) 30 cm²
+  D) 35 cm²
+  E) 40 cm²
+
+--- [GEOMETRI-18]  id=abb42434-547e-5e8b-94ae-46b22639e21c  sinav=TYT
+SORU: ABCD eşkenar dörtgeninde, $m(\widehat{ABC}) = 120^\circ$, $E \in [AD]$ ve $F \in [BC]$. $[DE] = [BF] = 3$ cm, $|AB| = 10$ cm'dir.
+Buna göre, $|EF|$ kaç cm'dir?
+  A) 7
+  B) $5\sqrt{2}$
+  C) 8
+  D) $2\sqrt{19}$
+  E) $3\sqrt{10}$
+
+--- [GEOMETRI-19]  id=cee98ef4-efe0-513a-bd32-44d43e9fa96a  sinav=TYT
+SORU: $x^2+y^2=75$ çemberine dış bölgesinde bulunan $A(-6, 8)$ noktasından çizilen teğetler arasındaki açı kaç derecedir?
+  A) 30
+  B) 45
+  C) 60
+  D) 90
+  E) 120
+
+--- [GEOMETRI-20]  id=6ed1e50d-82c6-573f-8470-d2f21afc2ba7  sinav=TYT
+SORU: ABC üçgenünde A = 60°, B = 45°, C = 75° olduğuna göre, ABC üçgeninin çevresi 20 cm ise, ABC üçgeninin alanı kaç cm²'dir?
+  A) 10
+  B) 15
+  C) 20
+  D) 25
+  E) 30
+
+--- [GEOMETRI-21]  id=8ef1c3aa-a38e-5cd2-84ad-2edc4ca7c86d  sinav=TYT
+SORU: Şekil 1'te verilen ABCD kare içindeki üçgen ABE'nin alanı kaç birimkaredir?
+  A) 12
+  B) 14
+  C) 16
+  D) 18
+  E) 20
+
+--- [GEOMETRI-22]  id=910aaedc-e715-5438-9276-14a578d6fbf5  sinav=TYT
+SORU: 1. Bir dik üçgenin bir kenarı 10 cm, diğer kenarı 24 cm ise, üçgenin hipotenüsü kaç cm?
+  A) 10 cm
+  B) 24 cm
+  C) 25 cm
+  D) 30 cm
+  E) 35 cm
+
+--- [GEOMETRI-23]  id=92e89ffa-8464-5419-b8cb-ade392bb4714  sinav=TYT
+SORU: Bir dikdörtgenler prizmasının hacmi, taban alanı ile yüksekliğinin çarpımına eşittir.
+Dikdörtgenler prizması şeklinde kapalı bir cam kabın içinde $360$ birimküp su bulunmaktadır. Kap, düz bir zemine farklı yüzleri bu zemine tamamen değecek biçimde konulduğunda suyun yüksekliği sırasıyla $2$ birim, $4$ birim ve $5$ birim olmaktadır.
+Buna göre, kabın hacmi kaç birimküptür?
+  A) 540
+  B) 720
+  C) 840
+  D) 960
+  E) 1080
+
+--- [GEOMETRI-24]  id=ccdfec25-dca7-5da3-8ba3-d5956df9504b  sinav=TYT
+SORU: [AD] ve [BE] kenarortay
+$S_1$ ve $S_2$ bulundukları bölgelerin alan değerleri
+$S_1 - S_2 = 7 \text{ cm}^2$
+olduğuna göre, $A(\overline{ABC})$ kaç $\text{cm}^2$ dir?
+  A) 48
+  B) 45
+  C) 42
+  D) 36
+  E) 39
+
+--- [GEOMETRI-25]  id=e8190c11-8042-5b33-8d64-762fa474346d  sinav=TYT
+SORU: Analitik düzlemde $|x|=3$ ve $|y|=4$ doğrularının oluşturduğu kapalı bölgenin, I. Çevresi 28 birimdir. II. Alanı 48 birimkaredir. III. Birbirine en uzak iki noktası arasındaki uzaklık 10 birimdir. ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) I ve II
+  C) II ve III
+  D) I ve III
+  E) I, II ve III
+
+--- [GEOMETRI-26]  id=0f35796a-a24d-5ef6-a164-7c17c4ef7059  sinav=TYT
+SORU: Küre biçimindeki bir top, Şekil 1'de yarıçapı 4 birim olan yatay konumdaki metal çemberin içine oturtulmuştur.
+
+Şekil 2'de çemberin konumu değişmeden çemberin yarıçapı 1 birim artırıldığında top dikey konumda 1 birim aşağı inmiştir.
+
+Buna göre, topun yüzey alanı kaç π birimkaredir?
+  A) 126
+  B) 128
+  C) 132
+  D) 136
+  E) 164
+
+--- [GEOMETRI-27]  id=80a2ebdc-c35a-5016-aee3-473ebc6b5185  sinav=TYT
+SORU: Bir üçgenin $x$ köşesinin diğer köşelere uzaklıkları toplamı $T(x)$ ile gösteriliyor.
+ABC üçgeninde,
+$T(A) = 12$ cm
+$T(B) = 9$ cm
+olduğuna göre, $|AB|$'nin en küçük tam sayı değeri kaç cm'dir?
+  A) 3
+  B) 4
+  C) 10
+  D) 13
+  E) 15
+
+--- [GEOMETRI-28]  id=5146517a-9acd-552d-b275-b49f21553a7c  sinav=TYT
+SORU: Dik koordinat düzleminde $x-2y+a=0$ ve $bx+y-8=0$ doğruları $y=2$ doğrusu üzerinde dik kesiştiklerine göre, $a+b$ toplamı kaçtır?
+  A) -2
+  B) -1
+  C) 1
+  D) 2
+  E) 3
+
+--- [GEOMETRI-29]  id=76c2c9e4-30e7-5e43-8843-47d1ed936eef  sinav=AYT
+SORU: Dik koordinat düzleminde verilen [BC] çaplı yarım çember y eksenini A noktasında kesmektedir.
+
+A ve B noktalarından geçen d₁ doğrusunun denklemi x - 2y + 8 = 0 olduğuna göre, C ve A noktalarından geçen doğrunun denklemi aşağıdakilerden hangisidir?
+  A) 2x + y - 4 = 0
+  B) 2x + y - 2 = 0
+  C) 2x + y - 6 = 0
+  D) x + 2y - 4 = 0
+  E) x + 2y - 2 = 0
+
+--- [KIMYA-1]  id=2e3b4b45-6141-5e51-a526-a09bba2f0021  sinav=TYT
+SORU: Üniversitelerin kimya ile ilgili bir bölümünden mezun olan bir kişinin,
+I. Millî Eğitim Bakanlığı
+II. Sağlık Bakanlığı
+III. Dışişleri Bakanlığı
+yukarıdaki bakanlıklardan hangisinde çalışması beklenmez?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+--- [KIMYA-2]  id=34a7f707-3efe-55db-a326-c3943d4c2c80  sinav=TYT
+SORU: Karboksilik asitlerin genel özellikleri ile ilgili,
+I. Suda çözündüklerinde ortama $H^+$ iyonu verirler.
+II. Uygun koşullarda alkollerle birleşerek esterleşme tepkimesi verirler.
+III. Molekülleri arasında yoğun fazla hidrojen bağı bulunur.
+ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [KIMYA-3]  id=e6c6b563-518d-50f0-8c75-17db6fdb9aee  sinav=TYT
+SORU: 1. Bu teneffüs akışında a) 7 cm3 saniyede b) 10 cm3 saniyede c) 12 cm3 saniyede d) 15 cm3 saniyede
+  A) 7 cm3 saniyede
+  B) 10 cm3 saniyede
+  C) 12 cm3 saniyede
+  D) 15 cm3 saniyede
+  E) Bilinmiyor
+
+--- [KIMYA-4]  id=2811c487-ac1c-5d72-999d-a7a45201236e  sinav=TYT
+SORU: $PO_4^{3-}$ iyonunda bulunan elektron sayısı kaçtır? ($_{15}P$, $_{8}O$)
+  A) 50
+  B) 47
+  C) 44
+  D) 28
+  E) 20
+
+--- [KIMYA-5]  id=3f111e66-4959-5711-99f4-941113df6255  sinav=TYT
+SORU: Metil propanoat bileşiğinin izomeri olan bileşik aşağıdakilerden hangisinde doğru olarak verilmiştir?
+  A) Bütanal
+  B) 2-Bütanon
+  C) Bütanoik asit
+  D) Propanoik asit
+  E) Dietileter
+
+--- [KIMYA-6]  id=e57cb73e-6761-5a65-aea0-b9745f81f2eb  sinav=TYT
+SORU: Yaygın adı "kireç taşı" olan bileşik aşağıdakilerden hangisidir?
+  A) CaO
+  B) $Ca(OH)_2$
+  C) $CaCO_3$
+  D) $NaHCO_3$
+  E) $CH_3COOH$
+
+--- [KIMYA-7]  id=b7551aad-6c07-5db0-88b2-ce9b363c840b  sinav=TYT
+SORU: $XY_2$ bileşiğinde kütlece %60 X bulunmaktadır. Buna göre, $XY_2$ bileşiğinde elementlerin kütlece birleşme oranı $\frac{m_X}{m_Y}$ kaçtır?
+  A) \frac{1}{3}
+  B) 3
+  C) \frac{2}{3}
+  D) \frac{3}{2}
+  E) \frac{1}{2}
+
+--- [KIMYA-8]  id=787b94bc-1837-5047-8b4a-70fc8aab2b2c  sinav=TYT
+SORU: Aşağıda karbonun bazı allotroplarının özellikleri verilmiştir:
+X: Her karbon atomunun $sp^3$ hibritleşmesi yaptığı, karbonun allotropları arasında en fazla sertliğe sahip olan doğal bir maddedir.
+Y: Karbon atomlarından oluşan altıgen halkaların tabakalar hâlinde dizildiği, elektriği ileten ve yumuşak yapıdaki doğal bir maddedir.
+Z: Karbon atomlarının oluşturduğu beşgen ve altıgen halkalardan meydana gelen yapay bir maddedir.
+Buna göre karbonun X, Y ve Z allotropları aşağıdakilerin hangisinde doğru verilmiştir?
+  A) Elmas, Grafit, Fulleren
+  B) Grafit, Elmas, Fulleren
+  C) Grafit, Fulleren, Elmas
+  D) Grafit, Fulleren, Grafit
+  E) Fulleren, Grafit, Elmas
+
+--- [KIMYA-9]  id=eae94e15-a79d-5d94-b6fe-3f4bad925342  sinav=TYT
+SORU: • $CO + MgO \to CO_2 + Mg$
+• $2Na + ZnO \to Na_2O + Zn$
+
+Yukarıdaki tepkimelerde aşağıdaki oksit türlerinden hangisinin örneği bulunmaz?
+  A) Asidik oksit
+  B) Amfoter oksit
+  C) Peroksit
+  D) Nötr oksit
+  E) Bazik oksit
+
+--- [KIMYA-10]  id=4caf63d4-14a8-5443-b94b-23c488bc5cbc  sinav=TYT
+SORU: $50 \text{ }^\circ\text{C}$'de $180 \text{ gram}$ saf suda $58,5 \text{ gram}$ NaCl tuzu tamamen çözülüyor. Buna göre, oluşan sulu çözeltinin $50 \text{ }^\circ\text{C}$'deki buhar basıncı kaç mmHg'dir? (Mol kütleleri: $H_2O = 18 \text{ g/mol}$, $NaCl = 58,5 \text{ g/mol}$, $50 \text{ }^\circ\text{C}$'de saf suyun buhar basıncı $93 \text{ mmHg}$'dir.)
+  A) 65
+  B) 72.5
+  C) 77.5
+  D) 80
+  E) 82.5
+
+--- [KIMYA-11]  id=8df8dd7c-a54d-5333-9874-782f46d5f9f0  sinav=TYT
+SORU: Tencere ve tava gibi mutfak malzemelerinin iç yüzeyleri çok yüksek erime noktasına sahip ve kimyasal etkilere karşı dirençli olan polimerlerle kaplanır.
+Aşağıdakilerden hangisi bu amaçla kullanılan polimerlerden biridir?
+  A) Politetrafloroeten (PTFE)
+  B) Polivinil klorür (PVC)
+  C) Polietilen tereftalat (PET)
+  D) Polietilen (PE)
+  E) Polistiren (PS)
+
+--- [KIMYA-12]  id=11abebd8-aa0e-58c3-be03-ddddd8f362ce  sinav=TYT
+SORU: $N_{2(g)} + 3H_{2(g)} \rightarrow 2NH_{3(g)}$ tepkimesiyle ilgili, I. $N_2$ ve $H_2$ reaktiftir. II. Toplam atom sayısı korunmuştur. III. Toplam molekül sayısı azalmıştır. hangileri doğrudur?
+  A) I ve II
+  B) II ve III
+  C) I ve III
+  D) I, II ve III
+  E) Yalnız III
+
+--- [KIMYA-13]  id=815c8cd4-56c6-50ca-a2f2-d88e4f08253d  sinav=TYT
+SORU: Kütlece %20'lik $\text{NaOH}$ sulu çözeltisinin molal derişimi kaçtır? $(\text{NaOH}: 40 \text{ g/mol})$
+  A) 5
+  B) 6,25
+  C) 7,5
+  D) 9
+  E) 10
+
+--- [KIMYA-14]  id=f4978caf-a13f-5753-896f-99ad29016045  sinav=TYT
+SORU: "Yaptığı bir deneyde, bir miktar kalay metalini içi hava dolu bir cam balona koyup ağzını kapatarak tartmıştır. Cam balonun ağzını açmadan ısıttığında balonda beyaz bir toz oluştuğunu gözlemlemiştir. Bu cam balonu tekrar tarttığında başlangıçtaki ağırlığın değişmediğini görmüştür." Yukarıdaki yaptığı deneyde kütlenin korunumu kanununu bulan bilim insanı aşağıdakilerden hangisidir?
+  A) John Dalton
+  B) Robert Boyle
+  C) Antonie Lavoisier
+  D) Joseph Proust
+  E) Gay Lussac
+
+--- [KIMYA-15]  id=8c96757a-1c56-57fa-9ca9-d3c85d2e09e5  sinav=AYT
+SORU: Tampon çözeltiler ile ilgili, I. Zayıf asit/baz o asidin/bazın tuzundan oluşan çözeltilerdir. II. $25 \text{ °C}$'de pH değeri her zaman $7$'ye eşittir. III. Bazı çözeltilerin pH değerini belirli aralıkta korumak amacıyla hazırlanır. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+--- [KIMYA-16]  id=1230cce2-eaf4-566c-a5a5-cf0a1c1146de  sinav=TYT
+SORU: Aşağıdaki maddelerden hangisinin $25^{\circ}\text{C}$'daki pH değeri ile ilgili verilen bilgi yanlıştır?
+  A) Tuz ruhu pH < 7
+  B) Kan pH > 7
+  C) Saf su pH = 7
+  D) Süt pH < 7
+  E) Elma pH > 7
+
+--- [KIMYA-17]  id=c3ed7e86-f3e3-55ca-b8e6-77578644673b  sinav=TYT
+SORU: Aşağıda alken sınıfında yer alan bazı bileşikler verilmiştir.
+I. 2-penten
+II. 2-metil-2-büten
+III. 1-bromo propen
+IV. 3-hekzen
+V. 2-kloro-1-penten
+Buna göre bu bileşiklerden cis-trans izomerliği gösterenler (A) ve göstermeyenler (B) aşağıdakilerden hangisinde doğru gruplandırılmıştır?
+  A) I, III ve IV
+  B) I ve III
+  C) I ve IV
+  D) I ve II
+  E) Yalnız II
+
+--- [KIMYA-18]  id=7968f5db-c110-5e69-bace-7ae97ee16009  sinav=TYT
+SORU: Oda koşullarında 0,5 er mol $HNO_3$ ve $NaOH$ içeren iki ayrı sulu çözelti eşit hacimde karıştırılıyor.
+Buna göre;
+I. Nötralleşme tepkimesi gerçekleşir.
+II. Son çözeltinin pH değeri 7 dir.
+III. Tepkime sonucunda çözeltideki $H^+$ ve $OH^-$ iyonları derişimi saf suyunkine eşittir.
+ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+--- [KIMYA-19]  id=1a477445-8b6e-5664-873d-3a943dde41fa  sinav=TYT
+SORU: Aşağıdaki bileşiklerden hangisinin molekülleri arasında yoğun fazda hidrojen bağı oluşmaz?
+  A) NH$_{3}$
+  B) HCl
+  C) CH$_{3}$OH
+  D) C$_{6}$H$_{12}$O$_{6}$
+  E) HF
+
+--- [KIMYA-20]  id=dabbed20-a7ce-5440-a5bb-64a67a57580f  sinav=TYT
+SORU: Elektriksel yükü negatif olan atom altı tanecik aşağıdakilerden hangisidir?
+  A) Proton
+  B) Nötron
+  C) Elektron
+  D) Anyon
+  E) Katyon
+
+--- [KIMYA-21]  id=977fdf9e-c10a-5bb0-b705-18dbb38e3eea  sinav=TYT
+SORU: 10 gram 'B' madeni, 1 litre'de çözünen 0,1 mol/litrel çözeltiye ekleniyor. Bu çözeltiye 0,5 gram 'A' madeni ekleniyor. Hareketli çözeltiye eklenen 'A' madeni, çözeltiye katılan 'B' madeninin %100'üne eşit oluyor. Yüzdesiyle çözeltideki 'A' madeni miktarı kaçtır?
+  A) 10%
+  B) 20%
+  C) 30%
+  D) 40%
+  E) 50%
+
+--- [KIMYA-22]  id=e6ffd5b5-2ea2-55e5-95c9-007369041a02  sinav=TYT
+SORU: Aşağıda bazı meslekler ve çalışma alanları verilmiştir. Buna göre, aşağıdakilerden hangisi yanlıştır?
+  A) Kimyager - Boya fabrikası
+  B) Kimya öğretmeni - Sağlık meslek lisesi
+  C) Eczacı - İlaç fabrikası
+  D) Kimya mühendisi - Su arıtma tesisi
+  E) Metalurji mühendisi - Tekstil sanayisi
+
+--- [KIMYA-23]  id=1262fb99-900c-57f9-a554-ffe3573433eb  sinav=TYT
+SORU: Periyodik sistemin aynı periyodunda atom numarası- nın arttığı yönde;
+I. Atom çapı
+II. İyonlaşma enerjisi
+III. Elektronegatiflik
+niceliklerinden hangileri genellikle artar?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) Yalnız II
+  E) II ve III
+
+--- [KIMYA-24]  id=21ab0dd4-75b2-58bd-831d-1c33b03dd690  sinav=TYT
+SORU: Bu soru, verilen verilerle birlikte bir deneyin sonucunu analiz ederek, verilen deneyin sonucunu açıklamak istenmektedir. Deneyin sonucu, deneyin sonucunu açıklamak istenmektedir. Deneyin sonucu, deneyin sonucunu açıklamak istenmektedir.
+  A) Açıklama doğru ve deneyin sonucunu doğru açıklamaktadır.
+  B) Açıklama doğru ancak deneyin sonucunu yanlış açıklamaktadır.
+  C) Açıklama yanlış ancak deneyin sonucunu doğru açıklamaktadır.
+  D) Açıklama ve deneyin sonucunu yanlış açıklamaktadır.
+  E) Verilen bilgilerle açıklamaya yetecek bir sonucun bulunamamaktadır.
+
+--- [KIMYA-25]  id=dac3795e-9a79-583a-a7c7-8128ecd74f74  sinav=TYT
+SORU: SO
+$_3$
+$^{2-}$ iyonunda S elementinin yükseltgenme basamağı kaçtır? (O: 6A)
+  A) +2
+  B) +3
+  C) +4
+  D) +5
+  E) +6
+
+--- [KIMYA-26]  id=554571fa-8466-58c7-ac41-f64e153d9646  sinav=TYT
+SORU: Sabit hacimli kapalı bir kapta belirli sıcaklıkta 1 mol $CO(g)$ ve 1 mol $H_2O(g)$ konuluyor ve başlangıçtaki toplam basınç 2 atm olarak ölçülüyor. Daha sonra $CO$ ve $H_2O$ arasında aşağıdaki denge tepkimesi gerçekleşiyor.
+$CO(g) + H_2O(g) \rightleftharpoons CO_2(g) + H_2(g) \quad K_c = 1,00$
+Çalışılan sıcaklıkta bu denge tepkimesiyle ilgili aşağıdakilerden hangisi doğrudur?
+(Gazların ideal gaz olarak davrandığı varsayılacaktır.)
+  A) Denge anında toplam basınç 2 atm'dir.
+  B) Denge anında $H_2$'nin kısmi basıncı $CO$'nunkinden küçüktür.
+  C) Basınç cinsinden denge sabiti ($K_p$) değeri 4'tür.
+  D) Denge anında $H_2O$'nun kısmi basıncı $CO$'nunkinin iki katıdır.
+  E) Ortama inert gaz ilave edildiğinde $CO_2$ gazının kısmi basıncı artar.
+
+--- [KIMYA-27]  id=5a9653bd-75c9-5b66-9f92-b3cdf3312783  sinav=TYT
+SORU: $2Fe_{(k)} + \frac{3}{2}O_{2(g)} \rightarrow Fe_2O_{3(k)}$ tepkimesi ile ilgili;
+I. Paslanma olayıdır.
+II. Ekzotermiktir.
+III. X'in formülü $FeO$ dur.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+--- [KIMYA-28]  id=0545bea9-0318-53c4-9e1f-1e9432b1de1b  sinav=AYT
+SORU: Baş kuantum sayısı 4, açısal kuantum sayısı 3 olan aşağıdakilerden hangisidir?
+  A) $4p$
+  B) $3d$
+  C) $4d$
+  D) $4f$
+  E) $5s$
+
+--- [KIMYA-29]  id=07647eb1-3219-53d1-abdb-dae6883c8bae  sinav=TYT
+SORU: Aşağıdaki tanecik çiftlerinden hangisinin içerdiği zayıf etkileşim türü yanlış verilmiştir? ($_{1}H$, $_{6}C$, $_{7}N$, $_{8}O$, $_{9}F$, $_{16}S$, $_{17}Cl$, $_{35}Br$)
+  A) H$_{2}$S - CH$_{3}$Cl, Dipol - dipol
+  B) NH$_{3}$ - CS$_{2}$, Dipol - indüklenmiş dipol
+  C) S$^{2-}$ - H$_{2}$O, İyon - indüklenmiş dipol
+  D) CH$_{4}$ - Br$_{2}$, London kuvvetleri
+  E) H$_{2}$O - HF, Hidrojen bağı
+
+--- [KIMYA-30]  id=ceab9118-e768-5bdc-bfeb-d2673f2535b8  sinav=TYT
+SORU: N.Ş.A'da $67,2 \text{ L}$ hacim kaplayan Helyum gazı kaç moldür?
+  A) 0,2
+  B) 0,5
+  C) 1
+  D) 2
+  E) 3
+
+--- [KIMYA-31]  id=fe6b0797-d936-5f67-9505-1044a68bc5a5  sinav=TYT
+SORU: N.Ş.A. $8,96$ litre $H_2$ gazının mol sayısı aşağıdakilerden hangisidir?
+  A) $0,2$
+  B) $0,4$
+  C) $0,6$
+  D) $0,8$
+  E) $4$
+
+--- [KIMYA-32]  id=4221d108-3187-54b3-ad20-b6298eab960f  sinav=TYT
+SORU: $H_2O(s) + ISI \rightleftharpoons H^+(suda) + OH^-(suda)$ Denklemine göre sıcaklık bir miktar artırıldığında arı suyun, I. İyonlaşma sabiti ($K_w$) II. İyonlaşma yüzdesi III. pH değeri niceliklerinden hangileri artar?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [KIMYA-33]  id=270bc3d1-dae9-56d4-82ec-906661a34a6a  sinav=TYT
+SORU: Sulara sertlik veren iyonlar ile ilgili;
+I. $+2$ yüklü iyonlardır.
+II. Sabunun köpürmesini engeller.
+III. Çaydanlık ve ısıtıcılarda kireç oluştururlar.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [KIMYA-34]  id=54cf25f5-1990-5ac9-bde4-f45961cf3ab0  sinav=TYT
+SORU: Metil oranj indikatörü asidik çözeltilerde kırmızı, bazik çözeltilerde sarı, nötr çözeltilerde ise turuncu rengi verir. İçerisine metil oranj damlatılmış X, Y ve Z çözeltileri ile ilgili aşağıdaki bilgiler veriliyor.
+• X: pH değeri 7'den küçüktür.
+• Y: HCl ve NaOH çözeltilerinin tepkimesi sonucu oluşmuştur.
+• Z: Tadı acıdır.
+Buna göre, X, Y ve Z çözeltilerinin rengi aşağıdakilerden hangisinde doğru olarak verilmiştir?
+  A) X: Kırmızı, Y: Turuncu, Z: Sarı
+  B) X: Kırmızı, Y: Sarı, Z: Turuncu
+  C) X: Sarı, Y: Kırmızı, Z: Turuncu
+  D) X: Turuncu, Y: Sarı, Z: Kırmızı
+  E) X: Sarı, Y: Turuncu, Z: Kırmızı
+
+--- [KIMYA-35]  id=bff4db9c-102a-5a67-be8e-a33a5615950f  sinav=AYT
+SORU: Yukarıda verilen bileşik ile ilgili,
+
+I. IUPAC adı 4 - hidroksi pentanoik asittir.
+II. Hidroksi asittir.
+III. Monokarboksilik asittir.
+
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız III
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [KIMYA-36]  id=eb7ba92d-bc87-50f7-9453-2987b70636cf  sinav=TYT
+SORU: I. $N_{2(g)} + 2O_{2(g)} + \text{ısı} \to N_2O_{4(g)}$ II. $PCl_{3(g)} + Cl_{2(g)} \to PCl_{5(g)} + \text{ısı}$ Yukarıdaki tepkimelerle ilgili aşağıdakilerden hangisi yanlıştır?
+  A) I. tepkime homojendir.
+  B) I. tepkime endotermik, II. tepkime ekzotermiktir.
+  C) İki tepkimede de molekül sayısı değişmemiştir.
+  D) İki tepkimede de atom türü korunmuştur.
+  E) İki tepkimede de molekül türü değişmiştir.
+
+--- [KIMYA-37]  id=9bb2bc36-6bd2-5272-a6f5-c0ca5ff1202e  sinav=TYT
+SORU: Bohr atom modeline göre aşağıdaki katman elektron dağılımlarından hangisi yanlıştır?
+  A) $_{19}K: 2) 8) 8) 1)$
+  B) $_{11}Na: 2) 8) 1)$
+  C) $_{35}Br: 2) 8) 18) 5) 2)$
+  D) $_{20}Ca: 2) 8) 8) 2)$
+  E) $_{21}Sc: 2) 8) 8) 9) 2)$
+
+--- [KIMYA-38]  id=26a81fc6-8416-507a-876d-d158582eac59  sinav=TYT
+SORU: Belirli bir maddenin kimyasal bileşenlerinin ya da kimyasal bileşenlerinden bir bölümünün niteliğini ve niceliğini inceleyen kimya alt dalı aşağıdakilerden hangisinde doğru olarak verilmiştir?
+  A) Analitik kimya
+  B) Fizikokimya
+  C) Biyokimya
+  D) Anorganik kimya
+  E) Organik kimya
+
+--- [KIMYA-39]  id=96da0da1-1335-5cd7-b383-66f745d390cc  sinav=TYT
+SORU: Elektron dağılımındaki son orbitali $4f^2$ olan X elementiyle ilgili yukarıdaki ifadelerden hangileri doğrudur?
+I. İç geçiş elementidir.
+II. Aktinittir.
+III. 4. periyot elementidir.
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+--- [KIMYA-40]  id=fbb478bf-8d35-5712-b8bc-ceb7c4310815  sinav=TYT
+SORU: Gaz fazındaki maddeler ile ilgili,
+I. $0^	ext{o}C$ ve 1 atm'de 1 molü 22,4 litre hacim kaplar.
+II. $25^	ext{o}C$ ve 1 atm'de 1 molü 24,5 litre hacim kaplar.
+III. Aynı şartlar altında eşit tanecik sayıları eşit hacim kaplar.
+verilenlerden hangileri doğrudur?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [KIMYA-41]  id=c345da0c-3791-57fc-814e-b43080854471  sinav=TYT
+SORU: C$_2$H$_5$-C(=O)-O-CH$_3$ bileşiği ile ilgili aşağıdakilerden hangisi yanlıştır?
+  A) IUPAC adı metil propanoattır.
+  B) Özel adı formik asidin propil esteridir.
+  C) Bütanoik asit ile fonksiyonel grup izomeridir.
+  D) Yoğun fazda molekülleri arasında hidrojen bağı içermez.
+  E) Hidroliz edildiğinde propanoik asit ve metanol elde edilir.
+
+--- [KIMYA-42]  id=f4cba84f-a618-5241-9296-63eb9b093e0a  sinav=TYT
+SORU: Tabelada X, Y, Z'nin maksimum ve minimum değerleri verilmiştir. Bu değerlerin sıralanmış formu aşağıdaki gibidir: X: 18, 27, 37, Y: 10, 15, 20, Z: 5, 10, 15. Bu göre dört eşitliğin hangileri A - p ile ifade edilebilir?
+  A) X + 10 = A - p
+  B) Y + 5 = A - p
+  C) Z + 5 = A - p
+  D) X + 5 = A - p
+  E) Y + 10 = A - p
+
+--- [MATEMATIK-1]  id=2f33bdd3-dcad-51ad-b0d0-e36d7a3887f2  sinav=TYT
+SORU: $\\int_{a}^{b} (6x - 3) dx = 42$ ve $b - a = 7$ olduğuna göre, $a + b$ toplamı kaçtır?
+  A) 2
+  B) 3
+  C) 4
+  D) 5
+  E) 6
+
+--- [MATEMATIK-2]  id=cf9ee59f-4190-5354-b046-ffb0b8ebcc51  sinav=AYT
+SORU: $y = x^2$ eğrisinin, $y = 4x - 5$ doğrusuna en yakın noktası aşağıdakilerden hangisidir?
+  A) (1, 2)
+  B) (2, 0)
+  C) (2, 4)
+  D) (1, 1)
+  E) (\frac{1}{2}, \frac{1}{4})
+
+--- [MATEMATIK-3]  id=95cc15b8-33ce-5e27-877e-063da6c98785  sinav=TYT
+SORU: $P(x^2) = x^4 + (a+1) \cdot x^3 + x^2 + b \cdot x$ olmak üzere, $P(x)$ bir polinomdur. Buna göre, $a+b$ toplamı kaçtır?
+  A) -2
+  B) -1
+  C) 0
+  D) 1
+  E) 2
+
+--- [MATEMATIK-4]  id=cd5bed64-48ed-53d6-9fb6-be01d33b9771  sinav=TYT
+SORU: $2\sin^2 x - 9\sin x + 4 = 0$ denkleminin $[0, 2\pi]$ aralığındaki kökleri aşağıdakilerden hangisidir?
+  A) $\left\{\frac{\pi}{4}, \frac{3\pi}{4}\right\}$
+  B) $\left\{\frac{\pi}{4}, \frac{5\pi}{4}, \frac{7\pi}{4}\right\}$
+  C) $\left\{\frac{\pi}{2}, \frac{3\pi}{2}\right\}$
+  D) $\left\{\frac{\pi}{6}, \frac{5\pi}{6}, \frac{7\pi}{6}, \frac{11\pi}{6}\right\}$
+  E) $\left\{\frac{\pi}{6}, \frac{5\pi}{6}\right\}$
+
+--- [MATEMATIK-5]  id=067150cf-936b-5f33-b3e6-6cf24b8ccaed  sinav=AYT
+SORU: Integrallerin değer eşitsizliklerinden hangisidir?
+  A) a < 0
+  B) a > 0
+  C) a < 0 veya a > 0
+  D) a = 0
+  E) a = 0 veya a = 1
+
+--- [MATEMATIK-6]  id=e4a6cd23-3d6b-51e7-b558-ecb037609990  sinav=TYT
+SORU: Bir çift zar aynı anda düz bir zemine atıldığında üst yüze gelen sayılar toplamının 10 olma olasılığı kaçtır?
+  A) $\frac{1}{2}$
+  B) $\frac{1}{3}$
+  C) $\frac{5}{24}$
+  D) $\frac{1}{12}$
+  E) $\frac{1}{24}$
+
+--- [MATEMATIK-7]  id=fa882ea4-5e35-587c-b2d8-d57859828753  sinav=TYT
+SORU: $|a-3|>5$ eşitsizliğini sağlayan en küçük pozitif tam sayı ile en büyük negatif tam sayının toplamı kaçtır?
+  A) 3
+  B) 4
+  C) 5
+  D) 6
+  E) 7
+
+--- [MATEMATIK-8]  id=5a404881-f4c1-5505-9b9b-6998f3415839  sinav=TYT
+SORU: Bir dikdörtgenin bir köşesinin açısı 45° olduğuna göre dikdörtgenin alanı kaç cm²'dir?
+  A) 100 cm²
+  B) 200 cm²
+  C) 300 cm²
+  D) 400 cm²
+  E) 500 cm²
+
+--- [MATEMATIK-9]  id=d2218595-c654-591d-aedd-82455caef20b  sinav=TYT
+SORU: log$_{5}1$ + log$_{5}x = 2$ olduğuna göre, $x$ kaçtır?
+  A) 27
+  B) 81
+  C) 1
+  D) 9
+  E) 25
+
+--- [MATEMATIK-10]  id=9b0218b2-42d9-5a35-b61b-c3dc49b6ac35  sinav=TYT
+SORU: Bir kutu 20 cm, alttaki kutu 30 cm, üstteki kutu 40 cm uzunluğunda üçgen şeklindeki bir kutu oluşturuyor. Bu kutu 100 cm uzunluğunda bir kağıdı kaplamak için yeterli mi?
+  A) Evet, yeterli
+  B) Evet, yeterli değil
+  C) Hayır, yeterli değil
+  D) Hayır, yeterli
+  E) Verilen bilgiler yeterli değil
+
+--- [MATEMATIK-11]  id=61ba8317-aeed-5681-aeab-593887ac1f04  sinav=TYT
+SORU: $(x^2 - y^3)^n$
+ifadesinin açılımında 8 terim olduğuna göre, $n$ kaçtır?
+  A) 9
+  B) 16
+  C) 15
+  D) 8
+  E) 7
+
+--- [MATEMATIK-12]  id=4fe59e88-db25-51b9-926f-f856dd03ccb9  sinav=TYT
+SORU: $\int \frac{f(x)}{x} dx = 3x^2-4x+c$ olduğuna göre, $f(2)$ kaçtır?
+  A) 24
+  B) 20
+  C) 16
+  D) 12
+  E) 9
+
+--- [MATEMATIK-13]  id=3c66523b-1777-5d0a-a50d-5afb69222fe5  sinav=TYT
+SORU: $3^{x+1} = 15^x$ olduğuna göre, $5^x + 3^x$ ifadesinin değeri kaçtır?
+  A) 32
+  B) 19
+  C) 18
+  D) 16
+  E) 8
+
+--- [MATEMATIK-14]  id=b9c131c0-c093-5f80-aede-943856aef36a  sinav=TYT
+SORU: “p ↔ q önermesinin doğruluk değeri “1” oluyorsa bu önermeye çift gerektirme denir.
+
+Buna göre,
+
+I. ABC dik üçgeninin kenar uzunlukları a, b, c olmak üzere, m(Â) = 90° ↔ a² = b² + c² dir.
+
+II. x² = 36 ↔ x = 6
+
+III. x > x³ ↔ 0 < x < 1
+
+önermelerinden hangileri bir çift gerektirmedir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+--- [MATEMATIK-15]  id=24de11e2-f376-5aeb-919c-831f045696ac  sinav=AYT
+SORU: Gerçel sayılar kümesinde tanımlı ve türevlenebilir bir $f$ fonksiyonunda her $x$ gerçel sayısı için $x^2+1=f'(x)$ olduğuna göre, $f(1)$, $f(2)$ ve $f(3)$ değerlerinin doğru sıralanışı aşağıdakilerden hangisidir?
+  A) $f(3)<f(2)<f(1)$
+  B) $f(1)<f(3)<f(2)$
+  C) $f(1)<f(2)<f(3)$
+  D) $f(2)<f(3)<f(1)$
+  E) $f(2)<f(1)<f(3)$
+
+--- [MATEMATIK-16]  id=92ab57ee-90bd-57e6-b1dd-846163c56f0e  sinav=TYT
+SORU: Aşağıdakilerden hangisi bir doğru, çeyrek ve saatlik saat gösteren saatlerin gösterdiği zamanları doğru sıralamadır?
+  A) 13:30, 14:30, 16:00, 17:00
+  B) 13:30, 14:30, 16:00, 18:00
+  C) 13:30, 14:30, 16:00, 19:00
+  D) 13:30, 14:30, 16:00, 20:00
+  E) 13:30, 14:30, 16:00, 21:00
+
+--- [MATEMATIK-17]  id=5f0360d3-66ba-5e20-8168-9f29299eda72  sinav=TYT
+SORU: $\sqrt{3-x} + \sqrt{3+x} = 2\sqrt{3}$ denklemini sağlayan pozitif $x$ gerçel sayısı kaçtır?
+  A) 1
+  B) $\sqrt{2}$
+  C) $\sqrt{3}$
+  D) $2\sqrt{2}$
+  E) $2\sqrt{3}$
+
+--- [MATEMATIK-18]  id=2b4c66df-728b-59ec-8ea1-699a158434b6  sinav=AYT
+SORU: Önceki sınav test-2
+
+Bir fonksiyonun grafiği verilmiştir. Bu fonksiyonun grafiği aşağıdaki özelliklerden hangisine sahip değildir?
+  A) f(0) = 0
+  B) f(1) = 1
+  C) f(2) = 2
+  D) f(3) = 3
+  E) f(4) = 4
+
+--- [MATEMATIK-19]  id=c0e38731-c2fd-5427-a1b9-ac213d570ada  sinav=TYT
+SORU: $f$, pozitif gerçek sayılarda tanımlı birim fonksiyon ve $m, n$ birer gerçek sayı olmak üzere $(x+2) \cdot f(mx+n) = 2x^2+3x-2$ olduğuna göre, $f(m-n)$ değeri kaçtır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+--- [MATEMATIK-20]  id=3ec5f279-f64f-5c27-af4a-49607059c079  sinav=TYT
+SORU: $(a-b)$ sayısının %80'i, $(a+b)$ sayısının %20'sine eşittir. Buna göre, $b$ sayısı $a$ sayısının % kaçına eşittir?
+  A) 80
+  B) 60
+  C) 50
+  D) 40
+  E) 20
+
+--- [MATEMATIK-21]  id=6ee0d972-57f0-54dd-85f4-03edb3b8a0a5  sinav=AYT
+SORU: $F$ gerçel sayılar kümesinde türevlenebilir bir fonksiyon ve $f$ gerçel sayılar kümesinde sürekli bir fonksiyon olmak üzere, her $x$ gerçel sayısı için $F'(x)=f(x)$ eşitliği sağlanıyor. $F(2)=7$ ve $F(1)=3$ olduğuna göre, $\int_{1}^{2} F(x)f(x) dx$ integralinin değeri kaçtır?
+  A) 16
+  B) 18
+  C) 20
+  D) 22
+  E) 24
+
+--- [MATEMATIK-22]  id=996766db-a76f-515c-aa97-181cf3163949  sinav=TYT
+SORU: A ve B iki tam sayı olmak üzere, a = group(A) ve b = group(B) ise, a + b = 8 ve a * b = 15 ise, a ve b tam sayıları kaçtır?
+  A) 3 ve 5
+  B) 2 ve 7
+  C) 3 ve 4
+  D) 2 ve 6
+  E) 4 ve 5
+
+--- [MATEMATIK-23]  id=3bd28463-e79a-5317-8139-dc762e19613f  sinav=TYT
+SORU: $A = \{1, 2, 3, 4, 5, 6\}$ kümesinin üçlü permütasyonlarının kaçında en az 1 tek sayı vardır?
+  A) 144
+  B) 132
+  C) 124
+  D) 120
+  E) 114
+
+--- [MATEMATIK-24]  id=a6239ed0-c83e-5942-816e-9ebbf621815f  sinav=TYT
+SORU: Hava Trafikte İndirgenme Kalkülü kullanılarak en az kaç gün sonra bir uçağın yolculuğu tamamlanacak?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+--- [MATEMATIK-25]  id=189e2eb4-f545-5034-96df-f58491aeccc2  sinav=TYT
+SORU: $\frac{\sin(\pi - x)}{\cos(\pi + x)}$ ifadesinin eşiti aşağıdakilerden hangisidir?
+  A) $\cot x$
+  B) $-\cot x$
+  C) $\tan x$
+  D) $\csc^2 x$
+  E) $-\tan x$
+
+--- [MATEMATIK-26]  id=91974d60-acbf-547e-9b3e-8f62fc8b291e  sinav=TYT
+SORU: $f(x) = ax^2 + bx + c$ parabolü için $f\left(\frac{1}{7}\right) = f\left(\frac{20}{7}\right)$'dir. Buna göre, $-\frac{b}{a}$ değeri kaçtır?
+  A) 1
+  B) $\frac{3}{2}$
+  C) 2
+  D) $\frac{5}{2}$
+  E) 3
+
+--- [MATEMATIK-27]  id=af71da93-d511-57c8-96d5-52992a9a3f2f  sinav=TYT
+SORU: $x^2 - ax - b = bx$ denkleminin kökler toplamı, kökler çarpımının 3 katıdır. Buna göre, $x^2 - (2a + b)x + a - b = 0$ denkleminin kökler toplamı, kökler çarpımının kaç katıdır?
+  A) $\frac{7}{5}$
+  B) $\frac{1}{2}$
+  C) $\frac{1}{3}$
+  D) $\frac{5}{8}$
+  E) $\frac{7}{4}$
+
+--- [MATEMATIK-28]  id=a585e2e9-c24d-5e88-b930-dab3fde39704  sinav=TYT
+SORU: Bir iş yerinde çalışan işçiler ve aldıkları maaşlarla ilgili olarak aşağıdakiler bilinmektedir: Bu iş yerinde 20 işçi çalışmaktadır. İşçilerin bir kısmı aylık 3200 TL, kalan kısmı aylık 2400 TL maaş almaktadır. İşçilerin tamamına bir ayda toplam 57600 TL maaş ödenmektedir. Bu iş yerinde bir ay için, toplam 7200 TL, her bir işçiye maaşıyla orantılı şekilde ikramiye olarak dağıtılacağına göre, maaşı yüksek olan bir işçinin ikramiye ile birlikte alacağı maaş kaç TL'dir?
+  A) 3400
+  B) 3500
+  C) 3600
+  D) 3800
+  E) 4000
+
+--- [MATEMATIK-29]  id=936c8bed-a426-52d1-8b4d-23c6485e0d15  sinav=TYT
+SORU: $x^2 - 4y^2 = 16$ ve $x - 2y = 2$ olduğuna göre, $y$ kaçtır?
+  A) 3
+  B) $\frac{5}{2}$
+  C) $\frac{3}{2}$
+  D) $\frac{1}{2}$
+  E) 1
+
+--- [MATEMATIK-30]  id=b43bcbb7-43bc-5854-9099-fdcbdccad121  sinav=TYT
+SORU: a ve b birer doğal sayı $P(x) = 3x^2 + ax + b - 2$ polinomu veriliyor. $P(3x-1)$ polinomunun katsayılar toplamı 34 olduğuna göre, $(a \cdot b)$ çarpımının alabileceği en büyük değer kaçtır?
+  A) 40
+  B) 54
+  C) 70
+  D) 72
+  E) 80
+
+--- [MATEMATIK-31]  id=53ac13af-bc91-5a89-9709-ed802128ee7f  sinav=AYT
+SORU: alabileceği en büyük terim 5'tir. Bu serinin 2. terimi kaçtır?
+  A) 12
+  B) 11
+  C) 10
+  D) 9
+  E) 8
+
+--- [MATEMATIK-32]  id=5adad5de-f115-53fa-8aae-0e38c07cbd7e  sinav=TYT
+SORU: Dik koordinat düzleminde bir A noktasının x-ekseni boyunca negatif yönde 15 birim ötelenmesi ile elde edilen nokta, $d: 4x - 3y + 24 = 0$ doğrusu üzerindedir. Buna göre A noktası y-ekseni boyunca pozitif yönde kaç birim ötelenirse elde edilen nokta d doğrusu üzerinde olur?
+  A) 9
+  B) 12
+  C) 16
+  D) 20
+  E) 25
+
+--- [MATEMATIK-33]  id=e3d26a00-cafe-599e-baf8-9c02e98d4f6a  sinav=TYT
+SORU: Ardışık iki tam sayının toplamı 25 olduğuna göre, küçük sayı kaçtır?
+  A) 11
+  B) 12
+  C) 13
+  D) 14
+  E) 15
+
+--- [MATEMATIK-34]  id=68dc2943-eda5-525a-9db5-b94b1c2c2df4  sinav=TYT
+SORU: 4. Rasyonel sayılarla ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) Rasyonel sayılar tam sayılarla birlikte sıralanabilir.
+  B) Rasyonel sayılar tam sayılarla birlikte sıralanamaz.
+  C) Rasyonel sayılar tam sayılarla birlikte sıralanabilir ve sıralanamaz.
+  D) Rasyonel sayılar tam sayılarla birlikte sıralanamaz ve sıralanabilir.
+  E) Rasyonel sayılar tam sayılarla birlikte sıralanamaz ve sıralanabilir.
+
+--- [MATEMATIK-35]  id=25319e0a-e708-5602-930d-8411075defd8  sinav=TYT
+SORU: Eşit kapasitede çalışan 6 makinenin 8 saatte yaptığı bir işi, bu makinelerden 8 tanesi kaç saatte yapar?
+  A) 3
+  B) 4
+  C) 6
+  D) 8
+  E) 9
+
+--- [MATEMATIK-36]  id=e5a1c546-b884-52f3-b13d-dec5564e213a  sinav=TYT
+SORU: Dik koordinat düzleminde $y = f(x)$ fonksiyonunun $(2, f(2))$ noktasındaki teğet doğrusu $y = 3x - 1$ ve $(5, f(5))$ noktasındaki teğet doğrusu $y = 2x + 4$ olarak veriliyor. Buna göre $g(x) = x^2 \cdot f'(x)$ biçiminde tanımlanan $g$ fonksiyonu için $g'(2)$ değeri kaçtır?
+  A) $64$
+  B) $72$
+  C) $80$
+  D) $88$
+  E) $96$
+
+--- [MATEMATIK-37]  id=5f86ced7-d6ca-5dc5-ac07-80792bb3a620  sinav=TYT
+SORU: 17. 100 kadar olan tüm doğal sayıların toplamı kaçtır?
+  A) 50
+  B) 500
+  C) 5050
+  D) 505
+  E) 550
+
+--- [MATEMATIK-38]  id=b4568eb4-a0ff-591e-8d49-2fadf41713bb  sinav=AYT
+SORU: $\lim_{x \to 5} \frac{x^2-25}{5x-25}$ limitinin değeri kaçtır?
+  A) 2
+  B) 3
+  C) 4
+  D) 5
+  E) 6
+
+--- [MATEMATIK-39]  id=4db90f5e-3736-5c2d-9df4-1a708e82904f  sinav=TYT
+SORU: $f(x) = \sum_{k=1}^{4} (k \cdot x^k)$ olduğuna göre, $f'(1)$ değeri kaçtır?
+  A) 28
+  B) 30
+  C) 32
+  D) 34
+  E) 36
+
+--- [MATEMATIK-40]  id=1b1f1b57-2c5a-5255-9773-9d63f0ab38b4  sinav=TYT
+SORU: Batuhan'ın vize notunun %30'u ile final notunun %70'inin toplamının 60'dan büyük veya eşit olursa Batuhan mezun olmaya hak kazanacaktır. Batuhan'ın finalden aldığı not $x$ ise, $30 \cdot \frac{x}{100} + 59 \cdot \frac{70}{100} \ge 60$ olmalıdır. Buna göre $x$ en az kaç olmalıdır?
+  A) 61
+  B) 62
+  C) 63
+  D) 64
+  E) 65
+
+--- [MATEMATIK-41]  id=6749f992-8364-5305-a8b3-54c088616cc3  sinav=TYT
+SORU: $(a_n) = \left(\frac{n!}{38}\right)$ dizisinin ilk hangi terimi bir tam sayıdır?
+  A) 38
+  B) 39
+  C) 41
+  D) 19
+  E) 23
+
+--- [MATEMATIK-42]  id=938f81f5-fa06-5472-a53f-631d8200818c  sinav=TYT
+SORU: $n$ pozitif bir tam sayı olmak üzere, $1+2+3+...+n = \frac{n(n+1)}{2}$ eşitliği sağlanmaktadır. $A = 1+2+3+...+9$ $B = 1+2+3+...+44$ olduğuna göre, $\frac{A}{B}$ oranı kaçtır?
+  A) $\frac{1}{11}$
+  B) $\frac{1}{22}$
+  C) $\frac{1}{44}$
+  D) $\frac{1}{45}$
+  E) $\frac{2}{45}$
+
+--- [MATEMATIK-43]  id=c34bcdd8-32c8-5541-b311-f34e84e33c9f  sinav=TYT
+SORU: $\int [f(x)-x] dx = 2x+5$ olduğuna göre, $f(-2)$ kaçtır?
+  A) 2
+  B) 4
+  C) -2
+  D) -8
+  E) 0
+
+--- [MATEMATIK-44]  id=63e219aa-8a93-50c6-80d3-2ea9a47649cd  sinav=TYT
+SORU: $ (a+2)x^2 + ax + 4 = 0 $ denklemi $x$ değişkenine bağlı 1. dereceden bir bilinmeyenli bir denklem olduğuna göre, $a$ kaçtır?
+  A) -4
+  B) -2
+  C) 1
+  D) 2
+  E) 4
+
+--- [MATEMATIK-45]  id=3d09ddca-1656-53c6-8cf7-5077eb3b9936  sinav=TYT
+SORU: |AB| = 9 br. |BC| = 18 br. [AB] $\perp$ [BC]
+Yukarıda verilenlere göre, mavi boyalı karenin alanı kırmızı boyalı karelerin alanları toplamından kaç $br^2$ daha fazladır?
+  A) 24
+  B) 18
+  C) 16
+  D) 12
+  E) 10
+
+--- [MATEMATIK-46]  id=db2f98c4-b43e-5804-b3cf-ea8b4c3b163b  sinav=TYT
+SORU: $-5$ sayısı;
+I. $N$
+II. $Z$
+III. $Q$
+IV. $R$
+sayı kümelerinden kaç tanesinin bir elemanıdır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+--- [MATEMATIK-47]  id=2ecdebac-e673-51af-a467-b3a47a1b5f7e  sinav=AYT
+SORU: İki kenarı verilen bir dik üçgenin hipotenüsünü bulun.
+  A) 10 cm
+  B) 12 cm
+  C) 14 cm
+  D) 16 cm
+  E) 18 cm
+
+--- [MATEMATIK-48]  id=c029bc73-c91b-5d5d-af17-d17003db5613  sinav=TYT
+SORU: Bir fabrikada üretilen bir maddenin $x$ tonunun maliyeti $y$ TL'dir. $x$ ile $y$ arasında $y = 4x + \frac{100}{x}$ bağıntısı olduğuna göre, $x$ tonunun maliyetinin en az olması için bu maddeden kaç ton üretilmesi gerekir?
+  A) 4
+  B) 5
+  C) 6
+  D) 7
+  E) 8
+
+--- [MATEMATIK-49]  id=fff39d54-47c4-553d-abe6-99d73256883f  sinav=TYT
+SORU: $a$ ve $b$ gerçel sayılar olmak üzere, dik koordinat düzleminde $y = 3x + a$ doğrusu $f(x) = x^3 - x^2 + bx + 4$ fonksiyonunun grafiğine $(1, f(1))$ noktasında teğettir. Buna göre, $a + b$ toplamı kaçtır?
+  A) $4$
+  B) $5$
+  C) $6$
+  D) $7$
+  E) $8$
+
+--- [MATEMATIK-50]  id=d64ed6d4-efbe-5e2b-8812-e6896e33fb74  sinav=TYT
+SORU: $x > y$ olmak üzere, $x$ ve $y$ pozitif tam sayılardır. $x+y=56$ EBOB$(x,y)=7$ olduğuna göre, $x-y$ farkı en az kaçtır?
+  A) 35
+  B) 28
+  C) 21
+  D) 14
+  E) 7
+
+--- [MATEMATIK-51]  id=11202da0-192c-5f1b-8798-bc8edf36a003  sinav=TYT
+SORU: $a=12,\overline{7373}...$ $b=13,\overline{2626}...$ olduğuna göre, $a+b$ toplamı kaçtır?
+  A) 26
+  B) 29
+  C) 32
+  D) 33
+  E) 36
+
+--- [MATEMATIK-52]  id=57e70c03-bec5-5c7d-ac6c-f9711c450029  sinav=TYT
+SORU: $a = \cos 70^\circ$
+$b = \cos 100^\circ$
+$c = \cos 195^\circ$
+eşitlikleri veriliyor.
+Buna göre; $a, b, c$'nin küçükten büyüğe doğru sıralanmış hali aşağıdakilerden hangisidir?
+  A) $a < b < c$
+  B) $b < a < c$
+  C) $c < a < b$
+  D) $c < b < a$
+  E) $b < c < a$
+
+--- [MATEMATIK-53]  id=c9f5c979-cbc9-5911-907a-4761ec75916c  sinav=TYT
+SORU: $x^2 + 6x - 3m = 0$ denkleminin gerçek kökü olmadığına göre, $m$ tam sayısı en fazla kaç olur?
+  A) -3
+  B) -4
+  C) -5
+  D) -6
+  E) -7
+
+--- [MATEMATIK-54]  id=5bf7058f-8354-5a01-99f5-6d407030fafe  sinav=TYT
+SORU: EBOB$(A, B) = 10$ ve EKOK$(A, B) = 60$ olduğuna göre, $A \cdot B$ kaçtır?
+  A) 300
+  B) 60
+  C) 360
+  D) 120
+  E) 600
+
+--- [MATEMATIK-55]  id=f45a0df4-8c38-50ee-b04c-43ef319980d4  sinav=TYT
+SORU: $\frac{1}{\sin^2 x} + \frac{1}{\cos^2 x} = \frac{16}{3}$ denkleminin $[0, \pi]$ aralığında kaç kökü vardır?
+  A) $6$
+  B) $5$
+  C) $4$
+  D) $3$
+  E) $2$
+
+--- [MATEMATIK-56]  id=111a0a82-ab91-56d2-8194-c076ff3ee029  sinav=AYT
+SORU: Fibonacci dizisi, bir önceki terimlerin toplamından oluşan bir seridir. Örneğin, 1, 1, 2, 3, 5, 8, 13, 21, ... şeklinde devam eder. Bu dizideki her bir terim, önceki iki terimin toplamıdır. Örneğin, 3 = 1 + 2, 5 = 2 + 3, 8 = 3 + 5, ... şeklinde devam eder. Bu dizideki her bir terim, önceki iki terimin toplamıdır. Örneğin, 3 = 1 + 2, 5 = 2 + 3, 8 = 3 + 5, ... şeklinde devam eder.
+  A) Fibonacci dizisinin 10. terimi 55'tir.
+  B) Fibonacci dizisinin 10. terimi 89'dur.
+  C) Fibonacci dizisinin 10. terimi 144'tür.
+  D) Fibonacci dizisinin 10. terimi 233'tür.
+  E) Fibonacci dizisinin 10. terimi 377'dür.
+
+--- [MATEMATIK-57]  id=d9bc7afb-313a-50c7-b175-c1574cb40bbe  sinav=TYT
+SORU: Nil, merdiveni çıkarken $3$er $3$er, inerken $4$er $4$er adım atıyor. Nil, merdiveni çıkarken $32$ adım attığına göre, inerken kaç adım atmıştır?
+  A) 20
+  B) 24
+  C) 25
+  D) 27
+  E) 30
+
+--- [MATEMATIK-58]  id=773642a1-6003-5c80-aa6e-1a4d457bb3ae  sinav=TYT
+SORU: f: [a, a + 8] \rightarrow [-2, b] ve a \in R olmak üzere,
+f(x) = -2x + 6
+fonksiyonu veriliyor.
+
+Buna göre, b kaçtır?
+  A) -6
+  B) -2
+  C) 5
+  D) 8
+  E) 14
+
+--- [MATEMATIK-59]  id=0ad9425d-de99-5971-b8b3-9804e24e5fb9  sinav=AYT
+SORU: 1. $x = 0$ olduğunda $y = x^2$ grafikinin hangi noktasında yer alır?
+  A) A) $(-1, 1)$
+  B) B) $(0, 0)$
+  C) C) $(1, 1)$
+  D) D) $(2, 4)$
+  E) E) $(3, 9)$
+
+--- [MATEMATIK-60]  id=2dabb0c5-fbfa-5025-b9ab-d1e693330175  sinav=TYT
+SORU: 6 haneli para kasasının şifresini unutan Meryem, şifreyi oluşturan rakamların 3 tanesinin 7 ve 3 tanesinin de 1 olduğunu biliyor. Buna göre, Meryem'in bu bilgilerle rastgele oluşturduğu 6 haneli bir sayının bu kasanın şifresi olan sayı olma olasılığı kaçtır?
+  A) $\frac{1}{4}$
+  B) $\frac{1}{8}$
+  C) $\frac{1}{10}$
+  D) $\frac{1}{16}$
+  E) $\frac{1}{20}$
+
+--- [MATEMATIK-61]  id=cde83b74-3adf-5fa7-bdca-b1e52fb14961  sinav=AYT
+SORU: 1. Birinci ve ikinci dereceden y = ax^2 + bx + c fonksiyonları grafikleri veriliyor. Grafiklerin kesişme noktaları için x değerlerini bulun.
+  A) x = -1 ve x = 2
+  B) x = -2 ve x = 1
+  C) x = -1 ve x = 1
+  D) x = 1 ve x = 2
+  E) x = -2 ve x = 2
+
+--- [MATEMATIK-62]  id=8526d09d-91af-5122-aca4-bc0a79849910  sinav=TYT
+SORU: f ve g doğrusal fonksiyon olmak üzere, aşağıdaki dik koordinat sisteminde f + g, f - g ve 2f + g fonksiyonlarının grafiklerinin bir kısmı çizilmiştir.
+
+Buna göre, (f · g)(-2) değeri kaçtır?
+  A) -2
+  B) -1
+  C) 0
+  D) 1
+  E) 2
+
+--- [MATEMATIK-63]  id=a64d5ba2-3ba5-5adb-a356-3e8e5468296e  sinav=TYT
+SORU: 8 tane ev eşyası aşağıdaki gibi numaralandırılmıştır.
+
+2, 3, 4, 5 ve 6 numaralı eşyalar mutfak eşyasıdır.
+
+0, 1, 2, 3, ..., 8 doğal sayılarından her biri 9 tane karttan farklı birine yazılarak tüm kartlar bir torbaya atılıyor. Bu torbadan rastgele bir kart çekilecektir. Çekilen kartta eğer 0'dan farklı bir numara varsa, o numaranın sahibi olduğu eşya kazanılacak; kartta 0 varsa çekiliş sadece bir kez daha tekrarlanacaktır.
+
+Bu çekilişi yapan birinin 2. çekilişinde bir eşya kazandığına göre, kazanılan eşyanın mutfak eşyası olma olasılığı kaçtır?
+  A) 1/18
+  B) 1/9
+  C) 1/3
+  D) 3/8
+  E) 5/8
+
+--- [MATEMATIK-64]  id=da22a94c-49de-53ed-9092-7b3f2982cbfd  sinav=TYT
+SORU: Türkiye'nin en büyük kütüphanesi olan İstanbul Kütüphanesi'nde, kitapların tamamının %20'si tarihi konularla ilgili olup, bunların %50'si ise tarih öncesi dönemlerle ilgili. Kütüphanede toplam 100.000 kitap bulunmaktadır. Tarihi konularla ilgili kitapların sayısı kaçtır?
+  A) 20.000
+  B) 25.000
+  C) 30.000
+  D) 35.000
+  E) 40.000
+
+--- [MATEMATIK-65]  id=0acba898-710b-5b90-87d5-fec6ed6b3c85  sinav=AYT
+SORU: $\int_{0}^{3} (|x-1| + |2x-2|) dx$ integralinin değeri kaçtır?
+  A) 7
+  B) 7.5
+  C) 8
+  D) 8.5
+  E) 9
+
+--- [MATEMATIK-66]  id=d409e7f0-c55a-59e1-8a2e-3f46a2c8eae2  sinav=TYT
+SORU: Hamza'nın kumbarasında bulunan $1 \text{ TL}$, $50 \text{ kuruş}$ ve $25 \text{ kuruşluk}$ madeni paralarla ilgili aşağıdakiler bilinmektedir.
+• $1 \text{ TL}$ adedi, $50 \text{ kuruş}$ adedinin %$10$'u kadardır.
+• Paraların toplam tutarının %$40$'ı $25 \text{ kuruşluk}$ madeni paralardan oluşmaktadır.
+Buna göre, kumbarada en az kaç adet madeni para vardır?
+  A) 10
+  B) 18
+  C) 27
+  D) 38
+  E) 46
+
+--- [MATEMATIK-67]  id=a188e418-8654-5276-967e-1501f2c0b158  sinav=TYT
+SORU: Bir işin tamamını; Zeynep tek başına A günde, Yasemin tek başına 3A günde yapabiliyor. İkisi birlikte bu işi 6 günde yapabildiğine göre, A kaçtır?
+  A) 6
+  B) 7
+  C) 8
+  D) 9
+  E) 10
+
+--- [MATEMATIK-68]  id=0661d7fc-f307-5faf-808d-6078494b78fb  sinav=TYT
+SORU: $x^2 - 4x + a - 1 = 0$ denkleminin gerçek kökü olmadığına göre, $a$'nın alabileceği en küçük tam sayı değeri kaçtır?
+  A) 3
+  B) 4
+  C) 5
+  D) 6
+  E) 7
+
+--- [MATEMATIK-69]  id=7431606e-aed8-5a9b-b0e0-705e3815c5f2  sinav=TYT
+SORU: Bir fayansçı maliyet fiyatı üzerinden %20 kârla belirlediği fayansların %20'sini taşıma esnasında kırıyor.
+Buna göre, fayansçının belirlediği kârı elde edebilmesi için kalan fayansları yüzde kaç kârla satmalıdır?
+  A) 30
+  B) 40
+  C) 50
+  D) 60
+  E) 70
+
+--- [MATEMATIK-70]  id=31c06e0b-4a12-5c97-ad53-f904095253f5  sinav=TYT
+SORU: $a \in \mathbb{R}$ olmak üzere, Ali, $f(x) = x^3 - a$ fonksiyonunun yazıcı ve arkadaşı Ömer'den a yerine bir sayı yazmasını istiyor. Ömer istediği bir sayıyı yazdıktan sonra fonksiyonun grafiğini çiziyorlar. Eğer fonksiyon $x$ eksenini sadece bir noktada kesiyorsa Ali, birden fazla noktada kesiyorsa oyunu Ömer kazanacaktır. Buna göre, aşağıdakilerden hangisi doğrudur?
+  A) Ömer a yerine bir çift sayı yazarsa oyunu kazanır.
+  B) Ömer a yerine bir tam sayının karekökünü yazarsa oyunu kazanır.
+  C) Ömer a yerine negatif bir sayı yazarsa oyunu kazanır.
+  D) Yarışmayı her şekilde Ali kazanır.
+  E) Ömer a yerine bir asal sayı yazarsa oyunu kazanır.
+
+--- [MATEMATIK-71]  id=b08e0a29-de02-5205-b374-2bece032d0e5  sinav=TYT
+SORU: Bir işi tek başına Halil, Vahap ve Salih sırasıyla 15, 20 ve 30 günde bitirebilmektedir.
+Bu üç arkadaş birlikte bu işe başladıktan 3. günün sonunda Halil, 4. günün sonunda ise Vahap işten ayrılıyor. Kalan işi Salih tek başına bitiriyor.
+Buna göre, Salih bu iş bitene kadar toplam kaç gün çalışmıştır?
+  A) 22
+  B) 21
+  C) 20
+  D) 19
+  E) 18
+
+--- [MATEMATIK-72]  id=20881748-e5db-5a2e-9ce0-6ee7ad531d1b  sinav=AYT
+SORU: Aşağıdaki denklemlerden hangisi genellikle doğrusal denklem olarak kabul edilmez?
+  A) x + 2y = 3
+  B) x^2 + y = 5
+  C) x + y = 7
+  D) 2x + 3y = 10
+  E) x + y = 0
+
+--- [MATEMATIK-73]  id=bd4014a9-9180-503c-8ebc-9c55296c9390  sinav=TYT
+SORU: $3x+4y=18$ ve $x+2y=6$ olduğuna göre $x$ kaçtır?
+  A) 3
+  B) 4
+  C) 5
+  D) 6
+  E) 7
+
+--- [MATEMATIK-74]  id=8b302459-185b-56e8-b925-3d18ad799aa2  sinav=TYT
+SORU: $7a^2b - 11a^2b^2 - 4a^2b + a^2b^2$ işleminin eşiti aşağıdakilerden hangisidir?
+  A) $3a^2b - 10ab$
+  B) $2a^2b - 10ab$
+  C) $3a^2b - 10a^2b^2$
+  D) $3a^2b + 10a^2b$
+  E) $2a^2b + 10ab$
+
+--- [MATEMATIK-75]  id=8b6af70c-0d10-5aa2-b0c5-d6e336e51fa0  sinav=TYT
+SORU: 1. Üç basamaklı bir doğal sayıının 10 ile bölünmesi sonucu 200 kalanı verir. Bu sayı, 10 ile bölünmesi sonucu 200 kalanı veren en küçük üç basamaklı doğal sayıdır.
+  A) 200
+  B) 201
+  C) 202
+  D) 203
+  E) 204
+
+--- [MATEMATIK-76]  id=2fe7dcf4-381c-5d7e-a8f9-c1c784138623  sinav=TYT
+SORU: A bir pozitif gerçel sayı olmak üzere, $\frac{x^2-6x}{x^2-A}=0$ denkleminin çözüm kümesi bir elemanlı olduğuna göre, A sayısı kaçtır?
+  A) 6
+  B) 12
+  C) 24
+  D) 30
+  E) 36
+
+--- [MATEMATIK-77]  id=47a7c9f5-c2eb-561d-beaa-d764b39b77f1  sinav=TYT
+SORU: 10 kişiden bir kişinin 10 kişiden birine telefonla ulaşması için kaç farklı yol var?
+  A) 10
+  B) 9
+  C) 8
+  D) 7
+  E) 6
+
+--- [MATEMATIK-78]  id=aebc5a11-cbff-52e3-a245-8e20963b8ba5  sinav=TYT
+SORU: 1. Üçgenişli dikdörtgenin bir köşesinin köşegeni paralelkenarın köşegeniyle birlikte bir doğru parçası haline getirilir. Bu doğru parçasının uzunluğu kaç cm'dir?
+  A) 12 cm
+  B) 10 cm
+  C) 8 cm
+  D) 6 cm
+  E) 4 cm
+
+--- [MATEMATIK-79]  id=95166e75-5b2c-59b5-a2a8-18345cb63b5d  sinav=TYT
+SORU: Eşitsizliğini kaç negatif tam sayı değeri sağlar? $x \ge \frac{100}{x}$
+  A) 11
+  B) 10
+  C) 12
+  D) 9
+  E) 8
+
+--- [MATEMATIK-80]  id=8477a02a-9579-5da3-8387-93fde0dcf116  sinav=TYT
+SORU: Ağırlıkça %24'ü şeker olan şekerli suyun $\frac{1}{4}$'ü alınarak yerine aynı ağırlıkta su ekleniyor. Buna göre, yeni karışımın ağırlıkça yüzde kaçı şekerdir?
+  A) 12
+  B) 15
+  C) 16
+  D) 18
+  E) 20
+
+--- [MATEMATIK-81]  id=84faf404-8c10-5dda-a18d-97a5f54a1522  sinav=TYT
+SORU: $x^2-2x+a=0$ denkleminin kökleri, $x^2+bx-2=0$ denkleminin köklerinin 2 katı olduğuna göre, $a+b$ toplamı kaçtır?
+  A) -10
+  B) -9
+  C) -8
+  D) -6
+  E) -4
+
+--- [MATEMATIK-82]  id=6e888d52-fa97-582a-be3a-5c3df0521d57  sinav=TYT
+SORU: Bir işçi bir işi 72 günde bitirebilmektedir.
+Bu işçi işe başladıktan sonra
+• İşin üçte biri bittiğinde kapasitesini %20,
+• İşin üçte ikisi bittiğinde kapasitesini bir öncekine göre %25
+artırırsa tüm iş kaç gün erken biter?
+  A) 9
+  B) 10
+  C) 8
+  D) 15
+  E) 12
+
+--- [MATEMATIK-83]  id=d625b3fb-101e-5019-8dae-cd224d89bd0e  sinav=TYT
+SORU: Aşağıdaki kuvvetlerden hangisinin en büyük olduğu hangisidir?
+  A) 2^3
+  B) 3^2
+  C) 4^1
+  D) 5^0
+  E) 6^(-1)
+
+--- [MATEMATIK-84]  id=abef006c-5e3a-5011-b032-e790b4661bce  sinav=TYT
+SORU: $a = 3,1\overline{6}$, $b = 3,164$, $c = 3,154$ olduğuna göre, $a, b$ ve $c$ sayılarının doğru sıralanışı aşağıdakilerden hangisidir?
+  A) $a < b < c$
+  B) $b < c < a$
+  C) $a < c < b$
+  D) $b < a < c$
+  E) $c < a < b$
+
+--- [MATEMATIK-85]  id=516fe26e-5d33-50ad-9d02-c5a0f31c479f  sinav=TYT
+SORU: a ve b pozitif gerçek sayılar olmak üzere
+
+$ax^2 - 2x + b = 0$
+$bx^2 - 3bx + a = 0$
+
+denklemlerinin her birinin kökler toplamı, kökler çarpımından 1 fazladır.
+
+Buna göre kökleri a ve b olan ikinci dereceden denklem aşağıdakilerden hangisi olabilir?
+  A) $3x^2 + 8x + 18 = 0$
+  B) $9x^2 - 14x - 8 = 0$
+  C) $9x^2 - 18x - 14 = 0$
+  D) $9x^2 - 8x + 14 = 0$
+  E) $9x^2 - 18x + 8 = 0$
+
+--- [MATEMATIK-86]  id=eb809a57-d4cf-53cb-8657-039645c7026f  sinav=AYT
+SORU: 1. $\frac{x-2}{x+1}+\frac{x-2}{x+2}=2$ denkleminin köklerini bulunuz.
+  A) x = 2
+  B) x = -2
+  C) x = 0
+  D) x = 1
+  E) x = -1
+
+--- [MATEMATIK-87]  id=09c19bf9-0d42-5a7f-9762-b7926e344033  sinav=TYT
+SORU: A = {Sarışın insanlar}
+B = {Sarışın kadınlar}
+olduğuna göre, $A - B$ kümesi aşağıdakilerden hangisidir?
+  A) {Sarışın olmayan insanlar}
+  B) {Sarışın olmayan kadınlar}
+  C) {Sarışın olmayan erkekler}
+  D) {Sarışın erkekler}
+  E) {Sarışın çocuklar}
+
+--- [MATEMATIK-88]  id=c83106ef-f64e-5730-b6f6-7c73d70d56fc  sinav=TYT
+SORU: log
+5
+5 + log
+9
+9 işleminin sonucu kaçtır?
+  A) 1
+  B) log
+15
+45
+  C) log
+45
+15
+  D) 1/2
+  E) 2
+
+--- [MATEMATIK-89]  id=4d984602-ea4a-5408-aafc-68e699757df0  sinav=TYT
+SORU: Bir grup içindeki her bir kişinin yaşını gösteren histogram verilmiştir. Bu grup içinde kaç kişi var?
+  A) 10
+  B) 15
+  C) 20
+  D) 25
+  E) 30
+
+--- [MATEMATIK-90]  id=19ae12f4-85b3-53f8-acc8-6c0f5ca7278d  sinav=TYT
+SORU: $k$ bir gerçel sayı olmak üzere $-4 \le k \le 5$ olduğuna göre $6-2k$'nın değer aralığındaki en büyük tam sayı aşağıdakilerden hangisidir?
+  A) $-4$
+  B) $10$
+  C) $14$
+  D) $18$
+  E) $26$
+
+--- [MATEMATIK-91]  id=b4cf0788-ac48-5fbe-8952-b9bc087de5ee  sinav=TYT
+SORU: Eni 48 metre, boyu 66 metre olan dikdörtgen şeklindeki bir alanın zemini eş kare şeklindeki fayanslarla döşenecektir. Bu iş için en az kaç fayans gerekir?
+  A) 82
+  B) 84
+  C) 86
+  D) 88
+  E) 90
+
+--- [MATEMATIK-92]  id=24613f5a-bfb5-5129-b00e-381ba174d312  sinav=TYT
+SORU: Bir suyu ısıtan elektrikli ısıtıcıda, suyun sıcaklığı 10°C'den 30°C'ye kadar arttığında, elektrikli ısıtıcıda verimlilik oranı %100'den %80'e kadar düşer. Bu durumda elektrikli ısıtıcıda verimlilik oranı %60'da suyun sıcaklığı kaç derece olur?
+  A) 20°C
+  B) 25°C
+  C) 30°C
+  D) 35°C
+  E) 40°C
+
+--- [MATEMATIK-93]  id=311c6765-b151-59e1-a400-88a0c4874508  sinav=TYT
+SORU: Tam sayılarda tanımlı $f$ ve $g$ fonksiyonları için,
+• $f+g$ fonksiyonu birim fonksiyondur.
+• $f-g$ fonksiyonu sabit fonksiyondur.
+Buna göre, $2 \cdot (f(5) + g(3))$ işleminin sonucu kaçtır?
+  A) 3
+  B) 5
+  C) 6
+  D) 8
+  E) 10
+
+--- [MATEMATIK-94]  id=4bbc0083-529d-5c9d-80bb-59d018504c81  sinav=TYT
+SORU: Dik koordinat düzleminde $y = -x^2 + x + 2$ parabolü ile $x = 3$ doğrusu çizilmiştir.
+
+Buna göre, sarı boyalı bölgelerin alanları toplamı kaç birimkaredir?
+  A) 3/2
+  B) 7/2
+  C) 25/6
+  D) 29/6
+  E) 31/6
+
+--- [MATEMATIK-95]  id=9811dfb8-1930-5190-9f09-1a36edcd8f3b  sinav=AYT
+SORU: Katsayıları sıfırdan farklı $P(x)=a_1x+a_2x^2+...+a_nx^n$ polinomu için $\lim_{x \to 0} \frac{\sqrt{1+P(x)}-1}{x}$ limitinin değeri kaçtır?
+  A) $a_1$
+  B) $\frac{a_1}{2}$
+  C) 1
+  D) $2a_1$
+  E) $3a_1$
+
+--- [MATEMATIK-96]  id=8727aa69-1454-5328-be70-8a7e9fd6e904  sinav=TYT
+SORU: $\frac{1-3x}{2} \le 1$ eşitsizliğinin çözüm kümesi aşağıdakilerden hangisidir?
+  A) $[\frac{1}{3}, \infty)$
+  B) $[-3, 1]$
+  C) $[-1, \frac{1}{3}]$
+  D) $(- \infty, -1]$
+  E) $[- \frac{1}{3}, \infty)$
+
+--- [MATEMATIK-97]  id=c70acf88-6b66-5224-9aea-08e5ebeb2e42  sinav=TYT
+SORU: $a$ ve $b$ gerçel sayılar olmak üzere,
+$a^2 < a$
+$-1 < b < 0$
+eşitsizlikleri veriliyor.
+Buna göre, $2a - b$ ifadesinin en geniş değer aralığı aşağıdakilerden hangisidir?
+  A) $(-1, 3)$
+  B) $(0, 2)$
+  C) $(0, 3)$
+  D) $(1, 4)$
+  E) $(0, 4)$
+
+--- [MATEMATIK-98]  id=2d666283-d6a6-5989-adef-da0d9bfba1a0  sinav=TYT
+SORU: 1. Bir doğal sayıda 17 tane bölünebilen kalan 0 olan sayıya göre, eşleşmesi tanımlı 17 tane tam sayıdan kaç tanesi 17 ile tam bölünmez?
+  A) 17
+  B) 16
+  C) 15
+  D) 14
+  E) 13
+
+--- [MATEMATIK-99]  id=7480ad55-c1eb-5400-abf5-cf175e1aee51  sinav=AYT
+SORU: İndüksiyonu göre, bazı n çarpanları değişmez kaçı?
+  A) a + b
+  B) a - b
+  C) a^2 - b^2
+  D) a^2 + b^2
+  E) a^3 - b^3
+
+--- [MATEMATIK-100]  id=38528561-9259-56f4-aa17-283d8a8aaf83  sinav=TYT
+SORU: f(x) = x^2 + 2x + 3 fonksiyonunun grafikinin simetri ekseni x = -1'dir.
+  A) Doğru
+  B) Yanlış
+  C) Bilmiyorum
+  D) Bunu anlayamadım
+  E) Bunu yapamadım
+
+--- [MATEMATIK-101]  id=e7c8ab57-f7a7-5fe8-ae5d-8fda92b6af4d  sinav=TYT
+SORU: Soner Bey, bir kuruyemişçiden %40'ı badem olan ceviz ve badem karışımından 250 gram satın almıştır. Fakat kuruyemişi yanlışlıkla %40'ı ceviz olan bir karışım hazırlamıştır. Durumu farkeden Soner Bey, kuruyemişçiye; "%40'ı badem olan karışımı elde etmemiz için karışıma sadece o kadar miktar ceviz eklemenizi rica ediyorum." demiştir.
+
+Buna göre, kuruyemişi karışıma kaç gram ceviz eklemiştir?
+  A) 100
+  B) 120
+  C) 125
+  D) 150
+  E) 175
+
+--- [MATEMATIK-102]  id=da9e676b-20e3-5846-b963-d3a7418d2633  sinav=TYT
+SORU: $\lim_{x \to \frac{\pi}{4}} \frac{\sin x - \cos x}{\tan x - 1}$ ifadesinin değeri kaçtır?
+  A) $\frac{\sqrt{2}}{4}$
+  B) $-\frac{\sqrt{2}}{2}$
+  C) $\sqrt{2}$
+  D) $2\sqrt{2}$
+  E) $\frac{1}{2}$
+
+--- [MATEMATIK-103]  id=a7cd061d-dc67-5511-a183-7344b28ea0ff  sinav=TYT
+SORU: $n$ doğal sayı olmak üzere $60+n$ sayısı, $60$ sayısının asal çarpanlarından biri hariç diğerleri ile tam bölünmektedir. Buna göre, $n$ sayısı aşağıdakilerden hangisi olamaz?
+  A) 10
+  B) 12
+  C) 15
+  D) 20
+  E) 30
+
+--- [MATEMATIK-104]  id=3a37811f-3a41-5d9a-bafd-7ae122ce7b73  sinav=TYT
+SORU: "SERPİL" kelimesinin harflerinin yerleri değiştirilerek altı harfli anlamlı ya da anlamsız kelimeler yazılacaktır. Buna göre, yazılabilecek kelimelerin kaç tanesi R harfi ile başlar?
+  A) $6!$
+  B) $5!$
+  C) $3! \cdot 4!$
+  D) $4!$
+  E) $3!$
+
+--- [MATEMATIK-105]  id=04d130c5-058c-5768-bdc8-bb4c9a33b3f9  sinav=TYT
+SORU: Mikro geometri kitabını çözmeye başlayan Yavuz her gün bir önceki günden 30 soru fazla çözecektir. Yavuz 4. günün sonunda toplam 420 soru çözdüğüne göre 2. gün kaç soru çözmüştür?
+  A) 60
+  B) 90
+  C) 150
+  D) 180
+  E) 250
+
+--- [MATEMATIK-106]  id=be75b7c8-087d-53ae-8372-46d1529d5ecb  sinav=TYT
+SORU: Ali, Veli, Can ve Deniz'in her birinde 4, 6, 8 ve 10 bilye bulunmaktadır.
+
+Ali: "4 bilyem var."
+Veli: "10 bilyem var."
+Can: "Ali'nin 8 bilyesi var."
+Deniz: "8 bilyem var."
+
+Ali, Veli, Can ve Deniz'den sadece biri doğruyu söylemediğine göre, Can ve Deniz'in toplam kaç tane bilyesi vardır?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+--- [MATEMATIK-107]  id=348ce3ee-600d-55ef-86bb-76f3151e4fd4  sinav=TYT
+SORU: $(a_n)$ aritmetik dizidir. $a_1 + a_2 + a_3 + a_4 + a_5 = 40$ olduğuna göre, $a_3$ kaçtır?
+  A) 5
+  B) 8
+  C) $\frac{24}{5}$
+  D) $\frac{26}{5}$
+  E) $\frac{27}{5}$
+
+--- [MATEMATIK-108]  id=5db666d2-319d-5e6e-8783-727320105b1c  sinav=TYT
+SORU: Üç lamba sırasıyla 5, 10 ve 18 dakikada bir yanıp sönmektedir. Bu üç lamba aynı anda yandıktan en az kaç dakika sonra tekrar üçü birlikte yanar?
+  A) 30
+  B) 54
+  C) 60
+  D) 90
+  E) 180
+
+--- [MATEMATIK-109]  id=295b82aa-43fe-5bc9-9d59-c90ccf77106e  sinav=TYT
+SORU: Küçükten büyüğe doğru sıralanmış
+$6, 10, 12, 14, x, y, 23$
+sayılarından oluşan veri grubunun;
+• sadece bir tane modu var.
+• medyanı aritmetik ortalamasına eşittir.
+Buna göre, $y$ kaçtır?
+  A) 22
+  B) 19
+  C) 18
+  D) 16
+  E) 15
+
+--- [MATEMATIK-110]  id=d107b977-1eb5-5ec5-8a4d-a74094cc96a5  sinav=TYT
+SORU: Bir otobüs şirketi şoförlerine araçlarını otobanda kullanırken hızlarını $60 \text{ km/saatten az}$, $120 \text{ km/saatten fazla}$ kullanmamaları talimatı vermiştir. Bu talimata uyan bir şoförün otobandaki hızı $v \text{ km/saattir}$. Buna göre, $v$'nin değer aralığını ifade eden eşitsizlik aşağıdakilerden hangisidir?
+  A) $|v-80|<40$
+  B) $|v+10|<130$
+  C) $|v-100|<20$
+  D) $|v-90|<30$
+  E) $|v-75|<45$
+
+--- [MATEMATIK-111]  id=2bfd4398-0aab-53cc-b464-5f43dfa57a28  sinav=AYT
+SORU: f(x) fonksiyonunun grafiği aşağıdaki gibidir. Buna göre, f(x) fonksiyonunun tersi fonksiyonunun grafiği aşağıdaki hangisidir?
+  A) Şekil 1
+  B) Şekil 2
+  C) Şekil 3
+  D) Şekil 4
+  E) Şekil 5
+
+--- [MATEMATIK-112]  id=fb642fa8-7407-5a1d-a5df-132c8c66c110  sinav=TYT
+SORU: $F(a, b) = a \cdot b + a + b$ şeklinde tanımlanan bir ifade için, $F(4, 5) - F(-1, -2)$ işleminin sonucu kaçtır?
+  A) 28
+  B) 29
+  C) 30
+  D) 31
+  E) 32
+
+--- [MATEMATIK-113]  id=66c3d977-cc8e-5e52-8ad4-395fa05ed238  sinav=AYT
+SORU: 1. $x^2 + 2x + 3 = 0$ denkleminin köklerinin toplamı kaçtır?
+  A) -1
+  B) 1
+  C) -2
+  D) 2
+  E) 3
+
+--- [MATEMATIK-114]  id=e7645e23-d9ff-5e2e-b03c-3fdf2ea16aa5  sinav=TYT
+SORU: Polinomun x^2 + 3x + 2 ifadesi veriliyor. Bu polinomun x = -1 değerindeki sonucu kaçtır?
+  A) -1
+  B) 0
+  C) 1
+  D) 2
+  E) 3
+
+--- [MATEMATIK-115]  id=057ae053-b73e-50bc-a872-757e50960a19  sinav=TYT
+SORU: $\frac{\pi}{2} < x < \pi$ ve $\cos x = -\frac{2}{3}$ olduğuna göre, $\sin x + \tan x$ değeri kaçtır?
+  A) $-\frac{\sqrt{5}}{6}$
+  B) $-\frac{1}{6}$
+  C) $\frac{\sqrt{5}}{6}$
+  D) $\frac{\sqrt{5}}{3}$
+  E) $\frac{2\sqrt{5}}{3}$
+
+--- [MATEMATIK-116]  id=61af769f-e00d-5dad-9fd7-797b0aa0f12a  sinav=TYT
+SORU: RENGÂRENK kelimesindeki harflerin yer değiştirilmesi ile elde edilen anlamlı-anlamsız 9 harfli kelimelerin kaçında ortadaki harf A olur?
+  A) 1860
+  B) 3200
+  C) 3660
+  D) 5040
+  E) 7200
+
+--- [MATEMATIK-117]  id=fb59c9f9-ea76-537f-9982-5deb8249c99b  sinav=TYT
+SORU: $f$, R'de tanımlı doğrusal bir fonksiyon olmak üzere, $f(0) = 2$ ve $f(1) = 5$ olduğuna göre, $f(2)$ kaçtır?
+  A) 1
+  B) 4
+  C) 6
+  D) 7
+  E) 8
+
+--- [MATEMATIK-118]  id=e4232755-be71-5f6a-a8b7-907cf915f632  sinav=TYT
+SORU: A kümesinin eleman sayısı 2 artırıldığında alt küme sayısı 24 artmaktadır. Buna göre, A kümesinin kaç elemanı vardır?
+  A) 2
+  B) 3
+  C) 4
+  D) 5
+  E) 6
+
+--- [MATEMATIK-119]  id=f8412bdf-4e86-5e24-9e58-d8ff1693f43e  sinav=TYT
+SORU: $a$ ve $b$ gerçel sayılar olmak üzere, dik koordinat düzleminde $y = 3x + a$ doğrusu
+$f(x) = x^3 - x^2 + bx + 4$
+fonksiyonunun grafiğine $(1, f(1))$ noktasında teğettir.
+Buna göre, $a+b$ toplamı kaçtır?
+  A) 4
+  B) 5
+  C) 6
+  D) 7
+  E) 8
+
+--- [MATEMATIK-120]  id=11a1d8ce-c55f-5ad4-a006-e1bb08ed2b3c  sinav=AYT
+SORU: Şekil 1'deki ABCD dikdörtgenin B köşesinden geçen ABD doğru parçası, dikdörtgenin kenar uzunluklarını ve açılarını belirler.
+  A) AB = 5 cm, BC = 3 cm, ABD açısının ölçüsü 45°
+  B) AB = 5 cm, BC = 3 cm, ABD açısının ölçüsü 60°
+  C) AB = 3 cm, BC = 5 cm, ABD açısının ölçüsü 45°
+  D) AB = 3 cm, BC = 5 cm, ABD açısının ölçüsü 60°
+  E) AB = 4 cm, BC = 4 cm, ABD açısının ölçüsü 45°
+
+--- [MATEMATIK-121]  id=8b6b42ae-dc12-5bb5-b32d-a3e17780c00d  sinav=TYT
+SORU: Dörtgenin bir köşesinden geçen tüm köşeleri kapsayan en küçük dörtgenin alanını bul.
+  A) 12
+  B) 16
+  C) 20
+  D) 24
+  E) 28
+
+--- [MATEMATIK-122]  id=855cad5f-57d8-5b3f-9236-4c2496ec01bc  sinav=TYT
+SORU: İşçi sayısı azaldıkça kalan yemeğin bitme süresi artar. $15$ işçi $10$ gün yetecek yiyecek varken, $10$ işçi kaç gün yetecek yiyecek ile idare eder?
+  A) 12
+  B) 15
+  C) 18
+  D) 20
+  E) 25
+
+--- [MATEMATIK-123]  id=329973c2-d40b-5d13-95ec-974b31e8cbba  sinav=TYT
+SORU: 4. Sorunun tam metni yok. Sadece bir parçası var: 'olduğunu görs, x + y kaça?'.
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+--- [MATEMATIK-124]  id=a5149c27-d1e4-56f6-95e3-78801c4885e2  sinav=AYT
+SORU: $a$ ve $b$ birer gerçek sayı olmak üzere, $f(x) = \begin{cases} ax+b & , x < 1 \\ 7 & , x = 1 \\ bx-a+6 & , x > 1 \end{cases}$ fonksiyonunun $x=1$ noktasında limiti olduğuna göre, $a$ kaçtır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 6
+
+--- [MATEMATIK-125]  id=1a8288c3-bb4b-50fa-879a-e92895800e60  sinav=AYT
+SORU: Gerçel sayılar kümesi üzerinde tanımlı $f$ ve $g$ fonksiyonları verilmiştir.
+$f(x) = \begin{cases} 2x+1, & x<0 \\ x+3, & x \ge 0 \end{cases}$
+$g(x) = \begin{cases} x+1, & x<2 \\ x-2, & x \ge 2 \end{cases}$
+biçiminde tanımlanıyor.
+Buna göre, $\lim_{x \to 0^-} (gof)(x) + \lim_{x \to 0^+} (fog)(x)$ limitinin değeri kaçtır?
+  A) 3
+  B) 4
+  C) 5
+  D) 6
+  E) 7
+
+--- [MATEMATIK-126]  id=14109df6-bcc4-5c04-b917-e6fa8cd99119  sinav=TYT
+SORU: $2n+1$ ve $3n-3$ ardışık tam sayılar olduğuna göre, $n$'nin alabileceği değerler çarpımı kaçtır?
+  A) 12
+  B) 13
+  C) 14
+  D) 15
+  E) 16
+
+--- [MATEMATIK-127]  id=6f01a9e6-4acf-5b43-a475-62dbf4b8287a  sinav=TYT
+SORU: Toplamları 60 olan iki sayıdan birinin 2 katı diğerinin 3 katına eşittir. Buna göre, bu sayıların farklarının mutlak değeri kaça eşittir?
+  A) 12
+  B) 13
+  C) 14
+  D) 15
+  E) 16
+
+--- [MATEMATIK-128]  id=7fdaf805-07ec-5dbf-baff-16548790b921  sinav=AYT
+SORU: P(x) = (x^2 + 3x + 4) (x + 1) polinomunun köklerini bul.
+  A) x = -1, x = -4
+  B) x = -1, x = -3
+  C) x = -1, x = 4
+  D) x = -1, x = 3
+  E) x = -1, x = 0
+
+--- [MATEMATIK-129]  id=2d3b7949-0645-535c-b7f9-5fcee4b6a001  sinav=AYT
+SORU: Bir kutu içindeki 10 adet karttan 5 adet kırmızı kart ve 5 adet beyaz kart vardır. Kutudan rastgele bir kart seçildiğinde, bu kartın beyaz olduğunu biliyoruz. Bu durumda, kutudan rastgele bir kart daha seçildiğinde, bu kartın da beyaz olma olasılığı kaçtır?
+  A) 0.5
+  B) 0.6
+  C) 0.7
+  D) 0.8
+  E) 0.9
+
+--- [MATEMATIK-130]  id=93b633a6-266d-5ce0-b88f-09a288e0991d  sinav=TYT
+SORU: $x^2-2x+m>0$ eşitsizliği her $x$ gerçek sayısı için sağlandığına göre, $m$'nin alabileceği en küçük tam sayı değeri kaçtır?
+  A) -1
+  B) 0
+  C) 1
+  D) 2
+  E) 4
+
+--- [MATEMATIK-131]  id=f760c3a2-e75a-540e-8053-a4bdbf1e5f12  sinav=TYT
+SORU: $a$ bir tam sayı olmak üzere, aşağıdakilerden hangisi daima bir rasyonel sayıdır?
+  A) $\frac{1}{a^2-1}$
+  B) $\frac{1}{a^2-2a}$
+  C) $\frac{a-9}{a^2-9}$
+  D) $\frac{a}{a^2-2}$
+  E) $\frac{3}{a^2+4}$
+
+--- [MATEMATIK-132]  id=99a4cb61-5439-51b4-939c-6132cbae99b1  sinav=AYT
+SORU: Dikdörtgenin çevresi 20 cm'dir. Bu dikdörtgenin bir kenarının uzunluğu 4 cm ise, dikdörtgenin alanı kaç cm²'dir?
+  A) 12 cm²
+  B) 16 cm²
+  C) 20 cm²
+  D) 24 cm²
+  E) 32 cm²
+
+--- [MATEMATIK-133]  id=0954e8dd-f6b5-5885-abb6-6a4850923334  sinav=TYT
+SORU: $K$ ve $L$ birer doğal sayıdır. $K=30-x$ $L=x+6$ olduğuna göre, $x$'in hangi değeri için $K \cdot L$ çarpımı en büyük değerini alır?
+  A) 0
+  B) 6
+  C) 10
+  D) 12
+  E) 18
+
+--- [MATEMATIK-134]  id=b333edab-b2a2-5a72-b343-8cdc97eea139  sinav=TYT
+SORU: Artış miktarı 3 olan ardışık beş sayıdan en büyük olanı en küçük olanının 4 katından 3 fazla olduğuna göre bu beş sayının toplamı kaçtır?
+  A) 21
+  B) 17
+  C) 36
+  D) 29
+  E) 45
+
+--- [MATEMATIK-135]  id=5614ee13-6166-54ba-b0a5-7569df79b399  sinav=TYT
+SORU: $\frac{12}{x}=x-4$ denkleminin çözüm kümesinin elemanları çarpımı kaçtır?
+  A) 12
+  B) 8
+  C) 10
+  D) -12
+  E) -10
+
+--- [MATEMATIK-136]  id=300680fe-a23a-5b3e-b5b0-a746a1c2a9a1  sinav=TYT
+SORU: 4. Bir tane çaydanlık kapının 120 gram çay içecek. Bu kapının 100 gram çay içecek için 12 gram suyunun eklenmesi gerekmektedir. Bu kapının 150 gram çay içecek için kaç gram suyunun eklenmesi gerekmektedir?
+  A) 15
+  B) 17
+  C) 18
+  D) 19
+  E) 20
