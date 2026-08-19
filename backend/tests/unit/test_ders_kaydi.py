@@ -167,7 +167,7 @@ def test_aktif_dersler_kanit_tasiyor() -> None:
 # BURADA TERSI: yeni ders eklemek orani DUSURUR (payda buyur), yani oran
 # tabani mesru ders eklemeyi BLOKLARDI. Korunmasi gereken sey "kac dersin
 # bekcisi var" — o yuzden taban SAYIYA baglandi.
-ZORLAYICI_TABANI = 41
+ZORLAYICI_TABANI = 43
 
 
 def test_zorlayici_sayisi_gerilemiyor() -> None:
