@@ -53,6 +53,32 @@ def zorlayicilari_topla() -> list[str]:
     return sorted(set(yollar))
 
 
+def bicim_gecersizleri(yollar: list[str]) -> list[str]:
+    """Bicim kapisi: pytest ARGV'sine girmesi GUVENLI olmayan degerleri dondur.
+
+    Defter bir VERI dosyasi ve degeri dogrudan pytest'in argumanlarina gidiyor.
+    "backend/....py" olmayan bir satir pytest BAYRAGINA donusebilir (`-p x`,
+    `--co`) ve kapiyi sessizce etkisizlestirebilirdi. Bu yuzden bicim once
+    dogrulanir, sonra subprocess'e verilir (shell=False, liste arguman).
+
+    Ayri fonksiyon cunku `main()` sonunda pytest cagiriyor; kapinin kendisini
+    test etmek pytest'i tekrar baslatmadan mumkun olmali (ozyineleme yok).
+
+    OLCULDU (S232): burada bir de `y.startswith("-")` dali vardi. Mutasyonla
+    silindiginde **16/16 test yine gecti** — cunku bir bayrak (`-p x`, `--co`)
+    zaten hem `backend/` on ekini hem `.py` sonekini saglayamaz, yani iki kural
+    tarafindan cift kapsaniyor. Hicbir mutasyonla civilenemeyen dal = test
+    edilemez agirlik (`L-s214-select-from-her-yerde-degil`), o yuzden KALDIRILDI.
+    Geri eklemeden once ayni olcumu tekrarla: dali silip testleri kosur, biri
+    kirmiziya donmuyorsa dal bir sey yapmiyordur.
+    """
+    return [
+        y
+        for y in yollar
+        if ".." in y or not y.startswith("backend/") or not y.endswith(".py")
+    ]
+
+
 def main() -> int:
     if not DEFTER.exists():
         print(f"HATA: ders defteri yok: {DEFTER}", file=sys.stderr)
@@ -67,18 +93,7 @@ def main() -> int:
         )
         return 1
 
-    # Defterdeki deger pytest'in ARGV'sine gidiyor. Defter bir VERI dosyasi;
-    # "backend/... .py" olmayan bir satir pytest BAYRAGINA donusebilir (`-p x`,
-    # `--co`) ve kapiyi sessizce etkisizlestirebilir. O yuzden bicim once
-    # dogrulanir, sonra subprocess'e verilir (shell=False, liste arguman).
-    bicimsiz = [
-        y
-        for y in yollar
-        if y.startswith("-")
-        or ".." in y
-        or not y.startswith("backend/")
-        or not y.endswith(".py")
-    ]
+    bicimsiz = bicim_gecersizleri(yollar)
     if bicimsiz:
         print(
             "HATA: defterdeki zorlayici degeri gecersiz bicimde "
