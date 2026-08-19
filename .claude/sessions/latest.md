@@ -1892,3 +1892,56 @@ script); geri alındı. Stage'i **dosya dosya** yap.
 ### Kalan sayısal dersler (④ kapandıktan sonra)
 MATEMATIK 14.119 · FIZIK 3.468 · GEOMETRI 2.948 — tahmini ~81M token, beklenen
 ~%75-85 verim (GEOMETRI pilotta %55, ayrı ele alınmalı).
+
+---
+
+## Session Handoff — 2026-08-19 (S232-G · ADIM 1 CANLIYA YAZILDI)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `5f22c5493` feat(Y11/ADIM0): yedek ALINDI+DOGRULANDI (147.880 satir) + ADIM1 tam olculdu
+**Uncommitted:** 4 yeni dosya (ADIM 1 aletleri) + devralınan `backend/semantic_cache.pkl`
+
+### Yapilanlar
+- `backups/kiro2_20260819_y11_oncesi.dump` — ADIM 0 yedeği (6,6 MB). `kiro2_app`'in
+  CREATE TABLE yetkisi YOK → tablo-yedek yerine `pg_dump`. **Doğrulandı:** dump içi
+  sayıldı, 5 tablo / **147.880 satır**, canlıyla birebir.
+- `backend/scripts/quality/y11_adim1_export.sql` + `y11_adim1_konular.csv` — 14 konu,
+  `parent_id` remap uygulanmış (`MAT.TRV` → canlı `MAT` id'si).
+- `backend/scripts/quality/y11_adim1_prova.sql` — ROLLBACK'li prova, **4 kapı geçti**
+  (12→26 · mükerrer kod 0 · yetim parent 0 · `MAT.TRV`→`MAT` · 14/14).
+- `backend/scripts/quality/y11_adim1_uygula.sql` — **CANLIYA YAZILDI (COMMIT)**.
+  `topic_hierarchy` **12 → 26**. Bağımsız doğrulandı: önceki 12 dokunulmamış,
+  yeni 14 kalıcı, `question_bank=36967` / `mv_safe_for_beta=27073` **değişmedi**.
+- `docs/audits/2026-08-19_y11_goc_mekanizmasi_tasarim.md` — ADIM 0-1 sonuçları eklendi (`5f22c5493`)
+
+### Fail Eden Testler
+YOK. Bu turda pytest koşulmadı (iş DB tarafındaydı). Y12 bekçisi son koşumda
+`8 xfailed` (beklenen — Y11 kapanana kadar).
+
+### Engelleyiciler
+- `kiro2_app` **CREATE TABLE yetkisiz** (`permission denied for schema public`).
+  DDL gereken her iş için `postgres` kullanıcısı lazım — parolası **elimde yok**.
+- Bu turda 3 alet hatası: Türkçe SQL'i inline `-c` ile geçirmek (kayıtlı kuralın
+  **2. ihlali**), `th.*` ile `json` kolonu `UNION`'a sokmak, `git add -A` süpürmesi.
+  Üçü de yakalandı ve zararsız kaldı.
+
+### Sonraki Adimlar (maks 5)
+1. **ADIM 2** — 50 satırlık pilot: 3.666 KABUL'den 50'si, 4 tabloya dağıt, **ROLLBACK**.
+   Kapılar: satır invaryantı (50 → 4×50, yetim 0) · JOIN'le geri okuma · 5/5 nokta-kontrol.
+   ⚠️ **865 sorunun `primary_topic_id`'si REMAP edilmeli** (KIM 852 · FIZ 12 · GEN 1).
+2. **ADIM 3** — 3.666 satır, 1000'lik parti.
+3. **ADIM 4** — `mv_safe_for_beta` REFRESH + Y12 bekçisini koş + `xfail` işaretlerini kaldır
+   (`backend/tests/integration/test_icerik_gecerliligi.py`, `_Y11` sabiti tek yerde).
+4. ③ tekilleştirme (153 satır) + anahtar düzeltme (~%1,4) — ADIM 2/3'ün içinde.
+5. Diğer sayısal dersler: MATEMATIK 14.119 · FIZIK 3.468 · GEOMETRI 2.948
+   → önce R1-R4 **her ders için yeniden ölçülmeli**.
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Yedek tablo değil dosya:** `pg_dump` DDL yetkisi istemiyor, canlıyı şişirmiyor.
+- **Her yazım iki turlu:** önce ROLLBACK'li prova + kapılar, sonra aynı işlem COMMIT.
+  ADIM 1'de prova remap'in çalıştığını yazımdan önce kanıtladı.
+- **14 kopyala + 4 EŞLE:** `code` UNIQUE ve `KIM/FIZ/GEN/MAT` canlıda zaten vardı.
+  Kopyalansaydı kısmi INSERT sonrası düşerdi.
+- **Göç kapısında insan tek karar mercii DEĞİL** — S232'de uyuşmazlık çözücü
+  kalibre edilirken kontrol kolu (Claude'un 24 elle yargısı) **düştü**; mekanizma
+  5 kalemde haklı çıktı. İki bağımsız çerçeve + insan tahkimi.
+- **`orta` güven atılmadı** — aleyhine kanıt yok, bedeli %9,2 olurdu (#451 deseni).
