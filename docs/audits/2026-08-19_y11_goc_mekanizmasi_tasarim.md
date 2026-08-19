@@ -125,3 +125,63 @@ göçünden önce R1-R4 **her ders için tekrar ölçülmeli** — özellikle R1
 casing) ve R2 (konu sayısı), çünkü ikisi de ders-bağımlı.
 
 Kod **yazılmadı**. Bu belge ADIM 0-4'ün girdisidir, çıktısı değil.
+
+---
+
+## ADIM 0 — YAPILDI ve DOĞRULANDI (19 Ağu 2026)
+
+`kiro2_app`'in `public` şemasında **CREATE TABLE yetkisi YOK**
+(`permission denied for schema public`). `.claude/rules/database.md` zaten
+"postgres for migrations/DDL" diyormuş. Tablo-yedek yerine **dosya-yedek** seçildi —
+`pg_dump` yalnız okur, DDL istemez, canlıyı şişirmez, deponun mevcut yolu.
+
+    backups/kiro2_20260819_y11_oncesi.dump   6,6 MB
+
+**Doğrulandı** (yedek bir iddiadır, dump'ın içi sayıldı):
+
+| tablo | dump içindeki satır | canlı |
+|---|---|---|
+| question_bank | 36.967 | 36.967 |
+| question_content | 36.967 | 36.967 |
+| question_metadata | 36.967 | 36.967 |
+| question_statistics | 36.967 | 36.967 |
+| topic_hierarchy | 12 | 12 |
+| **toplam** | **147.880** | ✅ |
+
+---
+
+## ADIM 1 — TAM ÖLÇÜLDÜ, kod YAZILMADI
+
+### Yetki
+`topic_hierarchy`'ye **INSERT yetkisi VAR**. Test işlemi yetki reddiyle değil,
+`osym_relevance` NOT NULL kısıtıyla düştü → alt küme değil **tam kolon** INSERT gerekli.
+ROLLBACK doğrulandı (0 test satırı, 12 konu).
+
+### Zincir
+17 taban konu + **1 ebeveyn** (`MAT.TRV` → `MAT`) = **18 konu**.
+En derin zincir **1 adım**, **yetim ebeveyn referansı 0**. INSERT sırası = `level`.
+
+### Kaynak bütünlüğü
+Canlının **9 zorunlu kolonu** (`id, code, name_tr, level, is_active, osym_relevance,
+osym_frequency, total_questions, average_difficulty`) kaynakta 18/18 satırda **DOLU**
+(NULL 0/9).
+
+### 🔴 KOD ÇAKIŞMASI — ADIM 1 "kopyala" değil "kopyala + EŞLE"
+`code` **UNIQUE** (`topic_hierarchy_code_key`). Kaynaktaki 18 kodun **4'ü** canlıda var:
+
+| kod | canlı id | etkilenen KIMYA sorusu |
+|---|---|---|
+| `KIM` | `72e79276-4795-424c-a262-0edf9a77a23f` | **852** |
+| `FIZ` | `c6c72669-267e-47ce-a3d2-8392de050bc7` | 12 |
+| `GEN` | `9928457b-b653-46d4-8bc1-a0937b1d9836` | 1 |
+| `MAT` | `259066bd-71fb-420e-85e3-a4e3ad9811fe` | 0 (yalnız `MAT.TRV`'nin ebeveyni) |
+
+→ **14 konu kopyalanır · 4 konu EŞLENİR · 865 sorunun `primary_topic_id`'si
+göç sırasında YENİDEN HARİTALANIR.**
+
+⚠️ Bu kopyalanmış olsaydı UNIQUE kısıtı **kısmi INSERT sonrası** düşerdi — gürültülü
+ama yarım durumda. Eşleme tablosu ADIM 2'nin girdisidir.
+
+### Kalan
+ADIM 2 (50 satırlık pilot + geri alma) ve sonrası **başlamadı**. İlk kalıcı veri
+yazımı orada; taze bağlamda yapılmalı.
