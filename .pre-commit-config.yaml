@@ -236,9 +236,24 @@ repos:
       #
       # Maliyet olculdu: 7,7 sn (canli PG, -n0). DSN backend/.env'den cozuluyor;
       # DB yoksa fixture skip eder (taze makinede gurultu uretmez).
-      - id: y12-icerik-gecerliligi
-        name: Y12 ogrenci kapisi icerik-gecerliligi bekcisi
-        entry: bash -c 'cd backend && python -m pytest tests/integration/test_icerik_gecerliligi.py -n0 -q --no-header'
+      #
+      # 19 Agu 2026 — TEK DOSYADAN DEFTERE GENISLETILDI.
+      # Olculdu: ders_kaydi.yaml'in 141 dersinin 40'inda `zorlayici` dolu (18 benzersiz
+      # dosya) ama bu kapi onlarin YALNIZ 1'ini kosuyordu (%5,6). S231 zaten enforcement'in
+      # %0 oldugunu olcmustu; tek dosya bagladigimizda %5,6 oldu — yeterli degil.
+      #
+      # LISTE SABIT DEGIL, DEFTERDEN TURETILIYOR. Hook'a 18 dosyayi elle yazmak bayatlar:
+      # yeni ders eklendiginde kimse listeyi guncellemez ve enforcement sessizce gerilerken
+      # sayi dogru gorunur (`L-s219-ilerleme-sayaci-da-bir-olcum-aletidir`).
+      # Sonuc: bir derse `zorlayici` yazmak = onu otomatik kapiya baglamak.
+      #
+      # Kapi ayrica DEFTERIN YALAN SOYLEMEDIGINI de sinar: `zorlayici` bir dosyayi
+      # gosteriyor ama dosya diskte yoksa HATA.
+      #
+      # Maliyet olculdu: 18 dosya / 156 passed + 1 skipped + 9 xfailed / **49 sn**.
+      - id: ders-zorlayici
+        name: Ders defterindeki ZORLAYICI testler (liste defterden turetilir)
+        entry: python backend/hooks/ders_zorlayici_kos.py
         language: system
         pass_filenames: false
         always_run: true
