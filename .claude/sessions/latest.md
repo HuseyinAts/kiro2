@@ -1576,3 +1576,146 @@ YOK. `test_cat_warmup_bos_havuz.py` **5/5** · `test_ders_kaydi.py` **9/9** ·
   (#451 deseni).
 - **CAT'in gürültülü yolları zaten vardı:** `pool_exhausted` termination + HTTP 422.
   "Motor sessizce anlamsız çıktı üretiyor" çerçevesi ölçümle **1/3'e** indirildi.
+
+---
+
+## Session Handoff — 2026-08-19 (S232 · Y12 KAPANDI) ✅
+
+**Branch:** feature/self-evolution-optimization
+**Push:** ✅ S231'in 4 commit'i gönderildi (`ee62c6d34..0af3916ea`, exit 0, iki bekçi Passed)
+**Y12 commit:** `e04cfc9e2` feat(Y12): ogrenci kapisi icerik-gecerliligi bekcisi (kontrol kollu)
+— 6 dosya / +684/−1, `git show --stat` ile NE GİRDİĞİ doğrulandı (S229 dersi)
+**Takipli-kirli:** 1 — devralınan `backend/semantic_cache.pkl` (`.gitignore`'da değil, ayrı triyaj)
+
+### Kullanıcı kararları (bu turda alındı, tekrar tartışılmasın)
+| Karar | Seçim |
+|---|---|
+| Y12 kapsamı | **Katman 1 + Katman 2** (dağılım invaryantları + doğrulanmış satır-içi kurallar) |
+| Enforcement | **pre-push git hook** (CI değil — gerekçe aşağıda ölçüldü) |
+| Eşik politikası | **`xfail(strict=True)`** — bugün bloklamaz, Y11 kapanınca XPASS ile kırar |
+| S231 commit'leri | **Şimdi push edildi** |
+
+### 🔴 EN AĞIR BULGU — Y11'in kaynağı DEĞİŞTİ
+
+S231 kurtarma kaynağı olarak `d-dataset/eslesmis_sorucevap.jsonl`'i (116 MB) işaret
+etmişti. **Yanlış.** Tek komut (`pg_database` listesi) aynı sunucuda:
+
+    kiro2_temp   2209 MB   question_bank 187.835 satır
+                           187.725'i source_book DOLU · 420 kaynak kitap
+                           difficulty_level 5 seviye · irt_difficulty 68.022 farklı
+
+Bağımsız hash tuzuyla 12 soru çekilip **elle çözüldü: 11'i servis edilebilir ve
+anahtarı doğru** (Kepler, teğet çember, EBOB, `tan(arcsin 7/25)`, çift yarık).
+
+Dahası JSONL'in **gerçek** katmanı (`answer_source='page_inline'`, 55.867) DB'ye
+**hiç girmemiş** (%0,0 geçiş); DB'ye giren AI türevi katman (`bayes_ai_upgrade`
+%96,8 + `jsonl_v11` %99,2). **JSONL'den içe aktarmak çöpü tekrar getirirdi.**
+
+Adli işaret: canlı 36.967/36.967 **UUIDv4**, tamamı **17 Ağu 04:47-04:49** (3 dk);
+`kiro2_temp` 187.629 **UUIDv5**, 4 Mar-22 Haz. `soru_hash` kesişimi **0** →
+üstüne yazma değil, tamamen **ayrık ikame**.
+
+→ **Y11 artık "116 MB dosya içe-aktarma" değil, aynı sunucuda DB-içi kurtarma.**
+Risk profili tamamen farklı (5 Ağu içerik kaybı sınıfından çıkıyor).
+
+### Y12 — ne yapıldı
+
+`backend/tests/integration/test_icerik_gecerliligi.py` (8 test, hepsi `xfail(strict=True)`)
+
+**Katman 1 — dağılım invaryantları** (I1 `pipeline_metadata` · I2 `source_book` ·
+I3 `primary_topic_id` · I4 `reviewed_at` · I5 zorluk/IRT · I6 kapı tek kolonla
+açıklanamaz).
+**Katman 2 — 6 satır-içi kural** {R1b, R2, R3, R4, R5, R6} + birleşim eşiği + ayrı
+"geçersiz anahtar = 0" testi.
+
+Aday 9 kuraldan **3'ü doğrulama-1'i geçemedi ve hiç girmedi**: R7/R8 temiz katmanda
+kirliden DAHA ÇOK ateşliyor, R9 yalnız 1,7x.
+
+### 🔴 KONTROL KOLU BEKÇİYİ İKİ KEZ DÜZELTTİ (bu turun en önemli dersi)
+
+Y12 canlıya koşuldu, `8 xfailed` verdi, **doğru görünüyordu**. Sonra bilinen-İYİ
+kola (`kiro2_temp`) koşuldu:
+
+1. **I4 KÖR DEDEKTÖRDÜ.** `reviewed_at > 1` iddiası canlı 1 → düşer (doğru),
+   `kiro2_temp` 0 (hepsi NULL) → **de düşer** (yanlış). İddia *"hiç incelenmemiş"*
+   ile *"incelendi yalanı"*nı karıştırıyordu → **`<> 1`**.
+2. **K2 eşiği bilinen-İYİYİ reddediyordu.** 0,02 başka bir popülasyondan
+   (jsonl `page_inline`, 0,007) alınmıştı; `kiro2_temp` **0,0256** → Y11 mükemmel
+   çalışsa bile bekçi kırmızı kalırdı. İki koldan ölçülüp **0,05**'e çekildi.
+3. **R6 sıkılaştırması** — `kiro2_temp`'ten 10 bayrak OKUNDU: 8 gerçek kusur,
+   1 doğrulanmış FP (*"Nüfus artış hızı"* şıkkı gövdede geçiyor ama soru gerçek).
+   `≥1 şık` → **`≥3 şık`**: ayırt edicilik 5,4x → **7,4x** VE FP sınıfı kalktı.
+
+### Ölçümler (iki kol, 19 Ağu)
+| İddia | canlı `kiro2` | `kiro2_temp` |
+|---|---|---|
+| I1 `pipeline_metadata` distinct | 1 ❌ | 34.916 ✅ |
+| I2 `source_book` oranı | 0,0000 ❌ | 1,0000 ✅ |
+| I3 `primary_topic_id` | 1 ❌ | 115 ✅ |
+| I4 `reviewed_at` | 1 ❌ | 0 ✅ |
+| I5 zorluk / irt | 1 / 1 ❌ | 5 / 22.559 ✅ |
+| K2 birleşim bayrak | 0,2075 ❌ | 0,0256 ✅ (8,1x) |
+| K2 geçersiz anahtar | 105 ❌ | 0 ✅ |
+
+- Canlı: **8 xfailed**; `--runxfail` ile 8/8 doğru sebeple `failed`
+- Kontrol kolu: **7/7 GEÇTİ**
+- **Mutasyon 4/4** öldü (hepsi `failed`, hiçbiri `error`; 4 geri alım `git status` boş)
+  — her mutasyon `1 failed, 7 xfailed` verdi, yani **XPASS mekanizması çalışıyor**
+- pre-push hook: **7,8 sn** pytest / 17,6 sn duvar, exit 0
+
+### YAN FIX — kardeş bekçi S210'dan beri ÖLÇMÜYORDU
+`test_question_bank_invariants.py` benzersizlik sorgusu `question_bank.question_text`
+kullanıyordu; o kolon 69-alan split'te (`0fd9b8413`) `question_content`'e taşınmış
+→ `UndefinedColumnError`. DSN'siz koşumda zaten skip olduğu için görülmedi.
+JOIN'e çevrildi, artık koşuyor (**0,928 ≥ 0,90 GEÇİYOR**).
+
+⚠️ **`MIN_SATIR = 150.000` BAYAT DEĞİL** — bir ajan öyle raporladı, ölçünce tersi
+çıktı: 187.835'e göre kalibre edilmiş ve `kiro2_temp`'te ölçülen değer tam olarak
+**187.835**. Canlının 36.967'de kalması **doğru bir alarm**. Eşiğe dokunulmadı.
+
+### Enforcement — neden CI değil (ölçüldü)
+- 11 workflow'un **0'ı** bu dala push'ta tetikleniyor; `base=master` PR açılırsa 5'i
+- `ci.yml:194-207` **`services: postgres` VAR** → engel Postgres değil
+- Engel **içerik**: `seed_mvp_data.py` soru tablolarına **0 referans**; korpus
+  `.gitignore:216` ile takip dışı (116 MB); `kiro2_temp` runner'da yok
+- Kök `.pre-commit-config.yaml`'da 25 hook, test koşan **0** (`:211` "KALDIRILDI
+  28 Tem 2026", commit `012a377d7`, gerekçe 16.743 test + `-x`)
+- `.git/hooks/pre-push` **kurulu ve çalışıyor** → tek gerçek yerel kanal
+
+### Elenen dedektör: Zemberek
+MCP `status: unhealthy`, `zemberek_available: false`. **Açık-devre başarısız
+oluyor**: bağlantı yokken her kelimeyi `is_correct: false` işaretleyip makul görünen
+`accuracy: 0.0` döndürüyor. Kontrol kolu (`göre`, `kaç`, `alanı`) da %0 çıktı.
+CLAUDE.md'nin "Zemberek Integration" bölümü bunu çalışıyor varsayıyor.
+
+### Fail eden testler
+YOK. Y12 `8 xfailed` · `test_ders_kaydi.py` **9/9** · `test_question_bank_invariants.py`
+**1 failed / 2 passed** (fail = hacim, gerçek alarm, kasıtlı).
+
+### Ders defteri — 130 → **135**
+`L-s232-kontrol-kolu-bekciyi-DUZELTIR` (zorlayıcı VAR) ·
+`L-s232-acik-devre-dedektor-makul-sayi-dondurur` ·
+`L-s232-kaynak-diskte-degil-YAN-VERITABANINDA` ·
+`L-s232-yanlis-pozitifi-OKU-esigi-tahmin-etme` (zorlayıcı VAR) ·
+`L-s232-bayat-esik-mi-yoksa-susturulmus-gercek-alarm-mi` (zorlayıcı VAR)
+
+### Sonraki oturum için ilk 3 hamle
+1. **Y11 — kaynak `kiro2_temp`.** Kabul kriteri kullanıcı tarafından ÖNCEDEN ilan
+   edildi: yeni 40 örneklemde **≥38/40** yanıtlanabilir-ve-doğru · `source_book`
+   NULL **< %5** · `student_coherent` **tek değer olmayacak**. Y12 bunun mekanik
+   yarısını otomatik ölçüyor (I1-I6 + K2); anlamsal yarısı hâlâ örneklem okuması.
+   ⚠️ ÖNCE: `kiro2_temp`'ten **40-60 stratifiye okuma** (bugün yalnız 12 okundu,
+   11/12 — nokta tahmin, popülasyon ölçümü DEĞİL) + şema göçü planı (pre-split 76
+   kolon → 4 yavru tablo) + geri alınabilir + backup'lı + pilotlu.
+2. **Y12 xfail işaretlerini kaldırma anı**: Y11 sonrası testler XPASS verip KIRACAK
+   — bu tasarım. `_Y11` sabitindeki gerekçe tek yerde, oradan kaldırılır.
+3. **`test_question_bank_invariants.py` pre-push'a bağlansın mı?** Bugün BAĞLANMADI
+   (bilinçli): hacim testi gerçek FAIL veriyor, bağlanırsa **her push'u bloklar**.
+   Y11 kapanınca 187.835'e döneceği için o zaman bağlanmalı. **Politika kararı.**
+
+### Devralınan / açık
+- Y3 (28 × HTTP 500 GF) · Y8 (lint borcu) · Y9 (admin/öğretmen/veli seed yok) ·
+  Y10 (mypy alet arızası) · Y2-kalan (`difficulty_classification_service.py`)
+- `kiro2-api-import-smoke` S211'den beri kırık · host `pytest` uçtan uca koşamıyor
+  (97 `ERROR at setup of`, `tests/conftest.py:1186` `TestClient(app=)`)
+- **Bu oturum yeni bir uçtan uca durum tespiti ÜRETMEDİ** — en son tam tablo 6 Ağu
