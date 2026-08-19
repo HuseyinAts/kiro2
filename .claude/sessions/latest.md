@@ -1719,3 +1719,88 @@ YOK. Y12 `8 xfailed` · `test_ders_kaydi.py` **9/9** · `test_question_bank_inva
 - `kiro2-api-import-smoke` S211'den beri kırık · host `pytest` uçtan uca koşamıyor
   (97 `ERROR at setup of`, `tests/conftest.py:1186` `TestClient(app=)`)
 - **Bu oturum yeni bir uçtan uca durum tespiti ÜRETMEDİ** — en son tam tablo 6 Ağu
+
+---
+
+## Session Handoff — 2026-08-19 (S232-B · Y11 ön koşulu ÖLÇÜLDÜ) 🔴 EŞİK KARŞILANMIYOR
+
+**Branch:** feature/self-evolution-optimization
+**Karar:** **Y11 düz göç olarak YAPILAMAZ.** Migrasyon başlatılmadı; hiçbir veri değiştirilmedi.
+
+### Ölçüm — `kiro2_temp` kapı eşdeğeri (34.982), 60 soruluk orantılı stratifiye kör okuma
+
+| Yargı | Servis edilebilir | Not |
+|---|---|---|
+| Claude, kör, figürsüz | **39/60 = %65,0** | 19 yanıtlanamaz + 2 anahtar yanlış |
+| Ajanlar (8), kör, figürsüz | **43/60 = %71,7** | 16 yanıtlanamaz + 1 anahtar yanlış |
+| Claude, figür düzeltmeli **tavan** | **45/60 = %75,0** | 6 figür-bağımlı soru kurtarıldı |
+| Kapsama (`GENEL`+`FEN`) | **0/4** | popülasyonun %0,85'i, orana dahil değil |
+
+**Kullanıcının önceden ilan ettiği eşik %95 (≥38/40).** Ölçülen **%65-75** → **KARŞILANMIYOR**.
+Düz göçte 34.982 satırın **~9.000-12.000'i** servis edilemez içerik olarak açılırdı.
+
+Eşiğin diğer iki maddesi **GEÇİYOR**: `source_book` NULL **0,0000** (<%5 ✅) ·
+`pipeline_metadata` distinct **34.916** (tek değer değil ✅). Kusur köken/izlenebilirlikte
+değil, **içerik kalitesinde**.
+
+### 🔴 Kendi yargımda kusur bulundu ve düzeltildi
+19 "yanıtlanamaz"ın 6'sını *yalnız metne bakarak* elemiştim. Ölçüldü: `kiro2_temp`'te
+`question_image_url` **34.901/34.982 (%99,8)** dolu, `d-dataset/output/crops` altında
+**528.651 PNG** var, container'a `/app/static/crops` olarak **bağlı**, ve o 6 sorunun
+6'sında da dosya **diskte mevcut**. İki görsel açıldı — ikisi de soruyu kurtarıyor.
+→ %65 bir **taban**, %75 **tavan**. (Canlı kapıda aynı alan **0/27.073** — orada
+"figür yok" gerçek kusur, burada değil.)
+
+### 🔴 ÇÜRÜTÜLEN HİPOTEZ — kitap düzeyinde eleme yol değil
+Örneklemde aynı kitaptan **çift** bozuk çıkmıştı (Neofizik Fizik 2/2, Esen Aps Tarih 2/2,
+Aramot Fen 2/2) → "çöp kitap düzeyinde yoğunlaşmış, deterministik kitap elemesi filtre
+olur" hipotezi kuruldu. **Uygulanmadan önce kontrol kolu koşuldu ve çürüdü:**
+
+| İnsan yargısıyla 2/2 bozuk kitap | Y12 mekanik bayrak | Mekanik sıra |
+|---|---|---|
+| Neofizik Ayt Fizik 2025 | %3,7 | **80 / 350** |
+| Esen Aps Tyt Ayt Tarih | %1,8 | **127 / 350** |
+| Aramot Tyt 2023 Fen Bilimleri | %1,6 | **135 / 350** |
+
+Mekanik olarak **en kirli** kitaplar (%24,6'ya kadar) Türkçe/Dil Bilgisi/Paragraf
+kitapları — örneklemde özellikle bozuk çıkmayanlar. Kitap elemesi gerçek çöpü yerinde
+bırakır, muhtemelen sağlam kitapları atardı.
+
+### Y12'nin bu havuzdaki erişimi — 9x boşluk
+Y12 mekanik kuralları `kiro2_temp`'te **%2,40** bayrak veriyor; insan yargısıyla gerçek
+çöp **%21,7**. Beklenen (duyarlılık %30 ölçülmüştü) ama somut anlamı: **Y12 göç filtresi
+olamaz** — bekçidir, ayıklayıcı değil.
+
+### Kalan tek yol
+%70 → %95 için **ölçekte semantik yargı**: kör çözüm + konsensüs + nokta-kontrol, ders
+ders, backup tablosu + geri alınabilir UPDATE (S182-S198 deseni, o turlar başarılıydı).
+Ölçek ~34.982 soru → **çok oturumlu, veri değiştiren, ayrı onay gerektiren proje.**
+Bu turda **başlatılmadı**.
+
+### 🔴 Ölçüm aletinde arıza (dürüst kayıt)
+İki bağımsız kör tur (A: çözüm, B: eleme) tasarlandı, 8/8 ajan döndü — **ama turlar
+ayrıştırılamadı**: journal `key` alanı hash (`v2:35c02da1...`), script'in `is` alanı
+journal'a taşınmamış → `turA=64, turB=0`, iki tur üst üste yazdı. **Tur-arası
+anlaşmazlık sinyali ÜRETİLEMEDİ**; ajan sonucu tek kör tur olarak geçerli.
+Düzeltme: tur kimliği **sonuç şemasının zorunlu alanı** olmalı.
+
+### Kanıt / aletler
+- `docs/audits/2026-08-19_y11_kaynak_olcumu.md` — tam rapor
+- `docs/audits/2026-08-19_kiro2temp_orneklem_KOR.txt` — 64 soru, **anahtarsız** (sızıntı 0 doğrulandı)
+- `backend/scripts/quality/y11_orneklem_uret.sql` · `y11_anahtar_orneklem.tsv`
+- `backend/scripts/quality/y11_kitap_yogunlasma.sql` · `y11_kitap_kontrol_kolu.sql`
+
+### Ders defteri — 135 → **139** · bekçi 9/9
+`L-s232-kurtarma-kaynagi-da-olculur` · `L-s232-kendi-yargin-da-bir-olcum-aletidir` ·
+`L-s232-mekanik-siralamayi-insan-yargisiyla-dogrula` · `L-s232-tur-kimligi-sonuc-semasinda-olmali`
+
+### Sonraki oturum — KULLANICI KARARI BEKLEYEN TEK ŞEY
+**Semantik yargı turu finanse edilsin mi?** ~34.982 soru, ders ders, S182-S198 deseni.
+Alternatifler: (a) tam tur → %95 hedefi; (b) yalnız MATEMATIK+GEOMETRI+KIMYA+FIZIK
+(23.000 soru, sayısal derslerde yargı daha güvenilir) → kısmi havuz; (c) ertelenip
+B2C'nin içerik-dışı blokerlerine dönülmesi.
+
+### Devralınan / açık
+Y3 · Y8 · Y9 · Y10 · Y2-kalan · `test_question_bank_invariants.py` pre-push'a bağlanma
+kararı (Y11 sonrasına ertelendi) · `kiro2-api-import-smoke` kırık · host `pytest` uçtan
+uca koşamıyor

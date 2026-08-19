@@ -983,3 +983,31 @@
   durum: aktif
   zorlayici: backend/tests/db/test_question_bank_invariants.py
   kanit: "S232 — Bir denetim ajani test_question_bank_invariants.py'nin MIN_SATIR=150.000 esigini 'bayat' diye raporladi (canli DB 36.967 satir, yani esik hep dusuyor). Olculdu ve TERSI cikti: dosyanin kendi docstring'i '5 Agu 2026'da tablo 187.835 satirdan 2.304'e dustu' diyor ve kiro2_temp'te olculen deger tam olarak 187.835. Yani esik GERCEK korpusa gore kalibre edilmis; canlinin 36.967'de kalmasi 17 Agu'daki IKINCI icerik ikamesinin DOGRU bir alarmi. Esige dokunulmadi. ASIL kusur baskaydi ve ayni dosyadaydi: benzersizlik sorgusu 'SELECT count(DISTINCT question_text) FROM question_bank' diyordu ve o kolon S210'un 69-alan split'inde (0fd9b8413) question_content'e tasinmisti -> UndefinedColumnError. Yani benzersizlik invaryanti split'ten BERI hic olcmemisti; gorulmedi cunku DSN'siz kosumda test zaten skip oluyordu (iki kusur ust uste: sessiz skip + bayat sema). JOIN'e cevrildi, artik kosuyor (0,928 >= 0,90 GECIYOR). Kural: 'esik bayat' bir OLCUMDUR. Once esigin turedigi sayiyi bul (docstring / commit mesaji / kalibrasyon kaydi); o sayi baska bir yerde HALA gecerliyse esik bayat degil, ALARM GERCEKTIR. Ve her zaman sor: bu bekci gercekten KOSUYOR mu yoksa skip mi ediyor?"
+- id: L-s232-kurtarma-kaynagi-da-olculur
+  baslik: "Kurtarma kaynagini 'temiz' saymak, kaybettigin havuzu 'dolu' saymakla ayni hatadir"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — kiro2_temp bulundugunda hemen 12 soru okundu, 11'i servis edilebilir cikti (%92) ve bu 'kaynak saglam' gibi okundu. Kullanici esigi (>=%95) icin 60 soruluk ORANTILI STRATIFIYE kor okuma yapildi ve sonuc cok farkli cikti: Claude 39/60 (%65), ajanlar 43/60 (%71,7), figur duzeltmesiyle tavan 45/60 (%75). Yani ilk 12'lik cekim SANSLIYDI; nokta tahmin populasyon degeri degildir. Kalan kusur figurler hesaba katildiktan SONRA bile %21,7 ve siniflari somut: anlamsiz Turkce ('Atomojiklerin', 'denge notasi'), GEOMETRIK OLARAK IMKANSIZ veri (A=60, AB=3, BC=2 -> kosinus teoremi b^2-3b+5=0, diskriminant -11), birebir ayni iki sik, eksik onceki-veri. Kural: bir kurtarma kaynagini kullanmadan once HEDEF ESIGE gore olc, kucuk bir orneklemin verdigi izlenime gore degil. Kardes ders: L-s231-hacim-vekil-olcum-icerik-degil (orada hacim vekildi, burada KUCUK ORNEKLEM vekil)"
+- id: L-s232-kendi-yargin-da-bir-olcum-aletidir
+  baslik: "Metne bakip 'yanitlanamaz' demek, figur varsa OLCUM DEGIL VARSAYIMDIR"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — 60 soruluk orneklemde 19 soru 'yanitlanamaz' diye yargilandi; bunlarin 6'si 'figur-bagimli, figur yok' gerekcesiyle elenmisti. Ama yargi YALNIZ METNE bakilarak verilmisti. Olculdu: kiro2_temp'te question_image_url 34.901/34.982 (%99,8) dolu; d-dataset/output/crops altinda 528.651 PNG var ve container'a /app/static/crops olarak BAGLI; 6 sorunun 6'sinda da dosya diskte MEVCUT. Iki gorsel acilip bakildi (eskenar ucgen boyali bolgeler, A x B kartezyen grafigi) ve ikisi de soruyu KURTARIYOR. Yani %65 rakamý bir TABAN, %75 tavan. Bu, canli kapiyla en keskin farklardan biri: canlida question_image_url 0/27.073 -> orada 'figur yok' gercek kusur, kiro2_temp'te DEGIL. Kural: 'bu soru yanitlanamaz' demeden once sorunun TASIDIGI TUM varliklari (gorsel, pasaj, tablo) kontrol et; metin tek basina sorunun tamami olmayabilir. Yargilayan da bir olcum aletidir ve kendi kor noktasi vardir"
+- id: L-s232-mekanik-siralamayi-insan-yargisiyla-dogrula
+  baslik: "Ucuz bir metrikle KUME elemeden once, o metrigin insan yargisini ONGORDUGUNU dogrula"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — 60'lik orneklemde ayni kitaptan CIFT bozuk soru cikti (Neofizik Fizik 2/2, Esen Aps Tarih 2/2, Aramot Fen 2/2). Buradan makul bir hipotez kuruldu: cop KITAP duzeyinde yogunlasmis olabilir -> deterministik kitap elemesi ucuz ve geri alinabilir bir filtre olur. Uygulanmadan ONCE kontrol kolu kosuldu: Y12'nin dogrulanmis 6 kurali 350 kitaba tek tek uygulandi ve insan-bozuk kitaplarin MEKANIK SIRASI arandi. CURUDU: Neofizik %3,7 (sira 80/350), Esen Aps Tarih %1,8 (127/350), Aramot Fen %1,6 (135/350) -- hepsi ortalarda. Mekanik olarak EN KIRLI kitaplar (%24,6'ya kadar) Turkce/Dil Bilgisi/Paragraf kitaplariydi ve orneklemde ozellikle bozuk cikmamislardi. Yani kitap elemesi gercek copu YERINDE BIRAKIP muhtemelen saglam kitaplari atardi. Genel mekanik bayrak %2,40 iken insan yargisiyla cop %21,7 -- 9 kat boslugu. Kural: bir siralama/skor ile TOPLU eleme yapmadan once, o skorun elle dogrulanmis ornekleri ONGORDUGUNU olc. Ongormuyorsa skor o is icin kordur; hipotezi CURUTMEK uygulamaktan ucuzdur"
+- id: L-s232-tur-kimligi-sonuc-semasinda-olmali
+  baslik: "Paralel turlari AYIRT etmek istiyorsan tur kimligini SONUC SEMASINA koy — harness etiketi hash olabilir"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — kor cozumde iki bagimsiz tur tasarlandi (A: dogrudan cozum, B: eleme) cunku deponun kayitli dersi 'same-model DISPUTE != DB hatasi; ikinci sinyal sart' diyor. 8 ajanin 8'i dondu, 128 kayit uretti. Ama turlar AYRISTIRILAMADI: workflow journal'inda `key` alani hash (`v2:35c02da1...`), ajanin `label`'i sonuc nesnesinde yok, ve script'in koydugu `is` alani journal'a tasinmamis. Iki tur ayni sozluge yazip uzerine bindi -> turA=64, turB=0. Sonuc: tur-arasi anlasmazlik sinyali URETILEMEDI ve olcum tek kor tur olarak raporlandi. Kritik nokta: bu bir BULGU gibi gorunuyordu ('turB bos') ama ALET ARIZASIYDI. Kural: paralel turlari ayirt etmen gerekiyorsa tur kimligini ajanin DONDURDUGU semanin icine zorunlu alan olarak koy (orn. `tur: {enum: [A,B]}`); harness'in etiketleme mekanizmasina guvenme"
