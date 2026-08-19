@@ -153,6 +153,39 @@ def test_aktif_dersler_kanit_tasiyor() -> None:
     )
 
 
+# S232'de olculdu: 143 dersin 41'inde `zorlayici` var ve o 41'i pre-push
+# kapisinda (`ders-zorlayici` hook'u) FIILEN kosuyor. Bundan ONCE oran %29 idi
+# ama KOSAN %0'di — yani "zorlayici alani dolu" tek basina hicbir sey
+# kanitlamiyordu (S231 olcumu).
+#
+# CIRCIR (ratchet) MANTIGI: bu sayi DUSMEMELI. Enforcement sessizce erimenin
+# tam olarak nasil gerceklestigini bu depo yasadi: 28 Tem'de pre-commit test
+# hook'u kaldirildi, kimse fark etmedi, aylar sonra %0 olarak olculdu.
+#
+# NEDEN ORAN DEGIL MUTLAK SAYI: `L-s231-sabit-esik-suite-buyudukce-gevser`
+# mutlak esiklerin evren buyudukce gevsedigini soyler ve bu genelde dogru.
+# BURADA TERSI: yeni ders eklemek orani DUSURUR (payda buyur), yani oran
+# tabani mesru ders eklemeyi BLOKLARDI. Korunmasi gereken sey "kac dersin
+# bekcisi var" — o yuzden taban SAYIYA baglandi.
+ZORLAYICI_TABANI = 41
+
+
+def test_zorlayici_sayisi_gerilemiyor() -> None:
+    """Enforcement geriye gitmemeli — bu depoda %0'a dusen bir kapi var.
+
+    Bu test DUSERSE iki mesru sebep olabilir:
+      1. Bir bekci dosyasi silindi/tasindi  -> dersi guncelle
+      2. Bir ders curutuldu ve bekcisi de gitti -> TABANI dusur ve
+         commit mesajinda NEDEN dustugunu yaz (sessiz gerileme yasak)
+    """
+    sayi = sum(1 for g in _kayit() if g["zorlayici"])
+    assert sayi >= ZORLAYICI_TABANI, (
+        f"Zorlayicisi olan ders sayisi {sayi} — taban {ZORLAYICI_TABANI}. "
+        "Enforcement GERILEDI. Bir bekci dosyasi mi silindi, yoksa taban mi "
+        "bilincli dusuruluyor? Ikincisiyse tabani guncelle ve gerekcesini yaz."
+    )
+
+
 def test_curutulen_dersler_gerekce_tasiyor() -> None:
     """Bir ders SESSIZCE curutulemez: neyin curuttugu yazili olmali."""
     gerekcesiz = [
