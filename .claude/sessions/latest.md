@@ -2087,3 +2087,155 @@ yedek        : backups/kiro2_20260819_y11_oncesi.dump (6,6 MB, 147.880 satir dog
   susturulmadı; biçim kapısı yazıldı, mutasyonla sınandı, sonra bastırıldı — ve
   bastırmanın yük taşıdığı ölçüldü (nosec varken bandit 0, yokken 1).
 - **Göç kapısında insan tek karar mercii DEĞİL** (S232-C'den taşınıyor, hâlâ geçerli).
+
+---
+
+## Session Handoff — 2026-08-19/20 (S233 · FAZ 0 + A1 + A2 + A2b + A3) ✅
+
+**Branch:** feature/self-evolution-optimization · uzakla **senkron** (`b22d279d3`, ahead/behind 0)
+**Commit'ler:** `f7b16b569` (plan) · `6da66a1e6` (A3) · `b22d279d3` (A2b) — **3'ü de push edildi**
+**Takipli-kirli:** yalnız devralınan `backend/semantic_cache.pkl`
+
+### Bu turun konusu
+S232-H "ADIM 2 için gereken her şey handoff'ta" diyerek kapanmıştı. Bu tur ADIM 2'ye
+girmedi; **girmeden önce ölçtü** ve göçü koruyacak dört güvenlik ağının dördünün de
+ölü olduğunu buldu. İş, veri taşımak değil **taşımayı güvenli kılmak**tı.
+
+### 8 ajanlı salt-okunur ölçüm turu (1,41M token, 27 dk) — 8 P0
+| # | Ölçülen gerçek | Kanıt |
+|---|---|---|
+| P0-1 | `soru_hash` canlıda **%100 UUID4**, içerik hash'i değil | `_soru_hash_uret()` taklidi 5 satırda **0/5** |
+| P0-2 | Kapı `v_safe_for_beta` **`is_active` filtrelemiyor** | viewdef WHERE'de 0 kez (kontrol kolu `quality_review_status` 1) |
+| P0-3 | `question_bank(id)`'ye **11 FK, 11'i ON DELETE CASCADE** | `pg_constraint confrelid` |
+| P0-4 | Yedek **bayat**: dump içinde `topic_hierarchy` 12, canlı 26 | `pg_restore --data-only` sayımı |
+| P0-5 | Invaryant bekçisi pre-push'ta **3/3 SKIP** | `sss / EXIT=0`; DSN'le `2 passed, 1 xfailed` |
+| P0-6 | Y12'nin 8 xfail'inden **4'ü INSERT anında XPASS** | `--runxfail` marjları `1>1`, `0>0` |
+| P0-7 | `REFRESH` `kiro2_app` ile çalışmaz | `matviewowner=postgres`, `pg_has_role=f` |
+| P0-8 | `embedding` **768 ↔ 1536** | `format_type` (— `udt_name` **0 fark** dedi, alet kördü) |
+
+**Kapsam düzeltmesi:** handoff'un ders rakamları **kapı alt kümesi**, korpus değil
+(MATEMATIK kapıda 14.119 / tabloda **65.341**). Kalan iş kapı düzeyinde **120,9M**,
+tam korpus **743,1M** token. Tam korpus göçünde satırların **%94,07'si** bugün FK ihlali verir.
+**Y8 severity ÇÜRÜDÜ:** kapı `pyproject.toml:195` `select`'te `PL` yok → 202 kalem
+hiçbir commit'i bloklamıyor → **P1 değil P3.**
+
+### FAZ 0 — engelleyici FANTOM çıktı
+S232-G/H'den beri taşınan *"`postgres` parolası elimde yok → DDL bloke"* **hiç ölçülmemişti.**
+`pg_hba.conf`: `local/127.0.0.1/docker/LAN → trust`. **Parola gerekmiyor.**
+Kanıt: `psql -U postgres -c "SELECT current_user, usesuper"` → `postgres|t`, EXIT=0;
+kontrol kolu aynı komut `kiro2_app` ile → `kiro2_app`.
+→ **P0-4 · P0-7 · backup-tablo engeli kalktı.**
+⚠️ **Yeni açık iş (P1, güvenlik):** `trust` docker ağı (172.17/172.18) ve LAN
+(192.168.65.0/24) için de açık. **pg_hba'ya bu turda DOKUNULMADI** (çalışan stack riski).
+
+### A1 + A2 — ve YENİ BİR P0 (P0-9)
+Taze yedek: `backups/kiro2_20260819_y11_adim2_oncesi.dump` (6,63 MB) + `.prereq.sql`.
+Dump **içi sayıldı**: **147.894** = 4×36.967 + 26. Kontrol kolu: eski dump'ta
+`topic_hierarchy` **12** → P0-4 bağımsız doğrulandı.
+
+**P0-9 — `pg_dump -t` yedeği KENDİ KENDİNE YETERLİ DEĞİL.** Gerçek `pg_restore` denendi, düştü:
+
+    ERROR: type "public.questiondifficultylevel" does not exist
+    -> question_statistics TABLOSU HIC OLUSMADI -> 36.967 satir HIC YUKLENMEDI
+    (5 tablodan 4'u yuklendi, pg_restore yalnizca EXIT=1 dedi)
+
+İkinci katman tip eklenince çıktı (`public.vector`) → tek tek keşif yerine
+`pg_catalog`'dan **sistemik** çıkarıldı; bağımlılıkların tamamı **2 tane**.
+Önkoşul üretildi, ikinci prova **147.894/147.894, 5/5 tablo**. Probe DB silindi,
+**canlı dokunulmadı** (36.967 / 27.073 / 26).
+
+### A3 — invaryant bekçisi artık ÖLÇÜYOR
+`ders_zorlayici_kos.py` DSN'i `backend/.env`'den çözüp pytest alt sürecine enjekte ediyor.
+STRICT **koşulsuz açılmıyor** (taze makinede içerik olmaması meşru — o dosyanın kendi
+12 Ağu gerekçesi korundu); sqlite **reddediliyor**; sürücü dönüşümü **yapılmıyor**
+(tek tanım tüketicide). `dsn_maskele()` parolayı gizliyor — kapı çıktısında parola **0 kez**.
+
+    kapi: 172 passed / 3 skipped / 8 xfailed  ->  182 / 0 / 9
+    ayristirma: +2 fix'in GERCEK kazanci, +8 ayni commit'te yazilan yeni testler
+    mutasyon 2/2: DSN kaldir -> 3 skipped (KOR) · esik 0.90->0.99 -> 1 failed
+                  `assert 0.9286661076094895 >= 0.99` (OLCUYOR)
+
+### A2b — P0-9 kalıcı kapatıldı (plan dışıydı, bugün eklendi)
+`backend/scripts/quality/yedek_onkosul_uret.py` (üreteç) +
+`backend/tests/db/test_yedek_onkosul_kapsami.py` (8 test).
+Bekçi **dosyaya değil ÜRETECE** bağlı — `backups/*` gitignore'da, dosyaya bağlanan test
+taze klonda anlamsız olurdu. Üreteç, elle kurduğum önkoşulu **birebir yeniden üretti**.
+**Mutasyon 3/3**, hepsi `failed`, üç geri alım `git status` ile TEMİZ:
+
+| Mutasyon | Öldüren |
+|---|---|
+| M1 uzantı satırını sil | `_kendi_kapsamini_saglar` + `_onkosul_tam` |
+| M2 enum etiketlerini alfabetik sırala | `_sirayi_korur` |
+| M3 `question_statistics`'i tablo kümesinden çıkar | `_dumpla_ayni_kume` + **`_bos_degil`** |
+
+M3 en değerlisi: P0-9'un kendisini simüle ediyor — küme daralınca `eksik` **boş** kalır,
+asıl test **yeşil** kalırdı. Yanlış-sıfır kapısı olmasaydı bekçi kendi kusuruna kör olurdu.
+
+### Fail eden testler
+**YOK.** Kapı yeşil: **20 dosya / 190 passed / 0 skipped / 9 xfailed**, EXIT=0.
+9 xfailed = Y12 içerik bekçisi (8) + hacim bekçisi (1) — beklenen, Y11 kapanınca XPASS'a döner.
+
+### Ders defteri 143 → **148** · zorlayıcı 41 → **43** · cırcır tabanı **43**
+`L-s233-pg-dump-t-yedegi-kendi-kendine-yeterli-degil` (zorlayıcılı) ·
+`L-s233-devir-notundaki-engelleyici-de-olculur` ·
+`L-s233-aletin-cikti-dili-kor-nokta` ·
+`L-s233-bekci-dosya-sayimi-assert-sayimi-degil` (zorlayıcılı) ·
+`L-s233-commitsiz-dosya-mutasyona-sokulmaz`
+Cırcır kalibre: taban 43 → `10 passed`, taban 44 → `1 failed` (tam oturuyor).
+Kapı dosyası **19 → 20**, kancaya **dokunulmadan** (defterden türetme uçtan uca çalıştı).
+
+### Bu turda 4 alet arızası / kural ihlali (dürüst kayıt)
+1. **Kendi kuralımı ihlal ettim:** mutasyonları commit'siz dosyada koştum →
+   `git checkout HEAD --` "did not match any file(s)" ile düştü → M1 geri alınmadı,
+   M2 üstüne bindi (**M2 ölçümü geçersizdi**). Kayıp olmadı çünkü geri alım doğrulaması
+   BAŞARISIZ dedi. Commit sonrası doğru sırayla tekrarlandı → 3/3.
+2. **`grep '^pg_restore: error'` → 0.** Türkçe locale `pg_restore: hata` yazıyor.
+   "EXIT=1 ama 0 hata" çelişkisi fark edilmeseydi kırık yedek "doğrulandı" olurdu.
+3. **Sentezciye giden paketi `slice(0,60000)` ile kestim** → sentez ajanı "6 ölçümün
+   yalnız 3,5'i geldi" dedi. Ölçümlerin 6'sı da tamdı; **alet arızası benim script'imdeydi.**
+4. **ruff N802'yi aynı oturumda İKİ KEZ** yaptım (vurgu için BÜYÜK harfli test adları).
+   İkisinde de `noqa` kullanılmadı, 13 test yeniden adlandırıldı.
+Ayrıca: **"3 commit bekliyor" dedim, gerçek 2** — elle sayım, S223'ün birebir tekrarı;
+`git log --oneline origin/<dal>..HEAD | wc -l` ile yakalandı.
+
+### Sonraki Adımlar (maks 5)
+1. **A4** — 4-tablo parity bekçisi (bugün YOK, grep 0). Kısmi INSERT sessiz kalıyor:
+   `question_bank`'a yazılıp yavruya yazılmayan satır kapıda görünmez, tabloda durur,
+   **hiçbir test görmez**. JOIN anahtarı **`qc.id = qb.id`** — `question_id` kolonu YOK
+   (`L-s230-yavru-tablonun-pk-si-id`). 6 yönlü assert + mutasyon.
+2. **A5** — Y12 `i6`'yı `--runxfail` ile ÖLÇ. Eleştirmenin "INSERT anında kırılır" cümlesi
+   `auto_judged_high` varsayımıyla kurulmuş bir **çıkarım**; `pending` yazınca satırlar
+   kapıya hak kazanmaz, i6 muhtemelen 0'da kalır. Ölç, varsayma.
+   **Sıra kritik:** pre-push push anında koşar → **(1) veriyi yaz → (2) i1/i3/i4/i5
+   xfail'lerini kaldır → (3) commit + push.** Ters sırada testler gerçekten FAIL verir.
+3. **FAZ B** — `y11_goc.py` saf dönüşüm + 9 RED test (embedding atlanır · remap **`code` ile** ·
+   eksik konu **kopyalanmaz** (UNIQUE(code)) · `created_by` NULL (65 yetim) · `is_public` açık ·
+   `pending` · dedup **metin+şık** ile, hash ile DEĞİL · `y11_batch` damgası).
+4. **FAZ C** — 50 satırlık pilot, `BEGIN…ROLLBACK`. Örneklem kör nokta bırakmaz:
+   ≥5 remap · ≥3 kapı-elenen · ≥2 mükerrer grubu · ≥1 çapraz-DB · ≥1 `created_by` yetimi.
+5. **FAZ D** — 3.554 ± ~10 satır kalıcı, `pending`, 1000'lik parti.
+   `question_bank` 36.967 → **~40.521**; `mv_safe_for_beta` **27.073'te KALIR** (beklenen).
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **Kapsam yalnız KIMYA** · **kapı politikası `pending` yaz → ayrı onayla terfi** ·
+  **geri alma `DELETE` + "bağlı cevap sayısı = 0" ön kapısı** (kullanıcı kararları).
+- `pending` politikası P0-3'ün CASCADE tuzağını pilot penceresinde **etkisiz kılıyor**
+  (kapıya girmeyen soru cevap üretmez) ve **FAZ D'yi postgres'siz bile yürütülebilir** yapıyor.
+  Bloke olan yalnız FAZ E (terfi + REFRESH).
+- **Geri alma kümesinin tek kaynağı `pipeline_metadata->>'y11_batch'` damgası**, tarih penceresi DEĞİL.
+- Hacim bekçisinin `MIN_SATIR=150.000` eşiğine **dokunulmadı** — bayat değil, gerçek alarm.
+- Kapının ruff'ı **0.7.1**, kabuğunki 0.14.13; biçim `pre-commit run ruff-format` ile
+  **depo kökünden**. Bu turda commit'i 1 kez düşürdü.
+- Bastırma (`# pragma: allowlist secret`) **yük taşıdığı ölçülerek** kondu; biçimlendirme
+  sonrası pragma'nın satırda kaldığı **yeniden ölçüldü** (S219'da `# nosec B311` böyle kırılmıştı).
+
+### Devralınan / açık
+- Y3 (28× GF HTTP 500 — **doğrulanmadı**, `latest.md:1291`'den alındı) · Y9 (seed:
+  `seed_mvp_data.py` 4 rolü de üretiyor, sadece bu DB'ye koşulmamış — **ucuz**) ·
+  Y10 (mypy yapısal kör) · Y2-kalan · Y8 (**P3'e indi**)
+- `#485` kalan: **SINIF=45 koşulsuz çalışma-anı kırığı** (`question_repository.py` 16 ·
+  `exam_performance_service.py` 11) + `irt_daemon.py:195` KWARG=6 → her IRT kalibrasyon
+  yazımı `CompileError`
+- `.pre-commit-config.yaml:253` bayat maliyet yorumu (19→20 dosya oldu) — dokunulmadı
+- `kiro2-api-import-smoke` S211'den beri kırık · host `pytest` uçtan uca koşamıyor
+- **Bu oturum yeni bir uçtan uca durum tespiti ÜRETMEDİ** — en son tam tablo hâlâ 6 Ağu
