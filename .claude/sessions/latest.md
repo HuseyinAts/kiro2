@@ -1945,3 +1945,145 @@ YOK. Bu turda pytest koşulmadı (iş DB tarafındaydı). Y12 bekçisi son koşu
   kalibre edilirken kontrol kolu (Claude'un 24 elle yargısı) **düştü**; mekanizma
   5 kalemde haklı çıktı. İki bağımsız çerçeve + insan tahkimi.
 - **`orta` güven atılmadı** — aleyhine kanıt yok, bedeli %9,2 olurdu (#451 deseni).
+
+---
+
+## Session Handoff — 2026-08-19 (S232-H · ENFORCEMENT KAPANDI) 🔒
+**Branch:** feature/self-evolution-optimization · uzakla **senkron** (ahead/behind yok)
+**Son commit:** `d81cd7214` test(dersler): enforcement circiri — zorlayici sayisi geriye gidemez
+**Uncommitted:** yalnız devralınan `backend/semantic_cache.pkl` (oturum başında da
+kirliydi, bu turun işi değil) + 99 takipsiz çalışma dosyası (önceden var olan gürültü).
+
+### Bu turun konusu
+S231 bir sayı ölçmüştü ve o sayı asıl bulguydu: **dersler yazılıydı ama hiçbiri
+koşmuyordu.** Bu tur o boşluğu kapattı. İş kod değil *mekanizma* işiydi.
+
+| Ölçüm | S231 | S232-H |
+|---|---|---|
+| Defterdeki ders | 130 → 141 | **143** |
+| `zorlayici` alanı dolu | 40 (%28) | **41 (%29)** |
+| **Bunların otomatik koşanı** | **0 (%0)** | **19 bekçi dosyası, HER PUSH** |
+| Kapı süresi | — | **~45 sn** (172 passed / 3 skipped / 8 xfailed) |
+
+### Yapilanlar
+
+**1. `d3d0f13b4` — kapı kuruldu, liste DEFTERDEN TÜRETİLİYOR**
+- `backend/hooks/ders_zorlayici_kos.py` (yeni) — `ders_kaydi.yaml`'daki `zorlayici:`
+  alanlarını ayrıştırır, o dosyaları pytest'e verir. `.pre-commit-config.yaml`'a
+  `ders-zorlayici` olarak **pre-push** aşamasında bağlandı.
+- **Neden elle liste değil:** elle yazılan 18'lik liste bayatlar; yeni ders eklenince
+  kimse güncellemez ve enforcement gerilerken sayı "18" olarak doğru görünür
+  (`L-s219-ilerleme-sayaci-da-bir-olcum-aletidir`). Türetince **derse `zorlayici`
+  yazmak = onu kapıya bağlamak** olur; defter dokümantasyon değil yük taşıyan yapı.
+- **Uçtan uca kanıtlandı:** bu turda yeni bir ders eklendi, kancaya tek satır
+  dokunulmadan liste **18 → 19** oldu.
+- Kapı iki yönde mutasyonla sınandı: defter var olmayan dosya gösterince `exit 1`,
+  bekçi kırmızı olunca `exit 1`, mutasyonsuz `exit 0`. **Boş liste de HATA** —
+  boş liste bulgu değil, alet arızası adayıdır.
+- `backend/tests/db/test_question_bank_invariants.py:138` — hacim bekçisine
+  `xfail(strict=True)`. 36.967 < 150.000 **doğru bir alarm**; kapıya bağlayabilmek
+  için işaretlendi, yoksa doğru alarm her push'u bloklar ve SKIP alışkanlığa dönerdi
+  (S215/S228/S229-B deseni). ⚠️ **Y11 bitince XPASS verip KIRACAK** — işaret o an
+  kaldırılmalı, eşik de yeniden ölçülmeli (yalnız kabul edilen ~%83 taşınıyor →
+  tam göç ~140-155K, 150.000 sınırda kalır).
+
+**2. `ae830d67d` — kancanın kendi bekçisi + çivilenemeyen dal silindi**
+- `backend/tests/unit/test_ders_zorlayici_hook.py` (yeni, 16 test). Kanca artık
+  enforcement'ın belkemiği ve testi yoktu; iki sessiz bozulma yolu vardı, ikisi de
+  kapıyı **kırmızı vermeden** etkisizleştirir: (a) ayrıştırıcı bozulur → liste boş,
+  (b) biçim kapısı bozulur → defterdeki satır pytest **bayrağına** dönüşür (`-p x`).
+- **Özyineleme yok:** `main()` sonunda pytest çağırıyor ve bu dosya defterde
+  `zorlayici` olarak kayıtlı (yani kanca onu koşuyor) → yalnız saf fonksiyonlar
+  sınanıyor. Bunun için biçim kapısı `bicim_gecersizleri()` diye ayrıldı.
+- **6 mutasyon** koşuldu, 5'i test düşürdü. **M5 hayatta kaldı** ve bir bulgu üretti:
+  `y.startswith("-")` dalı hiçbir şey yapmıyordu (bir bayrak zaten ne `backend/`
+  önekini ne `.py` sonekini sağlar → iki kural onu çift kapsıyor). Çivilenemeyen dal
+  = test edilemez ağırlık (`L-s214`) → **kaldırıldı**, ölçüm docstring'e yazıldı ki
+  bir sonraki kişi "güvenlik için" geri eklemeden önce aynı ölçümü tekrarlasın.
+
+**3. `d81cd7214` — cırcır (ratchet)**
+- `backend/tests/unit/test_ders_kaydi.py` · `ZORLAYICI_TABANI = 41`. Erime bu depoda
+  **gerçekten oldu**: 28 Tem'de pre-commit test hook'u kaldırıldı, kimse fark etmedi,
+  aylar sonra %0 olarak ölçüldü.
+- **Neden oran değil mutlak sayı:** `L-s231` mutlak eşiklerin evren büyüdükçe
+  gevşediğini söyler ama **burada tersi** — yeni ders eklemek oranı düşürür (payda
+  büyür), yani oran tabanı meşru ders eklemeyi bloklardı. Korunan şey "kaç dersin
+  bekçisi var". Gerekçe testin yanında yazılı.
+- Mutasyonla kalibre: taban 41 → `10 passed`, taban 42 → `1 failed`. Yani gerçek
+  sayıya **tam** oturuyor, gevşek tavan değil.
+
+**4. Kalıcı hafıza**
+- `memory/project_s232-y11-kaynak-ve-enforcement.md` (yeni).
+- **MEMORY.md'nin ÖNCE OKU bloğu DÜZELTİLDİ** — "gerçek korpus diskte:
+  `eslesmis_sorucevap.jsonl`" diyordu; S232 bunu çürüttü (`kiro2_temp`). O blok her
+  oturumda yükleniyor; bayat kalsaydı sonraki turu yanlış kaynağa gönderirdi.
+- Defter +2 ders: `L-s232-enforcement-listesi-defterden-turetilmeli` (zorlayıcılı),
+  `L-s232-boru-hattinda-exit-kodu-SON-komutundur`.
+
+### Fail Eden Testler
+**YOK.** Kapı yeşil: `172 passed, 3 skipped, 8 xfailed` (19 dosya, 44 sn).
+8 xfailed = Y12 içerik bekçisi + hacim bekçisi — **beklenen**, Y11 kapanınca XPASS'a döner.
+
+### Engelleyiciler
+- **`kiro2_app` CREATE TABLE yetkisiz** (`permission denied for schema public`).
+  DDL gereken iş için `postgres` parolası lazım, **elimde yok**. ADIM 2/3 DDL
+  gerektirmiyor (sadece INSERT) → şu an bloklamıyor.
+- **%29 ≠ %100.** Kalan 102 dersin çoğu makine ile korunamaz: sınıf dağılımı
+  ölçüm 34 · test 31 · alet 27 · tekrarlayan 5 · süreç 3 · şema 2. "Ölçüm aletini
+  doğrula" bir pytest assert'ine dönmez; ajan davranışı olarak yaşar. Cırcır bu
+  gerçeği gizlemiyor, sadece **kazanımın erimesini** engelliyor.
+- Ayrıca 42 ders `dogrulanmadi` durumunda (göç edilmiş, bu depoda hiç ölçülmemiş).
+
+### Bu turda 3 alet arızası (biri kuralın 3. ihlali)
+1. **`git commit … | tail; echo $?` → "EXIT 0" yazdı, commit exit 1 ile DÜŞMÜŞTÜ.**
+   `$?` boruda `tail`'in kodunu ölçer. Yakalayan şey `L-s229-commit-yarim-gidebilir`
+   gereği koşulan `git show --stat HEAD` oldu — bir ders, başka bir dersin ölçüm
+   aletindeki arızayı gördü. Doğrusu: `komut > /tmp/out 2>&1; KOD=$?`.
+2. **Mutasyon geri alım doğrulaması yanlış-negatif verdi** — `git diff --stat` boş
+   değildi ama sebep mutasyon değil, dosyadaki commit'siz refactor'dü. Doğru kontrol
+   içerik karşılaştırmasıydı (`'or False' in metin`).
+3. **Türkçe metni bash heredoc'a gömmek** — `unexpected EOF` ile düştü (kesme
+   işaretleri). Kısmi yazım OLMADI (dosya 1947'de kaldı, doğrulandı). Doğrusu:
+   içeriği Write tool'u ile ayrı dosyaya yaz, sonra `cat >>` ile ekle. Bu, kayıtlı
+   "Türkçe SQL'i inline `-c` ile geçirme" kuralının **kabuk ayağı**.
+
+### Sonraki Adimlar (maks 5)
+1. **ADIM 2 — 50 satırlık pilot + ROLLBACK.** Girdi hazır:
+   `backend/scripts/quality/y11_kimya_verdikt_TAM.tsv` (4.419 satır, **3.666 KABUL**
+   — 19 Ağu'da yeniden sayıldı). Kapılar: satır invaryantı (50 → 4×50, yetim 0) ·
+   JOIN'le geri okuma · 5/5 nokta-kontrol.
+   ⚠️ **865 sorunun `primary_topic_id`'si REMAP edilmeli** — bu turda yeniden ölçüldü:
+   **KIM 852 · FIZ 12 · GEN 1**. Canlı `topic_hierarchy` **26** (ADIM 1 kalıcı).
+2. **ADIM 3** — 3.666 satır, 1000'lik parti, her parti sonrası invaryant.
+3. **ADIM 4** — `mv_safe_for_beta` REFRESH → Y12 bekçisini koş → `xfail` işaretlerini
+   kaldır (`test_icerik_gecerliligi.py`, `_Y11` sabiti **tek yerde**) → hacim
+   bekçisinin `xfail`'ini kaldır ve `MIN_SATIR`'ı yeniden ölç.
+4. ③ tekilleştirme (**153** gerçek mükerrer; "669" ÇÜRÜDÜ, şıklar sayılmıyordu) +
+   anahtar düzeltme (~%1,4) — ADIM 2/3'ün içinde, ayrı iş değil.
+5. Diğer sayısal dersler: MATEMATIK 14.119 · FIZIK 3.468 · GEOMETRI 2.948 (~81M token)
+   → **R1-R4 her ders için yeniden ölçülmeli**, KIMYA kalibrasyonu devredilemez.
+
+### Canlı durum (19 Ağu, bu turda ölçüldü — ezberden yazılmadı)
+```
+canli kiro2  : question_bank 36.967 · mv_safe_for_beta 27.073 · topic_hierarchy 26
+kiro2_temp   : 187.835 soru / 420 kitap / difficulty 5 farkli / irt 68.022 farkli
+KIMYA        : 4.419 yargilandi -> 3.666 KABUL (%83,0)
+remap gereken: KIM 852 · FIZ 12 · GEN 1  (toplam 865)
+yedek        : backups/kiro2_20260819_y11_oncesi.dump (6,6 MB, 147.880 satir dogrulandi)
+```
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Enforcement listesi elle yazılmaz, defterden türetilir.** Bir derse `zorlayici`
+  yazmak onu kapıya bağlar. Yeni bekçi eklemek için kancaya dokunma.
+- **Doğru bir alarmı susturmak için `skip` değil `xfail(strict=True)`** kullanılır:
+  düzelince XPASS ile kendini bildirir, susturma kalıcılaşmaz.
+- **Cırcır mutlak sayıya bağlı** (oran değil) — gerekçe `test_ders_kaydi.py`'de yazılı.
+  Taban düşürülecekse commit mesajında NEDEN düştüğü yazılır; sessiz gerileme yasak.
+- **Çivilenemeyen kod silinir.** Bir dalın var olması gerekli olduğunu kanıtlamaz;
+  hiçbir mutasyonla öldürülemeyen dal test edilemez ağırlıktır (`L-s214`).
+- **Kapının ruff'ı 0.7.1**, kabuğunki 0.14.13 — biçim `pre-commit run ruff-format`
+  ile, **depo kökünden** yapılır (`L-s224`). Bu turda 2 kez commit'i düşürdü.
+- **`# noqa`/`# nosec` gerçek bir kapıya dayanmalı.** `subprocess` bulgusu
+  susturulmadı; biçim kapısı yazıldı, mutasyonla sınandı, sonra bastırıldı — ve
+  bastırmanın yük taşıdığı ölçüldü (nosec varken bandit 0, yokken 1).
+- **Göç kapısında insan tek karar mercii DEĞİL** (S232-C'den taşınıyor, hâlâ geçerli).
