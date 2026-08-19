@@ -157,9 +157,20 @@ async def test_question_bank_benzersizlik_orani(db_session):
     Hacim tabanını tek başına geçen bir kopya-doldurma (aynı metnin N kopyası)
     bu kapıda düşer — 5 Ağu'daki başarısızlık tam olarak buydu.
     """
+    # ⚠️ 19 Ağu 2026: bu sorgu `FROM question_bank` idi ve S210'un 69-alan
+    # split'inden (`0fd9b8413`) beri KOŞULAMIYORDU:
+    #     asyncpg.UndefinedColumnError: column "question_text" does not exist
+    # `question_text` `question_content`'e taşındı; `question_bank` artık 12
+    # kolon. Yani benzersizlik invaryantı split'ten bu yana HİÇ ÖLÇMEDİ —
+    # ve bunu kimse görmedi, çünkü DSN'siz koşumda test zaten skip oluyordu
+    # (iki kusur üst üste: sessiz skip + bayat şema).
     satir, benzersiz = (
         await db_session.execute(
-            text("SELECT count(*), count(DISTINCT question_text) FROM question_bank")
+            text(
+                "SELECT count(*), count(DISTINCT qc.question_text) "
+                "FROM question_bank qb "
+                "JOIN question_content qc ON qc.id = qb.id"
+            )
         )
     ).one()
 

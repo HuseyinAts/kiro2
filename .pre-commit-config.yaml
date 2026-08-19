@@ -217,6 +217,34 @@ repos:
       # tarayıcısının fiilen kapanmasının hikâyesi tam olarak budur.
       # Tam paket CI'ın işi; pre-push dar ve hızlı kalmalı.
 
+      # ...ve iste o "dar ve hizli" kapinin ilk uyesi (19 Agu 2026, Y12).
+      #
+      # NEDEN PRE-PUSH, CI DEGIL — olculdu (S231/S232):
+      #   ci.yml'de `services: postgres` VAR, yani engel Postgres degil.
+      #   Engel ICERIK: `seed_mvp_data.py` soru tablolarina 0 referans iceriyor
+      #   ve tek gercek korpus `.gitignore:216` ile takip disi (116 MB). Runner'da
+      #   ne DB icerigi ne dosya korpusu olur -> bekci orada YAPISAL OLARAK
+      #   olcemez. Ayrica bu dal (`feature/*`) hicbir workflow'u tetiklemiyor:
+      #   11 workflow'un 11'i main/master/develop filtreli.
+      #
+      # NEDEN 8 TESTIN 8'I DE `xfail(strict=True)` VE BU KAPI BUGUN BLOKLAMAZ:
+      #   Esikler hedef degerde; icerik duzelene kadar hepsi xfailed. Y11 kapanip
+      #   icerik gercek korpustan kuruldugunda XPASS verip KIRARLAR -> "duzeldi,
+      #   xfail isaretini kaldir" sinyali otomatik gelir. Esikleri bugune gore
+      #   ayarlamak (orn. bayrak orani <= %25) 0/40 servis edilebilir bir havuzu
+      #   TEST TARAFINDAN ONAYLANMIS hale getirirdi.
+      #
+      # Maliyet olculdu: 7,7 sn (canli PG, -n0). DSN backend/.env'den cozuluyor;
+      # DB yoksa fixture skip eder (taze makinede gurultu uretmez).
+      - id: y12-icerik-gecerliligi
+        name: Y12 ogrenci kapisi icerik-gecerliligi bekcisi
+        entry: bash -c 'cd backend && python -m pytest tests/integration/test_icerik_gecerliligi.py -n0 -q --no-header'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+        verbose: true
+
       - id: reward-hacking-check
         name: Reward Hacking Prevention (Daisy Stanton Standards)
         entry: python -m backend.hooks.reward_hacking.cli
