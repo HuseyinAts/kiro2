@@ -125,9 +125,36 @@ varsayımıyla "INSERT anında kırılır" dedi; `pending` yazınca satırlar
 `quality_review_status`'e göre **kapıya hak kazanmaz**, dolayısıyla i6 muhtemelen 0'da
 kalır. **FAZ D'den önce `--runxfail` ile bu tek test ölçülecek** (`L-s232-bulguyu-degil-aleti-sina`).
 
-**Sıra (kritik):** pre-push **push anında** koşar, INSERT ise DB işlemidir.
-Doğru sıra → **(1) veriyi yaz → (2) xfail işaretlerini kaldır → (3) commit + push.**
-Ters sırada testler FAIL verir (bugün gerçekten 1).
+**✅ A5 ÖLÇÜLDÜ (20 Ağu) — P0-6 ÇÜRÜDÜ, bu tablo GEÇERSİZ.**
+
+Yukarıdaki tablo eleştirmenin çıkarımıydı ve testlerin `question_bank`'ı ölçtüğünü
+varsayıyordu. Kaynak okundu: **7 sorgu `FROM mv_safe_for_beta`**, yalnız 1'i
+`FROM question_bank` (o da i6'nın ikinci ayağı). Ölçüm:
+
+    i6 bugun (ajh/hv)                     : 0       -> assert 0 > 0 duser (xfail DOGRU)
+    i6 + 'pending' IN listesine eklenirse : 9.894   <- DOGAL DENEY
+    status: auto_judged_high 27.073 (kapida 27.073) | pending 9.894 (kapida 0)
+
+Canlıda **zaten 9.894 `pending` satır var ve hiçbiri kapıda değil** — FAZ D'nin
+yazacağı satırların davranışı için hazır bir doğal deney. Sonuç:
+
+| Test | Ölçtüğü popülasyon | FAZ D sonrası |
+|---|---|---|
+| i1 · i2 · i3 · i4 · i5 · k2×2 | `mv_safe_for_beta` | **değişmez** (pending matview'e girmez, REFRESH de yok) |
+| i6 | status'e göre hak eden ama mv'de olmayan | **0'da kalır** (`pending` hak etmiyor) |
+
+→ **8 xfail'in 8'i de FAZ D'yi sağ atlatır.** "Göç commit'i kendi kapısını kırar"
+`auto_judged_high` varsayımına dayanıyordu; `pending` politikasıyla geçersiz.
+
+→ **FAZ D'den "xfail'leri kaldır" adımı DÜŞÜYOR.** O iş ve aşağıdaki sıra kısıtı
+tamamen **FAZ E'ye** (terfi) kayıyor.
+
+**Sıra kısıtı (FAZ E için geçerli):** pre-push **push anında** koşar, `UPDATE` ise
+DB işlemidir. Doğru sıra → **(1) `pending → auto_judged_high` + REFRESH →
+(2) xfail işaretlerini kaldır → (3) commit + push.** Ters sırada testler FAIL verir.
+
+*Ders: adversarial ajanın bulgusu da bir İDDİADIR. Eleştirmen 8 P0'ın 7'sinde
+haklıydı; P0-6'da testin hangi tabloya JOIN'lediğini okumadan çıkarım yaptı.*
 
 ### FAZ B — Göç script'i (TDD, yazma yok)
 
