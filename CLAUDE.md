@@ -1,5 +1,29 @@
 # KIRO2 Project Instructions
 
+## 🎯 Tek Kabul Kriteri (A1 — 20 Ağu 2026)
+
+> **Altın Yol:** *Yeni bir öğrenci kayıt olur → e-postasını doğrular → 40 soruluk bir
+> TYT Matematik testi çözer → netini ve konu kırılımını görür.*
+
+Her oturum tek soruyla ölçülür: **bu kritere kaç adım yaklaştım?** Bu kriteri
+ilerletmeyen iş, ne kadar doğru yapılırsa yapılsın, ürünü ilerletmez.
+
+**Neden var (ölçüldü, 20 Ağu 2026):** son 30 günde **443 commit**; tür dağılımı
+`chore 125 + docs 78 + test 34 = %53 süreç işi`. `frontend/src`'ye dokunan **69**,
+`backend/tests`'e dokunan **153**. 487 görevin hiçbiri "bitti" diyemiyordu çünkü
+**bitmişliğin tanımı yoktu**.
+
+### E3 — oturum başına en az 1 kullanıcı-görünür çıktı
+
+Kullanıcı-görünür yollar: `frontend/src` · `backend/api` · `backend/services` ·
+`backend/algorithms`. Bu **beyan değil ölçüm**: `.claude/hooks/session-save.py`
+her oturum sonunda günün commit'lerinin kaçının bu yollara dokunduğunu sayar ve
+0 ise `SESSION_STATE.md`'ye + sonraki oturumun banner'ına uyarı düşer.
+İstisna meşru (altyapı/ölçüm turu) — ama **gerekçesi devir notuna yazılır**.
+
+---
+
+
 ## 🧭 Behavioral Foundation (Karpathy Guidelines)
 
 KIRO2 üzerinde çalışan Claude için 4 davranış prensibi. Andrej Karpathy'nin LLM kodlama gözlemlerinden türetildi. Bu bölüm **davranış**, sonraki bölümler **proje detayı** içindir.
