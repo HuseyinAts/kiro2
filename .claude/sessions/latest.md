@@ -549,3 +549,43 @@ Bu oturumda tekrarlayan kayitli dersler: ters tirnak (1), `/tmp` ad-alani (1),
 CRLF ankraj (1), N802 buyuk harfli test adi (**2** — 7. ve 8. tekrar, Y13 acik).
 
 ---
+
+## Session Handoff — 2026-08-20 (S240 · TEKRARLAYAN DERSLERE ENFORCEMENT) ✅
+
+**Son commit:** `8ab187329` · **Kapı:** 24 dosya / **250 passed / 1 skipped / 1 xfailed / 0 failed**
+
+### Bu oturumun tek cümlesi
+N802 sekiz turdur tekrar ediyordu; sebep ders eksikliği değil, **ihlalin yazma
+anında görünmemesiydi** — ve hook onu görüp çöpe atıyordu.
+
+### Kök nedenler (üçü de "eksik kontrol" DEĞİL)
+- **N802:** `ruff check --fix --quiet` + `capture_output=True` → bulgu yakalanıp
+  **hiç okunmuyordu**. ⚠️ Hipotezim yanlıştı: susturan `--quiet` değil (ruff
+  0.14.13 N802'yi yine basıyor, EXIT=1); yutan şey yakalananın okunmaması.
+  Ayrıca ruff 0.14 **yeni tanı biçimi** kullanıyor → `--output-format=concise` şart.
+- **Ters tırnak:** hook doğru noktadaydı, bakmıyordu. Artık **bloklar** (exit 2).
+- **`/tmp`:** aynı körlük. **Uyarır, bloklamaz** — meşru kullanımı var; bloklarsak
+  sürtüşme yaratır, kapatılır, kontrol yine ölür.
+
+### İki dürüst kayıt
+1. **Dedektör ilk gerçek kullanımda yanlış-pozitif verdi** ve kendi defter
+   güncellememi blokladı (heredoc'taki ders METNİNİ komut sandı). Planın risk
+   tablosundaki madde ilk kullanımda ısırdı → segment-başı daraltma + 3 regresyon testi.
+2. **N802'yi DOKUZUNCU kez**, tam da N802'yi zorlayan test dosyasında yaptım.
+   Alışkanlık hook'tan güçlü — ama kapı bu kez yakaladı.
+
+### Ölçümler
+```
+dedektor testleri  24 passed (3'u yanlis-pozitif regresyonu)
+hook bekcileri    211 passed        yanlis-pozitif kolu 0/3
+mutasyon           3/3 OLDU  (M3 once "GECERSIZ" gorundu -> HARNESS ARIZASI:
+                   gevsek " error" alt-dizesi testin kendi verisine esledi)
+zorlayici liste  23 -> 24 dosya     kapi 250/0
+```
+
+### Kapsam dışı (bilerek)
+- **CRLF çok satırlı ankraj** — Edit `old_string` eşleşmesi hook'tan görünmüyor,
+  enforcement noktası YOK. `zorlayici: null` kalır, boşluk **görünür** bırakıldı.
+- **Kalan ~3.500 MAT** + `MAT.IST` dengesizliği — içerik hattı, ayrı iş.
+
+---
