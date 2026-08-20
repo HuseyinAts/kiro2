@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.cevap_kapisi import cevap_gorebilir, cevaplari_ele
 from core.database import get_async_session as get_db
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.quality_gate import safe_for_beta_sql
@@ -240,7 +241,10 @@ async def get_random_questions(
                 else 10.0,
             }
 
-            if with_answers:
+            # `with_answers` ISTEMCI kontrollu ve varsayilani True idi -> her ogrenci
+            # cevap anahtarini okuyabiliyordu (S241, denetim B2). Bayrak artik yalnizca
+            # yetkili rolun cevabi GORMEMEYI secmesine yarar; gormeye yetmez.
+            if with_answers and cevap_gorebilir(current_user.role):
                 q["correct_answer"] = row["correct_answer"]
 
             questions.append(q)
@@ -459,7 +463,9 @@ async def get_questions(
 
         return {
             "success": True,
-            "data": questions,
+            # Cevap kapisi (S241, denetim B2): bu uc `correct_answer`i KOSULSUZ
+            # doluruyordu -> duz ogrenci token'i cevap anahtarini okuyabiliyordu.
+            "data": cevaplari_ele(questions, current_user.role),
             "count": len(questions),
             "message": f"Found {len(questions)} OSYM questions",
         }
