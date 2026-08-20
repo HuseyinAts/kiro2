@@ -379,3 +379,63 @@ Toplam **223** — S237 tabaniyla (214+0+9) BIREBIR, kaybolan test yok.
   gercek oran ~%100.
 
 ---
+
+## Session Handoff — 2026-08-20 (S239 · MAT/TYT GOCU KALICI) ✅
+
+**Branch:** feature/self-evolution-optimization · **Son commit:** `1b3285d1c` · **Push:** ⏳ 4 commit
+**Canli DB:** `question_bank` **3.616 → 4.064** (+448 MAT/TYT) · kapi **0** (yeni parti `pending`, KASITLI)
+
+### Bu oturumun tek cumlesi
+448 TYT MATEMATIK sorusu, **her crop'u tek tek gozle okunmus** olarak kalici yazildi;
+ama asil ders, kendi AYT-kontrolumun **yanlis katmanda** olcup yesil vermesi oldu.
+
+### Yapilanlar
+- `ec40e2b2c` revize plan — eski planin **T2'si IPTAL** (MAT-T1 kitap katmanini curuttu:
+  9/354 = %2,54, kitap sinyali orneklem gurultusuyle ayni). Eski plandaki TUM taban sayilari
+  bayatti; "kapsam disi 386" **871** olctu.
+- `505a4ab28` `y11_aday_uret.py` + 7 bekci (TDD). Konu suzgeci ZORUNLU (871 eleniyor, yoksa
+  yukleyici TEK transaction'da tumden duser). Determinizm birebir + girdi sirasindan bagimsiz.
+  Cikti yazicisi trailing-newline uretiyor — kanca ciktiyi yamamak yerine YAZICI duzeltildi.
+- 🟢 `1b3285d1c` **KOR OKUMA: 586/586 crop, 15 ajan, 0 acilamayan** → 16 sizdiran **%2,73**.
+  **BAGIMSIZ TEKRARLAMA**: MAT-T1 farkli orneklemde %2,54; havuzlanmis 25/940 = %2,66.
+- PROVA 544 → sapma `[]`, yetim 0. **10 soru tek tek cozuldu: 9/10** (esik >=8/10).
+- KALICI 448. Gorsel 40/40 container'dan. Idempotens: capraz-DB elenen **448**.
+
+### 🔴 KENDI KONTROLUM YANLIS KATMANDA OLCTU (durust kayit)
+A1 konu kirilimi **MAT.TRV 30 + MAT.INT 26 + MAT.LMT 28 + MAT.LOG 12 = 96** AYT sorusu
+gosterdi. Ayni turda calistirdigim "AYT konusu kalan" olcumu **0** diyordu.
+Sebep: metin regex'i. Sorularin METNINDE "turev" gecmiyor — *"cemberin icine cizilen
+dikdortgenin alani en fazla kac cm2"* bir maks-min sorusu, digeri `f'(x)=0` notasyonlu.
+Yargi metinde degil **`primary_topic_id`**'de yasiyor.
+**Bu, MAT-T1'in kitap katmanini curuttugu hatanin BIREBIR AYNI SINIFI.** 96 satir silindi.
+
+### Fail Eden Testler
+**YOK.** `test_y11_aday_uret.py` 7 passed. Kapi (22 dosya) S238'de EXIT=0 dogrulanmisti.
+
+### A1 KABUL (canli olculdu)
+```
+farkli konu kodu = 16   (kabul >=5)     3 kat
+toplam soru      = 448  (kabul >=40)   11 kat
+gorseli dolu     = 448/448     AYT konusu = 0     kapi = 0 (degismedi)
+```
+
+### Engelleyiciler
+- Kapi hala **0** — terfi (`pending → auto_judged_high` + `REFRESH`) **AYRI ONAY** bekliyor.
+  Bu tek adim platformu ilk kez gercek soru servis eder hale getirir.
+
+### Sonraki Adimlar (maks 5)
+1. **PUSH** — 4 commit.
+2. **FAZ E terfi** (ayri onay): 448 MAT + 3.616 KIMYA `pending → auto_judged_high` + REFRESH.
+3. **MAT.TRG (30) + MAT.DIZ (27) mufredat karari** — sinirda; temel trigonometri TYT'de var,
+   ilerisi AYT'de. Kesin AYT olmadiklari icin silinmedi, karar bekliyor.
+4. Kalan ~3.500 kapsanan MAT sorusu — kor okuma kapasitesi artirilirsa ayri turda.
+5. Canlidaki 3.616 KIMYA'nin crop sizintisi **hic olculmedi** (~1.426 gorsel, ~%2,7 → ~38).
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Baglayici kisit ERISILEBILIRLIK degil DOGRULAMA KAPASITESI.** 5.420 aday vardi; 586
+  secildi cunku kor okunabilecek buyukluk buydu. Dogrulanmamis icerik = S238'de sildigimiz sey.
+- **"0 bulundu" her seferinde once ALET ARIZASI varsayilmali.** Bu oturumda iki kez oldu:
+  biri gercekti (capraz-DB 0), biri yanlis katmandi (AYT metin regex'i 0).
+- **exam_type GUVENILMEZ** — TYT etiketli dilimde %17,6 AYT konusu vardi.
+
+---
