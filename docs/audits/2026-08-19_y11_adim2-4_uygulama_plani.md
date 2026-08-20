@@ -357,6 +357,58 @@ gerçek kurtarma hedefi `kiro2`'de `users` var, veri yüklemesini etkilemedi.
 
 ---
 
+
+## 4c. GORSEL KARARI — OLCULDU (20 Agu, 58 goruntu kor okundu)
+
+Kullanici karari: "once OLC, sonra karar". Iki ayri kor okuma turu yapildi.
+
+| Sinif | n (KABUL) | orneklem | sonuc |
+|---|---|---|---|
+| tekil crop, 25 kitap | 1.435 | **30** | **30/30 TEMIZ** |
+| tekil crop, Apotemi 2024 Ayt Kimya SB | 112 | 2 | 2/2 sizintili (el yazisi) |
+| **tam sayfa (_PAGE), 27 kitap** | **2.119** | **26** | **23/26 SIZINTILI (%88,5)** |
+
+### Mekanizma: yayinevinin BASTIGI cevap anahtari
+
+`_PAGE` sizintisi el yazisi degil, **sayfa altina basili cevap anahtari seridi**:
+
+    "Soru 21a/ D   Soru 21b/ E   Soru 22/ D"   (mavi serit)
+    "1.E 2.E 3.A / 4.E 5.C 6.D"                (gri anahtar)
+    "1-D 2-B ... 8-D"                          (180 DERECE TERS basili)
+    "Cozum: ... Cevap: B"                      ("Ornek" sorularinda TAM cozum)
+
+Sayfa basina ortalama **5,2 soru** -> bir sayfa sizdiginda 5 sorunun cevabi birden acilir.
+Temiz cikan 3 sayfada serit **kirpma disinda kalmis** — tasarim degil sans.
+Crop'larin temiz olmasinin sebebi de bu: kirpma siniri alt seridi **disarida birakiyor**.
+
+### Ucuncu bir sizinti sinifi: el yazisi (kitap-kosullu)
+`Apotemi 2024 Ayt Kimya SB` (265 satir = %7,2) onceki sahibinin **pembe kalemiyle**
+isaretli; hem crop hem PAGE'inde dogrulandi (p0011, p0021, p0252 — ayni kalem).
+
+### KARAR (olcumle zorunlu)
+| Kural | Satir |
+|---|---|
+| `_PAGE` -> `question_image_url = NULL` | 2.119 |
+| crop, Apotemi 2024 Ayt Kimya SB -> `NULL` | 112 |
+| crop, diger 25 kitap -> **TASI** | **1.435** |
+
+**1.435 gorselli (%39,1) · 2.231 NULL (%60,9).**
+
+### Yan bulgu (ayri is)
+32 crop'un 3'unde soru EKSIK, biri **tamamen bos** (`dc4562db`, 345 Tyt).
+`question_image_url` dolu olmasi goruntunun kullanisli oldugunu GOSTERMIYOR — ~%9 kirpma kusuru.
+
+### Bu olcum IKI KEZ yon degistirdi (durust kayit)
+1. Tek PAGE acildi -> "el yazisi isaret" (YANLIS: acilan sayfa isaretli kitaptandi)
+2. 32 crop olculdu -> "kitap-kosullu" (kismen dogru, PAGE'i aciklamiyordu)
+3. 26 PAGE olculdu -> **basili anahtar, SINIF-kosullu** (dogru)
+
+Karistirici degisken (kitap) sinif degiskeniyle (PAGE/crop) cakisiyordu; ancak iki sinifi
+AYRI AYRI ve cok kitaba yayarak olcunce ayristi.
+Ders: `L-s233-iki-sinifi-AYRI-olc-karistirici-cakisir`
+
+---
+
 ## 5. Ölçülmemiş, bu planın varsaydığı şeyler (dürüst sınır)
 
 1. **Hiçbir satır INSERT denenmedi.** "3.666 göç edilebilir" bir **kısıt analizinden çıkarımdır**, çalıştırılmış ölçüm değil. FAZ C bunu ilk kez sınayacak.
