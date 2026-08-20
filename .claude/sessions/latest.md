@@ -2510,3 +2510,96 @@ S234'ün baseline'ıyla **aynı küme** (Y12 içerik bekçisi 8 + hacim bekçisi
   `L-s202-mutasyon-error-gecersiz` `error`'ü kapsıyor; ayrıştırıcı arızası **8/8'i geçersiz
   gösterdi** ve kontrol kolu geçtiği için harness sağlam göründü. Özeti son satırdan okuma,
   `^=+ ... =+$` deseniyle ara.
+
+---
+
+## Session Handoff — 2026-08-20 (S236 · FAZ C KAPANDI) ✅
+
+**Branch:** feature/self-evolution-optimization · **Son commit:** `0bd77c566`
+**Push:** ⏳ **1 commit bekliyor** (kullanıcı onayı) · ahead/behind **1/0**
+**Kapı:** 22 dosya / **214 passed / 0 skipped / 9 xfailed** — S235 tabanıyla **birebir**
+**Takipli-kirli:** yalnız devralınan `backend/semantic_cache.pkl`
+**Canlı DB (kapanışta):** `question_bank` **36.967** · `mv_safe_for_beta` **27.073** · damga kalıntısı **0**
+
+### Bu oturumun tek cümlesi
+FAZ C pilotu 50 satırı canlıya yazdı ve geri aldı; **kalıcı veri yok**. Yolda S235'in
+iki "engelleyici"sinden biri ölçülüp **çürüdü**, diğerinin (#486) gerçek yeri kesinleşti.
+
+### Pilot sonucu (transaction İÇİNDE ölçüldü, ROLLBACK sonrası taban doğrulandı)
+```
+50 -> 4x50 (bank/content/metadata/statistics)   yetim 0
+damgali 50/50            <- pipeline_metadata->>'y11_batch' geri okundu
+icerik sadakati 50/50    <- metin + 5 sik + anahtar BIREBIR, sapma 0
+kural: is_active 50 | is_public 50 | review_status=approved 50
+       quality_review_status=pending 50 | times_asked=0 50
+       bloom_category lowercase 50 | gorsel NULL 38 (= ornekemdeki _PAGE sayisi)
+ROLLBACK sonrasi: 36.967 x4 | mv 27.073 | damga kalintisi 0
+```
+
+### 🔴 DEVİR NOTUNUN İKİ ENGELLEYİCİSİ — biri ÇÜRÜDÜ, biri YER DEĞİŞTİRDİ
+| # | S235'in iddiası | Ölçüm |
+|---|---|---|
+| 1 | `correct_answer` düzeltme kanalı **KARAR BEKLİYOR** | **ÇÜRÜDÜ.** Verdikt TSV: KABUL **3.666/3.666**'da `yargic == db_anahtar` (fark **0**). 80 anahtar uyuşmazlığının tamamı `KUYRUK_ANAHTAR` sınıfında ve o sınıf **göç kapsamında değil**. Tasarım:115-117 ↔ kural 12 çelişkisi göç kümesi için **fantom**; imzaya parametre eklenmedi |
+| 2 | #486 "asyncpg jsonb codec" | **GERÇEK ama iki taraflı.** OKUMA'da kodek **ZORUNLU** (yoksa `str` gelir, dönüşüm gürültülü durur). YAZMA'da kodek **YASAK** (hedefe de kaydedilse `json.dumps`'lı `str` bir kez daha kodlanır → JSON string skaları → `->>` NULL → **sessiz damgasız parti**). Hedefte `json` kolon **7** ölçüldü, 1 değil |
+
+### Ölçülen diğer şema gerçekleri (ilk sürümü düşürdü / düşürecekti)
+- `question_bank.id` **`character varying`** — `uuid` DEĞİL (ilk ölçüm SQL'i bu yüzden düştü)
+- `pipeline_metadata` **`json`** — `jsonb` DEĞİL (`->>` ikisinde de çalışıyor, ölçüldü)
+- KABUL'de `json_typeof='string'` **0 satır** → "str geldi = kodek yok" guard'ı güvenli
+- 16 kaynak `topic_code`'un **16'sı da** canlı `topic_hierarchy`'de VAR → göç durmuyor
+
+### Plandaki iki sayı ÖLÇÜLEREK düzeldi
+- **"78 set-içi mükerrer (73 grup)" YANLIŞ ETİKET** — o **gövde-only** ölçümü. Karar ölçütü
+  SIKI kimlik (gövde+şık, sırasıyla): **16 grup / 16 fazlalık** (gevşek 17). Çapraz-DB **34**
+  (S234'ün rakamı bağımsız doğrulandı). ⚠️ `y11_dedup_olc.py` docstring'i hâlâ "78/73 siki"
+  diyor — **bayat, düzeltilmedi** (açık iş).
+- **Pilot kotası "≥1 `created_by` yetimi" KARŞILANAMAZ** — KABUL'de **3.666/3.666 NULL**.
+  "65 yetim" 4.419'luk tam küme içindi. Kota düşürüldü, gerekçesi seçicinin docstring'inde.
+
+### Üretilen (`0bd77c566`, +1020)
+| Dosya | Satır | Ne |
+|---|---|---|
+| `scripts/quality/y11_yukleyici.py` | 430 | Yazma katmanı: saf SQL üretimi + TEK transaction + `--kalici` bayrağı (varsayılan GERİ ALIR) |
+| `scripts/quality/y11_pilot_ornek.py` | 184 | Deterministik örneklem seçici (`random` YOK; iki koşum birebir aynı) |
+| `scripts/quality/y11_pilot_olcum{,2,3}.sql` | 126 | Üç ölçüm turu (salt okunur) |
+| `tests/fast/test_y11_yukleyici.py` | 280 | 9 test |
+
+### Mutasyon **9/9 ÖLDÜ** (commit SONRASI, bağımsız harness)
+M1 tablo sırası ters · M2 serialize yok · M3 çift kodlama · M4 `str` guard'ı kaldır ·
+M5 varsayılan kalıcı · M6 kolon sessizce düş · M7 değer/kolon hizası kay ·
+M8 yer tutucu eksik · M9 `JSON_KOLONLARI`'ndan `pipeline_metadata` çıkar.
+Hiçbiri `error`; dokuz geri alımın dokuzu `git status --short` **boş**; kontrol kolu yeşil.
+
+### Bu turda kayıtlı üç ders BİREBİR tekrar etti (dürüst kayıt)
+1. **`L-s229-cd-kalici-sifir-collected`** — `pytest` `0 items` verdi; sebep kabuk cwd'sinin
+   `scripts/quality`'de kalmasıydı. `pwd` ile 10 saniyede çözüldü.
+2. **`L-s212-bicimlendirici-import-siler`** — `JSON_KOLONLARI`'ı kullanımdan ÖNCE import ettim,
+   PostToolUse kancası F401 diye **sildi**, test `NameError` verdi. Kuralı yazarken ihlal ettim.
+3. **`L-s233-ayni-linter-iki-config...`** — yine **7 adet N802** (BÜYÜK harfli test adı); sinyal
+   yine ancak commit anında geldi (**Y13 kapanmadı**).
+
+### Fail Eden Testler
+**YOK.** `tests/fast/test_y11_yukleyici.py` **9 passed**. Kapı 214/0/9, yeni kırık **0**.
+
+### Engelleyiciler
+- **Yok** (FAZ D için). #486 kapandı, `correct_answer` kanalı çürüdü.
+- Devralınan: `kiro2-api-import-smoke` S211'den beri kırık · host `pytest` uçtan uca koşamaz.
+
+### Sonraki Adımlar (maks 5)
+1. **PUSH** — 1 commit bekliyor (`0bd77c566`).
+2. **FAZ D** — kalıcı yazım. Önce **tek sayı ilan et**: `3.666 − 16 (sıkı set-içi) − 34
+   (çapraz-DB) ± örtüşme`. **Örtüşme ÖLÇÜLMEDİ** — 16'nın kaçı 34'ün içinde? Tek sorgu.
+   Sonra 1000'lik parti, `pending`, her parti sonrası invaryant + damga sayımı.
+3. **FAZ E** (ayrı onay) — `pending → auto_judged_high` + `REFRESH` + Y12 xfail'leri + ES (#433).
+4. **FAZ F** — S235'in 4 ders adayı + bu turun 3 tekrarı `ders_kaydi.yaml`'a;
+   `test_y11_yukleyici.py` **kapı listesinde DEĞİL** (defterde `zorlayici` satırı yok →
+   `L-s232-enforcement-listesi-defterden-turetilmeli` gereği henüz zorunlu değil).
+5. **Y13** (P2) — kanca lint bulgusunu atıyor; N802 bu oturumda **6. kez** commit anında geldi.
+
+### Açık işler (bu oturumda ölçüldü)
+- **`y11_dedup_olc.py` docstring'i BAYAT (P2):** "78 satır / 73 grup, siki" diyor; gerçek
+  sıkı ölçüm **16/16**. O sayı gövde-only'ye ait. Script assert etmiyor, yalnız yazdırıyor.
+- **`.claude/rules/database.md` BAYAT (P2, S235'ten devir):** `review_status='APPROVED'`,
+  canlı `'approved'`. Bu dosya HER oturumda bağlama yükleniyor.
+- **Y14 (P1, güvenlik, S234'ten devir):** `pg_hba` `trust` docker ağı + LAN'a açık.
+- **`--kalici` bayrağı henüz hiç kullanılmadı** — kalıcı yol FAZ D'de ilk kez koşacak.
