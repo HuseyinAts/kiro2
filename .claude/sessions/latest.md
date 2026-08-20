@@ -439,3 +439,41 @@ gorseli dolu     = 448/448     AYT konusu = 0     kapi = 0 (degismedi)
 - **exam_type GUVENILMEZ** — TYT etiketli dilimde %17,6 AYT konusu vardi.
 
 ---
+
+### 🟢 EK — FAZ E KAPANDI: KAPI 0 → 3.615 (ayni oturum, kullanici onayiyla)
+
+Kullanici (a) sikkini secti: **once KIMYA croplarini da kor okut, sonra ikisini
+birlikte terfi ettir.** Karar dogru cikti.
+
+**KIMYA kor okuma (evrenin TAMAMI):** 30 ajan x ~48, **1426/1426** okundu,
+acilamayan 0, dusen ajan 0 -> **85 sizdiran = %5,96**.
+🔴 MAT'in (%2,73) **iki katindan fazla**. Sizinti MODU da farkli: MAT'ta kenar
+seridi anahtar listesi, KIMYA'da **cozumlu ornek blogu** (`Ornek: 6` -> `Cozum:`
+-> `Cevap: D`) -- ders kitabi duzeni. MAT oranini genellemek ~38 tahmin ederdi,
+gercek 85. **Katman degil ORAN da dersten derse degisiyor.** 85 satir SILINDI.
+
+**FAZ E terfi:** yedek `question_statistics_terfi_yedek_20260820` (3.979 eski
+durum) -> `auto_judged_high` -> `REFRESH MATERIALIZED VIEW`.
+Onkosul ONCEDEN simule edilmisti (kapi ayrica `demoted_at` + tier1_page_inline
+disliyor, bes bayraktan biri sart): 3.697 ongoruldu; silinen 85'in 82'si kapiya
+girecekti -> 3.697-82 = **3.615**. **Tahmin birebir tuttu.**
+
+**ASIL OLCUM (sayi vekildir, orneklem OKUNDU):**
+```
+S231 : kapidan 40 soru -> 0/40 servis edilebilir
+simdi: kapidan 12 soru -> 12/12 gercek, tutarli, KITAP KAYNAKLI
+       anahtarlar tek tek dogrulandi, 11'i kesin dogru
+       1 zayif: fc87492b II. onculunde OCR bozuklugu
+```
+
+**Canli son durum:** `question_bank` **3.979** (KIMYA 3.531 + MAT 448) ·
+kapi `mv_safe_for_beta` **3.615** (KIMYA 3.209 + MAT 406, damgasiz 0).
+
+**Geri alma:** `UPDATE question_statistics qs SET quality_review_status=y.eski
+FROM question_statistics_terfi_yedek_20260820 y WHERE y.id=qs.id;` + REFRESH.
+
+**Yeni acik isler:** ES index'i hala eski kapidan (#433) · MAT.TRG/MAT.DIZ
+mufredat karari · kalan ~3.500 MAT sorusu (kor okuma kapasitesi) ·
+`question_bank_cop_yedek_20260820` 4x36.967 disk tutuyor.
+
+---
