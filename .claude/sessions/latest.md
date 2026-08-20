@@ -48,59 +48,71 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
-## Session Handoff — 2026-08-20 (S238 · KITAPSIZ HAVUZ SILINDI) ✅
+## Session Handoff — 2026-08-20 (S241 · A1 ALTIN YOL ÖLÇÜLDÜ + CEVAP SIZINTISI KAPATILDI)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `adcadb61d` · **Push:** ✅ 0 bekleyen
+**Uncommitted:** yalnız devralınan `backend/semantic_cache.pkl`
 
-**Branch:** feature/self-evolution-optimization · **Son commit:** `3a5d98f61` · **Push:** ⏳ 5 commit
-**Uncommitted:** yalniz devralinan `backend/semantic_cache.pkl`
-**Canli DB:** `question_bank` **40.583 → 3.616** ×4 · kapi **27.073 → 0** (KASITLI) · yedek 4×36.967
+### Bu oturumun tek cümlesi
+A1'in dört ayağı ilk kez uçtan uca ölçüldü (11 ajan, 45 bulgu, 44 ayakta) ve
+**beş ölçücünün hiçbirinin bulamadığı** P0 kapatıldı: düz öğrenci token'ı cevap
+anahtarını okuyabiliyordu.
 
-### Bu oturumun tek cumlesi
-36.967 sentetik satir yedeklenip SILINDI; silme, iki bekcide **vakum deligi**
-(bos kumede kendiliginden gecme) aciga cikardi ve as?l kazanc o oldu.
+### Yapılanlar
+- `fa1784215` tasarım · `0973e5495` plan · `3a4b4bae7` denetim raporu
+  (`docs/audits/2026-08-20_a1_altin_yol_olcum.md`)
+- 🟢 `a664c2d5e` + `adcadb61d` **cevap sızıntısı KAPATILDI** — `core/cevap_kapisi.py`
+  (YENİ, tek kaynak) + 3 uç kablolandı + 13 test. Canlı: 4/4 uç `200 TEMIZ`, gövde dolu.
+- Defter **155 → 156**; zorlayıcı liste **24 → 25 dosya**, kapı **264 passed / 1 xfailed / 0 failed**
 
-### Yapilanlar
-- 🟢 `y11_cop_sil.py` + 29 bekci (`569b995b6`) — ayirici **PROVENANS** (`source_book IS NULL`),
-  icerik sezgisi degil: **36.967/36.967 eski vs 0/3.616 Y11**. Ucuz dedektorler tek basina
-  yalniz **8.696**'sini yakaliyordu → 28.271 cop kalir ve havuz "temizlenmis" gorunurdu.
-- 🟢 **Adversarial olcum: 180/180 cop** (dedektorlerin "TEMIZ" dedigi alt kumeden, 12 ders×15,
-  6 yargic + 3 mercekli curutme). **Kor kontrol kolu: ozgulluk 30/30 %100, duyarlilik 27/30 %90,
-  yanlis-poz 0** → `0/180` alet arizasi DEGIL. %95 ust sinir ~%1,9.
-- 🟢 Tahribat **0**: FK'li 11 tablonun 11'i CASCADE ve **hepsi bos** (`student_answers` dahil).
-- 🟢 PROVA (13/13 beklenti) → kalici → bagimsiz dogrulama: 3.616 ×4, kapi 0, kitapsiz 0,
-  Y11 damgali 3.616, farkli kaynak kitap **0 → 26**.
-- 🔴 `66cd9c958` — **iki bekci bos kapida KENDILIGINDEN geciyordu** (`farkli != 1`,
-  `n_r5 == 0`). XPASS "kusur kapandi" diyordu; kapanmamisti, olculecek satir kalmamisti.
-  Isaretler kaldirilsaydi iki bekci KALICI kaybedilirdi. Kardes testlerin (`test_i2:193`,
-  `test_k2_mekanik:399`) zaten tasidigi `assert toplam > 0` deyimi tasindi.
-- `3a5d98f61` — 9 CAT testi `xfail(strict)` ankrajlandi (dolu havuz ONKOSUL, test edilen sey
-  degil; SQL-metni iddia eden 3 kardes test bos havuzda da GECIYOR — ayrimin kaniti).
+### A1'in dört ayağı (kanıtlı yargı)
+```
+L1 Kayit      CALISIYOR  mutlu yol acik; username carpismasi 500 (commands/auth.py:100)
+L2 Dogrulama  YOK        1119 yolda uc yok; is_verified'i TRUE yapan TEK SATIR yok
+L3 Sinav      KIRIK      secim DOGRU (40/40 kapida, 11-13 konu), teslim OLU
+L4 Puanlama   KIRIK      tamami erisilemez + "konu" kirilimi aslinda DERS kirilimi
+L5 Yuzey      KIRIK      sayfa saglam, ilk yazma adimi 500
+```
 
-### Fail Eden Testler
-**YOK.** Kapi 22 dosya: **197 passed / 9 skipped / 17 xfailed / 0 failed** EXIT=0.
-Toplam **223** — S237 tabaniyla (214+0+9) BIREBIR, kaybolan test yok.
-9 skip ONCEDEN vardi (DSN yok); DSN verilip ayrica kosuldu → `benzersizlik_orani` PASSED,
-`hacim_tabani` XFAIL (3.616 < 150.000, dogru kirmizi).
+### 🔴 AÇIK P0 — B1: `exam_sessions` RLS (A1'in tek ve asıl engeli)
+Üç ayağı birden öldürüyor. `exam_sessions` politikası **fail-closed**; GUC
+`core/dependencies.py:455`'te *transaction-local* set ediliyor ama motor
+`core/osym_exam_engine.py:441`'de **ayrı bağlantı** açıyor. Backend `kiro2_app`
+(`rolbypassrls=f`). **`exam_sessions` = 0 satır, bugüne kadar.**
+`dependencies.py:456` yorumu sebebi belgeliyor: *"App superuser (postgres)
+olduğundan RLS bypass edilir"* — varsayım bayatlamış.
 
-### Engelleyiciler
-- 🔴 **KAPI 0** — ogrenciye servis edilecek soru yok. Ikmal hazir: `kiro2_temp`
-  **53.937 TYT MATEMATIK** (%98,1 gorselli) — A1 kabul kriterinin tam ihtiyaci.
-- Devralinan: OCR motoru yok · SMTP · `kiro2-api-import-smoke`.
+### Sonraki Adımlar (maks 5)
+1. **B1 RLS** — altın yolu açan tek fix. Motoru istek-kapsamlı oturuma bağla
+   VEYA GUC'u motorun bağlantısında set et. Kiracılık izolasyonunu bozma.
+2. **B3 konu kırılımı** — `osym_exam_engine.py:1364` `subject_area` → `topic_hierarchy.code`;
+   `QuestionResponse.topic` ham UUID yerine konu kodu. B1 onarılsa bile A1'in 4. ayağı bunsuz karşılanmaz.
+3. **B4 e-posta doğrulama** — yol **yok**, inşa kararı bekliyor (SMTP ayrı iş).
+4. **B5 username 500** — `commands/auth.py:100`, 409/422 dön + benzersiz username türet.
+5. Eksiklik eleştirmeninin 13 boşluğu — özellikle offline sync paketi (tasarım gereği
+   `correct_answer` taşıyor, şu an 500 olduğu için sızmıyor) ve sınav süresi hiç zorlanmıyor.
 
-### Sonraki Adimlar (maks 5)
-1. **PUSH** — 5 commit bekliyor (`569b995b6`…`3a5d98f61` + onceki 2).
-2. **MAT/TYT gocu** — plan `docs/superpowers/plans/2026-08-20-mat-tyt-goc.md`, T1 kapali.
-   Kapiyi dolduracak tek is bu.
-3. FAZ E terfi (3.616 KIMYA `pending` → `auto_judged_high` + REFRESH) — **ayri onay**.
-4. `soru_hash` capraz-DB dedup sayisi ("34") silme sonrasi **yeniden olculmeli**.
-5. Yedek tablolar (4×36.967) ikmal dogrulaninca dusurulebilir.
+### Kararlar (gelecek session tekrar tartışmasın)
+- **Cevap alanları cache'e TAM yazılır, ÇIKIŞTA temizlenir.** Cache anahtarı rol taşımıyor;
+  role göre cache'lemek öğretmenin girdisini öğrenciye servis ederdi. Bu yüzden
+  `cevaplari_ele` **saf olmak zorunda** (çivi: `test_girdi_sozlugu_degistirilmez`).
+- **MEMORY.md'deki "RLS GUC set edilmezse tüm satırlar geçer" ÇÜRÜDÜ** — 73 politika
+  fail-closed / 6 permissive. Bu yanlış kayıt B1'in görülmesini geciktirmiş olabilir.
+- **`bandit`/`mypy` SKIP'i ölçüldü, benim kodum değil** — değişikliklerim stash'liyken
+  aynı dosyada HEAD üzerinde aynı 2 mypy hatası; bandit B311 dokunmadığım satırlarda.
+  `osym_questions_api.py`'nin önceden var olan borcu, **ayrı açık iş**.
 
-### Kararlar (gelecek session tekrar tartismasin)
-- **Kapinin 0 olmasi gerileme DEGIL** — bugunku 27.073 zaten 0 servis edilebilir soru demekti
-  (52/52 okundu). Bos kapi durust; dolu-gorunen cop kapi aktif zarar.
-- **Bos kume uzerinde gecen bekci = YESIL ALET ARIZASI.** Bir bekciyi "duzeldi" diye emekliye
-  ayirmadan once **evrenin bos olmadigini olc**. (Yeni ders adayi.)
-- **Hacim bir vekil olcumdur** bir kez daha dogrulandi: ucuz dedektorler %23,5 yakaladi,
-  gercek oran ~%100.
+### Dürüst kayıt — bu turda 5 kez yanıldım, 4'ü kayıtlı ders
+1. **Kendi ölçüm aletim 3 kez** yanlış "0/boş" verdi: `LIKE 'MAT%'` (kolon UUID),
+   `information_schema` (matview `pg_attribute`'da), `/api/v1/sorular` (uç kök yolda).
+2. **Biçimlendirici import'u sildi** (`reference_formatter-import-stripping`) →
+   canlıda `name 'cevaplari_ele' is not defined` 500. Deploy edip **ölçtüğüm için**
+   yakalandı; ölçmeseydim "fix bitti" derdim ve iki uç 500 kalırdı.
+3. **Yarım commit**: `git stash pop` index'e değil çalışma ağacına koydu, `git add`'im
+   uçtu; `EXIT=0` + yeni hash geldi ama `osym_questions_api.py` **girmemişti**.
+   `git show --stat HEAD` yakaladı.
+4. **CRLF**: `printf` ile `.gitignore`'a LF yazdım, `mixed-line-ending` commit'i düşürdü.
+5. **N802 ONUNCU kez** (6 test adı). S240 bunu görünür kılmak için hook enforcement'ı
+   eklemişti — **bu turda bana görünmedi**, ancak `pre-commit` yakaladı. **Y13 yeniden açık.**
 
 ---
 
