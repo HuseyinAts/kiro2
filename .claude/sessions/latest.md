@@ -2374,3 +2374,104 @@ terfi sonrasi tavan: 3.336 (%91,0)  <- "~264" iddiasi CURUDU
 - Görsel: `_PAGE` → NULL, Apotemi 2024 Ayt crop → NULL, diğer crop → taşı
 - Dedup silme ölçütü **sıkı kimlik** (gövde + şık, sırasıyla); 58 yakın-kopya
   **raporlanır, silinmez** — benzerlik metriği bu korpusta **ters** çalışıyor
+
+---
+
+## Session Handoff — 2026-08-20 (S235 · FAZ B KAPANDI) ✅
+
+**Branch:** feature/self-evolution-optimization · **Commit:** `15876c14b` · **Push:** ⏳ 1 commit bekliyor
+**Kapı:** 22 dosya / **214 passed / 0 skipped / 9 xfailed**, EXIT=0 — baseline ile **birebir**
+**Takipli-kirli:** yalnız devralınan `backend/semantic_cache.pkl`
+
+### Bu oturumun tek cümlesi
+S234 "kesinleşmiş kurallar" diye 13 maddelik bir liste bırakmıştı. Bu oturum onları
+**uygulamadan önce ölçtü** ve **üçünün yanlış olduğunu** buldu — biri tam olarak
+uyardığı kusuru üretiyordu. Kalıcı veri yazımı yok.
+
+### Üretilen (`15876c14b`, +1637)
+| Dosya | Satır | Ne |
+|---|---|---|
+| `backend/scripts/quality/y11_goc.py` | 343 | Saf dönüşüm: kaynak 78 kolon → 4 hedef satır. DB/dosya/ağ/rastgelelik/zaman **yok** (import yalnız `copy` + `typing`) |
+| `backend/tests/fast/test_y11_goc.py` | 1294 | 54 test fonksiyonu / **242 pytest vakası** |
+
+### 🔴 DEVİR NOTUNUN 3 KURALI ÖLÇÜLEREK ÇÜRÜDÜ
+| # | S234'ün kuralı | Ölçüm | Düzeltme |
+|---|---|---|---|
+| 1 | `bloom_category → 5:EVALUATION, 6:CREATION` | 5/6 = **27 satır**. Kalan **4.392** (`bilgi/kavrama/uygulama/analiz`) kuralın DIŞINDA → `BLOOM_A_MAP.get(cat, 1.05)` (`empirical_irt_calibrator.py:119`) hepsini `irt_a=1.05`'e sabitlerdi. **Kural, uyardığı kusuru üretiyordu.** | altı seviyenin altısı, lowercase; bilinmeyen → `ValueError`; `bool` ayrıca elenir (`True == 1`) |
+| 2 | `review_status → AÇIKÇA yaz` (değer yok) | canlı kanon **`approved` lowercase** 36.967/36.967 · `server_default='APPROVED'` UPPERCASE | `REVIEW_STATUS = "approved"` |
+| 3 | `irt_based_difficulty` sürükleme yok | **EVREN-BAĞIMLI:** göç kapsamında (4.419) `medium`×4.419 → kural DOĞRU; filtresiz KIMYA'da `kolay` 4 + `orta` 2; tüm korpusta ayrıca `MEDIUM` 13 + `cok_kolay` 3 | FAZ B'de taşı; MAT/GEO/FIZ göçünde **yeniden ölç** |
+
+Ayrıca SPEC denetimi: **17 kural bir "kalan kolonlar aynen taşınır" maddesi içermiyordu** —
+harfiyen uyan bir uygulama 23 NOT NULL + defaultsuz kolonu atlar, **her INSERT düşerdi**.
+Modül 63 kolonluk **açık** geçiş listesi kullanıyor.
+
+### Ölçümler (bu turda üretildi)
+- **Uçtan uca, gerçek kaynak satırıyla:** anahtar kümeleri canlı `information_schema`'ya karşı
+  **12/12 · 19/19 · 21/21 · 33/34** — tek eksik `embedding` (kural 1: 768 ↔ 1536). FAZLA=0.
+- **topic remap KOD üzerinden:** `KIM` `dcd3211c…`→`72e79276…` (852) · `FIZ` (12) · `GEN` (1).
+  Diğer 14 kodun id'si zaten aynı — ama kural yine koddan çalışır, id eşitliği tesadüfe bırakılmaz.
+- **Görsel kuralı 3 sınıfta gerçek satırla:** sızıntılı kitap crop → `None` · `_PAGE` → `None` ·
+  temiz kitap crop → taşındı.
+- **Mutasyon 8/8 ÖLDÜ** (commit'li dosya üzerinde, bağımsız harness): bloom 5↔6 takas (2 failed) ·
+  `approved`→`APPROVED` (1) · bloom bekçisi `if False` (7) · `_PAGE`→`_page` (1) · kitap adı tek
+  karakter (2) · topic bilinmeyen kod sessiz geçir (1) · sayaçların yalnız ilki (5) · damga anahtarı (3).
+  Hiçbiri `error`, sekiz geri alımın sekizi `git status --short` boş.
+- 257 passed / 0 failed (`y11_goc` 242 + `y11_dedup` 15 — dedup regresyonu yok). Ödül-hackleme 0/0.
+
+### Bu turda aletlerim 4 kez yanıldı (dürüst kayıt)
+1. **Mutasyon harness'i 8/8 GEÇERSİZ raporladı — tamamen alet arızası.** Özeti *son satırdan*
+   okuyordum; mutasyonlu koşumda `pytest-benchmark` uyarısı özetin altına düşüyor. Desenle
+   aramaya çevirince **0/8 → 8/8**. Kontrol kolu geçerliydi (242 passed) ve bu yüzden harness
+   sağlam göründü — **kontrol kolunun geçmesi mutasyon kolunun ölçtüğünü kanıtlamaz.**
+2. **Aynı harness'te ikinci yanlış-negatif:** "uygulandı mı" kontrolüm `count(ankraj)==0` idi;
+   *ekleme* mutasyonları (M6) ankrajı yeni metnin içinde de taşıyor → "UYGULANMADI".
+3. **`cd backend` sonrası yol `backend/backend/` çözüldü, 2 kez.** Biri `grep`'i düşürdü ve
+   `||` yedeği **"TEMİZ" yanlış-pozitifi** bastı; diğeri `pre-commit run mypy`'ı
+   `(no files to check)` yaptı. Aynı turda sentez ajanı da aynı tuzağa düştü — 3/1 turda.
+4. **`git commit … | tail; $?` → EXIT=0 gösterdi ama commit DÜŞMÜŞTÜ** (mypy `no-any-return`).
+   Boru hattında `$?` son halkayı ölçer; yakalayan şey `git show --stat HEAD`'in hâlâ eski
+   hash'i göstermesiydi. Çıkış kodu ayrı değişkene alınarak düzeltildi.
+
+Ayrıca: mypy bulgusu **benim bu turda yazdığım satırdaydı** → SKIP tartışılmadı, iki tip
+anotasyonuyla düzeltildi (`_gorsel_url`), davranış nötr.
+
+### Sonraki Adımlar (maks 5)
+1. **PUSH** — 1 commit bekliyor (kullanıcı onayı).
+2. **FAZ C pilot** — 50 satır `BEGIN…ROLLBACK`. Örneklem kör nokta bırakmaz: ≥5 remap ·
+   ≥3 kapı-elenen · ≥2 mükerrer · ≥1 çapraz-DB · ≥1 `created_by` yetimi. Kapı: 50 → 4×50 ·
+   yetim 0 (A4 bekçisi) · JOIN'le geri okuma birebir · `ROLLBACK` sonrası `question_bank`=36.967.
+3. **Yükleyici sözleşmesi** (FAZ C'nin ön koşulu): dört sözlük **TEK transaction** ·
+   dedup **çağıran katmanda** (`y11_dedup.mukerrer_gruplar` ile ele, sonra dönüştür) ·
+   **#486 `set_type_codec('jsonb')`** yoksa parti damgasız + metadata'sız girer.
+4. **FAZ D** — kalıcı yazım, `pending`, 1000'lik parti.
+5. **FAZ F'ye biriken 4 ders** (aşağıda) + `ders_kaydi.yaml`.
+
+### Yeni açık işler (bu oturumda ölçüldü)
+- **`.claude/rules/database.md` BAYAT (P2):** `review_status='APPROVED'` yazıyor, canlı
+  36.967/36.967 `'approved'`. Bu dosyaya bakan sonraki ajan **yanlış değer yazar.**
+- **`docs/audits/2026-08-19_y11_goc_mekanizmasi_tasarim.md:169-183` BAYAT (P3):** "14 konu
+  KOPYALANIR" diyor; canlı `topic_hierarchy` **26** ve KIMYA'nın 17 kodunun 17'si de mevcut
+  (ADIM 1 uygulanmış).
+- **Plan'daki kitap adı dizesi YANLIŞ (P1, kapatıldı ama kaydedilsin):** plan
+  `'Apotemi 2024 Ayt Kimya SB'` diyor, canlı DB `'Apotemi 2024 Ayt Kimya Soru Bankasi'`.
+  Plan dizesi kullanılsaydı kural **hiç tetiklenmez**, 112 sızıntılı crop sessizce göç ederdi.
+- **`correct_answer` düzeltme kanalı — KARAR BEKLİYOR:** `tasarim:115-117` "yargıç düzeltmesi
+  göç sırasında yeni satıra yazılır" vs kural 12 "harf yeniden atama YASAK". İmzada bunu
+  taşıyacak parametre **yok**.
+- **Beklenen son satır sayısı üç belgede üç farklı:** 3.554 (`plan:196`) / ~3.616
+  (`latest.md:2333`) / dedup "153 fazlalık". **FAZ D'den önce tek sayı ilan edilmeli.**
+- **Apotemi sızıntısı kitaba mı yayınevine mi özgü — ÖLÇÜLMEDİ.** Aynı batch'te 3 Apotemi
+  kitabı daha var (408 + 105 + 1 satır); kural yalnız 2024 AYT kitabını dışlıyor.
+- **`grade_level=12` canlıya İLK KEZ girecek** (canlı 36.967/36.967 hepsi `11`).
+
+### Ders adayları (FAZ F'de deftere)
+- **Devir notundaki KURAL da bir iddiadır** — uygulamadan önce **kapsamını** ölç. Bloom
+  kuralı 4.419'un 27'sini kapsıyordu ve tam olarak uyardığı kusuru üretiyordu.
+- **Bir alanın kanonu ÜÇ yerden gelir** (ORM default · `server_default` · canlı dağılım) ve
+  **üçü çelişebilir**. `review_status`'ta üçü de farklıydı; canlı dağılım kazanır.
+- **"Sürükleme var/yok" EVREN-BAĞIMLI bir iddiadır.** Aynı kolon göç kapsamında temiz,
+  filtresiz derste kirli, korpusta daha kirli. Hangi evrende ölçtüğünü YAZ.
+- **Mutasyon harness'inin ÖZET AYRIŞTIRICISI da bir alettir ve yanlış-GEÇERSİZ üretir.**
+  `L-s202-mutasyon-error-gecersiz` `error`'ü kapsıyor; ayrıştırıcı arızası **8/8'i geçersiz
+  gösterdi** ve kontrol kolu geçtiği için harness sağlam göründü. Özeti son satırdan okuma,
+  `^=+ ... =+$` deseniyle ara.
