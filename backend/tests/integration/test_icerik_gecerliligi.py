@@ -217,7 +217,10 @@ async def test_i3_konu_dagilimi_var(live_db):
     )
 
 
-@_y11_xfail("reviewed_at 36.967 satırda aynı mikrosaniye (2026-08-17 05:08:04.105754)")
+@_y11_xfail(
+    "kapı BOŞ (0 satır) — 36.967 kitapsız satır 20 Ağu'da silindi; önceki "
+    "kusur: reviewed_at 36.967 satırda aynı mikrosaniye (2026-08-17 05:08:04.105754)"
+)
 async def test_i4_inceleme_damgasi_toptan_degil(live_db):
     """Tek bir zaman damgası = tek bir toplu UPDATE = gerçek inceleme yok.
 
@@ -235,11 +238,20 @@ async def test_i4_inceleme_damgasi_toptan_degil(live_db):
 
     `> 1` "hiç incelenmemiş"i "yalan söylemiş" ile karıştırıyordu.
     """
-    farkli = await _skaler(
-        live_db,
-        "SELECT count(DISTINCT qs.reviewed_at) "
-        "FROM mv_safe_for_beta m JOIN question_statistics qs ON qs.id = m.id",
-    )
+    toplam, farkli = (
+        await live_db.execute(
+            text(
+                "SELECT count(*), count(DISTINCT qs.reviewed_at) "
+                "FROM mv_safe_for_beta m JOIN question_statistics qs ON qs.id = m.id"
+            )
+        )
+    ).one()
+    # ⚠️ BOŞ KAPI MUAFİYET DEĞİL. `farkli != 1` iddiası boş kümede 0 != 1 ile
+    # KENDİLİĞİNDEN geçer. 20 Ağu 2026'da kapı 27.073 -> 0'a düştüğünde bu test
+    # XPASS verdi ve "kusur kapandı" diye okundu — kapanmamıştı, ölçülecek satır
+    # kalmamıştı. `test_i2`/`test_k2_mekanik` bu korumayı zaten taşıyordu; bu iki
+    # bekçide eksikti. Boş küme üstünde geçen bir bekçi, YEŞİL bir alet arızasıdır.
+    assert toplam > 0, "Kapı BOŞ — bu bekçi hiçbir şey ölçemez (alet arızası)."
     assert farkli != 1, (
         f"Kapıdaki tüm satırlar AYNI anda 'incelenmiş' ({farkli} farklı damga). "
         "Bu bir toplu UPDATE imzasıdır; `quality_review_status='auto_judged_high'` "
@@ -414,7 +426,10 @@ async def test_k2_mekanik_cop_orani_tabanin_altinda(live_db):
     )
 
 
-@_y11_xfail("kapıda 105 satırın anahtarı BOŞ şıkka işaret ediyor")
+@_y11_xfail(
+    "kapı BOŞ (0 satır) — 36.967 kitapsız satır 20 Ağu'da silindi; önceki "
+    "kusur: kapıda 105 satırın anahtarı BOŞ şıkka işaret ediyor"
+)
 async def test_k2_anahtar_dolu_bir_sikka_isaret_ediyor(live_db):
     """R5 tek başına: yanıtlanması matematiksel olarak imkânsız sorular.
 
@@ -423,6 +438,9 @@ async def test_k2_anahtar_dolu_bir_sikka_isaret_ediyor(live_db):
     havuzun geri kalanı ne kadar temiz olursa olsun servis edilemez.
     """
     satir = (await live_db.execute(text(_KURALLAR_SQL))).one()
+    # Bkz. `test_i4`: `n_r5 == 0` boş kapıda kendiliğinden geçer. Kardeş test
+    # `test_k2_mekanik_cop_orani_tabanin_altinda` bu satırı zaten taşıyordu.
+    assert satir.toplam > 0, "Kapı BOŞ — bu bekçi hiçbir şey ölçemez (alet arızası)."
     assert satir.n_r5 == 0, (
         f"Kapıda {satir.n_r5:,} sorunun cevap anahtarı geçersiz: ya A-E dışında "
         "ya da BOŞ bir şıkka işaret ediyor. Bu sorular hiçbir öğrenci "
