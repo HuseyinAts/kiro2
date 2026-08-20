@@ -24,8 +24,11 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import Session as _SyncSession
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool, StaticPool
+
+from core.tenant_context import GUC_KUR_SQL, aktif_kullaniciyi_getir
 
 from .config import settings
 
@@ -501,3 +504,42 @@ async def get_redis_client():
 
     # Return the Redis client (can be None if Redis is not available)
     return cache_manager.redis
+
+
+# ============================================================================
+# RLS kiraci GUC'u — HER transaction basinda (S241 B1)
+# ============================================================================
+# NEDEN BURADA, cagri yerlerinde DEGIL:
+# 79 tabloda RLS acik ve politikalar fail-closed. GUC set edilmemis baglantida
+# `current_setting('app.current_org_id', true)` NULL doner, karsilastirma NULL
+# olur, satir reddedilir. Backend `kiro2_app` rolu ile bagli (rolbypassrls=f),
+# yani RLS gercekten uygulaniyor. Olculdu: `exam_sessions` tablosunda BUGUNE
+# KADAR 0 satir -- hicbir ogrenci tek bir sinav baslatamadi.
+#
+# GUC'u set eden tek yer `core/dependencies.py`'deki `get_current_tenant`'ti ve
+# transaction-local oldugu icin yalniz istek oturumunu kapsiyordu. Sinav motoru
+# 16, komut/API 6 yerde KENDI oturumunu aciyor. 22 cagri yerini tek tek yamamak
+# cerrahi degil: biri atlanirsa sessiz 500 olarak geri doner. Bu yuzden kanca
+# tek bogaz noktasina -- transaction baslangicina -- konuyor.
+#
+# Bekci: backend/tests/integration/test_rls_guc_transaction.py
+@event.listens_for(_SyncSession, "after_begin")
+def _rls_guc_kur(session, transaction, connection):  # pragma: no cover - event hook
+    """Her transaction basinda `app.current_org_id`'yi aktif kullanicidan turet.
+
+    Uc dal da KASITLI:
+      * postgresql disi lehce (test sqlite'i) -> ATLA. `set_config` Postgres'e ozgu.
+      * aktif kullanici yok (Celery/startup/script) -> ATLA. Bugunku davranis korunur,
+        regresyon uretilmez.
+      * hata -> YUT ve LOG'LA. GUC kurulamazsa RLS zaten fail-closed davranir;
+        burada patlamak calisan istekleri de dusururdu.
+    """
+    if connection.dialect.name != "postgresql":
+        return
+    kullanici_id = aktif_kullaniciyi_getir()
+    if not kullanici_id:
+        return
+    try:
+        connection.exec_driver_sql(GUC_KUR_SQL, (kullanici_id,))
+    except Exception as exc:
+        logger.warning("RLS GUC kurulamadi (kullanici=%s): %s", kullanici_id, exc)

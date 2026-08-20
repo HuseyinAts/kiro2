@@ -14,6 +14,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.tenant_context import aktif_kullaniciyi_kur
+
 logger = logging.getLogger(__name__)
 
 # JWT Security
@@ -174,6 +176,12 @@ async def get_current_user(
                 detail=f"Invalid token: {e}",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        # RLS kiraci baglami (S241 B1): bu istekte acilacak HER DB oturumu bu
+        # kimlikten `app.current_org_id` GUC'unu turetir (core/database.py,
+        # after_begin dinleyicisi). Burada set edilir cunku `get_current_user`
+        # kimlikli her ucta kosar; `get_current_tenant` ise 153 router'in
+        # yalnizca 2'sinde bagimlilik olarak bildirilmis.
+        aktif_kullaniciyi_kur(user.id)
         return user
 
     except jwt.ExpiredSignatureError:
