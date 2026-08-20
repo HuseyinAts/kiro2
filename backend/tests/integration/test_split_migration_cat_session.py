@@ -72,27 +72,6 @@ os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only-32-chars")
 # olmayan DSN reddedilir (sessizce sqlite'a dusmeyi onler).
 pytestmark = pytest.mark.asyncio
 
-# --- BOS KAPI ANKRAJI (20 Agu 2026) ----------------------------------------
-# Bu dosyanin olctugu sey SEMA/SORGU DOGRULUGU (split sonrasi ham SQL dogru
-# tablolara mi vuruyor). Dolu bir aday havuzu ONKOSULDUR, test edilen sey
-# degildir. 20 Agu'da 36.967 kitapsiz (sentetik) satir silindi ve
-# `mv_safe_for_beta` 27.073 -> 0'a dustu; veri donmesini bekleyen 9 test
-# kirmizi verdi. Bu kirmizi SEMA hakkinda YANLIS bir ifadedir -- sema saglam,
-# olculecek satir yok.
-#
-# NEDEN skip DEGIL xfail(strict): skip sessizdir ve aliskanliga doner
-# (`test_icerik_gecerliligi.py` ayni gerekceyle xfail sectti). strict=True,
-# gercek icerik gelip testler gecmeye basladiginda XPASS ile KIRAR --
-# yani "isareti kaldir" sinyali otomatik gelir. SQL METNI uzerinde iddia eden
-# kardes testler (warm_up, kalite_kapisi, aday_sorgusu_join) isaretlenmedi:
-# onlar bos havuzda da olcuyor ve GECIYOR.
-_BOS_KAPI = (
-    "mv_safe_for_beta BOS (0 satir) — 36.967 kitapsiz sentetik satir 20 Agu "
-    "2026'da silindi (S238; 180/180 adversarial cop, ozgulluk %100). Bu test "
-    "dolu aday havuzu ONKOSULU ister; sema kusuru DEGIL. Y11/MAT gocu havuzu "
-    "doldurunca XPASS verip KIRACAK — o an bu isaret KALDIRILACAK."
-)
-_bos_kapi_xfail = pytest.mark.xfail(strict=True, reason=_BOS_KAPI)
 
 # Yerlestirme dersi: app/api/cat.py::PLACEMENT_SUBJECT ile ayni.
 DERS = "MATEMATIK"
@@ -287,7 +266,6 @@ async def test_warm_up_aday_sorgusu_undefined_column_atmiyor(cat_servis):
     assert isinstance(adaylar, list)
 
 
-@_bos_kapi_xfail
 async def test_zpd_aday_sorgusu_dolu_havuz_donduruyor(cat_servis):
     """ZPD dali gercek IRT parametreleriyle dolu bir havuz dondurmeli."""
     from app.services.irt_engine import ItemParams
@@ -302,7 +280,6 @@ async def test_zpd_aday_sorgusu_dolu_havuz_donduruyor(cat_servis):
             assert isinstance(deger, float), f"{ad} float degil: {deger!r}"
 
 
-@_bos_kapi_xfail
 async def test_aday_irt_parametreleri_question_statistics_ten_geliyor(
     cat_servis, live_db: AsyncSession
 ):
@@ -334,7 +311,6 @@ async def test_aday_irt_parametreleri_question_statistics_ten_geliyor(
         )
 
 
-@_bos_kapi_xfail
 async def test_aday_sorgusu_sekil_bagimli_sorulari_disliyor(
     cat_servis, live_db: AsyncSession
 ):
@@ -413,7 +389,6 @@ async def test_aday_sorgusu_kalite_kapisini_koruyor(cat_servis):
 # ---------------------------------------------------------------------------
 
 
-@_bos_kapi_xfail
 async def test_soru_detayi_undefined_column_atmiyor_ve_dolu_donuyor(
     cat_servis, live_db: AsyncSession
 ):
@@ -426,7 +401,6 @@ async def test_soru_detayi_undefined_column_atmiyor_ve_dolu_donuyor(
     assert isinstance(detay["stem"], str) and detay["stem"].strip()
 
 
-@_bos_kapi_xfail
 async def test_soru_detayi_tuketici_sozlesmesini_koruyor(
     cat_servis, live_db: AsyncSession
 ):
@@ -464,7 +438,6 @@ async def test_soru_detayi_tuketici_sozlesmesini_koruyor(
         assert isinstance(deger, float), f"irt.{ad} float degil: {deger!r}"
 
 
-@_bos_kapi_xfail
 async def test_soru_detayi_split_tablolara_id_uzerinden_join_ediyor(
     cat_servis, live_db: AsyncSession
 ):
@@ -501,7 +474,6 @@ async def test_soru_detayi_split_tablolara_id_uzerinden_join_ediyor(
 # ---------------------------------------------------------------------------
 
 
-@_bos_kapi_xfail
 async def test_check_answer_dogru_sikki_dogru_biliyor(live_db: AsyncSession):
     """`_check_answer` DOGRU siki dogru bilmeli.
 
@@ -531,14 +503,12 @@ async def test_check_answer_dogru_sikki_dogru_biliyor(live_db: AsyncSession):
 # ---------------------------------------------------------------------------
 
 
-@_bos_kapi_xfail
 async def test_cat_next_ucu_500_donmuyor(cat_client: AsyncClient):
     """Canli repro: `curl -X POST .../api/v1/cat/next` -> HTTP 500."""
     yanit = await cat_client.post("/api/v1/cat/next", json={})
     assert yanit.status_code == 200, f"HTTP {yanit.status_code}: {yanit.text[:400]}"
 
 
-@_bos_kapi_xfail
 async def test_cat_next_gercek_madde_ve_sik_donduruyor(cat_client: AsyncClient):
     """200 yetmez — sozlesmedeki madde gercek soru metni ve siklarla dolmali."""
     yanit = await cat_client.post("/api/v1/cat/next", json={})

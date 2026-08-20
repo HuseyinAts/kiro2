@@ -120,18 +120,6 @@ from sqlalchemy import text
 
 pytestmark = [pytest.mark.icerik_gecerliligi, pytest.mark.asyncio]
 
-# Y11 kapanınca bu işaretler KALDIRILACAK. Tek yerden, ki unutulmasın.
-_Y11 = (
-    "Y11 AÇIK: kapı içeriği sentetik dolgu (S231, 40/40 okundu, 0 servis "
-    "edilebilir). Kaynak `kiro2_temp` (187.835 soru / 420 kitap). Y11 "
-    "kapanınca bu xfail işareti KALDIRILACAK — XPASS zaten kıracak."
-)
-
-
-def _y11_xfail(ne: str):
-    return pytest.mark.xfail(strict=True, reason=f"{ne} — {_Y11}")
-
-
 # --- eşikler (hepsi hedef değerde; bugünkü değer yorumda) ------------------
 
 MIN_KAYNAK_KITAP_ORANI = 0.50  # bugün: 0,00 (27.073/27.073 source_book NULL)
@@ -153,7 +141,6 @@ async def _skaler(oturum, sql: str):
 # ===========================================================================
 
 
-@_y11_xfail("pipeline_metadata 36.967 satırın hepsinde birebir aynı 51 karakter")
 async def test_i1_pipeline_metadata_bilgi_tasiyor(live_db):
     """Yargı taşıdığı iddia edilen alan tek değerliyse, o yargı hiç yapılmamıştır.
 
@@ -174,7 +161,6 @@ async def test_i1_pipeline_metadata_bilgi_tasiyor(live_db):
     )
 
 
-@_y11_xfail("source_book kapıdaki 27.073 satırın 27.073'ünde NULL")
 async def test_i2_sorularin_kaynak_kitabi_var(live_db):
     """Kaynağı olmayan soru izlenebilir değildir.
 
@@ -199,7 +185,6 @@ async def test_i2_sorularin_kaynak_kitabi_var(live_db):
     )
 
 
-@_y11_xfail("primary_topic_id 36.967 satırın hepsinde 'Genel' (12 konudan 1'i)")
 async def test_i3_konu_dagilimi_var(live_db):
     """Tüm sorular tek konuya bağlıysa konu-bazlı öğrenme yolu anlamsızdır.
 
@@ -217,10 +202,6 @@ async def test_i3_konu_dagilimi_var(live_db):
     )
 
 
-@_y11_xfail(
-    "kapı BOŞ (0 satır) — 36.967 kitapsız satır 20 Ağu'da silindi; önceki "
-    "kusur: reviewed_at 36.967 satırda aynı mikrosaniye (2026-08-17 05:08:04.105754)"
-)
 async def test_i4_inceleme_damgasi_toptan_degil(live_db):
     """Tek bir zaman damgası = tek bir toplu UPDATE = gerçek inceleme yok.
 
@@ -259,7 +240,6 @@ async def test_i4_inceleme_damgasi_toptan_degil(live_db):
     )
 
 
-@_y11_xfail("difficulty_level 36.967 satırın hepsi MEDIUM; irt_difficulty 1 değer")
 async def test_i5_zorluk_sinyali_ayristirici(live_db):
     """Adaptif motorun (IRT/ZPD/CAT) TEK ayrıştırıcı girdisi budur.
 
@@ -284,7 +264,6 @@ async def test_i5_zorluk_sinyali_ayristirici(live_db):
     )
 
 
-@_y11_xfail("kapının elemesi tek başına quality_review_status ile birebir açıklanıyor")
 async def test_i6_kapi_lastik_damga_degil(live_db):
     """Kapı birden fazla boyutta elemeli — tek yordamlı kapı lastik damgadır.
 
@@ -397,7 +376,6 @@ FROM bayraklar
 """
 
 
-@_y11_xfail("kapıda birleşim bayrak oranı ~%21,4; gerçek kitap korpusunda %0,7")
 async def test_k2_mekanik_cop_orani_tabanin_altinda(live_db):
     """Ölçülmüş 6 kuralın birleşimi kapının en fazla %2'sini bayraklamalı.
 
@@ -426,10 +404,6 @@ async def test_k2_mekanik_cop_orani_tabanin_altinda(live_db):
     )
 
 
-@_y11_xfail(
-    "kapı BOŞ (0 satır) — 36.967 kitapsız satır 20 Ağu'da silindi; önceki "
-    "kusur: kapıda 105 satırın anahtarı BOŞ şıkka işaret ediyor"
-)
 async def test_k2_anahtar_dolu_bir_sikka_isaret_ediyor(live_db):
     """R5 tek başına: yanıtlanması matematiksel olarak imkânsız sorular.
 
