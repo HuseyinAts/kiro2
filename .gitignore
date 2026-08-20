@@ -437,3 +437,8 @@ scratch/
 
 # Sema yedekleri (alembic squash artefaktlari) - baseline SQL zaten repoda
 backend/backups/
+
+# A1 uctan uca olcum test hesabi (S241)
+.a1_e2e_kimlik.json
+.a1_kayit_ham.txt
+.a1_giris_ham.txt
