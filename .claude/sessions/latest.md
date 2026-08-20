@@ -477,3 +477,55 @@ mufredat karari · kalan ~3.500 MAT sorusu (kor okuma kapasitesi) ·
 `question_bank_cop_yedek_20260820` 4x36.967 disk tutuyor.
 
 ---
+
+### 🟢 EK 2 — S239 KAPANIS: #433 kok neden + mufredat temizligi + defter bosluğu
+
+**#433 KAPANDI ama kayitli baslik YANLIS TESHISTI.** "ES index'ini yeniden kur"
+diyordu; gercek kok neden bir **sema kacagi**: `core/es_index_schema.SORGU`
+S210 split'inden (`0fd9b8413`) once yazilmisti ve `SELECT q.question_text ...
+FROM question_bank q` diyordu. Split sonrasi o kolonlar yavru tablolarda.
+Senkron HER kosumda `asyncpg.UndefinedColumnError` ile dusuyordu -> canli ES
+index **AYLARDIR 0 dokuman**. Fix: `ALAN_KAYNAK` haritasi + dort tabloya JOIN.
+Index **0 -> 3.560**, yasakli alan (correct_answer/explanation/is_active) YOK.
+Bayat `_yedek_20260731` (64.270 dok, `correct_answer` TASIYORDU, silinmis
+satirlarin projeksiyonuydu) **DROP edildi**. ES 127.0.0.1'e bagli, LAN'a acik degil.
+
+🔴 **DEFTER BU KOR NOKTAYI ZATEN YAZMISTI VE BOSLUK ISIRDI.**
+`L-s230-ast-sayaci-ham-sql-goremez`: *"ham SQL yapisal kor noktadir... ZORLAYICI
+YOK, bu bosluk bilincli olarak gorunur birakildi."* Bugun ayni kor nokta ES
+senkronunda tekrar etti. Bosluk kapatildi: o dersin `zorlayici` alani artik
+`tests/integration/test_es_index_schema_split.py`. Bekci sorgunun METNINI okumaz,
+**canli semaya karsi KOSTURUR** (AST tarayici string literal icini goremez).
+
+**MUFREDAT: MAT.TRG + MAT.DIZ de AYT cikti.** Onceki turda "sinirda" deyip
+birakmistim; ICERIK OKUNDU: TRG'de radyan trigonometrik ozdeslikler /
+`tan(x+pi/3)` / `cos 235`, DIZ'de aritmetik-geometrik diziler (biri `sin 75`
+kullaniyor). TYT'de ne trigonometri ne diziler var. **57 soru silindi**, zincir
+tek turda hizalandi: DELETE -> REFRESH -> ES senkron.
+Kumulatif AYT temizligi **179** (26 metin + 96 konu kodu + 57) —
+`exam_type='TYT'` etiketinin guvenilmezlik olcusu.
+
+**YEDEK TABLOLARI: KENDI ONERIMI GERI ALDIM.** "Disk tutuyor, dusurulebilir"
+demistim; olculdu: **34 MB** (DB toplam 135 MB). 36.967 satirlik bir silmenin
+TEK geri alma yolunu 34 MB icin yok etmek kotu takas. **TUTULACAK.**
+
+### Canli son durum
+```
+question_bank 3.922   (KIMYA 3.531 + MAT 391)
+KAPI          3.560   ES index 3.560 (birebir)
+AYT konusu 0 | yetim 0 | A1: 14 konu / 391 soru (kabul >=5 / >=40)
+```
+
+### Kapi (defterden turetilen zorlayici liste)
+```
+22 dosya -> 23 dosya (ES bekcisi eklendi)
+226 passed / 1 skipped / 1 xfailed / 0 failed   EXIT=0
+```
+Kalan tek xfail hacim tabani (3.922 < 150.000) ve DOGRU kirmizi.
+
+### Yapilmayan (durust kayit)
+- **Kalan ~3.500 MAT sorusu** — baglayici kisit kor okuma kapasitesi. Bu oturumda
+  2.012 crop okundu (586 MAT + 1.426 KIMYA); kalan ayri tur isi.
+- `MAT.IST` (15 soru) tek basina az; A1'i etkilemiyor ama dengesiz.
+
+---
