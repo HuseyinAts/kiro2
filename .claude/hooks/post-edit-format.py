@@ -11,6 +11,9 @@ if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
 if sys.stderr and sys.stderr.encoding and sys.stderr.encoding.lower().startswith("cp"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ders_dedektorleri import duzeltilemeyen_bulgular  # noqa: E402
+
 # Python directories to auto-format
 PYTHON_DIRS = ["backend", "orchestrator"]
 
@@ -55,6 +58,24 @@ def main() -> int:
             timeout=10,
         )
         print(f"[format] ruff: {os.path.basename(file_path)}", file=sys.stderr)
+
+        # ---- N802'nin SEKIZ TUR kacmasinin sebebi (20 Agu 2026'da olculdu) ----
+        # Yukaridaki `--fix` cagrisi N802'yi GORUYOR ve basiyor (EXIT=1), ama
+        # `capture_output=True` ciktiyi yakaliyor ve KIMSE OKUMUYOR. Yani ihlal
+        # tespit edilip cope atiliyordu; sinyal ancak commit aninda, kapinin
+        # FARKLI ruff surumuyle geliyordu.
+        # `--output-format=concise` SURUMDEN BAGIMSIZ klasik bicimi verir
+        # (ruff 0.14 varsayilani yeni tani bicimi; dedektorun regex'i klasigi
+        # bekliyor). PostToolUse BLOKLAYAMAZ — amac blok degil, sinyali
+        # YAZMA aninda vermek.
+        kalan = subprocess.run(
+            ["ruff", "check", "--output-format=concise", file_path],
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        for bulgu in duzeltilemeyen_bulgular(kalan.stdout):
+            print(f"[lint] {bulgu}", file=sys.stderr)
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         print(f"[format] ruff skip: {e}", file=sys.stderr)
 
