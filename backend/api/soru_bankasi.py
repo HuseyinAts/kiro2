@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, sta
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.cevap_kapisi import cevaplari_ele
 from core.database import get_db_session
 from core.ddos_protection import limiter
 from core.dependencies import AuthenticatedUser, get_current_user
@@ -158,6 +159,13 @@ async def sorular_listele(
             compute_fn=fetch_questions,
             ttl=3600,  # 1 hour
         )
+
+        # Cevap kapısı — cache'ten SONRA (S241, denetim B2).
+        # Cache anahtarı (yukarıda, sorgu parametrelerinden türetiliyor) rol
+        # TAŞIMAZ; payload'ı role göre cache'lersek bir öğretmenin girdisi
+        # öğrenciye servis edilir. Bu yüzden cache TAM payload'ı tutar ve
+        # ayıklama okumadan sonra, her istekte koşar — isabet olsun olmasın.
+        soru_listesi = cevaplari_ele(soru_listesi, current_user.role)
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
