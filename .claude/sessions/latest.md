@@ -48,141 +48,6 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
-## Session Handoff — 2026-08-19/20 (S234 · FAZ A KAPANDI + FAZ B kararları) ✅ KAPANIŞ
-
-**Branch:** feature/self-evolution-optimization · **Kapı:** 22 dosya / **214 passed / 0 skipped / 9 xfailed**
-**Takipli-kirli:** yalnız devralınan `backend/semantic_cache.pkl`
-**Ders defteri:** 143 → **154** (S233'ten **11 ders**) · zorlayıcı 41 → **45** · cırcır tabanı **45**
-
-### Bu oturumun tek cümlesi
-S232-H "ADIM 2 için her şey hazır" diyerek kapanmıştı. Bu oturum ADIM 2'ye **girmedi** —
-girmeden önce ölçtü ve **göçü koruyacak dört güvenlik ağının dördünün de ölü** olduğunu
-buldu. İş veri taşımak değil, **taşımayı güvenli kılmak**tı. Hiçbir üretim satırı yazılmadı.
-
-### Commit'ler (7, hepsi push'lu)
-```
-f7b16b569  docs   plan + FAZ 0/A1/A2 (yedek GERI YUKLENEBILIR degildi)
-6da66a1e6  fix    A3 — invaryant bekcisi artik OLCUYOR (3 skip -> 0)
-b22d279d3  feat   A2b — onkosul kapsam bekcisi (P0-9 kalici kapandi)
-3e14402c9  chore  S233 checkpoint
-<a4>       feat   A4 — 4-tablo parity bekcisi
-<a5>       docs   A5 — Y12 xfail olcumu, P0-6 CURUDU
-<dedup>    feat   FAZ B dedup modulu + 15 test
-```
-
-### Ölçülen 9 P0
-| # | Bulgu | Durum |
-|---|---|---|
-| P0-1 | `soru_hash` canlıda **%100 UUID4** → dedup indeksi yapısal ölü | dedup **metin+şık** ile yapılacak |
-| P0-2 | Kapı `is_active`'i **hiç filtrelemiyor** → `is_active=false` NO-OP | geri alma DELETE ile |
-| P0-3 | `question_bank(id)`'ye **11 FK, 11'i CASCADE** | ön kapı: bağlı cevap = 0 |
-| P0-4 | Yedek bayat (dump'ta `topic_hierarchy` 12, canlı 26) | **A1'de yenilendi** ✅ |
-| P0-5 | Invaryant bekçisi pre-push'ta **3/3 SKIP** | **A3'te kapandı** ✅ |
-| P0-6 | "Göç commit'i kendi kapısını kırar" | **A5'te ÇÜRÜDÜ** ✅ |
-| P0-7 | `REFRESH` `kiro2_app` ile çalışmaz | FAZ E'ye, postgres erişimi VAR |
-| P0-8 | `embedding` **768 ↔ 1536** | INSERT'e hiç konmayacak |
-| **P0-9** | **`pg_dump -t` yedeği geri YÜKLENEMİYORDU** | **A2b'de kalıcı kapandı** ✅ |
-
-### FAZ A — tamamı kapandı, hepsi mutasyonla çivili
-| Adım | Kanıt |
-|---|---|
-| A1 yedek | dump **içi** sayıldı: 147.894; eski dump `topic_hierarchy` **12** → P0-4 bağımsız doğrulandı |
-| A2 restore provası | Gerçek `pg_restore` **denendi ve düştü** → P0-9 bulundu → önkoşul üretildi → **147.894/147.894** |
-| A2b önkoşul bekçisi | **Mutasyon 3/3** (M3 yanlış-sıfır kapısını çiviledi) |
-| A3 DSN enjeksiyonu | **Mutasyon 2/2**; kapı 172/3/8 → 182/0/9; parola maskeli, çıktıda **0 kez** |
-| A4 parity bekçisi | **Mutasyon 4/4**; M4 `# noqa: S608`'in dayanağının gerçek olduğunu kanıtladı |
-| A5 xfail ölçümü | **Kod gerekmedi** — P0-6 çürüdü |
-
-### FAZ 0 — engelleyici FANTOM
-S232-G/H'nin iki oturum taşıdığı *"postgres parolası elimde yok"* **hiç ölçülmemişti.**
-`pg_hba.conf` → **`trust`**. Üç P0 birden kalktı.
-⚠️ **Yeni P1 (Y14):** `trust` docker ağı (172.17/172.18) + LAN (192.168.65.0/24) için de açık.
-
-### FAZ B — 9 kararın 9'u kapandı, gövde yazmaya hazır
-Kolon eşlemesi 6 ajanla üretildi; **avcı iki eşleme ajanının çeliştiği yeri ölçerek çözdü**:
-> `question_bank` ajanı "terfi sonrası tavan **~264**, göçün kazancı ~0" dedi.
-> Gerçek **3.336 (%91,0)** — `v_safe_for_beta` pozitif sinyali **5 yönlü OR**, ajan 1 dal saymış.
-> **12,6 kat hata**; kapsam kararını tersine çevirecekti.
-
-**Yazılacak `y11_goc.py` için kesinleşmiş kurallar:**
-```
-embedding            -> INSERT'e HIC konmaz (768 vs 1536)
-primary_topic_id     -> remap `code` uzerinden (306 satir; KOPYALAMA = UNIQUE ihlali)
-created_by           -> NULL (65 yetim FK)
-is_public            -> ACIKCA `true`
-review_status        -> ACIKCA yaz (ORM default=PENDING, server_default=APPROVED -> 3 degil 4 secenek)
-quality_review_status-> 'pending'  (kullanici karari)
-bloom_category       -> SEVIYE-bazli remap: 5->EVALUATION, 6->CREATION (kullanici karari)
-                        yapilmazsa irt_a 3.666 satirda 1,05'e sabitlenir
-times_asked/correct  -> sifirla (8/1/8 satir)
-created_at/updated_at-> kaynaktan TASI (3. bagimsiz geri-alma secicisi)
-damga                -> pipeline_metadata.y11_batch  (json! ::jsonb || ... ::json)
-correct_answer       -> option_a..e ile TEK SELECT'ten, sira BOZULMADAN. normalize/reorder YASAK
-4 INSERT             -> TEK transaction (damga qm'de, capa qb'de -> yarim INSERT kurtarilamaz)
-geri alma            -> 3.666 id listesi BIRINCIL secici (TSV'de kalici)
-```
-
-### Görsel kararı — 58 görüntü kör okundu
-| Sınıf | n | örneklem | sonuç |
-|---|---|---|---|
-| crop, 25 kitap | 1.435 | 30 | **30/30 TEMİZ** → **TAŞI** |
-| crop, Apotemi 2024 Ayt | 112 | 2 | 2/2 el yazısı → **NULL** |
-| **`_PAGE`, 27 kitap** | **2.119** | **26** | **23/26 SIZINTILI (%88,5)** → **NULL** |
-
-Mekanizma: **yayınevinin sayfa altına BASTIĞI cevap anahtarı** (biri 180° ters basılı;
-"Örnek" sorularında tam çözüm + "Cevap: B"). Sayfa başına 5,2 soru.
-Crop'ların temiz olma sebebi: kırpma sınırı alt şeridi **dışarıda bırakıyor**.
-→ **1.435 görselli (%39,1) / 2.231 NULL (%60,9)**
-
-### Beklenen son sayılar (FAZ D)
-```
-3.666 KABUL - 16 (siki mukerrer) - 34 (capraz-DB) ~ 3.616 satir
-question_bank 36.967 -> ~40.583   |   mv_safe_for_beta 27.073'te KALIR (beklenen)
-terfi sonrasi tavan: 3.336 (%91,0)  <- "~264" iddiasi CURUDU
-```
-
-### Sonraki Adımlar (maks 5)
-1. **`y11_goc.py` gövdesi** + kalan 8 RED test (yukarıdaki kurallar) → mutasyon bataryası
-2. **FAZ C pilot** — 50 satır `BEGIN…ROLLBACK`. Örneklem kör nokta bırakmaz:
-   ≥5 remap · ≥3 kapı-elenen · ≥2 mükerrer · ≥1 çapraz-DB · ≥1 `created_by` yetimi
-3. **FAZ D** — ~3.616 satır kalıcı, `pending`, 1000'lik parti, tek transaction
-4. **FAZ E** (ayrı onay) — `pending → auto_judged_high` + `REFRESH` (postgres ile) +
-   Y12 xfail'lerini kaldır + hacim eşiğini yeniden ölç + ES yeniden index (#433)
-5. **Y13** — PostToolUse kancası lint bulgularını atıyor (aşağıda)
-
-### Yeni açık işler (bu oturumda ölçüldü)
-- **Y13 (P2):** `.claude/hooks/post-edit-format.py:46-52` `ruff check --fix --quiet` +
-  `capture_output=True` → bulgular **tamamen atılıyor**; ayrıca kök `pyproject.toml`
-  `select`'inde **`N` YOK**, `backend/pyproject.toml:143`'te **VAR**. Sonuç: N802 sinyali
-  ancak commit'te geliyor. **Kanca DEĞİŞTİRİLMEDİ** — `#451` gereği: kapı 5/5 yakalıyor,
-  eksik olan erken sinyal; testsiz/ölçümsüz değiştirmek yeni sessiz kusur açabilir.
-- **Y14 (P1, güvenlik):** `pg_hba` `trust` docker ağı + LAN'a açık.
-- **Y15 (P2):** crop'ların ~%9'unda soru eksik, **biri tamamen boş** (`dc4562db`).
-  `question_image_url` dolu olması görüntünün kullanışlı olduğunu göstermiyor.
-- **Y16 (P2):** LaTeX-gösterimi normalizasyonu 11 mükerrer grubu kurtarabilir; **kendi
-  doğrulamasını geçmeden eklenmeyecek** (32 farklı soruyu birleştirme riski).
-
-### Bu turda kendi aletlerim 6 kez yanıldı (dürüst kayıt)
-1. **Commit'siz dosyada mutasyon** → geri alım çalışmadı, M2 M1'in üstüne bindi (kendi kayıtlı kuralım)
-2. **`grep '^pg_restore: error'` → 0**, çünkü Türkçe locale `hata` yazıyor
-3. **Sentezciye giden paketi `slice(0,60000)` ile kestim** → ajan "veri gelmedi" dedi, 6'sı da tamdı
-4. **"3 commit bekliyor" dedim, gerçek 2** — elle sayım (S223'ün tekrarı)
-5. **ruff N802 × 5** (28 test yeniden adlandırıldı) — kök neden Y13'te ölçüldü
-6. **Tek PAGE görüntüsünden sınıf iddiası** — karıştırıcı (kitap) sınıf değişkeniyle çakışmıştı;
-   58 görüntü ölçülünce mekanizma tamamen değişti
-
-### Kararlar (gelecek session tekrar tartışmasın)
-- Kapsam **yalnız KIMYA** · kapı politikası **`pending` yaz → ayrı onayla terfi** ·
-  geri alma **`DELETE` + "bağlı cevap = 0" ön kapısı** (kullanıcı kararları)
-- `pending` politikası P0-3'ün CASCADE tuzağını pilot penceresinde **etkisiz kılıyor**
-  ve FAZ D'yi postgres'siz bile yürütülebilir yapıyor; bloke olan yalnız FAZ E
-- **8 xfail'in 8'i de FAZ D'yi sağ atlatır** (A5 ölçümü) — xfail kaldırma işi FAZ E'de
-- Görsel: `_PAGE` → NULL, Apotemi 2024 Ayt crop → NULL, diğer crop → taşı
-- Dedup silme ölçütü **sıkı kimlik** (gövde + şık, sırasıyla); 58 yakın-kopya
-  **raporlanır, silinmez** — benzerlik metriği bu korpusta **ters** çalışıyor
-
----
-
 ## Session Handoff — 2026-08-20 (S235 · FAZ B KAPANDI) ✅
 
 **Branch:** feature/self-evolution-optimization · **Son commit:** `e30023ed3`
@@ -409,3 +274,52 @@ Hiçbiri `error`; dokuz geri alımın dokuzu `git status --short` **boş**; kont
   canlı `'approved'`. Bu dosya HER oturumda bağlama yükleniyor.
 - **Y14 (P1, güvenlik, S234'ten devir):** `pg_hba` `trust` docker ağı + LAN'a açık.
 - **`--kalici` bayrağı henüz hiç kullanılmadı** — kalıcı yol FAZ D'de ilk kez koşacak.
+## Session Handoff — 2026-08-20 (S237 · E1-E4 + A + B + MAT-T1)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `18d1c927d` · **Push:** ⏳ 1 commit
+**Uncommitted:** yalniz devralinan `backend/semantic_cache.pkl` (Bin 4892→4892, 0 satir)
+**Canli DB:** `question_bank` **40.583** ×4 · kapi **27.073** (degismedi) · gorsel **1.426** (onceki 0)
+
+### Yapilanlar
+- `.claude/hooks/session-{save,init}.py` (`5fe5f624a`) — hook'lar olctugunu SANAN aletlerdi. Kok neden
+  olculdu: `_check_bash()` `timeout=3` vs soguk bash spawn **7,11 sn** → `run_cmd` turevi her alan bos.
+  bash kaldirildi; `git status -uno` (`-u` **>60 sn** → **0,09 sn**); `/api/v1/health`→`/health`;
+  `question_count` yalan etiketi 3 olcume bolundu. `tests/unit/test_hooks/test_session_hooks.py` 6/7 RED → **7/7**.
+- `.claude/rules/audit-methodology.md` 1010→**117**, `.claude/sessions/latest.md` 2605→411 (`ca95ba824`).
+  Arsivler sha256 **birebir** (`docs/dersler/…`, `sessions/arsiv/…`). Mekanizma: `paths:` frontmatter'i
+  OLMAYAN kural dosyasi her oturumda yukleniyor. Baglam yuku **2.602 → 1.810 satir/oturum**.
+- `.claude/rules/database.md` — `'approved'`, PG **18.1**, **duz-metin parola silindi** (hic commit
+  edilmemisti). `CLAUDE.md:3` — A1 kabul kriteri + E3 olcumu.
+- 🟢 `y11_{ortusme_olc,goc_kumesi_uret}.py` (`44cb08a04`) — **3.616 KIMYA satiri KALICI yazildi**
+  (aylardir ilk kalici icerik). Ortusme **0** → 3.666−50=3.616. Icerik sadakati sapma **[]**.
+- 🟢 `y11_konu_seed.py` (`f74a09bf5`) — `topic_hierarchy` 26→**45**, `MAT.*` 1→**20**; kapsama **%13,2 → %92,9** (+4.316).
+- `docs/superpowers/plans/2026-08-20-mat-tyt-goc.md` (`18d1c927d`) — 6 task / 29 adim.
+
+### Fail Eden Testler
+**YOK.** `test_session_hooks.py` 7 passed · push kapisi **214 passed / 9 xfailed** (2 kez).
+
+### Engelleyiciler
+- 🔴 **OCR MOTORU YOK** — `pytesseract` kurulu, `tesseract` ikilisi yok; container'da hic OCR yok.
+  **MAT-T2..T6 BLOKE.** Cozum: `pip install rapidocr-onnxruntime` (yonetici gerekmez).
+- Operator: SMTP kimlik bilgisi · odeme saglayicisi basvurusu (haftalar) · alan adi + SSL.
+- `SKIP=reward-hacking-check` (#495) — uc olcumle savunuldu, ayri is.
+
+### Sonraki Adimlar (maks 5)
+1. **PUSH** — `18d1c927d`.
+2. **OCR karari**; kurulursa `y11_sizinti_ayirt_olc.py` kalibrasyon kolu (9 kotu / 180 iyi) hazir.
+3. MAT-T2..T6 — plan dosyasinda, T1 kapandi.
+4. #495 Y15 · Y13 N802 · Y14 `pg_hba trust`.
+5. FAZ E terfi (`pending`→`auto_judged_high` + `REFRESH`) — **ayri onay**.
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **MAT-T1 planin T2'sini CURUTTU.** 59 kitap / 354 crop kor okundu → **9 sizinti (%2,54)**.
+  Esigim (`>=2/6`) yapisal olarak **sifir uretiyordu** (olasilik %0,91; beklenen 0,53).
+  Kitap sinyali YOK: hepsi ayni ~%2,5 oranindaysa >=1 gorulen kitap beklentisi **8,4**, gozlenen **9**
+  → orneklem gurultusu. Kitap kumesi YANLIS KATMAN, dogru katman crop-basi.
+- **Iki alternatif katman curudu:** "sayfanin son sorusu" = havuzun **%67**'si; crop koordinati
+  `pipeline_metadata`'da **yok** (66 anahtar tarandi).
+- **OCR'siz gorsel dedektor KOR:** KOTU medyan 0,0690 < IYI 0,0829 (fark **−0,0139**). Esik ZORLANMADI,
+  sentetik bozma kosulmadi. `y11_sizinti_ayirt_olc.py` **commit EDILMEDI** (kor metrik "hazir arac" gibi durmasin).
+- `#485` **donduruldu** (A3): Haziran'dan beri acik, 60 commit, kullanici-gorunur cikti 0.
+- Kayitli **4 ders birebir tekrar etti** (`$?` boru hatti · CRLF ankraj · deseni ANLATAN yorum · uc-ruff); `/tmp` tuzagi **4 kez**.
+
+---
