@@ -138,7 +138,7 @@ async def db_session():
 @pytest.mark.xfail(
     strict=True,
     reason=(
-        "Y11 AÇIK: canlı question_bank 36.967 satır, taban 150.000. Bu KIRMIZI "
+        "Y11 AÇIK: canlı question_bank 3.616 satır, taban 150.000 (o 36.967 satır 20 Ağu 2026'da SİLİNDİ — S238, yedek `*_cop_yedek_20260820`). Bu KIRMIZI "
         "DOĞRU — 17 Ağu 2026'da içerik sentetik dolguyla ikame edildi (S231/S232, "
         "40/40 okundu, 0 servis edilebilir). Eşik BAYAT DEĞİL: 187.835'e göre "
         "kalibre edilmiş ve `kiro2_temp` bugün tam o sayıyı taşıyor.\n"
