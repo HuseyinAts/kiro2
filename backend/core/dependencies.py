@@ -460,16 +460,26 @@ async def get_current_tenant(
             detail="Kullanıcı bir kuruma bağlı değil (tenant bağlamı yok).",
         )
     org_id = str(row[0])
-    # RLS aktivasyon prerequisite: transaction-local GUC. App superuser (postgres)
-    # olduğundan RLS şu an bypass edilir (no-op); non-superuser role geçilince
-    # RLS policy'leri bu GUC ile tenant izolasyonu uygular (faz1_rls_20260704).
+    # RLS aktivasyon prerequisite: transaction-local GUC.
+    #
+    # S241 DUZELTMESI: buradaki eski yorum "App superuser (postgres) oldugundan
+    # RLS su an bypass edilir (no-op)" diyordu ve CANLIDA GECERSIZDI -- uygulama
+    # `kiro2_app` ile bagli (rolsuper=f, rolbypassrls=f), yani RLS UYGULANIYOR.
+    # O bayat varsayim `exam_sessions`'in aylarca BOS kalmasinin sebebiydi.
+    #
+    # Bu cagri artik TEK savunma degil: `core/database.py` `after_begin`
+    # dinleyicisi GUC'u HER transaction'da kuruyor. Burasi istek oturumu icin
+    # erken/yedek kurulum olarak kaliyor.
     try:
         await db.execute(
             _text("SELECT set_config('app.current_org_id', :org, true)"),
             {"org": org_id},
         )
-    except Exception:
-        pass
+    except Exception as exc:
+        # SESSIZ GECMEZ (#495 sinifi): GUC kurulamadiysa bu istekteki RLS'li
+        # sorgular fail-closed davranir ve semptom "bos sonuc / 500" olur.
+        # Sebebi log'da GORUNUR olmali, yoksa kok neden aylarca aranir.
+        logger.warning("RLS GUC kurulamadi (org=%s): %s", org_id, exc)
     return org_id
 
 
