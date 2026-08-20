@@ -62,8 +62,11 @@ def check_staged_files() -> list[str]:
                     if ext in LFS_EXTENSIONS:
                         msg += " — use git-lfs or add to .gitignore"
                     warnings.append(msg)
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
+        # SESSIZCE YUTMA (#495): bu kancanin kendisi bir kontrol; sessizce
+        # bos donerse "temiz" sanilir. Bloklamiyoruz (kontrol basarisizligi
+        # commit'i durdurmamali) ama GORUNUR oluyor.
+        print(f"[uyari] kontrol kosulamadi: {type(e).__name__}: {e}", file=sys.stderr)
     return warnings
 
 
@@ -119,8 +122,11 @@ def check_case_duplicates() -> list[str]:
                 warnings.append(
                     f"Case duplicate: {' vs '.join(paths)} — will break Docker/Linux builds"
                 )
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
+        # SESSIZCE YUTMA (#495): bu kancanin kendisi bir kontrol; sessizce
+        # bos donerse "temiz" sanilir. Bloklamiyoruz (kontrol basarisizligi
+        # commit'i durdurmamali) ama GORUNUR oluyor.
+        print(f"[uyari] kontrol kosulamadi: {type(e).__name__}: {e}", file=sys.stderr)
     return warnings
 
 
@@ -154,8 +160,11 @@ def check_model_imports() -> list[str]:
         if check_result.returncode != 0:
             err = check_result.stderr.strip()[-200:] if check_result.stderr else "unknown error"
             warnings.append(f"Model import failed: {err}")
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
+        # SESSIZCE YUTMA (#495): bu kancanin kendisi bir kontrol; sessizce
+        # bos donerse "temiz" sanilir. Bloklamiyoruz (kontrol basarisizligi
+        # commit'i durdurmamali) ama GORUNUR oluyor.
+        print(f"[uyari] kontrol kosulamadi: {type(e).__name__}: {e}", file=sys.stderr)
     return warnings
 
 
