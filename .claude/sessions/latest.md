@@ -529,3 +529,23 @@ Kalan tek xfail hacim tabani (3.922 < 150.000) ve DOGRU kirmizi.
 - `MAT.IST` (15 soru) tek basina az; A1'i etkilemiyor ama dengesiz.
 
 ---
+### Durust kayit — kayitli ders BU TURDA YINE ihlal edildi
+
+`d03674d9d` commit mesajini `-m` ile ve icinde TERS TIRNAK ile verdim. Bash cift
+tirnak icinde ters tirnagi komut olarak calistirdi:
+
+    /usr/bin/bash: line 134: L-s230-ast-sayaci-ham-sql-goremez: command not found
+
+Sonuc: mesaj govdesinde defter kimligi YUTULDU ("Defter  kaydinda ham SQL...").
+Commit EXIT=0 verdi, push gecti — yani sessiz kayip. Kural (`L-s231-ters-tirnak`):
+**commit mesajini DAIMA `git commit -F <dosya>` ile ver.**
+
+Duzeltme yolu olarak `--amend` + force-push SECILMEDI: commit push'lanmisti ve
+yayimlanmis gecmisi yeniden yazmak bir mesaj duzeltmesi icin orantisiz. Ankraj
+zaten iki yerde duruyor: bu devir notu ve defterin kendisi
+(`L-s230-ast-sayaci-ham-sql-goremez`, `zorlayici` alani artik dolu).
+
+Bu oturumda tekrarlayan kayitli dersler: ters tirnak (1), `/tmp` ad-alani (1),
+CRLF ankraj (1), N802 buyuk harfli test adi (**2** — 7. ve 8. tekrar, Y13 acik).
+
+---
