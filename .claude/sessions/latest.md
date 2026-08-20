@@ -116,6 +116,43 @@ olduğundan RLS bypass edilir"* — varsayım bayatlamış.
 
 ---
 
+### 🟢 EK — B1 KAPANDI: A1 ALTIN YOLU İLK KEZ UÇTAN UCA ÇALIŞIYOR (`79a81ae05`)
+
+**`exam_sessions` 0 → 3.** Platform tarihinde ilk sınav oturumları yazıldı.
+
+Kök neden dört ölçümle çivilendi: politika fail-closed · backend `kiro2_app`
+(`rolbypassrls=f`) · GUC `dependencies.py:455`'te *transaction-local* · motor
+`osym_exam_engine.py:441`'de **ayrı bağlantı**. `dependencies.py:456`'daki yorum
+sebebi kendisi belgeliyordu: *"App superuser (postgres) olduğundan RLS bypass
+edilir"* — uygulama artık `postgres` değil, varsayım bayatlamıştı.
+
+Düzeltme **çağrı yerlerine değil boğaz noktasına**: `core/tenant_context.py` (YENİ)
++ `get_current_user` ContextVar'a yazar + `database.py` `after_begin` dinleyicisi.
+22 çağrı yerini tek tek yamamak cerrahi değildi (79 tabloda RLS açık).
+
+**Güvenlik:** `is_local=true` ZORUNLU — `false` olsaydı havuzdaki bağlantı bir
+sonraki kullanıcıya önceki kiracının org'unu taşırdı. Org istemciden değil
+`users`'tan türetilir. İkisi de testle çivili.
+
+```
+create (TYT MAT 40) 200 · start 200 · current-question 200 · save-answer 200
+complete -> dogru=1 yanlis=0 bos=39 NET=1.0   (beklenen D-Y/4 = 1.0 TUTTU)
+unit 8 + integration 4 (canli Postgres, kiro2_app) · kapi 264 passed
+```
+
+**Kalan A1 boşlukları:** B3 konu kırılımı hâlâ **ders** bazlı
+(`osym_exam_engine.py:1364`) · B4 e-posta doğrulama yolu **yok** · B5 `username`
+çarpışması 500.
+
+**Dürüst kayıt — bu turda 2 tekrar daha:**
+- **N802 ONBİRİNCİ kez ve bu oturumda İKİNCİ kez** (6 + 7 = bugün 13 ihlal).
+  Dersi aynı oturumda yazdım, sonra yine ihlal ettim. **Y13 açık ve büyüyor.**
+- **Ölçüm aletim 4. kez yanıldı**: ruff sayacının regex'i hem HEAD hem şimdi
+  için `0` döndü; kontrol kolu koşulunca aletin bozuk olduğu görüldü. Doğru
+  sayaçla: HEAD 10 / şimdi 10 / **fark 0**.
+
+---
+
 ## Session Handoff — 2026-08-20 (S239 · MAT/TYT GOCU KALICI) ✅
 
 **Branch:** feature/self-evolution-optimization · **Son commit:** `1b3285d1c` · **Push:** ⏳ 4 commit
