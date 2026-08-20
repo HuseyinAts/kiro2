@@ -48,108 +48,58 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
-## Session Handoff — 2026-08-20 (S241 · A1 ALTIN YOL ÖLÇÜLDÜ + CEVAP SIZINTISI KAPATILDI)
-**Branch:** feature/self-evolution-optimization · **Son commit:** `adcadb61d` · **Push:** ✅ 0 bekleyen
-**Uncommitted:** yalnız devralınan `backend/semantic_cache.pkl`
-
-### Bu oturumun tek cümlesi
-A1'in dört ayağı ilk kez uçtan uca ölçüldü (11 ajan, 45 bulgu, 44 ayakta) ve
-**beş ölçücünün hiçbirinin bulamadığı** P0 kapatıldı: düz öğrenci token'ı cevap
-anahtarını okuyabiliyordu.
+## Session Handoff — 2026-08-21 01:00 (S241 · A1 ALTIN YOLU AÇILDI)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `3d28c00ba` fix(core): GUC kurulum hatasi artik SESSIZ GECMIYOR
+**Uncommitted:** yalnız devralınan `backend/semantic_cache.pkl` (Bin 4892→4892, 0 satır)
+**Push:** ✅ 0 bekleyen · 9 commit · E3: kullanıcı-görünür yola dokunan **2** ✅
 
 ### Yapılanlar
-- `fa1784215` tasarım · `0973e5495` plan · `3a4b4bae7` denetim raporu
-  (`docs/audits/2026-08-20_a1_altin_yol_olcum.md`)
-- 🟢 `a664c2d5e` + `adcadb61d` **cevap sızıntısı KAPATILDI** — `core/cevap_kapisi.py`
-  (YENİ, tek kaynak) + 3 uç kablolandı + 13 test. Canlı: 4/4 uç `200 TEMIZ`, gövde dolu.
-- Defter **155 → 156**; zorlayıcı liste **24 → 25 dosya**, kapı **264 passed / 1 xfailed / 0 failed**
+- `docs/superpowers/specs/2026-08-20-a1-altin-yol-e2e-design.md` tasarım (`fa1784215`)
+- `docs/superpowers/plans/2026-08-20-a1-altin-yol-olcum.md` plan (`0973e5495`)
+- `docs/audits/2026-08-20_a1_altin_yol_olcum.md` — 11 ajan, **45 bulgu → 44 ayakta / 1 düştü** (`3a4b4bae7`)
+- `backend/core/cevap_kapisi.py` (YENİ) + `api/soru_bankasi.py:125` + `api/osym_questions_api.py:247,468`
+  — **cevap anahtarı sızıntısı KAPATILDI** (`a664c2d5e`, `adcadb61d`)
+- `backend/core/tenant_context.py` (YENİ) + `core/database.py:526` `after_begin` +
+  `core/dependencies.py:183` — **RLS GUC her transaction'da** (`79a81ae05`)
+- `backend/core/dependencies.py:466-476` — sessiz `except: pass` görünür + bayat yorum (`3d28c00ba`)
+- `.claude/lessons/ders_kaydi.yaml` 155→156 · zorlayıcı liste 24→**25 dosya**
 
-### A1'in dört ayağı (kanıtlı yargı)
-```
-L1 Kayit      CALISIYOR  mutlu yol acik; username carpismasi 500 (commands/auth.py:100)
-L2 Dogrulama  YOK        1119 yolda uc yok; is_verified'i TRUE yapan TEK SATIR yok
-L3 Sinav      KIRIK      secim DOGRU (40/40 kapida, 11-13 konu), teslim OLU
-L4 Puanlama   KIRIK      tamami erisilemez + "konu" kirilimi aslinda DERS kirilimi
-L5 Yuzey      KIRIK      sayfa saglam, ilk yazma adimi 500
-```
+### Fail Eden Testler
+**YOK.** Kapı: **264 passed / 1 xfailed / 0 failed**.
+Yeni: `tests/unit/test_cevap_kapisi.py` 13 · `tests/unit/test_tenant_context.py` 8 ·
+`tests/integration/test_rls_guc_transaction.py` 4 (canlı Postgres, `kiro2_app` rolü).
 
-### 🔴 AÇIK P0 — B1: `exam_sessions` RLS (A1'in tek ve asıl engeli)
-Üç ayağı birden öldürüyor. `exam_sessions` politikası **fail-closed**; GUC
-`core/dependencies.py:455`'te *transaction-local* set ediliyor ama motor
-`core/osym_exam_engine.py:441`'de **ayrı bağlantı** açıyor. Backend `kiro2_app`
-(`rolbypassrls=f`). **`exam_sessions` = 0 satır, bugüne kadar.**
-`dependencies.py:456` yorumu sebebi belgeliyor: *"App superuser (postgres)
-olduğundan RLS bypass edilir"* — varsayım bayatlamış.
+### Engelleyiciler
+**YOK.** Devralınan: SMTP · ödeme sağlayıcısı · alan adı+SSL (operatör).
+
+### A1'in dört ayağı (kanıtlı)
+```
+L1 Kayit      CALISIYOR   B5: username carpismasi 500 (commands/auth.py:100)
+L2 Dogrulama  YOK         1119 yolda uc yok, is_verified'i TRUE yapan satir yok
+L3 Sinav      CALISIYOR   create 200 / beta-practice 200
+L4 Puanlama   CALISIYOR   NET=1.0 = D-Y/4 TUTTU   B3: kirilim hala DERS bazli
+L5 Yuzey      uclar acildi, TARAYICIDA DOGRULANMADI
+exam_sessions 0 -> 5   (platform tarihinde ILK sinav oturumlari)
+```
 
 ### Sonraki Adımlar (maks 5)
-1. **B1 RLS** — altın yolu açan tek fix. Motoru istek-kapsamlı oturuma bağla
-   VEYA GUC'u motorun bağlantısında set et. Kiracılık izolasyonunu bozma.
-2. **B3 konu kırılımı** — `osym_exam_engine.py:1364` `subject_area` → `topic_hierarchy.code`;
-   `QuestionResponse.topic` ham UUID yerine konu kodu. B1 onarılsa bile A1'in 4. ayağı bunsuz karşılanmaz.
-3. **B4 e-posta doğrulama** — yol **yok**, inşa kararı bekliyor (SMTP ayrı iş).
-4. **B5 username 500** — `commands/auth.py:100`, 409/422 dön + benzersiz username türet.
-5. Eksiklik eleştirmeninin 13 boşluğu — özellikle offline sync paketi (tasarım gereği
-   `correct_answer` taşıyor, şu an 500 olduğu için sızmıyor) ve sınav süresi hiç zorlanmıyor.
+1. **B3 konu kırılımı** — `core/osym_exam_engine.py:1364` `subject_area` → `topic_hierarchy.code`;
+   `QuestionResponse.topic` ham UUID yerine konu kodu. A1'in 4. ayağı bunsuz karşılanmaz.
+2. **L5 tarayıcıda doğrula** — `/exam/start` → `/exam/:id` → `/exam/:id/results` (Playwright)
+3. **B4 e-posta doğrulama** — yol **yok**, inşa kararı bekliyor (SMTP ayrı iş)
+4. **B5** `commands/auth.py:100` — çakışmada 409/422 + benzersiz username türet
+5. Denetimin 13 boşluğu — özellikle offline sync paketi (tasarım gereği `correct_answer` taşıyor)
 
 ### Kararlar (gelecek session tekrar tartışmasın)
 - **Cevap alanları cache'e TAM yazılır, ÇIKIŞTA temizlenir.** Cache anahtarı rol taşımıyor;
-  role göre cache'lemek öğretmenin girdisini öğrenciye servis ederdi. Bu yüzden
-  `cevaplari_ele` **saf olmak zorunda** (çivi: `test_girdi_sozlugu_degistirilmez`).
-- **MEMORY.md'deki "RLS GUC set edilmezse tüm satırlar geçer" ÇÜRÜDÜ** — 73 politika
-  fail-closed / 6 permissive. Bu yanlış kayıt B1'in görülmesini geciktirmiş olabilir.
-- **`bandit`/`mypy` SKIP'i ölçüldü, benim kodum değil** — değişikliklerim stash'liyken
-  aynı dosyada HEAD üzerinde aynı 2 mypy hatası; bandit B311 dokunmadığım satırlarda.
-  `osym_questions_api.py`'nin önceden var olan borcu, **ayrı açık iş**.
-
-### Dürüst kayıt — bu turda 5 kez yanıldım, 4'ü kayıtlı ders
-1. **Kendi ölçüm aletim 3 kez** yanlış "0/boş" verdi: `LIKE 'MAT%'` (kolon UUID),
-   `information_schema` (matview `pg_attribute`'da), `/api/v1/sorular` (uç kök yolda).
-2. **Biçimlendirici import'u sildi** (`reference_formatter-import-stripping`) →
-   canlıda `name 'cevaplari_ele' is not defined` 500. Deploy edip **ölçtüğüm için**
-   yakalandı; ölçmeseydim "fix bitti" derdim ve iki uç 500 kalırdı.
-3. **Yarım commit**: `git stash pop` index'e değil çalışma ağacına koydu, `git add`'im
-   uçtu; `EXIT=0` + yeni hash geldi ama `osym_questions_api.py` **girmemişti**.
-   `git show --stat HEAD` yakaladı.
-4. **CRLF**: `printf` ile `.gitignore`'a LF yazdım, `mixed-line-ending` commit'i düşürdü.
-5. **N802 ONUNCU kez** (6 test adı). S240 bunu görünür kılmak için hook enforcement'ı
-   eklemişti — **bu turda bana görünmedi**, ancak `pre-commit` yakaladı. **Y13 yeniden açık.**
-
----
-
-### 🟢 EK — B1 KAPANDI: A1 ALTIN YOLU İLK KEZ UÇTAN UCA ÇALIŞIYOR (`79a81ae05`)
-
-**`exam_sessions` 0 → 3.** Platform tarihinde ilk sınav oturumları yazıldı.
-
-Kök neden dört ölçümle çivilendi: politika fail-closed · backend `kiro2_app`
-(`rolbypassrls=f`) · GUC `dependencies.py:455`'te *transaction-local* · motor
-`osym_exam_engine.py:441`'de **ayrı bağlantı**. `dependencies.py:456`'daki yorum
-sebebi kendisi belgeliyordu: *"App superuser (postgres) olduğundan RLS bypass
-edilir"* — uygulama artık `postgres` değil, varsayım bayatlamıştı.
-
-Düzeltme **çağrı yerlerine değil boğaz noktasına**: `core/tenant_context.py` (YENİ)
-+ `get_current_user` ContextVar'a yazar + `database.py` `after_begin` dinleyicisi.
-22 çağrı yerini tek tek yamamak cerrahi değildi (79 tabloda RLS açık).
-
-**Güvenlik:** `is_local=true` ZORUNLU — `false` olsaydı havuzdaki bağlantı bir
-sonraki kullanıcıya önceki kiracının org'unu taşırdı. Org istemciden değil
-`users`'tan türetilir. İkisi de testle çivili.
-
-```
-create (TYT MAT 40) 200 · start 200 · current-question 200 · save-answer 200
-complete -> dogru=1 yanlis=0 bos=39 NET=1.0   (beklenen D-Y/4 = 1.0 TUTTU)
-unit 8 + integration 4 (canli Postgres, kiro2_app) · kapi 264 passed
-```
-
-**Kalan A1 boşlukları:** B3 konu kırılımı hâlâ **ders** bazlı
-(`osym_exam_engine.py:1364`) · B4 e-posta doğrulama yolu **yok** · B5 `username`
-çarpışması 500.
-
-**Dürüst kayıt — bu turda 2 tekrar daha:**
-- **N802 ONBİRİNCİ kez ve bu oturumda İKİNCİ kez** (6 + 7 = bugün 13 ihlal).
-  Dersi aynı oturumda yazdım, sonra yine ihlal ettim. **Y13 açık ve büyüyor.**
-- **Ölçüm aletim 4. kez yanıldı**: ruff sayacının regex'i hem HEAD hem şimdi
-  için `0` döndü; kontrol kolu koşulunca aletin bozuk olduğu görüldü. Doğru
-  sayaçla: HEAD 10 / şimdi 10 / **fark 0**.
+  role göre cache'lemek öğretmenin girdisini öğrenciye servis ederdi.
+- **RLS GUC çağrı yerlerine değil boğaz noktasına.** 79 tablo, 22 çağrı yeri; biri atlanırsa
+  sessiz 500. `is_local=true` ZORUNLU — `false` havuzdan kiracı sızdırırdı.
+- **`bandit`/`mypy`/`ruff` SKIP'leri ÖLÇÜLDÜ**: `dependencies.py` ruff 8→7 (iyileşti), mypy 3→3;
+  `database.py`+`dependencies.py` 10→10 fark 0. Önceden var olan borç, **ayrı açık iş**.
+- **Y13 AÇIK VE BÜYÜYOR** — N802 11. kez, bu oturumda **2 kez** (6+7=bugün 13). Kanca edit
+  anında göstermiyor, yalnız pre-commit yakalıyor.
 
 ---
 
