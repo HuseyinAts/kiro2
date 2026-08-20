@@ -203,11 +203,19 @@ def test_dogrulama_sorgulari_tum_anahtarlari_kapsar() -> None:
 
 class _SahteIslem:
     def __init__(self) -> None:
+        self.baslatildi = False
         self.commit_edildi = False
         self.geri_alindi = False
+        # Hangi ifadeler transaction AÇIKKEN koştu — `_SahteBaglanti` doldurur.
+        self.acikken_kosan: list[str] = []
 
     async def start(self) -> None:
-        pass
+        # ⚠️ Boş gövde DEĞİL: `start()`in çağrıldığı ÖLÇÜLÜYOR.
+        # `cop_sil` bunu atlasaydı dört CTAS + DELETE transaction DIŞINDA,
+        # yani AUTOCOMMIT ile koşardı — prova sessizce KALICI yazım olurdu ve
+        # `geri_alindi is True` assert'i yine geçerdi (rollback çağrılır ama
+        # geri alacak bir şey yoktur). Bu alan o boşluğu kapatıyor.
+        self.baslatildi = True
 
     async def commit(self) -> None:
         self.commit_edildi = True
@@ -229,6 +237,10 @@ class _SahteBaglanti:
         if self.patlat and sql.startswith("DELETE"):
             raise RuntimeError("simule hata")
         self.ifadeler.append(sql)
+        if self.islem.baslatildi and not (
+            self.islem.commit_edildi or self.islem.geri_alindi
+        ):
+            self.islem.acikken_kosan.append(sql)
         return "DELETE 36967"
 
 
@@ -284,3 +296,25 @@ async def test_yedekler_silmeden_once_kosar() -> None:
     delete = [i for i, s in enumerate(b.ifadeler) if s.startswith("DELETE")]
     assert len(ctas) == 4 and len(delete) == 1
     assert max(ctas) < delete[0]
+
+
+@pytest.mark.asyncio
+async def test_bes_ifadenin_besi_de_acik_transaction_icinde_kosar() -> None:
+    """`start()` atlanırsa dört CTAS + DELETE autocommit ile koşar.
+
+    O durumda "prova" (kalici=False) SESSİZCE KALICI YAZIM olurdu ve mevcut
+    assert'ler bunu göremezdi: `rollback()` yine çağrılır, `geri_alindi is True`
+    yine geçer — ama geri alacak bir şey kalmamıştır.
+
+    Bu yüzden iddia "rollback çağrıldı" değil, "ifadeler transaction AÇIKKEN
+    koştu".
+    """
+    b = _SahteBaglanti()
+    await cop_sil(b, DAMGA)
+
+    assert b.islem.baslatildi is True, "transaction hiç açılmadı — autocommit"
+    assert len(b.islem.acikken_kosan) == 5, (
+        f"5 ifadeden {len(b.islem.acikken_kosan)}'i açık transaction içinde "
+        "koştu (4 CTAS + 1 DELETE beklenir)"
+    )
+    assert b.islem.acikken_kosan == b.ifadeler
