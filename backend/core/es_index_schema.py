@@ -50,6 +50,37 @@ ALANLAR = (
 
 YASAKLI_ALANLAR = frozenset({"correct_answer", "explanation", "is_active"})
 
+# S210'un 69-alan split'inden (`0fd9b8413`) SONRA her alanin KAYNAK TABLOSU.
+# Tek alias'a (`q.`) guvenmek tam olarak #433'u uretti: sorgu split oncesi
+# semayi varsayiyordu, `UndefinedColumnError` ile HER kosumda dusuyordu ve canli
+# index 0 dokuman kaldi. AST tabanli `scan_split_accesses.py` bunu goremedi —
+# kolon adlari bir STRING LITERAL icinde, string icinde `Attribute` dugumu yok.
+# Bu yuzden bekci (`tests/integration/test_es_index_schema_split.py`) sorgunun
+# METNINI okumaz, canli semaya karsi KOSTURUR.
+ALAN_KAYNAK: dict[str, str] = {
+    "id": "qb",
+    "primary_topic_id": "qb",
+    "question_text": "qc",
+    "option_a": "qc",
+    "option_b": "qc",
+    "option_c": "qc",
+    "option_d": "qc",
+    "option_e": "qc",
+    "subject_area": "qm",
+    "exam_type": "qm",
+    "grade_level": "qm",
+    "osym_year": "qm",
+    "source_book": "qm",
+    "bloom_level": "qm",
+    "word_count": "qm",
+    "difficulty_level": "qs",
+    "irt_difficulty": "qs",
+    "quality_score": "qs",
+}
+_eksik = set(ALANLAR) - set(ALAN_KAYNAK)
+if _eksik:
+    raise RuntimeError(f"ALAN_KAYNAK eksik: {sorted(_eksik)}")
+
 # Türkçe analiz zinciri — eski index'ten BİREBİR kopyalandı.
 # 31 Tem 2026'da neredeyse kaybediliyordu: ilk kurulan yeni index bu ayarlar
 # OLMADAN yazıldı ve fark ancak takas öncesi arama karşılaştırmasıyla görüldü:
@@ -110,10 +141,15 @@ MAPPING: dict[str, Any] = {
 # nosec B608 - f-string'e YALNIZCA modul duzeyindeki ALANLAR demetinin sabit
 # kolon adlari giriyor; kullanici girdisi HIC yok, parametre de yok.
 SORGU = f"""
-    SELECT {", ".join("q." + a for a in ALANLAR)}
+    SELECT {", ".join(f"{ALAN_KAYNAK[a]}.{a}" for a in ALANLAR)}
     FROM mv_safe_for_beta g
-    JOIN question_bank q ON q.id = g.id
+    JOIN question_bank       qb ON qb.id = g.id
+    JOIN question_content    qc ON qc.id = g.id
+    JOIN question_metadata   qm ON qm.id = g.id
+    JOIN question_statistics qs ON qs.id = g.id
 """  # noqa: S608  # nosec B608
+# INNER JOIN bilincli: dort tablo 1:1 ve yetim 0 (olculdu). Bir yavru satir
+# eksikse o kayit ES'e GITMEZ — sessizce yarim belge yazmaktansa dusmesi dogru.
 
 
 def _belge_kur(satir: dict[str, Any]) -> tuple[str, dict[str, Any]]:
