@@ -2379,9 +2379,13 @@ terfi sonrasi tavan: 3.336 (%91,0)  <- "~264" iddiasi CURUDU
 
 ## Session Handoff — 2026-08-20 (S235 · FAZ B KAPANDI) ✅
 
-**Branch:** feature/self-evolution-optimization · **Commit:** `15876c14b` · **Push:** ⏳ 1 commit bekliyor
+**Branch:** feature/self-evolution-optimization · **Son commit:** `e30023ed3`
+**Push:** ✅ `b520a9027..e30023ed3` — **2 commit** (sayı `git log --oneline origin/<dal>..HEAD | wc -l` ile ölçüldü)
+uzakla **senkron** (ahead/behind 0/0) · push-secret-guard sır bulmadı · reward-hacking-check **Passed**
+(1 bloklamayan uyarı: "Test count: 54 → Consider Hypothesis" — dedektörün sabit-eşik sezgisi;
+dosya zaten 20 parametrize dekoratörle 242 vaka üretiyor, uyarının istediği şey fiilen yapılmış)
 **Kapı:** 22 dosya / **214 passed / 0 skipped / 9 xfailed**, EXIT=0 — baseline ile **birebir**
-**Takipli-kirli:** yalnız devralınan `backend/semantic_cache.pkl`
+**Uncommitted:** yalnız devralınan `backend/semantic_cache.pkl` (Bin 4892→4892, 0 satır)
 
 ### Bu oturumun tek cümlesi
 S234 "kesinleşmiş kurallar" diye 13 maddelik bir liste bırakmıştı. Bu oturum onları
@@ -2435,9 +2439,40 @@ Modül 63 kolonluk **açık** geçiş listesi kullanıyor.
 Ayrıca: mypy bulgusu **benim bu turda yazdığım satırdaydı** → SKIP tartışılmadı, iki tip
 anotasyonuyla düzeltildi (`_gorsel_url`), davranış nötr.
 
+### Fail Eden Testler
+**YOK.** `tests/fast/test_y11_goc.py` **242 passed / 0 failed** · `test_y11_dedup.py` 15 passed
+(birlikte 257/0). Kapı 22 dosya **214 passed / 0 skipped / 9 xfailed** EXIT=0 — 9 xfailed
+S234'ün baseline'ıyla **aynı küme** (Y12 içerik bekçisi 8 + hacim bekçisi 1), yeni kırık **0**.
+
+### Engelleyiciler
+- **#486 — asyncpg `set_type_codec('jsonb')` (FAZ C'nin ÖN KOŞULU).** Yükleyici bunu
+  kaydetmezse asyncpg `pipeline_metadata`'yı `str` döndürür, modülün bekçisi gürültülü hata
+  verir; kaydedilir de bekçi yumuşatılırsa parti **damgasız** girer. Damga geri alma
+  kümesinin **tek** taşıyıcısı → damgasız parti **geri alınamaz**.
+- **`correct_answer` düzeltme kanalı KARARSIZ.** `tasarim:115-117` "yargıç düzeltmesi göç
+  sırasında yeni satıra yazılır" vs kural 12 "harf yeniden atama YASAK". `kaynak_satiri_donustur`
+  imzasında (`satir`, `topic_kod_haritasi`, `damga`) bunu taşıyacak parametre **yok**.
+- Devralınan: `kiro2-api-import-smoke` S211'den beri kırık · host `pytest` uçtan uca koşamaz.
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **`bloom_category` lowercase yazılır** (`knowledge…creation`), UPPERCASE değil — canlı kanon
+  36.967/36.967 lowercase ve `BLOOM_A_MAP` tüketici tarafta `.upper()` yapıyor, ikisi de
+  çalışır; UPPERCASE **üçüncü** bir yazım biçimi sokardı (kullanıcı kararı, 20 Ağu).
+- **`bloom_level` SAYI kanondur, Türkçe kelime değil** (S234 kullanıcı kararı): kaynak eski
+  Bloom kullanıyor (5=sentez, 6=değerlendirme), hedef revize Bloom. 27 satırın kategorisi
+  kelime-sadakatinden ayrılıyor — bilinen ve kabul edilen bedel. `b_bloom=(lvl-3)*0.15` de
+  sayıyı kullandığı için içsel tutarlı.
+- **Dedup modülü KOPYALANMADI, import de EDİLMEDİ** — dedup çağıran katmanın işi
+  (`y11_dedup.mukerrer_gruplar` ile ele → sonra satır satır dönüştür). Saf dönüşüm tek satır
+  görür, mükerrer kararı veremez.
+- **Mutasyon bataryası commit SONRASI koşuldu** (`15876c14b` üzerinde). S233 ve S234 bu kuralı
+  ihlal edip ölçümü geçersiz kılmıştı; bu turda workflow'un commit'siz 20 mutasyonu
+  **geçerli sayılmadı**, 8'i commit'li dosyada bağımsız tekrarlandı.
+- **`# noqa`/`SKIP` kullanılmadı.** mypy `no-any-return` bulgusu **bu turda yazdığım satırdaydı**
+  → iki tip anotasyonuyla düzeltildi (`_gorsel_url`), davranış nötr.
+
 ### Sonraki Adımlar (maks 5)
-1. **PUSH** — 1 commit bekliyor (kullanıcı onayı).
-2. **FAZ C pilot** — 50 satır `BEGIN…ROLLBACK`. Örneklem kör nokta bırakmaz: ≥5 remap ·
+1. **FAZ C pilot** — 50 satır `BEGIN…ROLLBACK`. Örneklem kör nokta bırakmaz: ≥5 remap ·
    ≥3 kapı-elenen · ≥2 mükerrer · ≥1 çapraz-DB · ≥1 `created_by` yetimi. Kapı: 50 → 4×50 ·
    yetim 0 (A4 bekçisi) · JOIN'le geri okuma birebir · `ROLLBACK` sonrası `question_bank`=36.967.
 3. **Yükleyici sözleşmesi** (FAZ C'nin ön koşulu): dört sözlük **TEK transaction** ·
