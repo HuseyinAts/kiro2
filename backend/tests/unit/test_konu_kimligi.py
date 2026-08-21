@@ -13,6 +13,8 @@ zorunda kaldi:
 
 from __future__ import annotations
 
+import pytest
+
 from models import KonuPerformansi
 
 
@@ -50,3 +52,66 @@ class TestKimlikAlanlari:
         assert kp.ders == "kimya"
         # Ayirt edici anahtar konu KODUDUR, konu ADI degil.
         assert kp.konu_kodu == "KIM"
+
+
+class TestDersDali:
+    """`advanced_reports` ogrenme-stili uyumu ders bazli dallanir.
+
+    OLCULDU (21 Agu 2026): kanon subject_area kumesi {KIMYA, MATEMATIK} --
+    ASCII, yani Turkce ders adi 'TURKCE' bicimindedir. Mevcut kodda
+    `elif "turkce" in ...` yerine Turkce harfli dize yaziyordu ve kanon
+    degerle HICBIR ZAMAN eslesemezdi.
+
+    Canli DB'de TURKCE satiri YOK -- bu dal E2E ile dogrulanamaz, bu yuzden
+    sentetik veriyle civilenir. Sinir denetim dokumanina yazildi.
+    """
+
+    @pytest.mark.parametrize(
+        "ders_girdi",
+        ["matematik", "MATEMATIK", "Matematik", "  matematik  "],
+    )
+    def test_matematik_dali_bicimden_bagimsiz_secilir(self, ders_girdi):
+        from api.advanced_reports import _ders_uyum_skoru
+
+        vark = {"visual": 0.8, "reading": 0.2, "auditory": 0.1, "kinesthetic": 0.1}
+        felder = {"sequential_global": -0.4, "visual_verbal": 0.3}
+
+        skor = _ders_uyum_skoru(ders_girdi, vark, felder)
+        beklenen = (vark["visual"] + abs(felder["sequential_global"])) / 2
+        assert skor == pytest.approx(
+            beklenen
+        ), f"matematik dali secilmedi (girdi={ders_girdi!r})"
+
+    def test_turkce_dali_ascii_kanon_degerle_secilir(self):
+        from api.advanced_reports import _ders_uyum_skoru
+
+        vark = {"visual": 0.1, "reading": 0.9, "auditory": 0.1, "kinesthetic": 0.1}
+        felder = {"sequential_global": -0.4, "visual_verbal": 0.3}
+
+        skor = _ders_uyum_skoru("TURKCE", vark, felder)
+        beklenen = (vark["reading"] + abs(felder["visual_verbal"])) / 2
+        assert skor == pytest.approx(beklenen), "TURKCE dali secilmedi"
+
+    def test_bilinmeyen_ders_ortalama_dala_duser(self):
+        from api.advanced_reports import _ders_uyum_skoru
+
+        vark = {"visual": 0.4, "reading": 0.4, "auditory": 0.4, "kinesthetic": 0.4}
+        felder = {"sequential_global": -0.4, "visual_verbal": 0.3}
+
+        assert _ders_uyum_skoru("KIMYA", vark, felder) == pytest.approx(0.4)
+        assert _ders_uyum_skoru(None, vark, felder) == pytest.approx(0.4)
+
+    def test_konu_adi_ders_dalini_secmez(self):
+        """Regresyon civisi: dal `konu` degil `ders` okur -- konu adi SECMEZ.
+
+        'Matematik' adli bir KONU (level-1, topic_hierarchy'de var) ders
+        dalini tetiklememelidir -- ders kimligi ayri alandan gelir.
+        """
+        from api.advanced_reports import _ders_uyum_skoru
+
+        vark = {"visual": 0.9, "reading": 0.1, "auditory": 0.1, "kinesthetic": 0.1}
+        felder = {"sequential_global": -0.9, "visual_verbal": 0.3}
+
+        # ders=None (kimlik yok) -> matematik dali SECILMEZ, ortalamaya duser
+        ortalama = sum(vark.values()) / 4
+        assert _ders_uyum_skoru(None, vark, felder) == pytest.approx(ortalama)

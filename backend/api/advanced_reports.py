@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse
 
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import session_to_sinav_sonucu
-from core.turkish_nlp_utils import normalize_tr
+from core.turkish_nlp_utils import subject_key
 
 # Aşağıdaki ignore bir ÖLÇÜM ALETİ artefaktıdır, kod kusuru değil: pre-commit
 # mypy depo KÖKÜNDEN koşuyor ve orada bir YOLO ağırlık klasörü (`kiro2/models/`,
@@ -930,18 +930,9 @@ async def _get_hibrit_ogrenme_stili_analizi_real(
 
     performans_uyumu = []
     for konu_perf in temel_sonuc.konu_performanslari:
-        konu_norm = normalize_tr(konu_perf.konu)
-        if "matematik" in konu_norm:
-            uyum_skoru = (
-                vark_profili["visual"]
-                + abs(felder_silverman_profili["sequential_global"])
-            ) / 2
-        elif "türkçe" in konu_norm:
-            uyum_skoru = (
-                vark_profili["reading"] + abs(felder_silverman_profili["visual_verbal"])
-            ) / 2
-        else:
-            uyum_skoru = sum(vark_profili.values()) / 4
+        uyum_skoru = _ders_uyum_skoru(
+            konu_perf.ders, vark_profili, felder_silverman_profili
+        )
 
         performans_uyumu.append(
             {
@@ -1047,19 +1038,10 @@ async def _get_hibrit_ogrenme_stili_analizi_mock(
         performans_uyumu = []
 
         for konu_performansi in temel_sonuc.konu_performanslari:
-            # Konu tipine göre öğrenme stili uyumu hesapla
-            if "matematik" in normalize_tr(konu_performansi.konu):
-                uyum_skoru = (
-                    vark_profili["visual"]
-                    + abs(felder_silverman_profili["sequential_global"])
-                ) / 2
-            elif "türkçe" in normalize_tr(konu_performansi.konu):
-                uyum_skoru = (
-                    vark_profili["reading"]
-                    + abs(felder_silverman_profili["visual_verbal"])
-                ) / 2
-            else:
-                uyum_skoru = sum(vark_profili.values()) / 4
+            # Ders kimligine gore ogrenme stili uyumu (B3 FAZ 3)
+            uyum_skoru = _ders_uyum_skoru(
+                konu_performansi.ders, vark_profili, felder_silverman_profili
+            )
 
             performans_uyumu.append(
                 {
@@ -1402,6 +1384,30 @@ def _serialize_temel_sonuc(sonuc: SinavSonucu) -> dict[str, Any]:
         "zayif_konular": sonuc.zayif_konular,
         "guclu_konular": sonuc.guclu_konular,
     }
+
+
+def _ders_uyum_skoru(
+    ders: str | None, vark: dict[str, float], felder: dict[str, float]
+) -> float:
+    """Ogrenme stili uyum skoru -- DERS kimligine gore dallanir.
+
+    B3 FAZ 3: onceki bicim `if "matematik" in normalize_tr(kp.konu)` idi ve
+    iki sebeple kirilgandi:
+      1) `konu` B3'ten sonra KONU adi tasiyor -> dal hic girilmiyordu (olu).
+      2) `normalize_tr` bir SUBJECT IDENTIFIER'a uygulanmamali: Turkce locale
+         I->i donusumu yapar (`.claude/rules/case-convention.md` yasagi).
+    Kimlik artik `ders` alanindan gelir ve `subject_key` ile kanonlanir.
+
+    Kanon kume OLCULDU (21 Agu 2026): {KIMYA, MATEMATIK} -- ASCII. Turkce
+    dersi kanonda 'TURKCE' bicimindedir; eski koddaki Turkce harfli dize
+    hicbir zaman eslesemezdi.
+    """
+    anahtar = subject_key(ders)
+    if anahtar == "matematik":
+        return (vark["visual"] + abs(felder["sequential_global"])) / 2
+    if anahtar == "turkce":
+        return (vark["reading"] + abs(felder["visual_verbal"])) / 2
+    return sum(vark.values()) / 4
 
 
 def _get_onerilen_ogrenme_yontemi(konu: str, vark: dict, felder: dict) -> str:
