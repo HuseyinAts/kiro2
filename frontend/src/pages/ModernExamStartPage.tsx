@@ -29,7 +29,7 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import * as React from 'react';
-import {  useState  } from 'react';
+import {  useEffect, useState  } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { GlassCard } from '../components/ui/GlassCard';
@@ -44,6 +44,35 @@ interface ExamConfig {
   question_count: number
   time_limit: number
 }
+
+/**
+ * UI etiketi → API'nin döndürdüğü ASCII ders etiketi (#514).
+ *
+ * 🔴 `.toUpperCase()` KULLANMA. JS Türkçe locale'i uygulamaz:
+ *    'Türkçe'.toUpperCase() === 'TÜRKÇE'  ≠  API'nin döndürdüğü 'TURKCE'
+ * Bu yüzden naif bir büyütme, Türkçe'yi *yanlış sebeple* kapalı gösterirdi —
+ * hatta Türkçe içeriği GELDİĞİ gün bile kapalı kalırdı.
+ *
+ * Tablo, backend'deki kanonik eşlemenin (core/osym_exam_engine.py SUBJECT_MAP)
+ * bu sayfada kullanılan dilimidir.
+ */
+// Tek tüketicisiyle birlikte duruyor (ayrı modül YOK — bu depoda soyutlama
+// 3+ tekrar olmadan açılmaz). Export'un tek sebebi: eşlemeyi doğrudan çivileyen
+// test. react-refresh uyarısı bu bilinçli tercihin sonucu.
+// eslint-disable-next-line react-refresh/only-export-components
+export const DERS_API_ETIKETI: Record<string, string> = {
+  Matematik: 'MATEMATIK',
+  Geometri: 'GEOMETRI',
+  'Türkçe': 'TURKCE',
+  Fizik: 'FIZIK',
+  Kimya: 'KIMYA',
+  Biyoloji: 'BIYOLOJI',
+  Tarih: 'TARIH',
+  Sosyal: 'SOSYAL',
+  Edebiyat: 'EDEBIYAT',
+};
+
+const DERS_KAPALI_GEREKCESI = 'İçerik hazırlanıyor';
 
 export const ModernExamStartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -66,6 +95,43 @@ export const ModernExamStartPage: React.FC = () => {
   const subjects: Record<string, string[]> = {
     TYT: ['Matematik', 'Geometri', 'Türkçe', 'Fizik', 'Kimya', 'Biyoloji', 'Tarih', 'Sosyal'],
     AYT: ['Matematik', 'Geometri', 'Fizik', 'Kimya', 'Biyoloji', 'Edebiyat', 'Tarih'],
+  };
+
+  /**
+   * İçeriği ölçülmüş derslerin ASCII etiketleri (#514).
+   * `null` = ÖLÇÜLEMEDİ → **FAIL-OPEN**: hiçbir ders kapatılmaz.
+   */
+  const [mevcutDersEtiketleri, setMevcutDersEtiketleri] = useState<Set<string> | null>(null);
+
+  useEffect(() => {
+    let iptalEdildi = false;
+
+    // Uç ders başına `question_count` DA döner; o sayı BİLEREK OKUNMUYOR:
+    // `question_bank` toplamını verir, oysa sınav motoru kalite kapısından
+    // (`mv_safe_for_beta`) servis eder — ikisi eşit değil. Ekrana yazmak
+    // doğrulanamaz bir iddia olurdu. Yalnız "var mı yok mu" bilgisi kullanılır.
+    apiRequest<{ data?: { subject?: string }[] }>('/api/v1/osym/subjects')
+      .then(yanit => {
+        if (iptalEdildi) {return;}
+        const etiketler = (yanit?.data ?? [])
+          .map(ders => ders?.subject)
+          .filter((etiket): etiket is string => typeof etiket === 'string');
+        // Boş liste de bir ölçüm YOKLUĞUDUR: hepsini kapatmak altın yolu
+        // (TYT/Matematik/40) da kapatırdı. Fail-open'da kal.
+        setMevcutDersEtiketleri(etiketler.length > 0 ? new Set(etiketler) : null);
+      })
+      .catch(() => {
+        // FAIL-OPEN: ağ/500/oturum hatasında bugünkü davranışa dön (hepsi açık).
+        // Fail-closed bir varsayılan, çalışan altın yolu da kapatırdı.
+        if (!iptalEdildi) {setMevcutDersEtiketleri(null);}
+      });
+
+    return () => { iptalEdildi = true; };
+  }, []);
+
+  const dersKullanilabilir = (etiket: string): boolean => {
+    if (mevcutDersEtiketleri === null) {return true;} // FAIL-OPEN
+    return mevcutDersEtiketleri.has(DERS_API_ETIKETI[etiket] ?? etiket);
   };
 
   const difficulties = [
@@ -254,9 +320,23 @@ export const ModernExamStartPage: React.FC = () => {
                   onChange={(e: SelectChangeEvent) => handleChange('subject', e.target.value)}
                   label="Ders"
                 >
-                  {subjects[config.exam_type as keyof typeof subjects].map(subject => (
-                    <MenuItem key={subject} value={subject}>{subject}</MenuItem>
-                  ))}
+                  {subjects[config.exam_type as keyof typeof subjects].map(subject => {
+                    // İçeriği olmayan ders LİSTEDEN SİLİNMEZ — görünür ama
+                    // tıklanamaz. Aksi halde öğrenci ham 400 hatasına çarpıyordu.
+                    const kullanilabilir = dersKullanilabilir(subject);
+                    return (
+                      <MenuItem key={subject} value={subject} disabled={!kullanilabilir}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <span>{subject}</span>
+                          {!kullanilabilir && (
+                            <Typography variant="caption" color="text.secondary">
+                              ({DERS_KAPALI_GEREKCESI})
+                            </Typography>
+                          )}
+                        </Box>
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               </FormControl>
 
