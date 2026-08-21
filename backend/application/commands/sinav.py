@@ -475,8 +475,16 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                 _ALGO_ERRORS["bkt_write"] = (
                                     _ALGO_ERRORS.get("bkt_write", 0) + 1
                                 )
-                            except Exception:
-                                pass
+                            except Exception as sayac_hatasi:
+                                # Sayac guncellenemezse ASIL hata yine de
+                                # asagida loglanir; ama sayacin kendisinin
+                                # dustugu SESSIZ gecmemeli -- yoksa
+                                # _ALGO_ERRORS bir sagligi olcuyor gibi
+                                # gorunup aslinda eksik sayar (#495 sinifi).
+                                logger.debug(
+                                    "BKT hata sayaci guncellenemedi: %s",
+                                    sayac_hatasi,
+                                )
                             logger.exception(
                                 "BKT fire-and-forget FAILED session=%s qid=%s",
                                 sid,

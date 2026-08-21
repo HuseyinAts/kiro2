@@ -5779,7 +5779,10 @@ class TestAPIModelSchemaValidation:
 
     def test_zero_numeric(self):
         """Zero is valid numeric value"""
-        assert 0 == 0
+        # `assert 0 == 0` DIL DUZEYINDE TOTOLOJIYDI -- hicbir davranis
+        # olcmuyordu. Ayristirma testine cevrildi: gercek bir donusum kosuyor.
+        assert int("0") == 0
+        assert float("0") == 0.0
 
     def test_negative_numeric(self):
         """Negative numbers where allowed"""
@@ -5799,7 +5802,11 @@ class TestAPIModelSchemaValidation:
 
     def test_scientific_notation(self):
         """Scientific notation support"""
-        assert 1e10 == 10000000000
+        # `assert 1e10 == 10000000000` DIL DUZEYINDE TOTOLOJIYDI -- iki taraf
+        # da derleme aninda sabit. Gercek iddia "bilimsel gosterim
+        # AYRISTIRILABILIYOR" oldugu icin ayristirmaya cevrildi.
+        assert float("1e10") == 10_000_000_000
+        assert float("1E10") == float("1e10")
 
     def test_true_boolean(self):
         """True boolean value"""
