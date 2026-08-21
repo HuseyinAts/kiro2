@@ -389,6 +389,19 @@ async def download_pdf_report(
 async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int]:
     """Aggregate IRT params for a subject_area from question_bank.
 
+    🔴 URETIMDE OLU (3c44910ff, B3 FAZ 3). Iki cagri yeri de ardili
+    `_get_irt_aggregate`e (asagida) tasindi. Kalan TEK tuketici
+    `tests/fast/test_advanced_reports_split.py` -- bu fonksiyon #485
+    split'inin JOIN yapisini civileyen bekcinin ANKRAJI oldugu icin
+    SILINMEDI. Yeni is icin ardili kullan; burayi degistirmen gerekiyorsa
+    once o bekcinin hala deger uretip uretmedigini olc (ayni yapi ardilda
+    da civili: `tests/fast/test_irt_aggregate_topic_split.py`).
+
+    NEDEN ARDILI VAR: bu fonksiyon yalniz DERS adi kabul eder ve iceride
+    `.upper()` yapar. Konu adi gecirilince sessizce YANLIS dersin verisini
+    dondurur -- olculdu: "Kimya" (level-1 KONU, 263 soru) -> "KIMYA" ->
+    3531 satir.
+
     S196 Day 2 helper. Returns AVG difficulty / discrimination / guessing and
     a sample-size confidence proxy. Sample size < 10 → caller should fall back
     to the per-question morfoloji service for that subject.

@@ -826,3 +826,190 @@ ec7047c6c3648d8f176da06aa73e84dd202856a7606f5e7563bd80bd9cc1e981  backend/applic
 `.claude/rules/audit-methodology.md` ("hacim bir vekil ölçümdür", "ölçüm aletini doğrula") ·
 `.claude/rules/verification.md` ("doğrulama kapsamı = değişikliğin kapsamı" — P1-1'in
 kök nedeni tam olarak bu kuralın `application/` dizinini atlaması)
+
+---
+
+# FAZ 3 — konu kimliği modele, metrik kovalama-değişmez (S244, 21 Ağu 2026)
+
+**Kapsam:** #511 (imaj) · #512 (model + 3 sessiz kusur) · #510 (M6 bekçisi)
+**Tasarım:** `docs/superpowers/specs/2026-08-21-b3-faz3-design.md`
+**Plan:** `docs/superpowers/plans/2026-08-21-b3-faz3-uygulama.md`
+**Aralık:** `ee5ef3c03..a9c826dee` (8 commit)
+
+## 1. Kök neden — bu sefer modelde
+
+FAZ 2 doğrudan tüketicileri onardı. Bir katman yukarıda üç kusur kaldı ve üçü de
+tek bir yapısal eksiğe bağlıydı:
+
+> `KonuPerformansi` (`models/exam.py:83`) yalnız `konu: str` taşıyordu.
+> **Ders kimliği için alan yoktu.** Ders kimliğine ihtiyacı olan her tüketici
+> `konu` dizesini ders sanmak zorunda kaldı.
+
+`ders: str | None` + `konu_kodu: str | None` eklendi (sona, varsayılanlı —
+`SubjectPerformance`'taki aynı disiplin). Üretici `session_to_sinav_sonucu`
+`ders=sp.subject, konu_kodu=sp.topic_code` yazıyor.
+
+**`topic_hierarchy.subject_area` KULLANILAMADI** — ölçüldü, o satırlarda NULL
+(`MAT|Matematik||1`). Ders kimliği yalnız `question_metadata` üzerinden gelir.
+
+## 2. Üç kusur — ÖNCE/SONRA (canlı DB, port 5434, db `kiro2`)
+
+### (a) IRT agregasyonu — `advanced_reports.py:474`, `:1149`
+
+`_get_subject_irt_aggregate(konu_perf.konu)` içeride `.upper()` yapıp
+`WHERE question_metadata.subject_area = <upper>` sorguluyordu.
+
+```
+"Kimyasal Denge" -> "KIMYASAL DENGE" ->    0 satir   (konunun gercegi 1262)
+"Kimya"          -> "KIMYA"          -> 3531 satir   (konunun gercegi  263)
+```
+
+İkincisi tehlikeli olan: **sıfır dönmek gürültülü, YANLIŞ dersin verisini
+dönmek sessizdir.** Sebep `topic_hierarchy`de level-1 KONU adının DERS adıyla
+çakışması (`KIM|Kimya`, `MAT|Matematik`). `topic_hierarchy.code` ASCII ve
+çakışmasız — ayırt edici anahtar odur.
+
+Fix: `_get_irt_aggregate(*, topic_code, ders)`. Kod varsa `topic_hierarchy` JOIN,
+yoksa derse düşer. **Cache anahtarı ayrışır** (`irt_aggregate:topic:*` /
+`:subject:*`) — tek şema ikisini karıştırırdı.
+
+Eski fonksiyon **silinmedi**: `tests/fast/test_advanced_reports_split.py` onu
+çağırıp #485 split JOIN yapısını çiviliyor. Nihai incelemenin Important bulgusu
+üzerine tanım yerine "URETIMDE OLU" işareti kondu.
+
+### (b) ZPD ortalaması — `:761` (real) + `:869/873` (mock)
+
+Toplam bölü kova sayısı biçimi kova sayısına bağlıydı; kardinalite 1 → 13 olunca
+ortalama sessizce kaydı (**+9,91 puan**, S243 ölçümü). `_agirlikli_ortalama`
+soru sayısıyla ağırlıklandırır.
+
+**Asıl kazanç bugünkü sapmanın düzelmesi değil:** ağırlıklı biçim
+**kovalamadan bağımsızdır** — aynı veri hangi kovalamayla verilirse verilsin
+aynı sonucu üretir, yani bir SONRAKİ kardinalite değişiminde de kaymaz.
+S243'ün deftere yazdığı dersin yapısal panzehiri budur.
+
+### (c) Ders dalı — `:934` (real) + `:1051` (mock)
+
+Dize eşleşmesiyle dallanıyordu (`normalize_tr(kp.konu)` içinde "matematik"
+aranıyordu). İki sebeple kırılgandı: `konu` artık konu adı taşıyor (dal ölü), ve
+`normalize_tr` bir subject identifier'a uygulanamaz (`case-convention.md`
+yasağı, Türkçe locale I → ı).
+
+`_ders_uyum_skoru(ders, vark, felder)` çıkarıldı; `subject_key(ders)` ile
+dallanır. **Kardeş sessiz kusur** de kapandı: kanon küme ölçüldü
+`{KIMYA, MATEMATIK}` — ASCII. Eski koddaki Türkçe harfli dize kanonla hiçbir
+zaman eşleşemezdi; ASCII `turkce` yapıldı.
+
+## 3. #510 — M6 öldü
+
+`POST /osym-exam/{sid}/complete` mapping'i FAZ 2'de `topic_code`/`topic_name`
+kazanmıştı ama **bekçisi yoktu**: M6 mutasyonu 2069 testte DELTA=0 veriyordu.
+
+T7 eklendi (gerçek Postgres, `AsyncMock` YOK — FAZ 2'nin kök nedeni mock
+körlüğüydü). Test yeşil doğduğu için RED kanıtı **mutasyonla** üretildi:
+iki alan mapping'den silinince T7 **tek başına** FAIL veriyor.
+
+`None` olmayan `topic_code`'ların benzersizliği assert edilir; `None`'lar
+**dışlanır** — ölçüldü `primary_topic_id IS NULL = 0/3922`, dışlamasak assert
+boş kümede kendiliğinden geçerdi (S238'de iki bekçi tam bu yüzden XPASS
+vermişti).
+
+## 4. #511 — git == imaj (kabul kriteri)
+
+```
+ONCE  : imajda topic_code sinav.py=0  osym_exam_engine.py=0   git=1 / 5
+SONRA : md5 esitligi 5/5 dosyada OK
+        (sinav.py, osym_exam_engine.py, advanced_reports.py,
+         models/exam.py, core/turkish_nlp_utils.py)
+        imajda _ders_uyum_skoru=3, _agirlikli_ortalama=5, _get_irt_aggregate=3
+```
+
+İki derleme yapıldı: ilki sigorta (imaj 3 gün bayattı, derlemenin yeşil olduğunu
+kanıtladı), ikincisi kriteri kapattı.
+
+## 5. Canlı E2E (yeni imaj, beta-practice yolu)
+
+```
+kayit 201, giris 200, beta-practice 200, start 200, complete 200
+  kova = 8   topic_code dolu = 8/8   benzersiz = 8
+  ornek: {"subject":"kimya", ..., "topic_code":"KIM.DEN", "topic_name":...}
+subject-performance 200  satir=8  farkli topic_code=8
+zpd 200, irt-analysis 200, learning-style 200, osym-ets 200  ->  5XX YOK
+```
+
+**UYARI:** `create` (tam TYT) **400** verdi: *"Yeterli soru bulunamadı.
+Gerekli: 120, Mevcut: 33"*. Bu B3 ile ilgisiz bir **havuz kapasitesi** sınırı —
+kapıda 3.560 soru var ama tam TYT dağılımını karşılayacak ders/konu bileşimi
+yok. Ayrı açık iş.
+
+## 6. Kapı
+
+```
+1292 passed / 1 skipped / 0 failed
+  (test_konu_kimligi, test_irt_aggregate_topic_split, test_advanced_reports_split,
+   test_advanced_reports_schema_parity, test_exam_curriculum_models,
+   test_osym_exam_konu_tuketiciler T1-T7, test_osym_exam_konu_kirilimi)
+```
+
+## 7. DÜRÜST SINIRLAR (iddia EDİLMEYEN şeyler)
+
+| # | Sınır | Neden |
+|---|---|---|
+| 1 | **(a) IRT kusuru CANLIDA DEĞİLDİ** | Ölçüldü: `config/mock_endpoint_flags.json` — 5/5 `advanced_reports.*` bayrağı `false`. İki çağrı yeri de `_real` yolda, yani **uykuda**. Gerçek kusur (operatör bayrağı çevirince sessizce aktifleşir) ama *"bugün öğrenciyi bozuyor"* aşırı iddia olurdu. Kanıt uçtan değil **doğrudan SQL**'den alındı. |
+| 2 | **TURKCE dalı E2E ile doğrulanamadı** | Canlı DB'de `TURKCE` satırı yok (kanon küme `{KIMYA, MATEMATIK}`). Sentetik birim testle çivili. |
+| 3 | **`sample_size` konu bazında KÜÇÜLDÜ** | Beklenen ve doğru: CI yarı-genişliği `0.5/sqrt(n)` ile büyür. Gerileme değil. |
+| 4 | **+9,91 rakamı bu turda yeniden ölçülmedi** | S243'ten devralındı. Bu turda ölçülen: ağırlıklı biçimin kovalama-değişmez olduğu (testle). |
+| 5 | **Bayat-mock assert'i mutasyonla kanıtlanmadı** | `await_count > 0` assert'i eklendi ama ankrajı eski ada geri alan mutasyon o assert'e **ULAŞMADAN** sqlite hatasıyla düştü. Bu ortamda yakalayan şey assert değil, DB'nin boş olması. |
+| 6 | **Gerçek yolun ders dalı çivilenmedi** | `_get_hibrit_..._real` çağrı yeri kapsanmadı (`learning_style_service` mock'lamamak için). Bugün ölü; bayrak çevrilirse açık. |
+| 7 | **`get_subject_morphology_factor` ölü** | `advanced_reports.py:561` — `hasattr` guard'ı daima `False`, `morfoloji_faktoru` hep `0.1`. Önceden var olan, bu turun sorumluluğu değil; nihai incelemede tespit edildi. |
+
+## 8. Çürütülen iddialar (dürüst kayıt — üçü de PLANI YAZANIN)
+
+1. **"(c) dalı B3 öncesi de ölüydü"** — tasarım turunda kuruldu, **ölçüm
+   çürüttü**: `osym_exam_engine.py:1387` `subject_area.lower()` üretiyor, yani
+   `normalize_tr("matematik")` eşitlik veriyordu. Dal **canlıydı**, B3 öldürdü.
+2. **Planın kovalama-değişmezlik test verisi DEJENEREYDİ** — implementer
+   aritmetiği kontrol edince yakaladı: ağırlıksız ortalamalar **6.0 vs 6.0**,
+   yani `test_kovalama_degismez` **hatalı implementasyona karşı da geçerdi** ve
+   mutasyon gereksinimi tatmin edilemezdi. Bağımsız hakem doğruladı. Veri
+   asimetrik yapıldı (6.0 vs 7.0).
+3. **`normalize_tr` başka yerde kullanılıyor sanılmıştı** — plan "koru" diyordu;
+   ölçüldü, üç kullanımın üçü de değiştirilen bloklardaydı, import ölü kaldı.
+
+## 9. Kapatılan test-kalitesi kusurları (3 ayrı çivi)
+
+Bu turda **üç dişsiz assert** bulundu ve değiştirildi — üçü de kendi bekçisini
+boşa çıkarıyordu:
+
+1. T6'nın son assert'i önceki ikisi tarafından **kapsanıyordu** → `konu`
+   DEĞİŞKEN / `ders` SABİT invaryantıyla değiştirildi.
+2. `test_konu_adi_ders_dalini_secmez` topic adını **hiç geçirmiyordu**;
+   inceleyici çağrı yerini `.ders` → `.konu` mutasyonuyla test etti:
+   **7 passed, 0 failed**. Çağrı-yeri düzeyinde gerçek testle değiştirildi.
+3. `test_advanced_reports_schema_parity.py` **bayat mock ankrajı** — taşınan
+   fonksiyonun eski adına patch yapıyordu, sessizce hiçbir şeyi yakalamıyordu.
+
+Nihai inceleme **dördüncüyü aradı, bulamadı**.
+
+## 10. Orkestrasyon dersi (bu tur ısırdı)
+
+Paralel ajanlarla çalışırken **depoda tek git index vardır.** İki ajan aynı anda
+`git add` yaparsa biri diğerinin işini kendi commit'ine süpürebilir. Task 5
+bunu fark edip pathspec'li `git commit -F msg -- <dosya>` kullandı; `git add .`
+yapmamak **yeterli koruma değil**, commit'in kendisi pathspec istiyor.
+
+İkinci tuzak: **dosya-değiştiren inceleyici, aynı dosyadaki implementer ile
+paralel koşturulmamalı.** Task 2'nin spec inceleyicisi `cp` yedek/geri-yükleme
+ile mutasyon koştururken Task 3 aynı dosyayı düzenliyordu; olası veri kaybı
+penceresi oluştu (bütünlük sonradan doğrulandı, kayıp yok). Sonraki incelemeler
+**salt-okunur** ve `git show <sha>:<yol>` üzerinden yapıldı.
+
+## 11. Açık kalan
+
+| İş | Durum |
+|---|---|
+| **#513** sert-yüklemede boş sayfa (frontend) | kapsam dışıydı, açık |
+| **L2** e-posta doğrulama | SMTP bloklu (#441) |
+| **#509** kapı borcu | +1: `test_advanced_reports_schema_parity.py` 5x E402 (kontrol koluyla önceden-var-olan ölçüldü, `SKIP=ruff` kullanıldı) |
+| Tam TYT `create` 400 | havuz kapasitesi (120 gerekli / 33 mevcut) — yeni açık iş |
+| `_get_subject_irt_aggregate` ölü ikiz | işaretlendi; silinmesi ayrı iş (bekçisi taşınmalı) |
