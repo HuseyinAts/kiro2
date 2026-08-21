@@ -91,8 +91,19 @@ Zorlayıcı: `tests/integration/test_osym_exam_konu_tuketiciler.py` (T1-T5, ger�
 - 🔴 **S241'in "NET=1.0 = D−Y/4 TUTTU" ölçümü AYIRT EDİCİ DEĞİLDİ** — D=1,Y=0'da iki
   formül çakışır. Canlı: `D=22, Y=18 → net 22.0` (D−Y/4 = 17,5). Motor `net = doğru`.
 - Kapı `SKIP=ruff,mypy` (#509) **önceden var olan borç** — kontrol kolu: HEAD'de aynı 4 bulgu.
-- `backend/semantic_cache.pkl` bu işe ait değil, commit'e alınmadı. Artık: `backend/.b3_read.py`
-  (benim değil, silmedim). DB'de 3 test öğrencisi + 4 oturum kasıtlı bırakıldı.
+- `backend/semantic_cache.pkl` bu işe ait değil, commit'e alınmadı.
+  DB'de 3 test öğrencisi + 4 oturum kasıtlı bırakıldı.
+- **Oturum sonu temizliği (ana bağlam, S243 kapanışı):** workflow ajanlarının bıraktığı
+  9 takipsiz artık silindi (`b3-*.png` ×4, `backend/.b3_*` ×4, `.b3_read.py`). Kalan
+  takipli-kirli: **yalnız** `backend/semantic_cache.pkl` (bu işe ait değil).
+  Tarayıcı kanıtı depo kökünden `docs/audits/kanit/2026-08-21_b3-tablo-gorunur.png`
+  altına alındı ve denetim dokümanının 677. satırındaki kırık referans düzeltildi
+  (`3071b9fdc`) — dosya kökte **takipsiz** durduğu için referans hiçbir makinede çözülmüyordu.
+- **Teslim kanıtı (A1 4. ayak):** ekran görüntüsünde `Ders | Konu` iki sütun, **14 satır /
+  14 farklı konu** (Kimyasal Denge · Asitler ve Bazlar · Fonksiyonlar · Olasılık …).
+  Bu kanıt **uygulama-içi gezinme** yolundan alındı; **sert yüklemede boş sayfa** (#513).
+- **Karar (kullanıcı, oturum sonu):** açık 3 P0'ın hiçbiri bu turda alınmadı —
+  "dur, devir notu yaz". Sıradaki oturum #511'den başlar.
 
 ### Sonraki Adımlar (maks 5)
 1. **#511** `docker compose build backend` + `up -d --no-deps backend` + `Start-Sleep 90` + E2E
