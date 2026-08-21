@@ -1008,8 +1008,97 @@ penceresi oluştu (bütünlük sonradan doğrulandı, kayıp yok). Sonraki incel
 
 | İş | Durum |
 |---|---|
-| **#513** sert-yüklemede boş sayfa (frontend) | kapsam dışıydı, açık |
+| **#513** sert-yüklemede boş sayfa (frontend) | ~~kapsam dışıydı, açık~~ → **ÖLÇÜLDÜ, TEKRARLANMIYOR** (bkz. EK, bu dokümanın sonu) |
 | **L2** e-posta doğrulama | SMTP bloklu (#441) |
 | **#509** kapı borcu | +1: `test_advanced_reports_schema_parity.py` 5x E402 (kontrol koluyla önceden-var-olan ölçüldü, `SKIP=ruff` kullanıldı) |
 | Tam TYT `create` 400 | havuz kapasitesi (120 gerekli / 33 mevcut) — yeni açık iş |
 | `_get_subject_irt_aggregate` ölü ikiz | işaretlendi; silinmesi ayrı iş (bekçisi taşınmalı) |
+
+---
+
+# EK — #513 ÖLÇÜLDÜ: TEKRARLANMIYOR (S244 kapanış turu, 21 Ağu 2026)
+
+S243 devir notu: *"`App.tsx:348` — sert yüklemede **boş sayfa** (`/exams` bozuk,
+`/dashboard` sağlıklı); rebuild'le ilk kez canlıda"*. Kök neden iddiası
+(`PageTransition:57`) o turda zaten kontrol koluyla çürütülmüştü (`/register`
+sağlıklı).
+
+## 1. Ankraj ile proza ÇELİŞİYOR (ölçüldü)
+
+```
+App.tsx:348  ->  path="/exam/:sinavId/results"   (ExamResultsPage, ogrenci+admin)
+App.tsx:356  ->  path="/exams"                   (ExamHistoryPage, ogrenci)
+```
+
+Devir notunun **ankrajı** `:348` = `/exam/:sinavId/results`; **prozası** `/exams`
+diyor. Bunlar farklı rotalar. `App.tsx` S243'ten beri **hiç değişmedi**
+(`frontend/src`'ye 20 Ağu'dan beri dokunan tek commit `da59ef871`, o da B3 FAZ 1).
+
+## 2. Sarmal kök neden OLAMAZ — yapısal kontrol kolu
+
+Sağlıklı diye raporlanan ile bozuk diye raporlanan rota **birebir aynı bileşimi**
+kullanıyor:
+
+```tsx
+/dashboard : <PageTransition><ProtectedRoute requiredRoles={['ogrenci']}><StudentDashboardPage/>…
+/exams     : <PageTransition><ProtectedRoute requiredRoles={['ogrenci']}><ExamHistoryPage/>…
+```
+
+Aynı sarmal, aynı guard, aynı rol, ikisi de `lazy()`. `/register` kontrol kolundan
+daha güçlü bir kontrol: **aynı bileşim hem sağlıklı hem bozuk olamaz.**
+
+## 3. Canlı tarayıcı ölçümü (Playwright, kimlik doğrulanmış `ogrenci`)
+
+Hesap `p513@kiro2-e2e.dev` (rol `ogrenci`), yeni kurulan backend imajı,
+frontend imajı 21 Ağu 07:20 UTC.
+
+| Test | Sonuç |
+|---|---|
+| `/login` → giriş | 200, "İçerdesin." |
+| **`/exams` SERT YÜKLEME** | **tam render** — kenar çubuğu, kullanıcı kimliği, "Sınav Geçmişi", 4 istatistik kartı, sekmeler, "Yeni Sınav Başlat". **0 konsol hatası** |
+| **`/exam/{sid}/results` SERT YÜKLEME** | **tam render** — "Sınav Sonuçları", istatistik kartları, "Konu Bazlı Performans". **0 konsol hatası** |
+| Konu kırılımı tablosu | **9 satır**, `Ders \| Konu` iki sütun |
+| Backend `/subject-performance` | **200, 9 satır** (`KIM.DEN` / "Kimyasal Denge" …) |
+
+**Ekran == backend: 9 == 9.** Örnek satırlar: `kimya \| Kimyasal Denge`,
+`matematik \| Polinomlar`, `matematik \| Çarpanlara Ayırma`,
+`kimya \| Çözeltiler ve Karışımlar`.
+
+Bu, B3'ün kullanıcı-görünür kabul kriteridir ve **sert yüklemede karşılanıyor**.
+
+## 4. 🔴 KENDİ ÖLÇÜM ALETİM YANILDI — dürüst kayıt
+
+Ara adımda "Konu Bazlı Performans tablosu BOŞ" diye bir bulgu üretildi:
+erişilebilirlik snapshot'ı `<table>` altında iki boş `rowgroup` gösteriyordu.
+
+**Bu bir alet artefaktıydı.** Snapshot `depth: 7` ile alınmıştı; tablo ağaçta
+daha derinde olduğu için çocukları kesilmişti. Tabloyu hedefleyen (`target:
+"table"`, derinlik sınırsız) ikinci ölçüm 9 satırın tamamını gösterdi.
+
+Ayırt edici sinyal, bulgu raporlanmadan önce yakalandı: `<TableHead>` **statik**
+hücreler içeriyor (`Ders`, `Konu`, `Doğru`, …) ve statik hücrelerin boş çıkması
+veri kaynaklı bir kusurla açıklanamaz — yalnız görüntülemenin kesildiğiyle
+açıklanabilir.
+
+Kural (`audit-methodology.md` "ölçüm aletini doğrula"): `depth` bir
+**görüntüleme** parametresidir ama çıktısı bir **ölçüm** gibi okunur; kesilmiş
+`rowgroup` gerçekten boş bir tablodan ayırt edilemez. Bu turda az kalsın fantom
+üretiliyordu.
+
+## 5. Sonuç ve DÜRÜST SINIR
+
+**#513 bugünkü yığında TEKRARLANMIYOR.** İki rota da sert yüklemede sağlıklı,
+konu kırılımı görünüyor, konsol temiz.
+
+**"Tekrarlanmıyor" ≠ "hiç yoktu".** Ölçüm koşulları:
+- tek hesap (`ogrenci`), tek tarayıcı oturumu
+- **backend imajı bugün İKİ KEZ yeniden kuruldu** (#511) — S243 bayat 18 Ağu
+  imajıyla gözlem yapıyordu
+- frontend imajı değişmedi (21 Ağu 07:20)
+
+En olası açıklama: gözlenen davranış bayat backend imajından kaynaklanıyordu ve
+#511 ile yan etki olarak düzeldi. **Bu KANITLANMADI** — eski imaj geri kurulup
+karşı-olgusal test yapılmadı. Yapılırsa #513 "fantom" yerine "şu commit'te
+düzeldi" diye kapanır.
+
+Kapanış türü: **ÖLÇÜLDÜ → TEKRARLANMIYOR** (kod değişikliği YAPILMADI).

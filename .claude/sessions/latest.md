@@ -116,12 +116,45 @@ Depoda **tek git index** var — `git add .` yapmamak yeterli koruma değil,
 dosyadaki implementer ile paralel koşturulmamalı (olası veri kaybı penceresi
 oluştu; bütünlük sonradan ölçüldü, kayıp yoktu — ama şans).
 
+### 🟢 EK — #513 ÖLÇÜLDÜ: TEKRARLANMIYOR (aynı oturum, kapanış turu)
+
+Devir notunun **ankrajı prozasıyla çelişiyordu**: `App.tsx:348` =
+`/exam/:sinavId/results`, ama proza `/exams` diyor — farklı rotalar.
+`App.tsx` S243'ten beri hiç değişmedi.
+
+**Sarmal kök neden olamaz** (S243'ün `/register` kontrol kolundan daha güçlü
+kanıt): `/dashboard` (sağlıklı) ile `/exams` (bozuk denilen) **birebir aynı
+bileşimi** kullanıyor — aynı `PageTransition`, aynı `ProtectedRoute`, aynı
+`['ogrenci']`, ikisi de `lazy()`.
+
+Canlı Playwright ölçümü (kimlik doğrulanmış `ogrenci`, yeni backend imajı):
+```
+/exams              SERT YUKLEME -> tam render, 0 konsol hatasi
+/exam/{sid}/results SERT YUKLEME -> tam render, 0 konsol hatasi
+konu kirilimi tablosu -> 9 satir (Ders | Konu)
+backend subject-performance -> 200, 9 satir
+EKRAN == BACKEND: 9 == 9
+```
+
+🔴 **Kendi ölçüm aletim yanıldı, dürüst kayıt:** ara adımda "tablo BOŞ" bulgusu
+üretildi — snapshot `depth: 7` ile alındığı için tablonun çocukları kesilmişti.
+Hedefli ikinci ölçüm 9 satırı gösterdi. Ayırt edici sinyal: `<TableHead>`
+**statik** hücreler taşıyor, onların boş çıkması veri kusuruyla açıklanamaz.
+Fantom raporlanmadan yakalandı.
+
+**DÜRÜST SINIR:** *"tekrarlanmıyor" ≠ "hiç yoktu"*. Backend imajı bugün **iki
+kez** yeniden kuruldu (#511); S243 bayat 18 Ağu imajıyla gözlem yapıyordu. En
+olası açıklama gözlemin o bayat imajdan kaynaklandığı ve #511 ile yan etki
+olarak düzeldiği — **ama kanıtlanmadı** (eski imaj geri kurulup karşı-olgusal
+test yapılmadı). Kapanış türü: **ÖLÇÜLDÜ → TEKRARLANMIYOR**, kod değişikliği YOK.
+Ayrıntı: `docs/audits/2026-08-21_b3_konu_kirilimi.md` §EK.
+
 ### Sonraki Adımlar (maks 5)
-1. **#513** sert-yüklemede boş sayfa (frontend) — teşhis sıfırdan
-2. **Tam TYT `create` 400** — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi, YENİ açık iş
-3. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441)
-4. `_get_subject_irt_aggregate` ölü ikizi sil (bekçisi ardıla taşınmalı)
-5. `advanced_reports.py:561` `get_subject_morphology_factor` ölü (`hasattr` daima False)
+1. **Tam TYT `create` 400** (#514) — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi
+2. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441)
+3. `_get_subject_irt_aggregate` ölü ikizi sil (#515; bekçisi ardıla taşınmalı)
+4. `advanced_reports.py:561` `get_subject_morphology_factor` ölü (`hasattr` daima False)
+5. #513'ü kesin kapatmak istersen: eski backend imajını geri kurup karşı-olgusal test
 
 ### Kararlar (gelecek oturum tekrar tartışmasın)
 - **Ölçü kovalamadan bağımsız olmalı, düzeltilmiş olmalı değil.** Ağırlıklı
