@@ -674,7 +674,7 @@ tetiklenmiyor) dedi. Kontrol kolu: **aynı bileşenle sarılı PUBLIC rota `/reg
 opacity 1'de açılıyor** (`opacitySifirBuyukElement: []`). Tetikleyici `ProtectedRoute` +
 `PageTransition` **bileşimi**; teşhis yeniden yapılmalı.
 
-**Ayrıca frontend raporu kendi içinde çelişiyor:** `b3-tablo-gorunur.png` tabloyu
+**Ayrıca frontend raporu kendi içinde çelişiyor:** `docs/audits/kanit/2026-08-21_b3-tablo-gorunur.png` tabloyu
 GÖRÜNÜR gösteriyor, aynı rapor tarif ettiği yolda opacity 10/10 = 0 ölçtüğünü yazıyor.
 İkisi ancak **farklı gezinme kiplerinden** gelebilir; ekran görüntüsünün hangi kipte
 alındığı açıklanmamış → **provenans eksik**, o artefakt "öğrenci görüyor" kanıtı sayılmaz.
