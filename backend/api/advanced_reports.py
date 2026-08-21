@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse
 
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import session_to_sinav_sonucu
-from core.turkish_nlp_utils import subject_key
+from core.turkish_nlp_utils import subject_db, subject_key
 
 # Aşağıdaki ignore bir ÖLÇÜM ALETİ artefaktıdır, kod kusuru değil: pre-commit
 # mypy depo KÖKÜNDEN koşuyor ve orada bir YOLO ağırlık klasörü (`kiro2/models/`,
@@ -455,6 +455,86 @@ async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int
     return result
 
 
+async def _get_irt_aggregate(
+    *, topic_code: str | None, ders: str | None
+) -> dict[str, float | int]:
+    """IRT toplami -- konu kodu varsa KONU bazli, yoksa DERSE duser.
+
+    B3 FAZ 3 kok nedeni: `_get_subject_irt_aggregate` yalniz DERS adi kabul
+    eder ve iceride `.upper()` yapar. Konu adi gecirilince iki sessiz kusur
+    olusur (ikisi de 21 Agu 2026'da canli DB'de olculdu):
+        "Kimyasal Denge" -> "KIMYASAL DENGE" -> 0 satir     (gercek 1262)
+        "Kimya"          -> "KIMYA"          -> 3531 satir  (gercek 263)
+    Ikincisi TEHLIKELI olan: sifir donmek gurultulu, YANLIS dersin verisini
+    donmek sessizdir. Sebep `topic_hierarchy`de level-1 KONU adinin DERS
+    adiyla cakismasi (KIM|Kimya, MAT|Matematik).
+
+    `topic_hierarchy.code` ASCII ve cakismasizdir -- ayirt edici anahtar odur.
+
+    Eski fonksiyon SILINMEDI: `tests/fast/test_advanced_reports_split.py`
+    onu cagirip #485 split JOIN yapisini civiliyor.
+    """
+    from sqlalchemy import func, select
+
+    from core.cache import cache_manager
+    from core.database import get_db_session_context
+    from models.question_bank import (
+        QuestionBankItem,
+        QuestionMetadata,
+        QuestionStatistics,
+        TopicHierarchy,
+    )
+
+    if topic_code:
+        cache_key = f"irt_aggregate:topic:{topic_code}"
+    else:
+        cache_key = f"irt_aggregate:subject:{subject_db(ders) or ''}"
+
+    cached: dict[str, float | int] | None = await cache_manager.get(cache_key)
+    if cached is not None:
+        return cached
+
+    async with get_db_session_context() as session:
+        # #485 split: irt_* QuestionStatistics'te, subject_area
+        # QuestionMetadata'da. SELECT listesinde yalniz QuestionStatistics
+        # kolonlari oldugu icin explicit select_from ZORUNLU -- yoksa
+        # SQLAlchemy sol tarafi o tablo sanip kendisine JOIN etmeye calisir
+        # ve sorgu CALISMA aninda degil KURULURKEN patlar.
+        stmt = (
+            select(
+                func.avg(QuestionStatistics.irt_difficulty).label("avg_difficulty"),
+                func.avg(QuestionStatistics.irt_discrimination).label(
+                    "avg_discrimination"
+                ),
+                func.avg(QuestionStatistics.irt_guessing).label("avg_guessing"),
+                func.count().label("sample_size"),
+            )
+            .select_from(QuestionBankItem)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            .where(QuestionBankItem.is_active.is_(True))
+        )
+        if topic_code:
+            stmt = stmt.join(
+                TopicHierarchy,
+                TopicHierarchy.id == QuestionBankItem.primary_topic_id,
+            ).where(TopicHierarchy.code == topic_code)
+        else:
+            stmt = stmt.join(
+                QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+            ).where(QuestionMetadata.subject_area == subject_db(ders))
+        row = (await session.execute(stmt)).one()
+
+    result = {
+        "avg_difficulty": float(row.avg_difficulty or 0.0),
+        "avg_discrimination": float(row.avg_discrimination or 1.0),
+        "avg_guessing": float(row.avg_guessing or 0.2),
+        "sample_size": int(row.sample_size or 0),
+    }
+    # 1h TTL — IRT parametreleri yalniz Curator guncellemesinde degisir.
+    await cache_manager.set(cache_key, result, ttl=3600)
+    return result
+
+
 async def _get_irt_morfoloji_analizi_real(
     sinav_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
@@ -471,7 +551,11 @@ async def _get_irt_morfoloji_analizi_real(
     konu_perfs = temel_sonuc.konu_performanslari or []
 
     for konu_perf in konu_perfs:
-        agg = await _get_subject_irt_aggregate(konu_perf.konu)
+        # B3 FAZ 3: anahtar KONU KODU. `konu_perf.konu` gecirmek "Kimya"
+        # ornegindeki gibi YANLIS dersin 3531 satirini dondururdu.
+        agg = await _get_irt_aggregate(
+            topic_code=konu_perf.konu_kodu, ders=konu_perf.ders
+        )
         sample_n = agg["sample_size"]
         morfoloji_faktoru = (
             irt_morfoloji_service.get_subject_morphology_factor(konu_perf.konu)
@@ -1146,7 +1230,7 @@ async def _get_osym_ets_karsilastirmasi_real(
         total_weight = 0
         wsum_disc = wsum_diff = wsum_guess = 0.0
         for kp in konu_perfs:
-            agg = await _get_subject_irt_aggregate(kp.konu)
+            agg = await _get_irt_aggregate(topic_code=kp.konu_kodu, ders=kp.ders)
             w = max(1, kp.toplam_soru)  # weight by # of questions in this konu
             wsum_disc += agg["avg_discrimination"] * w
             wsum_diff += agg["avg_difficulty"] * w
