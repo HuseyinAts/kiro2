@@ -2166,9 +2166,19 @@ async def session_to_sinav_sonucu(session_id: str):
     exam_type_map = {"tyt": SinavTipi.TYT, "ayt": SinavTipi.AYT, "ydt": SinavTipi.YDT}
     sinav_tipi = exam_type_map.get(session.exam_config.exam_type.value, SinavTipi.TYT)
     subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
+    # B3: `KonuPerformansi.konu` artık DERS değil KONU adı taşır. Tek satır, üç
+    # kusuru birden kapatır — çünkü üçü de "etiket ayırt edici mi" sorusuna bağlıydı:
+    #  1) zayif/guclu ayrışır: aynı ders altındaki 13 kova tek 'matematik' etiketine
+    #     çöktüğü için aynı ders hem zayıf hem güçlü listesinde görünüyordu.
+    #  2) öneri metni benzersizleşir: advanced_reports.py:1528 etiket başına öneri
+    #     üretiyor; 13 birebir aynı öneri yerine konu başına 1 öneri çıkar.
+    #  3) ogretmen_service.py:210 `sinav_sayisi += 1` etiket başına sayıyor; tek
+    #     sınav 13 sınav görünmesi durur, sayaç konu başına 1 olur.
+    # Düz konu adı kullanılır (ders adıyla nitelenmez) — öneri metni doğal Türkçe
+    # okunmalı. `or sp.subject` yalnız topic_name boş/None ise devreye girer.
     konu_performanslari = [
         KonuPerformansi(
-            konu=sp.subject,
+            konu=sp.topic_name or sp.subject,
             toplam_soru=sp.total_questions,
             dogru_sayisi=sp.correct_answers,
             yanlis_sayisi=sp.wrong_answers,

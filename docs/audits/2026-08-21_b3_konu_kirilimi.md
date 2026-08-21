@@ -13,6 +13,11 @@ KAPANMADI:** iki üretim tüketicisi sessizce bozuldu (aynı ders hem "zayıf" h
 tek sınav 13 sınav gibi sayılıyor), frontend imajı yeniden kurulmadığı için **öğrenci
 hâlâ göremiyor**, ve tasarımın sıralama + "Konu atanmamış" şartları **%0 test kapsamında**.
 
+> **[FAZ 2 EKI, ayni gun]** Yukaridaki iki uretim tuketicisi ARTIK duzeltildi ve
+> mutasyonla civilendi; frontend imaji da yeniden kuruldu. Ama B3 yine kapanmadi ve
+> bu paragraf **bilerek duzeltilmedi** (Faz 1'in yargisi tarihsel kayittir).
+> Guncel yargi: **[F2-TL;DR](#f2-tldr--tek-cumlelik-yargi)**.
+
 ---
 
 ## Methodology
@@ -385,6 +390,435 @@ bu işe ait değil, dokunulmadı, commit'e **alınmadı**.
 
 ---
 
+# FAZ 2 — 21 Ağu 2026, aynı gün ikinci tur
+
+> Faz 1 bu belgenin yukarısında. **Faz 1'in hiçbir satırı silinmedi veya düzeltilmedi** —
+> çürütülen iddiaları dahil, olduğu gibi duruyor. Aşağısı onun üstüne yazılan ölçümdür.
+> Faz 1'in "Açık işler" tablosundaki 1/2/3 numaralı P0-P1 kalemleri bu turda kapandı,
+> 5 ve 6 kısmen, geri kalanı hâlâ açık (§F2-5).
+
+## F2-TL;DR — tek cümlelik yargı
+
+**Faz 1'in ürettiği ve *beyan edilen* üç tüketici regresyonu ÖLÇÜLEREK kapandı ve iki
+mutasyonla (M2/M4) çivilendi; B3 bir bütün olarak yine KAPANMADI:** aynı kardinalite
+değişikliği (1 → 13) `advanced_reports.py`'de **üç yeni sessiz kusur** üretti (biri Faz 2'nin
+kendi tüketici taramasında "etkilenmiyor" diye **yanlış sınıflandırıldı**), fix'in ikinci
+yarısı (`sinav.py:844`) **bekçisiz** (M6 hayatta), frontend rebuild'i "konu sütunu"nu
+getirirken **kimlik-doğrulanmış rotalarda sert yüklemede boş sayfa** kusurunu da canlıya
+taşıdı, ve öğrenci ekranını besleyen yol bu turun **iki değişikliğinin de dışında**.
+
+---
+
+## F2-1 · Faz 1'in ürettiği regresyon — ÖNCE / SONRA (canlı sayılar)
+
+Kanıt değeri şuradan gelir: **veri değişmedi, yalnız etiketleme satırı değişti.**
+ÖNCE değerleri devir notundan alıntı DEĞİL — aynı canlı `subject_performances`
+verisi üzerinde `konu=sp.subject` ile **karşı-olgusal olarak yeniden türetildi**;
+böylece ÖNCE ve SONRA aynı oturumdan, aynı bayttan gelir.
+
+Canlı oturum `62d6b582-1d1d-4fc6-b254-c9c22311c41b` (40 soru, **13 kova, 2 ders** —
+Faz 1'in tek dersli oturumundan farklı olarak ders-arası çakışmayı da sınar):
+
+| # | Tüketici (dosya:satır) | Ölçüm | ÖNCE | SONRA |
+|---|---|---|---|---|
+| a | `core/osym_exam_engine.py:2181` | `konu_performanslari.konu` benzersiz etiket | **2** / 13 kova | **13** / 13 |
+| b | `api/advanced_reports.py:1391` | `zayıf ∩ güçlü` | `{kimya, matematik}` | **`[]`** |
+| c | `api/advanced_reports.py:1517` | benzersiz öneri açıklaması (12 öneri) | **4** | **12** |
+| d | `services/ogretmen_service.py:210` | `sinav_sayisi > 1` olanlar (TEK sınav) | `{kimya: 9, matematik: 4}` | **`{}`** |
+| f | `api/sinav.py:891` (ana kazanç) | `subject-performance` satır / benzersiz `topic_code` / `sum(total_questions)` | — | 13 / 13 / **40** (bozulmadı) |
+
+Faz 1'de **aynı ders hem "zayıf" hem "güçlü" listesindeydi**; şimdi 6 zayıf / 6 güçlü,
+kesişim boş. (c) satırında ÖNCE çıktısının 12 önerisinin 9'u birebir
+`"kimya konusunda temel kavramları pekiştirin"` idi; SONRA çıktısı
+`"Organik Kimya konusunda temel kavramları pekiştirin"` /
+`"Üslü ve Köklü Sayılar konusunda temel kavramları pekiştirin"` üretiyor —
+kullanıcının **düz konu adı** kararının doğal Türkçe okunduğunun doğrudan kanıtı.
+(c) ölçümü taklit değil: `_generate_personalized_recommendations` **gerçek fonksiyonu**
+koşuldu, ÖNCE değeri de aynı gerçek fonksiyona faz-1 etiketleri beslenerek alındı.
+
+**ÇOK-SINAVLI kontrol** (Faz 1'in "hiç ölçülmedi" dediği dal): (d)'nin döngüsü
+3 tamamlanmış oturumla koşuldu — `Kimyasal Denge` 3, `Asitler ve Bazlar` 3,
+`Periyodik` 3, `Organik Kimya` 2, `Atom Yapısı` 2 … ve konu bazında **gerçek**
+oturum sayısıyla karşılaştırıldı: **uyuşmazlık yok**. Yanlış sayım üretilemedi.
+`:210`'daki sayaç fonksiyondan dışarı çıkmadığı için salt-okunur `sys.settrace` ile
+`return` frame'inden okundu — **kod değiştirilmedi**.
+
+**`or sp.subject` fallback'i ÖLÇÜLDÜ ve HİÇ DEVREYE GİRMEDİ**: `topic_name IS None` = 0,
+`topic_name == ''` = 0 (13/13 dolu). Erişilebilirliği ayrıca sınandı → §F2-4/B6.
+
+### F2-1b · Faz 1 devir notunun bir premisi ÇÜRÜDÜ
+
+Devir notu *"`GET /performance` ayırt edilemez 13 satır döndürüyor"* diyordu.
+Ölçüldü: o uç `konu_performanslari` alanını **hiçbir zaman doldurmuyor**.
+
+```
+GET /api/v1/osym-exam/62d6b582-.../performance -> HTTP 200
+konu_performanslari tipi: list   uzunluk: 0
+zayif_konular: None   guclu_konular: None
+
+sed -n '734,832p' backend/api/sinav.py | grep -c "konu_performanslari"  -> 0
+backend/api/sinav.py:219  konu_performanslari: list[dict] = []   # varsayılan, hiç yazılmıyor
+```
+
+Yani 13 değil **0** satır döner ve bu değişiklikten önce de böyleydi
+(`git status -uno -- backend/api/sinav.py` → boş, dosyaya dokunulmadı).
+`sinav.py:841-844` fix'inin **gerçek taşıyıcısı POST /complete'tir**. İki bağımsız
+oturumda doğrulandı: 13/13 ve 5/5 satırda `topic_code`/`topic_name` **dolu**, mevcut
+8 alan korunmuş (10 anahtar) — sözleşme **eklemeli**.
+
+---
+
+## F2-2 · Kök neden — bu bir SÜREÇ kusuru, tek satırlık hata değil
+
+Faz 1 `core/osym_exam_engine.py`'de gruplama anahtarını `(subject)` → `(subject, topic)`
+yaptı ve tüketicileri taradı. Tarama **iki yapısal boşluk** bıraktı:
+
+1. **`application/` dizini hiç taranmadı.** `application/commands/sinav.py:831`
+   `konu_data` mapping'i yalnız 8 alan geçiriyordu; yeni `topic_code`/`topic_name`
+   alanları o sınırda sessizce düşüyordu. Faz 1'in kendi "Kapsanmayanlar" bölümü
+   bu boşluğun *sonucunu* (P1-1) kaydetti ama *sebebini* değil.
+2. **Geçişli tüketici izlenmedi.** `session_to_sinav_sonucu` (adaptör) → `SinavSonucu`
+   → 5 rapor ucu → öğretmen servisi → PDF zinciri, doğrudan çağrı grafiğinde
+   `get_subject_performance`'ın **iki adım** ötesindeydi.
+
+`verification.md#DOGRULAMA-KAPSAMI` zaten "kapsamı dizin yakınlığıyla değil **grep ile**
+belirle" diyor; kural vardı, `application/` yine atlandı.
+
+### DERS (ölçüldü) — `L-s241-kardinalite-degisiminde-SAYAN-tuketici`
+
+> **Kardinalite değiştiren bir değişikliğin en kırılgan tüketicisi listeyi OKUYAN değil,
+> listeyi SAYAN / etiketi ANAHTAR SANAN koddur.**
+
+Neden okuyanlar güvenli: `for p in konu_performanslari: rapor_satiri(p)` 1 kova yerine
+13 kova alınca **13 satır** üretir — istenen davranış (`pdf_generator.py:346-401` tam olarak
+budur; `+= 1` / `len(` / `Counter` / `groupby` eşleşmesi **0**, bozulmadı). Neden sayanlar bozuluyor:
+
+| Desen | Örnek | 1 → 13 olunca |
+|---|---|---|
+| **Sözlük anahtarı** | `d[konu]["sinav_sayisi"] += 1` | tek sınav 13 sınav sayılır |
+| **Küme üyeliği** | `zayif` / `guclu` aynı etiketle dolar | aynı ders hem zayıf hem güçlü |
+| **Bölen** | `toplam / len(liste)` | ağırlıksız ortalama **kayar** (ölçüldü: **+9,91 puan**) |
+| **Kimlik varsayımı** | `f(etiket)` — `etiket`i ders kimliği sanar | eşleşme **0**'a düşer, ya da **yanlış satırı yer** |
+
+Aranacak desenler (bu turda dördü de **gerçek kusur** buldu):
+`+= 1` · `len(` · `Counter` · `groupby` · `set(` · `in normalize_tr(` · `X[etiket]` ·
+`f(etiket)` — özellikle `f`'nin **başka bir kolona** eşitleme yaptığı yerler.
+
+Bu ders `.claude/lessons/ders_kaydi.yaml`'a **kanıtla** eklendi; zorlayıcısı
+`backend/tests/integration/test_osym_exam_konu_tuketiciler.py` (T1/T2/T3).
+Kardeş ders: `L-s241-bir-katmanda-kapatilan-sizinti-digerini-kapatmaz` — aynı kusur
+sınıfı bir katman yukarıda tekrarlıyor (§F2-4/B1, B2, B3).
+
+---
+
+## F2-3 · Mutasyon tablosu — M1…M6
+
+**Yöntem:** mutasyon **diske yazılmadı** (iş commit'sizdi — `verification.md`
+"commit'siz işi mutasyona sokma"). `sys.meta_path`'e takılan bir `MetaPathFinder`
+kaynağı **bellekte** değiştirip `compile()` ile derledi; `.pyc` önbelleği `get_code`
+override'ıyla tamamen atlandı. **Mutasyonun uygulandığı bağımsız ölçüldü:** yüklenmiş
+modülün `dis.dis()` çıktısındaki işaret sayısı, mutasyonsuz kontrol koluyla
+karşılaştırıldı (7/7'de fark + yükleyici `SourceFileLoader` → `_MutLoader`).
+Ankraj tekilliği önceden doğrulandı (7/7 desen `occurrences=1`).
+
+Kontrol kolu (mutasyonsuz temel): `-n 0` → **502 passed / 31 skipped / 0 failed**;
+xdist → **501 / 32 / 0**. Eklentinin xdist worker'larına **taşındığı** ayrıca ölçüldü —
+taşımasaydı tüm mutasyonlar sahte "hayatta kaldı" verirdi.
+
+| # | Mutasyon | dosya:satır | Faz 1 | **Faz 2** | Öldüren test |
+|---|---|---|---|---|---|
+| M1 | gruplama anahtarı `(subject, topic)` → `subject` | `osym_exam_engine.py:1394` | öldürüldü | **öldürüldü** | 8 test (T1-T5 + kırılım×2 + split×1) — aşırı çivi |
+| M2 | `subject_performances.sort(...)` bloğu SİLİNDİ | `:1463-1465` | 🔴 **HAYATTA** (631 passed, **0 fail**) | 🟢 **ÖLDÜ** | **T4 tek başına** — `test_kovalar_azalan_sirali_ve_tie_break_deterministik` |
+| M2b | yalnız tie-break kaldırıldı (`key=(-total,)`) | `:1464` | ölçülmemişti | 🟢 **ÖLDÜ** | **T4 tek başına** — T4 sıralamayı *ve* tie-break'i ayrı ayrı çiviliyor |
+| M3 | `"topic_code": topic_code` → `None` | `:1399` | öldürüldü | **öldürüldü** | 4 test |
+| M4 | `topic_name or "Konu atanmamis"` → `or subject` | `:1400` | 🔴 **HAYATTA** (31 passed, **0 fail**; bekçisi her koşumda **SKIPPED**) | 🟢 **ÖLDÜ** | **T5 tek başına** — `test_adsiz_konu_gorunur_konu_atanmamis_kovasinda`, **SKIP yok** |
+| M5 | `konu=sp.topic_name or sp.subject` → `sp.subject` (fix'in geri alımı) | `:2181` | — (fix yoktu) | 🟢 **ÖLDÜ** | T1 + T2 + T3, **üçü de bağımsız** |
+| M6 | `"topic_name": p.topic_name` anahtarı SİLİNDİ | `application/commands/sinav.py:844` | — | 🔴 **HAYATTA KALDI** | **YOK — bekçisiz** |
+
+**M2 ve M4, Faz 1'in "%0 test kapsamında" dediği iki dalın tam kendisiydi; Faz 2'de
+ikisi de öldürülüyor** ve her biri **tek** bir testin yükünü taşıyor (ne aşırı-çivi,
+ne kör nokta). M4'ün Faz 1'deki bekçisi (`test_osym_exam_konu_kirilimi.py:398`)
+çalışma anında SKIP oluyordu; ölçüm gösterdi ki o sayaç **hiçbir zaman artamaz**
+(§F2-4/B6) — yani **kalıcı olarak ölü** bir bekçiydi.
+
+**M6 dürüstçe hayatta:** uydurma bekçi sunulmuyor. Kapsam dizin yakınlığıyla değil
+grep ile belirlendi (`grep -rln "CompleteExamCommandHandler\|konu_data\|complete_exam\|topic_name" backend/tests`),
+14 ek dosya koşuldu; kontrol ve M6 çıktıları **birebir aynı**
+(12 failed / 2055 passed / 102 skipped — aynı 12 önceden var olan golden-flow hatası).
+**DELTA = 0.** Bağımsız teyit: `grep -rln "konu_data\|CompleteExamCommandHandler" backend/tests` → **çıktı yok**.
+
+---
+
+## F2-4 · Çürütücü bulguları — SİLİNMEZ, kanıtıyla durur
+
+İki bağımsız çürütücü mercek koştu; **ikisi de ana iddiayı çürüttü**. Aşağıdaki
+bulgular bu belgeden **kaldırılmayacak**; kapananın yanına kapanış kanıtı yazılır.
+
+### 🔴 B1 (HIGH, AÇIK) — `api/advanced_reports.py:474` + `:1167`: IRT toplulaştırması sıfıra düştü, **ve bir konu sessizce DERS istatistiğini yiyor**
+
+`_get_subject_irt_aggregate(konu_perf.konu)` girdiyi `.upper()` yapıp
+`QuestionMetadata.subject_area == canonical` ile sorguluyor. Etiket ders adıyken
+eşleşiyordu; konu adıyken eşleşmiyor. Canlı ölçüm:
+
+```
+konu='Kimyasal Denge'     -> sample_size=   0  avg_diff=0.0000  avg_disc=1.0000
+konu='Asitler ve Bazlar'  -> sample_size=   0  ...
+konu='Organik Kimya'      -> sample_size=   0  ...
+konu='Kimya'              -> sample_size=3531  avg_diff=0.0729   <-- !!!
+DERS='kimya'              -> sample_size=3531  avg_diff=0.0729
+DERS='matematik'          -> sample_size= 391  avg_diff=0.1258
+```
+
+Kök neden (etiket kümesi ile kolon kümesi örtüşmüyor):
+`SELECT subject_area, count(*) FROM question_metadata GROUP BY 1;` → `KIMYA|3531`, `MATEMATIK|391`.
+
+Bu **"hepsi bozuk"** değil, **tekdüzelik bozan** bir bozulma: `topic_hierarchy`'de
+`KIM` kodlu, adı tam olarak `Kimya` olan bir **level-1** konu var ve
+`'Kimya'.upper() == 'KIMYA' == subject_area`. Yani aynı yanıt içinde 12 konu varsayılan
+sıfır, 1 konu tüm dersin istatistiğini taşıyor — sabit-varsayılan hâlinden **daha zor**
+fark edilir. Yan etki: `ci_half` (`:482`) `sample_n=0` olduğu için `0.5` sabitine
+çivileniyor; Redis'te `irt_aggregate:<KONU ADI>` biçiminde konu başına yeni anahtar açılıyor.
+
+**Bu turda ölçülen ek (çürütücünün kaçırdığı):** çakışma **tek değil**. Level-1 konuların
+tamamı sayıldı —
+
+```
+SELECT th.code, th.name_tr, th.level, count(qb.id)
+FROM topic_hierarchy th LEFT JOIN question_bank qb ON qb.primary_topic_id = th.id
+WHERE th.level = 1 GROUP BY 1,2,3 ORDER BY 4 DESC;
+  KIM|Kimya|1|263     <- AKTİF çakışma ('KIMYA' == subject_area)
+  MAT|Matematik|1|0   <- LATENT çakışma ('MATEMATIK' == subject_area), bugün 0 soru
+```
+
+`MAT|Matematik|1` de `subject_area='MATEMATIK'` ile çakışır, ama bugün **0 soru** taşıdığı
+için latent. Bir soru o level-1 konuya atandığı gün ikinci çakışma **kendiliğinden** açılır.
+
+**Neden düzeltilmedi:** doğru düzeltme `KonuPerformansi`'ye ders alanı eklemeyi
+gerektiriyor (modelde ders alanı **yok**) — model/şema kararı, tek satır değil.
+Bunu yakalayan test **yok**.
+
+### 🔴 B2 (HIGH, AÇIK) — `api/advanced_reports.py:761` + `:869` + `:873`: Faz 2'nin kendi tüketici taraması "sayan kod yok" dedi, **SAYAN KOD VAR**
+
+Faz 2'nin GREEN turundaki tüketici tablosu bu satırlar için *"çıktı 13 ayrık konu satırı;
+**sayan/dedup eden kod yok**"* yazdı. Bağımsız grep:
+
+```
+backend/api/advanced_reports.py:761:    n = len(konu_zpd_analizleri)
+backend/api/advanced_reports.py:869:                / len(konu_zpd_analizleri),
+backend/api/advanced_reports.py:873:                / len(konu_zpd_analizleri),
+```
+
+`konu_zpd_analizleri` doğrudan `temel_sonuc.konu_performanslari` üzerinde dönerek
+kuruluyor (`:698-700`) → uzunluğu = **kova sayısı**. Canlı etki:
+
+```
+ÖNCE  kova= 2  n=2   ortalama_basari=41.6667
+SONRA kova=13  n=13  ortalama_basari=51.5751
+fark  = +9.9084 puan   (ağırlıksız ortalama, kova sayısına BAĞLI)
+SONRA kovalar: ['57.1','80.0','0.0','100.0','33.3','100.0','0.0','0.0','100.0','100.0','0.0','100.0','0.0']
+```
+
+`genel_zpd_profili.ortalama_mevcut_seviye` / `ortalama_optimal_zorluk` **+9,91 puan kaydı**.
+HTTP 200, şema aynı — tamamen sessiz. Daha kötüsü: 13 kovanın **6'sı tek soruluk**,
+%0/%100 uç değerleri üretip ağırlıksız ortalamayı domine ediyor.
+
+**Bu bulgunun asıl değeri metodolojik:** Faz 2 kök nedeni "SAYAN tüketicileri ara"
+diye teşhis etti, tarama tablosunu yazdı, **ve aynı turda bir `len()` çağrısını
+gözden kaçırdı**. Ders yazmak, dersi uygulamak değildir; tarama sonucu bağımsız
+bir mercekle **tekrar** ölçülmelidir.
+
+### 🟠 B3 (MEDIUM, AÇIK) — `api/advanced_reports.py:933` + `:1051`: öğrenme stili ders dalları ÖLDÜ
+
+```
+SONRA(konu adı): {'matematik-dali': 0, 'turkce-dali': 0, 'else-dali': 13}
+ÖNCE (ders adı): {'matematik-dali': 4, 'turkce-dali': 0, 'else-dali':  9}
+```
+
+`"matematik" in normalize_tr(konu_perf.konu)` ders adına göre yazılmış; konu adında o
+alt dize yok → tüm kovalar `else` dalına düşüp `uyum_skoru = sum(vark_profili.values())/4`
+alıyor. VARK-visual + Felder sequential_global dalları **hiç koşmuyor**. Sessiz:
+istisna yok, şema değişmiyor, sadece skor tekdüzeleşiyor. Bunu yakalayan test **yok**.
+
+### 🟠 B4 (MEDIUM, AÇIK) — `application/commands/sinav.py:844` BEKÇİSİZ
+
+M6 hayatta (§F2-3). `POST /complete` çıktı sözleşmesini assert eden **hiçbir test yok**;
+mevcut testlerin hiçbiri o dict'in anahtar kümesine bakmıyor. Kapatmak için gereken:
+`konu_data` anahtar kümesini assert eden bir sözleşme testi. **Görev #506 kod olarak
+kapandı, bekçi olarak AÇIK** → yeni görev #510.
+
+### 🔴 B5 (P0, AÇIK — B3 kapsamının DIŞINDA, ama bu rebuild'le canlıya çıktı) — `frontend/src/App.tsx:348`: kimlik-doğrulanmış rotalarda **sert yüklemede boş sayfa**
+
+Frontend rebuild'i "konu sütunu"nu getirdi (chunk `BOz4h0fG` → `C5Q5ku7s`, `topic` 0 → 3,
+eski chunk container'da 0 dosya), **ama aynı imajla ikinci bir kusur da canlıya çıktı.**
+İki bağımsız çürütücü, iki ayrı hesapla, aynı yolu (login formu → `page.goto(results)`)
+tekrarladı:
+
+```
+opacity (10 x 400ms) : ["0","0","0","0","0","0","0","0","0","0"]
+header               : ["Ders","Konu","Doğru","Yanlış","Boş","Başarı","Durum"]
+rowCount = 8   distinctTopics = 8      <- tablo DOM'da VAR, GÖRÜNMEZ
+uygulama-içi gezinme : opacity 0.148 -> 0.997 -> 1  (~320 ms)  <- SAĞLIKLI
+```
+
+**Kapsam ölçüldü** (frontend raporunun "tüm kimlik-doğrulanmış rotalar" ifadesi fazla geniş):
+`/exams` sert yükleme → `["0"]×6` **BOZUK** · `/dashboard` sert yükleme → `["1"]×8` **SAĞLIKLI** ·
+`/login` ve `/404` → opacity-0 element **yok**.
+
+**Yeni olduğu kanıtlandı:** `git show f357e4647:frontend/src/App.tsx` (31 Tem imajının kaynağı)
+→ results rotası `<ProtectedRoute>` ile sarılı, `PageTransition` **YOK**. Şimdiki
+`App.tsx:348` → `element={<PageTransition>…}` (7 Ağu, `af99079c2`).
+
+**Kök neden iddiası ÇÜRÜDÜ:** frontend raporu `PageTransition.tsx:57`
+(`AnimatePresence mode="wait"` + `initial={opacity:0}`, ilk mount'ta `animate`
+tetiklenmiyor) dedi. Kontrol kolu: **aynı bileşenle sarılı PUBLIC rota `/register`
+opacity 1'de açılıyor** (`opacitySifirBuyukElement: []`). Tetikleyici `ProtectedRoute` +
+`PageTransition` **bileşimi**; teşhis yeniden yapılmalı.
+
+**Ayrıca frontend raporu kendi içinde çelişiyor:** `b3-tablo-gorunur.png` tabloyu
+GÖRÜNÜR gösteriyor, aynı rapor tarif ettiği yolda opacity 10/10 = 0 ölçtüğünü yazıyor.
+İkisi ancak **farklı gezinme kiplerinden** gelebilir; ekran görüntüsünün hangi kipte
+alındığı açıklanmamış → **provenans eksik**, o artefakt "öğrenci görüyor" kanıtı sayılmaz.
+
+### 🟢 B6 (LOW, ÖLÇÜLDÜ-KAPANDI) — `osym_exam_engine.py:2181` `or sp.subject` **ÖLÜ KOD**
+
+Kullanıcı kararının gerekçesi *"fallback `topic_name` None ise devreye girer"* ölçülünce
+**erişilemez** çıktı:
+
+```
+UPDATE question_bank SET primary_topic_id = NULL
+  -> ERROR: null value in column "primary_topic_id" ... violates not-null constraint
+information_schema : question_bank.primary_topic_id  is_nullable = NO
+                     topic_hierarchy.name_tr         is_nullable = NO
+pg_constraint      : question_bank_primary_topic_id_fkey FK -> topic_hierarchy(id), convalidated = t
+canlı              : name_tr NULL=0, name_tr ''=0, toplam=45; dangling primary_topic_id=0
+```
+
+Üstelik `:1400` zaten falsy'yi `"Konu atanmamis"`a çeviriyor. `or` operatörünün koruduğu
+falsy sınıfın erişilebilir tek üyesi **boş dize** (`name_tr` üzerinde CHECK yok —
+`pg_constraint`'te yalnız `check_osym_relevance` + `check_topic_level`).
+T5 tam olarak bu yolu kullanıyor: işlem içinde `name_tr=''` olan sentetik bir
+`topic_hierarchy` satırı INSERT edildi, FK geçerli, test koştu, `ROLLBACK` —
+geri alım **bağımsız bir bağlantıyla** doğrulandı (`question_bank.primary_topic_id`
+eski değerinde, sentetik satır `count = 0`).
+
+**Yan bulgu:** kardeş dosyadaki `test_osym_exam_konu_kirilimi.py:398` bekçisi
+çalışma anında SKIP oluyordu ("NULL konulu satır 0"). Ölçüm gösteriyor ki o sayaç
+**hiçbir zaman artamaz** → o bekçi **kalıcı olarak ölü**, kendiliğinden koşacağı bir gün yok.
+**Kalan boşluk (AÇIK):** iki farklı konu `name_tr=''` taşırsa ikisi de AYNI
+`"Konu atanmamis"` etiketine çöker; T5 tek adsız konu ürettiği için bu **çakışmayı
+çivilemiyor**.
+
+### 🟢 B7 (LOW, ÖLÇÜLDÜ-KAPANDI) — `api/sinav.py:219`: `GET /performance` `konu_performanslari` HER ZAMAN `[]`
+
+§F2-1b. Devir notunun premisi çürüdü; fix'in taşıyıcısı `POST /complete`.
+Dosyaya dokunulmadı.
+
+### 🟢 B8 (P0, **BU COMMIT'LE GİT AYAĞI KAPANDI**) — fix ne commit'liydi ne imajda
+
+Çürütücü ölçtü, bağımsız tekrarlandı (4 katman, `MSYS_NO_PATHCONV=1` ile):
+
+```
+worktree            : grep -c "topic_name or sp.subject"  -> 1
+git show HEAD:      : ...                                 -> 0   <- COMMIT'Lİ DEĞİLDİ
+docker run IMAGE    : ...                                 -> 0   <- İMAJDA YOK
+docker exec RUNNING : ...                                 -> 1   <- yalnız yazılabilir katman
+```
+
+Tek bir `docker compose up -d` fix'i **sessizce geri alırdı**. Bu commit git ayağını
+kapatıyor; **imaj ayağı hâlâ AÇIK** (`docker compose build backend` yapılmadı) → §F2-5/1.
+
+### 🟢 B9 (P1, **BU COMMIT'LE KAPANDI**) — çiviyi tutan test dosyası git'te takipli değildi
+
+`git status --short -- backend/tests/` → `?? backend/tests/integration/test_osym_exam_konu_tuketiciler.py`.
+CI hiç koşmaz, başka makinede yoktur, `git clean -fd` siler. "Çivilendi" iddiası
+**tek makineye özeldi**. Bu commit'le takibe alındı.
+
+### 🔴 B10 (P1, AÇIK) — bu turun iki değişikliği de **öğrenci ekranını beslemiyor**
+
+```
+frontend/src/pages/ModernExamResultsPage.tsx:93  -> /api/v1/osym-exam/{id}/subject-performance
+                                            :131 -> topic: s.topic_name || s.subject
+backend/api/sinav.py:891 -> get_subject_performance(...) ÇAĞRISINDAN DOĞRUDAN kuruluyor
+```
+
+Yani öğrenci tablosu `session_to_sinav_sonucu` (`:2181`) ve `CompleteExamCommandHandler`
+`konu_data` (`:844`) yollarının **ikisini de atlıyor**. Öğrenci-görünür teslim tamamen
+**Faz 1 commit'i `da59ef871` + frontend rebuild'inden** geliyor; bu turun iki değişikliği
+**rapor/öğretmen katmanını** düzeltiyor ve o katmanın ölçülmüş bir UI tüketicisi yok.
+M6'nın bekçisiz hayatta kalması aynı sonucu bağımsız olarak işaret ediyor.
+
+### ⚪ B11 (bilgi, AÇIK — B3 kapsamı dışı) — `net_score` formülü: S241'in ölçümü iki hipotezi AYIRT ETMEMİŞ
+
+Canlı complete yanıtı: `correct=22, wrong=18, net_score=22.0`. D − Y/4 = **17,5**.
+Motor `net = doğru` kullanıyor (`api/sinav.py:786` yorumu: *"ÖSYM 2023+ 1/4 ceza kaldırıldı"*).
+Bağımsız ikinci oturum: `D=7, Y=33, net_score=7.0` (D−Y/4 = −1,25 **değil**).
+**S241'in "NET=1.0 = D−Y/4" ölçümü D=1, Y=0 ile yapılmış** — o noktada iki formül
+**çakışır**, yani o ölçüm iki hipotezi hiç ayırt etmemiş. Hangi formülün doğru olduğu
+bir **ürün kararı**; kod değiştirilmedi. `docs/audits/2026-08-20_a1_altin_yol_olcum.md`
+buna göre okunmalı. *(Ölçüm dersi: tek gözlemde çakışan iki hipotezi ayırt eden bir
+girdi seç — D=1,Y=0 hiçbir zaman ayırt edici değildi.)*
+
+---
+
+## F2-5 · Kapsanmayanlar — hâlâ açık olan her şey, NEDEN açık
+
+| # | Açık kalem | Neden açık | Şiddet | Görev |
+|---|---|---|---|---|
+| 1 | **Backend imajı yeniden kurulmadı** (`docker compose build backend`) | Bu tur belge + commit turuydu; imaj kurulumu ayrı bir doğrulama zinciri (health + E2E, `Start-Sleep 90`) gerektirir. Fix şu an git'te **var**, imajda **yok**, çalışan container'da **var** → `docker compose up -d` geri alır. | **P0** | **#511** |
+| 2 | **B1** — `_get_subject_irt_aggregate(konu_perf.konu)` | Doğru düzeltme `KonuPerformansi`'ye ders alanı eklemeyi gerektiriyor (modelde yok) → model/şema kararı, tek satır değil. `plan-before-execute.md` gereği onaysız girilmedi. Yakalayan test yok. | **P0** | **#512** |
+| 3 | **B2** — `len(konu_zpd_analizleri)` ağırlıksız ortalaması | Doğru düzeltme bir **ağırlıklandırma kararı**dır (soru sayısına göre mi, kova sayısına göre mi?) — ürün kararı, mekanik fix değil. | **P0** | **#512** |
+| 4 | **B3** — öğrenme stili ders dalları ölü | B1 ile aynı kök neden (etiketi ders kimliği sanmak); aynı model kararına bağlı, ayrı düzeltilirse aynı yere iki kez dokunulur. | P1 | **#512** |
+| 5 | **B4/M6** — `sinav.py:844` bekçisiz | Kod düzeltmesi yapıldı; sözleşme testi yazılmadı. Yeni fikstür gerektirmiyor, ayrı bir TDD turu. **Uydurma bekçi sunulmadı.** | P1 | **#510** |
+| 6 | **B5** — sert yüklemede boş sayfa | Frontend kaynağına dokunulmadı (görev kapsamı dışı) **ve** kök neden iddiası kontrol koluyla çürütüldü → teşhis yeniden yapılmalı. | **P0** | **#513** |
+| 7 | **B10** — öğrenci ekranı bu turun değişikliklerinden beslenmiyor | Bir kusur değil, bir **kapsam ölçümü**: rapor/öğretmen katmanının UI tüketicisi ölçülmedi. | P1 | #512 kapsamında |
+| 8 | **B6 kalanı** — iki boş-adlı konu aynı etikete çöker | T5 tek adsız konu üretiyor; çakışmayı çivilemek için ikinci sentetik satır gerekir. Boşluk **görünür bırakıldı** (`ders_kaydi.yaml` disiplini). | P2 | #508 (açık kalır) |
+| 9 | **Kapı borcu** — `SKIP=ruff,mypy` (`da59ef871`) | **Kontrol kolu koşuldu:** `git show HEAD:` üzerinde **aynı 4 bulgu** çıkıyor (`sinav.py:242 PLR0912`, `:315 SIM117`, `:292/:315 mypy _bkt_semaphore`) → **önceden var olan borç**, bu turun 15 satırı değil. Eklenen satırlar için `ruff format` **Passed**. | P1 | #509 (açık kalır) |
+| 10 | **L2 — e-posta doğrulama** | A1 altın yolunun 2. adımı, S241'de de açıktı. Blokaj: SMTP kimlik bilgisi (operatör). | **P0** (A1) | #441 |
+| 11 | `frontend/src/types/api.generated.ts` · `test_osym_exam_engine.py:722` · `api/sinav.py` GET /performance doldurma | Faz 1'in Kapsanmayanlar 3/5'i; koşullar **değişmedi** (bayat `openapi.json`, `openapi-typescript` kurulu değil, 26/26 koşulsuz skip → düzeltme doğrulanamaz olurdu). | P3 | — |
+| 12 | **B11** — `net_score` formülü | Ürün kararı; kod değiştirilmedi. | bilgi | — |
+
+---
+
+## F2-6 · Hijyen — kanıt, iddia değil
+
+**Ölçüm turlarında üretim kodu DEĞİŞMEDİ.** Mutasyon ve çürütme turlarının başında ve
+sonunda sha256 birebir aynı:
+
+```
+9b70d0b2a3b6b2a53aeba824c5dc1cd0a887f3d2ada37b7036b466def6e54690  backend/core/osym_exam_engine.py
+ec7047c6c3648d8f176da06aa73e84dd202856a7606f5e7563bd80bd9cc1e981  backend/application/commands/sinav.py
+```
+
+- Diske hiç mutasyon yazılmadı; yine de üç bağımsız kontrol yapıldı: `git status -uno`
+  başta = sonda · sha256 eşleşmesi · diskteki 7/7 **orijinal ankraj** yeniden sayıldı (hepsi `1`).
+- Geçici probe'lar silindi ve **doğrulandı**: host `_b3*.py` / `_b3v_mut.py` / `_cv_*.py` →
+  `git status` boş; container `/tmp/_b3*` ilk `rm`'de *"Operation not permitted"* verdi
+  (dosyalar root'a ait, container non-root koşuyor) → `docker exec -u root` ile silindi,
+  `ls` ile doğrulandı. **Silme iddiası doğrulanmasaydı container'da 3 artık kalacaktı.**
+- Probe'un açtığı Redis anahtarları (`irt_aggregate:FONKSIYONLAR`, `:MUTLAK DEĞER`,
+  `:KONU ATANMAMIS` …) `DEL` ile temizlendi → kalan yalnız önceden var olan `irt_aggregate:MATEMATIK`.
+- **Benim olmayan artık — silinmedi, bildiriliyor:** `backend/.b3_read.py` (takipsiz,
+  07:45, bu turlardan önce oluşmuş). Cerrahi müdahale kuralı.
+- **DB'de kasıtlı bırakılanlar** (A1'in canlıda çalıştığının kalıcı kanıtı):
+  3 test öğrencisi (`b3olcum…@ornektest.com`, `cv1787300428@…`, `cv1787300216@…`)
+  + 4 tamamlanmış sınav oturumu.
+- `backend/semantic_cache.pkl` bu işe ait **değil** — hiçbir turda dokunulmadı,
+  commit'e **alınmadı**.
+
+### Ölçüm aleti arızaları (tekrar edenler için)
+
+| Arıza | Belirti | Çözüm |
+|---|---|---|
+| Git Bash yol dönüşümü | `docker exec … /app/x` → `C:/Program Files/Git/app/x`, "dosya yok" → **"fix kurulmamış" yanlış teşhisi** | `MSYS_NO_PATHCONV=1` |
+| Container PYTHONPATH | `docker exec -w /app python x.py` → `ModuleNotFoundError: No module named 'core'` | `-e PYTHONPATH=/app` |
+| Türkçe SQL inline | `psql -c "…"` → `invalid byte sequence for encoding "UTF8": 0xd0 0x45` | `-f dosya.sql` |
+| `pytest -p no:xdist` | `unrecognized arguments: -n --dist=loadscope` (`pytest.ini` addopts) | tek süreç için `-n 0` |
+| asyncpg bind tipi | `AmbiguousParameterError` — aynı bind hem `varchar` kolona hem karşılaştırmaya girerse | ayrı kolon (`qc.id`) kullan |
+| Kolon adı tahmini | `topic_hierarchy.topic_name` → `column does not exist` | gerçek adlar `code` / `name_tr` |
+| Servis singleton adı | `services.ogretmen_service.ogretmen_service` → yok | Türkçe: `ogretmen_servisi` |
+| Probe yolu | prob `get_subject_performance`'ı **modül düzeyinde** aradı (aslında `OSYMExamEngine` metodu) → `pytest_sessionstart` INTERNALERROR, `grep` **boş çıktı** | "çıktı yok = sorun yok" **DEĞİL** — ham çıktı okundu; yalnız grep'e bakılsaydı 5 mutasyonda prob hiç koşmamış olacaktı |
+
+---
 ## İlişkili
 
 `docs/superpowers/specs/2026-08-21-b3-konu-kirilimi-design.md` (tasarım) ·

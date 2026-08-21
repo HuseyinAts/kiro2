@@ -48,6 +48,61 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-21 (S243 · B3 FAZ 2 — regresyon kapandı, B3 KAPANMADI)
+**Branch:** feature/self-evolution-optimization
+**Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md` §FAZ 2 (394 → 829 satır)
+
+### Ölçülen (canlı oturum `62d6b582…`, 40 soru / 13 kova / 2 ders)
+S242'nin 3 çürütücüsünün bulduğu **beyan edilmiş** regresyonlar kapandı. ÖNCE değerleri
+alıntı değil — aynı canlı veriden `konu=sp.subject` ile **karşı-olgusal** türetildi.
+```
+benzersiz konu etiketi : 2/13  -> 13/13
+zayif ∩ guclu          : {kimya, matematik} -> []
+benzersiz oneri (12)   : 4     -> 12   (gercek _generate_personalized_recommendations)
+sinav_sayisi > 1       : {kimya:9, matematik:4} -> {}   (TEK sinav)
+cok-sinavli kontrol    : 3 oturum, konu bazinda uyusmazlik YOK
+subject-performance    : 13 satir / 13 benzersiz topic_code / sum=40  (bozulmadi)
+```
+**Mutasyon 6/7 öldü.** Faz 1'de HAYATTA kalan iki dal artık ölüyor:
+`M2 sıralama` → T4 **tek başına** · `M4 "Konu atanmamis"` → T5 **tek başına, SKIP yok**
+(eski bekçisi `konu_kirilimi.py:398` kalıcı ölüydü — sütun NOT NULL, sayaç hiç artamaz).
+🔴 **M6 (`commands/sinav.py:844`) HAYATTA** — 2069 testte DELTA=0, **bekçisiz**.
+
+### Kök neden (DERS, deftere eklendi: `L-s241-kardinalite-degisiminde-SAYAN-tuketici`)
+> Kardinalite değiştiren değişikliğin en kırılgan tüketicisi listeyi **OKUYAN** değil,
+> listeyi **SAYAN / etiketi ANAHTAR SANAN** koddur.
+Faz 1'in taraması `application/` dizinini hiç taramadı + geçişli tüketiciyi izlemedi.
+Testler yeşil kaldı çünkü 4/4 referans `AsyncMock(return_value=None)`.
+Zorlayıcı: `tests/integration/test_osym_exam_konu_tuketiciler.py` (T1-T5, gerçek Postgres).
+
+### 🔴 KAPANMADI — aynı kusur sınıfı bir katman yukarıda
+| Bulgu | Ölçüm | Görev |
+|---|---|---|
+| `advanced_reports.py:474/1167` IRT | `sample_size 391→0`, ama adı `Kimya` olan level-1 konu **3531**'i yiyor (`MAT` latent, 0 soru) | #512 |
+| `advanced_reports.py:761/869/873` | `len(konu_zpd_analizleri)` → ZPD ortalaması **+9,91 puan** sessiz kaydı | #512 |
+| `advanced_reports.py:933/1051` | `"matematik" in normalize_tr(...)` → ders dalları **ölü** | #512 |
+| `commands/sinav.py:844` | M6 bekçisiz — POST /complete sözleşme testi yok | #510 |
+| `App.tsx:348` | sert yüklemede **boş sayfa** (`/exams` bozuk, `/dashboard` sağlıklı); rebuild'le ilk kez canlıda. Kök neden iddiası (`PageTransition:57`) kontrol koluyla **çürüdü** (`/register` sağlıklı) | #513 |
+| **imaj** | fix git'te ✅ / imajda ❌ / container'da ✅ → `docker compose up -d` geri alır | **#511** |
+
+### Kayıt
+- Bu commit'le kapandı: fix **commit'siz**di (`git show HEAD:` → 0) ve T1-T5 **takipsiz**di.
+- `sp.subject` fallback'i **ÖLÜ KOD**: `primary_topic_id`/`name_tr` ikisi de NOT NULL.
+- 🔴 **S241'in "NET=1.0 = D−Y/4 TUTTU" ölçümü AYIRT EDİCİ DEĞİLDİ** — D=1,Y=0'da iki
+  formül çakışır. Canlı: `D=22, Y=18 → net 22.0` (D−Y/4 = 17,5). Motor `net = doğru`.
+- Kapı `SKIP=ruff,mypy` (#509) **önceden var olan borç** — kontrol kolu: HEAD'de aynı 4 bulgu.
+- `backend/semantic_cache.pkl` bu işe ait değil, commit'e alınmadı. Artık: `backend/.b3_read.py`
+  (benim değil, silmedim). DB'de 3 test öğrencisi + 4 oturum kasıtlı bırakıldı.
+
+### Sonraki Adımlar (maks 5)
+1. **#511** `docker compose build backend` + `up -d --no-deps backend` + `Start-Sleep 90` + E2E
+2. **#512** `KonuPerformansi`'ye ders alanı → B1+B2+B3 tek turda (model kararı, plan gate)
+3. **#510** POST /complete sözleşme testi → M6'yı öldür
+4. **#513** sert-yükleme boş sayfa: `ProtectedRoute`+`PageTransition` bileşimi, teşhis sıfırdan
+5. **L2 e-posta doğrulama** hâlâ YOK — blokaj SMTP (#441)
+
+---
+
 ## Session Handoff — 2026-08-21 (S242 · B3 KONU KIRILIMI — motor açıldı, tüketiciler bozuldu)
 **Branch:** feature/self-evolution-optimization
 **Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md`

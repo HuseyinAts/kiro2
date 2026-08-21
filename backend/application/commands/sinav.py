@@ -838,6 +838,10 @@ class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, A
                     "success_rate": p.success_rate,
                     "average_response_time": p.average_response_time,
                     "difficulty_level": p.difficulty_level,
+                    # B3: konu kırılımı. Eklemeli sözleşme — mevcut 8 alan korunur.
+                    # Bunlar geçmeden GET /performance ayırt edilemez satırlar döner.
+                    "topic_code": p.topic_code,
+                    "topic_name": p.topic_name,
                 }
                 for p in subject_perfs
             ]
