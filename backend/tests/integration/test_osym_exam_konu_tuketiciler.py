@@ -776,7 +776,17 @@ async def test_konu_performanslari_ders_kimligi_de_tasir(tuketici_sinavi):
     assert all(kodlar), f"konu_kodu bos olan kova var: {kodlar}"
     assert len(set(kodlar)) == len(kodlar), f"konu_kodu tekrar ediyor: {kodlar}"
 
-    # Kimlik `konu` dizesinden BAGIMSIZ: ders adi konu adina esit olsa bile
-    # iki alan ayri ayri okunabilir.
-    for kp in kovalar:
-        assert kp.ders is not None and kp.konu_kodu is not None
+    # Kimlik `konu` dizesinden BAGIMSIZ olmali. Onceki bicim
+    # (`assert kp.ders is not None`) onceki iki assert tarafindan zaten
+    # KAPSANIYORDU -- tek basina hicbir mutasyonu olduremezdi. Yerine
+    # ayirt edici invaryant konuldu: `konu` DEGISKEN, `ders` SABIT.
+    # `ders=sp.topic_name` gibi bir yanlis kablolama bu assert'i dusurur,
+    # eskisini dusurmezdi.
+    assert len({kp.konu for kp in kovalar}) > 1, (
+        f"konu tek degerli -- fikstur cok konulu kurulmamis: "
+        f"{[kp.konu for kp in kovalar]}"
+    )
+    assert len({kp.ders for kp in kovalar}) == 1, (
+        f"ders degisken -- konu alanina kablolanmis olabilir: "
+        f"{[(kp.konu, kp.ders) for kp in kovalar]}"
+    )

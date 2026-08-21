@@ -94,7 +94,10 @@ class KonuPerformansi(BaseModel):
     # B3 FAZ 3 — kimlik alanlari SONA + varsayilanli.
     # `SubjectPerformance`'taki ayni disiplin (osym_exam_engine.py:113-117):
     # basa/ortaya eklenen alan pozisyonel cagriyi sessizce yanlis alana baglar.
-    # Varsayilanli olmalari mevcut 6 test cagri yerini geriye uyumlu birakir.
+    # Varsayilanli olmalari mevcut cagri yerlerini geriye uyumlu birakir.
+    # (Sayi YAZILMADI: yorumdaki sayac curur. Geriye uyumlulugu iddia degil
+    # regresyon kosumu tasir -- `tests/unit/test_exam_curriculum_models.py`
+    # + `test_advanced_reports_schema_parity.py` + `test_api_coverage_final.py`.)
     #
     # `konu` ARTIK ders adi degil KONU adi tasiyor (B3, da59ef871). Ders
     # kimligine ihtiyaci olan tuketici bu alani okur -- `konu` dizesini
