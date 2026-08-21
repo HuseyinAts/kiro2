@@ -386,96 +386,14 @@ async def download_pdf_report(
 # Yardımcı fonksiyonlar
 
 
-async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int]:
-    """Aggregate IRT params for a subject_area from question_bank.
-
-    🔴 URETIMDE OLU (3c44910ff, B3 FAZ 3). Iki cagri yeri de ardili
-    `_get_irt_aggregate`e (asagida) tasindi. Kalan TEK tuketici
-    `tests/fast/test_advanced_reports_split.py` -- bu fonksiyon #485
-    split'inin JOIN yapisini civileyen bekcinin ANKRAJI oldugu icin
-    SILINMEDI. Yeni is icin ardili kullan; burayi degistirmen gerekiyorsa
-    once o bekcinin hala deger uretip uretmedigini olc (ayni yapi ardilda
-    da civili: `tests/fast/test_irt_aggregate_topic_split.py`).
-
-    NEDEN ARDILI VAR: bu fonksiyon yalniz DERS adi kabul eder ve iceride
-    `.upper()` yapar. Konu adi gecirilince sessizce YANLIS dersin verisini
-    dondurur -- olculdu: "Kimya" (level-1 KONU, 263 soru) -> "KIMYA" ->
-    3531 satir.
-
-    S196 Day 2 helper. Returns AVG difficulty / discrimination / guessing and
-    a sample-size confidence proxy. Sample size < 10 → caller should fall back
-    to the per-question morfoloji service for that subject.
-
-    Cache (S196 Day 3 follow-up): Redis cache @ 1h TTL.
-
-    Why cache instead of an index: The IRT aggregate query has %30 selectivity
-    on subject_area (e.g., MATEMATIK = 57K of 187K active rows). The PostgreSQL
-    planner ignores even a tailored partial INCLUDE index because Parallel Seq
-    Scan costs less than Bitmap Index Scan + heap fetch at this selectivity.
-    Adding 9MB of index storage that the planner refuses to use is waste.
-
-    IRT aggregates change only on Curator UPDATE (rare — daily at most), so a
-    1-hour cache TTL has near-zero staleness risk and turns 175ms cold queries
-    into <2ms cache hits. With 12 subject_areas, total cache footprint is ~3KB.
-    """
-    from sqlalchemy import func, select
-
-    from core.cache import cache_manager
-    from core.database import get_db_session_context
-    from models.question_bank import (
-        QuestionBankItem,
-        QuestionMetadata,
-        QuestionStatistics,
-    )
-
-    canonical = subject_area.upper()
-    cache_key = f"irt_aggregate:{canonical}"
-
-    cached: dict[str, float | int] | None = await cache_manager.get(cache_key)
-    if cached is not None:
-        return cached
-
-    async with get_db_session_context() as session:
-        # #485 split: irt_* artık QuestionStatistics'te, subject_area
-        # QuestionMetadata'da. SELECT listesinde yalnız QuestionStatistics
-        # kolonları olduğu için explicit select_from ZORUNLU — yoksa SQLAlchemy
-        # sol tarafı o tablo sanıp kendisine JOIN etmeye çalışır.
-        stmt = (
-            select(
-                func.avg(QuestionStatistics.irt_difficulty).label("avg_difficulty"),
-                func.avg(QuestionStatistics.irt_discrimination).label(
-                    "avg_discrimination"
-                ),
-                func.avg(QuestionStatistics.irt_guessing).label("avg_guessing"),
-                func.count().label("sample_size"),
-            )
-            .select_from(QuestionBankItem)
-            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
-            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
-            .where(QuestionMetadata.subject_area == canonical)
-            .where(QuestionBankItem.is_active.is_(True))
-        )
-        row = (await session.execute(stmt)).one()
-
-    result = {
-        "avg_difficulty": float(row.avg_difficulty or 0.0),
-        "avg_discrimination": float(row.avg_discrimination or 1.0),
-        "avg_guessing": float(row.avg_guessing or 0.2),
-        "sample_size": int(row.sample_size or 0),
-    }
-    # 1h TTL — IRT params change only on Curator update (rare).
-    await cache_manager.set(cache_key, result, ttl=3600)
-    return result
-
-
 async def _get_irt_aggregate(
     *, topic_code: str | None, ders: str | None
 ) -> dict[str, float | int]:
     """IRT toplami -- konu kodu varsa KONU bazli, yoksa DERSE duser.
 
-    B3 FAZ 3 kok nedeni: `_get_subject_irt_aggregate` yalniz DERS adi kabul
-    eder ve iceride `.upper()` yapar. Konu adi gecirilince iki sessiz kusur
-    olusur (ikisi de 21 Agu 2026'da canli DB'de olculdu):
+    B3 FAZ 3 kok nedeni: silinen ikiz `_get_subject_irt_aggregate` yalniz DERS
+    adi kabul ediyor ve iceride `.upper()` yapiyordu. Konu adi gecirilince iki
+    sessiz kusur olusuyordu (ikisi de 21 Agu 2026'da canli DB'de olculdu):
         "Kimyasal Denge" -> "KIMYASAL DENGE" -> 0 satir     (gercek 1262)
         "Kimya"          -> "KIMYA"          -> 3531 satir  (gercek 263)
     Ikincisi TEHLIKELI olan: sifir donmek gurultulu, YANLIS dersin verisini
@@ -484,8 +402,11 @@ async def _get_irt_aggregate(
 
     `topic_hierarchy.code` ASCII ve cakismasizdir -- ayirt edici anahtar odur.
 
-    Eski fonksiyon SILINMEDI: `tests/fast/test_advanced_reports_split.py`
-    onu cagirip #485 split JOIN yapisini civiliyor.
+    Eski ikiz `_get_subject_irt_aggregate` #515'te SILINDI (uretimde oluydu).
+    Onu civileyen `tests/fast/test_advanced_reports_split.py` da silindi;
+    invaryantlari once mutasyonla olculup `tests/fast/
+    test_irt_aggregate_topic_split.py`e tasindi -- ucu (ders dalinda
+    kartezyen, NULL varsayilanlari, cache-hit) orada KAPSANMIYORDU.
     """
     from sqlalchemy import func, select
 

@@ -1,11 +1,25 @@
-"""Yeni konu-bazli IRT toplam sorgusunun split (#485) bekcisi.
+"""`_get_irt_aggregate` icin #485 split + sozlesme bekcisi.
 
-NEDEN AYRI DOSYA: `tests/fast/test_advanced_reports_split.py` YALNIZ
-`_get_subject_irt_aggregate`'i civiliyor. `_get_irt_aggregate` YENI bir
-sorgudur ve o bekcinin kapsami DISINDADIR -- ayni sinifta bir split kacagi
-burada tekrar edebilir (bkz. `L-s230-ast-sayaci-ham-sql-goremez` ve ES sema
-kacagi vakasi: sorgu S210 split'inden once yazilmisti, senkron AYLARDIR
-UndefinedColumnError ile sessizce dusuyordu).
+TEK BEKCI (#515, 22 Agu 2026): onceki ikiz `_get_subject_irt_aggregate` ve
+onu civileyen `tests/fast/test_advanced_reports_split.py` SILINDI -- fonksiyon
+uretimde oluydu (`3c44910ff` iki cagri yerini de buraya tasidi). Silmeden ONCE
+eski bekcinin HER invaryanti mutasyonla olculdu; ucu bu dosyada KAPSANMIYORDU
+ve buraya tasindi:
+    M-C  ders dalinda QuestionMetadata JOIN'i dus -> KARTEZYEN (2 FROM),
+         sessizce yanlis ortalama; eski hali 5/5 YESIL kaliyordu
+    M-D  NULL-toplam varsayilani boz -> donen sozluk hic okunmuyordu
+    M-E  cache-hit erken donusu kaldir -> hic olculmuyordu
+Karsilik gelen testler: `test_ders_dalinda_kartezyen_yok`,
+`test_null_toplamlar_varsayilana_duser`, `test_cache_dolu_ise_db_ye_gidilmez`.
+
+NEDEN CIVILI: ayni sinifta bir split kacagi tekrar edebilir (bkz.
+`L-s230-ast-sayaci-ham-sql-goremez` ve ES sema kacagi vakasi: sorgu S210
+split'inden once yazilmisti, senkron AYLARDIR UndefinedColumnError ile
+sessizce dusuyordu).
+
+DIKKAT: WHERE iddiasi derlenmis SQL dizesinde JOIN dusse bile DURUR
+(audit-methodology.md). Kartezyen yalniz `get_final_froms()` ile olculur --
+her iki dal icin de.
 
 Testler GERCEK `models.question_bank` modeline karsi kosar; sahte
 `sys.modules` stub'i kirik kodda da yesil kalirdi.
@@ -100,6 +114,28 @@ class TestKonuBazliSorgu:
         assert "topic_hierarchy" not in sql, f"gereksiz JOIN:\n{sql}"
 
     @pytest.mark.asyncio
+    async def test_ders_dalinda_kartezyen_yok(self, wired):
+        """#515 M-C: ders dalinda da tek FROM + gercek JOIN olmali.
+
+        WHERE dizesi JOIN dusse bile derlenmis SQL'de DURUR -- ustteki
+        `subject_area = 'MATEMATIK'` assert'i JOIN'siz halde de gecer ve
+        `FROM question_bank JOIN question_statistics ..., question_metadata`
+        (KARTEZYEN) uretir: her aktif soru x her ayni-ders metadata satiri,
+        yani sessizce sisirilmis sample_size ve yanlis ortalama. Kartezyen
+        yalniz YAPI uzerinden olculur.
+        """
+        from api.advanced_reports import _get_irt_aggregate
+
+        session, _ = wired
+        await _get_irt_aggregate(topic_code=None, ders="matematik")
+
+        froms = session.stmt.get_final_froms()
+        assert len(froms) == 1, f"ders dalinda kartezyen: {len(froms)} ayri FROM"
+        assert "JOIN question_metadata" in _compiled_sql(session.stmt), _compiled_sql(
+            session.stmt
+        )
+
+    @pytest.mark.asyncio
     async def test_is_active_filtresi_zorunlu(self, wired):
         """Soru sorgusunda `is_active` atlanamaz (.claude/rules/database.md)."""
         from api.advanced_reports import _get_irt_aggregate
@@ -130,3 +166,74 @@ class TestCakismaVeCache:
         assert any(
             a.startswith("irt_aggregate:subject:") for a in anahtarlar
         ), anahtarlar
+
+    @pytest.mark.asyncio
+    async def test_cache_dolu_ise_db_ye_gidilmez(self, wired):
+        """#515 M-E: cache-hit erken donusu -- sorgu HIC kurulmamali."""
+        from api.advanced_reports import _get_irt_aggregate
+
+        session, cache = wired
+        onbellekli = {
+            "avg_difficulty": 1.0,
+            "avg_discrimination": 2.0,
+            "avg_guessing": 0.3,
+            "sample_size": 99,
+        }
+        cache.get = AsyncMock(return_value=onbellekli)
+
+        sonuc = await _get_irt_aggregate(topic_code="KIM", ders="kimya")
+
+        assert sonuc == onbellekli
+        assert session.stmt is None, "cache hit'te DB sorgusu kuruldu"
+
+
+class TestDonenSozlesme:
+    """Cagiranlarla (irt / osym-ets) alan sozlesmesi + NULL varsayilanlari."""
+
+    @pytest.mark.asyncio
+    async def test_donen_sozluk_sekli(self, wired):
+        from api.advanced_reports import _get_irt_aggregate
+
+        session, cache = wired
+        session.row = MagicMock(
+            avg_difficulty=0.25,
+            avg_discrimination=1.4,
+            avg_guessing=0.18,
+            sample_size=7,
+        )
+
+        sonuc = await _get_irt_aggregate(topic_code="MAT.FON", ders="matematik")
+
+        assert sonuc == {
+            "avg_difficulty": 0.25,
+            "avg_discrimination": 1.4,
+            "avg_guessing": 0.18,
+            "sample_size": 7,
+        }
+        cache.set.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_null_toplamlar_varsayilana_duser(self, wired):
+        """#515 M-D: bos konu (JOIN sonrasi 0 satir) -> AVG NULL.
+
+        Varsayilanlar IRT semantigi tasir: guclugu 0.0, ayirt ediciligi 1.0,
+        sansi 0.2. Biri kayarsa cagiran sessizce yanlis yetenek kestirir.
+        """
+        from api.advanced_reports import _get_irt_aggregate
+
+        session, _ = wired
+        session.row = MagicMock(
+            avg_difficulty=None,
+            avg_discrimination=None,
+            avg_guessing=None,
+            sample_size=None,
+        )
+
+        sonuc = await _get_irt_aggregate(topic_code="MAT.FON", ders="matematik")
+
+        assert sonuc == {
+            "avg_difficulty": 0.0,
+            "avg_discrimination": 1.0,
+            "avg_guessing": 0.2,
+            "sample_size": 0,
+        }
