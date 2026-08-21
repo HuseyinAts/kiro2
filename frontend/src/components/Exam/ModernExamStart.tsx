@@ -205,24 +205,18 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       setLoading(true);
       setError(null);
 
-      if (sessionId) {
-        // Mevcut session'ı başlat (ModernExamStartPage zaten oluşturmuş)
-        await examService.startExam(sessionId);
-        onStart(sessionId);
-      } else {
-        // Fallback: session yoksa yeni oluştur ve hemen başlat
-        // BUG #3 fix: createExam tek başına status=not_started bırakır,
-        // ModernOSYMExamInterface IN_PROGRESS değil diye soru/timer
-        // fetch etmez → ekranda timer 00:00:00 + boş soru.
-        const session = await examService.createExam({
-          exam_type: examType,
-          custom_config: examInfo.difficulty_distribution ? {
-            difficulty_distribution: examInfo.difficulty_distribution,
-          } : undefined,
-        });
-        await examService.startExam(session.session_id);
-        onStart(session.session_id);
+      if (!sessionId) {
+        // #516: bu dal ROTADAN ULAŞILAMAZ — ExamPage yalnız /exam/:sinavId'e
+        // bağlı ve segment ZORUNLU. Eski hâli burada tam sınav (TYT=120)
+        // yaratmaya çalışıyordu; havuz karşılamadığı için 400 döner ve kullanıcı
+        // ham backend hatası görürdü. Sessiz/yanlış kurtarma yerine AÇIK hata:
+        // dal bir gün canlanırsa GÖRÜNÜR olsun, sessizce 400 üretmesin.
+        // Invaryant bekçisi: src/test/components/Exam/ModernExamStart.oturum-kimligi.test.tsx
+        throw new Error('Oturum kimliği yok — sınav başlatılamaz');
       }
+      // Mevcut session'ı başlat (ModernExamStartPage zaten oluşturmuş)
+      await examService.startExam(sessionId);
+      onStart(sessionId);
     } catch (err: any) {
       setError(err.message || 'Sınav başlatılamadı');
       // Hata durumunda guard'ı serbest bırak — kullanıcı tekrar deneyebilsin.
