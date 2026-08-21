@@ -48,6 +48,99 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-21 (S244 · B3 FAZ 3 — üç açık P0 KAPANDI)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `ee5ef3c03..HEAD` (10 commit)
+**Tasarım:** `docs/superpowers/specs/2026-08-21-b3-faz3-design.md`
+**Plan:** `docs/superpowers/plans/2026-08-21-b3-faz3-uygulama.md`
+**Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md` §FAZ 3 (828 → 1015 satır)
+
+### Kapanan (üçü de S243'ün bıraktığı P0)
+| # | Kabul kanıtı |
+|---|---|
+| **#511** | `git == imaj` — **5/5 dosyada md5 eşit**. Önce: imajda `topic_code` 0/0, git'te 1/5 |
+| **#512** | 3 sessiz kusur + 1 kardeş kusur; kök neden **modelde** çözüldü (`ders`+`konu_kodu`) |
+| **#510** | M6 **öldü** — mutasyonda T7 tek başına FAIL |
+
+### Kök neden ve fix
+`KonuPerformansi` yalnız `konu: str` taşıyordu; ders kimliği için alan yoktu.
+İki varsayılanlı alan eklendi (sona), üretici doldurdu, üç tüketici dize
+eşleşmesi yerine **alan** okuyor:
+
+- **(a) IRT** → `_get_irt_aggregate(topic_code=…, ders=…)`; `topic_hierarchy.code`
+  ile anahtarlanır, cache anahtarı ayrışır. Ölçüldü: `"Kimya"` (level-1 KONU,
+  263 soru) ders yolundan **3531** dönüyordu; `"Kimyasal Denge"` **0** (gerçek 1262).
+- **(b) ZPD** → `_agirlikli_ortalama`; **kovalama-değişmez**. Bugünkü +9,91
+  sapmayı kaldırmakla kalmaz, sonraki kardinalite değişiminde de kaymaz.
+- **(c) ders dalı** → `_ders_uyum_skoru` + `subject_key(ders)`. Kardeş kusur:
+  Türkçe harfli dize kanon `{KIMYA, MATEMATIK}` ile hiç eşleşemezdi → `turkce`.
+
+### Fail eden testler
+**YOK.** Kapı: **1292 passed / 1 skipped / 0 failed**.
+Yeni: `tests/unit/test_konu_kimligi.py` (15) · `tests/fast/test_irt_aggregate_topic_split.py` (6) ·
+`tests/integration/test_osym_exam_konu_tuketiciler.py` T6+T7 (gerçek Postgres, mock YOK).
+
+### Canlı E2E (yeni imaj)
+```
+kayit 201 · giris 200 · beta-practice 200 · start 200 · complete 200
+  8 kova · topic_code dolu 8/8 · benzersiz 8
+subject-performance 200 · 8 satir · 8 farkli topic_code
+zpd 200 · irt-analysis 200 · learning-style 200 · osym-ets 200   -> 5XX YOK
+```
+
+### 🔴 DÜRÜST SINIRLAR (iddia EDİLMEYENLER — denetimde 7 madde)
+1. **(a) IRT kusuru CANLIDA DEĞİLDİ.** Ölçüldü: `config/mock_endpoint_flags.json`
+   5/5 `advanced_reports.*` = `false`; iki çağrı yeri de `_real` yolda = **uykuda**.
+   Gerçek kusur (bayrak çevrilince sessizce aktifleşir) ama *"bugün öğrenciyi
+   bozuyor"* aşırı iddia olurdu. Kanıt uçtan değil **doğrudan SQL**'den alındı.
+2. **`TURKCE` dalı E2E ile doğrulanamadı** — canlı DB'de `TURKCE` satırı yok.
+3. **Bayat-mock assert'i mutasyonla kanıtlanmadı** — sqlite hatası önce patlıyor.
+4. **+9,91 bu turda yeniden ölçülmedi** (S243'ten devralındı).
+
+### Çürütülen 3 iddia — üçü de PLANI YAZANIN
+1. *"(c) dalı B3 öncesi de ölüydü"* → `osym_exam_engine.py:1387` `.lower()`
+   üretiyor; dal **canlıydı**, B3 öldürdü.
+2. **Planın kovalama-değişmezlik test verisi DEJENEREYDİ** — ağırlıksız
+   ortalamalar 6.0 vs 6.0, yani test **hatalı implementasyona karşı da geçerdi**.
+   İmplementer aritmetiği kontrol edip yakaladı, hakem doğruladı.
+3. *"`normalize_tr` başka yerde kullanılıyor"* → üç kullanımın üçü de
+   değiştirilen bloklardaydı.
+
+### 3 dişsiz assert bulundu ve değiştirildi
+T6'nın kapsanan assert'i · `test_konu_adi_ders_dalini_secmez` (inceleyici çağrı
+yeri mutasyonuyla kanıtladı: **7 passed**) · bayat mock ankrajı. Nihai inceleme
+**dördüncüyü aradı, bulamadı**.
+
+### Orkestrasyon dersi (bu tur ısırdı)
+Depoda **tek git index** var — `git add .` yapmamak yeterli koruma değil,
+**commit'in kendisi pathspec ister**. Ayrıca dosya-değiştiren inceleyici, aynı
+dosyadaki implementer ile paralel koşturulmamalı (olası veri kaybı penceresi
+oluştu; bütünlük sonradan ölçüldü, kayıp yoktu — ama şans).
+
+### Sonraki Adımlar (maks 5)
+1. **#513** sert-yüklemede boş sayfa (frontend) — teşhis sıfırdan
+2. **Tam TYT `create` 400** — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi, YENİ açık iş
+3. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441)
+4. `_get_subject_irt_aggregate` ölü ikizi sil (bekçisi ardıla taşınmalı)
+5. `advanced_reports.py:561` `get_subject_morphology_factor` ölü (`hasattr` daima False)
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **Ölçü kovalamadan bağımsız olmalı, düzeltilmiş olmalı değil.** Ağırlıklı
+  ortalama seçildi çünkü bir sonraki kardinalite değişiminde de kaymaz.
+- **`ders` küçük harf saklanır** (motorun ürettiği biçim); karşılaştırmada
+  `subject_key()`, DB'de `subject_db()` — `normalize_tr` YASAK (Türkçe locale).
+- **Eski `_get_subject_irt_aggregate` silinmedi** — split bekçisinin ankrajı.
+  Tanım yerine `URETIMDE OLU` işareti kondu (nihai incelemenin Important'ı).
+- **Defter 156 → 158**: `L-s244-kovalama-degismez-metrik` (zorlayıcı dolu) +
+  `L-s244-paralel-ajanlar-tek-git-index`.
+- **#509 borcuna +1**: `test_advanced_reports_schema_parity.py` 5× E402,
+  kontrol koluyla önceden-var-olan ölçüldü, `SKIP=ruff` kullanıldı.
+
+### Not
+Bu dosya **5 devir notu** taşıyor (S244/S243/S242/S241/S239-S240) — "son 3"
+kuralı önceki turda da aşılmıştı. En eskilerin arşive inmesi küçük bir açık iş.
+
+---
+
 ## Session Handoff — 2026-08-21 (S243 · B3 FAZ 2 — regresyon kapandı, B3 KAPANMADI)
 **Branch:** feature/self-evolution-optimization
 **Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md` §FAZ 2 (394 → 829 satır)
