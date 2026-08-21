@@ -707,6 +707,9 @@ async def _get_zpd_analizi_real(
         konu_zpd_analizleri.append(
             {
                 "konu": konu_perf.konu,
+                # B3 FAZ 3: agirlik = kovadaki soru sayisi. Genel profil
+                # ortalamasi bununla kovalama-DEGISMEZ hale gelir.
+                "agirlik": konu_perf.toplam_soru,
                 "mevcut_seviye": zpd.mevcut_seviye,
                 "alt_sinir": zpd.alt_sinir,
                 "ust_sinir": zpd.ust_sinir,
@@ -758,18 +761,15 @@ async def _get_zpd_analizi_real(
                 }
             )
 
-    n = len(konu_zpd_analizleri)
     return {
         "konu_zpd_analizleri": konu_zpd_analizleri,
         "genel_zpd_profili": {
-            "ortalama_mevcut_seviye": sum(
-                z["mevcut_seviye"] for z in konu_zpd_analizleri
-            )
-            / n,
-            "ortalama_optimal_zorluk": sum(
-                z["optimal_zorluk"] for z in konu_zpd_analizleri
-            )
-            / n,
+            "ortalama_mevcut_seviye": _agirlikli_ortalama(
+                konu_zpd_analizleri, "mevcut_seviye"
+            ),
+            "ortalama_optimal_zorluk": _agirlikli_ortalama(
+                konu_zpd_analizleri, "optimal_zorluk"
+            ),
             "kulturel_uyum_seviyesi": "yuksek",
             "maarif_degerleri_uyumu": "iyi",
         },
@@ -806,6 +806,8 @@ async def _get_zpd_analizi_mock(
             # ZPD aralığını hesapla (mock)
             zpd_araligi = {
                 "konu": konu_performansi.konu,
+                # B3 FAZ 3: real yolla ayni sozlesme (schema parity).
+                "agirlik": konu_performansi.toplam_soru,
                 "mevcut_seviye": konu_seviye,
                 "alt_sinir": max(0, konu_seviye - 0.5),
                 "ust_sinir": min(10, konu_seviye + 1.5),
@@ -863,14 +865,12 @@ async def _get_zpd_analizi_mock(
         return {
             "konu_zpd_analizleri": konu_zpd_analizleri,
             "genel_zpd_profili": {
-                "ortalama_mevcut_seviye": sum(
-                    z["mevcut_seviye"] for z in konu_zpd_analizleri
-                )
-                / len(konu_zpd_analizleri),
-                "ortalama_optimal_zorluk": sum(
-                    z["optimal_zorluk"] for z in konu_zpd_analizleri
-                )
-                / len(konu_zpd_analizleri),
+                "ortalama_mevcut_seviye": _agirlikli_ortalama(
+                    konu_zpd_analizleri, "mevcut_seviye"
+                ),
+                "ortalama_optimal_zorluk": _agirlikli_ortalama(
+                    konu_zpd_analizleri, "optimal_zorluk"
+                ),
                 "kulturel_uyum_seviyesi": "yuksek",
                 "maarif_degerleri_uyumu": "iyi",
             },
@@ -1384,6 +1384,25 @@ def _serialize_temel_sonuc(sonuc: SinavSonucu) -> dict[str, Any]:
         "zayif_konular": sonuc.zayif_konular,
         "guclu_konular": sonuc.guclu_konular,
     }
+
+
+def _agirlikli_ortalama(kayitlar: list[dict], alan: str) -> float:
+    """Soru-agirlikli ortalama -- kova SAYISINDAN bagimsiz.
+
+    B3 FAZ 3: onceki bicim `sum(...) / len(kayitlar)` idi. Kova kardinalitesi
+    1 -> 13 olunca ortalama sessizce kaydi (olculdu: +9,91 puan). Agirlikli
+    bicim ayni veriyi hangi kovalamayla verirsen ver AYNI sonucu uretir --
+    yani bir SONRAKI kardinalite degisiminde de kaymaz.
+
+    `agirlik` = o kovadaki soru sayisi. Toplam agirlik 0 ise 0.0 (sifira
+    bolme AYRI bir kaynaktir: `len(kayitlar) > 0` iken de olusabilir).
+    """
+    toplam_agirlik = sum(float(k.get("agirlik", 0)) for k in kayitlar)
+    if not toplam_agirlik:
+        return 0.0
+    return sum(float(k[alan]) * float(k.get("agirlik", 0)) for k in kayitlar) / (
+        toplam_agirlik
+    )
 
 
 def _ders_uyum_skoru(

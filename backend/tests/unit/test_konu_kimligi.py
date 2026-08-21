@@ -115,3 +115,100 @@ class TestDersDali:
         # ders=None (kimlik yok) -> matematik dali SECILMEZ, ortalamaya duser
         ortalama = sum(vark.values()) / 4
         assert _ders_uyum_skoru(None, vark, felder) == pytest.approx(ortalama)
+
+
+# --------------------------------------------------------------------------
+# Kovalama-degismez ortalama icin ORTAK veri.
+#
+# AYNI 40 soru, iki farkli kovalama:
+#   iki kova (DERS bazi) : matematik 10 soru @8.0 · kimya 30 soru @4.0
+#   dort kova (KONU bazi): matematik 3 konuya bolundu (3+3+4 soru, hepsi @8.0)
+#                          kimya tek konu olarak kaldi (30 soru @4.0)
+# Ders basina konu SAYISI dersten derse degisir (B3'te matematik 14 konuya,
+# kimya 13 konuya bolundu) -- bu asimetri gercek olanin ta kendisi.
+#
+# ARITMETIK (dogrulandi):
+#   agirlikli : (8*10 + 4*30)/40 = 5.0  ==  (8*3+8*3+8*4+4*30)/40 = 5.0   AYNI
+#   agirliksiz: (8+4)/2          = 6.0  !=  (8+8+8+4)/4          = 7.0   FARKLI
+#
+# Bu asimetri ZORUNLU: her iki tarafi da esit sayida alt-kovaya bolseydik
+# agirliksiz ortalama da esit cikar, kontrol kolu HICBIR SEY kanitlamazdi.
+# --------------------------------------------------------------------------
+IKI_KOVA = [
+    {"deger": 8.0, "agirlik": 10},
+    {"deger": 4.0, "agirlik": 30},
+]
+DORT_KOVA = [
+    {"deger": 8.0, "agirlik": 3},
+    {"deger": 8.0, "agirlik": 3},
+    {"deger": 8.0, "agirlik": 4},
+    {"deger": 4.0, "agirlik": 30},
+]
+
+
+class TestAgirlikliOrtalama:
+    """ZPD genel profili kova SAYISINDAN bagimsiz olmali.
+
+    Eski bicim `Sigma / len(kova)` idi: kardinalite 1 -> 13 olunca ortalama
+    sessizce kaydi (olculdu: +9,91 puan). Soru-agirlikli bicim ayni veriyi
+    hangi kovalamayla verirsen ver AYNI sonucu uretir -- yani bir sonraki
+    kardinalite degisiminde de kaymaz. Bu testin tasidigi iddia budur.
+    """
+
+    def test_agirlikli_ortalama_temel(self):
+        from api.advanced_reports import _agirlikli_ortalama
+
+        kayitlar = [
+            {"deger": 10.0, "agirlik": 1},
+            {"deger": 0.0, "agirlik": 3},
+        ]
+        # (10*1 + 0*3) / 4 = 2.5   (agirliksiz olsa 5.0 olurdu)
+        assert _agirlikli_ortalama(kayitlar, "deger") == pytest.approx(2.5)
+
+    def test_kovalama_degismez(self):
+        """AYNI 40 soru, iki farkli kovalama -> AYNI ortalama.
+
+        Bu, B3'un kirdigi invaryantin ta kendisidir.
+        """
+        from api.advanced_reports import _agirlikli_ortalama
+
+        assert _agirlikli_ortalama(IKI_KOVA, "deger") == pytest.approx(
+            _agirlikli_ortalama(DORT_KOVA, "deger")
+        ), "ortalama kovalamaya BAGIMLI -- invaryant kirik"
+
+    def test_agirliksiz_bicim_bu_invaryanti_kirar(self):
+        """KONTROL KOLU: eski `Sigma/len` bicimi ayni veride FARKLI verir.
+
+        Bu assert olmadan yukaridaki test 'her zaman gecen' bir test
+        sanilabilirdi -- invaryantin ayirt edici oldugunu kanitlar.
+        """
+        from api.advanced_reports import _agirlikli_ortalama
+
+        agirliksiz_iki = sum(k["deger"] for k in IKI_KOVA) / len(IKI_KOVA)
+        agirliksiz_dort = sum(k["deger"] for k in DORT_KOVA) / len(DORT_KOVA)
+        assert agirliksiz_iki != pytest.approx(agirliksiz_dort), (
+            "kontrol kolu bozuk: bu veri agirliksiz bicimi ayirt etmiyor, "
+            "test bir sey kanitlamiyor"
+        )
+        # ...ve agirlikli bicim ikisinde de ayni:
+        assert _agirlikli_ortalama(IKI_KOVA, "deger") == pytest.approx(
+            _agirlikli_ortalama(DORT_KOVA, "deger")
+        )
+
+    def test_ayni_soru_sayisi_kontrolu(self):
+        """Iki kovalama GERCEKTEN ayni sinavi temsil ediyor mu?
+
+        Toplam soru sayisi tutmuyorsa yukaridaki iki test farkli sinavlari
+        karsilastiriyor demektir ve invaryant iddiasi anlamsiz olur.
+        """
+        assert (
+            sum(k["agirlik"] for k in IKI_KOVA)
+            == sum(k["agirlik"] for k in DORT_KOVA)
+            == 40
+        )
+
+    def test_sifir_agirlik_sifira_bolmez(self):
+        from api.advanced_reports import _agirlikli_ortalama
+
+        assert _agirlikli_ortalama([], "deger") == 0.0
+        assert _agirlikli_ortalama([{"deger": 5.0, "agirlik": 0}], "deger") == 0.0
