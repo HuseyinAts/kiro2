@@ -1,6 +1,7 @@
 """
 Sınav sistemi veri modelleri
 """
+
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -89,8 +90,21 @@ class KonuPerformansi(BaseModel):
     yanlis_sayisi: int = Field(..., description="Yanlış cevap sayısı")
     bos_sayisi: int = Field(..., description="Boş cevap sayısı")
     basari_yuzdesi: float = Field(..., description="Başarı yüzdesi")
-    ortalama_sure: float | None = Field(
-        None, description="Ortalama cevaplama süresi"
+    ortalama_sure: float | None = Field(None, description="Ortalama cevaplama süresi")
+    # B3 FAZ 3 — kimlik alanlari SONA + varsayilanli.
+    # `SubjectPerformance`'taki ayni disiplin (osym_exam_engine.py:113-117):
+    # basa/ortaya eklenen alan pozisyonel cagriyi sessizce yanlis alana baglar.
+    # Varsayilanli olmalari mevcut 6 test cagri yerini geriye uyumlu birakir.
+    #
+    # `konu` ARTIK ders adi degil KONU adi tasiyor (B3, da59ef871). Ders
+    # kimligine ihtiyaci olan tuketici bu alani okur -- `konu` dizesini
+    # ders SANMAZ. Olculdu: level-1 konu adi ders adiyla cakisiyor
+    # (topic_hierarchy: KIM|Kimya|level 1), yani dize esitligi kimlik DEGIL.
+    ders: str | None = Field(
+        None, description="Ders kimligi (motorun urettigi bicim: kucuk harf)"
+    )
+    konu_kodu: str | None = Field(
+        None, description="topic_hierarchy.code -- ayirt edici anahtar"
     )
 
 

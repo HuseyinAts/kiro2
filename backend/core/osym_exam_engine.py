@@ -2185,6 +2185,13 @@ async def session_to_sinav_sonucu(session_id: str):
             bos_sayisi=sp.empty_answers,
             basari_yuzdesi=sp.success_rate,
             ortalama_sure=sp.average_response_time,
+            # B3 FAZ 3: kimlik alanlari. `konu` KONU adi tasidigi icin ders
+            # kimligi ayrica tasinmali -- tuketici dizeyi ders SANMASIN.
+            # `topic_hierarchy.subject_area` KULLANILAMAZ: olculdu, NULL
+            # (MAT|Matematik||1). Ders kimligi yalniz question_metadata
+            # uzerinden gelir, o da motorda `sp.subject`tir (kucuk harf).
+            ders=sp.subject,
+            konu_kodu=sp.topic_code,
         )
         for sp in subject_perfs
     ]

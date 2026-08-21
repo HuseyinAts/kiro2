@@ -746,3 +746,37 @@ async def test_adsiz_konu_gorunur_konu_atanmamis_kovasinda(
         "ROLLBACK sonrasi sentetik topic_hierarchy satiri DB'de KALDI: "
         f"{veri['adsiz_tid']}"
     )
+
+
+# --------------------------------------------------------------------------
+# T6 — B3 FAZ 3: uretici ders kimligini de tasir
+# --------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_konu_performanslari_ders_kimligi_de_tasir(tuketici_sinavi):
+    """`konu` KONU adi, `ders` DERS kimligi -- ikisi ayri alanda.
+
+    FAZ 2 `konu`yu konu adina cevirdi ama ders kimligi HICBIR yerde
+    tasinmiyordu; tuketiciler dizeyi ders sanmak zorunda kaldi. Bu test
+    kimligin uretici katmaninda gercekten dolduruldugunu civiler.
+    """
+    sonuc = await _sonucu_getir(tuketici_sinavi["session_id"])
+    assert sonuc is not None, _bos_sonuc_uyarisi(tuketici_sinavi)
+
+    kovalar = sonuc.konu_performanslari
+    assert kovalar, "kova yok -- fikstur kurulmamis"
+
+    # Her kova ders kimligi tasir ve hepsi AYNI ders (fikstur tek ders kurar).
+    dersler = {kp.ders for kp in kovalar}
+    assert dersler == {
+        DERS.lower()
+    }, f"ders kimligi eksik/yanlis: {dersler} (beklenen {{'{DERS.lower()}'}})"
+
+    # Konu kodu dolu ve BENZERSIZ -- ayirt edici anahtar budur.
+    kodlar = [kp.konu_kodu for kp in kovalar]
+    assert all(kodlar), f"konu_kodu bos olan kova var: {kodlar}"
+    assert len(set(kodlar)) == len(kodlar), f"konu_kodu tekrar ediyor: {kodlar}"
+
+    # Kimlik `konu` dizesinden BAGIMSIZ: ders adi konu adina esit olsa bile
+    # iki alan ayri ayri okunabilir.
+    for kp in kovalar:
+        assert kp.ders is not None and kp.konu_kodu is not None
