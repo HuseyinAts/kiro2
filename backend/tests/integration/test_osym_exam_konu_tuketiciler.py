@@ -790,3 +790,74 @@ async def test_konu_performanslari_ders_kimligi_de_tasir(tuketici_sinavi):
         f"ders degisken -- konu alanina kablolanmis olabilir: "
         f"{[(kp.konu, kp.ders) for kp in kovalar]}"
     )
+
+
+# --------------------------------------------------------------------------
+# T7 — #510: POST /complete donus sozlesmesi (M6 bekcisi)
+# --------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_complete_konu_data_topic_alanlarini_tasir(tuketici_sinavi):
+    """`application/commands/sinav.py` mapping'i sozlesmeyi tasir.
+
+    NEDEN: FAZ 2'de mapping'e `topic_code`/`topic_name` eklendi ama BEKCISI
+    YOKTU. M6 mutasyonu (iki alani mapping'den sil) 2069 testte DELTA=0
+    verdi -- yani o iki satiri hicbir test tasimiyor. Bu test onu civiler.
+
+    `CompleteExamCommandHandler` dogrudan cagrilir: HTTP katmani
+    (kimlik/rate-limit) bu iddianin parcasi degil, mapping'in kendisi.
+
+    `student_id` fikstur oturumunun KENDI sahibinden okunur -- handler
+    `sinav.py:791`'de sahiplik kontrolu yapiyor; esitlemezsek 403 alirdik
+    ve test YANLIS SEBEPTEN kirmizi olurdu.
+
+    OLCULDU (bu testi yazarken, core/osym_exam_engine.py:966-968):
+    `complete_exam` oturumu YIKMAZ cunku fikstur `status=COMPLETED` kurar ve
+    motor "zaten tamamlanmis" dalindan ERKEN DONER -- DB update, L1 eviction
+    (`del self.active_sessions[...]`) ve Redis silme HIC calismaz. Yine de
+    `handle` TEK KEZ cagrilir: erken donus bir uygulama detayidir, bu testin
+    iddiasi degil.
+    """
+    from application.commands.sinav import (
+        CompleteExamCommand,
+        CompleteExamCommandHandler,
+    )
+    from core.osym_exam_engine import osym_exam_engine
+
+    session_id = tuketici_sinavi["session_id"]
+    sahip = osym_exam_engine.active_sessions[session_id].student_id
+
+    handler = CompleteExamCommandHandler()
+    sonuc = await handler.handle(
+        CompleteExamCommand(student_id=str(sahip), session_id=session_id)
+    )
+
+    kovalar = sonuc["konu_performanslari"]
+    assert kovalar, f"konu_performanslari bos: {sonuc!r}"
+
+    # Sozlesme: FAZ 2 oncesi 8 alan + FAZ 2'nin ekledigi 2 alan.
+    zorunlu = {
+        "subject",
+        "total_questions",
+        "correct_answers",
+        "wrong_answers",
+        "empty_answers",
+        "success_rate",
+        "average_response_time",
+        "difficulty_level",
+        "topic_code",
+        "topic_name",
+    }
+    for kova in kovalar:
+        eksik = zorunlu - set(kova)
+        assert not eksik, f"sozlesme alani eksik: {eksik} — kova={kova!r}"
+
+    # Ayirt edicilik: None OLMAYAN topic_code'lar BENZERSIZ olmali.
+    # None'lar DISLANIR ki bekci bos kumede kendiliginden gecmesin
+    # (olculdu: primary_topic_id IS NULL = 0/3922, yani None dali bugun
+    # ulasilamaz; dislamazsak assert bilgi tasimaz).
+    kodlar = [k["topic_code"] for k in kovalar if k["topic_code"] is not None]
+    assert kodlar, "hicbir kova topic_code tasimiyor -- mapping dusmus olabilir"
+    assert len(set(kodlar)) == len(kodlar), f"topic_code tekrar ediyor: {kodlar}"
+    assert len(kodlar) == len(
+        kovalar
+    ), f"bazi kovalarda topic_code None: {[k['topic_code'] for k in kovalar]}"
