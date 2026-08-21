@@ -178,8 +178,35 @@ Kimya) / 6 gerekçeli kapalı / 0 konsol hatası.
 `subject` alanı OLMADAN çağırıyor → tam TYT (120) → aynı 400. Zincir
 `App.tsx:89 → ExamPage.tsx:18,195`. Farklı kusur sınıfı, ayrı karar gerekiyor.
 
+### 🟢 EK 3 — #516 ÖLÇÜLDÜ: DAL ÖLÜYDÜ, SİLİNDİ (aynı oturum)
+
+🔴 **Kendi iddiamı çürüttüm.** #514 turunda "ikinci **CANLI** yol" demiştim —
+yanlıştı. Import zinciri **bileşenin** ulaşılabilirliğini kanıtlar, **içindeki
+dalın** değil. Yanıltıcı sinyal `useParams<{ sinavId?: string }>()` idi:
+tipin `?` olması çalışma zamanında opsiyonel demek değil — **tip imzası niyet
+beyanı, rota tablosu gerçek kısıt.**
+
+Çürütme 5 yönden denendi, 5'i de yol bulamadı. Kesin olan **git geçmişi**:
+fallback `7d7025b71` (8 Mar) ile eklendiğinde rota tablosu **zaten aynıydı** —
+kaldırılmış bir rotanın kalıntısı değil, **doğuştan spekülatif**.
+(Tarayıcıda `/exam/` denemesi araç zaman aşımına uğradı → **sonuçsuz**,
+kanıt sayılmadı.)
+
+Silindi (`508a6bd4b`): `subject`siz `createExam` → açık hata. RED kanıtı
+silinen dalın ta kendisini yakaladı: `createExam` çağrısı `exam_type:"TYT"`
+ve **`subject` YOK** — canlı 400'ü üreten çağrının aynısı.
+
+**Mutasyon 3/3 öldü**, biri yanlış-sıfır bekçisi (`<ExamPage/>` yeniden
+adlandırılırsa test boş kümede geçmek yerine düşer). Testin taşıdığı iddia:
+*biri `ExamPage`'i segmentsiz rotaya bağlarsa silinen dalın YOKLUĞU gerçek
+kusura döner* — M1/M2 tam o anda düşer.
+
+Doğrulama: yeni test 4 passed · kardeş paket 8 passed · `tsc` EXIT 0 ·
+eslint **kontrol koluyla HEAD ile aynı**, +0. (`ExamInterface.test.tsx`'teki
+4 fail HEAD'de de var, o dosyada `ModernExamStart` geçmiyor — ilgisiz.)
+
 ### Sonraki Adımlar (maks 5)
-1. **#516** `ModernExamStart` tam-TYT yolu (fallback tek-derse mi düşsün?) — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi
+1. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441) — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi
 2. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441)
 3. `_get_subject_irt_aggregate` ölü ikizi sil (#515; bekçisi ardıla taşınmalı)
 4. `advanced_reports.py:561` `get_subject_morphology_factor` ölü (`hasattr` daima False)

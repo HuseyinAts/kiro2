@@ -1221,3 +1221,98 @@ tarifi.
 **#514 bir kusur değildi; kusur ders listesindeydi ve o düzeltildi.**
 Motorun tam-TYT reddi **doğru davranış** ve içerik genişleyince kendiliğinden
 çözülür. A1 zaten engellenmiyordu.
+
+---
+
+# EK 3 — #516 ÖLÇÜLDÜ: DAL ÖLÜYDÜ, SİLİNDİ + İNVARYANT ÇİVİLENDİ (S244, 22 Ağu 2026)
+
+## 1. İDDİAMI ÖNCE KENDİM ÇÜRÜTTÜM (dürüst kayıt)
+
+#514 turunda *"`ModernExamStart` tam-TYT `create` çağırıyor → **ikinci CANLI
+yol**"* dedim. **Yanlıştı.** Import zinciri **bileşenin** ulaşılabilirliğini
+kanıtlar, **içindeki dalın** değil — bu tam olarak bu depodaki *"tablo var bir
+vekil ölçümdür"* ayrımı.
+
+Yanıltıcı sinyal: `ExamPage.tsx:27` → `useParams<{ sinavId?: string }>()`.
+Tipin `?` olması **çalışma zamanında** opsiyonel olduğu anlamına gelmiyor;
+rota tanımı onu zorunlu kılıyor. **Tip imzası bir niyet beyanı, rota tablosu
+gerçek kısıt.** Çeliştiklerinde rota tablosu kazanır.
+
+## 2. Çürütme denemesi — 5 yön, 5'i de yol bulamadı
+
+| # | Deneme | Sonuç |
+|---|---|---|
+| 1 | `ModernExamStart`'ın başka render eden'i var mı | Yalnız `ExamPage.tsx:18,195`. Diğer eşleşmeler **farklı bileşen** (`ModernExamStartPage`) + 1 yorum |
+| 2 | `ExamPage` başka rotaya bağlı mı | `App.tsx:89` (lazy import) + `:343` (tek kullanım) |
+| 3 | 846 satırlık rota tablosu tarandı | `/exam/:sinavId` **tek mount**; iç içe rota yok, `path="*"` yalnız `/404`'e yönlendiriyor |
+| 4 | `sessionId` varsayılanı / atlanan çağrı | Yok — düz destructure, tek çağrı yeri parametreyi geçiyor |
+| 5 | **Git geçmişi (KESİN OLAN)** | Fallback `7d7025b71` (8 Mar 2026) ile eklendi; **o commit'te rota tablosu ZATEN aynıydı**. Yani kaldırılmış bir rotanın kalıntısı DEĞİL — **doğuştan spekülatif** |
+
+Ayrıca tarayıcıda `/exam/` denemesi yapıldı ama **araç zaman aşımına uğradı ve
+oturum düştü** → **sonuçsuz**, kanıt sayılmadı.
+
+## 3. Ne silindi
+
+`else` dalı `createExam`'i **`subject` alanı OLMADAN** çağırıyordu → tam sınav
+(TYT=120) → canlı ölçüm `400 "Gerekli: 120, Mevcut: 33"`.
+
+Yerine açık hata kondu:
+```ts
+if (!sessionId) throw new Error('Oturum kimliği yok — sınav başlatılamaz');
+await examService.startExam(sessionId);
+```
+Mevcut `catch` `setError(err.message)` yaptığı için görünür bir uyarı bandına
+dönüşüyor — çökme değil (doğrulandı, varsayılmadı).
+
+**Sessiz/yanlış kurtarma yerine açık hata:** dal bir gün canlanırsa
+**görünür** olsun, sessizce 400 üretmesin.
+
+## 4. RED kanıtı — silinen dalın ta kendisini yakaladı
+
+```
+AssertionError: expected "createExam" to not be called at all,
+                but actually been called 1 times
+  1st call: { exam_type: "TYT",
+              custom_config: { difficulty_distribution: {...} } }
+```
+Yükte **`subject` YOK** — yani ölü dal tam olarak canlı 400'ü üreten çağrıyı
+yapıyordu. GREEN: 4 passed.
+
+## 5. İnvaryant çivilendi — mutasyon 3/3 öldü
+
+`frontend/src/test/components/Exam/ModernExamStart.oturum-kimligi.test.tsx`
+
+```
+M1  "/exam/:sinavId" -> "/exam"        => '/exam' icinde ':sinavId' yok      OLDU
+M2  "/exam/:sinavId" -> ":sinavId?"    => opsiyonel segment yakalandi        OLDU
+M3  <ExamPage/> -> <ExamPageYeniAd/>   => "expected 0 to be >= 1"            OLDU
+```
+
+**M3 bir yanlış-sıfır bekçisidir:** bileşen adı değişirse test sessizce boş
+kümede geçmek yerine düşer. (S238'de iki bekçi tam bu yüzden XPASS vermişti.)
+
+Testin taşıdığı iddia: *biri `ExamPage`'i segmentsiz bir rotaya bağlarsa,
+silinen dalın **yokluğu** gerçek bir kusura dönüşür* — M1/M2 tam o anda düşer.
+
+Rota yarısı metin-tabanlı assert; gerekçesi docstring'de: `App.tsx` kendi
+`BrowserRouter`'ını 150+ lazy import ile kuruyor, render-tabanlı rota testi
+ölçülen tek şeyi gömerdi. Bilinen muhafazakâr yanlış-pozitif (`/exam/:sinavId`
+altına meşru bir iç içe rota) docstring'de yazılı — insan bakışını zorlar.
+
+## 6. Doğrulama
+
+```
+vitest (yeni dosya)      4 passed
+vitest src/test/pages/   8 passed        (kardes paket bozulmadi)
+tsc --noEmit             EXIT 0
+eslint  KONTROL KOLU     HEAD ile AYNI 4 bulgu, +0 benden
+```
+
+⚠️ `src/test/components/Exam/ExamInterface.test.tsx` 4 fail veriyor — kontrol
+kolu **HEAD'de de aynı 4**'ü gösterdi ve o dosyada `ModernExamStart` geçmiyor
+(`grep -c` → 0). **Önceden var olan, ilgisiz.**
+
+## 7. Kapanış
+
+Dal ölüydü, silindi, ölülüğü **testle çivilendi**. Kod tabanından bir tuzak
+eksildi: gelecekte rota değişirse sessizce canlanamaz.
