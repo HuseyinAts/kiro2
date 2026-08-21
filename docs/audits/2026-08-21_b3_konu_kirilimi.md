@@ -1316,3 +1316,98 @@ kolu **HEAD'de de aynı 4**'ü gösterdi ve o dosyada `ModernExamStart` geçmiyo
 
 Dal ölüydü, silindi, ölülüğü **testle çivilendi**. Kod tabanından bir tuzak
 eksildi: gelecekte rota değişirse sessizce canlanamaz.
+
+---
+
+# EK 4 — #515: SİLME, BEKÇİ BOŞLUĞU BULDUĞU İÇİN ÖNCE DURDU (S244, 22 Ağu 2026)
+
+`_get_subject_irt_aggregate` üretimde ölüydü (`3c44910ff` iki çağrı yerini
+ardıla taşımıştı) ama silinmemişti: `tests/fast/test_advanced_reports_split.py`
+onu çağırıp **#485 şema-split** invaryantını çiviliyordu.
+
+Silmeden önceki tek soru: **ardılın bekçisi, öncekinin yakaladığını gerçekten
+yakalıyor mu?** Prozayla "evet" demek yerine **mutasyonla ölçüldü** — ve cevap
+**hayır** çıktı.
+
+## 1. Kapsam tablosu: 10 invaryantın 4'ü AÇIKTI
+
+| # | Eski bekçinin çivilediği | Kapsanıyor mu |
+|---|---|---|
+| I1 | Sorgu kuruluyor + postgresql'e derleniyor | ✅ |
+| I2 | Tek FROM / kartezyen yok — **konu dalı** | ✅ |
+| I3 | `irt_*` `QuestionStatistics`'ten okunuyor | ✅ |
+| **I4** | **`JOIN question_metadata` var** | ❌ **AÇIK** |
+| I5 | `FROM question_bank` (açık `select_from`) — #485 çekirdeği | ✅ |
+| I6 | `subject_area` UPPERCASE | ✅ |
+| I7 | `is_active` filtresi | ✅ |
+| **I8** | **Dönen sözlük alan sözleşmesi** | ❌ **AÇIK** |
+| **I9** | **NULL toplamlar → 0.0/1.0/0.2/0** | ❌ **AÇIK** |
+| **I10** | **Cache hit DB'ye gitmiyor** | ❌ **AÇIK** |
+
+**6/10.** Silme DURDURULDU, 3 test eklendi, yeniden kanıtlandı, sonra silindi.
+
+## 2. 🔴 M-C — ASIL BULGU: sessiz kartezyen, bekçi hayatta kaldı
+
+Ders-fallback dalından `QuestionMetadata` JOIN'i silinince derlenen SQL:
+
+```sql
+FROM question_bank JOIN question_statistics ON ..., question_metadata
+```
+
+**İki FROM = kartezyen çarpım**: her aktif soru × aynı dersteki her metadata
+satırı. Sonuç: şişmiş `sample_size`, yanlış IRT ortalamaları — **ve çökme YOK.**
+
+Eski (güçlendirilmemiş) yeni-bekçi bu mutasyonda **5 passed** verdi. Neden:
+
+1. `subject_area = 'MATEMATIK'` iddiası bir **WHERE dizesi**; JOIN gitse bile
+   derlenmiş SQL metninde **duruyor**.
+2. Tek-FROM kontrolü yalnız **konu dalını** koşuyordu; ders dalının hiç
+   yapısal kontrolü yoktu.
+
+**Bu kural `audit-methodology.md`'de ZATEN YAZILI:** *"WHERE iddiasını yalnız
+`stmt.whereclause`'da ara — `select(Entity)` tüm kolonları SELECT'e koyar,
+filtre silinse bile dize tam SQL'de durur (mutasyon hayatta kalır)."*
+Kural vardı, kör nokta yine ısırdı. Fark: bu sefer **silmeden önce** yakalandı.
+
+## 3. Mutasyon matrisi (her ankraj 1× uygulandı, her geri alım doğrulandı)
+
+| Mutasyon | ESKİ bekçi | GÜÇLENDİRİLMİŞ bekçi | Öldüren assert |
+|---|---|---|---|
+| M-A `.select_from` sil | 4 failed | 5 failed | `InvalidRequestError: Don't know how to join to <Mapper QuestionStatistics>` |
+| M-B `irt_difficulty` → `QuestionBankItem` | 5 failed | 8 failed | `AttributeError: ... sinif duzeyinde kullanilamaz` |
+| **M-C metadata JOIN sil** | **5 PASSED (hayatta)** | 1 failed | `ders dalinda kartezyen: 2 ayri FROM` |
+| **M-D NULL varsayılanı** | **5 PASSED (hayatta)** | 1 failed | `avg_discrimination: 0.0 != 1.0` |
+| **M-E cache-hit dönüşü** | **5 PASSED (hayatta)** | 1 failed | `sample_size: 7 != 99` |
+
+M-C/D/E'nin her biri **tek** testle ölüyor → ankrajlar tekil, paylaşılan yük yok.
+
+## 4. Silinen
+
+- `_get_subject_irt_aggregate` (82 satır). Dört import'u da **fonksiyon-yerel**
+  → modül düzeyinde yetim import **yok**.
+- `tests/fast/test_advanced_reports_split.py` (211 satır). Sekiz testin sekizi
+  de eski fonksiyondan geçiyordu; taşınacak ilgisiz test **yok** (doğrulandı).
+
+`advanced_reports.py`: **1809 → 1730 satır (−79).**
+
+Defter kontrolü: `ders_kaydi.yaml` + `test_ders_kaydi.py` içinde hiçbir
+`zorlayici:` alanı silinen dosyayı işaret etmiyor → **defter güncellemesi
+gerekmedi** (ve `test_ders_kaydi.py` geçen pakette).
+
+## 5. Doğrulama
+
+```
+1278 passed / 0 failed
+ruff check api/advanced_reports.py -> All checks passed!  (exit 0)
+pre-commit DEPO KOKUNDEN 19/19 gecti, SKIP YOK
+```
+
+## 6. Net kazanç: koruma AZALMADI, ARTTI
+
+Ardılın bekçisi **5 → 9 invaryant** çiviliyor. Ders-fallback dalının önceden
+**hiç** yapısal kontrolü yoktu — sessiz bir kartezyenin üretime gitmesi tam
+oradan mümkündü.
+
+**Ders:** ölü kodu silmeden önce sorulacak soru "bu kod kullanılıyor mu"
+değil, **"bu kodu koruyan bekçi neyi çiviliyor ve ardıl onu çiviliyor mu"**.
+Birincisi kolay ve yanıltıcı; ikincisi bu turda 4 açık invaryant buldu.

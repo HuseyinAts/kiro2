@@ -205,6 +205,33 @@ Doğrulama: yeni test 4 passed · kardeş paket 8 passed · `tsc` EXIT 0 ·
 eslint **kontrol koluyla HEAD ile aynı**, +0. (`ExamInterface.test.tsx`'teki
 4 fail HEAD'de de var, o dosyada `ModernExamStart` geçmiyor — ilgisiz.)
 
+### 🟢 EK 4 — #515 KAPANDI: silme, bekçi boşluğu bulduğu için ÖNCE DURDU
+
+Ölü ikizi silmeden önce tek soru soruldu: **ardılın bekçisi öncekinin
+çivilediğini gerçekten çiviliyor mu?** Prozayla değil **mutasyonla** ölçüldü —
+cevap **hayır**: 10 invaryantın **4'ü açıktı**.
+
+🔴 **M-C asıl bulgu:** ders-fallback dalından `QuestionMetadata` JOIN'i silinince
+**sessiz kartezyen** oluşuyor (2 FROM → her soru × her metadata satırı) →
+şişmiş `sample_size`, yanlış IRT ortalaması, **çökme yok**. Eski yeni-bekçi bunu
+**hayatta bıraktı** çünkü `subject_area='MATEMATIK'` iddiası bir **WHERE dizesi**
+ve JOIN gitse bile derlenmiş SQL'de duruyor; tek-FROM kontrolü de yalnız **konu
+dalını** koşuyordu.
+
+**Bu kural `audit-methodology.md`'de ZATEN yazılı** ("WHERE iddiasını yalnız
+`stmt.whereclause`'da ara — filtre silinse bile dize tam SQL'de durur").
+Kural vardı, kör nokta yine ısırdı — ama bu sefer **silmeden önce** yakalandı.
+
+3 test eklendi (bekçi **5 → 9 invaryant**), M-C/D/E her biri **tek** testle
+öldü, sonra silindi: fonksiyon 82 satır + eski bekçi dosyası 211 satır.
+`advanced_reports.py` **1809 → 1730 (−79)**. Defter kontrolü: hiçbir
+`zorlayici:` silinen dosyayı işaret etmiyordu.
+
+Doğrulama: **1278 passed / 0 failed** · ruff temiz · pre-commit **19/19, SKIP YOK**.
+
+**Ders:** ölü kod silmeden önce sorulacak soru *"bu kod kullanılıyor mu"* değil,
+***"bu kodu koruyan bekçi neyi çiviliyor ve ardıl onu çiviliyor mu"***.
+
 ### Sonraki Adımlar (maks 5)
 1. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441) — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi
 2. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441)
