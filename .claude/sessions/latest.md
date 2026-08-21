@@ -149,8 +149,37 @@ olarak düzeldiği — **ama kanıtlanmadı** (eski imaj geri kurulup karşı-ol
 test yapılmadı). Kapanış türü: **ÖLÇÜLDÜ → TEKRARLANMIYOR**, kod değişikliği YOK.
 Ayrıntı: `docs/audits/2026-08-21_b3_konu_kirilimi.md` §EK.
 
+### 🟢 EK 2 — #514 ÖLÇÜLDÜ + DÜZELTİLDİ (aynı oturum)
+
+**#514 bir kusur DEĞİLDİ.** `"Mevcut: 33"` aritmetiği birebir tuttu:
+TYT dağılımı MATEMATIK 26 + KIMYA 7 = **33**; diğer 5 ders kapıda **sıfır**.
+`_select_questions` kusursuz — kısa sınavı sessizce servis etmiyor, sayıyı
+söyleyerek reddediyor.
+
+**A1 engellenmiyordu:** A1 "40 soruluk TYT *Matematik*" istiyor, tam TYT değil.
+Ölçüldü: `create(MATEMATIK,40)` → **200**. Üstelik `ModernExamStartPage`
+varsayılanı zaten `TYT/Matematik/orta/40` — altın yol kutudan çıktığı gibi.
+
+**ASIL kusur ders listesindeydi:** sabit kodlu 8 seçenek, havuz 2 karşılıyor →
+üretimin birebir yüküyle ölçüldü, **8'de 6 ham 400**. Düzeltildi (`cf196bdb6`):
+`GET /api/v1/osym/subjects` (zaten vardı, yeni uç YOK) ile müsait olmayanlar
+**görünür ama devre dışı + "İçerik hazırlanıyor"**.
+
+Üç bağlayıcı kısıt: (1) `question_count` **ekrana yazılmadı** — o alan
+`question_bank` toplamı (3.531), motor kapıdan servis ediyor (3.209);
+(2) **Türkçe locale tuzağı** — `'Türkçe'.toUpperCase()`=`'TÜRKÇE'` ≠ `'TURKCE'`,
+açık eşleme tablosu + **mutasyonla çivili** (`.toUpperCase()` ile tek assert ölüyor);
+(3) **FAIL-OPEN** — uç düşerse hiçbir ders kapanmaz, altın yol korunur (2 test).
+
+Frontend imajı yeniden kuruldu, **tarayıcıda doğrulandı**: 2 açık (Matematik,
+Kimya) / 6 gerekçeli kapalı / 0 konsol hatası.
+
+🔴 **İKİNCİ YOL kapsanmadı (#516):** `ModernExamStart.tsx:215-221` `create`'i
+`subject` alanı OLMADAN çağırıyor → tam TYT (120) → aynı 400. Zincir
+`App.tsx:89 → ExamPage.tsx:18,195`. Farklı kusur sınıfı, ayrı karar gerekiyor.
+
 ### Sonraki Adımlar (maks 5)
-1. **Tam TYT `create` 400** (#514) — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi
+1. **#516** `ModernExamStart` tam-TYT yolu (fallback tek-derse mi düşsün?) — `Gerekli: 120, Mevcut: 33`; havuz kapasitesi
 2. **L2 e-posta doğrulama** — hâlâ YOK, blokaj SMTP (#441)
 3. `_get_subject_irt_aggregate` ölü ikizi sil (#515; bekçisi ardıla taşınmalı)
 4. `advanced_reports.py:561` `get_subject_morphology_factor` ölü (`hasattr` daima False)

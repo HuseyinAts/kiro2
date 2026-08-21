@@ -1102,3 +1102,122 @@ karşı-olgusal test yapılmadı. Yapılırsa #513 "fantom" yerine "şu commit't
 düzeldi" diye kapanır.
 
 Kapanış türü: **ÖLÇÜLDÜ → TEKRARLANMIYOR** (kod değişikliği YAPILMADI).
+
+---
+
+# EK 2 — #514 ÖLÇÜLDÜ: KUSUR MOTORDA DEĞİL, DERS LİSTESİNDE (S244, 22 Ağu 2026)
+
+Devir notu #514'ü *"tam TYT `create` 400 — havuz kapasitesi"* diye açmıştı.
+Ölçüm bunu **yeniden çerçeveledi**: motor doğru çalışıyor, kusur arayüzde.
+
+## 1. "Mevcut: 33" nereden geliyor — aritmetik birebir tuttu
+
+`core/osym_exam_engine.py:435` → `len(_select_questions(cfg)) < cfg.total_questions`.
+TYT dağılımı (`:190-200`) ile kapı içeriği çarpıştırıldı:
+
+```
+ders        gerekli   kapida mevcut   secilen
+TURKCE          40          0            0
+MATEMATIK       26        351           26
+GEOMETRI        14          0            0
+FIZIK            7          0            0
+KIMYA            7      2.966            7
+BIYOLOJI         6          0            0
+TARIH/COGRAFYA/SOSYAL 20     0            0
+                                    --------
+                                    MEVCUT = 33
+```
+
+**26 + 7 = 33.** Spekülasyon değil, birebir. `_select_questions` **kusursuz**:
+kısa sınavı sessizce servis etmiyor, sayıyı söyleyerek reddediyor — bu depoda
+kovalanan "sessiz bozulma"nın tam tersi.
+
+Kapı bileşimi (`mv_safe_for_beta`, ölçüldü): `KIMYA/TYT 2.966` +
+`MATEMATIK/TYT 351` + `KIMYA/AYT 243` = **3.560**. TYT'nin gerektirdiği 7
+dersten 5'i **sıfır**.
+
+## 2. A1 ENGELLENMİYOR — kabul kriteri bugün karşılanıyor
+
+A1: *"40 soruluk bir TYT **Matematik** testi"* — tam TYT değil.
+`custom_config` tek-ders sınavını destekliyor (`osym_exam_engine.py:395-418`).
+
+Canlı ölçüm (öğrenci token'ı):
+```
+create(MATEMATIK,40)  HTTP 200   total_questions=40    <- A1 KABUL KRITERI
+create(KIMYA,40)      HTTP 200
+create(TURKCE,40)     HTTP 400   (Mevcut: 0)
+create(TYT tam)       HTTP 400   (Mevcut: 33)
+```
+
+Dahası: `ModernExamStartPage.tsx:53-58` **varsayılanı** `TYT / Matematik /
+orta / 40 soru` — yani altın yol arayüzde **kutudan çıktığı gibi** çalışıyor.
+
+## 3. ASIL KUSUR: liste 8 sunuyor, havuz 2 karşılıyor
+
+`ModernExamStartPage.tsx:66-69` ders listesi **sabit kodlu**. Üretimin
+**birebir yüküyle** (difficulty + time_limit dahil) 8 seçeneğin hepsi ölçüldü:
+
+```
+Matematik  200 OK          Fizik      400 (mevcut 0)
+Kimya      200 OK          Biyoloji   400 (mevcut 0)
+Geometri   400 (mevcut 0)  Tarih      400 (mevcut 0)
+Türkçe     400 (mevcut 0)  Sosyal     400 (mevcut 0)
+```
+
+**8'de 6 → ham backend hatası.** Görünür bir kontrolde %75 başarısızlık.
+
+⚠️ Metodoloji notu: ilk ölçümüm `difficulty`/`time_limit` **göndermiyordu**;
+üretim gönderiyor. Farklı yükle ölçmek "üretimden başka bir şeyi ölçmek"
+sınıfına girerdi — yük birebirlenip tekrar ölçüldü, sonuç değişmedi ama
+doğrulanmamış olarak bırakılamazdı.
+
+## 4. Fix (kullanıcı kararı: "görünür ama devre dışı + sebep")
+
+Kaynak **zaten vardı**, yeni uç yazılmadı:
+`GET /api/v1/osym/subjects` → `{"data":[{"subject":"KIMYA",...},{"subject":"MATEMATIK",...}]}`.
+
+Üç bağlayıcı kısıt uygulandı:
+
+1. **`question_count` EKRANA YAZILMADI.** O alan `question_bank` toplamını
+   veriyor (KIMYA 3.531), motor ise kapıdan servis ediyor (3.209). Doğrulanmamış
+   bir sayıyı öğrenciye göstermek, bu turda kaçınılan şeyin ta kendisi olurdu.
+   Yanıt yalnız **müsaitlik** sinyali olarak kullanıldı.
+2. **Türkçe locale tuzağı kapatıldı.** `'Türkçe'.toUpperCase()` → `'TÜRKÇE'`,
+   API ise `'TURKCE'` döndürüyor. Açık eşleme tablosu (`DERS_API_ETIKETI`,
+   backend `SUBJECT_MAP`'in aynası) kullanıldı. **Mutasyonla çivili:** eşleme
+   `.toUpperCase()` ile değiştirilince ilgili test **tek başına** düşüyor.
+3. **FAIL-OPEN.** Uç düşerse hiçbir ders kapatılmaz — bugünkü davranışa
+   dönülür. Fail-closed varsayılan altın yolu (`TYT/Matematik/40`) kırardı.
+   İki ayrı hata biçimiyle test edildi (HTTP 500 + ağ hatası). Boş `data`
+   dizisi de fail-open dalına düşüyor: hiçbir şey ölçmemiş bir yoklama
+   altın yolu kapatmamalı.
+
+Bekçi: `frontend/src/test/pages/ModernExamStartPage.ders-uygunlugu.test.tsx`
+(6 test, MSW ile gerçek fetch→apiRequest→sayfa zinciri). RED gözlendi (3 fail),
+GREEN 6/6. `tsc --noEmit` temiz; ESLint uyarı kümesi kontrol koluyla
+HEAD'inkiyle **aynı** (3 önceden var olan).
+
+## 5. 🔴 İKİNCİ YOL — kapsanmadı, ayrı kusur sınıfı (#516)
+
+`components/Exam/ModernExamStart.tsx:215-221` `createExam`'i **`subject`
+alanı OLMADAN** çağırıyor → tam sınav (TYT=120) isteniyor → aynı 400.
+
+```
+App.tsx:89 -> pages/ExamPage.tsx:18,195 -> ModernExamStart
+rota: /exam/:sinavId   tetikleyici: "session yoksa yeni olustur" fallback
+```
+
+Bu **#514'te düzeltilenden farklı**: orada ders listesi içeriği olmayan
+dersleri sunuyordu; burada tam-sınav talebi var. Ayrı karar gerektirir
+(fallback tek-derse mi düşsün, kaldırılsın mı, anlamlı hata mı) → **#516**.
+
+Not: o dosyadaki `sections` listesi (`Türkçe 40, Matematik 40, Fen 20,
+Sosyal 20`) yalnız **görüntü** (`:396` `.length`, `:413` `.map`) — seçici
+değil. Yani oradaki etiketler kusur DEĞİL, gerçek ÖSYM TYT yapısının doğru
+tarifi.
+
+## 6. Kapanış
+
+**#514 bir kusur değildi; kusur ders listesindeydi ve o düzeltildi.**
+Motorun tam-TYT reddi **doğru davranış** ve içerik genişleyince kendiliğinden
+çözülür. A1 zaten engellenmiyordu.
