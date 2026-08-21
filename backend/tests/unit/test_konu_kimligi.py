@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from models import KonuPerformansi
+from models import KonuPerformansi, SinavSonucu, SinavTipi
 
 
 def _kp(**ek) -> KonuPerformansi:
@@ -30,6 +30,23 @@ def _kp(**ek) -> KonuPerformansi:
     }
     alanlar.update(ek)
     return KonuPerformansi(**alanlar)
+
+
+def _sonuc(*kovalar: KonuPerformansi) -> SinavSonucu:
+    """Yalniz `konu_performanslari` anlamli olan minimal gecerli SinavSonucu."""
+    return SinavSonucu(
+        sonuc_id="sonuc-1",
+        sinav_id="sinav-1",
+        ogrenci_id="ogrenci-1",
+        sinav_tipi=SinavTipi.TYT,
+        toplam_soru=sum(k.toplam_soru for k in kovalar),
+        dogru_sayisi=sum(k.dogru_sayisi for k in kovalar),
+        yanlis_sayisi=sum(k.yanlis_sayisi for k in kovalar),
+        bos_sayisi=sum(k.bos_sayisi for k in kovalar),
+        net_sayisi=0.0,
+        ham_puan=0.0,
+        konu_performanslari=list(kovalar),
+    )
 
 
 class TestKimlikAlanlari:
@@ -101,20 +118,67 @@ class TestDersDali:
         assert _ders_uyum_skoru("KIMYA", vark, felder) == pytest.approx(0.4)
         assert _ders_uyum_skoru(None, vark, felder) == pytest.approx(0.4)
 
-    def test_konu_adi_ders_dalini_secmez(self):
-        """Regresyon civisi: dal `konu` degil `ders` okur -- konu adi SECMEZ.
+    async def test_cagri_yeri_konu_adini_ders_kimligi_sanmaz(self):
+        """REGRESYON CIVISI -- dalin secimi CAGRI YERINDE olculur.
 
-        'Matematik' adli bir KONU (level-1, topic_hierarchy'de var) ders
-        dalini tetiklememelidir -- ders kimligi ayri alandan gelir.
+        Neden helper degil de cagri yeri: `_ders_uyum_skoru(ders, ...)` yalniz
+        `ders` alir; "konu adi ders dalina sizdi" senaryosu helper duzeyinde
+        URETILEMEZ. Regresyon `konu_performansi.ders` -> `.konu` degisimidir,
+        yani yalnizca cagri yerinde yasar. (Onceki `test_konu_adi_ders_dalini_
+        secmez` bu yuzden disliksizdi: cagri yerini M mutasyonuyla `.konu`ya
+        cevirdiginde sinif YINE 7 passed / 0 failed veriyordu.)
+
+        MOCK yolu hedeflenir: `config/mock_endpoint_flags.json` icinde tum
+        `advanced_reports.*` bayraklari false -- canlida kosan bu. Ayrica
+        kendine yeterli (real yol `learning_style_service`'e cikar, mock'lamak
+        gerekirdi; bu depo mock-kor testlerden defalarca zarar gordu).
+
+        AYIRT EDICI KOVALAR:
+          konu='Fonksiyonlar' ders='matematik' -> konu adinda 'matematik' YOK
+          konu='Matematik'    ders='kimya'     -> konu adi DERS gibi gorunuyor
+        Ikincisi civinin ta kendisi: `.konu` okunursa subject_key('Matematik')
+        == 'matematik' olur ve matematik dali YANLISLIKLA secilir.
         """
-        from api.advanced_reports import _ders_uyum_skoru
+        from api.advanced_reports import _get_hibrit_ogrenme_stili_analizi_mock
 
-        vark = {"visual": 0.9, "reading": 0.1, "auditory": 0.1, "kinesthetic": 0.1}
-        felder = {"sequential_global": -0.9, "visual_verbal": 0.3}
+        sonuc = _sonuc(
+            _kp(konu="Fonksiyonlar", ders="matematik"),
+            _kp(konu="Matematik", ders="kimya"),
+            _kp(konu="Paragraf", ders="TURKCE"),
+        )
 
-        # ders=None (kimlik yok) -> matematik dali SECILMEZ, ortalamaya duser
-        ortalama = sum(vark.values()) / 4
-        assert _ders_uyum_skoru(None, vark, felder) == pytest.approx(ortalama)
+        analiz = await _get_hibrit_ogrenme_stili_analizi_mock("ogrenci-1", sonuc)
+        assert "performans_uyumu" in analiz, f"analiz uretilemedi: {analiz}"
+
+        # Fonksiyonun KENDI sabit profilleri -- beklenen sayilar bunlardan
+        # turetilir. Profil degisirse test sessizce yanlis olmasin diye once
+        # profilin kendisi civilenir.
+        vark = analiz["vark_profili"]
+        felder = analiz["felder_silverman_profili"]
+        assert (vark["visual"], vark["auditory"], vark["reading"]) == (0.7, 0.5, 0.8)
+        assert vark["kinesthetic"] == 0.4
+        assert (felder["sequential_global"], felder["visual_verbal"]) == (-0.4, 0.6)
+
+        matematik_dali = (0.7 + 0.4) / 2 * 100  # 55.0
+        turkce_dali = (0.8 + 0.6) / 2 * 100  # 70.0
+        ortalama_dali = (0.7 + 0.5 + 0.8 + 0.4) / 4 * 100  # 60.0
+        # Uc dal da FARKLI -- yoksa mutasyon sessizce hayatta kalirdi.
+        assert len({matematik_dali, turkce_dali, ortalama_dali}) == 3
+
+        skorlar = {
+            p["konu"]: p["ogrenme_stili_uyumu"] for p in analiz["performans_uyumu"]
+        }
+        assert skorlar["Fonksiyonlar"] == pytest.approx(matematik_dali), (
+            "ders='matematik' oldugu halde matematik dali secilmedi -- "
+            "cagri yeri ders kimligini okumuyor"
+        )
+        assert skorlar["Matematik"] == pytest.approx(ortalama_dali), (
+            "KONU adi 'Matematik' ders dalini tetikledi -- cagri yeri "
+            "`konu_performansi.konu` okuyor, `.ders` okumali"
+        )
+        assert skorlar["Paragraf"] == pytest.approx(
+            turkce_dali
+        ), "ders='TURKCE' oldugu halde turkce dali secilmedi"
 
 
 # --------------------------------------------------------------------------
