@@ -27,7 +27,12 @@ from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 from models.database import ExamQuestion, ExamSession, ExamType, StudentAnswer
 from models.question_bank import QuestionBankItem as Question
-from models.question_bank import QuestionContent, QuestionMetadata, QuestionStatistics
+from models.question_bank import (
+    QuestionContent,
+    QuestionMetadata,
+    QuestionStatistics,
+    TopicHierarchy,
+)
 
 logger = get_logger("osym_exam_engine")
 
@@ -105,6 +110,11 @@ class SubjectPerformance:
     success_rate: float
     average_response_time: float
     difficulty_level: float
+    # B3: konu kırılımı. SONA + VARSAYILANLI eklendi — dataclass pozisyonel
+    # çağrılıyor (tests/unit/test_sinav_api.py:1118), başa/ortaya eklenen alan
+    # o çağrıyı sessizce yanlış alana bağlar.
+    topic_code: str | None = None
+    topic_name: str | None = None
 
 
 @dataclass
@@ -1338,7 +1348,14 @@ class OSYMExamEngine:
             async with get_db_session_context() as db_session:
                 # Sınav sorularını ve cevapları getir
                 result = await db_session.execute(
-                    select(Question, StudentAnswer)
+                    # B3: topic_code/name_tr KOLON olarak seçilir (Row döner,
+                    # ek eager-load gerekmez — S220'nin 361->4 SELECT kazancı korunur).
+                    select(
+                        Question,
+                        StudentAnswer,
+                        TopicHierarchy.code,
+                        TopicHierarchy.name_tr,
+                    )
                     # #485: dongude :1345 subject_area(metadata) · :1362
                     # irt_difficulty(statistics) · :1367 correct_answer(content)
                     # okunuyor; lazy='select' -> eager-load sart.
@@ -1355,11 +1372,16 @@ class OSYMExamEngine:
                             StudentAnswer.exam_session_id == session_id,
                         ),
                     )
+                    # outerjoin (inner DEĞİL): konusu çözülemeyen soru DÜŞMEMELİ.
+                    .outerjoin(
+                        TopicHierarchy,
+                        TopicHierarchy.id == Question.primary_topic_id,
+                    )
                     .where(ExamQuestion.exam_session_id == session_id)
                     .order_by(ExamQuestion.question_order)
                 )
 
-                for question, answer in result:
+                for question, answer, topic_code, topic_name in result:
                     # QuestionBankItem.subject_area is String, not Enum
                     subject = (
                         question.subject_area.lower()
@@ -1367,8 +1389,15 @@ class OSYMExamEngine:
                         else question.subject_area.value
                     )
 
-                    if subject not in subject_stats:
-                        subject_stats[subject] = {
+                    # B3: kova anahtarı (ders, konu). Konu satırı yoksa sessiz
+                    # varsayılan YOK — görünür "Konu atanmamış" kovası.
+                    kova_anahtari = (subject, question.primary_topic_id)
+
+                    if kova_anahtari not in subject_stats:
+                        subject_stats[kova_anahtari] = {
+                            "subject": subject,
+                            "topic_code": topic_code,
+                            "topic_name": topic_name or "Konu atanmamis",
                             "total": 0,
                             "correct": 0,
                             "wrong": 0,
@@ -1377,7 +1406,7 @@ class OSYMExamEngine:
                             "total_difficulty": 0.0,
                         }
 
-                    stats = subject_stats[subject]
+                    stats = subject_stats[kova_anahtari]
                     stats["total"] += 1
                     stats["total_difficulty"] += question.irt_difficulty or 0.0
 
@@ -1397,7 +1426,7 @@ class OSYMExamEngine:
 
             # SubjectPerformance objelerini oluştur
             subject_performances = []
-            for subject, stats in subject_stats.items():
+            for stats in subject_stats.values():
                 success_rate = (
                     (stats["correct"] / stats["total"]) * 100
                     if stats["total"] > 0
@@ -1415,7 +1444,7 @@ class OSYMExamEngine:
                 )
 
                 subject_performance = SubjectPerformance(
-                    subject=subject,
+                    subject=stats["subject"],
                     total_questions=stats["total"],
                     correct_answers=stats["correct"],
                     wrong_answers=stats["wrong"],
@@ -1423,9 +1452,17 @@ class OSYMExamEngine:
                     success_rate=success_rate,
                     average_response_time=avg_response_time,
                     difficulty_level=avg_difficulty,
+                    topic_code=stats["topic_code"],
+                    topic_name=stats["topic_name"],
                 )
 
                 subject_performances.append(subject_performance)
+
+            # B3: total_questions AZALAN, eşitlikte topic_name alfabetik
+            # (deterministik sıra). Az soruluk kova gizlenmez/birleştirilmez.
+            subject_performances.sort(
+                key=lambda p: (-p.total_questions, p.topic_name or "")
+            )
 
             return subject_performances
 

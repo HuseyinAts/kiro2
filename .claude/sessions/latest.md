@@ -48,6 +48,47 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-21 (S242 · B3 KONU KIRILIMI — motor açıldı, tüketiciler bozuldu)
+**Branch:** feature/self-evolution-optimization
+**Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md`
+
+### Ölçülen
+- `GET /osym-exam/{sid}/subject-performance` **1 kova → 13/14 kova**, API == DB (küme eşit,
+  sayı eşitliğiyle bırakılmadı). Σ`total_questions` 40 == 40. SQL `execute` **4 → 4**
+  (S220 kazancı korundu). Kabul kriteri (≥5 `topic_code`) **GEÇTİ**.
+- Backend canlıya deploy edildi (`/openapi.json` `SubjectPerformanceResponse` içinde
+  `topic_code`+`topic_name` var). Testler: 628 passed / 31 skipped / 0 failed.
+
+### 🔴 KAPANMADI — 3 çürütücü mercek "hiçbir regresyon" iddiasını 3/3 çürüttü
+1. **P0** `core/osym_exam_engine.py:2168` `session_to_sinav_sonucu` → `konu=sp.subject`.
+   13 satırın 13'ü `'matematik'`; `zayif_konular` ×11 + `guclu_konular` ×1 = **aynı ders
+   hem zayıf hem güçlü**. Yayılım: `advanced_reports.py` 5 uç + `ogretmen_service.py`.
+2. **P0** `services/ogretmen_service.py:210` — tek sınav `sinav_sayisi=13` sayılıyor (önce 1).
+3. **P1** `application/commands/sinav.py:831` — mapping 8 alan kopyalıyor, `topic_code` yok.
+   **Kök neden:** GREEN'in tüketici grep'i `application/` dizinini taramadı.
+4. **P1** 4/4 test `session_to_sinav_sonucu`'yu `AsyncMock(return_value=None)` ile mockluyor
+   → regresyon test yüzeyinde **görünmez** (58/58 yeşil kaldı).
+5. **P2** Sıralama %0 kapsam: M2 mutasyonu (`sort` bloğu silindi) → **631 passed, 0 fail**.
+6. **P2** "Konu atanmamış" dalı ölü (DB'de NULL konu 0/3922); M4 mutasyonu 0 fail.
+7. **P2** Frontend imajı 31 Tem tarihli — bundle'da `topic` = **0**. Öğrenci hâlâ göremiyor.
+
+### Sonraki Adımlar (maks 5)
+1. P0-1/2 + P1-1 tüketici düzeltmesi (4 dosya → Root Cause + TDD turu, plan gate)
+2. `session_to_sinav_sonucu` için gerçek-veri testi (mock körlüğü kapansın)
+3. `docker compose build frontend` + `up -d --no-deps frontend`
+4. Sıralama bekçisi + Türkçe collation tie-break (`Ç` sona düşüyor)
+5. L2 e-posta doğrulama — hâlâ YOK, blokaj SMTP kimlik bilgisi (#441)
+
+### Kayıt
+- `api.generated.ts` **güncellenmedi** — gerekçe ölçüldü (0 importer, tsconfig exclude,
+  `openapi-typescript` kurulu değil, `backend/openapi.json` bayat). Ayrı commit'e konu.
+- pre-commit ruff(15) + mypy(3) **FANTOM** — kontrol kolu `git show HEAD:`/`stash` ile
+  ölçüldü, ikisi de HEAD sürümünde de var, benim hunk'larımda değil.
+- 3 ölçüm aleti arızası bulgu diye raporlanmadı: cp1254 mojibake (`encoding=` eksik),
+  `MSYS_NO_PATHCONV`, boru hattında `$?` son halkayı ölçmesi.
+
+---
+
 ## Session Handoff — 2026-08-21 01:00 (S241 · A1 ALTIN YOLU AÇILDI)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `3d28c00ba` fix(core): GUC kurulum hatasi artik SESSIZ GECMIYOR

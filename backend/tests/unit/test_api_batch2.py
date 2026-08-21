@@ -767,6 +767,11 @@ class TestOsymExamPerformanceEndpoints:
             mock_perf.success_rate = 70.0
             mock_perf.average_response_time = 65.5
             mock_perf.difficulty_level = 0.8
+            # B3: plain Mock() her ozniteligi otomatik uretir; bu iki alan elle
+            # set EDILMEZSE api/sinav.py mapping'i Mock nesnesini
+            # `topic_code: str | None` alanina verir -> ValidationError.
+            mock_perf.topic_code = "MAT.FON"
+            mock_perf.topic_name = "Fonksiyonlar"
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.get_subject_performance = AsyncMock(return_value=[mock_perf])
@@ -776,6 +781,10 @@ class TestOsymExamPerformanceEndpoints:
             assert len(response) == 1
             assert response[0].subject == "MATEMATIK"
             assert response[0].success_rate == 70.0
+            # Mapping konu alanlarini DUSURMEMELI (api/sinav.py:905-906).
+            # Bu iki satir silinirse degerler None'a duser ve test kirilir.
+            assert response[0].topic_code == "MAT.FON"
+            assert response[0].topic_name == "Fonksiyonlar"
 
 
 class TestOsymExamListEndpoints:
@@ -2531,6 +2540,11 @@ class TestOsymExamAPIEdgeCases:
             difficulty_level=0.8,
         )
         assert response.subject == "MATEMATIK"
+        # B3: iki yeni alan OPSIYONEL ve varsayilani None. Zorunlu yapilirsa
+        # yukaridaki 8 alanli cagri `ValidationError: field required` verir;
+        # varsayilan "" olursa asagidaki assert duser.
+        assert response.topic_code is None
+        assert response.topic_name is None
 
     @pytest.fixture
     def mock_user(self):
@@ -3722,6 +3736,15 @@ class TestOsymExamComprehensive:
             mock_session = Mock()
             mock_session.student_id = "test-user"
 
+            # B3: her ders altinda bir konu kodu tasinir. Plain Mock() bu
+            # oznitelikleri elle set edilmezse Mock nesnesi uretir ve
+            # `topic_code: str | None` alaninda ValidationError'a duser.
+            konu = {
+                "MATEMATIK": ("MAT.FON", "Fonksiyonlar"),
+                "TURKCE": ("TUR.PAR", "Paragraf"),
+                "FEN": ("FEN.OPT", "Optik"),
+                "SOSYAL": ("SOS.TAR", "Tarih"),
+            }
             performances = []
             for subject in ["MATEMATIK", "TURKCE", "FEN", "SOSYAL"]:
                 mock_perf = Mock()
@@ -3733,6 +3756,7 @@ class TestOsymExamComprehensive:
                 mock_perf.success_rate = 75.0
                 mock_perf.average_response_time = 60.0
                 mock_perf.difficulty_level = 0.7
+                mock_perf.topic_code, mock_perf.topic_name = konu[subject]
                 performances.append(mock_perf)
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
@@ -3741,6 +3765,20 @@ class TestOsymExamComprehensive:
             response = await get_subject_performance("session-123", mock_user)
 
             assert len(response) == 4
+            # Konu alanlari kova basina AYRI tasinmali (hepsi ayni degere
+            # sabitlenmemeli, mapping icinde kaybolmamali).
+            assert [r.topic_code for r in response] == [
+                "MAT.FON",
+                "TUR.PAR",
+                "FEN.OPT",
+                "SOS.TAR",
+            ]
+            assert [r.topic_name for r in response] == [
+                "Fonksiyonlar",
+                "Paragraf",
+                "Optik",
+                "Tarih",
+            ]
 
     @pytest.mark.asyncio
     async def test_exam_config_all_types(self):
@@ -3833,6 +3871,16 @@ class TestOsymExamComprehensive:
 
         # Pydantic v2: Use model_config instead of Config.schema_extra
         assert hasattr(SubjectPerformanceResponse, "model_config")
+
+        # B3 sema paritesi: OpenAPI ornegi modelin TUM alanlarini gostermeli.
+        # `hasattr(model_config)` alan sayisina kordur — yeni alan eklenip
+        # ornek guncellenmezse frontend sozlesmede gormez.
+        ornek = SubjectPerformanceResponse.model_config["json_schema_extra"]["example"]
+        assert set(ornek) == set(SubjectPerformanceResponse.model_fields), (
+            "json_schema_extra ornegi ile model alanlari ayristi: "
+            f"ornekte-yok={set(SubjectPerformanceResponse.model_fields) - set(ornek)}, "
+            f"modelde-yok={set(ornek) - set(SubjectPerformanceResponse.model_fields)}"
+        )
 
 
 class TestFSRSComprehensive:

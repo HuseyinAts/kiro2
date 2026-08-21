@@ -254,6 +254,8 @@ class SubjectPerformanceResponse(BaseModel):
     success_rate: float
     average_response_time: float
     difficulty_level: float
+    topic_code: str | None = None
+    topic_name: str | None = None
 
     model_config = {
         "json_schema_extra": {
@@ -266,6 +268,8 @@ class SubjectPerformanceResponse(BaseModel):
                 "success_rate": 70.0,
                 "average_response_time": 65.5,
                 "difficulty_level": 0.8,
+                "topic_code": "MAT.FON",
+                "topic_name": "Fonksiyonlar",
             }
         }
     }
@@ -898,6 +902,8 @@ async def get_subject_performance(
                 success_rate=perf.success_rate,
                 average_response_time=perf.average_response_time,
                 difficulty_level=perf.difficulty_level,
+                topic_code=perf.topic_code,
+                topic_name=perf.topic_name,
             )
             for perf in subject_performances
         ]

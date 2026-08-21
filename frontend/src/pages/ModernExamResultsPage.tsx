@@ -60,6 +60,7 @@ interface ExamResult {
   }>
   subject_breakdown: Array<{
     subject: string
+    topic: string
     correct: number
     wrong: number
     empty: number
@@ -122,6 +123,12 @@ export const ModernExamResultsPage: React.FC = () => {
         questions: [],
         subject_breakdown: subjectData.map((s: any) => ({
           subject: s.subject,
+          // Backend (core/osym_exam_engine.py) topic_name'i HER ZAMAN doldurur:
+          // konu atanmamış sorular için "Konu atanmamis" yazar, hiç null bırakmaz.
+          // `|| s.subject` yalnızca backend `topic_name` alanını henüz göndermeyen
+          // ESKİ bir sürümdeyse devreye girer (sözleşme geriye dönük uyumluluğu) —
+          // o durumda tablo eskisi gibi ders adını gösterir, boş hücre kalmaz.
+          topic: s.topic_name || s.subject,
           correct: s.correct_answers,
           wrong: s.wrong_answers,
           empty: s.empty_answers,
@@ -397,6 +404,7 @@ export const ModernExamResultsPage: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell><strong>Ders</strong></TableCell>
                 <TableCell><strong>Konu</strong></TableCell>
                 <TableCell align="center"><strong>Doğru</strong></TableCell>
                 <TableCell align="center"><strong>Yanlış</strong></TableCell>
@@ -411,6 +419,7 @@ export const ModernExamResultsPage: React.FC = () => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{item.subject}</TableCell>
+                    <TableCell>{item.topic}</TableCell>
                     <TableCell align="center">
                       <Chip label={item.correct} size="small" color="success" />
                     </TableCell>

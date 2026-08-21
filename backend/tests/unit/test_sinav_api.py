@@ -1096,6 +1096,8 @@ class TestGetSubjectPerformance:
             success_rate=70.0,
             average_response_time=65.5,
             difficulty_level=0.8,
+            topic_code="MAT.FON",
+            topic_name="Fonksiyonlar",
         )
         with patch(ENGINE_PATH) as mock_engine:
             mock_engine.get_session_data = AsyncMock(return_value=session)
@@ -1110,9 +1112,20 @@ class TestGetSubjectPerformance:
         assert data[0]["subject"] == "MATEMATIK"
         assert data[0]["success_rate"] == pytest.approx(70.0)
         assert data[0]["total_questions"] == 40
+        # B3 UCTAN UCA: konu alanlari HTTP govdesine kadar tasinmali. Yalniz
+        # mapping'i olcmek yetmez — `response_model` alani tanimlamazsa FastAPI
+        # onu govdeden SESSIZCE duserir.
+        assert data[0]["topic_code"] == "MAT.FON"
+        assert data[0]["topic_name"] == "Fonksiyonlar"
 
     def test_returns_multiple_subjects(self, client):
-        """Multiple subjects are all returned in the list."""
+        """Multiple subjects are all returned in the list.
+
+        Bu cagri POZISYONEL — B3 kanaryasi. `topic_code`/`topic_name` dataclass'a
+        SONA ve VARSAYILANLI eklendigi icin 8 argumanli bu cagri hala dogru
+        baglanmali. Alan basa/ortaya eklenirse baglama sessizce kayar; asagidaki
+        assert'ler o kaymayi gorunur kilar.
+        """
         session = _make_in_progress_session()
         perfs = [
             SubjectPerformance("MATEMATIK", 40, 28, 10, 2, 70.0, 65.5, 0.8),
@@ -1125,7 +1138,13 @@ class TestGetSubjectPerformance:
                 f"/api/v1/osym-exam/{TEST_SESSION_ID}/subject-performance"
             )
         assert response.status_code == 200
-        assert len(response.json()) == 2
+        data = response.json()
+        assert len(data) == 2
+        assert data[0]["subject"] == "MATEMATIK"
+        assert data[0]["difficulty_level"] == pytest.approx(0.8)
+        # Pozisyonel cagri konu alani vermedi -> varsayilan None kalmali.
+        assert data[0]["topic_code"] is None
+        assert data[0]["topic_name"] is None
 
     def test_returns_404_when_session_not_found(self, client):
         """Non-existent session returns 404."""

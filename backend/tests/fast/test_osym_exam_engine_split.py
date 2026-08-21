@@ -119,7 +119,12 @@ class _CaptureSession:
     Motorun sonucu TUKETME sekilleri kodda tek tek okundu:
       * `get_current_question`            -> `result.scalar_one_or_none()`
       * `save_answer` notlandirma (:697)  -> `(...).scalar_one_or_none()`
-      * `get_subject_performance` (:1326) -> `for question, answer in result`
+      * `get_subject_performance` (:1384) -> B3 sonrasi DORTLU cozum:
+        `for question, answer, topic_code, topic_name in result`
+        (SELECT listesine `TopicHierarchy.code` + `.name_tr` KOLON olarak
+        eklendi). Iki elemanli satir verilirse motor `ValueError` atar, bunu
+        :1468'deki ciplak `except Exception` yutar ve `return []` doner —
+        yani fikstur yanlis sekilde kalirsa test yanlis-KIRMIZI olur.
       * `_select_*` id havuzu             -> `id_result.all()`  (row[0], row[1])
       * `_select_*` entity sorgusu        -> `result.scalars().all()`
       * `_analyze_performance` (:1722)    -> `for row in result` + `row.id`
@@ -242,8 +247,15 @@ def _session_data(engine, **kw):
     return ExamSessionData(**payload)
 
 
-def _real_question(qid="q-1", *, text="Soru metni?", answer="A", subject="MATEMATIK"):
-    """GERCEK ORM nesneleri (S212 D maddesi: sahte stub KIRIK kodda da yesil)."""
+def _real_question(
+    qid="q-1", *, text="Soru metni?", answer="A", subject="MATEMATIK", topic_id="t-1"
+):
+    """GERCEK ORM nesneleri (S212 D maddesi: sahte stub KIRIK kodda da yesil).
+
+    `topic_id` = `primary_topic_id`. B3 sonrasi kova anahtari
+    `(subject, primary_topic_id)` oldugu icin konu bazli gruplamayi olcen test
+    ayni ders altinda FARKLI `topic_id` tasiyan sorular kurabilmelidir.
+    """
     from models.question_bank import (
         QuestionBankItem,
         QuestionContent,
@@ -252,7 +264,7 @@ def _real_question(qid="q-1", *, text="Soru metni?", answer="A", subject="MATEMA
         QuestionStatistics,
     )
 
-    question = QuestionBankItem(id=qid, primary_topic_id="t-1", is_active=True)
+    question = QuestionBankItem(id=qid, primary_topic_id=topic_id, is_active=True)
     question.content = QuestionContent(
         id=qid,
         question_text=text,
@@ -441,7 +453,9 @@ class TestEntityQueriesEagerLoad:
         answer = SimpleNamespace(
             is_correct=True, response_time_seconds=12.0, selected_answer="A"
         )
-        session = wired([[(question, answer)]])
+        # B3: satir DORTLU (bkz. _CaptureSession docstring). Ikili birakilirsa
+        # motor ValueError atar, ciplak `except` yutar, `out` BOS doner.
+        session = wired([[(question, answer, "MAT.GEO", "Geometri")]])
 
         out = await engine.get_subject_performance("s-1")
 
@@ -453,6 +467,64 @@ class TestEntityQueriesEagerLoad:
         _assert_single_from(session.statements[0])
         assert [p.subject for p in out] == ["geometri"]
         assert [p.correct_answers for p in out] == [1]
+        # B3 sozlesmesi: konu kolonlari satirdan OKUNUP kovaya tasinmali.
+        assert [p.topic_code for p in out] == ["MAT.GEO"]
+        assert [p.topic_name for p in out] == ["Geometri"]
+
+    @pytest.mark.asyncio
+    async def test_get_subject_performance_groups_by_topic_not_subject(
+        self, wired, engine
+    ):
+        """B3: kova anahtari `(subject, primary_topic_id)` — DERS degil KONU.
+
+        Kesif fazinda olculdu: HICBIR backend testi "farkli `primary_topic_id`
+        farkli kova uretir" iddiasini assert etmiyordu; tum canli testler ya tek
+        kova ya sabit sayida mock kova sayiyordu. Anahtar `subject`'e geri
+        dondurulurse ucu de ayni kovaya duser ve bu test kirmizi olur.
+
+        Konu satiri `LEFT OUTER JOIN` ile baglanir (INNER degil): konusu
+        cozulemeyen soru sorgudan DUSMEMELI.
+        """
+        fon_1 = _real_question("q-1", subject="MATEMATIK", topic_id="t-fon")
+        fon_2 = _real_question("q-2", subject="MATEMATIK", topic_id="t-fon")
+        geo_1 = _real_question("q-3", subject="MATEMATIK", topic_id="t-geo")
+        dogru = SimpleNamespace(
+            is_correct=True, response_time_seconds=10.0, selected_answer="A"
+        )
+        yanlis = SimpleNamespace(
+            is_correct=False, response_time_seconds=20.0, selected_answer="B"
+        )
+        session = wired(
+            [
+                [
+                    (fon_1, dogru, "MAT.FON", "Fonksiyonlar"),
+                    (fon_2, yanlis, "MAT.FON", "Fonksiyonlar"),
+                    (geo_1, dogru, "MAT.GEO", "Geometri"),
+                ]
+            ]
+        )
+
+        out = await engine.get_subject_performance("s-1")
+
+        # TEK ders, IKI kova. `subject` hala tasiniyor (alan silinmedi).
+        assert [p.subject for p in out] == ["matematik", "matematik"]
+        # Siralama: total_questions AZALAN (2 soruluk konu once).
+        assert [(p.topic_code, p.total_questions) for p in out] == [
+            ("MAT.FON", 2),
+            ("MAT.GEO", 1),
+        ]
+        assert [p.topic_name for p in out] == ["Fonksiyonlar", "Geometri"]
+        assert [p.correct_answers for p in out] == [1, 1]
+        assert [p.wrong_answers for p in out] == [1, 0]
+        # INVARYANT: gruplama anahtari degisirken soru kaybolmaz/coklanmaz.
+        assert sum(p.total_questions for p in out) == 3
+
+        stmt = session.statements[0]
+        _assert_single_from(stmt)
+        assert "LEFT OUTER JOIN topic_hierarchy" in _compiled_sql(stmt), (
+            "topic_hierarchy INNER JOIN ile baglanmis olabilir — konusu "
+            "atanmamis soru sessizce dusurulur"
+        )
 
 
 # ===========================================================================
