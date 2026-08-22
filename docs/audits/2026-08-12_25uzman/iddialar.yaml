@@ -102,7 +102,7 @@ iddialar:
     gorev: "min(calculated_interval, days_until_yks) cap."
     severity_iddia: P2
     severity_olculen: P2
-    durum: dogrulandi
+    durum: uygulandi
     dogrulama:
       - "grep -rn 'interval' backend/algorithms/fsrs*.py backend/services/*fsrs* 2>/dev/null | head -30"
       - "grep -rn 'maximum_interval\\|max_interval\\|MAX_INTERVAL' backend/ --include=*.py | head"
@@ -130,8 +130,8 @@ iddialar:
       rep 4: stability=6054.88 interval_days=6055 due=2043-03-21
       ```
       App.tsx:396-401 `/fsrs-review` -> FSRSReviewPage.tsx ROTA MOUNT (roller: ogrenci, admin). App.tsx:779 `/admin/labs` -> RevolutionaryDashboard -> FSRSScheduler.tsx (Kolay(4) butonu, satir 592-598) MOUNT (admin-only). Ikisi de AYNI canonical uca gidiyor: app/api/fsrs.py:190 POST /api/v1/fsrs/review -> app/services/fsrs_service.py:apply_review -> fsrs_engine.fsrs_update -> MAX_INTERVAL_DAYS=36500.
-    commit: null
-    zorlayici_test: null
+    commit: 3ccff58a1
+    zorlayici_test: "backend/tests/unit/test_fsrs_yks_cap.py (6 test) — mutasyon 4/4 oldu; M1 cap silindi -> 2 test dustu, M2 varsayilan cap kaldirildi -> 1 (canli fix yolu), M3 interval=1 -> 1 (kontrol kolu), M4 hedef <= bugun yerine < -> 1"
 
   - id: U03
     uzman: "Albert Corbett — BKT"
