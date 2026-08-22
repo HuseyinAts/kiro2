@@ -48,11 +48,43 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
-## Session Handoff — 2026-08-21 (S244 · B3 FAZ 3 — üç açık P0 KAPANDI)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `ee5ef3c03..HEAD` (10 commit)
+## Session Handoff — 2026-08-21/22 (S244 · B3 FAZ 3 + 3 devralınan P0 — KAPANIŞ)
+**Branch:** feature/self-evolution-optimization
+**Aralık:** `ee5ef3c03..34f957482` — **18 commit**, hepsi push'lu, ağaç temiz
 **Tasarım:** `docs/superpowers/specs/2026-08-21-b3-faz3-design.md`
 **Plan:** `docs/superpowers/plans/2026-08-21-b3-faz3-uygulama.md`
-**Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md` §FAZ 3 (828 → 1015 satır)
+**Denetim:** `docs/audits/2026-08-21_b3_konu_kirilimi.md` §FAZ 3 + EK 1-4 (**828 → 1413 satır**)
+
+### 📌 KAPANIŞ TABLOSU — 6 kalem kapandı, 3'ü "kusur değildi" çıktı
+
+| # | Kapanış türü | Kanıt |
+|---|---|---|
+| **#511** | düzeltildi | `git == imaj`, 5/5 dosyada md5 eşit (önce imajda `topic_code` 0/0) |
+| **#512** | düzeltildi | kök neden **modelde**; 3 sessiz kusur + 1 kardeş kusur |
+| **#510** | çivilendi | M6 mutasyonda **tek başına** ölüyor |
+| **#513** | **ÖLÇÜLDÜ → tekrarlanmıyor** | kod değişikliği YOK; ankraj/proza çelişiyordu |
+| **#514** | **yeniden çerçevelendi** + düzeltildi | motor doğruydu; kusur ders listesindeydi |
+| **#516** | **ölü çıktı** → silindi | git geçmişi: doğuştan spekülatif; invaryant çivilendi |
+| **#515** | silme **önce durdu** → sonra silindi | bekçi denkliği 4 açık invaryant buldu |
+
+**Kapı:** 1278-1292 passed / 0 failed (tur boyunca). Backend **2×**, frontend **2×**
+yeniden kuruldu; her fix **deploy edildi ve tarayıcıda/SQL'le doğrulandı**.
+
+### 🔴 Bu turda ÇÜRÜTÜLEN 5 iddia — beşi de benim
+
+1. *"(c) dalı B3 öncesi de ölüydü"* → `.lower()` üretiyordu, dal **canlıydı**
+2. *Planın kovalama-değişmezlik verisi* → **dejenereydi**, test hatalı koda karşı da geçerdi
+3. *"`normalize_tr` başka yerde kullanılıyor"* → üç kullanımın üçü de değişen bloklardaydı
+4. *"#516 ikinci **CANLI** yol"* → dal **ölüydü**; import zinciri bileşeni kanıtlar, dalı değil
+5. *"push kapısı uyarıda blokluyor"* → 3 gerçek kritik vardı, üçü de devralınmış
+
+Ayrıca **iki alet arızası** bulgu diye raporlanmadan yakalandı: snapshot `depth`
+kesmesi ("boş tablo") ve yanlış asset yolu ("imajda kod yok"). İkisi de **kontrol
+koluyla** ayıklandı.
+
+### ⚠️ Ortamda bırakılanlar
+- DB: **4** `@kiro2-e2e.dev` test öğrencisi + **23** sınav oturumu (kasıtlı, yeniden ölçüm için)
+- `backend/semantic_cache.pkl` takipli-kirli — **devralındı**, bu işe ait değil, commit'lenmedi
 
 ### Kapanan (üçü de S243'ün bıraktığı P0)
 | # | Kabul kanıtı |
