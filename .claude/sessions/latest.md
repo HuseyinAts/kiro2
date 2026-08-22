@@ -79,7 +79,30 @@ kapatmış · U06 ankraj dosyası git'e hiç commit'lenmemiş + import zinciri
 kırık · U16 XP-kaybı mekanizması hiçbir katmanda yok · U23 Bloom 6-seviye
 filtresi hem FE Select'inde hem BE Pydantic'te (`ge=1,le=6`) VAR.
 
-### 🔴 Tek esaslı açık kusur — U02 (doğrulandı, P2)
+### ✅ U02 KAPANDI — `3ccff58a1` + kütük `ed61bfb12`
+`yks_gun_kalan()` eklendi (bu yılınki geçtiyse **veya bugünse** gelecek yılınki →
+dönüş **her zaman ≥1**; sınav günü 0 dönmek cap'i o gün etkisiz kılardı).
+`fsrs_update(..., max_interval_days=None)`; None → `yks_gun_kalan()` →
+**çağrı yerleri değişmeden** canlı kusur kapandı (`fsrs_service.py` diff'i **boş**).
+Cap tek noktada (scheduled_days + due_date yazımından hemen önce) → 4 dal tek satırla.
+Dal yerine **ternary**: `fsrs_update` zaten PLR0912 sınırındaydı (HEAD 16>12);
+ölçüldü, benim hâlim de **16** — mevcut ihlal kötüleşmedi.
+
+**TDD:** RED (ImportError) → GREEN 6/6. **Mutasyon 4/4 öldü, her biri FARKLI
+sayıda test öldürdü** (assert'ler bağımsız): M1 cap silindi→2 · M2 varsayılan cap
+kaldırıldı→1 (canlı fix yolu) · M3 `interval=1`→1 (kontrol kolu) · M4 `<=`→`<`→1.
+
+**Regresyon kontrol kolu (`git stash`):** `test_fsrs_card_persistence` ÖNCE 2F+2E /
+SONRA 2F+2E · `test_fsrs_schema_contract` ÖNCE 2F / SONRA 2F → **benim değil.**
+Kök neden: `to_regclass('public.user_item_fsrs')` → **NULL, tablo canlıda YOK.**
+🔴 Bu AYRI ve AÇIK bir kusur — `#461`'de restore edilmişti, yine düşmüş.
+
+**Kapı borcu (SKIP=ruff,mypy — üç kollu ölçüldü):** şikayet edilen 4 satır
+(178/222/235/249) HEAD'de birebir var (158/202/215/229); benim eklediklerim
+32/67-86/255-260/360-370 → **örtüşme yok**. Yaygınlık: 4 `no-any-return` +
+7 `PLC240x` (Türkçe sabit adları, 10 dosya). Aynı sınıf `#509`'da kayıtlı.
+
+### 🔴 (kapanmadan önceki kayıt) U02 — doğrulandı, P2
 FSRS aralığı **YKS tarihine göre cap'lenmiyor**. `app/services/fsrs_engine.py:64`
 `MAX_INTERVAL_DAYS=36_500` tek cap; `grep 'yks_tarih|sinav_tarih|exam_date'`
 fsrs_engine/fsrs_service → **0 sonuç**. İki çürütücü de canlı motoru koşturdu:
