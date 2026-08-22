@@ -48,46 +48,42 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
-## Session Handoff — 2026-08-22 (S246 · Eksik alet yazıldı + 3 kusur kapatıldı)
+## Session Handoff — 2026-08-22 06:43
+**Branch:** feature/self-evolution-optimization (master'dan 629 commit önde)
+**Son commit:** `f20f5bfc5` docs(devir): S246 — eksik alet yazıldı + 3 kusur kapatıldı (kuyruk 7 → 4)
+**Uncommitted:** `backend/semantic_cache.pkl` (Bin 4892→4892, S244'ten **devralındı**, bu işe ait değil — bilinçli commit'lenmedi)
 
-**Commit'ler:** `0e3314f02` (ajan) · `2e7c11d53` (X10) · `1c9299f96` (X05) ·
-`d220255c1` (X05 bekçisi) · `42af7ed3f` (kütük) · `3da8e5159` (ajan notu)
-**Kapı:** `tests/audit` + 2 bekçi → **20 passed / 3 skipped / 0 failed**
-**Kütük:** `dogrulandi` **7 → 4** · `uygulandi` 6 → **8**
+### Yapilanlar
+- `.claude/agents/kusur-kapatici.md` — **eksik alet yazıldı** (`0e3314f02`, kayıt kısıtı notu `3da8e5159`). Boşluk ölçüldü: `tdd-loop`/`debug-bug` 5 adımı kapsıyor, deponun dayattığı 7 kontrolün (mutasyon · kontrol kolu · üç kollu SKIP · hash-değişimi · kütük · biçimlendirici · `/tmp`) **hiçbiri** yok; 7'si de bu oturumda ısırdı. Sözleşme 9 adım, ajan **commit etmez**.
+- `backend/tests/db/test_question_bank_invariants.py` — **X10 P0 kapandı** (`2e7c11d53`, +171/−2). İki kolu varmış; `27c8fff02` yalnız birincisini kapatmış. İkincisi: sessiz skip **sessiz VEKİL ÖLÇÜMLE** değiştirilmiş (`tests/e2e/pg_dsn.py:48-70` hiç soket açmaz). sıkı+DB-ölü `EXIT=0` → **`EXIT=1`**. Mutasyon 6/6.
+- `.claude/settings.json` — **X05 kapandı** (`1c9299f96`, +1/−56). `excludePatterns` + `contextManagement` ölü ölçüldü (binary'de 0, kontrol kolu 17/24/1). Mutasyon 5/5, ikisi "aşırıya kaçma" civisi.
+- `backend/tests/unit/test_claude_settings_anahtar_kumesi.py` — X05 kalıcı bekçisi (`d220255c1`, 3 test, mutasyon 3/3).
+- `docs/audits/2026-08-12_25uzman/iddialar.yaml` — kütük (`42af7ed3f`): X10/X05 → `uygulandi`, X02 → `abartili`. **`dogrulandi` 7 → 4** · `uygulandi` 6 → **8**.
+- `backend/app/services/fsrs_engine.py` + `backend/tests/unit/test_fsrs_yks_cap.py` — U02 (`3ccff58a1`, önceki tur): `yks_gun_kalan()` + `max_interval_days`; çağrı yerleri değişmeden kapandı.
 
-### Eksik alet yazıldı: `.claude/agents/kusur-kapatici.md`
-Boşluk **ölçüldü**: `tdd-loop`/`debug-bug` reproduce→kök-neden→fix→test→regresyon
-kapsıyor; deponun kurallarının dayattığı **7 kontrolün hiçbiri** ikisinde de yok
-(mutasyon · kontrol kolu · üç kollu SKIP · hash-değişimi · kütük · biçimlendirici
-import silme · `/tmp` ad-alanı). **Yedisi de 22 Ağu'da ısırdı** — ampirik gerekçe.
-Sözleşme: **9 adım**, ajan **commit ETMEZ** (paralel turda git index çakışmaz).
-🔴 **Kayıt kısıtı ölçüldü:** yeni ajan **aynı oturumda** `agentType` olarak
-kullanılamıyor (3/3 `not found`). Sözleşme prompt'a gömüldü → 3/3 kapanış üretildi.
+### Fail Eden Testler
+- **YOK.** `tests/audit/` + `test_claude_settings_anahtar_kumesi.py` + `test_question_bank_invariants.py` + `test_fsrs_yks_cap.py` → **26 passed / 3 skipped / 0 failed**.
+- (3 skipped = varsayılan gevşek modda DB'ye bağlı invaryantlar — X10 fix'i bunu **bilinçli** korudu; `KIRO2_STRICT_DB_INVARIANTS=1` ile 4 assert koşuyor.)
 
-### 3 kusur, 3'ü de bağımsız çürütücüyle **AYAKTA**
-| Kod | Sonuç | Öz |
-|---|---|---|
-| **X10** P0 | KAPANDI | **İki kolu varmış**; `27c8fff02` yalnız birincisini kapatmış. İkincisi: sessiz skip **sessiz bir VEKİL ÖLÇÜMLE** değiştirilmiş — `pg_dsn.py` hiç soket açmaz. sıkı+DB-ölü: `EXIT=0` → **`EXIT=1`**. Mutasyon **6/6**. |
-| **X02** P1 | **DEĞER +0 → DURDU** | İddia bayat: 9 dosya/1.782 satır **değil** 5/529; kalan 5'in hepsi *"her oturumda yüklenmeli"* diye **beyan ediyor** → `paths` eklemek kusur olurdu. Fix **yazılmadı**. |
-| **X05** P3 | KAPANDI | 2 ölü anahtar + 47 glob silindi (hakem 49 demişti, ajan 47 ölçtü). Mutasyon **5/5**, ikisi "aşırıya kaçma" civisi. |
+### Engelleyiciler
+- 🔴 `user_item_fsrs` tablosu **canlı DB'de YOK** (`to_regclass` → NULL). `#461`'de restore edilmişti, yine düşmüş. `tests/integration/test_fsrs_schema_contract.py` 2 kırmızı — kontrol koluyla **önceden var olduğu** ölçüldü, bu turun regresyonu değil.
+- 🔴 **11 CI workflow'unun 0'ı** bu dalda tetikleniyor (`on: [main,master,develop]`, dal 629 commit önde) → görev `#468`.
+- ⚠️ Kapı borcu `#509` büyüdü: `fsrs_engine.py`'de 4 `no-any-return` + 7 `PLC240x`; **üç kollu ölçüldü, hepsi HEAD'de birebir var**, benim satırlarımla örtüşme yok.
 
-### 🔴 İki alet arızası yakalandı (bulgu değil, arıza)
-1. **Yazdığım bekçi ölü doğdu.** `parents[2]` = `backend/` → dosya yok → `3 skipped`,
-   üç mutasyon da "hayatta kaldı" çünkü test hiç koşmadı. **X10'un birebir aynı sınıfı.**
-   Mutasyon adımı olmasaydı ölü bekçi commit'lenecekti. → `parents[3]` + skip-değil-FAIL.
-2. **Ankraj tekil değildi.** `replace(b"parents[3]",…,1)` **docstring'i** vurdu, kodu değil
-   → M3 sahte "hayatta kaldı". Tekil ankrajla tekrarlandı → öldü.
+### Sonraki Adimlar (maks 5)
+1. `X06` — 5+ ayrı rol-kontrolü implementasyonu (`require_role` ×3, `require_admin` ×2). Kütükte `dogrulandi`; **yeni `kusur-kapatici` ajanı artık kayıtlı**, doğrudan `agentType` ile çağrılabilir.
+2. `U25` — migration geri-alınabilirliği otomatik test edilmiyor (`dogrulandi`).
+3. `user_item_fsrs` tablosunu geri getir → 2 şema bekçisi yeşile döner.
+4. `X11` — `offline_sync_api.py` host ağacında var, **dağıtılan imajda yok** (`dogrulandi`, rebuild gerektirir).
+5. X10'un **fail-open `STRICT` bayrağı** (`"true"` → sessizce gevşek) ve **M6 ölçülmemiş dalı** — ikisi de bilinçli açık bırakıldı, +0 değer kuralı.
 
-### ⚠️ Yakın kaza
-X05 çürütücüsü mutasyon için `git checkout HEAD -- .claude/settings.json` çalıştırdı;
-fix commit'siz olduğu için **sildi**. `git diff --stat` ile yakalandı, bayt-bayt
-yeniden kuruldu, sha256 doğrulandı. Kayıp yok. Kural teyit: commit'siz iş
-`git stash push -- <dosya>` ile mutasyona sokulur, **`git checkout HEAD --` ile asla**.
-
-### Sıradaki
-`dogrulandi` kalan 4: **X06** (5+ ayrı rol-kontrolü impl.) · **U25** (migration
-geri-alınabilirlik) · **X04** (883 satırlık rule dosyası) · **X11** (offline_sync_api
-imajda yok). Ayrıca X10'un **fail-open `STRICT` bayrağı** ve **M6 ölçülmemiş dalı** açık.
+### Kararlar (gelecek session tekrar tartismasin)
+- **Bir planın kendisi de bayatlar.** 6 Ağu'da yazdığım FAZ 0 (`TRUNCATE question_bank` + `pg_restore`) 22 Ağu'da **yıkıcı** olurdu: FAZ 0'ın 5 kalemi kapalıydı ve dump **eski tek-tablo şeması**. Komuttan önce planın yazıldığı günün varsayımlarını ölç.
+- **Mutasyon adımı pazarlık dışı.** Yazdığım X05 bekçisi `parents[2]` yüzünden ölü doğdu (`3 skipped`, üç mutasyon da "hayatta kaldı" çünkü test hiç koşmadı) — X10'un birebir aynı sınıfı. Mutasyon olmasaydı **ölü bekçi commit'lenecekti**.
+- **Ankraj tekilliği ölçülür.** `replace(...,1)` docstring'i vurabilir → sahte "hayatta kaldı". `count==1` doğrula.
+- **Commit'siz iş `git stash push -- <dosya>` ile mutasyona sokulur, `git checkout HEAD --` ile ASLA.** X05 çürütücüsü bunu ihlal edip uncommitted fix'i sildi; sha256 ile geri kuruldu, kayıp yok.
+- **Yeni ajan aynı oturumda kayıt olmaz** (ölçüldü: 3/3 `not found`). Sözleşmeyi prompt'a göm. *Bu oturumda teyit edildi: `kusur-kapatici` artık kayıtlı.*
+- Ajan **commit etmez** — paralel kapatma turunda git index çakışmasını önler, her commit tek tek doğrulanabilir.
 
 ---
 
