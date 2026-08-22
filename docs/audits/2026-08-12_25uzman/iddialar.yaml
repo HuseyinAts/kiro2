@@ -1084,9 +1084,19 @@ iddialar:
     iddia: "13 rule dosyasının 9'unda `paths:` yok -> 1.782 satır HER oturumda bağlama giriyor."
     gorev: "Yol-kapsamlı yükleme (`paths:` frontmatter)."
     severity_iddia: P1
-    severity_olculen: P1
-    durum: dogrulandi
+    severity_olculen: yok
+    durum: abartili
     kanit: |
+      GUNCELLEME 22 Agu 2026 (kapatma turu): iddia BAYAT + KISMEN TASARIM.
+      Canli olcum: 9 dosya/1.782 satir DEGIL, 5 dosya/529 satir.
+      9'un 5'i (testing, systematic-debugging, security, golden-flows,
+      deprecation-guard) artik paths: tasiyor -- commit baf59b23e; ca95ba824
+      mesaji birebir 'kural dosyalari 1345 -> 529' diyor.
+      Kalan 5'in HEPSI 'her oturumda yuklenmeli' diye BEYAN ediyor
+      (audit-methodology.md:8 birebir) -> paths eklemek KUSUR olurdu.
+      Fix'in degeri +0 -> adim 2 kapisi geregi FIX YAPILMADI.
+      Curutucu notu: database.md orijinal 9'da YOKTU, ca95ba824 ile
+      20 Agu'da yaratildi -> dogrusu 'orijinal 9'un 4'u kaldi + 1 yeni'.
       Ölçüm (12 Ağu): audit-methodology 288, testing 671, verification 247,
       systematic-debugging 175, security 160, golden-flows 153, deprecation-guard 39,
       debugging-first 26, plan-before-execute 23 = 1.782 satır, paths=0.
@@ -1135,7 +1145,7 @@ iddialar:
     gorev: "Doğrula; ölüyse sil, değilse dokunma."
     severity_iddia: P2
     severity_olculen: P3
-    durum: dogrulandi
+    durum: uygulandi
     on_bulgu: |
       ⚠️ ÖLÇÜM GEÇERSİZ — ALET ARIZASI. Binary string grep denendi (2.1.228):
         excludePatterns=0, contextManagement=0  ama  advisorModel=0 DE ÇIKTI.
@@ -1153,8 +1163,8 @@ iddialar:
       [1] .claude/settings.json satır 156-172: 'contextManagement': {warningThreshold:60, clearThreshold:70, progressFile:'progress.md', autoCompact:true} ve 'excludePatterns': [...] GERÇEKTEN VAR. Grep .claude dizini genelinde (hooks, commands, skills dahil) 'excludePatterns|contextManagement': SADECE settings.json'un kendisinde eşleşme (1 dosya) — hiçbir hook/script bu anahtarları OKUMUYOR. .claude/settings.json hooks.PreCompact = .claude/hooks/session-save.py; bu dosyada grep 'contextManagement|progressFile|warningThreshold|clearThreshold' = 0 eşleşme (hardcoded mantık, ayarlardan bağımsız). progressFile='progress.md' repo kökünde YOK (ls progress.md -> 'No such file'), gerçek dosya docs/progress.md'de — configure edilen yol ile gerçek kullanım UYUŞMUYOR.
       [2] .claude/settings.json:156-161 `contextManagement: {warningThreshold, clearThreshold, progressFile, autoCompact}` ve :162-210 `excludePatterns: [...49 glob]` — ikisi de gerçekten dosyada var. `grep -rn "excludePatterns|contextManagement" .claude/` -> yalnız settings.json'daki kendi tanımları eşleşiyor, başka hiçbir dosya bu iki anahtarı OKUMUYOR. `.claude/hooks/pre-tool-use.py`, `.claude/hooks/post-commit-checkpoint.py` içindeki 'settings.json' referansları bu iki anahtarla ilgisiz (yalnız dokümante edilmiş `matcher` ve `permissions.deny` anahtarlarına atıf). Aynı dosyada satır 27-73 zaten dokümante edilmiş `permissions.deny` Read() glob listesi VAR ve excludePatterns'in listelediği yolların çoğuyla (node_modules, .venv, __pycache__, dist, build, htmlcov, .pytest_cache, .mypy_cache, .ruff_cache) örtüşüyor.
       [3] 1) rg -a -o -N "<key>" /c/Users/husey/.local/bin/claude.exe (2.1.239, 337MB): KONTROL KOLU enabledPlugins=111, outputStyle=105, advisorModel=59, statusLine=55, forceLoginMethod=31, cleanupPeriodDays=26, includeCoAuthoredBy=13 | HEDEF excludePatterns=0, warningThreshold=0, clearThreshold=0, progressFile=0, contextManagement=1. Tek contextManagement eslesmesi (offset 324859514) ayar semasi degil Java SDK belge metni: '| Context editing | beta | `.contextManagement(BetaContextManagementConfig.builder()...)`'. 2) Gercek sema binary'de: Ftr() @302054823 = _e({$schema,apiKeyHelper,...,cleanupPeriodDays...}); Ybe=ve(()=>Ftr($tr())) — .strict() YOK; seb=ve(()=>Ftr($tr(),{strictPolicyHelperKeys:!0}).strict()) yalniz policy icin. UOn() @302153xxx proje settings.json'u Ybe().safeParse ile ayristirir => bilinmeyen anahtar sessizce dusurulur, uyari uretmez. 3) autoCompactEnabled=25 (gercek anahtar) vs contextManagement.autoCompact=0. 4) rg -n "excludePatterns|contextManagement|warningThreshold|clearThreshold|progressFile" .claude .github orchestrator backend/scripts frontend/src -> yalniz .claude/settings.json:156-162 (kendi tanimi); ExamTimer.tsx:49 warningThresholds alakasiz. 5) .claude/hooks/session-save.py:377 (PROJECT_ROOT/'progress.md','progress') hardcoded + 'if src.exists()' -> depo kokunde progress.md YOK, sessiz no-op. 6) git log -S'"contextManagement"' -- .claude/settings.json -> 20326aec7 (4 Sub 2026, 'fix: Remove skip decorators...') drive-by.
-    commit: null
-    zorlayici_test: null
+    commit: 1c9299f96
+    zorlayici_test: "backend/tests/unit/test_claude_settings_anahtar_kumesi.py (3 test, commit d220255c1) — mutasyon 3/3 oldu; bekci ILK YAZILISINDA parents[2] yuzunden OLUYDU (3 skipped), mutasyon yakaladi, parents[3] + skip-degil-FAIL ile duzeltildi"
 
   - id: X06
     uzman: "12 Ağu araç-zinciri ölçümü"
@@ -1329,7 +1339,7 @@ iddialar:
     gorev: "DSN yokken skip yerine FAIL et, VEYA CI'da DSN'i zorunlu kıl. Bekçinin sessizce atlanabilmesi bekçiyi yok sayar."
     severity_iddia: P0
     severity_olculen: P0
-    durum: dogrulandi
+    durum: uygulandi
     kanit: |
       CANLI KOŞUM (12 Ağu, question_bank GERÇEKTEN 0 satırken):
         cd backend && pytest tests/db/test_question_bank_invariants.py -v
@@ -1381,8 +1391,8 @@ iddialar:
       skip yasağı, CI zorunlu DSN) kapsam dışı bırakıldı — bu, üçüncü örneği
       kapatır ama 1. ve 2. örneği (Golden Flow login, test_migrations.py)
       etkilemez; onlar ayrı kalemler.
-    commit: "27c8fff02"
-    zorlayici_test: "backend/tests/db/test_question_bank_invariants.py::test_invaryant_olculebilir_olmali"
+    commit: 2e7c11d53
+    zorlayici_test: "backend/tests/db/test_question_bank_invariants.py::test_bekci_db_erisilemezken_sessizce_gecemez (7 test) — mutasyon 6/6 oldu, farkli sayida test oldurduler (1/2/2/1/1/1); M6 (SELECT count -> SELECT 1) HAYATTA KALDI, olculmemis dal olarak kayitli"
 
   # --- Tur 3'te U14 doğrulanırken hakemin YAN BULGU olarak çıkardığı kalem --
   # Panelde yoktu. U14'ü çürütmek için dağıtım katmanına bakan hakem,
