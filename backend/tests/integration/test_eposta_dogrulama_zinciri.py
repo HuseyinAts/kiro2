@@ -64,6 +64,7 @@ class _SahteOturum:
     def __init__(self) -> None:
         self.kullanicilar: dict[str, Any] = {}
         self.commit_sayisi = 0
+        self.geri_alma_sayisi = 0
         self.uygulanan_update = 0
 
     def kaydet(self, user: Any) -> None:
@@ -98,7 +99,13 @@ class _SahteOturum:
         self.commit_sayisi += 1
 
     async def rollback(self) -> None:
-        pass
+        """Geri alma SAYILIR — "hiç yazmadı" ile "yazıp geri aldı" ayrılabilsin.
+
+        Boş bırakılsaydı bir test bu ikisini ayırt edemezdi: `is_verified`
+        false kalır ve sebebi görünmezdi. Kardeş `test_password_recovery_flow.py`
+        de aynı sebeple sayıyor.
+        """
+        self.geri_alma_sayisi += 1
 
 
 @pytest.fixture(scope="module")
@@ -243,6 +250,10 @@ def test_zincir_gonder_verify_alan_degisiyor(client, app_ve_oturum, gonderilen):
     # ASIL ASSERT: uç 200 döndü diye alan değişmiş olmaz.
     assert user.is_verified is True, "uç 200 döndü ama is_verified DEĞİŞMEDİ"
     assert session.uygulanan_update == 1
+    # Yazma KALICI mı: commit edildi ve geri alınmadı. Bu iki assert olmadan
+    # "yazdı ama transaction geri döndü" senaryosu testten sızardı.
+    assert session.commit_sayisi >= 1, "UPDATE yapıldı ama commit EDİLMEDİ"
+    assert session.geri_alma_sayisi == 0, "yazma geri alındı"
 
 
 def test_token_tek_kullanimlik(client, app_ve_oturum, gonderilen):
