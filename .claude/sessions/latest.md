@@ -48,6 +48,62 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-22 (S245 · İddia kütüğü: beklemede 15 → 0)
+
+**Branch:** feature/self-evolution-optimization · **Commit:** `1a39a71e4` (2 dosya, +221/−52)
+**Kapı:** `tests/audit` **13 passed / 0 failed** (önce 9 passed / 1 failed) · ruff + format temiz
+**Ağaç:** yalnız `backend/semantic_cache.pkl` kirli (S244'ten devralındı, bu işe ait değil)
+
+### 🛑 İlk iş: bayat bir planı ÇALIŞTIRMAYI REDDETTİM
+Kullanıcı 6 Ağu'da yazdığım "FAZ 0" komutlarını (`TRUNCATE question_bank` +
+`pg_restore`) uygulamamı istedi. Ölçtüm: **plan 16 gün / ~20 oturum bayat.**
+FAZ 0'ın 5 kaleminin **5'i de kapalı** (#472-#476); celery log'da parola
+**0 isabet**; iki "regresyon" **yok** (`git diff` boş). Ve komut bugün
+**zarar verirdi**: (a) `TRUNCATE` S232-S240'ta `kiro2_temp`'ten taşınan
+küratörlü 3.922 satırı siler, (b) 27 Tem dump'ı **eski tek-tablo şeması** —
+`question_bank.question_text` artık YOK (4 tabloya bölündü).
+
+### Yapılan — 25-uzman kütüğünün ölçülmemiş kuyruğu boşaltıldı
+`docs/audits/2026-08-12_25uzman/iddialar.yaml`: **beklemede 15 → 0.**
+Kütük ilk kez tamamen ölçülü: fantom 6→14 · doğrulandi 6→8 · abartili 4→9.
+
+Yöntem: iddia başına **iki bağımsız çürütücü** (`iddia-dogrulayici`, farklı
+mercek: A=zaten-kapalı/yanlış-ad, B=başka-katman/semantik-yanlış) +
+anlaşmazlıkta **`kanit-hakemi`**. 12 ajan / 498 araç çağrısı / salt-okunur.
+13/15 mutabık; U09 ve X05 hakeme gitti.
+
+**15 iddianın 8'i FANTOM (%53).** Örnekler: U10 `position:fixed` saf
+layout/compositing — JS re-render tetiklemez · U12 iddia edilen "36px"
+dosyada hiç yok, global CSS zaten 44px merkezi token · U11 #415 zaten
+kapatmış · U06 ankraj dosyası git'e hiç commit'lenmemiş + import zinciri
+kırık · U16 XP-kaybı mekanizması hiçbir katmanda yok · U23 Bloom 6-seviye
+filtresi hem FE Select'inde hem BE Pydantic'te (`ge=1,le=6`) VAR.
+
+### 🔴 Tek esaslı açık kusur — U02 (doğrulandı, P2)
+FSRS aralığı **YKS tarihine göre cap'lenmiyor**. `app/services/fsrs_engine.py:64`
+`MAX_INTERVAL_DAYS=36_500` tek cap; `grep 'yks_tarih|sinav_tarih|exam_date'`
+fsrs_engine/fsrs_service → **0 sonuç**. İki çürütücü de canlı motoru koşturdu:
+5 ardışık PUAN_İYİ → **194 gün**; rep4 → **6055 gün (due 2043-03-21)**.
+İddia edilenden **geniş**: tetikleyici "Çok Kolay" değil (o buton yok,
+`response_ms` hiç gönderilmiyor → her zaman PUAN_İYİ=3); **herhangi 2-3
+ardışık doğru cevap** yetiyor. → Sıradaki iş: `min(interval, gun_kalan_yks)`.
+
+### Bekçi kör noktası — bulundu ve TDD ile kapatıldı
+`test_ankraj_dosyalari_var` *"dosya yoksa FANTOM'dur"* diyerek X07'yi kırmızı
+yapıyordu. Oysa X07 `durum=uygulandi` ve fix'in **kendisi silmeydi**
+(`a978ae86a`). Ölçüm aleti, ölçtüğü doğru kapanışı cezalandırıyordu.
+**Kontrol kolu:** eski kütük 1F/9P, yeni kütük 1F/9P → bu turun regresyonu değil.
+Fix: `_kayip_ankrajlar()` saf fonksiyonu, `durum=="uygulandi"` MUAF.
+**Mutasyon 2/2 öldü** (M6 muafiyeti kaldır · M7 toptan-atlamaya çevir);
+geri alım sha256 ile doğrulandı.
+
+### Kalıcı ders
+**Bir planın kendisi de bayatlar.** 16 gün önce doğru olan `TRUNCATE`,
+bugün yıkıcıydı. Komutu çalıştırmadan önce planın yazıldığı günün
+varsayımlarını ölç — özellikle şema, tarih ve "kapandı" listesi.
+
+---
+
 ## Session Handoff — 2026-08-21/22 (S244 · B3 FAZ 3 + 3 devralınan P0 — KAPANIŞ)
 **Branch:** feature/self-evolution-optimization
 **Aralık:** `ee5ef3c03..34f957482` — **18 commit**, hepsi push'lu, ağaç temiz
