@@ -123,6 +123,42 @@ class AuthService {
   }
 
   /**
+   * L2: E-postadaki token ile hesabı doğrular (public — token=auth).
+   *
+   * A1 altın yolunun ikinci ayağı. Token tek kullanımlıktır: aynı link ikinci
+   * kez çağrılırsa backend 400 döner (replay koruması), bu yüzden hata mesajı
+   * kullanıcıyı "yeni bağlantı iste"ye yönlendirir.
+   */
+  async epostaDogrulaVerify(token: string): Promise<{ status: string; message: string }> {
+    try {
+      return await apiRequest(`${this.baseUrl}/eposta-dogrula/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error) || 'Doğrulama başarısız');
+    }
+  }
+
+  /**
+   * L2: Doğrulama bağlantısını (yeniden) gönderir (public).
+   *
+   * Backend numaralandırmaya kapalı: e-posta kayıtlı olsa da olmasa da AYNI
+   * yanıt döner. Bu yüzden arayüz de "gönderildi" demez, "kayıtlıysa
+   * gönderildi" der — aksi hâlde ekran backend'in gizlediği bilgiyi sızdırır.
+   */
+  async epostaDogrulaGonder(email: string): Promise<{ status: string; message: string }> {
+    try {
+      return await apiRequest(`${this.baseUrl}/eposta-dogrula/gonder`, {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error) || 'Gönderim başarısız');
+    }
+  }
+
+  /**
    * KVKK Faz 2: Veli onayını geri çeker (public — token=auth, KVKK Madde 11)
    */
   async veliOnayWithdraw(token: string): Promise<{ status: string; message: string }> {

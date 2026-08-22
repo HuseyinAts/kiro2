@@ -24,6 +24,7 @@ import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
 import { ModernRegisterPage as RegisterPage } from './pages/ModernRegisterPage';
 import { VeliOnayPage } from './pages/VeliOnayPage';
+import { EpostaDogrulaPage } from './pages/EpostaDogrulaPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 // S179 (F-P0-2): ParentDashboard route now redirects to /parent/dashboard;
 // no eager import needed. ParentDashboardPage (Modern) is still lazy.
@@ -255,6 +256,10 @@ function AppContent() {
               <Route path="/login" element={<PageTransition><KiroLoginRoute /></PageTransition>} />
               <Route path="/register" element={<PageTransition><RegisterPage /></PageTransition>} />
               <Route path="/veli-onay" element={<PageTransition><VeliOnayPage /></PageTransition>} />
+              {/* L2 — A1 altın yolunun ikinci ayağı. Backend e-postaya
+                  {FRONTEND_URL}/eposta-dogrula?token=... linkini koyuyor
+                  (core/eposta_dogrulama.py); bu rota olmadan link 404 verir. */}
+              <Route path="/eposta-dogrula" element={<PageTransition><EpostaDogrulaPage /></PageTransition>} />
               {/* Şifre kurtarma (blocker #1). GirisPage:337 zaten buraya link
                   veriyordu ama rota kayıtlı değildi. ModernLoginPage:430 ise
                   /forgot-password diyor — o da ölü linkti, yönlendiriyoruz
