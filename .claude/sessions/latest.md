@@ -48,6 +48,68 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-22 (S247 · L2 E-POSTA DOĞRULAMA — A1'in 2. ayağı KAPANDI)
+**Branch:** feature/self-evolution-optimization
+**Aralık:** `750c38ef3 · 076ade47c · 25c6a2475 · aa037cef8` (4 commit)
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
+
+### Neden bu iş seçildi (ölçüm, beyan değil)
+A1 altın yolunun 4 ayağı ölçüldü: L1 kayıt ✅ (21 kullanıcı) · **L2 ❌ YOK** ·
+L3 sınav ✅ (23 oturum / 15 tamamlanmış) · L4 net ✅ (15/15 `raw_score` dolu).
+Tek eksik ayak L2'ydi ve altyapısı hazırdı (`core/email_util.py`, #466).
+
+### Kök neden
+`users.is_verified` **21/21 false**; kolonu YÜKSELTEN uç yok (canlı openapi 1119 yol),
+OKUYAN giriş kontrolü yok (grep `backend/**`), `commands/auth.py:94` sabit `FALSE`
+yazıyordu. Alan beyan edilmiş, hiçbir yere bağlanmamıştı.
+
+### Yapılanlar
+- `backend/core/eposta_dogrulama.py` **(YENİ)** — politika (flag + muafiyet + tek karar
+  noktası) + HMAC'li tek-kullanımlık token deposu + `store_al()` **tekil** + tek e-posta
+  gövdesi. Mutasyon **5/5**, M2 iki test öldürdü (assert'ler bağımsız).
+- `api/auth.py` + `commands/auth.py` — 2 uç, kayıt tetikleyicisi, giriş kapısı
+  (`is_active`'in kardeşi), `EpostaDogrulanmamis` → **403** (401 değil: kimlik doğru).
+- `tests/integration/test_eposta_dogrulama_zinciri.py` **(YENİ, 8 test)** — HTTP zinciri.
+  Mutasyon: M1 kapı silindi→**2** · M2 yalnız `/login/secure`→**1** · M3 verify UPDATE
+  silindi (uç yine 200)→**1**.
+- `frontend/` — `/eposta-dogrula` rotası + `EpostaDogrulaPage` + 2 servis metodu.
+
+### Fail Eden Testler
+**YOK.** 26 birim + 8 zincir + 55 regresyon (auth/rate-limit) → **0 failed**.
+29 skip: `test_auth_api_comprehensive.py`'nin tamamı, canlı backend ister, önceden var olan.
+
+### Engelleyiciler
+- 🔴 **SMTP hâlâ yapılandırılmamış (#441, operatör).** Kapı bu yüzden **varsayılan KAPALI**
+  (`EPOSTA_DOGRULAMA_ZORUNLU`). Açık + SMTP ölü = yeni kayıtlar giriş yapamaz.
+- 🔴 **Canlıda DEĞİL** — backend+frontend yeniden kurulmadı (#511 dersi).
+- ⚠️ Kapı borcu `#509` +1: `SKIP=ruff,mypy` — üç kollu ölçüldü, **ruff 8→8 / mypy 4→4**,
+  bulguların hiçbiri benim satırlarımda değil (satır no kayması dışında birebir aynı).
+
+### Sonraki Adimlar (maks 5)
+1. **SMTP kimlik bilgisi** (#441, operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`.
+2. Backend + frontend **rebuild** → L2'yi canlıya al, tarayıcıda doğrula.
+3. `X06` — 5+ ayrı rol-kontrolü implementasyonu (kütükte `dogrulandi`).
+4. `user_item_fsrs` tablosunu geri getir → 2 şema bekçisi yeşile döner.
+5. `U25` migration geri-alınabilirliği · `X11` imaj/host farkı.
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Kapı flag'li + varsayılan KAPALI, muafiyet TARİH bazlı** (kullanıcı onayı). Muafiyet
+  sınırı `2026-08-22 00:00 UTC` — ölçümle seçildi: 21 hesabın **hepsinden sonra**
+  (max `08-21 20:40`), `now()`'dan **önce** (`04:18`). Gelecekteki sınır kapıyı süse çevirirdi.
+  DB'ye tek satır yazılmadı → geri alınabilir.
+- **Depo TEKİL, çekirdek modülde.** Token'ı ÜRETEN (komut katmanı) ile ÇÖZEN (API katmanı)
+  ayrı katmanlarda; her biri kendi örneğini yaratsaydı Redis'siz kurulumda doğrulama
+  **her zaman sessizce** başarısız olurdu — `api/auth.py:1297`'deki kusurun aynısı.
+- **Negatif test istegin İŞLEYİCİYE ULAŞTIĞINI da ölçmeli.** İlk koşumda iki "engellenmedi"
+  testi 422 (geçersiz `.test` TLD) yüzünden **boşuna geçti**. `_istek_isleyiciye_ulasti()`
+  premis assert'i eklendi. Yanlış-SIFIR kuralının negatif-test hâli.
+- **Biçimlendirici tuzağı 2. kez ısırdı:** import'u kullanımdan ÖNCE yazdım, ruff sildi,
+  `F821` üretti. Import smoke GÖRMEDİ (dal çalışma anında), ruff gördü. **Kullanımı önce yaz.**
+- `git stash pop` index'e değil **çalışma ağacına** koyar → `git add` tekrar gerekir
+  (commit "no changes added" ile sessizce iptal oldu).
+
+---
+
 ## Session Handoff — 2026-08-22 06:43
 **Branch:** feature/self-evolution-optimization (master'dan 629 commit önde)
 **Son commit:** `f20f5bfc5` docs(devir): S246 — eksik alet yazıldı + 3 kusur kapatıldı (kuyruk 7 → 4)
