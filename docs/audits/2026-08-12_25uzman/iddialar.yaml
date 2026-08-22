@@ -101,14 +101,35 @@ iddialar:
     iddia: "'Çok Kolay' işaretlenince aralık 180 günü aşıp YKS tarihini geçebiliyor."
     gorev: "min(calculated_interval, days_until_yks) cap."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P2
+    durum: dogrulandi
     dogrulama:
       - "grep -rn 'interval' backend/algorithms/fsrs*.py backend/services/*fsrs* 2>/dev/null | head -30"
       - "grep -rn 'maximum_interval\\|max_interval\\|MAX_INTERVAL' backend/ --include=*.py | head"
       - "# ÖLÇÜM: gerçek bir kartta 'easy' seçilince dönen interval kaç gün?"
     curutme_sorusu: "FSRS'in kendi maximum_interval parametresi zaten cap koyuyor olabilir — varsayılan 36500 mü, yoksa daha düşük mü ayarlanmış?"
-    kanit: null
+    kanit: |
+      YARGI: dogrulandi · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Iddianin tetikleyici mekanizmasi ('Cok Kolay' isaretleme) YANLIS: boyle bir UI butonu/etiketi yok (frontend/src'de 'Cok Kolay' grep 0 sonuc), FSRSReviewPage.tsx'te sadece 2 buton var ('Tekrar Et'/'Bildim', boolean is_correct). Ama iddianin OZU (FSRS araligi YKS-tarih-farkinda cap'lenmiyor, 180 gunu asabiliyor) GERCEK ve DAHA DA KOTU: sadece 5 ardisik DOGRU cevapla (herhangi bir ogrenci normal kullaniminda) interval 194 gune cikiyor; 8. tekrarda ~5 yila ulasiyor. 9 Nis 2026'da bir P0 fix (a65ea45e7) '137 yillik due_date'i 36.500 gune (100 yil) clamp'ledi ama YKS-tarihi hic dusunulmedi — bu bosluk halen acik.
+      --- KANITLAR ---
+      [1] backend/app/services/fsrs_engine.py:64 `MAX_INTERVAL_DAYS: int = 36_500` — tek cap bu, YKS-tarih-farkındalığı YOK. Canlı simülasyon (backend dizininde python ile calistirildi, salt-okunur, DB'ye yazmadi):
+      ```
+      review 1: interval=3d
+      review 2: interval=10d, cumulative=13d
+      review 3: interval=30d, cumulative=43d
+      review 4: interval=80d, cumulative=123d
+      review 5: interval=194d, cumulative=317d  <- 180 gunu asti
+      review 8: interval=1829d (~5yil)
+      ```
+      Bu PUAN_İYİ (rating=3, 'İyi/Good') ile — yani PRODUCTION'DA GERÇEKTEN ERİŞİLEBİLİR olan tek doğru-cevap puanıyla. `frontend/src/pages/FSRSReviewPage.tsx:56-59` `/api/v1/fsrs/review`'a yalniz `{question_id, is_correct}` gonderiyor, `response_ms` YOK. `backend/app/services/fsrs_engine.py:345-375` `answer_to_fsrs_rating()` `response_ms is None` ise HER ZAMAN PUAN_İYİ(3) doner, PUAN_KOLAY(4)='Kolay' asla tetiklenmez. `backend/app/services/cat_session.py:1065` CAT akisinda da `response_ms: None` sabit — yani PUAN_KOLAY tum urunde STRUKTUREL OLARAK ERISILEMEZ (sadece `backend/tests/test_fsrs.py`de kullanilir).
+      [2] backend/app/services/fsrs_engine.py:64 `MAX_INTERVAL_DAYS: int = 36_500` (100 yil) — YKS tarihine gore hicbir cap yok (grep 'yks_tarih|sinav_tarih|exam_date' backend/app -> yalniz learning_path_orchestrator.py/learning_path_daily.py cikti, fsrs_engine.py/fsrs_service.py'de SIFIR sonuc). Canli simulasyon (salt-okunur, DB'ye yazmadan python ile fsrs_update() coklu cagri):
+      ```
+      rep 1: stability=15.47 interval_days=15
+      rep 2: stability=137.94 interval_days=138  due=2027-01-07
+      rep 3: stability=1017.96 interval_days=1018 due=2029-06-05
+      rep 4: stability=6054.88 interval_days=6055 due=2043-03-21
+      ```
+      App.tsx:396-401 `/fsrs-review` -> FSRSReviewPage.tsx ROTA MOUNT (roller: ogrenci, admin). App.tsx:779 `/admin/labs` -> RevolutionaryDashboard -> FSRSScheduler.tsx (Kolay(4) butonu, satir 592-598) MOUNT (admin-only). Ikisi de AYNI canonical uca gidiyor: app/api/fsrs.py:190 POST /api/v1/fsrs/review -> app/services/fsrs_service.py:apply_review -> fsrs_engine.fsrs_update -> MAX_INTERVAL_DAYS=36500.
     commit: null
     zorlayici_test: null
 
@@ -247,15 +268,20 @@ iddialar:
     iddia: "Geometri sorularında OCR kökü okuyor ama diyagram parçalarını kaçırıyor."
     gorev: "İstemci tarafında OpenCV contour edge detector ile şekil alanı tespiti."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     dogrulama:
       - "sed -n '320,350p' frontend/src/pages/PhotoAskPage.tsx"
     curutme_sorusu: |
       KAPSAM İTİRAZI: 'OpenCV istemci tarafında' = wasm bundle (~8MB). Rapor §D.1/#6
       (en basit harness) gereği ÖNCE ölç: kaç yüklemede diyagram kaçıyor? <%5 ise
       fix'in DEĞERİ yok (audit-methodology 'Fix'in DEĞERİNİ ölç').
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Sayfa ulasilabilir ve backend ucu canli — ozellik olu kod DEGIL. Ama iddianin ankrajladigi 330-340 satir araligi OCR/diyagram isleme mantigi ICERMIYOR; backend'den zaten gelmis `ocr_text`'i ekrana basan bir sonuc kartidir. Dosyanin tamaminda geometri/diyagram kelimesi hic gecmiyor — bu is (varsa) backend/services/photo_ask_service.py katmaninda olur, bu dosya:satirda degil. Iddia yanlis dosya/satira baglanmis.
+      --- KANITLAR ---
+      [1] frontend/src/App.tsx:367 `<PhotoAskPage />` (rota /photo-ask). curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/v1/photo-ask/health -> 404 (health ucu yok ama) openapi.json'da /api/v1/photo-ask/upload[POST], /solution/{question_id}[GET], /ai-solve[POST] MEVCUT -> router DISABLED_ROUTERS'ta DEGIL, canli. PhotoAskPage.tsx:328-341 (iddia ankraji) sadece `uploadResult.ocr_text.slice(0,200)` render eden salt-okunur sonuc karti; grep -i 'geometri|diyagram|sekil|şekil|figure|diagram' frontend/src/pages/PhotoAskPage.tsx (481 satirin tamami) -> 'No matches found'.
+      [2] curl -o /dev/null -w '%{http_code}' GET /api/v1/photo-ask/upload -> 405 (route var, POST-only, DISABLED değil). openapi.json: /api/v1/photo-ask/upload[post], /solution/{id}[get], /ai-solve[post] hepsi canlı. grep -in 'geometri|diyagram|figure|shape|crop|sekil|şekil' frontend/src/pages/PhotoAskPage.tsx -> 0 eşleşme (481 satırın tamamı). backend/api/photo_ask_api.py aynı grep -> 0 eşleşme. Satır 330-340 gerçekte 'Results State' bloğu: sadece uploadResult.ocr_text.slice(0,200) ve matched_questions listesini render ediyor — diyagram/geometri ile hiçbir ilgisi yok.
     commit: null
     zorlayici_test: null
 
@@ -266,14 +292,19 @@ iddialar:
     iddia: "Birleşik yapılarda ('öngörülemez') Zemberek lemmatizer zaman aşımına takılabiliyor."
     gorev: "@lru_cache(maxsize=10000) ile morfolojik analiz önbelleği."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     dogrulama:
       - "sed -n '1,60p' backend/services/osym_language_validator.py"
       - "grep -rn 'lru_cache\\|cache' backend/services/osym_language_validator.py"
       - "# ÖLÇÜM: 'öngörülemez' ile gerçek çağrı — süre kaç ms? timeout GERÇEKTEN oluyor mu?"
     curutme_sorusu: "Zaman aşımı ölçüldü mü, yoksa varsayım mı? (audit-methodology: 'Varsayım ≠ Ölçüm')"
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Dosya diskte var ama (a) git'e hic commitlenmemis (izole/artik dosya), (b) kendi importlarindan biri (ai_ml.zemberek_context_analyzer) hic var olmayan bir modul, (c) hicbir yerden cagirilmiyor. Zemberek bu dosya araciligiyla FIILEN hic calismiyor -> 'ongorulemez gibi birlesik yapida timeout' iddiasi olcunemez cunku kod yolu import-zamaninda cokup calisamiyor. Iddia canli sistemi degil, olu/izole bir dosyayi tarif ediyor.
+      --- KANITLAR ---
+      [1] git status --porcelain backend/services/osym_language_validator.py -> '?? backend/services/osym_language_validator.py' (dosya git'e HIC commitlenmemis, izlenmiyor). python -c "import ai_ml.zemberek_context_analyzer" -> ModuleNotFoundError: No module named 'ai_ml' (backend/ altinda ai_ml/ dizini yok, Glob '**/ai_ml/**' -> No files found). python -c "from services.osym_language_validator import OSYMLanguageValidator" -> ModuleNotFoundError: No module named 'backend' (dosyanin kendi ikinci importu da kirik). grep 'osym_language_validator|OSYMLanguageValidator' backend/api, backend/services, backend/routers, backend/core, backend/tests, backend/algorithms -> hepsinde 0 sonuc (kendi disinda hicbir caller yok).
+      [2] backend/services/osym_language_validator.py:15 -> `from ai_ml.zemberek_context_analyzer import ZemberekContextualAnalyzer` -> ai_ml/zemberek_context_analyzer.py:11 -> `from backend.utils.zemberek_integration import ZemberekClient`. Doğrudan import denemesi: `cd backend && python -c "from services.osym_language_validator import OSYMLanguageValidator"` -> `NameError: name 'List' is not defined` (backend/utils/zemberek_integration.py:217, `List[str]` kullanılıyor ama sadece `from typing import Any` import edilmiş, `from __future__ import annotations` yok). Modül import ANINDA çöküyor. Ayrıca kod içi ikinci kusur: osym_language_validator.py:78 `self.zemberek.analyze_contextual(...)` çağırıyor ama ZemberekContextualAnalyzer sınıfında böyle bir metod YOK (metodlar: disambiguate_word, analyze_sentence, _process_disambiguation) -> import düzeltilse bile AttributeError, gerçek Zemberek çağrısına hiç ulaşılamaz -> timeout imkansız. Container kontrolü: `docker exec kiro2-backend sh -c "java -version"` -> `sh: 1: java: not found` (exit 127); `/app/zemberek-full.jar` 9 byte (gerçek zemberek-full.jar onlarca MB, bu bir stub/placeholder). grep backend/api, backend/services, backend/core, backend/routers, backend/tests -> OSYMLanguageValidator/osym_language_validator hiçbir yerden import edilmiyor (kendi dosyası hariç) -> tüketicisi yok, ölü kod.
     commit: null
     zorlayici_test: null
 
@@ -402,14 +433,20 @@ iddialar:
     iddia: "Ping > 200ms'te rakip işaretlemesi geriden geliyor."
     gorev: "NTP epoch timestamp + client-side prediction & interpolation."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     curutme_sorusu: |
       MİMARİ ÇELİŞKİ: CLAUDE.md 'WebSockets deprecated, SSE'ye migrasyon' diyor.
       Deprecated bir katmana interpolation yatırımı yapmak doğru mu? ÖNCE mimari karar.
     dogrulama:
       - "grep -rn 'WebSocket\\|socket.io\\|ws://' frontend/src/kiro/screens/DuelloPage.tsx | head"
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: hakem · 3 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Anlasmazlik varlikta: A mekanizmayi yok saydi, B artik bir kusur birakti. Fix'in degerini olctum: isaretlemeyi gecikmeye bagli degistirecek TEK dal yok — dort katmanda da (skor, kazanan, sunucu suresi, dogruluk) zaman girdisi kullanilmiyor, istemci sayaci yerel basliyor. B'nin P3'u kusura degil genel ag fizigine verilmis; B zaten 'iddia edilen kusur icin kanit degil' diyor. Artik yok, indirgeme yok.
+      --- KANITLAR ---
+      [1] frontend/src/App.tsx:415 `<DuelPage />`. openapi.json: /api/v1/duel/stream/{session_id} [GET] canli (SSE ucu), /matchmake, /{session_id}/answer, /rating, /history de MEVCUT -> router DISABLED degil. grep 'WebSocket|new WebSocket|ws://|wss://|socket.io' DuelloPage.tsx -> 0 sonuc; grep 'EventSource' -> 2 sonuc (satir 10, 169: 'Ekran EventSource açmaz — yalnız duelStream(handlers)'). frontend/src/kiro/api/api-client.ts:943 `new EventSource(esBase()+'/api/v1/duel/stream/'+sessionId,...)` — gercek SSE. Satir 905-907 yorum: 'Tur kazananı stream'den GELMEZ — turSonucu postDuelAnswer yanıtındadır (sunucu-otorite)'.
+      [2] openapi.json: /api/v1/duel/matchmake[post], /{id}/answer[post], /stream/{id}[get], /rating[get], /history[get], /{id}/current-question[get], /{id}/result[get] — hepsi canlı. backend/routers/loader.py:21 DISABLED_ROUTERS = {} (bos, duel devre disi degil). frontend/src/kiro/screens/DuelloPage.tsx:10 'rakip cevapları + bitiş duelStream(handlers) ile (EKRAN EventSource AÇMAZ, yalnız abone olur)'; frontend/src/kiro/api/api-client.ts:943 `new EventSource(esBase() + '/api/v1/duel/stream/' + sessionId, ...)` — WebSocket DEĞİL, SSE. grep -in 'ping|latency|gecikme' DuelloPage.tsx -> 0 eslesme; herhangi bir ping-esikli/lag-telafi kodu yok.
+      [3] (1) curl -s localhost:8000/openapi.json | python -> 'total paths 1119' + /api/v1/duel/stream/{session_id} ['get'] (SSE), /matchmake ['post'], /{id}/answer ['post'] — canli. backend/routers/loader.py:21 `DISABLED_ROUTERS: dict[str,str] = {}` (bos). (2) KONTROL KOLU: `grep -rn WebSocket backend/api -l` -> multi_agent.py, team_challenges_api.py, yolo_detection_api.py (arac CALISIYOR); ayni grep duel_api.py+duel_service.py'de 0 satir. Frontend'de WebSocket 20+ dosyada eslesiyor, duel yolunda 0. (3) SKORLAMA LATENCY-BAGIMSIZ: backend/services/duel_service.py:225-234 `match.player1_time_ms = time_ms` ... `if is_correct: session.player1_score += 1` — time_ms YALNIZ SAKLANIYOR, skora girmiyor; :262-269 kazanan = `player1_score > player2_score` (esitlik=draw), sure TIE-BREAK DEGIL. (4) SUNUCUDA SURE KAPISI YOK: grep 'time_per_question_sec|deadline|timeout' backend/api/duel_api.py -> yalniz :80 sema, :507/:552 istemciye GONDERIM; gec gelen cevabi reddeden dal YOK. (5) Dogruluk: duel_api.py:636-675 `_check_answer_correctness` -> question_content.correct_answer ile harf karsilastirmasi, zaman girdisi yok. (6) Istemci sayaci YEREL basliyor: DuelloPage.tsx:167-168 ve :247-248 `setTimeLeft(q.sure); roundStartRef.current = Date.now();` :201 `timeMs = Date.now() - roundStartRef.current` — ping cevap penceresini YEMIYOR. (7) Akis kozmetik: api-client.ts:948-953 `else if (t === 'answer') { // Stream YALNIZ rakip durum-pili besler; tur kazanani postDuelAnswer'da }`.
     commit: null
     zorlayici_test: null
 
@@ -424,13 +461,18 @@ iddialar:
     iddia: "ThemeSelector inline position:fixed — kaydırmada re-render tetikliyor."
     gorev: "React.createPortal ile App köküne taşı."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     dogrulama:
       - "grep -n 'ThemeSelector' frontend/src/pages/ModernStudentDashboard.tsx frontend/src/App.tsx"
       - "# ÖLÇÜM: React Profiler — kaydırmada gerçekten re-render var mı?"
     curutme_sorusu: "position:fixed TEK BAŞINA re-render tetiklemez (CSS'tir). Gerçek sebep state/context olabilir — profiler kanıtı yoksa iddia yanlış teşhis."
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Semantik hata: CSS position:fixed saf layout/compositing ozelligidir, JS re-render TETIKLEMEZ (bu iddianin curutme sorusunda da isaret ettigi nokta). Kod tarafinda da dogrulandi: ThemeSelector'da scroll listener/useState-on-scroll YOK; tek state `acik` (menu ac/kapa) ve zustand selector `s => s.kulturelTema} — ikisi de scroll'a baglanmiyor, sadece tiklamaya (mousedown) bagli click-outside handler var. Profiler kaniti da yok. Iddia hem yanlis teshis hem kod-kaniti yok.
+      --- KANITLAR ---
+      [1] frontend/src/kiro/components/ThemeSelector.tsx: kendi kok div'i position:'relative', acilir menu position:'absolute' (satir 68, 86) — 'fixed' YOK. frontend/src/pages/ModernStudentDashboard.tsx:93: `<Box sx={{ position: 'fixed', top: 32, right: 32, zIndex: 9999 }}><ThemeSelector /></Box>` — fixed olan ThemeSelector'un KENDISI degil, onu saran ust Box. `grep -n "fixed|scroll|Scroll" ThemeSelector.tsx ModernStudentDashboard.tsx` -> sadece 1 satir (fixed, satir 93); onScroll/addEventListener('scroll')/window.scrollY/useScroll icin Dashboard klasorunde 0 esles.
+      [2] frontend/src/kiro/components/ThemeSelector.tsx (tüm dosya, 133 satır): tek 'position' kullanımı satır 68 `position:'relative'` (dropdown wrapper) — bileşenin kendisinde `position:fixed` YOK. `position:fixed` olan yer parent'ta: frontend/src/pages/ModernStudentDashboard.tsx:92-95 `<Box sx={{ position:'fixed', top:32, right:32, zIndex:9999 }}><ThemeSelector/></Box>` — CSS wrapper'da, davranışsal kod değil. `grep -n "scroll" frontend/src/pages/ModernStudentDashboard.tsx` -> 0 eşleşme. ThemeSelector içindeki tek state `useState(acik)` (dropdown aç/kapa) + zustand `useAyar((s)=>s.kulturelTema)` ince-taneli seçici (ThemeSelector.tsx:51-52) — scroll'a bağlı hiçbir efekt/listener yok, tek `useEffect` mousedown-dışına-tıklama için (satır 55-63).
     commit: null
     zorlayici_test: null
 
@@ -441,12 +483,17 @@ iddialar:
     iddia: "Şık radyo butonlarında aria-label dinamik metinle çakışıyor."
     gorev: 'aria-label="A seçeneği: [Şık Metni]" formatı.'
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     dogrulama:
       - "grep -rn 'aria-label' frontend/src/kiro/screens/SoruCozmePage.tsx frontend/src/pages/*Soru*.tsx 2>/dev/null | head -20"
     curutme_sorusu: "Görev #415 (a11y: AccessibilityProvider mount + aria-invalid/label) TAMAMLANMIŞ. Bu iddia o işten SONRA mı ölçüldü?"
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Iki bagimsiz curutme: (1) #415 zaten a11y calismasini kapatmis ve AccessibilityProvider gercekten mount; (2) ogrencinin fiilen gordugu radyo butonlarinda aria-label hic yok (cakisma imkansiz), aria-label+dinamik metin deseni olan tek bilesen ise App.tsx'te hicbir route'tan erisilemiyor -> olu kod hakkinda bir iddia.
+      --- KANITLAR ---
+      [1] git log: #415 4 commit ile TAMAMLANMIS (144eb42f9, 4670e6577, 70910dbdc, 8ce300665). Canli sinav yolu: App.tsx -> ExamPage.tsx:19 `import { ModernOSYMExamInterface }` -> satir 214 render; bu dosyada Radio/FormControlLabel (satir 589-623) hicbir aria-label TASIMIYOR (native <label> ile gorunur metin uzerinden erisilebilir isim aliyor) -> cakisacak aria-label YOK. Dinamik `aria-label={`Sik ${option}`}` deseni sadece frontend/src/components/Exam/BubbleSheetInterface.tsx:162,216'da var; bu dosya ExamInterface.tsx uzerinden import ediliyor ve `grep -n ExamInterfaceExample App.tsx` -> 0 esles (mount edilmemis). aria-labelledby/aria-describedby BubbleSheetInterface.tsx'te de 0 esles -> gercek bir 'cakisma' hicbir yerde yok.
+      [2] grep aria-label sonucu: ModernOSYMExamInterface.tsx (canlı yol) -> 0 eşleşme radyo bloğunda. AnswerPanel.tsx (OSYMExamInterface.tsx'in eski/alternatif paneli) -> 0 eşleşme. Doğru grup+radio aria-label deseni SADECE BubbleSheetInterface.tsx:162,216'da var (`aria-label={Soru ${questionNumber} cevap seçenekleri}` + `aria-label={Şık ${option}}`) — çakışma değil, standart grup-etiket + öğe-etiket deseni. Ama bu dosyanın tüketicisi ExamInterface.tsx hiçbir App.tsx rotasında YOK: `grep -rln "ExamInterface" frontend/src --include=*.tsx | grep -v test` -> yalnız ExamInterfaceExample.tsx (demo) döndü, App.tsx'te sıfır referans.
     commit: null
     zorlayici_test: null
 
@@ -457,14 +504,19 @@ iddialar:
     iddia: "Admin/öğretmen tablolarında mobil buton 36px (WCAG min 44px)."
     gorev: "minHeight/minWidth 44px zırhı."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     on_bulgu: "MEMORY: Faz 3 tasarım-portu kanon derslerinde 'minHeight>=44' zaten var — kısmen uygulanmış olabilir."
     dogrulama:
       - "grep -rn 'minHeight\\|min-height' frontend/src/pages/CalibrationStatusPage.tsx"
       - "find frontend/src -name 'touch-optimized.css'"
     curutme_sorusu: "44px kuralı design-system token'ında merkezîleştirilmiş olabilir; sayfa-sayfa yama gerekmeyebilir."
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Iddianin somut sayisi (36px) dosyada hic yok; global CSS zaten WCAG 44px minimumunu merkezi token gibi (button/.btn/input selector) tum uygulamaya uyguluyor — curutme sorusunun ongordugu 'merkezi token' senaryosu dogrulandi. Ayrica hedef sayfa (CalibrationStatusPage) admin-only, B2C ogrenci etkisi zaten sifir olurdu, ama bu tartisma bile gereksiz cunku 36px degeri kod tabaninda mevcut degil.
+      --- KANITLAR ---
+      [1] `grep -n "36px|min-height|min-width|44px" frontend/src/styles/touch-optimized.css` -> tum min-height/min-width degerleri **44px** (satir 8,9,16,28,44) veya daha buyuk (60px, satir 192,260); dosyada tek bir '36px' esleslmesi YOK. `grep -n "Button|size=|height:|minHeight" frontend/src/pages/CalibrationStatusPage.tsx` -> yalniz `Chip size="small"` ve progress-bar height (8px/6px, dekoratif), ozel-boyutlu buton yok.
+      [2] `grep -n "36px\|44px\|min-height\|min-width" frontend/src/styles/touch-optimized.css` -> 8/16/28/44 satırlarında `min-height:44px; min-width:44px`, 192/260'da `min-width:60px`/`min-height:60px`. '36px' hiç geçmiyor. `grep -n "36px" frontend/src/styles/touch-optimized.css frontend/src/pages/CalibrationStatusPage.tsx` -> BOŞ çıktı. CalibrationStatusPage.tsx'te hiç Button/IconButton yok — yalnız LinearProgress (height:8/6) ve dekoratif 24x24 daire (satır 151), yani buton dokunma hedefi bile mevcut değil.
     commit: null
     zorlayici_test: null
 
@@ -606,13 +658,18 @@ iddialar:
     iddia: "Din Kültürü muafiyeti AYT Sosyal-2 katsayısında ayrı izlenmiyor."
     gorev: "Muaf öğrenciler için alternatif puan simülasyonu."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P3
+    durum: abartili
     dogrulama:
       - "grep -rn 'din_kultur\\|dinkultur\\|muaf\\|felsefe' backend/ --include=*.py -i | head -20"
       - "grep -rln 'YKSEstimate\\|yks_estimate' backend/ frontend/src | head"
     curutme_sorusu: "Puan motoru gerçek ÖSYM katsayılarını uyguluyor mu, yoksa zaten yaklaşık mı? Yaklaşıksa muafiyet marjinal."
-    kanit: null
+    kanit: |
+      YARGI: abartili · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Ankraj yanlis: YKSEstimateEngine adinda bir sinif yok; gercek motor PreferenceSimulationService zaten net*sabit-katsayi seklinde KABA bir yaklastirma (gercek OSYM T-skor/standart-sapma formulunu modellemiyor), Sosyal-1/Sosyal-2 ayrimi veya herhangi bir 'muafiyet' mekanizmasi bastan beri yok -- bu, iddia edilenden DAHA GENIS ama zaten kabul edilmis bir sadelestirme, 'P1 dogruluk kaybi' degil. Ayrica canli DB'de Sosyal Bilimler/Din Kulturu konusu hic bulunmadigindan (yalniz KIMYA/MATEMATIK), bu spesifik eksiklik su an olcumlenebilir bir kullanici etkisi uretmiyor.
+      --- KANITLAR ---
+      [1] grep 'YKSEstimateEngine' backend/ (api,services,algorithms,core,models) -> 0 sonuc, bu sinif hic yok. Gercek karsiligi: backend/services/preference_simulation_service.py:23-46 COEFFICIENTS dict + calculate_yks_score(). Canli GET curl http://localhost:8000/api/v1/preference-simulation/score-coefficients?score_type=SOZ -> {"AYT":{"literature":5.0,"history":5.0,"geography":5.0,"philosophy":5.0}} — Din Kulturu alani YOK, 'Sosyal-2' alt grubu YOK, 'muafiyet' kavrami kod genelinde hic yok (grep 'muafiyet|exemption' 0 sonuc). Ankraj'in diger yarisi TopicHierarchy.meb_code (backend/models/question_bank.py:62) bu servisle hicbir iliskisi olmayan genel bir string kolon (relationship/FK yok). DB: psql topic_hierarchy DISTINCT subject_area -> yalniz KIMYA, MATEMATIK (Sosyal/Din/Felsefe konusu su an DB'de hic yok).
+      [2] backend/app/services/yks_estimator.py:66-78 AYT_DERSLER dict'inde 'din': DersYapisi('Din Kültürü', 6, ...) TANIMLI ama satır 82-110 AYT_KATSAYILAR dict'inde (SAY/EA/SÖZ/DİL dördünde de) 'din' anahtarı HİÇ YOK -> ayt_puan_hesapla() (satır 280) sadece `katsayilar.items()` üzerinde döner, 'din' hiçbir puan_turu için işleme girmiyor; hesaplanan din net'i (theta_to_net ile üretilse bile) sessizce atılıyor. Router canlı: `curl .../openapi.json` -> `/api/v1/estimate/ayt/{puan_turu}` mevcut (DISABLED_ROUTERS boş, app.api.estimator kayıtlı). estimator.py:156 'din' theta dict'ine dahil ediliyor ama YKSEstimator.ayt_raporu() içinde hiçbir katkı üretmiyor. Kod genelinde 'muaf' kelimesi backend/app altında SIFIR eşleşme -> muafiyet kavramı (exemption tracking) proje genelinde hiç modellenmemiş, sadece Din Kültürü değil. DB kontrolü: `SELECT subject_area, count(*) FROM question_metadata GROUP BY subject_area` -> yalnızca KIMYA(3531) ve MATEMATIK(391); topic_hierarchy subject_area dağılımı MATEMATIK(20)/KIMYA(12)/NULL(13) -> Din Kültürü, Felsefe, Tarih, Coğrafya, Sosyal Bilimler için DB'de HİÇ soru/konu yok, dolayısıyla hiçbir öğrenci bugün 'din' veya 'felsefe' theta'sı üretemiyor (canlıda tetiklenemez).
     commit: null
     zorlayici_test: null
 
@@ -623,13 +680,18 @@ iddialar:
     iddia: "Günlük soru çözmeyince XP kaybı (loss aversion) motivasyonu aşırı düşürüyor."
     gorev: "XP kaybı yerine 'Oba Kalkanı' (streak freeze) eşyası."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     dogrulama:
       - "grep -rn 'xp\\|XP' frontend/src/pages/ObaPage.tsx | grep -i 'kay\\|lose\\|minus\\|-' | head"
       - "grep -rn 'penalty\\|ceza\\|decay' backend/services/*gamif* backend/api/gamification*.py 2>/dev/null | head"
     curutme_sorusu: "XP kaybı GERÇEKTEN implement edilmiş mi, yoksa sadece UI'da mı gösteriliyor? Backend'de decay job var mı?"
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: İddia 'XP kaybı motivasyonu aşırı düşürüyor' diyor ama XP kaybı (loss aversion) mekanizması ne backend'de (celery/streak_tasks.py sadece streak sıfırlıyor, XP değil) ne frontend'de (ObaPage/DailyQuestPage sadece XP KAZANCI gösteriyor) mevcut. Var olmayan bir özelliğin 'motivasyonu düşürdüğü' iddia edilemez — feature hiç inşa edilmemiş.
+      --- KANITLAR ---
+      [1] Grep frontend/src/pages/ObaPage.tsx 'xp|streak|loss|kayb': tek eşleşme xp_pool (mevcut/kazanılmış XP gösterimi, satır 18/182/246) — 'kayıp/loss' kelimesi hiç yok. Grep DailyQuestPage.tsx: xp_reward, bonus_xp — sadece KAZANÇ, kayıp yok. Grep backend 'xp_pool -=|xp -=|xp.*decay' backend/**/*.py: 0 eşleşme. backend/tasks/streak_tasks.py:37-45 sadece 'current_streak = 0' yapıyor (seri sıfırlama), XP'ye hiç dokunmuyor — freeze_count varsa seri bile korunuyor. celery task grep (41 dosya) içinde XP azaltan/decay eden hiçbir task yok.
+      [2] frontend/src/pages/ObaPage.tsx (286 satır, tamamı okundu): sayfa yalnız oba oluştur/katıl/ayrıl/üye-listesi/xp_pool gösteriyor; 'streak', 'kayıp', 'gunluk soru' kavramı hiç yok. backend/api/oba_api.py (341 satır, tamamı okundu): 7 endpoint (list/my/create/join/leave/members/promote) — hiçbirinde xp_pool azaltma yok. models/gamification.py:181 `xp_pool = Column(Integer, default=0)` — decrement mekanizması yok. backend/core/celery_app.py beat_schedule (satır 113-143) 3 job listeliyor (daily/weekly report, safe-pool refresh, ES sync) — xp/decay/streak_reset YOK. `curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/v1/oba/list` -> 401 (canlı, auth gerekli).
     commit: null
     zorlayici_test: null
 
@@ -752,11 +814,16 @@ iddialar:
     iddia: "Productive failure scaffolding yok."
     gorev: "Kademeli ipucu / üretken başarısızlık iskelesi."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P3
+    durum: abartili
     curutme_sorusu: "MEMORY: 'İnteraktifÇözümPage backend-hazırlık kontrolü + mount' (#425) tamamlanmış. Sayfa canlı mı, yoksa mount edilmemiş mi?"
     dogrulama: ["grep -n 'InteraktifCozum' frontend/src/App.tsx"]
-    kanit: null
+    kanit: |
+      YARGI: abartili · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Cok-katmanli/asamali ipucu (hint-tier) sistemi GERCEKTEN yok (grep 0) — iddianin cekirdegi dogru. Ama 'scaffolding TAMAMEN yok' iddiasi tam dogru degil: sayfada tek-katmanli duzeltici geri bildirim var (basarisiz denemede yonlendirici ipucu donuyor). Bu, PF pedagojisinin klasik cok-asamali versiyonu degil ama sifir da degil. Daha onemlisi: sayfa gorevi #425'te ('backend-hazırlık kontrolü GEREKMEDİ', 0 P0 adversarial bulgu) bilincli olarak backend'siz, tek-widget kesif araci olarak tasarlanmis; A1 altin yoluna (kayit->dogrulama->40 soru TYT->net) hic dokunmuyor. P1 severity bu yardimci/kesif widget'i icin asiri — P3'e dusuruluyor.
+      --- KANITLAR ---
+      [1] frontend/src/App.tsx:318 `<InteraktifCozumPage />`. grep -i 'hint|ipucu|scaffold|kademe|productive.?failure' InteraktifCozumPage.tsx (423 satirin tamami) -> 'No matches found'. Ama satir 252-260 `kontrolEt()`: basarisizlikta tek-katmanli duzeltici geri bildirim doner ("Henüz değil — tepe şu an (${vertexX},${vertexY}). a negatif mi? b'yi 0'a, c'yi 3'e yaklaştır.") — 'Mini görev' karti (satir 393-413). Dosya basligi (satir 1-9): 'Sohbet / ChatBubble / QuestionCard / backend / streaming YOK' — bilincli backend'siz saf istemci-matematik widget'i. git show ccdb62233 (.claude/sessions/latest.md): '#425 /interaktif-cozum mount ... backend-hazırlık kontrolü GEREKMEDİ ... Net-new rota (önceden 404'tü). Canlı E2E: kaydırıcı etkileşimi doğrulandı.'
+      [2] openapi.json'da 'interaktif' icin hic route yok (tasarim geregi: dosya basligi 'Sohbet / ChatBubble / QuestionCard / backend / streaming YOK'). grep -in 'hint|ipucu|scaffold|kademe' InteraktifCozumPage.tsx -> 0 eslesme (kelime düzeyinde iddia dogru). AMA satir 252-259 `kontrolEt()`: basarisiz denemede yönlendirici geri-bildirim üretiyor -- `msg: 'Henüz değil — tepe şu an (${vertexX}, ${vertexY}). a negatif mi? b'yi 0'a, c'yi 3'e yaklaştır.'` -- cevabi vermeden ipucu veren tek-kademeli bir basarisizlik-geri-bildirim döngüsü zaten var. git show ccdb62233 -- .claude/sessions/latest.md: #425 kapsami 'backend-hazırlık kontrolü + mount' idi, pedagoji/scaffold hic konu edilmedi (o iddiayi curutmuyor, sadece ilgisiz).
     commit: null
     zorlayici_test: null
 
@@ -820,15 +887,41 @@ iddialar:
     iddia: "HNSW index parametreleri ince ayarlı değil."
     gorev: "HNSW fine-tuning (m, ef_construction, ef_search)."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P3
+    durum: abartili
     on_bulgu: "CLAUDE.md: vektör arama ZATEN 21ms (hedef <100ms). Fix'in DEĞERİ ölçülmeli — %79 marj varken tuning gereksiz olabilir."
     dogrulama:
       [
         "psql -p 5434 -d kiro2 -c \"\\di+ *hnsw*\"",
         "grep -rn 'ef_search\\|ef_construction\\|hnsw' backend/ --include=*.py | head",
       ]
-    kanit: null
+    kanit: |
+      YARGI: abartili · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Kusur teknik olarak var (parametreler pgvector default'u) ama iki nedenle abartili: (1) ANKRAJ FANTOM — belirtilen dosyada (question_repository.py) HNSW/embedding ile ilgili hicbir kod yok, gercek kod baska dosyalarda; (2) UCUNCU-KATMAN OLCUMU — 3 HNSW-index'li tablonun 3'unde de embedding kolonu %100 BOS (0/3922, 0/0, 0/0). Bos bir sutunu indeksleyen index'in m/ef_construction ayari pratikte hicbir sorgu performansini etkilemiyor — index'in ustunde arama yapilacak veri yok.
+      --- KANITLAR ---
+      [1] Ankraj YANLIS: `grep -i 'embedding|vector|hnsw' backend/repositories/question_repository.py` -> 0 eslesme (459 satirlik dosyada pgvector/HNSW ile ilgili TEK SATIR yok). Gercek HNSW kodu `backend/core/rag_service.py`, `vector_store_factory.py`, `vector_optimizations.py`'de.
+      Canli DB (psql -p 5434 -d kiro2):
+      ```
+      indexname                    | indexdef
+      ix_question_embedding_hnsw   | ... USING hnsw (embedding vector_cosine_ops) WITH (m='16', ef_construction='64')
+      ix_rc_problem_embedding_hnsw | ... m='16', ef_construction='64'
+      ix_rs_problem_embedding_hnsw | ... m='16', ef_construction='64'
+      ```
+      Ucu de pgvector VARSAYILANI (m=16, ef_construction=64) — 'ince ayarli degil' iddiasi teknik olarak DOGRU.
+      Ama doluluk:
+      ```
+      question_statistics: total=3922, embedding dolu=0
+      reasoning_cache:     total=0,    embedding dolu=0
+      reasoning_sessions:  total=0,    embedding dolu=0
+      ```
+      `current_setting('hnsw.ef_search')` -> bos (hic set edilmemis, pgvector varsayilani 40 kullaniliyor).
+      [2] psql: `select indexname, indexdef from pg_indexes where indexdef ilike '%hnsw%'` ->
+      ```
+      ix_rc_problem_embedding_hnsw | ... hnsw (problem_embedding ...) WITH (m='16', ef_construction='64')
+      ix_rs_problem_embedding_hnsw | ... hnsw (problem_embedding ...) WITH (m='16', ef_construction='64')
+      ix_question_embedding_hnsw   | ... hnsw (embedding ...) WITH (m='16', ef_construction='64')
+      ```
+      (pgvector varsayilanlari birebir). Doluluk: `select count(*), count(embedding) from question_statistics` -> `3922|0` (embedding %0 dolu); `reasoning_cache` ve `reasoning_sessions` -> 0 satir (tablolar BOS). `backend/repositories/question_repository.py` icinde embedding/vector/hnsw/similarity -> 0 eslesme (grep) — ANKRAJ YANLIS, bu dosya vektor aramasi yapmiyor. Gercek pgvector kullanan kod `backend/services/photo_ask_service.py:157-167` `FROM question_bank q ... q.embedding` — ama `information_schema.columns` sorgusu `question_bank`'ta `embedding` kolonu OLMADIGINI gosteriyor (yalniz question_statistics/v_safe_for_beta*'ta var) -> bu sorgu canli calisirsa 'column does not exist' hatasi verir, index'e hic ulasamaz. Kod tabaninda `hnsw.ef_search` (pgvector query-time param) SIFIR sonuc; bulunanlar (`core/vector_store_factory.py`, `core/vector_optimizations.py`) Chroma/FAISS icin `index.hnsw.efSearch`, pgvector'le ilgisiz farkli bir vektor deposu.
     commit: null
     zorlayici_test: null
 
@@ -839,14 +932,19 @@ iddialar:
     iddia: "Veli haftalık özet telemetrisi yok."
     gorev: "Haftalık özet telemetri."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P3
+    durum: abartili
     dogrulama:
       [
         "grep -rn 'weekly\\|haftalik\\|summary' frontend/src/pages/ModernParentDashboard.tsx | head",
       ]
     curutme_sorusu: "KVKK: veli telemetrisi çocuk verisi işler. KVKK Faz B tamamlanmış — yeni telemetri aydınlatma metnine ekleme GEREKTİRİR. Bu bir ön koşul."
-    kanit: null
+    kanit: |
+      YARGI: abartili · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: İddia 'telemetri yok' derken YANLIŞ katmanı işaret ediyor: backend'de haftalık özet telemetrisi (weekly-report endpoint) GERÇEKTEN var ve çalışıyor. Gerçek kusur backend eksikliği değil, frontend'in bu canlı endpoint'i hiç ÇAĞIRMAMASI — sayfa %100 mock veri gösteriyor. Severity P2 yerine P3'e düşer: backend hazır, sadece wiring eksik (tek satır fetch entegrasyonu), veri modelleme/güvenlik/KVKK çalışması gerekmiyor çünkü altyapı zaten KVKK-guard'lı (rol kontrolü var).
+      --- KANITLAR ---
+      [1] curl http://localhost:8000/openapi.json canlı: /api/v1/parent/children/{child_id}/weekly-report (200), /api/v1/parent/dashboard, /api/v1/parent/children/{child_id}/performance — HEPSİ CANLI. backend/api/parent.py:184-221 get_weekly_report gerçek implementasyon: ParentService(db).generate_weekly_report(child_id), rol kontrolü (PARENT), gerçek DB. Ama frontend/src/pages/ModernParentDashboard.tsx: grep 'fetch(|axios|api\.' = 0 eşleşme; dosya satır 42 yorum: '// Mock data - gerçek API'den gelecek'; children/recentActivities/upcomingEvents/teacherMessages hepsi hardcoded sabit array (satır 43-132).
+      [2] ModernParentDashboard.tsx (656 satır, tamamı okundu): satır 42 '// Mock data - gerçek API'den gelecek', dosyada hiç fetch/apiRequest/apiClient çağrısı YOK (0 API çağrısı) — children/activities/events/messages tamamı hardcoded array. AMA sistemde gerçek haftalık rapor akışı ÇALIŞIYOR: `curl http://localhost:8000/api/v1/parent/children/1/weekly-report` -> 401 (kayıtlı, canlı), openapi.json'da mevcut; bu uç ModernParentChildrenPage.tsx:100 tarafından tüketiliyor ve bu sayfa `/parent/children` rotasında (App.tsx:660-666, aynı veli rolüyle) mount edilmiş. Ayrıca ayrı bir kırık ikiz bulundu: ModernParentReportsPage.tsx (`/parent/reports`, App.tsx:668-674) `/api/v1/parent/children-performance` ve `/api/v1/parent/children/{id}/weekly-performance` çağırıyor — `curl` ikisi de 404 (kayıtlı DEĞİL), catch bloğu sessizce mock'a düşüyor.
     commit: null
     zorlayici_test: null
 
@@ -857,15 +955,20 @@ iddialar:
     iddia: "Bloom taksonomisi 6 seviye filtresi yok."
     gorev: "6-level Bloom filtresi."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: yok
+    durum: fantom
     on_bulgu: "Skill mevcut: .claude/skills/taxonomy-validate/ — backend'de SOLO/Marzano/Bloom entegrasyonu CLAUDE.md'de anılıyor. Kısmen VAR olabilir."
     dogrulama:
       [
         "grep -rn 'bloom\\|Bloom' backend/ --include=*.py -l | head",
         "find frontend/src -name 'OSYMQuestionGenerator*'",
       ]
-    kanit: null
+    kanit: |
+      YARGI: fantom · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: İddia 'Bloom taksonomisi 6 seviye filtresi yok' diyor ama ankraj dosyasının kendisinde tam 6 seviyeli, uçtan uca çalışan (state->UI->API body) bir Bloom seçici zaten mevcut. Bu bir eksiklik değil, var olan bir özelliğin görülmemesi — iddia teknik olarak yanlış (semantik curutme). Ayrıca sayfa admin-only olduğu için B2C öğrenci etkisi zaten yok idi (iddianın kendi mantığıyla bile P1 değil P3 olurdu), ama asıl mesele özellik zaten var.
+      --- KANITLAR ---
+      [1] frontend/src/pages/OSYMQuestionGeneratorPage.tsx:78-85: bloomLevels = [1:Bilgi,2:Kavrama,3:Uygulama,4:Analiz,5:Sentez,6:Yaratma] — TAM 6 SEVİYE. Satır 237-251: FormControl+Select, value={params.bloomLevel}, onChange ile params güncelleniyor, MenuItem'lar bloomLevels.map ile render ediliyor. Satır 98-102: handleGenerate -> fetch('/api/v1/osym/generate-question', body: JSON.stringify(params)) — bloomLevel dahil TÜM params backend'e gönderiliyor. openapi.json'da 'bloom_level' alanı question_metadata şemasında (EvaluationResponse) mevcut, backend destekliyor.
+      [2] OSYMQuestionGeneratorPage.tsx:78-85 `bloomLevels` dizisi 6 seviyeyi (Bilgi..Yaratma) tam listeliyor, satır 238-251 MUI Select ile UI'da render ediliyor, `params.bloomLevel` POST body'de `/api/v1/osym/generate-question`'a gönderiliyor (satır 98-103). backend/api/osym_routes.py:40-41 `bloomLevel: int = Field(default=3, ge=1, le=6, description="Bloom's taxonomy level (1-6)")`, satır 143 `bloom_level=payload.bloomLevel` generator'a geçiyor, satır 174 prompt metnine ekleniyor. Router loader.py:70 `api.osym_routes` kayıtlı (disabled değil).
     commit: null
     zorlayici_test: null
 
@@ -876,8 +979,8 @@ iddialar:
     iddia: "HSL glassmorphism token'ları yok."
     gorev: "HSL tokenization."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P3
+    durum: abartili
     curutme_sorusu: |
       KAPSAM: MEMORY 'Faz 3 tasarım-portu 42/42 TAMAM, kanon dersleri belgede
       (coral CTA, faded->ink.muted)'. Yeni bir tasarım dili eklemek TAMAMLANMIŞ
@@ -887,7 +990,12 @@ iddialar:
         "find frontend/src -name 'modern-theme.ts'",
         "grep -c 'hsl' frontend/src/theme/modern-theme.ts 2>/dev/null",
       ]
-    kanit: null
+    kanit: |
+      YARGI: abartili · karar: A+B mutabik · 2 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Curutme sorusundaki kapsam itirazi DOGRULANDI: Faz 3 tasarim-portu gercekten 42/42 tamamlanmis ve resmi kanon token sistemi (kiro/tokens/tokens.ts, 'TEK kaynak') zaten HEX tabanli calisiyor — HSL kullanmiyor. modern-theme.ts'de glassmorphism zaten FONKSIYONEL (blur+saturate+glass renkleri); eksik olan yalnizca renk-format tercihi (HSL vs hex/rgba), bu bir a11y/fonksiyonel kusur degil. Tamamlanmis ve kilitlenmis bir portun ustune yeni bir renk-formati talebi P2 kusur degil, P3 iyilestirme/stil tercihi.
+      --- KANITLAR ---
+      [1] design/PORT_DURUM.md:257-265: `# KIRO2 — FAZ 3 KAPANIS (2026-07-24 · 42/42 TAMAM)` ... `Faz 3 TOPLAM: 42/42 ekran + paylasilan varliklar`. Canon token dosyasi `frontend/src/kiro/tokens/tokens.ts` acikca 'TEK kaynak' diye tanimli ve HEX kullaniyor (`#F7F4EF`, `#2A2433`, coral `#FF6F5C`/`coralCtaBg #C2452B`) — HSL degil. `grep -n "hsl(" frontend/src/theme/*.ts` -> 0 esles (dogru: HSL yok). Ama glassmorphism'in KENDISI zaten var: modern-theme.ts:207-227 `backdropFilter: 'blur(16px) saturate(180%)'` + `modernColors.glass.white.light` + `modernColors.glass.border` + `modernColors.shadow.glass` (rgba/hex tabanli, modern-colors.ts).
+      [2] frontend/src/theme/modern-colors.ts:158-177 `glass: { white:{light/medium/dark/subtle}, black:{...}, primary:{...}, border }` — tam bir glassmorphism token sistemi zaten var, rgba formatında (örn. `rgba(255,255,255,0.9)`). modern-theme.ts satır 207-315'te bu token'lar MUI Card/Paper `backgroundColor`/`border`/`boxShadow` override'larına bağlanmış. `grep -n "hsl\|HSL" modern-colors.ts modern-theme.ts` -> 0 eşleşme; renkler hex (#F0F4FF vb.) ve rgba formatında, hiçbiri hsl()/hsla() değil.
     commit: null
     zorlayici_test: null
 
@@ -1026,8 +1134,8 @@ iddialar:
     iddia: "Bu iki anahtar Claude Code'un belgelenmiş ayar listesinde YOK — sessizce ölü olabilir."
     gorev: "Doğrula; ölüyse sil, değilse dokunma."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
+    severity_olculen: P3
+    durum: dogrulandi
     on_bulgu: |
       ⚠️ ÖLÇÜM GEÇERSİZ — ALET ARIZASI. Binary string grep denendi (2.1.228):
         excludePatterns=0, contextManagement=0  ama  advisorModel=0 DE ÇIKTI.
@@ -1038,7 +1146,13 @@ iddialar:
       tekil ("bu anahtar var mı?") sorgu.
     dogrulama:
       - "claude doctor   # setup checkup, bilinmeyen anahtar uyarısı verir mi?"
-    kanit: null
+    kanit: |
+      YARGI: dogrulandi · karar: hakem · 3 bagimsiz yargi · 22 Agu 2026
+      GEREKCE: Iki curutucu de ayni katmana bakti, ayni olguyu buldu ve ikisi de P3 olctu; ayrilik yalniz etiketde. A'nin 'abartili' etiketi kendi cumlesiyle celisiyor ('sessizce olu hipotezini DOGRULUYOR'). Ikisinin 'olculemedi' dedigi cekirdek iddiayi olctum: anahtarlar binary'de hic gecmiyor, sema strict degil, sessizce dusuruluyor. Iddia birebir dogru; davranis degismedigi icin P3.
+      --- KANITLAR ---
+      [1] .claude/settings.json satır 156-172: 'contextManagement': {warningThreshold:60, clearThreshold:70, progressFile:'progress.md', autoCompact:true} ve 'excludePatterns': [...] GERÇEKTEN VAR. Grep .claude dizini genelinde (hooks, commands, skills dahil) 'excludePatterns|contextManagement': SADECE settings.json'un kendisinde eşleşme (1 dosya) — hiçbir hook/script bu anahtarları OKUMUYOR. .claude/settings.json hooks.PreCompact = .claude/hooks/session-save.py; bu dosyada grep 'contextManagement|progressFile|warningThreshold|clearThreshold' = 0 eşleşme (hardcoded mantık, ayarlardan bağımsız). progressFile='progress.md' repo kökünde YOK (ls progress.md -> 'No such file'), gerçek dosya docs/progress.md'de — configure edilen yol ile gerçek kullanım UYUŞMUYOR.
+      [2] .claude/settings.json:156-161 `contextManagement: {warningThreshold, clearThreshold, progressFile, autoCompact}` ve :162-210 `excludePatterns: [...49 glob]` — ikisi de gerçekten dosyada var. `grep -rn "excludePatterns|contextManagement" .claude/` -> yalnız settings.json'daki kendi tanımları eşleşiyor, başka hiçbir dosya bu iki anahtarı OKUMUYOR. `.claude/hooks/pre-tool-use.py`, `.claude/hooks/post-commit-checkpoint.py` içindeki 'settings.json' referansları bu iki anahtarla ilgisiz (yalnız dokümante edilmiş `matcher` ve `permissions.deny` anahtarlarına atıf). Aynı dosyada satır 27-73 zaten dokümante edilmiş `permissions.deny` Read() glob listesi VAR ve excludePatterns'in listelediği yolların çoğuyla (node_modules, .venv, __pycache__, dist, build, htmlcov, .pytest_cache, .mypy_cache, .ruff_cache) örtüşüyor.
+      [3] 1) rg -a -o -N "<key>" /c/Users/husey/.local/bin/claude.exe (2.1.239, 337MB): KONTROL KOLU enabledPlugins=111, outputStyle=105, advisorModel=59, statusLine=55, forceLoginMethod=31, cleanupPeriodDays=26, includeCoAuthoredBy=13 | HEDEF excludePatterns=0, warningThreshold=0, clearThreshold=0, progressFile=0, contextManagement=1. Tek contextManagement eslesmesi (offset 324859514) ayar semasi degil Java SDK belge metni: '| Context editing | beta | `.contextManagement(BetaContextManagementConfig.builder()...)`'. 2) Gercek sema binary'de: Ftr() @302054823 = _e({$schema,apiKeyHelper,...,cleanupPeriodDays...}); Ybe=ve(()=>Ftr($tr())) — .strict() YOK; seb=ve(()=>Ftr($tr(),{strictPolicyHelperKeys:!0}).strict()) yalniz policy icin. UOn() @302153xxx proje settings.json'u Ybe().safeParse ile ayristirir => bilinmeyen anahtar sessizce dusurulur, uyari uretmez. 3) autoCompactEnabled=25 (gercek anahtar) vs contextManagement.autoCompact=0. 4) rg -n "excludePatterns|contextManagement|warningThreshold|clearThreshold|progressFile" .claude .github orchestrator backend/scripts frontend/src -> yalniz .claude/settings.json:156-162 (kendi tanimi); ExamTimer.tsx:49 warningThresholds alakasiz. 5) .claude/hooks/session-save.py:377 (PROJECT_ROOT/'progress.md','progress') hardcoded + 'if src.exists()' -> depo kokunde progress.md YOK, sessiz no-op. 6) git log -S'"contextManagement"' -- .claude/settings.json -> 20326aec7 (4 Sub 2026, 'fix: Remove skip decorators...') drive-by.
     commit: null
     zorlayici_test: null
 

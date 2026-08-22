@@ -21,6 +21,11 @@ MUTASYONLA ÇİVİLENDİ (12 Ağu 2026):
   M3: iki kayda aynı id ver                            -> test_id_benzersiz FAIL ✓
   M4: durum="uygulandi" + commit=null                  -> test_uygulandi_commit FAIL ✓
   M5: stakes cümlesini değiştir                        -> test_stakes_sabit FAIL ✓
+
+MUTASYONLA ÇİVİLENDİ (22 Ağu 2026 — `uygulandi` ankraj muafiyeti):
+  M6: `uygulandi` muafiyetini KALDIR   -> test_uygulandi_ankraj_silinmis FAIL ✓
+  M7: muafiyeti TOPTAN atlamaya çevir  -> aynı testin kontrol kolu    FAIL ✓
+  (geri alım sha256 ile doğrulandı: be04c5e6…)
 """
 
 from __future__ import annotations
@@ -181,14 +186,21 @@ def test_stakes_sabit(kutuk):
     )
 
 
-def test_ankraj_dosyalari_var(kutuk):
-    """Ankraj dosyası yoksa iddia zaten fantomdur — ilk ucuz filtre."""
-    # KUTUK = <depo>/docs/audits/<tarih>/iddialar.yaml  ->  parents[3] = <depo>
-    depo = KUTUK.resolve().parents[3]
-    assert (depo / ".claude").is_dir(), f"depo koku yanlis cozuldu: {depo}"
+def _kayip_ankrajlar(kayitlar, depo: Path) -> list[tuple[str, str]]:
+    """Ankrajı diskte olmayan iddiaları (id, yol) olarak döndürür.
 
-    kayip = []
-    for k in kutuk[1]:
+    Saf fonksiyon: kütükten bağımsız test edilebilir olsun diye ayrıldı
+    (aynı kalıp `_kalip_ihlali` / `_kiracilik_yargisi` ile tutarlı).
+
+    `durum == "uygulandi"` MUAF: fix'in kendisi bir SİLME olabilir; o zaman
+    ankrajın yokluğu kusur değil, kapanışın KANITIDIR. Muafiyet güvenli çünkü
+    `uygulandi` kayıtlar commit + zorlayici_test taşımak zorunda
+    (test_uygulandi_commit_ve_test_ister). Diğer tüm durumlarda kontrol sürer.
+    """
+    kayip: list[tuple[str, str]] = []
+    for k in kayitlar:
+        if k.get("durum") == "uygulandi":
+            continue
         for parca in str(k["ankraj"]).replace("+", " ").split():
             yol = parca.split(":")[0].strip("(),")
             if "{" in yol:  # brace expansion -> tek dosya degil, atla
@@ -199,7 +211,50 @@ def test_ankraj_dosyalari_var(kutuk):
                 continue
             if not (depo / yol).exists():
                 kayip.append((k["id"], yol))
+    return kayip
+
+
+def test_ankraj_dosyalari_var(kutuk):
+    """Ankraj dosyası yoksa iddia zaten fantomdur — ilk ucuz filtre."""
+    # KUTUK = <depo>/docs/audits/<tarih>/iddialar.yaml  ->  parents[3] = <depo>
+    depo = KUTUK.resolve().parents[3]
+    assert (depo / ".claude").is_dir(), f"depo koku yanlis cozuldu: {depo}"
+
+    kayip = _kayip_ankrajlar(kutuk[1], depo)
     assert not kayip, (
         f"ankraj dosyası bulunamadı: {kayip}. Dosya yoksa iddia FANTOM'dur — "
         "durumu 'fantom' yap ve kanıta bu listeyi yaz."
+    )
+
+
+def test_uygulandi_ankraj_silinmis_olabilir(tmp_path):
+    """'uygulandi' iddianın ankrajı SİLİNMİŞ olabilir — fix'in kendisi silme olabilir.
+
+    VAKA (22 Ağu 2026): X07 `backend/app/guardrails/guards/socratic_guard.py`
+    ankrajını taşıyor ama commit `a978ae86a` ("refactor(X07): olu SocraticGuard
+    sinifi silindi") tam da o dosyayı SİLEREK iddiayı kapattı. Kütük bekçisi
+    "dosya yoksa FANTOM'dur" diyerek doğru kapanışı kırmızıya çevirdi —
+    yani ölçüm aleti, ölçtüğü şeyi cezalandırıyordu.
+
+    Muafiyet güvenli: `uygulandi` kayıtlar zaten commit + zorlayici_test
+    taşımak ZORUNDA (test_uygulandi_commit_ve_test_ister).
+    """
+    silinmis = "backend/app/guardrails/guards/socratic_guard.py"
+    kayitlar = [
+        {"id": "SILINMIS-FIX", "ankraj": silinmis, "durum": "uygulandi"},
+        {"id": "OLCULMEMIS", "ankraj": silinmis, "durum": "beklemede"},
+    ]
+
+    kayip = _kayip_ankrajlar(kayitlar, tmp_path)
+    idler = {i for i, _ in kayip}
+
+    # (1) MUAFİYET: fix'i silme olan kapanmış iddia kırmızıya düşmemeli
+    assert "SILINMIS-FIX" not in idler, (
+        "'uygulandi' iddianın silinmiş ankrajı kayıp sayıldı — fix'in kendisi "
+        "bir SİLME olabilir (X07 / a978ae86a)."
+    )
+    # (2) KONTROL KOLU: muafiyet toptan atlamaya dönüşmemeli
+    assert "OLCULMEMIS" in idler, (
+        "muafiyet fazla geniş: ölçülmemiş iddianın kayıp ankrajı da atlandı — "
+        "bu ucuz fantom filtresini tamamen öldürür."
     )
