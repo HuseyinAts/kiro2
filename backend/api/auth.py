@@ -34,6 +34,7 @@ from core.authorization import require_student_owner_or_privileged
 from core.config import settings as app_settings
 from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
 from core.email_util import send_email
+from core.eposta_dogrulama import dogrulama_baslat, store_al
 from core.jwt_auth import get_jwt_manager
 from core.password_reset_codes import CODE_DIGITS, PasswordResetCodeStore
 from database.connection import get_sync_session_context
@@ -103,6 +104,13 @@ RATE_LIMITS = {
     # Kaba kuvveti asıl durduran şey bu kova değil, koda bağlı deneme sayacı
     # ve hesap başına kod limiti (core/password_reset_codes.py).
     "password_reset_verify": (10, 300),
+    # L2 e-posta doğrulama — şifre sıfırlamayla AYNI gerekçeyle iki ayrı kova:
+    # tek kova olsaydı 1 gönderim isteği + 4 başarısız link denemesi kullanıcıyı
+    # 5 dk kilitlerdi ve okul NAT'ı arkasında bu gerçek bir senaryo. IP kovası
+    # kaba kuvveti asıl durduran şey değil; onu hesap başına gönderim limiti
+    # yapıyor (core/eposta_dogrulama.py MAX_GONDERIM).
+    "eposta_dogrulama_gonder": (5, 300),
+    "eposta_dogrulama_verify": (10, 300),
     "2fa_verify": (10, 60),
     "award_xp": (10, 60),
     "quest_progress": (20, 60),
@@ -630,7 +638,11 @@ async def kullanici_giris(
     await _check_login_rate_limit(request)
 
     try:
-        from application.commands.auth import LoginCommand, TwoFactorRequired
+        from application.commands.auth import (
+            EpostaDogrulanmamis,
+            LoginCommand,
+            TwoFactorRequired,
+        )
         from core.cqrs.bus import get_command_bus
 
         command = LoginCommand(
@@ -644,6 +656,18 @@ async def kullanici_giris(
             "message": "2FA doğrulaması gerekli",
             "email": e.email,
         }
+    except EpostaDogrulanmamis as e:
+        # 403, 401 DEĞİL: kimlik bilgileri DOĞRU. 401 döndürseydik kullanıcı
+        # şifresini yanlış sanıp sıfırlamaya giderdi. `_record_failed_login`
+        # de çağrılmıyor — bu başarısız bir giriş denemesi değil.
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "EPOSTA_DOGRULANMAMIS",
+                "message": "Giriş yapabilmek için e-posta adresinizi doğrulayın.",
+                "email": e.email,
+            },
+        )
     except ValueError:
         _record_failed_login(request)
         raise HTTPException(
@@ -697,7 +721,11 @@ async def secure_login(
     await _check_login_rate_limit(request)
 
     try:
-        from application.commands.auth import LoginCommand, TwoFactorRequired
+        from application.commands.auth import (
+            EpostaDogrulanmamis,
+            LoginCommand,
+            TwoFactorRequired,
+        )
         from core.cqrs.bus import get_command_bus
 
         command = LoginCommand(
@@ -741,6 +769,16 @@ async def secure_login(
             "message": "2FA doğrulaması gerekli",
             "email": e.email,
         }
+    except EpostaDogrulanmamis as e:
+        # Kapı BURADA da olmalı: yalnız `/giris`e konsaydı bu uçtan atlanırdı.
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "EPOSTA_DOGRULANMAMIS",
+                "message": "Giriş yapabilmek için e-posta adresinizi doğrulayın.",
+                "email": e.email,
+            },
+        )
     except ValueError:
         _record_failed_login(request)
         raise HTTPException(
@@ -2106,6 +2144,102 @@ async def veli_onay_withdraw(
         return VeliOnayResponse(status=result["status"], message=result["message"])
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# ============================================================================
+# L2: E-posta doğrulama — A1 altın yolunun ikinci ayağı
+# ============================================================================
+# 22 Ağu 2026 ölçümü: `users.is_verified` 21/21 `false`, kolonu YÜKSELTEN bir uç
+# yoktu (canlı openapi'de 1119 yol tarandı) ve OKUYAN bir giriş kontrolü yoktu.
+# Politika `core/eposta_dogrulama.py`'de: kapı `EPOSTA_DOGRULAMA_ZORUNLU` ile
+# açılır, varsayılan KAPALI (SMTP #441 gelene kadar kilitlenme üretmesin).
+
+
+class EpostaDogrulamaGonderRequest(BaseModel):
+    email: str = Field(..., min_length=5, max_length=254)
+
+
+class EpostaDogrulamaVerifyRequest(BaseModel):
+    token: str = Field(..., min_length=10, max_length=200)
+
+
+class EpostaDogrulamaResponse(BaseModel):
+    status: str
+    message: str
+
+
+# Numaralandırmayı önlemek için gönderim ucu HER ZAMAN bu yanıtı döner: e-posta
+# kayıtlı da olsa değilse de, kotası dolmuş da olsa. Farklı yanıt vermek ucu bir
+# "bu e-posta sistemde var mı" sorgusuna çevirirdi.
+_DOGRULAMA_GONDER_YANITI = EpostaDogrulamaResponse(
+    status="ok",
+    message="E-posta adresiniz kayıtlıysa doğrulama bağlantısı gönderildi.",
+)
+
+
+@router.post("/eposta-dogrula/gonder", response_model=EpostaDogrulamaResponse)
+async def eposta_dogrulama_gonder(
+    request: Request,
+    body: EpostaDogrulamaGonderRequest,
+    db: AsyncSession = Depends(get_db),
+) -> EpostaDogrulamaResponse:
+    """Doğrulama bağlantısını (yeniden) gönderir (public — numaralandırmaya kapalı)."""
+    await _check_rate_limit(request, "eposta_dogrulama_gonder")
+
+    from sqlalchemy import text as _text
+
+    # ASCII lower() KASITLI: normalize_tr() Türkçe yerel ayarıyla "I" -> "ı"
+    # yapar ve e-posta adresini bozar (case-convention.md Endpoint Gate).
+    email = body.email.strip().lower()
+
+    satir = (
+        await db.execute(
+            _text("SELECT id, is_verified FROM users WHERE lower(email) = :e"),
+            {"e": email},
+        )
+    ).fetchone()
+
+    # Zaten doğrulanmışsa yeni token üretmiyoruz — ama yanıt DEĞİŞMİYOR.
+    if satir is not None and not satir.is_verified:
+        await dogrulama_baslat(str(satir.id), email)
+
+    return _DOGRULAMA_GONDER_YANITI
+
+
+@router.post("/eposta-dogrula/verify", response_model=EpostaDogrulamaResponse)
+async def eposta_dogrulama_verify(
+    request: Request,
+    body: EpostaDogrulamaVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+) -> EpostaDogrulamaResponse:
+    """E-postadaki token ile hesabı doğrular (public — token=auth)."""
+    await _check_rate_limit(request, "eposta_dogrulama_verify")
+
+    from sqlalchemy import text as _text
+
+    store = await store_al()
+    user_id = await store.token_coz(body.token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Doğrulama bağlantısı geçersiz veya süresi dolmuş. "
+            "Yeni bir bağlantı isteyin.",
+        )
+
+    await db.execute(
+        _text(
+            "UPDATE users SET is_verified = TRUE, updated_at = CURRENT_TIMESTAMP "
+            "WHERE id = :uid"
+        ),
+        {"uid": user_id},
+    )
+    await db.commit()
+
+    logger.info("e-posta doğrulandı: user_id=%s", user_id)
+    return EpostaDogrulamaResponse(
+        status="verified",
+        message="E-posta adresiniz doğrulandı. Artık giriş yapabilirsiniz.",
+    )
 
 
 @router.get("/veli-onay/status", response_model=VeliOnayStatusResponse)

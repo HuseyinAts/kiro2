@@ -245,3 +245,112 @@ class EpostaDogrulamaStore:
             f"{self.KEY_GONDERIM}:{_slot(email)}", self.GONDERIM_PENCERESI_SECONDS
         )
         return count <= self.MAX_GONDERIM
+
+
+# ---------------------------------------------------------------------------
+# TEK ÖRNEK — iki çağıran da BURADAN alır
+# ---------------------------------------------------------------------------
+# Token'ı üreten (`RegisterUserCommandHandler`, komut katmanı) ile onu çözen
+# (`/eposta-dogrula/verify`, API katmanı) FARKLI katmanlarda. Her biri kendi
+# örneğini yaratsaydı Redis'siz kurulumda ikisi ayrı süreç-içi `dict`e yazar ve
+# doğrulama HER ZAMAN başarısız olurdu — sessizce. `api/auth.py:1297`'de
+# belgelenen şifre-sıfırlama kusurunun birebir aynısı.
+#
+# Redis edinimi de bu yüzden burada: çağıranlardan biri istemciyi enjekte etseydi
+# hangisinin önce çalıştığına bağlı olarak depo bazen Redis'li bazen bellekli
+# olurdu (sıraya bağlı, teşhisi zor bir kusur).
+
+
+class _Depo:
+    def __init__(self) -> None:
+        self.ornek: EpostaDogrulamaStore | None = None
+        self.redis: Any | None = None
+        self.redis_denendi = False
+
+
+_depo = _Depo()
+
+
+async def _redis_al() -> Any | None:
+    """Redis istemcisi; erişilemezse `None` (bellek-içi moda düşülür).
+
+    `redis_denendi` bayrağı olmadan Redis kapalıyken her istekte bir bağlantı
+    zaman aşımı ödenirdi.
+    """
+    if _depo.redis_denendi:
+        return _depo.redis
+
+    _depo.redis_denendi = True
+    try:
+        import redis.asyncio as aioredis
+
+        client = aioredis.from_url(
+            os.environ.get("REDIS_URL", "redis://localhost:6379/0"),
+            decode_responses=True,
+        )
+        await client.ping()
+        _depo.redis = client
+    except Exception:
+        logger.warning(
+            "e-posta doğrulama: Redis yok, süreç-içi belleğe düşülüyor. Çok "
+            "işçili kurulumda token bir işçide üretilip diğerinde doğrulanacağı "
+            "için akış SESSİZCE bozulur."
+        )
+        _depo.redis = None
+    return _depo.redis
+
+
+async def store_al() -> EpostaDogrulamaStore:
+    """Süreç genelinde TEK `EpostaDogrulamaStore` örneği."""
+    if _depo.ornek is None:
+        _depo.ornek = EpostaDogrulamaStore(await _redis_al())
+    return _depo.ornek
+
+
+def dogrulama_epostasi_gonder(email: str, token: str) -> bool:
+    """Doğrulama linkli e-postayı gönder.
+
+    Gövde BURADA, tek yerde. Kayıt akışı (komut katmanı) ile "yeniden gönder"
+    ucu (API katmanı) ayrı gövdeler yazsaydı ikisi zamanla ayrışırdı — komşu
+    `veli_onay` kodunda tam olarak bu oldu: uç düzgün HTML gönderirken kayıt
+    akışı `f"Token: {token}"` stub'ı gönderiyor (`commands/auth.py:148`).
+
+    Returns:
+        True  — mesaj gönderim kuyruğuna alındı
+        False — SMTP yapılandırılmamış, e-posta GİTMEDİ
+    """
+    from core.email_util import send_email
+
+    frontend = os.environ.get("FRONTEND_URL", "http://localhost:3001").rstrip("/")
+    link = f"{frontend}/eposta-dogrula?token={token}"
+    saat = EpostaDogrulamaStore.TOKEN_TTL_SECONDS // 3600
+    html = (
+        "<p>Merhaba,</p>"
+        "<p>KIRO2 hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın.</p>"
+        f'<p><a href="{link}">E-postamı doğrula</a> '
+        f"(bağlantı {saat} saat geçerli)</p>"
+        '<p style="font-size:12px;color:#888">Bu kaydı siz yapmadıysanız bu '
+        "e-postayı yok sayabilirsiniz.</p>"
+    )
+    kuyruga_alindi = send_email(email, "KIRO2 — E-posta Adresinizi Doğrulayın", html)
+    if not kuyruga_alindi:
+        logger.error(
+            "Doğrulama e-postası GÖNDERİLEMEDİ (SMTP yapılandırılmamış): %s. "
+            "EPOSTA_DOGRULAMA_ZORUNLU açıksa bu kullanıcı giriş YAPAMAZ.",
+            email,
+        )
+    return bool(kuyruga_alindi)
+
+
+async def dogrulama_baslat(user_id: str, email: str) -> bool:
+    """Token üret + e-posta gönder. Kota dolduysa sessizce `False`.
+
+    Hem kayıt akışı hem "yeniden gönder" ucu bunu çağırır — ikisinin de aynı
+    kota ve aynı gövdeyi kullanması böyle garanti ediliyor.
+    """
+    store = await store_al()
+    if not await store.gonderim_hakki_var_mi(email):
+        logger.warning("doğrulama e-postası hesap limitine takıldı: %s", _slot(email))
+        return False
+    token = await store.token_uret(user_id, email)
+    return dogrulama_epostasi_gonder(email, token)

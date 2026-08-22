@@ -149,6 +149,16 @@ class RegisterUserCommandHandler(CommandHandler[RegisterUserCommand, dict[str, A
             except Exception as e:
                 logger.error("veli onay tetikleme hatası: %s", e)
 
+        # L2: doğrulama e-postası. Kayıt AKIŞINI BLOKLAMAZ — SMTP yoksa
+        # kullanıcı yine kayıtlıdır, yalnızca `is_verified` false kalır ve kapı
+        # kapalıyken bu hiçbir şeyi engellemez (veli-onay ile aynı desen).
+        try:
+            from core.eposta_dogrulama import dogrulama_baslat
+
+            await dogrulama_baslat(user_id, command.email)
+        except Exception as e:
+            logger.error("doğrulama e-postası tetikleme hatası: %s", e)
+
         logger.info(f"Yeni kullanıcı kaydı: {command.email} ({rol_str})")
         return {
             "success": True,
@@ -175,6 +185,22 @@ class TwoFactorRequired(Exception):
         super().__init__("2FA verification required")
 
 
+class EpostaDogrulanmamis(Exception):  # noqa: N818
+    """L2 kapısı: hesap var, şifre doğru, ama e-posta doğrulanmamış.
+
+    `ValueError` DEĞİL, ayrı bir tür: `ValueError` uçta jenerik 401 "İşlem
+    başarısız" üretiyor ve kullanıcı ne yapacağını bilemiyor. `TwoFactorRequired`
+    ile aynı desen — eylem gerektiren durum, kimlik hatası değil.
+
+    N818 (adı "Error" ile bitmeli) kardeş `TwoFactorRequired` ile simetri için
+    bilinçli olarak susturuldu.
+    """
+
+    def __init__(self, email: str):
+        self.email = email
+        super().__init__("E-posta doğrulaması gerekli")
+
+
 class LoginCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     email: str
@@ -194,6 +220,22 @@ class LoginCommandHandler(CommandHandler[LoginCommand, dict[str, Any]]):
 
         if not db_user.is_active:
             raise ValueError("Hesap aktif değil")
+
+        # L2 kapısı — `is_active`in kardeşi. Karar burada DEĞİL saf fonksiyonda
+        # (`core/eposta_dogrulama.py`): gömülü bir if zinciri mutasyonla
+        # çivilenemez. Varsayılan KAPALI; mevcut hesaplar tarih muafiyetiyle
+        # korunur.
+        # Yerel import KASITLI: bu dosyanın modül-düzeyi import bloğu kodun
+        # ALTINDA (7 adet önceden var olan E402). Oraya bir satır daha eklemek
+        # mevcut ihlali büyütürdü; dosyadaki diğer işleyiciler de yerel import
+        # kullanıyor.
+        from core.eposta_dogrulama import giris_engellenmeli_mi
+
+        if giris_engellenmeli_mi(
+            bool(getattr(db_user, "is_verified", False)),
+            getattr(db_user, "created_at", None),
+        ):
+            raise EpostaDogrulanmamis(email=db_user.email)
 
         if not command.password:
             raise ValueError("Şifre alanı boş olamaz")
