@@ -48,6 +48,49 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-22 (S246 · Eksik alet yazıldı + 3 kusur kapatıldı)
+
+**Commit'ler:** `0e3314f02` (ajan) · `2e7c11d53` (X10) · `1c9299f96` (X05) ·
+`d220255c1` (X05 bekçisi) · `42af7ed3f` (kütük) · `3da8e5159` (ajan notu)
+**Kapı:** `tests/audit` + 2 bekçi → **20 passed / 3 skipped / 0 failed**
+**Kütük:** `dogrulandi` **7 → 4** · `uygulandi` 6 → **8**
+
+### Eksik alet yazıldı: `.claude/agents/kusur-kapatici.md`
+Boşluk **ölçüldü**: `tdd-loop`/`debug-bug` reproduce→kök-neden→fix→test→regresyon
+kapsıyor; deponun kurallarının dayattığı **7 kontrolün hiçbiri** ikisinde de yok
+(mutasyon · kontrol kolu · üç kollu SKIP · hash-değişimi · kütük · biçimlendirici
+import silme · `/tmp` ad-alanı). **Yedisi de 22 Ağu'da ısırdı** — ampirik gerekçe.
+Sözleşme: **9 adım**, ajan **commit ETMEZ** (paralel turda git index çakışmaz).
+🔴 **Kayıt kısıtı ölçüldü:** yeni ajan **aynı oturumda** `agentType` olarak
+kullanılamıyor (3/3 `not found`). Sözleşme prompt'a gömüldü → 3/3 kapanış üretildi.
+
+### 3 kusur, 3'ü de bağımsız çürütücüyle **AYAKTA**
+| Kod | Sonuç | Öz |
+|---|---|---|
+| **X10** P0 | KAPANDI | **İki kolu varmış**; `27c8fff02` yalnız birincisini kapatmış. İkincisi: sessiz skip **sessiz bir VEKİL ÖLÇÜMLE** değiştirilmiş — `pg_dsn.py` hiç soket açmaz. sıkı+DB-ölü: `EXIT=0` → **`EXIT=1`**. Mutasyon **6/6**. |
+| **X02** P1 | **DEĞER +0 → DURDU** | İddia bayat: 9 dosya/1.782 satır **değil** 5/529; kalan 5'in hepsi *"her oturumda yüklenmeli"* diye **beyan ediyor** → `paths` eklemek kusur olurdu. Fix **yazılmadı**. |
+| **X05** P3 | KAPANDI | 2 ölü anahtar + 47 glob silindi (hakem 49 demişti, ajan 47 ölçtü). Mutasyon **5/5**, ikisi "aşırıya kaçma" civisi. |
+
+### 🔴 İki alet arızası yakalandı (bulgu değil, arıza)
+1. **Yazdığım bekçi ölü doğdu.** `parents[2]` = `backend/` → dosya yok → `3 skipped`,
+   üç mutasyon da "hayatta kaldı" çünkü test hiç koşmadı. **X10'un birebir aynı sınıfı.**
+   Mutasyon adımı olmasaydı ölü bekçi commit'lenecekti. → `parents[3]` + skip-değil-FAIL.
+2. **Ankraj tekil değildi.** `replace(b"parents[3]",…,1)` **docstring'i** vurdu, kodu değil
+   → M3 sahte "hayatta kaldı". Tekil ankrajla tekrarlandı → öldü.
+
+### ⚠️ Yakın kaza
+X05 çürütücüsü mutasyon için `git checkout HEAD -- .claude/settings.json` çalıştırdı;
+fix commit'siz olduğu için **sildi**. `git diff --stat` ile yakalandı, bayt-bayt
+yeniden kuruldu, sha256 doğrulandı. Kayıp yok. Kural teyit: commit'siz iş
+`git stash push -- <dosya>` ile mutasyona sokulur, **`git checkout HEAD --` ile asla**.
+
+### Sıradaki
+`dogrulandi` kalan 4: **X06** (5+ ayrı rol-kontrolü impl.) · **U25** (migration
+geri-alınabilirlik) · **X04** (883 satırlık rule dosyası) · **X11** (offline_sync_api
+imajda yok). Ayrıca X10'un **fail-open `STRICT` bayrağı** ve **M6 ölçülmemiş dalı** açık.
+
+---
+
 ## Session Handoff — 2026-08-22 (S245 · İddia kütüğü: beklemede 15 → 0)
 
 **Branch:** feature/self-evolution-optimization · **Commit:** `1a39a71e4` (2 dosya, +221/−52)
