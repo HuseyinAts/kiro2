@@ -35,7 +35,10 @@ kasıtlı olarak kullanılmadı: S203'te "tablo var" vekili aylarca yeşil kalı
 
 from __future__ import annotations
 
+import asyncio
+import inspect
 import os
+import sys
 
 import pytest
 import pytest_asyncio
@@ -84,7 +87,8 @@ MIN_BENZERSIZLIK = 0.90
 STRICT = os.getenv("KIRO2_STRICT_DB_INVARIANTS") == "1"
 
 
-def test_invaryant_olculebilir_olmali():
+@pytest.mark.asyncio
+async def test_invaryant_olculebilir_olmali():
     """SIKI modda bekçi ÖLÇEBİLİR olmalı — ölçememek de bir alarmdır.
 
     NEDEN AYRI (ve fixture'sız) BİR TEST:
@@ -97,18 +101,58 @@ def test_invaryant_olculebilir_olmali():
     temiz FAILED üretir.
 
     ÖLÇÜLDÜ (12 Ağu): fixture içinde -> `2 errors`; burada -> `1 failed`.
+
+    22 AĞU 2026 — İKİNCİ KOL: "DSN var" ölçüm DEĞİL, VEKİLDİR.
+    12 Ağu'daki sürüm yalnız `assert resolve_pg_dsn()` diyordu. `pg_dsn.py`
+    hiç bağlanmaz, sadece dize inceler. Ölçüldü:
+
+        STRICT=1 + KVKK_VERIFY_DSN=...@localhost:5999/kiro2 (ölü port)
+            -> 1 passed, 2 skipped        EXIT=0
+
+    Yani sessiz skip, sessiz bir VEKİLLE değiştirilmişti; bekçi yine
+    "korumak için yazıldığı felaketin ortasında" susabiliyordu. Bu dosyanın
+    kendi docstring'i vekil ölçümü zaten yasaklıyor (S203). Bu yüzden artık
+    DSN'e GERÇEKTEN bağlanılıp `question_bank` sayılıyor.
+
+    `SELECT 1` YETMEZ, kasıtlı olarak `question_bank` sayılıyor: 19 Ağu'da
+    ölçüldüğü gibi (aşağıdaki benzersizlik testinin notu) S210 split'i
+    sorguyu koşulamaz hale getirmişti ve bunu kimse görmedi. Doğru tabloya
+    dokunmayan bir canlılık ölçümü o sınıfı kaçırır.
     """
     if not STRICT:
         pytest.skip(
             "Gevşek mod. Sıkı kontrol için: KIRO2_STRICT_DB_INVARIANTS=1 "
             "(içeriğin bulunması GEREKEN ortamlarda: CI, staging, üretim-yakını)"
         )
-    assert resolve_pg_dsn(), (
+    dsn = resolve_pg_dsn()
+    assert dsn, (
         "SIKI MOD: question_bank invaryant bekçisi ÖLÇEMEDİ — gerçek PostgreSQL "
         f"DSN'i yok.\n{SKIP_REASON}\n"
         "Bu ortam içerik taşımıyorsa KIRO2_STRICT_DB_INVARIANTS'ı set etme; "
         "taşıyorsa DSN ver. Sessiz skip yasak: 12 Ağu 2026'da question_bank "
         "0 satırken bu paket '2 skipped' verdi ve hiçbir alarm çalmadı."
+    )
+
+    hata: Exception | None = None
+    engine = create_async_engine(dsn, poolclass=NullPool)
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT count(*) FROM question_bank"))
+    except Exception as exc:
+        hata = exc
+    finally:
+        await engine.dispose()
+
+    # `@` öncesi ATILIYOR: DSN parolası assert mesajına ve oradan CI log'una
+    # düşmemeli (bu depoda bir kez düştü — FAZ 0-4, Celery log'u).
+    assert hata is None, (
+        "SIKI MOD: question_bank invaryant bekçisi ÖLÇEMEDİ — DSN çözüldü ama "
+        f"DB'ye ULAŞILAMADI: {dsn.rsplit('@', 1)[-1]} -> "
+        f"{type(hata).__name__}: {hata}\n"
+        "Bekçinin susması ile içeriğin sağlam olması AYNI ŞEY DEĞİLDİR: "
+        "aşağıdaki iki invaryant bu koşumda skip oldu, yani hacim ve "
+        "çeşitlilik BU KOŞUMDA ÖLÇÜLMEDİ. Postgres'i ayağa kaldır (port 5434) "
+        "veya bu ortam içerik taşımıyorsa KIRO2_STRICT_DB_INVARIANTS'ı set etme."
     )
 
 
@@ -199,3 +243,128 @@ async def test_question_bank_benzersizlik_orani(db_session):
         "Hacim sağlıklı görünse bile içerik çeşitliliği çökmüş. "
         "5 Ağu 2026: 2.304 satır / 21 benzersiz."
     )
+
+
+# ===========================================================================
+# BEKÇİNİN BEKÇİSİ — 22 Ağu 2026, X10'un kapanmamış kolu
+#
+# `27c8fff02` X10'un *DSN-yok* kolunu kapattı. Açık kalan kol ÖLÇÜLDÜ:
+#
+#   KIRO2_STRICT_DB_INVARIANTS=1 \
+#   KVKK_VERIFY_DSN=postgresql://postgres@localhost:5999/kiro2 \
+#   pytest tests/db/test_question_bank_invariants.py
+#       -> 1 passed, 2 skipped        EXIT=0
+#
+# Sıkı mod AÇIKKEN, bekçi YEŞİL, ölçülen şey YOK. Sebep: sıkı kontrol
+# `assert resolve_pg_dsn()` diyordu — ve `pg_dsn.py` yalnızca DİZE inceler,
+# hiç bağlanmaz. Yani sessiz skip, bir VEKİL ÖLÇÜMLE değiştirilmişti; oysa
+# bu dosyanın kendi docstring'i vekil ölçümü açıkça yasaklıyor (S203:
+# "tablo var" vekili aylarca yeşilken `/fsrs/due` canlıda 500 dönüyordu).
+#
+# Bu, laboratuvar senaryosu DEĞİL: pre-push kapısı (`backend/hooks/
+# ders_zorlayici_kos.py:161-169`) DSN'i `backend/.env`'den DİZE olarak çözüp
+# STRICT'i 1 yapıyor — o da hiç bağlanmıyor. Postgres durduğu an kapı yeşil
+# kalır. Bu depoda PG18'in durduğu ölçülmüş bir durum (3 Tem, topoloji drift).
+#
+# Aşağıdaki dörtlü gerçek DB İSTEMEZ (ölü porta bağlanmayı dener), bu yüzden
+# DSN'siz bir makinede de KOŞAR. Ölçüldü: varsayılan koşum 3 skipped / 0
+# assert idi -> 4 passed / 3 skipped.
+# ===========================================================================
+_BU_MODUL = sys.modules[__name__]
+
+# 5999'da bir Postgres dinlemiyor. Başka bir şey dinliyor olsa bile asyncpg
+# protokol hatasıyla yükselir; test yine doğru tarafa düşer. 127.0.0.1
+# bilinçli: `localhost` çift-yığın (::1) yeniden denemesiyle 4,11 sn sürüyor,
+# 127.0.0.1 2,26 sn (ölçüldü).
+OLU_DSN = "postgresql://postgres@127.0.0.1:5999/kiro2"
+
+
+def _bekciyi_kostur():
+    """Sıkı kontrolü doğrudan çağır; senkron ya da async olmasına bakma.
+
+    Şekle bağlanmamak bilinçli: aksi halde bekçiyi async'e çevirmek meta
+    testleri `ValueError: a coroutine was expected` ile düşürür ve bu, kusuru
+    ölçmüş gibi görünen bir ALET ARIZASI olur.
+    """
+    sonuc = test_invaryant_olculebilir_olmali()
+    if inspect.isawaitable(sonuc):
+        asyncio.run(sonuc)
+
+
+def test_alet_dsn_cozumu_erisilebilirlik_tanigi_degil(monkeypatch):
+    """ALET DOĞRULAMASI — kusurun premisi: DSN çözümü BAĞLANMAZ.
+
+    Bu düşerse kapatılacak bir şey yoktur: `resolve_pg_dsn()` erişilebilirliği
+    zaten doğruluyor demektir ve `assert resolve_pg_dsn()` vekil değil gerçek
+    ölçüm olurdu.
+    """
+    monkeypatch.setenv("KVKK_VERIFY_DSN", OLU_DSN)
+    cozulen = resolve_pg_dsn()
+
+    assert cozulen, "Ölü porta bakan DSN bile çözülüyor olmalı (premis)."
+    assert "5999" in cozulen, (
+        "Çözülen DSN ölü portu taşımalı — yani çözücü yalnız dize işliyor, "
+        "hiçbir soket açmıyor."
+    )
+
+
+def test_bekci_db_erisilemezken_sessizce_gecemez(monkeypatch):
+    """RED — sıkı mod + DSN var + DB erişilemez: bekçi DÜŞMELİ.
+
+    Kusur tam buradaydı: DSN dizesi çözüldüğü için sıkı kontrol GEÇİYOR,
+    iki gerçek invaryant ise fixture'da skip oluyordu -> EXIT=0.
+    """
+    monkeypatch.setattr(_BU_MODUL, "STRICT", True)
+    monkeypatch.setenv("KVKK_VERIFY_DSN", OLU_DSN)
+
+    with pytest.raises(AssertionError) as yakalanan:
+        _bekciyi_kostur()
+
+    mesaj = str(yakalanan.value)
+
+    # ⚠️ Burada önce `"5999" in mesaj` yazılmıştı ve MUTASYON HAYATTA KALDI:
+    # port, maskeden BAĞIMSIZ olarak asyncpg'nin kendi metninde de geçiyor
+    # ("Connect call failed ('127.0.0.1', 5999)"). Ankraj TEKİL DEĞİLDİ.
+    # `/kiro2` ise yalnız maskenin ürettiği parçada var.
+    assert "127.0.0.1:5999/kiro2" in mesaj, (
+        "Mesaj ölçülemeyen hedefi (host:port/db) göstermeli ki operatör nereye "
+        "bakacağını bilsin."
+    )
+    # Maskenin VARLIK SEBEBİ: `@` öncesi kimlik bilgisi mesaja DÜŞMEMELİ —
+    # bu depoda DB parolası bir kez log'a düştü (FAZ 0-4, Celery).
+    assert (
+        "postgres@" not in mesaj
+    ), "DSN'in kimlik bilgisi kısmı mesaja sızdı — maske kaldırılmış olmalı."
+
+
+def test_gevsek_modda_bekci_hala_sessiz(monkeypatch):
+    """KONTROL KOLU — 'her koşumda kırmızı' çözümünü öldürür.
+
+    Sıkı mod kapalıyken (taze geliştirme makinesi) bekçi SKIP vermeli.
+    Bu assert olmadan `pytest.fail()`'i koşulsuz çağıran bir 'fix' de
+    diğer testlerin hepsini geçerdi — ve bekçi gürültüye dönüp devre dışı
+    bırakılırdı (S215/S228/S229-B'de ölçülen desen).
+    """
+    monkeypatch.setattr(_BU_MODUL, "STRICT", False)
+    monkeypatch.setenv("KVKK_VERIFY_DSN", OLU_DSN)
+
+    with pytest.raises(pytest.skip.Exception):
+        _bekciyi_kostur()
+
+
+def test_dsn_yokken_sikida_hala_duser(monkeypatch):
+    """KONTROL KOLU — `27c8fff02`'nin kapattığı kol GERİLEMEMELİ.
+
+    Yeni erişilebilirlik ölçümü, DSN-yok dalının YERİNE geçmemeli; ONA
+    EKLENMELİ. İkisi bağımsız yük taşır.
+    """
+    monkeypatch.setattr(_BU_MODUL, "STRICT", True)
+    for anahtar in ("KVKK_VERIFY_DSN", "DATABASE_URL_SYNC", "DATABASE_URL"):
+        monkeypatch.delenv(anahtar, raising=False)
+
+    with pytest.raises(AssertionError) as yakalanan:
+        _bekciyi_kostur()
+
+    # "DSN" demek YETMEZ: erişilemezlik mesajı da o kelimeyi içeriyor. Bu dalı
+    # ayırt eden ifadeyi ara, yoksa `dsn = <sabit>` mutasyonu hayatta kalır.
+    assert "DSN'i yok" in str(yakalanan.value)
