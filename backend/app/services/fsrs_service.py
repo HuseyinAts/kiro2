@@ -52,18 +52,21 @@ _FETCH_DUE_SQL = text(
         f.lapses,
         f.scheduled_days,
         f.elapsed_days,
-        q.irt_discrimination  AS irt_a,
-        q.irt_difficulty      AS irt_b,
-        q.irt_guessing        AS irt_c,
-        q.subject_area        AS subject_id,
+        qs.irt_discrimination AS irt_a,
+        qs.irt_difficulty     AS irt_b,
+        qs.irt_guessing       AS irt_c,
+        qm.subject_area       AS subject_id,
         q.primary_topic_id    AS topic_id,
-        q.question_text,
-        q.option_a,
-        q.option_b,
-        q.option_c,
-        q.option_d
+        qc.question_text,
+        qc.option_a,
+        qc.option_b,
+        qc.option_c,
+        qc.option_d
     FROM user_item_fsrs f
     JOIN question_bank q ON q.id = f.question_id
+    JOIN question_content qc ON qc.id = q.id
+    JOIN question_metadata qm ON qm.id = q.id
+    JOIN question_statistics qs ON qs.id = q.id
     WHERE f.user_id = :user_id
       AND f.due_date <= NOW() + INTERVAL '4 hours'
       AND f.state IN (1, 2, 3)
@@ -91,18 +94,21 @@ _FETCH_DUE_MERCY_SQL = text(
         f.lapses,
         f.scheduled_days,
         f.elapsed_days,
-        q.irt_discrimination  AS irt_a,
-        q.irt_difficulty      AS irt_b,
-        q.irt_guessing        AS irt_c,
-        q.subject_area        AS subject_id,
+        qs.irt_discrimination AS irt_a,
+        qs.irt_difficulty     AS irt_b,
+        qs.irt_guessing       AS irt_c,
+        qm.subject_area       AS subject_id,
         q.primary_topic_id    AS topic_id,
-        q.question_text,
-        q.option_a,
-        q.option_b,
-        q.option_c,
-        q.option_d
+        qc.question_text,
+        qc.option_a,
+        qc.option_b,
+        qc.option_c,
+        qc.option_d
     FROM user_item_fsrs f
     JOIN question_bank q ON q.id = f.question_id
+    JOIN question_content qc ON qc.id = q.id
+    JOIN question_metadata qm ON qm.id = q.id
+    JOIN question_statistics qs ON qs.id = q.id
     WHERE f.user_id = :user_id
       AND f.due_date <= NOW()
       AND f.state IN (1, 2, 3)
