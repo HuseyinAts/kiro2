@@ -356,16 +356,19 @@ class AuthenticationContext:
             AuthorizationError: If permission not present
         """
         if not self.has_permission(permission):
-            raise AuthorizationError(
-                f"Permission required: {permission}",
-                severity=ErrorSeverity.HIGH,
-                context={
+            # AuthorizationError Gen-1 (ServiceError) ailesindendir: ``severity``/``context``
+            # kwarg'i KABUL ETMEZ -- oyle cagrilinca yetki reddi yerine TypeError firlar.
+            # Yaptirimli kalip exceptions.py:501'deki fabrikadir: once kur, sonra details.
+            error = AuthorizationError(f"Permission required: {permission}")
+            error.details.update(
+                {
                     "user_id": self.user_id,
                     "role": self.role,
                     "required_permission": permission,
                     "user_permissions": self.permissions,
                 }
             )
+            raise error
 
     def require_role(self, *roles: str) -> None:
         """
@@ -378,15 +381,16 @@ class AuthenticationContext:
             AuthorizationError: If role not present
         """
         if not self.has_role(*roles):
-            raise AuthorizationError(
-                f"Role required: {', '.join(roles)}",
-                severity=ErrorSeverity.HIGH,
-                context={
+            # Bkz. require_permission: Gen-1 imzasi ``severity``/``context`` almaz.
+            error = AuthorizationError(f"Role required: {', '.join(roles)}")
+            error.details.update(
+                {
                     "user_id": self.user_id,
                     "user_role": self.role,
                     "required_roles": list(roles),
                 }
             )
+            raise error
 
     def add_security_warning(self, warning: str) -> None:
         """Add a security warning to the context"""
@@ -410,8 +414,12 @@ class AuthenticationContext:
             "session_id": self.session_id,
             "device_id": self.device_id,
             "ip_address": self.ip_address,
-            "authentication_type": self.authentication_type.value if self.authentication_type else None,
-            "authenticated_at": self.authenticated_at.isoformat() if self.authenticated_at else None,
+            "authentication_type": self.authentication_type.value
+            if self.authentication_type
+            else None,
+            "authenticated_at": self.authenticated_at.isoformat()
+            if self.authenticated_at
+            else None,
             "is_authenticated": self.is_authenticated,
             "is_2fa_verified": self.is_2fa_verified,
             "is_trusted_device": self.is_trusted_device,

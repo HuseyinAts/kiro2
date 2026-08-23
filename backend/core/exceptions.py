@@ -65,9 +65,19 @@ class AuthorizationError(ServiceError):
 class DatabaseError(ServiceError):
     """Database operation error exception"""
 
-    def __init__(self, message: str, operation: str | None = None):
-        details = {"operation": operation} if operation else {}
-        super().__init__(message, "DATABASE_ERROR", details)
+    def __init__(
+        self,
+        message: str,
+        operation: str | None = None,
+        details: dict[str, Any] | None = None,
+    ):
+        # ``details`` ServiceError'un zaten kabul ettigi parametredir; bu sinif onu
+        # daraltmisti ve 22 cagri yeri onu gonderdigi icin TypeError firliyordu.
+        # ``operation`` once yazilir, acikca verilen ``details`` uzerine yazabilir.
+        birlesik: dict[str, Any] = {"operation": operation} if operation else {}
+        if details:
+            birlesik.update(details)
+        super().__init__(message, "DATABASE_ERROR", birlesik)
 
 
 class ExternalServiceError(ServiceError):
