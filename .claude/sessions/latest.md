@@ -48,6 +48,98 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-23 (S248 · L2 CANLIYA ALINDI + ölü-link kusuru kapandı)
+**Branch:** feature/self-evolution-optimization · **Commit:** `9561654472`
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
+
+### Bağlam: bilgisayar kapandı, iş yarım kaldı → **kod kaybı SIFIR**
+Ölçüldü: ağaç temiz, `origin` ile **0/0**, S247'nin 6 commit'i push'lu. Stash'lerin
+hepsi **12 Ağu ve öncesi**. Kaybolan tek şey **çalışan altyapı**: Docker Desktop
+kapanmıştı (PostgreSQL native servis olduğu için kendi dönmüştü).
+⚠️ Oturum banner'ı `Backend=200 Frontend=200` diyordu — **bayat**; daemon'a pipe yoktu.
+
+### 🔴 Bulunan kusur: doğrulama linkleri ÖLÜ PORTA gidiyordu
+S247 L2'yi doğru kodladı, testleri yeşildi, uçları canlıydı — ama üretilen bağlantı
+hiçbir yere gitmiyordu:
+```
+'FRONTEND_URL' in os.environ -> False      (compose'da HIC tanimli degil)
+uretilen link -> http://localhost:3001/eposta-dogrula?token=...
+curl :3001 -> 000  (baglanti yok)     curl :3000 -> 200  (frontend nginx)
+```
+**Kusur kodda DEĞİL**: `core/eposta_dogrulama.py:324` + `api/auth.py:2088`'deki `:3001`
+varsayılanı Docker'sız yerel geliştirmede DOĞRU (Vite dev portu). Kusur compose'un
+backend'e dağıtım gerçeğini hiç söylememesiydi → **tek satır**, Python'a dokunulmadı.
+Etki iki akışta: L2 **ve** veli onayı. SMTP (#441) gelseydi ikisi de ölü doğacaktı.
+
+**Bekçi:** `backend/tests/unit/test_compose_frontend_url.py` (5 test).
+Port **sabit yazılmadı** — `assert port == 3000` totoloji olurdu. İki kaynak
+karşılaştırılıyor: frontend'in YAYINLADIĞI host portu vs bağlantının portu.
+TDD: RED 2F/3P → GREEN 9P. **Mutasyon 3/3 öldü**, üç geri alım da doğrulandı:
+M1 satır silindi→**2** · M2 `3000`→`3001`→**1** · M3 frontend portu `3002`→**1**
+(M3 kritik: testin sabit port beklemediğini kanıtlar). Kapı: pre-commit **24/24, SKIP YOK**.
+
+### Canlıya alındı ve ÖLÇÜLDÜ
+Backend + frontend **yeniden kuruldu ve recreate edildi** (env değişimi restart'la geçmez).
+```
+imaj ONCE 21 Agu 16:29 -> eposta_dogrulama.py YOK, auth.py grep 0
+imaj SONRA              -> eposta_dogrulama.py VAR, auth.py grep 2
+canli openapi yol sayisi: 1119 -> 1121   (+2 = tam olarak L2'nin iki ucu)
+Redis token anahtari: kayit ONCE 0 -> SONRA 1     <- kayit tetikleyicisi KABLOLU
+DB is_verified: False -> TRUE                      <- 21/21 false olan kolon ilk kez yukseldi
+verify 200 · ayni token tekrar 400 (replay) · gonder 200 (notr mesaj) · login 200 (kapi kapali)
+TARAYICI: POST /eposta-dogrula/verify -> 200, DB True
+```
+Düz metin token hiçbir yerde saklanmıyor (yalnız HMAC) + SMTP ölü → token **yan
+kanaldan** üretildi (aynı container, aynı pepper, aynı Redis). Uç, Redis ve DB
+**gerçek**; taklit edilen tek şey e-posta teslimi.
+
+### 🔴 AÇIK — ÖNCEDEN VAR OLAN: anonim ziyaretçi public rotada KALAMIYOR
+Zamanlama ölçümü (temiz tarayıcı: çerez + localStorage + SW + cache silinmiş):
+```
+0ms    /eposta-dogrula  h1=null
+250ms  /eposta-dogrula  h1="E-posta Dogrulama"  status="Dogrulaniyor..."
+500ms  /login           <- FIRLATILDI
+750ms  /login           h1="Tekrar hos geldin."
+```
+Hesap **doğrulanıyor** (DB kanıtlıyor) ama kullanıcı onay mesajını **hiç görmüyor**.
+Kök neden sınıfı: global 401 yakalayıcıları **sert yönlendirme** yapıyor, public rota
+muafiyeti yok — `utils/apiHelpers.ts:467` · `services/apiClient.ts:77` ·
+`kiro/api/api-client.ts:147` · `services/learningStyleService.ts:31`. Tetikleyici:
+anonim kullanıcıya `401` dönen `/api/v1/osb/settings/`.
+**Kontrol kolu — benim/S247'nin işi DEĞİL:** dosyalar en son 7 Ağu / 10 Mar / 23 Nis'te
+değişmiş; `git diff 750c38ef3~1..ac4c9dcef` bu dosyalarda **boş**. `/register` de aynı
+şekilde fırlıyor → L2'ye özgü değil, **global**. Görev numarası atanmalı.
+
+### Ölçüm aleti iki kez yanıldı (bulgu diye raporlanmadan yakalandı)
+1. *"Rota bundle'da YOK (0 eşleşme)"* → **alet arızası**: JS `/js` altında, `/assets`'te
+   yalnız 59 KaTeX fontu var. Kontrol kolu (`dashboard→12`, `exam→26`) ortaya çıkardı.
+2. *"L2 sayfası fırlıyor"* → **L2'ye özgü değil**; `/register` de fırlıyor. Az kalsın
+   fantom rapor ediliyordu. Ayırt edici ölçüm: **başka bir public rota da fırlıyor mu?**
+
+### Fail Eden Testler
+**YOK.** 43 passed / 0 failed (`test_eposta_dogrulama` 26 + zincir 8 + compose 9).
+
+### Sonraki Adımlar (maks 5)
+1. **SMTP kimlik bilgisi** (#441, operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`.
+   Not: kapı hâlâ **varsayılan KAPALI**, `EPOSTA_DOGRULAMA_ZORUNLU` container'da `None`.
+2. **Public-rota 401 muafiyeti** (yukarıdaki açık kalem) — 4 dosya, plan gate gerekir.
+3. `X06` — 5+ ayrı rol-kontrolü implementasyonu (kütükte `dogrulandi`).
+4. `user_item_fsrs` tablosunu geri getir → 2 şema bekçisi yeşile döner.
+5. `U25` migration geri-alınabilirliği · `X11` imaj/host farkı.
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **Varsayılan port bir DAĞITIM gerçeğidir, kod sabiti değil.** `:3001` kodda kalıyor
+  (yerel dev doğru); dağıtım gerçeği compose'ta. Kodu değiştirmek yerel devi kırardı.
+- **Bekçi sabit değer beklememeli.** `assert port == 3000` bugün geçer, frontend yarın
+  taşınınca sessizce yeşil kalır — bugünkü kusurun aynısı. İki kaynağı karşılaştır.
+- **httpOnly çerez `document.cookie`'de GÖRÜNMEZ.** "Çerez yok" diye ölçüp temiz durum
+  sandım; gerçekte `refresh_token` + `logged_in` duruyordu. Temizlik `context.clearCookies()`
+  ile yapılır ve **öncesi/sonrası listelenerek** doğrulanır.
+- **Ortamda bırakılanlar:** 5 `@kiro2-e2e.dev` test öğrencisi (4'ü `is_verified=true`) —
+  yeniden ölçüm için kasıtlı. Redis'te 1-2 doğrulama token'ı (24 sa TTL, kendiliğinden düşer).
+
+---
+
 ## Session Handoff — 2026-08-22 (S247 · L2 E-POSTA DOĞRULAMA — A1'in 2. ayağı KAPANDI)
 **Branch:** feature/self-evolution-optimization
 **Aralık:** `750c38ef3 · 076ade47c · 25c6a2475 · aa037cef8` (4 commit)
