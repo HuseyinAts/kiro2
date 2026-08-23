@@ -48,6 +48,90 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-24 (S250 · X06 — kusur 1 satır değil 24'müş)
+**Branch:** feature/self-evolution-optimization · **Commit:** `1bd8b3c15`
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
+**Bağlam:** bilgisayar kapandı → **kod kaybı SIFIR** (ağaç temiz, origin 0/0, merge artığı yok).
+Kaybolan tek şey çalışan altyapıydı; Docker açılışta kendi döndü. Banner'a güvenilmedi, `curl` ile ölçüldü.
+
+### Kapanan
+| Kalem | Kabul kanıtı |
+|---|---|
+| **X06 (a)** kanon rol yazımı | `users.role` PG enum `userrole`, **BÜYÜK HARF**; canlı 35 satır hepsi `STUDENT`. `enums_db.py:18` kanonu doğrulandı |
+| **X06 (b)** `:381` TypeError→500 | 24 çağrı / 8 dosya kapatıldı. Canlı: `TypeError` → `AuthorizationError`, `details` dolu (host **ve** konteyner) |
+| Bekçi | `backend/tests/unit/test_exception_kwarg_sozlesmesi.py` — eşik SIFIR, 12 test, **mutasyon 4/4 öldü** |
+
+### Kök neden (denetimin anlattığından farklı)
+`core/exceptions.py` **iki kuşak** barındırıyor: Gen‑1 `ServiceError`(:12) ve Gen‑2
+`EnhancedServiceError`(:233, `severity` kabul eder). `AuthorizationError`(:58) ve
+`DatabaseError`(:65) Gen‑1'de kalmış; 24 çağrı yeri Gen‑2 sözleşmesiyle yazılmış.
+**İki ayrı kök neden → iki ayrı düzeltme:** `DatabaseError` ebeveyninin `details`'ini
+daraltmıştı (geri verildi, 22 çağrı); `AuthorizationError`'ın `severity`/`context`'i
+**hiçbir kuşakta yok** (2 çağrı yeri `:501` fabrikasına döndü).
+Gen‑2'ye taşımak ÇÖZMEZDİ (`context` orada da yok) **ve** 5/541 test kırardı —
+emsal: `ContentError` bu göçü yaşamış, testi tam bu yüzden skip'li (`:539-544`).
+
+### Fail Eden Testler
+**YOK.** Bekçi 12 passed · tüketici tarama (20 dosya, grep ile bulundu) **1280 passed /
+133 skipped**. Tek collection error önceden var: `test_core_partial_batch2.py` →
+`langchain_core` paketi eksik, bu diff'le ilgisiz.
+
+### 🔴 Bu turda ÜÇ kez kendi iddiamı çürüttüm
+1. **"Rol büyük/küçük harf uyumsuzluğu P0"** → `require_role("ADMIN")` küçültüyor ama
+   `rbac_system.py:994` **kullanıcının rolünü de** küçültüyor (`_auth_role_slug`). Fantom
+   raporlanmadan öldü. Normalizasyonu tek tarafta görüp yargıya varmak = veri akışını izlememek.
+2. **"mypy kapısı ölü"** → alt dizinden koştuğum mypy "modül iki kez bulundu" ile ölüyordu.
+   **Depo kökünden** koşunca kusuru tam teşhisle yakalıyor (`call-arg`). Deponun kendi kuralı
+   (`kapıyı depo kökünden ölç`) tam bu yüzden yazılmış.
+3. **Bekçim ölü doğuyordu** — kontrol kolu yakaladı: `**kwargs`'lı sınıf **atanın dar
+   imzasıyla** yargılanıyordu (yanlış-pozitif üretebilirdi). `_ESNEK`/`_MIRAS` ayrımı eklendi.
+
+### Kapı borcu (SKIP=ruff,bandit,mypy — ölçülmüş erteleme)
+Ayrı worktree'de HEAD taban çizgisi ölçüldü:
+| kapı | HEAD | fix sonrası | delta |
+|---|---|---|---|
+| mypy | 14 | 10 | **−4** (dördü de tam olarak bu kusur) |
+| ruff | 12 | 12 | 0 |
+| bandit | 1 | 1 | 0 |
+Kendi kodum kapının **kendi sürümleriyle** temiz (ruff 0.7.1 + format Passed).
+İlk koşumda kendi hatam vardı — **N802, 12. kez** — ertelenmedi, düzeltildi.
+
+### Engelleyiciler / açık kalemler
+- 🔴 **Yetki hataları HÂLÂ 500 dönüyor.** 403 döndüren **üç** handler modülünün **üçü de**
+  kayıtsız ölü kod (`exception_handlers.py:518` · `exception_handler.py:334` ·
+  `global_exception_handler.py:768`); canlıda yalnız 5 handler kayıtlı, catch-all
+  `core/application.py:354-392` → 500. **(b) hata TİPİNİ düzeltti, istemcinin gördüğü KODU değil.**
+- 🔴 10 önceden var olan mypy hatası (`exceptions.py` ×4, `enhanced_authentication.py` ×6);
+  çoğu ölü `authenticate_user` alt ağacında. Görev no atanmalı.
+- ⚠️ `test_core_exceptions_comprehensive.py`'de **19 skip**, 8 ayrı sınıfı "API changed"
+  diye işaretliyor — aynı kuşak kayması, bu turda ölçülmedi.
+- ⚠️ Beş ölü modül (query_builder/transaction_manager/enhanced_database/migration_framework/
+  connection_pool_optimizer) — çürütücünün önerisi: silmek borcu 24→0 indirir. Ayrı karar.
+- ⚠️ `latest.md` "son 3 oturum" kuralı kaymış: dosya **11 oturum** tutuyor (1006 satır).
+
+### Sonraki Adımlar (maks 5)
+1. **X06 (c)** — 7 canlı kapıyı kanonik kapıya göçür (kanon artık ölçülü: BÜYÜK HARF).
+2. **403 handler kaydı** — asıl kullanıcı-görünür kusur bu; ayrı TDD turu, blast radius uygulama geneli.
+3. `ad6ba3bbe485` ankrajı — RLS testinin 8 collection error'ı (squash'ın 2. kurbanı).
+4. **SMTP** (#441, operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`.
+5. X06 (d) — 16 ölü tanımın silinmesi (ayrı kalem, Cerrahi Müdahale).
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **Taban sınıfı Gen‑2'ye TAŞIMADIM.** Ölçüldü: çözmüyor (`context` orada da yok) + 5 test
+  kırıyor + emsali var (`ContentError` skip'i). Ebeveynin sözleşmesini geri vermek =
+  API icat etmek DEĞİL; `ServiceError` `details`'i zaten kabul ediyordu.
+- **22 çağrı yerini tek tek düzenlemedim.** Sınıfı düzeltmek aynı sonucu 1 dosyada veriyor
+  ve 0 test kırıyor. Kullanıcının seçtiği sonuç (24→0 + bekçi) birebir sağlandı.
+- **Bekçi mypy'ın kopyası DEĞİL.** mypy ileriye dönük ve yalnız **değişen** dosyalara bakar;
+  bekçi **tüm ağacı** ve **mevcut borcu** tarar. Bu 24 satıra aylardır dokunulmamıştı.
+
+### ⚠️ E3 — bu tur kullanıcı-görünür çıktı üretmedi (gerekçe)
+Dokunulan: `backend/core` + `backend/tests`. Kullanıcı-görünür yol YOK. Gerekçe: X06'nın
+kendi denetimi birleştirmeden **önce** kapatılmasını şart koşmuştu ve 24 çağrının bugün
+çağıranı 0 (uyuyan kusur). Kullanıcı-görünür etki **2. adımda** (403 handler kaydı) gelir.
+
+---
+
 ## Session Handoff — 2026-08-23 (S249 · AÇIK KALEMLER — 5 kalem kapandı)
 **Branch:** feature/self-evolution-optimization · **Aralık:** `1212ccea0..0fc88b7f4` (11 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)

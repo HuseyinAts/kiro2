@@ -1244,8 +1244,39 @@ iddialar:
       BU TURDA BİRLEŞTİRME YAPILMADI (kullanıcı kararı: önce envanter).
       Sıra: (a) kanon rol yazımını psql ile ÖLÇ, (b) :381 TypeError->500'ü kapat,
       (c) 7 canlı kapıyı göçür, (d) 16 ölü tanımın silinmesi AYRI KALEM.
-    commit: null
-    zorlayici_test: null
+
+      ────────── 24 Ağu 2026 (S250) — alt-bulgu (a) ve (b) KAPANDI ──────────
+      (a) KANON ROL YAZIMI ÖLÇÜLDÜ: users.role PG enum `userrole`, etiketleri BÜYÜK
+          HARF (STUDENT,TEACHER,PARENT,ADMIN,SUPER_ADMIN); canlı 35 satır, hepsi
+          STUDENT. enums_db.py:18 kanonu doğrulandı; 3 lowercase kopya ve
+          enums.py:104 "ogrenci" sapmadır. Harf büyüklüğü CANLI KAPIDA sorun DEĞİL:
+          rbac_system.py:46 _auth_role_slug İKİ tarafı da küçültüyor — kendi
+          "case uyuşmazlığı P0" şüphem ölçümle ÇÜRÜDÜ (fantom raporlanmadı).
+      (b) :381 TypeError->500 KAPATILDI — commit 1bd8b3c15. Kusur TEK SATIR DEĞİLMİŞ:
+          AST ölçümü 24 çağrı / 8 dosya buldu (ALT SINIR; attribute-biçimi taranmadı).
+          Kök neden: exceptions.py'de İKİ kuşak var — Gen-1 ServiceError(:12) ve
+          Gen-2 EnhancedServiceError(:233, severity kabul eder). AuthorizationError
+          (:58) ve DatabaseError(:65) Gen-1'de kalmış, çağrı yerleri Gen-2
+          sözleşmesiyle yazılmış. İKİ AYRI düzeltme gerekti:
+            - DatabaseError'a DOĞRUDAN EBEVEYNİ ServiceError'un zaten kabul ettiği
+              `details` geri verildi (22 çağrı) — API icat edilmedi, taban sınıf
+              DEĞİŞMEDİ, bu yüzden __str__ korundu ve 5/541 test kırılması OLMADI.
+            - AuthorizationError'ın 2 çağrı yeri :501 fabrikasına döndürüldü.
+          Gen-2'ye taşımak ÇÖZMEZDİ: EnhancedServiceError'da da `context` YOK.
+          Emsal: ContentError bu göçü bir kez yaşamış ve testi tam bu yüzden
+          skip'lenmiş (test_core_exceptions_comprehensive.py:539-544).
+          mypy kapısı bu sınıfı ZATEN görüyordu (HEAD 14 -> fix sonrası 10, delta -4
+          ve dördü de :359/:381) — kapı yalnız DEĞİŞEN dosyalara baktığı için bu 24
+          satır aylardır tetiklenmemişti.
+      AÇIK KALAN: (c) 7 canlı kapının göçü · (d) 16 ölü tanım.
+      YENİ AÇIK KALEM (bu turda ölçüldü, kapatılmadı): yetki hataları HÂLÂ 500
+      dönüyor. 403 döndüren ÜÇ handler modülünün ÜÇÜ DE kayıtsız ölü kod
+      (exception_handlers.py:518 · exception_handler.py:334 ·
+      global_exception_handler.py:768); canlı uygulamada yalnız 5 handler kayıtlı,
+      catch-all core/application.py:354-392 -> 500. Yani (b) hata TİPİNİ düzeltti,
+      istemcinin gördüğü KODU değil.
+    commit: null # bileşik iddia: (c)+(d) açık, birleştirme yapılmadı
+    zorlayici_test: "backend/tests/unit/test_exception_kwarg_sozlesmesi.py (12 test, commit 1bd8b3c15) — YALNIZ alt-bulgu 3'ü koruyor. Eşik SIFIR + 6 kontrol kolu. Mutasyon 4/4 ÖLDÜ, dört geri alım da doğrulandı. Kontrol kolu ilk koşumda bekçide GERÇEK kusur yakaladı: **kwargs'lı sınıf atanın dar imzasıyla yargılanıyordu (yanlış-pozitif üretebilirdi)."
 
   # --- U04 doğrulamasında ortaya çıkan, AYRILABİLİR iki kusur ---------------
   # Ayrı kalem açıldı çünkü U04 "uygulandi" işaretlenince bunlar kaybolur.
