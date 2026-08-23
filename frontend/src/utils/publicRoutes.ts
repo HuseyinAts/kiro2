@@ -54,7 +54,9 @@ export const PUBLIC_ROUTES = [
  */
 function yolNormalize(pathname: string | null | undefined): string {
   const ham = (pathname ?? '/').split('?')[0].split('#')[0].toLowerCase();
-  if (ham === '') return '/';
+  if (ham === '') {
+    return '/';
+  }
   return ham.length > 1 && ham.endsWith('/') ? ham.slice(0, -1) : ham;
 }
 

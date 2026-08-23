@@ -6,6 +6,7 @@
 import type { AxiosResponse } from 'axios';
 
 import { apiClient } from '../services/apiClient';
+import { girisYonlendirmesiGerekli } from './publicRoutes';
 
 interface ApiResponse<T = any> {
   success: boolean
@@ -463,7 +464,7 @@ export async function apiRequest<T = any>(
       // Handle 401 — session expired, redirect to login
       // Skip redirect if already on /login to prevent infinite reload loop
       if (response.status === 401) {
-        if (window.location.pathname !== '/login') {
+        if (girisYonlendirmesiGerekli(window.location.pathname)) {
           window.location.href = '/login';
         }
         throw new Error('Oturum süresi doldu');

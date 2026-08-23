@@ -141,9 +141,12 @@ function apiPath(path: string): string {
   return path.startsWith('/api/v1') ? path : '/api/v1' + path;
 }
 
+import { girisYonlendirmesiGerekli } from '../../utils/publicRoutes';
+
 // B1 (Faz 4): 401 → gerçek app'in /login akışına yönlendir (apiHelpers ile aynı sözleşme).
+// S249: "aynı sözleşme" artık kopya değil, paylaşılan tek karar noktası.
 function redirectToLogin(): void {
-  if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+  if (typeof window !== 'undefined' && girisYonlendirmesiGerekli(window.location.pathname)) {
     window.location.href = '/login';
   }
 }
