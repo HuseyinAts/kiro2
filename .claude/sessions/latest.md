@@ -48,6 +48,73 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-23 (S249 · AÇIK KALEMLER — 5 kalem kapandı)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `1212ccea0..0fc88b7f4` (11 commit)
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
+**Yöntem:** `superpowers:brainstorming` → spec → `writing-plans` → hibrit yürütme
+(paralel ölçüm **workflow**'da, sıralı/git/tarayıcı işi ana bağlamda)
+**Spec:** `docs/superpowers/specs/2026-08-23-acik-kalemler-design.md`
+**Plan:** `docs/superpowers/plans/2026-08-23-acik-kalemler-uygulama.md` (11 task / 54 adım)
+
+### Kapanan
+
+| # | Kalem | Kabul kanıtı |
+|---|---|---|
+| **İ0** | Sıçramanın kök nedeni | `docs/audits/2026-08-23_i0_yonlendirme_kok_neden.md`. Belge **2 kez** yüklendi → sert gezinme; 401'ler stub'lanınca sıçrama **kayboldu** |
+| **İ1** | Public-rota 401 muafiyeti | 🟢 **KULLANICI-GÖRÜNÜR.** Tarayıcı: 10 sn boyunca `/eposta-dogrula`'da **kaldı**, 250ms'de *"E-posta adresiniz doğrulandı"*. Regresyon 4/4 |
+| **İ2** | `user_item_fsrs` + ayrışma kayması | Canlı `/fsrs/due`, `/due?mercy`, `/due-count` → **200** (öncesi 500) |
+| **İ3** | X06 envanteri (kod yok) | `docs/audits/2026-08-23_x06_rol_kapisi_envanteri.md` — 23 tanım, **16'sı ölü**, 3 zıt yargı kanıtlandı |
+| **İ5** | X11 2. kol | Karar C: docstring koda uyduruldu, özellik yazılmadı |
+| **İ4** | Kütük | `dogrulandi` 4 → **3**, `uygulandi` 8 → **9** |
+
+### Fail Eden Testler
+**YOK.** `test_fsrs_schema_contract` **2 failed → 0** (12 passed) · frontend
+`src/utils/__tests__` 86 passed · kütük bekçileri 23 passed · İ2 regresyon 32 passed.
+
+### 🔴 Bu turda ÜÇ bekçi de ÖLÜ DOĞDU — üçünü de mutasyon yakaladı
+
+*"Bir deseni **anlatan** yorum, o deseni **içerir**"* (`audit-methodology.md`) —
+kural yazılıydı, **bir oturumda üç kez** ısırdı:
+
+1. **İ2 bekçisi**: migration docstring'i tabloyu 20+ kez geçiyor, düz alt-dize
+   araması onu *tanım* sandı → M1 hayatta kaldı. Fix: `tokenize`+`ast` ile
+   yorum/docstring ayıklama. **M6** (kod ref'leri silindi, docstring'de 6 referans
+   DURUYOR) → öldü. Bu, strip'in çalıştığının kanıtı.
+2. **İ5 docstring'i** eski yalanı **alıntılıyordu** → `grep` yine **1** dönüyordu.
+3. **İ5 bekçisi iki kez**: önce kendi docstring'imdeki `StudentAnswer` kelimesini
+   "yazım var" sandı; düzeltince bu kez kendi `NOT PERSISTED` başlığımı **vaat**
+   sandı (olumsuzlamayı görmüyordu) → `_vaat_bul()` olumsuzlama-farkındalığı.
+
+**Mutasyon olmasaydı bugün üç işe yaramaz bekçi commit'lenmişti.**
+
+### 🔴 Çürütülen kendi iddialarım
+1. *"U25 ankrajı yok"* → **YANLIŞ**, `versions_archive/fa067642bdfe…` duruyor; yalnız `versions/` altına bakmıştım.
+2. **Planımın Task 2 Adım 1'i yanlış dosyayı hedefliyordu** — squash **inline DDL içermiyor**, gövdeyi `baseline/*.sql`'den okuyor. Workflow ajanının kontrol kolu yakaladı (`question_bank` için de 0 döndü).
+3. *"Rota bundle'da yok"* ×2 — biri yanlış dizin (`/assets` vs `/js`), biri minification (fonksiyon adı aranmaz, **dize** aranır).
+4. *"Sayfa reload olup HTTP 400 gösteriyor"* → **deploy artığıydı**; SW güncelken ikinci koşum 10 sn kararlı. Az kalsın fantom raporluyordum.
+
+### Engelleyiciler / açık kalemler
+- 🔴 **Aynı squash (`e002f550b`) ikinci bir kurban yaratmış:** `test_rls_fail_closed_with_check.py`'nin ankraj migration'ı (`ad6ba3bbe485`) arşive taşınmış → **8 collection error**. Kontrol koluyla benim olmadığı doğrulandı. **Görev no atanmalı.**
+- 🔴 `synced_count` fazla-raporluyor (`offline_sync_service.py:330`) — kütüğe yazıldı, davranış bilinçli değiştirilmedi.
+- 🔴 `enhanced_authentication.py:381` **TypeError → HTTP 500** — bugün çağıranı 0, X06 birleştirmesinden **önce** kapatılmalı.
+- ⚠️ Kapı borcu: `SKIP=bandit` ×3 — **üç kollu ölçüldü**, B608'ler `safe_for_beta_sql` deseninden, **6 dosyada** yaygın, HEAD'de birebir aynı.
+- ⚠️ **İki commit sessizce düştü** (prettier auto-fix + stash çakışması). Hash ölçümü olmasaydı "girdi" sanılacaktı.
+
+### Sonraki Adımlar (maks 5)
+1. **SMTP** (#441, operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`.
+2. `ad6ba3bbe485` ankrajı — RLS testinin 8 collection error'ı (squash'ın 2. kurbanı).
+3. X06 birleştirme — **önce** kanon rol yazımını `psql` ile ölç, **sonra** `:381` TypeError→500'ü kapat.
+4. U25 — `tests/test_migrations.py` `skipif(True)` kaldır veya downgrade'i CI'ya bağla.
+5. X04 — CLAUDE.md 910 satır; kesme ayrı tur.
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **`PUBLIC_ROUTES` küratörlü liste, türetilmez.** App.tsx'te `ProtectedRoute` içermeyen 14 rota var ama yalnız 9'u anlamsal olarak public; `*` catch-all türetmeyle muaf olurdu. Spec'in "inşa ile tekillik" önerisi **ölçümle reddedildi**.
+- **`env.py:84` yorumdan ÇIKARILMADI** — ölçüldü, **+0 değer**: `alembic_autogen_guard.py:82` yansıtılmış+metadata'sız her nesneyi zaten dışlıyor. Tekrar-DROP riski autogenerate'ten değil **squash**'tan geldi.
+- **INNER JOIN seçildi, LEFT değil** — `fsrs_service.py:209` `float(row.irt_a)` None'da patlar. IRT varsayılanı **uydurulmadı** (adaptif seçimi etkiler). Güvenli: 3922/3922/3922/3922, yetim 0, IRT NULL 0.
+- **Karşı-olgusalda EFEKTİ engellemek kırılgan, NEDENİ kaldırmak sağlam.** `location.href` redefine edilemez, `page.route` service worker'ı göremez, SW her yüklemede kendini yeniden kaydeder — üç deneme de başarısız. 401'leri stub'lamak ilk seferde çalıştı.
+
+---
+
 ## Session Handoff — 2026-08-23 (S248 · L2 CANLIYA ALINDI + ölü-link kusuru kapandı)
 **Branch:** feature/self-evolution-optimization · **Commit:** `9561654472`
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
