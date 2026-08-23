@@ -1014,7 +1014,7 @@ iddialar:
     dogrulama:
       - "ls backend/alembic/versions/*.py | wc -l"
       - "grep -L 'def downgrade' backend/alembic/versions/*.py | wc -l   # downgrade'i OLMAYAN migration sayısı"
-    severity_olculen: P1
+    severity_olculen: P2
     durum: dogrulandi
     kanit: |
       TUR 2 (wf_285d1d38-c12), iki çürütücü MUTABIK.
@@ -1045,6 +1045,32 @@ iddialar:
       BAĞIMSIZ TEYİT: docs/HANDOFF_2026-08-07_gemini.md:352-366 "İş #9 — Alembic
       round-trip testi gerçek değil", AYNI bulgu, AYNI örnek (fa067642bdfe), P1.
       git log --since=2026-08-07 -- <bu dosyalar> -> BOŞ. 5 gündür açık.
+
+      ────────── 23 Ağu 2026 (S249) — ÖNCÜL BAYAT, ÇEKİRDEK İDDİA AYAKTA ──────────
+      ESKİ ANKRAJ GEÇERSİZ: alembic/versions/fa067642bdfe_force_drop_questions
+      artık göç yolunda DEĞİL. Dosya SİLİNMEDİ — squash e002f550b (14 Ağu) onu
+      117 revizyonla birlikte versions_archive/ altına taşıdı.
+      NOT: S249'un ÖN-ölçümü "ankraj yok" demişti; YANLIŞTI — yalnız versions/
+      altına bakılmıştı. Dosya versions_archive/ altında duruyor.
+      "115 migration" öncülü de bayat: göç yolunda 2, arşivde 117.
+
+      YENİ ANKRAJ (kök neden, öncelik sırasıyla):
+        1) backend/tests/test_migrations.py:37-40 — pytestmark = skipif(True).
+           command.downgrade çağıran 4 satırın (251,343,542,576) HEPSİ bu dosyada
+           ve dosya KOŞULSUZ atlanıyor (16/16 skipped). Depoda başka çağrı YOK.
+        2) backend/tests/db/test_migrations.py:96-112 — yalnız ast.walk ile
+           "downgrade adlı fonksiyon var mı" bakıyor; GÖVDE denetlenmiyor.
+        3) CI'da downgrade adımı YOK (ci.yml:269/:478, golden-flows.yml:191).
+           scripts/ci/test_migrations.py VAR ama 0 workflow'dan çağrılıyor.
+
+      SEVERITY P1 -> P2, gerekçe ÖLÇÜLDÜ: göç yolu 115'ten 2'ye indi; bu 2'nin
+      1'i (0001 squash tabanı) TASARIM GEREĞİ geri alınamaz (RuntimeError,
+      docstring'de "BEDELI:" başlığıyla kabul edilmiş). Round-trip bugün yalnız
+      0002 için anlamlı — maruziyet 115 revizyondan 1'e düştü. Doğrulama boşluğu
+      (bekçi yok, CI adımı yok) GERÇEK ve AÇIK.
+
+      ÖLÇÜLEMEYEN: canlı `alembic downgrade` DENENMEDİ (görev salt-okunurdu).
+      0002'nin downgrade gövdesi yalnız OKUNDU, koşturulmadı.
     fix_degeri: |
       ÖLÇÜLEBİLİR ve mutasyonla çivilenebilir: gerçek round-trip test
       (upgrade head -> downgrade -1 -> upgrade head, tek-kullanımlık DB)
@@ -1133,7 +1159,15 @@ iddialar:
     severity_iddia: P1
     severity_olculen: P1
     durum: dogrulandi
-    kanit: "wc -l CLAUDE.md = 883 (12 Ağu). Rapor §A.4 + §D.1/#3."
+    kanit: |
+      wc -l CLAUDE.md = 883 (12 Ağu). Rapor §A.4 + §D.1/#3.
+
+      ────────── 23 Ağu 2026 (S249) ──────────
+      wc -l CLAUDE.md -> 910. İddia 883 diyordu ve 12 Ağu'da BİREBİR
+      doğruydu (git show ile teyitli). Yön iyileşme değil, +27 BÜYÜME.
+      "<200 satır" sınırının depo-içi belgesi YOK (harici kural).
+      BU TURDA KESİLMEDİ: CLAUDE.md talimat dosyası; içerik kesmek
+      Claude'un davranışını değiştirir, ayrı bir turun konusudur.
     commit: null
     zorlayici_test: null
 
@@ -1186,6 +1220,30 @@ iddialar:
       parçalanma admin yüzeyinde ZARAR ÜRETMİYOR. Bulgu ayakta ama severity
       düşürülmeli: kanıtlanmış bir tutarsızlık henüz gösterilmedi. Ölçüm:
       diğer 5 implementasyonu KİM çağırıyor ve o uçlar atlatılabiliyor mu.
+
+      ────────── 23 Ağu 2026 (S249) — TUTARSIZLIK ARANDI VE BULUNDU ──────────
+      Envanter: docs/audits/2026-08-23_x06_rol_kapisi_envanteri.md
+      Sayı mutabakatı: kütüğün "21 tanım / 6 dosya"sı AYNI grep'ten gelmiyor
+      (21 -> 5 dosya, 6 dosya -> 23 tanım). Kanon: 23 tanım / 6 dosya.
+      23'ün 16'sı ÖLÜ (üretim çağıranı 0); canlı 7'nin 3'ü rol kapısı bile değil.
+
+      BELİRLEYİCİ — üç canlı çalıştırma, üç ZIT yargı:
+        1) SUPER_ADMIN + kapı "admin": auth_dependencies.py:322 KABUL /
+           jwt_auth.py:860 RED 403. Fark: :331 super_admin'i OTOMATİK ekliyor,
+           :886 eklemiyor.
+        2) rol "ogretmen" + kapı "teacher": auth_dependencies RED /
+           teacher_classroom.py:58 _STAFF_ROLLERI KABUL.
+        3) enhanced_authentication.py:381 AuthorizationError(msg, severity=…)
+           çağırıyor ama core/exceptions.py:61 imzası yalnız message alıyor ->
+           TypeError -> HTTP 500 (403 DEĞİL). Bugün çağıranı 0 (canlı etki YOK),
+           ama birleştirmede canlanırsa sessiz-500 sınıfı üretir.
+        4) Rol sözlüğü 5 çatallı: enums_db.py:18 STUDENT="STUDENT" (kanonik,
+           "Do NOT redefine") vs 3 kopya "student" vs enums.py:104 "ogrenci".
+
+      -> Sayı tek başına kusur DEĞİL; kusur bu üç zıt yargıdır. dogrulandi KALIR.
+      BU TURDA BİRLEŞTİRME YAPILMADI (kullanıcı kararı: önce envanter).
+      Sıra: (a) kanon rol yazımını psql ile ÖLÇ, (b) :381 TypeError->500'ü kapat,
+      (c) 7 canlı kapıyı göçür, (d) 16 ölü tanımın silinmesi AYRI KALEM.
     commit: null
     zorlayici_test: null
 
@@ -1407,7 +1465,7 @@ iddialar:
     gorev: "İKİ AYRI FIX: (1) imajı yeniden build et VEYA router'ı bilerek dışarıda tutma kararını belgele. (2) docstring'i koda uydur (ya student_answers yazımını ekle ya da yalanı sil)."
     severity_iddia: P1
     severity_olculen: P2
-    durum: dogrulandi
+    durum: uygulandi
     kanit: |
       DAĞITIM KAYMASI (hakem, U14 doğrulaması sırasında):
         curl /api/v1/offline/sync-results (host, backend:8000)  -> 404
@@ -1430,6 +1488,42 @@ iddialar:
         bile (imaj güncellense bile), synced_count artacak ama öğrenci
         cevabı HİÇ KALICILAŞMAYACAKTI — iddianın (U14) anlattığı çakışma
         mekanizmasından TAMAMEN FARKLI, ayrı bir kusur.
+
+      ────────── 23 Ağu 2026 (S249) — KOL BAZINDA KAPANIŞ ──────────
+      TOPTAN kapatılmadı: gorev alanı birebir "İKİ AYRI FIX" diyor, her kol AYRI
+      ölçüldü. (S246'da X10 tam bu yüzden yanlış kapatılmıştı: "İki kolu varmış;
+      önceki fix yalnız birincisini kapatmış.")
+
+      (1) DAĞITIM KAYMASI — KAPANDI (S248 rebuild'i; hedefli bir fix değildi):
+          docker exec: /app/api/offline_sync_api.py -> VAR
+          canlı /openapi.json -> 'offline' geçen 4 yol   (önceki ölçüm: 0)
+          /offline/sync-status -> 401, /offline/sync-results -> 405 (önceki: 404)
+          NOT: (1) açıldığı için (2) ARTIK ULAŞILABİLİR bir kod yolu oldu.
+          Kütüğün kendi notu "(1) kapalı olduğu için (2) tetiklenemez" diyordu.
+
+      (2) DOCSTRING/KOD UYUŞMAZLIĞI — KAPANDI, karar kuralı C ile. Üç şart:
+          a) satır OLUŞMUYOR: ORM sembolü modülde 0 kez, git log -S hiç olmadığını
+             gösteriyor. Tek yazım :328 db.add(card), o da if card is not None içinde.
+          b) HİÇ ÇAĞRI YOK: frontend/ içinde sync-results çağıranı yok; canlı
+             istemci AYRI routera gidiyor (/api/v1/sync/*).
+          c) VERİ KAYBI YOK: offline_sync_packages = 0 satır; paket yokken
+             process_sync_results her partiyi unknown_package ile reddediyor.
+          -> Özellik YAZILMADI (YAGNI + "+0 değer"): tüketici yok,
+             student_answers.exam_session_id NOT NULL olduğu için yazım
+             sentetik-oturum TASARIM KARARI açar, ve ikinci yazım yolu
+             /api/v1/sync/* ile çift-kaynaklı yazım riski doğurur.
+          -> Docstring koda uyduruldu. Eski yalanın BİREBİR metni docstring'de
+             TEKRARLANMADI ki grep ile yalanı arayan 0 alsın (ilk taslak
+             alıntılıyordu ve grep yine 1 dönüyordu).
+
+      YAN BULGU (bu iddiada YOKTU, S249'da ölçüldü):
+          synced += 1 (offline_sync_service.py:330) if card is not None bloğunun
+          DIŞINDA. Kart eşleşmezse HİÇBİR ŞEY yazılmıyor ama uç synced_count: 1
+          dönüyor. DAVRANIŞ DEĞİŞTİRİLMEDİ (tüketicisiz yolda yanıt sözleşmesini
+          değiştirmek +0 değer); sessizce düzeltmek yerine kaydedildi. AÇIK KALEM.
+
+      YOL DÜZELTMESİ: ankraj/iddia alanları backend/app/services/... diyor;
+      dosya gerçekte backend/services/offline_sync_service.py. Satır no doğru.
     fix_degeri: |
       ÖLÇÜLEBİLİR ve iki parçalı:
         (1) İmaj kaymasının kazancı: `docker compose build --no-cache backend`
@@ -1442,5 +1536,5 @@ iddialar:
       severity_iddia P1 -> P2: özellik zaten kullanılmıyor (0 paket, X09/U14
       ile aynı ortam), acil değil ama sessizce yanlış davranacak bir kod
       yolu üretim imajına girmeden önce yakalanmalı.
-    commit: null
-    zorlayici_test: null
+    commit: "858819bf1 (docstring kolu) + S248 rebuild (dagitim kolu)"
+    zorlayici_test: backend/tests/unit/test_offline_sync_docstring_tutarliligi.py
