@@ -216,9 +216,36 @@ async def process_sync_results(
 
     For each result:
     - Validates the question exists and belongs to question_bank.
-    - Inserts a record into student_answers (using a synthetic exam session or
-      the offline_sync pseudo-session id).
-    - Updates FSRS card scheduling when a matching card is found.
+    - Updates FSRS card scheduling **when a matching card is found** (`:322-328`).
+
+    NOT PERSISTED: student answers. (S249, 23 Aug 2026 — measured.)
+    ------------------------------------------------------------------
+    This docstring used to promise an insert into the student-answers table
+    (verbatim text in the audit ledger, X11 second limb — deliberately not
+    repeated here so that grepping for the false claim yields zero hits).
+    It was never true: `StudentAnswer` appears **zero** times in this module and
+    `git log -S` shows it never did. The only write is `db.add(card)` at `:328`.
+
+    The claim was not made true because measurement said the path is unused:
+      - `offline_sync_packages` -> 0 rows; `process_sync_results` rejects every
+        batch with `unknown_package` when no package exists (`:238-256`).
+      - `POST /api/v1/offline/sync-results` has **no caller** in `frontend/`;
+        the live client syncs through the separate `/api/v1/sync/*` router
+        (`backgroundSyncService.ts`, `sw.ts`).
+      - `student_answers.exam_session_id` is NOT NULL, so persisting here would
+        require inventing a synthetic-session design — a feature decision, not a
+        docstring fix, on a path nothing calls.
+    Writing the feature would violate YAGNI and risk a second, divergent write
+    path next to `/api/v1/sync/*`. If a client ever wires this endpoint, the
+    answer-persistence decision must be made **before** it ships.
+
+    KNOWN ISSUE — `synced_count` over-reports.
+    ------------------------------------------
+    `synced += 1` (`:330`) sits OUTSIDE the `if card is not None:` block, so an
+    item with no matching FSRS card counts as "synced" while **nothing at all**
+    is written. Left unchanged deliberately: altering it changes the response
+    contract on a path with no consumer (+0 user value). Recorded in the audit
+    ledger (X11, second limb) instead of silently fixed.
 
     Args:
         db: Async database session.
@@ -229,6 +256,7 @@ async def process_sync_results(
 
     Returns:
         Dict with synced_count, failed_count, next_sync_recommended_at.
+        `synced_count` counts *processed* items, not persisted ones — see above.
     """
     from models.fsrs_models import FSRSCard
     from models.question_bank import QuestionBankItem
