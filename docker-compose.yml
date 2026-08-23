@@ -46,6 +46,12 @@ services:
       - ./d-dataset/output/crops:/app/static/crops:ro
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
+      # Kullaniciya gonderilen baglantilarin (e-posta dogrulama, veli onayi) kok
+      # adresi. Tanimsiz birakilirsa kod `http://localhost:3001` (Vite DEV portu)
+      # kullanir ve bu yiginda hicbir sey orada dinlemez -> her link olu dogar.
+      # 23 Agu 2026 olcumu: curl :3001 -> 000, curl :3000 -> 200.
+      # Bekci: backend/tests/unit/test_compose_frontend_url.py
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
