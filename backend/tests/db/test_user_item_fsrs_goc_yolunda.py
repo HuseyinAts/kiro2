@@ -37,6 +37,9 @@ DB istemez, her yerde kosar ve tam da squash sinifini yakalar.
 
 from __future__ import annotations
 
+import ast
+import io
+import tokenize
 from pathlib import Path
 
 import pytest
@@ -51,17 +54,66 @@ ARSIV = BACKEND / "alembic" / "versions_archive"
 TABLO = "user_item_fsrs"
 
 
+def _yorumsuz_py(metin: str) -> str:
+    """Python kaynagindan YORUM ve DOCSTRING'leri atar.
+
+    NEDEN ZORUNLU (M1 mutasyonu bunu ORTAYA CIKARDI):
+    Ilk surum ham metinde alt-dize ariyordu. `0003_restore_user_item_fsrs.py`
+    docstring'i tablo adini onlarca kez geciriyor; dolayisiyla DDL tamamen
+    silinse bile bekci YESIL kaliyordu. Mutasyon M1 (`_TABLO` yeniden
+    adlandirildi) ilk surumde HAYATTA KALDI -- olu bekci commit'lenecekti.
+
+    `audit-methodology.md`: "Bir deseni ANLATAN yorum, o deseni ICERIR --
+    dedektor onu kusur sanar." Buradaki hali tersi: yorum, yoklugu VARLIK
+    gibi gosteriyordu.
+
+    Ayristirma basarisiz olursa ham metin doner; korlesme testleri bunu
+    yakalar (kontrol kolu bilinen tablolari aramaya devam eder).
+    """
+    try:
+        belirtecler = [
+            t
+            for t in tokenize.generate_tokens(io.StringIO(metin).readline)
+            if t.type != tokenize.COMMENT
+        ]
+        yorumsuz = tokenize.untokenize(belirtecler)
+        agac = ast.parse(yorumsuz)
+    except (SyntaxError, tokenize.TokenError, IndentationError):
+        return metin
+
+    for dugum in ast.walk(agac):
+        if isinstance(
+            dugum, ast.Module | ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef
+        ):
+            belge = ast.get_docstring(dugum, clean=False)
+            if belge:
+                yorumsuz = yorumsuz.replace(belge, "")
+    return yorumsuz
+
+
+def _yorumsuz_sql(metin: str) -> str:
+    """SQL kaynagindan `--` satir yorumlarini atar (ayni gerekce)."""
+    return "\n".join(s.split("--", 1)[0] for s in metin.splitlines())
+
+
 def _aktif_goc_metinleri() -> dict[str, str]:
     """AKTIF goc yolundaki her kaynak: versions/*.py + baseline/*.sql.
 
     `versions_archive/` KASITLI DISARIDA -- bekcinin tum varlik sebebi tablonun
     arsivde olup aktif yolda OLMAMASINI yakalamak.
+
+    Metinler YORUMSUZ dondurulur: aksi halde tablo adini yalnizca ANLATAN bir
+    docstring, tanimi SILINMIS bir tabloyu "var" gosterir (M1 mutasyonu).
     """
     metinler: dict[str, str] = {}
     for p in sorted(VERSIONS.glob("*.py")):
-        metinler[f"versions/{p.name}"] = p.read_text(encoding="utf-8", errors="replace")
+        metinler[f"versions/{p.name}"] = _yorumsuz_py(
+            p.read_text(encoding="utf-8", errors="replace")
+        )
     for p in sorted(BASELINE.glob("*.sql")):
-        metinler[f"baseline/{p.name}"] = p.read_text(encoding="utf-8", errors="replace")
+        metinler[f"baseline/{p.name}"] = _yorumsuz_sql(
+            p.read_text(encoding="utf-8", errors="replace")
+        )
     return metinler
 
 
