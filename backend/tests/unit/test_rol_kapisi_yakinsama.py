@@ -1,0 +1,164 @@
+"""Rol kapısı YAKINSAMA bekçisi — X06 (c) 1. adım (S252).
+
+NEDEN VAR
+---------
+X06'nın iddiası *"5+ ayrı rol kontrolü implementasyonu"* idi. S249 envanteri
+**sayının tek başına kusur olmadığını** doğru saptadı: kusur **tutarsızlıktır**.
+S252 ölçümü tutarsızlığın nerede yaşadığını gösterdi ve beklenen yerde değildi.
+
+    ADMIN+SUPER_ADMIN ikilisini LİTERAL yazan yer: **35** (AST, 24 Ağu 2026)
+    `core/dependencies.py:214` `PLATFORM_ADMIN_ROLES` kanonu: **1'i** kullanıyor
+
+Yani sapma riski KAPI SAYISINDA değil, **kopyalanmış rol kümelerinde**. Her kopya
+bağımsız olarak kayabilir — nitekim S252'de tam bu sınıftan iki canlı kusur çıktı
+(`api/ogretmen.py:46` ADMIN'i dışarıda bırakıyordu; `api/auth.py:348` haritası
+kanonik yazımı hiç tanımıyordu).
+
+BU DOSYA İKİ ŞEY ÇİVİLER
+------------------------
+1. **YAKINSAMA:** `admin_kullanici_getir` (17 uç) ile kanon `get_current_admin_user`
+   (83 uç) BEŞ kanonik rolün BEŞİNDE de AYNI kararı vermeli. İkiz oldukları
+   varsayılmaz — her rol için tek tek ölçülür.
+2. **CIRCIR (ratchet):** kopya literal sayısı ÖLÇÜLEN değerin üstüne çıkamaz.
+   Kalan borç görünür kalır; yeni kopya sessizce eklenemez.
+
+Eşik **ölçülmüştür, seçilmemiştir**. Düşerse eşiği düşür (borç azaldı); yükselirse
+yeni bir kopya girmiş demektir — kapı onu göstersin diye var.
+"""
+
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+
+import pytest
+from fastapi import HTTPException
+
+from api.admin import admin_kullanici_getir
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+)
+from models.enums_db import UserRole
+
+_BACKEND = Path(__file__).resolve().parents[2]
+
+#: 24 Ağu 2026 AST ölçümü: 35 kopya vardı; `api/admin.py:42` kanona bağlandı → 34.
+#: Bu bir HEDEF değil TAVAN: kalan 34 kopya ölçülmüş borçtur (X06 (c) tam göçü).
+KOPYA_LITERAL_TAVANI = 34
+
+#: Kanon rol yazımı (PG enum `userrole`, `models/enums_db.py:18`).
+TUM_ROLLER = [
+    UserRole.STUDENT,
+    UserRole.TEACHER,
+    UserRole.PARENT,
+    UserRole.ADMIN,
+    UserRole.SUPER_ADMIN,
+]
+
+
+def _kullanici(rol: UserRole) -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id="k1", username="olcum", role=rol, email="olcum@kiro2.com", permissions=[]
+    )
+
+
+async def _karar(kapi, rol: UserRole) -> str:
+    """Kapının verdiği yargıyı KABUL/RED-403/HATA olarak döndürür."""
+    try:
+        await kapi(_kullanici(rol))
+    except HTTPException as hata:
+        return f"RED-{hata.status_code}"
+    except (
+        Exception
+    ) as hata:  # pragma: no cover  # kapi 4xx disi bir sey atarsa gorunsun
+        return f"HATA-{type(hata).__name__}"
+    return "KABUL"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("rol", TUM_ROLLER)
+async def test_ikiz_kapilar_ayni_rolu_ayni_yargiliyor(rol: UserRole) -> None:
+    """X06'nın ASIL sorusu: iki kapı aynı rolü farklı mı yargılıyor?
+
+    `admin_kullanici_getir` 17 ucu, `get_current_admin_user` 83 ucu koruyor.
+    İkisi ayrı yargılarsa aynı yetkiye sahip iki kullanıcı farklı muamele görür.
+    """
+    kanon = await _karar(get_current_admin_user, rol)
+    ikiz = await _karar(admin_kullanici_getir, rol)
+    assert kanon == ikiz, (
+        f"{rol.value}: kanon={kanon} ama ikiz={ikiz}. İki kapı AYNI rolü FARKLI "
+        "yargılıyor — X06'nın tam olarak aradığı kusur."
+    )
+
+
+@pytest.mark.asyncio
+async def test_kontrol_kolu_yargilar_dejenere_degil() -> None:
+    """KONTROL KOLU: yukarıdaki test her şeye 'KABUL' dese de geçerdi.
+
+    Yakınsama testi tek başına anlamsız olurdu: iki kapı da hiçbir şey yapmasa
+    (ikisi de KABUL) yine 'aynı' olurlardı. Burada yargıların GERÇEKTEN
+    ayrıştığı — yani kapının kapı olduğu — çivilenir.
+    """
+    kararlar = {rol: await _karar(get_current_admin_user, rol) for rol in TUM_ROLLER}
+    assert kararlar[UserRole.ADMIN] == "KABUL"
+    assert kararlar[UserRole.SUPER_ADMIN] == "KABUL"
+    assert kararlar[UserRole.STUDENT] == "RED-403"
+    assert kararlar[UserRole.TEACHER] == "RED-403"
+    assert kararlar[UserRole.PARENT] == "RED-403"
+
+
+def _kopya_literaller() -> list[str]:
+    """ADMIN+SUPER_ADMIN ikilisini LİTERAL olarak yazan yerler (AST).
+
+    AST kullanılır: yorum satırları ve docstring'ler AST'de YOKTUR, bu yüzden
+    bir deseni ANLATAN yorum kusur sanılamaz.
+    """
+    hedef = {"ADMIN", "SUPER_ADMIN"}
+    bulunan: list[str] = []
+    for kok in ("api", "core", "services", "app"):
+        for yol in (_BACKEND / kok).rglob("*.py"):
+            if "__pycache__" in str(yol):
+                continue
+            try:
+                agac = ast.parse(yol.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                continue
+            for dugum in ast.walk(agac):
+                if not isinstance(dugum, ast.Tuple | ast.Set | ast.List):
+                    continue
+                adlar = {e.attr for e in dugum.elts if isinstance(e, ast.Attribute)}
+                if hedef <= adlar and len(adlar) <= 3:
+                    bulunan.append(
+                        f"{yol.relative_to(_BACKEND)}:{dugum.lineno} "
+                        f"({', '.join(sorted(adlar))})"
+                    )
+    return bulunan
+
+
+def test_alet_dogrulamasi_kanon_tanimi_bulunuyor() -> None:
+    """KONTROL KOLU: tarayıcı bilinen-VAR bir kopyayı görüyor mu.
+
+    Boş dönerse aşağıdaki çırçır hiçbir şey ölçmeden yeşil kalır — yanlış-SIFIR.
+    """
+    bulunan = _kopya_literaller()
+    assert (
+        len(bulunan) >= 10
+    ), f"AST tarayıcı yalnız {len(bulunan)} kopya buldu; alet arızalı olabilir"
+    assert any(
+        "core/dependencies.py" in b or "core\\dependencies.py" in b for b in bulunan
+    ), "kanon tanımının kendisi (dependencies.py:215) görünmüyor -> tarayıcı kör"
+
+
+def test_circir_kopya_rol_kumesi_sayisi_artmiyor() -> None:
+    """ÇIRÇIR: kopya literal sayısı ölçülen tavanı aşamaz.
+
+    Kalan borç X06 (c) tam göçüdür ve GÖRÜNÜR bırakılmıştır — sessizce
+    büyümesini bu kapı engeller.
+    """
+    bulunan = _kopya_literaller()
+    assert len(bulunan) <= KOPYA_LITERAL_TAVANI, (
+        f"Kopya rol kümesi {len(bulunan)} (tavan {KOPYA_LITERAL_TAVANI}). "
+        "Yeni bir kopya eklendi — `core/dependencies.PLATFORM_ADMIN_ROLES` "
+        "kanonunu kullan.\n" + "\n".join(sorted(bulunan))
+    )

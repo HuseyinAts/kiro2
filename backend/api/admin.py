@@ -15,7 +15,12 @@ from sqlalchemy import text as _sql_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # FIX 2026-04-01: in-memory auth kaldirildi, JWT auth eklendi
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
+from core.dependencies import (
+    PLATFORM_ADMIN_ROLES,
+    AuthenticatedUser,
+    get_current_user,
+    get_db,
+)
 from models.user import Kullanici
 from services.admin_service import admin_servisi
 
@@ -39,7 +44,14 @@ async def admin_kullanici_getir(
     str Enum: UserRole.ADMIN == 'admin' == 'ADMIN' degil,
     ama JWT payload 'admin' (lowercase) tasidigindan UserRole.ADMIN eslesir.
     """
-    if current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+    # ROL KUMESI KANONDAN gelir (core/dependencies.PLATFORM_ADMIN_ROLES), burada
+    # KOPYALANMAZ. X06 (c) 1. adim: bu kapi ile get_current_admin_user (83 uc)
+    # davranissal IKIZ; kume kopyalanirsa ikisi bagimsiz KAYABILIR ve ayni yetkiye
+    # sahip iki kullanici farkli muamele gorur. S252'de tam bu siniftan iki canli
+    # kusur cikti (api/ogretmen.py:46 · api/auth.py:348).
+    # Mesaj Turkce KALIYOR -- kullanici-gorunur delta SIFIR; birlesen sey YARGI.
+    # Bekci: tests/unit/test_rol_kapisi_yakinsama.py
+    if current_user.role not in PLATFORM_ADMIN_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu islem icin admin yetkisi gerekli",
