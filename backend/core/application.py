@@ -318,6 +318,34 @@ def setup_rate_limiting(app: FastAPI) -> None:
     logger.info("✅ Rate limiting configured (slowapi)")
 
 
+def _servis_hatasi_handleri_kaydet(app: FastAPI) -> None:
+    """`ServiceError` ailesini HTTP kodlarina esler (403/404/400/503...).
+
+    NEDEN: `core/exceptions.py`'deki `ServiceError` ailesi `HTTPException`
+    DEGIL. Kayit olmadan bu istisnalar :354'teki generic catch-all'a duser ve
+    istemciye **500** goruntusu verir. Canli olcum (24 Agu 2026):
+    `GET /api/v1/users` yetkisiz ogrenciye 403 degil **500** donduruyordu
+    (`api/enhanced_user_management_api.py:108` `ErrorFactory.authorization_error`).
+
+    ⚠️ Toptan `setup_exception_handlers(app)` (`core/exception_handlers.py:518`)
+    BILEREK CAGRILMIYOR: o fonksiyon :545'te `Exception` catch-all'ini DA
+    kaydedip bu dosyadaki :354 catch-all'ini devirir -- blast radius uygulama
+    geneli. Yalniz `ServiceError` kaydedilir; alt siniflar Starlette'in MRO
+    cozumlemesiyle zaten kapsanir.
+
+    Esleme `core/exception_handlers.py:162-169` `status_mapping`'ten gelir ve
+    yalnizca ALTI kodu tasir; mapping'de olmayan hata kodlari 500'de KALIR
+    (RATE_LIMIT / QUOTA / TIMEOUT davranisi degismez).
+
+    Bekci: `backend/tests/unit/test_service_error_http_kodu.py`.
+    """
+    from core.exception_handlers import ExceptionHandlers
+    from core.exceptions import ServiceError
+
+    handlers = ExceptionHandlers(turkish_messages=True)
+    app.add_exception_handler(ServiceError, handlers.service_exception_handler)
+
+
 def create_app() -> FastAPI:
     """
     Application factory.
@@ -349,6 +377,10 @@ def create_app() -> FastAPI:
 
     # Setup rate limiting
     setup_rate_limiting(app)
+
+    # ServiceError ailesi -> dogru HTTP kodu. Catch-all'dan ONCE kaydedilir:
+    # kayit olmadan yetki reddi istemciye 500 olarak gorunuyordu (K1, S252).
+    _servis_hatasi_handleri_kaydet(app)
 
     # Global catch-all exception handler (prevent internal detail leaks)
     @app.exception_handler(Exception)
