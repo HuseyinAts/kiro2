@@ -139,12 +139,64 @@ billing/org 21 error (`plans.is_active` NOT NULL fikstürü) · 8-dosyalık topl
 - ⚠️ CI: 11 workflow'un **0'ı** bu dalda tetikleniyor · `latest.md` "son 3 oturum" kuralı
   kaymış (12 oturum).
 
+### 2. TUR — kullanıcı onayıyla üç iş daha yapıldı
+
+**a) Push ✅** — `47e88aa39..745553975`. İlk denemede **push kapısı blokladı**
+(reward-hacking, 3 🔴 kritik). `--no-verify` KULLANILMADI: üç satırda da
+`pragma: no cover` gerekçesi **vardı** ama tire ile yazılmıştı; dedektör ikinci
+bir `#` bekliyor (`coverage_manipulation_detector.py:128`, biçim kendi
+docstring'inde dokümante). Düzeltilince **iki yeni kritik** çıktı
+(*maskenin altında maske*) → tek tek denemek yerine push aralığındaki **27
+python dosyasının hepsi** dedektöre verildi, hepsi temizlendi. Kapı sonra
+tamamen yeşil geçti.
+
+**b) Rebuild ✅ — deploy artık KALICI.** `docker compose build backend` +
+`up -d --no-deps backend`. `docker cp` konteynerin yazılabilir katmanına
+yazıyordu ve bir recreate'te kaybolurdu (#511 dersi). Recreate sonrası
+6/6 dosya `git == imaj`, `/health` 200, ve **üç kusur da hâlâ kapalı**
+(prop tekrarlandı: K1 403 · K2 200 · K3 200 · KONTROL değişmedi).
+
+**c) X06 (c) 1. ADIM ✅** — `49c6e1e3e` + `ccf53e136`
+> Ölçüm göçün şeklini değiştirdi: **AST ile 35 yerde** `ADMIN+SUPER_ADMIN`
+> ikilisi **literal kopyalanmış**; kanon `PLATFORM_ADMIN_ROLES` bunların
+> **1'inde** kullanılıyor. Yani X06'nın sapma riski *kapı sayısında* değil
+> **kopyalanmış rol kümelerinde** — S252'nin iki canlı kusuru da tam bu sınıftan.
+
+- `api/admin.py:42` kendi kopyası yerine **kanonu okuyor**. 17 uç, çağrı yerleri
+  değişmedi, 403 mesajı **Türkçe kaldı** → kullanıcı-görünür delta **SIFIR**.
+  Birleşen şey mesaj değil **yargı**.
+- 🔴 **`jwt_auth.require_admin` (2 uç) BİLEREK YAPILMADI** — ölçüldü, *"sıfır
+  davranış değişikliği" DEĞİL*: taşıyıcı tip farklı (`TokenPayload` vs
+  `AuthenticatedUser`) ve çağrı yerleri `.sub`'ı **4 yerde** kullanıyor
+  (`AuthenticatedUser`'da yok, `.id` var); ayrıca dosyanın diğer uçları da
+  `jwt_auth` ailesini kullanıyor → tek dosyada iki taşıyıcı tip karışırdı.
+- **Bekçi** `tests/unit/test_rol_kapisi_yakinsama.py` (9 test): yakınsama
+  (ikiz ile kanon 5 rolün 5'inde aynı yargı) + kontrol kolu (yargılar dejenere
+  değil) + **çırçır** (kopya sayısı 34'ü aşamaz) + alet doğrulaması.
+
+### 🔴 Mutasyon bu turda İKİ kez daha boşluk buldu
+1. **K1 bekçisi** — `create_app()` içindeki kayıt çağrısını yorumlamak hiçbir
+   testi düşürmedi. AST'li **üretim yolu** testi eklendi (`764d9a7f5`).
+2. **Çırçır kendini korumuyordu** — tavanı `34 → 999` yapmak hiçbir testi
+   düşürmedi (`<=` bir çırçırı korumaz). Tam eşitlik testi eklendi
+   (`ccf53e136`); M3 artık ölüyor. Ayrıca tarama `lru_cache`'lendi: **170 → 46 sn**.
+
+*İkisi de commit'lenmiş, yeşil görünen bekçilerdi.*
+
+### 🔴 Kendi kuralımı çiğnedim (kayıp kurtarıldı)
+**Commit'siz işi mutasyona soktum** ve mutasyon script'indeki
+`git checkout HEAD -- api/admin.py` düzeltmeyi **sildi**. Kural depoda yazılı
+(`verification.md`: *commit'siz iş `git stash push --` ile mutasyona sokulur,
+`git checkout HEAD --` ile ASLA*). Fark edildi, yeniden uygulandı, **önce commit
+edildi sonra mutasyon koşuldu**. Kalıcı kayıp yok.
+
 ### Sonraki Adımlar (maks 5)
-1. **Push** (12 commit) — kullanıcı onayı bekliyor.
-2. **X06 (c)**: önce davranışsal-İKİZ göçü (`admin_kullanici_getir` 17 + `jwt_auth.require_admin` 2
-   → kanon; sıfır davranış değişikliği), `require_role` 21 ucu **ayrı tur**.
+1. **X06 (c) 2. adım** — `jwt_auth.require_admin` (2 uç): taşıyıcı tip göçü
+   (`TokenPayload` → `AuthenticatedUser`, `.sub` → `.id` ×4). Kendi turu.
+2. **X06 (c) 3. adım** — kalan **34 kopya literal**. İki kanon gerekiyor:
+   `{ADMIN, SUPER_ADMIN}` (var) ve `{ADMIN, SUPER_ADMIN, TEACHER}` (**yok**, ~15 kopya).
 3. `/org/billing/dpa` rol kapısı — yeni açılan kalem.
-4. **SMTP #441** (operatör).
+4. **SMTP #441** (operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`.
 5. `org_memberships` RLS fail-open — ayrı P1.
 
 ### Kararlar (gelecek oturum tekrar tartışmasın)
