@@ -336,7 +336,18 @@ async def mevcut_kullanici_getir(
     try:
         payload = pyjwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
-        # Map JWT role to KullaniciRolu
+        # Map JWT role to KullaniciRolu.
+        #
+        # HARF BUYUKLUGU NORMALIZE EDILIR. Kanonik rol BUYUK harftir (`users.role`
+        # PG enum `userrole`: STUDENT/TEACHER/PARENT/ADMIN/SUPER_ADMIN,
+        # `models/enums_db.py:18` *"Do NOT redefine"*), bu haritanin anahtarlari
+        # ise kucuk. Normalizasyon olmadan kanonik jeton haritayi ISKALIYOR ve
+        # sessizce OGRENCI'ye dusuyordu -> `/api/v1/ogretmen/*` yuzeyinin 10 ucu
+        # kanonik rolle HIC acilmiyordu (24 Agu 2026 canli olcum: role="TEACHER"
+        # -> 403, role="teacher" -> 200, ayni uc).
+        #
+        # Ayni kusur sinifi bu dosyada `_map_registration_role`de zaten
+        # duzeltilmisti; kimlik dogrulama tarafi geride kalmisti.
         jwt_role = payload.get("role", "student")
         role_map = {
             "student": KullaniciRolu.OGRENCI,
@@ -345,7 +356,22 @@ async def mevcut_kullanici_getir(
             "parent": KullaniciRolu.VELI,
             "super_admin": KullaniciRolu.SUPER_ADMIN,
         }
-        rol = role_map.get(jwt_role, KullaniciRolu.OGRENCI)
+        rol_key = (
+            (jwt_role.value if isinstance(jwt_role, Enum) else str(jwt_role))
+            .strip()
+            .lower()
+        )
+        rol = role_map.get(rol_key)
+        if rol is None:
+            # SESSIZ DUSURME YASAK. Yetki yine de en dusuge cekilir (fail-closed,
+            # kilitlenme uretmez) ama GORUNUR olur: bu kusuru aylarca gizleyen sey
+            # tam olarak sessizligin kendisiydi.
+            logger.error(
+                "JWT rolu taninmadi, OGRENCI'ye dusuruldu: %r (kanon: %s)",
+                jwt_role,
+                ", ".join(sorted(role_map)),
+            )
+            rol = KullaniciRolu.OGRENCI
 
         return Kullanici(
             id=payload.get("sub", ""),

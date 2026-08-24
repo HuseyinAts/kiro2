@@ -1,6 +1,7 @@
 """
 Öğretmen paneli API endpoint'leri
 """
+
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -39,11 +40,23 @@ class BildirimGonder(BaseModel):
     tip: str = Field("bilgi", description="Bildirim tipi (bilgi, uyari, basari, hata)")
 
 
+#: Öğretmen uçlarından geçebilen roller.
+#: ADMIN/SUPER_ADMIN BİLEREK İÇERİDE: canlı dört rol-kapısı ailesinin dördü de
+#: (`get_current_admin_user` 83 uç · `admin_kullanici_getir` 17 · `require_role` 21
+#: · `jwt_auth.require_admin` 2) ADMIN istendiğinde SUPER_ADMIN'i geçiriyor.
+#: Bu kapı tek sapmaydı: eşitsizlik (küme değil) kullandığı için ADMIN ve
+#: SUPER_ADMIN 403 alıyordu (24 Ağu 2026 canlı ölçüm). Ürün kararı: geçmeliler.
+#: Bekçi: `tests/unit/test_ogretmen_rol_kapisi.py`.
+_OGRETMEN_KAPISI_ROLLERI = frozenset(
+    {KullaniciRolu.OGRETMEN, KullaniciRolu.ADMIN, KullaniciRolu.SUPER_ADMIN}
+)
+
+
 async def ogretmen_yetkisi_kontrol(
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
 ) -> Kullanici:
-    """Öğretmen yetkisi kontrolü"""
-    if mevcut_kullanici.rol != KullaniciRolu.OGRETMEN:
+    """Öğretmen yetkisi kontrolü (öğretmen + platform yöneticileri)."""
+    if mevcut_kullanici.rol not in _OGRETMEN_KAPISI_ROLLERI:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem için öğretmen yetkisi gerekli",
@@ -74,7 +87,10 @@ async def ogretmen_dashboard(ogretmen: Kullanici = Depends(ogretmen_yetkisi_kont
         }
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -124,7 +140,10 @@ async def ogrenci_listesi(
         }
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -161,7 +180,10 @@ async def ogrenci_performans_detay(
         }
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -199,7 +221,10 @@ async def sinif_raporu_olustur(
         }
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
