@@ -48,6 +48,120 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-24 (S252 · X06 ölçüldü → 3 CANLI KUSUR kapandı)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `a76f23563..1945fb2d8` (5 commit)
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
+**Push:** ❌ **12 commit yerelde** (`origin` 0/12) — kullanıcı istemedi, bekliyor.
+
+### İstenen iş X06 (c) göçüydü; ölçüm görevin ÖNCÜLÜNÜ değiştirdi
+7 boyutlu ölçüm workflow'u (13 ajan, her boyut ayrı çürütücüye gitti):
+
+| İddia | Ölçüm |
+|---|---|
+| "32 canlı uç" | **YANLIŞ.** Gerçek yüzey ~150. S249 envanteri yalnız `backend/core/*.py` taramıştı; API-yerel kapılar + `learning_style.py:40` (7 uç) + gölge adlar hiç sayılmamıştı |
+| "merkezi kapı `require_admin`" | **YANLIŞ.** Merkez `get_current_admin_user` — **83 uç / 22 dosya**. `require_admin` toplam 5 `Depends` |
+| "kanon kapının bekçisi var" | **YOK.** `grep PLATFORM_ADMIN_ROLES backend/tests` → **0 dosya** |
+| "admin E2E ağı korur" | **KORUMAZ.** `loginAsAdmin` `admin@kiro2.com`'a giriyor — o hesap **yok** (41 kullanıcı, hepsi STUDENT); üstelik yanıtlar `ApiMocker` ile taklit |
+
+**Kullanıcı kararı:** göç ertelendi, önce 3 kusur + kanon bekçisi.
+
+### Kapanan — hepsi CANLI proplandı, deploy edildi, tekrar proplandı
+| # | Kusur | ÖNCE → SONRA (none/STUDENT/TEACHER/ADMIN/SUPER) | Commit | Mutasyon |
+|---|---|---|---|---|
+| **K3** | `billing_service` **YANLIŞ TABLOYA** vuruyordu | `401/500/500/500/500` → `401/200/200/200/200` | `a76f23563` | **2/2** |
+| **K2** | kanonik BÜYÜK HARF rol sessizce `OGRENCI`'ye düşüyordu | `401/403/403/403/403` → `401/403/200/200/200` | `f084cd534` | **4/4** |
+| **K1** | yetki reddi istemciye **500** görünüyordu | `401/500/500/200/200` → `401/403/403/200/200` | `ba8acc9d9` + `764d9a7f5` | **3/3** |
+| **K4** | kanon kapının **hiç testi yoktu** (83 uç) | 0 test → 14 test | `1945fb2d8` | **4/4** |
+
+**KONTROL KOLU** `/api/v1/admin/dashboard/stats` tur boyunca `401/403/403/200/200` — değişmedi.
+Deploy: 6/6 dosya md5 `git == imaj`, `.pyc` silindi, restart + 95 sn, `/health` 200,
+`app.exception_handlers` **5 → 6** (`ServiceError` eklendi).
+
+### Kök nedenler — üçü de "denetimin anlattığından farklı" çıktı
+- **K3 kolon değil TABLO:** `data_processing_agreements` = FERPA/COPPA üçüncü-taraf
+  tablosu; B2B olan `billing_data_processing_agreements`. `faz1_billing` adı almaya
+  çalıştı, çakıştı, şema önekli ada taşındı, **servis ve ORM modeli taşınmadı**.
+  Maske: `extend_existing` YALNIZ billing tarafındaydı → çakışma import sırasına göre
+  ya sessizce eziyor ya patlıyordu. Kaldırıldı.
+- **K2 aynı bug 45 satır aşağıda ZATEN DÜZELTİLMİŞ:** `_map_registration_role`
+  (`auth.py:389`) docstring'i birebir aynı sınıfı anlatıyor. Kayıt tarafı onarılmış,
+  **kimlik doğrulama tarafı geride kalmış.**
+- **K1 iki katman:** kayıt yoktu **ve** handler'ın kendisi bozuktu
+  (`.dict()` → ham `datetime` → `json.dumps` patlıyor). Kaydedilse bile çalışmazdı —
+  `setup_exception_handlers`'ın 0 çağıranı olmasını bu açıklayabilir.
+
+### 🔴 Çürütülen kendi iddialarım
+1. **S251'de G5'i "değeri +0" diye DÜŞÜRMÜŞTÜM.** O ölçüm 17 **başka** ucu proplamıştı
+   (17/17 403 — doğru ama **eksik örneklem**). Bugün karşı-örnek ölçüldü: 3 uç 500.
+   *"+0" bir ÖLÇÜMDÜR ve örneklemi kadar geçerlidir.*
+2. *"K2 = ogretmen.py'nin eşitsizliği"* → eksikti; asıl kusur `role_map`'in harf
+   duyarlılığıydı ve **TEACHER bile** 403 alıyordu.
+
+### 🔴 Ölçüm aletim bu turda ÜÇ kez yanıldı (üçü de kontrol koluyla yakalandı)
+1. İlk canlı prop **hepsi 401** → token `username` taşımıyordu. **Kontrol kolu da 401'di**,
+   o yüzden "bulgu" değil alet arızası olduğu anlaşıldı.
+2. İkinci prop **hepsi 500** → `username="t"` (1 karakter), `ad_soyad` min_length=2 →
+   pydantic 500. Yani 500'ler **benim** ürettiğim hatalardı.
+3. Testte `.test` TLD → pydantic `EmailStr` reddediyor → 10 test ölçmek istediğine
+   **ulaşmadan** düştü. **S247 devir notunda kayıtlı tuzak, yine ısırdı.**
+
+### 🔴 Mutasyon bir bekçi boşluğu buldu (`764d9a7f5`)
+K1 bekçisinde **M1 hayatta kaldı**: `create_app()` içindeki kayıt çağrısını yorum satırı
+yapmak hiçbir testi düşürmedi — bekçi fonksiyonu *kendisi* çağırıyordu, **üretim
+kablosunu hiç ölçmüyordu**. AST'li üretim-yolu testi eklendi (yorum satırı AST'de yoktur
+→ "yorumu desen sanma" tuzağı yapısal olarak imkânsız). M1 artık ölüyor.
+*Ders: bir bekçiyi "fonksiyonu doğrudan çağırarak" yazmak, o fonksiyonun ÜRETİMDE
+çağrıldığını kanıtlamaz. İki ayrı sözleşme var, ikisi de ölçülmeli.*
+
+### Fail Eden Testler
+**YOK.** K3 5 · K2 16 · K1 10 · K4 14 passed. Regresyon: teacher_panel+auth+rate_limit+
+password_recovery+eposta zinciri **58 passed / 29 skipped**; main_application 12 ·
+main_smoke 10 · global_exception_handler 4 · exception_kwarg_sozlesmesi 12 → passed.
+Kontrol koluyla ölçülen **önceden var olan** hatalar (benim değil, HEAD'de birebir aynı):
+billing/org 21 error (`plans.is_active` NOT NULL fikstürü) · 8-dosyalık toplu koşuda
+50 error (sıra-bağımlı `MagicMock` stub kirlenmesi) · `test_core_middleware_infra` 1 error.
+
+### Engelleyiciler / açık kalemler
+- 🔴 **X06 (c) GÖÇÜ HÂLÂ AÇIK** ve kapsamı ~150 uç. Kanon adayı `get_current_admin_user`
+  (%66'sı zaten orada). ⚠️ `require_role` ailesinin 21 ucunu göçürmek **üç yönde
+  kullanıcı-görünür davranış değiştirir**: bugün blacklist okumuyor · cookie okumuyor ·
+  RLS GUC kurmuyor.
+- 🔴 **SMTP #441** (operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`. Sıra bu yönde;
+  yaptırım `7e2245aef`'te koda gömülü.
+- 🔴 `/api/v1/org/billing/dpa` **rol kapısı YOK** — öğrenci `{"organization_id":
+  "org_legacy_default","signed":false}` okuyabiliyor. Önceden 500 olduğu için görünmüyordu.
+- 🔴 `org_memberships` RLS politikası **PERMISSIVE / fail-open** (`app.current_org_id`
+  GUC yoksa tüm satırlar geçer) — MEMORY'deki "73 fail-closed" ifadesinin istisnası.
+- ⚠️ `/api/v1/ogretmen/dashboard` kapıyı artık geçiyor ama **400** dönüyor — ayrı,
+  önceden var olan handler kusuru (kapı ile ilgisiz).
+- ⚠️ `setup_exception_handlers` + `exception_handler.py:334` + `global_exception_handler.py:768`
+  → üç modül de kayıtsız ölü kod. X06 (d) ile birlikte ele alınmalı.
+- ⚠️ CI: 11 workflow'un **0'ı** bu dalda tetikleniyor · `latest.md` "son 3 oturum" kuralı
+  kaymış (12 oturum).
+
+### Sonraki Adımlar (maks 5)
+1. **Push** (12 commit) — kullanıcı onayı bekliyor.
+2. **X06 (c)**: önce davranışsal-İKİZ göçü (`admin_kullanici_getir` 17 + `jwt_auth.require_admin` 2
+   → kanon; sıfır davranış değişikliği), `require_role` 21 ucu **ayrı tur**.
+3. `/org/billing/dpa` rol kapısı — yeni açılan kalem.
+4. **SMTP #441** (operatör).
+5. `org_memberships` RLS fail-open — ayrı P1.
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **X06 (c) bu turda YAPILMADI ve doğru olan buydu:** kanon kapının bekçisi yoktu
+  (`PLATFORM_ADMIN_ROLES` → 0 test) ve tüm test ağındaki tek "doğru rol geçiyor mu"
+  kontrol kolu SKIP'ti. **Bekçisiz kapıya 126 uç yığılmaz.** Bekçi artık var (K4).
+- **`ogretmen.py`'ye ADMIN + SUPER_ADMIN geçer (kullanıcı kararı).** Canlı dört ailenin
+  dördü de böyle davranıyor; ogretmen.py tek sapmaydı.
+- **Toptan `setup_exception_handlers` ÇAĞRILMADI** — o fonksiyon `Exception` catch-all'ını
+  da kaydedip `application.py:354`'ü devirirdi. Yalnız `ServiceError` kaydedildi; alt
+  sınıflar Starlette MRO ile kapsanıyor (testle çivilendi).
+- **Kanon rol yazımı BÜYÜK HARF** (`userrole` PG enum). Küçük harf varyantları geriye
+  dönük uyumluluk olarak **çalışmaya devam etmeli** — testle çivilendi; kanonu tanırken
+  eskiyi kırmak da bir regresyondur.
+
+---
+
 ## Session Handoff — 2026-08-24 (S251 · PLAN + UYGULAMA — 5 görev, 1 düşürüldü)
 **Branch:** feature/self-evolution-optimization · **Aralık:** `89fe2e417..` (3 kod + 1 doküman commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)

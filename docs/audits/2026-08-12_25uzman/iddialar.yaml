@@ -1281,6 +1281,47 @@ iddialar:
       kayıtsız ÖLÜ KOD. Ama kaydetmenin bugünkü değeri **+0** (o ailenin
       api/+services/ içinde 1 raise'i var) → kaydedilmedi; ölü kod temizliği
       X06 (d) ile birlikte ele alınmalı.
+
+      ────────── 24 Ağu 2026 (S252) — (c) ÖLÇÜLDÜ, 3 CANLI KUSUR KAPANDI ──────────
+      ⚠️ YUKARIDAKİ "+0" GEREKÇESİ ÇÜRÜDÜ. O ölçüm 17 BAŞKA ucu proplamıştı
+      (17/17 403 — doğru ama EKSİK ÖRNEKLEM). Karşı-örnek ölçüldü: GET /api/v1/users
+      yetkisiz öğrenciye 500 dönüyordu (3 uç). Handler KAYDEDİLDİ (ba8acc9d9) ve
+      ayrıca handler'ın KENDİSİNİN bozuk olduğu bulundu (.dict() -> ham datetime ->
+      json.dumps patlıyor); kaydedilse bile çalışmazdı. "+0" bir ÖLÇÜMDÜR ve
+      örneklemi kadar geçerlidir.
+
+      (c) KAPSAMI YENİDEN ÖLÇÜLDÜ — "32 uç" YANLIŞTI, gerçek yüzey ~150:
+        get_current_admin_user   83 uç / 22 dosya   <- GERÇEK MERKEZ (kanon adayı)
+        require_role [A]         21 uç
+        admin_kullanici_getir    17 uç  (kanonun davranışsal İKİZİ)
+        ogretmen_yetkisi_kontrol 10 uç
+        require_org_role          7 uç
+        _verify_student_or_self   7 uç  (envanterde HİÇ YOKTU)
+        enhanced_user_mgmt        3 uç  · jwt_auth.require_admin 2 uç
+      S249 envanteri yalnız backend/core/*.py taramıştı; API-yerel kapılar ve
+      api/learning_style.py:40 sayılmamıştı. Envanterin KAPSAMI bildirimden
+      taştığında sessizce yanlış olur.
+
+      ✅ X06'NIN "İKİ KAPI AYNI ROLÜ ZIT YARGILIYOR" İDDİASI İLK KEZ CANLI
+      ÖRNEKLE DOĞRULANDI VE DÜZELTİLDİ (f084cd534): api/ogretmen.py:46
+      `!= KullaniciRolu.OGRETMEN` (eşitsizlik, küme değil) ADMIN ve SUPER_ADMIN'i
+      403 ile atıyordu; canlı dört ailenin dördü de ADMIN istendiğinde SUPER_ADMIN'i
+      geçiriyor. S249 envanteri zıtlığı yalnız ÖLÜ yollarda bulabilmişti.
+      Ayrıca DAHA GENİŞ bir kusur çıktı: api/auth.py:348 role_map anahtarları küçük
+      harf, kanon BÜYÜK harf -> kanonik jeton SESSİZCE OGRENCI'ye düşüyordu, yani
+      /api/v1/ogretmen/* yüzeyi TEACHER'a bile kapalıydı. Aynı kusur aynı dosyada
+      _map_registration_role'de zaten düzeltilmişti; auth tarafı geride kalmış.
+
+      ✅ KANON KAPININ BEKÇİSİ YAZILDI (1945fb2d8): PLATFORM_ADMIN_ROLES'ün
+      backend/tests genelinde 0 testi vardı ve 83 ucu koruyordu. 14 test,
+      mutasyon 4/4. Göçün ÖN KOŞULU buydu.
+
+      ❌ (c) GÖÇÜ HÂLÂ AÇIK — kullanıcı kararıyla ertelendi. Gerekçe ölçülü:
+      require_role ailesinin 21 ucunu kanona taşımak ÜÇ YÖNDE kullanıcı-görünür
+      davranış değiştirir (bugün blacklist okumuyor · httpOnly cookie okumuyor ·
+      RLS GUC kurmuyor). Önerilen sıra: önce davranışsal İKİZ göçü
+      (admin_kullanici_getir 17 + jwt_auth.require_admin 2, sıfır davranış
+      değişikliği), require_role ailesi AYRI tur + kendi E2E'si.
     commit: null # bileşik iddia: (c)+(d) açık, birleştirme yapılmadı
     zorlayici_test: "backend/tests/unit/test_exception_kwarg_sozlesmesi.py (12 test, commit 1bd8b3c15) — YALNIZ alt-bulgu 3'ü koruyor. Eşik SIFIR + 6 kontrol kolu. Mutasyon 4/4 ÖLDÜ, dört geri alım da doğrulandı. Kontrol kolu ilk koşumda bekçide GERÇEK kusur yakaladı: **kwargs'lı sınıf atanın dar imzasıyla yargılanıyordu (yanlış-pozitif üretebilirdi)."
 
