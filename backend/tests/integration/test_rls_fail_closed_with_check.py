@@ -65,15 +65,20 @@ RLS_YAZMA_REDDI = "42501"
 
 
 def _migration_modulu():
-    """Migration'i dosya yolundan yukler (alembic/versions paket degil)."""
-    yol = (
-        Path(__file__).resolve().parents[2]
-        / "alembic"
-        / "versions"
-        / "ad6ba3bbe485_fix_rls_fail_closed_policy.py"
-    )
-    if not yol.exists():  # pragma: no cover - dosya tasinirsa haber ver
-        pytest.fail(f"Migration bulunamadi: {yol}")
+    """Migration'i dosya yolundan yukler (alembic/versions paket degil).
+
+    Squash turlerinde dosya versions/ -> versions_archive/ tasinabiliyor.
+    Tek yolu civilemek bu testi SESSIZCE olduruyordu; iki dizin de aranir.
+    """
+    ad = "ad6ba3bbe485_fix_rls_fail_closed_policy.py"
+    kok = Path(__file__).resolve().parents[2] / "alembic"
+    adaylar = [kok / "versions" / ad, kok / "versions_archive" / ad]
+    yol = next((a for a in adaylar if a.exists()), None)
+    if yol is None:  # pragma: no cover - dosya tamamen silinirse haber ver
+        pytest.fail(
+            "Migration hicbir dizinde bulunamadi. Bakilan yollar: "
+            + " | ".join(str(a) for a in adaylar)
+        )
     spec = importlib.util.spec_from_file_location(yol.stem, yol)
     modul = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modul)
