@@ -45,11 +45,36 @@ bu aileden 4 dogrudan `raise` + 7 `ErrorFactory` cagrisi var. Gercek degisim:
 
 from __future__ import annotations
 
+import ast
+from pathlib import Path
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from core.exceptions import AuthorizationError, NotFoundError, ValidationError
+
+_APPLICATION_PY = Path(__file__).resolve().parents[2] / "core" / "application.py"
+
+
+def _create_app_icindeki_cagrilar() -> set[str]:
+    """`create_app()` govdesinde CAGRILAN duz fonksiyon adlari (AST ile).
+
+    Neden AST: yorum satirlari ve docstring'ler AST'de HIC YOKTUR. Duz metin
+    aramasi olsaydi `# _servis_hatasi_handleri_kaydet(app)` seklinde yorumlanmis
+    bir cagriyi "var" sayardi -- deponun tekrar tekrar isirdigi tuzak.
+    """
+    agac = ast.parse(_APPLICATION_PY.read_text(encoding="utf-8"))
+    create_app = next(
+        dugum
+        for dugum in ast.walk(agac)
+        if isinstance(dugum, ast.FunctionDef) and dugum.name == "create_app"
+    )
+    return {
+        dugum.func.id
+        for dugum in ast.walk(create_app)
+        if isinstance(dugum, ast.Call) and isinstance(dugum.func, ast.Name)
+    }
 
 
 def _uygulama() -> FastAPI:
@@ -127,6 +152,33 @@ def test_toptan_kurulum_cagrilmiyor() -> None:
         f"Yalniz ServiceError kaydedilmeliydi, eklenen: {eklenen}. "
         "Toptan setup_exception_handlers cagrildiysa Exception catch-all'i da "
         "gelir ve uygulamanin kendi catch-all'ini devirir."
+    )
+
+
+def test_alet_dogrulamasi_ast_cikartici_calisiyor() -> None:
+    """KONTROL KOLU: cikartici bilinen-CAGRILAN adlari goruyor mu.
+
+    Bos veya eksik bir kume donerse asagidaki bekci hicbir sey olcmeden
+    KIRMIZI olur ve "kayit silinmis" yanlis teshisi uretirdi.
+    """
+    cagrilar = _create_app_icindeki_cagrilar()
+    assert {"setup_middleware", "setup_rate_limiting", "setup_routers"} <= cagrilar, (
+        f"AST cikartici bilinen cagrilari goremiyor: {sorted(cagrilar)} -- "
+        "alet arizali, bu dosyadaki uretim-yolu bekcisine guvenilmez"
+    )
+
+
+def test_kayit_create_app_icinde_gercekten_cagriliyor() -> None:
+    """URETIM YOLU BEKCISI: fonksiyonu tanimlamak YETMEZ, baglanmasi gerekir.
+
+    S252 ilk mutasyon turunde M1 (`create_app()` icindeki cagriyi yorum satiri
+    yap) HICBIR testi dusurmedi: bekci fonksiyonu dogrudan cagiriyordu ve
+    uretim kablosunu hic olcmuyordu. Yani kayit silinse canli uygulama yine
+    500 dondurmeye baslardi ve paket yesil kalirdi. Bu test o bosluğu kapatir.
+    """
+    assert "_servis_hatasi_handleri_kaydet" in _create_app_icindeki_cagrilar(), (
+        "create_app() ServiceError handler'ini KAYDETMIYOR. Fonksiyon tanimli "
+        "olsa bile cagrilmadan canli uygulamada yetki reddi 500 doner (K1)."
     )
 
 
