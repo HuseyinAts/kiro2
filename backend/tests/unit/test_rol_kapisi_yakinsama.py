@@ -29,6 +29,7 @@ yeni bir kopya girmiş demektir — kapı onu göstersin diye var.
 from __future__ import annotations
 
 import ast
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
@@ -108,11 +109,15 @@ async def test_kontrol_kolu_yargilar_dejenere_degil() -> None:
     assert kararlar[UserRole.PARENT] == "RED-403"
 
 
-def _kopya_literaller() -> list[str]:
+@lru_cache(maxsize=1)
+def _kopya_literaller() -> tuple[str, ...]:
     """ADMIN+SUPER_ADMIN ikilisini LİTERAL olarak yazan yerler (AST).
 
     AST kullanılır: yorum satırları ve docstring'ler AST'de YOKTUR, bu yüzden
     bir deseni ANLATAN yorum kusur sanılamaz.
+
+    `lru_cache`: tarama dört ağacı geziyor ve testler onu üç kez çağırıyordu
+    (dosya tek koşuda ~170 sn sürüyordu). Sonuç aynı işlem içinde değişmez.
     """
     hedef = {"ADMIN", "SUPER_ADMIN"}
     bulunan: list[str] = []
@@ -133,7 +138,7 @@ def _kopya_literaller() -> list[str]:
                         f"{yol.relative_to(_BACKEND)}:{dugum.lineno} "
                         f"({', '.join(sorted(adlar))})"
                     )
-    return bulunan
+    return tuple(bulunan)
 
 
 def test_alet_dogrulamasi_kanon_tanimi_bulunuyor() -> None:
@@ -161,4 +166,25 @@ def test_circir_kopya_rol_kumesi_sayisi_artmiyor() -> None:
         f"Kopya rol kümesi {len(bulunan)} (tavan {KOPYA_LITERAL_TAVANI}). "
         "Yeni bir kopya eklendi — `core/dependencies.PLATFORM_ADMIN_ROLES` "
         "kanonunu kullan.\n" + "\n".join(sorted(bulunan))
+    )
+
+
+def test_circir_tavani_gercek_sayiyla_birebir_ayni() -> None:
+    """ÇIRÇIRIN KENDİSİNİ korur — mutasyon bu boşluğu buldu (S252).
+
+    İlk sürümde yalnız `<=` vardı: tavanı 999'a çekmek HİÇBİR testi düşürmedi
+    (M3 hayatta kaldı), yani sayaç sessizce etkisizleştirilebiliyordu. Tam
+    eşitlik bunu imkânsız kılar — tavan gerçek sayıyla oynamak zorunda.
+
+    Borç AZALIRSA bu test de düşer; bu KASITLIDIR: tavanı düşürmek bir
+    muhasebe adımıdır ve kazanımın kayda geçmesini zorunlu kılar.
+    """
+    gercek = len(_kopya_literaller())
+    assert gercek == KOPYA_LITERAL_TAVANI, (
+        f"Tavan {KOPYA_LITERAL_TAVANI} ama gerçek sayı {gercek}. "
+        + (
+            "Borç AZALMIŞ — tavanı düşür ve commit mesajına yaz."
+            if gercek < KOPYA_LITERAL_TAVANI
+            else "Borç ARTMIŞ — kanonu kullan, tavanı yükseltme."
+        )
     )
