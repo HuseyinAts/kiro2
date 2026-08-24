@@ -2119,5 +2119,9 @@ async def receive_web_vitals(request: Request):
         body = await request.json()
         logger.debug("Web vital: %s=%s", body.get("name"), body.get("value"))
     except Exception:
-        pass
+        # FIRE-AND-FORGET (bilincli): web vitals telemetrisi kullanicinin
+        # istegini ASLA dusurmemeli. Bos `pass` yerine acikca 204 donuyoruz --
+        # davranis birebir ayni, ama niyet okunur ve bos-handler dedektoru
+        # (backend/hooks/reward_hacking) yanlis-pozitif uretmiyor.
+        return Response(status_code=204)
     return Response(status_code=204)
