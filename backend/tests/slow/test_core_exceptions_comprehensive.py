@@ -49,12 +49,19 @@ class TestTurkishEducationPlatformException:
         assert hasattr(exc, "details")
         assert exc.details == details
 
-    @pytest.mark.skip(reason="API changed: details is now {} not None")
     def test_base_exception_without_details(self):
-        """Test base exception without details"""
+        """details verilmezse None DEGIL bos sozluk olmali.
+
+        Bu normalizasyon (``self.details = details or {}``) yuk tasiyor:
+        ErrorFactory core/exceptions.py:572 ve :607'de ``error.details.update(...)``
+        cagiriyor -- None olsaydi AttributeError firlardi. Assert'i ``is None``
+        yapmak fabrikayi sessizce kirar.
+        """
         exc = TurkishEducationPlatformException("Test message")
         assert hasattr(exc, "details")
-        assert exc.details is None
+        assert exc.details == {}
+        exc.details.update({"a": 1})  # fabrikanin bagimli oldugu davranis
+        assert exc.details == {"a": 1}
 
     def test_base_exception_inheritance(self):
         """Test that base exception inherits from Exception"""
@@ -118,7 +125,6 @@ class TestAuthenticationError:
         assert str(exc) == "Kimlik doğrulama başarısız"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use token_type")
     def test_authentication_error_with_user_info(self):
         """Test authentication error with user info"""
         details = {"username": "test_user", "attempt_count": 3}
@@ -127,7 +133,6 @@ class TestAuthenticationError:
         assert exc.details["username"] == "test_user"
         assert exc.details["attempt_count"] == 3
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use token_type")
     def test_authentication_error_token_expired(self):
         """Test authentication error for expired token"""
         details = {"reason": "token_expired", "expires_at": "2023-01-01"}
@@ -150,7 +155,6 @@ class TestAuthorizationError:
         assert str(exc) == "Yetki yetersiz"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter")
     def test_authorization_error_with_permission(self):
         """Test authorization error with permission details"""
         details = {
@@ -162,7 +166,6 @@ class TestAuthorizationError:
         assert exc.details["required_permission"] == "admin.write"
         assert len(exc.details["user_permissions"]) == 2
 
-    @pytest.mark.skip(reason="API changed: no details parameter")
     def test_authorization_error_role_based(self):
         """Test authorization error for role-based access"""
         details = {"required_role": "teacher", "user_role": "student"}
@@ -181,7 +184,6 @@ class TestDatabaseError:
         assert str(exc) == "Veritabanı bağlantı hatası"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use operation")
     def test_database_error_with_query_info(self):
         """Test database error with query information"""
         details = {
@@ -194,7 +196,6 @@ class TestDatabaseError:
         assert "SELECT" in exc.details["query"]
         assert exc.details["parameters"][0] == 123
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use operation")
     def test_database_error_connection_timeout(self):
         """Test database error for connection timeout"""
         details = {"timeout_seconds": 30, "operation": "connect"}
@@ -202,7 +203,6 @@ class TestDatabaseError:
 
         assert exc.details["timeout_seconds"] == 30
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use operation")
     def test_database_error_constraint_violation(self):
         """Test database error for constraint violation"""
         details = {"constraint": "unique_email", "table": "users", "field": "email"}
@@ -220,7 +220,6 @@ class TestExternalServiceError:
         assert str(exc) == "Dış servis hatası"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use service_name and status_code")
     def test_external_service_error_with_service_info(self):
         """Test external service error with service details"""
         details = {
@@ -234,7 +233,6 @@ class TestExternalServiceError:
         assert exc.details["service_name"] == "OSYM API"
         assert exc.details["status_code"] == 500
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use service_name")
     def test_external_service_error_timeout(self):
         """Test external service error for timeout"""
         details = {
@@ -246,7 +244,6 @@ class TestExternalServiceError:
 
         assert exc.details["service"] == "YouTube API"
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use service_name")
     def test_external_service_error_rate_limit(self):
         """Test external service error for rate limiting"""
         details = {
@@ -268,7 +265,6 @@ class TestConfigurationError:
         assert str(exc) == "Konfigürasyon hatası"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use config_key")
     def test_configuration_error_missing_setting(self):
         """Test configuration error for missing setting"""
         details = {
@@ -281,7 +277,6 @@ class TestConfigurationError:
         assert exc.details["setting_name"] == "DATABASE_URL"
         assert exc.details["required"] is True
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use config_key")
     def test_configuration_error_invalid_value(self):
         """Test configuration error for invalid value"""
         details = {"setting": "PORT", "value": "invalid", "expected_type": "integer"}
@@ -300,7 +295,6 @@ class TestBusinessLogicError:
         assert str(exc) == "İş kuralı ihlali"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use rule")
     def test_business_logic_error_exam_rules(self):
         """Test business logic error for exam rules"""
         details = {
@@ -313,7 +307,6 @@ class TestBusinessLogicError:
         assert exc.details["max_duration"] == 180
         assert exc.details["requested_duration"] == 240
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use rule")
     def test_business_logic_error_enrollment_rules(self):
         """Test business logic error for enrollment rules"""
         details = {
@@ -336,7 +329,6 @@ class TestResourceNotFoundError:
         assert str(exc) == "Kaynak bulunamadı"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use resource_type and resource_id")
     def test_resource_not_found_error_with_resource_info(self):
         """Test resource not found error with resource details"""
         details = {
@@ -349,7 +341,6 @@ class TestResourceNotFoundError:
         assert exc.details["resource_type"] == "User"
         assert exc.details["resource_id"] == "12345"
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use resource_type and resource_id")
     def test_resource_not_found_error_exam(self):
         """Test resource not found error for exam"""
         details = {"exam_id": "TYT2023", "student_id": "67890"}
@@ -367,7 +358,6 @@ class TestRateLimitError:
         assert str(exc) == "Oran sınırı aşıldı"
         assert isinstance(exc, TurkishEducationPlatformException)
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use limit and reset_time")
     def test_rate_limit_error_with_limit_info(self):
         """Test rate limit error with limit details"""
         details = {
@@ -382,7 +372,6 @@ class TestRateLimitError:
         assert exc.details["current_usage"] == 105
         assert exc.details["retry_after"] == 3600
 
-    @pytest.mark.skip(reason="API changed: no details parameter, use limit and reset_time")
     def test_rate_limit_error_api_specific(self):
         """Test rate limit error for specific API"""
         details = {
@@ -536,7 +525,9 @@ class TestParentError:
 class TestContentError:
     """Test content-specific error"""
 
-    @pytest.mark.skip(reason="ContentError now uses EnhancedServiceError format with error code prefix")
+    @pytest.mark.skip(
+        reason="ContentError now uses EnhancedServiceError format with error code prefix"
+    )
     def test_content_error_basic(self):
         """Test basic content error"""
         exc = ContentError("İçerik hatası")
@@ -667,7 +658,9 @@ class TestExceptionIntegration:
         # Details should be accessible separately
         assert exc.details is not None
 
-    @pytest.mark.skip(reason="JSON serialization escapes Turkish characters with unicode")
+    @pytest.mark.skip(
+        reason="JSON serialization escapes Turkish characters with unicode"
+    )
     def test_exception_serialization_compatibility(self):
         """Test that exceptions can be used in logging/serialization contexts"""
         import json
