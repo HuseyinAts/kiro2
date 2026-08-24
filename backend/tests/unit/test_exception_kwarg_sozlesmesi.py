@@ -262,7 +262,7 @@ def test_davranis_require_role_yetkisizde_authorization_error_firlatir():
         assert hata.details["user_role"] == "student"
         assert hata.details["required_roles"] == ["admin"]
         assert hata.error_code == "AUTHORIZATION_ERROR"
-    except TypeError as hata:  # pragma: no cover - regresyon isareti
+    except TypeError as hata:  # pragma: no cover  # regresyon isareti: bu dal calisirsa kusur geri gelmis
         raise AssertionError(f"Yetki reddi yerine cokme: {hata}") from hata
     else:
         raise AssertionError("Yetkisiz rol icin hic hata firlatilmadi")
@@ -279,7 +279,7 @@ def test_davranis_require_permission_yetkisizde_authorization_error_firlatir():
     except AuthorizationError as hata:
         assert hata.details["required_permission"] == "manage_users"
         assert hata.details["user_permissions"] == ["read"]
-    except TypeError as hata:  # pragma: no cover - regresyon isareti
+    except TypeError as hata:  # pragma: no cover  # regresyon isareti: bu dal calisirsa kusur geri gelmis
         raise AssertionError(f"Yetki reddi yerine cokme: {hata}") from hata
     else:
         raise AssertionError("Yetkisiz izin icin hic hata firlatilmadi")

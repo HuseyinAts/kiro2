@@ -74,7 +74,9 @@ def _migration_modulu():
     kok = Path(__file__).resolve().parents[2] / "alembic"
     adaylar = [kok / "versions" / ad, kok / "versions_archive" / ad]
     yol = next((a for a in adaylar if a.exists()), None)
-    if yol is None:  # pragma: no cover - dosya tamamen silinirse haber ver
+    if (
+        yol is None
+    ):  # pragma: no cover  # dosya tamamen silinirse yol gosteren hata verir
         pytest.fail(
             "Migration hicbir dizinde bulunamadi. Bakilan yollar: "
             + " | ".join(str(a) for a in adaylar)
