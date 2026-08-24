@@ -106,13 +106,20 @@ class DataProcessingAgreement(Base):
     """KVKK DPA — okul (veri sorumlusu) ↔ KIRO2 (veri işleyen).
 
     DPA-signed gate: okul aktive edilmeden önce status='signed' olmalı.
+
+    TABLO ADI ``billing_data_processing_agreements`` — ÖNEK ZORUNLU. Sade
+    ``data_processing_agreements`` adını FERPA/COPPA üçüncü-taraf sözleşme
+    tablosu tutuyor (``models/ferpa_coppa_models.py:197``, göç
+    ``20260406_ferpa_coppa.py``). ``faz1_billing_20260704`` bu adı almaya
+    çalıştı, çakıştı; şema ``cff60c64b93`` ile önekli ada taşındı ama bu model
+    ve ``services/billing_service.py`` eski adda kaldı → iki uç 6 hafta boyunca
+    500 döndü (S252 ölçümü). ``extend_existing`` KASITLI OLARAK YOK: çakışmayı
+    susturan buydu; bundan sonra çakışma ``InvalidRequestError`` ile bağırsın.
+    Bekçi: ``tests/integration/test_billing_schema_contract.py``.
     """
 
-    __tablename__ = "data_processing_agreements"
-    __table_args__ = (
-        Index("idx_dpa_org", "organization_id"),
-        {"extend_existing": True},
-    )
+    __tablename__ = "billing_data_processing_agreements"
+    __table_args__ = (Index("idx_billing_dpa_org", "organization_id"),)
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid7())

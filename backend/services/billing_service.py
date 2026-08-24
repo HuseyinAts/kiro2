@@ -18,7 +18,7 @@ async def is_dpa_signed(db: AsyncSession, org_id: str) -> bool:
     row = (
         await db.execute(
             text(
-                "SELECT 1 FROM data_processing_agreements "
+                "SELECT 1 FROM billing_data_processing_agreements "
                 "WHERE organization_id = :org AND status = 'signed' LIMIT 1"
             ),
             {"org": org_id},
@@ -102,7 +102,7 @@ async def sign_dpa(
     dpa_id = str(uuid.uuid4())
     await db.execute(
         text(
-            "INSERT INTO data_processing_agreements "
+            "INSERT INTO billing_data_processing_agreements "
             "(id, organization_id, version, status, signer_name, signer_email, "
             " signed_at, created_at) VALUES "
             "(:i, :o, :v, 'signed', :sn, :se, now(), now())"
