@@ -190,14 +190,65 @@ yazıyordu ve bir recreate'te kaybolurdu (#511 dersi). Recreate sonrası
 `git checkout HEAD --` ile ASLA*). Fark edildi, yeniden uygulandı, **önce commit
 edildi sonra mutasyon koşuldu**. Kalıcı kayıp yok.
 
+### 3. TUR — X06 (c) 2. adım ÖLÇÜLDÜ ve DÜŞÜRÜLDÜ, 3. adım YAPILDI
+
+**🔴 2. adım (`jwt_auth.require_admin`, 2 uç) YAPILMADI — değeri ölçüldü: +0**
+
+| Beklenen kazanç | Ölçüm |
+|---|---|
+| 403 mesajı birleşir | **+0** — `jwt_auth.py:962` zaten `"Admin access required"`, kanonla **birebir aynı** |
+| blacklist eklenir | **+0** — `jwt_auth`'ta zaten var |
+| RLS GUC kurulur | **+0** — uç1 docstring'i *"This is a placeholder"* (sabit veri), uç2 `db`'yi **hiç kullanmıyor** |
+| cookie desteği | **+0** — depo genelinde **0 tüketici**; frontend'de yalnız `api.generated.ts` |
+| Maliyet | 2 imza + 4 `.sub`→`.id` + tek dosyada iki taşıyıcı tip |
+
+S251'de "+0" iddiam eksik örneklem yüzünden çürümüştü; bu kez **beş eksende** ölçüldü.
+
+**🔴 `/org/billing/dpa` kalemi FANTOM çıktı, düşürüldü.** `get_current_tenant`
+(`dependencies.py:451`) `users.organization_id`'yi okuyor → uç kullanıcının
+**KENDİ** kurumunun DPA durumunu döndürüyor. Docstring'deki *"herhangi bir üye
+görebilir"* doğru ve kasıtlı; çapraz-kiracı sızıntı yok.
+
+**✅ 3. adım YAPILDI** — `db9b2d02e`
+> AST: `ADMIN+SUPER_ADMIN+TEACHER` üçlüsü **17 yerde literal**. Kapsayıcı sembol
+> adlarıyla sınıflandırıldı; **üyeleri aynı ama niyetleri AYRI**:
+
+| Küme | Ne | Karar |
+|---|---|---|
+| **A (12)** | başka bir ÖĞRENCİNİN verisine erişim | **birleştirildi** |
+| B (3) | içerik/kalite (`soru_guncelle`, `soru_sil`, `_OVERRIDE_APPROVERS`) | ayrı bırakıldı |
+| C (1) | uyumluluk (`_STAFF_COMPLIANCE`) | ayrı bırakıldı |
+| D (1) | öğretmen yüzeyi kapısı (`get_current_teacher_user`) | ayrı bırakıldı |
+
+Hepsini tek sabite bağlamak, yarın *"öğretmen artık başka öğrencinin verisini
+göremez"* (KVKK) kararı geldiğinde **soru düzenleme yetkisini de sessizce alırdı.**
+**Aynı üyeler ≠ aynı politika.**
+
+Yeni kanon `core/dependencies.STUDENT_DATA_ACCESS_ROLES`; 12 kopya bağlandı,
+çağrı yerleri değişmedi (takma adlar korundu), delta **SIFIR**.
+Doğrulama **sözdizimi değil KİMLİK**: 11 modül import edilip her takma adın
+kanonla **aynı nesne** (`is`) olduğu ölçüldü — `==` yetmezdi.
+Çırçır **34 → 23**; aritmetik ilk seferde tutmadı (22 bekliyordum), **kanonun
+kendi tanımı da bir literal** → 34−12+1. Tahmin edilmedi, yeniden ölçüldü.
+Mutasyon **2/2** (kanondan TEACHER çıkar → 1 · takma adı kopyaya döndür → 3).
+
+### 🔴 Bu turda kendi aletimi iki kez susturdum
+1. **`git stash pop` başarısız oldu ve çıktısını `>/dev/null` ile bastırdığım
+   için görmedim** — 4 dosyanın göçü stash'te kaldı, ağaç temiz göründü.
+   `git status` ile yakalandı, `stash@{0}` kurtarıldı, **kayıp yok**.
+   Engelleyen dosya `exam_performance.py`'nin çalışma ağacındaki değişikliği
+   yalnız bir **boş satır** (formatter artığı) çıktı — silinmeden önce ölçüldü.
+2. Daha önce (2. tur) **commit'siz işi mutasyona soktum** ve `git checkout HEAD --`
+   düzeltmeyi sildi. İkisi de aynı sınıf: **doğrulamayı atlamak.**
+
 ### Sonraki Adımlar (maks 5)
-1. **X06 (c) 2. adım** — `jwt_auth.require_admin` (2 uç): taşıyıcı tip göçü
-   (`TokenPayload` → `AuthenticatedUser`, `.sub` → `.id` ×4). Kendi turu.
-2. **X06 (c) 3. adım** — kalan **34 kopya literal**. İki kanon gerekiyor:
-   `{ADMIN, SUPER_ADMIN}` (var) ve `{ADMIN, SUPER_ADMIN, TEACHER}` (**yok**, ~15 kopya).
-3. `/org/billing/dpa` rol kapısı — yeni açılan kalem.
-4. **SMTP #441** (operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`.
-5. `org_memberships` RLS fail-open — ayrı P1.
+1. **SMTP #441** (operatör, TEK blocker) — prob hazır (`c6c6a17b5`),
+   `.env.mvp` bloğu eklenince zincir tek komutla ölçülür.
+2. **X06 (c) 4. adım** — B kümesi (içerik/kalite, 3 kopya) için ayrı kanon.
+3. `org_memberships` RLS **fail-open** — ayrı P1, ölçüm gerektirir.
+4. `jwt_auth.require_admin` — **yapılmayacak** (yukarıdaki +0 ölçümü); ancak
+   `/admin/statistics` placeholder'ı gerçek veriye bağlanırsa yeniden ölçülmeli.
+5. CI: 11 workflow'un 0'ı bu dalda tetikleniyor.
 
 ### Kararlar (gelecek oturum tekrar tartışmasın)
 - **X06 (c) bu turda YAPILMADI ve doğru olan buydu:** kanon kapının bekçisi yoktu
