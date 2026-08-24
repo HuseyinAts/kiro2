@@ -85,6 +85,10 @@ class SyncResultsResponse(BaseModel):
     """Response payload for POST /sync-results."""
 
     synced_count: int
+    # S251: onceden yoktu ve `synced_count` FSRS karti bulunmayan yanitlari da
+    # sayiyordu -- ogrenciye fazla-raporlama. Kart yoklugu ogrencinin hatasi
+    # olmadigi icin `failed_count`'a katilmiyor, ayri sayiliyor.
+    skipped_count: int
     failed_count: int
     next_sync_recommended_at: str
 
@@ -240,6 +244,7 @@ async def sync_results(
             extra_data={
                 "user": current_user.id,
                 "synced": outcome["synced_count"],
+                "skipped": outcome["skipped_count"],
                 "failed": outcome["failed_count"],
             },
         )

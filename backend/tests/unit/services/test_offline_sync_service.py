@@ -14,10 +14,10 @@ class _ScalarResult:
 
     def scalar_one_or_none(self):
         return self._value
-        
+
     def scalars(self):
         return self
-        
+
     def all(self):
         return [self._value] if self._value is not None else []
 
@@ -35,12 +35,25 @@ class _MappingsResult:
 
 @pytest.mark.asyncio
 async def test_sync_results_s1_happy_path_accepts_package():
+    # S251: bu test ONCEDEN kart VERMEDEN synced_count == 1 bekliyordu, yani
+    # kusuru civiliyordu (kart yokken hicbir sey kalici olmaz). Adi "happy path"
+    # oldugu icin assert'i zayiflatmak yerine GERCEK mutlu yol kuruldu: karti da ver.
+    kart = SimpleNamespace(
+        front_text="question:q1",
+        lapses=0,
+        reps=0,
+        stability=1.0,
+        scheduled_days=1,
+        state="new",
+        last_review=None,
+        due_date=None,
+    )
     db = AsyncMock()
     db.execute = AsyncMock(
         side_effect=[
             _MappingsResult({"student_id": "stu-1", "consumed_at": None}),
             _ScalarResult(SimpleNamespace(id="q1")),
-            _ScalarResult(None),
+            _ScalarResult(kart),
             _ScalarResult(None),
         ]
     )
@@ -61,7 +74,9 @@ async def test_sync_results_s1_happy_path_accepts_package():
     )
 
     assert result["synced_count"] == 1
+    assert result["skipped_count"] == 0
     assert result["failed_count"] == 0
+    assert kart.state == "review", "synced denildi ama kart guncellenmedi"
     db.commit.assert_awaited_once()
 
 
@@ -173,7 +188,9 @@ async def test_sync_results_s5_unknown_package_rejected_as_batch():
 async def test_sync_results_s6_ownership_rejected_with_error_log():
     db = AsyncMock()
     db.execute = AsyncMock(
-        return_value=_MappingsResult({"student_id": "other-student", "consumed_at": None})
+        return_value=_MappingsResult(
+            {"student_id": "other-student", "consumed_at": None}
+        )
     )
 
     with patch("services.offline_sync_service.logger.error") as error_log:

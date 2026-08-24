@@ -255,13 +255,18 @@ async def process_sync_results(
         completed_at: ISO-8601 string of when the offline session ended.
 
     Returns:
-        Dict with synced_count, failed_count, next_sync_recommended_at.
-        `synced_count` counts *processed* items, not persisted ones — see above.
+        Dict with synced_count, skipped_count, failed_count,
+        next_sync_recommended_at.
+        `synced_count` counts items whose FSRS card was actually updated.
+        Items whose question exists but has no FSRS card are `skipped_count`
+        (nothing persisted, but not the student's fault); invalid/unknown
+        items are `failed_count`. The three always sum to len(results).
     """
     from models.fsrs_models import FSRSCard
     from models.question_bank import QuestionBankItem
 
     synced = 0
+    skipped = 0
     failed = 0
     package_row = await db.execute(
         text(
@@ -349,12 +354,22 @@ async def process_sync_results(
 
             # Find matching FSRS card in pre-fetched list
             card = next((c for c in cards if question_id in c.front_text), None)
-            if card is not None:
-                _apply_fsrs_grade(
-                    card=card, is_correct=is_correct, time_seconds=time_seconds
+            if card is None:
+                # Karti olmayan soru: hicbir sey KALICI OLMADI. Onceden burada da
+                # `synced += 1` calisiyordu -- ogrenci "40 senkronlandi" gorup
+                # ertesi gun hicbirini tekrar listesinde bulamiyordu.
+                # `failed` demek de yanlis: kart yoklugu ogrencinin hatasi degil.
+                logger.info(
+                    f"FSRS card missing, result skipped: {question_id}",
+                    extra_data={"student_id": student_id},
                 )
-                db.add(card)
+                skipped += 1
+                continue
 
+            _apply_fsrs_grade(
+                card=card, is_correct=is_correct, time_seconds=time_seconds
+            )
+            db.add(card)
             synced += 1
 
         except Exception as exc:
@@ -379,6 +394,7 @@ async def process_sync_results(
 
     return {
         "synced_count": synced,
+        "skipped_count": skipped,
         "failed_count": failed,
         "next_sync_recommended_at": _next_sync_at_iso(),
     }
@@ -403,6 +419,7 @@ def _reject_batch(
 
     return {
         "synced_count": 0,
+        "skipped_count": 0,
         "failed_count": result_count,
         "next_sync_recommended_at": _next_sync_at_iso(),
     }
