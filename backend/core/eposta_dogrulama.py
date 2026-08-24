@@ -54,6 +54,8 @@ from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Any
 
+from core.email_util import smtp_yapilandirilmis_mi
+
 logger = logging.getLogger(__name__)
 
 # Bu tarihten ÖNCE açılmış hesaplar doğrulanmış sayılır (yukarıdaki ölçüme bak).
@@ -94,11 +96,43 @@ def _slot(email: str) -> str:
 # ---------------------------------------------------------------------------
 
 
+def kapi_engeli() -> str | None:
+    """Kapının kapanmasını engelleyen sebep; ``None`` ise kapı kapanabilir.
+
+    Bool yerine SEBEP dönüyor çünkü iki farklı ret var ve hangisi olduğunu
+    **söylemesi** gerekiyor: "SMTP yok" demek, bayrağı hiç açılmamış bir kurulumu
+    yanlış raporlardı (aynı kalıp: `tests/test_migrations.py::_kosma_engeli`).
+
+    🔴 SIRA YAPTIRIMI (S251, 24 Ağu 2026 canlı ölçümü):
+    Konteynerde SMTP_* **5/5 tanımsız** ve `users.is_verified` **false=26**.
+    Operatör SMTP'den ÖNCE `EPOSTA_DOGRULAMA_ZORUNLU=true` yaparsa o 26 kullanıcı
+    (a) giriş yapamaz **ve** (b) doğrulama postası alamaz (`send_email` SMTP
+    yokken `False` döner) → **kalıcı kilitlenme**. Bu sıra bugüne kadar yalnız
+    devir notunda yazıyordu; yorum yaptırım değildir.
+    """
+    if (
+        os.environ.get("EPOSTA_DOGRULAMA_ZORUNLU", "").strip().lower()
+        not in _ACIK_DEGERLER
+    ):
+        return "EPOSTA_DOGRULAMA_ZORUNLU açık değil (varsayılan KAPALI)"
+    if not smtp_yapilandirilmis_mi():
+        return (
+            "SMTP yapılandırılmamış (SMTP_HOST|SMTP_SERVER + SMTP_USERNAME + "
+            "SMTP_PASSWORD gerekli). Kapı açılırsa doğrulanmamış kullanıcılar "
+            "giriş de yapamaz, doğrulama postası da alamaz — kalıcı kilitlenme. "
+            "ÖNCE SMTP, SONRA kapı."
+        )
+    return None
+
+
 def dogrulama_zorunlu_mu() -> bool:
     """Giriş kapısı açık mı? **Varsayılan KAPALI** (yukarıdaki SMTP gerekçesi)."""
-    return (
-        os.environ.get("EPOSTA_DOGRULAMA_ZORUNLU", "").strip().lower() in _ACIK_DEGERLER
-    )
+    engel = kapi_engeli()
+    if engel is not None and not engel.startswith("EPOSTA_DOGRULAMA_ZORUNLU"):
+        # Operatör kapıyı KAPATMAK İSTEDİ ama edemedik. Sessizce False dönmek
+        # yanlış-pozitif güven üretir: operatör kapının kapalı olduğunu sanır.
+        logger.error("E-posta doğrulama kapısı AÇILAMADI: %s", engel)
+    return engel is None
 
 
 def muaf_mi(created_at: datetime | None) -> bool:

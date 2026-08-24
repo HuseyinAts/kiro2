@@ -306,6 +306,11 @@ def test_bilinmeyen_eposta_ayni_yaniti_verir(client, app_ve_oturum, gonderilen):
 def test_kapi_acikken_dogrulanmamis_yeni_hesap_403(
     client, app_ve_oturum, monkeypatch: pytest.MonkeyPatch
 ):
+    # S251: kapi artik SMTP olmadan ACILMIYOR (kalici kilitlenme yaptirimi).
+    # Bayrak TEK BASINA yetmez -- on kosul burada GORUNUR birakiliyor.
+    monkeypatch.setenv("SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("SMTP_USERNAME", "kiro2@example.com")
+    monkeypatch.setenv("SMTP_PASSWORD", "x")
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
     _app, session = app_ve_oturum
     user = _kullanici_uret(
@@ -343,6 +348,11 @@ def test_kapi_acikken_eski_hesap_engellenmez(
     client, app_ve_oturum, monkeypatch: pytest.MonkeyPatch
 ):
     """21 mevcut hesabın kilitlenmemesini HTTP düzeyinde çivileyen assert."""
+    # S251: kapi artik SMTP olmadan ACILMIYOR (kalici kilitlenme yaptirimi).
+    # Bayrak TEK BASINA yetmez -- on kosul burada GORUNUR birakiliyor.
+    monkeypatch.setenv("SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("SMTP_USERNAME", "kiro2@example.com")
+    monkeypatch.setenv("SMTP_PASSWORD", "x")
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
     _app, session = app_ve_oturum
     user = _kullanici_uret(
@@ -366,6 +376,11 @@ def test_kapi_iki_giris_ucunda_da_var(
     Kapı yalnız `/giris`e konsaydı bu test düşerdi — ve gerçek bir bypass
     olurdu, çünkü frontend httpOnly-cookie akışında bu ucu kullanıyor.
     """
+    # S251: kapi artik SMTP olmadan ACILMIYOR (kalici kilitlenme yaptirimi).
+    # Bayrak TEK BASINA yetmez -- on kosul burada GORUNUR birakiliyor.
+    monkeypatch.setenv("SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("SMTP_USERNAME", "kiro2@example.com")
+    monkeypatch.setenv("SMTP_PASSWORD", "x")
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
     _app, session = app_ve_oturum
     user = _kullanici_uret(

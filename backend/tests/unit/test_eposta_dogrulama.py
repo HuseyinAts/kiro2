@@ -63,6 +63,19 @@ def test_alet_dogrulamasi_muafiyet_siniri_gecmiste_ve_makul() -> None:
     )
 
 
+def _smtp_hazir(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Kapinin acilabilmesi icin SMTP de gerekli (S251 sira yaptirimi).
+
+    Bayrak TEK BASINA yetmiyor: SMTP olmadan kapi acilsaydi dogrulanmamis
+    kullanicilar ne girebilir ne dogrulama postasi alabilirdi. Bu on kosul
+    testlerde GORUNUR birakiliyor -- autouse fixture ile gizlenirse yaptirim
+    kazara kaldirildiginda hicbir test dusmezdi.
+    """
+    monkeypatch.setenv("SMTP_HOST", "smtp.example.com")
+    monkeypatch.setenv("SMTP_USERNAME", "kiro2@example.com")
+    monkeypatch.setenv("SMTP_PASSWORD", "x")
+
+
 # --------------------------------------------------------------------------
 # Flag — varsayılan KAPALI
 # --------------------------------------------------------------------------
@@ -77,6 +90,7 @@ def test_flag_varsayilan_kapali(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.mark.parametrize("deger", ["1", "true", "TRUE", "yes", " true "])
 def test_flag_acilabiliyor(monkeypatch: pytest.MonkeyPatch, deger: str) -> None:
     """KONTROL KOLU: flag hiç açılamıyorsa 'varsayılan kapalı' anlamsızdır."""
+    _smtp_hazir(monkeypatch)
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", deger)
     assert dogrulama_zorunlu_mu() is True
 
@@ -137,6 +151,7 @@ def test_flag_acikken_dogrulanmamis_yeni_hesap_engellenir(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Kapının ASIL işi. Bu düşerse kapı süstür."""
+    _smtp_hazir(monkeypatch)
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
     assert giris_engellenmeli_mi(is_verified=False, created_at=_yeni()) is True
 
@@ -145,6 +160,7 @@ def test_flag_acikken_dogrulanmis_engellenmez(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """KONTROL KOLU: `return True` yazan bir kapı herkesi kilitlerdi."""
+    _smtp_hazir(monkeypatch)
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
     assert giris_engellenmeli_mi(is_verified=True, created_at=_yeni()) is False
 
@@ -153,6 +169,7 @@ def test_flag_acikken_eski_hesap_engellenmez(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """21 mevcut hesabın kilitlenmemesini çivileyen assert."""
+    _smtp_hazir(monkeypatch)
     monkeypatch.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
     eski = MUAFIYET_SINIRI - timedelta(days=30)
     assert giris_engellenmeli_mi(is_verified=False, created_at=eski) is False
