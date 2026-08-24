@@ -10,7 +10,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from core.config_utils import get_config_for_user
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.dependencies import (
+    STUDENT_DATA_ACCESS_ROLES,
+    AuthenticatedUser,
+    get_current_user,
+)
 from core.feature_flags import (
     FeatureFlag,
     get_feature_flag_manager,
@@ -19,15 +23,9 @@ from core.feature_flags import (
 router = APIRouter(prefix="/api/v1/config", tags=["configuration"])
 
 
-def _verify_user_access(
-    current_user: AuthenticatedUser, user_id: str
-) -> None:
+def _verify_user_access(current_user: AuthenticatedUser, user_id: str) -> None:
     """IDOR: user own config only, admin/teacher any."""
-    if current_user.role in (
-        UserRole.ADMIN,
-        UserRole.TEACHER,
-        UserRole.SUPER_ADMIN,
-    ):
+    if current_user.role in STUDENT_DATA_ACCESS_ROLES:
         return
     if str(current_user.id) != user_id:
         raise HTTPException(

@@ -215,6 +215,28 @@ PLATFORM_ADMIN_ROLES: frozenset[UserRole] = frozenset(
     {UserRole.ADMIN, UserRole.SUPER_ADMIN}
 )
 
+#: BAŞKA BİR ÖĞRENCİNİN verisine erişebilen roller (KVKK-ilgili tek politika).
+#:
+#: S252 ölçümü: bu üçlü **17 yerde literal kopyalanmıştı** ve kopyaların 12'si tam
+#: olarak bu niyete hizmet ediyordu (`_STAFF_CAN_TARGET_STUDENT`,
+#: `_STUDENT_ANALYTICS_STAFF`, `_verify_student_access`, `verify_student_access`,
+#: `_STAFF_VIEW_STUDENT_PERFORMANCE` …). Her kopya bağımsız kayabilirdi; aynı
+#: oturumda tam bu sınıftan İKİ canlı kusur çıktı (`api/ogretmen.py:46` ADMIN'i
+#: dışarıda bırakıyordu, `api/auth.py:348` kanonik yazımı tanımıyordu).
+#:
+#: ⚠️ KAPSAM SINIRI — bu sabit ŞU ÜÇÜNÜN YERİNE GEÇMEZ, üyeleri bugün çakışsa bile:
+#:   · içerik/kalite yetkisi   (`soru_guncelle`, `soru_sil`, `_OVERRIDE_APPROVERS`)
+#:   · uyumluluk               (`_STAFF_COMPLIANCE`)
+#:   · öğretmen yüzeyi kapısı  (`get_current_teacher_user`)
+#: Hepsini tek sabite bağlamak, yarın "öğretmen artık başka öğrencinin verisini
+#: göremez" kararı geldiğinde soru düzenleme yetkisini de SESSİZCE alırdı.
+#: Aynı üyeler ≠ aynı politika.
+#:
+#: Bekçi: `tests/unit/test_rol_kapisi_yakinsama.py`
+STUDENT_DATA_ACCESS_ROLES: frozenset[UserRole] = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
+
 
 async def get_current_admin_user(
     current_user: AuthenticatedUser = Depends(get_current_user),

@@ -44,9 +44,29 @@ from models.enums_db import UserRole
 
 _BACKEND = Path(__file__).resolve().parents[2]
 
-#: 24 Ağu 2026 AST ölçümü: 35 kopya vardı; `api/admin.py:42` kanona bağlandı → 34.
-#: Bu bir HEDEF değil TAVAN: kalan 34 kopya ölçülmüş borçtur (X06 (c) tam göçü).
-KOPYA_LITERAL_TAVANI = 34
+#: AST ölçümü — her adım ÖLÇÜLDÜ, tahmin edilmedi:
+#:   35  başlangıç (24 Ağu)
+#:   34  `api/admin.py:42` kanona bağlandı (X06 (c) 1. adım)
+#:   23  "öğrenci verisine erişim" kümesinin **12 kopyası** kanona bağlandı,
+#:       **+1** kanonun kendi tanımı (`STUDENT_DATA_ACCESS_ROLES`) yeni bir
+#:       literaldir → 34 − 12 + 1 = 23. Bu +1 ilk hesabımda YOKTU; sayı
+#:       tutmayınca aritmetik yeniden yapıldı.
+#: Kalan 23'ün staff-üçlüsü olan 6'sı BİLEREK duruyor (ayrı politikalar):
+#:   içerik/kalite (`soru_guncelle`, `soru_sil`, `_OVERRIDE_APPROVERS`) ·
+#:   uyumluluk (`_STAFF_COMPLIANCE`) · öğretmen yüzeyi (`get_current_teacher_user`)
+KOPYA_LITERAL_TAVANI = 23
+
+#: "Başka bir öğrencinin verisine erişebilen personel" politikasını kullanan
+#: modül-düzeyi takma adlar. Çağrı yerleri değişmedi; yalnız TANIM kanona bağlandı.
+KANONA_BAGLI_TAKMA_ADLAR = [
+    ("api.analytics", "_STUDENT_ANALYTICS_STAFF"),
+    ("api.berturk_api", "_STAFF_CAN_TARGET_STUDENT"),
+    ("api.cultural_adaptation_api", "_STAFF_STUDENT_ACCESS"),
+    ("api.elasticsearch", "_ES_USER_ANALYTICS_STAFF"),
+    ("api.exam_performance", "_STAFF_VIEW_STUDENT_PERFORMANCE"),
+    ("api.learning_style", "_PRIVILEGED_ROLES"),
+    ("api.v1.content_recommendation", "_STAFF_CAN_ACT_FOR_USER"),
+]
 
 #: Kanon rol yazımı (PG enum `userrole`, `models/enums_db.py:18`).
 TUM_ROLLER = [
@@ -139,6 +159,40 @@ def _kopya_literaller() -> tuple[str, ...]:
                         f"({', '.join(sorted(adlar))})"
                     )
     return tuple(bulunan)
+
+
+def test_ogrenci_verisi_kanonu_dogru_uyeleri_tasiyor() -> None:
+    """Kanon kümesi daraltılamaz/genişletilemez.
+
+    Daralırsa (ör. TEACHER çıkarılırsa) 12 uç ailesi aynı anda kapanır;
+    genişlerse aynı anda açılır. Bu yüzden tam eşitlik.
+    """
+    from core.dependencies import STUDENT_DATA_ACCESS_ROLES
+
+    assert (
+        frozenset({UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN})
+        == STUDENT_DATA_ACCESS_ROLES
+    )
+
+
+@pytest.mark.parametrize(("modul_adi", "takma_ad"), KANONA_BAGLI_TAKMA_ADLAR)
+def test_takma_adlar_kanonun_KENDISI(modul_adi: str, takma_ad: str) -> None:
+    """Takma ad kanonla AYNI NESNE olmalı — eşit değil, AYNI.
+
+    Eşitlik (`==`) yeterli değildi: birisi kanonla aynı üyelere sahip YENİ bir
+    frozenset yazsa test geçerdi ve kopya sessizce geri gelirdi. Kimlik (`is`)
+    tek kaynağı kanıtlar.
+    """
+    import importlib
+
+    from core.dependencies import STUDENT_DATA_ACCESS_ROLES
+
+    modul = importlib.import_module(modul_adi)
+    assert hasattr(modul, takma_ad), f"{modul_adi}.{takma_ad} kayboldu"
+    assert getattr(modul, takma_ad) is STUDENT_DATA_ACCESS_ROLES, (
+        f"{modul_adi}.{takma_ad} kanonun kendisi DEĞİL — kopya geri gelmiş. "
+        "`core/dependencies.STUDENT_DATA_ACCESS_ROLES` kullan."
+    )
 
 
 def test_alet_dogrulamasi_kanon_tanimi_bulunuyor() -> None:

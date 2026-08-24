@@ -26,7 +26,11 @@ from sqlalchemy import text
 try:
     from core.auth_dependencies import require_role
     from core.database import get_db_session_context
-    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+    from core.dependencies import (
+        STUDENT_DATA_ACCESS_ROLES,
+        AuthenticatedUser,
+        get_current_user,
+    )
     from core.learning_path_auth import verify_student_access
     from core.redis_cache import get_cache
     from models.database import User
@@ -34,7 +38,11 @@ try:
 except ImportError:
     from core.auth_dependencies import require_role
     from core.database import get_db_session_context
-    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+    from core.dependencies import (
+        STUDENT_DATA_ACCESS_ROLES,
+        AuthenticatedUser,
+        get_current_user,
+    )
     from core.learning_path_auth import verify_student_access
     from core.redis_cache import get_cache
     from models.database import User
@@ -43,9 +51,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 
-_STUDENT_ANALYTICS_STAFF = frozenset(
-    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
-)
+_STUDENT_ANALYTICS_STAFF = STUDENT_DATA_ACCESS_ROLES
 
 
 def _mock_analytics_guard(endpoint: str) -> None:

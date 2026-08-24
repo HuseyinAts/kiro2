@@ -20,11 +20,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from core.auth_dependencies import AuthenticationDependency, AuthorizationDependency
 from core.chroma_client import chromadb_connection_mode
-from core.dependencies import AuthenticatedUser
-from models.enums_db import UserRole
+from core.dependencies import STUDENT_DATA_ACCESS_ROLES, AuthenticatedUser
 
 get_current_user = AuthenticationDependency(required=True)
-get_current_admin_user = AuthorizationDependency(required_roles=["admin", "super_admin"])
+get_current_admin_user = AuthorizationDependency(
+    required_roles=["admin", "super_admin"]
+)
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -51,9 +52,7 @@ router = APIRouter(
 )
 
 # F4: Öğrenci başkası adına `user_id` gönderemez (IDOR). Öğretmen / admin hedef kullanabilir.
-_STAFF_CAN_ACT_FOR_USER = frozenset(
-    {UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.TEACHER}
-)
+_STAFF_CAN_ACT_FOR_USER = STUDENT_DATA_ACCESS_ROLES
 
 
 def _authorized_target_user_id(
@@ -363,10 +362,11 @@ async def get_user_profile(
     user_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> UserProfileResponse:
     """Kullanici profilini getir."""
-    if str(current_user.id) != str(user_id) and current_user.role not in _STAFF_CAN_ACT_FOR_USER:
-        raise HTTPException(
-            status_code=403, detail="Bu profile erisim yetkiniz yok"
-        )
+    if (
+        str(current_user.id) != str(user_id)
+        and current_user.role not in _STAFF_CAN_ACT_FOR_USER
+    ):
+        raise HTTPException(status_code=403, detail="Bu profile erisim yetkiniz yok")
     try:
         service = get_recommendation_service()
 

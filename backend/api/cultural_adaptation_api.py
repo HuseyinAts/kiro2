@@ -12,11 +12,14 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
-
-_STAFF_STUDENT_ACCESS = frozenset(
-    {UserRole.ADMIN, UserRole.TEACHER, UserRole.SUPER_ADMIN}
+from core.dependencies import (
+    STUDENT_DATA_ACCESS_ROLES,
+    AuthenticatedUser,
+    UserRole,
+    get_current_user,
 )
+
+_STAFF_STUDENT_ACCESS = STUDENT_DATA_ACCESS_ROLES
 from services.cultural_adaptation_service import CulturalAdaptationService
 
 logger = logging.getLogger(__name__)
@@ -34,9 +37,7 @@ class BehavioralUpdateRequest(BaseModel):
     study_time_preference: str | None = Field(
         None, description="Çalışma zamanı tercihi"
     )
-    group_study_sessions: int | None = Field(
-        None, description="Grup çalışması sayısı"
-    )
+    group_study_sessions: int | None = Field(None, description="Grup çalışması sayısı")
     individual_study_time: int | None = Field(
         None, description="Bireysel çalışma süresi (dakika)"
     )
@@ -106,7 +107,9 @@ async def get_student_cultural_adaptation(
 
     except ValueError as e:
         logger.warning(f"Öğrenci bulunamadı: {student_id} - {e}")
-        raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
     except HTTPException:
         raise
@@ -167,7 +170,9 @@ async def update_student_behavioral_data(
 
     except ValueError as e:
         logger.warning(f"Davranış güncelleme hatası: {student_id} - {e}")
-        raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
     except HTTPException:
         raise
@@ -340,7 +345,8 @@ async def get_cultural_adaptation_summary(
 
 @router.post("/test-adaptation", response_model=CulturalAdaptationResponse)
 async def test_cultural_adaptation(
-    test_data: dict[str, Any], current_user: AuthenticatedUser = Depends(get_current_user)
+    test_data: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kültürel adaptasyon testi (sadece admin kullanıcılar için)

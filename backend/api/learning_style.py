@@ -19,8 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # calisiyordu; yani kusur 'auth bozuk' degil IKI KARDESIN FARKLI KIMLIK
 # SOZLESMESI kullanmasiydi. Olcum: detect COOKIE->401 / BEARER->200,
 # completion COOKIE->200. Bekci: tests/e2e/test_cookie_auth_demo_yolu.py
-from core.dependencies import get_current_user, get_db
-from core.jwt_auth import UserRole
+from core.dependencies import STUDENT_DATA_ACCESS_ROLES, get_current_user, get_db
 from core.learning_path_auth import verify_student_access
 from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
@@ -34,7 +33,7 @@ router = APIRouter(prefix="/api/v1/learning-style", tags=["Öğrenme Stili"])
 # Service instance
 learning_style_service = LearningStyleService()
 
-_PRIVILEGED_ROLES = {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+_PRIVILEGED_ROLES = STUDENT_DATA_ACCESS_ROLES
 
 
 async def _verify_student_or_self(student_id: str, current_user, db: AsyncSession):

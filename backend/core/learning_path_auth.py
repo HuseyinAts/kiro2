@@ -15,7 +15,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_db
+from core.dependencies import STUDENT_DATA_ACCESS_ROLES, get_db
 from core.jwt_auth import JWTManager, TokenType, UserRole, get_jwt_manager
 from models.learning_path_models import LearningPathStudentProfile
 
@@ -105,8 +105,7 @@ async def verify_student_access(
     """
     # Privileged roles (teacher, admin) can access any student
     if allow_privileged and (
-        getattr(current_user, "role", None)
-        in (UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+        getattr(current_user, "role", None) in STUDENT_DATA_ACCESS_ROLES
         or _user_role_slug(current_user) in _PRIVILEGED_STUDENT_ACCESS_SLUGS
     ):
         logger.info(
@@ -117,7 +116,7 @@ async def verify_student_access(
         return True
 
     # Student ownership: verify via DB that user_id owns this student_id
-    user_id = getattr(current_user, 'id', None) or getattr(current_user, 'sub', None)
+    user_id = getattr(current_user, "id", None) or getattr(current_user, "sub", None)
 
     result = await db.execute(
         select(LearningPathStudentProfile.student_id).where(
@@ -134,9 +133,7 @@ async def verify_student_access(
             detail="Bu öğrenci verisine erişim yetkiniz yok",
         )
 
-    logger.info(
-        f"Student access verified: user={user_id} owns student={student_id}"
-    )
+    logger.info(f"Student access verified: user={user_id} owns student={student_id}")
     return True
 
 
@@ -152,7 +149,7 @@ async def assert_can_access_body_student_id(
     ``student_id`` değerini (verify_student_access).
     """
     role = getattr(current_user, "role", None)
-    if role in (UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN):
+    if role in STUDENT_DATA_ACCESS_ROLES:
         return
     if _user_role_slug(current_user) in _PRIVILEGED_STUDENT_ACCESS_SLUGS:
         return

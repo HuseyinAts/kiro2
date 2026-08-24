@@ -12,7 +12,12 @@ from pydantic import BaseModel, Field
 
 try:
     from core.auth_dependencies import require_role
-    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+    from core.dependencies import (
+        STUDENT_DATA_ACCESS_ROLES,
+        AuthenticatedUser,
+        UserRole,
+        get_current_user,
+    )
     from services.elasticsearch_service import (
         CONTENT_SAFE_FIELDS,
         STUDENT_SAFE_QUESTION_FIELDS,
@@ -22,7 +27,12 @@ try:
 except ImportError:
     # Import the canonical get_current_user function from core.dependencies
     from core.auth_dependencies import require_role
-    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+    from core.dependencies import (
+        STUDENT_DATA_ACCESS_ROLES,
+        AuthenticatedUser,
+        UserRole,
+        get_current_user,
+    )
     from services.elasticsearch_service import (
         STUDENT_SAFE_QUESTION_FIELDS,
         ElasticsearchService,
@@ -38,9 +48,7 @@ _CONTENT_SAFE_FIELD_SET = frozenset(CONTENT_SAFE_FIELDS)
 
 router = APIRouter(prefix="/api/v1/elasticsearch", tags=["elasticsearch"])
 
-_ES_USER_ANALYTICS_STAFF = frozenset(
-    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
-)
+_ES_USER_ANALYTICS_STAFF = STUDENT_DATA_ACCESS_ROLES
 
 
 # Request/Response modelleri
