@@ -48,6 +48,80 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-24 (S251 · PLAN + UYGULAMA — 5 görev, 1 düşürüldü)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `89fe2e417..` (3 kod + 1 doküman commit)
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
+**Yöntem:** `writing-plans` → plan (`docs/superpowers/plans/2026-08-24-acik-kalem-kapatma.md`,
+6 görev/908 satır) → hibrit yürütme: **2 ölçüm workflow'u (26 + 3 ajan)**, kod işi ana bağlamda.
+
+### Kapanan
+| # | Kalem | Ölçülen delta | Commit |
+|---|---|---|---|
+| G1 | `details` daralması **13 sınıfta** | skip **21→2** (19 test canlandı) · AST daraltan **13→0** · mypy `exceptions.py` **4→0** | `89fe2e417` |
+| G2 | RLS göç ankrajı arşivde | **0 koşuyor → 5 passed** | `c4dd5282a` |
+| G3 | Hiç var olmamış modülün testi | `tests/integration` collection error **1→0** | `c4dd5282a` |
+| G6 | Göç testleri **koşulsuz** susturulmuş (U25) | **16 skipped/0 passed → 6 passed/10 skipped** + üretim koruması | `c4dd5282a` |
+| G4 | `synced_count` fazla-raporluyor | 3. sayaç `skipped_count`; **synced+skipped+failed == N** | `ec580070a` |
+
+**Mutasyon:** G1 **3/3** · G4 **2/2**, tüm geri alımlar doğrulandı.
+
+### 🔴 Kendi iddiam çürüdü — G5 DÜŞÜRÜLDÜ
+S250 devir notunda *"yetki hataları HÂLÂ 500 dönüyor"* yazmıştım ve planın G5'i buna
+dayanıyordu. Ölçüm çürüttü: taze öğrenci hesabıyla **17 yetki-reddi ucu → 17/17 HTTP 403**.
+Canlı yollar `HTTPException` fırlatıyor; Gen‑1 `AuthorizationError`'ı yalnız çağıranı olmayan
+iki metot üretiyor. Ölü handler'lar **gerçek** ama kaydetmenin değeri **+0** →
+*"+0 ise fix yapılmaz"*. Üç yerdeki (kütük · devir notu · MEMORY) iddia **düzeltildi**.
+
+### 🔴 Bu turda yakalanan üç "susturulmuş kusur" deseni
+Üçü de aynı patoloji: **kusuru düzeltmek yerine ölçen aleti susturmak.**
+1. **19 test** `@pytest.mark.skip("API changed: no details parameter")` — 13 sınıf ebeveyninin
+   `details`'ini daraltmıştı; testler doğruydu, kod yanlıştı.
+2. **16 test** `skipif(True, "... 1F + 10E")` — gerekçe 6'sı için **YALAN**: o 6 test DB'ye
+   hiç dokunmuyor ve geçiyor. Aralarında `test_no_manual_table_drops_without_backup` var —
+   5 Ağu içerik kaybının bekçisi, aylardır karanlıktaydı.
+3. **2 test** kusuru *assert* olarak çivilemişti (`cards=[]` ile `synced_count == 1`).
+   İkisi de assert zayıflatılarak değil, **gerçek mutlu yola taşınarak** düzeltildi.
+
+### Fail Eden Testler
+**YOK.** G1 58 passed/2 skipped · tüketiciler 348 passed · G2 5 · G6 6+7 · G4 15+15.
+
+### Engelleyiciler / açık kalemler
+- 🔴 **SMTP (#441)** — operatör. Canlı ölçüm: konteynerde SMTP_* **5/5 tanımsız**;
+  `users.is_verified` **false=26 / true=12**; `EPOSTA_DOGRULAMA_ZORUNLU` tanımsız →
+  doğrulanmamış kullanıcı **giriş yapabiliyor**. ⚠️ Kapıyı SMTP'den ÖNCE açmak 26 kişiyi kilitler.
+- 🔴 **CI: 11 workflow'un 0'ı bu dalda tetikleniyor**; `master..HEAD` = **652 commit**.
+  `claude-ci` ve `quality-gates` bilinçli olarak `workflow_dispatch`'e indirilmiş.
+- 🔴 **X06 (c)** 3 rol kapısının birleştirilmesi — **32 canlı uç** (`require_role` 19 ·
+  `require_org_role` 7 · `require_admin` 6). Kendi turunu hak ediyor.
+- ⚠️ **X06 (d)** 16 ölü tanım + üç ölü handler modülü + beş ölü modül — silme kararı kullanıcıya ait.
+- ⚠️ `test_migrations.py` içinde 10 test hâlâ skip: sebep PG yokluğu **değil**,
+  `tests/conftest.py:100` `USE_POSTGRES_TESTS` yoksa sqlite'a düşürüyor (`near "CASCADE"`).
+- ⚠️ Envanter workflow'u **89 ham kalem → 74 gerçek / 15 fantom** buldu; bu turda 5'i kapandı.
+
+### Sonraki Adımlar (maks 5)
+1. **SMTP #441** (operatör) → sonra `EPOSTA_DOGRULAMA_ZORUNLU=true`. **Sıra bu yönde olmalı.**
+2. **X06 (c)** kanon rol kapısı göçü — kanon ölçülü (`userrole` BÜYÜK HARF).
+3. `USE_POSTGRES_TESTS=true` ile göç testlerinin kalan 10'unu koştur (üretim koruması artık var).
+4. CI: en az `ci.yml` + `golden-flows.yml`'i bu dala bağla — 652 commit denetimsiz.
+5. Ölü kod temizliği (X06 d + 3 handler + 5 modül) — **açık istek** gerekir.
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **G5 yapılmadı ve yapılmamalı** (öncülü çürüdü, değeri +0). Ölü handler'lar X06 (d) kalemine devredildi.
+- **`skipped_count` seçildi (kullanıcı kararı)**, `failed_count`'a katılmadı: kart yokluğu
+  öğrencinin hatası değil. Şema alanı eklendi; `api.generated.ts` ÜRETİLMİŞ dosya, elle dokunulmadı.
+- **Susturulmuş testi yeniden susturmak yasak.** `test_base_exception_without_details`
+  yeniden mute edilmedi, **düzeltildi**: `details or {}` normalizasyonu yük taşıyor
+  (`ErrorFactory` :572/:607 `.update()` çağırıyor). Mutasyon M3 bunu doğruladı.
+- **G6 kapısı modül değil SINIF düzeyinde** — modül düzeyi 6 çalışan bekçiyi de karartırdı.
+- **Yorum yaptırım değildir:** G6'nın açtığı `downgrade(base)` tehlikesi `URETIM_DB_ADLARI`
+  ile koda gömüldü + 7 testle assert edildi.
+
+### ⚠️ E3 — kullanıcı-görünür çıktı: **G4 ✅**
+`backend/services/offline_sync_service.py` + `backend/api/offline_sync_api.py` —
+öğrencinin gördüğü senkron sayısı artık doğru. Diğer 4 görev test/altyapı katmanında.
+
+---
+
 ## Session Handoff — 2026-08-24 (S250 · X06 — kusur 1 satır değil 24'müş)
 **Branch:** feature/self-evolution-optimization · **Commit:** `1bd8b3c15`
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
@@ -97,10 +171,11 @@ Kendi kodum kapının **kendi sürümleriyle** temiz (ruff 0.7.1 + format Passed
 İlk koşumda kendi hatam vardı — **N802, 12. kez** — ertelenmedi, düzeltildi.
 
 ### Engelleyiciler / açık kalemler
-- 🔴 **Yetki hataları HÂLÂ 500 dönüyor.** 403 döndüren **üç** handler modülünün **üçü de**
-  kayıtsız ölü kod (`exception_handlers.py:518` · `exception_handler.py:334` ·
-  `global_exception_handler.py:768`); canlıda yalnız 5 handler kayıtlı, catch-all
-  `core/application.py:354-392` → 500. **(b) hata TİPİNİ düzeltti, istemcinin gördüğü KODU değil.**
+- ⚠️ **DÜZELTME (S251):** yukarıdaki *"yetki hataları hâlâ 500 dönüyor"* iddiam **ÇÜRÜDÜ**.
+  Taze öğrenci hesabıyla 17 yetki-reddi ucu proplandı → **17/17 HTTP 403**. Canlı yollar
+  `HTTPException` fırlatıyor; Gen‑1 `AuthorizationError`'ı yalnız çağıranı olmayan iki metot
+  üretiyor. **Ayakta kalan:** üç handler modülü gerçekten kayıtsız ölü kod — ama kaydetmenin
+  bugünkü değeri **+0**, o yüzden yapılmadı (bkz. S251).
 - 🔴 10 önceden var olan mypy hatası (`exceptions.py` ×4, `enhanced_authentication.py` ×6);
   çoğu ölü `authenticate_user` alt ağacında. Görev no atanmalı.
 - ⚠️ `test_core_exceptions_comprehensive.py`'de **19 skip**, 8 ayrı sınıfı "API changed"

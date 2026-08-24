@@ -1269,12 +1269,18 @@ iddialar:
           ve dördü de :359/:381) — kapı yalnız DEĞİŞEN dosyalara baktığı için bu 24
           satır aylardır tetiklenmemişti.
       AÇIK KALAN: (c) 7 canlı kapının göçü · (d) 16 ölü tanım.
-      YENİ AÇIK KALEM (bu turda ölçüldü, kapatılmadı): yetki hataları HÂLÂ 500
-      dönüyor. 403 döndüren ÜÇ handler modülünün ÜÇÜ DE kayıtsız ölü kod
-      (exception_handlers.py:518 · exception_handler.py:334 ·
-      global_exception_handler.py:768); canlı uygulamada yalnız 5 handler kayıtlı,
-      catch-all core/application.py:354-392 -> 500. Yani (b) hata TİPİNİ düzeltti,
-      istemcinin gördüğü KODU değil.
+      ⚠️ S250'DE YAZDIĞIM "YETKİ HATALARI HÂLÂ 500 DÖNÜYOR" İDDİASI
+      **ÇÜRÜDÜ (S251, 24 Ağu)**. Taze öğrenci hesabıyla 17 yetki-reddi ucu
+      proplandı: **17/17 HTTP 403**, hiçbiri 500 değil. Canlı yollar
+      core/authorization.py:12 (AuthorizationError(HTTPException,403)) ve
+      auth_dependencies.py:201/223 (raise HTTPException) kullanıyor.
+      Gen-1 AuthorizationError'ı yalnız enhanced_authentication.py:362/:385
+      üretiyor ve o metotların üretim çağıranı **0**.
+      AYAKTA KALAN kısım: üç handler modülü (exception_handlers.py:518 ·
+      exception_handler.py:334 · global_exception_handler.py:768) gerçekten
+      kayıtsız ÖLÜ KOD. Ama kaydetmenin bugünkü değeri **+0** (o ailenin
+      api/+services/ içinde 1 raise'i var) → kaydedilmedi; ölü kod temizliği
+      X06 (d) ile birlikte ele alınmalı.
     commit: null # bileşik iddia: (c)+(d) açık, birleştirme yapılmadı
     zorlayici_test: "backend/tests/unit/test_exception_kwarg_sozlesmesi.py (12 test, commit 1bd8b3c15) — YALNIZ alt-bulgu 3'ü koruyor. Eşik SIFIR + 6 kontrol kolu. Mutasyon 4/4 ÖLDÜ, dört geri alım da doğrulandı. Kontrol kolu ilk koşumda bekçide GERÇEK kusur yakaladı: **kwargs'lı sınıf atanın dar imzasıyla yargılanıyordu (yanlış-pozitif üretebilirdi)."
 
