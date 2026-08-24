@@ -21,7 +21,9 @@ from pathlib import Path
 import pytest
 
 BACKEND = Path(__file__).resolve().parents[2]
-if str(BACKEND) not in sys.path:  # pragma: no cover - ortam kurulumu
+if (
+    str(BACKEND) not in sys.path
+):  # pragma: no cover  # ortam kurulumu: sys.path zaten doluysa kosmaz
     sys.path.insert(0, str(BACKEND))
 
 

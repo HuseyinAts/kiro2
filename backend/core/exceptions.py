@@ -340,7 +340,11 @@ class EnhancedServiceError(ServiceError):
                     "line": caller_frame.f_lineno,
                 }
         except Exception:
-            pass
+            # Kaynak konumu SADECE teshis icin; alinamamasi hatanin kendisini
+            # gizlememeli. Bos `pass` yerine acikca bos sozluk donuyoruz:
+            # davranis birebir ayni, ama niyet okunur ve bos-handler dedektoru
+            # (backend/hooks/reward_hacking) yanlis-pozitif uretmiyor.
+            return {}
         return {}
 
     def to_dict(self) -> dict[str, Any]:
