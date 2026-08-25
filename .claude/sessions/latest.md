@@ -241,14 +241,54 @@ Mutasyon **2/2** (kanondan TEACHER çıkar → 1 · takma adı kopyaya döndür 
 2. Daha önce (2. tur) **commit'siz işi mutasyona soktum** ve `git checkout HEAD --`
    düzeltmeyi sildi. İkisi de aynı sınıf: **doğrulamayı atlamak.**
 
+### 4. TUR — SMTP #441 BAĞLANDI (kısmen doğrulandı, kapı HÂLÂ KAPALI)
+
+`.env.mvp`'ye SMTP bloğu **kullanıcı tarafından** eklendi (izin katmanı bana
+`.env*` yazmayı engelliyor — 3 deneme, hepsi reddedildi; etrafından dolaşılmadı).
+Gmail uygulama şifresi, `smtp.gmail.com:587`, `EMAIL_FROM = SMTP_USERNAME`.
+
+| Ölçüm | Sonuç |
+|---|---|
+| Konteynerde değişken | **0/5 → 5/5** (recreate sonrası; restart yetmez) |
+| `smtp_yapilandirilmis_mi()` | `False → True` |
+| **Senkron SMTP** (gerçek TCP+STARTTLS+LOGIN) | ✅ hatasız |
+| `dogrulama_baslat()` | ✅ `True` |
+| **Redis token** (öncesi/sonrası) | ✅ `1 → 2`, TTL **~23 sa** |
+| Link tabanı | ✅ `http://localhost:3000/...` (S248 düzeltmesi tutuyor) |
+| **Kutuya ULAŞTI mı** | ⏳ **ÖLÇÜLMEDİ — insan teyidi bekliyor** |
+| `EPOSTA_DOGRULAMA_ZORUNLU` | 🔴 **HÂLÂ KAPALI** (bilerek) |
+
+**Kapı BİLEREK açılmadı:** *gönderildi* ile *ulaştı* ayrı ölçümlerdir. Gmail
+mesajı kabul edip spam'e atmış olabilir. Kutu teyidi gelmeden bayrağı açmak
+`is_verified=false` olan **29 kullanıcıyı** kilitler.
+
+### 🔴 Kendi bugün yazdığım probun ADIM 3'ü YAPISAL OLARAK BOŞTU (`07dea8b18`)
+`docker logs | grep "gönderim hatası"` → "0 eşleşme" bekliyordu ve yeşil
+görünüyordu. Ama prob `docker exec` ile **ayrı süreçte** koşuyor; log'ları
+uvicorn akışına **hiç düşmüyor** → orada her zaman 0 çıkacaktı.
+**Yakalayan şey öncesi/sonrası sayaç oldu (`0 → 0`).** Düzeltildi: Adım 2 artık
+Redis'i ÖNCE/SONRA sayıyor, Adım 3 ölçüm yapmıyor — **`[OLCULMEDI]` diyor** ve
+doğru yordamı veriyor.
+
+⚠️ **Tuzak kaydedildi:** `/auth/eposta-dogrula/gonder` adres **kayıtlı değilse de
+HTTP 200** döner (kullanıcı sayımı koruması). Bu turda birebir yaşandı —
+`huseyinates038@gmail.com` kayıtlı olmadığı için 200 alındı ama **hiçbir şey
+gönderilmedi**. *200 gördün diye gönderildi sanma; sayaca bak.*
+
 ### Sonraki Adımlar (maks 5)
-1. **SMTP #441** (operatör, TEK blocker) — prob hazır (`c6c6a17b5`),
-   `.env.mvp` bloğu eklenince zincir tek komutla ölçülür.
-2. **X06 (c) 4. adım** — B kümesi (içerik/kalite, 3 kopya) için ayrı kanon.
-3. `org_memberships` RLS **fail-open** — ayrı P1, ölçüm gerektirir.
-4. `jwt_auth.require_admin` — **yapılmayacak** (yukarıdaki +0 ölçümü); ancak
-   `/admin/statistics` placeholder'ı gerçek veriye bağlanırsa yeniden ölçülmeli.
-5. CI: 11 workflow'un 0'ı bu dalda tetikleniyor.
+1. 🔴 **SMTP kutu teyidi** — kullanıcı Gmail'de *"KIRO2 — SMTP kurulum probu
+   (#441)"* konulu postayı arayacak (**spam dahil**). Geldiyse:
+   (a) gerçek `/auth/kayit` ile uçtan uca test (ÖNCE/SONRA sayaçla — bu A1'in
+   L1+L2 ayağı), (b) sonra `EPOSTA_DOGRULAMA_ZORUNLU=true` + recreate + kapı
+   ölçümü. Gelmediyse: Gmail "Güvenlik" → uygulama şifresi geçerli mi, spam
+   politikası, gerekirse Resend/Brevo'ya geç.
+2. **X06 (c) 4. adım** — B kümesi (içerik/kalite: `soru_guncelle`, `soru_sil`,
+   `_OVERRIDE_APPROVERS`) için ayrı kanon. Çırçır 23 → ~21.
+3. `org_memberships` RLS **fail-open** (`current_setting(...) IS NULL` → tüm
+   satırlar geçer) — MEMORY'deki "73 fail-closed" ifadesinin istisnası. P1.
+4. CI: **11 workflow'un 0'ı** bu dalda tetikleniyor; `master..HEAD` ~670 commit.
+5. `jwt_auth.require_admin` — **YAPILMAYACAK** (5 eksende +0 ölçüldü). Yalnız
+   `/admin/statistics` placeholder'ı gerçek veriye bağlanırsa yeniden ölç.
 
 ### Kararlar (gelecek oturum tekrar tartışmasın)
 - **X06 (c) bu turda YAPILMADI ve doğru olan buydu:** kanon kapının bekçisi yoktu
