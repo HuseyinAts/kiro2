@@ -16,14 +16,21 @@ NEDEN "HTTP 200" veya "True" YETMEZ
 
     dogrulama_baslat() -> True   ≠   "e-posta gitti"
 
-Bu prob bu yüzden ÜÇ bağımsız katman ölçer ve hiçbirini diğerinin yerine saymaz:
+Bu prob İKİ katmanı ölçer, ÜÇÜNCÜSÜNÜ ölçemediğini SÖYLER:
 
   A. SENKRON SMTP  — `send_email(..., blocking=True)`; gerçek TCP + STARTTLS +
-                     LOGIN. Kimlik yanlışsa BURADA patlar.
-  B. ÜRETİM YOLU   — gerçek `dogrulama_baslat()`; token üretimi + Redis + tek
-                     e-posta gövdesi. Taklit yok.
-  C. LOG           — `email gönderim hatası` taraması; A ve B yeşilken bile
-                     thread içinde sessiz hata olabilir.
+                     LOGIN. Kimlik yanlışsa BURADA patlar. ÖLÇÜLÜR.
+  B. ÜRETİM YOLU   — gerçek `dogrulama_baslat()`; Redis token sayısı
+                     ÖNCESİ/SONRASI karşılaştırılır. ÖLÇÜLÜR.
+  C. UÇTAN UCA     — **ÖLÇÜLEMEZ.** Bu prob `docker exec` ile AYRI süreçte
+                     koşar; uvicorn log'una düşmez ve daemon thread süreç
+                     çıkarken kesilebilir. Yordam Adım 3'te.
+
+🔴 İLK SÜRÜMÜN KUSURU (25 Ağu 2026): Adım 3 `docker logs` taraması yapıp
+"SIFIR eşleşme" bekliyordu. O ölçüm YAPISAL OLARAK boştu — orada zaten hiçbir
+zaman satır olmayacaktı — ve 0'ı "hata yok" diye okumak YANLIŞ-YEŞİL üretti.
+Kusuru yakalayan şey ÖNCESİ/SONRASI sayaç oldu (`0 -> 0`). Mutlak bir sayı durum
+hakkında hiçbir şey söylemez; DEĞİŞİM söyler. Bu ders koda gömüldü.
 
 Kullanım (konteyner içinde, PYTHONPATH=/app):
     docker exec -i -e PYTHONPATH=/app -w /app kiro2-backend \
@@ -130,7 +137,11 @@ def adim_1_senkron_smtp(hedef: str) -> bool:
 async def adim_2_uretim_yolu(hedef: str) -> bool:
     """GERÇEK `dogrulama_baslat()`: token + Redis + tek gövde. Taklit yok."""
     print("\n=== ADIM 2: üretim yolu (dogrulama_baslat) ===")
-    from core.eposta_dogrulama import dogrulama_baslat, store_al
+    from core.eposta_dogrulama import (
+        EpostaDogrulamaStore,
+        dogrulama_baslat,
+        store_al,
+    )
 
     store = await store_al()
     _yaz("BILGI", f"depo tipi: {type(store).__name__}")
@@ -143,11 +154,38 @@ async def adim_2_uretim_yolu(hedef: str) -> bool:
         )
         return False
 
+    # ÖNCE/SONRA sayaç — mutlak sayı ("1 anahtar var") durum hakkında hiçbir şey
+    # söylemez, DEĞİŞİM söyler. Eski bir token da 1 gösterirdi.
+    from core.eposta_dogrulama import _redis_al
+
+    redis = await _redis_al()
+    desen = f"{EpostaDogrulamaStore.KEY_DOGRULAMA}:*"
+    once = len(await redis.keys(desen)) if redis else None
+
     sonuc = await dogrulama_baslat("prob-kullanici", hedef)
     if not sonuc:
         _yaz("HATA", "dogrulama_baslat False döndü", "SMTP veya kota")
         return False
+
+    if redis is None:
+        _yaz("UYARI", "Redis yok", "token kalıcılığı ÖLÇÜLEMEDİ (bellek-içi depo)")
+    else:
+        sonra = len(await redis.keys(desen))
+        if sonra <= (once or 0):
+            _yaz("HATA", f"Redis token sayısı ARTMADI ({once} -> {sonra})")
+            return False
+        ttl = await redis.ttl((await redis.keys(desen))[-1])
+        _yaz(
+            "OK", f"Redis token {once} -> {sonra}", f"TTL {ttl} sn (~{ttl // 3600} sa)"
+        )
+
     _yaz("OK", "dogrulama_baslat True (token üretildi + gövde kuyruğa alındı)")
+    _yaz(
+        "UYARI",
+        "GÖNDERİM BU SÜREÇTE DOĞRULANMADI",
+        "`send_email` daemon THREAD'de gönderiyor; bu tek-atımlık `docker exec` "
+        "süreci hemen çıkarsa thread KESİLİR. Uçtan uca kanıt için Adım 3'e bak.",
+    )
 
     frontend = os.environ.get("FRONTEND_URL", "http://localhost:3001").rstrip("/")
     if frontend.endswith(":3001"):
@@ -162,16 +200,43 @@ async def adim_2_uretim_yolu(hedef: str) -> bool:
     return True
 
 
-def adim_3_log_taramasi() -> bool:
-    """A ve B yeşilken bile thread içinde sessiz hata olabilir."""
-    print("\n=== ADIM 3: log taraması ===")
+def adim_3_uctan_uca_yordam() -> bool:
+    """UÇTAN UCA gönderim BU PROBLA ÖLÇÜLEMEZ — nedeni ve doğru yordam.
+
+    🔴 İLK SÜRÜMÜN KUSURU (25 Ağu 2026'da yakalandı): burada `docker logs`
+    taraması öneriliyor ve "SIFIR eşleşme" bekleniyordu. O ölçüm YAPISAL OLARAK
+    boştu: bu prob `docker exec` ile AYRI bir süreçte koşuyor, log'ları
+    uvicorn'un akışına HİÇ düşmüyor. Yani orada her zaman 0 çıkacaktı ve 0'ı
+    "hata yok" diye okumak YANLIŞ-YEŞİL üretiyordu.
+
+    Yakalayan şey ÖNCESİ/SONRASI sayaç oldu (`0 -> 0`): mutlak bir sayı durum
+    hakkında hiçbir şey söylemez, DEĞİŞİM söyler.
+
+    Bu adım artık ölçüm YAPMAZ; ölçmediğini SÖYLER ve doğru yordamı verir.
+    """
+    print("\n=== ADIM 3: uçtan uca gönderim — BU PROBLA ÖLÇÜLEMEZ ===")
+    _yaz(
+        "OLCULMEDI",
+        "gönderimin ULAŞTIĞI bu süreçten doğrulanamaz",
+        "prob `docker exec` ile ayrı süreçte koşar; uvicorn log'una düşmez ve "
+        "daemon thread süreç çıkarken kesilebilir.",
+    )
+    _yaz("BILGI", "DOĞRU YORDAM — host'ta, ÖNCESİ/SONRASI sayaçla:")
+    print(
+        '  ONCE=$(docker logs kiro2-backend 2>&1 | grep -ci "gönderildi")\n'
+        "  curl -s -X POST http://localhost:8000/api/v1/auth/kayit \\\n"
+        "       -H \"Content-Type: application/json\" -d '{...gerçek e-posta...}'\n"
+        "  sleep 8\n"
+        '  SONRA=$(docker logs kiro2-backend 2>&1 | grep -ci "gönderildi")\n'
+        "  # SONRA > ONCE olmalı. Eşitse gönderim OLMADI."
+    )
     _yaz(
         "BILGI",
-        "host'ta koştur:",
-        "docker logs --tail 200 kiro2-backend 2>&1 | grep -i "
-        '"email gönderim hatası\\|GÖNDERİLEMEDİ\\|SMTPAuth"',
+        "⚠️ /auth/eposta-dogrula/gonder NÖTR yanıt döner",
+        "adres kayıtlı DEĞİLSE de HTTP 200 verir (kullanıcı sayımı koruması). "
+        "200 gördün diye gönderildi SANMA — sayaç bak.",
     )
-    _yaz("BILGI", "beklenen: SIFIR eşleşme")
+    _yaz("BILGI", "SON ÖLÇÜM İNSANDA: gerçek kutuya düştü mü (spam dahil)")
     return True
 
 
@@ -218,7 +283,7 @@ def main() -> int:
     if not asyncio.run(adim_2_uretim_yolu(arg.hedef)):
         adim_4_kapi_durumu()
         return 1
-    adim_3_log_taramasi()
+    adim_3_uctan_uca_yordam()
     adim_4_kapi_durumu()
 
     print(
