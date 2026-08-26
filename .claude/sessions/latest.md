@@ -78,6 +78,29 @@ mutasyon **4/4**.
 | BLOKE-2 | giriş ekranı **yanlış teşhis** + kurtarma yolu YOK | sabit *"şifre eşleşmedi"* → sunucunun sebebi **+ `link → /eposta-dogrula`** | `6fadf6829` +`4e42bbc58` | 5/5 |
 | 401 | **kendi gerilemem**: hiç oturumu olmayana *"Oturum süresi doldu"* | `"Oturum süresi doldu"` → **`"Islem basarisiz…"`** | `81720e681` +`ce4e65875` | 3/3 |
 
+| BLOKE-4 | nginx arkasındaki **herkes tek rate-limit kovası** | iki kaynak → **iki ayrı kova**; sahte IP kovası **0** | `6ddc1b910` | 7/7 |
+
+**BLOKE-4'te analizim İKİ KEZ düzeldi (ikisi de ölçümle):**
+1. *"uvicorn ProxyHeadersMiddleware kurulu değil"* → **yanlış**; `proxy_headers`
+   varsayılanı **`True`**, middleware zaten aktifti — `forwarded_allow_ips`
+   varsayılanı `127.0.0.1` olduğu için nginx'i tanımıyordu.
+2. *"nginx `X-Forwarded-For`'u EZMELİ yoksa spoof olur"* → **gereksiz**; uvicorn
+   0.52.4 zincirin **en sağdaki güvenilmez** adresini seçiyor (`'1.2.3.4, 5.6.7.8'`
+   → `'5.6.7.8'`), yani append semantiği spoof'a kapalı. **`nginx.conf`'a dokunulmadı.**
+   Benim "ilk eleman" çıkarımım `api/auth.py:128`'e dayanıyordu — o dal üretimde
+   **erişilemez** (uvicorn `scope["client"]`'ı önce yeniden yazıyor).
+
+Sonuç: **kapsam 6 dosyadan TEK ortam değişkenine düştü.** Canlı üç limiter de
+`request.client.host` okuyor; uvicorn'un çözümünü düzeltmek üçünü birden düzeltti
+(hem `ratelimit:<kova>:<ip>` hem `ratelimit:free:<yol>:<ip>` ayrıştı).
+**Subnet değil TAM IP** — subnet güvenilirse gateway de güvenilir olur ve `:8000`'e
+doğrudan gelen istek kendi IP'sini dikte eder (ölçüldü: `'9.9.9.9'` → `'9.9.9.9'`).
+
+⚠️ **Operasyon:** `docker compose down` **`kiro2-ollama`'yı kaldırmadı** (compose
+etiketi doğru olmasına rağmen) ve ağ *"active endpoints"* ile silinemedi. Yordam:
+`docker network disconnect -f kiro2_default kiro2-ollama` → `docker network rm
+kiro2_default` → `docker compose up -d` → **ollama'yı geri bağla**.
+
 **🔴 401'i BEN ürettim.** `6fadf6829` ekranı *"sunucunun sebebini göster"*e çevirdi; canlı
 propta 401 dalının o sebebi hiç üretmediği görüldü (`apiHelpers.ts:466` gövdeyi
 **okumadan** kısa devre yapıyordu). Önceki sabit metin *kazara daha doğruydu* — yani
