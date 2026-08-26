@@ -461,16 +461,30 @@ export async function apiRequest<T = any>(
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+
       // Handle 401 — session expired, redirect to login
       // Skip redirect if already on /login to prevent infinite reload loop
       if (response.status === 401) {
         if (girisYonlendirmesiGerekli(window.location.pathname)) {
           window.location.href = '/login';
         }
-        throw new Error('Oturum süresi doldu');
+        // 🔴 Gövde ARTIK OKUNUYOR. Eskiden bu dal gövdeye HİÇ bakmadan
+        // "Oturum süresi doldu" fırlatıyordu; sonuç (26 Ağu 2026 canlı ölçümü)
+        // `/login`de yanlış şifre giren, HİÇ OTURUMU OLMAYAN kullanıcıya
+        // "oturumun doldu" denmesiydi — BLOKE-1 ile aynı yanlış-teşhis sınıfı.
+        // Yönlendirme davranışı DEĞİŞMEDİ; yalnız mesaj sunucudan geliyor.
+        const oturumDetayi: unknown = errorData?.detail;
+        const oturumMesaji =
+          typeof oturumDetayi === 'string'
+            ? oturumDetayi
+            : oturumDetayi && typeof oturumDetayi === 'object' && !Array.isArray(oturumDetayi)
+              ? (oturumDetayi as { message?: unknown }).message
+              : undefined;
+        throw new Error(
+          typeof oturumMesaji === 'string' && oturumMesaji ? oturumMesaji : 'Oturum süresi doldu',
+        );
       }
-
-      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
 
       // Handle 422 validation errors from FastAPI
       if (response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {

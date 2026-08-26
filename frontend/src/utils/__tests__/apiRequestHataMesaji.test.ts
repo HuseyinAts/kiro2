@@ -77,6 +77,30 @@ describe('apiRequest — backend hata mesajı', () => {
     expect(await firlatilanMesaj()).toBe('Giriş yapabilmek için e-posta adresinizi doğrulayın.');
   });
 
+  it('401 sunucunun sebebini gösterir, "Oturum süresi doldu" DEĞİL', async () => {
+    // 🔴 CANLI ÖLÇÜM (26 Ağu 2026): `/login`de yanlış şifreyle giriş denendi.
+    //    backend -> 401 {"detail":"Islem basarisiz. Lutfen tekrar deneyin."}
+    //    EKRANDA -> "Oturum süresi doldu"
+    // Hiç oturumu olmayan kullanıcıya "oturumun doldu" demek yanlış teşhis —
+    // BLOKE-1 ile aynı sınıf. Kök neden `apiHelpers.ts:466-471`: 401 dalı
+    // gövdeyi OKUMADAN kısa devre yapıyordu.
+    //
+    // ⚠️ Yol `/login`e kuruluyor: `girisYonlendirmesiGerekli('/login')` false
+    // döner, yani yönlendirme dalı tetiklenmez ve jsdom'da gezinme gürültüsü
+    // olmaz. Yönlendirme davranışı bu düzeltmede DEĞİŞMEDİ.
+    window.history.replaceState({}, '', '/login');
+    govdeDondur({ detail: 'Islem basarisiz. Lutfen tekrar deneyin.' }, 401);
+    expect(await firlatilanMesaj()).toBe('Islem basarisiz. Lutfen tekrar deneyin.');
+  });
+
+  it('401 gövdesi kullanışsızsa "Oturum süresi doldu" KORUNUR (geriye uyum)', async () => {
+    // Gerçek süresi-dolmuş-oturum durumunda backend gövde göndermeyebilir;
+    // o zaman eski mesaj hâlâ doğru olan.
+    window.history.replaceState({}, '', '/login');
+    server.use(http.post(UC, () => new HttpResponse(null, { status: 401 })));
+    expect(await firlatilanMesaj()).toBe('Oturum süresi doldu');
+  });
+
   it('5xx sunucu içini SIZDIRMAZ (extractErrorDetail.ts:56-58 ile aynı politika)', async () => {
     govdeDondur({ detail: 'psycopg2.errors.UndefinedColumn: users.gizli_kolon' }, 500);
     const mesaj = await firlatilanMesaj();
