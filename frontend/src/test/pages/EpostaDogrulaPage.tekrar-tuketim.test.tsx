@@ -128,6 +128,32 @@ describe('EpostaDogrulaPage — token yeniden tüketimi', () => {
     expect(await screen.findByRole('button', { name: /yeniden gönder/i })).toBeInTheDocument();
   });
 
+  it('BAŞARISIZLIK önbelleğe ALINMAZ: yeniden yükleme tekrar dener', async () => {
+    // MUTASYON BOŞLUĞU (26 Ağu 2026): `.catch` dalına `basariyiYaz(token, e.message)`
+    // eklemek testlerin HİÇBİRİNİ düşürmüyordu (M4 hayatta kaldı). O hâlde
+    // düşen bir çağrı kalıcı "başarı" gibi kaydedilir ve yeniden yüklemede
+    // ekran, hata METNİNİ başarı KABUĞUYLA gösterir — kurtarma formu kaybolur.
+    // Ağ hatası da 400 gibi görünebildiği için yeniden denemek MEŞRU.
+    server.use(
+      http.post('*/api/v1/auth/eposta-dogrula/verify', () => {
+        cagriSayisi += 1;
+        return HttpResponse.json({ detail: 'Doğrulama bağlantısı geçersiz.' }, { status: 400 });
+      }),
+    );
+
+    const ilk = ekranaBas('hep-dusen-token');
+    expect(await screen.findByRole('button', { name: /yeniden gönder/i })).toBeInTheDocument();
+    expect(cagriSayisi).toBe(1);
+
+    ilk.unmount();
+    ekranaBas('hep-dusen-token');
+
+    expect(await screen.findByRole('button', { name: /yeniden gönder/i })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(cagriSayisi, 'başarısızlık önbelleğe alınmış — yeniden denenmedi').toBe(2),
+    );
+  });
+
   it('token TAŞIMAYAN bağlantı ucu HİÇ çağırmaz', async () => {
     render(
       <React.StrictMode>
