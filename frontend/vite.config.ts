@@ -18,8 +18,37 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         globIgnores: ['**/stats.html', '**/node_modules/**'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit
+
+        // 🔴 navigateFallback KAPALI — varsayılanı (index.html) BİLEREK iptal.
+        // Varsayılan, workbox'ın `NavigationRoute(createHandlerBoundToURL(...))`
+        // rotasını üretiyordu ve TÜM navigasyonları precache'ten, AĞA HİÇ
+        // ÇIKMADAN servis ediyordu. Sonuç (26 Ağu 2026, üç bağımsız ölçüm):
+        //   • `GET /eposta-dogrula` nginx log'una HİÇ düşmedi (ağ isteği yok)
+        //   • deploy sonrası ilk yükleme ESKİ bundle'ı çalıştırdı
+        //   • sonra SW güncelleyip sayfayı yeniledi -> doğrulama token'ı
+        //     ikinci kez tüketildi ve BAŞARI, BAŞARISIZLIK gibi göründü
+        // Yani her deploy, mevcut kullanıcıya bir tur eski kod servis ediyordu.
+        //
+        // ⚠️ Workbox Router rotaları KAYIT SIRASINA göre eşleştirir ve üretilen
+        // dosyada `NavigationRoute` runtimeCaching'ten ÖNCE kaydediliyordu.
+        // Bu yüzden aşağıya network-first bir navigasyon rotası EKLEMEK tek
+        // başına yetmezdi — varsayılanın KALDIRILMASI şart.
+        navigateFallback: undefined,
+
         // Cache API responses for offline use
         runtimeCaching: [
+          {
+            // Navigasyon (HTML kabuğu): AĞ ÖNCE. Çevrimiçiyken kullanıcı her
+            // zaman taze kabuk alır; çevrimdışıyken en son görülen kabuğa düşer,
+            // yani PWA çevrimdışı desteği korunur.
+            urlPattern: ({ request }: { request: Request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'kiro2-html-shell',
+              // Ağ yavaşsa sonsuza kadar bekleme; 3 sn sonra önbelleğe düş.
+              networkTimeoutSeconds: 3,
+            },
+          },
           {
             urlPattern: /^\/api\/realms\//,
             handler: 'NetworkFirst',
