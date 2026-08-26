@@ -48,6 +48,84 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..f58fe0f3a` (4 commit)
+**Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
+
+### Ortam
+PC kapanmasından sonra: kayıp **yok** (HEAD == origin). Docker daemon kapalıydı,
+başlatıldı; 6 konteyner healthy. SMTP değişkenleri `.env.mvp`'den korunmuş (5/5).
+
+### A1 altın yolunun L1+L2 ayağı CANLI ÖLÇÜLDÜ (yeni prob: `backend/scripts/kayit_e2e_probu.py`)
+```
+kullanici            42 -> 43   (Δ+1)      redis_token   2 -> 3 -> 2 (tek kullanımlık)
+gonderildi            6 ->  8   (Δ+2)      hata          0 -> 0
+users.is_verified  false -> TRUE           kayıtsız adres: HTTP 200 ama Δ0
+```
+Kardeş `smtp_dogrulama_probu.py` bu adımı bilerek ölçmüyordu (ayrı süreç);
+verdiği host-tarafı yordam çalıştırılabilir hâle getirildi. Bekçi: 6 test,
+mutasyon **4/4**.
+
+### 🔴 Kapanan üç kusur — üçü de CANLI TARAYICIDA proplandı
+| # | Kusur | ÖNCE → SONRA | Commit | Mutasyon |
+|---|---|---|---|---|
+| BLOKE-5 | doğrulama sonrası "Giriş yap" → `/404` | `/url:/giris` → `/url:/login` | `5d119a2e3` | 2/2 |
+| ① | yeniden yükleme token'ı tekrar tüketiyor → **başarı "HTTP 400" görünüyor** | verify 2 çağrı → **1**; ekran hata → başarı | `0bcd7edd6` | 3/4 |
+| ①b | mutasyon boşluğu: başarısızlık önbelleğe alınabiliyordu | M4 hayatta → **öldü** | `f58fe0f3a` | 4/4 |
+
+### 🔴 Kendi iddialarım çürüdü (ikisi de ölçümle)
+1. **"Kapı açılabilir, 403 dönüyor sorun yok"** — HTTP kodunu ölçtüm, **kullanıcının
+   GÖRDÜĞÜNÜ** ölçmedim. Ekranda birebir **`HTTP 400`** yazıyor: backend `{"detail":…}`
+   gönderiyor, `apiHelpers.ts:485` üst düzey `errorData.message` okuyor. Aynı sınıf
+   `/giris` 403'ünde de var → kullanıcıya "şifren yanlış" denecekti.
+2. **"9 bloklanır, hepsi test fikstürü"** — o sayı HAREKETLİ (41 satırda 8, 47'de 13);
+   "hepsi test hesabı" yalnız küçük anlık görüntüde ölçüldü. Mutlak sayı değil delta.
+
+### Yaptırım kararı: **KOŞULLU — kapı AÇILMADI** (24 ajanlı ölçüm workflow'u)
+Teknik zincir çalışıyor ve `kapi_engeli()` → `None` diyor; ama açıldığı anda
+kullanıcı yanlış şey görür. Ön koşullar: BLOKE-1 (mesaj yutulması) · BLOKE-2
+(arayüzde `/eposta-dogrula`'ya **0 href**, `EPOSTA_DOGRULANMAMIS` **0 eşleşme**).
+
+### Açık kalemler (öncelik sırasıyla)
+- 🔴 **BLOKE-3** `username = email.split("@")[0]` + `UNIQUE ix_users_username`, benzersizlik
+  ön-kontrolü YALNIZ email (`commands/auth.py:67,100`) → `ahmet@gmail.com` varken
+  `ahmet@hotmail.com` **HTTP 500**. A1 adım 1'i kırar, kapıdan bağımsız. Canlı ölçüldü.
+- 🔴 **BLOKE-4** `_TRUSTED_PROXIES` compose ağını (`172.25.0.0/16`) kapsamıyor
+  (`api/auth.py:83`) → nginx arkasındaki TÜM kullanıcılar tek rate-limit kovasını
+  paylaşıyor; 6. istek 429. Canlı ölçüldü.
+- 🔴 **BLOKE-1** hata gövdesi şekli ↔ istemci okuyucusu uyuşmuyor (`apiHelpers.ts:485`).
+  ⚠️ `apiRequest`'in 11 çağıranı var → kapsam ölçülmeli.
+- 🔴 **③ Service worker bayat kabuk servis ediyor.** İki kez ölçüldü: (a) kullanıcının
+  tıklaması nginx log'una HİÇ düşmedi + `referer: /404`, (b) rebuild sonrası tarayıcı
+  eski bundle'ı yükledi. Mevcut kullanıcılarda doğrulama linki `/404` açabilir.
+- ⚠️ **38 ölü iç bağ** daha (`/bugun` 8x, `/ogrenme-yolu` 4x, `/panel` 3x …) — çırçırla
+  çivilendi (`rotaButunlugu.test.ts`), ayrı iş.
+- ⚠️ `POST /api/v1/auth/{register,login,me,…}` **10 uç `include_in_schema=False`** →
+  OpenAPI'de yok; frontend'in kullandığı kayıt yolu (`/register`) tip üretimine girmiyor.
+- ⚠️ 2FA `login-verify` L2 kapısını atlıyor (bugün 0 kullanıcı 2FA'lı — latent).
+- ⏳ **Kutuya ulaştı mı** hâlâ ÖLÇÜLMEDİ (insan teyidi bekliyor).
+
+### Kararlar
+- **Kapı `.env.mvp`'ye dokunulmadan açılmaz** — izin katmanı `.env*` yazmayı engelliyor,
+  etrafından dolaşılmadı.
+- **Test kullanıcıları TUTULUYOR**: `+a1s253` (doğrulanmış) / `+a1s253b` (doğrulanmamış)
+  kapı ölçümünün kontrol kolu çifti.
+
+### 🔴 Tekrarlayan kendi hatalarım (bu turda ölçüldü)
+- **`$?` boru hattının SON halkasını ölçer** — `git commit | tail` sonrası `exit=0` gördüm,
+  commit DÜŞMÜŞTÜ. `git log` ile yakalandı.
+- **Bir deseni anlatan yorum onu içerir** — bekçimin ham metin araması probun kendi
+  docstring'ine eşleşti; aynı dosyada iki paragraf yukarıda bunu uyarmıştım.
+- **`-p no:xdist`** `addopts`'taki `-n auto`'yu tanınmaz argümana çevirir → `-n0` kullan.
+- **Git Bash `-w /app`'i yeniden yazar** → `MSYS_NO_PATHCONV=1`. Sayaç (2→2) yakaladı.
+- **`ruff --select=E,F,W` kapının kendisi DEĞİL** — kapı `S105`'te düştü (`DESEN_TOKEN`
+  değeri değil DEĞİŞKEN ADINI desenliyor; kaynak modül aynı tuzağı `KEY_DOGRULAMA` ile
+  geçmiş). Kapıyı **kendi config'iyle** ölç.
+- **Ön koşulu varsaymak**: "replay testi" tarayıcının token'ı zaten tükettiğini varsaydı,
+  ölçmedi — ve kullanıcının token'ını yaktı.
+
+---
+
 ## Session Handoff — 2026-08-24 (S252 · X06 ölçüldü → 3 CANLI KUSUR kapandı)
 **Branch:** feature/self-evolution-optimization · **Aralık:** `a76f23563..1945fb2d8` (5 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı, bu işe ait değil)
