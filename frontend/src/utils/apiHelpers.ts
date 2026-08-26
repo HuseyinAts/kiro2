@@ -482,7 +482,34 @@ export async function apiRequest<T = any>(
         throw new Error(`Doğrulama hatası: ${validationErrors}`);
       }
 
-      throw new Error(errorData.message || `HTTP ${response.status}`);
+      // Rate limit — backend'in İngilizce "Rate limit exceeded: N per M second"
+      // metnini göstermeyiz. `extractErrorDetail.ts:35-37` ile AYNI politika.
+      if (response.status === 429) {
+        throw new Error('Çok fazla istek gönderdiniz, lütfen biraz bekleyin');
+      }
+
+      // 5xx — sunucu içini ASLA sızdırma (`extractErrorDetail.ts:56-58`).
+      // `detail` okumasından ÖNCE gelmeli: 500 gövdeleri traceback taşıyabilir.
+      if (response.status >= 500) {
+        throw new Error('Sunucu hatası, lütfen daha sonra tekrar deneyin');
+      }
+
+      // 🔴 FastAPI mesajı `detail` ALTINDA gönderir; üst düzey `message` nadir.
+      // Eskiden yalnız `errorData.message` okunuyordu, dolayısıyla backend'in
+      // Türkçe metni HER SEFERİNDE yutulup `HTTP <kod>` gösteriliyordu
+      // (26 Ağu 2026 canlı ölçümü: ekranda birebir "HTTP 400"). İki şekil var:
+      //   düz string   {"detail": "…"}                        api/auth.py:2251
+      //   iç içe nesne {"detail": {"code","message","email"}}  api/auth.py:802-805
+      const detay: unknown = errorData?.detail;
+      const detayMesaji =
+        typeof detay === 'string'
+          ? detay
+          : detay && typeof detay === 'object' && !Array.isArray(detay)
+            ? (detay as { message?: unknown }).message
+            : undefined;
+
+      const mesaj = typeof detayMesaji === 'string' ? detayMesaji : errorData?.message;
+      throw new Error(mesaj || `HTTP ${response.status}`);
     }
 
     return await response.json();
