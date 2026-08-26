@@ -84,6 +84,18 @@ describe('apiRequest — backend hata mesajı', () => {
     expect(mesaj).not.toContain('gizli_kolon');
   });
 
+  it('429 backend’in İNGİLİZCE rate-limit metnini göstermez', async () => {
+    // MUTASYON BOŞLUĞU (26 Ağu 2026): 429 dalını silmek 7 testin hiçbirini
+    // düşürmüyordu (M4 hayatta kaldı) — yani politika ölçülmemiş bir daldı.
+    // Bu dal FARAZİ DEĞİL: `_TRUSTED_PROXIES` compose ağını kapsamadığı için
+    // (`api/auth.py:83`) nginx arkasındaki tüm kullanıcılar tek kovayı
+    // paylaşıyor ve 6. istek 429 alıyor (canlı ölçüldü).
+    govdeDondur({ detail: 'Rate limit exceeded: 5 per 300 second' }, 429);
+    const mesaj = await firlatilanMesaj();
+    expect(mesaj).not.toContain('Rate limit exceeded');
+    expect(mesaj).toContain('Çok fazla istek');
+  });
+
   it('422 doğrulama dalı BOZULMADI (önceden var olan davranış)', async () => {
     govdeDondur(
       { detail: [{ loc: ['body', 'email'], msg: 'value is not a valid email address' }] },
