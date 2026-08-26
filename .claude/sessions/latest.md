@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..ce4e65875` (18 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..4c50b7d7a` (21 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -151,7 +151,7 @@ bu turda **3'ü kapandı**, **5'i açık**:
 | 1 | hata gövdesi `detail` okunsun (`apiHelpers`) | ✅ `0e08ec329` |
 | 2 | giriş ekranında `/eposta-dogrula` yönlendirmesi + yeniden gönder | ✅ `6fadf6829` |
 | 3 | `/giris` → `/login` ölü link | ✅ `5d119a2e3` |
-| 4 | `_TRUSTED_PROXIES` compose ağını kapsasın (429 kovası) | 🔴 açık |
+| 4 | `_TRUSTED_PROXIES` compose ağını kapsasın (429 kovası) | ✅ `6ddc1b910` |
 | 5 | kayıtta "e-postanı kontrol et" adımı **veya** otomatik girişi kapat | 🔴 açık |
 | 6 | bloklanacak kümeyi kapı öncesi temizle (backup şart) | 🔴 açık |
 | 7 | `MUAFIYET_SINIRI` kararı (sabit 22 Ağu mı, açılış günü mü) | 🔴 açık |
@@ -169,9 +169,6 @@ kullanıcı 2 saniyede içeri girip **sonraki girişinde** bloklanır — mesaj 
   (7 E402 + `TwoFactorRequired` N818). E402'ler dosyanın kendi yorumunda (`:228-231`)
   belgeli borç; düzeltmek import sırasını değiştirir. **Bu dosyaya dokunan her commit
   aynı SKIP'e mahkûm** — ayrı bir temizlik commit'i gerekiyor.
-- 🔴 **BLOKE-4** `_TRUSTED_PROXIES` compose ağını (`172.25.0.0/16`) kapsamıyor
-  (`api/auth.py:83`) → nginx arkasındaki TÜM kullanıcılar tek rate-limit kovasını
-  paylaşıyor; 6. istek 429. Canlı ölçüldü.
 - ⚠️ **`frontend/public/sw.js` ÖLÜ KOD** — build'de workbox üretimiyle eziliyor ama
   içinde *"HTML navigation — network-first"* yazıyor: **koşmayan bir strateji
   belgeliyor**. Bu yüzden kök nedeni ararken önce yanlış dosyayı okudum.
