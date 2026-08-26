@@ -36,6 +36,8 @@ const T = {
   girisBaslik: 'Tekrar hoş geldin.',
   girisAlt: 'Serin ve ilerlemen seni bekliyor — kaldığın yerden devam.',
   sifreLink: 'Şifreni mi unuttun?',
+  girisBasarisiz: 'E-posta ya da şifre eşleşmedi — bir daha dener misin?',
+  dogrulamaLink: 'Doğrulama bağlantısı iste',
   girisCta: 'Devam edelim',
   girisDip: 'Girişte sıralama yok, alarm yok — sadece bugünkü planın.',
   kayitBaslik: 'Başlayalım.',
@@ -120,7 +122,20 @@ function Alan({ id, label, tip = 'text', value, onChange, placeholder, aciklama,
 export interface GirisPageProps {
   onLanding?: (rota: string) => void;
   rol?: KiroRol;
-  onLogin?: (creds: { eposta: string; sifre: string }) => Promise<boolean | '2fa_required'>;
+  /**
+   * Giriş denemesi.
+   *
+   * `{ hata }` dalı SÖZLEŞMEYİ GENİŞLETİR, kırmaz: düz `false` hâlâ geçerli
+   * (geriye uyum testle çivili). Genişletmenin sebebi ölçüldü — backend giriş
+   * engellendiğinde `api/auth.py:802-805` "Giriş yapabilmek için e-posta
+   * adresinizi doğrulayın." diyor, `authStore.ts:203` bunu `error` alanına
+   * yazıyor, ama bu ekran onu ATIP sabit "şifre eşleşmedi" gösteriyordu.
+   * Kullanıcı şifresini yanlış sanıp sıfırlamaya gidiyordu.
+   */
+  onLogin?: (creds: {
+    eposta: string;
+    sifre: string;
+  }) => Promise<boolean | '2fa_required' | { hata: string | null }>;
   onVerify2fa?: (args: { eposta: string; sifre: string; kod: string }) => Promise<boolean>;
   onRegister?: (creds: { eposta: string; sifre: string; ad: string }) => void | Promise<void>;
 }
@@ -136,6 +151,10 @@ export function GirisPage({ onLanding, rol: rolProp, onLogin, onVerify2fa, onReg
   const [gonderiliyor, setGonderiliyor] = React.useState(false);
   const [yuklenenRol, setYuklenenRol] = React.useState<KiroRol>('ogrenci');
   const [kod, setKod] = React.useState(''); // F4-S1: 2FA TOTP kodu
+  // Basarisiz giristen sonra kurtarma yolunu goster. Her zaman gorunur
+  // OLMAMASI kasitli: kontrol kolu testi basarili giriste bu baglantinin
+  // CIKMADIGINI civiliyor.
+  const [kurtarmaGoster, setKurtarmaGoster] = React.useState(false);
 
   // Rol = giriş-sonrası landing kaynağı (Persona'dan AYRI). Prop verilirse onu kullan;
   // yoksa giriş BAŞARISINDAN sonra getRol() ile yüklenir (gonder()) — kimliksiz mount'ta
@@ -145,6 +164,7 @@ export function GirisPage({ onLanding, rol: rolProp, onLogin, onVerify2fa, onReg
   const modaGec = (m: Mod) => {
     setMod(m);
     setHint(null);
+    setKurtarmaGoster(false);
   };
 
   const dogrula = (): string | null => {
@@ -158,6 +178,7 @@ export function GirisPage({ onLanding, rol: rolProp, onLogin, onVerify2fa, onReg
   const gonder = async () => {
     const h = dogrula();
     setHint(h);
+    setKurtarmaGoster(false);
     if (h) return;
     setGonderiliyor(true);
     try {
@@ -169,7 +190,18 @@ export function GirisPage({ onLanding, rol: rolProp, onLogin, onVerify2fa, onReg
         // Gerçek auth (cookie). 2FA dalı ve hatalı-kimlik ayrı ele alınır.
         const r = await onLogin({ eposta, sifre });
         if (r === '2fa_required') { setHint(null); setDurum('2fa'); return; }
-        if (r === false) { setHint('E-posta ya da şifre eşleşmedi — bir daha dener misin?'); return; }
+        if (r === false || (typeof r === 'object' && r !== null)) {
+          // Sunucunun GERÇEK sebebi varsa onu göster. Sabit metin yalnızca
+          // fallback: sebep bilinmiyorsa "şifre eşleşmedi" makul bir tahmin,
+          // ama sebep BİLİNİYORKEN onu ezmek yanlış teşhis üretiyordu.
+          const sunucuSebebi = typeof r === 'object' && r !== null ? r.hata : null;
+          setHint(sunucuSebebi ?? T.girisBasarisiz);
+          // Kurtarma yolu: postayı almayan/silen ya da doğrulanmamış kullanıcı
+          // buradan yeni bağlantı isteyebilsin. Ölçüldü: bu bağlantı eklenmeden
+          // önce frontend'de `/eposta-dogrula`'ya giden 0 href vardı.
+          setKurtarmaGoster(true);
+          return;
+        }
       } else {
         await apiLogin({ eposta, sifre });
       }
@@ -368,6 +400,22 @@ export function GirisPage({ onLanding, rol: rolProp, onLogin, onVerify2fa, onReg
                     }}
                   >
                     {hint}
+                    {/* Kurtarma yolu. Ölçüldü (26 Ağu 2026): bu bağlantı eklenmeden
+                        önce frontend'de `/eposta-dogrula`'ya giden 0 href vardı —
+                        doğrulama postasını almayan/silen kullanıcının tek çıkışı
+                        URL'yi elle yazmaktı. `/eposta-dogrula` giriş GEREKTİRMEZ
+                        (publicRoutes.ts:38) ve o sayfada "yeniden gönder" formu var
+                        (EpostaDogrulaPage.tsx:69-92). */}
+                    {kurtarmaGoster && (
+                      <div style={{ marginTop: 8 }}>
+                        <a
+                          href="/eposta-dogrula"
+                          style={{ fontSize: 12.5, fontWeight: 700, color: color.dawn.coralTextOnLight }}
+                        >
+                          {T.dogrulamaLink}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 )}
 

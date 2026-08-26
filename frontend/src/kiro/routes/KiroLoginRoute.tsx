@@ -30,7 +30,17 @@ export default function KiroLoginRoute(): React.ReactElement {
   return (
     <GirisPage
       rol={toKiroRol(user?.rol)}
-      onLogin={({ eposta, sifre }) => login({ email: eposta, password: sifre })}
+      onLogin={async ({ eposta, sifre }) => {
+        const sonuc = await login({ email: eposta, password: sifre });
+        if (sonuc !== false) {
+          return sonuc;
+        }
+        // `authStore.login` başarısızlıkta `error` alanına sunucunun GERÇEK
+        // sebebini yazıyor (`authStore.ts:197,203`) ama yalnız `false` döndürüyor,
+        // dolayısıyla mesaj ekrana ULAŞMIYORDU. Store'u imperatif okumak
+        // (`getState()`) burada zaten kullanılan kalıp (bkz. onLanding).
+        return { hata: useAuthStore.getState().error };
+      }}
       onVerify2fa={({ eposta, sifre, kod }) => verifyTwoFactor(eposta, sifre, kod)}
       onRegister={() => { navigate('/register'); }}
       onLanding={() => {
