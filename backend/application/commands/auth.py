@@ -1,5 +1,7 @@
 import logging
+import secrets
 import uuid
+from collections.abc import Awaitable, Callable
 from datetime import datetime
 from typing import Any
 
@@ -23,6 +25,69 @@ _SELF_REGISTERABLE_ROLES = {
     "ogretmen": "TEACHER",
     "teacher": "TEACHER",
 }
+
+
+# `users.username` varchar(100) NOT NULL (information_schema ile ölçüldü).
+KULLANICI_ADI_MAX = 100
+# Son ek: ayraç + 4 onaltılık karakter -> 65.536 olasılık, 5 denemede çakışma
+# olasılığı ihmal edilebilir. Sayılı son ek (`ahmet2`) BİLEREK seçilmedi:
+# username'den "bu yerel-adı kaç kişi kullanıyor" okunabilirdi.
+_SON_EK_UZUNLUK = 4
+_DENEME_SINIRI = 5
+
+
+class KullaniciAdiUretilemediError(RuntimeError):
+    """Sınırlı denemede benzersiz bir `username` bulunamadı.
+
+    Sessizce çakışan bir ad DÖNDÜRÜLMEZ: çağıran yine `UniqueViolationError`
+    alır ve bugünkü HTTP 500 gizlenmiş hâlde geri gelirdi.
+    """
+
+
+async def benzersiz_kullanici_adi(
+    email: str,
+    alinmis_mi: Callable[[str], Awaitable[bool]],
+    *,
+    deneme_siniri: int = _DENEME_SINIRI,
+) -> str:
+    """E-postadan çakışmayan bir `username` türet.
+
+    Kararı DB erişiminden ayrı tutuyoruz (`alinmis_mi` geri-çağrı): işleyicinin
+    içine gömülü bir döngü mutasyonla çivilenemez, saf fonksiyon çivilenir —
+    `core/eposta_dogrulama.py:10-12` ile aynı gerekçe.
+
+    🔴 NEDEN VAR (26 Ağu 2026 canlı ölçümü): `username` e-postanın yerel-adından
+    türetiliyor ama benzersizlik ön-kontrolü YALNIZ `email` üzerindeydi. DB'de
+    `ix_users_username` UNIQUE olduğu için `ahmet@gmail.com` kayıtlıyken gelen
+    `ahmet@hotmail.com` **HTTP 500 "Dahili sunucu hatasi"** alıyordu (users
+    47 -> 47, kayıt oluşmuyordu). A1 altın yolunun 1. adımı.
+
+    ⚠️ KALAN YARIŞ PENCERESİ — kapatılmadı, GÖRÜNÜR bırakıldı: kontrol ile
+    INSERT arasında başka bir işlem aynı adı alabilir. O durumda bugünkü
+    davranışa (500) düşülür, yani daha kötü olmaz; kapatmak SAVEPOINT + yeniden
+    deneme gerektirir ve ölçülen kusur bu değil. Aynı pencere `email`
+    ön-kontrolünde de zaten var.
+    """
+    yerel = email.split("@")[0]
+    taban = yerel[:KULLANICI_ADI_MAX]
+    if not await alinmis_mi(taban):
+        return taban
+
+    # Son ek için yer aç: taban + "-" + son_ek <= KULLANICI_ADI_MAX
+    kisa_taban = yerel[: KULLANICI_ADI_MAX - _SON_EK_UZUNLUK - 1]
+    denenen: set[str] = set()
+    for _ in range(deneme_siniri):
+        son_ek = secrets.token_hex(_SON_EK_UZUNLUK // 2)
+        aday = f"{kisa_taban}-{son_ek}"
+        if aday in denenen:
+            continue
+        denenen.add(aday)
+        if not await alinmis_mi(aday):
+            return aday
+
+    raise KullaniciAdiUretilemediError(
+        f"{deneme_siniri} denemede benzersiz kullanıcı adı üretilemedi (taban={kisa_taban!r})"
+    )
 
 
 def _map_registration_role(rol: Any) -> str:
@@ -83,6 +148,29 @@ class RegisterUserCommandHandler(CommandHandler[RegisterUserCommand, dict[str, A
 
         user_id = str(uuid.uuid4())
 
+        # `username` e-postanın yerel-adından türüyor ama `ix_users_username`
+        # UNIQUE: `ahmet@gmail.com` kayıtlıyken `ahmet@hotmail.com` eskiden
+        # UniqueViolation -> HTTP 500 üretiyordu (26 Ağu 2026 canlı ölçümü).
+        async def _kullanici_adi_alinmis_mi(aday: str) -> bool:
+            sonuc = await db.execute(
+                text("SELECT 1 FROM users WHERE username = :ad LIMIT 1"),
+                {"ad": aday},
+            )
+            return sonuc.fetchone() is not None
+
+        try:
+            kullanici_adi = await benzersiz_kullanici_adi(
+                command.email, _kullanici_adi_alinmis_mi
+            )
+        except KullaniciAdiUretilemediError as e:
+            # Yeniden denemek GERÇEKTEN işe yarar (son ek rastgele), bu yüzden
+            # 500 değil 503: istemciye eyleme dönüştürülebilir bir şey söyle.
+            logger.error("kullanıcı adı üretilemedi: %s", e)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Kayıt şu anda tamamlanamadı, lütfen tekrar deneyin.",
+            ) from e
+
         await db.execute(
             text("""
             INSERT INTO users
@@ -97,7 +185,7 @@ class RegisterUserCommandHandler(CommandHandler[RegisterUserCommand, dict[str, A
             {
                 "id": user_id,
                 "email": command.email,
-                "username": command.email.split("@")[0],
+                "username": kullanici_adi,
                 "pw_hash": pw_hash,
                 "first_name": first_name,
                 "last_name": last_name,
