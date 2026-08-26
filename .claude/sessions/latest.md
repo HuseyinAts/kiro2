@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..b6dc1eb15` (6 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..977d3fbb2` (9 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -73,6 +73,15 @@ mutasyon **4/4**.
 | ① | yeniden yükleme token'ı tekrar tüketiyor → **başarı "HTTP 400" görünüyor** | verify 2 çağrı → **1**; ekran hata → başarı | `0bcd7edd6` | 3/4 |
 | ①b | mutasyon boşluğu: başarısızlık önbelleğe alınabiliyordu | M4 hayatta → **öldü** | `f58fe0f3a` | 4/4 |
 | BLOKE-3 | aynı e-posta yerel-adı kayıtta **HTTP 500** | `500`/users Δ0 → **`201`**/Δ+1, `…-0e7f` | `b6dc1eb15` | 5/5 |
+| BLOKE-1 | backend'in Türkçe mesajı yutuluyor → ekranda **`HTTP 400`** | `"HTTP 400"` → **`"Doğrulama bağlantısı geçersiz veya süresi dolmuş…"`** | `0e08ec329` +`977d3fbb2` | 5/5 |
+
+**BLOKE-1 notu:** `apiHelpers.ts:485` yalnız üst düzey `errorData.message` okuyordu;
+FastAPI mesajı `detail` **altında** gönderiyor (düz string · iç içe `{code,message,email}`).
+Politika kardeş `extractErrorDetail.ts` ile **hizalandı** (429 Türkçe · 5xx sunucu içini
+sızdırmaz · 422 dalı korundu · tanınmayan şekilde `HTTP <kod>` fallback'i korundu).
+İkisi BİRLEŞTİRİLMEDİ — farklı girdi şekli (`AxiosError` vs `fetch`); üçüncü tüketici
+çıkarsa birleştirilmeli. `apiRequest`'in **önceden HİÇ testi yoktu**; 8 test eklendi.
+Kapsam: 26 çağrı yeri / 11 dosya → **433 passed / 0 failed**.
 
 **BLOKE-3 ürün kararı (kullanıcıya soruldu):** çakışmada **rastgele son ek**.
 İlk kullanıcı temiz `ahmet` alır, çakışan `ahmet-0e7f`. Sayılı son ek
@@ -103,11 +112,22 @@ kullanıcı yanlış şey görür. Ön koşullar: BLOKE-1 (mesaj yutulması) · 
 - 🔴 **BLOKE-4** `_TRUSTED_PROXIES` compose ağını (`172.25.0.0/16`) kapsamıyor
   (`api/auth.py:83`) → nginx arkasındaki TÜM kullanıcılar tek rate-limit kovasını
   paylaşıyor; 6. istek 429. Canlı ölçüldü.
-- 🔴 **BLOKE-1** hata gövdesi şekli ↔ istemci okuyucusu uyuşmuyor (`apiHelpers.ts:485`).
-  ⚠️ `apiRequest`'in 11 çağıranı var → kapsam ölçülmeli.
-- 🔴 **③ Service worker bayat kabuk servis ediyor.** İki kez ölçüldü: (a) kullanıcının
-  tıklaması nginx log'una HİÇ düşmedi + `referer: /404`, (b) rebuild sonrası tarayıcı
-  eski bundle'ı yükledi. Mevcut kullanıcılarda doğrulama linki `/404` açabilir.
+- 🔴🔴 **③ SERVICE WORKER BAYAT KABUK SERVİS EDİYOR — ÜÇ KEZ ÖLÇÜLDÜ, EN ÖNCELİKLİ.**
+  (a) Kullanıcının tıklaması nginx log'una **hiç düşmedi** + `referer: /404`
+      (SW önbellekten servis edince ağ isteği YOK; eski kabuk rotayı bilmiyor).
+  (b) Rebuild sonrası tarayıcı **eski** bundle'ı yükledi → doğrulama 200 oldu,
+      SW güncelleyip sayfayı yeniden yükledi → aynı token 400 → **başarı,
+      başarısızlık gibi göründü**.
+  (c) BLOKE-1 propunda birebir tekrar: `index-Fe3aT5vZ.js` (eski) yüklendi,
+      ekran `HTTP 400` gösterdi; SW güncelleyip `index-CunBJbge.js`'e geçince
+      doğru Türkçe mesaj çıktı.
+  **Sonuç: her deploy, mevcut kullanıcıya BİR TUR eski kod servis ediyor.** A1'in
+  doğrulama linki bu yüzden `/404` açabilir. Düzeltilmeden kapı açılmamalı —
+  ①/BLOKE-1 düzeltmeleri de kullanıcıya bir tur GECİKMELİ ulaşacak.
+- ⚠️ **4 ÖKSÜZ test dosyası** collection'da düşüyor: `useOfflineMode`,
+  `modernApiClient`, `VideoErrorHandler` — diskte OLMAYAN modülleri import
+  ediyorlar. HEAD'de de düşüyor (kontrol koluyla ölçüldü). S251'in G3'üyle aynı
+  sınıf: hiçbir şey ölçmeyen testler.
 - ⚠️ **38 ölü iç bağ** daha (`/bugun` 8x, `/ogrenme-yolu` 4x, `/panel` 3x …) — çırçırla
   çivilendi (`rotaButunlugu.test.ts`), ayrı iş.
 - ⚠️ `POST /api/v1/auth/{register,login,me,…}` **10 uç `include_in_schema=False`** →
