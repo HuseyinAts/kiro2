@@ -91,6 +91,46 @@ describe('GirisPage — doğrulanmamış e-posta kurtarma yolu', () => {
     expect(screen.queryByRole('link', { name: /doğrulama/i })).not.toBeInTheDocument();
   });
 
+  it('FORM doğrulama hatasında kurtarma bağlantısı ÇIKMAZ', async () => {
+    // MUTASYON BOŞLUĞU (26 Ağu 2026): `kurtarmaGoster` bayrağını `true` sabitine
+    // çevirmek (M3) ve yeni denemede sıfırlamayı silmek (M5) HİÇBİR testi
+    // düşürmüyordu. Sebep: "başarılı girişte link yok" kontrol kolum yanlış şeyi
+    // ölçüyordu — orada `hint` zaten `null`, yani linki gizleyen şey bayrak
+    // DEĞİL, hint kutusunun hiç render edilmemesiydi. Bayrağın yük taşıdığı tek
+    // yer burası: hint VAR ama sunucuya hiç gidilmedi.
+    const onLogin = vi.fn();
+    const kullanici = userEvent.setup();
+    render(<GirisPage onLogin={onLogin} onLanding={() => {}} />);
+
+    await kullanici.type(screen.getByLabelText(/e-posta adresin/i), 'gecersiz-adres');
+    await kullanici.type(screen.getByLabelText(/şifren/i), 'Zq7#Kv2!Rm9x');
+    await kullanici.click(screen.getByRole('button', { name: /devam edelim/i }));
+
+    expect(await screen.findByText(/yarım görünüyor/i)).toBeInTheDocument();
+    expect(onLogin, 'geçersiz form sunucuya gitmemeli').not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole('link', { name: /doğrulama/i }),
+      'sunucuya hiç gidilmedi; doğrulama önerisi anlamsız',
+    ).not.toBeInTheDocument();
+  });
+
+  it('başarısız giriş SONRASI form hatası bağlantıyı TEMİZLER', async () => {
+    // M5'in ikinci yüzü: bayrak yeni denemede sıfırlanmazsa, kullanıcı
+    // e-postasını düzeltmeye çalışırken alakasız doğrulama önerisi ekranda kalır.
+    const onLogin = vi.fn().mockResolvedValue({ hata: KAPI_MESAJI });
+    const kullanici = await girisDene(onLogin);
+    expect(await screen.findByRole('link', { name: /doğrulama/i })).toBeInTheDocument();
+
+    await kullanici.clear(screen.getByLabelText(/e-posta adresin/i));
+    await kullanici.type(screen.getByLabelText(/e-posta adresin/i), 'hala-gecersiz');
+    await kullanici.click(screen.getByRole('button', { name: /devam edelim/i }));
+
+    expect(await screen.findByText(/yarım görünüyor/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole('link', { name: /doğrulama/i })).not.toBeInTheDocument(),
+    );
+  });
+
   it('2FA dalı BOZULMADI (önceden var olan davranış)', async () => {
     const onLogin = vi.fn().mockResolvedValue('2fa_required');
     await girisDene(onLogin);
