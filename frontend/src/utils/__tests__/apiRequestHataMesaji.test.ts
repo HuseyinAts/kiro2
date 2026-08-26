@@ -24,12 +24,17 @@
  * ve ÇELİŞEN hata politikası olurdu.
  */
 
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { http, HttpResponse } from 'msw';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { apiRequest } from '../apiHelpers';
 import { server } from '../../test/mocks/server';
 
+const BURASI = dirname(fileURLToPath(import.meta.url));
 const UC = 'http://localhost:3000/api/v1/olcum/hata';
 
 function govdeDondur(govde: unknown, status: number) {
@@ -99,6 +104,40 @@ describe('apiRequest — backend hata mesajı', () => {
     window.history.replaceState({}, '', '/login');
     server.use(http.post(UC, () => new HttpResponse(null, { status: 401 })));
     expect(await firlatilanMesaj()).toBe('Oturum süresi doldu');
+  });
+
+  it('401 dalı yönlendirme kararını HÂLÂ veriyor (üretim kablosu)', () => {
+    // MUTASYON BOŞLUĞU (26 Ağu 2026): yönlendirme koşulunu tamamen silmek
+    // 10 testin hiçbirini düşürmüyordu. Sebep dürüst: testler yolu bilerek
+    // `/login`e kuruyor, yani o dal HİÇ tetiklenmiyor.
+    //
+    // jsdom'da `window.location.href` atamasını proplamak kırılgan (location
+    // yeniden tanımlanamaz; navigasyon "Not implemented" üretir). Bu yüzden
+    // ölçüm YAPISAL: 401 bloğu, `publicRoutes` kararını veren fonksiyonu
+    // çağırıyor mu? Karar fonksiyonunun KENDİ 7 testi zaten var
+    // (publicRoutes.test.ts) — burada eksik olan tek şey ÇAĞRILDIĞIYDI.
+    //
+    // Arama 401 BLOĞUNA ankrajlı, dosyanın tamamına değil: ankrajsız bir
+    // `toContain` başka bir daldaki çağrıya eşleşip yanlış-yeşil verirdi.
+    const kaynak = readFileSync(resolve(BURASI, '..', 'apiHelpers.ts'), 'utf-8');
+    const bas = kaynak.indexOf('if (response.status === 401) {');
+    expect(bas, '401 dalı bulunamadı — ölçüm geçersiz').toBeGreaterThan(-1);
+
+    let derinlik = 1;
+    let i = bas + 'if (response.status === 401) {'.length;
+    while (i < kaynak.length && derinlik > 0) {
+      if (kaynak[i] === '{') derinlik++;
+      else if (kaynak[i] === '}') derinlik--;
+      i++;
+    }
+    const blok = kaynak.slice(bas, i);
+
+    expect(blok, 'yönlendirme kararı 401 dalından kaldırılmış').toContain(
+      'girisYonlendirmesiGerekli(',
+    );
+    expect(blok, 'yönlendirme eylemi 401 dalından kaldırılmış').toContain(
+      "window.location.href = '/login'",
+    );
   });
 
   it('5xx sunucu içini SIZDIRMAZ (extractErrorDetail.ts:56-58 ile aynı politika)', async () => {
