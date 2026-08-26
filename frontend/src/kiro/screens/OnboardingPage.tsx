@@ -104,7 +104,8 @@ export function OnboardingPage(): React.ReactElement {
             Adım {adim === 'ton' ? 1 : adim === 'calib' ? 2 : 3} / 3
           </span>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <a href="/giris" style={{ ...linkBtn, textDecoration: 'none' }}>Hesabın var mı? Giriş yap</a>
+            {/* `/login` — `/giris` rotası yok (App.tsx:256), catch-all -> /404 */}
+            <a href="/login" style={{ ...linkBtn, textDecoration: 'none' }}>Hesabın var mı? Giriş yap</a>
             <a href="/panel" style={{ ...linkBtn, textDecoration: 'none' }}>Atla</a>
           </div>
         </div>

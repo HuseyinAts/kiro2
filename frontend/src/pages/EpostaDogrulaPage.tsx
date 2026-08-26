@@ -62,7 +62,10 @@ export function EpostaDogrulaPage() {
 
       {ok === true && (
         <p>
-          <a href="/giris">Giriş yap</a>
+          {/* `/giris` rotası HİÇ var olmadı; giriş ekranı `/login` (App.tsx:256).
+              Eski hâli catch-all'a düşüp /404 açıyordu — doğrulama başarılı olduğu
+              hâlde kullanıcı çıkmaza giriyordu. Bekçi: rotaButunlugu.test.ts */}
+          <a href="/login">Giriş yap</a>
         </p>
       )}
 
