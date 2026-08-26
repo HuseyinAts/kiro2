@@ -57,6 +57,25 @@ services:
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
       - ELASTICSEARCH_USER=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
+      # uvicorn'un X-Forwarded-For'una GUVENECEGI tek adres = nginx'in statik IP'si.
+      # Bu deger asagidaki frontend.networks.default.ipv4_address ile AYNI olmali;
+      # ayrisirlarsa duzeltme SESSIZCE oler (bekci:
+      # backend/tests/unit/test_proxy_guven_yapilandirmasi.py).
+      #
+      # NEDEN GEREKLI (26 Agu 2026 canli olcumu): uvicorn ProxyHeadersMiddleware
+      # VARSAYILAN OLARAK ACIK (proxy_headers=True) ama forwarded_allow_ips
+      # varsayilani 127.0.0.1 oldugu icin nginx'i TANIMIYOR. Sonuc: nginx
+      # arkasindaki TUM kullanicilar tek rate-limit kovasi paylasiyordu
+      # (ratelimit:eposta_dogrulama_gonder:172.25.0.2 -- iki farkli kaynak
+      # ayni kovayi artirdi, 3 farkli X-Forwarded-For ile 3. istek 429 aldi).
+      # Canli yigindaki UC limiter de istemciyi request.client.host'tan okuyor,
+      # dolayisiyla bu tek deger ucunu birden duzeltir.
+      #
+      # 🔴 SUBNET DEGIL TAM IP: uvicorn zincirin EN SAGDAKI guvenilmez adresini
+      # secer; tek elemanli zincirde bu istemcinin dikte ettigi degerdir. Backend
+      # :8000 disariya acik oldugundan, subnet guvenilirse gateway (172.25.0.1)
+      # de guvenilir olur ve nginx'i ATLAYAN istek kendi IP'sini uydurabilir.
+      - FORWARDED_ALLOW_IPS=172.25.255.10
     restart: unless-stopped
     networks:
       - default
@@ -243,6 +262,15 @@ services:
     container_name: kiro2-frontend
     ports:
       - "3000:3000"
+    networks:
+      default:
+        # SABIT IP: backend'in FORWARDED_ALLOW_IPS'i bu adresi gosteriyor.
+        # Dinamik atama kullanilamaz -- backend, frontend'den ONCE basliyor
+        # (asagidaki depends_on) ve acilista DNS ile cozmek YAPISAL OLARAK
+        # bos doner. Adres bilerek YUKSEK: Docker dusuk adresleri sirayla
+        # dagitir (26 Agu 2026 olcumu: mevcut 6 konteyner .2-.7), .255.10
+        # o araligin cok disinda.
+        ipv4_address: 172.25.255.10
     depends_on:
       backend:
         condition: service_healthy
@@ -272,6 +300,15 @@ volumes:
 networks:
   default:
     driver: bridge
+    # Subnet ACIKCA ilan ediliyor: frontend'e sabit IP atanabilmesi icin sart.
+    # Ilan edilmezse Docker rastgele bir blok secer ve statik adres her ag
+    # yeniden yaratildiginda kayar. 172.25.0.0/16 zaten bu yiginin kullandigi
+    # blok (26 Agu 2026 olcumu) ve host'taki diger aglarla CAKISMIYOR:
+    #   bridge 172.17 · kiro2-dev 172.18 · turkiye_sinav 172.19 ·
+    #   tohum-nexus 172.20 · openwebui 172.24
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
   turkiye_sinav_network:
     external: true
     name: kiro2_turkiye_sinav_network
