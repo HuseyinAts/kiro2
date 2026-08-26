@@ -96,7 +96,11 @@ describe('dağıtım tazelik politikası', () => {
     // Referrer-Policy, Permissions-Policy, X-Content-Type-Options) o konum için
     // DÜŞER. `always` bunu değiştirmez. Önbellek politikası bu yüzden `expires`
     // ile yazıldı. Canlı kontrol kolu: /, /js/, /sw.js -> 6/6 güvenlik başlığı.
-    const ihlal = locationBloklari(NGINX).filter((b) => /^\s*add_header/m.test(b.govde));
+    // 🔴 `^\s*add_header` ANKRAJI KULLANMA. İlk sürüm öyleydi ve mutasyon
+    // hayatta kaldı: bu dosyadaki konumların çoğu TEK SATIRLIK
+    // (`location /js/ { expires 1y; add_header ...; }`) ve orada `add_header`
+    // satır başında DEĞİL. Dedektör tam da korumak istediği bloklara kördü.
+    const ihlal = locationBloklari(NGINX).filter((b) => /\badd_header\b/.test(b.govde));
     expect(
       ihlal.map((b) => b.eslesme),
       'bu location(lar)da add_header var -> o yolda CSP/HSTS dahil TÜM güvenlik ' +
@@ -107,13 +111,29 @@ describe('dağıtım tazelik politikası', () => {
   it('server bloğu güvenlik başlıklarını HÂLÂ tanımlıyor (kontrol kolu)', () => {
     // Üstteki test "add_header hiç yok" diye de geçebilirdi; o zaman güvenlik
     // başlıkları tamamen kaybolmuş olurdu ve bekçi bunu ALKIŞLARDI.
+    //
+    // 🔴 YORUMLAR AYIKLANIYOR. İlk sürüm ham metinde arıyordu ve mutasyon
+    // hayatta kaldı: `nginx.conf`'a yazdığım AÇIKLAMA satırı bu başlık
+    // adlarını (CSP, HSTS, X-Frame-Options…) sayıyor, dolayısıyla direktif
+    // silinse bile eşleşme sürüyordu. "Bir deseni anlatan yorum o deseni
+    // İÇERİR" — `.claude/rules/audit-methodology.md`.
+    const yorumsuz = NGINX.replace(/#.*$/gm, '');
+    expect(
+      yorumsuz.length,
+      'alet doğrulaması: yorum ayıklama hiçbir şey silmedi',
+    ).toBeLessThan(NGINX.length);
+
     for (const baslik of [
       'Content-Security-Policy',
       'Strict-Transport-Security',
       'X-Frame-Options',
       'X-Content-Type-Options',
+      'Referrer-Policy',
+      'Permissions-Policy',
     ]) {
-      expect(NGINX, `server bloğunda ${baslik} yok`).toContain(baslik);
+      expect(yorumsuz, `server bloğunda \`add_header ${baslik}\` DİREKTİFİ yok`).toMatch(
+        new RegExp(`add_header\\s+${baslik}\\b`),
+      );
     }
   });
 
@@ -128,7 +148,22 @@ describe('dağıtım tazelik politikası', () => {
   it('PWA navigasyonu network-first bir rotaya sahip', () => {
     expect(VITE).toContain('kiro2-html-shell');
     expect(VITE).toMatch(/request\.mode\s*===\s*'navigate'/);
+
+    // 🔴 ANKRAJ ŞART. İlk sürüm yalnız `VITE.toContain("handler: 'NetworkFirst'")`
+    // diyordu ve mutasyon hayatta kaldı: navigate rotası CacheFirst'e çevrilse
+    // bile /api/realms ve /api/gamification rotaları hâlâ NetworkFirst olduğu
+    // için assert geçiyordu. Yargı, ölçmek istediği ROTAYA bağlanmalı.
+    const bas = VITE.indexOf("request.mode === 'navigate'");
+    const son = VITE.indexOf("'kiro2-html-shell'");
+    expect(bas, 'navigate eşleyicisi bulunamadı').toBeGreaterThan(-1);
+    expect(son, 'kiro2-html-shell bulunamadı').toBeGreaterThan(bas);
+
+    const navigasyonRotasi = VITE.slice(bas, son);
     // Çevrimdışı desteği korunuyor: NetworkFirst ağ yoksa önbelleğe düşer.
-    expect(VITE).toContain("handler: 'NetworkFirst'");
+    expect(
+      navigasyonRotasi,
+      'navigasyon rotasının handler’ı NetworkFirst değil — bayat kabuk geri döner',
+    ).toContain("handler: 'NetworkFirst'");
+    expect(navigasyonRotasi).not.toContain("handler: 'CacheFirst'");
   });
 });
