@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..b9cbe0a97` (12 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..ce4e65875` (18 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -75,6 +75,14 @@ mutasyon **4/4**.
 | BLOKE-3 | aynı e-posta yerel-adı kayıtta **HTTP 500** | `500`/users Δ0 → **`201`**/Δ+1, `…-0e7f` | `b6dc1eb15` | 5/5 |
 | BLOKE-1 | backend'in Türkçe mesajı yutuluyor → ekranda **`HTTP 400`** | `"HTTP 400"` → **`"Doğrulama bağlantısı geçersiz veya süresi dolmuş…"`** | `0e08ec329` +`977d3fbb2` | 5/5 |
 | ③ SW | **her deploy sonrası bayat kabuk** → link `/404`, token yanıyor | nginx `GET /eposta-dogrula` **Δ0 → Δ+2** | `6b52fd1b7` +`b9cbe0a97` | 6/6 |
+| BLOKE-2 | giriş ekranı **yanlış teşhis** + kurtarma yolu YOK | sabit *"şifre eşleşmedi"* → sunucunun sebebi **+ `link → /eposta-dogrula`** | `6fadf6829` +`4e42bbc58` | 5/5 |
+| 401 | **kendi gerilemem**: hiç oturumu olmayana *"Oturum süresi doldu"* | `"Oturum süresi doldu"` → **`"Islem basarisiz…"`** | `81720e681` +`ce4e65875` | 3/3 |
+
+**🔴 401'i BEN ürettim.** `6fadf6829` ekranı *"sunucunun sebebini göster"*e çevirdi; canlı
+propta 401 dalının o sebebi hiç üretmediği görüldü (`apiHelpers.ts:466` gövdeyi
+**okumadan** kısa devre yapıyordu). Önceki sabit metin *kazara daha doğruydu* — yani
+düzeltmem bu vakayı bir tur **kötüleştirmişti**. Canlı prop yakaladı, test yazıldı, kapandı.
+*Ders: bir düzeltmeyi yalnız hedeflediği dalda proplama; komşu dalları da prop.*
 
 **③ kök nedeni belgelenenden FARKLIYDI.** `public/sw.js` (*"navigation — network-first"*)
 **ölü kod**: build'de workbox üretimiyle eziliyor. Gerçek satır
@@ -111,10 +119,25 @@ okunabilirdi. Karar testle çivilendi. Kontrol kolları: aynı e-posta `400`
 2. **"9 bloklanır, hepsi test fikstürü"** — o sayı HAREKETLİ (41 satırda 8, 47'de 13);
    "hepsi test hesabı" yalnız küçük anlık görüntüde ölçüldü. Mutlak sayı değil delta.
 
-### Yaptırım kararı: **KOŞULLU — kapı AÇILMADI** (24 ajanlı ölçüm workflow'u)
-Teknik zincir çalışıyor ve `kapi_engeli()` → `None` diyor; ama açıldığı anda
-kullanıcı yanlış şey görür. Ön koşullar: BLOKE-1 (mesaj yutulması) · BLOKE-2
-(arayüzde `/eposta-dogrula`'ya **0 href**, `EPOSTA_DOGRULANMAMIS` **0 eşleşme**).
+### Yaptırım kararı: kapı HÂLÂ AÇILMADI — ama engeller azaldı (24 ajanlı workflow)
+Teknik zincir çalışıyor, `kapi_engeli()` → `None`. Workflow **8 ön koşul** saymıştı;
+bu turda **3'ü kapandı**, **5'i açık**:
+
+| # | Ön koşul | Durum |
+|---|---|---|
+| 1 | hata gövdesi `detail` okunsun (`apiHelpers`) | ✅ `0e08ec329` |
+| 2 | giriş ekranında `/eposta-dogrula` yönlendirmesi + yeniden gönder | ✅ `6fadf6829` |
+| 3 | `/giris` → `/login` ölü link | ✅ `5d119a2e3` |
+| 4 | `_TRUSTED_PROXIES` compose ağını kapsasın (429 kovası) | 🔴 açık |
+| 5 | kayıtta "e-postanı kontrol et" adımı **veya** otomatik girişi kapat | 🔴 açık |
+| 6 | bloklanacak kümeyi kapı öncesi temizle (backup şart) | 🔴 açık |
+| 7 | `MUAFIYET_SINIRI` kararı (sabit 22 Ağu mı, açılış günü mü) | 🔴 açık |
+| 8 | açılış günü SMTP probu + kutu teyidi TEKRAR | 🔴 açık |
+
+⚠️ **5 numara ciddi:** `authStore.ts:252-262` kayıttan sonra **otomatik giriş** yapıyor
+(`ModernRegisterPage.tsx`'te "doğrula" kelimesi 0 kez geçiyor). Kapı açıkken kayıt olan
+kullanıcı 2 saniyede içeri girip **sonraki girişinde** bloklanır — mesaj ile davranış
+çelişir.
 
 ### Açık kalemler (öncelik sırasıyla)
 - 🔴 **`commands/auth.py` ruff kapısı KIRMIZI — 8 önceden var olan hata.** BLOKE-3
