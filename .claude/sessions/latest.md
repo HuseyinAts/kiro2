@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..977d3fbb2` (9 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..b9cbe0a97` (12 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -74,6 +74,20 @@ mutasyon **4/4**.
 | ①b | mutasyon boşluğu: başarısızlık önbelleğe alınabiliyordu | M4 hayatta → **öldü** | `f58fe0f3a` | 4/4 |
 | BLOKE-3 | aynı e-posta yerel-adı kayıtta **HTTP 500** | `500`/users Δ0 → **`201`**/Δ+1, `…-0e7f` | `b6dc1eb15` | 5/5 |
 | BLOKE-1 | backend'in Türkçe mesajı yutuluyor → ekranda **`HTTP 400`** | `"HTTP 400"` → **`"Doğrulama bağlantısı geçersiz veya süresi dolmuş…"`** | `0e08ec329` +`977d3fbb2` | 5/5 |
+| ③ SW | **her deploy sonrası bayat kabuk** → link `/404`, token yanıyor | nginx `GET /eposta-dogrula` **Δ0 → Δ+2** | `6b52fd1b7` +`b9cbe0a97` | 6/6 |
+
+**③ kök nedeni belgelenenden FARKLIYDI.** `public/sw.js` (*"navigation — network-first"*)
+**ölü kod**: build'de workbox üretimiyle eziliyor. Gerçek satır
+`registerRoute(new NavigationRoute(createHandlerBoundToURL("index.html")))` —
+tüm navigasyonları precache'ten, **ağa hiç çıkmadan** servis ediyordu. Üç gözlemin
+üçünü de bu açıklıyor. Düzeltme: `navigateFallback: undefined` + `request.mode ===
+'navigate'` için NetworkFirst rota (çevrimdışı destek korunur, ağ yoksa önbelleğe düşer).
+⚠️ Workbox Router **kayıt sırasına** göre eşler ve `NavigationRoute` runtimeCaching'ten
+**önce** kaydediliyordu → rota eklemek tek başına yetmezdi.
+İkinci katman: nginx **hiçbir yola `Cache-Control` göndermiyordu** → sezgisel önbellekleme.
+`expires` ile eklendi — **`add_header` DEĞİL**: bir `location`'a `add_header` koymak
+`server`'daki **tüm** güvenlik başlıklarını (CSP/HSTS/…) o yolda düşürür. Kontrol kolu:
+`/`, `/js/`, `/sw.js` → **6/6 başlık korundu**.
 
 **BLOKE-1 notu:** `apiHelpers.ts:485` yalnız üst düzey `errorData.message` okuyordu;
 FastAPI mesajı `detail` **altında** gönderiyor (düz string · iç içe `{code,message,email}`).
@@ -112,18 +126,10 @@ kullanıcı yanlış şey görür. Ön koşullar: BLOKE-1 (mesaj yutulması) · 
 - 🔴 **BLOKE-4** `_TRUSTED_PROXIES` compose ağını (`172.25.0.0/16`) kapsamıyor
   (`api/auth.py:83`) → nginx arkasındaki TÜM kullanıcılar tek rate-limit kovasını
   paylaşıyor; 6. istek 429. Canlı ölçüldü.
-- 🔴🔴 **③ SERVICE WORKER BAYAT KABUK SERVİS EDİYOR — ÜÇ KEZ ÖLÇÜLDÜ, EN ÖNCELİKLİ.**
-  (a) Kullanıcının tıklaması nginx log'una **hiç düşmedi** + `referer: /404`
-      (SW önbellekten servis edince ağ isteği YOK; eski kabuk rotayı bilmiyor).
-  (b) Rebuild sonrası tarayıcı **eski** bundle'ı yükledi → doğrulama 200 oldu,
-      SW güncelleyip sayfayı yeniden yükledi → aynı token 400 → **başarı,
-      başarısızlık gibi göründü**.
-  (c) BLOKE-1 propunda birebir tekrar: `index-Fe3aT5vZ.js` (eski) yüklendi,
-      ekran `HTTP 400` gösterdi; SW güncelleyip `index-CunBJbge.js`'e geçince
-      doğru Türkçe mesaj çıktı.
-  **Sonuç: her deploy, mevcut kullanıcıya BİR TUR eski kod servis ediyor.** A1'in
-  doğrulama linki bu yüzden `/404` açabilir. Düzeltilmeden kapı açılmamalı —
-  ①/BLOKE-1 düzeltmeleri de kullanıcıya bir tur GECİKMELİ ulaşacak.
+- ⚠️ **`frontend/public/sw.js` ÖLÜ KOD** — build'de workbox üretimiyle eziliyor ama
+  içinde *"HTML navigation — network-first"* yazıyor: **koşmayan bir strateji
+  belgeliyor**. Bu yüzden kök nedeni ararken önce yanlış dosyayı okudum.
+  Silinmedi (kapsam dışı); silinmeli veya "bu dosya build'de eziliyor" notu düşülmeli.
 - ⚠️ **4 ÖKSÜZ test dosyası** collection'da düşüyor: `useOfflineMode`,
   `modernApiClient`, `VideoErrorHandler` — diskte OLMAYAN modülleri import
   ediyorlar. HEAD'de de düşüyor (kontrol koluyla ölçüldü). S251'in G3'üyle aynı
