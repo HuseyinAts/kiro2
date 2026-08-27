@@ -1032,22 +1032,33 @@ def test_gf3u_quiz_submit_dogru_cevabi_icerikten_okuyor(client: httpx.Client):
     token = _login(client, STUDENT)
     headers = _auth_headers(token)
 
-    profil = client.post(
-        "/api/v1/learning-path/create-profile",
-        headers=headers,
-        json={
-            "name": "GF3u Probe",
-            "grade": 11,
-            "subjects": ["MATEMATIK"],
-            "goals": ["TYT"],
-        },
-    )
-    assert profil.status_code == 200, (
-        f"GF3u kurulum: create-profile {profil.status_code} {profil.text[:200]}. "
-        "Sema kaymasi geri gelmis olabilir (neuro_inclusive_mode)."
-    )
-    student_id = profil.json().get("student_id")
-    assert student_id, f"GF3u kurulum: student_id yok: {profil.json()}"
+    # student_id ONCE rate-limit'siz okuma ucundan alinir. `create-profile`
+    # 10/dk sinirli (olculdu) ve GF10 + GF24 de onu cagiriyor; paketi dakika
+    # icinde tekrar kosunca KURULUM 429 alir ve bu test bir URUN kusuru
+    # sanilan YALAN KIRMIZI uretir (S255 2. turda bunu bizzat urettim).
+    # `/my-profile` sinirsiz: 15/15 istek 200 olculdu.
+    mevcut = client.get("/api/v1/learning-path/my-profile", headers=headers)
+    student_id = mevcut.json().get("student_id") if mevcut.status_code == 200 else None
+    if not student_id:
+        profil = client.post(
+            "/api/v1/learning-path/create-profile",
+            headers=headers,
+            json={
+                "name": "GF3u Probe",
+                "grade": 11,
+                "subjects": ["MATEMATIK"],
+                "goals": ["TYT"],
+            },
+        )
+        assert profil.status_code == 200, (
+            f"GF3u kurulum: create-profile {profil.status_code} "
+            f"{profil.text[:200]}. Sema kaymasi geri gelmis olabilir "
+            "(neuro_inclusive_mode)."
+        )
+        student_id = profil.json().get("student_id")
+    assert (
+        student_id
+    ), f"GF3u kurulum: student_id alinamadi (my-profile {mevcut.status_code})"
 
     # Gercek bir question_id: sinav akisindan al (uydurma id FK'ya takilir).
     session_id = _create_small_exam_session(client, token)
