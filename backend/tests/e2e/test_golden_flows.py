@@ -383,30 +383,69 @@ def test_gf8_parent_children_reachable(client: httpx.Client):
 
 
 def _create_exam_session(
-    client: httpx.Client, token: str, exam_type: str = "TYT"
-) -> str | None:
-    """Create and start an exam session. Returns session_id or None on skip."""
+    client: httpx.Client,
+    token: str,
+    exam_type: str = "TYT",
+    *,
+    subject: str = "MATEMATIK",
+    question_count: int = 5,
+) -> str:
+    """Sınav oturumu kurar + başlatır, oturum kimliğini döndürür.
+
+    🔴 KURULUM HATASI `pytest.skip` DEĞİL `assert` ÜRETİR. Bu yardımcı testin
+    ÖLÇMEK istediği şeyi değil, ona giden KURULUMU yapar; kurulum çökerse bu
+    "ortam yok" değil "kurulum yanlış" demektir. (`_login`'in 401 dalı skip
+    ediyor ve öyle KALMALI — seed yokluğu gerçekten ortam eksikliğidir;
+    ayrım `tests/unit/test_golden_flow_login_gate.py`'de çivili.)
+
+    Ölçüldü (27 Ağu 2026) — eski hâli çıplak ``{"exam_type": "TYT"}``
+    gönderiyordu ve kurulum reddini skip'e çeviriyordu:
+
+        POST /osym-exam/create {"exam_type":"TYT"}
+        -> 400 {"detail":"Yeterli soru bulunamadı. Gerekli: 120, Mevcut: 33"}
+        -> GF3c/GF3d/GF1w/GF3w: 4 skipped, EXIT KODU 0
+
+    400 **doğru** cevaptı: `core/osym_exam_engine.py:415-420` dağıtımı ancak
+    ``custom_config["subject"]`` varsa tek derse indiriyor; o anahtar yokken
+    ``total_questions`` 120 kalıyor ve TYT'nin dokuz dersi (`:191-205`)
+    kapılı havuzda karşılanmıyor (MATEMATIK 26 + KIMYA 7 = 33).
+
+    Bu yüzden burada frontend'in FİİLEN gönderdiği şekil kullanılıyor
+    (`ModernExamStartPage.tsx:154-165`). Çıplak ``{"exam_type"}`` şeklini
+    üreten canlı bir kullanıcı yolu YOK (ölçüldü: `ExamStart.tsx` 0 importer,
+    `examService.createExamSession` 0 çağıran).
+
+    Sözleşme bekçisi: `tests/unit/test_golden_flow_exam_setup_gate.py`
+    """
+    headers = _auth_headers(token)
     create_resp = client.post(
         "/api/v1/osym-exam/create",
-        headers=_auth_headers(token),
-        json={"exam_type": exam_type},
+        headers=headers,
+        json={
+            "exam_type": exam_type,
+            "custom_config": {
+                "subject": subject,
+                "difficulty": "medium",
+                "question_count": question_count,
+                "time_limit": 10,
+            },
+        },
     )
-    if create_resp.status_code != 200:
-        pytest.skip(
-            f"exam create failed: {create_resp.status_code} {create_resp.text[:200]}"
-        )
+    assert create_resp.status_code == 200, (
+        f"kurulum: exam create {create_resp.status_code} "
+        f"{create_resp.text[:200]} — {question_count} soruluk {subject} "
+        f"{exam_type} oturumu kurulamıyorsa öğrenci de sınav olamıyor demektir."
+    )
     session_id = create_resp.json().get("session_id")
-    if not session_id:
-        pytest.skip(f"no session_id in create response: {create_resp.json()}")
+    assert session_id, f"kurulum: create 200 ama session_id yok: {create_resp.json()}"
 
     start_resp = client.post(
         f"/api/v1/osym-exam/{session_id}/start",
-        headers=_auth_headers(token),
+        headers=headers,
     )
-    if start_resp.status_code != 200:
-        pytest.skip(
-            f"exam start failed: {start_resp.status_code} {start_resp.text[:200]}"
-        )
+    assert (
+        start_resp.status_code == 200
+    ), f"kurulum: start {start_resp.status_code} {start_resp.text[:200]}"
     return session_id
 
 
@@ -424,7 +463,6 @@ def test_gf3c_exam_session_save_answer_smoke(client: httpx.Client):
     token = _login(client, STUDENT)
     headers = _auth_headers(token)
     session_id = _create_exam_session(client, token)
-    assert session_id is not None
 
     cq_resp = client.get(
         f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
@@ -464,7 +502,6 @@ def test_gf3d_exam_session_complete_smoke(client: httpx.Client):
     token = _login(client, STUDENT)
     headers = _auth_headers(token)
     session_id = _create_exam_session(client, token)
-    assert session_id is not None
 
     comp = client.post(
         f"/api/v1/osym-exam/{session_id}/complete",
@@ -597,7 +634,6 @@ def test_gf1w_save_answer_updates_mastery(client: httpx.Client):
 
     # 2. Start a session and grab a real question_id.
     session_id = _create_exam_session(client, token)
-    assert session_id is not None  # _create_exam_session pytest.skip's otherwise
 
     cq_resp = client.get(
         f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
@@ -673,7 +709,6 @@ def test_gf3w_save_answer_rejects_empty_question_id(client: httpx.Client):
     token = _login(client, STUDENT)
     headers = _auth_headers(token)
     session_id = _create_exam_session(client, token)
-    assert session_id is not None
 
     resp = client.post(
         f"/api/v1/osym-exam/{session_id}/save-answer",
@@ -701,42 +736,16 @@ def test_gf3w_save_answer_rejects_empty_question_id(client: httpx.Client):
 def _create_small_exam_session(client: httpx.Client, token: str) -> str:
     """KÜÇÜK (5 soruluk) bir sınav oturumu kurar ve başlatır.
 
-    🔴 Paylaşılan ``_create_exam_session`` burada KULLANILAMAZ. O yalnızca
-    ``{"exam_type": "TYT"}`` gönderiyor; backend tam TYT dağıtımını (120 soru)
-    kurmaya çalışıyor, havuz yetmiyor ve helper ``pytest.skip`` ediyor.
-    Ölçüldü (27 Ağu 2026):
+    Ayrı bir ad olarak duruyor çünkü GF3x/GF90 "küçük ve TAMAMLANABİLİR bir
+    oturum" NİYETİNİ adlandırıyor. Şekil tek yerde: ``_create_exam_session``.
 
-        POST /osym-exam/create {"exam_type":"TYT"}
-        -> 400 {"detail":"Yeterli soru bulunamadı. Gerekli: 120, Mevcut: 33"}
-
-    Skip, FAIL üretmez — yani o helper'ı kullanan test kusuru ölçemez ve
-    sessizce yeşil görünür. Burada frontend'in FİİLEN gönderdiği şekil
-    kullanılıyor (``ModernExamStartPage.tsx:154-165``).
+    27 Ağu 2026'da bu şeklin İKİ kopyası vardı ve paylaşılan olan bayattı
+    (çıplak ``{"exam_type": "TYT"}``); üstelik kurulum reddini
+    ``pytest.skip``'e çevirdiği için onu kullanan dört test her koşumda
+    sessizce atlanıyordu. Kopya birleştirildi — ikisinin yeniden ayrışması
+    artık ölçülüyor (`tests/unit/test_golden_flow_exam_setup_gate.py`).
     """
-    headers = _auth_headers(token)
-    create_resp = client.post(
-        "/api/v1/osym-exam/create",
-        headers=headers,
-        json={
-            "exam_type": "TYT",
-            "custom_config": {
-                "subject": "MATEMATIK",
-                "difficulty": "medium",
-                "question_count": 5,
-                "time_limit": 10,
-            },
-        },
-    )
-    assert (
-        create_resp.status_code == 200
-    ), f"kurulum: exam create {create_resp.status_code} {create_resp.text[:200]}"
-    session_id = create_resp.json()["session_id"]
-
-    start_resp = client.post(f"/api/v1/osym-exam/{session_id}/start", headers=headers)
-    assert (
-        start_resp.status_code == 200
-    ), f"kurulum: start {start_resp.status_code} {start_resp.text[:200]}"
-    return session_id
+    return _create_exam_session(client, token)
 
 
 def test_gf3x_unknown_field_must_not_delete_saved_answer(client: httpx.Client):
