@@ -59,6 +59,9 @@ export const ModernRegisterPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  // Kayit OLDU ama giris tamamlanmadi (e-posta dogrulama kapisi / 2FA).
+  // `success`ten AYRI: o dal /login'e yonlendiriyor, bu dal YONLENDIRMEMELI.
+  const [dogrulamaGerekli, setDogrulamaGerekli] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const { register } = useAuthStore();
@@ -179,16 +182,37 @@ export const ModernRegisterPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setSuccess(null);
+    setDogrulamaGerekli(null);
 
     try {
-      const success = await register(formData);
+      const sonuc = await register(formData);
 
-      if (success) {
+      if (sonuc === true) {
         setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
         setTimeout(() => {
           navigate('/login');
         }, 2000);
+        return;
       }
+
+      if (typeof sonuc === 'object' && sonuc !== null && sonuc.kayitOldu) {
+        // Hesap OLUŞTU ama giriş tamamlanmadı (e-posta doğrulama kapısı ya da
+        // 2FA). Eskiden bu dal `false`'a katlanıyor, `if (success)` düşüyor ve
+        // ekran TAMAMEN sessiz kalıyordu: kullanıcı kayıt oldu ama hiçbir şey
+        // görmüyordu.
+        //
+        // `/login`e YÖNLENDİRİLMİYOR: orada yine bloklanır ve neden bloklandığını
+        // anlamadan döngüye girerdi.
+        setDogrulamaGerekli(
+          sonuc.girisEngellendi ??
+            'Hesabın oluştu. Giriş yapmadan önce e-posta adresini doğrulaman gerekiyor.',
+        );
+        return;
+      }
+
+      // Kayıt gerçekten başarısız. Eskiden burada da HİÇBİR ŞEY gösterilmiyordu
+      // (sayfa store `error`'ını okumuyor, `catch` de tetiklenmiyor).
+      setError('Kayıt tamamlanamadı. Bilgileri kontrol edip tekrar dener misin?');
     } catch (error: any) {
       setError(error.message || 'Kayıt sırasında bir hata oluştu');
     } finally {
@@ -359,6 +383,31 @@ export const ModernRegisterPage: React.FC = () => {
                   >
                     <Alert severity="success" sx={{ mb: 3 }}>
                       {success}
+                    </Alert>
+                  </motion.div>
+                )}
+
+                {/* Hesap OLUŞTU ama giriş tamamlanmadı. `severity="info"`:
+                    bu bir HATA değil, kullanıcıdan bir ADIM isteniyor.
+                    Ölçüldü (26 Ağu 2026): bu blok eklenmeden önce kapı açıkken
+                    ekran tamamen sessiz kalıyordu — kayıt olan kullanıcı hiçbir
+                    geri bildirim görmüyordu. */}
+                {dogrulamaGerekli && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    <Alert severity="info" sx={{ mb: 3 }}>
+                      {dogrulamaGerekli}
+                      <Box sx={{ mt: 1 }}>
+                        {/* `/eposta-dogrula` giriş GEREKTİRMEZ
+                            (frontend/src/utils/publicRoutes.ts:38) ve o sayfada
+                            "yeniden gönder" formu var. */}
+                        <Link href="/eposta-dogrula" fontWeight={700}>
+                          Doğrulama bağlantısı iste
+                        </Link>
+                      </Box>
                     </Alert>
                   </motion.div>
                 )}
