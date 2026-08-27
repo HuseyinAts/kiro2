@@ -383,6 +383,61 @@ describe('authStore', () => {
       expect(useAuthStore.getState().isAuthenticated).toBe(true)
     })
 
+    it('kayit BASARILI ama otomatik giris ENGELLENDI: false DEGIL, sebep doner', async () => {
+      // MUTASYON BOSLUGU (26 Agu 2026): `return loginResult === true` katlamasini
+      // geri getirmek ModernRegisterPage testlerinin HICBIRINI dusurmuyordu --
+      // o testler store'u `vi.mock`'luyor, yani SOZLESMEYI hic olcmuyorlar.
+      // Yuk tasiyan yer burasi.
+      //
+      // Gercek senaryo: EPOSTA_DOGRULAMA_ZORUNLU acikken kayit 201 doner (hesap
+      // OLUSUR) ama otomatik giris 403 EPOSTA_DOGRULANMAMIS alir. Bunu "kayit
+      // basarisiz" saymak ekrani SESSIZ birakiyordu.
+      ;(authService.register as Mock).mockResolvedValue({ success: true })
+      ;(authService.login as Mock).mockResolvedValue({
+        success: false,
+        message: 'Giris yapabilmek icin e-posta adresinizi dogrulayin.',
+      })
+
+      let result: unknown
+      await act(async () => {
+        result = await useAuthStore.getState().register({
+          email: 'dogrulanmamis@example.com',
+          password: 'pass123', // pragma: allowlist secret
+          ad: 'Dogrulanmamis',
+          soyad: 'User',
+          rol: 'ogrenci',
+        })
+      })
+
+      expect(result).not.toBe(false)
+      expect(result).toMatchObject({ kayitOldu: true })
+      expect((result as { girisEngellendi: string | null }).girisEngellendi).toBe(
+        'Giris yapabilmek icin e-posta adresinizi dogrulayin.',
+      )
+      // KONTROL KOLU: hesap olustu ama kullanici GIRMIS sayilmamali.
+      expect(useAuthStore.getState().isAuthenticated).toBe(false)
+    })
+
+    it('kayit BASARISIZ ise hala duz false doner (geriye uyum)', async () => {
+      // Sozlesme GENISLETILDI, kirilmadi: cagiranin `=== true` ve dogrudan
+      // falsy kontrolleri calismaya devam etmeli.
+      ;(authService.register as Mock).mockResolvedValue({ success: false })
+
+      let result: unknown
+      await act(async () => {
+        result = await useAuthStore.getState().register({
+          email: 'dup@example.com',
+          password: 'pass123', // pragma: allowlist secret
+          ad: 'Dup',
+          soyad: 'User',
+          rol: 'ogrenci',
+        })
+      })
+
+      expect(result).toBe(false)
+      expect(authService.login).not.toHaveBeenCalled()
+    })
+
     it('should set error on failed registration', async () => {
       ;(authService.register as Mock).mockResolvedValue({
         success: false,
