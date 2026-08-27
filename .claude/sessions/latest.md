@@ -157,6 +157,34 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## 🔴 OKU — agacta SAHIPSIZ 3 dosya var (28 Agu 2026, push sonrasi)
+
+`a7cf76e7e` push edildikten SONRA `git status` uc dosyayi degismis gosterdi:
+
+| Dosya | Icerik |
+|---|---|
+| `.github/workflows/golden-flows.yml` | CI tetikleyicisine `feature/self-evolution-optimization` eklenmis |
+| `backend/app/api/cat.py:187` | GUVENLIK: yanit yalniz oturumda SUNULAN maddeye verilebilsin (cevap-anahtari oracle'i kapatiyor) |
+| `backend/app/services/cat_session.py:459` | Kalici theta geri okunuyor (her seans 0'dan basliyordu) |
+
+**Bunlari BU oturumda ben yazmadim.** Iz surdum: `~/.cache/pre-commit/patch1787871723-19628`
+(ilk push denemem sirasinda olusan pre-commit stash yamasi) bu degisiklikleri ICERIYOR;
+bir onceki yama (`patch1787847592`) icermiyor. Yani pre-commit'in stash/restore dongusu
+bunlari agaca koydu. Kaynagi (hangi oturumun islemi oldugu) KESINLESTIRILEMEDI.
+
+Ikisi de gercek gorunuyor ve `KOD GERCEGI FIX` yorum imzasi tasiyor (onceki oturum isareti).
+Hicbiri git gecmisinde YOK (`git log -S` -> 0 commit).
+
+**KARAR: ne commit edildi ne silindi.** Gerekce: benim isim degil, test edilmedi,
+gozden gecirilmedi; ozellikle `cat.py` bir GUVENLIK degisikligi ve oturum kapanisinda
+incelenmeden commit edilmesi dogru olmaz. Agacta birakildi ki KAYBOLMASIN ve
+sonraki oturumun ilk `git status`'unde gorunsun.
+
+**Sonraki oturum icin ilk is:** bu ucunu incele -> ya commit et (test + kanit ile),
+ya `git stash push -m` ile acik etiketle sakla, ya da bilincli olarak at.
+
+---
+
 ## Session Handoff — 2026-08-27 20:15
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `2e8cbaad5` docs(s255): devir notu duzeltmesi -- flake IKI ayri kusurdu
