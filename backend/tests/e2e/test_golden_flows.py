@@ -937,6 +937,54 @@ def test_gf3z_yabanci_question_id_reddedilir(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF3s: ogrenci profili — #485 split gocunun KALAN erisimleri
+# ---------------------------------------------------------------------------
+
+
+def test_gf3s_student_dashboard_profil_not_500(client: httpx.Client):
+    """Ogrenci profili ucu 500 DONMEMELI.
+
+    Canli olcum (27 Agu 2026): HTTP **500**. Kok neden #485 split gocunun
+    kalan bir erisimi -- `services/student_dashboard_service.py:286`
+    `select(Question.subject_area)` SINIF duzeyinde okuyor; alan artik
+    `question_metadata`ta ve uyumluluk katmani bilerek yol gosteren bir
+    AttributeError atiyor::
+
+        QuestionBankItem.subject_area sinif duzeyinde kullanilamaz:
+        bu alan artik metadata_info iliskisinde. Sorguda JOIN kullanin.
+
+    Ayni router'in diger dort ucu 200 donuyordu; yani kusur router'da
+    degil TEK sorguda. Kontrol kolu olarak `/istatistikler` de olculur.
+
+    NEDEN ICERIK ASSERT EDILMIYOR (olculdu, ayri kalem):
+    Duzeltmeden sonra uc 200 donuyor ama `guclu_alanlar`/`zayif_alanlar`
+    HER ogrenci icin BOS geliyor. Sebep bu goc DEGIL: `exam_sessions`
+    uzerinde RLS acik (politika `tenant_isolation`:
+    organization_id::text = current_setting('app.current_org_id', true))
+    ve API `kiro2_app` rolunden (rolbypassrls=false) baglaniyor; GUC
+    kurulmadigi icin tablo 0 satir gosteriyor. Olculdu: postgres rolunde
+    ayni sorgu MATEMATIK 47/8 donuyor, kiro2_app rolunde 0.
+    Yani icerik assert'i bu kusurdan BAGIMSIZ bir sebeple duserdi.
+    """
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+
+    # KONTROL KOLU: ayni router calisiyor mu? (kimlik/rota sorunu degil)
+    kontrol = client.get("/api/v1/student-dashboard/istatistikler", headers=headers)
+    assert kontrol.status_code == 200, (
+        f"GF3s KONTROL KOLU: /istatistikler {kontrol.status_code} — router veya "
+        f"kimlik bozuk, asagidaki assert yanlis sebeple duserdi: {kontrol.text[:200]}"
+    )
+
+    resp = client.get("/api/v1/student-dashboard/profil", headers=headers)
+    assert resp.status_code != 500, (
+        f"GF3s: ogrenci profili 500 donuyor: {resp.text[:300]}. #485 split "
+        f"gocunun kalan erisimi (student_dashboard_service.py:286 civari) — "
+        f"`subject_area` question_metadata'ta, JOIN gerekli."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF4w.1: learning-path register-wrong-answers must accept a valid question_id
 # ---------------------------------------------------------------------------
 
