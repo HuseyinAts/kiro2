@@ -29,6 +29,7 @@ from application.commands.sinav import (
 from core.cqrs.bus import CommandBus, get_command_bus
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import osym_exam_engine
+from core.osym_puanlama import osym_net
 from core.structured_logger import get_logger
 from models.database import ExamType
 
@@ -785,8 +786,9 @@ async def get_performance_analysis(
                 correct_answers=correct,
                 wrong_answers=wrong,
                 empty_answers=empty,
-                # ÖSYM 2023+ 1/4 ceza kaldırıldı → net = doğru (engine ile tutarlı)
-                net_score=float(correct),
+                # ÖSYM neti TEK KAYNAKTAN: core/osym_puanlama.osym_net
+                # (eski yorum "2023+ ceza kaldırıldı" diyordu ve YANLIŞTI)
+                net_score=osym_net(correct, wrong),
                 raw_score=float(row.raw_score or 0.0),
                 percentile=row.percentile,
                 estimated_ability=float(row.estimated_ability or 0.0),

@@ -23,6 +23,7 @@ from sqlalchemy import and_, func, or_, select, update
 from sqlalchemy.orm import selectinload
 
 from core.database import get_db_session_context
+from core.osym_puanlama import osym_net
 from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 from models.database import ExamQuestion, ExamSession, ExamType, StudentAnswer
@@ -1190,7 +1191,7 @@ class OSYMExamEngine:
                     correct_answers=_c,
                     wrong_answers=_w,
                     empty_answers=_e,
-                    net_score=float(_c),  # ÖSYM 2023+ ceza yok → net = doğru
+                    net_score=osym_net(_c, _w),
                     raw_score=float(row.raw_score or 0.0),
                     percentile=row.percentile,
                     estimated_ability=float(row.estimated_ability or 0.0),
@@ -1936,8 +1937,10 @@ class OSYMExamEngine:
 
             empty_answers = total_questions - answered_questions
 
-            # Net hesaplama — ÖSYM 2023'ten itibaren 1/4 ceza kaldırıldı
-            net_score = float(correct_answers)
+            # ÖSYM neti TEK KAYNAKTAN: core/osym_puanlama.osym_net
+            # (eski satır `float(correct_answers)` idi ve yorumu YANLIŞTI —
+            #  1/4 cezası kaldırılmadı, 27 Ağu 2026'da operatör doğruladı)
+            net_score = osym_net(correct_answers, wrong_answers)
             raw_score = (
                 (correct_answers / total_questions) * 100 if total_questions > 0 else 0
             )
