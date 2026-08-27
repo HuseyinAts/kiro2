@@ -48,6 +48,97 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-27 (S254 · A1'in L3 ayağı KAPANDI — öğrenci netini görüyor)
+
+**Branch:** feature/self-evolution-optimization · **Aralık:** `e932a7648..4d56c6420`
+**Push:** yapılmadı
+
+### 🟢 A1 ALTIN YOLU TAMAM — teslim ayağı canlı tarayıcıda proplandı
+
+> *kayıt → e-posta doğrulama → 40 soruluk test → **netini ve konu kırılımını görür***
+
+Son hop düşüyordu. Zincirin 5 adımının 4'ü zaten canlı yeşildi:
+
+```
+beta-practice -> start -> save-answer x14 -> complete       ... OK
+GET /osym-exam/{sid}/performance  -> net_score: 3.75        ... OK
+ModernExamResultsPage.tsx:119     -> score: raw_score       ... KUSUR
+```
+
+Aynı `fetch` `net_score`'u DA döndürüyordu; mapper onu **hiç okumuyordu**
+(kaynakta ve dağıtılan pakette `net_score` **0 eşleşme**). Ekrandaki dev sayı
+`raw_score`'du — ki o bir YÜZDE ve etiketsizdi. 40 soruluk testte "27.5" gören
+öğrenci onu net sanıyordu.
+
+**Kapanan 4 kusur** (`e99003041`, `4d56c6420` — ikisi de canlı proplandı + deploy
+edildi + tekrar proplandı; mutasyon **4/4** ve **4/4**):
+
+| # | Kusur | Düzeltme |
+|---|---|---|
+| 1 | Net hiç gösterilmiyor | `net` alanı EKLENDİ (`score` KALDIRILMADI) + daire `% başarı` diye etiketlendi |
+| 2 | Yüzde ham float: `27.500000000000004` (daireden taşıyordu) | `Number(x.toFixed(1))` — alt karttaki ev geleneğiyle aynı |
+| 3 | En düşük bant mesajı: *"Pes etmeyin, **başarısız olabilirsiniz**!"* | → *"…**başarabilirsiniz**!"* — score<50 bandı, yani EN ÇOK görülen mesaj |
+| 4 | En yüksek bant: `sergiledinizyürümeye` (bitişik) | virgülle ayrıldı, yazarın kelimeleri korundu |
+
+Canlı doğrulama (`e8fc3c64…`, 11 doğru / 29 yanlış): daire **27.5**, **Net 3.75**,
+alt kart `27.5%`, konu kırılımı tablosu dolu.
+
+### 🔴 `score`'u net ile DEĞİŞTİRMEK kusur olurdu — çırçır bunu koruyor
+`score` yüzde eşiklerini besliyor (`getScoreGradient/Icon/Message`, 85/70/50).
+Net en fazla soru sayısı kadar olabildiği için `score = net` yapmak `net >= 85`
+dalını **sessizce erişilemez** kılardı. Tip sistemi göremez (ikisi de `number`);
+ayrımı **5. test kontrol kolu olarak** çiviliyor (mutasyon M4 tam bunu öldürdü).
+
+### 🔴 İSTEMCİDE NET YENİDEN HESAPLANMIYOR — kasıtlı
+`correct/wrong` elimizdeydi, `doğru - yanlış/4` iki satırdı. Yazılmadı: bir
+önceki commit (`e932a7648`) tam olarak bu hesabın backend'de **5 kopyaya** çıkıp
+ikisinin çelişmesini düzeltiyordu. 6. kopyayı istemciye koymak onu geri
+getirirdi. Backend `net_score` göndermezse alan **boş görünür** — doğrusu budur.
+
+### 🔴 Bu turda aletim iki kez yanıldı (ikisi de yakalandı)
+
+1. **"Her rota `opacity:0` donuyor, uygulama boş render oluyor"** — 8 örnekli
+   zaman serisi, `document.timeline` ilerliyor, rAF 145fps… hepsi *gerçek kusur*
+   diyordu. **Alet arızasıydı:** ardışık CDP `evaluate_script` çağrıları
+   framer-motion'ın rAF döngüsünü bölüyormuş. Hiç script çalıştırılmayan taze
+   sekmede sayfa normal render oldu. **Raporlanmadı.**
+2. **Kendi fixture'ım çakıştı** — doğru=6 ve boş=6 iken alet doğrulaması
+   *"Found multiple elements with the text: 6"* ile düştü; test ölçmek istediğini
+   değil kendi çakışmasını ölçmüştü. Küme `19/6/8/5/4/30` yapıldı (hepsi ayırt edici).
+
+### 🔴 `TaskStop` yetim vitest süreci bırakıyor
+İki arka plan vitest'ini durdurunca koşucu **tamamen kilitlendi** — sonraki her
+koşum toplama aşamasında donuyordu. "Benim testim mi bozdu" sanılabilirdi;
+**kontrol kolu** (daha önce 22 sn'de koşan dosya) da donunca ortamsal olduğu
+anlaşıldı. Çözüm: yalnız `CommandLine -like '*vitest*'` olan node süreçlerini
+öldür (25 node sürecinin tümünü değil — MCP sunucuları da node).
+
+### Açık kalemler (bu turda ölçüldü, yapılmadı)
+- `save-answer`'da **sessiz veri kaybı**: bilinmeyen JSON alanı yutuluyor, 200
+  dönüyor ve **önceden kaydedilmiş cevap siliniyor**
+- `/api/v1/exam-performance/*` **5/5 uç 500** — tek kök:
+  `exam_performance_service.py:322` sınıf düzeyinde `Question.subject_area`
+- `exam_type='TYT'` **sıfır bilgi** taşıyor; `beta-practice` "A1 TYT Matematik"
+  akışına **19 KIMYA + 1 MATEMATIK** döndürüyor
+  (`soru_bankasi_service.py:936` havuz boşalınca kısıtı düşürüyor)
+- GF3'ün 4 E2E testi **çıkış kodu 0 ile skip** ediyor (kapı yeşil, kırmızı değil)
+- 26 testlik sınav akışı paketi `skipif(True)` altında **ölü**
+- Gizli RLS: `osym_exam_engine.py:452` `organization_id` yazmıyor — 52 kullanıcının
+  hepsi tek org'da olduğu için çalışıyor; farklı org'lu kullanıcı **500**
+- 4 bağımsız net hesabı daha var (`BAGIMSIZ_NET_HESABI = 4` ile çivili)
+- **Cold-load render**: doğrudan derin bağlantıyla açılan sayfa bazen boş kaldı,
+  reload'da düzeldi. Yukarıdaki alet arızasıyla **aynı sınıf olabilir** —
+  ÖLÇÜLMEDİ, iddia edilmiyor. Bağımsız bir tarayıcıyla tekrar denenmeli.
+
+### Kararlar
+- Sonuç ekranındaki **iki büyüklük ayrı etiketlendi** (`% başarı` / `Net`) —
+  birimi farklı iki sayı yan yana duruyorsa hangisinin ne olduğu YAZILMALI.
+- Test hesabına parola **yazılmadı**; jeton konteynerde üretilip nginx'in
+  servis ettiği geçici dosyayla tarayıcıya taşındı ve **hemen silindi**
+  (silme doğrulandı: JWT deseni 0 eşleşme).
+
+---
+
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
 **Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..09c9f95f5` (30 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
