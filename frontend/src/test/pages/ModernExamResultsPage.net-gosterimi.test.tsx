@@ -123,6 +123,51 @@ describe('ModernExamResultsPage — net gösterimi', () => {
     expect(await screen.findByText(/% başarı/i)).toBeInTheDocument();
   });
 
+  it('yüzde HAM kayan nokta olarak basılmaz', async () => {
+    // Canlı proplandı (27 Ağu): 11 doğru / 40 soru -> backend raw_score
+    // 27.500000000000004 dönüyor ve daire bunu 17 haneli olarak basıyordu;
+    // metin dairenin dışına taşıyordu. Alt karttaki "Başarı Oranı" zaten
+    // `.toFixed(1)` kullanıyor — ev geleneği bu, daire ona uymuyordu.
+    server.use(...handlerlar({ ...performansGovdesi, raw_score: 27.500000000000004 }));
+    sayfayiKur();
+
+    expect(await screen.findByText('27.5')).toBeInTheDocument();
+    expect(screen.queryByText('27.500000000000004')).not.toBeInTheDocument();
+  });
+
+  it('tam sayı yüzde gereksiz ".0" ile basılmaz', async () => {
+    // `.toFixed(1)` tek başına 85 -> "85.0" yapardı. Manşet sayı için çirkin;
+    // bu yüzden biçimlendirme sondaki sıfırı düşürüyor.
+    server.use(...handlerlar({ ...performansGovdesi, raw_score: 85 }));
+    sayfayiKur();
+
+    expect(await screen.findByText('85')).toBeInTheDocument();
+    expect(screen.queryByText('85.0')).not.toBeInTheDocument();
+  });
+
+  it('en düşük bant mesajı öğrenciye "başarısız olabilirsin" DEMEZ', async () => {
+    // Bu mesajı en çok öğrenci görüyor (score < 50). Metin bozuktu:
+    // "Pes etmeyin, başarısız olabilirsiniz!" — yani "pes etme, başaramayabilirsin".
+    // Öğrenciyi cesaretlendirmesi gereken cümle tam tersini söylüyordu.
+    server.use(...handlerlar({ ...performansGovdesi, raw_score: 27.5 }));
+    sayfayiKur();
+
+    // POZİTİF ANKRAJ ÖNCE: yoksa sayfa hiç render olmasa da "yok" testi geçerdi.
+    const mesaj = await screen.findByText(/Daha fazla çalışmanız gerekiyor/);
+    expect(mesaj.textContent).not.toMatch(/başarısız olabilirsiniz/);
+    expect(mesaj.textContent).toMatch(/başarabilirsiniz/);
+  });
+
+  it('en yüksek bant mesajında bitişik kelime yok', async () => {
+    // "sergiledinizyürümeye" — iki kelime kaynaşmış.
+    server.use(...handlerlar({ ...performansGovdesi, raw_score: 90 }));
+    sayfayiKur();
+
+    const mesaj = await screen.findByText(/Mükemmel!/);
+    expect(mesaj.textContent).not.toMatch(/sergiledinizyürümeye/);
+    expect(mesaj.textContent).toMatch(/sergilediniz/);
+  });
+
   it('KONTROL KOLU: yüzde eşik mantığı net ile DEĞİL raw_score ile besleniyor', async () => {
     // `score`'u net ile değiştirseydik 85/70/50 eşikleri sessizce ölürdü.
     // raw_score=30 -> "geliştirilmeli" bandı; net=4 olsaydı da aynı banda

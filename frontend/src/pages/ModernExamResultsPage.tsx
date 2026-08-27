@@ -196,11 +196,21 @@ export const ModernExamResultsPage: React.FC = () => {
   };
 
   const getScoreMessage = (score: number) => {
-    if (score >= 85) {return 'Mükemmel! Harika bir performans sergiledinizyürümeye devam edin!';}
+    if (score >= 85) {return 'Mükemmel! Harika bir performans sergilediniz, yürümeye devam edin!';}
     if (score >= 70) {return 'Çok iyi! Biraz daha çalışarak daha da iyiye gidebilirsiniz.';}
     if (score >= 50) {return 'İyi bir başlangıç! Eksik konularınızı çalışmaya devam edin.';}
-    return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarısız olabilirsiniz!';
+    // "başarısız olabilirsiniz" yazıyordu: cesaretlendirmesi gereken cümle
+    // öğrenciye "pes etme, başaramayabilirsin" diyordu. Bu mesajı en çok
+    // öğrenci görüyor (score < 50), yani en görünür metin en bozuk olanıydı.
+    return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarabilirsiniz!';
   };
+
+  // Backend `raw_score`'u ham kayan nokta dondurur: 11/40 -> 27.500000000000004.
+  // Daire bunu oldugu gibi basiyordu; 17 hane hem yanlis hem de dairenin
+  // disina tasiyordu (canli proplandi, 27 Agu). Alt karttaki "Basari Orani"
+  // zaten `.toFixed(1)` kullaniyor -- ev gelenegi bu, daire ona uymuyordu.
+  // `Number(...)` sondaki sifiri duser: 85.0 -> 85, 27.5 -> 27.5.
+  const yuzde = Number(result.score.toFixed(1));
 
   const successRate = result.question_count > 0
     ? ((result.correct_count / result.question_count) * 100).toFixed(1)
@@ -281,7 +291,7 @@ export const ModernExamResultsPage: React.FC = () => {
             }}
           >
             <Typography variant="h2" fontWeight={700} color="white">
-              {result.score}
+              {yuzde}
             </Typography>
           </Box>
 
