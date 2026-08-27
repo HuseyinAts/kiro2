@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..9ddaf538b` (25 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..0c3d60165` (28 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -163,12 +163,26 @@ bu turda **3'ü kapandı**, **5'i açık**:
 | 3 | `/giris` → `/login` ölü link | ✅ `5d119a2e3` |
 | 4 | `_TRUSTED_PROXIES` compose ağını kapsasın (429 kovası) | ✅ `6ddc1b910` |
 | 5 | kayıtta "e-postanı kontrol et" adımı **veya** otomatik girişi kapat | ✅ `38eb5cdc6` |
-| 6 | bloklanacak kümeyi kapı öncesi temizle (backup şart) | 🔴 açık |
-| 7 | `MUAFIYET_SINIRI` kararı (sabit 22 Ağu mı, açılış günü mü) | 🔴 açık |
-| 8 | açılış günü SMTP probu + kutu teyidi TEKRAR | 🔴 açık |
+| 6 | bloklanacak kümeyi kapı öncesi temizle | ✅ **GEREKSİZ ÇIKTI** — sınır ileri alınınca 15→0, veriye dokunulmadı |
+| 7 | `MUAFIYET_SINIRI` kararı | ✅ `9004d50a1` — 22 Ağu → **27 Ağu** |
+| 8 | açılış günü SMTP probu + kutu teyidi | ✅ prob yeşil (Δ+1/Δ+1/Δ+2/Δ0) + **insan teyidi alındı** |
 
-⚠️ Kalan 3'ü (6-7-8) **operasyonel**: küme temizliği · `MUAFIYET_SINIRI` kararı ·
-açılış günü SMTP tekrar probu. Kod tarafında engel KALMADI.
+🟢 **8/8 TAMAM — kapıyı açmanın önünde teknik engel KALMADI.** Kalan tek adım
+operatörde: `.env.mvp`'ye `EPOSTA_DOGRULAMA_ZORUNLU=true` + `docker compose up -d
+--no-deps backend` (restart YETMEZ). İzin katmanı `.env*` yazmayı engelliyor,
+etrafından dolaşılmadı.
+
+**Kapı öncesi son ölçüm (27 Ağu 01:2x UTC):** `kapi_engeli()` → `None` ·
+toplam **52** · girebilen **50** · bloklanan **2** (ikisi de `+kapi27*` prob
+hesabım, gerçek Gmail adresine gidiyor ve doğrulama postaları **kutuya ulaştı**
+— insan teyidi). **Gerçek kullanıcı: 0.**
+
+🔴 **AYNI SINIF HATA ÜÇ YERDE, ÜÇÜNCÜSÜ KENDİ KODUMDA.** Bir sabite bağlı ölçümü
+o sabitin DEĞERİYLE yazmak: `test_eposta_kapi_sirasi.py` sabit `2026-08-23`
+(sınır ileri alınınca **sesli** düştü) · `kayit_e2e_probu.py` sabit `2026-08-22`
+(**sessizdi** — cevap tesadüfen doğruydu, karşılaştırma anlamsızdı) ·
+`eposta_dogrulama.py` docstring'i bayat ölçüm. Üçü de kaynaktan okuyacak şekilde
+düzeltildi (`0c3d60165`).
 
 🔴 **YENİ AÇIK İŞ — `detect-secrets` kapısı `authStore.test.ts`'te KIRMIZI.**
 `.secrets.baseline` bu dosya için **0 giriş** taşıyor; kapı, dosyaya dokunan **her**
