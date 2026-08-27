@@ -126,6 +126,34 @@ def _psql(sql: str, **degisken: str) -> str:
     return _kos([*argv, "-f", "-"], girdi=sql.encode("utf-8")).strip()
 
 
+def _muafiyet_siniri() -> str:
+    """`core.eposta_dogrulama.MUAFIYET_SINIRI` — SABIT YAZILMAZ, OKUNUR.
+
+    🔴 İlk sürümde bu tarih probun içine `'2026-08-22'` olarak gömülüydü. Sınır
+    27 Ağu'da ileri alınınca prob FOSİL bir değerle karşılaştırmaya devam etti;
+    o gün cevap tesadüfen yine doğruydu ama karşılaştırma anlamını yitirmişti.
+    Aynı sınıf hata aynı gün `test_eposta_kapi_sirasi.py`'de de bulundu.
+    Kural: bir sabite bağlı ölçümü o sabitin DEĞERİYLE yazma, KAYNAĞINDAN oku.
+    """
+    cikti = _kos(
+        [
+            "docker",
+            "exec",
+            "-e",
+            "PYTHONPATH=/app",
+            BACKEND,
+            "python",
+            "-c",
+            "from core.eposta_dogrulama import MUAFIYET_SINIRI as m;"
+            "print('SINIR=%s' % m.isoformat())",
+        ]
+    )
+    for satir in cikti.splitlines():
+        if satir.startswith("SINIR="):
+            return satir.split("=", 1)[1].strip()
+    raise RuntimeError(f"ALET ARIZASI: MUAFIYET_SINIRI okunamadi -> {cikti[:200]}")
+
+
 def _sifre_uret() -> str:
     """Politikayı karşılayan rastgele şifre: büyük+küçük+rakam+özel, ardışık yok."""
     return "Kx" + secrets.token_urlsafe(9).replace("-", "q").replace("_", "w") + "!7Vm"
@@ -261,9 +289,10 @@ def main() -> int:
     print("\n=== ADIM 5: yeni kullanıcının DB durumu ===")
     satir = _psql(
         "SELECT is_verified::text || '|' || is_active::text || '|' || role::text "
-        "|| '|' || (created_at >= TIMESTAMPTZ '2026-08-22 00:00:00+00')::text "
+        "|| '|' || (created_at >= TIMESTAMPTZ :'sinir')::text "
         "FROM users WHERE email = :'hedef'",
         hedef=arg.hedef,
+        sinir=_muafiyet_siniri(),
     )
     if not satir:
         _yaz("HATA", "kullanıcı DB'de bulunamadı")
