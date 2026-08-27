@@ -157,6 +157,92 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · 6. TUR — şema kayması + göç borcu BİRLİKTE)
+
+**Push:** yapılmadı
+
+### Zincir: birinci kusur ikinciyi GİZLİYORDU
+
+**(1) Şema kayması** — `learning_path_student_profiles` DB'de **35** kolon,
+ORM'de **34**. Fark tek kolon: `neuro_inclusive_mode` (boolean, NOT NULL,
+`server_default` YOK), ORM modelinde **hiç tanımlı değil**. Kolonu oluşturan
+**alembic migration de yok** → alembic dışında eklenmiş.
+Sonuç: ORM INSERT kolonu atlıyor → `NotNullViolationError` → create-profile 500
+→ profil yok → `verify_student_access` her isteği **403** → `learning_path`'in
+tamamı kilitli. Düzeltme: kolon modele eklendi (`default=False`). DB'ye
+`server_default` **eklenmedi** (şema değişikliği, ayrı migration).
+
+**(2) Göç borcu** — (1) düzelir düzelmez `learning_path.py:808-813` **ilk kez
+erişilebilir** oldu ve hemen 500 döndü:
+```
+AttributeError: QuestionBankItem.correct_answer sinif duzeyinde kullanilamaz:
+bu alan artik content iliskisinde.
+```
+Beş alan **üç ayrı** yavru tabloya taşınmış; `id` ve `primary_topic_id`
+parent'ta kalmış → üç INNER JOIN. Yetim **0** (üçünde de) → satır düşmez.
+
+**Canlı doğrulama:** quiz submit → 200, `correct_answer "E"` / `student_answer
+"A"` / `is_correct false`; DB çapraz kontrolü `question_content.correct_answer
+= 'E'`. Yani değer **gerçekten okunuyor**, sessiz `None` değil.
+
+### 🔴 Mutasyon bir BEKÇİ ZAYIFLIĞI buldu
+
+`neuro_inclusive_mode`'u modelden silince (MS1) **GF10 GEÇTİ**. Sebep:
+`create-profile` mevcut profili **erken döndürüyor** — INSERT'e hiç gitmiyor
+(ölçüldü: `"S255 Guard"` gönderdim, `"GF10 Probe Student"` döndü). Yani GF10 bu
+kaymayı yalnız **taze kullanıcıda** yakalar; profil bir kez oluştuktan sonra
+**bir daha asla** yakalayamaz. Kalıcı bekçi bu yüzden **durumsuz parite testi**:
+
+`tests/integration/test_learning_path_profile_sema_paritesi.py` (4 test) —
+ORM↔DB kolon paritesi (iki yön) + NOT NULL/default kontrolü + **alet
+doğrulaması** (boş küme yakalanır). MS1 bu testi **öldürdü**.
+Canlı taraf: `test_gf3u_quiz_submit_dogru_cevabi_icerikten_okuyor`; **asıl
+assert 200 değil `correct_answer` dolu olması**. Canlı mutasyon MS2 onu öldürdü.
+
+> Bu kayma sınıfının **hiç bekçisi yoktu**: `scripts/audit_orm_vs_db_parity.py`
+> başka bir şey ölçüyor (S209, iki *model sürümü*) ve hiçbir test onu koşmuyor.
+
+### ⚠️ GF10 hâlâ ARALIKLI düşüyor — kapandı DEMİYORUM
+
+| | Önce | Sonra |
+|---|---|---|
+| GF10 | **%100 fail** (deterministik `NotNullViolationError`) | **5 eş-koşumun 2'sinde** fail |
+
+Deterministik kök neden kapandı ve kanıtlandı. Kalan aralıklı kusurun **sebebi
+bulunamadı**: talep üzerine üretilemiyor (3 ardışık temiz tur), konteyner
+günlüğünde **19/19 create-profile → 200** ve **hiçbir yolda 500 yok**. Bir turda
+`1 skipped` görüldü — `_login`'in 429 imzası, yani testler arası **rate-limit
+etkileşimi** en güçlü aday (create-profile ölçüldü: 10 istek sonra temiz **429**,
+500 değil). **Açık kalem.**
+
+### Yan bulgu (latent, düzeltilmedi)
+
+`learning_path_v2.py:793` `actual_student_id = submission.student_id or
+str(current_user.id)`. Profil `STU_xxx` anahtarlı; gövdede `student_id` yoksa
+kapı 403 verir. Frontend **gönderiyor** (`useLearningPathMutations.ts:120`) →
+bugün canlı kullanıcı yolunda tetiklenmiyor, ama fallback **yanlış anahtar
+uzayına** düşüyor.
+
+### 🔴 Kendi hatam (yine): `pwd`
+
+Mutasyon geri alımı `cd backend` yüzünden yanlış dizinde koştu ve
+`pathspec did not match` verdi — **host dosyaları mutasyonlu kaldı**. Çıktıda
+görülüp hemen geri alındı, ankrajlar doğrulandı (kayıp yok). Bu oturumda
+**dördüncü** `pwd` hatası.
+
+### Kapı
+
+`SKIP=ruff,mypy` — yalnız `application/commands/learning_path.py`, hepsi
+önceden var. Kontrol kolu: `is_active == True` HEAD'de **2** / şimdi **2**
+(eklemedim), `quiz_question` (B007) HEAD'de 5, PLR0912 üç fonksiyonda ve
+hiçbiri benim hunk'ımda değil (hunk'lar: 23, 810-834).
+
+### Deploy
+
+`docker compose build backend celery-worker` + `up -d` → md5 `git == imaj` 2/2.
+
+---
+
 ## Session Handoff — 2026-08-27 (S255 · 5. TUR — kalan göç adaylarının CANLILIK ölçümü)
 
 **Push:** yapılmadı
