@@ -116,8 +116,14 @@ OTURUM_INSERT_SQL = text(
 )
 
 SATIR_SQL = text(
-    "SELECT selected_answer, answer_changes FROM student_answers "
-    "WHERE exam_session_id = :sid AND question_id = :qid"
+    # LEFT JOIN BILEREK: satirin VARLIGI yalnizca `student_answers`a bagli
+    # kalmali. INNER JOIN olsaydi `question_content` eksikliginde satir
+    # "hic yazilmamis" gibi gorunur ve ustteki testler YANLIS sebeple duserdi.
+    "SELECT sa.selected_answer, sa.answer_changes, sa.is_correct, "
+    "       qc.correct_answer "
+    "FROM student_answers sa "
+    "LEFT JOIN question_content qc ON qc.id = sa.question_id "
+    "WHERE sa.exam_session_id = :sid AND sa.question_id = :qid"
 )
 
 
@@ -313,4 +319,76 @@ async def test_bos_dizge_upsert_i_gercekten_calistirir(sinav_ortami):
         "Temizleme UPSERT'i hic kosmadi: answer_changes "
         f"{onceki['answer_changes']} -> {sonraki['answer_changes']}. "
         "INSERT kisit ihlaliyle dustu ve hata yutuldu."
+    )
+
+
+async def test_is_correct_cevapla_birlikte_hareket_eder(sinav_ortami):
+    """`is_correct` her yazimda YENIDEN hesaplanmali: notla, temizle, yeniden notla.
+
+    NEDEN VAR (S255 -- veri olcumunden dogdu)
+    -----------------------------------------
+    `student_answers`ta ALTI fosil satir olculdu (27 Agu 2026): biri yanlis
+    notlu (`answer_changes > 0`, K2 oncesi uretim UPSERT'i `is_correct`i
+    guncellemiyordu), besi "cevap temizlenmis ama not duruyor". Ureticinin
+    duzeldigi canli olculdu ve satirlar geriye donuk duzeltildi -- ama
+    ureticiyi koruyan BIR DAVRANIS testi yoktu.
+
+    Var olan bekci `test_save_answer_upsert_parity.py` UPSERT'in SQL SEKLINI
+    civiliyor (`is_correct: stmt.excluded.is_correct`). Bu YETMEZ: notu
+    URETEN blok (`save_answer` icindeki `question_content.correct_answer`
+    sorgusu) bozulsa `is_correct` her yazimda sessizce NULL olurdu ve sekil
+    testi YESIL kalirdi -- `except Exception: logger.debug(...)` onu yutuyor.
+    Yani sozlesme dogru, URETIM olu olabilir. Bu test o boslugu kapatir.
+
+    UC GECIS de olculur, cunku fosillerin IKI ayri sinifi vardi:
+      notla -> temizle (NULL olmali)  ·  yanlisa degis (yeniden notlanmali)
+    """
+    engine, session_id, question_id, satiri_oku = sinav_ortami
+
+    await engine.save_answer(session_id, question_id, ILK_CEVAP)
+    satir = await satiri_oku()
+    assert satir is not None, "On kosul: ilk cevap DB'ye yazilmadi"
+
+    dogru = satir["correct_answer"]
+    # ALET DOGRULAMASI: dogru cevap yoksa asagidaki assert'ler VAKUMDA gecerdi.
+    assert dogru, (
+        "Secilen sorunun `question_content.correct_answer` degeri bos -- "
+        "bu test hicbir sey olcemez. Fikstur baska bir soru secmeli."
+    )
+    dogru_harf = str(dogru).strip().upper()
+
+    assert satir["is_correct"] is (dogru_harf == ILK_CEVAP), (
+        f"Ilk yazimda not yanlis: cevap={ILK_CEVAP!r} dogru={dogru_harf!r} "
+        f"is_correct={satir['is_correct']!r}. `is_correct` HIC hesaplanmiyorsa "
+        "(None) notlama blogu sessizce dusuyordur (save_answer icindeki "
+        "`except Exception: logger.debug`)."
+    )
+
+    # 2) TEMIZLE -> not da silinmeli (5 fosil satirin sinifi)
+    await engine.save_answer(session_id, question_id, TEMIZLE)
+    temiz = await satiri_oku()
+    assert temiz is not None, "Satir tamamen kayboldu"
+    assert temiz["is_correct"] is None, (
+        "Cevap temizlendi ama not DURUYOR: "
+        f"is_correct={temiz['is_correct']!r}. Ogrencinin cevabi yokken "
+        "'dogru/yanlis' demek analitigi ve mastery'yi kirletir."
+    )
+
+    # 3) DOGRU cevaba gec -> True
+    await engine.save_answer(session_id, question_id, dogru_harf)
+    d = await satiri_oku()
+    assert d is not None and d["is_correct"] is True, (
+        f"Dogru cevap {dogru_harf!r} yazildi ama is_correct="
+        f"{d['is_correct'] if d else None!r}"
+    )
+
+    # 4) YANLIS cevaba gec -> False (1 fosil satirin sinifi: cakismada
+    #    not yeniden hesaplanmiyordu)
+    yanlis_harf = "A" if dogru_harf != "A" else "B"
+    await engine.save_answer(session_id, question_id, yanlis_harf)
+    y = await satiri_oku()
+    assert y is not None and y["is_correct"] is False, (
+        f"Cevap {dogru_harf!r} -> {yanlis_harf!r} degisti ama is_correct="
+        f"{y['is_correct'] if y else None!r}. Cakisma dalinda not YENIDEN "
+        "hesaplanmiyor (K2'nin sinifi geri gelmis olabilir)."
     )
