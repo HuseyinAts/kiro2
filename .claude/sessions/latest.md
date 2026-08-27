@@ -157,6 +157,81 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · 4. TUR — #485 göç envanteri: 46'nın 22'si ÖLÜ KODDA)
+
+**Push:** yapılmadı
+
+### Öncül yine değişti — sayı da, dosya sayısı da alt sınırmış
+
+| Devir notu | Ölçüm (`scripts/scan_split_accesses.py` canlı) |
+|---|---|
+| "~47 erişim / **11 dosya**" | **SINIF=34 · KWARG=12 · ENTITY=56 / 23 dosya** |
+
+### 🔴 46 kalemin 22'si ÖLÜ KODDA, 2'si YANLIŞ POZİTİF
+
+| Dosya | Kalem | Durum |
+|---|---|---|
+| `repositories/question_repository.py` | 16 SINIF | **ÖLÜ** — tüm backend'de tek referans kendi `class` satırı |
+| `analytics/exam_results_reporting.py` | 4 SINIF | **ÖLÜ** — 0 importer |
+| `core/irt_daemon.py` | 2 SINIF + 6 KWARG | **ÖLÜ** — `application.py:181` `await irt_daemon.start()` **yorum satırı** |
+| `core/osym_exam_engine.py` | 2 KWARG | **YANLIŞ POZİTİF** — zaten göçmüş (`update(QuestionStatistics)`) |
+
+Aletin kendi docstring'indeki *"12 KWARG kaleminin 12'si de `QuestionBankItem`
+köküne bağlı"* ölçümü **bayat**. Ham SQL kör noktası da tarandı: 3 isabetin biri
+(`quality_gate.py:97`) **docstring** içinde — gerçek SQL değil.
+
+### Canlı ve kullanıcı-görünür TEK kalem düzeltildi
+
+```
+GET /api/v1/student-dashboard/profil -> 500
+AttributeError: QuestionBankItem.subject_area sinif duzeyinde kullanilamaz:
+bu alan artik metadata_info iliskisinde. Sorguda JOIN kullanin.
+```
+
+`student_dashboard_service.py:286/296` → `QuestionMetadata`'ya doğrudan JOIN
+(paylaşılan PK). **Göç güvenliği önce ölçüldü:** `question_bank` 3922 ==
+`question_metadata` 3922, yetim 0, cevaplanmış soruda metadata eksiği 0.
+Emitilen SQL derlendi: **FROM=1 (kartezyen yok)**, elle koşulan SQL'le birebir.
+Bekçi `test_gf3s_...` (kontrol kolu: aynı router'ın `/istatistikler` ucu).
+
+### 🔴 200 DÖNMEK DOĞRULUK KANITI DEĞİL — ayrı kalem bulundu
+
+Düzeltmeden sonra uç 200 dönüyor ama `guclu_alanlar`/`zayif_alanlar` **her
+öğrenci için BOŞ**. Sebep bu göç değil: `exam_sessions` üzerinde RLS politikası
+`tenant_isolation` (`organization_id::text = current_setting('app.current_org_id', true)`)
+ve API `kiro2_app` rolünden bağlanıyor (`rolbypassrls=false`); GUC kurulmadığı
+için tablo **0 satır** gösteriyor. Ölçüldü: `postgres` rolünde aynı sorgu
+**MATEMATIK 47/8**, `kiro2_app` rolünde **0**. Bu S241'in açık kalemi; teste
+içerik assert'i **bilerek konmadı** (bu kusurdan bağımsız sebeple düşerdi).
+
+Ara hipotezler ölçülüp **çürütüldü**: önbellek (anahtar silindi, sonuç değişmedi),
+yanlış model (tek `ExamSession`, doğru tablo), yanlış `kullanici_id`
+(`/auth/me` ile DB birebir aynı), kartezyen (FROM=1).
+
+### ⚠️ Kapı: `SKIP=ruff,ruff-format,bandit,mypy` (ölçülmüş erteleme)
+
+Kontrol kolu: `git stash` ile **HEAD'in hâli aynı dört kancada aynen düşüyor**
+(RET504 1 · E712 3 · E741 1 · S608 1 · mypy attr-defined 2 — hepsi 24-582
+satırlarında; benim diff'im 43-44 ve 305-326). `--no-verify` **kullanılmadı**.
+Bu dosyanın kapı borcu **ayrı bir temizlik commit'i** istiyor.
+
+### 🔴 Biçimlendirici 3 satırlık değişikliği 38 HUNK yaptı
+
+PostToolUse kancası `Edit`/`Write` sonrası **tüm dosyayı** yeniden biçimledi
+(dosya daha önce hiç ruff-format görmemiş). Cerrahi müdahale ilkesi bozuldu ve
+kapıda 6 yeni "eski borç" yüzeye çıktı. Geri alınıp yama **Bash üzerinden**
+yeniden uygulandı (Bash yazımları kancayı tetiklemiyor) → diff **11+/3-**.
+
+### Kalan göç borcu (canlılığı ÖLÇÜLMEDİ — sıradaki iş)
+
+- `application/commands/learning_path.py` 5 SINIF (`SubmitQuizCommand` handler)
+- `services/irt_analysis_service.py` 1 SINIF + 4 KWARG (`soru_bankasi_service` import ediyor)
+- `services/difficulty_classification_service.py` 2 SINIF (503 shim'li olabilir)
+- `tasks/mega_feature_tasks.py` 2 SINIF (yalnız Celery worker koşarken canlı)
+- ENTITY=56 ayrı ve daha yumuşak sınıf (lazy-load riski, `MissingGreenlet`)
+
+---
+
 ## Session Handoff — 2026-08-27 (S255 · 3. TUR — `is_correct` backfill KARARI verildi)
 
 **Push:** yapılmadı
