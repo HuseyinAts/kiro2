@@ -48,6 +48,115 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · sınav akışının 4 GF testi YANLIŞ-SIFIR üretiyordu)
+
+**Aralık:** `3236630f3..6be68d48d` · **Push:** yapılmadı
+
+### Devralınan görevin öncülü iki yerde düzeldi
+
+| Öncül (S254 devir notu) | Ölçüm |
+|---|---|
+| "GF3c/GF1w/GF3w sessizce atlanıyor" — **3 test** | **4.** GF3d de aynı helper'ı çağırıyor (`:466`). Devralırken kapsam yeniden ilan edilmeli |
+| "havuz yetmiyor" (tek kusur) | **İki ayrı kusur.** Havuzun yetmemesi *doğru* davranıştı; kusur (a) alet, (b) istenen şekil |
+
+### Kök neden — ikisi de gerekliydi
+
+**D1 (ALET):** `_create_exam_session` *kurulum* reddini `pytest.skip`'e çeviriyordu.
+Kanıt: dört testi tek başına koşunca **`4 skipped, EXIT KODU 0`**. `golden-flows.md`
+bu pakete *"Merge block"* yetkisi veriyor; yani kapı yeşil rapor verirken
+save-answer / complete / BKT / doğrulama yollarının **hiçbiri** ölçülmüyordu.
+
+**D2 (ŞEKİL):** helper çıplak `{"exam_type":"TYT"}` gönderiyordu →
+`osym_exam_engine.py:415-420` tek-ders dalına **hiç girilmiyor** → `total_questions`
+120 kalıyor → TYT'nin dokuz dersi kapılı havuzda karşılanmıyor
+(**MATEMATIK 26 + KIMYA 7 = 33**). Yani **400 doğru cevaptı.** Üstelik o şekli üreten
+**canlı kullanıcı yolu YOK** (ölçüldü: `ExamStart.tsx` **0 importer**,
+`examService.createExamSession` **0 çağıran**; routed olan `ModernExamStart` →
+`ModernExamStartPage.tsx:154-165` daima `custom_config` gönderiyor).
+
+> D1'i tek başına düzeltmek paketi **kalıcı kırmızı** yapardı; D2'yi tek başına
+> düzeltmek bir sonraki şekil kaymasını yine sessize alırdı.
+
+### 🔴 Değer SATIRDA değil GÖZLEMLENEBİLİR SONUÇTA ölçüldü
+
+Aynı arıza (havuz 120 soruyu karşılamıyor) enjekte edildiğinde:
+
+| | ÖNCE | SONRA |
+|---|---|---|
+| Sonuç | `4 skipped` | **`4 failed`** |
+| Exit | **0** | **1** |
+
+"4 skipped → 4 passed" tek başına *"+0 değer"* diye okunabilirdi (exit kodu ikisinde
+de 0). Ayırt eden ölçüm, **kusuru geri enjekte edip kapının kırmızıya döndüğünü
+görmek** oldu.
+
+### Regresyon — kontrol kolu
+
+| | HEAD~1 | HEAD |
+|---|---|---|
+| passed | 142 | **146** |
+| skipped | 25 | **21** |
+| failed | 12 | 12 — **fail kümesi BİREBİR AYNI** (`diff` boş) |
+
+12 fail **önceden var** (chat/2FA/learning-path/fsrs/kvkk/duel/diary/adhd/flashcards +
+`gf1z`), hiçbiri bu turda üretilmedi. İddia edilmedi, **ölçüldü** (iş commit'lendikten
+sonra `git checkout HEAD~1 -- <dosya>` ile).
+
+### Bekçi + mutasyon
+
+`tests/unit/test_golden_flow_exam_setup_gate.py` (7 test, kardeş `_login` kapısının
+biçimi): üç skip dalının davranışı · gönderilen **şekil** (`custom_config.subject` +
+`question_count` tavanı) · ikiz yardımcının ayrışması · **AST sınıf bekçisi** ·
+alet doğrulaması. **Mutasyon 6/6** — M1 skip'e dönüş · M2 `custom_config` silme ·
+M3 yalnız `subject` silme · M4 yardımcıyı yeniden adlandırma (alet doğrulaması) ·
+M5 delegasyonu bozma · M6 `question_count` tavanını aşma.
+
+AST kullanıldı çünkü ham metin araması *"bir deseni ANLATAN yorum onu İÇERİR"*
+tuzağına düşerdi — bu depoda tek oturumda üç kez ısırmış bir sınıf.
+
+### Düşürülen aday bulgu (ölçüldü, temiz çıktı)
+
+Motor `difficulty` için yalnız `{kolay, orta, zor, cok_zor}` kabul ediyor, gerisini
+`logger.warning` ile **sessizce yutuyor**. "Öğrencinin zorluk seçimi kayboluyor olabilir"
+diye ölçüldü: `ModernExamStartPage.tsx:137-142` **4/4 geçerli Türkçe değer**
+gönderiyor, varsayılan `'orta'`. **Canlı kusur yok** — iddia edilmedi.
+
+### Ölü kod (bahsedildi, SİLİNMEDİ — kapsam dışı)
+
+- `frontend/src/components/Exam/ExamStart.tsx` — **0 importer**; üstelik
+  `custom_config` gönderiyor ama içinde `subject` **yok** → bağlansaydı 400 alırdı
+- `frontend/src/services/examService.ts:648 createExamSession` — **0 çağıran**
+
+### ⚠️ E3 istisnası (gerekçe zorunlu)
+
+Bu tur `frontend/src` · `backend/api` · `backend/services` · `backend/algorithms`
+yollarının **hiçbirine** dokunmadı → oturum-sonu kancası "0 kullanıcı-görünür" uyarısı
+düşürecek. **Gerekçe:** bu bir ölçüm-aleti turuydu; A1'in sınav akışını koruyan dört
+bekçi bugüne kadar **hiçbir şey ölçmüyordu**, yani onlara dayanan her "kapı yeşil"
+raporu boştu. Kullanıcı-görünür çıktı üretmedi ama kullanıcı-görünür kusurların
+**görünmesini** sağladı.
+
+### 🔴 Bu turda kendi hatam (yakalandı, kayıp yok)
+
+İki uzun pytest koşumunu **tek komuta** koydum; 2 dk zaman aşımı ikinci koşumu
+kesti ve **değişikliğim `git stash`'te kaldı**. `git stash pop` + ankraj doğrulaması
+(`custom_config` 2, ölü assert 0) ile kurtarıldı. Doğru yordam sonradan uygulandı:
+**önce commit, sonra `git checkout HEAD~1 --`** — commit'li işte kayıp yapısal olarak
+imkânsız. Ayrıca kabuk `cd`'si kalıcı olduğu için ders-defteri komutu yanlış dizinde
+koştu (`pwd` ile yakalandı).
+
+### Açık kalemler (S254'ten devralınan, hâlâ açık)
+
+- Batch zehirlenmesi: `""` dışında başka tetikleyici var mı **ÖLÇÜLMEDİ**; kalıcı
+  çözüm (per-item retry / sayaç) plana alınmadı
+- Bayat `is_correct` satırlarının geriye dönük backfill'i — karar verilmedi
+- `models/question_bank.py` göçünün kalan ~47 erişimi (11 dosya)
+- `scripts/_verify_beta_selection.py` örnek düzeyi sessiz `None`
+- mypy borcu (6 hata, 3 dosya)
+- **YENİ:** GF paketinde **12 önceden var olan fail** artık isim isim listeli — ayrı iş
+
+---
+
 ## Session Handoff — 2026-08-27 (S254 · 2. TUR — sınav akışında 5 kusur kapandı)
 
 **Aralık:** `9bec7b700..6c14afc3f` · **Push:** yapılmadı
