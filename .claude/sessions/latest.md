@@ -157,6 +157,67 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · 3. TUR — `is_correct` backfill KARARI verildi)
+
+**Push:** yapılmadı
+
+### Karar ölçümle verildi (tahminle değil)
+
+| Ölçüm | Değer |
+|---|---|
+| `student_answers` toplam | **546** (98 oturum) |
+| Cevaplı satır | 457 → **456 doğru / 1 yanlış** |
+| Cevap temizlenmiş ama not duruyor | **5** |
+| **Toplam fosil** | **6** (%1,1) |
+| Satırların sahibi | **hepsi test/prob hesabı — gerçek öğrenci 0** |
+
+İki fosil sınıfı da S254'ün K2 düzeltmesinden **önceki** dönemden:
+(A) cevap temizlenmiş, not duruyor · (B) cevap değiştirilmiş, not eski cevaptan kalmış.
+
+### 🔴 Backfill'den ÖNCE üreticinin düzeldiği doğrulandı
+
+Yoksa semptom boyanmış olurdu. Canlı ölçüm, **üç geçişin üçü de**:
+
+```
+doğru cevap  -> E|true          temizle -> <NULL>|<NULL>          yanlışa değiş -> A|false
+```
+
+### Backfill — `scripts/is_correct_fosil_backfill_20260827.sql`
+
+- Yedek tablo `student_answers_is_correct_yedek_20260827` (546 satır).
+  **`IF NOT EXISTS` KULLANILMADI** — tablo zaten varsa script sessizce
+  *yedeksiz* devam ederdi.
+- **Güvenlik durdurması:** düzeltilecek satır >50 ise `RAISE EXCEPTION`.
+  Karar 6 satırlık bir ölçüme dayanıyordu; ölçüm bayatlarsa script durmalı.
+  Koşumda `NOTICE: TOPLAM=6` → geçti.
+- `UPDATE 5` + `UPDATE 1`. Doğrulama **0/0**; yedekten farklı olan **tam 6** →
+  yan etki yok. **456 doğru satıra dokunulmadı** (gereksiz yazım + `answered_at`
+  gürültüsü istemedik).
+- Geri alma SQL'i dosyanın başlığında.
+
+### 🔴 Asıl kazanç: ŞEKİL bekçisi ≠ DAVRANIŞ bekçisi
+
+Var olan `test_save_answer_upsert_parity.py` UPSERT'in **SQL şeklini** çiviliyor
+(`is_correct: stmt.excluded.is_correct`). Notu **üreten** blok
+(`question_content.correct_answer` sorgusu, `except Exception: logger.debug`
+ile sarılı) ölse `is_correct` her yazımda sessizce NULL olurdu ve şekil testi
+**yeşil kalırdı**. Ölçüldü:
+
+| Mutasyon | DAVRANIŞ bekçisi | PARİTE bekçisi |
+|---|---|---|
+| MG1 INSERT yolu notu düşürsün (`is_correct=None`) | **ÖLDÜ** | HAYATTA |
+| MG2 notlama bloğu ölü olsun (`if _ca` → `if False`) | **ÖLDÜ** | HAYATTA |
+
+Yeni bekçi: `test_save_answer_clear_persists.py::test_is_correct_cevapla_birlikte_hareket_eder`
+— notla → temizle → doğruya geç → yanlışa geç, dördünün de DB'deki değeri
+ölçülür. `SATIR_SQL`'e `is_correct` + `correct_answer` eklendi
+(**LEFT JOIN bilerek**: satırın *varlığı* yalnız `student_answers`a bağlı kalmalı,
+yoksa üstteki üç test yanlış sebeple düşerdi).
+
+Test: 4/4 (canlı Postgres, dış transaction ROLLBACK — kalıcı yazım yok).
+
+---
+
 ## Session Handoff — 2026-08-27 (S255 · 2. TUR — cevap kuyruğunda 3 YENİ zehirlenme tetikleyicisi)
 
 **Aralık:** `23e03f0c2..<batch commit>` · **Push:** yapılmadı
