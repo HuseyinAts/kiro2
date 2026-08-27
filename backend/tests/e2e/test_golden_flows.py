@@ -832,6 +832,111 @@ def test_gf3x_unknown_field_must_not_delete_saved_answer(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF3y / GF3z: toplu yazma kuyruğunu zehirleyen girdiler kapıda durmalı
+# ---------------------------------------------------------------------------
+
+
+def _gf_kurulum_bir_cevapla(client: httpx.Client) -> tuple[str, dict[str, str], str]:
+    """Küçük oturum kurar, ilk soruya "B" yazar ve yazıldığını DOĞRULAR."""
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+    session_id = _create_small_exam_session(client, token)
+
+    q = client.get(
+        f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
+    ).json()
+    question_id = q.get("question_id") or q.get("id")
+    assert question_id, f"kurulum: current-question'da id yok: {q}"
+
+    ilk = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={"question_id": question_id, "selected_answer": "B", "response_time": 2.0},
+    )
+    assert ilk.status_code == 200, f"kurulum: {ilk.status_code} {ilk.text[:200]}"
+    # ALET DOĞRULAMASI: cevap hiç yazılmadıysa "korundu" assert'i yanlış
+    # sebeple geçerdi.
+    once = client.get(f"/api/v1/osym-exam/{session_id}/answers", headers=headers).json()
+    assert (
+        once.get("answers", {}).get(question_id) == "B"
+    ), f"kurulum: ilk cevap yazılmamış: {once}"
+    return session_id, headers, question_id
+
+
+@pytest.mark.parametrize("gecersiz", ["F", "AB", "1"])
+def test_gf3y_gecersiz_cevap_harfi_reddedilir(client: httpx.Client, gecersiz: str):
+    """A–E dışı `selected_answer` **422** olmalı — 200 dönmek veri kaybıdır.
+
+    Canlı ölçüm (27 Ağu 2026, `scripts/batch_zehirlenme_probu.py`): bu değerler
+    uçtan **200** dönüyordu ama toplu yazımda PostgreSQL tarafından
+    reddediliyordu (`CheckViolationError` / `StringDataRightTruncationError`).
+    Tek işlem geri alındığı ve kuyruk modül düzeyinde TEK nesnede olduğu için
+    aynı gruptaki **başka öğrencilerin** cevapları da düşüyordu:
+    3 geçerli cevaptan 2'si yok oluyordu.
+    """
+    session_id, headers, question_id = _gf_kurulum_bir_cevapla(client)
+
+    resp = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={
+            "question_id": question_id,
+            "selected_answer": gecersiz,
+            "response_time": 1.0,
+        },
+    )
+    assert resp.status_code == 422, (
+        f"GF3y: geçersiz cevap {gecersiz!r} reddedilmedi (HTTP "
+        f"{resp.status_code} {resp.text[:200]}). Toplu yazım kuyruğunu "
+        "zehirler. Fix: SaveAnswerRequest.selected_answer doğrulayıcısı "
+        "(backend/api/sinav.py)."
+    )
+
+    sonra = client.get(
+        f"/api/v1/osym-exam/{session_id}/answers", headers=headers
+    ).json()
+    assert (
+        sonra.get("answers", {}).get(question_id) == "B"
+    ), f"GF3y: reddedilen istek önceki cevabı SİLDİ: {sonra.get('answers')}"
+
+
+def test_gf3z_yabanci_question_id_reddedilir(client: httpx.Client):
+    """Oturuma ait olmayan `question_id` 4xx olmalı — 200 dönmek veri kaybıdır.
+
+    `student_answers.question_id` `question_bank(id)`'ye FK'lı; yabancı bir id
+    toplu yazımı `ForeignKeyViolationError` ile düşürüyordu. Bu, **geçersiz
+    girdi gerektirmeyen** en ağır vektördü: kuyruk paylaşıldığı için bozuk
+    id gönderen bir istemci BAŞKA öğrencilerin cevaplarını siliyordu.
+    """
+    import uuid as _uuid
+
+    session_id, headers, question_id = _gf_kurulum_bir_cevapla(client)
+
+    resp = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={
+            "question_id": str(_uuid.uuid4()),
+            "selected_answer": "A",
+            "response_time": 1.0,
+        },
+    )
+    assert 400 <= resp.status_code < 500, (
+        f"GF3z: oturuma ait olmayan question_id kabul edildi (HTTP "
+        f"{resp.status_code} {resp.text[:200]}). Fix: save_answer'da "
+        "`question_id not in session_data.questions` kontrolü "
+        "(backend/core/osym_exam_engine.py)."
+    )
+
+    sonra = client.get(
+        f"/api/v1/osym-exam/{session_id}/answers", headers=headers
+    ).json()
+    assert (
+        sonra.get("answers", {}).get(question_id) == "B"
+    ), f"GF3z: reddedilen istek önceki cevabı SİLDİ: {sonra.get('answers')}"
+
+
+# ---------------------------------------------------------------------------
 # GF4w.1: learning-path register-wrong-answers must accept a valid question_id
 # ---------------------------------------------------------------------------
 

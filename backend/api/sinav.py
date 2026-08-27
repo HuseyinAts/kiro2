@@ -89,8 +89,41 @@ class SaveAnswerRequest(BaseModel):
         return s
 
     selected_answer: str | None = Field(
-        None, description="Seçilen cevap (A, B, C, D, E)"
+        None, description="Seçilen cevap (A, B, C, D, E) — boş/None = cevabı temizle"
     )
+
+    @field_validator("selected_answer", mode="before")
+    @classmethod
+    def selected_answer_normalize_et_ve_dogrula(cls, v: object) -> str | None:
+        """A–E dışı değer 422 döner; boş/None "cevabı temizle" olarak KALIR.
+
+        S255 canlı ölçümü — bu alan zincirin hiçbir katmanında doğrulanmıyordu
+        ve dört değer batch'i zehirliyordu (uç yine 200 dönüyordu):
+
+            "F" / "Z"  -> CheckViolationError  (kısıt: NULL veya 'A'..'E')
+            "AB"       -> StringDataRightTruncationError (varchar(1))
+            "  "       -> strip sonrası "" -> CheckViolationError
+
+        Toplu yazımda tek bozuk öğe `commit()`e ulaşılmadan tüm işlemi geri
+        alıyor; kuyruk modül düzeyinde TEK nesnede (`osym_exam_engine.py:2180`)
+        olduğu için düşen cevaplar **başka öğrencilerin** cevapları olabiliyor.
+
+        `""` ve `None` REDDEDİLMEZ — frontend'in meşru `clearAnswer`'ı odur
+        (`examStore.ts`); reddedilirse öğrenci cevabını geri alamaz.
+        Sözleşme: `tests/unit/test_save_answer_girdi_kapisi.py`
+        """
+        if v is None:
+            return None
+        s = str(v).strip().upper()
+        if s == "":
+            return ""
+        if s not in {"A", "B", "C", "D", "E"}:
+            raise ValueError(
+                "selected_answer yalnızca A, B, C, D, E veya boş olabilir "
+                f"(gelen: {str(v)[:20]!r})"
+            )
+        return s
+
     response_time: float | None = Field(None, description="Cevaplama süresi (saniye)")
     rating: int | None = Field(
         None, description="FSRS rating (1=Again, 2=Hard, 3=Good, 4=Easy)", ge=1, le=4
@@ -550,7 +583,10 @@ async def save_answer(
         response_time=request.response_time,
         rating=request.rating,
     )
-    return await command_bus.execute(command)
+    # mypy: bus `Any` doner; imza `dict[str, Any]` vaat ediyor. Ara
+    # degisken sozlesmeyi ACIK kilar (davranis-notr, S255 kapi borcu).
+    sonuc: dict[str, Any] = await command_bus.execute(command)
+    return sonuc
 
 
 @router.post(
@@ -586,7 +622,10 @@ async def flag_question(
         question_id=request.question_id,
         flagged=request.flagged,
     )
-    return await command_bus.execute(command)
+    # mypy: bus `Any` doner; imza `dict[str, Any]` vaat ediyor. Ara
+    # degisken sozlesmeyi ACIK kilar (davranis-notr, S255 kapi borcu).
+    sonuc: dict[str, Any] = await command_bus.execute(command)
+    return sonuc
 
 
 @router.get("/{session_id}/remaining-time", summary="Kalan Süre")
@@ -934,7 +973,10 @@ async def cancel_exam(
 ) -> dict[str, Any]:
     command_bus = _resolve_command_bus(command_bus)
     command = CancelExamCommand(student_id=str(current_user.id), session_id=session_id)
-    return await command_bus.execute(command)
+    # mypy: bus `Any` doner; imza `dict[str, Any]` vaat ediyor. Ara
+    # degisken sozlesmeyi ACIK kilar (davranis-notr, S255 kapi borcu).
+    sonuc: dict[str, Any] = await command_bus.execute(command)
+    return sonuc
 
 
 # Task 69.2: Boş bırakma (Empty answer handling) - REQ-1.6

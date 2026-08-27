@@ -176,6 +176,12 @@ class OSYMExamEngine:
         # P2: Performance analysis cache — idempotent re-call protection (TTL 1 hour, max 500 sessions)
         self._performance_cache: TTLCache = TTLCache(maxsize=500, ttl=3600)
 
+        # S255: toplu cevap yazımının SESSİZ kayıpları ölçülebilir olsun.
+        # `logger.error` tek başına yetmiyordu — günlük dondurulmuş bir sayı
+        # vermez ve "bugün kaç öğrenci cevabı düştü" sorusu cevapsız kalır.
+        self.toplu_yazim_hata_sayaci: int = 0
+        self.dusen_cevap_sayaci: int = 0
+
         # ÖSYM sınav konfigürasyonları
         # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
         # DB aktif soru dağılımı (Mart 2026):
@@ -615,6 +621,63 @@ class OSYMExamEngine:
             )
             return None
 
+    async def _toplu_yaz_kurtarmali(
+        self, stmt: Any, batch: list[dict[str, Any]]
+    ) -> tuple[int, int]:
+        """Toplu UPSERT'i dener; düşerse öğeleri TEK TEK yazar.
+
+        Returns:
+            (yazilan, dusen)
+
+        NEDEN VAR (ölçüldü 27 Ağu 2026, `scripts/batch_zehirlenme_probu.py`):
+        PostgreSQL tek bir bozuk satırda TÜM işlemi geri alır, `commit()`e hiç
+        ulaşılmaz. Kuyruk modül düzeyinde TEK nesnede (`:2180`) olduğu için
+        düşen cevaplar **başka öğrencilerin** cevapları olabiliyordu ve
+        istemci HTTP 200 görüyordu:
+
+            "F" / "AB" / yabancı question_id  ->  3 geçerli cevaptan 2'si YOK
+
+        Katman A (girdi kapısı) ve B (soru üyeliği) bugün bilinen dört
+        tetikleyiciyi kapatıyor. Bu metot BEŞİNCİ, HENÜZ BİLİNMEYEN tetikleyici
+        içindir: patlama yarıçapını 1000'den 1'e indirir.
+
+        Tek-tek yol YALNIZCA hata dalında koşar; sağlam batch tek işlemde
+        yazılır (çivi: `tests/unit/test_toplu_cevap_dayanikliligi.py`).
+        """
+        from core.database import get_db_session_context
+
+        try:
+            async with get_db_session_context() as db_session:
+                await db_session.execute(stmt, batch)
+                await db_session.commit()
+            return len(batch), 0
+        except Exception as toplu_hata:
+            self.toplu_yazim_hata_sayaci += 1
+            logger.error(
+                f"Bulk DB worker error: {toplu_hata} — {len(batch)} öğe tek tek "
+                "yeniden denenecek"
+            )
+
+        yazilan = dusen = 0
+        for oge in batch:
+            try:
+                async with get_db_session_context() as tekil_oturum:
+                    await tekil_oturum.execute(stmt, [oge])
+                    await tekil_oturum.commit()
+                yazilan += 1
+            except Exception as oge_hatasi:
+                dusen += 1
+                self.dusen_cevap_sayaci += 1
+                logger.error(
+                    "Cevap SATIRI düşürüldü (toplu yazım kurtarması)",
+                    extra_data={
+                        "session_id": oge.get("exam_session_id"),
+                        "question_id": oge.get("question_id"),
+                        "hata": str(oge_hatasi)[:200],
+                    },
+                )
+        return yazilan, dusen
+
     async def save_answer(
         self,
         session_id: str,
@@ -647,6 +710,25 @@ class OSYMExamEngine:
                 return False
 
             if session_data.status != ExamStatus.IN_PROGRESS:
+                return False
+
+            # S255 — Katman B: soru bu oturuma AİT Mİ?
+            # `student_answers.question_id` `question_bank(id)`'ye FK'lı. Yabancı
+            # bir id yazılırsa ForeignKeyViolationError toplu yazımı düşürür ve
+            # kuyruk TEK nesnede paylaşıldığı için AYNI gruptaki BAŞKA
+            # ÖĞRENCİLERİN cevapları da geri alınır. Canlı ölçüldü (27 Ağu 2026):
+            # uydurma question_id -> uç 200, 3 geçerli cevaptan 2'si YOK OLDU.
+            # `session_data.questions` oturum kurulduktan sonra hiç değişmiyor
+            # (ölçüldü: depoda `.questions.append/extend` yok), yani öğrencinin
+            # meşru olarak cevaplayabileceği her soru bu listededir.
+            if question_id not in session_data.questions:
+                logger.warning(
+                    "save_answer: oturuma ait olmayan question_id reddedildi",
+                    extra_data={
+                        "session_id": session_id,
+                        "question_id": str(question_id)[:64],
+                    },
+                )
                 return False
 
             # Cevabı kaydet (normalize: uppercase + strip)
@@ -691,23 +773,23 @@ class OSYMExamEngine:
 
                             # Bulk UPSERT
                             if batch:
-                                async with get_db_session_context() as db_session:
-                                    stmt = pg_insert(StudentAnswer)
-                                    stmt = stmt.on_conflict_do_update(
-                                        constraint="uq_student_answer",
-                                        set_={
-                                            "selected_answer": stmt.excluded.selected_answer,
-                                            "response_time_seconds": stmt.excluded.response_time_seconds,
-                                            "is_correct": stmt.excluded.is_correct,
-                                            "answered_at": datetime.now(),
-                                            "answer_changes": StudentAnswer.answer_changes
-                                            + 1,
-                                        },
-                                    )
-                                    await db_session.execute(stmt, batch)
-                                    await db_session.commit()
+                                stmt = pg_insert(StudentAnswer)
+                                stmt = stmt.on_conflict_do_update(
+                                    constraint="uq_student_answer",
+                                    set_={
+                                        "selected_answer": stmt.excluded.selected_answer,
+                                        "response_time_seconds": stmt.excluded.response_time_seconds,
+                                        "is_correct": stmt.excluded.is_correct,
+                                        "answered_at": datetime.now(),
+                                        "answer_changes": StudentAnswer.answer_changes
+                                        + 1,
+                                    },
+                                )
+                                # S255: tek bozuk öğe TÜM grubu (1000'e kadar
+                                # cevap, farklı öğrencilerin) geri aldırıyordu.
+                                await self._toplu_yaz_kurtarmali(stmt, batch)
                         except Exception as e:
-                            logger.error(f"Bulk DB worker error: {e}")
+                            logger.error(f"Bulk DB worker error (kuyruk): {e}")
                         finally:
                             for _ in batch:
                                 self._db_queue.task_done()
