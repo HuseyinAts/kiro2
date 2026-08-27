@@ -46,7 +46,10 @@ interface ExamResult {
   correct_count: number
   wrong_count: number
   empty_count: number
+  /** `raw_score` — YÜZDE (0-100). Eşik mantığını (85/70/50) besler, net DEĞİLDİR. */
   score: number
+  /** `net_score` — ÖSYM neti (`doğru - yanlış/4`). Negatif olabilir. */
+  net: number
   duration: number
   duration_limit: number
   completed_at: string
@@ -117,6 +120,15 @@ export const ModernExamResultsPage: React.FC = () => {
         wrong_count: perfData.wrong_answers,
         empty_count: perfData.empty_answers,
         score: perfData.raw_score,
+        // 🔴 İSTEMCİDE YENİDEN HESAPLANMIYOR — KASITLI. `correct/wrong` elimizde,
+        // yani `doğru - yanlış/4` buraya yazılabilirdi. Yazılmıyor: net hesabı
+        // backend'de tam da bu yüzden 5 kopyaya çıkmış ve ikisi çelişmişti
+        // (`core/osym_puanlama.py` docstring'i). İstemciye 6. kopyayı koymak,
+        // az önce tek kaynağa bağladığımız kuralı yeniden çatallardı. Backend
+        // `net_score` göndermezse alan BOŞ görünür — ki bu doğrusudur: sessizce
+        // "makul" bir sayı uydurmak, sunucu regresyonunu öğrenciye doğru bir
+        // netmiş gibi gösterirdi.
+        net: perfData.net_score,
         duration: durationMinutes,
         duration_limit: sessionData?.duration_minutes || 0,
         completed_at: sessionData?.completed_at || new Date().toISOString(),
@@ -273,7 +285,21 @@ export const ModernExamResultsPage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Typography variant="h6" gutterBottom>{getScoreMessage(result.score)}</Typography>
+          {/* Daire ETİKETLENİYOR: içindeki sayı bir YÜZDE. Etiketsizken öğrenci
+              onu net sanıyordu — 40 soruluk bir testte "30" görmek net gibi
+              okunuyor ama burada %30 demek. İki sayı ekranda yan yana
+              duracaksa hangisinin ne olduğu YAZILMALI. */}
+          <Typography variant="body2" color="text.secondary">% başarı</Typography>
+
+          {/* A1 kabul kriterinin teslim ayağı: "netini görür". */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">Net</Typography>
+            <Typography variant="h3" fontWeight={700} color="primary.main">
+              {result.net}
+            </Typography>
+          </Box>
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>{getScoreMessage(result.score)}</Typography>
 
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={12} sm={4}>
