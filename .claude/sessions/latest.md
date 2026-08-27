@@ -157,6 +157,107 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · 2. TUR — cevap kuyruğunda 3 YENİ zehirlenme tetikleyicisi)
+
+**Aralık:** `23e03f0c2..<batch commit>` · **Push:** yapılmadı
+
+### Soru "başka tetikleyici var mı" idi; cevap: **üç tane daha**
+
+Canlı prob yazıldı (`backend/scripts/batch_zehirlenme_probu.py`). Hepsi uçtan **HTTP 200**:
+
+| aday | ÖNCE | SONRA |
+|---|---|---|
+| T0 kontrol kolu `"B"` | 200 · 4/4 · hata 0 | 200 · 4/4 · hata 0 *(değişmedi)* |
+| T1 `""` (S254) | 200 · 4/4 · hata 0 | 200 · 4/4 · hata 0 *(zaten kapalı)* |
+| **T2** `"F"` (A–E dışı) | 200 · **1/3** · hata 1 | **422** · 3/3 · hata 0 |
+| **T3** `"AB"` (`varchar(1)`) | 200 · **1/3** · hata 1 | **422** · 3/3 · hata 0 |
+| **T4** yabancı `question_id` (FK) | 200 · **1/3** · hata 1 | **400** · 3/3 · hata 0 |
+| **T5** `"  "` (strip → `""`) | 200 · 3/3 · hata 1 | 200 · 4/4 · hata 0 |
+| T6 aynı soruya eşzamanlı 2. yazım | — | **tetiklemedi** (ölçülmüş negatif) |
+
+`1/3` = aynı gruptaki **üç geçerli cevaptan ikisi yok oldu**. Komşu kaybı
+zamanlamaya bağlı: ilk turda T2/T3 "kurtuldu", ikinci turda kurtulmadı —
+yani "kurtuldu" güvenlik değil **şans**tı.
+
+### 🔴 Patlama yarıçapı KULLANICILAR ARASI
+
+`osym_exam_engine = OSYMExamEngine()` (`:2180`) **modül düzeyi tek nesne** →
+`self._db_queue` o worker sürecindeki **bütün öğrenciler** için ortak. Yani bozuk
+istek gönderen bir istemci, **başka öğrencilerin** cevaplarını sildiriyordu.
+
+### 🔴 T5, S254'ün düzeltmesinin KAÇIRDIĞI biçim
+
+`normalized = selected_answer.strip().upper() if selected_answer else None` —
+`"  "` **truthy**, `else None` dalına hiç girmiyor, `.strip()` sonucu `""`
+batch'e giriyor. **Kapı ham değere baktı, normalizasyon SONUCUNA değil.**
+
+### Üç katman (kullanıcı kararı: kapılar + dayanıklılık, ve 422)
+
+| Katman | Ne | Nerede |
+|---|---|---|
+| **A** | `selected_answer` doğrulayıcı: A–E / `""` / `null`, gerisi **422**. `""` ve `None` KORUNDU (meşru `clearAnswer`) | `api/sinav.py` |
+| **B** | `question_id` oturuma ait mi (`session_data.questions`) | `core/osym_exam_engine.py` |
+| **C** | Toplu yazım düşerse öğeler **tek tek** yazılır + sayaç (`toplu_yazim_hata_sayaci` / `dusen_cevap_sayaci`) | `core/osym_exam_engine.py` |
+
+**C konteynerde CANLI kanıtlandı** (`scripts/toplu_yazim_kurtarma_probu.py`):
+1 geçerli + 1 bozuk öğe → `(yazilan, dusen) = (1, 1)`, geçerli öğenin cevabı
+**`'D'` olarak yazıldı**, bozuk satır yazılmadı, sayaçlar `0 → 1`.
+Eskiden bu batch'te geçerli cevap da kaybolurdu.
+
+### Mutasyon 5/5 (host) + 4/4 (canlı)
+
+Host: MA1 doğrulayıcı her şeyi kabul etsin · MA2 `""`'yi reddetsin · MC1 kurtarma
+dalını kaldır · MC2 sağlam batch de tek tek yazılsın (çırpma kontrol kolu) ·
+MC3 sayaç artmasın. **Canlı:** Katman A+B konteynere mutasyonlu dağıtıldı →
+`gf3y[F/AB/1]` + `gf3z` **4/4 düştü**; geri alındıktan sonra 4/4 geçti.
+*Host mutasyonu GF testlerini etkilemez (onlar konteynere vurur) — bu yüzden
+canlı mutasyon ayrıca yapıldı.*
+
+### S254'ün parite bekçisi KORUNDU
+
+`test_save_answer_upsert_parity.py` `_db_worker`'ı `save_answer`'ın **iç
+fonksiyonu** ve içinde tam **2** `on_conflict_do_update` olarak çiviliyor.
+Bu yüzden `stmt` yerinde bırakıldı; yalnız **yürütme** metoda çıkarıldı.
+Refactor'dan önce bekçiyi okumak, onu kırmaktan ucuza geldi.
+
+### Kapı borcu (SKIP değil, düzeltildi)
+
+`api/sinav.py`'de **3 önceden var olan** mypy `no-any-return`. Kontrol kolu:
+`git diff HEAD -U0` → diff'im yalnız **92-126** aralığına dokunuyor, o satırların
+**hiçbirine** değil. S254 emsali izlendi: çekirdek kapıyı SKIP'lemektense
+davranış-nötr ara değişkenle tiplendi. Ayrıca prob script'lerine ev deseninde
+`# nosec B404/B603/B607/B608` + gerekçe kondu ve gerekçeyi **doğru kılmak için**
+SQL'e giden tek değişken `uuid.UUID()` ile doğrulanıyor.
+
+### Deploy
+
+`docker compose build backend` + `up -d --no-deps backend` → md5 `git == imaj`
+(2/2), `/health` 200. `docker cp` yazılabilir katmanda kalır ve recreate'te
+kaybolurdu (S252 dersi).
+
+### 🔴 Bu turda kendi hatalarım
+
+- **`pwd`** — kabuk `cd`'si kalıcı; ders defteri ve `grep` komutları iki kez
+  yanlış dizinde koştu ("0 sonuç" → önce `pwd`).
+- **Kapıyı çalışma ağacında koşturmak commit'i garanti etmez:** `pre-commit run
+  --files` formatter düzeltmelerini çalışma ağacına yazdı, ben `git add`
+  etmedim; commit hook'u staged anlık görüntüde koşup **düştü**
+  (*"Stashed changes conflicted with hook auto-fixes"*). Kayıp yok
+  (patch'ten geri yüklendi), ama `git add` sonrası **tekrar** kapı koşulmalı.
+- **`# pragma: allowlist secret` yanlış satıra düştü** — formatter dict'i böldü,
+  pragma kapanış parantezine gitti. S252'de aynı sınıf.
+
+### Açık kalemler
+
+- Bayat `is_correct` satırlarının geriye dönük backfill'i — karar verilmedi
+- `models/question_bank.py` göçünün kalan ~47 erişimi (11 dosya)
+- `scripts/_verify_beta_selection.py` örnek düzeyi sessiz `None`
+- GF paketinde **12 önceden var olan fail** (S255 1. turda isim isim listelendi)
+- ⚠️ `save_answer`'ın dış `except Exception` (`:831`) hâlâ her hatayı yutup
+  `False` dönüyor; uç 400 veriyor ama **sebep** istemciye gitmiyor — ayrı kalem
+
+---
+
 ## Session Handoff — 2026-08-27 (S254 · 2. TUR — sınav akışında 5 kusur kapandı)
 
 **Aralık:** `9bec7b700..6c14afc3f` · **Push:** yapılmadı
