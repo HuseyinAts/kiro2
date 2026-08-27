@@ -21,16 +21,34 @@ SMTP canlıya alınana kadar KAPALI kalır.
 
 MUAFİYET SINIRI — SAYI DEĞİL ÖLÇÜM
 ----------------------------------
-Kapı açıldığında mevcut hesaplar kilitlenmemeli. 22 Ağu 2026 ölçümü:
+Kapı açıldığında mevcut hesaplar kilitlenmemeli. Sınır İKİ kısıtı birden
+karşılamalı: tüm mevcut hesaplardan **sonra**, ve `now()`'dan **önce**
+(gelecekteki bir sınır herkesi muaf yapar ve kapıyı süse çevirirdi —
+`test_alet_dogrulamasi_muafiyet_siniri_gecmiste_ve_makul` bunu çiviliyor).
 
-    SELECT min(created_at), max(created_at), count(*) FROM users;
-    -> 2026-08-09 23:07:18 | 2026-08-21 20:40:32 | 21     (UTC)
-    SELECT now() AT TIME ZONE 'UTC';  -> 2026-08-22 04:18:53
+27 Ağu 2026 ölçümü — kapı açılışı için TAZELENDİ:
 
-`MUAFIYET_SINIRI` bu iki kısıtı birden karşılar: 21 hesabın **hepsinden**
-sonra, ve `now()`'dan **önce** (gelecekteki bir sınır herkesi muaf yapar ve
-kapıyı süse çevirirdi — `test_alet_dogrulamasi_muafiyet_siniri_gecmiste_ve_makul`
-bunu çiviliyor).
+    SELECT now() AT TIME ZONE 'UTC';       -> 2026-08-27 01:12:06
+    SELECT max(created_at) FROM users;     -> 2026-08-26 16:40:50  (UTC)
+    SELECT count(*) FROM users;            -> 50  (36'sı doğrulanmamış)
+
+    sınır 2026-08-22 -> bloklanacak 15
+    sınır 2026-08-27 -> bloklanacak  0
+
+Önceki sınır (22 Ağu) 21 hesaplık bir tabana göre seçilmişti; taban 50'ye
+çıkınca aradaki 15 doğrulanmamış hesap kapının kapsamına girmişti. Hepsi
+E2E/prob artığı (`ornektest.com`, `kiro2-e2e.dev`, `baskabiralan.com`,
+`kiro2test.com`, `example.com`) — gerçek kullanıcı YOK.
+
+🔴 SINIRI İLERİ ALMAK, VERİ TEMİZLİĞİNİN YERİNE GEÇER. Alternatif "bloklanacak
+hesapları sil veya `is_verified=true` yap" idi; ölçüm onu gereksiz kıldı:
+`users.id`'ye **146 FK** bağlı (çoğu `ON DELETE CASCADE`) ve bloklananların 3'ü
+E2E paketinin kullandığı `kiro2-e2e.dev` fikstürü — silmek testleri kırardı.
+Sınır değişikliği DB'ye tek satır yazmaz.
+
+⚠️ SINIR, KAPININ AÇILDIĞI GÜN TAZELENMELİ. Açılış ertelenirse arada biriken
+doğrulanmamış hesaplar SESSİZCE kapsama girer — 22 Ağu sınırında tam bu oldu
+(0 iken 15'e çıktı). Yukarıdaki sorgu açılış günü tekrar koşulmalı.
 
 Muafiyet KOD düzeyinde; DB'ye tek satır yazılmıyor, dolayısıyla sınırı
 değiştirmek tek satırlık ve geri alınabilir bir işlem.
@@ -59,7 +77,7 @@ from core.email_util import smtp_yapilandirilmis_mi
 logger = logging.getLogger(__name__)
 
 # Bu tarihten ÖNCE açılmış hesaplar doğrulanmış sayılır (yukarıdaki ölçüme bak).
-MUAFIYET_SINIRI = datetime(2026, 8, 22, tzinfo=UTC)
+MUAFIYET_SINIRI = datetime(2026, 8, 27, tzinfo=UTC)
 
 _ACIK_DEGERLER = frozenset({"1", "true", "yes", "evet", "on"})
 

@@ -97,31 +97,34 @@ def test_bayrak_kapaliyken_engel_sebebi_smtp_degil_bayrak(temiz_ortam):
 
 def test_giris_engellenmeli_smtp_yokken_kullaniciyi_disari_kilitlemez(temiz_ortam):
     """Uctan uca: dogrulanmamis + yeni hesap, bayrak acik, SMTP yok -> giris SERBEST."""
-    from datetime import UTC, datetime
+    from datetime import timedelta
 
-    from core.eposta_dogrulama import giris_engellenmeli_mi
+    from core.eposta_dogrulama import MUAFIYET_SINIRI, giris_engellenmeli_mi
 
     temiz_ortam.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
 
     engellendi = giris_engellenmeli_mi(
         is_verified=False,
-        created_at=datetime(2026, 8, 23, tzinfo=UTC),  # muafiyet sinirindan SONRA
+        # 🔴 SABIT TARIH KULLANMA: sinir ileri alininca (22 Agu -> 27 Agu)
+        # bu tarih sinirin ONUNE dustu ve test SESSIZCE anlamini yitirdi.
+        # Kardes dosya (test_eposta_dogrulama.py) bastan GORELI yazilmis.
+        created_at=MUAFIYET_SINIRI + timedelta(days=1),  # sinirdan SONRA
     )
     assert engellendi is False, "SMTP yokken dogrulanmamis kullanici DISARI kilitlendi"
 
 
 def test_giris_engellenmeli_smtp_hazirken_kullaniciyi_engeller(temiz_ortam):
     """Kontrol kolu: dogru sirada kapi GERCEKTEN engelliyor -- yukaridaki yesil anlamli."""
-    from datetime import UTC, datetime
+    from datetime import timedelta
 
-    from core.eposta_dogrulama import giris_engellenmeli_mi
+    from core.eposta_dogrulama import MUAFIYET_SINIRI, giris_engellenmeli_mi
 
     _smtp_kur(temiz_ortam)
     temiz_ortam.setenv("EPOSTA_DOGRULAMA_ZORUNLU", "true")
 
     assert (
         giris_engellenmeli_mi(
-            is_verified=False, created_at=datetime(2026, 8, 23, tzinfo=UTC)
+            is_verified=False, created_at=MUAFIYET_SINIRI + timedelta(days=1)
         )
         is True
     )
