@@ -17,9 +17,9 @@ name: Golden Flows
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, master, develop, feature/self-evolution-optimization]
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, master, develop, feature/self-evolution-optimization]
   workflow_dispatch:
 
 concurrency:

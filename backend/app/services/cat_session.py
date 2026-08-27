@@ -456,6 +456,25 @@ class CATSessionService:
         session_id = str(uuid.uuid4())
         now_iso = datetime.now(UTC).isoformat()
 
+        # KOD GERÇEĞİ FIX (seanslar arası hafıza): kalıcı θ'yı geri oku.
+        # _update_theta_cache her cevapta theta:{user}:{subject_id} anahtarına
+        # yazıyordu ama okuyanı yoktu -> her yeni seans θ=0'dan başlıyordu.
+        # Guest hariç, çağıran varsayılanı (0.0) bıraktıysa son θ'yı prior yap;
+        # cache miss / parse hatası -> soğuk başlangıç (bugünküyle aynı).
+        if not is_guest and placement_theta == 0.0:
+            try:
+                _cached_theta = await self.redis.get(f"theta:{user_id}:{subject_id}")
+                if _cached_theta is not None:
+                    _tv = float(
+                        _cached_theta.decode()
+                        if isinstance(_cached_theta, bytes)
+                        else _cached_theta
+                    )
+                    if -4.0 <= _tv <= 4.0:
+                        placement_theta = _tv
+            except Exception:
+                placement_theta = 0.0
+
         # BUG-6 FIX: Önceki aktif oturumu Redis'ten temizle
         prev_key = f"cat:active:{user_id}:{subject_id}"
         prev_session_id = await self.redis.get(prev_key)
@@ -958,7 +977,7 @@ class CATSessionService:
 
         # Her yanıtı learning_events'e yaz
         for i, (q_id, resp) in enumerate(
-            zip(state.answered_ids, state.responses, strict=False)
+            zip([_q for _q in state.answered_ids if _q not in set(state.skipped_ids)], state.responses, strict=False)
         ):
             _params_raw = state.item_params[i] if i < len(state.item_params) else {}
             event_stmt = text("""
@@ -1068,7 +1087,7 @@ class CATSessionService:
                     else None,
                 }
                 for i, (q_id, resp) in enumerate(
-                    zip(state.answered_ids, state.responses, strict=False)
+                    zip([_q for _q in state.answered_ids if _q not in set(state.skipped_ids)], state.responses, strict=False)
                 )
             ]
             await fsrs_svc.apply_batch_reviews(reviews)

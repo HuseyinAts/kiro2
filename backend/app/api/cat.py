@@ -91,8 +91,13 @@ def get_cat_service(
 
             _url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
             redis = _aioredis.from_url(_url, decode_responses=False)
-        except Exception:
-            pass
+        except Exception as _redis_exc:
+            # KOD GERÇEĞİ FIX: sessiz yutma yerine logla (reward-hacking kapısı +
+            # redis bağlantı hataları artık görünür; davranış aynı: redis=None).
+            logger.warning(
+                "CAT Redis baglantisi kurulamadi, redis=None ile devam: %s",
+                _redis_exc,
+            )
     return CATSessionService(redis=redis, db=db)
 
 
@@ -182,6 +187,16 @@ async def submit_answer(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Oturum bulunamadı veya süresi dolmuş",
+        )
+
+    # KOD GERÇEĞİ FIX (answer-key oracle): yanıt YALNIZCA sunucunun bu oturumda
+    # servis ettiği maddeye verilebilir; aksi halde bu uç, tahmin edilen herhangi
+    # bir question_id için correct_option döndürerek tüm question_bank'i cevap-
+    # anahtarı oracle'ına çevirir. Kardeş uç cat_next:428 zaten bunu doğruluyor.
+    if str(body.question_id) != str(state.pending_question_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Bu madde bu oturumda sunulmadı",
         )
 
     # Doğru mu?  — DB'den doğru seçeneği al
