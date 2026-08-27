@@ -48,6 +48,64 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 
 ---
 
+## Session Handoff — 2026-08-27 (S254 · 2. TUR — sınav akışında 5 kusur kapandı)
+
+**Aralık:** `9bec7b700..6c14afc3f` · **Push:** yapılmadı
+
+### İstenen 3 işti; ölçüm ÜÇÜNÜN DE ÖNCÜLÜNÜ değiştirdi
+
+| Öncül iddiam | Ölçüm |
+|---|---|
+| "A1 TYT Matematik akışı 19 KİMYA + 1 MATEMATİK dönüyor" | **YANLIŞ.** A1 akışı `/osym-exam/create` + `custom_config.subject` kullanıyor → 40/40 saf MATEMATİK\|TYT. `beta-practice` ayrı bir düğme ve metni zaten *"karışık test"*. |
+| "Kök neden `soru_bankasi_service.py:936`" | **FANTOM ANKRAJ.** `:936` zorluk filtresi; gerçek fallback `:947` ve ders kısıtını hiç düşürmüyor. O fonksiyon beta-practice yolunda **hiç geçmiyor**. |
+| "exam-performance'ta tek kök neden `:322`" | **YANLIŞ.** En az 4 kusur sınıfı; `func.case(else_=)` tek başına 500 üretiyor. |
+| "save-answer: bilinmeyen alan yutuluyor → cevap siliniyor" | **DOĞRU** (canlı: tipo → 200 + `/answers` `{}`), ama daha ağır bir kardeşi vardı (K1). |
+
+### Kapanan 5 kalem — hepsi CANLI proplandı (build + up + tekrar prop)
+
+| # | Kusur | Canlı kanıt (öncesi → sonrası) |
+|---|---|---|
+| K1 | Frontend'in **meşru** `clearAnswer`'ı (`""`) CHECK kısıtını ihlal edip **1000'lik batch'in tamamını** düşürüyordu, uç 200 dönüyordu | satır `D\|0` *(değişmemiş)* → `<NULL>\|2` · `Bulk DB worker error` delta **0** |
+| K2 | Üretim UPSERT'i `is_correct` güncellemiyordu (TESTING dalı güncelliyordu → testler kusuru **yapısal olarak göremiyordu**) | yanlış `A\|f\|0` → doğru `E\|t\|1` |
+| K3 | `beta-practice` öğrenci kalite kapısını uygulamıyordu (`safe_for_beta_gate` **import'luydu, çağrılmıyordu**) | 4/20 kapı-dışı + 3/20 AYT → **60/60 kapı içi, 60/60 TYT, 0 AYT** (3 tur) |
+| K4 | `/exam-performance/*` 5/5 500 — bozuk şema göçü **+** `func.case(else_=)` | **5/5 → 200** |
+| K5 | `SaveAnswerRequest` bilinmeyen alanı yutuyordu | tipo: 200 + cevap silinir → **422 + cevap korunur** |
+
+### 🔴 İKİ BEKÇİ YANLIŞ-SIFIR ÜRETİYORDU
+- **GF90**: uydurma oturum id'si IDOR kapısında **404**'e takılıyor, servise hiç
+  girilmiyordu; assert `!= 500` olduğu için test **her koşumda geçiyordu**.
+  Kontrol koluyla kanıtlandı: eski hâli **1 passed** — servis tamamen çökükken.
+  Ölçüldü: uydurma id 404 · aktif oturum **400** · tamamlanmış oturum **500**.
+- **`_create_exam_session`** (paylaşılan helper): `{"exam_type":"TYT"}` gönderiyor,
+  backend 120 soruluk tam TYT kurmaya çalışıyor, havuz yetmiyor → **400 → `pytest.skip`**.
+  GF3c/GF1w/GF3w sessizce atlanıyor. **DOKUNULMADI** (kapsam dışı) — ayrı kalem.
+
+### 🔴 Denetim mutasyonla bir boşluk buldu (kapatıldı)
+Parite bekçisi `set_` **anahtarlarını** çiviliyordu, **değerlerini** değil:
+`"is_correct": stmt.excluded.is_correct` → `False` mutasyonu **hayatta kalıyordu** —
+yani K2'nin kapattığı sınıfın ta kendisi yeşil geçerek geri gelebilirdi. Eklendi:
+mutlak sözleşme (cevap yükü `stmt.excluded.<aynı anahtar>`), göreli sözleşme (iki dal
+ortak anahtarlarda aynı ifadeyi yazar) ve kontrol kolu (türetilen `answer_changes`
+sayacı excluded'a **bağlanmamalı**). Mutasyon **4/4**, simetrik senkron-dal boşluğu dahil.
+
+### Kapı: SKIP=mypy (ölçülmüş erteleme) + zorunlu E712/RET504/E402 süpürmesi
+6 mypy hatasının 6'sı da **HEAD'de birebir aynı satırlarda**. Ruff ise bu dosyaları
+ilk kez gördüğü için 3 eski borç çıkardı (*"maskenin altında maske"*): `is_active == True`
+×3 → `.is_(True)`, mükerrer `import pytest`, `resources` ataması. Çekirdek kapıyı
+SKIP'lemektense düzeltildi; üçü de davranış-nötr.
+
+### Açık kalemler (bu turda ölçüldü, YAPILMADI)
+- `_create_exam_session` skip'i → GF3c/GF1w/GF3w sessizce atlanıyor
+- Batch zehirlenmesi: `""` dışında başka tetikleyici var mı **ÖLÇÜLMEDİ**; kalıcı
+  çözüm (per-item retry / `logger.error` yerine sayaç) plana alınmadı
+- Bayat `is_correct` satırlarının geriye dönük backfill'i — karar verilmedi
+- `models/question_bank.py` göçünün kalan ~47 erişimi (11 dosya)
+- `scripts/_verify_beta_selection.py` içinde `q.subject_area`/`q.pipeline_metadata`
+  hâlâ `None` dönüyor (örnek düzeyi sessiz `None` — ayrı kalem)
+- mypy borcu (6 hata, 3 dosya)
+
+---
+
 ## Session Handoff — 2026-08-27 (S254 · A1'in L3 ayağı KAPANDI — öğrenci netini görüyor)
 
 **Branch:** feature/self-evolution-optimization · **Aralık:** `e932a7648..4d56c6420`
