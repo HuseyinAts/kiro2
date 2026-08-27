@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..4c50b7d7a` (21 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..9ddaf538b` (25 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -79,6 +79,16 @@ mutasyon **4/4**.
 | 401 | **kendi gerilemem**: hiç oturumu olmayana *"Oturum süresi doldu"* | `"Oturum süresi doldu"` → **`"Islem basarisiz…"`** | `81720e681` +`ce4e65875` | 3/3 |
 
 | BLOKE-4 | nginx arkasındaki **herkes tek rate-limit kovası** | iki kaynak → **iki ayrı kova**; sahte IP kovası **0** | `6ddc1b910` | 7/7 |
+| Ön koşul 5 | kayıt BAŞARILI olduğu hâlde ekran **SESSİZ** | hiçbir şey → **`"Kayıt tamamlanamadı…"`** (canlı) + kapı dalında doğrulama adımı | `38eb5cdc6` +`9ddaf538b` | 5/5 |
+
+**Ön koşul 5 — sözleşme hatasıydı.** `authStore.ts:262` `return loginResult === true`
+*kayıt başarısı* ile *otomatik-giriş başarısını* tek boolean'a katlıyordu. Kapı açıkken:
+kayıt 201 → otomatik giriş 403 → `register` `false` → `if (success)` düşer → **ekran
+tamamen sessiz**. Dönüş `| { kayitOldu: true; girisEngellendi }` ile genişletildi
+(kırılmadı); sayfa artık *"hesabın oluştu, e-postanı doğrula"* + `/eposta-dogrula`
+bağlantısı gösteriyor ve **`/login`'e yönlendirmiyor** (orada yine bloklanır, döngü olurdu).
+⚠️ Nesne dönüşü JS'de **truthy** — eski `if (success)` onu "başarı" sayardı; kontrol
+artık `sonuc === true` ile tam.
 
 **BLOKE-4'te analizim İKİ KEZ düzeldi (ikisi de ölçümle):**
 1. *"uvicorn ProxyHeadersMiddleware kurulu değil"* → **yanlış**; `proxy_headers`
@@ -152,15 +162,18 @@ bu turda **3'ü kapandı**, **5'i açık**:
 | 2 | giriş ekranında `/eposta-dogrula` yönlendirmesi + yeniden gönder | ✅ `6fadf6829` |
 | 3 | `/giris` → `/login` ölü link | ✅ `5d119a2e3` |
 | 4 | `_TRUSTED_PROXIES` compose ağını kapsasın (429 kovası) | ✅ `6ddc1b910` |
-| 5 | kayıtta "e-postanı kontrol et" adımı **veya** otomatik girişi kapat | 🔴 açık |
+| 5 | kayıtta "e-postanı kontrol et" adımı **veya** otomatik girişi kapat | ✅ `38eb5cdc6` |
 | 6 | bloklanacak kümeyi kapı öncesi temizle (backup şart) | 🔴 açık |
 | 7 | `MUAFIYET_SINIRI` kararı (sabit 22 Ağu mı, açılış günü mü) | 🔴 açık |
 | 8 | açılış günü SMTP probu + kutu teyidi TEKRAR | 🔴 açık |
 
-⚠️ **5 numara ciddi:** `authStore.ts:252-262` kayıttan sonra **otomatik giriş** yapıyor
-(`ModernRegisterPage.tsx`'te "doğrula" kelimesi 0 kez geçiyor). Kapı açıkken kayıt olan
-kullanıcı 2 saniyede içeri girip **sonraki girişinde** bloklanır — mesaj ile davranış
-çelişir.
+⚠️ Kalan 3'ü (6-7-8) **operasyonel**: küme temizliği · `MUAFIYET_SINIRI` kararı ·
+açılış günü SMTP tekrar probu. Kod tarafında engel KALMADI.
+
+🔴 **YENİ AÇIK İŞ — `detect-secrets` kapısı `authStore.test.ts`'te KIRMIZI.**
+`.secrets.baseline` bu dosya için **0 giriş** taşıyor; kapı, dosyaya dokunan **her**
+commit'i bloklar. `9ddaf538b` `SKIP=detect-secrets` ile geçti (kontrol kolu: HEAD'in
+hâli de düşüyor; kendi satırlarıma `// pragma: allowlist secret` konuldu).
 
 ### Açık kalemler (öncelik sırasıyla)
 - 🔴 **`commands/auth.py` ruff kapısı KIRMIZI — 8 önceden var olan hata.** BLOKE-3
