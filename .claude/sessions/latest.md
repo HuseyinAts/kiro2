@@ -157,6 +157,77 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · 5. TUR — kalan göç adaylarının CANLILIK ölçümü)
+
+**Push:** yapılmadı
+
+### Sonuç: adayların **hiçbiri bir uçtan erişilebilir değil** — ama biri Pazar'a zamanlı
+
+Her erişim AST ile **fonksiyon düzeyinde** ankrajlandı, çağıranları tarandı, üçü
+**canlı proplandı**:
+
+| Site | Kalem | Canlılık | Kanıt |
+|---|---|---|---|
+| `irt_analysis_service.py` | 1 SINIF + 4 KWARG | **ÖLÜ** | `calibrate_soru_difficulty` ve `generate_adaptive_test_questions` — **ikisinin de 0 çağıranı**. Sınıf canlı (`soru_bankasi_service:268`), **metotlar** ölü |
+| `difficulty_classification_service.py` | 2 SINIF | **KASITLI 503** | `POST /api/v1/difficulty/filter` → **503** + açık mesaj (*"veritabanı katmanı yeniden yapılandırılıyor"*) |
+| `application/commands/learning_path.py` | 5 SINIF | **ULAŞILAMIYOR** | `POST /learning-path/quiz/{id}/submit` → **403**; sebep üstteki kusur (aşağıda) |
+| `tasks/mega_feature_tasks.py` | 2 SINIF | 🔴 **GİZLİ CANLI** | → **düzeltildi** |
+
+### 🔴 "Gizli canlı" — uç probu bu sınıfı YAPISAL OLARAK göremez
+
+`_build_peer_recommendations` yalnız `run_weekly_error_clustering` içinden
+çağrılıyor; o task `celery_app.py:188`'de beat'e **Pazar 23:00**'e zamanlı ve
+`kiro2-celery-worker` **19 saattir ayakta**. Beat günlüğünde henüz tetiklenmemiş
+→ bugün hiçbir HTTP probu bunu göstermez, ama düzeltilmeseydi **sonraki haftalık
+koşumda `AttributeError` ile sessizce patlardı** (celery task hatası = kimsenin
+bakmadığı bir günlük satırı).
+
+Düzeltme: `subject_area` → `QuestionMetadata`'ya **ek JOIN** (entity takası
+değil — `primary_topic_id` parent tabloda kalıyor). Bekçi 3 test (sahte db;
+kusur *kurulumda* olduğu için canlı DB gerekmiyor) + **alet doğrulaması**
+(üçüncü sorguya ulaşıldı mı — ilk fikstür zayıfsa fonksiyon `continue` eder ve
+test boş kümede geçerdi) + emitilen SQL'de `question_metadata.subject_area`
+aranıyor + `get_final_froms()` ile kartezyen. **Mutasyon 2/2.**
+Sayaç doğrulaması: `scan_split_accesses` çıktısında dosya **artık hiç listelenmiyor**.
+
+### 🔴 GF10'un kök nedeni bulundu (göç DEĞİL — şema kayması)
+
+```
+asyncpg.exceptions.NotNullViolationError: null value in column
+"neuro_inclusive_mode" of relation "learning_path_student_profiles"
+```
+Kolon DB'de **NOT NULL ve default'suz**; ORM modelinde **hiç tanımlı değil**
+(`grep neuro_inclusive_mode models/` → **0 isabet**). Ham-SQL migration'ın
+şema kaymasını gizlemesi sınıfı.
+
+⚠️ **Bağımlılık:** bu düzeltilirse `learning_path.py:808-813` göç borcu **canlı
+hale gelir ve 500 üretir**. İki iş **birlikte** ele alınmalı.
+
+### Deploy — celery worker AYRI imaj
+
+`kiro2-celery-worker` ve `kiro2-backend` **farklı imajlar**; ilk ölçümde ikisi de
+eski dosyayı taşıyordu. `docker compose build backend celery-worker celery-beat`
++ `up -d` → md5 `git == imaj` **2/2**, üçü healthy. Yalnız backend'i rebuild
+etmek, Pazar'a kadar hiçbir şeyi değiştirmezdi.
+
+### ⚠️ `/health` 200 ≠ HAZIR (iki kez ölçüldü)
+
+`docker compose up` + `sleep 95` + `/health` 200'den **hemen sonraki ilk koşumda**
+GF90 iki kez düştü, ardışık iki turda geçti. Yani hazırlık ölçüsü olarak
+`/health` yetmiyor; rebuild sonrası ilk kırmızı **regresyon sanılabilir**.
+Yordam: rebuild sonrası **iki tur** koş, ilkini ısınma say.
+
+### Açık kalemler
+
+- `neuro_inclusive_mode` şema kayması (GF10 + GF24 zinciri) — **sonraki iş**,
+  `learning_path.py:808-813` ile birlikte
+- ENTITY=56 (lazy-load / `MissingGreenlet` riski) hiç ele alınmadı
+- Ölü kod: `question_repository.py` (16), `exam_results_reporting.py` (4),
+  `irt_analysis_service` metotları — **bahsedildi, silinmedi** (kapsam dışı)
+- `mega_feature_tasks.py` + `student_dashboard_service.py` kapı borcu (SKIP'li)
+
+---
+
 ## Session Handoff — 2026-08-27 (S255 · 4. TUR — #485 göç envanteri: 46'nın 22'si ÖLÜ KODDA)
 
 **Push:** yapılmadı
