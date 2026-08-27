@@ -157,6 +157,62 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 (S255 · 7. TUR — GF'nin aralıklı kırmızısı: ürün değil TAŞIMA)
+
+**Push:** yapılmadı
+
+### 🔴 Aralıklı düşme bir ASSERT DEĞİLDİ
+
+Beş tur boyunca yanlış yerde aradım çünkü GF10'un tek assert'i `!= 500`;
+"demek ki 500 dönüyor" diye **varsaydım**. Günlükte 500 yoktu ve bu çelişkiyi
+hipotez üreterek değil, **tam traceback'i yakalayarak** çözdüm
+(düşene kadar döngü + `--tb=long`):
+
+```
+httpx.RemoteProtocolError: Server disconnected without sending a response
+request = <Request('POST', '.../api/v1/learning-path/create-profile')>
+```
+
+Sunucu isteği **yanıtlamadan bağlantıyı kapatıyor** → istek uygulamaya **hiç
+ulaşmıyor** → günlükte ne 500 ne erişim satırı. Sunucu sağlam:
+`RestartCount=0`, `OOMKilled=false`, bellek %6,7.
+
+### Dört hipotez ölçülüp ÇÜRÜTÜLDÜ (kök neden KANITLANMADI)
+
+| Hipotez | Ölçüm |
+|---|---|
+| login rate-limit (`_login` 429'da `pytest.fail` eder) | **30/30 login 200** — limit yok |
+| basit idle timeout | 1/4/6/8 sn boşluk → **4/4 başarılı** |
+| 5 sn keep-alive yarışı | POST ile 4.8–5.2 sn → **18/18 başarılı** |
+| hızlı ateş | 40 ardışık POST → 10×200 + 30×429, **0 hata** |
+
+Kök nedeni **iddia etmiyorum**. En olası: Docker port yönlendiricisinin bayat
+bağlantıyı kapatması — kanıtlanmadı.
+
+### Düzeltme: sınıfı YAPISAL olarak kaldır
+
+GF istemcisinde `limits=httpx.Limits(max_keepalive_connections=0)`. Bağlantı
+yeniden kullanılmazsa bayat-bağlantı yarışı **imkânsız** — kök nedeni bilmeden
+de sınıf kapanır. Bedel: istek başına bir localhost TCP kurulumu.
+
+> **Bu "flaky testi susturma" DEĞİL:** hiçbir assert zayıflatılmadı, hiçbir test
+> skip'lenmedi. Kaldırılan şey testin **ölçmek istemediği** bir taşıma riski.
+
+**A/B:** öncesi ~**4 düşme / 30 koşum** (%13) → sonrası **0 / 35**.
+Aynı taban oranda tesadüfen 35 temiz tur olasılığı **~%0,8**.
+
+**Çırçır:** `test_golden_flow_login_gate.py::test_gf_istemcisi_baglanti_yeniden_kullanmiyor`
+— AST ile `limits=` içinde `max_keepalive_connections=0` arar + alet doğrulaması.
+Mutasyon (değeri 10 yap) çırçırı **öldürdü**. Gerekçe: keep-alive geri açılırsa
+paket yeniden aralıklarla kırmızı olur ve o kırmızı bir **ürün kusuru sanılır**.
+
+### 🔴 Kendi hatam: `pwd` (bu oturumda BEŞİNCİ)
+
+Mutasyon geri alımı yine yanlış dizinde koştu. Kural artık net: her komut
+`cd /c/Users/husey/kiro2 &&` ile başlamalı; `cd backend` zincirin **sonunda**.
+
+---
+
 ## Session Handoff — 2026-08-27 (S255 · 6. TUR — şema kayması + göç borcu BİRLİKTE)
 
 **Push:** yapılmadı
