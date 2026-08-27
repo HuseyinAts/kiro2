@@ -985,6 +985,80 @@ def test_gf3s_student_dashboard_profil_not_500(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF3u: quiz submit — #485 gocunun learning_path ayagi
+# ---------------------------------------------------------------------------
+
+
+def test_gf3u_quiz_submit_dogru_cevabi_icerikten_okuyor(client: httpx.Client):
+    """Quiz gonderimi 500 DONMEMELI **ve** dogru cevabi GERCEKTEN okumali.
+
+    Canli olcum (27 Agu 2026): GF10'un sema kaymasi duzeltilip profil
+    olusturulabilir hale gelince bu yol ILK KEZ erisilebilir oldu ve
+    hemen 500 dondu::
+
+        AttributeError: QuestionBankItem.correct_answer sinif duzeyinde
+        kullanilamaz: bu alan artik content iliskisinde.
+
+    Yani goc borcu bir BASKA kusurun arkasinda gizlenmisti; ustteki kusur
+    kapatilinca ortaya cikti. (`application/commands/learning_path.py:808-813`)
+
+    ASIL ASSERT SONUNCUSU: 200 donmek yetmez. Duzeltme uc yavru tabloya
+    INNER JOIN ekliyor; yetim bir satir olsaydi soru sonuc kumesinden
+    DUSER, `correct_answer` None kalir ve ogrencinin DOGRU cevabi SESSIZCE
+    yanlis sayilirdi. Yetim 0 olculdu, bu assert onu civiliyor.
+    """
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+
+    profil = client.post(
+        "/api/v1/learning-path/create-profile",
+        headers=headers,
+        json={
+            "name": "GF3u Probe",
+            "grade": 11,
+            "subjects": ["MATEMATIK"],
+            "goals": ["TYT"],
+        },
+    )
+    assert profil.status_code == 200, (
+        f"GF3u kurulum: create-profile {profil.status_code} {profil.text[:200]}. "
+        "Sema kaymasi geri gelmis olabilir (neuro_inclusive_mode)."
+    )
+    student_id = profil.json().get("student_id")
+    assert student_id, f"GF3u kurulum: student_id yok: {profil.json()}"
+
+    # Gercek bir question_id: sinav akisindan al (uydurma id FK'ya takilir).
+    session_id = _create_small_exam_session(client, token)
+    soru = client.get(
+        f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
+    ).json()
+    question_id = soru.get("question_id") or soru.get("id")
+    assert question_id, f"GF3u kurulum: current-question'da id yok: {soru}"
+
+    resp = client.post(
+        "/api/v1/learning-path/quiz/gf3u-probe/submit",
+        headers=headers,
+        json={
+            "student_id": student_id,
+            "answers": [{"question_id": question_id, "answer": "A"}],
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF3u quiz submit 500: {resp.text[:300]}. #485 goc borcu "
+        "(application/commands/learning_path.py:808-813) — correct_answer / "
+        "subject_area / irt_* alanlari yavru tablolara tasindi, JOIN gerekli."
+    )
+
+    sonuclar = resp.json().get("question_results") or []
+    assert sonuclar, f"GF3u: question_results bos: {resp.text[:300]}"
+    assert sonuclar[0].get("correct_answer"), (
+        "GF3u SESSIZ None: dogru cevap okunamadi "
+        f"({sonuclar[0]!r}). Yavru tabloya JOIN satiri DUSURUYOR olabilir; "
+        "bu durumda ogrencinin DOGRU cevabi yanlis sayilir."
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF4w.1: learning-path register-wrong-answers must accept a valid question_id
 # ---------------------------------------------------------------------------
 

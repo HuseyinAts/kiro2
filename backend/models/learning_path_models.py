@@ -98,6 +98,17 @@ class LearningPathStudentProfile(Base):
     knowledge_level = Column(
         String(50), nullable=False, default="beginner"
     )  # beginner, elementary, intermediate, advanced, expert
+
+    # ORM<->DB KAYMASI (olculdu 27 Agu 2026): bu kolon canli DB'de VARDI
+    # (boolean, NOT NULL, server_default YOK) ama modelde HIC TANIMLI DEGILDI.
+    # Kolonu olusturan bir alembic migration da yok -> alembic disinda eklenmis.
+    # Sonuc: ORM'in INSERT'i kolonu ATLIYOR, PG'nin doldurabilecegi bir default
+    # olmadigi icin her profil olusturma NotNullViolationError ile dusuyordu:
+    #   POST /api/v1/learning-path/create-profile -> HTTP 500  (GF10, GF24)
+    # Python tarafi default veriliyor; DB'ye server_default EKLENMIYOR (bu bir
+    # sema degisikligi olur ve ayri migration ister -- ayri kalem).
+    # Bekci: tests/integration/test_learning_path_profile_sema_paritesi.py
+    neuro_inclusive_mode = Column(Boolean, nullable=False, default=False)
     interests = Column(JSON, nullable=False, default=list)  # List[str]
     goals = Column(JSON, nullable=False, default=list)  # List[str]
     available_time = Column(Integer, nullable=False, default=60)  # Daily minutes

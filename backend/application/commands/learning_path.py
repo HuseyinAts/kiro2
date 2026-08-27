@@ -20,6 +20,11 @@ from models.learning_path_models import (
 )
 from models.learning_path_models import QuizSubmission as QuizSubmissionModel
 from models.question_bank import QuestionBankItem as Question
+from models.question_bank import (
+    QuestionContent,
+    QuestionMetadata,
+    QuestionStatistics,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -802,16 +807,31 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
             else:
                 question_ids = [a.question_id for a in command.answers]
                 if question_ids:
+                    # #485 split gocu: `id` ve `primary_topic_id` PARENT tabloda
+                    # kaldi; diger bes alan uc AYRI yavru tabloya tasindi ve
+                    # sinif duzeyi erisim uyumluluk katmaninda BILEREK
+                    # AttributeError atiyor. Bu dal CANLI olculdu (27 Agu 2026):
+                    #   POST /learning-path/quiz/{id}/submit -> HTTP 500
+                    #   "QuestionBankItem.correct_answer sinif duzeyinde
+                    #    kullanilamaz: bu alan artik content iliskisinde."
+                    # Paylasilan PK; yetim 0 olculdu (content/metadata/statistics
+                    # ucunde de) -> INNER JOIN satir DUSURMEZ. Dusurseydi soru
+                    # `correct_answers` sozlugune hic girmez ve ogrencinin dogru
+                    # cevabi SESSIZCE yanlis sayilirdi.
                     questions_result = await db.execute(
                         select(
                             Question.id,
-                            Question.correct_answer,
+                            QuestionContent.correct_answer,
                             Question.primary_topic_id,
-                            Question.subject_area,
-                            Question.irt_discrimination,
-                            Question.irt_difficulty,
-                            Question.irt_guessing,
-                        ).filter(
+                            QuestionMetadata.subject_area,
+                            QuestionStatistics.irt_discrimination,
+                            QuestionStatistics.irt_difficulty,
+                            QuestionStatistics.irt_guessing,
+                        )
+                        .join(QuestionContent, QuestionContent.id == Question.id)
+                        .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                        .join(QuestionStatistics, QuestionStatistics.id == Question.id)
+                        .filter(
                             Question.id.in_(question_ids), Question.is_active == True
                         )
                     )
