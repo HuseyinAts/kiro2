@@ -206,6 +206,40 @@ Aynı taban oranda tesadüfen 35 temiz tur olasılığı **~%0,8**.
 Mutasyon (değeri 10 yap) çırçırı **öldürdü**. Gerekçe: keep-alive geri açılırsa
 paket yeniden aralıklarla kırmızı olur ve o kırmızı bir **ürün kusuru sanılır**.
 
+### 🔴 DÜZELTME — "0/35" YETMEDİ, İKİNCİ bir kusur vardı ve onu BEN ürettim
+
+Keep-alive düzeltmesinden sonra 5 eş-koşumun 1'i **yine** düştü. Tam çıktı
+alındı; bu sefer **farklı** ve suçlu bendim:
+
+```
+GF3u kurulum: create-profile 429 {"error":"Rate limit exceeded: 10 per 1 minute"}
+```
+
+Önceki turda eklediğim GF3u, kurulumda `create-profile`'ı çağırıp
+`status_code == 200` diye **katı** assert ediyordu. Uç **10/dk** sınırlı ve aynı
+pakette GF10 + GF24 de onu çağırıyor → paket dakika içinde tekrar koşunca sınır
+doluyor ve test **ürün kusuru sanılan yalan kırmızı** üretiyor.
+
+**Düzeltme:** `student_id` artık önce `GET /learning-path/my-profile`'dan
+okunuyor (rate-limit'siz: 15/15 istek 200 ölçüldü); `create-profile` yalnız
+profil **yoksa** çağrılıyor → kurulumun sınır baskısına katkısı **sıfır**.
+Bu, `_login` token önbelleğinin (#462) aynı yapısal çözümü.
+
+**İki AYRI kusurdu:**
+
+| # | Kusur | Ölçüm |
+|---|---|---|
+| 1 | `httpx.RemoteProtocolError` — taşıma katmanı | 4/30 → **0/35** |
+| 2 | `create-profile` 429 — **benim** eklediğim kurulum | 1/5 → **0/10** (18 sn aralıkla) |
+
+⚠️ **Önceden var, düzeltilmedi:** GF10 ve GF24 hâlâ `create-profile` çağırıyor
+(2 çağrı/koşum). Paket dakikada 5+ kez koşulursa GF24'ün ön koşul assert'i
+429'a takılır. GF10 etkilenmez (`!= 500` assert'i 429'u kabul eder).
+
+> **Ders:** "0/35 temiz" bir ölçümdü ve **doğruydu** — ama yalnızca *o* kusur
+> için. Bir flake'i kapatmak, paketin flake'siz olduğunu kanıtlamaz; ölçümü
+> **düzeltmeden sonra da sürdürmek** gerekiyordu ve sürdürünce ikincisi çıktı.
+
 ### 🔴 Kendi hatam: `pwd` (bu oturumda BEŞİNCİ)
 
 Mutasyon geri alımı yine yanlış dizinde koştu. Kural artık net: her komut
