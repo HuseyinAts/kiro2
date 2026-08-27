@@ -49,7 +49,7 @@ Gerekçe (20 Ağu 2026 ölçümü): dosya 2.605 satır / 185 KB'a ulaşmıştı 
 ---
 
 ## Session Handoff — 2026-08-26 (S253 · A1 L1+L2 UÇTAN UCA — 3 kusur kapandı)
-**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..0c3d60165` (28 commit)
+**Branch:** feature/self-evolution-optimization · **Aralık:** `46bf8120f..09c9f95f5` (30 commit)
 **Uncommitted:** `backend/semantic_cache.pkl` (S244'ten devralındı) · **Push:** yapılmadı
 
 ### Ortam
@@ -167,10 +167,30 @@ bu turda **3'ü kapandı**, **5'i açık**:
 | 7 | `MUAFIYET_SINIRI` kararı | ✅ `9004d50a1` — 22 Ağu → **27 Ağu** |
 | 8 | açılış günü SMTP probu + kutu teyidi | ✅ prob yeşil (Δ+1/Δ+1/Δ+2/Δ0) + **insan teyidi alındı** |
 
-🟢 **8/8 TAMAM — kapıyı açmanın önünde teknik engel KALMADI.** Kalan tek adım
-operatörde: `.env.mvp`'ye `EPOSTA_DOGRULAMA_ZORUNLU=true` + `docker compose up -d
---no-deps backend` (restart YETMEZ). İzin katmanı `.env*` yazmayı engelliyor,
-etrafından dolaşılmadı.
+🟢🟢 **KAPI AÇILDI** (`09c9f95f5`) — `dogrulama_zorunlu_mu = True`, A1'in L2 ayağı
+artık **yaptırımda**.
+
+Bayrak `.env.mvp`'ye DEĞİL **`docker-compose.yml`**'e kondu: bu bir sır değil bir
+**politika kararı**; git'te olması denetlenebilir kılar ve testle korunabilir.
+SMTP kimlik bilgileri `.env.mvp`'de kaldı. (İzin katmanı `.env*` yazmayı zaten
+engelliyor — etrafından dolaşılmadı, daha uygun bir yer seçildi.)
+
+**Açılış ölçümü — üç hesap sınıfı, ÖNCE → SONRA:**
+
+| Sınıf | Önce | Sonra | |
+|---|---|---|---|
+| A doğrulanmış | 200 | **200** | değişmemeli, değişmedi |
+| B doğrulanmamış + muafiyet dışı | 200 | **403** | kapı gerçekten engelliyor |
+| C doğrulanmamış + **muaf** | 200 | **200** | muafiyet gerçekten çalışıyor |
+
+**Kullanıcı-görünür doğrulama (gerçek Chrome):**
+`status: "Giriş yapabilmek için e-posta adresinizi doğrulayın."` +
+`link "Doğrulama bağlantısı iste" → /eposta-dogrula`.
+Bu sabah aynı kullanıcı *"E-posta ya da şifre eşleşmedi"* görüp şifre sıfırlamaya
+gidecekti ve arayüzde `/eposta-dogrula`'ya giden **0 bağlantı** vardı.
+
+**Geri alma (tek adım):** compose'daki satırı kaldır + `docker compose up -d
+--no-deps backend`. **Restart YETMEZ** — env değişikliği recreate ister.
 
 **Kapı öncesi son ölçüm (27 Ağu 01:2x UTC):** `kapi_engeli()` → `None` ·
 toplam **52** · girebilen **50** · bloklanan **2** (ikisi de `+kapi27*` prob
