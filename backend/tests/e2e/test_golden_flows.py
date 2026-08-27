@@ -75,7 +75,29 @@ def client() -> httpx.Client:
     create_all çalıştırıyordu — kaldırıldı), (3) gerçekten deploy edilen kodu
     test eder. Backend ulaşılamazsa auto-skip (golden-flows.md kuralı).
     """
-    c = httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT)
+    # KEEP-ALIVE KAPALI (S255). Olculdu: paket araliklarla
+    # `httpx.RemoteProtocolError: Server disconnected without sending a
+    # response` ile dusuyordu ve dusen istek HER SEFERINDE havuzdan
+    # gelen bir baglanti uzerindeydi. Sunucu o istegi HIC GORMUYOR:
+    # konteyner gunlugunde ne 500 ne de erisim satiri var, uvicorn
+    # yeniden baslamamis (RestartCount=0, OOM yok). Yani baglanti
+    # istemci ile uygulama ARASINDA dusuyor (Docker port yonlendiricisi
+    # bayat baglantiyi kapatiyor olabilir -- KOK NEDEN KANITLANMADI).
+    #
+    # Dort hipotez olculup CURUTULDU: login rate-limit (30/30 login 200),
+    # basit idle timeout (1/4/6/8 sn bosluk -> 4/4 basarili), 5 sn
+    # keep-alive yarisi (15/15 basarili), hizli ates (40 istek, 0 hata).
+    #
+    # Baglanti YENIDEN KULLANILMAZSA bayat-baglanti yarisi YAPISAL OLARAK
+    # imkansizdir; kok nedeni bilmeden de sinif kapanir. Bedeli: istek
+    # basina bir localhost TCP kurulumu (ihmal edilebilir).
+    # NOT: bu bir "flaky testi sustur" degil -- assert'ler AYNEN duruyor;
+    # kaldirilan sey testin OLCMEDIGI bir tasima katmani riski.
+    c = httpx.Client(
+        base_url=BACKEND_URL,
+        timeout=TIMEOUT,
+        limits=httpx.Limits(max_keepalive_connections=0),
+    )
     try:
         c.get("/health")
     except Exception as exc:

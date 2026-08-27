@@ -216,3 +216,61 @@ def test_token_yoksa_assert_duser() -> None:
     istemci = _SahteIstemci(_SahteYanit(200, {}))
     with pytest.raises(AssertionError):
         gf._login(istemci, KIMLIK)
+
+
+def test_gf_istemcisi_baglanti_yeniden_kullanmiyor() -> None:
+    """KOSUM HATTI SOZLESMESI (S255) -- havuzdaki baglanti YENIDEN KULLANILMAZ.
+
+    Olculdu: paket ~%13 oranda `httpx.RemoteProtocolError: Server
+    disconnected without sending a response` ile dusuyordu. Dusen istek her
+    seferinde HAVUZDAN gelen bir baglanti uzerindeydi ve sunucu o istegi HIC
+    GORMUYORDU (konteyner gunlugunde ne 500 ne erisim satiri; uvicorn
+    RestartCount=0, OOM yok) -- yani baglanti istemci ile uygulama ARASINDA
+    dusuyordu. Kok neden KANITLANMADI; dort hipotez olculup curutuldu
+    (login rate-limit, idle timeout, 5 sn keep-alive yarisi, hizli ates).
+
+    `max_keepalive_connections=0` bayat-baglanti yarisini YAPISAL OLARAK
+    imkansiz kilar. A/B olcumu: oncesi ~4/30 dusme, sonrasi **35/35 temiz**
+    (ayni taban oranda tesadufen 35 temiz tur olasiligi ~%0,8).
+
+    Bu bir CIRCIR: biri keep-alive'i geri acarsa paket yeniden araliklarla
+    KIRMIZI olur ve o kirmizi bir URUN kusuru sanilir -- yalan rapor.
+    """
+    import ast
+    from pathlib import Path
+
+    kaynak = Path(gf.__file__).read_text(encoding="utf-8")
+    agac = ast.parse(kaynak)
+
+    fixture = next(
+        (
+            n
+            for n in ast.walk(agac)
+            if isinstance(n, ast.FunctionDef) and n.name == "client"
+        ),
+        None,
+    )
+    # ALET DOGRULAMASI: fixture bulunamazsa asagidaki kontrol BOS KUMEDE gecerdi.
+    assert fixture is not None, (
+        "`client` fixture bulunamadi -> bu bekci hicbir sey olcmuyor. "
+        "Ad degistiyse test guncellenmeli."
+    )
+
+    limitler = [
+        kw.value
+        for d in ast.walk(fixture)
+        if isinstance(d, ast.Call)
+        for kw in d.keywords
+        if kw.arg == "limits"
+    ]
+    assert limitler, (
+        "GF istemcisi `limits=` GONDERMIYOR -> baglanti havuzu varsayilan "
+        "davranista, bayat-baglanti yarisi geri gelir (S255)."
+    )
+
+    metin = " ".join(ast.unparse(d) for d in limitler)
+    assert "max_keepalive_connections=0" in metin, (
+        f"GF istemcisinde keep-alive KAPALI DEGIL: {metin!r}. "
+        "Paket araliklarla RemoteProtocolError ile duser ve bu, urun "
+        "kusuru sanilan bir YALAN KIRMIZI uretir."
+    )
