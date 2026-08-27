@@ -62,7 +62,7 @@ COMPOSE = KOK / "docker-compose.yml"
 
 @pytest.fixture(scope="module")
 def compose() -> dict:
-    if not COMPOSE.exists():  # pragma: no cover - yol kayarsa ölçüm geçersiz
+    if not COMPOSE.exists():  # pragma: no cover  # yol kayarsa ölçüm geçersiz
         pytest.fail(f"docker-compose.yml bulunamadı: {COMPOSE}")
     return yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
 
