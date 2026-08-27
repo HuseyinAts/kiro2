@@ -157,6 +157,46 @@ koştu (`pwd` ile yakalandı).
 
 ---
 
+## Session Handoff — 2026-08-27 20:15
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `2e8cbaad5` docs(s255): devir notu duzeltmesi -- flake IKI ayri kusurdu
+**Uncommitted:** temiz (`git status --untracked-files=no` bos) · **origin'den 51 commit ileride, PUSH YOK**
+
+### Yapilanlar (16 commit, `3236630f3..2e8cbaad5`)
+- `tests/e2e/test_golden_flows.py:385` `_create_exam_session` kurulum reddini `pytest.skip`'e ceviriyordu -> 4 GF testi (GF3c/GF3d/GF1w/GF3w) her kosumda YANLIS-SIFIR uretiyordu. `6be68d48d`
+- `api/sinav.py:95` + `core/osym_exam_engine.py:706,806` cevap kuyrugunda UC yeni zehirlenme tetikleyicisi (`"F"`, `"AB"`, yabanci `question_id`) + S254'un kacirdigi `"  "`; hepsi HTTP 200 donup 1000'lik batch'i dusuruyordu. `e12d299f2`
+- `student_answers.is_correct` 6 fosil satir duzeltildi (yedek + guvenlik durdurmali `scripts/is_correct_fosil_backfill_20260827.sql`) + `tests/integration/test_save_answer_clear_persists.py` DAVRANIS bekcisi. `88bb0bd8e`
+- `services/student_dashboard_service.py:313` #485 split gocu -> `/student-dashboard/profil` CANLI 500 kapandi. `fc7a86c37`
+- `tasks/mega_feature_tasks.py:371,393` GIZLI CANLI kusur: beat'te Pazar 23:00'e zamanli, sonraki kosumda sessizce patlayacakti.
+- `models/learning_path_models.py:99` `neuro_inclusive_mode` ORM<->DB kaymasi + `application/commands/learning_path.py:824` goc borcu -> **GF10 ve GF24 kapandi**.
+- `tests/e2e/test_golden_flows.py:79` GF istemcisinde keep-alive kapatildi (aralikli `RemoteProtocolError`) + `:1035` GF3u kurulumu rate-limit'siz uca cevrildi. `152aceaad`
+
+### Fail Eden Testler
+- **GF paketi: 10 failed / 154 passed / 21 skipped** (oturum basi: 12/142/25).
+  Kalanlar ONCEDEN VAR: `gf3wa` (chat 500) · `gf9wd` · `gf12` · `gf16` · `gf42` · `gf49` · `gf86` · `gf87` · `gf130` · `gf10x` kumesi.
+- ⚠️ Sayi KOSUMLAR ARASI OYNAK: paket ust uste kosulunca `gf1x/gf1y/gf1z` de dusuyor (GF1x cikis yapip PAYLASILAN token onbellegini zehirliyor -- `_login_taze` docstring'inde belgeli).
+- Birim/entegrasyon bekcileri: **53 passed** (7 dosya).
+
+### Engelleyiciler
+- `services/student_dashboard_service.py`, `application/commands/learning_path.py`, `tasks/mega_feature_tasks.py` kapida KIRMIZI (ruff/mypy/bandit) -- **hepsi onceden var**, kontrol koluyla olculdu, `SKIP=` ile gecildi. Ayri temizlik commit'i istiyor.
+- RLS: `exam_sessions` uzerinde `tenant_isolation` politikasi var, API `kiro2_app` rolunden bagliyor ve `app.current_org_id` GUC'si KURULMUYOR -> tablo 0 satir gosteriyor (S241 acik kalemi). `/student-dashboard/profil` bu yuzden 200 donuyor ama icerik BOS.
+
+### Sonraki Adimlar
+1. **PUSH** (51 commit yerelde bekliyor).
+2. Kalan 10 GF fail -- `gf3wa` (chat session create 500) en gorunur olani.
+3. RLS GUC kurulumu (S241): `get_current_tenant` 153 router'in 2'sinde.
+4. #485 gocunun ENTITY=56 dilimi (lazy-load / `MissingGreenlet` riski) -- hic ele alinmadi.
+5. Kapi borcu temizligi (yukaridaki uc dosya).
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Kurulum hatasi FAIL, ortam yoklugu SKIP.** `_login`'in 401 dali skip KALDI (seed yoklugu gercekten ortamdir); kurulum cagrisinin reddi FAIL uretir.
+- **`is_correct` backfill YAPILDI** ama once URETICININ duzeldigi canli dogrulandi (3 gecis). 456 dogru satira DOKUNULMADI -- `is_correct` bir ANLIK GORUNTUDUR, bugunku `correct_answer`'dan toptan geriye yazmak 'dogru cevap hic degismedi' varsayimi olurdu.
+- **Olu kod SILINMEDI** (`question_repository.py` 16 erisim, `exam_results_reporting.py` 4, `irt_analysis_service` metotlari): kapsam disi, bahsedildi.
+- **GF keep-alive kapatildi** -- bu bir 'flaky testi susturma' DEGIL; hicbir assert zayiflatilmadi, urun kodu degismedi, A/B ile olculdu (4/30 -> 0/35) ve circirla civilendi.
+- **`jwt_auth.require_admin` ve `learning_path_v2.py:793` fallback BILEREK dokunulmadi** -- olculdu, bugun canli kullanici yolunda tetiklenmiyor.
+
+---
+
 ## Session Handoff — 2026-08-27 (S255 · 7. TUR — GF'nin aralıklı kırmızısı: ürün değil TAŞIMA)
 
 **Push:** yapılmadı
