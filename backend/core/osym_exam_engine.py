@@ -698,6 +698,7 @@ class OSYMExamEngine:
                                         set_={
                                             "selected_answer": stmt.excluded.selected_answer,
                                             "response_time_seconds": stmt.excluded.response_time_seconds,
+                                            "is_correct": stmt.excluded.is_correct,
                                             "answered_at": datetime.now(),
                                             "answer_changes": StudentAnswer.answer_changes
                                             + 1,
@@ -713,8 +714,15 @@ class OSYMExamEngine:
 
                 self._db_worker_task = asyncio.create_task(_db_worker())
 
+            # `else None` ZORUNLU, `else selected_answer` DEGIL: frontend'in
+            # `clearAnswer`'i bos dizge gonderiyor (examStore.ts:412) ve
+            # `student_answers.check_selected_answer` kisiti `''`i REDDEDER
+            # (yalniz NULL veya 'A'..'E'). Bos dizge buradan gecerse INSERT
+            # CheckViolation ile duser, :709/:824 hatayi yutar, uc 200 doner ve
+            # toplu dalda AYNI batch'teki 1000'e kadar cevap birlikte kaybolur.
+            # Bu satir :653-656'daki "bos cevap = kaydi sil" semantigiyle ayni.
             normalized_answer = (
-                selected_answer.strip().upper() if selected_answer else selected_answer
+                selected_answer.strip().upper() if selected_answer else None
             )
 
             # Grade the answer at write time so student_answers.is_correct is
@@ -1483,7 +1491,9 @@ class OSYMExamEngine:
         "cok_zor": ["HARD", "VERY_HARD"],
     }
 
-    async def _select_beta_questions(self, count: int) -> list[Question]:
+    async def _select_beta_questions(
+        self, count: int, exam_type: str
+    ) -> list[Question]:
         """Beta pratik için soru seç.
 
         Kör-çözüm doğrulamasından geçmiş (pipeline_metadata.verified_provisional
@@ -1497,10 +1507,19 @@ class OSYMExamEngine:
         SAYILMAZ (K1b dairesellik tekrarı riski). İkinci bağımsız sinyal (farklı
         model re-solve veya insan-GT) ile teyit edilince ``verified_gold``'a terfi.
 
+        Kör-çözüm doğrulaması bir KALİTE kanıtıdır, ÖĞRENCİ KAPISI değildir:
+        ``core/quality_gate.py`` politikası gereği öğrenciye içerik dönen her
+        sorgu ``mv_safe_for_beta``dan da geçer (ölçüldü: havuzun 317/3868'i
+        kapı dışındaydı). Kapı ``is_active``in YANINA gelir, yerine değil.
+        Ayrıca ``exam_type`` süzülür — "tyt" ilan edilen oturumlara AYT sorusu
+        giriyordu (3/20, 5/60, 1/60).
+
         Cache anahtarı ``BETA:*`` ile standart subject havuzundan ayrıdır;
-        beta-dışı sorunun beta moduna sızması mümkün değildir.
+        beta-dışı sorunun beta moduna sızması mümkün değildir. Anahtar
+        ``exam_type`` de taşır: taşımazsa TTLCache(ttl=3600) ilk çağrılan dalın
+        havuzunu diğer dala servis eder.
         """
-        cache_key = "BETA:verified_provisional:all"
+        cache_key = f"BETA:verified_provisional:{exam_type}"
         pool = self._question_pool_cache.get(cache_key)
         if pool is None:
             async with get_db_session_context() as db_session:
@@ -1514,6 +1533,8 @@ class OSYMExamEngine:
                     .join(QuestionMetadata, QuestionMetadata.id == Question.id)
                     .where(
                         Question.is_active.is_(True),
+                        QuestionMetadata.exam_type == exam_type,
+                        safe_for_beta_gate(Question.id),
                         QuestionMetadata.pipeline_metadata.op("->>")(
                             "verified_provisional"
                         )
@@ -1556,7 +1577,11 @@ class OSYMExamEngine:
         # Beta pratik: subject_distribution ve proxy base_filters'ı atla,
         # doğrudan beta_clean havuzundan karışık seç.
         if getattr(exam_config, "beta_practice", False):
-            return await self._select_beta_questions(exam_config.total_questions)
+            return await self._select_beta_questions(
+                exam_config.total_questions,
+                # Ders #26: enum lowercase ("tyt"), DB UPPERCASE ("TYT").
+                exam_config.exam_type.value.upper(),
+            )
 
         selected_questions = []
         difficulty_levels = None

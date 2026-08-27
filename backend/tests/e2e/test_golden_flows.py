@@ -694,6 +694,135 @@ def test_gf3w_save_answer_rejects_empty_question_id(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF3x: yanlış alan adı KAYDEDİLMİŞ cevabı SİLMEMELİ
+# ---------------------------------------------------------------------------
+
+
+def _create_small_exam_session(client: httpx.Client, token: str) -> str:
+    """KÜÇÜK (5 soruluk) bir sınav oturumu kurar ve başlatır.
+
+    🔴 Paylaşılan ``_create_exam_session`` burada KULLANILAMAZ. O yalnızca
+    ``{"exam_type": "TYT"}`` gönderiyor; backend tam TYT dağıtımını (120 soru)
+    kurmaya çalışıyor, havuz yetmiyor ve helper ``pytest.skip`` ediyor.
+    Ölçüldü (27 Ağu 2026):
+
+        POST /osym-exam/create {"exam_type":"TYT"}
+        -> 400 {"detail":"Yeterli soru bulunamadı. Gerekli: 120, Mevcut: 33"}
+
+    Skip, FAIL üretmez — yani o helper'ı kullanan test kusuru ölçemez ve
+    sessizce yeşil görünür. Burada frontend'in FİİLEN gönderdiği şekil
+    kullanılıyor (``ModernExamStartPage.tsx:154-165``).
+    """
+    headers = _auth_headers(token)
+    create_resp = client.post(
+        "/api/v1/osym-exam/create",
+        headers=headers,
+        json={
+            "exam_type": "TYT",
+            "custom_config": {
+                "subject": "MATEMATIK",
+                "difficulty": "medium",
+                "question_count": 5,
+                "time_limit": 10,
+            },
+        },
+    )
+    assert (
+        create_resp.status_code == 200
+    ), f"kurulum: exam create {create_resp.status_code} {create_resp.text[:200]}"
+    session_id = create_resp.json()["session_id"]
+
+    start_resp = client.post(f"/api/v1/osym-exam/{session_id}/start", headers=headers)
+    assert (
+        start_resp.status_code == 200
+    ), f"kurulum: start {start_resp.status_code} {start_resp.text[:200]}"
+    return session_id
+
+
+def test_gf3x_unknown_field_must_not_delete_saved_answer(client: httpx.Client):
+    """
+    Bilinmeyen bir alan adı gönderildiğinde önceki cevap KAYBOLMAMALI.
+
+    Canlı ölçüm (27 Ağu 2026) — sessiz veri kaybı:
+
+        POST save-answer {"question_id": Q, "selected_answer": "B"}
+        -> 200 ; GET /answers -> {"Q": "B"}                      ✓
+
+        POST save-answer {"question_id": Q, "secilen_cevap": "C"}
+        -> 200 ; GET /answers -> {}                              ✗ CEVAP SİLİNDİ
+
+    Mekanizma: ``SaveAnswerRequest`` (``api/sinav.py:99-107``) pydantic v2
+    varsayılanı ``extra="ignore"`` ile çalışıyor. Bilinmeyen alan sessizce
+    düşürülüyor, ``selected_answer`` tanımlı varsayılanı olan ``None``'a
+    iniyor ve motor bunu "bu cevabı temizle" komutu sanıyor
+    (``core/osym_exam_engine.py`` ``del session_data.answers[...]``).
+    Öğrenci HTTP 200 görüyor, hiçbir hata almıyor, cevabı gitmiş oluyor.
+
+    Bugünkü tek istemci (``frontend/src/services/examService.ts``) doğru alan
+    adlarını gönderdiği için bu yol canlıda tetiklenmiyor; ama sözleşme
+    tarafında hiçbir şey engellemiyordu.
+
+    En kritik assert SONUNCUSU: 422 dönmek tek başına yetmez, önceki cevabın
+    KORUNDUĞU da ölçülmeli.
+    """
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+    session_id = _create_small_exam_session(client, token)
+
+    q_resp = client.get(
+        f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
+    )
+    assert (
+        q_resp.status_code == 200
+    ), f"GF3x kurulum: current-question {q_resp.status_code} {q_resp.text[:200]}"
+    q_body = q_resp.json()
+    question_id = q_body.get("question_id") or q_body.get("id")
+    assert question_id, f"GF3x kurulum: current-question'da id yok: {q_body}"
+
+    ilk = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={
+            "question_id": question_id,
+            "selected_answer": "B",
+            "response_time": 2.0,
+        },
+    )
+    assert (
+        ilk.status_code == 200
+    ), f"GF3x kurulum: geçerli save-answer {ilk.status_code} {ilk.text[:200]}"
+    # ALET DOĞRULAMASI: cevap gerçekten kaydedilmemişse aşağıdaki "korundu"
+    # assert'i yanlış sebeple geçerdi.
+    once = client.get(f"/api/v1/osym-exam/{session_id}/answers", headers=headers).json()
+    assert (
+        once.get("answers", {}).get(question_id) == "B"
+    ), f"GF3x ALET DOĞRULAMASI: ilk cevap hiç kaydedilmemiş: {once}"
+
+    tipo = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={
+            "question_id": question_id,
+            "secilen_cevap": "C",  # BİLİNMEYEN alan (doğrusu: selected_answer)
+            "response_time": 2.0,
+        },
+    )
+    assert tipo.status_code == 422, (
+        f"GF3x: bilinmeyen alan reddedilmedi, HTTP {tipo.status_code} "
+        f"{tipo.text[:300]}. Fix: SaveAnswerRequest.model_config'e "
+        f'"extra": "forbid" (backend/api/sinav.py:99-107).'
+    )
+
+    sonra = client.get(
+        f"/api/v1/osym-exam/{session_id}/answers", headers=headers
+    ).json()
+    assert sonra.get("answers", {}).get(question_id) == "B", (
+        f"GF3x SESSİZ VERİ KAYBI: bilinmeyen alanlı istek kaydedilmiş cevabı "
+        f"sildi. Öncesi={once.get('answers')} Sonrası={sonra.get('answers')}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF4w.1: learning-path register-wrong-answers must accept a valid question_id
 # ---------------------------------------------------------------------------
 
@@ -3783,25 +3912,95 @@ def test_gf89_team_challenges_create_not_500(client: httpx.Client):
 # ---------------------------------------------------------------------------
 
 
+def _create_completed_exam_session(client: httpx.Client, token: str) -> str:
+    """GF90 için KÜÇÜK ve TAMAMLANMIŞ bir sınav oturumu kurar.
+
+    Kurulum ``_create_small_exam_session``'a devredildi (paylaşılan
+    ``_create_exam_session``'ın neden kullanılamadığı orada yazıyor).
+    Buradaki fark: oturum ayrıca CEVAPLANIR ve TAMAMLANIR — ölçüldü ki
+    ``detailed-analysis`` yalnız tamamlanmış oturumda servise giriyor
+    (aktif oturum 400, uydurma id 404).
+    """
+    headers = _auth_headers(token)
+    session_id = _create_small_exam_session(client, token)
+
+    # En az bir cevap: 0 cevaplı bir oturumda "analiz boş döndü" ile "analiz
+    # çöktü" ayırt edilemezdi.
+    q_resp = client.get(
+        f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
+    )
+    assert (
+        q_resp.status_code == 200
+    ), f"GF90 kurulum: current-question {q_resp.status_code} {q_resp.text[:200]}"
+    q_body = q_resp.json()
+    question_id = q_body.get("question_id") or q_body.get("id")
+    assert question_id, f"GF90 kurulum: current-question'da id yok: {q_body}"
+
+    save_resp = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={
+            "question_id": question_id,
+            "selected_answer": "A",
+            "response_time": 3.0,
+        },
+    )
+    assert (
+        save_resp.status_code == 200
+    ), f"GF90 kurulum: save-answer {save_resp.status_code} {save_resp.text[:200]}"
+
+    complete_resp = client.post(
+        f"/api/v1/osym-exam/{session_id}/complete", headers=headers
+    )
+    assert (
+        complete_resp.status_code == 200
+    ), f"GF90 kurulum: complete {complete_resp.status_code} {complete_resp.text[:200]}"
+    return session_id
+
+
 def test_gf90_exam_performance_detailed_analysis_not_500(client: httpx.Client):
     """
-    GET /api/v1/exam-performance/{sid}/detailed-analysis must not crash.
+    GET /api/v1/exam-performance/{sid}/detailed-analysis çökmemeli.
 
-    Probes the exam performance analytics pipeline. The service
-    (exam_performance_service.analyze_exam_performance) joins exam sessions,
-    answer tracking, IRT theta and topic hierarchies — any wrong-table or
-    async session trap surfaces as a 500 at the `db.execute` call site. 404
-    is acceptable for a synthetic sinav_id.
+    🔴 BU TEST YANLIŞ-SIFIR ÜRETİYORDU (düzeltildi 27 Ağu 2026)
+    ------------------------------------------------------------
+    Eskiden ``gf90-synthetic-sid`` gibi UYDURMA bir oturum id'si kullanılıyor
+    ve ``!= 500`` assert ediliyordu. Ama uydurma id, IDOR kapısında
+    (``api/exam_performance.py::_assert_exam_session_authorized``) **404** ile
+    duruyor ve ``exam_performance_service`` koduna HİÇ GİRİLMİYOR. Yani test,
+    proplamayı iddia ettiği koda hiç ulaşamıyordu ve **her koşumda geçiyordu** —
+    servis tamamen çökük olsa bile. Ölçüldü:
+
+        synthetic id      -> 404   (kapı; servise girilmiyor -> test GEÇER)
+        aktif oturum      -> 400   (ön koşul; servise girilmiyor -> test GEÇER)
+        TAMAMLANMIŞ oturum-> 500   (GERÇEK KUSUR)
+
+    Bu yüzden test artık gerçek, sahibi bu öğrenci olan, TAMAMLANMIŞ bir
+    oturum kuruyor. Alet doğrulaması olarak 404/400 de reddediliyor: bu iki
+    kod, "servise ulaşamadık" demektir ve yanlış-sıfırın geri gelme yoludur.
+
+    Bilinen kök nedenler (``services/exam_performance_service.py``):
+    ``func.case(..., else_=)`` -> ``TypeError`` ve 4 tabloya ayrılmış soru
+    şemasına (``question_bank``/``_content``/``_metadata``/``_statistics``)
+    göç etmemiş kolon erişimleri.
     """
     token = _login(client, STUDENT)
+    session_id = _create_completed_exam_session(client, token)
+
     resp = client.get(
-        "/api/v1/exam-performance/gf90-synthetic-sid/detailed-analysis",
+        f"/api/v1/exam-performance/{session_id}/detailed-analysis",
         headers=_auth_headers(token),
     )
+
+    assert resp.status_code not in (400, 404), (
+        f"GF90 ALET DOĞRULAMASI: servise ulaşılamadı ({resp.status_code}). "
+        f"Bu kodlar kapı/ön koşul kaynaklıdır ve testin proplamak istediği "
+        f"kodu ATLAR — eski yanlış-sıfır tam olarak buydu. {resp.text[:200]}"
+    )
     assert resp.status_code != 500, (
-        f"GF90 exam-performance/detailed-analysis crashed: {resp.status_code} "
-        f"{resp.text[:300]}. 404 acceptable for synthetic sid. "
-        f"Check api/exam_performance.py + services/exam_performance_service.py."
+        f"GF90 exam-performance/detailed-analysis çöktü: {resp.status_code} "
+        f"{resp.text[:300]}. Bak: services/exam_performance_service.py "
+        f"(func.case(else_=) + question_bank şema göçü)."
     )
 
 
@@ -5015,10 +5214,12 @@ def test_gf149_study_rooms_not_500(client: httpx.Client):
         f"or 503 is the expected semantic response; a 500 would mean "
         f"someone added a partial router that imports a broken helper."
     )
-import pytest
+
 
 def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
-    pytest.skip("All health probe targets in this test were pruned during Backend Router Consolidation.")
+    pytest.skip(
+        "All health probe targets in this test were pruned during Backend Router Consolidation."
+    )
     """
     (A) J6 / J7 / live-session / clustering: liveness + DB ping (no auth).
     (B) Chroma stack health: semantic search, duplicate detection, content

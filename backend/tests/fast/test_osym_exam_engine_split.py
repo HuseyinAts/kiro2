@@ -388,7 +388,7 @@ class TestSelectBetaQuestions:
         """
         session = wired([[("qb-1",)], []])
 
-        await engine._select_beta_questions(5)
+        await engine._select_beta_questions(5, "TYT")
 
         assert len(session.statements) == 2, session.statements
         for stmt in session.statements:
@@ -401,7 +401,7 @@ class TestSelectBetaQuestions:
     ):
         session = wired([[("qb-1",)], []])
 
-        await engine._select_beta_questions(5)
+        await engine._select_beta_questions(5, "TYT")
 
         where_sql = _compiled_where(session.statements[0])
         assert "question_metadata.pipeline_metadata" in where_sql, where_sql
@@ -572,7 +572,19 @@ class TestAnalyzePerformance:
         assert metrics.net_score == 1.0
 
     @pytest.mark.asyncio
-    async def test_wrong_answer_scores_zero_net(self, wired, engine):
+    async def test_wrong_answer_scores_negative_net(self, wired, engine):
+        """Tek yanlış cevap ÖSYM cezasını yer: net = 0 - 1/4 = -0.25.
+
+        🔴 BU TEST BAYATTI (düzeltildi 27 Ağu 2026). Adı
+        ``test_wrong_answer_scores_zero_net`` idi ve ``0.0`` bekliyordu —
+        yani *"ÖSYM 2023+ 1/4 ceza kaldırıldı"* inancını çiviliyordu.
+        O inanç yanlıştı ve `core/osym_puanlama.py` ile tek kaynağa
+        bağlandığında (kural: 4 yanlış 1 doğruyu götürür) bu test kırmızıya
+        döndü. Test motoru değil, motor testi düzeltti.
+
+        Kırpma YOK: negatif net görünür kalır (kanon gerekçesi
+        `core/osym_puanlama.py` docstring'inde).
+        """
         session = wired([[SimpleNamespace(id="q-1", correct_answer="B")]])
 
         metrics = await engine._analyze_performance(
@@ -584,7 +596,7 @@ class TestAnalyzePerformance:
             metrics.correct_answers,
             metrics.wrong_answers,
             metrics.net_score,
-        ) == (0, 1, 0.0)
+        ) == (0, 1, -0.25)
 
     @pytest.mark.asyncio
     async def test_times_asked_update_targets_question_statistics(self, wired, engine):

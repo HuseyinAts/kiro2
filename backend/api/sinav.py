@@ -97,13 +97,16 @@ class SaveAnswerRequest(BaseModel):
     )
 
     model_config = {
+        # K5: bilinmeyen alan SESSIZCE yutulmasin (pydantic v2 varsayilani 'ignore').
+        # Yutulursa selected_answer varsayilana duser ve uc 200 doner -> cevap kaybolur.
+        "extra": "forbid",
         "json_schema_extra": {
             "example": {
                 "question_id": "550e8400-e29b-41d4-a716-446655440000",
                 "selected_answer": "A",
                 "response_time": 45.5,
             }
-        }
+        },
     }
 
 

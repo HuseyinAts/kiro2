@@ -2468,6 +2468,59 @@ class TestOsymExamAPIEdgeCases:
         with pytest.raises((ValueError, TypeError, Exception)):
             SaveAnswerRequest()
 
+    def test_save_answer_request_rejects_unknown_field(self):
+        """K5: bilinmeyen alan SESSIZCE YUTULMAZ, ValidationError firlatir.
+
+        Kusur: model_config'de 'extra' anahtari yoksa pydantic v2 varsayilani
+        'ignore' olur. Turkce/eski adli bir alan (secilen_cevap) sessizce
+        dusurulur, selected_answer varsayilani None'a duser ve uc 200 doner
+        -> ogrencinin cevabi kaybolur ama istemci basarili sanir.
+        """
+        from pydantic import ValidationError
+
+        from api.sinav import SaveAnswerRequest
+
+        with pytest.raises(ValidationError) as exc_info:
+            SaveAnswerRequest(question_id="q1", secilen_cevap="C")
+
+        # Dusme sebebi 'bilinmeyen alan' olmali -- baska bir dogrulama hatasi degil.
+        errors = exc_info.value.errors()
+        assert any(e["type"] == "extra_forbidden" for e in errors), errors
+        assert any("secilen_cevap" in str(e.get("loc", ())) for e in errors), errors
+
+    def test_save_answer_request_accepts_empty_selected_answer(self):
+        """K5 KONTROL KOLU: bos selected_answer MESRU yol, reddedilmemeli.
+
+        frontend/src/store/examStore.ts:411 clearAnswer() ->
+        saveAnswer(questionId, '', 0) yani govde
+        {"question_id": ..., "selected_answer": "", "response_time": 0}.
+        'forbid' bu yolu KIRMAMALI; kirarsa cevap temizleme ozelligi olur.
+        """
+        from api.sinav import SaveAnswerRequest
+
+        req = SaveAnswerRequest(question_id="q1", selected_answer="", response_time=0)
+        assert req.selected_answer == ""
+        assert req.response_time == 0
+
+    def test_save_answer_request_accepts_full_valid_body(self):
+        """K5 ALET DOGRULAMASI: gecerli tam govde hatasiz kurulmali.
+
+        Bu test duserse 'forbid' asiriya kacmis demektir (kapatilacak kusur
+        degil, yeni kusur uretilmis olur).
+        """
+        from api.sinav import SaveAnswerRequest
+
+        req = SaveAnswerRequest(
+            question_id="550e8400-e29b-41d4-a716-446655440000",
+            selected_answer="A",
+            response_time=45.5,
+            rating=3,
+        )
+        assert req.question_id == "550e8400-e29b-41d4-a716-446655440000"
+        assert req.selected_answer == "A"
+        assert req.response_time == 45.5
+        assert req.rating == 3
+
     def test_exam_session_response_model(self):
         """ExamSessionResponse model structure"""
         from api.sinav import ExamSessionResponse

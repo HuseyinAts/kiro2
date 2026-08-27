@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from sqlalchemy import and_, desc, func, select
+from sqlalchemy import and_, case, desc, func, select
 from sqlalchemy.orm import selectinload
 
 from core.database import get_db_session_context
@@ -25,7 +25,12 @@ from models.database import (
     StudentAnswer,
 )
 from models.question_bank import QuestionBankItem as Question
-from models.question_bank import QuestionDifficultyLevel
+from models.question_bank import (
+    QuestionContent,
+    QuestionDifficultyLevel,
+    QuestionMetadata,
+    QuestionStatistics,
+)
 
 logger = get_logger("exam_performance_service")
 
@@ -317,23 +322,30 @@ class ExamPerformanceService:
         """Konu bazlı performans analizi"""
 
         # Konu bazlı istatistikleri getir
+        # NOT: subject_area / correct_answer / irt_difficulty / difficulty_level
+        # 4 tablolu bölünmede question_metadata / question_content /
+        # question_statistics'e taşındı -> açık JOIN zorunlu.
         subject_stats_result = await db_session.execute(
             select(
-                Question.subject_area,
+                QuestionMetadata.subject_area,
                 Question.primary_topic_id,
                 func.count(Question.id).label("total_questions"),
                 func.sum(
-                    func.case(
-                        (StudentAnswer.selected_answer == Question.correct_answer, 1),
+                    case(
+                        (
+                            StudentAnswer.selected_answer
+                            == QuestionContent.correct_answer,
+                            1,
+                        ),
                         else_=0,
                     )
                 ).label("correct_answers"),
                 func.sum(
-                    func.case(
+                    case(
                         (
                             and_(
                                 StudentAnswer.selected_answer
-                                != Question.correct_answer,
+                                != QuestionContent.correct_answer,
                                 StudentAnswer.selected_answer.isnot(None),
                             ),
                             1,
@@ -342,33 +354,42 @@ class ExamPerformanceService:
                     )
                 ).label("wrong_answers"),
                 func.sum(
-                    func.case((StudentAnswer.selected_answer.is_(None), 1), else_=0)
+                    case((StudentAnswer.selected_answer.is_(None), 1), else_=0)
                 ).label("empty_answers"),
                 func.avg(StudentAnswer.response_time_seconds).label(
                     "avg_response_time"
                 ),
-                func.avg(Question.irt_difficulty).label("avg_difficulty"),
+                func.avg(QuestionStatistics.irt_difficulty).label("avg_difficulty"),
             )
             .select_from(Question)
             .join(StudentAnswer, Question.id == StudentAnswer.question_id)
+            .join(QuestionContent, QuestionContent.id == Question.id)
+            .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+            .join(QuestionStatistics, QuestionStatistics.id == Question.id)
             .where(StudentAnswer.exam_session_id == exam_session.id)
-            .where(Question.is_active == True)
-            .group_by(Question.subject_area, Question.primary_topic_id)
+            .where(Question.is_active.is_(True))
+            .group_by(QuestionMetadata.subject_area, Question.primary_topic_id)
         )
 
         # FIX N+1: Fetch all difficulty distributions in one query
         all_difficulties_result = await db_session.execute(
             select(
-                Question.subject_area,
+                QuestionMetadata.subject_area,
                 Question.primary_topic_id,
-                Question.difficulty_level,
+                QuestionStatistics.difficulty_level,
                 func.count(Question.id).label("count"),
             )
             .select_from(Question)
             .join(StudentAnswer, Question.id == StudentAnswer.question_id)
+            .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+            .join(QuestionStatistics, QuestionStatistics.id == Question.id)
             .where(StudentAnswer.exam_session_id == exam_session.id)
-            .where(Question.is_active == True)
-            .group_by(Question.subject_area, Question.primary_topic_id, Question.difficulty_level)
+            .where(Question.is_active.is_(True))
+            .group_by(
+                QuestionMetadata.subject_area,
+                Question.primary_topic_id,
+                QuestionStatistics.difficulty_level,
+            )
         )
 
         # Create lookup dictionary: (subject_area, topic) -> {difficulty: count}
@@ -555,7 +576,7 @@ class ExamPerformanceService:
         """Önerilen kaynakları getir"""
 
         # Basit implementasyon - gerçek uygulamada içerik veritabanından çekilecek
-        resources = [
+        return [
             {
                 "type": "video",
                 "title": f"{topic} - Konu Anlatımı",
@@ -581,8 +602,6 @@ class ExamPerformanceService:
                 "url": f"https://tr.khanacademy.org/{subject}/{topic}",
             },
         ]
-
-        return resources
 
     async def _compare_performance(
         self, db_session, exam_session: ExamSession, overall_performance: dict[str, Any]
@@ -648,15 +667,16 @@ class ExamPerformanceService:
         # Konu bazlı zaman analizi
         time_by_subject_result = await db_session.execute(
             select(
-                Question.subject_area,
+                QuestionMetadata.subject_area,
                 func.avg(StudentAnswer.response_time_seconds).label("avg_time"),
                 func.count(StudentAnswer.id).label("question_count"),
             )
             .select_from(Question)
             .join(StudentAnswer, Question.id == StudentAnswer.question_id)
+            .join(QuestionMetadata, QuestionMetadata.id == Question.id)
             .where(StudentAnswer.exam_session_id == exam_session.id)
-            .where(Question.is_active == True)
-            .group_by(Question.subject_area)
+            .where(Question.is_active.is_(True))
+            .group_by(QuestionMetadata.subject_area)
         )
 
         time_by_subject = {}

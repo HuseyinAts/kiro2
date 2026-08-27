@@ -20,7 +20,11 @@ def _is_beta_clean(q) -> bool:
 
 async def main() -> int:
     engine = OSYMExamEngine()
-    questions = await engine._select_beta_questions(20)
+    # exam_type ARTIK ZORUNLU: beta seçimi öğrenci kalite kapısını ve sınav
+    # tipini uygulayacak şekilde değiştirildi (27 Ağu 2026). Bu çağrı
+    # güncellenmeseydi script "missing 1 required positional argument" ile
+    # sert çökerdi.
+    questions = await engine._select_beta_questions(20, "TYT")
     n = len(questions)
     all_clean = all(_is_beta_clean(q) for q in questions)
     all_active = all(q.is_active for q in questions)
