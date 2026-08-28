@@ -18,7 +18,7 @@ import uuid
 # Add backend to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import psycopg2
+import psycopg  # psycopg3 (requirements.txt: psycopg[binary]); psycopg2 CI'da yok
 from passlib.context import CryptContext
 
 # Password hasher (must match auth system)
@@ -27,7 +27,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # MVP password from env var (fallback for backwards compatibility)
 MVP_DEFAULT_PASSWORD = os.getenv("MVP_PASSWORD", "Kiro2Beta2026@x")
 
-# Database connection - strip asyncpg driver for sync psycopg2
+# Database connection - strip asyncpg driver for sync psycopg3
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     sys.exit(
@@ -162,14 +162,14 @@ ON CONFLICT (id) DO NOTHING
 def main():
     print(f"Connecting to PostgreSQL: {db_host}:{db_port}/{dbname}")
     try:
-        conn = psycopg2.connect(
+        conn = psycopg.connect(
             host=db_host,
             port=int(db_port),
             dbname=dbname,
             user=db_user,
             password=db_pass,
         )
-    except psycopg2.OperationalError as e:
+    except psycopg.OperationalError as e:
         print(f"ERROR: DB connection failed: {e}")
         print("Check DATABASE_URL in .env.mvp")
         sys.exit(1)
