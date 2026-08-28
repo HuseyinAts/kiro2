@@ -58,10 +58,10 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2  # pragma: allowlist secret
-      REDIS_URL: redis://localhost:6379/0
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@127.0.0.1:5434/kiro2  # pragma: allowlist secret
+      REDIS_URL: redis://127.0.0.1:6379/0
       JWT_SECRET: test-jwt-secret-for-golden-flows-ci-not-for-production-use-only  # pragma: allowlist secret
-      BACKEND_URL: http://localhost:8000
+      BACKEND_URL: http://127.0.0.1:8000
       PYTHONIOENCODING: utf-8
 
     steps:
@@ -207,7 +207,7 @@ jobs:
       - name: Wait for backend
         run: |
           for i in {1..30}; do
-            if curl -sf http://localhost:8000/health > /dev/null; then
+            if curl -sf http://127.0.0.1:8000/health > /dev/null; then
               echo "Backend is up after ${i}s"
               exit 0
             fi
