@@ -25,7 +25,7 @@ class BERTurkEducationFineTuner:
             base_model,
             num_labels=num_labels
         ).to(self.device)
-        
+
     def prepare_dataset(
         self,
         texts: List[str],
@@ -39,11 +39,11 @@ class BERTurkEducationFineTuner:
                 truncation=True,
                 max_length=max_length
             )
-        
+
         dataset = Dataset.from_dict({"text": texts, "label": labels})
         tokenized = dataset.map(tokenize_function, batched=True)
         return tokenized
-    
+
     def train(
         self,
         train_dataset: Dataset,
@@ -67,7 +67,7 @@ class BERTurkEducationFineTuner:
             logging_steps=10,
             fp16=torch.cuda.is_available()
         )
-        
+
         trainer = Trainer(
             model=self.model,
             args=training_args,
@@ -77,26 +77,26 @@ class BERTurkEducationFineTuner:
             data_collator=DataCollatorWithPadding(self.tokenizer),
             compute_metrics=self._compute_metrics
         )
-        
+
         trainer.train()
         return trainer
-    
+
     def _compute_metrics(self, eval_pred):
         predictions, labels = eval_pred
         predictions = np.argmax(predictions, axis=1)
-        
+
         precision, recall, f1, _ = precision_recall_fscore_support(
             labels, predictions, average="weighted"
         )
         acc = accuracy_score(labels, predictions)
-        
+
         return {
             "accuracy": acc,
             "f1": f1,
             "precision": precision,
             "recall": recall
         }
-    
+
     def predict(self, texts: List[str]) -> List[int]:
         inputs = self.tokenizer(
             texts,
@@ -104,11 +104,11 @@ class BERTurkEducationFineTuner:
             truncation=True,
             return_tensors="pt"
         ).to(self.device)
-        
+
         with torch.no_grad():
             outputs = self.model(**inputs)
             predictions = torch.argmax(outputs.logits, dim=-1)
-        
+
         return predictions.cpu().numpy().tolist()
 
 
@@ -120,18 +120,18 @@ class EducationDatasetBuilder:
             "2 + 2 = ?",
             "x^2 + 5x + 6 = 0 denklemini cozunuz",
             "Integral of sin(x)dx",
-            "Termodinamiðin ikinci yasasýný aciklayiniz"
+            "TermodinamiÄŸin ikinci yasasÄ±nÄ± aciklayiniz"
         ]
         labels = [0, 2, 3, 4]  # 0=very easy, 4=very hard
         return texts, labels
-    
+
     @staticmethod
     def build_topic_classification_dataset():
         # Classify educational topics
         texts = [
             "Pisagor teoremi ile dik ucgende kenar hesaplama",
             "Fotosentez surecinde klorofilin rolu",
-            "Osmanli Imparatorluðunun kurulusu"
+            "Osmanli ImparatorluÄŸunun kurulusu"
         ]
         labels = [0, 1, 2]  # 0=math, 1=biology, 2=history
         return texts, labels
@@ -142,15 +142,15 @@ class ModelRegistry:
     def __init__(self):
         self.models: Dict[str, str] = {}
         self.active_model: str = "v1"
-    
+
     def register_model(self, version: str, model_path: str):
         self.models[version] = model_path
-    
+
     def set_active_model(self, version: str):
         if version in self.models:
             self.active_model = version
         else:
             raise ValueError(f"Model version {version} not found")
-    
+
     def get_active_model_path(self) -> str:
         return self.models.get(self.active_model)
