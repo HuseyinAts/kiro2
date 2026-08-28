@@ -658,6 +658,8 @@ async def post_verdict(
 
     try:
         await db.commit()
+    except HTTPException:
+        raise
     except Exception as e:
         await db.rollback()
         logger.error("Curator verdict commit failed for %s: %s", body.question_id, e)

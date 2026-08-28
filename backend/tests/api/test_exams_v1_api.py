@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from core.dependencies import get_db
+from core.dependencies import get_current_user, get_db
 from main import app
 from models.enums_db import ExamType
 
@@ -27,6 +27,7 @@ async def test_generate_mock_exam_endpoint(mock_db_session):
     mock_db_session.execute.return_value = mock_result
 
     app.dependency_overrides[get_db] = lambda: mock_db_session
+    app.dependency_overrides[get_current_user] = lambda: MagicMock(id="test-student-id")
 
     try:
         async with AsyncClient(
@@ -78,6 +79,7 @@ async def test_get_exam_session_endpoint(mock_db_session):
     mock_db_session.execute.return_value = mock_result
 
     app.dependency_overrides[get_db] = lambda: mock_db_session
+    app.dependency_overrides[get_current_user] = lambda: MagicMock(id="test-student-id")
 
     try:
         async with AsyncClient(
@@ -101,7 +103,7 @@ async def test_get_exam_session_endpoint(mock_db_session):
 
 @pytest.mark.asyncio
 async def test_save_answer_endpoint(mock_db_session):
-    mock_session_obj = MagicMock(id="session-123")
+    mock_session_obj = MagicMock(id="session-123", student_id="test-student-id")
     mock_result_session = MagicMock()
     mock_result_session.scalar_one_or_none.return_value = mock_session_obj
 
@@ -111,6 +113,7 @@ async def test_save_answer_endpoint(mock_db_session):
     mock_db_session.execute.side_effect = [mock_result_session, mock_result_ans]
 
     app.dependency_overrides[get_db] = lambda: mock_db_session
+    app.dependency_overrides[get_current_user] = lambda: MagicMock(id="test-student-id")
 
     try:
         async with AsyncClient(
@@ -136,6 +139,7 @@ async def test_save_answer_endpoint(mock_db_session):
 async def test_submit_exam_endpoint(mock_db_session):
     mock_session_obj = MagicMock()
     mock_session_obj.id = "session-123"
+    mock_session_obj.student_id = "test-student-id"
     mock_session_obj.status = "in_progress"
 
     mock_eq = MagicMock()
@@ -158,6 +162,7 @@ async def test_submit_exam_endpoint(mock_db_session):
     mock_db_session.execute.return_value = mock_result
 
     app.dependency_overrides[get_db] = lambda: mock_db_session
+    app.dependency_overrides[get_current_user] = lambda: MagicMock(id="test-student-id")
 
     try:
         async with AsyncClient(

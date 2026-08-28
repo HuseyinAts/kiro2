@@ -52,7 +52,13 @@ AUDIT_ROOTS = ["api", "app/api"]
 SKIP_DIRS = {"__pycache__", "_deprecated", "tests", "node_modules", "venv", ".venv"}
 
 # File-level skips: demo / example surfaces are not real endpoints.
-SKIP_FILE_SUFFIXES = ("_demo.py", "_example.py", "sentry_demo.py", "tracing_example.py")
+SKIP_FILE_SUFFIXES = (
+    "_demo.py",
+    "_example.py",
+    "sentry_demo.py",
+    "tracing_example.py",
+    "_stub.py",
+)
 
 WRITE_METHODS = {"post", "put", "patch", "delete"}
 
@@ -91,6 +97,15 @@ AUTH_REQUIRED_NAMES = {
     # Session-specific helpers that load a user from a token
     "_get_user_orm",
     "_require_2fa_feature",
+    # Org / multi-tenant auth deps — all transitively Depends(get_current_user):
+    #   require_org_role -> get_current_membership -> get_current_tenant
+    #   get_current_tenant -> Depends(get_current_user) (403 if no tenant)
+    #   require_dpa_signed -> get_current_tenant -> get_current_user
+    #   get_current_user_old = `get_current_user as get_current_user_old` import alias
+    "require_org_role",
+    "get_current_tenant",
+    "require_dpa_signed",
+    "get_current_user_old",
 }
 
 # Dependencies that allow ANONYMOUS access — MED severity for write endpoints.
@@ -98,6 +113,8 @@ AUTH_OPTIONAL_NAMES = {
     "authenticate_optional",
     "get_current_user_optional",
     "optional_current_user",
+    # cat.py guest sessions: returns User|None, None for anonymous (by design).
+    "get_optional_user",
 }
 
 # Class-based authorization dependency names — detected via Call prefix.
@@ -183,6 +200,12 @@ PUBLIC_PATH_SUBSTRINGS = (
     "/errors/report",
     # Public content browsing (makaleler, dersler — educational read path)
     "/content/search",
+    # Email-link token flows (token in body IS the auth — like /auth/verify):
+    # parental consent (veli-onay) + email verification (eposta-dogrula).
+    "/veli-onay/",
+    "/eposta-dogrula/",
+    # Billing webhook: authenticated by X-Kiro2-Billing-Secret shared secret.
+    "/billing/webhook",
 )
 
 

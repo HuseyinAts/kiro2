@@ -99,6 +99,8 @@ async def analyze_osym_pdf(
                     "cognitive_load_score": trend.cognitive_load_score,
                 },
             }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -322,7 +324,11 @@ class RunEquatingRequest(BaseModel):
 
 
 @router.post("/auto-assign-anchors")
-async def auto_assign_anchors(request: AutoAssignAnchorsRequest):
+async def auto_assign_anchors(
+    request: AutoAssignAnchorsRequest,
+    # (Admin) gate — S-KODGERCEGI
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+):
     """
     (Admin) Belirli bir dersteki soruları IRT kalibrasyon kalitesine göre çıpa (anchor) ilan eder.
     """
@@ -348,6 +354,9 @@ async def auto_assign_anchors(request: AutoAssignAnchorsRequest):
                 select(QuestionBankItem)
                 .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
                 .where(QuestionMetadata.subject_area == request.subject)
+                # KOD GERCEGI (is_active): capalar yalniz AKTIF havuzdan secilir —
+                # soft-delete'li (is_active=False) "cop" maddeler capa olamaz.
+                .where(QuestionBankItem.is_active.is_(True))
                 .order_by(QuestionBankItem.id)
                 .limit(request.count)
             )
@@ -363,12 +372,18 @@ async def auto_assign_anchors(request: AutoAssignAnchorsRequest):
                 "message": f"{len(questions)} soru anchor olarak atandı.",
                 "subject": request.subject,
             }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/run-equating")
-async def run_equating(request: RunEquatingRequest):
+async def run_equating(
+    request: RunEquatingRequest,
+    # (Admin) gate — S-KODGERCEGI
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+):
     """
     (Admin) Mean-Mean Equating metodunu çalıştırarak formları eşitler.
     """
@@ -389,6 +404,8 @@ async def run_equating(request: RunEquatingRequest):
             "constants": {"A_slope": A, "B_intercept": B},
             "sample_transformation": sample_transformation,
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

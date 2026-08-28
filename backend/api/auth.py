@@ -1980,6 +1980,8 @@ async def refresh_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Refresh token bulunamadı veya geçersiz.",
         )
+    except HTTPException:
+        raise
     except Exception:
         logger.exception(
             "refresh_token: beklenmeyen hata (istemciye genel 401 donuldu)"

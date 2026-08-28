@@ -128,6 +128,20 @@ SKIP_PATH_SUBSTRINGS = (
     "/stats",
 )
 
+# KOD GERCEGI (false-positive duzeltmesi): asagidaki uc yol, LLM/TTS/embedding
+# ceviren bir sentinel'i IMPORT eden dosyalarda yasar ama KENDILERI o servisi
+# CAGIRMAZ — dolayisiyla "kota yakan" maliyet-tasiyan uc degiller (dosya-duzeyi
+# sentinel sezgisinin yanlis pozitifi). Govde denetimiyle dogrulandi:
+#   - /bionic-reading      -> BionicReadingService (metin bicimlendirme + cache)
+#   - /auto-assign-anchors -> DB sorgusu (IRT capa atama); admin-yetki kapisi var
+#   - /run-equating        -> saf matematik (MeanMeanEquator); admin-yetki kapisi var
+# Genel istismar zaten DDoSProtectionMiddleware + GLOBAL_RATE_LIMITS ile kapali.
+NON_COST_BEARING_PATHS = (
+    "/bionic-reading",
+    "/auto-assign-anchors",
+    "/run-equating",
+)
+
 
 @dataclass
 class Finding:
@@ -281,6 +295,9 @@ def _scan_file(path: Path, src: str, report: AuditReport, root: Path) -> None:
         )
 
         if any(sub in full_path.lower() for sub in SKIP_PATH_SUBSTRINGS):
+            continue
+
+        if any(sub in full_path.lower() for sub in NON_COST_BEARING_PATHS):
             continue
 
         if _has_rate_limit_decorator(fn):

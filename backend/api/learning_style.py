@@ -402,6 +402,8 @@ async def get_all_hybrid_codes():
             "message": f"{len(hybrid_codes)} hibrit kod kombinasyonu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Hibrit kodlar hatası: {e!s}")
         raise HTTPException(status_code=500, detail=f"Hibrit kodlar alınamadı: {e!s}")
@@ -423,6 +425,8 @@ async def get_learning_style_statistics():
             "message": "İstatistikler hazırlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İstatistik hatası: {e!s}")
         raise HTTPException(status_code=500, detail=f"İstatistikler alınamadı: {e!s}")
@@ -482,6 +486,8 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
             "message": "İçerik açıklaması hazırlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İçerik açıklaması hatası: {e!s}")
         raise HTTPException(status_code=500, detail=f"Açıklama oluşturulamadı: {e!s}")
@@ -569,6 +575,8 @@ async def health_check():
             "message": "Hibrit öğrenme stili sistemi çalışıyor",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sağlık kontrolü hatası: {e!s}")
         raise HTTPException(

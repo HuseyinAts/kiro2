@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from algorithms.test_assembly import YksBellCurveAssembler
-from core.dependencies import get_db
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from models.enums_db import ExamType, SubjectArea
 from models.exam_db import ExamQuestion, ExamSession, StudentAnswer
 from models.question_bank import QuestionBankItem, QuestionStatistics, TopicHierarchy
@@ -191,13 +191,17 @@ def _options_from_content(content: object) -> list[dict[str, str]]:
 
 @router.post("/generate-mock", status_code=status.HTTP_201_CREATED)
 async def generate_mock_exam(
-    req: GenerateMockRequest, db: AsyncSession = Depends(get_db)
+    req: GenerateMockRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Generates a full TYT Mock Exam (120 questions).
     """
+    # KOD GERCEGI (auth+IDOR): student_id kimlik dogrulanmis kullanicidan gelir,
+    # istek govdesinden DEGIL — aksi halde herkes baskasi adina oturum acardi.
     session = ExamSession(
-        student_id=req.student_id,
+        student_id=str(current_user.id),
         organization_id=req.organization_id or "org_legacy_default",
         exam_type=ExamType.TYT,
         exam_name="TYT Deneme Sınavı",
@@ -362,7 +366,10 @@ async def get_exam_session(
 
 @router.post("/{session_id}/answer")
 async def save_answer(
-    session_id: str, req: AnswerQuestionRequest, db: AsyncSession = Depends(get_db)
+    session_id: str,
+    req: AnswerQuestionRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Saves or updates a candidate's answer for a specific question in real-time.
@@ -374,6 +381,12 @@ async def save_answer(
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Exam session not found"
+        )
+    # KOD GERCEGI (ownership): yalniz oturum sahibi cevap yazabilir.
+    if str(session.student_id) != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu sinav oturumu size ait degil",
         )
 
     ans_res = await db.execute(
@@ -409,7 +422,10 @@ async def save_answer(
 
 @router.post("/{session_id}/submit")
 async def submit_exam(
-    session_id: str, req: SubmitExamRequest, db: AsyncSession = Depends(get_db)
+    session_id: str,
+    req: SubmitExamRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Finalizes the exam session, calculates scores and branch breakdowns, and returns results.
@@ -428,6 +444,12 @@ async def submit_exam(
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Exam session not found"
+        )
+    # KOD GERCEGI (ownership): yalniz oturum sahibi sinavi gonderebilir.
+    if str(session.student_id) != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu sinav oturumu size ait degil",
         )
 
     answers_map = {ans.question_id: ans for ans in session.student_answers}
