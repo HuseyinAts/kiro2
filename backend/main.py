@@ -104,6 +104,18 @@ except ImportError as e:
             allow_headers=["*"],
         )
 
+        # Guvenlik basliklari fallback app'te de olmali: aksi halde
+        # core.application import edilemedigi her ortamda (CI'daki
+        # api-security job'i dahil) X-Frame-Options / X-Content-Type-Options
+        # / CSP sessizce kayboluyor ve OWASP ZAP taramasi FAIL veriyor.
+        try:
+            from core.security_headers import SecurityHeadersMiddleware
+
+            app.add_middleware(SecurityHeadersMiddleware)
+            logger.info("Security headers middleware added (fallback app)")
+        except ImportError as exc:
+            logger.warning(f"Security headers middleware unavailable: {exc}")
+
         @app.get("/")
         async def root():
             return {"app": "KIRO2", "status": "online"}

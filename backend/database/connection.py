@@ -36,6 +36,17 @@ else:
     # import zincirini (orn. api/auth.py -> database/__init__) coker, router
     # yuklenmez ve uclar 404 olur. alembic/env.py'deki duzeltmenin ayni sinifi
     # (28 Agu 2026, gf veli-onay 404 teshisi).
+    #
+    # 2. tur (security.yml -> api-security): o is DATABASE_URL'i CIPLAK
+    # "postgresql://" olarak export ediyor. O halde SADECE +asyncpg'yi
+    # cevirmek yetmiyordu -- ciplak URL hem async motorda (async surucu yok)
+    # hem sync motorda (psycopg2 yok) patliyor, main.py minimal fallback
+    # app'e dusuyor ve ZAP neredeyse bos bir uygulamayi tariyordu.
+    # Bu yuzden her iki uc de acikca normalize ediliyor.
+    if DATABASE_URL.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL.replace(
+            "postgresql://", "postgresql+asyncpg://", 1
+        )
     SYNC_DATABASE_URL = DATABASE_URL.replace(
         "postgresql+asyncpg://", "postgresql+psycopg://"
     )
