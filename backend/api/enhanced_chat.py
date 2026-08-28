@@ -1002,56 +1002,121 @@ async def _extract_text_from_pdf(file_bytes: bytes) -> str:
         return f"PDF okuma hatasi: {e}"
 
 
-async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
-    """Fetch and extract readable text from a URL (SSRF-safe)."""
+# Bir URL'yi getirirken izin verilen azami yonlendirme sayisi (SSRF sertlestirme).
+_URL_FETCH_MAX_REDIRECTS = 5
+
+
+def _ssrf_url_guvenli(url: str) -> tuple[bool, str]:
+    """URL'nin SSRF acisindan guvenli olup olmadigini dogrular.
+
+    (guvenli, hata_mesaji) doner. Bu bekci TEK bir hop'u dener; cagiran
+    taraf ilk URL'yi VE her yonlendirme hedefini ayri ayri buradan gecirir
+    (bkz. _fetch_url_content). CodeQL py/full-ssrf (alert #114, CWE-918).
+
+    Kapsanan bosluklar:
+      - Sema: yalniz http/https (file://, gopher://, dict:// vb. reddedilir).
+      - Hostname'in COZUMLENEN TUM IP'leri denetlenir (yalniz ilki degil) —
+        cok-A-kayitli bir isim ile bir public + bir private IP karisimi
+        engellenir.
+      - private / loopback / link-local (169.254.169.254 = bulut metadata) /
+        reserved / multicast / unspecified araliklarinin tumu engellenir.
+
+    Bilinen kalinti (kabul edildi): getaddrinfo on-cozumlemesi ile httpx'in
+    fiili baglanti cozumlemesi ayri oldugundan teorik bir DNS-rebinding /
+    TOCTOU penceresi kalir. Sifirlamak icin cozulen IP'ye baglanip Host
+    basligini elde tutmak gerekir (TLS SNI ile karmasik); pratikte pencere
+    cok dar ve asil somurulen yol olan yonlendirme-ile-metadata bu bekciyle
+    kapatildi.
+    """
     import ipaddress
     import socket
     from urllib.parse import urlparse
 
-    import httpx
-
-    # Scheme + hostname validation
     parsed = urlparse(url)
     if parsed.scheme not in ("http", "https"):
-        return "Sadece http ve https URL'ler desteklenir."
+        return False, "Sadece http ve https URL'ler desteklenir."
     if not parsed.hostname:
-        return "Gecersiz URL."
+        return False, "Gecersiz URL."
 
-    # Block private/loopback/link-local IPs (SSRF prevention)
     try:
         infos = socket.getaddrinfo(parsed.hostname, None)
-        ip = infos[0][4][0]
-        addr = ipaddress.ip_address(ip)
-        if addr.is_private or addr.is_loopback or addr.is_link_local:
-            return "Yerel ag adreslerine erisim engellenmistir."
-    except (socket.gaierror, ValueError):
-        return "URL cozumlenemedi."
+    except (socket.gaierror, ValueError, UnicodeError):
+        return False, "URL cozumlenemedi."
 
+    for info in infos:
+        try:
+            addr = ipaddress.ip_address(info[4][0])
+        except ValueError:
+            return False, "URL cozumlenemedi."
+        if (
+            addr.is_private
+            or addr.is_loopback
+            or addr.is_link_local
+            or addr.is_reserved
+            or addr.is_multicast
+            or addr.is_unspecified
+        ):
+            return False, "Yerel/dahili ag adreslerine erisim engellenmistir."
+
+    return True, ""
+
+
+async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
+    """Fetch and extract readable text from a URL (SSRF-safe).
+
+    follow_redirects=False + manuel, her-hop dogrulanan yonlendirme takibi:
+    httpx'in dogrulanmamis 3xx takibi bir public URL'den bulut metadata /
+    dahili servise SSRF yolu aciyordu (alert #114). Artik ilk URL de her
+    yonlendirme hedefi de _ssrf_url_guvenli'den gecirilir.
+    """
+    from urllib.parse import urljoin
+
+    import httpx
+
+    current = url
     try:
-        async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-            resp = await client.get(url, headers={"User-Agent": "KIRO2-Bot/1.0"})
-            resp.raise_for_status()
-            content_type = resp.headers.get("content-type", "")
-            if "text/html" in content_type:
-                # Simple HTML text extraction
-                import re
+        async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:
+            for _hop in range(_URL_FETCH_MAX_REDIRECTS + 1):
+                guvenli, mesaj = _ssrf_url_guvenli(current)
+                if not guvenli:
+                    return mesaj
 
-                html = resp.text
-                # Remove script/style tags
-                html = re.sub(
-                    r"<(script|style)[^>]*>.*?</\1>",
-                    "",
-                    html,
-                    flags=re.DOTALL | re.IGNORECASE,
+                resp = await client.get(
+                    current, headers={"User-Agent": "KIRO2-Bot/1.0"}
                 )
-                # Remove HTML tags
-                text_content = re.sub(r"<[^>]+>", " ", html)
-                # Clean whitespace
-                text_content = re.sub(r"\s+", " ", text_content).strip()
-                return text_content[:5000]  # max 5000 chars
-            if "application/json" in content_type:
+
+                if resp.is_redirect:
+                    location = resp.headers.get("location", "")
+                    if not location:
+                        return "Yonlendirme hedefi bulunamadi."
+                    # Goreli Location'i mutlak URL'ye cevir, sonra tekrar dogrula.
+                    current = urljoin(current, location)
+                    continue
+
+                resp.raise_for_status()
+                content_type = resp.headers.get("content-type", "")
+                if "text/html" in content_type:
+                    # Simple HTML text extraction
+                    import re
+
+                    html = resp.text
+                    # Remove script/style tags
+                    html = re.sub(
+                        r"<(script|style)[^>]*>.*?</\1>",
+                        "",
+                        html,
+                        flags=re.DOTALL | re.IGNORECASE,
+                    )
+                    # Remove HTML tags
+                    text_content = re.sub(r"<[^>]+>", " ", html)
+                    # Clean whitespace
+                    text_content = re.sub(r"\s+", " ", text_content).strip()
+                    return text_content[:5000]  # max 5000 chars
+                if "application/json" in content_type:
+                    return str(resp.text)[:5000]
                 return str(resp.text)[:5000]
-            return str(resp.text)[:5000]
+
+            return "Cok fazla yonlendirme (limit asildi)."
     except Exception as e:
         logger.warning(f"URL fetch failed: {e}")
         return f"URL icerigi alinamadi: {e}"
