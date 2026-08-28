@@ -96,6 +96,14 @@ def upgrade() -> None:
 
     conn.exec_driver_sql(BASELINE_SQL.read_text(encoding="utf-8"))
 
+    # pg_dump matview'leri daima `WITH NO DATA` yazar; populate edilmemis
+    # matview'u sorgulamak PostgreSQL'de hatadir (ObjectNotInPrerequisiteState:
+    # "mv_safe_for_beta has not been populated") ve safe_for_beta_sql() kapisini
+    # kullanan HER ucta 500 uretir (GF3c/GF13/GF32/GF40/GF128 zinciri,
+    # 28 Agu 2026 olcumu). Bos DB'de refresh ucuzdur ve view'u sorgulanabilir
+    # (bos kume) yapar; seed script'i soru ekledikten sonra tekrar refresh eder.
+    conn.exec_driver_sql("REFRESH MATERIALIZED VIEW mv_safe_for_beta")
+
 
 def downgrade() -> None:
     # RuntimeError, NotImplementedError DEGIL. Ikisi ayni sey degil:

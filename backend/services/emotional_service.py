@@ -34,6 +34,10 @@ from models.diary import EmotionalState
 
 
 class EmotionalService:
+    # GF49 (28 Agu 2026): EmotionalState.user_id kolonu VARCHAR'dir; ham UUID
+    # nesnesi asyncpg'de "operator does not exist: character varying = uuid"
+    # uretir. Bu siniftaki TUM user_id karsilastirmalari str() ile normalize
+    # edilir (track_state'teki insert kalibiyla tutarli).
     """
     Emotional tracking servisi (REQ-5)
 
@@ -187,7 +191,7 @@ class EmotionalService:
             select(EmotionalState)
             .where(
                 and_(
-                    EmotionalState.user_id == user_id,
+                    EmotionalState.user_id == str(user_id),
                     EmotionalState.timestamp >= start_date,
                 )
             )
@@ -317,7 +321,7 @@ class EmotionalService:
 
         query = select(EmotionalState).where(
             and_(
-                EmotionalState.user_id == user_id,
+                EmotionalState.user_id == str(user_id),
                 EmotionalState.timestamp >= start_date,
             )
         )
@@ -390,7 +394,7 @@ class EmotionalService:
             select(EmotionalState)
             .where(
                 and_(
-                    EmotionalState.user_id == user_id,
+                    EmotionalState.user_id == str(user_id),
                     EmotionalState.timestamp >= start_date,
                 )
             )
@@ -512,7 +516,7 @@ class EmotionalService:
             select(EmotionalState)
             .where(
                 and_(
-                    EmotionalState.user_id == user_id,
+                    EmotionalState.user_id == str(user_id),
                     EmotionalState.timestamp >= start_date,
                 )
             )
@@ -667,7 +671,7 @@ class EmotionalService:
 
         query = select(EmotionalState).where(
             and_(
-                EmotionalState.user_id == user_id,
+                EmotionalState.user_id == str(user_id),
                 EmotionalState.timestamp >= start_date,
             )
         )
@@ -751,7 +755,7 @@ class EmotionalService:
         Returns:
             List[EmotionalState] - Durum listesi
         """
-        conditions = [EmotionalState.user_id == user_id]
+        conditions = [EmotionalState.user_id == str(user_id)]
 
         if from_date:
             conditions.append(EmotionalState.timestamp >= from_date)
@@ -784,7 +788,7 @@ class EmotionalService:
             Optional[EmotionalState] - Durum veya None
         """
         query = select(EmotionalState).where(
-            and_(EmotionalState.id == state_id, EmotionalState.user_id == user_id)
+            and_(EmotionalState.id == state_id, EmotionalState.user_id == str(user_id))
         )
         result = await self.db.execute(query)
         return result.scalar_one_or_none()

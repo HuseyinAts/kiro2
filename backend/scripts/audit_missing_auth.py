@@ -390,7 +390,7 @@ def _collect_dependency_names(
         if name:
             names.append(name)
     # kwonly
-    for arg, default in zip(args.kwonlyargs, args.kw_defaults):
+    for arg, default in zip(args.kwonlyargs, args.kw_defaults, strict=False):
         name = _extract_depends_name(default, aliases=aliases)
         if name:
             names.append(name)

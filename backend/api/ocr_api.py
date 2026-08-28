@@ -155,12 +155,19 @@ def decode_base64_image(b64_string: str):
     if "," in b64_string:
         b64_string = b64_string.split(",")[1]
 
-    img_bytes = base64.b64decode(b64_string)
+    try:
+        img_bytes = base64.b64decode(b64_string)
+    except ValueError as exc:
+        # GF102: bozuk base64 istemci hatasidir — 500 degil 400.
+        raise HTTPException(400, "Gecersiz base64 gorsel verisi") from exc
     nparr = np.frombuffer(img_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     if img is None:
-        raise ValueError("Failed to decode image")
+        # GF102: cv2'nin cozemedigi payload istemci hatasidir — 400.
+        # (1x1 gri+alfa PNG gibi minimal gorsellerde imdecode None
+        # dondurebiliyor; sunucu cokusu degildir.)
+        raise HTTPException(400, "Gorsel decode edilemedi")
 
     return img
 

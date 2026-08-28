@@ -54,8 +54,10 @@ class PerformanceRecordRequest(BaseModel):
 
 # Session 147 (GF86/GF87): ORM models in `models/streak_tracking.py` drift
 # from the actual PostgreSQL schema in three ways:
-#   1. `streak_tracking` has a NOT NULL `student_id` column the ORM does not
-#      declare, so ORM-built INSERTs crash with NotNullViolationError.
+#   1. (tarihsel) canli semada bir donem NOT NULL `student_id` kolonu vardi;
+#      guncel sema (alembic/baseline/0001_baseline_schema.sql: streak_tracking)
+#      yalniz `user_id` icerir. Raw SQL 28 Agu 2026'da user_id'ye cevrildi
+#      (GF86/87: UndefinedColumnError: column "student_id" does not exist).
 #   2. `performance_history.id` is a real `uuid` column, but the ORM binds
 #      it as VARCHAR with `default=lambda: str(uuid4())`, which asyncpg
 #      refuses to implicitly cast with DatatypeMismatchError.
@@ -76,7 +78,7 @@ async def _fetch_streak(db: AsyncSession, user_id: str) -> dict | None:
             """
             SELECT id, current_streak, best_streak, milestones_reached
             FROM streak_tracking
-            WHERE student_id = :uid
+            WHERE user_id = :uid
             LIMIT 1
             """
         ),
@@ -105,10 +107,10 @@ async def submit_answer_feedback(
                 text(
                     """
                     INSERT INTO streak_tracking
-                        (id, student_id, user_id, current_streak, best_streak,
+                        (id, user_id, current_streak, best_streak,
                          milestones_reached, created_at, updated_at)
                     VALUES
-                        (gen_random_uuid()::text, :uid, :uid, 0, 0,
+                        (gen_random_uuid()::text, :uid, 0, 0,
                          '[]'::json, now(), now())
                     """
                 ),
@@ -151,7 +153,7 @@ async def submit_answer_feedback(
                         streak_start_date = COALESCE(:ssd, streak_start_date),
                         milestones_reached = CAST(:ms AS json),
                         updated_at = now()
-                    WHERE student_id = :uid
+                    WHERE user_id = :uid
                     """
                 ),
                 {
@@ -171,7 +173,7 @@ async def submit_answer_feedback(
                     SET current_streak = 0,
                         streak_start_date = NULL,
                         updated_at = now()
-                    WHERE student_id = :uid
+                    WHERE user_id = :uid
                     """
                 ),
                 {"uid": user_id},

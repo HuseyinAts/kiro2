@@ -27,6 +27,7 @@ DUEL_SESSION_TTL_SEC = 600
 # ELO helpers
 # ---------------------------------------------------------------------------
 
+
 def calculate_elo_change(
     rating_a: float, rating_b: float, score_a: float
 ) -> tuple[float, float]:
@@ -55,12 +56,14 @@ def get_elo_bracket(elo: float) -> int:
 # Matchmaking (Redis)
 # ---------------------------------------------------------------------------
 
+
 async def enqueue_matchmaking(
     redis,
     *,
     student_id: str,
     subject: str,
     elo_rating: float,
+    theta_estimate: float = 0.0,
 ) -> str | None:
     """Try to find a match or enqueue the player.
 
@@ -89,6 +92,12 @@ async def enqueue_matchmaking(
             "subject": subject,
             "player1_elo": opponent["elo_rating"],
             "player2_elo": elo_rating,
+            # GF42: eslesen iki oyuncunun ortak ZPD hedefi — duel sorulari
+            # bu theta cevresinden secilir (api/duel_api.py shared_theta).
+            "shared_theta": round(
+                ((opponent.get("theta_estimate", 0.0) or 0.0) + theta_estimate) / 2.0,
+                4,
+            ),
         }
         # Store match in Redis for SSE consumers
         await redis.set(
@@ -98,22 +107,31 @@ async def enqueue_matchmaking(
         )
         logger.info(
             "Duel match found",
-            extra_data={"session_id": session_id, "p1": opponent["student_id"], "p2": student_id},
+            extra_data={
+                "session_id": session_id,
+                "p1": opponent["student_id"],
+                "p2": student_id,
+            },
         )
         return session_id
 
     # No opponent — enqueue this player
-    player_data = json.dumps({
-        "student_id": student_id,
-        "elo_rating": elo_rating,
-        "queued_at": datetime.now(UTC).isoformat(),
-    })
+    player_data = json.dumps(
+        {
+            "student_id": student_id,
+            "elo_rating": elo_rating,
+            "theta_estimate": theta_estimate,
+            "queued_at": datetime.now(UTC).isoformat(),
+        }
+    )
     await redis.lpush(queue_key, player_data)
     await redis.expire(queue_key, MATCHMAKING_TTL_SEC)
     return None
 
 
-async def cancel_matchmaking(redis, *, student_id: str, subject: str, elo_rating: float) -> bool:
+async def cancel_matchmaking(
+    redis, *, student_id: str, subject: str, elo_rating: float
+) -> bool:
     """Remove player from matchmaking queue."""
     bracket = get_elo_bracket(elo_rating)
     queue_key = f"duel:queue:{subject}:{bracket}"
@@ -135,6 +153,7 @@ async def cancel_matchmaking(redis, *, student_id: str, subject: str, elo_rating
 # ---------------------------------------------------------------------------
 # DB operations
 # ---------------------------------------------------------------------------
+
 
 async def get_or_create_rating(*, db: AsyncSession, student_id: str) -> DuelRating:
     """Get or create the ELO rating for a student."""
@@ -311,13 +330,16 @@ async def finish_duel(*, db: AsyncSession, session_id: str) -> dict | None:
     }
 
 
-async def get_duel_history(*, db: AsyncSession, student_id: str, limit: int = 20) -> list[dict]:
+async def get_duel_history(
+    *, db: AsyncSession, student_id: str, limit: int = 20
+) -> list[dict]:
     """Get recent duel results for a student."""
     result = await db.execute(
         select(DuelSession)
         .where(
             DuelSession.status == "completed",
-            (DuelSession.player1_id == student_id) | (DuelSession.player2_id == student_id),
+            (DuelSession.player1_id == student_id)
+            | (DuelSession.player2_id == student_id),
         )
         .order_by(DuelSession.finished_at.desc())
         .limit(limit)
@@ -328,20 +350,24 @@ async def get_duel_history(*, db: AsyncSession, student_id: str, limit: int = 20
             "session_id": s.id,
             "subject": s.subject,
             "opponent_id": s.player2_id if s.player1_id == student_id else s.player1_id,
-            "my_score": s.player1_score if s.player1_id == student_id else s.player2_score,
-            "opponent_score": s.player2_score if s.player1_id == student_id else s.player1_score,
+            "my_score": s.player1_score
+            if s.player1_id == student_id
+            else s.player2_score,
+            "opponent_score": s.player2_score
+            if s.player1_id == student_id
+            else s.player1_score,
             "won": s.winner_id == student_id,
             "draw": s.winner_id is None,
-            "elo_change": s.player1_elo_change if s.player1_id == student_id else s.player2_elo_change,
+            "elo_change": s.player1_elo_change
+            if s.player1_id == student_id
+            else s.player2_elo_change,
             "finished_at": s.finished_at.isoformat() if s.finished_at else None,
         }
         for s in sessions
     ]
 
 
-async def get_duel_session_players(
-    *, db: AsyncSession, session_id: str
-) -> list[str]:
+async def get_duel_session_players(*, db: AsyncSession, session_id: str) -> list[str]:
     """Return player IDs for a duel session (for IDOR checks).
 
     Returns:

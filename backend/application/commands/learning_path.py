@@ -30,6 +30,25 @@ logger = logging.getLogger(__name__)
 
 
 # --- Existing CreateStudentProfile ---
+async def _lp_profilini_sahibine_cevir(db: Any, student_id: str) -> str:
+    """LP profil kimligini (STU_...) sahibinin users.id'sine cevirir.
+
+    bkt_states / xp_transactions / streaks tablolari users.id'ye FK'lidir
+    (bkt_states_student_id_fkey); STU_ kimligiyle yazmak FK ihlali uretir ve
+    oturumu zehirler (28 Agu 2026 olcumu, gf4w1 zinciri). Profil bulunamazsa
+    kimlik oldugu gibi doner — cagiran taraf zaten users.id gecirmis olabilir.
+    """
+    if not student_id.startswith("STU_"):
+        return student_id
+    sonuc = await db.execute(
+        select(LearningPathStudentProfile.user_id).where(
+            LearningPathStudentProfile.student_id == student_id
+        )
+    )
+    sahip = sonuc.scalar_one_or_none()
+    return str(sahip) if sahip else student_id
+
+
 class CreateStudentProfileCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -901,8 +920,16 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
             try:
                 from services.learning_event_service import LearningEventService
 
+                # bkt_states/xp/streak tablolari users.id'ye FK'li
+                # (bkt_states_student_id_fkey). Quiz akisina LP profil kimligi
+                # (STU_...) gelebilir; yan etkiler icin sahibine cevrilir,
+                # aksi halde FK ihlali oturumu zehirliyordu (28 Agu olcumu).
+                event_user_id = await _lp_profilini_sahibine_cevir(
+                    db, command.student_id
+                )
+
                 event_report = await LearningEventService.on_quiz_completed(
-                    student_id=command.student_id,
+                    student_id=event_user_id,
                     question_results=question_results,
                     q_meta=q_meta,
                     score=score,

@@ -311,7 +311,7 @@ async def semantic_search(
 
         # Perform search
         results = await rag_service.search(
-            query=request.query, k=request.k, filter_dict=filter_dict
+            query=request.query, k=request.k, filter=filter_dict
         )
 
         # Format results
@@ -371,7 +371,7 @@ async def get_llm_context(
 
         # Search for relevant documents
         results = await rag_service.search(
-            query=request.query, k=request.k, filter_dict=user_filter
+            query=request.query, k=request.k, filter=user_filter
         )
 
         # Build context string
@@ -442,10 +442,7 @@ async def list_documents(
         is_admin = getattr(current_user, "role", "") in ("ADMIN", "admin")
 
         documents, total_count = await rag_service.list_documents(
-            user_id=str(current_user.id),
-            is_admin=is_admin,
-            limit=limit,
-            offset=skip
+            user_id=str(current_user.id), is_admin=is_admin, limit=limit, offset=skip
         )
 
         return DocumentListResponse(
@@ -479,9 +476,7 @@ async def delete_document(
 
         try:
             await rag_service.delete_document(
-                document_id=document_id,
-                user_id=str(current_user.id),
-                is_admin=is_admin
+                document_id=document_id, user_id=str(current_user.id), is_admin=is_admin
             )
         except PermissionError as e:
             raise HTTPException(

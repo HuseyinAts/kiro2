@@ -245,6 +245,31 @@ jobs:
           # Mantik ARTIK BURADA DEGIL — inline heredoc'un testi yoktu (A.2).
           # Sozlesme: tests/unit/test_gf_esik_kapisi.py (11 test, mutasyonla civili)
           # Kural: toplam >= 170 · hata == 0 · atlanan <= 5
+          #
+          # Anonim teshis (28 Agu 2026): adim log'lari GitHub'da giris istiyor;
+          # annotation'lar istemiyor. Dusen/erroren testlerin ADI ve ilk mesaj
+          # satiri annotation olarak yazilir ki kirik akis oturum acmadan da
+          # gorulebilsin (alembic-hata deseninin devami). Kapi karari ASLA
+          # burada verilmez — bu blok yalnizca raporlar, son soz asagidaki
+          # gf_esik_kapisi.py'dedir.
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          try:
+              root = ET.parse("gf-results.xml").getroot()
+          except Exception as exc:  # noqa: BLE001 - rapor katmani, kapi degil
+              print(f"::warning title=gf-annot::gf-results.xml okunamadi: {exc}")
+              raise SystemExit(0)
+
+          dusen = 0
+          for tc in root.iter("testcase"):
+              for kayit in list(tc.findall("failure")) + list(tc.findall("error")):
+                  dusen += 1
+                  mesaj = (kayit.get("message") or kayit.text or "").strip()
+                  mesaj = " ".join(mesaj.split())[:220]
+                  print(f"::error title=gf-dusen::{tc.get('name')} :: {mesaj}")
+          print(f"::notice title=gf-dusen-ozet::dusen_test_sayisi={dusen}")
+          PY
           python scripts/gf_esik_kapisi.py gf-results.xml
 
       - name: Backend log on failure

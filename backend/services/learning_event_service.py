@@ -74,6 +74,11 @@ class LearningEventService:
         except Exception as e:
             logger.warning("BKT update skipped: %s", e)
             report["bkt"] = f"error: {e}"
+            # 28 Agu 2026: adim hatasi (orn. BKT FK ihlali) oturum
+            # transaction'ini zehirliyor ve SONRAKI adimlar/istekler
+            # 'transaction has been rolled back' / MissingGreenlet ile
+            # cokuyordu (gf4w1 suite-sirali 500). Temiz txn ile devam et.
+            await db.rollback()
 
         # 2. XP award
         try:
@@ -91,6 +96,11 @@ class LearningEventService:
         except Exception as e:
             logger.warning("XP award skipped: %s", e)
             report["xp"] = f"error: {e}"
+            # 28 Agu 2026: adim hatasi (orn. BKT FK ihlali) oturum
+            # transaction'ini zehirliyor ve SONRAKI adimlar/istekler
+            # 'transaction has been rolled back' / MissingGreenlet ile
+            # cokuyordu (gf4w1 suite-sirali 500). Temiz txn ile devam et.
+            await db.rollback()
 
         # 3. Streak update
         try:
@@ -102,6 +112,11 @@ class LearningEventService:
         except Exception as e:
             logger.warning("Streak update skipped: %s", e)
             report["streak"] = f"error: {e}"
+            # 28 Agu 2026: adim hatasi (orn. BKT FK ihlali) oturum
+            # transaction'ini zehirliyor ve SONRAKI adimlar/istekler
+            # 'transaction has been rolled back' / MissingGreenlet ile
+            # cokuyordu (gf4w1 suite-sirali 500). Temiz txn ile devam et.
+            await db.rollback()
 
         # 4. Badge check (best-effort)
         try:
@@ -115,6 +130,11 @@ class LearningEventService:
         except Exception as e:
             logger.warning("Badge check skipped: %s", e)
             report["badges"] = f"error: {e}"
+            # 28 Agu 2026: adim hatasi (orn. BKT FK ihlali) oturum
+            # transaction'ini zehirliyor ve SONRAKI adimlar/istekler
+            # 'transaction has been rolled back' / MissingGreenlet ile
+            # cokuyordu (gf4w1 suite-sirali 500). Temiz txn ile devam et.
+            await db.rollback()
 
         # 5. Leaderboard update (best-effort, Redis)
         try:
@@ -126,6 +146,11 @@ class LearningEventService:
         except Exception as e:
             logger.warning("Leaderboard update skipped: %s", e)
             report["leaderboard"] = f"error: {e}"
+            # 28 Agu 2026: adim hatasi (orn. BKT FK ihlali) oturum
+            # transaction'ini zehirliyor ve SONRAKI adimlar/istekler
+            # 'transaction has been rolled back' / MissingGreenlet ile
+            # cokuyordu (gf4w1 suite-sirali 500). Temiz txn ile devam et.
+            await db.rollback()
 
         await db.commit()
         return report
@@ -210,12 +235,13 @@ class LearningEventService:
                 select(TopicHierarchy.id, TopicHierarchy.subject_area).where(
                     and_(
                         TopicHierarchy.subject_area.in_(subjects_upper),
-                        TopicHierarchy.is_active == True
+                        TopicHierarchy.is_active == True,
                     )
                 )
             )
 
             from collections import defaultdict
+
             topics_by_subject = defaultdict(list)
             for row in topic_rows.all():
                 subj = row.subject_area.lower() if row.subject_area else ""
@@ -231,12 +257,14 @@ class LearningEventService:
                 if subj_id is None:
                     continue
 
-                abilities_to_upsert.append({
-                    "student_id": student_id,
-                    "subject_id": subj_id,
-                    "theta": theta,
-                    "theta_se": se,
-                })
+                abilities_to_upsert.append(
+                    {
+                        "student_id": student_id,
+                        "subject_id": subj_id,
+                        "theta": theta,
+                        "theta_se": se,
+                    }
+                )
 
                 p_learn = max(0.05, min(0.95, (theta + 3) / 6))
                 mastery_status = "learning" if p_learn < 0.80 else "mastered"
@@ -254,15 +282,17 @@ class LearningEventService:
                     continue
 
                 for topic_id in topic_ids:
-                    bkt_states_to_upsert.append({
-                        "student_id": student_id,
-                        "topic_id": topic_id,
-                        "p_learn": round(p_learn, 4),
-                        "p_transit": 0.10,
-                        "p_guess": 0.20,
-                        "p_slip": 0.10,
-                        "mastery_status": mastery_status,
-                    })
+                    bkt_states_to_upsert.append(
+                        {
+                            "student_id": student_id,
+                            "topic_id": topic_id,
+                            "p_learn": round(p_learn, 4),
+                            "p_transit": 0.10,
+                            "p_guess": 0.20,
+                            "p_slip": 0.10,
+                            "mastery_status": mastery_status,
+                        }
+                    )
 
             # Execute bulk upserts
             if abilities_to_upsert:
@@ -279,7 +309,9 @@ class LearningEventService:
 
             if bkt_states_to_upsert:
                 insert_bkt_stmt = pg_insert(BKTState)
-                stmt_bkt = insert_bkt_stmt.values(bkt_states_to_upsert).on_conflict_do_update(
+                stmt_bkt = insert_bkt_stmt.values(
+                    bkt_states_to_upsert
+                ).on_conflict_do_update(
                     index_elements=["student_id", "topic_id"],
                     set_={"p_learn": insert_bkt_stmt.excluded.p_learn},
                     where=BKTState.p_learn == 0.10,
@@ -539,7 +571,9 @@ class GamificationDBService:
             ("consistent_30", current_streak >= 30),
         ]
 
-        candidate_badge_ids = [badge_id for badge_id, criteria_met in badge_checks if criteria_met]
+        candidate_badge_ids = [
+            badge_id for badge_id, criteria_met in badge_checks if criteria_met
+        ]
         earned_badge_ids = set()
         if candidate_badge_ids:
             existing_badges = await db.execute(

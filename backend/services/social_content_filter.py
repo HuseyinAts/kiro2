@@ -367,7 +367,14 @@ class SocialContentFilter:
             )
 
         # Check consecutive emoji spam (any emoji, >10)
-        import emoji as emoji_lib
+        try:
+            import emoji as emoji_lib
+        except ImportError:
+            # GF34: `emoji` kutuphanesi eksikse 500 yerine bu alt-kontrolu
+            # atla — yukaridaki Unicode-aralik kontrolu zaten kostu.
+            # (Kutuphane requirements.txt'e de eklendi; bu dal yalniz gercek
+            # yokluk senaryosu icin.)
+            return LayerResult("emoji_abuse", True, 0.0, "emoji lib unavailable")
 
         emoji_chars = [ch for ch in raw if emoji_lib.is_emoji(ch)]
         if len(emoji_chars) > 10:

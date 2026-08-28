@@ -56,7 +56,7 @@ class JWTTokens(BaseModel):
 
     access_token: str
     refresh_token: str
-    token_type: str = "bearer"  # noqa: S105
+    token_type: str = "bearer"
     expires_in: int
     refresh_expires_in: int
 
@@ -251,18 +251,25 @@ class JWTManager:
 
         # Database persistence varsa, refresh token'ı kontrol et
         if db:
+            from sqlalchemy import select as sa_select
+            from sqlalchemy.ext.asyncio import AsyncSession as SAAsyncSession
+
             from models.database import RefreshToken
 
             token_hash = hashlib.sha256(refresh_token.encode()).hexdigest()
-            db_token = (
-                db.query(RefreshToken)
-                .filter(
-                    RefreshToken.jti == payload.jti,
-                    RefreshToken.token_hash == token_hash,
-                    RefreshToken.revoked.is_(False),
-                )
-                .first()
+            kosullar = (
+                RefreshToken.jti == payload.jti,
+                RefreshToken.token_hash == token_hash,
+                RefreshToken.revoked.is_(False),
             )
+            if isinstance(db, SAAsyncSession):
+                # GF1z: CQRS RefreshTokenCommandHandler AsyncSession gecirir;
+                # sync .query() AttributeError firlatiyor ve handler bunu
+                # ValueError -> 401'e maskeliyordu. Async yolda select() kullan.
+                sonuc = await db.execute(sa_select(RefreshToken).where(*kosullar))
+                db_token = sonuc.scalar_one_or_none()
+            else:
+                db_token = db.query(RefreshToken).filter(*kosullar).first()
 
             if not db_token:
                 raise HTTPException(
