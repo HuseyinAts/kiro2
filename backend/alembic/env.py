@@ -38,9 +38,10 @@ if not database_url:
     )
 
 # Convert async driver to sync driver for Alembic
-# postgresql+asyncpg:// -> postgresql://
+# postgresql+asyncpg:// -> postgresql+psycopg:// (psycopg3 — requirements.txt psycopg[binary];
+#   duz "postgresql://" psycopg2 lehcesine gider ve CI'da psycopg2 YOK -> ModuleNotFoundError)
 # sqlite+aiosqlite:// -> sqlite://
-sync_url = database_url.replace("+asyncpg", "").replace("+aiosqlite", "")
+sync_url = database_url.replace("+asyncpg", "+psycopg").replace("+aiosqlite", "")
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Log which database is being used (mask password)
