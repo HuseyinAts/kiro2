@@ -305,7 +305,7 @@ class BionicReadingService:
         """Cache anahtarı oluştur"""
         import hashlib
 
-        text_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
+        text_hash = hashlib.md5(text.encode("utf-8"), usedforsecurity=False).hexdigest()
         return f"{self.cache_prefix}text:{text_hash}"
 
     async def _get_from_cache(self, cache_key: str) -> dict[str, Any] | None:

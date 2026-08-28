@@ -310,7 +310,7 @@ class ResourceDiscoveryService:
         )
 
         # Process results
-        for strategy, result in zip(active_strategies, results):
+        for strategy, result in zip(active_strategies, results, strict=False):
             platform = strategy.get_platform_name()
 
             if isinstance(result, Exception):
@@ -542,7 +542,9 @@ class ResourceDiscoveryService:
             str(request.limit),
             str(sorted(request.preferred_platforms)),
         )
-        digest = hashlib.md5("\x00".join(key_parts).encode()).hexdigest()
+        digest = hashlib.md5(
+            "\x00".join(key_parts).encode(), usedforsecurity=False
+        ).hexdigest()
         return f"rd:{digest}"
 
     async def find_similar(

@@ -292,6 +292,25 @@ def setup_middleware(app: FastAPI) -> None:
     except ImportError as e:
         logger.warning(f"⚠️ Advanced rate limiter not available: {e}")
 
+    # 4. Security Headers (EN DISTA)
+    # core/security_headers.py yazilmisti ama HICBIR YERDE register
+    # edilmemisti: X-Frame-Options, X-Content-Type-Options, CSP, HSTS,
+    # Referrer-Policy hicbir yanitta yoktu. OWASP ZAP API taramasi da
+    # (security.yml -> api-security) tam bu yuzden FAIL veriyordu.
+    # add_middleware SON eklenen katmani EN DISA koyar; boylece rate
+    # limiter'in kestigi 429'lar dahil her yanit basliklari alir.
+    try:
+        from core.security_headers import SecurityHeadersMiddleware, get_csp_policy
+
+        app.add_middleware(
+            SecurityHeadersMiddleware, csp_policy=get_csp_policy(settings.environment)
+        )
+        logger.info(
+            f"✅ Security headers middleware added (CSP: {settings.environment})"
+        )
+    except ImportError as e:
+        logger.warning(f"⚠️ Security headers middleware not available: {e}")
+
     logger.info("✅ Middleware setup complete")
 
 

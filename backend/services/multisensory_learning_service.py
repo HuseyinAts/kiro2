@@ -370,7 +370,7 @@ class MultisensoryLearningService:
         import hashlib
 
         return hashlib.md5(
-            f"{seed}_{datetime.now(UTC).isoformat()}".encode()
+            f"{seed}_{datetime.now(UTC).isoformat()}".encode(), usedforsecurity=False
         ).hexdigest()[:16]
 
 

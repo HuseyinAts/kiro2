@@ -38,7 +38,7 @@ def _get_value(obj) -> str:
     """Get string value from enum or return string as-is"""
     if obj is None:
         return "none"
-    if hasattr(obj, 'value'):
+    if hasattr(obj, "value"):
         return obj.value
     return str(obj)
 
@@ -245,9 +245,9 @@ class UserRole:
     assigned_by: str
     assigned_at: datetime
     expires_at: datetime | None = None
-    context: dict[
-        str, Any
-    ] | None = None  # Additional context like department, course, etc.
+    context: dict[str, Any] | None = (
+        None  # Additional context like department, course, etc.
+    )
     is_active: bool = True
 
     def is_valid(self) -> bool:
@@ -293,7 +293,9 @@ class AuthorizationResult:
     context: AuthorizationContext | None = None
     cached: bool = False
     message: str = ""  # Alias for reason (backward compatibility)
-    granted_permissions: list[str] = field(default_factory=list)  # Alias for matched_permissions
+    granted_permissions: list[str] = field(
+        default_factory=list
+    )  # Alias for matched_permissions
 
     def __post_init__(self):
         # Sync aliases
@@ -998,11 +1000,16 @@ class RBACManager:
                             reason="Role check: user_role missing on context",
                             context=auth_context,
                         )
-                        ctx.add_annotation("Permission denied: role check without user_role")
+                        ctx.add_annotation(
+                            "Permission denied: role check without user_role"
+                        )
                         await self._log_audit_event(
                             AuditAction.PERMISSION_DENIED,
                             auth_context.user_id,
-                            {"reason": "role_check_no_user_role", "required_roles": req_roles},
+                            {
+                                "reason": "role_check_no_user_role",
+                                "required_roles": req_roles,
+                            },
                         )
                         return result
                     if uslug in req_roles:
@@ -1121,9 +1128,7 @@ class RBACManager:
                 granted_permissions = []
                 matched_roles = []
 
-                required_permission_id = (
-                    f"{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}"
-                )
+                required_permission_id = f"{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}"
 
                 for user_role in user_roles:
                     role = self.role_manager.get_role(user_role.role_id)
@@ -1205,7 +1210,7 @@ class RBACManager:
     def _get_cache_key(self, auth_context: AuthorizationContext) -> str:
         """Generate cache key for authorization context"""
         key_data = f"{auth_context.user_id}:{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}:{auth_context.resource_id or 'any'}"
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.md5(key_data.encode(), usedforsecurity=False).hexdigest()
 
     def _get_cached_permission(self, cache_key: str) -> AuthorizationResult | None:
         """Get cached permission result"""
@@ -1237,7 +1242,9 @@ class RBACManager:
         keys_to_remove = [
             key
             for key in self.permission_cache.keys()
-            if key.startswith(hashlib.md5(user_id.encode()).hexdigest()[:8])
+            if key.startswith(
+                hashlib.md5(user_id.encode(), usedforsecurity=False).hexdigest()[:8]
+            )
         ]
 
         for key in keys_to_remove:

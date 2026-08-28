@@ -29,7 +29,8 @@ Calistirma (K-M3-7 hibrit):
     python pilot_500p.py --book-dir <kitap> --resume <batch_id>
 
 Env:
-    DATABASE_URL          postgresql://user:pass@host:port/db (DB yazim icin zorunlu)
+    DATABASE_URL          postgresql DSN (DB yazimi icin zorunlu). Parolayi URL
+                          icine gomme; PGPASSWORD ya da .pgpass kullan.
     ANTHROPIC_API_KEY     OPSIYONEL ve KULLANILMAZ. Varsa subprocess'lerden UNSET
                           edilir, claude CLI Max OAuth ile oturum acar.
 
@@ -78,20 +79,30 @@ from tenacity import (
 # ============================================================================
 
 DEFAULT_MODEL = "claude-opus-4-7"  # K-M3-6
-DEFAULT_CONCURRENCY = 1            # smoke=1, 500p=4, prod=8 (K-M3-2)
-POOL_OVERHEAD = 2                  # K-M3-3: pool size = concurrency + 2
+DEFAULT_CONCURRENCY = 1  # smoke=1, 500p=4, prod=8 (K-M3-2)
+POOL_OVERHEAD = 2  # K-M3-3: pool size = concurrency + 2
 
-CLAUDE_CLI = "claude"              # Claude Code CLI binary (Max abonelik)
-CLAUDE_TIMEOUT = 180               # subprocess timeout (saniye)
-EXTRACT_RETRY_TRANSIENT = 3        # subprocess transient hata - 3 retry
-EXTRACT_RETRY_PARSE = 1            # JSON parse fail - 1 retry farkli prompt
-DB_RETRY = 3                       # DB connection lost 3 retry
+CLAUDE_CLI = "claude"  # Claude Code CLI binary (Max abonelik)
+CLAUDE_TIMEOUT = 180  # subprocess timeout (saniye)
+EXTRACT_RETRY_TRANSIENT = 3  # subprocess transient hata - 3 retry
+EXTRACT_RETRY_PARSE = 1  # JSON parse fail - 1 retry farkli prompt
+DB_RETRY = 3  # DB connection lost 3 retry
 
-QA_RANDOM_RATIO = 0.01             # %1 random sample (Plan sec.1.2)
+QA_RANDOM_RATIO = 0.01  # %1 random sample (Plan sec.1.2)
 SUBJECT_AREA_ENUM = {
-    "MATEMATIK", "GEOMETRI", "FIZIK", "KIMYA", "BIYOLOJI",
-    "TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL",
-    "FEN", "INGILIZCE", "GENEL",
+    "MATEMATIK",
+    "GEOMETRI",
+    "FIZIK",
+    "KIMYA",
+    "BIYOLOJI",
+    "TURKCE",
+    "EDEBIYAT",
+    "TARIH",
+    "COGRAFYA",
+    "SOSYAL",
+    "FEN",
+    "INGILIZCE",
+    "GENEL",
 }
 EXAM_TYPE_ENUM = {"AYT", "TYT"}
 DIFFICULTY_ENUM = {"VERY_EASY", "EASY", "MEDIUM", "HARD", "VERY_HARD"}
@@ -195,7 +206,7 @@ def _hash_question(
     d = _normalize_turkish(option_d)
     e = _normalize_turkish(option_e) if option_e else ""
     payload = f"{qt}|{a}|{b}|{c}|{d}|{e}"
-    return hashlib.md5(payload.encode("utf-8")).hexdigest()
+    return hashlib.md5(payload.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def _uuid5_from_hash(soru_hash: str) -> str:
@@ -371,13 +382,17 @@ async def _run_claude_cli(png_path: Path, user_prompt: str, model: str) -> str:
 
     cmd = [
         CLAUDE_CLI,
-        "-p",                                  # print mode (non-interactive)
-        "--model", model,
-        "--no-session-persistence",            # disk'e kaydetme
-        "--add-dir", str(png_path.parent),     # Read tool dizine erissin
-        "--allowedTools", "Read",              # sadece Read, baska tool yok
-        "--system-prompt", EXTRACT_SYSTEM_PROMPT,
-        user_prompt,                           # son arg = user prompt
+        "-p",  # print mode (non-interactive)
+        "--model",
+        model,
+        "--no-session-persistence",  # disk'e kaydetme
+        "--add-dir",
+        str(png_path.parent),  # Read tool dizine erissin
+        "--allowedTools",
+        "Read",  # sadece Read, baska tool yok
+        "--system-prompt",
+        EXTRACT_SYSTEM_PROMPT,
+        user_prompt,  # son arg = user prompt
     ]
 
     proc = await asyncio.create_subprocess_exec(
@@ -388,7 +403,8 @@ async def _run_claude_cli(png_path: Path, user_prompt: str, model: str) -> str:
     )
     try:
         stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=CLAUDE_TIMEOUT,
+            proc.communicate(),
+            timeout=CLAUDE_TIMEOUT,
         )
     except TimeoutError:
         proc.kill()
@@ -402,7 +418,10 @@ async def _run_claude_cli(png_path: Path, user_prompt: str, model: str) -> str:
         err_text = stderr.decode("utf-8", errors="replace").strip()
         low = err_text.lower()
         # Auth/quota = critical, retry yok
-        if any(s in low for s in ("not authenticated", "subscription", "quota", "rate limit")):
+        if any(
+            s in low
+            for s in ("not authenticated", "subscription", "quota", "rate limit")
+        ):
             raise ClaudeCliCriticalError(f"claude CLI critical: {err_text}")
         raise ClaudeCliError(f"claude CLI exit {proc.returncode}: {err_text[:500]}")
 
@@ -440,7 +459,9 @@ async def extract_page(
         data = json.loads(_strip_json_fence(raw))
     except json.JSONDecodeError:
         # 1 retry strict prompt
-        log.warning("extract_page %s JSON parse fail, retry with strict prompt", file_page)
+        log.warning(
+            "extract_page %s JSON parse fail, retry with strict prompt", file_page
+        )
         strict_prompt = EXTRACT_USER_PROMPT_STRICT_RETRY.format(base=base_user_prompt)
         raw2 = await _run_claude_cli_retried(png_path, strict_prompt, model)
         try:
@@ -514,7 +535,9 @@ def validate_page(extracted: ExtractedPage) -> ValidatedPage:
         opts = q.get("options") or {}
         if ca not in {"A", "B", "C", "D", "E"}:
             flags["has_anomaly"] = True
-            flags["needs_manual_review"] = True   # Session 88 fix: kalite gate tutarliligi
+            flags["needs_manual_review"] = (
+                True  # Session 88 fix: kalite gate tutarliligi
+            )
             flags["anomaly_reasons"].append(f"q{i}_correct_answer_invalid:{ca}")
         elif ca and opts.get(ca) is None:
             flags["has_anomaly"] = True
@@ -597,7 +620,7 @@ async def _lookup_topic_id(topic_code: str, conn: asyncpg.Connection) -> str | N
 
     # Fallback: name_tr fuzzy match (kod nokta sonrasi son parcasini name candidate kabul et)
     # 'matematik.polinomlar' -> 'polinomlar', 'MAT.POL' -> 'POL' (zayif)
-    candidate = topic_code.split('.')[-1].split('-')[-1].strip()
+    candidate = topic_code.split(".")[-1].split("-")[-1].strip()
     if len(candidate) < 3:
         return None
     row2 = await conn.fetchrow(
@@ -612,7 +635,9 @@ async def _lookup_topic_id(topic_code: str, conn: asyncpg.Connection) -> str | N
     if row2:
         log.warning(
             "topic code='%s' bulunamadi, name_tr fallback ile cozuldu: %s (%s)",
-            topic_code, row2["code"], row2["name_tr"],
+            topic_code,
+            row2["code"],
+            row2["name_tr"],
         )
         return str(row2["id"])
     return None
@@ -656,10 +681,12 @@ async def write_staging(
 
     pipeline_meta = {
         "pipeline": "v1.2.1",
-        "model": model,                            # K-M3-6 + runtime --model flag
+        "model": model,  # K-M3-6 + runtime --model flag
         "batch_id": batch_id,
         "extracted_at": datetime.now(UTC).isoformat(),
-        "extraction_confidence": _safe_float(extracted.get("extraction_confidence"), 0.0),
+        "extraction_confidence": _safe_float(
+            extracted.get("extraction_confidence"), 0.0
+        ),
         "page_type": extracted.get("page_type", ""),
         "test_no": extracted.get("test_no"),
         "book_page_from_footer": extracted.get("book_page_from_footer"),
@@ -698,56 +725,56 @@ async def write_staging(
 
         # Plan v1.2.1 sec.5.5 default'lari
         params = (
-            question_id,                      # $1  id
-            _normalize_turkish(qt),           # $2  question_text
-            _normalize_turkish(opt_a),        # $3  option_a
-            _normalize_turkish(opt_b),        # $4  option_b
-            _normalize_turkish(opt_c),        # $5  option_c
-            _normalize_turkish(opt_d),        # $6  option_d
+            question_id,  # $1  id
+            _normalize_turkish(qt),  # $2  question_text
+            _normalize_turkish(opt_a),  # $3  option_a
+            _normalize_turkish(opt_b),  # $4  option_b
+            _normalize_turkish(opt_c),  # $5  option_c
+            _normalize_turkish(opt_d),  # $6  option_d
             _normalize_turkish(opt_e) if opt_e else None,  # $7 option_e nullable
-            correct,                          # $8  correct_answer
-            primary_topic_id,                 # $9  primary_topic_id (FK)
-            bloom,                            # $10 bloom_level
-            "kavrama",                        # $11 bloom_category default
-            diff_level,                       # $12 difficulty_level (buyuk harf)
-            "medium",                         # $13 irt_based_difficulty (kucuk harf!)
-            0.0,                              # $14 student_success_rate
-            0,                                # $15 difficulty_update_count
-            1.0,                              # $16 irt_discrimination
-            0.0,                              # $17 irt_difficulty
-            0.2,                              # $18 irt_guessing
-            1.0,                              # $19 irt_upper_asymptote
-            False,                            # $20 is_calibrated (S5)
-            0,                                # $21 calibration_sample_size
-            0.0,                              # $22 calibration_quality_score
-            morph,                            # $23 morphology_complexity
-            word_count,                       # $24 word_count
-            unique_words,                     # $25 unique_word_count
-            avg_word_len,                     # $26 average_word_length
-            50.0,                             # $27 readability_score default
-            0,                                # $28 times_asked
-            0,                                # $29 times_correct
-            0,                                # $30 times_wrong
-            0,                                # $31 times_skipped
-            0.0,                              # $32 average_response_time
-            0.0,                              # $33 median_response_time
-            0.0,                              # $34 exposure_rate
-            exam_type,                        # $35 exam_type
-            subject_area,                     # $36 subject_area
-            11,                               # $37 grade_level (AYT/TYT default 11)
-            True,                             # $38 osym_format_compliant
-            osym_year,                        # $39 osym_year (nullable)
-            75.0,                             # $40 quality_score (Plan: dürüst 75 değer)
-            "pending",                        # $41 quality_review_status
-            book_name,                        # $42 source_book
-            source_page,                      # $43 source_page
-            pipeline_meta,                    # $44 pipeline_metadata (JSONB string)
-            True,                             # $45 is_active
-            False,                            # $46 is_public
-            False,                            # $47 is_calib_pool (S5)
-            soru_hash,                        # $48 soru_hash
-            batch_id,                         # $49 staging_batch_id
-            "pending",                        # $50 staging_status
+            correct,  # $8  correct_answer
+            primary_topic_id,  # $9  primary_topic_id (FK)
+            bloom,  # $10 bloom_level
+            "kavrama",  # $11 bloom_category default
+            diff_level,  # $12 difficulty_level (buyuk harf)
+            "medium",  # $13 irt_based_difficulty (kucuk harf!)
+            0.0,  # $14 student_success_rate
+            0,  # $15 difficulty_update_count
+            1.0,  # $16 irt_discrimination
+            0.0,  # $17 irt_difficulty
+            0.2,  # $18 irt_guessing
+            1.0,  # $19 irt_upper_asymptote
+            False,  # $20 is_calibrated (S5)
+            0,  # $21 calibration_sample_size
+            0.0,  # $22 calibration_quality_score
+            morph,  # $23 morphology_complexity
+            word_count,  # $24 word_count
+            unique_words,  # $25 unique_word_count
+            avg_word_len,  # $26 average_word_length
+            50.0,  # $27 readability_score default
+            0,  # $28 times_asked
+            0,  # $29 times_correct
+            0,  # $30 times_wrong
+            0,  # $31 times_skipped
+            0.0,  # $32 average_response_time
+            0.0,  # $33 median_response_time
+            0.0,  # $34 exposure_rate
+            exam_type,  # $35 exam_type
+            subject_area,  # $36 subject_area
+            11,  # $37 grade_level (AYT/TYT default 11)
+            True,  # $38 osym_format_compliant
+            osym_year,  # $39 osym_year (nullable)
+            75.0,  # $40 quality_score (Plan: dürüst 75 değer)
+            "pending",  # $41 quality_review_status
+            book_name,  # $42 source_book
+            source_page,  # $43 source_page
+            pipeline_meta,  # $44 pipeline_metadata (JSONB string)
+            True,  # $45 is_active
+            False,  # $46 is_public
+            False,  # $47 is_calib_pool (S5)
+            soru_hash,  # $48 soru_hash
+            batch_id,  # $49 staging_batch_id
+            "pending",  # $50 staging_status
         )
 
         if dry_run:
@@ -1065,15 +1092,29 @@ async def finalize_batch(
     qa_csv_path = output_dir / "qa_sample.csv"
     with qa_csv_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "staging_id", "source_page", "soru_hash", "staging_status",
-            "needs_manual_review", "anomaly_reasons", "sample_type",
-        ])
+        writer.writerow(
+            [
+                "staging_id",
+                "source_page",
+                "soru_hash",
+                "staging_status",
+                "needs_manual_review",
+                "anomaly_reasons",
+                "sample_type",
+            ]
+        )
         for r in qa_rows:
-            writer.writerow([
-                r["staging_id"], r["source_page"], r["soru_hash"], r["staging_status"],
-                r["needs_review"], r["anomaly_reasons"], r["sample_type"],
-            ])
+            writer.writerow(
+                [
+                    r["staging_id"],
+                    r["source_page"],
+                    r["soru_hash"],
+                    r["staging_status"],
+                    r["needs_review"],
+                    r["anomaly_reasons"],
+                    r["sample_type"],
+                ]
+            )
 
     # failed_pages.csv satir sayisi
     failed_extract_count = 0
@@ -1095,7 +1136,9 @@ async def finalize_batch(
     }
 
     summary_path = output_dir / "batch_summary.json"
-    summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     log.info("finalize: %s", summary_path)
 
     return summary
@@ -1165,6 +1208,7 @@ async def _process_page(
         # 1) Preprocess (Layer 1 + Layer 2 yayinevi-bazli crop, smoke1f-style hazir
         # PNG'lerde no-op). Cache: <book>/.cropped/sayfa_NNNN.png
         from crop_preprocessor import preprocess_page
+
         try:
             png_to_extract = preprocess_page(png_path)
         except Exception as e:
@@ -1182,7 +1226,9 @@ async def _process_page(
             result["error"] = str(e)
             log.error("extract_page %s FAILED: %s", file_page, e)
             async with failed_lock:
-                failed_writer.writerow([file_page, str(png_path), "extract_failed", str(e)])
+                failed_writer.writerow(
+                    [file_page, str(png_path), "extract_failed", str(e)]
+                )
             return result
 
         # 2) Validate (saf)
@@ -1201,9 +1247,7 @@ async def _process_page(
                 validated["flags"]["needs_manual_review"],
             )
             # Debug: extracted JSON'u diske yaz, manuel inceleme icin
-            extracted_dir = (
-                Path(__file__).parent / "runs" / batch_id / "extracted"
-            )
+            extracted_dir = Path(__file__).parent / "runs" / batch_id / "extracted"
             extracted_dir.mkdir(parents=True, exist_ok=True)
             (extracted_dir / f"sayfa_{file_page}.json").write_text(
                 json.dumps(extracted, ensure_ascii=False, indent=2),
@@ -1216,8 +1260,12 @@ async def _process_page(
             async with pool.acquire() as conn:
                 # write_staging (kendi tx'i, hash check pre-pilot UNIQUE'le karsilanir)
                 staging_ids = await write_staging(
-                    validated, batch_id, book_name, conn,
-                    dry_run=False, model=model,
+                    validated,
+                    batch_id,
+                    book_name,
+                    conn,
+                    dry_run=False,
+                    model=model,
                 )
 
                 # 0-question durum: staging'e satir yazilmaz; resume'un bu sayfayi
@@ -1225,10 +1273,14 @@ async def _process_page(
                 # (Bug fix 6 May 2026: 0-Q sayfalar resume'da bos Opus call yaratiyordu.)
                 if len(staging_ids) == 0:
                     async with failed_lock:
-                        failed_writer.writerow([
-                            file_page, str(png_path), "no_questions",
-                            f"page_type={extracted.get('page_type', '?')} conf={_safe_float(extracted.get('extraction_confidence'), 0.0):.2f}",
-                        ])
+                        failed_writer.writerow(
+                            [
+                                file_page,
+                                str(png_path),
+                                "no_questions",
+                                f"page_type={extracted.get('page_type', '?')} conf={_safe_float(extracted.get('extraction_confidence'), 0.0):.2f}",
+                            ]
+                        )
                     log.info(
                         "page=%s questions=0 (resume_skip iz birakildi)",
                         file_page,
@@ -1243,7 +1295,8 @@ async def _process_page(
 
                 log.info(
                     "page=%s questions=%d L1=%d L2=%d L3=%d",
-                    file_page, len(staging_ids),
+                    file_page,
+                    len(staging_ids),
                     result["layer_counts"][1],
                     result["layer_counts"][2],
                     result["layer_counts"][3],
@@ -1267,22 +1320,53 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Pilot 500p - Icerik Pipeline v1.2.1",
     )
-    p.add_argument("--book-dir", required=True, type=Path,
-                   help="Sayfa PNG'lerini iceren dizin (sayfa_*.png)")
-    p.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY,
-                   help="Paralel sayfa sayisi (smoke=1, 500p=4, prod=8)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="DB yazimi yok, sadece extract+validate (MCP smoke)")
-    p.add_argument("--resume", type=str, default=None,
-                   help="Var olan batch_id ile devam (pending+failed sayfalar)")
-    p.add_argument("--model", type=str, default=DEFAULT_MODEL,
-                   help=f"Anthropic modeli (default: {DEFAULT_MODEL})")
-    p.add_argument("--start-page", type=int, default=None,
-                   help="Hangi file_page numarasindan baslasin (1-indexed, ornek: --start-page=15)")
-    p.add_argument("--max-pages", type=int, default=None,
-                   help="Smoke icin sayfa sayisini sinirla (None=hepsi)")
-    p.add_argument("--book-name", type=str, default=None,
-                   help="source_book degeri (default: book-dir adi)")
+    p.add_argument(
+        "--book-dir",
+        required=True,
+        type=Path,
+        help="Sayfa PNG'lerini iceren dizin (sayfa_*.png)",
+    )
+    p.add_argument(
+        "--concurrency",
+        type=int,
+        default=DEFAULT_CONCURRENCY,
+        help="Paralel sayfa sayisi (smoke=1, 500p=4, prod=8)",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="DB yazimi yok, sadece extract+validate (MCP smoke)",
+    )
+    p.add_argument(
+        "--resume",
+        type=str,
+        default=None,
+        help="Var olan batch_id ile devam (pending+failed sayfalar)",
+    )
+    p.add_argument(
+        "--model",
+        type=str,
+        default=DEFAULT_MODEL,
+        help=f"Anthropic modeli (default: {DEFAULT_MODEL})",
+    )
+    p.add_argument(
+        "--start-page",
+        type=int,
+        default=None,
+        help="Hangi file_page numarasindan baslasin (1-indexed, ornek: --start-page=15)",
+    )
+    p.add_argument(
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Smoke icin sayfa sayisini sinirla (None=hepsi)",
+    )
+    p.add_argument(
+        "--book-name",
+        type=str,
+        default=None,
+        help="source_book degeri (default: book-dir adi)",
+    )
     return p.parse_args()
 
 
@@ -1360,8 +1444,7 @@ async def _amain(args: argparse.Namespace) -> int:
         async with pool.acquire() as conn:
             db_has = await batch_id_exists(batch_id, conn)
             completed = (
-                await already_completed_pages(batch_id, conn)
-                if db_has else set()
+                await already_completed_pages(batch_id, conn) if db_has else set()
             )
 
         # Bug fix 6 May 2026: batch tum sayfalari 0-Q olmussa DB'de iz olmaz
@@ -1391,13 +1474,23 @@ async def _amain(args: argparse.Namespace) -> int:
                 log.warning("failed_pages.csv okunamadi (devam): %s", e)
 
         before = len(pages)
-        pages = [p for p in pages if (_safe_int(p.stem.replace("sayfa_", "")) or -1) not in completed]
-        log.info("RESUME: %d completed (DB+CSV), %d remaining (toplam %d)", len(completed), len(pages), before)
+        pages = [
+            p
+            for p in pages
+            if (_safe_int(p.stem.replace("sayfa_", "")) or -1) not in completed
+        ]
+        log.info(
+            "RESUME: %d completed (DB+CSV), %d remaining (toplam %d)",
+            len(completed),
+            len(pages),
+            before,
+        )
 
     # start-page: belli bir sayfadan basla (1-indexed)
     if args.start_page is not None:
         pages = [
-            p for p in pages
+            p
+            for p in pages
             if (_safe_int(p.stem.replace("sayfa_", "")) or 0) >= args.start_page
         ]
         log.info("start-page=%d uygulanmis, kalan: %d", args.start_page, len(pages))
@@ -1422,15 +1515,25 @@ async def _amain(args: argparse.Namespace) -> int:
 
     log.info(
         "PILOT START: pages=%d concurrency=%d dry_run=%s model=%s output=%s",
-        len(pages), args.concurrency, args.dry_run, args.model, output_dir,
+        len(pages),
+        args.concurrency,
+        args.dry_run,
+        args.model,
+        output_dir,
     )
 
     t0 = time.time()
     tasks = [
         _process_page(
-            p, batch_id, book_name, pool, semaphore,
-            failed_writer, failed_lock,
-            model=args.model, dry_run=args.dry_run,
+            p,
+            batch_id,
+            book_name,
+            pool,
+            semaphore,
+            failed_writer,
+            failed_lock,
+            model=args.model,
+            dry_run=args.dry_run,
         )
         for p in pages
     ]
@@ -1451,15 +1554,23 @@ async def _amain(args: argparse.Namespace) -> int:
 
     log.info(
         "PILOT END: %.1fs ok=%d extract_failed=%d db_failed=%d  layers L1=%d L2=%d L3=%d",
-        elapsed, ok, extract_failed, db_failed,
-        layer_total[1], layer_total[2], layer_total[3],
+        elapsed,
+        ok,
+        extract_failed,
+        db_failed,
+        layer_total[1],
+        layer_total[2],
+        layer_total[3],
     )
 
     # finalize_batch (sadece DB modunda)
     if pool is not None:
         async with pool.acquire() as conn:
             await finalize_batch(
-                batch_id, output_dir, conn, failed_pages_csv=failed_csv_path,
+                batch_id,
+                output_dir,
+                conn,
+                failed_pages_csv=failed_csv_path,
             )
         await pool.close()
     else:
@@ -1473,7 +1584,8 @@ async def _amain(args: argparse.Namespace) -> int:
             "elapsed_seconds": elapsed,
         }
         (output_dir / "batch_summary.json").write_text(
-            json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8",
+            json.dumps(summary, ensure_ascii=False, indent=2),
+            encoding="utf-8",
         )
         log.info("dry_run summary: %s", output_dir / "batch_summary.json")
 
@@ -1485,7 +1597,9 @@ def main() -> int:
     try:
         return asyncio.run(_amain(args))
     except KeyboardInterrupt:
-        log.warning("Interrupted - mevcut tx'ler commit'li, resume ile devam edilebilir")
+        log.warning(
+            "Interrupted - mevcut tx'ler commit'li, resume ile devam edilebilir"
+        )
         return 130
 
 

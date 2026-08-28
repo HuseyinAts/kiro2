@@ -149,7 +149,9 @@ class ABTestRunner:
             return self._user_assignments[user_id]
 
         # Consistent hashing
-        user_hash = int(hashlib.md5(user_id.encode()).hexdigest(), 16)
+        user_hash = int(
+            hashlib.md5(user_id.encode(), usedforsecurity=False).hexdigest(), 16
+        )
         threshold = user_hash / (2**128)
 
         # Allocate based on weights

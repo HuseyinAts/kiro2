@@ -19,7 +19,7 @@ from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class CacheKeyPrefix(str, Enum):
@@ -150,7 +150,7 @@ class ImprovementCache:
 
     def _hash_content(self, content: str) -> str:
         """İçerik hash'i oluştur."""
-        return hashlib.md5(content.encode()).hexdigest()[:12]
+        return hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()[:12]
 
     # =========================================================================
     # RULE EFFECTIVENESS CACHE
@@ -182,10 +182,7 @@ class ImprovementCache:
             return None
 
     async def set_rule_effectiveness(
-        self,
-        rule_id: str,
-        score: float,
-        ttl: int | None = None
+        self, rule_id: str, score: float, ttl: int | None = None
     ) -> bool:
         """
         Kural etkinlik skorunu cache'e yaz.
@@ -291,10 +288,7 @@ class ImprovementCache:
             return None
 
     async def set_pattern(
-        self,
-        pattern_id: str,
-        data: dict[str, Any],
-        ttl: int | None = None
+        self, pattern_id: str, data: dict[str, Any], ttl: int | None = None
     ) -> bool:
         """
         Pattern verisini cache'e yaz.
@@ -326,9 +320,7 @@ class ImprovementCache:
     # =========================================================================
 
     async def cache_feedback_batch(
-        self,
-        rule_id: str,
-        feedbacks: list[dict[str, Any]]
+        self, rule_id: str, feedbacks: list[dict[str, Any]]
     ) -> bool:
         """
         Feedback batch'ini cache'e yaz.
@@ -369,9 +361,7 @@ class ImprovementCache:
             return False
 
     async def get_cached_feedbacks(
-        self,
-        rule_id: str,
-        limit: int = 100
+        self, rule_id: str, limit: int = 100
     ) -> list[dict[str, Any]]:
         """
         Cache'den feedback'leri al.
@@ -403,11 +393,7 @@ class ImprovementCache:
     # A/B TEST CACHE
     # =========================================================================
 
-    async def cache_ab_test_result(
-        self,
-        test_id: str,
-        result: dict[str, Any]
-    ) -> bool:
+    async def cache_ab_test_result(self, test_id: str, result: dict[str, Any]) -> bool:
         """
         A/B test sonucunu cache'e yaz.
 
@@ -465,7 +451,7 @@ class ImprovementCache:
         self,
         request_id: str,
         changes: dict[str, Any],
-        ttl: int = 86400  # 24 saat
+        ttl: int = 86400,  # 24 saat
     ) -> bool:
         """
         Bekleyen onay isteğini cache'e yaz.
@@ -486,7 +472,7 @@ class ImprovementCache:
             data = {
                 "changes": changes,
                 "created_at": datetime.now(UTC).isoformat(),
-                "status": "pending"
+                "status": "pending",
             }
 
             await self._redis.setex(key, ttl, json.dumps(data))
@@ -634,6 +620,7 @@ class ImprovementCache:
 # IN-MEMORY FALLBACK CACHE
 # =============================================================================
 
+
 @dataclass
 class CacheEntry:
     """Tek bir cache girişi."""
@@ -682,8 +669,7 @@ class InMemoryCache:
             if len(self._cache) >= self._max_size:
                 # En eski entry'yi sil
                 oldest_key = min(
-                    self._cache.keys(),
-                    key=lambda k: self._cache[k].created_at
+                    self._cache.keys(), key=lambda k: self._cache[k].created_at
                 )
                 del self._cache[oldest_key]
 
@@ -701,10 +687,7 @@ class InMemoryCache:
     def _evict_expired(self) -> int:
         """Süresi dolmuş entry'leri temizle."""
         now = datetime.now(UTC)
-        expired_keys = [
-            k for k, v in self._cache.items()
-            if now > v.expires_at
-        ]
+        expired_keys = [k for k, v in self._cache.items() if now > v.expires_at]
 
         for key in expired_keys:
             del self._cache[key]
@@ -731,9 +714,9 @@ class InMemoryCache:
 # CACHE FACTORY
 # =============================================================================
 
+
 async def create_cache(
-    use_redis: bool = True,
-    config: CacheConfig | None = None
+    use_redis: bool = True, config: CacheConfig | None = None
 ) -> ImprovementCache | InMemoryCache:
     """
     Cache instance oluştur.

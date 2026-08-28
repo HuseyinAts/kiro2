@@ -245,7 +245,10 @@ class ABTest:
 
         # User ID'yi hash'le
         hash_value = int(
-            hashlib.md5(f"{self.test_id}:{user_id}".encode()).hexdigest(), 16
+            hashlib.md5(
+                f"{self.test_id}:{user_id}".encode(), usedforsecurity=False
+            ).hexdigest(),
+            16,
         )
         percentage = (hash_value % 100) + 1  # 1-100 arası
 
@@ -491,9 +494,7 @@ class FeatureFlagManager:
         """Performance config'i al"""
         return self.performance_config
 
-    def get_ab_test_variant(
-        self, test_id: str, user_id: str
-    ) -> ABTestVariant | None:
+    def get_ab_test_variant(self, test_id: str, user_id: str) -> ABTestVariant | None:
         """
         Kullanıcı için A/B test varyantını al
         """
@@ -594,9 +595,7 @@ def get_feature_flag_manager() -> FeatureFlagManager:
     return _feature_flag_manager
 
 
-def initialize_feature_flags(
-    environment: Environment, config_file: str | None = None
-):
+def initialize_feature_flags(environment: Environment, config_file: str | None = None):
     """Feature flag manager'ı initialize et"""
     global _feature_flag_manager
     _feature_flag_manager = FeatureFlagManager(

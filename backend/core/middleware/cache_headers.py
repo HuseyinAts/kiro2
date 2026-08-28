@@ -62,7 +62,9 @@ class CacheConfig:
 
     max_age: int = 300  # 5 dakika default
     policy: CachePolicy = CachePolicy.PUBLIC
-    vary_headers: list[str] = field(default_factory=lambda: ["Accept", "Accept-Encoding"])
+    vary_headers: list[str] = field(
+        default_factory=lambda: ["Accept", "Accept-Encoding"]
+    )
     stale_while_revalidate: int | None = None
     stale_if_error: int | None = None
 
@@ -140,7 +142,7 @@ def generate_etag(content: bytes, weak: bool = False) -> str:
         >>> etag = generate_etag(b'{"data": "test"}')
         >>> print(etag)  # '"a1b2c3d4e5f6..."'
     """
-    hash_digest = hashlib.md5(content).hexdigest()
+    hash_digest = hashlib.md5(content, usedforsecurity=False).hexdigest()
     etag = f'"{hash_digest}"'
 
     if weak:
@@ -202,7 +204,9 @@ def get_cache_config_for_path(path: str) -> CacheConfig:
     # Path prefix eslestirmesi
     for prefix, cache_type in PATH_CACHE_MAPPING.items():
         if path.startswith(prefix):
-            return DEFAULT_CACHE_CONFIGS.get(cache_type, DEFAULT_CACHE_CONFIGS["dynamic"])
+            return DEFAULT_CACHE_CONFIGS.get(
+                cache_type, DEFAULT_CACHE_CONFIGS["dynamic"]
+            )
 
     # Default: dynamic cache
     return DEFAULT_CACHE_CONFIGS["dynamic"]
@@ -406,7 +410,9 @@ class CacheMiddleware(BaseHTTPMiddleware):
                     break
 
             if limit_exceeded:
-                logger.debug("Response body size exceeded 2MB while reading, converting to StreamingResponse")
+                logger.debug(
+                    "Response body size exceeded 2MB while reading, converting to StreamingResponse"
+                )
                 from starlette.responses import StreamingResponse
 
                 async def stream_remaining():
@@ -466,7 +472,9 @@ class CacheMiddleware(BaseHTTPMiddleware):
 
             # Cache header'larini ekle
             new_response.headers["ETag"] = etag
-            new_response.headers["Cache-Control"] = build_cache_control_header(cache_config)
+            new_response.headers["Cache-Control"] = build_cache_control_header(
+                cache_config
+            )
             new_response.headers["Vary"] = ", ".join(cache_config.vary_headers)
             new_response.headers["X-Cache-Status"] = "MISS"
 

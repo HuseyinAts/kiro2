@@ -10,9 +10,14 @@ import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
-from sqlalchemy import select
+
+# `update` SQLAlchemy'de sqlalchemy.orm'da DEGIL, sqlalchemy kokunde
+# tanimlidir. Yanlis import bu modulu ImportError ile coken hale getiriyordu:
+# routers/loader bu router'i hic yukleyemiyor, /api/v1/2fa/* uclarinin hepsi
+# CI'da 404 donuyordu ("Failed to import api.two_factor_auth_api").
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import undefer, update
+from sqlalchemy.orm import undefer
 
 from core.database import get_async_session
 from core.jwt_auth import TokenPayload, get_current_user

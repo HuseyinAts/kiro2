@@ -24,6 +24,7 @@ Backward Compatibility:
 Bu dosya silinmeyecek, ancak yeni kod icin
 core/cache/ kullanilmali.
 """
+
 import hashlib
 import json
 import pickle
@@ -194,9 +195,7 @@ class CacheService:
 
     # ==================== ASYNC METHODS ====================
 
-    async def async_get(
-        self, key: str, namespace: str | None = None
-    ) -> Any | None:
+    async def async_get(self, key: str, namespace: str | None = None) -> Any | None:
         """Get value from cache (async)"""
         try:
             client = await self.async_client
@@ -275,7 +274,9 @@ class CacheService:
                         + [str(arg) for arg in args]
                         + [f"{k}={v}" for k, v in sorted(kwargs.items())]
                     )
-                    cache_key = hashlib.md5(":".join(key_parts).encode()).hexdigest()
+                    cache_key = hashlib.md5(
+                        ":".join(key_parts).encode(), usedforsecurity=False
+                    ).hexdigest()
 
                 # Try to get from cache
                 cached_value = self.get(cache_key, namespace)
@@ -322,7 +323,9 @@ class CacheService:
                         + [str(arg) for arg in args]
                         + [f"{k}={v}" for k, v in sorted(kwargs.items())]
                     )
-                    cache_key = hashlib.md5(":".join(key_parts).encode()).hexdigest()
+                    cache_key = hashlib.md5(
+                        ":".join(key_parts).encode(), usedforsecurity=False
+                    ).hexdigest()
 
                 # Try to get from cache
                 cached_value = await self.async_get(cache_key, namespace)

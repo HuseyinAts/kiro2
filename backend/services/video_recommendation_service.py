@@ -242,8 +242,9 @@ class VideoRecommendationService:
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 logger.error(
-                    f"[{request_id}] Error processing goal '{goals_to_process[i]}': {result!s}"
-                , exc_info=True)
+                    f"[{request_id}] Error processing goal '{goals_to_process[i]}': {result!s}",
+                    exc_info=True,
+                )
             else:
                 recommendations.append(result)
 
@@ -370,7 +371,9 @@ class VideoRecommendationService:
         }
 
         profile_str = json.dumps(profile_dict, sort_keys=True)
-        profile_hash = hashlib.md5(profile_str.encode()).hexdigest()
+        profile_hash = hashlib.md5(
+            profile_str.encode(), usedforsecurity=False
+        ).hexdigest()
 
         return f"video_rec:{profile_hash}"
 

@@ -5,9 +5,12 @@ Consolidates JWT, RBAC, 2FA, and session management
 """
 
 import hashlib
+import hmac
 import logging
 import os
 import secrets
+import struct
+import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
@@ -994,25 +997,43 @@ class UnifiedAuthService:
         self._2fa_secrets[user_id] = secret
         return secret
 
+    @staticmethod
+    def _totp_kodu(anahtar: bytes, sayac: int) -> str:
+        """RFC 4226 HOTP (RFC 6238 TOTP'nin cekirdegi), 6 haneli."""
+        ozet = hmac.new(anahtar, struct.pack(">Q", sayac), hashlib.sha1).digest()
+        ofset = ozet[-1] & 0x0F
+        kesit = struct.unpack(">I", ozet[ofset : ofset + 4])[0] & 0x7FFFFFFF
+        return f"{kesit % 1_000_000:06d}"
+
     def verify_2fa_code(self, user_id: int, code: str) -> bool:
         """
-        Verify a 2FA code
+        Verify a 2FA code (RFC 6238 TOTP, 30 sn adim, +/-1 adim tolerans).
 
-        Note: This is a simplified implementation.
-        In production, use pyotp for proper TOTP validation.
+        ONCEKI HALI KIRIKTI: `sha1(f"{secret}{counter}")[:6]` ne HMAC'ti ne de
+        RFC uyumluydu -- hicbir authenticator uygulamasi bu kodu uretemez,
+        anahtar mesajla duz birlestiriliyordu ve karsilastirma sabit zamanli
+        degildi. Burada gercek HOTP kesme (truncation) algoritmasi kullanilir;
+        HMAC-SHA1 TOTP standardinin kendisidir (Bandit B324'un hedefledigi
+        "ciplak sha1" kullanimi degildir).
+
+        Not: sirlar hala surec-ici bir dict'te tutuluyor; kalici 2FA icin
+        api/two_factor_auth_api.py yolunu kullanin.
         """
         secret = self._2fa_secrets.get(user_id)
         if not secret:
             return False
 
-        # Simplified verification (use pyotp in production)
-        # This generates a time-based code for demo purposes
-        import time
+        try:
+            anahtar = bytes.fromhex(secret)
+        except ValueError:
+            anahtar = secret.encode()
 
-        counter = int(time.time()) // 30
-        expected = hashlib.sha1(f"{secret}{counter}".encode()).hexdigest()[:6]
-
-        return code == expected
+        sayac = int(time.time()) // 30
+        # Saat kaymasi icin bir onceki/sonraki pencereyi de kabul et.
+        for kaydirma in (-1, 0, 1):
+            if hmac.compare_digest(code, self._totp_kodu(anahtar, sayac + kaydirma)):
+                return True
+        return False
 
     def disable_2fa(self, user_id: int) -> bool:
         """Disable 2FA for a user"""

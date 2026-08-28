@@ -24,15 +24,19 @@ load_dotenv()
 
 def check_api_keys():
     """API key'lerini kontrol et"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🔑 API KEY KONTROLÜ")
-    print("="*80)
+    print("=" * 80)
 
     gemini_key = os.getenv("GOOGLE_API_KEY")
     claude_key = os.getenv("ANTHROPIC_API_KEY")
 
     gemini_ok = gemini_key and len(gemini_key) > 20
-    claude_ok = claude_key and claude_key != "your_anthropic_api_key_here" and len(claude_key) > 20
+    claude_ok = (
+        claude_key
+        and claude_key != "your_anthropic_api_key_here"
+        and len(claude_key) > 20
+    )
 
     print(f"\n✅ Gemini API Key: {'Ayarlanmış' if gemini_ok else '❌ Eksik'}")
     if gemini_ok:
@@ -40,26 +44,29 @@ def check_api_keys():
     else:
         print("   ⚠️  .env dosyasında GOOGLE_API_KEY değerini ayarlayın")
 
-    print(f"\n{'✅' if claude_ok else '⚠️ '} Claude API Key: {'Ayarlanmış' if claude_ok else 'Eksik (opsiyonel)'}")
+    print(
+        f"\n{'✅' if claude_ok else '⚠️ '} Claude API Key: {'Ayarlanmış' if claude_ok else 'Eksik (opsiyonel)'}"
+    )
     if claude_ok:
         print(f"   Key: {claude_key[:20]}...")
     else:
-        print("   ℹ️  Claude kullanmak için .env dosyasında ANTHROPIC_API_KEY değerini ayarlayın")
+        print(
+            "   ℹ️  Claude kullanmak için .env dosyasında ANTHROPIC_API_KEY değerini ayarlayın"
+        )
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
 
     return gemini_ok or claude_ok
 
 
 async def test_simple_query(system: OptimalHybridSystem):
     """Basit sorgu testi"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📝 TEST 1: Basit Sorgu (Claude Only)")
-    print("="*80)
+    print("=" * 80)
 
     result = await system.process_query(
-        query="Python'da liste nedir? Kısaca açıkla.",
-        use_cache=True
+        query="Python'da liste nedir? Kısaca açıkla.", use_cache=True
     )
 
     print(f"\n🤖 Model: {result['model']}")
@@ -71,9 +78,9 @@ async def test_simple_query(system: OptimalHybridSystem):
 
 async def test_medium_query(system: OptimalHybridSystem):
     """Orta seviye sorgu testi"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📝 TEST 2: Orta Seviye Sorgu (Gemini Assist)")
-    print("="*80)
+    print("=" * 80)
 
     code = """
 def fibonacci(n):
@@ -85,7 +92,7 @@ def fibonacci(n):
     result = await system.process_query(
         query=f"Bu kodu analiz et ve optimize et:\n{code}",
         context={"language": "python", "type": "optimization"},
-        use_cache=True
+        use_cache=True,
     )
 
     print(f"\n🤖 Model: {result['model']}")
@@ -97,9 +104,9 @@ def fibonacci(n):
 
 async def test_complex_query(system: OptimalHybridSystem):
     """Karmaşık sorgu testi"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📝 TEST 3: Karmaşık Sorgu (Gemini Thinking)")
-    print("="*80)
+    print("=" * 80)
 
     result = await system.process_query(
         query="""
@@ -109,11 +116,11 @@ async def test_complex_query(system: OptimalHybridSystem):
         - Ürün kataloğu
         - Sipariş yönetimi
         - Ödeme sistemi
-        
+
         Her servisin sorumluluklarını ve aralarındaki iletişimi detaylı açıkla.
         """,
         context={"type": "system_design", "complexity": "high"},
-        use_cache=True
+        use_cache=True,
     )
 
     print(f"\n🤖 Model: {result['model']}")
@@ -125,9 +132,9 @@ async def test_complex_query(system: OptimalHybridSystem):
 
 async def test_cache_performance(system: OptimalHybridSystem):
     """Cache performans testi"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📝 TEST 4: Cache Performansı")
-    print("="*80)
+    print("=" * 80)
 
     query = "Python'da liste nedir?"
 
@@ -141,15 +148,17 @@ async def test_cache_performance(system: OptimalHybridSystem):
     result2 = await system.process_query(query, use_cache=True)
     print(f"   Süre: {result2['duration']:.2f}s | Cache: {result2['cached']}")
 
-    speedup = result1['duration'] / result2['duration'] if result2['duration'] > 0 else 0
+    speedup = (
+        result1["duration"] / result2["duration"] if result2["duration"] > 0 else 0
+    )
     print(f"\n⚡ Hızlanma: {speedup:.1f}x")
 
 
 async def show_metrics(system: OptimalHybridSystem):
     """Sistem metriklerini göster"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📊 SİSTEM METRİKLERİ")
-    print("="*80)
+    print("=" * 80)
 
     metrics = system.get_metrics()
 
@@ -159,7 +168,7 @@ async def show_metrics(system: OptimalHybridSystem):
     print(f"📊 Ortalama Süre: {metrics['avg_time']:.2f}s")
     print(f"💵 Ortalama Maliyet: ${metrics['avg_cost']:.4f}")
 
-    cache_rates = metrics['cache_hit_rate']
+    cache_rates = metrics["cache_hit_rate"]
     print("\n📦 Cache Hit Rate:")
     print(f"   L1 (Memory): {cache_rates['l1']:.1%}")
     print(f"   L2 (Redis Hot): {cache_rates['l2']:.1%}")
@@ -169,9 +178,9 @@ async def show_metrics(system: OptimalHybridSystem):
 
 async def interactive_mode(system: OptimalHybridSystem):
     """İnteraktif mod"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("💬 İNTERAKTİF MOD")
-    print("="*80)
+    print("=" * 80)
     print("\nSorularınızı yazın (çıkmak için 'exit' yazın)")
     print("Komutlar:")
     print("  - 'metrics': Sistem metriklerini göster")
@@ -185,21 +194,27 @@ async def interactive_mode(system: OptimalHybridSystem):
             if not query:
                 continue
 
-            if query.lower() == 'exit':
+            if query.lower() == "exit":
                 print("\n👋 Görüşmek üzere!")
                 break
 
-            if query.lower() == 'metrics':
+            if query.lower() == "metrics":
                 await show_metrics(system)
                 continue
 
-            if query.lower() == 'clear':
-                os.system('cls' if os.name == 'nt' else 'clear')
+            if query.lower() == "clear":
+                # os.system() bir kabuk baslatir (Bandit B605, HIGH). Ekrani
+                # temizlemek icin kabuga hic ihtiyac yok: ANSI "erase display"
+                # + "cursor home" dizisi Windows Terminal, macOS ve Linux'ta
+                # calisir ve disariya hicbir komut sizdirmaz.
+                print("\033[2J\033[H", end="", flush=True)
                 continue
 
             # Routing bilgisini göster
             routing = system.router.get_routing_info(query)
-            print(f"\n🎯 Routing: {routing['model_type']} (karmaşıklık: {routing['complexity']}/10)")
+            print(
+                f"\n🎯 Routing: {routing['model_type']} (karmaşıklık: {routing['complexity']}/10)"
+            )
             print(f"⏱️  Tahmini süre: {routing['estimated_time']:.1f}s")
 
             # Sorguyu işle
@@ -220,10 +235,10 @@ async def interactive_mode(system: OptimalHybridSystem):
 
 async def main():
     """Ana fonksiyon"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("🚀 OPTIMAL HYBRID SYSTEM")
     print("Gemini 3 Pro + Claude Sonnet 4.5")
-    print("="*80)
+    print("=" * 80)
 
     # API key kontrolü
     if not check_api_keys():
@@ -240,9 +255,9 @@ async def main():
     print("✅ Sistem hazır!\n")
 
     # Menü
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("📋 MENÜ")
-    print("="*80)
+    print("=" * 80)
     print("\n1. Otomatik testleri çalıştır")
     print("2. İnteraktif mod (soru-cevap)")
     print("3. Çıkış")

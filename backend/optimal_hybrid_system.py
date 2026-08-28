@@ -21,6 +21,7 @@ logger = structlog.get_logger()
 
 class ModelType(Enum):
     """Model tipleri"""
+
     CLAUDE_ONLY = "claude_only"
     GEMINI_ASSIST = "gemini_assist"
     GEMINI_THINKING = "gemini_thinking"
@@ -28,6 +29,7 @@ class ModelType(Enum):
 
 class ComplexityLevel(Enum):
     """Karmaşıklık seviyeleri"""
+
     SIMPLE = 1  # 0-3
     MEDIUM = 2  # 4-6
     COMPLEX = 3  # 7-10
@@ -40,17 +42,17 @@ class SmartRouter:
         self.complexity_thresholds = {
             ComplexityLevel.SIMPLE: 3,
             ComplexityLevel.MEDIUM: 6,
-            ComplexityLevel.COMPLEX: 10
+            ComplexityLevel.COMPLEX: 10,
         }
 
     def analyze_complexity(self, query: str, context: dict | None = None) -> int:
         """
         Query karmaşıklığını analiz et (0-10)
-        
+
         Args:
             query: Kullanıcı sorusu
             context: Ek bağlam
-        
+
         Returns:
             Complexity score (0-10)
         """
@@ -87,11 +89,11 @@ class SmartRouter:
     def route(self, query: str, context: dict | None = None) -> ModelType:
         """
         Query'yi uygun modele yönlendir
-        
+
         Args:
             query: Kullanıcı sorusu
             context: Ek bağlam
-        
+
         Returns:
             Kullanılacak model tipi
         """
@@ -112,7 +114,7 @@ class SmartRouter:
             "complexity": complexity,
             "model_type": model_type.value,
             "estimated_time": self._estimate_time(model_type),
-            "estimated_cost": self._estimate_cost(model_type)
+            "estimated_cost": self._estimate_cost(model_type),
         }
 
     def _estimate_time(self, model_type: ModelType) -> float:
@@ -120,7 +122,7 @@ class SmartRouter:
         time_map = {
             ModelType.CLAUDE_ONLY: 1.5,
             ModelType.GEMINI_ASSIST: 5.0,
-            ModelType.GEMINI_THINKING: 15.0
+            ModelType.GEMINI_THINKING: 15.0,
         }
         return time_map[model_type]
 
@@ -129,7 +131,7 @@ class SmartRouter:
         cost_map = {
             ModelType.CLAUDE_ONLY: 0.003,
             ModelType.GEMINI_ASSIST: 0.005,
-            ModelType.GEMINI_THINKING: 0.008
+            ModelType.GEMINI_THINKING: 0.008,
         }
         return cost_map[model_type]
 
@@ -150,7 +152,7 @@ class MultiLayerCache:
     def _generate_key(self, prompt: str, model: str) -> str:
         """Cache key oluştur"""
         content = f"{model}:{prompt}"
-        return hashlib.md5(content.encode()).hexdigest()
+        return hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
 
     async def get(self, prompt: str, model: str) -> str | None:
         """Cache'den oku"""
@@ -226,7 +228,7 @@ class MultiLayerCache:
             "l1": self.hits["l1"] / total_requests,
             "l2": self.hits["l2"] / total_requests,
             "l3": self.hits["l3"] / total_requests,
-            "total": sum(self.hits.values()) / total_requests
+            "total": sum(self.hits.values()) / total_requests,
         }
 
 
@@ -236,11 +238,11 @@ class TokenOptimizer:
     def optimize_prompt(self, prompt: str, max_tokens: int = 4000) -> str:
         """
         Prompt'u optimize et
-        
+
         Args:
             prompt: Orijinal prompt
             max_tokens: Maksimum token sayısı
-        
+
         Returns:
             Optimize edilmiş prompt
         """
@@ -293,19 +295,16 @@ class OptimalHybridSystem:
         self.total_time = 0.0
 
     async def process_query(
-        self,
-        query: str,
-        context: dict | None = None,
-        use_cache: bool = True
+        self, query: str, context: dict | None = None, use_cache: bool = True
     ) -> dict[str, Any]:
         """
         Query'yi işle
-        
+
         Args:
             query: Kullanıcı sorusu
             context: Ek bağlam
             use_cache: Cache kullan
-        
+
         Returns:
             Response dict
         """
@@ -320,7 +319,7 @@ class OptimalHybridSystem:
             "query_processing_started",
             query_length=len(query),
             complexity=routing_info["complexity"],
-            model_type=model_type.value
+            model_type=model_type.value,
         )
 
         # Cache kontrolü
@@ -328,16 +327,13 @@ class OptimalHybridSystem:
             cached_response = await self.cache.get(query, model_type.value)
             if cached_response:
                 duration = time.time() - start_time
-                logger.info(
-                    "query_completed_from_cache",
-                    duration=duration
-                )
+                logger.info("query_completed_from_cache", duration=duration)
                 return {
                     "response": cached_response,
                     "model": model_type.value,
                     "cached": True,
                     "duration": duration,
-                    "cost": 0.0
+                    "cost": 0.0,
                 }
 
         # Token optimizasyonu
@@ -357,10 +353,7 @@ class OptimalHybridSystem:
         self.total_cost += cost
 
         logger.info(
-            "query_completed",
-            duration=duration,
-            cost=cost,
-            model=model_type.value
+            "query_completed", duration=duration, cost=cost, model=model_type.value
         )
 
         return {
@@ -369,14 +362,11 @@ class OptimalHybridSystem:
             "cached": False,
             "duration": duration,
             "cost": cost,
-            "routing_info": routing_info
+            "routing_info": routing_info,
         }
 
     async def _call_model(
-        self,
-        query: str,
-        model_type: ModelType,
-        context: dict | None
+        self, query: str, model_type: ModelType, context: dict | None
     ) -> str:
         """Model çağrısı - Gerçek API implementasyonu"""
         try:
@@ -398,10 +388,7 @@ class OptimalHybridSystem:
             return await self._call_claude(query, context, thinking_mode=False)
 
     async def _call_claude(
-        self,
-        query: str,
-        context: dict | None,
-        thinking_mode: bool = False
+        self, query: str, context: dict | None, thinking_mode: bool = False
     ) -> str:
         """Claude API çağrısı"""
         import anthropic
@@ -425,16 +412,13 @@ class OptimalHybridSystem:
         message = client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=4096,
-            messages=[{"role": "user", "content": full_prompt}]
+            messages=[{"role": "user", "content": full_prompt}],
         )
 
         return message.content[0].text
 
     async def _call_gemini(
-        self,
-        query: str,
-        context: dict | None,
-        thinking_mode: bool = False
+        self, query: str, context: dict | None, thinking_mode: bool = False
     ) -> str:
         """Gemini API çağrısı"""
         import google.generativeai as genai
@@ -480,7 +464,7 @@ class OptimalHybridSystem:
             "total_time": self.total_time,
             "avg_time": avg_time,
             "avg_cost": avg_cost,
-            "cache_hit_rate": cache_hit_rate
+            "cache_hit_rate": cache_hit_rate,
         }
 
 
@@ -493,7 +477,7 @@ async def main():
     queries = [
         "Python nedir?",  # Simple
         "Bu kodu optimize et: def fib(n): ...",  # Medium
-        "Design.md dosyasını detaylı analiz et"  # Complex
+        "Design.md dosyasını detaylı analiz et",  # Complex
     ]
 
     for query in queries:
