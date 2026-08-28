@@ -188,7 +188,16 @@ jobs:
       - name: Run migrations
         working-directory: backend
         run: |
-          alembic upgrade head || echo "::warning::alembic upgrade failed — continuing with raw schema"
+          set +e
+          alembic upgrade head > /tmp/alembic.log 2>&1
+          rc=$?
+          cat /tmp/alembic.log
+          if [ "$rc" -ne 0 ]; then
+            tail_msg=$(tail -12 /tmp/alembic.log | tr '\n\r\t' '   ' | sed 's/  */ /g')
+            echo "::error title=alembic-hata::rc=$rc :: ${tail_msg: -700}"
+            echo "::warning::alembic upgrade failed — continuing with raw schema"
+          fi
+          exit 0
 
       - name: Seed MVP users
         working-directory: backend
