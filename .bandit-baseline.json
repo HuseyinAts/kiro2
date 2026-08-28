@@ -21,7 +21,7 @@
       "code": "96     try:\n97         with urllib.request.urlopen(req, timeout=timeout) as resp:\n98             result = json.loads(resp.read())\n",
       "col_offset": 13,
       "end_col_offset": 57,
-      "filename": "backend/_pilots\\ab_test_gemini_vs_sonnet.py",
+      "filename": "backend/_pilots/ab_test_gemini_vs_sonnet.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -41,7 +41,7 @@
       "code": "142     try:\n143         with urllib.request.urlopen(req, timeout=timeout) as resp:\n144             result = json.loads(resp.read())\n",
       "col_offset": 13,
       "end_col_offset": 57,
-      "filename": "backend/_pilots\\ab_test_gemini_vs_sonnet.py",
+      "filename": "backend/_pilots/ab_test_gemini_vs_sonnet.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -61,7 +61,7 @@
       "code": "101     try:\n102         with urllib.request.urlopen(req, timeout=timeout) as resp:\n103             result = json.loads(resp.read())\n",
       "col_offset": 13,
       "end_col_offset": 57,
-      "filename": "backend/_pilots\\ab_test_o3_vs_gemini.py",
+      "filename": "backend/_pilots/ab_test_o3_vs_gemini.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -81,7 +81,7 @@
       "code": "137     try:\n138         with urllib.request.urlopen(req, timeout=timeout) as resp:\n139             result = json.loads(resp.read())\n",
       "col_offset": 13,
       "end_col_offset": 57,
-      "filename": "backend/_pilots\\ab_test_o3_vs_gemini.py",
+      "filename": "backend/_pilots/ab_test_o3_vs_gemini.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -101,7 +101,7 @@
       "code": "76                 text(\n77                     f\"\"\"\n78             SELECT id::text, source_book,\n79                    (pipeline_metadata::jsonb -> 'tier_g_match' ->> 'similarity')::float AS sim,\n80                    pipeline_metadata::jsonb -> 'tier_g_match' ->> 'crop_file' AS cf,\n81                    LEFT(question_text, 400) AS qt\n82             FROM question_bank\n83             WHERE is_active=TRUE\n84               AND pipeline_metadata::jsonb -> 'tier_g_match' ->> 'tier' = '{sub_tier}'\n85             ORDER BY md5(id::text)\n86             LIMIT 30\n87         \"\"\"\n88                 )\n",
       "col_offset": 24,
       "end_col_offset": 75,
-      "filename": "backend/_pilots\\audit_task03_tier_g_substring.py",
+      "filename": "backend/_pilots/audit_task03_tier_g_substring.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -131,7 +131,7 @@
       "code": "135     t0 = time.time()\n136     resp = urllib.request.urlopen(req, timeout=timeout)\n137     result = json.loads(resp.read())\n",
       "col_offset": 11,
       "end_col_offset": 55,
-      "filename": "backend/_pilots\\bench_models_phase7.py",
+      "filename": "backend/_pilots/bench_models_phase7.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -151,7 +151,7 @@
       "code": "271     try:\n272         r = urllib.request.urlopen(\"http://localhost:11434/api/tags\").read()\n273         installed = {m[\"name\"] for m in json.loads(r)[\"models\"]}\n",
       "col_offset": 12,
       "end_col_offset": 69,
-      "filename": "backend/_pilots\\bench_models_phase7.py",
+      "filename": "backend/_pilots/bench_models_phase7.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -171,7 +171,7 @@
       "code": "48                 text(\n49                     f\"SELECT column_name FROM information_schema.columns \"\n50                     f\"WHERE table_name='{table}' ORDER BY ordinal_position\"\n51                 )\n",
       "col_offset": 22,
       "end_col_offset": 40,
-      "filename": "backend/_pilots\\beta01_flags_read.py",
+      "filename": "backend/_pilots/beta01_flags_read.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -192,7 +192,7 @@
       "code": "68             rows = c.execute(\n69                 text(f\"SELECT * FROM {table} WHERE {uid_col}=:uid ORDER BY 1 DESC\"),\n70                 {\"uid\": str(user_id)},\n",
       "col_offset": 23,
       "end_col_offset": 37,
-      "filename": "backend/_pilots\\beta01_flags_read.py",
+      "filename": "backend/_pilots/beta01_flags_read.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -212,7 +212,7 @@
       "code": "86         with eng.connect() as c:\n87             count = c.execute(text(f\"SELECT COUNT(*) FROM {table}\")).scalar()\n88             lines.append(f\"\\n## `{table}` total rows: {count}\\n\")\n",
       "col_offset": 37,
       "end_col_offset": 58,
-      "filename": "backend/_pilots\\beta01_flags_read.py",
+      "filename": "backend/_pilots/beta01_flags_read.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -232,7 +232,7 @@
       "code": "91                     text(\n92                         f\"SELECT column_name FROM information_schema.columns \"\n93                         f\"WHERE table_name='{table}'\"\n94                     )\n",
       "col_offset": 26,
       "end_col_offset": 44,
-      "filename": "backend/_pilots\\beta01_flags_read.py",
+      "filename": "backend/_pilots/beta01_flags_read.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -253,7 +253,7 @@
       "code": "107                     rows = c.execute(\n108                         text(f\"SELECT * FROM {table} WHERE {uid_col}=:uid\"),\n109                         {\"uid\": str(user_id)},\n",
       "col_offset": 31,
       "end_col_offset": 45,
-      "filename": "backend/_pilots\\beta01_flags_read.py",
+      "filename": "backend/_pilots/beta01_flags_read.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -273,7 +273,7 @@
       "code": "31     img_required_in_view = c.execute(\n32         text(f\"SELECT COUNT(*) FROM v_safe_for_beta WHERE question_text ~* '{IMG_REQ}'\")\n33     ).scalar()\n",
       "col_offset": 15,
       "end_col_offset": 76,
-      "filename": "backend/_pilots\\bug_7_10_smoke.py",
+      "filename": "backend/_pilots/bug_7_10_smoke.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -293,7 +293,7 @@
       "code": "27     lines.append(\"| id | source_book | preview |\\n|---|---|---|\")\n28     sql = f\"\"\"\n29         SELECT id::text, source_book, LEFT(question_text, 200) AS preview\n30         FROM question_bank\n31         WHERE is_active=true AND quality_review_status='auto_judged_high'\n32           AND {pred}\n33         ORDER BY md5(id::text)\n34         LIMIT 8\n35     \"\"\"\n36     with eng.connect() as c:\n",
       "col_offset": 14,
       "end_col_offset": 14,
-      "filename": "backend/_pilots\\check_r5_samples.py",
+      "filename": "backend/_pilots/check_r5_samples.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -320,7 +320,7 @@
       "code": "94 for tier in tiers:\n95     sql = text(f\"\"\"\n96         SELECT id::text, source_book, question_text, question_image_url\n97         FROM question_bank\n98         WHERE pipeline_metadata::jsonb ? '{tier}'\n99           AND question_image_url IS NOT NULL\n100           AND question_text IS NOT NULL\n101         ORDER BY RANDOM()\n102         LIMIT 50\n103     \"\"\")\n104     with eng.connect() as c:\n",
       "col_offset": 19,
       "end_col_offset": 42,
-      "filename": "backend/_pilots\\verify_image_match_content.py",
+      "filename": "backend/_pilots/verify_image_match_content.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -348,7 +348,7 @@
       "code": "34 for tier in tiers:\n35     sql = f\"\"\"\n36         SELECT id::text, question_image_url\n37         FROM question_bank\n38         WHERE pipeline_metadata::jsonb ? '{tier}'\n39           AND question_image_url IS NOT NULL\n40     \"\"\"\n41     ok, missing = 0, 0\n",
       "col_offset": 14,
       "end_col_offset": 42,
-      "filename": "backend/_pilots\\verify_image_match_disk.py",
+      "filename": "backend/_pilots/verify_image_match_disk.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -373,7 +373,7 @@
       "code": "28     # whitelist validation ile g\u00fcvenlik sa\u011flan\u0131r\n29     cursor.execute(f\"SELECT COUNT(*) FROM [{table}]\")\n30     count = cursor.fetchone()[0]\n",
       "col_offset": 21,
       "end_col_offset": 43,
-      "filename": "backend/_scripts\\check_db.py",
+      "filename": "backend/_scripts/check_db.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -393,7 +393,7 @@
       "code": "41     print(\"Calling http://localhost:9000/health...\")\n42     response = requests.get(\"http://localhost:9000/health\")\n43     print(f\"Response status: {response.status_code}\")\n",
       "col_offset": 15,
       "end_col_offset": 59,
-      "filename": "backend/_scripts\\debug_caching.py",
+      "filename": "backend/_scripts/debug_caching.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -413,7 +413,7 @@
       "code": "24         # Send login request\n25         response = requests.post(\n26             LOGIN_URL,\n27             json=CREDENTIALS,\n28             headers={\"Content-Type\": \"application/json\"}\n29         )\n30 \n",
       "col_offset": 19,
       "end_col_offset": 9,
-      "filename": "backend/_scripts\\test_admin_login_api.py",
+      "filename": "backend/_scripts/test_admin_login_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -437,7 +437,7 @@
       "code": "39         print(f\"\\n\u27a4 {description}...\")\n40         result = subprocess.run(cmd, capture_output=True, text=True, shell=True)\n41 \n",
       "col_offset": 17,
       "end_col_offset": 80,
-      "filename": "backend/_scripts\\test_coverage_master_fix.py",
+      "filename": "backend/_scripts/test_coverage_master_fix.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 78,
@@ -457,7 +457,7 @@
       "code": "236             cmd = f\"python -m pytest {test_file} -q --tb=no\"\n237             subprocess.run(cmd, shell=True, capture_output=True)\n238 \n",
       "col_offset": 12,
       "end_col_offset": 64,
-      "filename": "backend/_scripts\\test_coverage_master_fix.py",
+      "filename": "backend/_scripts/test_coverage_master_fix.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 78,
@@ -477,7 +477,7 @@
       "code": "42 if __name__ == \"__main__\":\n43     uvicorn.run(app, host=\"0.0.0.0\", port=8002)\n",
       "col_offset": 26,
       "end_col_offset": 35,
-      "filename": "backend/_scripts\\test_endpoint.py",
+      "filename": "backend/_scripts/test_endpoint.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -497,7 +497,7 @@
       "code": "25     try:\n26         response = requests.post(\n27             \"http://localhost:8000/api/v1/auth/login\",\n28             json=payload,\n29             headers={\"Content-Type\": \"application/json\"}\n30         )\n31 \n",
       "col_offset": 19,
       "end_col_offset": 9,
-      "filename": "backend/_scripts\\test_frontend_login.py",
+      "filename": "backend/_scripts/test_frontend_login.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -521,7 +521,7 @@
       "code": "80     try:\n81         response = requests.post(\n82             \"http://localhost:8000/api/v1/auth/login\",\n83             json=payload,\n84             headers={\"Content-Type\": \"application/json\"}\n85         )\n86 \n",
       "col_offset": 19,
       "end_col_offset": 9,
-      "filename": "backend/_scripts\\test_frontend_login.py",
+      "filename": "backend/_scripts/test_frontend_login.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -545,7 +545,7 @@
       "code": "6 # Test login with English \"password\" field (frontend format)\n7 response = requests.post(\n8     \"http://localhost:8000/api/v1/auth/login\",\n9     json={\"email\": \"test@kiro2.com\", \"password\": \"Test123!\"},\n10     headers={\"Content-Type\": \"application/json\"}\n11 )\n12 \n",
       "col_offset": 11,
       "end_col_offset": 1,
-      "filename": "backend/_scripts\\test_login_simple.py",
+      "filename": "backend/_scripts/test_login_simple.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -569,7 +569,7 @@
       "code": "353         config_options = {\n354             \"host\": \"0.0.0.0\",\n355             \"port\": 8000,\n356             \"reload\": True,\n357             \"workers\": 1,\n358             \"log_level\": \"info\",\n359             \"access_log\": True,\n360         }\n361 \n362         # Verify uvicorn can be imported\n",
       "col_offset": 20,
       "end_col_offset": 29,
-      "filename": "backend/_scripts\\test_main_application.py",
+      "filename": "backend/_scripts/test_main_application.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -596,7 +596,7 @@
       "code": "17     url = f\"{BASE_URL}/api/v1/osym/statistics\"\n18     response = requests.get(url)\n19 \n",
       "col_offset": 15,
       "end_col_offset": 32,
-      "filename": "backend/_scripts\\test_osym_api.py",
+      "filename": "backend/_scripts/test_osym_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -616,7 +616,7 @@
       "code": "36     url = f\"{BASE_URL}/api/v1/osym/subjects\"\n37     response = requests.get(url)\n38 \n",
       "col_offset": 15,
       "end_col_offset": 32,
-      "filename": "backend/_scripts\\test_osym_api.py",
+      "filename": "backend/_scripts/test_osym_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -636,7 +636,7 @@
       "code": "57 \n58     response = requests.get(url, params=params)\n59     print(f\"Status Code: {response.status_code}\")\n",
       "col_offset": 15,
       "end_col_offset": 47,
-      "filename": "backend/_scripts\\test_osym_api.py",
+      "filename": "backend/_scripts/test_osym_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -656,7 +656,7 @@
       "code": "89 \n90     response = requests.get(url, params=params)\n91     print(f\"Status Code: {response.status_code}\")\n",
       "col_offset": 15,
       "end_col_offset": 47,
-      "filename": "backend/_scripts\\test_osym_api.py",
+      "filename": "backend/_scripts/test_osym_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -676,7 +676,7 @@
       "code": "119 \n120     response = requests.get(url, params=params)\n121     print(f\"Status Code: {response.status_code}\")\n",
       "col_offset": 15,
       "end_col_offset": 47,
-      "filename": "backend/_scripts\\test_osym_api.py",
+      "filename": "backend/_scripts/test_osym_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 400,
@@ -696,7 +696,7 @@
       "code": "163     try:\n164         exec(import_str)\n165         print(f\"[CHECK] {name}\")\n",
       "col_offset": 8,
       "end_col_offset": 24,
-      "filename": "backend/_scripts\\verify_langchain_status.py",
+      "filename": "backend/_scripts/verify_langchain_status.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 78,
@@ -716,7 +716,7 @@
       "code": "135     op.execute(\n136         f\"\"\"\n137         DO $do$\n138         BEGIN\n139             IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '{APP_ROLE}') THEN\n140                 EXECUTE 'GRANT SELECT ON mv_safe_for_beta TO {APP_ROLE}';\n141                 EXECUTE 'GRANT EXECUTE ON FUNCTION refresh_safe_for_beta() TO {APP_ROLE}';\n142             END IF;\n143         END\n144         $do$\n145         \"\"\"\n146     )\n",
       "col_offset": 12,
       "end_col_offset": 63,
-      "filename": "backend/alembic\\versions_archive\\20260727_mv_safe_for_beta.py",
+      "filename": "backend/alembic/versions_archive/20260727_mv_safe_for_beta.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -745,7 +745,7 @@
       "code": "254     op.execute(\n255         f\"\"\"\n256         DO $$\n257         BEGIN\n258           IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'kiro2_app') THEN\n259 {grants}\n260           END IF;\n261         END $$;\n262         \"\"\"\n263     )\n",
       "col_offset": 12,
       "end_col_offset": 0,
-      "filename": "backend/alembic\\versions_archive\\20260727_restore_dropped_tables.py",
+      "filename": "backend/alembic/versions_archive/20260727_restore_dropped_tables.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -772,7 +772,7 @@
       "code": "122     # zaten parametrelenemez.\n123     return f\"\"\"\n124         DO $$\n125         BEGIN\n126             IF EXISTS (SELECT 1 FROM pg_policies WHERE tablename = '{table}' AND policyname = 'tenant_isolation') THEN\n127                 ALTER POLICY tenant_isolation ON {table} USING ({pred}) WITH CHECK ({pred});\n128             END IF;\n129         END\n130         $$;\n131         \"\"\"  # noqa: S608\n132 \n",
       "col_offset": 15,
       "end_col_offset": 68,
-      "filename": "backend/alembic\\versions_archive\\ad6ba3bbe485_fix_rls_fail_closed_policy.py",
+      "filename": "backend/alembic/versions_archive/ad6ba3bbe485_fix_rls_fail_closed_policy.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -800,7 +800,7 @@
       "code": "57             sa.text(\n58                 f\"UPDATE {t} SET organization_id = :org WHERE organization_id IS NULL\"\n59             ).bindparams(org=LEGACY_ORG)\n",
       "col_offset": 18,
       "end_col_offset": 25,
-      "filename": "backend/alembic\\versions_archive\\c2d3e4f5a6b7_faz0_org_id_identity_core.py",
+      "filename": "backend/alembic/versions_archive/c2d3e4f5a6b7_faz0_org_id_identity_core.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -820,7 +820,7 @@
       "code": "33         n = conn.execute(\n34             sa.text(f\"SELECT count(*) FROM {t} WHERE organization_id IS NULL\")\n35         ).scalar()\n",
       "col_offset": 22,
       "end_col_offset": 43,
-      "filename": "backend/alembic\\versions_archive\\faz0_notnull_20260703_org_id_notnull_identity.py",
+      "filename": "backend/alembic/versions_archive/faz0_notnull_20260703_org_id_notnull_identity.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -840,7 +840,7 @@
       "code": "48             sa.text(\n49                 f\"UPDATE {tbl} SET organization_id = :legacy \"\n50                 f\"WHERE organization_id IS NULL\"\n51             ).bindparams(legacy=LEGACY)\n",
       "col_offset": 18,
       "end_col_offset": 25,
-      "filename": "backend/alembic\\versions_archive\\faz1_katmanA2_20260704_org_id_grup2.py",
+      "filename": "backend/alembic/versions_archive/faz1_katmanA2_20260704_org_id_grup2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -861,7 +861,7 @@
       "code": "53         n = conn.execute(\n54             sa.text(f\"SELECT count(*) FROM {tbl} WHERE organization_id IS NULL\")\n55         ).scalar()\n",
       "col_offset": 22,
       "end_col_offset": 43,
-      "filename": "backend/alembic\\versions_archive\\faz1_katmanA2_20260704_org_id_grup2.py",
+      "filename": "backend/alembic/versions_archive/faz1_katmanA2_20260704_org_id_grup2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -881,7 +881,7 @@
       "code": "65             sa.text(\n66                 f\"UPDATE {tbl} t SET organization_id = COALESCE(\"\n67                 f\"  (SELECT s.organization_id FROM {src} s WHERE s.{scol} = t.{ucol}), \"\n68                 f\"  :legacy) \"\n69                 f\"WHERE t.organization_id IS NULL\"\n70             ).bindparams(legacy=LEGACY)\n",
       "col_offset": 18,
       "end_col_offset": 25,
-      "filename": "backend/alembic\\versions_archive\\faz1_katmanA_20260704_org_id_pii_tables.py",
+      "filename": "backend/alembic/versions_archive/faz1_katmanA_20260704_org_id_pii_tables.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -904,7 +904,7 @@
       "code": "73         n = conn.execute(\n74             sa.text(f\"SELECT count(*) FROM {tbl} WHERE organization_id IS NULL\")\n75         ).scalar()\n",
       "col_offset": 22,
       "end_col_offset": 43,
-      "filename": "backend/alembic\\versions_archive\\faz1_katmanA_20260704_org_id_pii_tables.py",
+      "filename": "backend/alembic/versions_archive/faz1_katmanA_20260704_org_id_pii_tables.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -924,7 +924,7 @@
       "code": "104             sa.text(\n105                 f\"UPDATE {tbl} SET organization_id = :l WHERE organization_id IS NULL\"\n106             ).bindparams(l=LEGACY)\n",
       "col_offset": 18,
       "end_col_offset": 25,
-      "filename": "backend/alembic\\versions_archive\\faz1_katmanBC_20260704_org_id_remaining.py",
+      "filename": "backend/alembic/versions_archive/faz1_katmanBC_20260704_org_id_remaining.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -944,7 +944,7 @@
       "code": "108         n = conn.execute(\n109             sa.text(f\"SELECT count(*) FROM {tbl} WHERE organization_id IS NULL\")\n110         ).scalar()\n",
       "col_offset": 22,
       "end_col_offset": 43,
-      "filename": "backend/alembic\\versions_archive\\faz1_katmanBC_20260704_org_id_remaining.py",
+      "filename": "backend/alembic/versions_archive/faz1_katmanBC_20260704_org_id_remaining.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -964,7 +964,7 @@
       "code": "145                     await db.execute(\n146                         _t(f'SELECT * FROM \"{t}\" WHERE user_id = :u LIMIT 5000'),\n147                         {\"u\": user_id},\n",
       "col_offset": 29,
       "end_col_offset": 44,
-      "filename": "backend/api\\kvkk_privacy_api.py",
+      "filename": "backend/api/kvkk_privacy_api.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -984,7 +984,7 @@
       "code": "258             stmt = text(\n259                 r\"\"\"\n260                 SELECT qb.id::text,\n261                        qs.irt_discrimination AS a,\n262                        qs.irt_difficulty AS b,\n263                        qs.irt_guessing AS c\n264                 FROM question_bank qb\n265                 LEFT JOIN question_content qc ON qc.id = qb.id\n266                 LEFT JOIN question_metadata qm ON qm.id = qb.id\n267                 LEFT JOIN question_statistics qs ON qs.id = qb.id\n268                 WHERE LOWER(qm.subject_area) = LOWER(:subject_id)\n269                   AND qb.is_active = TRUE\n270                   -- 15 May 2026: Convention v2 \u2014 bkz: docs/quality_review_status_convention.md\n271                   AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')\n272                   -- Kalite kap\u0131s\u0131 (core/quality_gate.py) \u2014 status-only filtre 34.982 sat\u0131r\n273                   -- g\u00f6r\u00fcyor, kap\u0131 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru\n274                   -- \u00f6\u011frenciye servis ediliyordu. Status sat\u0131r\u0131 savunma katman\u0131 olarak kal\u0131r.\n275                   AND \"\"\"  # noqa: S608 (kap\u0131 sabiti, kullan\u0131c\u0131 girdisi de\u011fil)\n276                 + safe_for_beta_sql(\"qb.id\")\n277                 + r\"\"\"\n",
       "col_offset": 16,
       "end_col_offset": 25,
-      "filename": "backend/app\\services\\cat_session.py",
+      "filename": "backend/app/services/cat_session.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1021,7 +1021,7 @@
       "code": "307             stmt = text(\n308                 r\"\"\"\n309                 SELECT qb.id::text,\n310                        qs.irt_discrimination AS a,\n311                        qs.irt_difficulty AS b,\n312                        qs.irt_guessing AS c\n313                 FROM question_bank qb\n314                 LEFT JOIN question_content qc ON qc.id = qb.id\n315                 LEFT JOIN question_metadata qm ON qm.id = qb.id\n316                 LEFT JOIN question_statistics qs ON qs.id = qb.id\n317                 WHERE LOWER(qm.subject_area) = LOWER(:subject_id)\n318                   AND qs.irt_difficulty BETWEEN :b_min AND :b_max\n319                   AND qb.is_active = TRUE\n320                   -- 15 May 2026: Convention v2 \u2014 bkz: docs/quality_review_status_convention.md\n321                   AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')\n322                   -- Kalite kap\u0131s\u0131 (core/quality_gate.py) \u2014 status-only filtre 34.982 sat\u0131r\n323                   -- g\u00f6r\u00fcyor, kap\u0131 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru\n324                   -- \u00f6\u011frenciye servis ediliyordu. Status sat\u0131r\u0131 savunma katman\u0131 olarak kal\u0131r.\n325                   AND \"\"\"  # noqa: S608 (kap\u0131 sabiti, kullan\u0131c\u0131 girdisi de\u011fil)\n326                 + safe_for_beta_sql(\"qb.id\")\n327                 + r\"\"\"\n",
       "col_offset": 16,
       "end_col_offset": 25,
-      "filename": "backend/app\\services\\cat_session.py",
+      "filename": "backend/app/services/cat_session.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1059,7 +1059,7 @@
       "code": "42 _FETCH_DUE_SQL = text(\n43     \"\"\"\n44     SELECT\n45         f.question_id::text,\n46         f.stability,\n47         f.difficulty,\n48         f.due_date,\n49         f.last_review,\n50         f.state,\n51         f.reps,\n52         f.lapses,\n53         f.scheduled_days,\n54         f.elapsed_days,\n55         qs.irt_discrimination AS irt_a,\n56         qs.irt_difficulty     AS irt_b,\n57         qs.irt_guessing       AS irt_c,\n58         qm.subject_area       AS subject_id,\n59         q.primary_topic_id    AS topic_id,\n60         qc.question_text,\n61         qc.option_a,\n62         qc.option_b,\n63         qc.option_c,\n64         qc.option_d\n65     FROM user_item_fsrs f\n66     JOIN question_bank q ON q.id = f.question_id\n67     JOIN question_content qc ON qc.id = q.id\n68     JOIN question_metadata qm ON qm.id = q.id\n69     JOIN question_statistics qs ON qs.id = q.id\n70     WHERE f.user_id = :user_id\n71       AND f.due_date <= NOW() + INTERVAL '4 hours'\n72       AND f.state IN (1, 2, 3)\n73       AND q.is_active = TRUE\n74 \"\"\"\n75     # Kalite kap\u0131s\u0131 (core/quality_gate.py) \u2014 kap\u0131s\u0131z sorgu 85.731 yarg\u0131lanmam\u0131\u015f/\n76     # reddedilmi\u015f soruyu \u00f6\u011frenciye servis ediyordu. is_active'in YER\u0130NE de\u011fil\n77     # YANINA gelir: bayat matview'a ra\u011fmen ar\u015fivleme an\u0131nda etki etsin.\n78     + f\"      AND {safe_for_beta_sql('q.id')}\\n\"\n79     + \"\"\"    ORDER BY f.due_date ASC\n",
       "col_offset": 4,
       "end_col_offset": 3,
-      "filename": "backend/app\\services\\fsrs_service.py",
+      "filename": "backend/app/services/fsrs_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1114,7 +1114,7 @@
       "code": "84 _FETCH_DUE_MERCY_SQL = text(\n85     \"\"\"\n86     SELECT\n87         f.question_id::text,\n88         f.stability,\n89         f.difficulty,\n90         f.due_date,\n91         f.last_review,\n92         f.state,\n93         f.reps,\n94         f.lapses,\n95         f.scheduled_days,\n96         f.elapsed_days,\n97         qs.irt_discrimination AS irt_a,\n98         qs.irt_difficulty     AS irt_b,\n99         qs.irt_guessing       AS irt_c,\n100         qm.subject_area       AS subject_id,\n101         q.primary_topic_id    AS topic_id,\n102         qc.question_text,\n103         qc.option_a,\n104         qc.option_b,\n105         qc.option_c,\n106         qc.option_d\n107     FROM user_item_fsrs f\n108     JOIN question_bank q ON q.id = f.question_id\n109     JOIN question_content qc ON qc.id = q.id\n110     JOIN question_metadata qm ON qm.id = q.id\n111     JOIN question_statistics qs ON qs.id = q.id\n112     WHERE f.user_id = :user_id\n113       AND f.due_date <= NOW()\n114       AND f.state IN (1, 2, 3)\n115       AND q.is_active = TRUE\n116 \"\"\"\n117     # Kalite kap\u0131s\u0131 (core/quality_gate.py) \u2014 merhamet yolu da \u00f6\u011frenciye soru\n118     # metni/\u015f\u0131k servis ediyor; kap\u0131s\u0131z 85.731 soruluk s\u0131z\u0131nt\u0131n\u0131n par\u00e7as\u0131yd\u0131.\n119     + f\"      AND {safe_for_beta_sql('q.id')}\\n\"\n120     + \"\"\"    ORDER BY f.stability ASC, f.difficulty DESC\n",
       "col_offset": 4,
       "end_col_offset": 3,
-      "filename": "backend/app\\services\\fsrs_service.py",
+      "filename": "backend/app/services/fsrs_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1168,7 +1168,7 @@
       "code": "284             text(\n285                 r\"\"\"\n286             SELECT\n287                 qb.id::text             AS question_id,\n288                 qc.question_text,\n289                 qc.option_a,\n290                 qc.option_b,\n291                 qc.option_c,\n292                 qc.option_d,\n293                 qs.irt_discrimination   AS a,\n294                 qs.irt_difficulty       AS b,\n295                 qs.irt_guessing         AS c,\n296                 qm.subject_area         AS subject_id,\n297                 qb.primary_topic_id     AS topic_id\n298             -- 18 Agu 2026: 69 alan question_bank'tan content/metadata/statistics\n299             -- tablolarina tasindi. JOIN kosulu `id` uzerinde (cocuk tablolarin PK'si\n300             -- question_bank.id'ye FK); `question_id` diye bir kolon YOK.\n301             -- LEFT JOIN: 1:1 kayit yapisal olarak GARANTI degil, eksik cocuk satiri\n302             -- havuzu sessizce daraltmasin diye (asagidaki filtreler zaten eleyecek).\n303             FROM question_bank qb\n304             LEFT JOIN question_content    qc ON qc.id = qb.id\n305             LEFT JOIN question_metadata   qm ON qm.id = qb.id\n306             LEFT JOIN question_statistics qs ON qs.id = qb.id\n307             WHERE LOWER(qm.subject_area) = LOWER(:sid)\n308               AND qb.is_active = TRUE\n309               -- 15 May 2026: Convention v2 \u2014 eski 'approved' (hardcoded literal,\n310               -- %87 hatal\u0131) yasak. Sadece ger\u00e7ek manuel onay (human_verified)\n311               -- veya LLM-as-judge y\u00fcksek g\u00fcven (auto_judged_high) kabul.\n312               -- Bkz: docs/quality_review_status_convention.md\n313               AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')\n314               -- 18 May 2026: Bug #11 fix \u2014 IMAGE-REQUIRED sorular\u0131 HARI\u00c7.\n315               -- Vision audit (10/10 sample) t\u00fcm question_image_url'lerin\n316               -- options leak i\u00e7erdi\u011fini ortaya koydu. Ge\u00e7ici \u00e7\u00f6z\u00fcm: text-self-contained\n317               -- sorulara dar (image olmadan \u00e7\u00f6z\u00fclebilen).\n318               -- Bug #11 v3: PostgreSQL C locale fix (LOWER('\u015e')='\u015e')\n319               -- char class [\u015f\u015e] her T\u00fcrk\u00e7e ilk-harf i\u00e7in\n320               AND qc.question_text !~* '[\u015f\u015e]ekil|[yY]ukar\u0131da|[aA]\u015fa\u011f\u0131da|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[\u015f\u015e]emada|[hH]aritada|[vV]erilenler|a\u015fa\u011f\u0131daki \u015fek|[gG]\u00f6rsel|[kK]avram harita|[dD]eney d\u00fczene|numaraland.* \u00f6zelli|\u015fekildeki kap|[cC]am boru|[pP]aralelkenar|\u015fek\\.|\u015fek |[dD]ik \u00fc\u00e7gen|[eE]\u015fkenar \u00fc\u00e7gen|[iI]kizkenar \u00fc\u00e7gen'\n321             \"\"\"\n322                 # Kalite kap\u0131s\u0131 (core/quality_gate.py). Bu sorgunun kap\u0131s\u0131z\n323                 # havuzu 19.873, kap\u0131l\u0131 13.756 (27 Tem \u00f6l\u00e7\u00fcm\u00fc): 6.117\n324                 # demote/tek-sinyal/fallback-topic soru placement testinde\n325                 # \u00f6\u011frenciye servis ediliyordu. is_active YANINDA durur,\n326                 # yerine de\u011fil (bayat matview'a kar\u015f\u0131 canl\u0131 ar\u015fiv filtresi).\n327                 + f\"AND {safe_for_beta_sql('qb.id')}\\n\"\n328                 + r\"\"\"\n",
       "col_offset": 16,
       "end_col_offset": 15,
-      "filename": "backend/app\\services\\placement_service.py",
+      "filename": "backend/app/services/placement_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1230,7 +1230,7 @@
       "code": "75             if data[0:1] == b\"C\":\n76                 return pickle.loads(zlib.decompress(data[1:]))\n77             return pickle.loads(data[1:])\n",
       "col_offset": 23,
       "end_col_offset": 62,
-      "filename": "backend/config\\redis_optimized_config.py",
+      "filename": "backend/config/redis_optimized_config.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -1250,7 +1250,7 @@
       "code": "76                 return pickle.loads(zlib.decompress(data[1:]))\n77             return pickle.loads(data[1:])\n78         except Exception as e:\n",
       "col_offset": 19,
       "end_col_offset": 41,
-      "filename": "backend/config\\redis_optimized_config.py",
+      "filename": "backend/config/redis_optimized_config.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -1270,7 +1270,7 @@
       "code": "633 \n634                 temp_wav = tempfile.mktemp(suffix=\".wav\")\n635                 sf.write(temp_wav, y, sr)\n",
       "col_offset": 27,
       "end_col_offset": 57,
-      "filename": "backend/content\\multimedia_content_processor.py",
+      "filename": "backend/content/multimedia_content_processor.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 377,
@@ -1290,7 +1290,7 @@
       "code": "251             # where_clause must only be used with trusted internal callers\n252             return f\"SELECT COUNT(*) FROM {table} WHERE {where_clause};\"\n253         return f\"\"\"\n",
       "col_offset": 21,
       "end_col_offset": 42,
-      "filename": "backend/core\\api_performance.py",
+      "filename": "backend/core/api_performance.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1310,7 +1310,7 @@
       "code": "252             return f\"SELECT COUNT(*) FROM {table} WHERE {where_clause};\"\n253         return f\"\"\"\n254             SELECT CASE\n255                 WHEN c.reltuples < 10000 THEN (SELECT COUNT(*) FROM {table})\n256                 ELSE c.reltuples::bigint\n257             END as count\n258             FROM pg_class c\n259             WHERE c.relname = %(table_name)s;\n260             \"\"\"\n261 \n",
       "col_offset": 19,
       "end_col_offset": 68,
-      "filename": "backend/core\\api_performance.py",
+      "filename": "backend/core/api_performance.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1337,7 +1337,7 @@
       "code": "165             # Tokenizer'lar\u0131 y\u00fckle\n166             self.tokenizer = AutoTokenizer.from_pretrained(\n167                 self.model_name, cache_dir=str(self.cache_dir)\n168             )\n169 \n",
       "col_offset": 29,
       "end_col_offset": 13,
-      "filename": "backend/core\\berturk_service.py",
+      "filename": "backend/core/berturk_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -1359,7 +1359,7 @@
       "code": "169 \n170             self.sentiment_tokenizer = AutoTokenizer.from_pretrained(\n171                 self.sentiment_model_name, cache_dir=str(self.cache_dir)\n172             )\n173 \n",
       "col_offset": 39,
       "end_col_offset": 13,
-      "filename": "backend/core\\berturk_service.py",
+      "filename": "backend/core/berturk_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -1381,7 +1381,7 @@
       "code": "174             # Base model'i y\u00fckle\n175             self.base_model = AutoModel.from_pretrained(\n176                 self.model_name, cache_dir=str(self.cache_dir)\n177             )\n178 \n",
       "col_offset": 30,
       "end_col_offset": 13,
-      "filename": "backend/core\\berturk_service.py",
+      "filename": "backend/core/berturk_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -1403,7 +1403,7 @@
       "code": "179             # Sentiment model'i y\u00fckle\n180             self.sentiment_model = AutoModelForSequenceClassification.from_pretrained(\n181                 self.sentiment_model_name, cache_dir=str(self.cache_dir)\n182             )\n183 \n",
       "col_offset": 35,
       "end_col_offset": 13,
-      "filename": "backend/core\\berturk_service.py",
+      "filename": "backend/core/berturk_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -1425,7 +1425,7 @@
       "code": "113             # Fall back to pickle\n114             return pickle.loads(value)\n115 \n",
       "col_offset": 19,
       "end_col_offset": 38,
-      "filename": "backend/core\\cache_service.py",
+      "filename": "backend/core/cache_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -1445,7 +1445,7 @@
       "code": "81         self.slow_api_threshold_ms = int(os.getenv(\"SLOW_API_THRESHOLD_MS\", \"1000\"))\n82         self.host = os.getenv(\"HOST\", \"0.0.0.0\")\n83         self.port = int(os.getenv(\"PORT\", \"8000\"))\n",
       "col_offset": 38,
       "end_col_offset": 47,
-      "filename": "backend/core\\config.py",
+      "filename": "backend/core/config.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -1465,7 +1465,7 @@
       "code": "713 \n714         query = f\"\"\"\n715         SELECT *, \n716                CASE \n717                    WHEN {' OR '.join(fts_conditions)} THEN 1\n718                    WHEN {' OR '.join(trigram_conditions)} THEN 0.5\n719                    ELSE 0\n720                END as relevance_score\n721         FROM {table}\n722         WHERE ({' OR '.join(fts_conditions + trigram_conditions)})\n723         ORDER BY relevance_score DESC, id\n724         \"\"\"\n725 \n",
       "col_offset": 20,
       "end_col_offset": 24,
-      "filename": "backend/core\\database_optimizer.py",
+      "filename": "backend/core/database_optimizer.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1495,7 +1495,7 @@
       "code": "1068         if not ip_address:\n1069             return \"0.0.0.0\"\n1070 \n",
       "col_offset": 19,
       "end_col_offset": 28,
-      "filename": "backend/core\\kvkk_compliance.py",
+      "filename": "backend/core/kvkk_compliance.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -1515,7 +1515,7 @@
       "code": "1080 \n1081         return \"0.0.0.0\"\n1082 \n",
       "col_offset": 15,
       "end_col_offset": 24,
-      "filename": "backend/core\\kvkk_compliance.py",
+      "filename": "backend/core/kvkk_compliance.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -1535,7 +1535,7 @@
       "code": "864 \n865         template = f'''\"\"\"\n866 Migration: {name}\n867 Created: {datetime.now().isoformat()}\n868 Author: {author or 'Unknown'}\n869 Type: {migration_type.value}\n870 \"\"\"\n871 \n872 from core.migration_framework import BaseMigration, MigrationInfo, MigrationType\n873 from sqlalchemy.ext.asyncio import AsyncSession\n874 from sqlalchemy import text\n875 \n876 # Migration metadata\n877 migration_info = MigrationInfo(\n878     id=\"{migration_id}\",\n879     name=\"{name}\",\n880     description=\"TEMPLATE: Add your migration description here (e.g., 'Add user roles table')\",\n881     version=\"1.0.0\",\n882     migration_type=MigrationType.{migration_type.name},\n883     dependencies=[],  # Add dependency migration IDs here\n884     author=\"{author or 'Unknown'}\",\n885     tags=[]  # Add tags here\n886 )\n887 \n888 \n889 class Migration_{migration_id.upper()}(BaseMigration):\n890     \"\"\"Migration class for {name}\"\"\"\n891     \n892     def __init__(self):\n893         super().__init__(migration_info)\n894     \n895     async def up(self, session: AsyncSession) -> None:\n896         \"\"\"Execute migration forward\"\"\"\n897         # TEMPLATE: Implement your forward migration logic here\n898         # Example:\n899         # await session.execute(text(\"\"\"\n900         #     CREATE TABLE example_table (\n901         #         id SERIAL PRIMARY KEY,\n902         #         name VARCHAR(255) NOT NULL\n903         #     )\n904         # \"\"\"))\n905 \n906         pass\n907     \n908     async def down(self, session: AsyncSession) -> None:\n909         \"\"\"Execute migration rollback\"\"\"\n910         # TEMPLATE: Implement your rollback migration logic here\n911         # Example:\n912         # await session.execute(text(\"DROP TABLE IF EXISTS example_table\"))\n913 \n914         pass\n915     \n916     async def validate_preconditions(self, session: AsyncSession) -> List[str]:\n917         \"\"\"Validate preconditions before migration\"\"\"\n918         errors = []\n919 \n920         # TEMPLATE: Add your precondition validation logic here\n921         # Example:\n922         # result = await session.execute(text(\"SELECT 1 FROM information_schema.tables WHERE table_name = 'required_table'\"))\n923         # if not result.fetchone():\n924         #     errors.append(\"Required table 'required_table' does not exist\")\n925 \n926         return errors\n927     \n928     async def validate_postconditions(self, session: AsyncSession) -> List[str]:\n929         \"\"\"Validate postconditions after migration\"\"\"\n930         errors = []\n931 \n932         # TEMPLATE: Add your postcondition validation logic here\n933         # Example:\n934         # result = await session.execute(text(\"SELECT 1 FROM information_schema.tables WHERE table_name = 'example_table'\"))\n935         # if not result.fetchone():\n936         #     errors.append(\"Table 'example_table' was not created\")\n937 \n938         return errors\n939 \n940 \n941 # Create migration instance\n942 migration = Migration_{migration_id.upper()}()\n943 '''\n944 \n",
       "col_offset": 23,
       "end_col_offset": 11,
-      "filename": "backend/core\\migration_framework.py",
+      "filename": "backend/core/migration_framework.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1633,7 +1633,7 @@
       "code": "286         \"\"\"\n287         base_query = f\"SELECT * FROM {self.table_name}\"\n288 \n",
       "col_offset": 23,
       "end_col_offset": 37,
-      "filename": "backend/core\\sql_injection_prevention.py",
+      "filename": "backend/core/sql_injection_prevention.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1653,7 +1653,7 @@
       "code": "259         cols = \", \".join(self._select_cols)\n260         parts.append(f\"SELECT {cols} FROM {self._from_table}\")\n261 \n",
       "col_offset": 23,
       "end_col_offset": 30,
-      "filename": "backend/core\\sql_security.py",
+      "filename": "backend/core/sql_security.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1673,7 +1673,7 @@
       "code": "363             # XML parse et\n364             root = ET.fromstring(metadata_xml)\n365 \n",
       "col_offset": 19,
       "end_col_offset": 46,
-      "filename": "backend/core\\sso_saml_service.py",
+      "filename": "backend/core/sso_saml_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 20,
@@ -1693,7 +1693,7 @@
       "code": "590             xml_data = base64.b64decode(saml_response)\n591             root = ET.fromstring(xml_data)\n592 \n",
       "col_offset": 19,
       "end_col_offset": 42,
-      "filename": "backend/core\\sso_saml_service.py",
+      "filename": "backend/core/sso_saml_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 20,
@@ -1713,7 +1713,7 @@
       "code": "828             xml_data = base64.b64decode(saml_response)\n829             root = ET.fromstring(xml_data)\n830 \n",
       "col_offset": 19,
       "end_col_offset": 42,
-      "filename": "backend/core\\sso_saml_service.py",
+      "filename": "backend/core/sso_saml_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 20,
@@ -1733,7 +1733,7 @@
       "code": "60     enable_l3_cache: bool = False\n61     l3_cache_path: str = \"/tmp/kiro2_cache\"\n62 \n",
       "col_offset": 25,
       "end_col_offset": 43,
-      "filename": "backend/core\\unified\\cache_system.py",
+      "filename": "backend/core/unified/cache_system.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -1753,7 +1753,7 @@
       "code": "220         if self.config.serialization_method == \"pickle\":\n221             return pickle.loads(data)\n222         # Default to pickle\n",
       "col_offset": 19,
       "end_col_offset": 37,
-      "filename": "backend/core\\unified\\cache_system.py",
+      "filename": "backend/core/unified/cache_system.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -1773,7 +1773,7 @@
       "code": "222         # Default to pickle\n223         return pickle.loads(data)\n224 \n",
       "col_offset": 15,
       "end_col_offset": 33,
-      "filename": "backend/core\\unified\\cache_system.py",
+      "filename": "backend/core/unified/cache_system.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -1793,7 +1793,7 @@
       "code": "448             count_result = await conn.execute(\n449                 text(f\"SELECT COUNT(*) FROM {table_name}\")\n450             )\n",
       "col_offset": 23,
       "end_col_offset": 44,
-      "filename": "backend/core\\unified\\database_system.py",
+      "filename": "backend/core/unified/database_system.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1813,7 +1813,7 @@
       "code": "218 \n219     host: str = Field(default=\"0.0.0.0\", description=\"Server host\")\n220     port: int = Field(default=8000, description=\"Server port\")\n",
       "col_offset": 30,
       "end_col_offset": 39,
-      "filename": "backend/core\\unified_config.py",
+      "filename": "backend/core/unified_config.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -1833,7 +1833,7 @@
       "code": "482             # Sat\u0131r say\u0131s\u0131\n483             count_query = text(f\"SELECT COUNT(*) FROM {table_name}\")\n484             result = await session.execute(count_query)\n",
       "col_offset": 33,
       "end_col_offset": 54,
-      "filename": "backend/database\\optimization.py",
+      "filename": "backend/database/optimization.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1853,7 +1853,7 @@
       "code": "200         async with self.engine.begin() as conn:\n201             result = await conn.execute(text(f\"\"\"\n202                 INSERT INTO {self.TABLE_NAME}\n203                 (revision, direction, status, started_at, completed_at,\n204                  duration_ms, author, description, error_message,\n205                  affected_tables, metadata)\n206                 VALUES\n207                 (:revision, :direction, :status, :started_at, :completed_at,\n208                  :duration_ms, :author, :description, :error_message,\n209                  :affected_tables, :metadata)\n210                 RETURNING id\n211             \"\"\"), {\n212                 \"revision\": revision,\n",
       "col_offset": 49,
       "end_col_offset": 28,
-      "filename": "backend/db\\history\\tracker.py",
+      "filename": "backend/db/history/tracker.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1883,7 +1883,7 @@
       "code": "293         async with self.engine.connect() as conn:\n294             result = await conn.execute(text(f\"\"\"\n295                 SELECT id, revision, direction, status, started_at, completed_at,\n296                        duration_ms, author, description, error_message,\n297                        affected_tables, metadata\n298                 FROM {self.TABLE_NAME}\n299                 WHERE {where_clause}\n300                 ORDER BY started_at DESC\n301                 LIMIT :limit OFFSET :offset\n302             \"\"\"), params)\n303 \n",
       "col_offset": 49,
       "end_col_offset": 21,
-      "filename": "backend/db\\history\\tracker.py",
+      "filename": "backend/db/history/tracker.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1911,7 +1911,7 @@
       "code": "333             # Get all unique revisions\n334             result = await conn.execute(text(f\"\"\"\n335                 SELECT DISTINCT revision\n336                 FROM {self.TABLE_NAME}\n337                 WHERE direction = 'upgrade'\n338                 AND status = 'completed'\n339                 ORDER BY revision\n340             \"\"\"))\n341 \n",
       "col_offset": 49,
       "end_col_offset": 21,
-      "filename": "backend/db\\history\\tracker.py",
+      "filename": "backend/db/history/tracker.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1937,7 +1937,7 @@
       "code": "417         async with self.engine.connect() as conn:\n418             result = await conn.execute(text(f\"\"\"\n419                 SELECT revision\n420                 FROM {self.TABLE_NAME}\n421                 WHERE status = 'completed' AND direction = 'upgrade'\n422                 ORDER BY completed_at DESC\n423                 LIMIT 1\n424             \"\"\"))\n425             row = result.fetchone()\n",
       "col_offset": 49,
       "end_col_offset": 21,
-      "filename": "backend/db\\history\\tracker.py",
+      "filename": "backend/db/history/tracker.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1963,7 +1963,7 @@
       "code": "430         async with self.engine.connect() as conn:\n431             result = await conn.execute(text(f\"\"\"\n432                 SELECT status, COUNT(*)\n433                 FROM {self.TABLE_NAME}\n434                 GROUP BY status\n435             \"\"\"))\n436 \n",
       "col_offset": 49,
       "end_col_offset": 21,
-      "filename": "backend/db\\history\\tracker.py",
+      "filename": "backend/db/history/tracker.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -1987,7 +1987,7 @@
       "code": "231                 # Terminate existing connections to source DB\n232                 conn.execute(text(f\"\"\"\n233                     SELECT pg_terminate_backend(pg_stat_activity.pid)\n234                     FROM pg_stat_activity\n235                     WHERE pg_stat_activity.datname = '{self.config.db_name}'\n236                     AND pid <> pg_backend_pid()\n237                 \"\"\"))\n238 \n",
       "col_offset": 38,
       "end_col_offset": 54,
-      "filename": "backend/db\\testing\\dry_run.py",
+      "filename": "backend/db/testing/dry_run.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2012,7 +2012,7 @@
       "code": "531                         count_result = await conn.execute(\n532                             text(f'SELECT COUNT(*) FROM \"{table}\"')\n533                         )\n",
       "col_offset": 35,
       "end_col_offset": 57,
-      "filename": "backend/db\\testing\\dry_run.py",
+      "filename": "backend/db/testing/dry_run.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2032,7 +2032,7 @@
       "code": "597                 # Terminate connections\n598                 conn.execute(text(f\"\"\"\n599                     SELECT pg_terminate_backend(pg_stat_activity.pid)\n600                     FROM pg_stat_activity\n601                     WHERE pg_stat_activity.datname = '{self.test_db_name}'\n602                     AND pid <> pg_backend_pid()\n603                 \"\"\"))\n604 \n",
       "col_offset": 38,
       "end_col_offset": 54,
-      "filename": "backend/db\\testing\\dry_run.py",
+      "filename": "backend/db/testing/dry_run.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2057,7 +2057,7 @@
       "code": "228                     count_result = await conn.execute(\n229                         text(f'SELECT COUNT(*) FROM \"{table}\"')\n230                     )\n",
       "col_offset": 31,
       "end_col_offset": 53,
-      "filename": "backend/db\\validation\\integrity_validator.py",
+      "filename": "backend/db/validation/integrity_validator.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2077,7 +2077,7 @@
       "code": "308                 try:\n309                     orphan_result = await conn.execute(text(f\"\"\"\n310                         SELECT COUNT(*), array_agg(t.{column_name}::text)\n311                         FROM \"{table_name}\" t\n312                         LEFT JOIN \"{ref_table}\" r ON t.{column_name} = r.{ref_column}\n313                         WHERE t.{column_name} IS NOT NULL\n314                         AND r.{ref_column} IS NULL\n315                     \"\"\"))\n316                     row = orphan_result.fetchone()\n",
       "col_offset": 64,
       "end_col_offset": 53,
-      "filename": "backend/db\\validation\\integrity_validator.py",
+      "filename": "backend/db/validation/integrity_validator.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2103,7 +2103,7 @@
       "code": "368                 try:\n369                     dup_result = await conn.execute(text(f\"\"\"\n370                         SELECT {cols_str}, COUNT(*)\n371                         FROM \"{table_name}\"\n372                         GROUP BY {cols_str}\n373                         HAVING COUNT(*) > 1\n374                     \"\"\"))\n375                     dup_rows = dup_result.fetchall()\n",
       "col_offset": 61,
       "end_col_offset": 31,
-      "filename": "backend/db\\validation\\integrity_validator.py",
+      "filename": "backend/db/validation/integrity_validator.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2128,7 +2128,7 @@
       "code": "415                 try:\n416                     null_result = await conn.execute(text(f\"\"\"\n417                         SELECT COUNT(*)\n418                         FROM \"{table_name}\"\n419                         WHERE \"{column_name}\" IS NULL\n420                     \"\"\"))\n421                     null_count = null_result.scalar() or 0\n",
       "col_offset": 62,
       "end_col_offset": 30,
-      "filename": "backend/db\\validation\\integrity_validator.py",
+      "filename": "backend/db/validation/integrity_validator.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2232,7 +2232,7 @@
       "code": "56 if __name__ == \"__main__\":\n57     uvicorn.run(\"main:app\", host=\"0.0.0.0\", port=8000, reload=True)\n",
       "col_offset": 33,
       "end_col_offset": 42,
-      "filename": "backend/models\\main.py",
+      "filename": "backend/models/main.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -2282,7 +2282,7 @@
       "code": "83     try:\n84         with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310\n85             spec = json.load(resp)\n",
       "col_offset": 13,
       "end_col_offset": 51,
-      "filename": "backend/scripts\\audit_path_drift.py",
+      "filename": "backend/scripts/audit_path_drift.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -2302,7 +2302,7 @@
       "code": "408         try:\n409             tree = ET.parse(self.coverage_xml)\n410             root = tree.getroot()\n",
       "col_offset": 19,
       "end_col_offset": 46,
-      "filename": "backend/scripts\\automated_coverage_reporter.py",
+      "filename": "backend/scripts/automated_coverage_reporter.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 20,
@@ -2322,7 +2322,7 @@
       "code": "48 \n49     preview = text(f\"\"\"\n50         SELECT\n51             difficulty_level,\n52             COUNT(*) AS cnt,\n53             COUNT(CASE WHEN is_calibrated THEN 1 END) AS already_calibrated\n54         FROM question_bank\n55         {where_clause}\n56         GROUP BY difficulty_level\n57         ORDER BY difficulty_level\n58     \"\"\")\n59 \n",
       "col_offset": 23,
       "end_col_offset": 8,
-      "filename": "backend/scripts\\bootstrap_irt_params.py",
+      "filename": "backend/scripts/bootstrap_irt_params.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2351,7 +2351,7 @@
       "code": "59 \n60     update_query = text(f\"\"\"\n61         UPDATE question_bank\n62         SET\n63             irt_discrimination = CASE difficulty_level::text\n64                 WHEN 'VERY_EASY' THEN 0.8\n65                 WHEN 'EASY'      THEN 1.0\n66                 WHEN 'MEDIUM'    THEN 1.2\n67                 WHEN 'HARD'      THEN 1.0\n68                 WHEN 'VERY_HARD' THEN 0.8\n69                 ELSE 1.0 END,\n70             irt_difficulty = CASE difficulty_level::text\n71                 WHEN 'VERY_EASY' THEN -2.0\n72                 WHEN 'EASY'      THEN -1.0\n73                 WHEN 'MEDIUM'    THEN  0.0\n74                 WHEN 'HARD'      THEN  1.0\n75                 WHEN 'VERY_HARD' THEN  2.0\n76                 ELSE 0.0 END,\n77             irt_guessing = CASE difficulty_level::text\n78                 WHEN 'VERY_EASY' THEN 0.20\n79                 WHEN 'EASY'      THEN 0.20\n80                 WHEN 'MEDIUM'    THEN 0.20\n81                 WHEN 'HARD'      THEN 0.15\n82                 WHEN 'VERY_HARD' THEN 0.10\n83                 ELSE 0.20 END,\n84             irt_upper_asymptote = 1.0,\n85             is_calibrated = false,\n86             calibration_sample_size = 0\n87         {where_clause}\n88     \"\"\")\n89 \n",
       "col_offset": 28,
       "end_col_offset": 8,
-      "filename": "backend/scripts\\bootstrap_irt_params.py",
+      "filename": "backend/scripts/bootstrap_irt_params.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2399,7 +2399,7 @@
       "code": "137             indexes = await self.conn.fetch(\n138                 f\"\"\"\n139                 SELECT indexname\n140                 FROM pg_indexes\n141                 WHERE tablename = '{table}'\n142                 AND indexname LIKE '%{index_pattern}%'\n143             \"\"\"\n144             )\n",
       "col_offset": 20,
       "end_col_offset": 35,
-      "filename": "backend/scripts\\check_database_health.py",
+      "filename": "backend/scripts/check_database_health.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2424,7 +2424,7 @@
       "code": "252             try:\n253                 count = await self.conn.fetchval(f\"SELECT COUNT(*) FROM {table}\")\n254                 print(f\"    {table:25} {count:>10,} rows\")\n",
       "col_offset": 51,
       "end_col_offset": 72,
-      "filename": "backend/scripts\\check_database_health.py",
+      "filename": "backend/scripts/check_database_health.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2444,7 +2444,7 @@
       "code": "32     url = sys.argv[1] if len(sys.argv) > 1 else \"http://127.0.0.1:8000/openapi.json\"\n33     with urllib.request.urlopen(url, timeout=30) as resp:\n34         spec = json.load(resp)\n",
       "col_offset": 9,
       "end_col_offset": 48,
-      "filename": "backend/scripts\\dalga_a_mutating_openapi.py",
+      "filename": "backend/scripts/dalga_a_mutating_openapi.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -2464,7 +2464,7 @@
       "code": "40     if parsed.scheme in (\"http\", \"https\"):\n41         with urllib.request.urlopen(source, timeout=120) as resp:  # noqa: S310\n42             return json.load(resp)\n",
       "col_offset": 13,
       "end_col_offset": 56,
-      "filename": "backend/scripts\\dalga_b_requestbody_tenant_id.py",
+      "filename": "backend/scripts/dalga_b_requestbody_tenant_id.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -2484,7 +2484,7 @@
       "code": "225         cur.execute(\n226             f\"SELECT id, question_text, {image_col}, subject_area, \"\n227             f\"option_a, option_b, option_c, option_d \"\n228             f\"FROM {table} WHERE {where_clause}\",\n229             params,\n",
       "col_offset": 14,
       "end_col_offset": 40,
-      "filename": "backend/scripts\\deactivate_bad_questions.py",
+      "filename": "backend/scripts/deactivate_bad_questions.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -2506,7 +2506,7 @@
       "code": "275                 cur.execute(\n276                     f\"UPDATE {table} SET {active_col} = FALSE \"\n277                     f\"WHERE id IN ({placeholders})\",\n278                     batch,\n",
       "col_offset": 22,
       "end_col_offset": 29,
-      "filename": "backend/scripts\\deactivate_bad_questions.py",
+      "filename": "backend/scripts/deactivate_bad_questions.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -2527,7 +2527,7 @@
       "code": "68         # Get file info\n69         with urllib.request.urlopen(url) as response:\n70             total_size = int(response.headers.get(\"content-length\", 0))\n",
       "col_offset": 13,
       "end_col_offset": 40,
-      "filename": "backend/scripts\\download_zemberek_jar.py",
+      "filename": "backend/scripts/download_zemberek_jar.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -2547,7 +2547,7 @@
       "code": "68 SELECT_BACKUP_SQL = (\n69     f\"SELECT id, quality_review_status FROM question_bank {FILTER_WHERE} ORDER BY id\"\n70 )\n",
       "col_offset": 6,
       "end_col_offset": 58,
-      "filename": "backend/scripts\\faz_1_6_bronze_promotion.py",
+      "filename": "backend/scripts/faz_1_6_bronze_promotion.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2567,7 +2567,7 @@
       "code": "70 )\n71 SELECT_COUNT_SQL = f\"SELECT COUNT(*) FROM question_bank {FILTER_WHERE}\"\n72 \n",
       "col_offset": 21,
       "end_col_offset": 56,
-      "filename": "backend/scripts\\faz_1_6_bronze_promotion.py",
+      "filename": "backend/scripts/faz_1_6_bronze_promotion.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2587,7 +2587,7 @@
       "code": "151     # Tek UPDATE \u2014 PostgreSQL atomic transaction (filter WHERE inline)\n152     update_sql = f\"\"\"\n153         UPDATE question_bank\n154         SET quality_review_status = 'bronze_clean',\n155             pipeline_metadata = CASE\n156                 WHEN pipeline_metadata IS NULL THEN CAST(:audit AS json)\n157                 ELSE CAST(\n158                     jsonb_set(\n159                         CAST(pipeline_metadata AS jsonb),\n160                         '{{faz_1_6_bronze}}',\n161                         CAST(:audit AS jsonb),\n162                         TRUE\n163                     ) AS json\n164                 )\n165             END,\n166             updated_at = NOW()\n167         {FILTER_WHERE}\n168     \"\"\"\n169     with eng.begin() as c:\n",
       "col_offset": 21,
       "end_col_offset": 8,
-      "filename": "backend/scripts\\faz_1_6_bronze_promotion.py",
+      "filename": "backend/scripts/faz_1_6_bronze_promotion.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2623,7 +2623,7 @@
       "code": "53     )\n54     resp = urllib.request.urlopen(req, timeout=120)\n55     result = json.loads(resp.read())\n",
       "col_offset": 11,
       "end_col_offset": 51,
-      "filename": "backend/scripts\\generate_embeddings.py",
+      "filename": "backend/scripts/generate_embeddings.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -2643,7 +2643,7 @@
       "code": "94     cur.execute(\n95         f\"\"\"\n96         SELECT id::text, subject_area,\n97                irt_discrimination AS a,\n98                irt_difficulty     AS b,\n99                irt_guessing       AS c\n100         FROM question_bank\n101         WHERE is_calib_pool = TRUE\n102           AND is_active = TRUE\n103           {subj_filter}\n104         ORDER BY subject_area, irt_difficulty\n105     \"\"\",\n106         (args.subject,) if args.subject else (),\n",
       "col_offset": 12,
       "end_col_offset": 10,
-      "filename": "backend/scripts\\generate_synthetic_responses.py",
+      "filename": "backend/scripts/generate_synthetic_responses.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -2673,7 +2673,7 @@
       "code": "184                     result = await session.execute(\n185                         text(f\"SELECT COUNT(*) FROM {table}\")\n186                     )\n",
       "col_offset": 31,
       "end_col_offset": 52,
-      "filename": "backend/scripts\\optimize_database.py",
+      "filename": "backend/scripts/optimize_database.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2693,7 +2693,7 @@
       "code": "925     sema birebir ayni, SELECT-INSERT yeterli).\"\"\"\n926     sql = f\"\"\"\n927         INSERT INTO question_bank ({_QB_COLUMNS})\n928         SELECT {_QB_COLUMNS}\n929         FROM question_bank_staging\n930         WHERE staging_id = $1\n931     \"\"\"\n932     await conn.execute(sql, uuid.UUID(staging_id))\n",
       "col_offset": 14,
       "end_col_offset": 35,
-      "filename": "backend/scripts\\pipeline\\pilot_500p.py",
+      "filename": "backend/scripts/pipeline/pilot_500p.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2718,7 +2718,7 @@
       "code": "1063     qa_rows = await conn.fetch(\n1064         f\"\"\"\n1065         WITH flagged AS (\n1066             SELECT staging_id::text, source_page, soru_hash, staging_status,\n1067                    pipeline_metadata->>'needs_manual_review' AS needs_review,\n1068                    pipeline_metadata->>'anomaly_reasons' AS anomaly_reasons,\n1069                    'flagged' AS sample_type\n1070             FROM question_bank_staging\n1071             WHERE staging_batch_id = $1\n1072               AND pipeline_metadata->>'needs_manual_review' = 'true'\n1073         ),\n1074         random_sample AS (\n1075             SELECT staging_id::text, source_page, soru_hash, staging_status,\n1076                    pipeline_metadata->>'needs_manual_review' AS needs_review,\n1077                    pipeline_metadata->>'anomaly_reasons' AS anomaly_reasons,\n1078                    'random' AS sample_type\n1079             FROM question_bank_staging\n1080             WHERE staging_batch_id = $1\n1081               AND pipeline_metadata->>'needs_manual_review' != 'true'\n1082             ORDER BY random()\n1083             LIMIT {qa_size_random}\n1084         )\n1085         SELECT * FROM flagged\n1086         UNION ALL\n1087         SELECT * FROM random_sample\n1088         \"\"\",\n1089         batch_id,\n",
       "col_offset": 12,
       "end_col_offset": 18,
-      "filename": "backend/scripts\\pipeline\\pilot_500p.py",
+      "filename": "backend/scripts/pipeline/pilot_500p.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2762,7 +2762,7 @@
       "code": "73         apply_sql = (\n74             \"BEGIN;\\n\"\n75             f\"CREATE TABLE IF NOT EXISTS question_bank_blindsolve_w{n}_backup_{dt_tbl} AS \"\n76             f\"SELECT id,quality_review_status,pipeline_metadata FROM question_bank \"\n77             f\"WHERE id::text IN ({_inlist(promote)});\\n\"\n78             \"UPDATE question_bank SET quality_review_status='auto_judged_high', \"\n79             \"pipeline_metadata=(jsonb_set(jsonb_set(coalesce(pipeline_metadata,'{}')::jsonb,\"\n80             f\"'{{verified_provisional}}','true'),'{{blind_solve_wave}}','\\\"{dt_flag}-w{n}\\\"'))::json \"\n81             f\"WHERE id::text IN ({_inlist(promote)});\\n\"\n82             \"COMMIT;\\n\"\n83         )\n",
       "col_offset": 12,
       "end_col_offset": 67,
-      "filename": "backend/scripts\\quality\\_blindsolve\\aggregate_wave.py",
+      "filename": "backend/scripts/quality/_blindsolve/aggregate_wave.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2790,7 +2790,7 @@
       "code": "90     flag_sql = (\n91         \"UPDATE question_bank SET pipeline_metadata=(jsonb_set(\"\n92         \"coalesce(pipeline_metadata,'{}')::jsonb,'{blind_seen}','true'))::json \"\n93         f\"WHERE id::text IN ({_inlist(order)});\\n\"\n94     )\n",
       "col_offset": 8,
       "end_col_offset": 29,
-      "filename": "backend/scripts\\quality\\_blindsolve\\aggregate_wave.py",
+      "filename": "backend/scripts/quality/_blindsolve/aggregate_wave.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2812,7 +2812,7 @@
       "code": "116         f\"-- \u00c7ALI\u015eTIRMADAN \u00d6NCE: opus_w{n}.txt'i Opus ile do\u011frula, precision>=%95 olmal\u0131.\\n\"\n117         + (\"BEGIN;\\n\"\n118            f\"CREATE TABLE IF NOT EXISTS question_bank_blindsolve_w{n}v2_backup_{dt_tbl} AS \"\n119            f\"SELECT id,quality_review_status,pipeline_metadata FROM question_bank WHERE id::text IN ({ids_sql});\\n\"\n120            \"UPDATE question_bank SET quality_review_status='auto_judged_high', \"\n121            \"pipeline_metadata=(jsonb_set(jsonb_set(coalesce(pipeline_metadata,'{}')::jsonb,\"\n122            f\"'{{verified_provisional}}','true'),'{{blind_solve_wave}}','\\\"{dt_flag}-w{n}v2\\\"'))::json \"\n123            f\"WHERE id::text IN ({ids_sql});\\nCOMMIT;\\n\" if promote else \"SELECT 1;  -- 0 promote\\n\")\n124     )\n",
       "col_offset": 11,
       "end_col_offset": 66,
-      "filename": "backend/scripts\\quality\\_blindsolve\\aggregate_wave_v2.py",
+      "filename": "backend/scripts/quality/_blindsolve/aggregate_wave_v2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2838,7 +2838,7 @@
       "code": "111 (BASE / \"D_regate_demote.sql\").write_text(\n112     \"-- Re-gate demote (reversible). question_bank YAZMAZ; exclusion tablosu.\\n\"\n113     \"-- Reverse: TRUNCATE blindsolve_regate_demoted; + view'dan AND id NOT IN (...) \u00e7\u0131kar.\\n\"\n114     \"CREATE TABLE IF NOT EXISTS blindsolve_regate_demoted (id varchar PRIMARY KEY, reason text, demoted_at timestamptz DEFAULT now());\\n\"\n115     + \"\\n\".join(\n116         f\"INSERT INTO blindsolve_regate_demoted (id,reason) VALUES ('{i}','{r}') ON CONFLICT (id) DO NOTHING;\"\n117         for i, r in ([(x, \"coherence\") for x in dem_coh] + [(x, \"consensus_fail\") for x in dem_cons]))\n118     + \"\\n\\n-- SONRA: v_safe_for_beta'ya canl\u0131 pg_get_viewdef'ten 'AND id NOT IN (SELECT id FROM blindsolve_regate_demoted)' ekle (bayrak-grubu DI\u015eINA, gate2c gibi). Apply sonras\u0131 leak=0 do\u011frula.\\n\",\n",
       "col_offset": 4,
       "end_col_offset": 137,
-      "filename": "backend/scripts\\quality\\_blindsolve\\regate\\regate.py",
+      "filename": "backend/scripts/quality/_blindsolve/regate/regate.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2863,7 +2863,7 @@
       "code": "115     + \"\\n\".join(\n116         f\"INSERT INTO blindsolve_regate_demoted (id,reason) VALUES ('{i}','{r}') ON CONFLICT (id) DO NOTHING;\"\n117         for i, r in ([(x, \"coherence\") for x in dem_coh] + [(x, \"consensus_fail\") for x in dem_cons]))\n",
       "col_offset": 10,
       "end_col_offset": 69,
-      "filename": "backend/scripts\\quality\\_blindsolve\\regate\\regate.py",
+      "filename": "backend/scripts/quality/_blindsolve/regate/regate.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2883,7 +2883,7 @@
       "code": "117         for i, r in ([(x, \"coherence\") for x in dem_coh] + [(x, \"consensus_fail\") for x in dem_cons]))\n118     + \"\\n\\n-- SONRA: v_safe_for_beta'ya canl\u0131 pg_get_viewdef'ten 'AND id NOT IN (SELECT id FROM blindsolve_regate_demoted)' ekle (bayrak-grubu DI\u015eINA, gate2c gibi). Apply sonras\u0131 leak=0 do\u011frula.\\n\",\n119     encoding=\"utf-8\")\n120 print(\"yaz\u0131ld\u0131: keep_ids.json, demote_ids.json, opus_keep.txt(25), opus_demote.txt(25), D_regate_demote.sql\")\n121 print(\"SIRA: opus_keep.txt + opus_demote.txt'i Opus ile do\u011frula -> KEEP temiz & DEMOTE hakl\u0131ysa D_regate_demote.sql + view edit uygula.\")\n",
       "col_offset": 6,
       "end_col_offset": 201,
-      "filename": "backend/scripts\\quality\\_blindsolve\\regate\\regate.py",
+      "filename": "backend/scripts/quality/_blindsolve/regate/regate.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2909,7 +2909,7 @@
       "code": "57         text(\n58             f\"CREATE TABLE {BACKUP} AS SELECT * FROM question_bank WHERE id = ANY(:ids)\"\n59         ),\n",
       "col_offset": 14,
       "end_col_offset": 27,
-      "filename": "backend/scripts\\quality\\_content_panel\\apply_deactivate.py",
+      "filename": "backend/scripts/quality/_content_panel/apply_deactivate.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2929,7 +2929,7 @@
       "code": "61     )\n62     bkc = c.execute(text(f\"SELECT count(*) FROM {BACKUP}\")).scalar()\n63     print(f\"\\n=== backup tablo {BACKUP}: {bkc} sat\u0131r ===\")\n",
       "col_offset": 27,
       "end_col_offset": 48,
-      "filename": "backend/scripts\\quality\\_content_panel\\apply_deactivate.py",
+      "filename": "backend/scripts/quality/_content_panel/apply_deactivate.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2949,7 +2949,7 @@
       "code": "88 print(\n89     f\"\\nGeri alma: UPDATE question_bank q SET is_active=b.is_active, \"\n90     f\"quality_review_status=b.quality_review_status, pipeline_metadata=b.pipeline_metadata \"\n91     f\"FROM {BACKUP} b WHERE q.id=b.id;\"\n92 )\n",
       "col_offset": 6,
       "end_col_offset": 11,
-      "filename": "backend/scripts\\quality\\_content_panel\\apply_deactivate.py",
+      "filename": "backend/scripts/quality/_content_panel/apply_deactivate.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2971,7 +2971,7 @@
       "code": "50         text(\n51             f\"CREATE TABLE {BACKUP} AS SELECT * FROM question_bank WHERE id = ANY(:i)\"\n52         ),\n",
       "col_offset": 14,
       "end_col_offset": 27,
-      "filename": "backend/scripts\\quality\\_content_panel\\apply_tytayt_relabel.py",
+      "filename": "backend/scripts/quality/_content_panel/apply_tytayt_relabel.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -2991,7 +2991,7 @@
       "code": "55     print(\n56         f\"backup {BACKUP}: {c.execute(text(f'SELECT count(*) FROM {BACKUP}')).scalar()} sat\u0131r\"\n57     )\n",
       "col_offset": 45,
       "end_col_offset": 66,
-      "filename": "backend/scripts\\quality\\_content_panel\\apply_tytayt_relabel.py",
+      "filename": "backend/scripts/quality/_content_panel/apply_tytayt_relabel.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3011,7 +3011,7 @@
       "code": "79 print(\n80     f\"\\nGeri alma: UPDATE question_bank q SET exam_type=b.exam_type, pipeline_metadata=b.pipeline_metadata \"\n81     f\"FROM {BACKUP} b WHERE q.id=b.id;\"\n82 )\n",
       "col_offset": 6,
       "end_col_offset": 11,
-      "filename": "backend/scripts\\quality\\_content_panel\\apply_tytayt_relabel.py",
+      "filename": "backend/scripts/quality/_content_panel/apply_tytayt_relabel.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3032,7 +3032,7 @@
       "code": "65 for qid in sorted(final):\n66     lines.append(f\"INSERT INTO gate2c_demoted (id, reason) VALUES ('{qid}', '{final[qid]}') ON CONFLICT (id) DO NOTHING;\")\n67 (BASE / \"D6_part1_table.sql\").write_text(\"\\n\".join(lines) + \"\\n\", encoding=\"utf-8\")\n",
       "col_offset": 19,
       "end_col_offset": 68,
-      "filename": "backend/scripts\\quality\\_gate2b\\build_final_demote.py",
+      "filename": "backend/scripts/quality/_gate2b/build_final_demote.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3052,7 +3052,7 @@
       "code": "71 (BASE / \"D6_backup.sql\").write_text(\n72     \"\\\\encoding UTF8\\n\"\n73     \"\\\\copy (SELECT id, is_active, correct_answer, quality_review_status, pipeline_metadata \"\n74     f\"FROM question_bank WHERE id IN ({ids_sql})) \"\n75     \"TO 'C:/Users/husey/kiro2/backend/scripts/quality/_gate2b/D6_backup.tsv' \"\n76     \"WITH (FORMAT csv, DELIMITER E'\\\\t', HEADER)\\n\",\n77     encoding=\"utf-8\")\n",
       "col_offset": 4,
       "end_col_offset": 38,
-      "filename": "backend/scripts\\quality\\_gate2b\\build_final_demote.py",
+      "filename": "backend/scripts/quality/_gate2b/build_final_demote.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3076,7 +3076,7 @@
       "code": "89 tsv_posix = str(tsv).replace(\"\\\\\", \"/\")\n90 sql = f\"\"\"-- Pool A {tag} apply (generated). Reversible. correct_answer/is_active UNTOUCHED.\n91 \\\\set ON_ERROR_STOP on\n92 BEGIN;\n93 -- 1. backup the exact processed rows\n94 CREATE TABLE IF NOT EXISTS question_bank_poolA_{tag}_backup_{RUNDATE.replace(\"-\", \"\")} AS\n95   SELECT * FROM question_bank WHERE id::text IN (SELECT id FROM (VALUES {{IDS}}) v(id));\n96 -- 2. load decisions\n97 CREATE TEMP TABLE _poolA_{tag} (id text, topic_id text, promote text, blind_ans text, blind_conf text, cat text);\n98 \\\\copy _poolA_{tag} FROM '{tsv_posix}' WITH (FORMAT csv, DELIMITER E'\\\\t', HEADER true);\n99 -- 3. PROMOTE: rewrite topic + status + clear fallback flag + run marker\n100 UPDATE question_bank q SET\n101   primary_topic_id = d.topic_id::uuid,\n102   quality_review_status = 'auto_judged_high',\n103   pipeline_metadata = (\n104     jsonb_set(q.pipeline_metadata::jsonb, '{{ai_extras,topic_match_quality}}', '\"poolA_retag_verified\"')\n105     || jsonb_build_object('blind_seen', true, 'poolA_wave', {wave_num},\n106          'verified_provisional', true,\n107          'poolA_retag_run', '{RUNDATE}', 'blind_solve_answer', d.blind_ans,\n108          'blind_conf', d.blind_conf::float, 'blind_solve_wave', 'poolA_{tag}')\n109   )::json\n110 FROM _poolA_{tag} d\n111 WHERE q.id::text = d.id AND d.promote = '1';\n112 -- 4. ALL processed (incl non-promote): mark seen + category for later 2nd-signal\n113 UPDATE question_bank q SET\n114   pipeline_metadata = (\n115     q.pipeline_metadata::jsonb\n116     || jsonb_build_object('blind_seen', true, 'poolA_wave', {wave_num}, 'poolA_cat', d.cat)\n117   )::json\n118 FROM _poolA_{tag} d\n119 WHERE q.id::text = d.id AND d.promote = '0';\n120 COMMIT;\n121 \"\"\"\n122 # embed VALUES list of ids for the backup CTE\n",
       "col_offset": 10,
       "end_col_offset": 20,
-      "filename": "backend/scripts\\quality\\_poolA_retag\\apply_wave.py",
+      "filename": "backend/scripts/quality/_poolA_retag/apply_wave.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3127,7 +3127,7 @@
       "code": "70 tsv_posix = str(tsv).replace(\"\\\\\", \"/\")\n71 sql = f\"\"\"-- Pool A open-ended audit apply (generated). Reversible. correct_answer/is_active UNTOUCHED.\n72 \\\\set ON_ERROR_STOP on\n73 BEGIN;\n74 CREATE TABLE IF NOT EXISTS question_bank_poolA_audit_backup_{RUNDATE.replace(\"-\", \"\")} AS\n75   SELECT * FROM question_bank WHERE id::text IN (SELECT id FROM (VALUES {ids_values}) v(id));\n76 CREATE TEMP TABLE _aud (id text, action text, topic_id text, open_subj text);\n77 \\\\copy _aud FROM '{tsv_posix}' WITH (FORMAT csv, DELIMITER E'\\\\t', HEADER true);\n78 -- RECOVER: promote lowconf (re-tag topic + status + clear fallback + verified_provisional)\n79 UPDATE question_bank q SET\n80   primary_topic_id = d.topic_id::uuid,\n81   quality_review_status = 'auto_judged_high',\n82   pipeline_metadata = (\n83     jsonb_set(q.pipeline_metadata::jsonb, '{{ai_extras,topic_match_quality}}', '\"poolA_retag_verified\"')\n84     || jsonb_build_object('verified_provisional', true, 'poolA_2signal', true,\n85          'poolA_recover_run', '{RUNDATE}', 'blind_solve_wave', 'poolA_recover')\n86   )::json\n87 FROM _aud d WHERE q.id::text = d.id AND d.action = 'recover';\n88 -- CONFIRM: strengthen existing promotes (2nd independent signal agreed subject+answer)\n89 UPDATE question_bank q SET\n90   pipeline_metadata = (q.pipeline_metadata::jsonb || jsonb_build_object('poolA_2signal', true))::json\n91 FROM _aud d WHERE q.id::text = d.id AND d.action = 'confirm';\n92 -- DISPUTE: flag for future 3rd-signal (book key authoritative, stays vp)\n93 UPDATE question_bank q SET\n94   pipeline_metadata = (q.pipeline_metadata::jsonb || jsonb_build_object('poolA_answer_dispute', true))::json\n95 FROM _aud d WHERE q.id::text = d.id AND d.action = 'dispute';\n96 -- WRONG: record 2nd-signal subject (all defensible/adjacent, kept)\n97 UPDATE question_bank q SET\n98   pipeline_metadata = (q.pipeline_metadata::jsonb || jsonb_build_object('poolA_subject_2nd', d.open_subj))::json\n99 FROM _aud d WHERE q.id::text = d.id AND d.action = 'wrong';\n100 COMMIT;\n101 \"\"\"\n102 (HERE / \"audit_apply.sql\").write_text(sql, encoding=\"utf-8\")\n",
       "col_offset": 10,
       "end_col_offset": 60,
-      "filename": "backend/scripts\\quality\\_poolA_retag\\audit_apply.py",
+      "filename": "backend/scripts/quality/_poolA_retag/audit_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3177,7 +3177,7 @@
       "code": "122 lines.append(\n123     f\"CREATE TABLE {BACKUP_TABLE} AS SELECT id, correct_answer, quality_review_status, \"\n124     f\"is_active, pipeline_metadata FROM question_bank WHERE id IN ({id_list});\"\n125 )\n",
       "col_offset": 6,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\_pool_growth_gemma3\\consensus_apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_gemma3/consensus_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3198,7 +3198,7 @@
       "code": "134     lines.append(\n135         \"UPDATE question_bank SET quality_review_status='auto_judged_high', \"\n136         f\"pipeline_metadata=(pipeline_metadata::jsonb || '{obj}'::jsonb)::json \"\n137         f\"WHERE id='{pid}' AND quality_review_status='unverified';\"\n138     )\n",
       "col_offset": 8,
       "end_col_offset": 58,
-      "filename": "backend/scripts\\quality\\_pool_growth_gemma3\\consensus_apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_gemma3/consensus_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3220,7 +3220,7 @@
       "code": "142     lines.append(\n143         \"UPDATE question_bank SET \"\n144         f\"pipeline_metadata=(pipeline_metadata::jsonb || '{obj}'::jsonb)::json WHERE id='{pid}';\"\n145     )\n",
       "col_offset": 8,
       "end_col_offset": 58,
-      "filename": "backend/scripts\\quality\\_pool_growth_gemma3\\consensus_apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_gemma3/consensus_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3241,7 +3241,7 @@
       "code": "148     lines.append(\n149         \"UPDATE question_bank SET \"\n150         f\"pipeline_metadata=(pipeline_metadata::jsonb || '{obj}'::jsonb)::json WHERE id='{pid}';\"\n151     )\n",
       "col_offset": 8,
       "end_col_offset": 58,
-      "filename": "backend/scripts\\quality\\_pool_growth_gemma3\\consensus_apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_gemma3/consensus_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3262,7 +3262,7 @@
       "code": "153 lines.append(\n154     f\"SELECT (SELECT count(*) FROM question_bank WHERE pipeline_metadata::jsonb->>'consensus_2signal_run'='{RUN_TAG}') AS promoted, \"\n155     f\"(SELECT count(*) FROM {BACKUP_TABLE}) AS backup_rows;\"\n156 )\n",
       "col_offset": 6,
       "end_col_offset": 107,
-      "filename": "backend/scripts\\quality\\_pool_growth_gemma3\\consensus_apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_gemma3/consensus_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3283,7 +3283,7 @@
       "code": "22 BACKUP = \"question_bank_pool_growth_dblind_backup_20260603\"\n23 ids = json.loads(Path(\"/tmp/pool_pilot_candidates.json\").read_text(encoding=\"utf-8\"))\n24 \n",
       "col_offset": 22,
       "end_col_offset": 55,
-      "filename": "backend/scripts\\quality\\_pool_growth_pilot\\apply_candidates.py",
+      "filename": "backend/scripts/quality/_pool_growth_pilot/apply_candidates.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -3303,7 +3303,7 @@
       "code": "51             text(\n52                 f\"\"\"CREATE TABLE {BACKUP} AS\n53                     SELECT id, pipeline_metadata, quality_review_status,\n54                            correct_answer, is_active\n55                     FROM question_bank WHERE id = ANY(:ids)\"\"\"\n56             ),\n",
       "col_offset": 20,
       "end_col_offset": 33,
-      "filename": "backend/scripts\\quality\\_pool_growth_pilot\\apply_candidates.py",
+      "filename": "backend/scripts/quality/_pool_growth_pilot/apply_candidates.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3326,7 +3326,7 @@
       "code": "58         )\n59         bk = (await s.execute(text(f\"SELECT COUNT(*) FROM {BACKUP}\"))).scalar()\n60         print(f\"backup tablo: {BACKUP} ({bk} sat\u0131r)\")\n",
       "col_offset": 37,
       "end_col_offset": 58,
-      "filename": "backend/scripts\\quality\\_pool_growth_pilot\\apply_candidates.py",
+      "filename": "backend/scripts/quality/_pool_growth_pilot/apply_candidates.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3346,7 +3346,7 @@
       "code": "106         print(\n107             f\"\\nROLLBACK: UPDATE question_bank qb SET pipeline_metadata=b.pipeline_metadata \"\n108             f\"FROM {BACKUP} b WHERE qb.id=b.id;\"\n109         )\n",
       "col_offset": 14,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\_pool_growth_pilot\\apply_candidates.py",
+      "filename": "backend/scripts/quality/_pool_growth_pilot/apply_candidates.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3367,7 +3367,7 @@
       "code": "142 \n143         with open(\"/tmp/pool_pilot_readable.jsonl\", \"w\", encoding=\"utf-8\") as f:\n144             for rec in readable:\n",
       "col_offset": 18,
       "end_col_offset": 50,
-      "filename": "backend/scripts\\quality\\_pool_growth_pilot\\prep_pilot.py",
+      "filename": "backend/scripts/quality/_pool_growth_pilot/prep_pilot.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -3387,7 +3387,7 @@
       "code": "145                 f.write(json.dumps(rec, ensure_ascii=False) + \"\\n\")\n146         with open(\"/tmp/pool_pilot_garbled.jsonl\", \"w\", encoding=\"utf-8\") as f:\n147             for rec in garbled:\n",
       "col_offset": 18,
       "end_col_offset": 49,
-      "filename": "backend/scripts\\quality\\_pool_growth_pilot\\prep_pilot.py",
+      "filename": "backend/scripts/quality/_pool_growth_pilot/prep_pilot.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -3407,7 +3407,7 @@
       "code": "113     return (\n114         f\"UPDATE question_bank SET pipeline_metadata = \"\n115         f\"(COALESCE(pipeline_metadata::jsonb,'{{}}'::jsonb) || '{j}'::jsonb)::json \"\n116         f\"WHERE id = '{pid}';\"\n117     )\n",
       "col_offset": 10,
       "end_col_offset": 64,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave1\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave1/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3429,7 +3429,7 @@
       "code": "125 lines.append(\n126     f\"CREATE TABLE {BACKUP_TABLE} AS SELECT id, pipeline_metadata, \"\n127     f\"quality_review_status, is_active FROM question_bank WHERE id IN ({id_list});\"\n128 )\n",
       "col_offset": 6,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave1\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave1/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3450,7 +3450,7 @@
       "code": "102     return (\n103         f\"UPDATE question_bank SET pipeline_metadata = \"\n104         f\"(COALESCE(pipeline_metadata::jsonb,'{{}}'::jsonb) || '{j}'::jsonb)::json \"\n105         f\"WHERE id = '{pid}';\"\n106     )\n",
       "col_offset": 10,
       "end_col_offset": 64,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave2\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave2/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3472,7 +3472,7 @@
       "code": "114 lines.append(\n115     f\"CREATE TABLE {BACKUP_TABLE} AS SELECT id, pipeline_metadata, \"\n116     f\"quality_review_status, is_active FROM question_bank WHERE id IN ({id_list});\"\n117 )\n",
       "col_offset": 6,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave2\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave2/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3493,7 +3493,7 @@
       "code": "102     return (\n103         f\"UPDATE question_bank SET pipeline_metadata = \"\n104         f\"(COALESCE(pipeline_metadata::jsonb,'{{}}'::jsonb) || '{j}'::jsonb)::json \"\n105         f\"WHERE id = '{pid}';\"\n106     )\n",
       "col_offset": 10,
       "end_col_offset": 64,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave3\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave3/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3515,7 +3515,7 @@
       "code": "114 lines.append(\n115     f\"CREATE TABLE {BACKUP_TABLE} AS SELECT id, pipeline_metadata, \"\n116     f\"quality_review_status, is_active FROM question_bank WHERE id IN ({id_list});\"\n117 )\n",
       "col_offset": 6,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave3\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave3/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3536,7 +3536,7 @@
       "code": "102     return (\n103         f\"UPDATE question_bank SET pipeline_metadata = \"\n104         f\"(COALESCE(pipeline_metadata::jsonb,'{{}}'::jsonb) || '{j}'::jsonb)::json \"\n105         f\"WHERE id = '{pid}';\"\n106     )\n",
       "col_offset": 10,
       "end_col_offset": 64,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave4\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave4/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3558,7 +3558,7 @@
       "code": "114 lines.append(\n115     f\"CREATE TABLE {BACKUP_TABLE} AS SELECT id, pipeline_metadata, \"\n116     f\"quality_review_status, is_active FROM question_bank WHERE id IN ({id_list});\"\n117 )\n",
       "col_offset": 6,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\_pool_growth_wave4\\apply.py",
+      "filename": "backend/scripts/quality/_pool_growth_wave4/apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3579,7 +3579,7 @@
       "code": "37 \n38 backup = f\"\"\"-- WAVE1 BACKUP (reversible). tiers={args.tiers}, n={len(ids)}.\n39 -- Rollback: UPDATE question_bank q SET quality_review_status=b.quality_review_status,\n40 --   pipeline_metadata=b.pipeline_metadata FROM {BACKUP_TABLE} b WHERE q.id=b.id;\n41 DROP TABLE IF EXISTS {BACKUP_TABLE};\n42 CREATE TABLE {BACKUP_TABLE} AS\n43 SELECT id, quality_review_status, pipeline_metadata\n44 FROM question_bank\n45 WHERE id IN {in_clause};\n46 SELECT count(*) AS backed_up FROM {BACKUP_TABLE};\n47 \"\"\"\n48 \n",
       "col_offset": 13,
       "end_col_offset": 49,
-      "filename": "backend/scripts\\quality\\_wave1\\gen_promote_sql.py",
+      "filename": "backend/scripts/quality/_wave1/gen_promote_sql.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3608,7 +3608,7 @@
       "code": "48 \n49 promote = f\"\"\"-- WAVE1 PROMOTE. tiers={args.tiers}, n={len(ids)}.\n50 -- correct_answer / is_active DOKUNULMAZ. status + pipeline_metadata.wave1_run yalniz.\n51 UPDATE question_bank\n52 SET quality_review_status = 'auto_judged_high',\n53     pipeline_metadata = jsonb_set(\n54       COALESCE(pipeline_metadata::jsonb, '{{}}'::jsonb),\n55       '{{wave1_run}}', 'true'::jsonb)\n56 WHERE id IN {in_clause};\n57 SELECT count(*) AS promoted FROM question_bank\n58 WHERE pipeline_metadata::jsonb ? 'wave1_run';\n59 \"\"\"\n60 \n",
       "col_offset": 14,
       "end_col_offset": 38,
-      "filename": "backend/scripts\\quality\\_wave1\\gen_promote_sql.py",
+      "filename": "backend/scripts/quality/_wave1/gen_promote_sql.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3638,7 +3638,7 @@
       "code": "10 Path(\"vp116_backup.sql\").write_text(\n11  f\"\"\"-- VP116 BACKUP (reversible). n={len(ids)}.\n12 DROP TABLE IF EXISTS {BT};\n13 CREATE TABLE {BT} AS SELECT id, quality_review_status, pipeline_metadata FROM question_bank WHERE id IN {inc};\n14 SELECT count(*) AS backed_up FROM {BT};\n15 \"\"\", encoding=\"utf-8\")\n16 Path(\"vp116_promote.sql\").write_text(\n",
       "col_offset": 5,
       "end_col_offset": 37,
-      "filename": "backend/scripts\\quality\\_wave1\\gen_vp116_promote.py",
+      "filename": "backend/scripts/quality/_wave1/gen_vp116_promote.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3662,7 +3662,7 @@
       "code": "16 Path(\"vp116_promote.sql\").write_text(\n17  f\"\"\"-- VP116 PROMOTE: verified_provisional + Opus-confirmed (2-signal) -> status auto_judged_high.\n18 -- correct_answer/is_active DOKUNULMAZ. status + provenance flag yalniz. n={len(ids)}.\n19 UPDATE question_bank\n20 SET quality_review_status='auto_judged_high',\n21     pipeline_metadata = jsonb_set(COALESCE(pipeline_metadata::jsonb,'{{}}'::jsonb),'{{vp_status_promote_2signal}}','true'::jsonb)\n22 WHERE id IN {inc};\n23 SELECT count(*) AS promoted FROM question_bank WHERE pipeline_metadata::jsonb ? 'vp_status_promote_2signal';\n24 \"\"\", encoding=\"utf-8\")\n25 print(f\"vp116_backup.sql + vp116_promote.sql yazildi (n={len(ids)})\")\n",
       "col_offset": 5,
       "end_col_offset": 75,
-      "filename": "backend/scripts\\quality\\_wave1\\gen_vp116_promote.py",
+      "filename": "backend/scripts/quality/_wave1/gen_vp116_promote.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3689,7 +3689,7 @@
       "code": "168             where_part = sql.split(\"WHERE\", 1)[1]\n169             count_sql = f\"SELECT COUNT(*) FROM question_bank WHERE {where_part}\"\n170             with eng.connect() as c:\n",
       "col_offset": 26,
       "end_col_offset": 67,
-      "filename": "backend/scripts\\quality\\beta_eligible_filter.py",
+      "filename": "backend/scripts/quality/beta_eligible_filter.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3709,7 +3709,7 @@
       "code": "77 def _rule_sql(rule_name: str, predicate: str) -> str:\n78     return f\"\"\"\n79         UPDATE question_bank\n80         SET quality_review_status = 'rejected',\n81             pipeline_metadata = jsonb_set(\n82                 COALESCE(CAST(pipeline_metadata AS jsonb), '{{}}'::jsonb),\n83                 '{{beta_filter_v2}}',\n84                 CAST(:audit AS jsonb) || CAST('{{\"rule\":\"{rule_name}\"}}' AS jsonb),\n85                 TRUE\n86             )::json,\n87             updated_at = NOW()\n88         WHERE is_active=true\n89           AND quality_review_status='auto_judged_high'\n90           AND {predicate}\n91     \"\"\"\n92 \n",
       "col_offset": 15,
       "end_col_offset": 57,
-      "filename": "backend/scripts\\quality\\beta_eligible_filter_v2.py",
+      "filename": "backend/scripts/quality/beta_eligible_filter_v2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3742,7 +3742,7 @@
       "code": "94 def _count_sql(predicate: str) -> str:\n95     return f\"\"\"\n96         SELECT COUNT(*) FROM question_bank\n97         WHERE is_active=true\n98           AND quality_review_status='auto_judged_high'\n99           AND {predicate}\n100     \"\"\"\n101 \n",
       "col_offset": 15,
       "end_col_offset": 14,
-      "filename": "backend/scripts\\quality\\beta_eligible_filter_v2.py",
+      "filename": "backend/scripts/quality/beta_eligible_filter_v2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3767,7 +3767,7 @@
       "code": "873         sql = (\n874             f\"SELECT COUNT(*) FROM question_bank \"\n875             f\"WHERE is_active=true AND quality_review_status='auto_judged_high' \"\n876             f\"AND ({pred})\"\n877         )\n",
       "col_offset": 14,
       "end_col_offset": 19,
-      "filename": "backend/scripts\\quality\\beta_pattern_scanner.py",
+      "filename": "backend/scripts/quality/beta_pattern_scanner.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3789,7 +3789,7 @@
       "code": "891     sql = (\n892         f\"SELECT id::text, source_book, \"\n893         f\"  LEFT(question_text, 250) AS qt, \"\n894         f\"  LEFT(option_a, 80) AS a, LEFT(option_b, 80) AS b, \"\n895         f\"  LEFT(option_c, 80) AS c, LEFT(option_d, 80) AS d, \"\n896         f\"  LEFT(option_e, 80) AS e \"\n897         f\"FROM question_bank \"\n898         f\"WHERE is_active=true AND quality_review_status='auto_judged_high' \"\n899         f\"AND ({pred}) \"\n900         f\"ORDER BY md5(id::text) LIMIT {n}\"\n901     )\n",
       "col_offset": 10,
       "end_col_offset": 15,
-      "filename": "backend/scripts\\quality\\beta_pattern_scanner.py",
+      "filename": "backend/scripts/quality/beta_pattern_scanner.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3817,7 +3817,7 @@
       "code": "919             sql = (\n920                 f\"SELECT COUNT(*) FROM question_bank \"\n921                 f\"WHERE is_active=true AND quality_review_status='auto_judged_high' \"\n922                 f\"AND ({pred})\"\n923             )\n",
       "col_offset": 18,
       "end_col_offset": 23,
-      "filename": "backend/scripts\\quality\\beta_pattern_scanner.py",
+      "filename": "backend/scripts/quality/beta_pattern_scanner.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3839,7 +3839,7 @@
       "code": "927             meta = json.dumps({\"category\": cat})\n928             sql = f\"\"\"\n929                 UPDATE question_bank\n930                 SET quality_review_status = 'rejected',\n931                     pipeline_metadata = jsonb_set(\n932                         COALESCE(CAST(pipeline_metadata AS jsonb), '{{}}'::jsonb),\n933                         '{{beta_pattern_scan_v1}}',\n934                         CAST(:audit AS jsonb) || CAST(:meta AS jsonb),\n935                         TRUE\n936                     )::json,\n937                     updated_at = NOW()\n938                 WHERE is_active=true\n939                   AND quality_review_status='auto_judged_high'\n940                   AND ({pred})\n941             \"\"\"\n942             with eng.begin() as c:\n",
       "col_offset": 22,
       "end_col_offset": 23,
-      "filename": "backend/scripts\\quality\\beta_pattern_scanner.py",
+      "filename": "backend/scripts/quality/beta_pattern_scanner.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3872,7 +3872,7 @@
       "code": "107     out.write_text(\n108         \"# Beta Pool NUKE v1 \u2014 RESULT\\n\\n\"\n109         f\"**Date:** {AUDIT_DATE}\\n\\n\"\n110         f\"## Transition\\n\\n\"\n111         f\"| Metric | Pre | Post |\\n|---|---|---|\\n\"\n112         f\"| auto_judged_high | {pre_ajh:,} | {post_ajh:,} |\\n\"\n113         f\"| pending | (varsa) | {post_pending:,} |\\n\"\n114         f\"| v_safe_for_beta | {pre_view:,} | {post_view:,} |\\n\\n\"\n115         f\"## Aksiyon\\n\\n\"\n116         f\"- {moved:,} sat\u0131r auto_judged_high \u2192 pending (manuel review queue)\\n\"\n117         f\"- Audit trail: `pipeline_metadata.beta_pool_nuke_v1` (reversible)\\n\"\n118         f\"- v_safe_for_beta = 0 (g\u00f6rsel-bound soru tamamen s\u0131f\u0131r)\\n\\n\"\n119         f\"## Reversal Path\\n\\n\"\n120         f\"```sql\\nUPDATE question_bank SET quality_review_status='auto_judged_high'\\n\"\n121         f\"WHERE pipeline_metadata::jsonb ? 'beta_pool_nuke_v1';\\n```\\n\\n\"\n122         f\"## Sonraki Ad\u0131mlar\\n\\n\"\n123         f\"- Faz 6.1 LLM judge pilot (1,000 sat\u0131r pending'den)\\n\"\n124         f\"- Vision re-crop sprint (figure-only crop 84K sample)\\n\"\n125         f\"- Beta i\u00e7in Sapphire (human_verified) growth\\n\",\n126         encoding=\"utf-8\",\n",
       "col_offset": 8,
       "end_col_offset": 20,
-      "filename": "backend/scripts\\quality\\beta_pool_nuke_to_pending.py",
+      "filename": "backend/scripts/quality/beta_pool_nuke_to_pending.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -3909,7 +3909,7 @@
       "code": "55     cur.execute(\n56         f\"SELECT id::text, difficulty_level::text, bloom_level, irt_difficulty \"\n57         f\"FROM question_bank WHERE {TARGET_WHERE}\"\n58     )\n",
       "col_offset": 10,
       "end_col_offset": 35,
-      "filename": "backend/scripts\\quality\\bootstrap_irt_priors.py",
+      "filename": "backend/scripts/quality/bootstrap_irt_priors.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -3930,7 +3930,7 @@
       "code": "107     cur.execute(\n108         f\"CREATE TABLE {BACKUP_TABLE} AS \"\n109         f\"SELECT id, irt_difficulty, irt_discrimination, irt_guessing, irt_method \"\n110         f\"FROM question_bank WHERE {TARGET_WHERE}\"\n111     )\n",
       "col_offset": 10,
       "end_col_offset": 23,
-      "filename": "backend/scripts\\quality\\bootstrap_irt_priors.py",
+      "filename": "backend/scripts/quality/bootstrap_irt_priors.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -3952,7 +3952,7 @@
       "code": "112     conn.commit()\n113     cur.execute(f\"SELECT COUNT(*) FROM {BACKUP_TABLE}\")\n114     print(f\"Backup tablo: {BACKUP_TABLE} ({cur.fetchone()[0]:,} sat\u0131r)\")\n",
       "col_offset": 18,
       "end_col_offset": 39,
-      "filename": "backend/scripts\\quality\\bootstrap_irt_priors.py",
+      "filename": "backend/scripts/quality/bootstrap_irt_priors.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -3972,7 +3972,7 @@
       "code": "124         cur.executemany(\n125             \"UPDATE question_bank SET irt_discrimination=%s, irt_difficulty=%s, \"\n126             f\"irt_guessing=%s, irt_method='{MARKER}', \"\n127             \"last_difficulty_update=NOW() WHERE id=%s\",\n128             payload,\n",
       "col_offset": 12,
       "end_col_offset": 43,
-      "filename": "backend/scripts\\quality\\bootstrap_irt_priors.py",
+      "filename": "backend/scripts/quality/bootstrap_irt_priors.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -3994,7 +3994,7 @@
       "code": "92         for strata_label, where_clause in STRATA_QUERIES:\n93             sql = f\"\"\"\n94                 SELECT\n95                     CAST(id AS text) AS id,\n96                     subject_area,\n97                     source_book,\n98                     source_page,\n99                     question_text,\n100                     option_a,\n101                     option_b,\n102                     option_c,\n103                     option_d,\n104                     option_e,\n105                     correct_answer,\n106                     question_image_url,\n107                     pipeline_metadata::jsonb ->> 'match_tier' AS match_tier,\n108                     quality_review_status\n109                 FROM question_bank\n110                 WHERE is_active = TRUE\n111                   AND ({where_clause})\n112                 ORDER BY md5(CAST(id AS text) || :seed)\n113                 LIMIT :n\n114             \"\"\"\n115             result = c.execute(\n",
       "col_offset": 22,
       "end_col_offset": 23,
-      "filename": "backend/scripts\\quality\\faz_4_1_sample.py",
+      "filename": "backend/scripts/quality/faz_4_1_sample.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4035,7 +4035,7 @@
       "code": "111     # Count rows to be restored\n112     count_sql = f\"SELECT COUNT(*) FROM question_bank WHERE {RESTORE_WHERE}\"\n113     with eng.connect() as c:\n",
       "col_offset": 18,
       "end_col_offset": 59,
-      "filename": "backend/scripts\\quality\\faz_6_6_r2_selective_restore.py",
+      "filename": "backend/scripts/quality/faz_6_6_r2_selective_restore.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4055,7 +4055,7 @@
       "code": "118     # Source book breakdown\n119     breakdown_sql = f\"\"\"\n120         SELECT source_book, COUNT(*) AS cnt\n121         FROM question_bank\n122         WHERE {RESTORE_WHERE}\n123         GROUP BY 1 ORDER BY 2 DESC\n124     \"\"\"\n125     with eng.connect() as c:\n",
       "col_offset": 24,
       "end_col_offset": 14,
-      "filename": "backend/scripts\\quality\\faz_6_6_r2_selective_restore.py",
+      "filename": "backend/scripts/quality/faz_6_6_r2_selective_restore.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4080,7 +4080,7 @@
       "code": "136         start = time.time()\n137         restore_sql = f\"\"\"\n138             UPDATE question_bank\n139             SET quality_review_status = 'auto_judged_high',\n140                 pipeline_metadata = jsonb_set(\n141                     COALESCE(CAST(pipeline_metadata AS jsonb), '{{}}'::jsonb),\n142                     '{{beta_filter_v2_r2_restore}}',\n143                     CAST(:audit AS jsonb),\n144                     TRUE\n145                 )::json,\n146                 updated_at = NOW()\n147             WHERE {RESTORE_WHERE}\n148         \"\"\"\n149         with eng.begin() as c:\n",
       "col_offset": 26,
       "end_col_offset": 18,
-      "filename": "backend/scripts\\quality\\faz_6_6_r2_selective_restore.py",
+      "filename": "backend/scripts/quality/faz_6_6_r2_selective_restore.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4111,7 +4111,7 @@
       "code": "97     for stratum_name, (subj_where, tier_where) in strata.items():\n98         sql = f\"\"\"\n99             SELECT id::text AS id, subject_area, source_book, source_page,\n100                    pipeline_metadata::jsonb ->> 'match_tier' AS match_tier,\n101                    LEFT(question_text, 300) AS question_text_prefix,\n102                    question_image_url,\n103                    LENGTH(question_text) AS text_len,\n104                    '{stratum_name}' AS stratum\n105             FROM question_bank\n106             WHERE is_active = TRUE\n107               AND quality_review_status IN ('human_verified', 'auto_judged_high')\n108               AND question_image_url IS NOT NULL AND question_image_url != ''\n109               AND {subj_where}\n110               AND {tier_where}\n111               AND (\n112                   pipeline_metadata IS NULL\n113                   OR NOT (pipeline_metadata::jsonb ? 'image_audit_v1')\n114               )\n115             ORDER BY md5(id::text)\n116             LIMIT {per_stratum}\n117         \"\"\"\n118         with eng.connect() as c:\n",
       "col_offset": 18,
       "end_col_offset": 20,
-      "filename": "backend/scripts\\quality\\image_audit_claude_vision.py",
+      "filename": "backend/scripts/quality/image_audit_claude_vision.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4150,7 +4150,7 @@
       "code": "132 \n133     sql = f\"\"\"\n134         SELECT id::text AS id, question_text, question_image_url, subject_area\n135         FROM question_bank\n136         WHERE {where}\n137         ORDER BY md5(id::text)\n138         {f\"LIMIT {limit}\" if limit else \"\"}\n139     \"\"\"\n140 \n",
       "col_offset": 14,
       "end_col_offset": 14,
-      "filename": "backend/scripts\\quality\\image_audit_v1.py",
+      "filename": "backend/scripts/quality/image_audit_v1.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4176,7 +4176,7 @@
       "code": "158             text(\n159                 f\"SELECT id::text, source_book, question_text, pipeline_metadata::text AS pm \"\n160                 f\"FROM question_bank WHERE is_active=true \"\n161                 f\"AND (question_image_url IS NULL OR question_image_url='') \"\n162                 f\"{limit}\"\n163             )\n",
       "col_offset": 18,
       "end_col_offset": 76,
-      "filename": "backend/scripts\\quality\\image_match_book_page_v4.py",
+      "filename": "backend/scripts/quality/image_match_book_page_v4.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4199,7 +4199,7 @@
       "code": "162             text(\n163                 f\"SELECT id::text, source_book, question_text FROM question_bank \"\n164                 f\"WHERE is_active=true \"\n165                 f\"AND (question_image_url IS NULL OR question_image_url='') \"\n166                 f\"AND question_text IS NOT NULL \"\n167                 f\"{limit}\"\n168             )\n",
       "col_offset": 18,
       "end_col_offset": 48,
-      "filename": "backend/scripts\\quality\\image_match_fuzzy_v3.py",
+      "filename": "backend/scripts/quality/image_match_fuzzy_v3.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4223,7 +4223,7 @@
       "code": "113         rows = c.execute(\n114             sa_text(f\"\"\"\n115             SELECT id::text, source_book, question_text, source_page\n116             FROM question_bank\n117             WHERE is_active=true\n118               AND (question_image_url IS NULL OR question_image_url='')\n119               AND question_text IS NOT NULL\n120             {limit_clause}\n121         \"\"\")\n122         ).fetchall()\n",
       "col_offset": 24,
       "end_col_offset": 12,
-      "filename": "backend/scripts\\quality\\image_match_gemini_flash_v8.py",
+      "filename": "backend/scripts/quality/image_match_gemini_flash_v8.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4250,7 +4250,7 @@
       "code": "170             text(\n171                 f\"SELECT id::text, question_text FROM question_bank \"\n172                 f\"WHERE is_active=true \"\n173                 f\"AND (question_image_url IS NULL OR question_image_url='') \"\n174                 f\"AND question_text IS NOT NULL \"\n175                 f\"{limit}\"\n176             )\n",
       "col_offset": 18,
       "end_col_offset": 48,
-      "filename": "backend/scripts\\quality\\image_match_jsonl_v2.py",
+      "filename": "backend/scripts/quality/image_match_jsonl_v2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4274,7 +4274,7 @@
       "code": "220 \n221     sql = f\"\"\"\n222         SELECT id::text, source_book, pipeline_metadata::text\n223         FROM question_bank\n224         WHERE is_active=true\n225           AND (question_image_url IS NULL OR question_image_url='')\n226           AND source_book IS NOT NULL\n227           AND pipeline_metadata IS NOT NULL\n228         {limit_sql}\n229     \"\"\"\n230 \n",
       "col_offset": 14,
       "end_col_offset": 8,
-      "filename": "backend/scripts\\quality\\image_match_metadata_v1.py",
+      "filename": "backend/scripts/quality/image_match_metadata_v1.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4302,7 +4302,7 @@
       "code": "179             text(\n180                 f\"SELECT id::text, source_book, question_text FROM question_bank \"\n181                 f\"WHERE is_active=true \"\n182                 f\"AND (question_image_url IS NULL OR question_image_url='') \"\n183                 f\"AND question_text IS NOT NULL \"\n184                 f\"{limit}\"\n185             )\n",
       "col_offset": 18,
       "end_col_offset": 48,
-      "filename": "backend/scripts\\quality\\image_match_rebuild_v5.py",
+      "filename": "backend/scripts/quality/image_match_rebuild_v5.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4326,7 +4326,7 @@
       "code": "93         where += \" AND irt_se_a IS NULL\"\n94     cur.execute(f\"\"\"\n95         SELECT id::text, irt_discrimination, irt_difficulty, COALESCE(irt_guessing, 0),\n96                COALESCE(irt_n_responses, 0),\n97                question_text, option_a, option_b, option_c, option_d, option_e\n98         FROM question_bank {where}\n99     \"\"\")\n100     rows = cur.fetchall()\n",
       "col_offset": 20,
       "end_col_offset": 27,
-      "filename": "backend/scripts\\quality\\metadata_phase2_v2_bulk.py",
+      "filename": "backend/scripts/quality/metadata_phase2_v2_bulk.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -4351,7 +4351,7 @@
       "code": "48     )\n49     resp = json.loads(urllib.request.urlopen(req, timeout=30).read())\n50     embs = resp.get(\"embeddings\", [])\n",
       "col_offset": 22,
       "end_col_offset": 61,
-      "filename": "backend/scripts\\quality\\metadata_phase5_embedding.py",
+      "filename": "backend/scripts/quality/metadata_phase5_embedding.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4371,7 +4371,7 @@
       "code": "129     cur.execute(\n130         f\"\"\"\n131         SELECT id::text, question_text, option_a, option_b, option_c, option_d, option_e\n132         FROM question_bank q\n133         WHERE is_active = true\n134           AND question_text IS NOT NULL\n135           AND embedding IS NULL\n136           {gold_filter}\n137         ORDER BY created_at DESC\n138         LIMIT %s\n139         \"\"\",\n140         (args.limit,),\n",
       "col_offset": 12,
       "end_col_offset": 10,
-      "filename": "backend/scripts\\quality\\metadata_phase5_embedding.py",
+      "filename": "backend/scripts/quality/metadata_phase5_embedding.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -4400,7 +4400,7 @@
       "code": "45     cur.execute(\n46         f\"\"\"\n47         SELECT q.id::text\n48         FROM question_bank q\n49         WHERE q.is_active\n50           AND q.embedding IS NOT NULL\n51           AND q.pipeline_metadata->'beta_filter_v1'->>'rule' = 'R4_rule_based_gold'\n52           AND q.similar_question_ids IS NULL\n53         ORDER BY q.id\n54         {where_limit}\n55         \"\"\"\n56     )\n",
       "col_offset": 12,
       "end_col_offset": 8,
-      "filename": "backend/scripts\\quality\\metadata_phase6_similar_kNN.py",
+      "filename": "backend/scripts/quality/metadata_phase6_similar_kNN.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -4429,7 +4429,7 @@
       "code": "67     try:\n68         with urllib.request.urlopen(req, timeout=timeout) as resp:\n69             return json.loads(resp.read())\n",
       "col_offset": 13,
       "end_col_offset": 57,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_gemini.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_gemini.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4449,7 +4449,7 @@
       "code": "240     )\n241     with urllib.request.urlopen(req, timeout=60) as resp:\n242         upload_url = resp.headers.get(\"X-Goog-Upload-URL\")\n",
       "col_offset": 9,
       "end_col_offset": 48,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_gemini.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_gemini.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4469,7 +4469,7 @@
       "code": "256     )\n257     with urllib.request.urlopen(req2, timeout=600) as resp2:\n258         result = json.loads(resp2.read())\n",
       "col_offset": 9,
       "end_col_offset": 50,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_gemini.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_gemini.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4489,7 +4489,7 @@
       "code": "360     req = urllib.request.Request(url, method=\"GET\")\n361     with urllib.request.urlopen(req, timeout=600) as resp:\n362         return resp.read()\n",
       "col_offset": 9,
       "end_col_offset": 49,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_gemini.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_gemini.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4509,7 +4509,7 @@
       "code": "68     try:\n69         with urllib.request.urlopen(req, timeout=timeout) as resp:\n70             return json.loads(resp.read())\n",
       "col_offset": 13,
       "end_col_offset": 57,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_openai.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_openai.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4529,7 +4529,7 @@
       "code": "239         try:\n240             with urllib.request.urlopen(req, timeout=300) as resp:\n241                 file_obj = json.loads(resp.read())\n",
       "col_offset": 17,
       "end_col_offset": 57,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_openai.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_openai.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4549,7 +4549,7 @@
       "code": "328         )\n329         with urllib.request.urlopen(req, timeout=600) as resp:\n330             output_text = resp.read().decode(\"utf-8\", errors=\"replace\")\n",
       "col_offset": 13,
       "end_col_offset": 53,
-      "filename": "backend/scripts\\quality\\metadata_phase7_batch_openai.py",
+      "filename": "backend/scripts/quality/metadata_phase7_batch_openai.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4569,7 +4569,7 @@
       "code": "162     )\n163     resp = urllib.request.urlopen(req, timeout=timeout)\n164     result = json.loads(resp.read())\n",
       "col_offset": 11,
       "end_col_offset": 55,
-      "filename": "backend/scripts\\quality\\metadata_phase7_llm_generation.py",
+      "filename": "backend/scripts/quality/metadata_phase7_llm_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4589,7 +4589,7 @@
       "code": "198     )\n199     resp = urllib.request.urlopen(req, timeout=timeout)\n200     result = json.loads(resp.read())\n",
       "col_offset": 11,
       "end_col_offset": 55,
-      "filename": "backend/scripts\\quality\\metadata_phase7_llm_generation.py",
+      "filename": "backend/scripts/quality/metadata_phase7_llm_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4609,7 +4609,7 @@
       "code": "222     )\n223     resp = urllib.request.urlopen(req, timeout=timeout)\n224     result = json.loads(resp.read())\n",
       "col_offset": 11,
       "end_col_offset": 55,
-      "filename": "backend/scripts\\quality\\metadata_phase7_llm_generation.py",
+      "filename": "backend/scripts/quality/metadata_phase7_llm_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -4629,7 +4629,7 @@
       "code": "566     fetch_cur.execute(\n567         f\"\"\"\n568         SELECT q.id::text, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.option_e,\n569                q.correct_answer, q.subject_area, q.exam_type, q.difficulty_level::text, q.bloom_category\n570         FROM question_bank q\n571         LEFT JOIN question_option_rationales r ON r.question_id = q.id::text AND r.option_letter = 'A'\n572         WHERE q.is_active = true\n573           AND q.question_text IS NOT NULL\n574           AND q.option_a IS NOT NULL\n575           AND q.correct_answer IN ('A', 'B', 'C', 'D', 'E')\n576           AND r.question_id IS NULL\n577           {gold_filter}\n578         ORDER BY q.created_at DESC\n579         LIMIT %s\n580         \"\"\",\n581         (args.limit,),\n",
       "col_offset": 12,
       "end_col_offset": 10,
-      "filename": "backend/scripts\\quality\\metadata_phase7_llm_generation.py",
+      "filename": "backend/scripts/quality/metadata_phase7_llm_generation.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -4662,7 +4662,7 @@
       "code": "149     # Count rows to be restored\n150     count_sql = f\"SELECT COUNT(*) FROM question_bank WHERE {RESTORE_WHERE}\"\n151     with eng.connect() as c:\n",
       "col_offset": 18,
       "end_col_offset": 59,
-      "filename": "backend/scripts\\quality\\r1_legacy_v3_restore_apply.py",
+      "filename": "backend/scripts/quality/r1_legacy_v3_restore_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4682,7 +4682,7 @@
       "code": "158     # Subject breakdown\n159     breakdown_sql = f\"\"\"\n160         SELECT subject_area, COUNT(*) AS cnt\n161         FROM question_bank\n162         WHERE {RESTORE_WHERE}\n163         GROUP BY 1 ORDER BY 2 DESC\n164     \"\"\"\n165     with eng.connect() as c:\n",
       "col_offset": 24,
       "end_col_offset": 14,
-      "filename": "backend/scripts\\quality\\r1_legacy_v3_restore_apply.py",
+      "filename": "backend/scripts/quality/r1_legacy_v3_restore_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4707,7 +4707,7 @@
       "code": "222         start = time.time()\n223         restore_sql = f\"\"\"\n224             UPDATE question_bank\n225             SET quality_review_status = 'auto_judged_high',\n226                 pipeline_metadata = jsonb_set(\n227                     COALESCE(CAST(pipeline_metadata AS jsonb), '{{}}'::jsonb),\n228                     '{{r1_restore_v1}}',\n229                     CAST(:audit AS jsonb),\n230                     TRUE\n231                 )::json,\n232                 updated_at = NOW()\n233             WHERE {RESTORE_WHERE}\n234         \"\"\"\n235         with eng.begin() as c:\n",
       "col_offset": 26,
       "end_col_offset": 18,
-      "filename": "backend/scripts\\quality\\r1_legacy_v3_restore_apply.py",
+      "filename": "backend/scripts/quality/r1_legacy_v3_restore_apply.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4738,7 +4738,7 @@
       "code": "114         pool_size = c.execute(\n115             text(f\"SELECT COUNT(*) FROM {pool['source']} WHERE {pool['where']}\")\n116         ).scalar()\n",
       "col_offset": 19,
       "end_col_offset": 40,
-      "filename": "backend/scripts\\quality\\weekly_audit.py",
+      "filename": "backend/scripts/quality/weekly_audit.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4758,7 +4758,7 @@
       "code": "126 \n127     sql = f\"\"\"\n128         SELECT\n129             CAST(id AS text) AS id,\n130             subject_area,\n131             source_book,\n132             source_page,\n133             question_text,\n134             option_a, option_b, option_c, option_d, option_e,\n135             correct_answer,\n136             question_image_url,\n137             pipeline_metadata::jsonb ->> 'match_tier' AS match_tier,\n138             quality_review_status\n139         FROM {pool[\"source\"]}\n140         WHERE {pool[\"where\"]}\n141         ORDER BY md5(CAST(id AS text) || :seed)\n142         LIMIT :n\n143     \"\"\"\n144     with eng.connect() as c:\n",
       "col_offset": 14,
       "end_col_offset": 13,
-      "filename": "backend/scripts\\quality\\weekly_audit.py",
+      "filename": "backend/scripts/quality/weekly_audit.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4794,7 +4794,7 @@
       "code": "114             # Download to temp directory\n115             temp_file = Path(f\"/tmp/{Path(self.s3_key).name}\")\n116             s3_client.download_file(self.s3_bucket, self.s3_key, str(temp_file))\n",
       "col_offset": 31,
       "end_col_offset": 36,
-      "filename": "backend/scripts\\restore_database.py",
+      "filename": "backend/scripts/restore_database.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -4814,7 +4814,7 @@
       "code": "237                 \"-c\",\n238                 f\"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{self.db_name}' AND pid <> pg_backend_pid();\",\n239             ]\n",
       "col_offset": 18,
       "end_col_offset": 90,
-      "filename": "backend/scripts\\restore_database.py",
+      "filename": "backend/scripts/restore_database.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4834,7 +4834,7 @@
       "code": "300             # Make executable\n301             os.chmod(pre_commit_hook, 0o755)\n302 \n",
       "col_offset": 12,
       "end_col_offset": 44,
-      "filename": "backend/scripts\\run_coverage_automation.py",
+      "filename": "backend/scripts/run_coverage_automation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 732,
@@ -4854,7 +4854,7 @@
       "code": "189 \n190     sql = text(f\"\"\"\n191         SELECT id,\n192                subject_area,\n193                COALESCE(question_text, '') AS qtext,\n194                COALESCE(image_ocr_text, '') AS ocr,\n195                correct_answer,\n196                question_image_url\n197         FROM question_bank\n198         WHERE pipeline_metadata::jsonb -> 'tier_i_reocr' ->> 'band' = 'high'\n199           AND is_active = TRUE\n200           AND subject_area = '{subject}'\n201           AND question_text IS NOT NULL\n202           AND image_ocr_text IS NOT NULL\n203         ORDER BY id\n204     \"\"\")\n205     with engine.connect() as conn:\n",
       "col_offset": 19,
       "end_col_offset": 30,
-      "filename": "backend/scripts\\tier_j_apply_heuristic.py",
+      "filename": "backend/scripts/tier_j_apply_heuristic.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4888,7 +4888,7 @@
       "code": "105 \n106     sql = text(f\"\"\"\n107         SELECT id,\n108                subject_area,\n109                COALESCE(question_text, '') AS qtext,\n110                COALESCE(image_ocr_text, '') AS ocr,\n111                correct_answer,\n112                question_image_url,\n113                (pipeline_metadata::jsonb -> 'tier_i_reocr' ->> 'substr_pct')::float AS tier_i_substr\n114         FROM question_bank\n115         WHERE pipeline_metadata::jsonb -> 'tier_i_reocr' ->> 'band' = 'high'\n116           AND is_active = TRUE\n117           AND subject_area = '{subject}'\n118           AND question_text IS NOT NULL\n119           AND image_ocr_text IS NOT NULL\n120         ORDER BY id\n121     \"\"\")\n122     with engine.connect() as conn:\n",
       "col_offset": 19,
       "end_col_offset": 30,
-      "filename": "backend/scripts\\tier_j_qtext_audit.py",
+      "filename": "backend/scripts/tier_j_qtext_audit.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4923,7 +4923,7 @@
       "code": "171 \n172     sql = text(f\"\"\"\n173         SELECT id,\n174                subject_area,\n175                COALESCE(question_text, '') AS qtext,\n176                COALESCE(image_ocr_text, '') AS ocr,\n177                correct_answer,\n178                question_image_url,\n179                (pipeline_metadata::jsonb -> 'tier_i_reocr' ->> 'substr_pct')::float AS tier_i_substr\n180         FROM question_bank\n181         WHERE pipeline_metadata::jsonb -> 'tier_i_reocr' ->> 'band' = 'high'\n182           AND is_active = TRUE\n183           AND subject_area = '{subject}'\n184           AND question_text IS NOT NULL\n185           AND image_ocr_text IS NOT NULL\n186         ORDER BY id\n187     \"\"\")\n188     with engine.connect() as conn:\n",
       "col_offset": 19,
       "end_col_offset": 30,
-      "filename": "backend/scripts\\tier_j_qtext_audit_v2.py",
+      "filename": "backend/scripts/tier_j_qtext_audit_v2.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4958,7 +4958,7 @@
       "code": "74 \n75     query = f\"\"\"\n76         SELECT id, subject_area, exam_type, source_book,\n77                LEFT(question_text, 200) as preview,\n78                question_text\n79         FROM question_bank\n80         WHERE is_active = true\n81           AND subject_area IN ({subjects_sql})\n82           AND ({like_sql})\n83         ORDER BY subject_area, id\n84     \"\"\"\n85 \n",
       "col_offset": 16,
       "end_col_offset": 31,
-      "filename": "backend/scripts\\validate_subject_classification.py",
+      "filename": "backend/scripts/validate_subject_classification.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -4987,7 +4987,7 @@
       "code": "123             # BERTurk modelini y\u00fckle\n124             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)\n125 \n",
       "col_offset": 29,
       "end_col_offset": 75,
-      "filename": "backend/services\\bloom_taxonomy_classifier.py",
+      "filename": "backend/services/bloom_taxonomy_classifier.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5007,7 +5007,7 @@
       "code": "436         with open(filepath, \"rb\") as f:\n437             model_data = pickle.load(f)\n438 \n",
       "col_offset": 25,
       "end_col_offset": 39,
-      "filename": "backend/services\\enhanced_bloom_classifier.py",
+      "filename": "backend/services/enhanced_bloom_classifier.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -5027,7 +5027,7 @@
       "code": "75             await db.execute(\n76                 text(f\"SELECT {', '.join(_USERS_PII_COLS)} FROM users WHERE id = :u\"),\n77                 {\"u\": user_id},\n",
       "col_offset": 23,
       "end_col_offset": 30,
-      "filename": "backend/services\\kvkk_erasure_service.py",
+      "filename": "backend/services/kvkk_erasure_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5047,7 +5047,7 @@
       "code": "107                 await db.execute(\n108                     text(f\"SELECT {', '.join(cols)} FROM {tbl} WHERE user_id = :u\"),\n109                     {\"u\": user_id},\n",
       "col_offset": 27,
       "end_col_offset": 34,
-      "filename": "backend/services\\kvkk_erasure_service.py",
+      "filename": "backend/services/kvkk_erasure_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5067,7 +5067,7 @@
       "code": "119                 text(\n120                     f\"UPDATE {tbl} SET {set_clause}, updated_at = now() \"\n121                     f\"WHERE user_id = :u\"\n122                 ),\n",
       "col_offset": 22,
       "end_col_offset": 29,
-      "filename": "backend/services\\kvkk_erasure_service.py",
+      "filename": "backend/services/kvkk_erasure_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5088,7 +5088,7 @@
       "code": "66         try:\n67             self.tokenizer = AutoTokenizer.from_pretrained(\n68                 self.model_name, trust_remote_code=True\n69             )\n70 \n",
       "col_offset": 29,
       "end_col_offset": 13,
-      "filename": "backend/services\\llm\\qwen_provider.py",
+      "filename": "backend/services/llm/qwen_provider.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5110,7 +5110,7 @@
       "code": "74 \n75             self.model = AutoModelForCausalLM.from_pretrained(\n76                 model_name_local,\n77                 torch_dtype=torch.float16 if self.device == \"cuda\" else torch.float32,\n78                 device_map=\"auto\" if self.device == \"cuda\" else None,\n79                 trust_remote_code=True,\n80             )\n81 \n",
       "col_offset": 25,
       "end_col_offset": 13,
-      "filename": "backend/services\\llm\\qwen_provider.py",
+      "filename": "backend/services/llm/qwen_provider.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5135,7 +5135,7 @@
       "code": "69         # Tokenizer ve model y\u00fckle\n70         self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)\n71 \n",
       "col_offset": 25,
       "end_col_offset": 87,
-      "filename": "backend/services\\nlp_training\\berturk_embedding.py",
+      "filename": "backend/services/nlp_training/berturk_embedding.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5155,7 +5155,7 @@
       "code": "71 \n72         self.model = AutoModel.from_pretrained(model_name, cache_dir=cache_dir)\n73 \n",
       "col_offset": 21,
       "end_col_offset": 79,
-      "filename": "backend/services\\nlp_training\\berturk_embedding.py",
+      "filename": "backend/services/nlp_training/berturk_embedding.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5175,7 +5175,7 @@
       "code": "22         self.device = device or (\"cuda\" if torch.cuda.is_available() else \"cpu\")\n23         self.tokenizer = AutoTokenizer.from_pretrained(base_model)\n24         self.model = AutoModelForSequenceClassification.from_pretrained(\n",
       "col_offset": 25,
       "end_col_offset": 66,
-      "filename": "backend/services\\nlp_training\\berturk_finetuning_pipeline.py",
+      "filename": "backend/services/nlp_training/berturk_finetuning_pipeline.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5195,7 +5195,7 @@
       "code": "23         self.tokenizer = AutoTokenizer.from_pretrained(base_model)\n24         self.model = AutoModelForSequenceClassification.from_pretrained(\n25             base_model,\n26             num_labels=num_labels\n27         ).to(self.device)\n28 \n",
       "col_offset": 21,
       "end_col_offset": 9,
-      "filename": "backend/services\\nlp_training\\berturk_finetuning_pipeline.py",
+      "filename": "backend/services/nlp_training/berturk_finetuning_pipeline.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5218,7 +5218,7 @@
       "code": "603         \"\"\"\n604         checkpoint = torch.load(model_path, map_location=self.device)\n605         self.reward_model.load_state_dict(checkpoint[\"model_state_dict\"])\n",
       "col_offset": 21,
       "end_col_offset": 69,
-      "filename": "backend/services\\nlp_training\\rlhf_training.py",
+      "filename": "backend/services/nlp_training/rlhf_training.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -5238,7 +5238,7 @@
       "code": "80         logger.info(f\"Loading T5 model: {t5_model_name}\")\n81         self.t5_tokenizer = AutoTokenizer.from_pretrained(\n82             t5_model_name, cache_dir=cache_dir\n83         )\n84         self.t5_model = T5ForConditionalGeneration.from_pretrained(\n",
       "col_offset": 28,
       "end_col_offset": 9,
-      "filename": "backend/services\\nlp_training\\t5_bart_generation.py",
+      "filename": "backend/services/nlp_training/t5_bart_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5260,7 +5260,7 @@
       "code": "83         )\n84         self.t5_model = T5ForConditionalGeneration.from_pretrained(\n85             t5_model_name, cache_dir=cache_dir\n86         )\n87         self.t5_model.to(self.device)\n",
       "col_offset": 24,
       "end_col_offset": 9,
-      "filename": "backend/services\\nlp_training\\t5_bart_generation.py",
+      "filename": "backend/services/nlp_training/t5_bart_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5282,7 +5282,7 @@
       "code": "91         logger.info(f\"Loading BART model: {bart_model_name}\")\n92         self.bart_tokenizer = AutoTokenizer.from_pretrained(\n93             bart_model_name, cache_dir=cache_dir\n94         )\n95         self.bart_model = BartForConditionalGeneration.from_pretrained(\n",
       "col_offset": 30,
       "end_col_offset": 9,
-      "filename": "backend/services\\nlp_training\\t5_bart_generation.py",
+      "filename": "backend/services/nlp_training/t5_bart_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5304,7 +5304,7 @@
       "code": "94         )\n95         self.bart_model = BartForConditionalGeneration.from_pretrained(\n96             bart_model_name, cache_dir=cache_dir\n97         )\n98         self.bart_model.to(self.device)\n",
       "col_offset": 26,
       "end_col_offset": 9,
-      "filename": "backend/services\\nlp_training\\t5_bart_generation.py",
+      "filename": "backend/services/nlp_training/t5_bart_generation.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5326,7 +5326,7 @@
       "code": "156 \n157     sql = sa_text(f\"\"\"\n158         SELECT q.id, q.question_text, q.question_image_url,\n159                q.exam_type, q.subject_area, q.source_book,\n160                q.difficulty_level, q.correct_answer,\n161                q.option_a, q.option_b, q.option_c, q.option_d, q.option_e,\n162                q.explanation,\n163                1 - (q.embedding <=> CAST(:emb AS vector)) as similarity\n164         FROM question_bank q\n165         WHERE {where_clause}\n166           AND 1 - (q.embedding <=> CAST(:emb AS vector)) >= :min_sim\n167         ORDER BY q.embedding <=> CAST(:emb AS vector)\n168         LIMIT :top_k\n169     \"\"\")\n170 \n",
       "col_offset": 22,
       "end_col_offset": 14,
-      "filename": "backend/services\\photo_ask_service.py",
+      "filename": "backend/services/photo_ask_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5358,7 +5358,7 @@
       "code": "275 \n276                 self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)\n277                 self._model = AutoModel.from_pretrained(self.model_name)\n",
       "col_offset": 34,
       "end_col_offset": 80,
-      "filename": "backend/services\\quality\\metrics.py",
+      "filename": "backend/services/quality/metrics.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5378,7 +5378,7 @@
       "code": "276                 self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)\n277                 self._model = AutoModel.from_pretrained(self.model_name)\n278                 self._model.eval()\n",
       "col_offset": 30,
       "end_col_offset": 72,
-      "filename": "backend/services\\quality\\metrics.py",
+      "filename": "backend/services/quality/metrics.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 494,
@@ -5398,7 +5398,7 @@
       "code": "155                 with self.cache_file.open(\"rb\") as f:\n156                     self.embeddings_cache = pickle.load(f)\n157                 logger.info(\n",
       "col_offset": 44,
       "end_col_offset": 58,
-      "filename": "backend/services\\semantic_youtube_search.py",
+      "filename": "backend/services/semantic_youtube_search.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 502,
@@ -5418,7 +5418,7 @@
       "code": "190 \n191         query = sa_text(f\"\"\"\n192             (SELECT id::text, exam_name::text, exam_type::text, completed_at,\n193                     scaled_score::float,\n194                     total_correct::int, total_wrong::int, total_empty::int,\n195                     duration_minutes::int\n196              FROM exam_sessions\n197              WHERE student_id IN (SELECT id FROM student_profiles WHERE user_id = :uid)\n198                AND status = 'completed' {type_filter}\n199             )\n200             UNION ALL\n201             (SELECT id::text, ('CAT ' || subject_id)::text AS exam_name,\n202                     'CAT'::text AS exam_type,\n203                     completed_at, NULL::float AS scaled_score,\n204                     NULL::int AS total_correct, NULL::int AS total_wrong,\n205                     NULL::int AS total_empty,\n206                     (EXTRACT(EPOCH FROM (completed_at - started_at))::int / 60)::int\n207                         AS duration_minutes\n208              FROM kiro2_cat_sessions\n209              WHERE user_id = CAST(:uid AS uuid) AND state = 'completed'\n210             )\n211             ORDER BY completed_at DESC NULLS LAST\n212             LIMIT :lim OFFSET :off\n213         \"\"\")\n214 \n",
       "col_offset": 28,
       "end_col_offset": 40,
-      "filename": "backend/services\\student_dashboard_service.py",
+      "filename": "backend/services/student_dashboard_service.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5502,7 +5502,7 @@
       "code": "148             success=True,\n149             backup_path=Path(\"/tmp/backup.sql.gz\"),\n150             size_bytes=1024 * 1024,  # 1 MB\n",
       "col_offset": 29,
       "end_col_offset": 49,
-      "filename": "backend/tests\\db\\test_pre_migration.py",
+      "filename": "backend/tests/db/test_pre_migration.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -5522,7 +5522,7 @@
       "code": "338                 success=True,\n339                 backup_path=Path(\"/tmp/backup.sql.gz\"),\n340                 size_bytes=1024,\n",
       "col_offset": 33,
       "end_col_offset": 53,
-      "filename": "backend/tests\\db\\test_pre_migration.py",
+      "filename": "backend/tests/db/test_pre_migration.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -5542,7 +5542,7 @@
       "code": "63     return (\n64         f\"SELECT count(*) FROM {_tablo(yavru)} c \"  # noqa: S608 - _tablo() beyaz listesi\n65         f\"LEFT JOIN question_bank qb ON qb.id = c.id WHERE qb.id IS NULL\"\n66     )\n",
       "col_offset": 10,
       "end_col_offset": 31,
-      "filename": "backend/tests\\db\\test_soru_tablolari_parity.py",
+      "filename": "backend/tests/db/test_soru_tablolari_parity.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5563,7 +5563,7 @@
       "code": "71     return (\n72         f\"SELECT count(*) FROM question_bank qb \"  # noqa: S608 - _tablo() beyaz listesi\n73         f\"LEFT JOIN {_tablo(yavru)} c ON c.id = qb.id WHERE c.id IS NULL\"\n74     )\n",
       "col_offset": 10,
       "end_col_offset": 20,
-      "filename": "backend/tests\\db\\test_soru_tablolari_parity.py",
+      "filename": "backend/tests/db/test_soru_tablolari_parity.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5584,7 +5584,7 @@
       "code": "186                 text(\n187                     f\"SELECT count(*) FROM (VALUES ('yok-boyle-bir-id')) v(id) \"  # noqa: S608\n188                     f\"LEFT JOIN {_tablo(yavru)} c ON c.id = v.id WHERE c.id IS NULL\"\n189                 )\n",
       "col_offset": 22,
       "end_col_offset": 32,
-      "filename": "backend/tests\\db\\test_soru_tablolari_parity.py",
+      "filename": "backend/tests/db/test_soru_tablolari_parity.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5605,7 +5605,7 @@
       "code": "221         sayimlar[tablo] = (\n222             await db_session.execute(text(f\"SELECT count(*) FROM {_tablo(tablo)}\"))  # noqa: S608\n223         ).scalar_one()\n",
       "col_offset": 44,
       "end_col_offset": 65,
-      "filename": "backend/tests\\db\\test_soru_tablolari_parity.py",
+      "filename": "backend/tests/db/test_soru_tablolari_parity.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5625,7 +5625,7 @@
       "code": "5101     assert resp.status_code != 500, (\n5102         f\"GF128 osym/random-questions crashed: {resp.status_code} \"\n5103         f\"{resp.text[:300]}. Check api/osym_questions_api.py \u2014 \"\n5104         f\"raw SQL with `SELECT ... FROM question_bank WHERE is_active` + \"\n5105         f\"`random.sample()` on mappings. 77K production questions should \"\n5106         f\"return 5 rows trivially; a 500 means get_db async-drift or \"\n5107         f\"the mapping projection is broken.\"\n5108     )\n",
       "col_offset": 10,
       "end_col_offset": 47,
-      "filename": "backend/tests\\e2e\\test_golden_flows.py",
+      "filename": "backend/tests/e2e/test_golden_flows.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5650,7 +5650,7 @@
       "code": "820         entry.markdown_content = \"# Bug\u00fcn\\n\\nBug\u00fcn \u00e7ok \u00e7al\u0131\u015ft\u0131m.\"\n821         entry.file_path = \"/tmp/diary.md\"\n822         entry.created_at = datetime.now(UTC)\n",
       "col_offset": 26,
       "end_col_offset": 41,
-      "filename": "backend/tests\\fast\\test_api_coverage_batch13.py",
+      "filename": "backend/tests/fast/test_api_coverage_batch13.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -5670,7 +5670,7 @@
       "code": "1078                 \"rapor_olustur\",\n1079                 return_value=\"/tmp/test_report.pdf\",\n1080             ),\n",
       "col_offset": 29,
       "end_col_offset": 51,
-      "filename": "backend/tests\\fast\\test_api_coverage_batch14.py",
+      "filename": "backend/tests/fast/test_api_coverage_batch14.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -5690,7 +5690,7 @@
       "code": "56             settings = Settings()\n57             assert settings.host == \"0.0.0.0\"\n58 \n",
       "col_offset": 36,
       "end_col_offset": 45,
-      "filename": "backend/tests\\fast\\test_core_config_comprehensive.py",
+      "filename": "backend/tests/fast/test_core_config_comprehensive.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -5710,7 +5710,7 @@
       "code": "124 \n125         key1 = hashlib.md5(f\"{query1}_1_None\".encode()).hexdigest()\n126         key2 = hashlib.md5(f\"{query2}_1_None\".encode()).hexdigest()\n",
       "col_offset": 15,
       "end_col_offset": 55,
-      "filename": "backend/tests\\fast\\test_core_rag_service.py",
+      "filename": "backend/tests/fast/test_core_rag_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 327,
@@ -5730,7 +5730,7 @@
       "code": "125         key1 = hashlib.md5(f\"{query1}_1_None\".encode()).hexdigest()\n126         key2 = hashlib.md5(f\"{query2}_1_None\".encode()).hexdigest()\n127         key3 = hashlib.md5(f\"{query3}_1_None\".encode()).hexdigest()\n",
       "col_offset": 15,
       "end_col_offset": 55,
-      "filename": "backend/tests\\fast\\test_core_rag_service.py",
+      "filename": "backend/tests/fast/test_core_rag_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 327,
@@ -5750,7 +5750,7 @@
       "code": "126         key2 = hashlib.md5(f\"{query2}_1_None\".encode()).hexdigest()\n127         key3 = hashlib.md5(f\"{query3}_1_None\".encode()).hexdigest()\n128 \n",
       "col_offset": 15,
       "end_col_offset": 55,
-      "filename": "backend/tests\\fast\\test_core_rag_service.py",
+      "filename": "backend/tests/fast/test_core_rag_service.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 327,
@@ -5770,7 +5770,7 @@
       "code": "34         # Test server settings\n35         assert settings.host == \"0.0.0.0\"\n36         assert settings.port == 8000\n",
       "col_offset": 32,
       "end_col_offset": 41,
-      "filename": "backend/tests\\integration\\test_core_config.py",
+      "filename": "backend/tests/integration/test_core_config.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -5790,7 +5790,7 @@
       "code": "262             # String concatenation (unsafe - for testing only)\n263             return f\"SELECT * FROM users WHERE username = '{username}'\"\n264 \n",
       "col_offset": 21,
       "end_col_offset": 59,
-      "filename": "backend/tests\\integration\\test_critical_database.py",
+      "filename": "backend/tests/integration/test_critical_database.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5810,7 +5810,7 @@
       "code": "286                 await db.execute(\n287                     text(f\"DELETE FROM {tablo} WHERE {kolon} = :sid\"),  # noqa: S608\n288                     {\"sid\": session_id},\n",
       "col_offset": 27,
       "end_col_offset": 39,
-      "filename": "backend/tests\\integration\\test_osym_exam_konu_kirilimi.py",
+      "filename": "backend/tests/integration/test_osym_exam_konu_kirilimi.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5830,7 +5830,7 @@
       "code": "134     try:\n135         c.execute(f\"INSERT INTO {PROBE} VALUES (1, %s)\", (YABANCI_ORG,))  # noqa: S608\n136     except psycopg2.Error as hata:\n",
       "col_offset": 20,
       "end_col_offset": 32,
-      "filename": "backend/tests\\integration\\test_rls_fail_closed_with_check.py",
+      "filename": "backend/tests/integration/test_rls_fail_closed_with_check.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -5850,7 +5850,7 @@
       "code": "197     imlec.execute(f\"SET LOCAL app.current_org_id = '{KENDI_ORG}'\")\n198     imlec.execute(f\"INSERT INTO {PROBE} VALUES (1, %s)\", (KENDI_ORG,))  # noqa: S608\n199     imlec.execute(f\"SELECT count(*) FROM {PROBE}\")  # noqa: S608\n",
       "col_offset": 20,
       "end_col_offset": 32,
-      "filename": "backend/tests\\integration\\test_rls_fail_closed_with_check.py",
+      "filename": "backend/tests/integration/test_rls_fail_closed_with_check.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -5870,7 +5870,7 @@
       "code": "198     imlec.execute(f\"INSERT INTO {PROBE} VALUES (1, %s)\", (KENDI_ORG,))  # noqa: S608\n199     imlec.execute(f\"SELECT count(*) FROM {PROBE}\")  # noqa: S608\n200     assert imlec.fetchone()[0] == 1, (\n",
       "col_offset": 20,
       "end_col_offset": 41,
-      "filename": "backend/tests\\integration\\test_rls_fail_closed_with_check.py",
+      "filename": "backend/tests/integration/test_rls_fail_closed_with_check.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 89,
@@ -5890,7 +5890,7 @@
       "code": "192     \"\"\"Superuser'in gordugu satir sayisi \u2014 kiyaslamanin referansi.\"\"\"\n193     n = _sorgula(f\"SELECT count(*) FROM {ORNEK_TABLO}\")  # noqa: S608\n194     if n == 0:\n",
       "col_offset": 19,
       "end_col_offset": 40,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5910,7 +5910,7 @@
       "code": "221     gorunen = _sorgula(\n222         f\"SELECT count(*) FROM {ORNEK_TABLO}\",  # noqa: S608\n223         kurulum=[\n",
       "col_offset": 10,
       "end_col_offset": 31,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5930,7 +5930,7 @@
       "code": "246     guc_yok = _sorgula(\n247         f\"SELECT count(*) FROM {ORNEK_TABLO}\",  # noqa: S608\n248         kurulum=[\"SET ROLE kiro2_app\"],\n",
       "col_offset": 10,
       "end_col_offset": 31,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5950,7 +5950,7 @@
       "code": "250     guc_bos = _sorgula(\n251         f\"SELECT count(*) FROM {ORNEK_TABLO}\",  # noqa: S608\n252         kurulum=[\"SET ROLE kiro2_app\", \"SET LOCAL app.current_org_id = ''\"],\n",
       "col_offset": 10,
       "end_col_offset": 31,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5970,7 +5970,7 @@
       "code": "259 \n260     dogru_org = _sorgula(f\"SELECT organization_id FROM {ORNEK_TABLO} LIMIT 1\")  # noqa: S608\n261     guc_dogru = _sorgula(\n",
       "col_offset": 27,
       "end_col_offset": 55,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -5990,7 +5990,7 @@
       "code": "261     guc_dogru = _sorgula(\n262         f\"SELECT count(*) FROM {ORNEK_TABLO}\",  # noqa: S608\n263         kurulum=[\"SET ROLE kiro2_app\", f\"SET LOCAL app.current_org_id = '{dogru_org}'\"],\n",
       "col_offset": 10,
       "end_col_offset": 31,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6010,7 +6010,7 @@
       "code": "321     guc_yok = _sorgula(\n322         f\"SELECT count(*) FROM {ORNEK_TABLO}\",  # noqa: S608\n323         kurulum=[\"SET ROLE kiro2_app\"],\n",
       "col_offset": 10,
       "end_col_offset": 31,
-      "filename": "backend/tests\\integration\\test_rls_tenant_isolation_guard.py",
+      "filename": "backend/tests/integration/test_rls_tenant_isolation_guard.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6030,7 +6030,7 @@
       "code": "17     \"\"\"ETag degeri uret.\"\"\"\n18     hash_digest = hashlib.md5(content).hexdigest()\n19     etag = f'\"{hash_digest}\"'\n",
       "col_offset": 18,
       "end_col_offset": 38,
-      "filename": "backend/tests\\property\\test_http_caching.py",
+      "filename": "backend/tests/property/test_http_caching.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 327,
@@ -6050,7 +6050,7 @@
       "code": "96 \n97             manager = ChromaDBCollectionManager(persist_directory=\"/tmp/test_db\")\n98 \n",
       "col_offset": 66,
       "end_col_offset": 80,
-      "filename": "backend/tests\\services\\test_chromadb_collection_manager.py",
+      "filename": "backend/tests/services/test_chromadb_collection_manager.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6070,7 +6070,7 @@
       "code": "124 \n125             manager = ChromaDBCollectionManager(persist_directory=\"/tmp/test_db\")\n126 \n",
       "col_offset": 66,
       "end_col_offset": 80,
-      "filename": "backend/tests\\services\\test_chromadb_collection_manager.py",
+      "filename": "backend/tests/services/test_chromadb_collection_manager.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6090,7 +6090,7 @@
       "code": "149 \n150             manager = ChromaDBCollectionManager(persist_directory=\"/tmp/test_db\")\n151 \n",
       "col_offset": 66,
       "end_col_offset": 80,
-      "filename": "backend/tests\\services\\test_chromadb_collection_manager.py",
+      "filename": "backend/tests/services/test_chromadb_collection_manager.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6110,7 +6110,7 @@
       "code": "176 \n177             manager = ChromaDBCollectionManager(persist_directory=\"/tmp/test_db\")\n178 \n",
       "col_offset": 66,
       "end_col_offset": 80,
-      "filename": "backend/tests\\services\\test_chromadb_collection_manager.py",
+      "filename": "backend/tests/services/test_chromadb_collection_manager.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6130,7 +6130,7 @@
       "code": "301         def simple_sim(t1: str, t2: str) -> float:\n302             h1 = hashlib.md5(t1.encode()).digest()\n303             h2 = hashlib.md5(t2.encode()).digest()\n",
       "col_offset": 17,
       "end_col_offset": 41,
-      "filename": "backend/tests\\services\\test_chromadb_collection_manager.py",
+      "filename": "backend/tests/services/test_chromadb_collection_manager.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 327,
@@ -6150,7 +6150,7 @@
       "code": "302             h1 = hashlib.md5(t1.encode()).digest()\n303             h2 = hashlib.md5(t2.encode()).digest()\n304             common = sum(a == b for a, b in zip(h1, h2))\n",
       "col_offset": 17,
       "end_col_offset": 41,
-      "filename": "backend/tests\\services\\test_chromadb_collection_manager.py",
+      "filename": "backend/tests/services/test_chromadb_collection_manager.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 327,
@@ -6170,7 +6170,7 @@
       "code": "25         assert settings.environment == \"development\"\n26         assert settings.host == \"0.0.0.0\"\n27         assert settings.port == 8000\n",
       "col_offset": 32,
       "end_col_offset": 41,
-      "filename": "backend/tests\\slow\\test_core_config_comprehensive.py",
+      "filename": "backend/tests/slow/test_core_config_comprehensive.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -6190,7 +6190,7 @@
       "code": "182                 await session.execute(\n183                     text(f\"INSERT INTO question_bank ({cols}) VALUES ({placeholders})\"),\n184                     q,\n",
       "col_offset": 27,
       "end_col_offset": 54,
-      "filename": "backend/tests\\test_authenticated_stub_guardrails.py",
+      "filename": "backend/tests/test_authenticated_stub_guardrails.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6210,7 +6210,7 @@
       "code": "557         anonymized = kvkk_manager._anonymize_ip(None)\n558         assert anonymized == \"0.0.0.0\"\n559 \n",
       "col_offset": 29,
       "end_col_offset": 38,
-      "filename": "backend/tests\\test_kvkk_compliance.py",
+      "filename": "backend/tests/test_kvkk_compliance.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -6230,7 +6230,7 @@
       "code": "284         \"\"\"Test detection of .format() method\"\"\"\n285         query = \"SELECT * FROM users WHERE id = {}\".format(\"placeholder\")\n286         result = self.validator.validate_query(query)\n",
       "col_offset": 16,
       "end_col_offset": 51,
-      "filename": "backend/tests\\test_sql_injection_prevention.py",
+      "filename": "backend/tests/test_sql_injection_prevention.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6250,7 +6250,7 @@
       "code": "292         \"\"\"Test detection of string concatenation\"\"\"\n293         query = \"SELECT * FROM users WHERE id = \" + \"1\"\n294         result = self.validator.validate_query(query)\n",
       "col_offset": 16,
       "end_col_offset": 49,
-      "filename": "backend/tests\\test_sql_injection_prevention.py",
+      "filename": "backend/tests/test_sql_injection_prevention.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6270,7 +6270,7 @@
       "code": "122 _auth_utils = types.ModuleType(\"_auth_utils_under_test\")\n123 exec(compile(_UTILITY_SOURCE, \"<auth_utils>\", \"exec\"), _auth_utils.__dict__)  # noqa: S102\n124 \n",
       "col_offset": 0,
       "end_col_offset": 76,
-      "filename": "backend/tests\\unit\\test_auth_utilities.py",
+      "filename": "backend/tests/unit/test_auth_utilities.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 78,
@@ -6290,7 +6290,7 @@
       "code": "88             await session.execute(\n89                 text(f\"DELETE FROM {table} WHERE student_id = :sid\"),\n90                 {\"sid\": REAL_USER_ID},\n",
       "col_offset": 23,
       "end_col_offset": 35,
-      "filename": "backend/tests\\unit\\test_bkt_record_answer_batch1b.py",
+      "filename": "backend/tests/unit/test_bkt_record_answer_batch1b.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6310,7 +6310,7 @@
       "code": "70             await session.execute(\n71                 text(f\"DELETE FROM {table} WHERE student_id = :sid\"),\n72                 {\"sid\": REAL_USER_ID},\n",
       "col_offset": 23,
       "end_col_offset": 35,
-      "filename": "backend/tests\\unit\\test_bkt_record_answer_batch1b_errors.py",
+      "filename": "backend/tests/unit/test_bkt_record_answer_batch1b_errors.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6330,7 +6330,7 @@
       "code": "28             assert settings.environment == \"development\"\n29             assert settings.host == \"0.0.0.0\"\n30             assert settings.port == 8000\n",
       "col_offset": 36,
       "end_col_offset": 45,
-      "filename": "backend/tests\\unit\\test_core_config_comprehensive.py",
+      "filename": "backend/tests/unit/test_core_config_comprehensive.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -6350,7 +6350,7 @@
       "code": "501         # TESTING env var set above \u2014 skips HuggingFace/Chroma loading\n502         return RAGService(persist_directory=\"/tmp/test_rag\")\n503 \n",
       "col_offset": 44,
       "end_col_offset": 59,
-      "filename": "backend/tests\\unit\\test_core_partial_batch2.py",
+      "filename": "backend/tests/unit/test_core_partial_batch2.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6370,7 +6370,7 @@
       "code": "494         # TextLoader is mocked; calling load() on mock returns []\n495         result = dp.load_document(\"/tmp/fake.xyz\")\n496         # Either empty list on error or a MagicMock list \u2014 no exception raised\n",
       "col_offset": 34,
       "end_col_offset": 49,
-      "filename": "backend/tests\\unit\\test_core_remaining_batch1.py",
+      "filename": "backend/tests/unit/test_core_remaining_batch1.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6390,7 +6390,7 @@
       "code": "1844     def test_extension(self):\n1845         fi = fu_mod.FileInfo(path=Path(\"/tmp/test.json\"))\n1846         assert fi.extension == \".json\"\n",
       "col_offset": 39,
       "end_col_offset": 55,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6410,7 +6410,7 @@
       "code": "1848     def test_name(self):\n1849         fi = fu_mod.FileInfo(path=Path(\"/tmp/test.json\"))\n1850         assert fi.name == \"test.json\"\n",
       "col_offset": 39,
       "end_col_offset": 55,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6430,7 +6430,7 @@
       "code": "1852     def test_stem(self):\n1853         fi = fu_mod.FileInfo(path=Path(\"/tmp/test.json\"))\n1854         assert fi.stem == \"test\"\n",
       "col_offset": 39,
       "end_col_offset": 55,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6450,7 +6450,7 @@
       "code": "1856     def test_default_values(self):\n1857         fi = fu_mod.FileInfo(path=Path(\"/tmp/test.txt\"))\n1858         assert fi.exists is False\n",
       "col_offset": 39,
       "end_col_offset": 54,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6470,7 +6470,7 @@
       "code": "1866     async def test_returns_file_info(self):\n1867         result = await fu_mod.get_file_info(\"/tmp/any_file.txt\")\n1868         assert isinstance(result, fu_mod.FileInfo)\n",
       "col_offset": 44,
       "end_col_offset": 63,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6490,7 +6490,7 @@
       "code": "1890             mock_write.return_value = 10\n1891             result = await fu_mod.write_file(\"/tmp/test.txt\", \"hello world\")\n1892             assert result == 10\n",
       "col_offset": 45,
       "end_col_offset": 60,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6510,7 +6510,7 @@
       "code": "1897             mock_write.return_value = 50\n1898             result = await fu_mod.write_json(\"/tmp/test.json\", {\"key\": \"value\"})\n1899             assert result == 50\n",
       "col_offset": 45,
       "end_col_offset": 61,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6530,7 +6530,7 @@
       "code": "1909             mock_read.return_value = '{\"key\": \"value\"}'\n1910             result = await fu_mod.read_json(\"/tmp/test.json\")\n1911             assert result[\"key\"] == \"value\"\n",
       "col_offset": 44,
       "end_col_offset": 60,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6550,7 +6550,7 @@
       "code": "1916     async def test_delete_existing(self):\n1917         result = await fu_mod.delete_file(\"/tmp/test.txt\")\n1918         assert result is True  # default stub succeeds\n",
       "col_offset": 42,
       "end_col_offset": 57,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6570,7 +6570,7 @@
       "code": "1928         try:\n1929             result = await fu_mod.delete_file(\"/tmp/missing.txt\")\n1930             assert result is False\n",
       "col_offset": 46,
       "end_col_offset": 64,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6590,7 +6590,7 @@
       "code": "1938         with patch.object(fu_mod, \"get_file_info\", new_callable=AsyncMock) as mock_info:\n1939             fi = fu_mod.FileInfo(path=Path(\"/tmp/f.txt\"), exists=True, is_file=True)\n1940             mock_info.return_value = fi\n",
       "col_offset": 43,
       "end_col_offset": 55,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6610,7 +6610,7 @@
       "code": "1940             mock_info.return_value = fi\n1941             result = await fu_mod.file_exists(\"/tmp/f.txt\")\n1942             assert result is True\n",
       "col_offset": 46,
       "end_col_offset": 58,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6630,7 +6630,7 @@
       "code": "1946         with patch.object(fu_mod, \"get_file_info\", new_callable=AsyncMock) as mock_info:\n1947             fi = fu_mod.FileInfo(path=Path(\"/tmp/f.txt\"), exists=False)\n1948             mock_info.return_value = fi\n",
       "col_offset": 43,
       "end_col_offset": 55,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6650,7 +6650,7 @@
       "code": "1948             mock_info.return_value = fi\n1949             result = await fu_mod.file_exists(\"/tmp/f.txt\")\n1950             assert result is False\n",
       "col_offset": 46,
       "end_col_offset": 58,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6670,7 +6670,7 @@
       "code": "1956         with patch.object(fu_mod, \"get_file_info\", new_callable=AsyncMock) as mock_info:\n1957             fi = fu_mod.FileInfo(path=Path(\"/tmp\"), exists=True, is_dir=True)\n1958             mock_info.return_value = fi\n",
       "col_offset": 43,
       "end_col_offset": 49,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6690,7 +6690,7 @@
       "code": "1958             mock_info.return_value = fi\n1959             result = await fu_mod.dir_exists(\"/tmp\")\n1960             assert result is True\n",
       "col_offset": 45,
       "end_col_offset": 51,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6710,7 +6710,7 @@
       "code": "1967             fi = fu_mod.FileInfo(\n1968                 path=Path(\"/tmp/f.txt\"), exists=True, is_file=True, size=100\n1969             )\n",
       "col_offset": 26,
       "end_col_offset": 38,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6730,7 +6730,7 @@
       "code": "1970             mock_info.return_value = fi\n1971             result = await fu_mod.validate_file_size(\"/tmp/f.txt\", max_size=1000)\n1972             assert result is True\n",
       "col_offset": 53,
       "end_col_offset": 65,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6750,7 +6750,7 @@
       "code": "1977             fi = fu_mod.FileInfo(\n1978                 path=Path(\"/tmp/f.txt\"), exists=True, is_file=True, size=2000\n1979             )\n",
       "col_offset": 26,
       "end_col_offset": 38,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6770,7 +6770,7 @@
       "code": "1981             with pytest.raises(ValueError, match=\"limiti\"):\n1982                 await fu_mod.validate_file_size(\"/tmp/f.txt\", max_size=1000)\n1983 \n",
       "col_offset": 48,
       "end_col_offset": 60,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6790,7 +6790,7 @@
       "code": "1986         with patch.object(fu_mod, \"get_file_info\", new_callable=AsyncMock) as mock_info:\n1987             fi = fu_mod.FileInfo(path=Path(\"/tmp/f.txt\"), exists=False)\n1988             mock_info.return_value = fi\n",
       "col_offset": 43,
       "end_col_offset": 55,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6810,7 +6810,7 @@
       "code": "1989             with pytest.raises(FileNotFoundError):\n1990                 await fu_mod.validate_file_size(\"/tmp/f.txt\")\n1991 \n",
       "col_offset": 48,
       "end_col_offset": 60,
-      "filename": "backend/tests\\unit\\test_coverage_final_50.py",
+      "filename": "backend/tests/unit/test_coverage_final_50.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 377,
@@ -6830,7 +6830,7 @@
       "code": "87         \"169.254.169.254\",  # link-local \u2014 AWS/GCP metadata\n88         \"0.0.0.0\",  # unspecified\n89     ],\n90 )\n91 def test_dahili_ip_reddedilir(dahili_ip):\n92     with patch(\"socket.getaddrinfo\", _mock_getaddrinfo(dahili_ip)):\n93         guvenli, mesaj = _ssrf_url_guvenli(f\"http://kotu.example/{dahili_ip}\")\n94     assert guvenli is False\n95     assert \"engellenmistir\" in mesaj\n96 \n",
       "col_offset": 8,
       "end_col_offset": 17,
-      "filename": "backend/tests\\unit\\test_enhanced_chat_ssrf.py",
+      "filename": "backend/tests/unit/test_enhanced_chat_ssrf.py",
       "issue_confidence": "MEDIUM",
       "issue_cwe": {
         "id": 605,
@@ -6857,7 +6857,7 @@
       "code": "59             n = c.execute(\n60                 text(f\"SELECT count(*) FROM {t} WHERE organization_id IS NULL\")\n61             ).scalar()\n",
       "col_offset": 23,
       "end_col_offset": 44,
-      "filename": "backend/tests\\unit\\test_faz1_katmanA_org_id.py",
+      "filename": "backend/tests/unit/test_faz1_katmanA_org_id.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6877,7 +6877,7 @@
       "code": "61             await session.execute(\n62                 text(f\"DELETE FROM {table} WHERE student_id = :sid\"),\n63                 {\"sid\": REAL_USER_ID},\n",
       "col_offset": 23,
       "end_col_offset": 35,
-      "filename": "backend/tests\\unit\\test_fsrs_card_persistence.py",
+      "filename": "backend/tests/unit/test_fsrs_card_persistence.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6897,7 +6897,7 @@
       "code": "157 \n158         with urllib.request.urlopen(\"http://localhost:8000/health\", timeout=3) as yanit:\n159             canli = yanit.status == 200\n",
       "col_offset": 13,
       "end_col_offset": 78,
-      "filename": "backend/tests\\unit\\test_hooks\\test_session_hooks.py",
+      "filename": "backend/tests/unit/test_hooks/test_session_hooks.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 22,
@@ -6917,7 +6917,7 @@
       "code": "78             nulls = c.execute(\n79                 text(f\"SELECT count(*) FROM {t} WHERE organization_id IS NULL\")\n80             ).scalar()\n",
       "col_offset": 23,
       "end_col_offset": 44,
-      "filename": "backend/tests\\unit\\test_org_id_retrofit_identity.py",
+      "filename": "backend/tests/unit/test_org_id_retrofit_identity.py",
       "issue_confidence": "LOW",
       "issue_cwe": {
         "id": 89,
@@ -6937,7 +6937,7 @@
       "code": "92     try:\n93         icerik = yaml.load(metin, Loader=MukerrerAnahtarYukleyici)  # noqa: S506\n94     except yaml.YAMLError as hata:\n",
       "col_offset": 17,
       "end_col_offset": 66,
-      "filename": "backend/tests\\unit\\test_workflow_yaml.py",
+      "filename": "backend/tests/unit/test_workflow_yaml.py",
       "issue_confidence": "HIGH",
       "issue_cwe": {
         "id": 20,

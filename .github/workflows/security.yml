@@ -64,7 +64,13 @@ jobs:
           project: 'kiro2'
           path: '.'
           format: 'ALL'
-          others: '--enableRetired --enableExperimental'
+          # DIKKAT: action bu degeri TEK bir argv elemani olarak geciriyor
+          # (action.yml: `- '${{ inputs.others }}'`). Iki bayrak yan yana
+          # yazilinca dependency-check "Unrecognized option:
+          # --enableRetired --enableExperimental" deyip 2 saniyede cikiyordu
+          # (yerelde ayni imajla birebir uretildi). Ayrica bu surumde
+          # --enableRetired diye bir secenek YOK; usage ciktisinda gecmiyor.
+          others: '--enableExperimental'
 
       - name: Upload results
         uses: actions/upload-artifact@v4
