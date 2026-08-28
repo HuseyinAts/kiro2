@@ -2,7 +2,7 @@
 fastapi==0.141.1
 starlette==1.4.1
 uvicorn[standard]==0.24.0
-pydantic>=2.8.0
+pydantic[email]>=2.8.0  # [email] = email-validator; models/user.py EmailStr kullaniyor (alembic env.py import zinciri)
 pydantic-settings>=2.4.0
 orjson>=3.9.0
 
