@@ -128,7 +128,70 @@ eşik, sayılar bilindikten sonra bağlanacak.
 
 ---
 
-## 5. Kapı olmaktan çıkarılanlar ve gerekçeleri
+## 5. OWASP ZAP (API Security Testing job)
+
+CI komutu: `zaproxy/action-api-scan@v0.5.0 -t .../openapi.json -a -I -c .zap/rules.tsv`
+(aktif tarama, `openapi.json`'dan import edilen 1596 URL -> 10.055 URL'e
+genisliyor).
+
+Run 33214662441 (28 Ağu 2026, PR #62, 2. deneme): `FAIL-NEW: SQL Injection
+[40018] x 163`, iş 32dk 32sn'de kırmızı düştü. Ham veri: run'ın kendi
+`zap-report` artifact'ı (`report_json.json`, `gh run download`) ve
+zaproxy action'ın otomatik açtığı issue #64.
+
+### Doğrulama
+
+163 vuruşun 161'i **boş `evidence`** alanıyla geldi -- yalnızca ZAP'in
+boolean-tabanlı sezgiseli (`AND 1=1` / `AND 1=2` gönderip yanıt
+boyutu/içeriği farklılaşıyor mu diye bakan teknik). Vurulan parametreler
+`limit`, `sayfa`, `konu`, `zorluk`, `aktif`, `end_date`, `search` gibi
+sıradan filtre/sayfalama alanları -- bu alanlarda deger degistikce sonuc
+kumesinin degismesi zaten BEKLENEN davranis, sezgisel bunu "SQLi" sanıyor.
+
+Kod tarafında dogrulama: bu 163 vurusun dagıldıgı tum route/servis
+dosyalari (`api/auth.py`, `api/veli.py`, `api/admin.py`,
+`services/veli_onay_service.py` ve digerleri) tek tek kontrol edildi --
+sorgu insasi ya SQLAlchemy ORM `select(...).where(Model.x == deger)`
+(otomatik parametreli) ya da baglanan `text("... WHERE x = :p", {"p": deger})`
+kullaniyor. Depo genelinde `git grep` ile ham f-string/`.format`/`%`
+SQL insasi taraması yapıldı: canli API yüzeyinde tek eşleşme yok; tek
+eşleşmeler zaten `# nosec B608` ile gerekçelendirilmiş iki satır
+(`api/admin.py:183,340` -- sabit kod parçaları f-string'de, kullanıcı
+değerleri hep `:param` bağlı) ve Alembic migration'larının DDL'inde
+(tablo/kolon adları sabit Python listelerinden, HTTP girdisinden değil).
+Bandit'in aynı sınıfı yakalayan B608 kuralı da (bkz. §1) canlı API
+kodunda sıfır bulgu üretti -- iki bağımsız aracın doğrulaması örtüşüyor.
+
+Kalan 2 vuruş (`veli-onay/verify`, `veli-onay/withdraw`, param `token`,
+attack `John Doe'(`) gerçek `HTTP/1.1 500` evidence'ı taşıyor. Kod okundu:
+`VeliOnayService.verify_and_grant/withdraw` token'i önce `hashlib.sha256`
+ile hash'liyor, DB'ye SADECE bu hash `token_hash == :hash` seklinde ORM
+karsilastirmasiyla gidiyor -- enjeksiyona kapali bir yol. Bu 2 istek aynı
+taramanın genel `A Server Error response code [100000]` grubunda da var
+(227 vuruş, API'nin tamamına yayılmış) -- yani token içeriğine özgü değil,
+10.055 URL'lik aktif taramanın tek bir test Postgres konteynerine bindirdiği
+yük altında oluşan dağınık/geçici 500'lerden ikisi. `settings.debug=False`
+olduğu için (CI `DEBUG` env değişkenini set etmiyor) global exception
+handler (`core/application.py:434`) zaten yalnız `{"detail": "Dahili
+sunucu hatasi"}` dönüyor, iz (traceback) sızmıyor.
+
+### Karar
+
+`.zap/rules.tsv`: `40018` (genel boolean-tabanlı) `FAIL` -> `WARN`.
+Zaman-tabanlı SQLi varyantları (`40019`-`40022`, farklı/daha güvenilir
+teknik) `FAIL` kalıyor; bu taramada hiç vurmadılar. Gerçek bir SQLi
+bulunmadı -- bu, "gerçek delik -> gerçek düzeltme" değil, "yanlış pozitif
+-> belgelenmiş istisna" dalı (SAST/IaC baseline ratchet'iyle aynı ilke).
+
+**Sıradaki iş (opsiyonel, kapı değil):** 227'lik genel 500 kümesi, tek
+Postgres/Redis konteynerinin 10k'lık aktif tarama yükü altında bağlantı
+havuzu baskısı görüp görmediğine dair ayrı bir dayanıklılık sorusu --
+güvenlik açığı değil, kapasite/timeout ayarı sorusu. Bu PR'ın kapsamı
+dışında bırakıldı.
+
+---
+
+## 6. Kapı olmaktan çıkarılanlar ve gerekçeleri
 
 | Adım | Durum | Gerekçe |
 |---|---|---|

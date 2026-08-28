@@ -20,7 +20,22 @@
 10011	WARN	Cookie Without Secure Flag
 
 # SQL Injection - FAIL (Critical)
-40018	FAIL	SQL Injection
+# 40018 (generic boolean-based) 28 Ags 2026 PR #62'de WARN'a dusuruldu:
+# run 33214662441'de risk "High (Low)" = ZAP'in kendi guveni dusuk, 163
+# vuruş coktu. Manuel kod incelemesi: vurulan HER uc SQLAlchemy ORM
+# .where(...) ya da baglanan (:param) text() kullaniyor -- ham string
+# birlestirme YOK. 163'un 161'i bos evidence (yalnizca boolean AND-1=1 /
+# AND-1=2 payload'lari arasindaki yanit-boyutu farkindan cikarim -- normal
+# filtre/sayfalama parametrelerinde beklenen davranis). Kalan 2'si
+# (veli-onay/verify, /withdraw, param=token) gercek "500" evidence'i
+# tasiyor ama AYNI 2 istek, ayni taramanin genel "A Server Error [100000]"
+# grubunda (227 vuruş, TUM API yuzeyine yayilmis) da var -- yani SQLi
+# payload'ina ozgu degil, 10.055 URL'lik aktif taramanin PostgreSQL test
+# konteynerine bindirdigi yuk altinda olusan genel/gecici 500'lerden ikisi.
+# Detay + dogrulama adimlari: docs/guvenlik-borcu.md #5.
+# Zaman-tabanli varyantlar (40019-40022) FAIL kaliyor: bu taramada hic
+# vurmadilar, farkli (daha guvenilir) bir teknige dayaniyorlar.
+40018	WARN	SQL Injection
 40019	FAIL	SQL Injection - MySQL
 40020	FAIL	SQL Injection - Hypersonic SQL
 40021	FAIL	SQL Injection - Oracle
