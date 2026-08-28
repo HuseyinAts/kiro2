@@ -34,7 +34,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: pgvector/pgvector:pg15  # pgvector gerekli (baseline CREATE EXTENSION vector)
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres  # pragma: allowlist secret

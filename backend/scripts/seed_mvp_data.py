@@ -101,14 +101,16 @@ INSERT INTO users (
     first_name, last_name, role,
     is_active, is_verified,
     total_xp, level,
-    is_premium, is_2fa_enabled
+    is_premium, is_2fa_enabled,
+    elo_rating, is_parent
 )
 VALUES (
     %(id)s, %(email)s, %(username)s, %(password_hash)s,
     %(first_name)s, %(last_name)s, %(role)s::userrole,
     TRUE, TRUE,
     0, 1,
-    FALSE, FALSE
+    FALSE, FALSE,
+    1000, FALSE
 )
 ON CONFLICT (email) DO NOTHING
 """
@@ -146,6 +148,17 @@ ON CONFLICT (id) DO NOTHING
 """
 
 
+ORG_INSERT_SQL = """
+INSERT INTO organizations (
+    id, name, org_type, status, kvkk_role, license_seats
+)
+VALUES (
+    'org_legacy_default', 'Varsayilan Organizasyon', 'school', 'active', 'controller', 0
+)
+ON CONFLICT (id) DO NOTHING
+"""
+
+
 def main():
     print(f"Connecting to PostgreSQL: {db_host}:{db_port}/{dbname}")
     try:
@@ -162,6 +175,12 @@ def main():
         sys.exit(1)
     conn.autocommit = False
     cur = conn.cursor()
+
+    # org_legacy_default: users.organization_id DB-default'u buna FK baglar; bos CI
+    # semasi tabloyu kurar ama satiri degil — kullanicilardan ONCE bu org olmali.
+    cur.execute(ORG_INSERT_SQL)
+    if cur.rowcount:
+        print("  CREATE: organizations org_legacy_default")
 
     created = 0
     skipped = 0
