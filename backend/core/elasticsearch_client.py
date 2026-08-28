@@ -43,7 +43,7 @@ class ElasticsearchClient:
 
     def __init__(
         self,
-        hosts: list[str] = None,
+        hosts: list[str] | None = None,
         username: str | None = None,
         password: str | None = None,
         verify_certs: bool = True,
@@ -67,8 +67,12 @@ class ElasticsearchClient:
         """Lazy-init the AsyncElasticsearch client if not already done"""
         if self._client is None:
             import os
+
             es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
-            if self.hosts == ["http://localhost:9200"] and es_url != "http://localhost:9200":
+            if (
+                self.hosts == ["http://localhost:9200"]
+                and es_url != "http://localhost:9200"
+            ):
                 self.hosts = [es_url]
             if self.username and self.password:
                 self._client = AsyncElasticsearch(
@@ -157,8 +161,14 @@ class ElasticsearchClient:
         query: dict[str, Any],
         size: int = 10,
         from_: int = 0,
+        source_includes: list[str] | None = None,
     ) -> SearchResult:
-        """Search documents"""
+        """Search documents.
+
+        `source_includes` verilirse ES YALNIZ o alanları döndürür. Beyaz liste
+        bilinçli (kara liste değil): index'e yeni bir hassas alan eklendiğinde
+        kara liste sessizce sızdırır, beyaz liste sızdırmaz.
+        """
         await self._ensure_connected()
         try:
             response = await self._client.search(
@@ -166,6 +176,7 @@ class ElasticsearchClient:
                 query=query,
                 size=size,
                 from_=from_,
+                source_includes=source_includes,
             )
 
             return SearchResult(
@@ -215,31 +226,66 @@ class ElasticsearchClient:
         self,
         index_name: str,
         query_text: str,
-        fields: list = None,
+        fields: list | None = None,
         size: int = 10,
         from_: int = 0,
-        filters: dict = None,
+        filters: dict | None = None,
+        source_includes: list[str] | None = None,
     ) -> SearchResult:
-        """Turkish full-text search with multi-field support"""
+        """Turkish full-text search with multi-field support.
+
+        `source_includes` verilirse ES YALNIZ o alanları döndürür — bkz.
+        `search()`. Varsayılan arama alanlarından `explanation` 27 Tem 2026'da
+        ÇIKARILDI: bu depoda explanation'ın içeriği düpedüz "Doğru cevap: A
+        (Güven: %76, Kaynak: bayes_2of4_orig)" biçiminde. Aranabilir olması,
+        kaynak filtrelense bile bir cevap oracle'ı: canlı ölçümde
+        "Doğru cevap: E" sorgusu ilk 10 sonucun 4'ünü E yaptı (beklenen ~2).
+        """
         if not self._client:
             import os
+
             es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
             self._client = AsyncElasticsearch([es_url])
         try:
-            search_fields = fields or ["question_text^2", "option_a", "option_b",
-                                       "option_c", "option_d", "option_e", "explanation"]
-            must = [{"multi_match": {"query": query_text, "fields": search_fields,
-                                     "type": "best_fields", "fuzziness": "AUTO"}}]
+            search_fields = fields or [
+                "question_text^2",
+                "option_a",
+                "option_b",
+                "option_c",
+                "option_d",
+                "option_e",
+            ]
+            must = [
+                {
+                    "multi_match": {
+                        "query": query_text,
+                        "fields": search_fields,
+                        "type": "best_fields",
+                        "fuzziness": "AUTO",
+                    }
+                }
+            ]
             filter_clauses = []
             if filters:
                 for k, v in filters.items():
                     if v is not None:
                         filter_clauses.append({"term": {k: v}})
-            query = {"bool": {"must": must, "filter": filter_clauses}} if filter_clauses else {"bool": {"must": must}}
+            query = (
+                {"bool": {"must": must, "filter": filter_clauses}}
+                if filter_clauses
+                else {"bool": {"must": must}}
+            )
             response = await self._client.search(
-                index=index_name, query=query, size=size, from_=from_)
+                index=index_name,
+                query=query,
+                size=size,
+                from_=from_,
+                source_includes=source_includes,
+            )
             return SearchResult(
-                hits=[{"id": h["_id"], **h["_source"]} for h in response["hits"]["hits"]],
+                hits=[
+                    {"id": h["_id"], **h["_source"]} for h in response["hits"]["hits"]
+                ],
                 total=response["hits"]["total"]["value"],
                 took=response["took"],
                 max_score=response["hits"].get("max_score"),
@@ -252,11 +298,12 @@ class ElasticsearchClient:
         """Get a single document by ID"""
         if not self._client:
             import os
+
             es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
             self._client = AsyncElasticsearch([es_url])
         try:
             response = await self._client.get(index=index_name, id=doc_id)
-            return response["_source"] if response["found"] else None
+            return response["_source"] if response["found"] else None  # type: ignore[no-any-return]
         except Exception as e:
             logger.error(f"Get document failed: {e}")
             return None
@@ -265,6 +312,7 @@ class ElasticsearchClient:
         """Bulk index a list of documents"""
         if not self._client:
             import os
+
             es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
             self._client = AsyncElasticsearch([es_url])
         try:
@@ -286,9 +334,7 @@ class ElasticsearchClient:
         try:
             response = await self._client.cat.indices(format="json")
             return [
-                idx["index"]
-                for idx in response
-                if not idx["index"].startswith(".")
+                idx["index"] for idx in response if not idx["index"].startswith(".")
             ]
         except Exception as e:
             logger.error(f"Failed to list indices: {e}")
@@ -311,12 +357,17 @@ _elasticsearch_client: ElasticsearchClient | None = None
 
 def get_elasticsearch_client() -> ElasticsearchClient:
     """Get global Elasticsearch client instance"""
-    global _elasticsearch_client
+    global _elasticsearch_client  # noqa: PLW0603 — modül-tekil istemci, bilinçli
 
     if _elasticsearch_client is None:
-        import os
-        es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
-        _elasticsearch_client = ElasticsearchClient(hosts=[es_url])
+        from core.config import settings
+
+        es_url = settings.elasticsearch_url
+        es_user = settings.elasticsearch_user
+        es_pass = settings.elasticsearch_password
+        _elasticsearch_client = ElasticsearchClient(
+            hosts=[es_url], username=es_user, password=es_pass
+        )
 
     return _elasticsearch_client
 

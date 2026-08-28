@@ -1,0 +1,124 @@
+/* ============================================================================
+   KIRO2 — Tasarım Token'ları (web CSS yansıması)
+   Tek kaynak: tokens.ts — bu dosya onun CSS-değişkeni karşılığıdır.
+   Tema kuralı: ekran TÜRÜ temayı belirler (çalışma=AÇIK, duygusal=KOYU);
+   kök elemana .k-paper ya da .k-dusk sınıfı ver. Kullanıcı toggle'ı değildir.
+   ============================================================================ */
+
+:root {
+  /* Dawn aksanı — her iki temada sabit marka ipliği */
+  --k-coral: #FF6F5C;
+  --k-coral-2: #FF8A5B;
+  --k-peach: #FFAE86;
+  --k-peach-2: #FFC59B;
+  --k-gold: #FFD98C;
+  --k-gold-2: #FCD34D;
+  --k-coral-text-on-light: #C2452B;
+
+  /* Semantik */
+  --k-risk: #C77A1E;               /* dolgu/grafik amber'i */
+  --k-risk-text-on-light: #9A5D0D; /* sıkı-AA metin amber'i */
+  --k-risk-bg-soft: #FBF0DE;
+  --k-risk-border-soft: #F2D9AC;
+  --k-success: #1FB683;
+  --k-success-2: #34D399;
+  --k-success-text-on-light: #047857;
+  --k-success-bg-soft: #ECFDF5;
+  --k-success-border-soft: #BBF7D0;
+
+  /* Hâkimiyet kademeleri */
+  --k-mastery-tanidik: #9A93A5;
+  --k-mastery-yetkin: #7FB0FF;
+  --k-mastery-usta: #FFAE86;
+  --k-mastery-fethedildi: #FCD34D;
+
+  /* Tipografi */
+  --k-font-serif: 'Instrument Serif', Georgia, serif;
+  --k-font-sans: 'Hanken Grotesk', -apple-system, sans-serif;
+  --k-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Radius */
+  --k-r-chip: 10px;
+  --k-r-input: 11px;
+  --k-r-button: 13px;
+  --k-r-card: 16px;
+  --k-r-card-lg: 20px;
+  --k-r-pill: 999px;
+
+  /* Gölge */
+  --k-shadow-card-soft: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --k-shadow-card-float: 0 20px 50px -24px rgba(42, 36, 51, 0.3);
+  --k-shadow-coral-cta: 0 10px 22px -10px rgba(255, 111, 92, 0.7);
+
+  /* Motion — kaygı-duyarlı: sakin; girişler transform-only */
+  --k-dur-fast: 120ms;
+  --k-dur-base: 150ms;
+  --k-dur-page: 220ms;
+  --k-ease: cubic-bezier(0.33, 0, 0.2, 1);
+
+  /* Şafak göğü gradyanları (koyu hero zeminleri) */
+  --k-gradient-dawn-sky: linear-gradient(176deg, #141029, #241640, #3E1F4E, #6A2B52, #A33C4E, #D35F49, #F2974C, #FFC76F);
+  --k-gradient-dawn-underglow: radial-gradient(130% 100% at 50% 118%, #FFB57E, #FF8A5B, #C24E7E, #5B2F66, #1A0F26);
+}
+
+/* ---- AÇIK tema: çalışma / odak / analitik ekranlar ---- */
+.k-paper {
+  --k-bg: #F7F4EF;
+  --k-surface: #FFFFFF;
+  --k-surface-subtle: #FBF8F3;
+  --k-border: #ECE6DD;
+  --k-border-strong: #E2DACE;
+  --k-border-faint: #F0EAE1;
+  --k-text: #2A2433;
+  --k-text-2: #4A4456;
+  --k-text-muted: #6B6478;   /* açık zeminde küçük metin AA minimumu */
+  --k-text-faded: #B0A9B8;   /* yalnız dekoratif */
+  /* Ders renkleri — açık panel paleti */
+  --k-subj-mat: #3B82F6;
+  --k-subj-fiz: #8B5CF6;
+  --k-subj-kim: #E0593F;
+  --k-subj-biy: #1FB683;
+  --k-subj-tur: #F59E0B;
+  --k-subj-edb: #D97706;
+  --k-subj-tar: #B45309;
+  --k-subj-cog: #0D9488;
+  --k-subj-fel: #7C3AED;
+  --k-subj-din: #6B7280;
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--k-font-sans);
+}
+
+/* ---- KOYU tema: duygusal / hub / kutlama / ritüel ekranlar ---- */
+.k-dusk {
+  --k-bg: #110C18;
+  --k-surface: #150E20;
+  --k-surface-subtle: #170E22;
+  --k-border: rgba(255, 240, 230, 0.16);
+  --k-border-strong: rgba(255, 240, 230, 0.26);
+  --k-border-faint: rgba(255, 240, 230, 0.1);
+  --k-text: #F1E9F2;
+  --k-text-2: #ECE4F0;
+  --k-text-muted: rgba(241, 233, 242, 0.6);
+  --k-text-faded: rgba(241, 233, 242, 0.4);
+  /* Ders renkleri — koyu zeminde parlak palet (kiro-data subjects[].renk) */
+  --k-subj-mat: #5B8DEF;
+  --k-subj-fiz: #A77BFF;
+  --k-subj-kim: #E25A72;
+  --k-subj-biy: #2DD4A7;
+  --k-subj-tur: #FFB347;
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--k-font-sans);
+}
+
+/* Sayılar her zaman tabular */
+.k-num { font-family: var(--k-font-sans); font-variant-numeric: tabular-nums; }
+
+/* Odak halkası (kanon) */
+:focus-visible { outline: 2px solid rgba(255, 111, 92, 0.7); outline-offset: 2px; }
+
+/* Kaygı-duyarlı motion tabanı */
+@media (prefers-reduced-motion: no-preference) {
+  a, button, [role='button'] { transition: transform var(--k-dur-fast) ease, filter var(--k-dur-base) ease; }
+}

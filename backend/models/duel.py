@@ -4,12 +4,12 @@ Duel Models
 DuelSession, DuelMatch ve DuelRating modelleri — ogrenciler arasi soru duelolari.
 """
 
-import uuid
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -20,7 +20,7 @@ class DuelSession(Base):
     __tablename__ = "duel_sessions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     player1_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -60,7 +60,7 @@ class DuelMatch(Base):
     __tablename__ = "duel_matches"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     session_id: Mapped[str] = mapped_column(
         String, ForeignKey("duel_sessions.id", ondelete="CASCADE"), nullable=False
@@ -90,7 +90,14 @@ class DuelRating(Base):
     __tablename__ = "duel_ratings"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(
         String,
@@ -109,6 +116,5 @@ class DuelRating(Base):
 
     def __repr__(self) -> str:
         return (
-            f"<DuelRating id={self.id} student={self.student_id}"
-            f" elo={self.elo_rating}>"
+            f"<DuelRating id={self.id} student={self.student_id} elo={self.elo_rating}>"
         )

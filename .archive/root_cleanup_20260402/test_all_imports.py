@@ -11,29 +11,29 @@ packages = {
     "Pydantic": "pydantic",
     "SQLAlchemy": "sqlalchemy",
     "Alembic": "alembic",
-    
+
     # Database
     "asyncpg": "asyncpg",
     "psycopg": "psycopg",
-    
+
     # Cache & Queue
     "Redis": "redis",
     # "aioredis": "aioredis",  # DEPRECATED in Python 3.13
     "Celery": "celery",
-    
+
     # HTTP
     "aiohttp": "aiohttp",
     "httpx": "httpx",
-    
+
     # Testing
     "pytest": "pytest",
     "pytest_asyncio": "pytest_asyncio",
-    
+
     # ML/Data
     "NumPy": "numpy",
     "scikit-learn": "sklearn",
     "matplotlib": "matplotlib",
-    
+
     # Utils
     "Pillow": "PIL",
     "structlog": "structlog",

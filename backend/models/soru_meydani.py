@@ -16,12 +16,12 @@ Kurallar:
 
 from __future__ import annotations
 
-import uuid
 from datetime import datetime
 
 from sqlalchemy import (
     Boolean,
     DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
@@ -29,6 +29,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -43,7 +44,14 @@ class ForumQuestion(Base):
     __tablename__ = "forum_questions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     # Hangi soru bankasi sorusu hakkinda (opsiyonel)
@@ -59,7 +67,7 @@ class ForumQuestion(Base):
     )
     # Soru metni (max 500 karakter, sablon + parametre)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
-    body: Mapped[str | None] = mapped_column(Text, nullable=True)
+    body: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
     # Durum
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default="open", index=True
@@ -89,12 +97,12 @@ class ForumSolution(Base):
     __tablename__ = "forum_solutions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     question_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     solver_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     # Cozum icerigi
-    body: Mapped[str] = mapped_column(Text, nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     # Oylama
     helpful_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -123,7 +131,7 @@ class ForumVote(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     voter_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     solution_id: Mapped[str] = mapped_column(String, nullable=False, index=True)

@@ -1,0 +1,12 @@
+# data blobs (large; reproducible via export+workflow; DB backups are source of truth)
+*.csv
+*_keymap.json
+*_manifest.json
+*_solved.json
+batch_*.json
+w*_*.json
+*_apply.tsv
+*_apply.sql
+aud_*.json
+aud_*.tsv
+audit_master.csv

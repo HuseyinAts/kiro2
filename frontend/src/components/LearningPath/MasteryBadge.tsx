@@ -16,14 +16,14 @@ interface MasteryBadgeProps {
 }
 
 const getMasteryColor = (mastery: number): string => {
-  if (mastery >= 0.8) return '#4CAF50';
-  if (mastery >= 0.5) return '#FF9800';
+  if (mastery >= 0.8) {return '#4CAF50';}
+  if (mastery >= 0.5) {return '#FF9800';}
   return '#F44336';
 };
 
 const getMasteryLabel = (mastery: number): string => {
-  if (mastery >= 0.8) return 'Güçlü';
-  if (mastery >= 0.5) return 'Gelişiyor';
+  if (mastery >= 0.8) {return 'Güçlü';}
+  if (mastery >= 0.5) {return 'Gelişiyor';}
   return 'Başlangıç';
 };
 

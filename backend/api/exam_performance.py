@@ -15,16 +15,17 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
-
 from sqlalchemy import select
 
 from core.database import get_db_session_context
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.dependencies import (
+    STUDENT_DATA_ACCESS_ROLES,
+    AuthenticatedUser,
+    get_current_user,
+)
 from models.database import ExamSession
 
-_STAFF_VIEW_STUDENT_PERFORMANCE = frozenset(
-    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
-)
+_STAFF_VIEW_STUDENT_PERFORMANCE = STUDENT_DATA_ACCESS_ROLES
 
 
 async def _assert_exam_session_authorized(
@@ -42,13 +43,16 @@ async def _assert_exam_session_authorized(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Sinav oturumu bulunamadi",
         )
-    if str(owner) != str(
-        current_user.id
-    ) and current_user.role not in _STAFF_VIEW_STUDENT_PERFORMANCE:
+    if (
+        str(owner) != str(current_user.id)
+        and current_user.role not in _STAFF_VIEW_STUDENT_PERFORMANCE
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu sinav verisine erisim yetkiniz yok",
         )
+
+
 from core.multi_layer_cache import MultiLayerCache
 from core.structured_logger import get_logger
 from models.database import ExamType
@@ -445,7 +449,10 @@ async def get_detailed_performance_analysis(
                 "student_id": current_user.id,
             },
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -524,7 +531,10 @@ async def get_subject_weaknesses(
         return weaknesses_response
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -597,7 +607,10 @@ async def get_study_recommendations(
         return recommendations_response
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -660,7 +673,10 @@ async def get_performance_comparison(
         return comparison_response
 
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -693,9 +709,10 @@ async def get_student_improvement_trends(
     - **Son Puanlar**: Kronolojik sırayla son 5 sınav
     """
     try:
-        if str(current_user.id) != str(
-            student_id
-        ) and current_user.role not in _STAFF_VIEW_STUDENT_PERFORMANCE:
+        if (
+            str(current_user.id) != str(student_id)
+            and current_user.role not in _STAFF_VIEW_STUDENT_PERFORMANCE
+        ):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu öğrencinin verilerine erişim yetkiniz yok",

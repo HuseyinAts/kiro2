@@ -97,8 +97,11 @@ def check_environment() -> list[str]:
 
     # API keys
     for var, desc in {
-        "ANTHROPIC_API_KEY": "API erisimi icin gerekli",
-        "GOOGLE_API_KEY": "Gemini MCP icin gerekli",
+        # Bunlar env degisken ADLARI, deger DEGIL — `detect-secrets` "Secret
+        # Keyword" dedektoru anahtar adini gorup yanindaki Turkce aciklamayi
+        # "deger" saniyor. Yanlis-pozitif oldugu olculdu (deger yok, yalniz ad).
+        "ANTHROPIC_API_KEY": "API erisimi icin gerekli",  # pragma: allowlist secret
+        "GOOGLE_API_KEY": "Gemini MCP icin gerekli",  # pragma: allowlist secret
     }.items():
         if not os.environ.get(var):
             warnings.append(f"{var} tanimli degil: {desc}")
@@ -118,14 +121,37 @@ def check_environment() -> list[str]:
     # Backend health — 1s timeout
     try:
         import urllib.request
-        req = urllib.request.Request("http://localhost:8000/api/v1/health", method="GET")
-        with urllib.request.urlopen(req, timeout=1) as resp:
+        # `/health` DOGRU yol. `/api/v1/health` **404** doner — `api/health.py`
+        # router'inda prefix YOK (olculdu: 1 Agu ve 20 Agu 2026). Yanlis yol
+        # 35 saattir healthy olan backend'i "erisilemez" diye raporlatiyordu.
+        req = urllib.request.Request("http://localhost:8000/health", method="GET")
+        with urllib.request.urlopen(req, timeout=3) as resp:
             if resp.status != 200:
                 warnings.append(f"Backend health: HTTP {resp.status}")
     except Exception:
         warnings.append("Backend (8000) erisilemez")
 
     return warnings
+
+
+def _icerik_satiri(production: dict) -> str:
+    """Icerik durumunu KAYNAGI ADIYLA yaz.
+
+    Eskiden `d-dataset/eslesmis_sorucevap.jsonl` satir sayisi (77.336)
+    "Production: 77,336 questions" diye raporlaniyordu. Canli DB'de
+    `question_bank`=36.967, ogrenci kapisi 27.073 ve iki kumenin kesisimi
+    SIFIR (20 Agu 2026 olcumu). Vekil olcumu urun sayisi diye sunmak
+    her oturumda yanlis bir baslangic noktasi veriyordu.
+    """
+    def g(anahtar: str) -> str:
+        deger = production.get(anahtar)
+        return f"{deger:,}" if isinstance(deger, int) else "olculemedi"
+
+    return (
+        f"DB question_bank={g('db_question_bank')} "
+        f"ogrenci kapisi={g('db_safe_pool')} "
+        f"(JSONL dosyasi={g('jsonl_rows')} — servis edilen havuz DEGIL)"
+    )
 
 
 def build_context(prev_state: dict | None) -> str:
@@ -150,11 +176,16 @@ def build_context(prev_state: dict | None) -> str:
     if uncommitted > 0:
         parts.append(f"Uncommitted: {uncommitted} files ({git.get('uncommitted_py', 0)} .py)")
 
-    q_count = production.get("question_count", 0)
-    if q_count > 0:
-        parts.append(f"Production: {q_count:,} questions")
+    parts.append(_icerik_satiri(production))
 
     parts.append(f"Services: Backend={services.get('backend', '?')} Frontend={services.get('frontend', '?')}")
+
+    gorunur = prev_state.get("visible_output") or {}
+    if gorunur.get("commits_today") and not gorunur.get("user_visible_today"):
+        parts.append(
+            f"UYARI (E3): onceki turda {gorunur['commits_today']} commit atildi, "
+            "kullanici-gorunur cikti 0."
+        )
 
     active = tasks.get("active", [])
     if active:
@@ -189,9 +220,7 @@ def print_banner(session_id: str, source: str, warnings: list[str], prev_state: 
         uncommitted = git.get("uncommitted_count", 0)
         if uncommitted > 0:
             lines.append(f"Uncommitted: {uncommitted} files ({git.get('uncommitted_py', 0)} .py)")
-        q_count = production.get("question_count", 0)
-        if q_count > 0:
-            lines.append(f"Production: {q_count:,} questions")
+        lines.append(_icerik_satiri(production))
         lines.append(f"Services: Backend={services.get('backend', '?')} Frontend={services.get('frontend', '?')}")
         lines.append("--- End Previous State ---")
 

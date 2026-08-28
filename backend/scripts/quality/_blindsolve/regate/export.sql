@@ -1,0 +1,2 @@
+\encoding UTF8
+\copy (SELECT json_build_object('id', q.id, 'subject', q.subject_area, 'key', q.correct_answer, 'q', q.question_text, 'a', q.option_a, 'b', q.option_b, 'c', q.option_c, 'd', q.option_d, 'e', q.option_e, 'img', (q.question_image_url IS NOT NULL), 'wave', q.pipeline_metadata::jsonb->>'blind_solve_wave') FROM v_safe_for_beta q WHERE q.pipeline_metadata::jsonb ? 'blind_solve_wave' ORDER BY md5(q.id)) TO 'C:/Users/husey/kiro2/backend/scripts/quality/_blindsolve/regate/master.csv' CSV

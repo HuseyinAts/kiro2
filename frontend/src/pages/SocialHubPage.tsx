@@ -94,7 +94,7 @@ export default function SocialHubPage() {
 
   useEffect(() => {
     socialSummary.getXP().then((res) => {
-      if (res.success) setXp(res.data);
+      if (res.success) {setXp(res.data);}
     }).catch(() => {});
   }, []);
 

@@ -227,13 +227,13 @@ const mockAdminAnalytics = {
 describe('Analytics Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup default mocks
     vi.mocked(analyticsService.formatDateRange).mockReturnValue({
       startDate: '2024-01-01T00:00:00Z',
       endDate: '2024-01-31T00:00:00Z'
     });
-    
+
     vi.mocked(analyticsService.getPerformanceColor).mockReturnValue('text-green-600');
     vi.mocked(analyticsService.getTrendIcon).mockReturnValue('📈');
     vi.mocked(analyticsService.getLearningStyleColor).mockReturnValue('bg-blue-100 text-blue-800');
@@ -263,7 +263,7 @@ describe('Analytics Components', () => {
 
       // Check if performance metrics are displayed
       expect(screen.getByText('45.5h')).toBeInTheDocument(); // Study time
-      expect(screen.getByText('1,247')).toBeInTheDocument(); // Questions solved
+      expect(screen.getByText(/1[.,]247/)).toBeInTheDocument(); // Questions solved
     });
 
     it('handles error state', async () => {
@@ -303,7 +303,7 @@ describe('Analytics Components', () => {
 
       // Check if class metrics are displayed
       expect(screen.getByText('38.2h')).toBeInTheDocument(); // Average study time
-      expect(screen.getByText('5,847')).toBeInTheDocument(); // Total questions
+      expect(screen.getByText(/5[.,]847/)).toBeInTheDocument(); // Total questions
     });
   });
 
@@ -328,8 +328,8 @@ describe('Analytics Components', () => {
       );
 
       // Check if system metrics are displayed
-      expect(screen.getByText('25,847')).toBeInTheDocument(); // Total users
-      expect(screen.getByText('15,896')).toBeInTheDocument(); // Active users
+      expect(screen.getByText(/25[.,\s]847/)).toBeInTheDocument(); // Total users
+      expect(screen.getByText(/15[.,\s]896/)).toBeInTheDocument(); // Active users
     });
   });
 

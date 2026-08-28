@@ -27,15 +27,42 @@ def _build_message(
     return msg
 
 
+def _smtp_kimlik() -> tuple[str | None, str | None, str | None]:
+    """Gönderim için gereken ÜÇ değer — bu modüldeki **tek kaynak**.
+
+    F20 (#466): dogrulayicilar `SMTP_HOST`, tuketiciler `SMTP_SERVER` okuyordu.
+    Operator dokumante edilen SMTP_HOST'u doldurdugunda startup validator
+    GECIYOR ama gonderim burada sessizce False donuyordu — yanlis pozitif
+    saglik sinyali. Iki ad da kabul ediliyor; SMTP_HOST tercih edilir cunku
+    dogrulayicilarin ve .env sablonunun kullandigi ad odur.
+
+    Kontrolü KOPYALAYAN her yeni çağıran aynı ayrışmayı yeniden üretir; bu
+    yüzden `send_email` de `smtp_yapilandirilmis_mi()` de buradan okur.
+    """
+    return (
+        os.getenv("SMTP_HOST") or os.getenv("SMTP_SERVER"),
+        os.getenv("SMTP_USERNAME"),
+        os.getenv("SMTP_PASSWORD"),
+    )
+
+
+def smtp_yapilandirilmis_mi() -> bool:
+    """`send_email` gerçekten gönderebilir mi?
+
+    "Gönderebilir" ile "yapılandırılmış görünüyor" AYNI ŞEY OLMALI — aksi halde
+    e-posta doğrulama kapısı açılır ama doğrulama postası hiç gitmez
+    (bkz. `core/eposta_dogrulama.kapi_engeli`).
+    """
+    return all(_smtp_kimlik())
+
+
 def send_email(to: str, subject: str, html_body: str, blocking: bool = False) -> bool:
     """Email gönder. Config yoksa False (uyarı loglar). blocking=True testte senkron."""
-    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_server, smtp_username, smtp_password = _smtp_kimlik()
     smtp_port = os.getenv("SMTP_PORT", "587")
-    smtp_username = os.getenv("SMTP_USERNAME")
-    smtp_password = os.getenv("SMTP_PASSWORD")
     from_addr = os.getenv("EMAIL_FROM") or smtp_username or "noreply@kiro2.edu.tr"
 
-    if not (smtp_server and smtp_username and smtp_password):
+    if not smtp_yapilandirilmis_mi():
         logger.warning("SMTP yapılandırılmamış; %s adresine email atlandı", to)
         return False
 

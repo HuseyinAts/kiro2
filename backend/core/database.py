@@ -12,6 +12,7 @@ Requirements: REQ-1.2
 """
 
 import logging
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -23,8 +24,11 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import Session as _SyncSession
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool, StaticPool
+
+from core.tenant_context import GUC_KUR_SQL, aktif_kullaniciyi_getir
 
 from .config import settings
 
@@ -103,6 +107,7 @@ class DatabaseManager:
         Requirements: REQ-1.2
         """
         import asyncio
+
         try:
             current_loop = asyncio.get_running_loop()
         except RuntimeError:
@@ -118,14 +123,6 @@ class DatabaseManager:
             self._initialized = False
 
         self._loop = current_loop
-
-        # TESTING MODE: Skip initialization if TESTING=true (smoke tests)
-        import os
-
-        if os.environ.get("TESTING") == "true":
-            logger.info("⚠️  TESTING mode: Skipping database initialization")
-            self._initialized = True
-            return
 
         try:
             # Ensure asyncpg driver is used for PostgreSQL
@@ -155,9 +152,7 @@ class DatabaseManager:
                     "timeout": 30.0,  # Connection timeout (seconds)
                 }
             elif "sqlite" in database_url:
-                connect_args = {
-                    "check_same_thread": False
-                }
+                connect_args = {"check_same_thread": False}
 
             # Pool settings only for PostgreSQL and SQLite
             engine_args = {
@@ -168,7 +163,9 @@ class DatabaseManager:
             if "sqlite" in database_url:
                 # SQLite: Use StaticPool to prevent losing in-memory database across connection closes
                 engine_args["poolclass"] = StaticPool
-                logger.info("SQLite connection configured with StaticPool and check_same_thread=False")
+                logger.info(
+                    "SQLite connection configured with StaticPool and check_same_thread=False"
+                )
             elif "postgresql" in database_url:
                 # SRE forced settings for 1000 concurrent user I/O (optimised for max_connections=200 limit)
                 pool_size = 20
@@ -207,18 +204,26 @@ class DatabaseManager:
 
             # SRE Slow Query Telemetry: Log queries taking > 500ms at WARNING level
             @event.listens_for(self.engine.sync_engine, "before_cursor_execute")
-            def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+            def before_cursor_execute(
+                conn, cursor, statement, parameters, context, executemany
+            ):
                 import time
+
                 if context is not None:
                     context._query_start_time = time.perf_counter()
 
             @event.listens_for(self.engine.sync_engine, "after_cursor_execute")
-            def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+            def after_cursor_execute(
+                conn, cursor, statement, parameters, context, executemany
+            ):
                 import time
+
                 if context is not None:
                     start_time = getattr(context, "_query_start_time", None)
                     if start_time is not None:
-                        total_time = (time.perf_counter() - start_time) * 1000.0  # in ms
+                        total_time = (
+                            time.perf_counter() - start_time
+                        ) * 1000.0  # in ms
                         if total_time > 500.0:
                             logger.warning(
                                 f"[SLOW QUERY WARNING] Execution time: {total_time:.2f}ms\n"
@@ -499,3 +504,42 @@ async def get_redis_client():
 
     # Return the Redis client (can be None if Redis is not available)
     return cache_manager.redis
+
+
+# ============================================================================
+# RLS kiraci GUC'u — HER transaction basinda (S241 B1)
+# ============================================================================
+# NEDEN BURADA, cagri yerlerinde DEGIL:
+# 79 tabloda RLS acik ve politikalar fail-closed. GUC set edilmemis baglantida
+# `current_setting('app.current_org_id', true)` NULL doner, karsilastirma NULL
+# olur, satir reddedilir. Backend `kiro2_app` rolu ile bagli (rolbypassrls=f),
+# yani RLS gercekten uygulaniyor. Olculdu: `exam_sessions` tablosunda BUGUNE
+# KADAR 0 satir -- hicbir ogrenci tek bir sinav baslatamadi.
+#
+# GUC'u set eden tek yer `core/dependencies.py`'deki `get_current_tenant`'ti ve
+# transaction-local oldugu icin yalniz istek oturumunu kapsiyordu. Sinav motoru
+# 16, komut/API 6 yerde KENDI oturumunu aciyor. 22 cagri yerini tek tek yamamak
+# cerrahi degil: biri atlanirsa sessiz 500 olarak geri doner. Bu yuzden kanca
+# tek bogaz noktasina -- transaction baslangicina -- konuyor.
+#
+# Bekci: backend/tests/integration/test_rls_guc_transaction.py
+@event.listens_for(_SyncSession, "after_begin")
+def _rls_guc_kur(session, transaction, connection):  # pragma: no cover - event hook
+    """Her transaction basinda `app.current_org_id`'yi aktif kullanicidan turet.
+
+    Uc dal da KASITLI:
+      * postgresql disi lehce (test sqlite'i) -> ATLA. `set_config` Postgres'e ozgu.
+      * aktif kullanici yok (Celery/startup/script) -> ATLA. Bugunku davranis korunur,
+        regresyon uretilmez.
+      * hata -> YUT ve LOG'LA. GUC kurulamazsa RLS zaten fail-closed davranir;
+        burada patlamak calisan istekleri de dusururdu.
+    """
+    if connection.dialect.name != "postgresql":
+        return
+    kullanici_id = aktif_kullaniciyi_getir()
+    if not kullanici_id:
+        return
+    try:
+        connection.exec_driver_sql(GUC_KUR_SQL, (kullanici_id,))
+    except Exception as exc:
+        logger.warning("RLS GUC kurulamadi (kullanici=%s): %s", kullanici_id, exc)

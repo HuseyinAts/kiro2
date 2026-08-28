@@ -35,8 +35,8 @@ def mock_elasticsearch_service():
 def mock_current_user():
     """Mock current user for authentication"""
     user = Mock()
-    user.id = "user_123"
-    user.user_id = "user_123"
+    user.id = "student_123"
+    user.user_id = "student_123"
     user.username = "test_user"
     user.email = "test@example.com"
     user.role = "student"
@@ -104,6 +104,7 @@ class TestStudentAnalyticsEndpoint:
         """Test successful student analytics retrieval"""
         from api.analytics import get_student_analytics
 
+        mock_current_user.id = "student_123"
         with patch(
             "api.analytics.get_elasticsearch_service",
             return_value=mock_elasticsearch_service,

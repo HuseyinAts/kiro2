@@ -11,7 +11,6 @@ import logging
 import math
 import re
 from datetime import datetime
-from functools import lru_cache
 from typing import Any
 
 from models.irt_morfoloji import (
@@ -25,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 from collections import OrderedDict
+
 
 class AsyncLRUCacheDecorator:
     """
@@ -56,7 +56,7 @@ class AsyncLRUCacheDecorator:
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        
+
         class BoundMethod:
             def __init__(self, decorator, inst):
                 self._decorator = decorator
@@ -78,7 +78,7 @@ class AsyncLRUCacheDecorator:
                     if key in self._decorator.cache:
                         self._decorator.cache.move_to_end(key)
                         return self._decorator.cache[key]
-                    
+
                     if len(self._decorator.cache) >= self._decorator.maxsize:
                         # Pop oldest (LRU Eviction)
                         self._decorator.cache.popitem(last=False)
@@ -312,15 +312,15 @@ class ZemberekMorfolojiService:
             # Her kelime için paralel analiz yap
             kelime_listesi = [k for k in kelimeler if len(k) > 1]
             benzersiz_kelimeler = list(set(kelime_listesi))
-            
+
             kelime_tasklari = [self.analiz_et_kelime(k) for k in benzersiz_kelimeler]
             kelime_sonuclari = await asyncio.gather(*kelime_tasklari, return_exceptions=True)
-            
+
             kelime_to_analiz = {}
             for k, res in zip(benzersiz_kelimeler, kelime_sonuclari):
                 if not isinstance(res, Exception) and res:
                     kelime_to_analiz[k] = res
-                    
+
             kelime_analizleri = []
             for kelime in kelime_listesi:
                 analiz = kelime_to_analiz.get(kelime)

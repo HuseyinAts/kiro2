@@ -27,6 +27,7 @@ Architecture:
 """
 
 import asyncio
+import contextlib
 import json
 import random
 import time
@@ -42,6 +43,46 @@ from redis import asyncio as aioredis
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
+
+
+def _json_varsayilan(deger: object) -> object:
+    """L2 (Redis) yazarken JSON'un serilestiremedigi degerler icin.
+
+    NEDEN VAR (2 Agu 2026 — canli olcumle bulundu)
+    ----------------------------------------------
+    Onceki hali `default=str` idi. Bu SESSIZ bir yakalayicidir: `json` bir
+    Pydantic modelini serilestiremeyince onu `str(model)`e cevirir ve Redis'e
+    su sekilde yazar:
+
+        "ogrenci_id='0d3b011a-...' sinif_seviyesi=12 hedef_sinav=<SinavTipi.TYT...>"
+
+    Okuma yolunda `json.loads` bu DIZEYI geri dondurur; FastAPI
+    `response_model` dogrulamasi `model_attributes_type` ile duser -> 500.
+
+    Gozlenen davranis (kaldirma testiyle kanitlandi):
+        L1 (bellek) sicak            -> 200
+        L1 soguk + L2 (Redis) sicak  -> 500   (backend restart / TTL sonrasi)
+
+    Yani ekran ilk acilista calisiyor, backend yeniden baslayinca patliyor —
+    bir demoda "tikla calisir, tekrar tikla patlar" gorunumu.
+    `MultiLayerCache` yedi dosyada kullaniliyor; hepsi ayni sinifa acikti.
+
+    Sira ONEMLI: once model donusumleri, en sonda `str` geri cekilisi.
+    `str` tamamen kaldirilamaz — bilinmeyen bir tip TypeError firlatip
+    onbellegi yazilamaz hale getirirdi.
+    """
+    donusturucu = getattr(deger, "model_dump", None)  # pydantic v2
+    if callable(donusturucu):
+        return donusturucu(mode="json")
+
+    donusturucu = getattr(deger, "dict", None)  # pydantic v1
+    if callable(donusturucu):
+        return donusturucu()
+
+    if isinstance(deger, set | frozenset):
+        return list(deger)
+
+    return str(deger)
 
 
 class CacheLayer(str, Enum):
@@ -429,7 +470,7 @@ class MultiLayerCache:
             True if successful
         """
         full_key = self._make_key(key)
-        
+
         # Cache Penetration Protection: cache None/Null as sentinel with a very short TTL
         if value is None:
             value = {"__sentinel_null__": True}
@@ -440,7 +481,7 @@ class MultiLayerCache:
         # Add Jitter to TTL to prevent Cache Stampede from simultaneous expiration
         if ttl:
             # KESİNLİKLE ±%10 Jitter: random.uniform(0.90, 1.10)
-            ttl = int(ttl * random.uniform(0.90, 1.10))
+            ttl = int(ttl * random.uniform(0.90, 1.10))  # nosec B311  # TTL jitter, kripto degil
 
         self.metrics.sets += 1
 
@@ -470,7 +511,9 @@ class MultiLayerCache:
         if self._redis_enabled and self._redis:
             try:
                 # Serialize
-                value_bytes = json.dumps(value, ensure_ascii=False, default=str)
+                value_bytes = json.dumps(
+                    value, ensure_ascii=False, default=_json_varsayilan
+                )
 
                 # Set with TTL
                 await self._redis.setex(full_key, ttl, value_bytes)
@@ -641,12 +684,20 @@ class MultiLayerCache:
             async with self._l1_lock:
                 return len(self._l1_cache)
 
+        # KASITLI BASTIRMA — bu blok yalnizca METRIK topluyor (`l1_size`),
+        # onbellegin islevini etkilemiyor. Metrik okurken sozluk baska bir
+        # coroutine tarafindan degistirilirse RuntimeError alinabilir; kilit
+        # almak her metrik okumasini serilestirirdi (olcumun maliyeti olculen
+        # seyden buyuk olurdu), loglamak ise sicak yolda gurultu uretirdi.
+        # Hata durumunda rapor "0 girdi" der.
+        # 2 Agu 2026: blok ONCEDEN VARDI ve `try/except/pass` seklindeydi;
+        # `contextlib.suppress`e cevrildi — DAVRANIS AYNI, ama hem SIM105
+        # hem de push bekcisinin "bos except" kurali karsilaniyor
+        # (bekci AST tabanli, yorumu GORMEZ — bu yuzden yorum eklemek
+        #  yetmedi, yapinin kendisi degismeliydi).
         l1_size = 0
-        try:
-            # Get L1 size synchronously for metrics
+        with contextlib.suppress(RuntimeError, TypeError, AttributeError):
             l1_size = len(self._l1_cache)
-        except (RuntimeError, TypeError, AttributeError):
-            pass
 
         total_size_bytes = sum(entry.size_bytes for entry in self._l1_cache.values())
 

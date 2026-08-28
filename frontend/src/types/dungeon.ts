@@ -34,9 +34,9 @@ export interface DungeonMapResponse {
 export type RoomLevel = 0 | 1 | 2 | 3;
 
 export function getRoomLevel(progress: DungeonProgressData): RoomLevel {
-  if (progress.completed) return 3;
-  if (progress.best_score >= 50) return 2;
-  if (progress.attempt_count > 0) return 1;
+  if (progress.completed) {return 3;}
+  if (progress.best_score >= 50) {return 2;}
+  if (progress.attempt_count > 0) {return 1;}
   return 0;
 }
 
@@ -54,8 +54,8 @@ export function fogOpacity(
   room: DungeonRoom,
   theta: number,
 ): number {
-  if (!room.prereqs_met) return 0.9;
-  if (room.progress.completed) return 0;
+  if (!room.prereqs_met) {return 0.9;}
+  if (room.progress.completed) {return 0;}
 
   const thetaFactor = Math.max(0, Math.min(1, (theta + 3) / 6));
   const depthFactor = Math.max(0, 1 - room.dag_depth * 0.15);

@@ -15,7 +15,12 @@ from sqlalchemy import text as _sql_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # FIX 2026-04-01: in-memory auth kaldirildi, JWT auth eklendi
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
+from core.dependencies import (
+    PLATFORM_ADMIN_ROLES,
+    AuthenticatedUser,
+    get_current_user,
+    get_db,
+)
 from models.user import Kullanici
 from services.admin_service import admin_servisi
 
@@ -39,7 +44,14 @@ async def admin_kullanici_getir(
     str Enum: UserRole.ADMIN == 'admin' == 'ADMIN' degil,
     ama JWT payload 'admin' (lowercase) tasidigindan UserRole.ADMIN eslesir.
     """
-    if current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
+    # ROL KUMESI KANONDAN gelir (core/dependencies.PLATFORM_ADMIN_ROLES), burada
+    # KOPYALANMAZ. X06 (c) 1. adim: bu kapi ile get_current_admin_user (83 uc)
+    # davranissal IKIZ; kume kopyalanirsa ikisi bagimsiz KAYABILIR ve ayni yetkiye
+    # sahip iki kullanici farkli muamele gorur. S252'de tam bu siniftan iki canli
+    # kusur cikti (api/ogretmen.py:46 · api/auth.py:348).
+    # Mesaj Turkce KALIYOR -- kullanici-gorunur delta SIFIR; birlesen sey YARGI.
+    # Bekci: tests/unit/test_rol_kapisi_yakinsama.py
+    if current_user.role not in PLATFORM_ADMIN_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu islem icin admin yetkisi gerekli",
@@ -84,7 +96,7 @@ async def kullanicilari_listele(
             FROM users {where_sql}
             ORDER BY created_at DESC
             LIMIT :limit OFFSET :offset
-        """),
+        """),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             params,
         )
         return [dict(r) for r in result.mappings().all()]
@@ -154,7 +166,8 @@ async def kullanici_guncelle(
 ) -> dict[str, Any]:
     """Kullanici is_active / role guncelle. Diger alanlar ignora edilir."""
     try:
-        updates, params = [], {"uid": kullanici_id}
+        updates: list[str] = []
+        params: dict[str, Any] = {"uid": kullanici_id}
         if "is_active" in kullanici_data:
             updates.append("is_active = :is_active")
             params["is_active"] = bool(kullanici_data["is_active"])
@@ -167,7 +180,8 @@ async def kullanici_guncelle(
         if not updates:
             raise HTTPException(400, detail="Guncellenecek alan yok")
         await db.execute(
-            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"), params
+            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
+            params,
         )
         await db.commit()
         result = await db.execute(
@@ -245,12 +259,14 @@ async def dashboard_istatistikleri(
         q = await db.execute(
             _sql_text("""
             SELECT
-                COUNT(*)                                                    AS toplam_soru,
-                SUM(CASE WHEN is_active THEN 1 ELSE 0 END)                 AS aktif_soru,
-                SUM(CASE WHEN is_calibrated THEN 1 ELSE 0 END)             AS kalibre_soru,
-                SUM(CASE WHEN is_calib_pool THEN 1 ELSE 0 END)             AS calib_pool,
-                COUNT(DISTINCT subject_area)                                AS ders_sayisi
-            FROM question_bank
+                COUNT(*)                                        AS toplam_soru,
+                SUM(CASE WHEN qb.is_active THEN 1 ELSE 0 END)   AS aktif_soru,
+                SUM(CASE WHEN qs.is_calibrated THEN 1 ELSE 0 END) AS kalibre_soru,
+                SUM(CASE WHEN qs.is_calib_pool THEN 1 ELSE 0 END) AS calib_pool,
+                COUNT(DISTINCT qm.subject_area)                 AS ders_sayisi
+            FROM question_bank qb
+            LEFT JOIN question_statistics qs ON qs.id = qb.id
+            LEFT JOIN question_metadata qm ON qm.id = qb.id
         """)
         )
         s = dict(q.mappings().one())
@@ -293,28 +309,35 @@ async def soru_bankasi_listesi(
 ) -> dict[str, Any]:
     """Soru bankasini listele — dogrudan question_bank DB sorgusu."""
     try:
-        clauses, params = [], {}
+        clauses: list[str] = []
+        params: dict[str, Any] = {}
         if konu:
-            clauses.append("LOWER(subject_area) = LOWER(:konu)")
+            clauses.append("LOWER(qm.subject_area) = LOWER(:konu)")
             params["konu"] = konu
         if zorluk:
-            clauses.append("difficulty_level = :zorluk")
+            clauses.append("qs.difficulty_level = :zorluk")
             params["zorluk"] = zorluk
         where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
         params.update({"limit": sayfa_boyutu, "offset": (sayfa - 1) * sayfa_boyutu})
+        joins = (
+            "FROM question_bank qb "
+            "JOIN question_content qc ON qc.id = qb.id "
+            "JOIN question_metadata qm ON qm.id = qb.id "
+            "JOIN question_statistics qs ON qs.id = qb.id"
+        )
         rows = await db.execute(
             _sql_text(f"""
-            SELECT id, question_text, subject_area, difficulty_level,
-                   correct_answer, is_calibrated, is_calib_pool,
-                   irt_difficulty, irt_discrimination
-            FROM question_bank {where}
-            ORDER BY created_at DESC
+            SELECT qb.id, qc.question_text, qm.subject_area, qs.difficulty_level,
+                   qc.correct_answer, qs.is_calibrated, qs.is_calib_pool,
+                   qs.irt_difficulty, qs.irt_discrimination
+            {joins} {where}
+            ORDER BY qb.created_at DESC
             LIMIT :limit OFFSET :offset
-        """),
+        """),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             params,
         )
         cnt = await db.execute(
-            _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),
+            _sql_text(f"SELECT COUNT(*) {joins} {where}"),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             {k: v for k, v in params.items() if k not in ("limit", "offset")},
         )
         return {
@@ -355,6 +378,23 @@ async def soru_ekle(
         soru = await soru_bankasi_servisi.soru_ekle(
             {**soru_data, "created_by": admin.id}
         )
+
+        # Servis, soru_hash çakışmasında MEVCUT satırı döndürüyor (bilinçli:
+        # toplu içe-aktarma yolu için idempotentlik). Burada koşulsuz
+        # "başarıyla eklendi" demek SAHTE SAHİPLİK üretiyordu: çağıran,
+        # başkasının sorusunun kimliğini kendi oluşturduğu sanıyordu. DELETE
+        # ucu çalışır hâle geldiği için (aynı gün, A-1) bu artık bir veri
+        # kaybı yoluna bağlanıyor.
+        # `getattr` varsayılanı False: bayrağı taşımayan bir dönüş çakışma
+        # SAYILMAZ, aksi halde sağlam oluşturma yolları 409 ile kırılırdı.
+        if getattr(soru, "zaten_mevcuttu", False):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    f"Bu soru zaten kayıtlı (id: {soru.id}). Yeni kayıt oluşturulmadı."
+                ),
+            )
+
         return {
             "success": True,
             "data": {
@@ -392,14 +432,49 @@ async def soru_ekle(
 async def soru_guncelle(
     soru_id: str,
     soru_data: dict[str, Any],
-    _: Kullanici = Depends(admin_kullanici_getir),
+    admin: Kullanici = Depends(admin_kullanici_getir),
 ) -> dict[str, Any]:
     """
     Mevcut soruyu güncelle (Admin yetkisi gerekli)
     """
     try:
-        soru = await admin_servisi.soru_guncelle(soru_id, soru_data)
-        return {"success": True, "data": soru, "message": "Soru başarıyla güncellendi"}
+        # `admin_servisi.soru_guncelle` POZISYONEL cagrildigi icin
+        # @admin_required soru_id'yi kullanici saniyor -> AdminAuthorizationError
+        # -> asagidaki ciplak except -> 500. DELETE (a30416f34) ve POST (:349)
+        # bu desenden coktan cikmisti, PUT geride kalmisti (#465/YENI-1).
+        # Yetki kaybi YOK: `Depends(admin_kullanici_getir)` kapisi ustte duruyor
+        # ve ADMIN/SUPER_ADMIN disina 403 veriyor (:42).
+        from services.soru_bankasi_service import soru_bankasi_servisi
+
+        soru = await soru_bankasi_servisi.soru_guncelle(soru_id, soru_data)
+
+        if soru is None:
+            # DIKKAT: servis "bulunamadi" ve "istisna" icin AYNI None'i donuyor
+            # (soru_bankasi_service.py:1265-1270). Yani gercek bir DB hatasi
+            # burada 404 gorunebilir. Servis DEGISTIRILMEDI cunku ikinci bir
+            # uretim cagirani var (api/soru_bankasi.py:845). Belirsizlik durum
+            # tablosunda YENI-8 olarak kayitli.
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+            )
+
+        await admin_servisi.admin_aktivite_kaydet(
+            admin.id, "soru_guncelle", hedef_id=soru_id
+        )
+        # UCUNCU BASTIRICI: eski kod `"data": soru` ile HAM ORM nesnesi
+        # donduruyordu. Pydantic SQLAlchemy modelini serialize edemez
+        # (PydanticSerializationError) -> dekorator atlansa BILE 500 surerdi.
+        # Kardes uclar bu tuzagi coktan asmis: POST (:379) ve
+        # api/soru_bankasi.py:857 ikisi de ACIK sozluk kuruyor. Ayni desen.
+        return {
+            "success": True,
+            "data": {
+                "id": str(soru.id),
+                "soru_metni": soru.question_text,
+                "guncellenen_alanlar": sorted(soru_data.keys()),
+            },
+            "message": "Soru başarıyla güncellendi",
+        }
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -416,19 +491,34 @@ async def soru_guncelle(
 
 @router.delete("/content/questions/{soru_id}", summary="Soru Sil")
 async def soru_sil(
-    soru_id: str, _: Kullanici = Depends(admin_kullanici_getir)
+    soru_id: str, admin: Kullanici = Depends(admin_kullanici_getir)
 ) -> dict[str, Any]:
     """
-    Soruyu sil (Admin yetkisi gerekli)
+    Soruyu sil (Admin yetkisi gerekli) — soft delete, is_active=False.
     """
     try:
-        basarili = await admin_servisi.soru_sil(soru_id)
+        # admin_kullanici_getir yetki doğrulamasını zaten yapıyor (403).
+        # admin_servisi.soru_sil ÇAĞRILAMIYOR: oradaki @admin_required
+        # pozisyonel çağrıda args[0]'ı — yani soru_id'yi — current_user sanıp
+        # deprecated in-memory KullaniciServisi'nde arıyor; sonuç her zaman
+        # AdminAuthorizationError -> 500 (30 Tem 2026'da canlıda 3/3 ölçüldü).
+        # Aynı desen soru_ekle'de (satır 349) zaten uygulanmıştı, DELETE
+        # geride kalmış.
+        from services.soru_bankasi_service import soru_bankasi_servisi
 
-        if basarili:
-            return {"success": True, "message": "Soru başarıyla silindi"}
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+        basarili = await soru_bankasi_servisi.soru_sil(soru_id)
+
+        if not basarili:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+            )
+
+        # Denetim kaydı: eski kod current_user'ı hiç geçirmediği için admin_id
+        # None kalıyordu. Yıkıcı bir admin işlemi kimliksiz loglanmamalı.
+        await admin_servisi.admin_aktivite_kaydet(
+            admin.id, "soru_sil", hedef_id=soru_id
         )
+        return {"success": True, "message": "Soru başarıyla silindi"}
     except HTTPException:
         raise
     except Exception:
@@ -522,21 +612,28 @@ async def icerik_ara(
         }
         rows = await db.execute(
             _sql_text("""
-            SELECT id, question_text, subject_area, difficulty_level, correct_answer
-            FROM question_bank
-            WHERE is_active=TRUE
-              AND (LOWER(question_text) LIKE LOWER(:q)
-                   OR LOWER(subject_area) LIKE LOWER(:q))
-            ORDER BY id LIMIT :limit OFFSET :offset
+            SELECT qb.id, qc.question_text, qm.subject_area,
+                   qs.difficulty_level, qc.correct_answer
+            FROM question_bank qb
+            JOIN question_content qc ON qc.id = qb.id
+            JOIN question_metadata qm ON qm.id = qb.id
+            JOIN question_statistics qs ON qs.id = qb.id
+            WHERE qb.is_active=TRUE
+              AND (LOWER(qc.question_text) LIKE LOWER(:q)
+                   OR LOWER(qm.subject_area) LIKE LOWER(:q))
+            ORDER BY qb.id LIMIT :limit OFFSET :offset
         """),
             params,
         )
         cnt = await db.execute(
             _sql_text("""
-            SELECT COUNT(*) FROM question_bank
-            WHERE is_active=TRUE
-              AND (LOWER(question_text) LIKE LOWER(:q)
-                   OR LOWER(subject_area) LIKE LOWER(:q))
+            SELECT COUNT(*)
+            FROM question_bank qb
+            JOIN question_content qc ON qc.id = qb.id
+            JOIN question_metadata qm ON qm.id = qb.id
+            WHERE qb.is_active=TRUE
+              AND (LOWER(qc.question_text) LIKE LOWER(:q)
+                   OR LOWER(qm.subject_area) LIKE LOWER(:q))
         """),
             {"q": f"%{q}%"},
         )

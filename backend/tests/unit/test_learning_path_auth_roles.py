@@ -5,7 +5,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import HTTPException
 
-from core.learning_path_auth import assert_can_access_body_student_id, verify_student_access
+from core.learning_path_auth import (
+    assert_can_access_body_student_id,
+    verify_student_access,
+)
 
 
 @pytest.mark.asyncio

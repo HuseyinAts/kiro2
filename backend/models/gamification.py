@@ -44,6 +44,13 @@ class BKTState(Base):
     topic_id = Column(
         String, primary_key=True
     )  # FK kaldırıldı (primary_topic_id String)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     p_learn = Column(Float(precision=5, asdecimal=False), default=0.05)
     p_transit = Column(Float(precision=5, asdecimal=False), default=0.10)
     p_guess = Column(Float(precision=5, asdecimal=False), default=0.20)
@@ -87,6 +94,13 @@ class RealmProgress(Base):
     __tablename__ = "realm_progress"
 
     id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     realm_id = Column(Integer, ForeignKey("realms.id"), nullable=False)
     bkt_score = Column(Float(precision=5, asdecimal=False), default=0.0)
@@ -111,6 +125,13 @@ class Streak(Base):
     __tablename__ = "streaks"
 
     user_id = Column(String, ForeignKey("users.id"), unique=True, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     current_streak = Column(Integer, default=0)
     largest_streak = Column(Integer, default=0)
     freeze_count = Column(Integer, default=2)
@@ -129,6 +150,13 @@ class XPTransaction(Base):
     __tablename__ = "xp_transactions"
 
     id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     amount = Column(Integer, nullable=False)
     # kaynak: 'soru'|'3d'|'alim'|'duel'|'streak'|'realm' + ad-hoc API callers
@@ -163,6 +191,13 @@ class ObaUye(Base):
     __tablename__ = "oba_uyeler"
 
     id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     oba_id = Column(Integer, ForeignKey("obalar.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     role = Column(String(10), default="toycu")  # toycu|noker|bey
@@ -198,7 +233,14 @@ class UserBadge(Base):
 
     __tablename__ = "user_badges"
 
-    id = Column(String, primary_key=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     badge_id = Column(String, ForeignKey("badges.id"), nullable=False)
     earned_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -259,6 +301,13 @@ class ParentChild(Base):
     __tablename__ = "parent_child"
 
     id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     parent_id = Column(String, ForeignKey("users.id"), nullable=False)
     child_id = Column(String, ForeignKey("users.id"), nullable=False)
     approved = Column(Boolean, nullable=False, default=False)
@@ -267,6 +316,38 @@ class ParentChild(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (UniqueConstraint("parent_id", "child_id"),)
+
+
+# ---------------------------------------------------------------------------
+# ParentLinkCode (kod-tabanli veli-ogrenci baglama)
+# ---------------------------------------------------------------------------
+
+
+class ParentLinkCode(Base):
+    """Kod-tabanli veli-ogrenci baglama kodu.
+
+    Email-tabanli akisa ek: ogrenci kisa-omurlu (10 dk) 6-hane kod uretir,
+    veli bu kodu girerek ParentChild(approved=False) iliskisi baslatir.
+    organization_id ParentChild ile ayni tenancy desenini takip eder
+    (nullable=False + server_default) — RLS WITH CHECK (tenant_isolation) uyumu.
+    """
+
+    __tablename__ = "parent_link_codes"
+
+    id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
+    code = Column(String(6), nullable=False, index=True)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    consumed = Column(Boolean, nullable=False, default=False)
+    consumed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 # ---------------------------------------------------------------------------
@@ -280,6 +361,13 @@ class DailyQuest(Base):
     __tablename__ = "daily_quests"
 
     id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     quest_date = Column(Date, nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     quest_type = Column(
@@ -304,6 +392,13 @@ class StudentAbility(Base):
 
     student_id = Column(String, ForeignKey("users.id"), primary_key=True)
     subject_id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     theta = Column(Float(precision=6, asdecimal=False), default=0.0)
     theta_se = Column(Float(precision=6, asdecimal=False), default=1.0)
     updated_at = Column(
@@ -319,6 +414,13 @@ class ZPDHistory(Base):
     __tablename__ = "zpd_history"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     topic_id = Column(String, nullable=False, index=True)
     zone = Column(String(20), nullable=False)  # frustration / zpd / mastery

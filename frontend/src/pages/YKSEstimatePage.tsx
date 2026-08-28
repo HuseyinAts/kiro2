@@ -107,14 +107,14 @@ export default function YKSEstimatePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return (
+  if (loading) {return (
     <Box textAlign="center" py={8}>
       <CircularProgress size={52} />
       <Typography mt={2} color="text.secondary">Puan tahmini hesaplanıyor...</Typography>
     </Box>
-  );
+  );}
 
-  if (error || !data) return (
+  if (error || !data) {return (
     <Box maxWidth={640} mx="auto" mt={4}>
       <Alert severity="info" icon={<School />} sx={{ borderRadius: 2 }}>
         <Typography variant="subtitle2" fontWeight={700} mb={0.5}>Henüz Tahmin Yapılamıyor</Typography>
@@ -124,7 +124,7 @@ export default function YKSEstimatePage() {
         </Typography>
       </Alert>
     </Box>
-  );
+  );}
 
   const puanlar = [data.tyt, data.say, data.ea, data.soz, data.dil].filter(Boolean) as PuanTahmini[];
   const enYuksek = puanlar.length ? puanlar.reduce((a, b) => a.puan > b.puan ? a : b) : null;

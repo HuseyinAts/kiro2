@@ -94,7 +94,6 @@ class TestAnalyticsDeepCoverage:
     @pytest.fixture(autouse=True)
     def setup(self):
         import api.analytics as mod
-
         from core.auth_dependencies import authenticate_user
         from core.dependencies import AuthenticatedUser
         from models.enums_db import UserRole

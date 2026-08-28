@@ -9,12 +9,15 @@ import logging
 import os
 import time
 import uuid
+from collections.abc import Sequence
 from functools import lru_cache
 from typing import Any
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
+from langchain_core.embeddings import Embeddings
+from langchain_core.vectorstores import VectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Configure logging (must be before any logger usage)
@@ -31,6 +34,21 @@ except ImportError:
     logger.warning("Redis not available for RAG caching")
 
 
+@lru_cache(maxsize=100)
+def _preprocess_text_cached(text: str) -> str:
+    """
+    Metin ön-işleme (Türkçe normalizasyon + boşluk sadeleştirme).
+
+    Modül düzeyinde cache'lenir: işlem örnek durumuna bağlı DEĞİL. Metot
+    üzerinde `@lru_cache` kullanmak cache anahtarına `self`'i de koyar ve
+    RAGService örneğini süresiz canlı tutardı (ruff B019).
+    """
+    from core.turkish_nlp_utils import normalize_tr
+
+    # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
+    return " ".join(normalize_tr(text).split())
+
+
 class RAGService:
     """RAG pipeline için servis - Performance Optimized"""
 
@@ -42,21 +60,24 @@ class RAGService:
             persist_directory: Vector store kayıt dizini
         """
         self.persist_directory = persist_directory
-        self.embeddings = None
-        self.vector_store = None
-        self.text_splitter = None
+        # None hâli GERÇEKTEN ulaşılabilir: _initialize() TESTING=true iken
+        # erken döner, ayrıca except dalları bileşenleri None bırakabilir.
+        self.embeddings: Embeddings | None = None
+        self.vector_store: VectorStore | None = None
+        self.text_splitter: RecursiveCharacterTextSplitter | None = None
 
         # Performance optimizations
         self._redis_client = None
-        self._search_cache = {}  # In-memory search cache
+        # cache_key -> (sonuçlar, yazılma zamanı)
+        self._search_cache: dict[str, tuple[list[dict[str, Any]], float]] = {}
         self._cache_ttl = int(os.getenv("RAG_CACHE_TTL", "1800"))  # 30 minutes
         self._max_cache_size = int(os.getenv("RAG_MAX_CACHE_SIZE", "500"))
 
         # Batch processing settings
         self._batch_size = int(os.getenv("RAG_BATCH_SIZE", "50"))
 
-        # Document tracking
-        self._document_registry = {}  # Track added documents
+        # Document tracking: doc_id -> kayıt metadata'sı
+        self._document_registry: dict[str, dict[str, Any]] = {}
 
         self._initialize()
 
@@ -171,13 +192,31 @@ class RAGService:
             logger.warning(f"Redis connection test failed: {e}")
             self._redis_client = None
 
+    def _require_ready(self) -> tuple[VectorStore, Embeddings]:
+        """
+        Servis hazır değilse net sebeple hata ver, hazırsa daraltılmış
+        (vector_store, embeddings) ikilisini döndür.
+
+        Not: çağıran metotların çoğu geniş `except Exception` ile sarılı,
+        bu yüzden bu hata dışarı ÇIKMAZ — kazanç teşhis edilebilirlik:
+        log'da kriptik `'NoneType' object has no attribute ...` yerine
+        gerçek sebep görünür.
+        """
+        if self.vector_store is None or self.embeddings is None:
+            raise RuntimeError(
+                "RAGService başlatılmadı (TESTING=true veya _initialize() "
+                "hatası): vector_store/embeddings yok"
+            )
+        return self.vector_store, self.embeddings
+
     def _generate_search_cache_key(
         self, query: str, k: int, filter_dict: dict | None = None
     ) -> str:
         """Generate cache key for search queries"""
         cache_data = {"query": query, "k": k, "filter": filter_dict or {}}
         cache_string = json.dumps(cache_data, sort_keys=True)
-        return hashlib.md5(cache_string.encode()).hexdigest()
+        # Cache anahtarı — kriptografik amaç YOK, sadece deterministik kısaltma.
+        return hashlib.md5(cache_string.encode(), usedforsecurity=False).hexdigest()
 
     async def _get_cached_search_results(
         self, cache_key: str
@@ -233,20 +272,15 @@ class RAGService:
         except Exception as e:
             logger.error(f"Error setting cached search results: {e}")
 
-    @lru_cache(maxsize=100)
     def _preprocess_text(self, text: str) -> str:
         """Preprocess text for better search results - cached"""
-        # Basic text preprocessing
-        text = text.strip().lower()
-        # Remove extra whitespace
-        text = " ".join(text.split())
-        return text
+        return _preprocess_text_cached(text)
 
     def _rerank_results(
         self,
         query: str,
         results: list[dict[str, Any]],
-        top_k: int = None,
+        top_k: int | None = None,
     ) -> list[dict[str, Any]]:
         """
         Rerank results using cross-encoder for better accuracy
@@ -301,7 +335,7 @@ class RAGService:
         from core.document_deduplication import get_deduplicator
 
         dedup = get_deduplicator()
-        is_duplicate, original = dedup.is_duplicate(text, method="hash")
+        is_duplicate, _original = dedup.is_duplicate(text, method="hash")
 
         if is_duplicate:
             logger.warning(f"Document is duplicate, skipping: {text[:100]}...")
@@ -357,6 +391,11 @@ class RAGService:
 
                 # Metni parçala
                 if len(content) > 1000:
+                    if self.text_splitter is None:
+                        raise RuntimeError(
+                            "RAGService başlatılmadı (TESTING=true veya "
+                            "_initialize() hatası): text_splitter yok"
+                        )
                     chunks = self.text_splitter.split_text(content)
                     for i, chunk in enumerate(chunks):
                         chunk_metadata = metadata.copy()
@@ -390,19 +429,26 @@ class RAGService:
                         f"Created new {config.vector_store.store_type} vector store"
                     )
 
+                # Buradan sonra store zorunlu: yukarıdaki lazy-init ya oluşturdu
+                # ya da zaten vardı. Factory'nin dönüşü tip-belirsiz olduğu için
+                # açıkça doğrula.
+                store = self.vector_store
+                if store is None:
+                    raise RuntimeError(
+                        "Vector store oluşturulamadı (VectorStoreFactory None döndü)"
+                    )
+
                 # Add documents
-                ids = self.vector_store.add_documents(langchain_docs)
+                ids = store.add_documents(langchain_docs)
 
                 # Persist
-                if hasattr(self.vector_store, "persist"):
-                    self.vector_store.persist()
-                elif hasattr(self.vector_store, "save_local"):
+                if hasattr(store, "persist"):
+                    store.persist()
+                elif hasattr(store, "save_local"):
                     # FAISS
                     from core.vector_store_factory import VectorStoreFactory
 
-                    VectorStoreFactory.save_faiss_store(
-                        self.vector_store, self.persist_directory
-                    )
+                    VectorStoreFactory.save_faiss_store(store, self.persist_directory)
 
                 return {
                     "success": True,
@@ -433,26 +479,34 @@ class RAGService:
             Hybrid search results
         """
         try:
+            # Guard ÖNCE gelmeli: aksi halde langchain import hatası asıl sebebi
+            # (servis başlatılmamış) maskeler.
+            store, _ = self._require_ready()
+
             from langchain.retrievers import EnsembleRetriever
             from langchain_community.retrievers import BM25Retriever
 
             # Semantic retriever
-            semantic_retriever = self.vector_store.as_retriever(search_kwargs={"k": k})
+            semantic_retriever = store.as_retriever(search_kwargs={"k": k})
 
             # Get all documents for BM25 (cache this in production)
             all_docs = []
-            if hasattr(self.vector_store, "_collection"):
+            if hasattr(store, "_collection"):
                 # Chroma specific
                 try:
-                    all_docs_data = self.vector_store._collection.get()
+                    all_docs_data = store._collection.get()
                     all_docs = [
                         Document(page_content=text, metadata=meta)
                         for text, meta in zip(
-                            all_docs_data["documents"], all_docs_data["metadatas"]
+                            all_docs_data["documents"],
+                            all_docs_data["metadatas"],
+                            strict=False,
                         )
                     ]
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(
+                        f"BM25 doc fetch failed, skipping keyword retriever: {e}"
+                    )
 
             if all_docs:
                 # Keyword retriever
@@ -510,14 +564,15 @@ class RAGService:
             # Create multi-query retriever
             multi_retriever = MultiQueryRetriever(self.vector_store, expander)
 
-            # Retrieve with query expansion
-            results = await multi_retriever.retrieve(
+            # Retrieve with query expansion.
+            # Anotasyon zorunlu: retrieve() tip-belirsiz (Any) döndürüyor,
+            # anotasyonsuz doğrudan return mypy `no-any-return` veriyor.
+            results: list[dict[str, Any]] = await multi_retriever.retrieve(
                 query=query,
                 k=k,
                 num_expansions=num_expansions,
                 aggregation="ranked_fusion",
             )
-
             return results
 
         except Exception as e:
@@ -556,31 +611,38 @@ class RAGService:
                 cached_results = await self._get_cached_search_results(cache_key)
                 if cached_results:
                     # Filter by score threshold
-                    filtered_results = [
+                    return [
                         r
                         for r in cached_results
                         if r.get("score", 0) >= score_threshold
                     ]
-                    return filtered_results
+
+            # Guard cache kontrolünden SONRA: cache isabeti vector store
+            # gerektirmez, guard'ı öne almak o yolu gereksiz kapatırdı.
+            store, _ = self._require_ready()
 
             # Benzerlik araması - handle both with_score and regular methods
+            # `results` iki şekil taşıyabilir: (Document, skor) ikilileri veya
+            # düz Document'lar. Sequence kullanılıyor çünkü list değişmez
+            # (invariant) olduğundan iki dalın dönüşü tek list tipine sığmaz.
+            results: Sequence[Document | tuple[Document, float]]
             try:
                 # Try with score first (preferred)
-                results = self.vector_store.similarity_search_with_score(
+                results = store.similarity_search_with_score(
                     query=processed_query, k=k, filter=filter
                 )
-                has_scores = True
             except (AttributeError, NotImplementedError):
                 # Fallback to regular search
-                results = self.vector_store.similarity_search(
+                results = store.similarity_search(
                     query=processed_query, k=k, filter=filter
                 )
-                has_scores = False
 
             # Sonuçları formatla
             formatted_results = []
             for item in results:
-                if has_scores:
+                # Şekli bayrak yerine doğrudan öğeden anla: Document'ın kendisi
+                # de unpack edilebildiği için bayrakla ayırmak tip-güvensizdi.
+                if isinstance(item, tuple):
                     doc, score = item
                 else:
                     doc = item
@@ -668,11 +730,14 @@ class RAGService:
                 return []
 
             # Step 2: Apply MMR reranking
-            selected = []
+            selected: list[dict[str, Any]] = []
             remaining = list(initial_results)
 
-            # Get query embedding for MMR calculation
-            query_embedding = self.embeddings.embed_query(query)
+            # Aday/seçili benzerliği için embeddings zorunlu.
+            # Not: burada ayrıca sorgunun embedding'i hesaplanıp hiç
+            # kullanılmıyordu — her çağrıda boşa giden bir embedding
+            # isteğiydi, kaldırıldı (ruff F841).
+            _, embeddings = self._require_ready()
 
             while len(selected) < k and remaining:
                 if not selected:
@@ -690,10 +755,10 @@ class RAGService:
 
                         # Calculate max similarity to already selected
                         max_sim_to_selected = 0.0
-                        candidate_emb = self.embeddings.embed_query(candidate["content"])
+                        candidate_emb = embeddings.embed_query(candidate["content"])
 
                         for sel in selected:
-                            sel_emb = self.embeddings.embed_query(sel["content"])
+                            sel_emb = embeddings.embed_query(sel["content"])
                             sim = self._cosine_similarity(candidate_emb, sel_emb)
                             max_sim_to_selected = max(max_sim_to_selected, sim)
 
@@ -719,16 +784,16 @@ class RAGService:
         """Calculate cosine similarity between two vectors"""
         import numpy as np
 
-        vec1 = np.array(vec1)
-        vec2 = np.array(vec2)
+        arr1 = np.asarray(vec1, dtype=float)
+        arr2 = np.asarray(vec2, dtype=float)
 
-        norm1 = np.linalg.norm(vec1)
-        norm2 = np.linalg.norm(vec2)
+        norm1 = np.linalg.norm(arr1)
+        norm2 = np.linalg.norm(arr2)
 
         if norm1 == 0 or norm2 == 0:
             return 0.0
 
-        return float(np.dot(vec1, vec2) / (norm1 * norm2))
+        return float(np.dot(arr1, arr2) / (norm1 * norm2))
 
     async def search_hybrid_ranked(
         self,
@@ -782,12 +847,15 @@ class RAGService:
                 if created_at:
                     try:
                         # Handle various timestamp formats
-                        if isinstance(created_at, (int, float)):
+                        if isinstance(created_at, int | float):
                             age_days = (current_time - created_at) / 86400
                         else:
                             from datetime import datetime
+
                             if isinstance(created_at, str):
-                                created_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                                created_dt = datetime.fromisoformat(
+                                    created_at.replace("Z", "+00:00")
+                                )
                             else:
                                 created_dt = created_at
                             age_days = (datetime.now() - created_dt).days
@@ -806,7 +874,10 @@ class RAGService:
 
                 # Normalize popularity (log scale)
                 import math
-                popularity_score = math.log1p(popularity_raw) / 10 if popularity_raw > 0 else 0.0
+
+                popularity_score = (
+                    math.log1p(popularity_raw) / 10 if popularity_raw > 0 else 0.0
+                )
                 popularity_score = min(1.0, popularity_score)  # Cap at 1.0
 
                 # Calculate hybrid score
@@ -958,6 +1029,125 @@ Cevap:"""
             query=query, k=k, filter=filter_dict if filter_dict else None
         )
 
+    async def list_documents(
+        self, user_id: str, is_admin: bool = False, limit: int = 50, offset: int = 0
+    ) -> tuple[list[dict[str, Any]], int]:
+        """
+        List indexed documents with RLS/ownership checks.
+        """
+        documents = []
+        total_count = 0
+
+        try:
+            filtered_registry = {}
+            for doc_id, doc_info in self._document_registry.items():
+                owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get(
+                    "user_id"
+                )
+                if is_admin or str(owner_id) == str(user_id):
+                    filtered_registry[doc_id] = doc_info
+
+            total_count = len(filtered_registry)
+
+            for doc_id, doc_info in filtered_registry.items():
+                documents.append(
+                    {
+                        "id": doc_id,
+                        "title": doc_info.get("title", "Untitled"),
+                        "source": doc_info.get("source", "unknown"),
+                        "indexed_at": doc_info.get("indexed_at", ""),
+                        "chunk_count": doc_info.get("chunk_count", 0),
+                        "metadata": doc_info.get("metadata", {}),
+                    }
+                )
+
+            documents.sort(key=lambda x: str(x.get("indexed_at", "")), reverse=True)
+            documents = documents[offset : offset + limit]
+
+            # Fallback to vector store if registry is empty
+            if not documents and total_count == 0 and self.vector_store:
+                collection = getattr(self.vector_store, "_collection", None)
+                if collection:
+                    where_clause = None if is_admin else {"user_id": user_id}
+                    results = collection.get(
+                        where=where_clause, limit=limit, offset=offset
+                    )
+                    if results and results.get("ids"):
+                        for i, (doc_id, metadata) in enumerate(
+                            zip(
+                                results.get("ids", []),
+                                results.get("metadatas", []),
+                                strict=False,
+                            )
+                        ):
+                            documents.append(
+                                {
+                                    "id": doc_id,
+                                    "title": metadata.get("title", f"Document {i + 1}"),
+                                    "source": metadata.get("source", "unknown"),
+                                    "indexed_at": metadata.get("indexed_at", ""),
+                                    "chunk_count": 1,
+                                    "metadata": metadata,
+                                }
+                            )
+                        total_count = len(documents)
+        except Exception as e:
+            logger.error(f"Error listing documents: {e}")
+
+        return documents, total_count
+
+    async def delete_document(
+        self, document_id: str, user_id: str, is_admin: bool = False
+    ) -> bool:
+        """
+        Delete a document with RLS/ownership checks.
+        Raises ValueError if not found, or PermissionError if unauthorized.
+        """
+        deleted = False
+
+        # 1. Check & delete from registry
+        if document_id in self._document_registry:
+            doc_info = self._document_registry[document_id]
+            owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get(
+                "user_id"
+            )
+
+            if not is_admin and str(owner_id) != str(user_id):
+                raise PermissionError("Not authorized to delete this document")
+
+            del self._document_registry[document_id]
+            deleted = True
+
+        # 2. Check & delete from vector store
+        if self.vector_store:
+            collection = getattr(self.vector_store, "_collection", None)
+            if collection:
+                if not deleted and not is_admin:
+                    results = collection.get(where={"document_id": document_id})
+                    if (
+                        not results
+                        or not results.get("metadatas")
+                        or len(results["metadatas"]) == 0
+                    ):
+                        raise ValueError(f"Document {document_id} not found")
+
+                    doc_meta = results["metadatas"][0]
+                    if str(doc_meta.get("user_id")) != str(user_id):
+                        raise PermissionError("Not authorized to delete this document")
+
+                collection.delete(where={"document_id": document_id})
+                deleted = True
+
+        # 3. Clear from cache
+        keys_to_remove = [k for k in self._search_cache if document_id in str(k)]
+        for k in keys_to_remove:
+            del self._search_cache[k]
+
+        if not deleted:
+            raise ValueError(f"Document {document_id} not found")
+
+        return True
+
     def get_statistics(self) -> dict[str, Any]:
         """Get RAG service statistics"""
         try:
@@ -982,8 +1172,8 @@ Cevap:"""
                     elif hasattr(self.vector_store, "index"):
                         # FAISS
                         stats["total_chunks"] = self.vector_store.index.ntotal
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(f"Vector store count unavailable: {e}")
 
             return stats
         except Exception as e:
@@ -993,13 +1183,16 @@ Cevap:"""
     def clear_database(self):
         """Vector store'u temizle"""
         try:
-            if hasattr(self.vector_store, "delete_collection"):
-                self.vector_store.delete_collection()
+            store = self.vector_store
+            # `hasattr(None, ...)` zaten False — `is not None` davranışı
+            # değiştirmez, sadece tipi daraltır.
+            if store is not None and hasattr(store, "delete_collection"):
+                store.delete_collection()
                 self.vector_store = Chroma(
                     persist_directory=self.persist_directory,
                     embedding_function=self.embeddings,
                 )
-            elif hasattr(self.vector_store, "delete"):
+            elif store is not None and hasattr(store, "delete"):
                 # FAISS - recreate
                 self.vector_store = None
 
@@ -1018,7 +1211,7 @@ _rag_service: RAGService | None = None
 
 
 def _get_rag_service() -> RAGService:
-    global _rag_service
+    global _rag_service  # noqa: PLW0603 — kasıtlı lazy singleton (bkz. _LazyRAGService)
     if _rag_service is None:
         _rag_service = RAGService()
     return _rag_service

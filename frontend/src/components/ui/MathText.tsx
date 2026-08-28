@@ -4,10 +4,10 @@
  * Chat'te zaten çalışıyor (TurkishChatInterface), bu sınav sorularına da taşıyor.
  */
 
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import React, { Suspense } from 'react';
+import './mathText.css';
+
+const MarkdownRenderer = React.lazy(() => import('./MarkdownRenderer'));
 
 interface MathTextProps {
   children: string;
@@ -15,55 +15,44 @@ interface MathTextProps {
   inline?: boolean;
 }
 
-/** Metinde LaTeX var mı hızlı kontrol */
 function hasLatex(text: string): boolean {
-  return text.includes('$') || text.includes('\\frac') || text.includes('\\sqrt');
+  return text.includes('$') || text.includes('\\[') || text.includes('\\frac') || text.includes('\\sqrt') || text.includes('\\triangle');
 }
 
-/**
- * Bare LaTeX wrap — $ delimiter olmadan ham \frac, \sqrt, \alpha vb. varsa
- * remarkMath bunları render etmez (ham kalır: "\frac{26}{33}"). Bug #1 v2
- * (19 May 2026 beta01 flag `7c49c4d7`): opsiyonlarda DB'de `\frac{26}{33}`
- * format'ında — auto-wrap çözer.
- */
-const BARE_LATEX_REGEX = /\\(?:frac|sqrt|sum|int|prod|lim|infty|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|pi|sigma|phi|psi|omega|cdot|times|le|ge|ne|approx|in|notin|cup|cap|subset|supset|forall|exists|partial|nabla|leftarrow|rightarrow|Leftrightarrow|Rightarrow|leq|geq|neq)\b/;
+function preprocessLatex(text: string): string {
+  // Just normalize unescaped dollar signs and spacing, don't try to guess math bounds
+  let t = text.replace(/\\\$/g, '$');
+  t = t.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').trim();
 
-function autoWrapBareLatex(text: string): string {
-  // Eğer $ delimiter zaten varsa veya bare LaTeX yoksa dokunma
-  if (text.includes('$') || !BARE_LATEX_REGEX.test(text)) {
-    return text;
+  // Auto-wrap if it looks like a purely bare math string (like \frac{26}{33} without text)
+  if (!t.includes('$') && !t.includes('\\[') && t.startsWith('\\') && !t.includes(' ')) {
+    t = `$${t}$`;
+  } else if (!t.includes('$') && (t.includes('\\frac') || t.includes('\\sqrt') || t.includes('\\sin') || t.includes('\\cos') || t.includes('\\tan') || t.includes('\\cot') || t.includes('\\lim'))) {
+    // If it's mixed text and math without $, this is a complex problem.
+    // For now, we will wrap specific known commands using a simple regex,
+    // or just let it pass as text if it's too complex.
+    // Actually, react-markdown won't parse it without $. We'll wrap the whole thing if it's very short.
+    if (t.length < 20) {
+      t = `$${t}$`;
+    }
   }
-  // Tek bir bare LaTeX expression: tüm string'i $...$ ile sar
-  return `$${text}$`;
+  return t;
 }
 
 export const MathText: React.FC<MathTextProps> = ({ children, inline = false }) => {
-  // Null/undefined guard — content + question_text ikisi de boşsa crash önle
-  if (!children) return inline ? <span /> : <div />;
+  if (!children) { return inline ? <span /> : <div />; }
 
-  // LaTeX yoksa doğrudan metin döndür (performans)
   if (!hasLatex(children)) {
     const normalized = children.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').trim();
     return inline ? <span>{normalized}</span> : <div style={{ whiteSpace: 'pre-wrap' }}>{normalized}</div>;
   }
 
-  // LaTeX yolunda da whitespace normalize et (OCR line-break temizliği)
-  // + bare LaTeX auto-wrap ($ delimiter olmadan \frac vb. olanlar için)
-  const preprocessed = autoWrapBareLatex(
-    children.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').trim(),
-  );
+  const preprocessed = preprocessLatex(children);
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkMath]}
-      rehypePlugins={[rehypeKatex]}
-      components={{
-        // Paragrafları inline modda span olarak render et
-        p: ({ children: c }) => inline ? <span>{c}</span> : <p style={{ margin: 0 }}>{c}</p>,
-      }}
-    >
-      {preprocessed}
-    </ReactMarkdown>
+    <Suspense fallback={inline ? <span>{children}</span> : <div style={{ whiteSpace: 'pre-wrap' }}>{children}</div>}>
+      <MarkdownRenderer text={preprocessed} inline={inline} />
+    </Suspense>
   );
 };
 

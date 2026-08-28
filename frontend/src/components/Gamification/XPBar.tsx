@@ -28,7 +28,7 @@ export const XPBar: React.FC<XPBarProps> = ({
 
   useEffect(() => {
     const el = fillRef.current;
-    if (!el) return;
+    if (!el) {return;}
 
     // Start from previous value, animate to current
     el.style.width = `${prevPercent}%`;

@@ -6,7 +6,6 @@ Database models for study rooms, members, chat, and file sharing.
 
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
 
 from sqlalchemy import (
     ARRAY,
@@ -24,6 +23,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -45,7 +45,7 @@ class RoomVisibility(str, Enum):
 
     PUBLIC = "public"  # Anyone can join
     PRIVATE = "private"  # Invitation only
-    PASSWORD = "password"  # Requires password
+    PASSWORD = "password"  # Requires password  # pragma: allowlist secret
 
 
 class MemberRole(str, Enum):
@@ -107,7 +107,14 @@ class StudyRoom(Base):
 
     __tablename__ = "study_rooms"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Basic Information
     name = Column(String(255), nullable=False)
@@ -161,16 +168,24 @@ class StudyRoom(Base):
 
     # Relationships
     members = relationship(
-        "RoomMember", back_populates="room", cascade="all, delete-orphan"
+        "RoomMember",
+        back_populates="room",
+        cascade="all, delete-orphan",
     )
     messages = relationship(
-        "RoomChatMessage", back_populates="room", cascade="all, delete-orphan"
+        "RoomChatMessage",
+        back_populates="room",
+        cascade="all, delete-orphan",
     )
     files = relationship(
-        "SharedFile", back_populates="room", cascade="all, delete-orphan"
+        "SharedFile",
+        back_populates="room",
+        cascade="all, delete-orphan",
     )
     invitations = relationship(
-        "RoomInvitation", back_populates="room", cascade="all, delete-orphan"
+        "RoomInvitation",
+        back_populates="room",
+        cascade="all, delete-orphan",
     )
 
 
@@ -188,7 +203,7 @@ class RoomMember(Base):
 
     __tablename__ = "room_members"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -247,7 +262,7 @@ class RoomInvitation(Base):
 
     __tablename__ = "room_invitations"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
 
     # Inviter & Invitee
@@ -290,7 +305,7 @@ class RoomChatMessage(Base):
 
     __tablename__ = "room_chat_messages"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -348,7 +363,7 @@ class SharedFile(Base):
 
     __tablename__ = "shared_files"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     uploaded_by = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -402,7 +417,9 @@ class SharedFile(Base):
     # Relationships
     room = relationship("StudyRoom", back_populates="files")
     versions = relationship(
-        "FileVersion", back_populates="file", cascade="all, delete-orphan"
+        "FileVersion",
+        back_populates="file",
+        cascade="all, delete-orphan",
     )
 
 
@@ -420,7 +437,7 @@ class FileVersion(Base):
 
     __tablename__ = "file_versions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     file_id = Column(String, ForeignKey("shared_files.id"), nullable=False)
 
     # Version Details
@@ -460,7 +477,7 @@ class StudySession(Base):
     __tablename__ = "study_sessions"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -492,7 +509,7 @@ class RoomAnalytics(Base):
 
     __tablename__ = "room_analytics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False, unique=True)
 
     # Member Statistics
@@ -546,7 +563,7 @@ class RoomSettings(Base):
 
     __tablename__ = "room_settings"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False, unique=True)
 
     # Chat Settings

@@ -36,9 +36,7 @@ class VideoWatchSession(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Session info
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)  # youtube, eba, khan, vimeo
 
@@ -70,10 +68,14 @@ class VideoWatchSession(Base):
     # Relationships
     user = relationship("User")
     notes = relationship(
-        "VideoNote", back_populates="session", cascade="all, delete-orphan"
+        "VideoNote",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
     bookmarks = relationship(
-        "VideoBookmark", back_populates="session", cascade="all, delete-orphan"
+        "VideoBookmark",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
@@ -92,9 +94,7 @@ class VideoCompletionMilestone(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
@@ -135,16 +135,12 @@ class VideoNote(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
     # Session reference
-    session_id = Column(
-        String, ForeignKey("video_watch_sessions.id"), nullable=True
-    )
+    session_id = Column(String, ForeignKey("video_watch_sessions.id"), nullable=True)
 
     # Note content
     content = Column(Text, nullable=False)
@@ -185,16 +181,12 @@ class VideoBookmark(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
     # Session reference
-    session_id = Column(
-        String, ForeignKey("video_watch_sessions.id"), nullable=True
-    )
+    session_id = Column(String, ForeignKey("video_watch_sessions.id"), nullable=True)
 
     # Bookmark info
     timestamp = Column(Integer, nullable=False)  # Video position (seconds)
@@ -236,9 +228,7 @@ class VideoAnalyticsSummary(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and period
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     period_type = Column(String(10), nullable=False)  # daily, weekly, monthly
     period_start = Column(DateTime(timezone=True), nullable=False, index=True)
     period_end = Column(DateTime(timezone=True), nullable=False)

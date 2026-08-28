@@ -53,11 +53,19 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("🚀 KIRO2 Backend Starting...")
     logger.info(f"  Environment: {settings.environment}")
     logger.info(f"  Debug Mode: {settings.debug}")
-    logger.info(f"  Database: {settings.database_url[:30]}...")
-
     # S179 fix (B-P0-49): AGPL exposure warning. See
     # docs/compliance/AGPL_LICENSE_EXPOSURE.md. ultralytics + PyMuPDF
     # are AGPL-3.0; commercial production deployment without a
+    import anyio
+
+    try:
+        limiter = anyio.to_thread.current_default_thread_limiter()
+        limiter.total_tokens = 5000
+        logger.info(
+            f"✅ AnyIO thread pool expanded to {limiter.total_tokens} for high CCU sync endpoints"
+        )
+    except Exception as e:
+        logger.warning(f"⚠️ AnyIO thread pool expansion failed: {e}")
     # licensing decision risks copyleft trigger.
     import os as _os
 
@@ -131,6 +139,15 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         logger.warning(f"⚠️ Agent initialization failed (non-fatal): {e}")
 
+    # Initialize CQRS Handlers
+    try:
+        from application.bootstrap import bootstrap_cqrs
+
+        bootstrap_cqrs()
+        logger.info("✅ CQRS Handlers initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ CQRS initialization failed (non-fatal): {e}")
+
     # Register blackboard subscribers
     try:
         from services.blackboard_service import register_default_subscribers
@@ -158,6 +175,7 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Start IRT Daemon
     try:
         from core.irt_daemon import irt_daemon
+
         # DISABLED FOR LOAD TESTING: This daemon spawns heavy NLP threads
         # that hold the GIL and starve the asyncio event loop for HTTP requests.
         # await irt_daemon.start()
@@ -172,10 +190,11 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     logger.info("🛑 KIRO2 Backend Shutting Down...")
-    
+
     # Stop IRT Daemon
     try:
         from core.irt_daemon import irt_daemon
+
         await irt_daemon.stop()
         logger.info("✅ IRT Daemon stopped")
     except Exception as e:
@@ -209,6 +228,7 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # SRE Bulkhead: Shutdown worker pools
     try:
         from core.worker_pools import shutdown_pools
+
         shutdown_pools()
     except Exception as e:
         logger.error(f"Error shutting down SRE worker pools: {e}")
@@ -229,19 +249,6 @@ def setup_middleware(app: FastAPI) -> None:
 
     Requirements: REQ-2.1.2, REQ-4.1.3, REQ-6.1.1
     """
-    # 1. Timing Middleware (en dışta - tüm request süresini ölçer)
-    try:
-        from core.middleware.timing import TimingMiddleware, get_timing_stats_manager
-
-        # app.add_middleware(
-        #     TimingMiddleware,
-        #     stats_manager=get_timing_stats_manager(),
-        #     exclude_paths=["/health", "/metrics", "/docs", "/redoc", "/openapi.json"],
-        # )
-        logger.info("✅ Timing middleware added (DISABLED FOR LOAD TEST)")
-    except ImportError as e:
-        logger.warning(f"⚠️ Timing middleware not available: {e}")
-
     # 2. CORS Middleware
     # SECURITY: Validate production origins are configured
     localhost_only = all(
@@ -268,66 +275,22 @@ def setup_middleware(app: FastAPI) -> None:
     )
     logger.info(f"✅ CORS middleware added (origins: {len(settings.allowed_origins)})")
 
-    # 2.5. CSRF Protection Middleware
-    # ANALIZ (02.04.2026): Phase 2 (X-CSRF-Token) GEREKSIZ.
-    # Neden: auth cookie'ler samesite="lax" + httponly=True kullanıyor.
-    # SameSite=Lax: cross-site POST/AJAX isteklerinde cookie gönderilmez
-    #   → CSRF saldırıları zaten başarısız olur.
-    # API JSON tabanlı (form submit değil) → klasik CSRF de geçersiz.
-    # 80+ dosya X-CSRF-Token göndermek için değiştirilmek zorunda kalmaz.
-    # Middleware devrede ama /api/v1/ exempt — bu yeterli.
+    # 3. Advanced Rate Limiters
     try:
-        from core.csrf_protection import CSRFProtectionMiddleware
+        from core.auth_rate_limiting import AuthRateLimitMiddleware
 
-        # app.add_middleware(
-        #     CSRFProtectionMiddleware,
-        #     exempt_paths=[
-        #         "/api/v1/",  # SameSite=Lax zaten koruyor — exempt kalabilir
-        #         "/api/pwa-sync-api/",  # PWA sync endpoints — JSON API, CSRF gereksiz
-        #         "/docs",
-        #         "/redoc",
-        #         "/openapi.json",
-        #         "/health",
-        #     ],
-        # )
-        logger.info("✅ CSRF middleware aktif (SameSite=Lax birincil koruma) (DISABLED)")
+        app.add_middleware(AuthRateLimitMiddleware)
+        logger.info("✅ Auth Rate Limiting middleware added")
     except ImportError as e:
-        logger.warning(f"⚠️ CSRF middleware not available: {e}")
+        logger.warning(f"⚠️ Auth rate limiter not available: {e}")
 
-    # 3. Cache Headers Middleware (ETag, If-None-Match)
     try:
-        from core.middleware.cache_headers import CacheMiddleware
+        from core.rate_limit_middleware import RateLimitMiddleware
 
-        # app.add_middleware(
-        #     CacheMiddleware,
-        #     skip_paths=["/health", "/metrics", "/docs", "/api/v1/auth"],
-        #     enable_metrics=True,
-        # )
-        logger.info("✅ Cache headers middleware added (DISABLED)")
+        app.add_middleware(RateLimitMiddleware)
+        logger.info("✅ Advanced Rate Limiting middleware added")
     except ImportError as e:
-        logger.warning(f"⚠️ Cache headers middleware not available: {e}")
-
-    # 4. GZip Compression Middleware
-    try:
-        from core.middleware.compression import GZipMiddleware
-
-        # app.add_middleware(
-        #     GZipMiddleware,
-        #     minimum_size=1000,  # 1KB minimum
-        #     compression_level=6,  # Balance speed/size
-        # )
-        logger.info("✅ GZip compression middleware added (DISABLED)")
-    except ImportError as e:
-        logger.warning(f"⚠️ Compression middleware not available: {e}")
-
-    # 5. Version Redirect Middleware (legacy /api/xxx → /api/v1/xxx)
-    try:
-        from core.middleware.version_redirect import VersionRedirectMiddleware
-
-        # app.add_middleware(VersionRedirectMiddleware)
-        logger.info("✅ Version redirect middleware added (DISABLED)")
-    except ImportError as e:
-        logger.warning(f"⚠️ Version redirect middleware not available: {e}")
+        logger.warning(f"⚠️ Advanced rate limiter not available: {e}")
 
     logger.info("✅ Middleware setup complete")
 
@@ -353,6 +316,34 @@ def setup_rate_limiting(app: FastAPI) -> None:
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
     logger.info("✅ Rate limiting configured (slowapi)")
+
+
+def _servis_hatasi_handleri_kaydet(app: FastAPI) -> None:
+    """`ServiceError` ailesini HTTP kodlarina esler (403/404/400/503...).
+
+    NEDEN: `core/exceptions.py`'deki `ServiceError` ailesi `HTTPException`
+    DEGIL. Kayit olmadan bu istisnalar :354'teki generic catch-all'a duser ve
+    istemciye **500** goruntusu verir. Canli olcum (24 Agu 2026):
+    `GET /api/v1/users` yetkisiz ogrenciye 403 degil **500** donduruyordu
+    (`api/enhanced_user_management_api.py:108` `ErrorFactory.authorization_error`).
+
+    ⚠️ Toptan `setup_exception_handlers(app)` (`core/exception_handlers.py:518`)
+    BILEREK CAGRILMIYOR: o fonksiyon :545'te `Exception` catch-all'ini DA
+    kaydedip bu dosyadaki :354 catch-all'ini devirir -- blast radius uygulama
+    geneli. Yalniz `ServiceError` kaydedilir; alt siniflar Starlette'in MRO
+    cozumlemesiyle zaten kapsanir.
+
+    Esleme `core/exception_handlers.py:162-169` `status_mapping`'ten gelir ve
+    yalnizca ALTI kodu tasir; mapping'de olmayan hata kodlari 500'de KALIR
+    (RATE_LIMIT / QUOTA / TIMEOUT davranisi degismez).
+
+    Bekci: `backend/tests/unit/test_service_error_http_kodu.py`.
+    """
+    from core.exception_handlers import ExceptionHandlers
+    from core.exceptions import ServiceError
+
+    handlers = ExceptionHandlers(turkish_messages=True)
+    app.add_exception_handler(ServiceError, handlers.service_exception_handler)
 
 
 def create_app() -> FastAPI:
@@ -387,9 +378,20 @@ def create_app() -> FastAPI:
     # Setup rate limiting
     setup_rate_limiting(app)
 
+    # ServiceError ailesi -> dogru HTTP kodu. Catch-all'dan ONCE kaydedilir:
+    # kayit olmadan yetki reddi istemciye 500 olarak gorunuyordu (K1, S252).
+    _servis_hatasi_handleri_kaydet(app)
+
     # Global catch-all exception handler (prevent internal detail leaks)
     @app.exception_handler(Exception)
     async def _unhandled_exception_handler(request: Request, exc: Exception):
+        import sys
+        import traceback
+
+        sys.stderr.write("!!! EXCEPTION CAUGHT BY GLOBAL HANDLER !!!\n")
+        sys.stderr.write(traceback.format_exc())
+        sys.stderr.write("!!! END OF EXCEPTION !!!\n")
+
         # B-P0-52: Exception Swallowing. Bypass default HTTP & validation errors
         from fastapi.exception_handlers import (
             http_exception_handler,
@@ -399,6 +401,10 @@ def create_app() -> FastAPI:
         from starlette.exceptions import HTTPException as StarletteHTTPException
 
         if isinstance(exc, StarletteHTTPException):
+            sys.stderr.write(
+                f"!!! HTTP EXCEPTION CAUGHT: {exc.status_code} {exc.detail} !!!\n"
+            )
+            sys.stderr.write(traceback.format_exc() + "\n")
             return await http_exception_handler(request, exc)
         if isinstance(exc, RequestValidationError):
             return await request_validation_exception_handler(request, exc)
@@ -410,18 +416,10 @@ def create_app() -> FastAPI:
             exc,
             exc_info=True,
         )
-        # In dev/debug mode, expose error class + message so the client
-        # isn't left guessing when the frontend surfaces a 500. Production
-        # keeps the generic message to avoid leaking internals.
         if settings.debug:
             return JSONResponse(
                 status_code=500,
-                content={
-                    "detail": "Dahili sunucu hatasi",
-                    "error_type": type(exc).__name__,
-                    "error_message": str(exc),
-                    "path": request.url.path,
-                },
+                content={"detail": "Dahili sunucu hatasi", "error": str(exc)},
             )
         return JSONResponse(
             status_code=500,

@@ -18,8 +18,37 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         globIgnores: ['**/stats.html', '**/node_modules/**'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB limit
+
+        // 🔴 navigateFallback KAPALI — varsayılanı (index.html) BİLEREK iptal.
+        // Varsayılan, workbox'ın `NavigationRoute(createHandlerBoundToURL(...))`
+        // rotasını üretiyordu ve TÜM navigasyonları precache'ten, AĞA HİÇ
+        // ÇIKMADAN servis ediyordu. Sonuç (26 Ağu 2026, üç bağımsız ölçüm):
+        //   • `GET /eposta-dogrula` nginx log'una HİÇ düşmedi (ağ isteği yok)
+        //   • deploy sonrası ilk yükleme ESKİ bundle'ı çalıştırdı
+        //   • sonra SW güncelleyip sayfayı yeniledi -> doğrulama token'ı
+        //     ikinci kez tüketildi ve BAŞARI, BAŞARISIZLIK gibi göründü
+        // Yani her deploy, mevcut kullanıcıya bir tur eski kod servis ediyordu.
+        //
+        // ⚠️ Workbox Router rotaları KAYIT SIRASINA göre eşleştirir ve üretilen
+        // dosyada `NavigationRoute` runtimeCaching'ten ÖNCE kaydediliyordu.
+        // Bu yüzden aşağıya network-first bir navigasyon rotası EKLEMEK tek
+        // başına yetmezdi — varsayılanın KALDIRILMASI şart.
+        navigateFallback: undefined,
+
         // Cache API responses for offline use
         runtimeCaching: [
+          {
+            // Navigasyon (HTML kabuğu): AĞ ÖNCE. Çevrimiçiyken kullanıcı her
+            // zaman taze kabuk alır; çevrimdışıyken en son görülen kabuğa düşer,
+            // yani PWA çevrimdışı desteği korunur.
+            urlPattern: ({ request }: { request: Request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'kiro2-html-shell',
+              // Ağ yavaşsa sonsuza kadar bekleme; 3 sn sonra önbelleğe düş.
+              networkTimeoutSeconds: 3,
+            },
+          },
           {
             urlPattern: /^\/api\/realms\//,
             handler: 'NetworkFirst',
@@ -78,6 +107,7 @@ export default defineConfig({
       },
       devOptions: {
         enabled: false,
+        suppressWarnings: true,
       },
     }),
     // Bundle analyzer (only in build mode)
@@ -92,6 +122,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    isolate: false,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        maxForks: process.env.CI ? 4 : undefined,
+        minForks: 1,
+      },
+    },
     setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',
@@ -150,22 +188,44 @@ export default defineConfig({
         // breaks createContext order. Hence no react/react-dom group.
         manualChunks: (id: string) => {
           if (id.includes('node_modules/@mui/icons-material')) {
-            return 'mui-icons';
+            return 'vendor-mui-icons';
           }
-          if (id.includes('node_modules/@mui')) {
-            return 'mui-core';
+          if (id.includes('node_modules/@mui') || id.includes('node_modules/@emotion')) {
+            return 'vendor-mui-core';
           }
           if (
             id.includes('node_modules/recharts') ||
             id.includes('node_modules/d3-')
           ) {
-            return 'charts';
+            return 'vendor-charts';
           }
           if (
             id.includes('node_modules/react-router') ||
             id.includes('node_modules/@remix-run')
           ) {
-            return 'router';
+            return 'vendor-router';
+          }
+          if (id.includes('node_modules/framer-motion')) {
+            return 'vendor-motion';
+          }
+          if (id.includes('node_modules/katex') || id.includes('node_modules/react-katex')) {
+            return 'vendor-katex';
+          }
+          if (id.includes('node_modules/highlight.js')) {
+            return 'vendor-highlight';
+          }
+          if (
+            id.includes('node_modules/refractor') ||
+            id.includes('node_modules/prismjs')
+          ) {
+            return 'vendor-prism';
+          }
+          if (
+            id.includes('node_modules/axios') ||
+            id.includes('node_modules/react-query') ||
+            id.includes('node_modules/dayjs')
+          ) {
+            return 'vendor-utils';
           }
           return undefined;
         },
@@ -204,10 +264,7 @@ export default defineConfig({
       '@mui/icons-material',
       'axios',
       'dayjs',
-      'react-query'
-    ],
-    exclude: [
-      // Büyük kütüphaneleri exclude et
+      'react-query',
       'recharts',
       'framer-motion'
     ]

@@ -67,7 +67,22 @@ interface AuthStore extends Omit<AuthState, 'token' | 'refreshToken'> {
   // 2FA flow: `'2fa_required'` literal returned when backend requests TOTP step
   // (see types.ts LoginResponse.requires_2fa). Caller branches on this.
   login: (credentials: LoginRequest) => Promise<boolean | '2fa_required'>
-  register: (userData: RegisterRequest) => Promise<boolean>
+  verifyTwoFactor: (email: string, password: string, totpCode: string) => Promise<boolean>
+  /**
+   * Kayıt.
+   *
+   * `{ kayitOldu }` dalı SÖZLEŞMEYİ GENİŞLETİR, kırmaz: `true` hâlâ
+   * "kayıt + otomatik giriş tamam". Genişletmenin sebebi ölçüldü — eskiden
+   * `return loginResult === true` iki AYRI sonucu tek boolean'a katlıyordu:
+   * "kayıt başarısız" ile "kayıt BAŞARILI ama giriş engellendi". İkincisi
+   * kullanıcı için tamamen farklı: hesabı VAR, yapması gereken e-postasını
+   * doğrulamak. `EPOSTA_DOGRULAMA_ZORUNLU` açıkken bu dal her yeni kullanıcıyı
+   * vurur ve ekran SESSİZ kalırdı (`ModernRegisterPage.tsx:186` `if (success)`
+   * düşer, sayfa store `error`'ını da okumaz).
+   */
+  register: (
+    userData: RegisterRequest,
+  ) => Promise<boolean | { kayitOldu: true; girisEngellendi: string | null }>
   logout: () => Promise<void>
   refreshAuth: () => Promise<boolean>
   initializeAuth: () => Promise<void>
@@ -206,9 +221,45 @@ export const useAuthStore = create<AuthStore>()(
         },
 
         /**
+         * Complete a 2FA-gated login (second step after login() returns '2fa_required').
+         * SECURITY: Server re-validates credentials + TOTP and sets httpOnly cookies.
+         */
+        verifyTwoFactor: async (email: string, password: string, totpCode: string): Promise<boolean> => {
+          try {
+            set({ loading: true, error: null });
+
+            const response = await authService.loginVerify2FA(email, password, totpCode);
+
+            if (response.success && response.user) {
+              set({
+                isAuthenticated: true,
+                user: response.user,
+                loading: false,
+                error: null,
+              });
+              return true;
+            }
+
+            set({
+              loading: false,
+              error: response.message || 'Doğrulama başarısız',
+            });
+            return false;
+          } catch (error: unknown) {
+            set({
+              loading: false,
+              error: getErrorMessage(error),
+            });
+            return false;
+          }
+        },
+
+        /**
          * Register action
          */
-        register: async (userData: RegisterRequest): Promise<boolean> => {
+        register: async (
+          userData: RegisterRequest,
+        ): Promise<boolean | { kayitOldu: true; girisEngellendi: string | null }> => {
           try {
             set({ loading: true, error: null });
 
@@ -216,15 +267,20 @@ export const useAuthStore = create<AuthStore>()(
 
             if (response.success) {
               // Auto-login after successful registration.
-              // login() can return '2fa_required' if account had TOTP enabled
-              // pre-registration (edge case). Coerce to false for the
-              // register-returns-boolean contract — caller will handle the
-              // 2FA flow via the standard login path on next attempt.
               const loginResult = await get().login({
                 email: userData.email,
                 password: userData.password,
               });
-              return loginResult === true;
+              if (loginResult === true) {
+                return true;
+              }
+              // 🔴 KAYIT BAŞARILI, yalnız otomatik giriş tamamlanmadı.
+              // Eskiden burası `loginResult === true` ile `false`'a katlanıyordu
+              // ve çağıran bunu "kayıt başarısız" sanıyordu — oysa hesap OLUŞTU.
+              // İki gerçek dal: (a) e-posta doğrulama kapısı 403 döndürdü
+              // (`api/auth.py:802-805`), (b) hesapta TOTP açık ('2fa_required').
+              // (b) durumunda `error` null'dır; çağıran genel bir mesaj gösterir.
+              return { kayitOldu: true, girisEngellendi: get().error };
             } else {
               set({
                 loading: false,

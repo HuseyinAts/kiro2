@@ -81,7 +81,7 @@ export default function SoruMeydaniPage() {
   useEffect(() => { fetchQuestions(); }, [fetchQuestions]);
 
   const handleAsk = async () => {
-    if (!askSubject || !askTitle) return;
+    if (!askSubject || !askTitle) {return;}
     setSubmitting(true);
     try {
       await soruMeydani.askQuestion({
@@ -113,7 +113,7 @@ export default function SoruMeydaniPage() {
   };
 
   const handleSubmitSolution = async () => {
-    if (!selectedQ || !solBody) return;
+    if (!selectedQ || !solBody) {return;}
     setSubmitting(true);
     try {
       await soruMeydani.submitSolution(selectedQ.id, { body: solBody });

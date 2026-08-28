@@ -1,10 +1,11 @@
 """Enhanced Chat API - AI sohbet sistemi."""
 
 import base64
+import contextlib
 import json
 import logging
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
@@ -33,6 +34,7 @@ from core.learning_path_auth import (
     verify_student_access,
 )
 from core.turkish_nlp_utils import normalize_tr
+from services.socratic_rag_guardrail_service import socratic_rag_guardrail_service
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +109,7 @@ _chat_tables_verified = False
 
 async def _verify_chat_tables(db: AsyncSession) -> bool:
     """Check chat tables exist on first call. Logs error once if missing."""
-    global _chat_tables_verified
+    global _chat_tables_verified  # noqa: PLW0603
     if _chat_tables_verified:
         return True
     try:
@@ -121,10 +123,8 @@ async def _verify_chat_tables(db: AsyncSession) -> bool:
             "Run: python backend/_scripts/create_chat_tables.py"
         )
         # Rollback the failed transaction so the connection is usable
-        try:
+        with contextlib.suppress(Exception):
             await db.rollback()
-        except Exception:
-            pass
         return False
 
 
@@ -147,10 +147,16 @@ async def _get_or_create_session(
     title = subject.capitalize() if subject else "Yeni Sohbet"
     await db.execute(
         text(
-            "INSERT INTO chat_sessions (id, user_id, title, subject_type) "
-            "VALUES (:id, :uid, :title, :subj)"
+            "INSERT INTO chat_sessions (id, user_id, title, subject_type, organization_id) "
+            "VALUES (:id, :uid, :title, :subj, :org_id)"
         ),
-        {"id": new_id, "uid": user_id, "title": title, "subj": subject or "general"},
+        {
+            "id": new_id,
+            "uid": user_id,
+            "title": title,
+            "subj": subject or "general",
+            "org_id": "org_legacy_default",
+        },
     )
     await db.commit()
     return new_id
@@ -220,6 +226,19 @@ SOCRATIC_SYSTEM_PROMPT = (
     "Ogrenci: '2x + 5 = 13 nasil cozulur?'\n"
     "Sen: 'Guzel bir soru! Once dusunelim: esitligin iki tarafindan "
     "ayni sayiyi cikarabilir miyiz? Hangi sayiyi cikarmaliyiz ve neden?'"
+)
+
+# U04 (12 Ağu 2026) — çıktı-tarafı zorlama sabitleri. Kanıt: canlı tetiklemede
+# tek ısrar sonrası model TÜM yanıtı "C) 4" / "C" olarak üretti.
+STRENGTHENED_REMINDER = (
+    "\n\nÖNEMLİ UYARI: Az önce cevabı doğrudan söyledin. Bunu KESİNLİKLE YAPMA. "
+    "Öğrenciye asla nihai cevabı veya şıkkı harf/sayı olarak verme — yalnızca "
+    "yönlendirici bir soru sor."
+)
+
+SOCRATIC_FALLBACK_MESSAGE = (
+    "Cevabı doğrudan söyleyemem, ama beraber bulalım: bu sorudaki ilk adımı "
+    "birlikte düşünelim mi? Sence hangi işlemi yapmalıyız?"
 )
 
 
@@ -328,12 +347,21 @@ SUBJECT_CHAT_PROMPTS: dict[str, str] = {
 }
 
 
-def _get_system_prompt(subject: str, teaching_mode: str = "direct") -> str:
-    """Build system prompt based on subject and teaching mode."""
+def _get_system_prompt(
+    subject: str, teaching_mode: str = "direct", user_query: str = ""
+) -> str:
+    """Build system prompt with RAG curriculum grounding based on subject and teaching mode."""
     base = SOCRATIC_SYSTEM_PROMPT if teaching_mode == "socratic" else SYSTEM_PROMPT
     subject_addition = SUBJECT_CHAT_PROMPTS.get(normalize_tr(subject), "")
     if subject_addition:
         base += "\n\n" + subject_addition
+
+    if user_query and subject:
+        rag_data = socratic_rag_guardrail_service.get_curriculum_grounding(
+            subject, user_query
+        )
+        base += "\n\n" + rag_data["rag_context_text"]
+
     return base
 
 
@@ -352,13 +380,62 @@ def _generate_fallback(message: str, subject: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# LLM call with fallback chain
+# U04: Sokratik guardrail çıktı-tarafı zorlaması
+# ---------------------------------------------------------------------------
+async def enforce_socratic_output(
+    response_text: str,
+    teaching_mode: str,
+    regenerate: Callable[[], Awaitable[str]],
+) -> str:
+    """Sokratik modda dogrudan-cevap sizintisini zorlayici sekilde engeller.
+
+    teaching_mode != "socratic" ise dokunmadan doner (direct mod ogrencisi
+    bilerek dogrudan cevap istiyor, bu bir ihlal degil).
+    Sizinti varsa `regenerate()` ile BIR KEZ yeniden dener; retry sonucu da
+    AYNI dedektorle yeniden kontrol edilir. O da sizarsa (veya bossa) sabit
+    yonlendirme sablonuna duser -- sizinti HICBIR dalda client'a ulasmaz.
+    """
+    if teaching_mode != "socratic":
+        return response_text
+
+    eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(
+        response_text
+    )
+    if not eval_res["direct_answer_detected"]:
+        return response_text
+
+    logger.warning(
+        "Sokratik sizinti tespit edildi, guclendirilmis prompt ile yeniden deneniyor"
+    )
+    retried_text = await regenerate()
+    retried_eval = socratic_rag_guardrail_service.validate_socratic_compliance(
+        retried_text
+    )
+    if retried_text and not retried_eval["direct_answer_detected"]:
+        return retried_text
+
+    logger.warning(
+        "Sokratik sizinti yeniden deneme sonrasi da tespit edildi, sabit sablona dusuluyor"
+    )
+    return SOCRATIC_FALLBACK_MESSAGE
+
+
+# ---------------------------------------------------------------------------
+# LLM call with fallback chain and Guardrail validation
 # ---------------------------------------------------------------------------
 async def _call_llm(
     message: str, subject: str, teaching_mode: str = "direct"
 ) -> EnhancedChatResponse:
-    """Try LLM backends in order: LiteLLM → Ollama → fallback."""
-    system_prompt = _get_system_prompt(subject, teaching_mode)
+    """Try LLM backends in order: LiteLLM → Ollama → fallback, with Guardrail checks."""
+    safety_check = socratic_rag_guardrail_service.inspect_input_safety(message)
+    if not safety_check["is_safe"]:
+        return EnhancedChatResponse(
+            message=safety_check["reason"] or "Güvenlik Uyarısı: Girdi engellendi.",
+            confidence_score=0.0,
+            suggestions=["Lütfen müfredata uygun eğitim soruları sorun."],
+        )
+
+    system_prompt = _get_system_prompt(subject, teaching_mode, user_query=message)
 
     # --- Try 1: LiteLLM proxy ---
     if os.getenv("LLM_BACKEND") == "litellm":
@@ -370,12 +447,30 @@ async def _call_llm(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": message},
             ]
-            response = await client.chat_completion(
-                messages=messages,
-                stream=False,
-            )
-            content = response.choices[0].message.content
-            return EnhancedChatResponse(message=content, confidence_score=0.9)
+            response_text = await client.chat(messages=messages)
+            if response_text:
+
+                async def _regenerate_litellm() -> str:
+                    retry_messages = [
+                        {
+                            "role": "system",
+                            "content": system_prompt + STRENGTHENED_REMINDER,
+                        },
+                        {"role": "user", "content": message},
+                    ]
+                    return await client.chat(messages=retry_messages) or ""
+
+                response_text = await enforce_socratic_output(
+                    response_text, teaching_mode, _regenerate_litellm
+                )
+                eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(
+                    response_text
+                )
+                return EnhancedChatResponse(
+                    message=response_text,
+                    confidence_score=eval_res["socratic_score"],
+                    suggestions=eval_res["suggestions"],
+                )
         except Exception as e:
             logger.warning(f"LiteLLM failed: {e}")
 
@@ -401,17 +496,49 @@ async def _call_llm(
                 data = resp.json()
                 content = data.get("message", {}).get("content", "")
                 if content:
+
+                    async def _regenerate_ollama() -> str:
+                        retry_resp = await client.post(
+                            f"{ollama_url}/api/chat",
+                            json={
+                                "model": model,
+                                "messages": [
+                                    {
+                                        "role": "system",
+                                        "content": system_prompt
+                                        + STRENGTHENED_REMINDER,
+                                    },
+                                    {"role": "user", "content": message},
+                                ],
+                                "stream": False,
+                            },
+                        )
+                        if retry_resp.status_code == 200:
+                            retry_data = retry_resp.json()
+                            return str(retry_data.get("message", {}).get("content", ""))
+                        return ""
+
+                    content = await enforce_socratic_output(
+                        content, teaching_mode, _regenerate_ollama
+                    )
+                    eval_res = (
+                        socratic_rag_guardrail_service.validate_socratic_compliance(
+                            content
+                        )
+                    )
                     return EnhancedChatResponse(
                         message=content,
-                        confidence_score=0.85,
+                        confidence_score=eval_res["socratic_score"],
+                        suggestions=eval_res["suggestions"],
                     )
     except Exception as e:
         logger.debug(f"Ollama not available: {e}")
 
     # --- Fallback: smart placeholder ---
+    fallback_text = _generate_fallback(message, subject)
     return EnhancedChatResponse(
-        message=_generate_fallback(message, subject),
-        confidence_score=0.3,
+        message=fallback_text,
+        confidence_score=0.5,
         suggestions=["Konuyu belirtin", "Soruyu detaylandirin"],
     )
 
@@ -437,9 +564,7 @@ async def send_message(
     The bug only surfaces when the upstream LLM responds fast enough that the
     request doesn't time out first (GF24 was previously a state-dependent skip).
     """
-    await _verify_enhanced_chat_student_context(
-        payload.student_id, current_user, db
-    )
+    await _verify_enhanced_chat_student_context(payload.student_id, current_user, db)
 
     llm_response = await _call_llm(
         payload.message, payload.subject, payload.teaching_mode
@@ -491,22 +616,104 @@ async def send_message(
     }
 
 
+@router.post("/socratic-dialogue")
+@limiter.limit("10/minute")
+async def socratic_dialogue(
+    request: Request,
+    response: Response,
+    payload: ChatMessageRequest,
+    current_user: Any = _auth_dep,
+    db: AsyncSession = _db_dep,
+) -> dict[str, Any]:
+    """Sokratik diyalog ve pedagojik yönlendirme ucu."""
+    await _verify_enhanced_chat_student_context(payload.student_id, current_user, db)
+
+    payload.teaching_mode = "socratic"
+    llm_response = await _call_llm(
+        payload.message, payload.subject, teaching_mode="socratic"
+    )
+
+    socratic_eval = socratic_rag_guardrail_service.validate_socratic_compliance(
+        llm_response.message
+    )
+    latex_eval = socratic_rag_guardrail_service.validate_latex_formatting(
+        llm_response.message
+    )
+
+    now = datetime.now(UTC).isoformat()
+    resp_id = f"soc-{uuid4().hex[:8]}"
+
+    session_id = payload.session_id
+    if db is not None and await _verify_chat_tables(db):
+        try:
+            user_id = (
+                str(getattr(current_user, "id", "anonymous"))
+                if current_user
+                else "anonymous"
+            )
+            session_id = await _get_or_create_session(
+                db,
+                user_id,
+                payload.session_id,
+                payload.subject,
+            )
+            await _save_message(db, session_id, "user", payload.message)
+            await _save_message(
+                db,
+                session_id,
+                "assistant",
+                llm_response.message,
+                model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
+                confidence=socratic_eval["socratic_score"],
+            )
+        except Exception as e:
+            logger.warning(f"Socratic DB persist failed: {e}")
+
+    return {
+        "success": True,
+        "data": {
+            "response_id": resp_id,
+            "message": llm_response.message,
+            "session_id": session_id,
+            "socratic_score": socratic_eval["socratic_score"],
+            "direct_answer_detected": socratic_eval["direct_answer_detected"],
+            "latex_formatting_valid": latex_eval["is_valid"],
+            "suggestions": socratic_eval["suggestions"],
+        },
+        "response": llm_response.message,
+        "agent": "socratic_tutor",
+        "timestamp": now,
+        "session_id": session_id,
+        "confidence_score": socratic_eval["socratic_score"],
+    }
+
+
 # ---------------------------------------------------------------------------
 # SSE Streaming endpoint
 # ---------------------------------------------------------------------------
 async def _stream_ollama(
-    message: str, subject: str, teaching_mode: str = "direct"
+    message: str,
+    subject: str,
+    teaching_mode: str = "direct",
+    strengthen: bool = False,
 ) -> AsyncIterator[str]:
-    """Stream Ollama response as SSE events."""
+    """Stream Ollama response as SSE events.
+
+    strengthen=True: U04 retry yolu -- guardrail sizintisi tespit edildikten
+    sonra guclendirilmis hatirlatmayla YENIDEN uretim icin kullanilir.
+    """
     import httpx
 
     ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
     model = os.getenv("OLLAMA_MODEL", "qwen3:8b")
     system_prompt = _get_system_prompt(subject, teaching_mode)
+    if strengthen:
+        system_prompt += STRENGTHENED_REMINDER
 
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            async with client.stream(
+        async with (
+            httpx.AsyncClient(timeout=120.0) as client,
+            client.stream(
                 "POST",
                 f"{ollama_url}/api/chat",
                 json={
@@ -517,22 +724,38 @@ async def _stream_ollama(
                     ],
                     "stream": True,
                 },
-            ) as resp:
-                async for line in resp.aiter_lines():
-                    if not line:
-                        continue
-                    data = json.loads(line)
-                    content = data.get("message", {}).get("content", "")
-                    if content:
-                        yield f"data: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
-                    if data.get("done"):
-                        break
+            ) as resp,
+        ):
+            async for line in resp.aiter_lines():
+                if not line:
+                    continue
+                data = json.loads(line)
+                content = data.get("message", {}).get("content", "")
+                if content:
+                    yield f"data: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
+                if data.get("done"):
+                    break
     except Exception as e:
         logger.warning(f"Ollama stream failed: {e}")
         fallback = _generate_fallback(message, subject)
         yield f"data: {json.dumps({'content': fallback}, ensure_ascii=False)}\n\n"
 
     yield "data: [DONE]\n\n"
+
+
+async def _collect_stream_text(
+    message: str, subject: str, teaching_mode: str, strengthen: bool = False
+) -> str:
+    """`_stream_ollama`'yi tuketip TAM metni dondurur; client'a hicbir sey gondermez."""
+    accumulated = ""
+    async for chunk in _stream_ollama(
+        message, subject, teaching_mode, strengthen=strengthen
+    ):
+        if chunk.startswith("data: ") and "[DONE]" not in chunk:
+            with contextlib.suppress(Exception):
+                chunk_data = json.loads(chunk[6:].strip())
+                accumulated += chunk_data.get("content", "")
+    return accumulated
 
 
 @router.post("/stream")
@@ -545,9 +768,7 @@ async def stream_message(
 ) -> StreamingResponse:
     """Stream AI response as Server-Sent Events."""
 
-    await _verify_enhanced_chat_student_context(
-        payload.student_id, current_user, db
-    )
+    await _verify_enhanced_chat_student_context(payload.student_id, current_user, db)
 
     # Resolve session before streaming starts
     session_id = payload.session_id
@@ -566,29 +787,48 @@ async def stream_message(
             logger.warning(f"Chat DB persist (stream-pre) failed: {e}")
 
     async def _stream_and_persist() -> AsyncIterator[str]:
-        """Wrap streaming to collect full response and persist after."""
-        accumulated = ""
-        async for chunk in _stream_ollama(
-            payload.message, payload.subject, payload.teaching_mode
-        ):
-            # Collect content for DB persistence
-            if chunk.startswith("data: ") and "[DONE]" not in chunk:
-                try:
-                    chunk_data = json.loads(chunk[6:].strip())
-                    accumulated += chunk_data.get("content", "")
-                except Exception:
-                    pass
-            # Inject session_id in first chunk
-            yield chunk
+        """Direct mod: gercek zamanli akis (degismedi).
+        Socratic mod: biriktir -> guardrail kontrolu -> SONRA gonder (U04)."""
+        if payload.teaching_mode != "socratic":
+            accumulated = ""
+            async for chunk in _stream_ollama(
+                payload.message, payload.subject, payload.teaching_mode
+            ):
+                # Collect content for DB persistence
+                if chunk.startswith("data: ") and "[DONE]" not in chunk:
+                    with contextlib.suppress(Exception):
+                        chunk_data = json.loads(chunk[6:].strip())
+                        accumulated += chunk_data.get("content", "")
+                # Inject session_id in first chunk
+                yield chunk
+            final_text = accumulated
+        else:
+            raw_text = await _collect_stream_text(
+                payload.message, payload.subject, payload.teaching_mode
+            )
+
+            async def _regenerate() -> str:
+                return await _collect_stream_text(
+                    payload.message,
+                    payload.subject,
+                    payload.teaching_mode,
+                    strengthen=True,
+                )
+
+            final_text = await enforce_socratic_output(
+                raw_text, payload.teaching_mode, _regenerate
+            )
+            yield f"data: {json.dumps({'content': final_text}, ensure_ascii=False)}\n\n"
+            yield "data: [DONE]\n\n"
 
         # Persist AI response after stream completes
-        if db is not None and accumulated and session_id:
+        if db is not None and final_text and session_id:
             try:
                 await _save_message(
                     db,
                     session_id,
                     "assistant",
-                    accumulated,
+                    final_text,
                     model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
                 )
             except Exception as e:
@@ -762,7 +1002,7 @@ async def _extract_text_from_pdf(file_bytes: bytes) -> str:
         return f"PDF okuma hatasi: {e}"
 
 
-async def _fetch_url_content(url: str) -> str:
+async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
     """Fetch and extract readable text from a URL (SSRF-safe)."""
     import ipaddress
     import socket
@@ -810,8 +1050,8 @@ async def _fetch_url_content(url: str) -> str:
                 text_content = re.sub(r"\s+", " ", text_content).strip()
                 return text_content[:5000]  # max 5000 chars
             if "application/json" in content_type:
-                return resp.text[:5000]
-            return resp.text[:5000]
+                return str(resp.text)[:5000]
+            return str(resp.text)[:5000]
     except Exception as e:
         logger.warning(f"URL fetch failed: {e}")
         return f"URL icerigi alinamadi: {e}"
@@ -840,7 +1080,7 @@ async def _analyze_image_with_vision(
         client = get_litellm_client()
         result = await client.analyze_image(image_b64, prompt)
         if result:
-            return result
+            return str(result)
     except Exception as e:
         logger.debug(f"LiteLLM vision not available: {e}")
 
@@ -865,7 +1105,7 @@ async def _analyze_image_with_vision(
                 data = resp.json()
                 content = data.get("message", {}).get("content", "")
                 if content:
-                    return content
+                    return str(content)
     except Exception as e:
         logger.debug(f"Ollama vision not available: {e}")
 
@@ -876,7 +1116,7 @@ async def _analyze_image_with_vision(
 
 @router.post("/message-with-attachment")
 @limiter.limit("10/minute")
-async def message_with_attachment(
+async def message_with_attachment(  # noqa: PLR0912
     request: Request,
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
@@ -1034,7 +1274,10 @@ async def bionic_reading_enhanced_chat(
     from core.cache import cache_manager
 
     svc = BionicReadingService(cache_service=cache_manager)
-    user_id = str(getattr(current_user, "id", "anonymous") if current_user else "anonymous")
-    return await svc.process_text(
+    user_id = str(
+        getattr(current_user, "id", "anonymous") if current_user else "anonymous"
+    )
+    res = await svc.process_text(
         text=str(text).strip(), user_id=user_id, use_cache=True
     )
+    return dict(res) if isinstance(res, dict) else {}

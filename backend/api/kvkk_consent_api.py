@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import undefer
 
 from core.database import get_async_session
 from core.jwt_auth import TokenPayload, get_current_user
@@ -164,6 +165,11 @@ async def give_consent(
 
         await db.commit()
         await db.refresh(new_consent)
+        # GF16: consent_text modelde deferred (models/kvkk_models.py). Normal
+        # refresh deferred kolonu yuklemez; response_model=ConsentResponse
+        # serializasyonu erisince AsyncSession'da MissingGreenlet -> 500
+        # oluyordu. Kolonu acikca yukle.
+        await db.refresh(new_consent, attribute_names=["consent_text"])
 
         logger.info(
             "consent_given",
@@ -349,7 +355,13 @@ async def get_my_consents(
     Returns user's consent history with optional status filter.
     """
     try:
-        stmt = select(KVKKConsent).where(KVKKConsent.user_id == current_user.sub)
+        # GF16 kardes yolu: consent_text deferred — response_model listesi
+        # serializasyonda kolona erisir; undefer olmadan kayit VARKEN 500.
+        stmt = (
+            select(KVKKConsent)
+            .options(undefer(KVKKConsent.consent_text))
+            .where(KVKKConsent.user_id == current_user.sub)
+        )
 
         if status_filter:
             stmt = stmt.where(KVKKConsent.status == status_filter)

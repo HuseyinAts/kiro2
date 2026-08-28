@@ -430,37 +430,49 @@ class TestFSRSScheduleCalculation:
         self.review_date = datetime(2025, 3, 10)  # March 10 - normal period
 
     def test_again_gives_shortest_interval(self) -> None:
-        schedule = self.fsrs.calculate_next_review(
-            self.card, FSRSGrade.AGAIN, self.review_date, self.context
-        )
-        assert schedule.interval_days >= 1
-        # AGAIN should give shorter interval than GOOD
-        schedule_good = self.fsrs.calculate_next_review(
-            self.card, FSRSGrade.GOOD, self.review_date, self.context
-        )
-        assert schedule.interval_days <= schedule_good.interval_days
+        import random
+        from unittest.mock import patch
+        
+        with patch.object(random, "randint", return_value=0):
+            schedule = self.fsrs.calculate_next_review(
+                self.card, FSRSGrade.AGAIN, self.review_date, self.context
+            )
+            assert schedule.interval_days >= 1
+            # AGAIN should give shorter interval than GOOD
+            schedule_good = self.fsrs.calculate_next_review(
+                self.card, FSRSGrade.GOOD, self.review_date, self.context
+            )
+            assert schedule.interval_days <= schedule_good.interval_days
 
     def test_easy_gives_longest_interval(self) -> None:
-        schedule_easy = self.fsrs.calculate_next_review(
-            self.card, FSRSGrade.EASY, self.review_date, self.context
-        )
-        schedule_good = self.fsrs.calculate_next_review(
-            self.card, FSRSGrade.GOOD, self.review_date, self.context
-        )
-        assert schedule_easy.interval_days >= schedule_good.interval_days
+        import random
+        from unittest.mock import patch
+        
+        with patch.object(random, "randint", return_value=0):
+            schedule_easy = self.fsrs.calculate_next_review(
+                self.card, FSRSGrade.EASY, self.review_date, self.context
+            )
+            schedule_good = self.fsrs.calculate_next_review(
+                self.card, FSRSGrade.GOOD, self.review_date, self.context
+            )
+            assert schedule_easy.interval_days >= schedule_good.interval_days
 
     def test_grade_ordering(self) -> None:
         """AGAIN < HARD <= GOOD <= EASY in interval days."""
-        intervals = {}
-        for grade in FSRSGrade:
-            s = self.fsrs.calculate_next_review(
-                self.card, grade, self.review_date, self.context
-            )
-            intervals[grade] = s.interval_days
+        import random
+        from unittest.mock import patch
+        
+        with patch.object(random, "randint", return_value=0):
+            intervals = {}
+            for grade in FSRSGrade:
+                s = self.fsrs.calculate_next_review(
+                    self.card, grade, self.review_date, self.context
+                )
+                intervals[grade] = s.interval_days
 
-        assert intervals[FSRSGrade.AGAIN] <= intervals[FSRSGrade.HARD]
-        assert intervals[FSRSGrade.HARD] <= intervals[FSRSGrade.GOOD]
-        assert intervals[FSRSGrade.GOOD] <= intervals[FSRSGrade.EASY]
+            assert intervals[FSRSGrade.AGAIN] <= intervals[FSRSGrade.HARD]
+            assert intervals[FSRSGrade.HARD] <= intervals[FSRSGrade.GOOD]
+            assert intervals[FSRSGrade.GOOD] <= intervals[FSRSGrade.EASY]
 
     def test_interval_within_bounds(self) -> None:
         for grade in FSRSGrade:

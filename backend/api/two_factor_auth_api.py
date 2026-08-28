@@ -10,8 +10,9 @@ import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import undefer, update
 
 from core.database import get_async_session
 from core.jwt_auth import TokenPayload, get_current_user
@@ -48,7 +49,14 @@ async def _get_user_orm(
 
     Raises 401 if the token is valid but the user row is gone.
     """
-    result = await db.execute(select(User).where(User.id == token.sub))
+    # GF9wD: backup_codes_hashed modelde deferred (models/user_models.py:95).
+    # Handler govdesinde erisim AsyncSession'da lazy IO tetikleyip
+    # greenlet_spawn hatasiyla 500 uretiyordu; sorguda undefer et.
+    result = await db.execute(
+        select(User)
+        .options(undefer(User.backup_codes_hashed))
+        .where(User.id == token.sub)
+    )
     user = result.scalar_one_or_none()
     if user is None:
         raise HTTPException(
@@ -56,7 +64,6 @@ async def _get_user_orm(
             detail="User not found",
         )
     return user
-
 
 
 # Request/Response Models

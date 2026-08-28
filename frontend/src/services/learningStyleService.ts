@@ -8,6 +8,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 import config from '../config';
+import { girisYonlendirmesiGerekli } from '../utils/publicRoutes';
 
 // Base URL
 const BASE_URL = config.api.baseURL;
@@ -26,7 +27,7 @@ const api: AxiosInstance = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && girisYonlendirmesiGerekli(window.location.pathname)) {
       // setTimeout(0) allows pending promise chains to complete before redirect
       setTimeout(() => { window.location.href = '/login'; }, 0);
     }

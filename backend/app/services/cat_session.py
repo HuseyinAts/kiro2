@@ -55,12 +55,15 @@ from typing import Any
 import redis.asyncio as aioredis
 
 from app.services.irt_engine import (
+    MAX_ITEMS,
+    SE_STOP,
     IRTResult,
     ItemParams,
     eap_update,
     select_next_question,
     should_terminate,
 )
+from core.quality_gate import safe_for_beta_sql
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +114,18 @@ class CATState:
     state: str = "active"  # active|completed|abandoned
     termination_reason: str = ""
     warm_up_done: bool = False  # ilk 3 kolay soru bitti mi
+    # Misafir (auth'suz) yerleştirme: user_id gerçek bir users satırı DEĞİL
+    # ("guest:<uuid>"). Bu oturumun hiçbir kalıcı tabloya yazılmaması gerekir —
+    # FK ihlali ve RLS'li tablolara sahipsiz satır yazımı önlenir.
+    is_guest: bool = False
+    # SUNUCUNUN SERVİS ETTİĞİ madde. Yanıtın gerçekten bu maddeye ait olduğu
+    # doğrulanmazsa istemci hangi sorunun puanlanacağını seçebilir; yanıt
+    # doğru/yanlış bilgisini geri verdiği için bu, soru bankasının cevap
+    # anahtarını sızdıran bir oracle'a dönüşür.
+    pending_question_id: str = ""
+    # "Emin değilim" ile atlanan maddeler. θ'ya GİRMEZ (uygulanmamış sayılır)
+    # ama madde bütçesinden düşer ve tekrar sunulmaz.
+    skipped_ids: list[str] = field(default_factory=list)
 
     # ------- Yardımcı metodlar -------
 
@@ -144,6 +159,9 @@ class CATState:
             "state": self.state,
             "termination_reason": self.termination_reason,
             "warm_up_done": "1" if self.warm_up_done else "0",
+            "is_guest": "1" if self.is_guest else "0",
+            "pending_question_id": self.pending_question_id,
+            "skipped_ids": json.dumps(self.skipped_ids),
         }
 
     @classmethod
@@ -164,6 +182,9 @@ class CATState:
             state=d.get("state", "active"),
             termination_reason=d.get("termination_reason", ""),
             warm_up_done=d.get("warm_up_done", "0") == "1",
+            is_guest=d.get("is_guest", "0") == "1",
+            pending_question_id=d.get("pending_question_id", ""),
+            skipped_ids=json.loads(d.get("skipped_ids", "[]")),
         )
 
 
@@ -234,61 +255,89 @@ class CATSessionService:
             #   1. is_calib_pool=TRUE ve kolay (b < 0) → zorunlu ilk temas
             #   2. is_calib_pool=TRUE tumu → havuz doluysa genisle
             #   3. Normal kolay sorular (fallback)
-            stmt = text(r"""
-                SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
-                FROM question_bank
-                WHERE LOWER(subject_area) = LOWER(:subject_id)
-                  AND is_active = TRUE
+            stmt = text(
+                r"""
+                SELECT qb.id::text,
+                       qs.irt_discrimination AS a,
+                       qs.irt_difficulty AS b,
+                       qs.irt_guessing AS c
+                FROM question_bank qb
+                LEFT JOIN question_content qc ON qc.id = qb.id
+                LEFT JOIN question_metadata qm ON qm.id = qb.id
+                LEFT JOIN question_statistics qs ON qs.id = qb.id
+                WHERE LOWER(qm.subject_area) = LOWER(:subject_id)
+                  AND qb.is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
-                  AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')
+                  -- Kalite kapısı (core/quality_gate.py) — status-only filtre 34.982 satır
+                  -- görüyor, kapı 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru
+                  -- öğrenciye servis ediliyordu. Status satırı savunma katmanı olarak kalır.
+                  AND """  # noqa: S608 (kapı sabiti, kullanıcı girdisi değil)
+                + safe_for_beta_sql("qb.id")
+                + r"""
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
                   -- Bug #11 v3: PostgreSQL C locale fix — [şŞ] char class her Türkçe ilk-harf için
-                  AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+                  AND qc.question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
                   AND (
                       -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
-                      (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
+                      (qs.is_calib_pool = TRUE AND qs.is_calibrated = TRUE AND qs.irt_difficulty BETWEEN -1.0 AND 1.0)
                       OR
                       -- Oncelik 2: Kalibreli ama b araligi disinda
-                      (is_calib_pool = TRUE AND is_calibrated = TRUE)
+                      (qs.is_calib_pool = TRUE AND qs.is_calibrated = TRUE)
                       OR
                       -- Oncelik 3: Kalibrasyon havuzunda ama is_calibrated=FALSE (default parametreler)
-                      (is_calib_pool = TRUE)
+                      (qs.is_calib_pool = TRUE)
                       OR
                       -- Son care: kolay normal sorular
-                      (irt_difficulty < :b_max)
+                      (qs.irt_difficulty < :b_max)
                   )
                 ORDER BY
                     -- is_calibrated=TRUE olanlar her zaman once gelir
-                    CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
-                         WHEN is_calib_pool = TRUE THEN 1
+                    CASE WHEN qs.is_calibrated = TRUE AND qs.is_calib_pool = TRUE THEN 0
+                         WHEN qs.is_calib_pool = TRUE THEN 1
                          ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 30
-            """)
+            """
+            )
         else:
             # ZPD bolgesi: theta - 1.5 < b < theta + 1.5
             # Kalibrasyon havuzundaki sorulari tercih et
-            stmt = text(r"""
-                SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
-                FROM question_bank
-                WHERE LOWER(subject_area) = LOWER(:subject_id)
-                  AND irt_difficulty BETWEEN :b_min AND :b_max
-                  AND is_active = TRUE
+            stmt = text(
+                r"""
+                SELECT qb.id::text,
+                       qs.irt_discrimination AS a,
+                       qs.irt_difficulty AS b,
+                       qs.irt_guessing AS c
+                FROM question_bank qb
+                LEFT JOIN question_content qc ON qc.id = qb.id
+                LEFT JOIN question_metadata qm ON qm.id = qb.id
+                LEFT JOIN question_statistics qs ON qs.id = qb.id
+                WHERE LOWER(qm.subject_area) = LOWER(:subject_id)
+                  AND qs.irt_difficulty BETWEEN :b_min AND :b_max
+                  AND qb.is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
-                  AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')
+                  -- Kalite kapısı (core/quality_gate.py) — status-only filtre 34.982 satır
+                  -- görüyor, kapı 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru
+                  -- öğrenciye servis ediliyordu. Status satırı savunma katmanı olarak kalır.
+                  AND """  # noqa: S608 (kapı sabiti, kullanıcı girdisi değil)
+                + safe_for_beta_sql("qb.id")
+                + r"""
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
                   -- Bug #11 v3: PostgreSQL C locale fix — [şŞ] char class her Türkçe ilk-harf için
-                  AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+                  AND qc.question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
                 ORDER BY
                     -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
-                    CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
-                         WHEN is_calib_pool = TRUE THEN 1
+                    CASE WHEN qs.is_calibrated = TRUE AND qs.is_calib_pool = TRUE THEN 0
+                         WHEN qs.is_calib_pool = TRUE THEN 1
                          ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 100
-            """)
+            """
+            )
 
         params = (
             {"subject_id": subject_id, "b_max": max(theta - 1.0, -0.5)}
@@ -318,27 +367,35 @@ class CATSessionService:
         from sqlalchemy import text
 
         stmt = text("""
-            SELECT id::text,
-                   question_text AS stem,
+            SELECT qb.id::text,
+                   qc.question_text AS stem,
                    CASE
-                       WHEN option_e IS NOT NULL AND option_e != ''
-                       THEN json_build_object('A', option_a, 'B', option_b,
-                                             'C', option_c, 'D', option_d, 'E', option_e)
-                       ELSE json_build_object('A', option_a, 'B', option_b,
-                                             'C', option_c, 'D', option_d)
+                       WHEN qc.option_e IS NOT NULL AND qc.option_e != ''
+                       THEN json_build_object('A', qc.option_a, 'B', qc.option_b,
+                                             'C', qc.option_c, 'D', qc.option_d, 'E', qc.option_e)
+                       ELSE json_build_object('A', qc.option_a, 'B', qc.option_b,
+                                             'C', qc.option_c, 'D', qc.option_d)
                    END AS options,
-                   correct_answer AS correct_option,
-                   irt_difficulty AS difficulty,
-                   irt_discrimination AS discrimination,
-                   irt_guessing AS guessing,
-                   primary_topic_id::text AS topic_id,
-                   subject_area AS subject_id,
-                   question_image_url,
-                   image_width,
-                   image_height,
-                   image_ocr_text
-            FROM question_bank
-            WHERE id = :qid AND is_active = TRUE
+                   qc.correct_answer AS correct_option,
+                   -- COALESCE: cocuk satiri yoksa LEFT JOIN NULL dondurur; asagidaki
+                   -- float() cagrilari patlar. Varsayilanlar ORM ile ayni
+                   -- (models/question_bank.py:371-373).
+                   COALESCE(qs.irt_difficulty, 0.0) AS difficulty,
+                   COALESCE(qs.irt_discrimination, 1.0) AS discrimination,
+                   COALESCE(qs.irt_guessing, 0.25) AS guessing,
+                   qb.primary_topic_id::text AS topic_id,
+                   th.name_tr AS konu,
+                   qm.subject_area AS subject_id,
+                   qc.question_image_url,
+                   qc.image_width,
+                   qc.image_height,
+                   qc.image_ocr_text
+            FROM question_bank qb
+            LEFT JOIN question_content qc ON qc.id = qb.id
+            LEFT JOIN question_metadata qm ON qm.id = qb.id
+            LEFT JOIN question_statistics qs ON qs.id = qb.id
+            LEFT JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+            WHERE qb.id = :qid AND qb.is_active = TRUE
         """)
         result = await self.db.execute(stmt, {"qid": question_id})
         row = result.fetchone()
@@ -350,6 +407,7 @@ class CATSessionService:
             "options": row.options,
             "correct_option": row.correct_option,
             "topic_id": row.topic_id,
+            "konu": row.konu,
             "subject_id": row.subject_id,
             "irt": {
                 "difficulty": round(float(row.difficulty), 4),
@@ -364,11 +422,17 @@ class CATSessionService:
 
     # ---- Ana API ----
 
+    async def fetch_question_detail(self, question_id: str) -> dict | None:
+        """Soru içeriğinin dışarıya açık okuyucusu (adaptörler için)."""
+        return await self._fetch_question_detail(question_id)
+
     async def start_session(
         self,
         user_id: str,
         subject_id: str,
         placement_theta: float = 0.0,
+        *,
+        is_guest: bool = False,
     ) -> dict[str, Any]:
         """
         Yeni CAT oturumu başlat.
@@ -392,6 +456,25 @@ class CATSessionService:
         session_id = str(uuid.uuid4())
         now_iso = datetime.now(UTC).isoformat()
 
+        # KOD GERÇEĞİ FIX (seanslar arası hafıza): kalıcı θ'yı geri oku.
+        # _update_theta_cache her cevapta theta:{user}:{subject_id} anahtarına
+        # yazıyordu ama okuyanı yoktu -> her yeni seans θ=0'dan başlıyordu.
+        # Guest hariç, çağıran varsayılanı (0.0) bıraktıysa son θ'yı prior yap;
+        # cache miss / parse hatası -> soğuk başlangıç (bugünküyle aynı).
+        if not is_guest and placement_theta == 0.0:
+            try:
+                _cached_theta = await self.redis.get(f"theta:{user_id}:{subject_id}")
+                if _cached_theta is not None:
+                    _tv = float(
+                        _cached_theta.decode()
+                        if isinstance(_cached_theta, bytes)
+                        else _cached_theta
+                    )
+                    if -4.0 <= _tv <= 4.0:
+                        placement_theta = _tv
+            except Exception:
+                placement_theta = 0.0
+
         # BUG-6 FIX: Önceki aktif oturumu Redis'ten temizle
         prev_key = f"cat:active:{user_id}:{subject_id}"
         prev_session_id = await self.redis.get(prev_key)
@@ -414,6 +497,7 @@ class CATSessionService:
             theta=placement_theta,
             se=1.0,
             started_at=now_iso,
+            is_guest=is_guest,
         )
 
         # İlk soru: warm-up (kolay)
@@ -422,7 +506,26 @@ class CATSessionService:
         )
 
         if not candidates:
-            # Warm-up sorusu yoksa normal havuza geç
+            # Warm-up sorusu yoksa normal havuza geç.
+            #
+            # 19 Agu 2026 (Y4) — BU DAL SESSIZ OLMAMALI. Olculdu: warm_up
+            # havuzunun DORT dalinin DORDU de bu veride bos donuyor
+            #   - Oncelik 1/2/3 -> `is_calib_pool = TRUE` sarti; canli DB'de
+            #     is_calib_pool TRUE=0 / FALSE=36.967
+            #   - Son care -> `irt_difficulty < max(theta-1.0, -0.5)`; tum
+            #     satirlarda irt_difficulty=0.0 oldugu icin theta=0'da
+            #     `0.0 < -0.5` FALSE -> 0 satir
+            # Yani "kolay ilk soru" tasarim niyeti fiilen OLU: ogrencinin ilk
+            # sorusu rastgele bir ZPD maddesi oluyor. Fallback dogru davranis
+            # (oturum yine baslar) ama SESSIZ olmasi kusuru gorunmez kiliyordu.
+            # Bu uyari, prior'lar yazilana kadar (Y4 Adim 3) tek sinyaldir.
+            logger.warning(
+                "CAT warm-up havuzu BOS (ders=%s, theta=%.2f) -> core havuzuna "
+                "dusuluyor; 'kolay ilk soru' garantisi YOK. Beklenen sebep: "
+                "is_calib_pool=FALSE ve irt_difficulty kalibre edilmemis.",
+                subject_id,
+                placement_theta,
+            )
             candidates = await self._get_candidate_questions(
                 subject_id, placement_theta, warm_up=False
             )
@@ -442,6 +545,10 @@ class CATSessionService:
             raise ValueError(f"Konu {subject_id} için uygun soru seçilemedi")
 
         question_detail = await self._fetch_question_detail(first_item.question_id)
+
+        # Sunulan maddeyi state'e yaz: yanıtın bu maddeye ait olduğu
+        # doğrulanabilsin (cevap-anahtarı oracle'ı önleme).
+        state.pending_question_id = first_item.question_id
 
         await self._write_state(state)
         # Aktif oturum kaydını Redis'e yaz (önceki iptal için)
@@ -463,6 +570,9 @@ class CATSessionService:
         question_id: str,
         is_correct: bool,
         response_ms: int | None = None,
+        *,
+        max_items: int = MAX_ITEMS,
+        se_threshold: float = SE_STOP,
     ) -> dict[str, Any]:
         """
         Yanıtı işle ve bir sonraki soruyu getir.
@@ -540,72 +650,84 @@ class CATSessionService:
         if state.n_questions >= 3:
             state.warm_up_done = True
 
-        # 3b. PROGRESSIVE PERSIST: Her cevaptan sonra theta'yı DB'ye yaz
-        # Böylece öğrenci oturumu tamamlamasa bile son theta kaydedilir.
-        try:
-            _SUBJ_MAP = {
-                "matematik": 1,
-                "geometri": 2,
-                "fizik": 3,
-                "kimya": 4,
-                "biyoloji": 5,
-                "turkce": 6,
-                "tarih": 7,
-                "cografya": 8,
-                "edebiyat": 9,
-                "felsefe": 10,
-                "din": 11,
-                "sosyal": 12,
-            }
-            _sid = _SUBJ_MAP.get(_normalize_subject(state.subject_id))
-            if _sid is not None:
-                from sqlalchemy import text as _txt
+        # 3b/3c. PROGRESSIVE PERSIST — misafir oturumunda TAMAMEN atlanır.
+        # Misafirin user_id'si ("guest:<uuid>") gerçek bir users satırı değildir:
+        # student_abilities/xp_transactions FK'yı ihlal eder, üstelik bu tablolar
+        # FORCE RLS altında olduğu için sahipsiz satır yazımı zaten reddedilir.
+        if not state.is_guest:
+            # Her cevaptan sonra theta'yı DB'ye yaz — öğrenci oturumu
+            # tamamlamasa bile son theta kaydedilir.
+            try:
+                _SUBJ_MAP = {
+                    "matematik": 1,
+                    "geometri": 2,
+                    "fizik": 3,
+                    "kimya": 4,
+                    "biyoloji": 5,
+                    "turkce": 6,
+                    "tarih": 7,
+                    "cografya": 8,
+                    "edebiyat": 9,
+                    "felsefe": 10,
+                    "din": 11,
+                    "sosyal": 12,
+                }
+                _sid = _SUBJ_MAP.get(_normalize_subject(state.subject_id))
+                if _sid is not None:
+                    from sqlalchemy import text as _txt
 
+                    await self.db.execute(
+                        _txt("""
+                        INSERT INTO student_abilities (student_id, subject_id, theta, theta_se, updated_at)
+                        VALUES (:uid, :sid, :theta, :se, NOW())
+                        ON CONFLICT (student_id, subject_id)
+                        DO UPDATE SET theta = :theta, theta_se = :se, updated_at = NOW()
+                        """),
+                        {
+                            "uid": state.user_id,
+                            "sid": _sid,
+                            "theta": round(state.theta, 4),
+                            "se": round(state.se, 4),
+                        },
+                    )
+                    await self.db.commit()
+            except Exception as e:
+                logger.error("CAT theta persist HATASI — theta kaybı riski: %s", e)
+
+            # XP: Doğru 10XP, Yanlış 3XP (katılım ödülü)
+            try:
+                from sqlalchemy import text as _txt2
+
+                _xp = 10 if is_correct else 3
+                # 1) xp_transactions INSERT (gamification endpoint bunu okur)
                 await self.db.execute(
-                    _txt("""
-                    INSERT INTO student_abilities (student_id, subject_id, theta, theta_se, updated_at)
-                    VALUES (:uid, :sid, :theta, :se, NOW())
-                    ON CONFLICT (student_id, subject_id)
-                    DO UPDATE SET theta = :theta, theta_se = :se, updated_at = NOW()
-                    """),
-                    {
-                        "uid": state.user_id,
-                        "sid": _sid,
-                        "theta": round(state.theta, 4),
-                        "se": round(state.se, 4),
-                    },
+                    _txt2("""INSERT INTO xp_transactions (student_id, amount, source, created_at)
+                             VALUES (:uid, :xp, 'cat', NOW())"""),
+                    {"uid": state.user_id, "xp": _xp},
+                )
+                # 2) users.total_xp UPDATE (dashboard bunu okur)
+                await self.db.execute(
+                    _txt2("UPDATE users SET total_xp = total_xp + :xp WHERE id = :uid"),
+                    {"uid": state.user_id, "xp": _xp},
                 )
                 await self.db.commit()
-        except Exception as e:
-            logger.error("CAT theta persist HATASI — theta kaybı riski: %s", e)
-
-        # 3c. PROGRESSIVE XP: Her cevaptan sonra XP ekle
-        try:
-            from sqlalchemy import text as _txt2
-
-            _xp = 10 if is_correct else 3  # Doğru: 10XP, Yanlış: 3XP (katılım ödülü)
-            # 1) xp_transactions INSERT (gamification endpoint bunu okur)
-            await self.db.execute(
-                _txt2("""INSERT INTO xp_transactions (student_id, amount, source, created_at)
-                         VALUES (:uid, :xp, 'cat', NOW())"""),
-                {"uid": state.user_id, "xp": _xp},
-            )
-            # 2) users.total_xp UPDATE (dashboard bunu okur)
-            await self.db.execute(
-                _txt2("UPDATE users SET total_xp = total_xp + :xp WHERE id = :uid"),
-                {"uid": state.user_id, "xp": _xp},
-            )
-            await self.db.commit()
-        except Exception as e:
-            logger.warning("CAT XP persist hatası: %s", e)
+            except Exception as e:
+                logger.warning("CAT XP persist hatası: %s", e)
 
         # 4. Bitiş kontrolü
-        terminate, reason = should_terminate(state.se, state.n_questions)
+        # Bütçe = cevaplanan + atlanan (omit de madde sunumudur).
+        terminate, reason = should_terminate(
+            state.se,
+            state.n_questions + len(state.skipped_ids),
+            se_threshold=se_threshold,
+            max_items=max_items,
+        )
 
         if terminate:
             # 5a. Oturumu kapat
             state.state = "completed"
             state.termination_reason = reason
+            state.pending_question_id = ""
             await self._write_state(state)
 
             # DB'ye toplu kayıt (async, non-blocking tercih edilir)
@@ -650,6 +772,7 @@ class CATSessionService:
             # Havuz tükendi → oturumu bitir
             state.state = "completed"
             state.termination_reason = "pool_exhausted"
+            state.pending_question_id = ""
             await self._write_state(state)
             await self._persist_session_to_db(state)
             return {
@@ -669,6 +792,7 @@ class CATSessionService:
             }
 
         next_question_detail = await self._fetch_question_detail(next_item.question_id)
+        state.pending_question_id = next_item.question_id
 
         # 6. State'i Redis'e geri yaz
         await self._write_state(state)
@@ -685,6 +809,94 @@ class CATSessionService:
                 "is_correct": is_correct,
                 "correct_option": q_detail.get("correct_option") if q_detail else None,
             },
+        }
+
+    async def skip_question(
+        self,
+        session_id: str,
+        question_id: str,
+        *,
+        max_items: int = MAX_ITEMS,
+    ) -> dict[str, Any]:
+        """
+        Maddeyi ATLA ("Emin değilim") — omit UYGULANMAMIŞ sayılır.
+
+        Omit'i yanlış (0) kodlamak dürüst belirsizliği kör tahminden ağır
+        cezalandırır: θ_true=+1.0 olan öğrenci 12 maddenin 6'sında omit derse
+        θ̂=-1.04 çıkar, kör tahmin etseydi -0.56 olurdu. IRT'de omit'in doğru
+        muamelesi "bu madde uygulanmadı"dır; YKS'de de boş bırakmanın maliyeti
+        sıfırdır.
+
+        Bu yüzden madde:
+          - responses/item_params'a GİRMEZ (θ ve SE değişmez),
+          - answered_ids'e girer (tekrar sunulmaz),
+          - skipped_ids'e girer ve madde BÜTÇESİNDEN düşer (test sonsuza gitmez).
+        """
+        state = await self._read_state(session_id)
+        if state is None:
+            raise ValueError(f"Oturum bulunamadı veya süresi dolmuş: {session_id}")
+        if not state.is_active():
+            raise ValueError(f"Oturum zaten tamamlanmış: {session_id} ({state.state})")
+        if question_id in state.answered_ids:
+            raise ValueError(f"Bu soru zaten işlendi: {question_id}")
+
+        state.answered_ids.append(question_id)
+        state.skipped_ids.append(question_id)
+
+        sunulan = state.n_questions + len(state.skipped_ids)
+        if sunulan >= max_items:
+            state.state = "completed"
+            state.termination_reason = "max_questions"
+            state.pending_question_id = ""
+            await self._write_state(state)
+            await self._persist_session_to_db(state)
+            return {
+                "is_complete": True,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
+                "termination_reason": "max_questions",
+                "next_question": None,
+                "phase": "completed",
+            }
+
+        candidates = await self._get_candidate_questions(
+            state.subject_id, state.theta, warm_up=(not state.warm_up_done)
+        )
+        next_item = select_next_question(
+            theta=state.theta,
+            candidates=candidates,
+            answered_ids=set(state.answered_ids),
+            epsilon=0.20,
+        )
+        if next_item is None:
+            state.state = "completed"
+            state.termination_reason = "pool_exhausted"
+            state.pending_question_id = ""
+            await self._write_state(state)
+            await self._persist_session_to_db(state)
+            return {
+                "is_complete": True,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
+                "termination_reason": "pool_exhausted",
+                "next_question": None,
+                "phase": "completed",
+            }
+
+        next_detail = await self._fetch_question_detail(next_item.question_id)
+        state.pending_question_id = next_item.question_id
+        await self._write_state(state)
+
+        return {
+            "is_complete": False,
+            "theta": state.theta,
+            "se": state.se,
+            "n_questions": state.n_questions,
+            "termination_reason": None,
+            "next_question": next_detail,
+            "phase": "warm_up" if not state.warm_up_done else "core",
         }
 
     async def get_session_state(self, session_id: str) -> CATState | None:
@@ -709,7 +921,17 @@ class CATSessionService:
         Bu fonksiyon sadece oturum bittiğinde çağrılır.
         Her yanıtta DB yazımı yapmak yerine,
         sadece son durumu toplu olarak kaydediyoruz.
+
+        Misafir oturumu hiçbir tabloya yazılmaz — sahibi olmayan bir user_id ile
+        kiro2_cat_sessions/learning_events/user_theta satırı üretmek FK ve RLS
+        ihlalidir; yerleştirme sonucu yalnız Redis'te (TTL'li) yaşar.
         """
+        if state.is_guest:
+            logger.debug(
+                "Misafir CAT oturumu — DB persist atlandı: %s", state.session_id
+            )
+            return
+
         from sqlalchemy import text
 
         stmt = text("""
@@ -754,7 +976,9 @@ class CATSessionService:
         )
 
         # Her yanıtı learning_events'e yaz
-        for i, (q_id, resp) in enumerate(zip(state.answered_ids, state.responses)):
+        for i, (q_id, resp) in enumerate(
+            zip([_q for _q in state.answered_ids if _q not in set(state.skipped_ids)], state.responses, strict=False)
+        ):
             _params_raw = state.item_params[i] if i < len(state.item_params) else {}
             event_stmt = text("""
                 INSERT INTO kiro2_learning_events (
@@ -863,7 +1087,7 @@ class CATSessionService:
                     else None,
                 }
                 for i, (q_id, resp) in enumerate(
-                    zip(state.answered_ids, state.responses)
+                    zip([_q for _q in state.answered_ids if _q not in set(state.skipped_ids)], state.responses, strict=False)
                 )
             ]
             await fsrs_svc.apply_batch_reviews(reviews)

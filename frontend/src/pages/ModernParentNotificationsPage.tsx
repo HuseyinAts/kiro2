@@ -15,7 +15,6 @@ import {
   Star,
 } from '@mui/icons-material';
 import {
-  Container,
   Typography,
   Box,
   Chip,
@@ -29,7 +28,7 @@ import { useState, useEffect } from 'react';
 
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
-import { ModernLoader } from '../components/ui/ModernLoader';
+import { DashboardScaffold } from '../components/Layout/DashboardScaffold';
 import apiClient from '../services/apiClient';
 import modernColors from '../theme/modern-colors';
 import { useAuthStore } from '@/store/authStore';
@@ -243,86 +242,34 @@ export function ModernParentNotificationsPage() {
 
   const unreadCount = notifications.filter((n) => !n.okundu).length;
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: modernColors.gradients.mesh,
-        }}
-      >
-        <ModernLoader message="Bildirimler yükleniyor..." size="large" />
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: modernColors.gradients.mesh,
-        py: 4,
-      }}
+    <DashboardScaffold
+      loading={loading}
+      loadingMessage="Bildirimler yükleniyor..."
+      icon={
+        <Badge badgeContent={unreadCount} color="error">
+          <Notifications />
+        </Badge>
+      }
+      iconGradient={modernColors.gradients.sunset}
+      title="Bildirimler"
+      titleGradient={modernColors.gradients.sunset}
+      subtitle="Çocuğunuzun aktiviteleri hakkında güncel bildirimler"
+      maxWidth="md"
+      headerActions={
+        unreadCount > 0 && (
+          <ModernButton
+            variant="gradient"
+            gradient={modernColors.gradients.success}
+            icon={<MarkEmailRead />}
+            onClick={handleMarkAllAsRead}
+            size="small"
+          >
+            Tümünü Okundu İşaretle
+          </ModernButton>
+        )
+      }
     >
-      <Container maxWidth="md">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 3,
-                  background: modernColors.gradients.sunset,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Badge badgeContent={unreadCount} color="error">
-                  <Notifications sx={{ fontSize: 32, color: 'white' }} />
-                </Badge>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    fontWeight: 900,
-                    background: modernColors.gradients.sunset,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  Bildirimler
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Çocuğunuzun aktiviteleri hakkında güncel bildirimler
-                </Typography>
-              </Box>
-              {unreadCount > 0 && (
-                <ModernButton
-                  variant="gradient"
-                  gradient={modernColors.gradients.success}
-                  icon={<MarkEmailRead />}
-                  onClick={handleMarkAllAsRead}
-                  size="small"
-                >
-                  Tümünü Okundu İşaretle
-                </ModernButton>
-              )}
-            </Box>
-          </Box>
-        </motion.div>
-
         {/* Filter Tabs */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -540,8 +487,7 @@ export function ModernParentNotificationsPage() {
             </motion.div>
           )}
         </AnimatePresence>
-      </Container>
-    </Box>
+    </DashboardScaffold>
   );
 }
 

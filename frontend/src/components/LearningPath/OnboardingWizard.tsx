@@ -200,11 +200,11 @@ export function OnboardingWizard({ studentId: _studentId, onComplete, onSkip }: 
 
   const handleDiagnosticComplete = useCallback((results: { percentage: number }) => {
     // Map percentage to knowledge level
-    if (results.percentage >= 90) setKnowledgeLevel('expert');
-    else if (results.percentage >= 70) setKnowledgeLevel('advanced');
-    else if (results.percentage >= 50) setKnowledgeLevel('intermediate');
-    else if (results.percentage >= 30) setKnowledgeLevel('elementary');
-    else setKnowledgeLevel('beginner');
+    if (results.percentage >= 90) {setKnowledgeLevel('expert');}
+    else if (results.percentage >= 70) {setKnowledgeLevel('advanced');}
+    else if (results.percentage >= 50) {setKnowledgeLevel('intermediate');}
+    else if (results.percentage >= 30) {setKnowledgeLevel('elementary');}
+    else {setKnowledgeLevel('beginner');}
 
     setDiagnosticDone(true);
     setDiagnosticQuestions(null);

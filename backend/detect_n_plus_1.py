@@ -13,7 +13,7 @@ def detect_n_plus_1_patterns(file_path):
     with open(file_path, encoding='utf-8') as f:
         try:
             content = f.read()
-        except:
+        except Exception:
             return []
 
     lines = content.split('\n')

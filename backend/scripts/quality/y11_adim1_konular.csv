@@ -1,0 +1,15 @@
+id,parent_id,code,name_tr,name_en,description,meb_code,osym_relevance,osym_frequency,total_questions,average_difficulty,difficulty_level,subject_area,is_active,level
+58a51ee7-c311-5bad-93e4-229223db5d51,,FEN,Fen Bilimleri,,,,0,0,0,0,0,,t,1
+b98e65f1-b27d-5348-ae97-0620f40bff1c,,TYT-KIM-01,Atom Yapisi,,,,0.5,5,0,1.2,-1.2,KIMYA,t,1
+aa157d61-8c27-4855-85b2-ff41b69709ce,,TYT-KIM-09,Çözeltiler ve Karışımlar,,,,0.5,0,0,0.5,0.5,KIMYA,t,1
+06b54c94-cdcc-4058-b5f2-2ff9b3134ed6,,TYT-KIM-10,Maddenin Halleri ve Gazlar,,,,0.5,0,0,0.5,0.5,KIMYA,t,1
+ef532ffe-145c-468d-a728-5575fd49c017,,TYT-KIM-11,Çevre Kimyası,,,,0.5,0,0,0.5,0.5,KIMYA,t,1
+cfa12425-38a6-4ea4-80cd-bcd4318869b5,,TYT-KIM-12,Mol ve Kimyasal Hesaplamalar,,,,0.5,0,0,0.5,0.5,KIMYA,t,1
+b70e7141-a707-4354-9158-647518c0f2d7,,KIM.ASI,Asitler ve Bazlar,Acids and Bases,,,0.5,1,0,0.5,0,KIMYA,t,2
+6ef2025f-a1e3-428e-9dfd-1c4c62cbcb37,,KIM.DEN,Kimyasal Denge,Chemical Equilibrium,,,0.5,1,0,0.5,0,KIMYA,t,2
+c9c92a8f-c0d0-4440-a3ea-a2a4ace8f634,,KIM.ORG,Organik Kimya,Organic Chemistry,,,0.5,1,0,0.5,0,KIMYA,t,2
+f33ee303-4023-4fdb-a52f-f17957d640dd,,KIM.TER,Termokimya,Thermochemistry,,,0.5,1,0,0.5,0,KIMYA,t,2
+367119dc-abc4-515b-a866-f98ad01ac13e,259066bd-71fb-420e-85e3-a4e3ad9811fe,MAT.TRV,Türev,Derivative,,,0.5,0,129,0.5,0,MATEMATIK,t,2
+8978f24a-451e-535b-8a6a-7cfdb1dfca6a,,TYT-KIM-02,Periyodik,,,,0.5,5,0,0.8,-0.8,KIMYA,t,2
+d8bb8dfd-00a2-5a7d-ae77-6bb74db8b812,,TYT-KIM-03,Kim Baglar,,,,0.5,5,0,0.5,-0.5,KIMYA,t,3
+a6c265f6-b562-5ef1-9aa9-0b92465e14e1,,TYT-KIM-04,Reaksiyonlar,,,,0.5,5,0,0,0,KIMYA,t,4

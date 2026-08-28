@@ -47,10 +47,10 @@ class LearningStyleService:
         ]
 
         # In-memory caches (used by API layer for quick lookups)
-        self.profiles_cache: Dict[str, Any] = {}
-        self.questionnaire_cache: Dict[str, list] = {}
-        self.behavioral_data_cache: Dict[str, list] = {}
-        self.recommendations_cache: Dict[str, Any] = {}
+        self.profiles_cache: dict[str, Any] = {}
+        self.questionnaire_cache: dict[str, list] = {}
+        self.behavioral_data_cache: dict[str, list] = {}
+        self.recommendations_cache: dict[str, Any] = {}
 
     async def detect_learning_style(
         self,
@@ -189,8 +189,9 @@ class LearningStyleService:
 
         except Exception as e:
             logger.error(
-                f"Öğrenme stili tespit hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            , exc_info=True)
+                f"Öğrenme stili tespit hatası - Öğrenci: {student_id}, Hata: {e!s}",
+                exc_info=True,
+            )
             raise
 
     async def _calculate_vark_profile(
@@ -424,6 +425,35 @@ class LearningStyleService:
             "profil_aciklamasi": profile.profile_description,
         }
 
+    async def update_behavioral_data(
+        self,
+        student_id: str,
+        db: AsyncSession,
+        new_data: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Yeni davranissal veriyle ogrenme stili profilini YENIDEN hesaplar.
+
+        NEDEN VAR (GF-K2, 1 Agu 2026 olcumu)
+        -------------------------------------
+        `api/learning_style.py:202` bu metodu cagiriyordu ama metot HIC
+        yazilmamisti -> `AttributeError: 'LearningStyleService' object has no
+        attribute 'update_behavioral_data'` -> uc 500. Golden Flow `gf82`
+        bunu yakaladi.
+
+        ONBELLEK GECERSIZLESTIRME SART
+        -------------------------------
+        `detect_learning_style` ilk is olarak `learning_style:{id}` anahtarini
+        okur (satir 72-77). Onbellek temizlenmezse "guncelleme" ESKI profili
+        geri dondururdu: 200 doner, hicbir sey degismez — sessiz yalan.
+        Civi: `tests/unit/test_learning_style_update.py`.
+        """
+        await cache_manager.delete(f"learning_style:{student_id}")
+        return await self.detect_learning_style(
+            student_id=student_id,
+            db=db,
+            behavioral_data=new_data,
+        )
+
     async def generate_content_recommendations(
         self,
         student_id: str,
@@ -619,8 +649,9 @@ class LearningStyleService:
 
         except Exception as e:
             logger.error(
-                f"Öğrenme önerileri hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            , exc_info=True)
+                f"Öğrenme önerileri hatası - Öğrenci: {student_id}, Hata: {e!s}",
+                exc_info=True,
+            )
             raise
 
     def _generate_hibrit_code(

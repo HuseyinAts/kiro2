@@ -34,7 +34,7 @@ export default function PlacementAssessmentPage() {
   const [results, setResults] = useState<Record<string, { level_label: string; theta: number }>>({});
 
   const handleComplete = (r: { theta: number; level: string; level_label: string }) => {
-    if (!selectedSubject) return;
+    if (!selectedSubject) {return;}
     setResults(prev => ({ ...prev, [selectedSubject.id]: { theta: r.theta, level_label: r.level_label } }));
     setTimeout(() => setSelectedSubject(null), 3000);
   };

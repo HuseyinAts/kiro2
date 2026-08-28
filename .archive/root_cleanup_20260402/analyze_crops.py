@@ -49,7 +49,7 @@ if sizes:
     print(f"  Ortalama: {avg_w:.0f}x{avg_h:.0f}")
     print(f"  Min: {min_w}x{min_h}")
     print(f"  Max: {max_w}x{max_h}")
-    
+
     # Çok küçük crop'lar
     tiny = [s for s in sizes if s[0] < 50 or s[1] < 20]
     print(f"  Çok küçük (<50x20): {len(tiny)} ({len(tiny)/len(sizes)*100:.1f}%)")
@@ -63,13 +63,13 @@ reader = easyocr.Reader(['tr', 'en'], gpu=True, verbose=False)
 for path, img in sample_crops[:5]:
     print(f"\n  📄 {path.parent.name[:30]}/{path.name}")
     print(f"     Boyut: {img.size}")
-    
+
     import numpy as np
     img_array = np.array(img)
-    
+
     # OCR yap
     result = reader.readtext(img_array, detail=1)
-    
+
     print(f"     Tespit sayısı: {len(result)}")
     for detection in result:
         bbox, text, conf = detection

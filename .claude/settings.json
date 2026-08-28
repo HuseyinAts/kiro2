@@ -55,10 +55,24 @@
       "Edit(d-dataset/eslesmis_sorucevap.jsonl)",
       "Write(d-dataset/ocr_output/**)",
       "Write(d-dataset/answer_keys/**)",
-      "Write(d-dataset/eslesmis_sorucevap.jsonl)"
+      "Write(d-dataset/eslesmis_sorucevap.jsonl)",
+
+      "Read(./.archive/**)",
+      "Read(./node_modules/**)",
+      "Read(./**/node_modules/**)",
+      "Read(./venv/**)",
+      "Read(./.venv/**)",
+      "Read(./frontend/coverage/**)",
+      "Read(./backend/htmlcov/**)",
+      "Read(./**/__pycache__/**)",
+      "Read(./**/.pytest_cache/**)",
+      "Read(./**/.mypy_cache/**)",
+      "Read(./**/.ruff_cache/**)",
+      "Read(./**/dist/**)",
+      "Read(./**/build/**)"
     ]
   },
-  "model": "claude-sonnet-4-6",
+  "model": "claude-sonnet-5",
   "hooks": {
     "PreToolUse": [
       {
@@ -138,60 +152,5 @@
       }
     ]
   },
-  "enabledPlugins": {},
-  "contextManagement": {
-    "warningThreshold": 60,
-    "clearThreshold": 70,
-    "progressFile": "progress.md",
-    "autoCompact": true
-  },
-  "excludePatterns": [
-    "node_modules",
-    "node_modules/**",
-    ".venv*",
-    ".venv*/**",
-    "venv",
-    "venv/**",
-    "__pycache__",
-    "__pycache__/**",
-    "*.pyc",
-    ".git",
-    ".git/**",
-    "*.log",
-    "dist",
-    "dist/**",
-    "build",
-    "build/**",
-    "htmlcov",
-    "htmlcov/**",
-    ".pytest_cache",
-    ".pytest_cache/**",
-    ".mypy_cache",
-    ".mypy_cache/**",
-    ".ruff_cache",
-    ".ruff_cache/**",
-    "*.egg-info",
-    "*.egg-info/**",
-    ".eggs",
-    ".eggs/**",
-    "coverage",
-    ".coverage",
-    ".nyc_output",
-    "*.min.js",
-    "*.min.css",
-    "*.bundle.js",
-    "*.chunk.js",
-    "package-lock.json",
-    "yarn.lock",
-    "poetry.lock",
-    ".idea",
-    ".vscode",
-    "*.swp",
-    "*.swo",
-    "tmp",
-    "temp",
-    ".temp",
-    ".tmp",
-    "**/desktop.ini"
-  ]
+  "enabledPlugins": {}
 }

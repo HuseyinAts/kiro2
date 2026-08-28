@@ -115,8 +115,8 @@ class TestAssessmentEventWiring:
     @pytest.mark.asyncio
     async def test_multi_subject_upsert(self):
         """Multiple subjects should each get ability + BKT rows."""
-        from unittest.mock import MagicMock
         from types import SimpleNamespace
+        from unittest.mock import MagicMock
 
         db = AsyncMock()
         mock_topic_result = MagicMock()

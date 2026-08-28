@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  /* ==== KIRO2 geçiş + micro-interaction ==== */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: kv-out 0.22s ease both; }
+    ::view-transition-new(root) { animation: kv-in 0.30s cubic-bezier(0.33,0,0.2,1) both; }
+    a, button, [role="button"] { transition: transform 0.12s ease, filter 0.15s ease; }
+  }
+  @keyframes kv-out { to { opacity: 0; transform: translateY(-6px); } }
+  @keyframes kv-in { from { opacity: 0; transform: translateY(12px); } }
+  :focus-visible { outline: 2px solid rgba(255,111,92,0.7); outline-offset: 2px; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #F7F4EF; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .scan::-webkit-scrollbar { width: 9px; }
+  .scan::-webkit-scrollbar-thumb { background: #E0D8CC; border-radius: 99px; }
+  @keyframes bloom { 0% { transform:scale(0.35); opacity:0.85; } 100% { transform:scale(2.3); opacity:0; } }
+  @keyframes riseUp { 0% { transform:translateY(6px); opacity:0; } 100% { transform:translateY(0); opacity:1; } }
+</style>
+</helmet>
+
+<div data-screen-label="Mastery Rozet" style="width:100%; font-family:'Hanken Grotesk',-apple-system,sans-serif; color:#2A2433; font-size:14px; line-height:1.6;">
+
+  <!-- ===== SINGLE BADGE (import mode) ===== -->
+  <sc-if value="{{ isBadge }}" hint-placeholder-val="">
+    <span style="display:inline-flex; align-items:center; gap:8px; height:30px; padding:0 12px 0 10px; border-radius:99px; background:{{ b.bg }}; border:1px solid {{ b.border }};">
+      <span style="width:9px; height:9px; border-radius:50%; background:{{ b.color }}; box-shadow:0 0 8px {{ b.glow }};"></span>
+      <span style="font-size:12.5px; font-weight:800; color:{{ b.color }};">{{ b.name }}</span>
+      <span style="font-size:12.5px; font-weight:700; color:#6B6478; font-variant-numeric:tabular-nums;">%{{ b.pct }}</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="{{ b.trendColor }}" style="{{ b.trendRot }}"><path d="M12 5l7 10H5z"/></svg>
+    </span>
+  </sc-if>
+
+  <!-- ===== DEMO / SPEC (standalone) ===== -->
+  <sc-if value="{{ isDemo }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:860px; margin:0 auto; padding:36px 30px 70px;">
+
+    <header style="margin-bottom:28px;">
+      <span style="font-size:11px; font-weight:800; letter-spacing:0.14em; color:#E0593F; text-transform:uppercase;">Bağlantı Dokusunun Omurgası</span>
+      <h1 style="margin:12px 0 8px; font-family:'Instrument Serif',Georgia,serif; font-size:40px; line-height:1.05; color:#2A2433;">Birleşik Hâkimiyet Sistemi</h1>
+      <p style="margin:0; font-size:15.5px; color:#6B6478; max-width:620px;">Tek model, tek rozet — Panel, Öğrenme Yolu, Neden Geri Bildirim ve Soru Çözme'de <em>aynı</em>. Başarılı getirimde yükselir, FSRS ile görünür düşer; kutlamalar yalnız gerçek kademe atlayışına bağlı.</p>
+    </header>
+
+    <!-- LADDER -->
+    <section style="background:#FFFFFF; border:1px solid #ECE6DD; border-radius:18px; padding:24px; margin-bottom:16px; box-shadow:0 1px 2px rgba(60,40,20,.04),0 14px 40px -30px rgba(60,40,20,.3);">
+      <div style="font-size:11.5px; font-weight:700; letter-spacing:0.1em; color:#6B6478; margin-bottom:16px;">4 KADEMELİ HÂKİMİYET MERDİVENİ</div>
+      <div style="display:flex; height:14px; border-radius:99px; overflow:hidden; margin-bottom:8px;">
+        <div style="width:40%; background:#C6BFC9;"></div>
+        <div style="width:25%; background:#3B6FD4;"></div>
+        <div style="width:20%; background:#E0593F;"></div>
+        <div style="width:15%; background:#C99A2E;"></div>
+      </div>
+      <div style="display:flex; font-size:11px; font-weight:700; color:#6B6478; margin-bottom:20px;">
+        <span style="width:40%;">0</span><span style="width:25%;">40</span><span style="width:20%;">65</span><span style="width:15%;">85 · 100</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+        <sc-for list="{{ ladder }}" as="t" hint-placeholder-count="4">
+          <div style="border:1px solid #ECE6DD; border-radius:13px; padding:14px;">
+            <div style="display:flex; align-items:center; gap:7px; margin-bottom:7px;">
+              <span style="width:10px; height:10px; border-radius:50%; background:{{ t.color }};"></span>
+              <span style="font-size:13.5px; font-weight:800; color:{{ t.color }};">{{ t.name }}</span>
+            </div>
+            <div style="font-size:11.5px; color:#6B6478; font-weight:600; margin-bottom:8px;">{{ t.range }}</div>
+            <div style="font-size:12px; color:#6B6478; line-height:1.45;">{{ t.desc }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- LIVE: celebration only on real tier transition -->
+    <section style="background:#FFFFFF; border:1px solid #ECE6DD; border-radius:18px; padding:22px; margin-bottom:16px;">
+      <div style="font-size:11.5px; font-weight:700; letter-spacing:0.1em; color:#6B6478; margin-bottom:15px;">CANLI · KUTLAMA YALNIZ GERÇEK GEÇİŞTE</div>
+      <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+        <div style="position:relative;">
+          <sc-if value="{{ justLeveled }}" hint-placeholder-val=""><div style="position:absolute; inset:-12px; border-radius:99px; background:radial-gradient(circle, {{ simB.glow }}, transparent 70%); animation:bloom 1.6s ease-out; pointer-events:none;"></div></sc-if>
+          <span style="position:relative; display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 14px 0 11px; border-radius:99px; background:{{ simB.bg }}; border:1px solid {{ simB.border }};"><span style="width:10px; height:10px; border-radius:50%; background:{{ simB.color }}; box-shadow:0 0 8px {{ simB.glow }};"></span><span style="font-size:13px; font-weight:800; color:{{ simB.color }};">{{ simB.name }}</span><span style="font-size:13px; font-weight:700; color:#6B6478; font-variant-numeric:tabular-nums;">%{{ sp }}</span></span>
+        </div>
+        <button onClick="{{ onAnswer }}" style="height:44px; padding:0 20px; border:none; border-radius:12px; background:linear-gradient(110deg,#FF8A5B,#FF5E7E); color:#fff; font-family:inherit; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 8px 22px -10px rgba(255,94,126,0.5);" style-active="transform:translateY(2px);">Doğru cevap +</button>
+        <button onClick="{{ resetSim }}" style="height:44px; padding:0 16px; border:1px solid #ECE6DD; border-radius:12px; background:#fff; color:#6B6478; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;">Sıfırla</button>
+        <sc-if value="{{ justLeveled }}" hint-placeholder-val=""><span style="font-size:13.5px; font-weight:800; color:{{ simB.color }};">Kademe atladın → {{ simB.name }}!</span></sc-if>
+        <sc-if value="{{ gainedNoJump }}" hint-placeholder-val=""><span style="font-size:12.5px; color:#6B6478;">+{{ lastInc }} · sınıra {{ toNext }} kaldı — henüz kutlama yok</span></sc-if>
+      </div>
+      <p style="margin:14px 0 0; font-size:13px; color:#6B6478; line-height:1.55;">Her doğru cevap puanı artırır; kutlama <strong style="color:#2A2433;">yalnız kademe sınırı aşılınca</strong> ateşlenir — sahte tamamlanma ödüllendirilmez. Üretimde Soru Çözme aynı geçiş mantığını çağırır.</p>
+    </section>
+
+    <!-- STATES: rise / stable / fall -->
+    <section style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+      <div style="background:#FFFFFF; border:1px solid #ECE6DD; border-radius:18px; padding:22px;">
+        <div style="font-size:11.5px; font-weight:700; letter-spacing:0.1em; color:#6B6478; margin-bottom:15px;">ROZET — HER KADEMEDE</div>
+        <div style="display:flex; flex-direction:column; gap:11px;">
+          <sc-for list="{{ examples }}" as="e" hint-placeholder-count="4">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="display:inline-flex; align-items:center; gap:8px; height:30px; padding:0 12px 0 10px; border-radius:99px; background:{{ e.bg }}; border:1px solid {{ e.border }};">
+                <span style="width:9px; height:9px; border-radius:50%; background:{{ e.color }}; box-shadow:0 0 8px {{ e.glow }};"></span>
+                <span style="font-size:12.5px; font-weight:800; color:{{ e.color }};">{{ e.name }}</span>
+                <span style="font-size:12.5px; font-weight:700; color:#6B6478; font-variant-numeric:tabular-nums;">%{{ e.pct }}</span>
+              </span>
+              <span style="font-size:12.5px; color:#6B6478;">{{ e.topic }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #ECE6DD; border-radius:18px; padding:22px;">
+        <div style="font-size:11.5px; font-weight:700; letter-spacing:0.1em; color:#6B6478; margin-bottom:15px;">YÖN — GETİRİM ↑ / FSRS ↓</div>
+        <div style="display:flex; flex-direction:column; gap:13px;">
+          <div style="display:flex; align-items:center; gap:11px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1FB683"><path d="M12 5l7 10H5z"/></svg>
+            <span style="font-size:13px; color:#2A2433;"><strong style="color:#1FB683;">Yükseliş</strong> — başarılı getirim puanı artırır.</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center;"><span style="width:8px; height:3px; border-radius:2px; background:#6B6478;"></span></span>
+            <span style="font-size:13px; color:#2A2433;"><strong style="color:#6B6478;">Sabit</strong> — tazelik korunuyor, tekrar zamanı gelmedi.</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFB570" style="transform:rotate(180deg);"><path d="M12 5l7 10H5z"/></svg>
+            <span style="font-size:13px; color:#2A2433;"><strong style="color:#9A5D0D;">Düşüş</strong> — FSRS yarı-ömrü doluyor, puan <em>görünür</em> geriler (sıcak amber, alarm değil).</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKED EXAMPLE -->
+    <section style="background:linear-gradient(150deg,#FFF3EE,#FFFFFF); border:1px solid #F2D9CE; border-radius:18px; padding:24px; margin-bottom:16px;">
+      <div style="font-size:11.5px; font-weight:700; letter-spacing:0.1em; color:#6B6478; margin-bottom:16px;">CANLI ÖRNEK · TÜREV · ZİNCİR KURALI</div>
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <!-- before -->
+        <div style="text-align:center;">
+          <span style="display:inline-flex; align-items:center; gap:7px; height:30px; padding:0 12px 0 10px; border-radius:99px; background:rgba(154,147,165,0.14); border:1px solid #E0D8CC;"><span style="width:9px; height:9px; border-radius:50%; background:#6B6478;"></span><span style="font-size:12.5px; font-weight:800; color:#6B6478;">Tanıdık</span><span style="font-size:12.5px; font-weight:700; color:#6B6478;">%38</span></span>
+        </div>
+        <svg width="26" height="16" viewBox="0 0 26 16" fill="none" stroke="#B5AEA2" stroke-width="2" stroke-linecap="round"><path d="M2 8h20M17 3l5 5-5 5"/></svg>
+        <span style="font-size:12.5px; font-weight:700; color:#1FB683;">6 doğru getirim → +9</span>
+        <svg width="26" height="16" viewBox="0 0 26 16" fill="none" stroke="#B5AEA2" stroke-width="2" stroke-linecap="round"><path d="M2 8h20M17 3l5 5-5 5"/></svg>
+        <!-- after (tier-up, celebration) -->
+        <div style="position:relative; text-align:center;">
+          <div style="position:absolute; inset:-6px; border-radius:99px; background:radial-gradient(circle, rgba(59,111,212,0.4), transparent 70%); animation:bloom 1.8s ease-out infinite; pointer-events:none;"></div>
+          <span style="position:relative; display:inline-flex; align-items:center; gap:7px; height:32px; padding:0 13px 0 11px; border-radius:99px; background:rgba(59,111,212,0.12); border:1px solid rgba(59,111,212,0.35); animation:riseUp .5s ease both;"><span style="width:9px; height:9px; border-radius:50%; background:#3B6FD4; box-shadow:0 0 8px rgba(59,111,212,0.6);"></span><span style="font-size:12.5px; font-weight:800; color:#3B6FD4;">Yetkin</span><span style="font-size:12.5px; font-weight:700; color:#6B6478;">%47</span><svg width="12" height="12" viewBox="0 0 24 24" fill="#1FB683"><path d="M12 5l7 10H5z"/></svg></span>
+        </div>
+      </div>
+      <p style="margin:16px 0 0; font-size:13.5px; color:#5A5266; line-height:1.55;"><strong style="color:#2A2433;">Kademe atladı → kutlama tetiklendi</strong> (şafak çiçeklenmesi). 3 gün sonra tekrar gelmezse FSRS puanı %47 → %43'e <span style="color:#9A5D0D; font-weight:700;">görünür düşer</span> ve "Yetkin'i koru" nazik uyarısı çıkar. Kutlama yalnız <em>gerçek</em> geçişte — sahte tamamlanmada değil.</p>
+    </section>
+
+    <!-- INTEGRATION -->
+    <section style="background:#FFFFFF; border:1px solid #ECE6DD; border-radius:18px; padding:22px;">
+      <div style="font-size:11.5px; font-weight:700; letter-spacing:0.1em; color:#6B6478; margin-bottom:14px;">TEK ROZET — DÖRT EKRANDA AYNI</div>
+      <div style="display:flex; gap:9px; flex-wrap:wrap; margin-bottom:13px;">
+        <sc-for list="{{ screens }}" as="s" hint-placeholder-count="4">
+          <span style="display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:11px; background:#FBF7F1; border:1px solid #ECE6DD; font-size:12.5px; font-weight:700; color:#4A4456;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E0593F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ s.icon }}"/></svg>
+            {{ s.name }}
+          </span>
+        </sc-for>
+      </div>
+      <p style="margin:0; font-size:13px; color:#6B6478; line-height:1.55;">Bu rozet tek kaynaktan gelir (<code style="background:#F2EEE7; padding:1px 6px; border-radius:5px; font-size:12px;">Mastery Rozet</code> bileşeni) — her ekran <code style="background:#F2EEE7; padding:1px 6px; border-radius:5px; font-size:12px;">tier</code> + <code style="background:#F2EEE7; padding:1px 6px; border-radius:5px; font-size:12px;">pct</code> + <code style="background:#F2EEE7; padding:1px 6px; border-radius:5px; font-size:12px;">trend</code> geçirir, görünüm hep aynıdır. Bilim (θ/BKT/FSRS) → tek his (rozet).</p>
+    </section>
+
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 900, &quot;height&quot;: 900 },
+  &quot;badge&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Mod&quot; },
+  &quot;tier&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;proficient&quot;, &quot;options&quot;: [&quot;familiar&quot;, &quot;proficient&quot;, &quot;master&quot;, &quot;conquered&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Rozet&quot; },
+  &quot;pct&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 58, &quot;min&quot;: 0, &quot;max&quot;: 100, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Rozet&quot; },
+  &quot;trend&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;up&quot;, &quot;options&quot;: [&quot;up&quot;, &quot;stable&quot;, &quot;down&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Rozet&quot; },
+  &quot;subject&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Türev&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Rozet&quot; }
+}">
+class Component extends DCLogic {
+  state = { simPct: 34, justLeveled: false, lastInc: 0 };
+  tierIdx(p) { return p >= 85 ? 3 : p >= 65 ? 2 : p >= 40 ? 1 : 0; }
+  answerCorrect = () => this.setState((s) => { const inc = 3 + Math.floor(Math.random() * 6); const np = Math.min(100, s.simPct + inc); const up = this.tierIdx(np) > this.tierIdx(s.simPct); if (up) setTimeout(() => this.setState({ justLeveled: false }), 2200); return { simPct: np, justLeveled: up, lastInc: inc }; });
+  reset = () => this.setState({ simPct: 34, justLeveled: false, lastInc: 0 });
+
+  TIERS = {
+    familiar:  { name: 'Tanıdık',    color: '#6B6478', bg: 'rgba(154,147,165,0.14)', border: '#E0D8CC',              glow: 'rgba(154,147,165,0.5)' },
+    proficient:{ name: 'Yetkin',     color: '#3B6FD4', bg: 'rgba(59,111,212,0.12)',  border: 'rgba(59,111,212,0.32)', glow: 'rgba(59,111,212,0.55)' },
+    master:    { name: 'Usta',       color: '#E0593F', bg: 'rgba(224,89,63,0.12)',   border: 'rgba(224,89,63,0.32)',  glow: 'rgba(224,89,63,0.55)' },
+    conquered: { name: 'Fethedildi', color: '#C99A2E', bg: 'rgba(201,154,46,0.16)',  border: 'rgba(201,154,46,0.4)',  glow: 'rgba(201,154,46,0.6)' },
+  };
+
+  badge(tierKey, pct, trend) {
+    const t = this.TIERS[tierKey] || this.TIERS.familiar;
+    const tc = trend === 'up' ? '#1FB683' : (trend === 'down' ? '#FFB570' : '#B5AEA2');
+    const rot = trend === 'down' ? 'transform:rotate(180deg);' : (trend === 'stable' ? 'opacity:0.4;' : '');
+    return { name: t.name, color: t.color, bg: t.bg, border: t.border, glow: t.glow, pct, trendColor: tc, trendRot: rot };
+  }
+
+  renderVals() {
+    const isDemo = !this.props.badge;
+    const pct0 = this.props.pct != null ? this.props.pct : 58;
+    const tk = pct0 >= 85 ? 'conquered' : pct0 >= 65 ? 'master' : pct0 >= 40 ? 'proficient' : 'familiar';
+    const b = this.badge(tk, pct0, this.props.trend || 'up');
+
+    const ladder = [
+      { ...this.TIERS.familiar,   range: '0 – 40',   desc: 'Konuyla yeni tanıştın; temel var, hız yok.' },
+      { ...this.TIERS.proficient, range: '40 – 65',  desc: 'Çoğu soruyu çözüyorsun; tuzaklarda takılabilirsin.' },
+      { ...this.TIERS.master,     range: '65 – 85',  desc: 'Hızlı ve güvenli; nadir hata.' },
+      { ...this.TIERS.conquered,  range: '85 – 100', desc: 'Fethedildi — sınav güvencesi. Sadece koru.' },
+    ];
+
+    const ex = (tk, pct, topic) => ({ ...this.badge(tk, pct, 'stable'), topic });
+    const examples = [
+      ex('familiar', 34, 'Türev · zincir kuralı'),
+      ex('proficient', 58, 'Mol · stokiyometri'),
+      ex('master', 78, 'Paragraf · ana düşünce'),
+      ex('conquered', 91, 'Üslü sayılar'),
+    ];
+
+    const screens = [
+      { name: 'Panel', icon: 'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z' },
+      { name: 'Öğrenme Yolu', icon: 'M6 6h.01M18 12h.01M7 18h.01M8 6h5a3 3 0 0 1 3 3M16 12a3 3 0 0 1-3 3H9' },
+      { name: 'Neden Geri Bildirim', icon: 'M12 3a9 9 0 1 0 9 9M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2.5 2-2.5 4M12 17h.01' },
+      { name: 'Soru Çözme', icon: 'M9 11l3 3 8-8M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9' },
+    ];
+
+    const sp = this.state.simPct;
+    const si = this.tierIdx(sp);
+    const simB = this.badge(['familiar', 'proficient', 'master', 'conquered'][si], sp, 'up');
+    const thr = [40, 65, 85, 101][si];
+
+    return { isDemo, isBadge: !isDemo, b, ladder, examples, screens, simB, sp, onAnswer: this.answerCorrect, resetSim: this.reset, justLeveled: this.state.justLeveled, gainedNoJump: this.state.lastInc > 0 && !this.state.justLeveled, lastInc: this.state.lastInc, toNext: Math.max(0, thr - sp) };
+  }
+}
+</script>
+</body>
+</html>

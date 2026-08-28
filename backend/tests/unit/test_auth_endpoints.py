@@ -158,6 +158,10 @@ def app_client():
     app = FastAPI()
     app.include_router(auth_router)
 
+    from application.bootstrap import bootstrap_cqrs
+
+    bootstrap_cqrs()
+
     mock_db = AsyncMock()
     mock_db.execute = AsyncMock()
     mock_db.commit = AsyncMock()
@@ -188,11 +192,11 @@ class TestLogin:
         mock_db.execute = AsyncMock(return_value=mock_result)
 
         with (
-            patch("api.auth.get_jwt_manager") as mock_get_mgr,
-            patch("api.auth.pwd_context") as mock_pwd,
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
         ):
             mock_get_mgr.return_value = _make_mock_jwt_manager()
-            mock_pwd.verify.return_value = False  # wrong password
+            mock_pwd.return_value.verify.return_value = False  # wrong password
 
             resp = client.post(
                 "/api/v1/auth/giris",
@@ -209,7 +213,7 @@ class TestLogin:
         mock_result.scalar_one_or_none.return_value = None  # user not found
         mock_db.execute = AsyncMock(return_value=mock_result)
 
-        with patch("api.auth.get_jwt_manager") as mock_get_mgr:
+        with patch("application.commands.auth.get_jwt_manager") as mock_get_mgr:
             mock_get_mgr.return_value = _make_mock_jwt_manager()
 
             resp = client.post(
@@ -230,14 +234,14 @@ class TestLogin:
         jwt_token = _make_jwt()
 
         with (
-            patch("api.auth.get_jwt_manager") as mock_get_mgr,
-            patch("api.auth.pwd_context") as mock_pwd,
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
         ):
             mgr = _make_mock_jwt_manager()
             mgr.create_access_token.return_value = jwt_token
             mgr.create_refresh_token.return_value = _make_jwt(role="student")
             mock_get_mgr.return_value = mgr
-            mock_pwd.verify.return_value = True
+            mock_pwd.return_value.verify.return_value = True
 
             resp = client.post(
                 "/api/v1/auth/giris",
@@ -259,7 +263,11 @@ class TestLogin:
         """
         import asyncio
 
-        from api.auth import TwoFactorRequired, database_authenticate
+        from application.commands.auth import (
+            LoginCommand,
+            LoginCommandHandler,
+            TwoFactorRequired,
+        )
         from models.user import KullaniciGiris
 
         db_user = _make_mock_db_user(is_2fa_enabled=True)
@@ -270,10 +278,16 @@ class TestLogin:
 
         giris = KullaniciGiris(email=_TEST_EMAIL, sifre=_TEST_PASSWORD)
 
-        with patch("api.auth.pwd_context") as mock_pwd:
-            mock_pwd.verify.return_value = True
+        with patch("application.commands.auth.CryptContext") as mock_pwd:
+            mock_pwd.return_value.verify.return_value = True
             with pytest.raises(TwoFactorRequired) as exc_info:
-                asyncio.run(database_authenticate(giris, mock_db))
+                asyncio.run(
+                    LoginCommandHandler().handle(
+                        LoginCommand(
+                            email=giris.email, password=giris.get_password(), db=mock_db
+                        )
+                    )
+                )
 
         assert exc_info.value.email == _TEST_EMAIL
         assert exc_info.value.user_id == _TEST_USER_ID
@@ -316,7 +330,7 @@ class TestLogin:
         mock_result.scalar_one_or_none.return_value = db_user
         mock_db.execute = AsyncMock(return_value=mock_result)
 
-        with patch("api.auth.get_jwt_manager") as mock_get_mgr:
+        with patch("application.commands.auth.get_jwt_manager") as mock_get_mgr:
             mock_get_mgr.return_value = _make_mock_jwt_manager()
 
             resp = client.post(
@@ -342,14 +356,14 @@ class TestLogin:
         jwt_token = _make_jwt()
 
         with (
-            patch("api.auth.get_jwt_manager") as mock_get_mgr,
-            patch("api.auth.pwd_context") as mock_pwd,
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
         ):
             mgr = _make_mock_jwt_manager()
             mgr.create_access_token.return_value = jwt_token
             mgr.create_refresh_token.return_value = _make_jwt(role="student")
             mock_get_mgr.return_value = mgr
-            mock_pwd.verify.return_value = True
+            mock_pwd.return_value.verify.return_value = True
 
             resp = client.post(
                 "/api/v1/auth/giris",
@@ -376,14 +390,14 @@ class TestSecureLogin:
         jwt_token = _make_jwt()
 
         with (
-            patch("api.auth.get_jwt_manager") as mock_get_mgr,
-            patch("api.auth.pwd_context") as mock_pwd,
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
         ):
             mgr = _make_mock_jwt_manager()
             mgr.create_access_token.return_value = jwt_token
             mgr.create_refresh_token.return_value = _make_jwt(role="student")
             mock_get_mgr.return_value = mgr
-            mock_pwd.verify.return_value = True
+            mock_pwd.return_value.verify.return_value = True
 
             resp = client.post(
                 "/api/v1/auth/login/secure",
@@ -406,7 +420,7 @@ class TestSecureLogin:
         mock_result.scalar_one_or_none.return_value = None
         mock_db.execute = AsyncMock(return_value=mock_result)
 
-        with patch("api.auth.get_jwt_manager") as mock_get_mgr:
+        with patch("application.commands.auth.get_jwt_manager") as mock_get_mgr:
             mock_get_mgr.return_value = _make_mock_jwt_manager()
 
             resp = client.post(
@@ -425,11 +439,11 @@ class TestSecureLogin:
         mock_db.execute = AsyncMock(return_value=mock_result)
 
         with (
-            patch("api.auth.get_jwt_manager") as mock_get_mgr,
-            patch("api.auth.pwd_context") as mock_pwd,
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
         ):
             mock_get_mgr.return_value = _make_mock_jwt_manager()
-            mock_pwd.verify.return_value = True
+            mock_pwd.return_value.verify.return_value = True
 
             resp = client.post(
                 "/api/v1/auth/login/secure",

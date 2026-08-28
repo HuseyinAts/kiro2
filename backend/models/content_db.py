@@ -3,7 +3,6 @@ SQLAlchemy ORM Content Models
 database.py'den ayrıştırıldı (2026-01-10)
 """
 
-import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -22,118 +21,17 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
-from .enums_db import ExamType, QuestionDifficulty, SubjectArea
+from .enums_db import QuestionDifficulty, SubjectArea
 
 if TYPE_CHECKING:
     from .user_models import TeacherProfile
 
 
-class Question(Base):
-    """Soru modeli"""
-
-    __tablename__ = "questions"
-    __table_args__ = (
-        CheckConstraint(
-            "correct_answer IN ('A', 'B', 'C', 'D', 'E')", name="check_correct_answer"
-        ),
-        CheckConstraint(
-            "irt_difficulty >= -3.0 AND irt_difficulty <= 3.0",
-            name="check_irt_difficulty",
-        ),
-        CheckConstraint(
-            "irt_discrimination >= 0.1 AND irt_discrimination <= 3.0",
-            name="check_irt_discrimination",
-        ),
-        CheckConstraint(
-            "irt_guessing >= 0.0 AND irt_guessing <= 1.0", name="check_irt_guessing"
-        ),
-        CheckConstraint(
-            "irt_upper_asymptote >= 0.85 AND irt_upper_asymptote <= 1.0",
-            name="check_irt_upper_asymptote"
-        ),
-        Index("idx_question_exam_type", "exam_type"),
-        Index("idx_question_subject", "subject_area"),
-        Index("idx_question_topic", "topic"),
-        Index("idx_question_difficulty", "difficulty"),
-        Index("idx_question_irt_difficulty", "irt_difficulty"),
-    )
-
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-
-    # Question content
-    question_text: Mapped[str] = mapped_column(Text, nullable=False)
-    question_image_url: Mapped[str | None] = mapped_column(String(500))
-
-    # Answer options
-    option_a: Mapped[str] = mapped_column(Text, nullable=False)
-    option_b: Mapped[str] = mapped_column(Text, nullable=False)
-    option_c: Mapped[str] = mapped_column(Text, nullable=False)
-    option_d: Mapped[str] = mapped_column(Text, nullable=False)
-    option_e: Mapped[str | None] = mapped_column(Text)
-
-    correct_answer: Mapped[str] = mapped_column(String(1), nullable=False)
-    explanation: Mapped[str | None] = mapped_column(Text)
-
-    # Classification - use values_callable for correct lowercase enum mapping
-    exam_type: Mapped[ExamType] = mapped_column(
-        Enum(ExamType, values_callable=lambda x: [e.value for e in x], native_enum=False, create_constraint=False),
-        nullable=False
-    )
-    subject_area: Mapped[SubjectArea] = mapped_column(
-        Enum(SubjectArea, values_callable=lambda x: [e.value for e in x], native_enum=False, create_constraint=False),
-        nullable=False
-    )
-    topic: Mapped[str] = mapped_column(String(200), nullable=False)
-    subtopic: Mapped[str | None] = mapped_column(String(200))
-
-    # Difficulty and IRT parameters
-    difficulty: Mapped[QuestionDifficulty] = mapped_column(
-        Enum(QuestionDifficulty, values_callable=lambda x: [e.value for e in x], native_enum=False, create_constraint=False),
-        nullable=False
-    )
-    irt_difficulty: Mapped[float] = mapped_column(Float, default=0.0)
-    irt_discrimination: Mapped[float] = mapped_column(Float, default=1.0)
-    irt_guessing: Mapped[float] = mapped_column(Float, default=0.25)
-    irt_upper_asymptote: Mapped[float] = mapped_column(Float, default=1.0)
-
-    # IRT calibration metadata
-    irt_calibrated: Mapped[bool] = mapped_column(Boolean, default=False)
-    irt_sample_size: Mapped[int] = mapped_column(Integer, default=0)
-
-    # Source information
-    source_book: Mapped[str | None] = mapped_column(String(300))
-    source_page: Mapped[int | None] = mapped_column(Integer)
-
-    # Turkish morphology analysis
-    morphology_complexity: Mapped[float] = mapped_column(Float, default=0.0)
-    readability_score: Mapped[float] = mapped_column(Float, default=0.0)
-
-    # Statistics
-    times_asked: Mapped[int] = mapped_column(Integer, default=0)
-    times_correct: Mapped[int] = mapped_column(Integer, default=0)
-    average_response_time: Mapped[float] = mapped_column(Float, default=0.0)
-
-    # System fields
-    created_by: Mapped[str | None] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE")
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-    )
-    is_active: Mapped[bool] = mapped_column("aktif", Boolean, default=True)
-
-    # Visual content support
-    visual_content: Mapped[dict | None] = mapped_column(JSON)
-
-    # Note: exam_questions and student_answers relationships moved to QuestionBankItem
-    # (ExamQuestion/StudentAnswer now reference question_bank table)
+# DEPRECATED: `Question` class has been removed to fix the Dual Table Trap.
+# Please import `QuestionBankItem` from `models.question_bank` instead.
 
 
 # Legacy alias for compatibility
@@ -154,12 +52,12 @@ class EducationalContent(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
 
     # Content information
     title: Mapped[str] = mapped_column(String(300), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, deferred=True)
     content_type: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # Source information
@@ -197,7 +95,7 @@ class EducationalContent(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
 
 class ClassRoom(Base):
@@ -214,7 +112,14 @@ class ClassRoom(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     teacher_id: Mapped[str] = mapped_column(
         String, ForeignKey("teacher_profiles.id", ondelete="CASCADE"), nullable=False
@@ -227,10 +132,10 @@ class ClassRoom(Base):
     school_year: Mapped[str] = mapped_column(String(20), nullable=False)
 
     # Student list (JSON array of student IDs)
-    student_ids: Mapped[dict | None] = mapped_column(JSON)
+    student_ids: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Class settings
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     max_students: Mapped[int] = mapped_column(Integer, default=40)
 
     # System fields

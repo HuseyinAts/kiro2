@@ -34,26 +34,26 @@ print(f"Toplam crop: {len(sizes)}")
 if sizes:
     widths = [s[0] for s in sizes]
     heights = [s[1] for s in sizes]
-    
+
     print(f"\nGENİŞLİK:")
     print(f"  Min: {min(widths)}, Max: {max(widths)}, Ort: {sum(widths)/len(widths):.0f}")
-    
+
     print(f"\nYÜKSEKLİK:")
     print(f"  Min: {min(heights)}, Max: {max(heights)}, Ort: {sum(heights)/len(heights):.0f}")
-    
+
     # Küçük crop'lar
     tiny_w = len([w for w in widths if w < 100])
     tiny_h = len([h for h in heights if h < 30])
     print(f"\nKÜÇÜK CROP'LAR:")
     print(f"  Genişlik < 100px: {tiny_w} ({tiny_w/len(sizes)*100:.1f}%)")
     print(f"  Yükseklik < 30px: {tiny_h} ({tiny_h/len(sizes)*100:.1f}%)")
-    
+
     # En küçükler
     print(f"\nEN KÜÇÜK 5 CROP:")
     sorted_by_area = sorted(sizes, key=lambda x: x[0]*x[1])[:5]
     for w, h, book, f in sorted_by_area:
         print(f"  {w}x{h} - {book[:30]}/{f}")
-    
+
     # Örnekler
     print(f"\nÖRNEK CROP'LAR:")
     for path, w, h, book, f in samples[:10]:

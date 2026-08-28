@@ -19,8 +19,9 @@ import asyncio
 import logging
 import os
 import sys
-from sqlalchemy.ext.asyncio import create_async_engine
+
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine
 
 # Configure logging
 logging.basicConfig(
@@ -44,9 +45,9 @@ async def main():
     env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env.mvp")
     if not os.path.exists(env_path):
         env_path = ".env.mvp"
-        
+
     if os.path.exists(env_path):
-        with open(env_path, "r", encoding="utf-8") as f:
+        with open(env_path, encoding="utf-8") as f:
             for line in f:
                 if line.strip().startswith("DATABASE_URL="):
                     db_url = line.strip().split("DATABASE_URL=", 1)[1]
@@ -75,7 +76,7 @@ async def main():
         async with engine.connect() as conn:
             # Set statement timeout
             await conn.execute(text("SET statement_timeout = '10s';"))
-            
+
             if args.dry_run:
                 logger.info("=== SİMÜLASYON MODU (DRY RUN) ETKİN - HİÇBİR VERİ DEĞİŞTİRİLMEYECEK ===")
             else:
@@ -85,7 +86,7 @@ async def main():
             # 1. Aşama: Mükerrer Soruların Tespiti ve Temizliği
             # ---------------------------------------------------------
             logger.info("Mükerrer soru hash grupları sorgulanıyor...")
-            
+
             dup_hashes_query = text("""
                 SELECT soru_hash, COUNT(*) as cnt 
                 FROM question_bank 
@@ -94,9 +95,9 @@ async def main():
             """)
             dup_hashes_res = await conn.execute(dup_hashes_query)
             dup_groups = dup_hashes_res.fetchall()
-            
+
             logger.info(f"Toplam {len(dup_groups)} farklı mükerrer hash grubu bulundu.")
-            
+
             total_duplicates_processed = 0
             total_answers_migrated = 0
             total_calibration_history_migrated = 0
@@ -104,7 +105,7 @@ async def main():
 
             for group in dup_groups:
                 hash_val, count = group
-                
+
                 # Fetch all questions sharing this hash
                 # We sort by is_active DESC, times_asked DESC, created_at ASC to find the canonical item
                 q_list_query = text("""
@@ -115,20 +116,20 @@ async def main():
                 """)
                 q_res = await conn.execute(q_list_query, {"hash_val": hash_val})
                 questions = q_res.fetchall()
-                
+
                 if not questions or len(questions) < 2:
                     continue
-                    
+
                 canonical = questions[0]
                 duplicates = questions[1:]
-                
+
                 canonical_id = canonical[0]
                 logger.info(f"Hash {hash_val}: Canonical Soru={canonical_id} seçildi. Kopyaları: {[d[0] for d in duplicates]}")
-                
+
                 for dup in duplicates:
                     dup_id = dup[0]
                     total_duplicates_processed += 1
-                    
+
                     if args.dry_run:
                         # Dry run reporting
                         # Get answer count
@@ -137,42 +138,42 @@ async def main():
                             {"dup_id": dup_id}
                         )
                         ans_count = ans_count_res.scalar()
-                        
+
                         # Get calibration history count
                         cal_count_res = await conn.execute(
                             text("SELECT COUNT(*) FROM irt_calibration_history WHERE question_id = :dup_id;"),
                             {"dup_id": dup_id}
                         )
                         cal_count = cal_count_res.scalar()
-                        
+
                         # Get exam question association count
                         eq_count_res = await conn.execute(
                             text("SELECT COUNT(*) FROM exam_questions WHERE question_id = :dup_id;"),
                             {"dup_id": dup_id}
                         )
                         eq_count = eq_count_res.scalar()
-                        
+
                         logger.info(
                             f"[DRY-RUN SIMULATION] Soru ID {dup_id} soft-delete yapılacak.\n"
                             f"  -> {ans_count} öğrenci cevabı Soru {canonical_id}'ye aktarılacak.\n"
                             f"  -> {cal_count} kalibrasyon kaydı Soru {canonical_id}'ye aktarılacak.\n"
                             f"  -> {eq_count} sınav soru ataması Soru {canonical_id}'ye aktarılacak."
                         )
-                        
+
                         total_answers_migrated += ans_count
                         total_calibration_history_migrated += cal_count
                         total_exam_questions_migrated += eq_count
                     else:
                         # Execute mode with explicit transaction isolation
                         logger.info(f"Soru ID {dup_id} verileri Soru ID {canonical_id}'ye taşınıyor...")
-                        
+
                         # Use nested transactions for row-by-row updates to safely ignore IntegrityErrors
                         from sqlalchemy.exc import IntegrityError
-                        
+
                         # A. Transfer student answers row-by-row
                         ans_select = text("SELECT id FROM student_answers WHERE question_id = :dup_id;")
                         ans_rows = (await conn.execute(ans_select, {"dup_id": dup_id})).fetchall()
-                        
+
                         answers_moved = 0
                         for ans_row in ans_rows:
                             ans_row_id = ans_row[0]
@@ -192,7 +193,7 @@ async def main():
                                     {"ans_row_id": ans_row_id}
                                 )
                         total_answers_migrated += answers_moved
-                        
+
                         # B. Transfer calibration histories row-by-row
                         cal_select = text("SELECT id FROM irt_calibration_history WHERE question_id = :dup_id;")
                         cal_rows = (await conn.execute(cal_select, {"dup_id": dup_id})).fetchall()
@@ -210,7 +211,7 @@ async def main():
                                     text("DELETE FROM irt_calibration_history WHERE id = :cal_row_id;"),
                                     {"cal_row_id": cal_row_id}
                                 )
-                        
+
                         # C. Transfer exam questions row-by-row
                         eq_select = text("SELECT id FROM exam_questions WHERE question_id = :dup_id;")
                         eq_rows = (await conn.execute(eq_select, {"dup_id": dup_id})).fetchall()
@@ -228,7 +229,7 @@ async def main():
                                     text("DELETE FROM exam_questions WHERE id = :eq_row_id;"),
                                     {"eq_row_id": eq_row_id}
                                 )
-                        
+
                         # D. Set duplicate question as inactive (Karantina)
                         deactivate_query = text("""
                             UPDATE question_bank 
@@ -236,7 +237,7 @@ async def main():
                             WHERE id = :dup_id;
                         """)
                         await conn.execute(deactivate_query, {"dup_id": dup_id})
-                        
+
                         logger.info(f"Soru ID {dup_id} karantinaya alındı. {answers_moved} adet cevap başarıyla kanonik kayda devredildi.")
 
             # ---------------------------------------------------------
@@ -246,9 +247,9 @@ async def main():
             trash_query = text("SELECT id, question_text FROM question_bank WHERE LENGTH(question_text) < 15 AND is_active = true;")
             trash_res = await conn.execute(trash_query)
             trash_rows = trash_res.fetchall()
-            
+
             logger.info(f"Toplam {len(trash_rows)} adet aktif çöp soru bulundu.")
-            
+
             for row in trash_rows:
                 q_id, q_text = row
                 if args.dry_run:

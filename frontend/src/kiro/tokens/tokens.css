@@ -1,0 +1,634 @@
+/* ============================================================================
+   KIRO2 — Tasarım Token'ları (web CSS yansıması)
+   Tek kaynak: tokens.ts — bu dosya onun CSS-değişkeni karşılığıdır.
+   Tema kuralı: ekran TÜRÜ temayı belirler (çalışma=AÇIK, duygusal=KOYU);
+   kök elemana .k-paper ya da .k-dusk sınıfı ver. Kullanıcı toggle'ı değildir.
+   ============================================================================ */
+
+:root {
+  /* Dawn aksanı — her iki temada sabit marka ipliği */
+  --k-coral: #FF6F5C;
+  --k-coral-2: #FF8A5B;
+  --k-peach: #FFAE86;
+  --k-peach-2: #FFC59B;
+  --k-gold: #FFD98C;
+  --k-gold-2: #FCD34D;
+  --k-coral-text-on-light: #C2452B;
+  --k-coral-cta-bg: #C2452B; /* beyaz metin taşıyan CTA/balon zemini — AA (beyaz metin 5:1) */
+
+  /* Semantik */
+  --k-risk: #C77A1E;               /* dolgu/grafik amber'i */
+  --k-risk-text-on-light: #9A5D0D; /* sıkı-AA metin amber'i */
+  --k-risk-bg-soft: #FBF0DE;
+  --k-risk-border-soft: #F2D9AC;
+  --k-success: #1FB683;
+  --k-success-2: #34D399;
+  --k-success-text-on-light: #047857;
+  --k-success-bg-soft: #ECFDF5;
+  --k-success-border-soft: #BBF7D0;
+
+  /* Hâkimiyet kademeleri */
+  --k-mastery-tanidik: #9A93A5;
+  --k-mastery-yetkin: #7FB0FF;
+  --k-mastery-usta: #FFAE86;
+  --k-mastery-fethedildi: #FCD34D;
+
+  /* Tipografi */
+  --k-font-serif: 'Instrument Serif', Georgia, serif;
+  --k-font-sans: 'Hanken Grotesk', -apple-system, sans-serif;
+  --k-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Radius */
+  --k-r-chip: 10px;
+  --k-r-input: 11px;
+  --k-r-button: 13px;
+  --k-r-card: 16px;
+  --k-r-card-lg: 20px;
+  --k-r-pill: 999px;
+
+  /* Gölge */
+  --k-shadow-card-soft: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --k-shadow-card-float: 0 20px 50px -24px rgba(42, 36, 51, 0.3);
+  --k-shadow-coral-cta: 0 10px 22px -10px rgba(255, 111, 92, 0.7);
+
+  /* Motion — kaygı-duyarlı: sakin; girişler transform-only */
+  --k-dur-fast: 120ms;
+  --k-dur-base: 150ms;
+  --k-dur-page: 220ms;
+  --k-ease: cubic-bezier(0.33, 0, 0.2, 1);
+
+  /* Şafak göğü gradyanları (koyu hero zeminleri) */
+  --k-gradient-dawn-sky: linear-gradient(176deg, #141029 0%, #241640 17%, #3E1F4E 33%, #6A2B52 51%, #A33C4E 66%, #D35F49 80%, #F2974C 92%, #FFC76F 100%);
+  --k-gradient-dawn-underglow: radial-gradient(130% 100% at 50% 118%, #FFB57E, #FF8A5B, #C24E7E, #5B2F66, #1A0F26);
+}
+
+/* ---- AÇIK tema: çalışma / odak / analitik ekranlar ---- */
+.k-paper {
+  --k-bg: #F7F4EF;
+  --k-surface: #FFFFFF;
+  --k-surface-subtle: #FBF8F3;
+  --k-border: #ECE6DD;
+  --k-border-strong: #E2DACE;
+  --k-border-faint: #F0EAE1;
+  --k-text: #2A2433;
+  --k-text-2: #4A4456;
+  --k-text-muted: #6B6478;   /* açık zeminde küçük metin AA minimumu */
+  --k-text-faded: #B0A9B8;   /* yalnız dekoratif */
+  /* Ders renkleri — açık panel paleti */
+  --k-subj-mat: #3B82F6;
+  --k-subj-fiz: #8B5CF6;
+  --k-subj-kim: #E0593F;
+  --k-subj-biy: #1FB683;
+  --k-subj-tur: #F59E0B;
+  --k-subj-edb: #D97706;
+  --k-subj-tar: #B45309;
+  --k-subj-cog: #0D9488;
+  --k-subj-fel: #7C3AED;
+  --k-subj-din: #6B7280;
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--k-font-sans);
+}
+
+/* ---- KOYU tema: duygusal / hub / kutlama / ritüel ekranlar ---- */
+.k-dusk {
+  --k-bg: #110C18;
+  --k-surface: #150E20;
+  --k-surface-subtle: #170E22;
+  --k-border: rgba(255, 240, 230, 0.16);
+  --k-border-strong: rgba(255, 240, 230, 0.26);
+  --k-border-faint: rgba(255, 240, 230, 0.1);
+  --k-text: #F1E9F2;
+  --k-text-2: #ECE4F0;
+  --k-text-muted: rgba(241, 233, 242, 0.6);
+  --k-text-faded: rgba(241, 233, 242, 0.4);
+  /* Ders renkleri — koyu zeminde parlak palet (kiro-data subjects[].renk) */
+  --k-subj-mat: #5B8DEF;
+  --k-subj-fiz: #A77BFF;
+  --k-subj-kim: #E25A72;
+  --k-subj-biy: #2DD4A7;
+  --k-subj-tur: #FFB347;
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--k-font-sans);
+}
+
+/* Sayılar her zaman tabular */
+.k-num { font-family: var(--k-font-sans); font-variant-numeric: tabular-nums; }
+
+/* Odak halkası (kanon) */
+:focus-visible { outline: 2px solid rgba(255, 111, 92, 0.7); outline-offset: 2px; }
+
+/* Switch (aç/kapa) odak halkası — pill için özel yarıçap (SPRINT10-C · Switch.tsx'ten
+   taşındı: her örnekte ayrı <style> enjekte etmek yerine tek CSS kuralı). */
+.kiro-switch:focus-visible { outline: 2px solid var(--k-coral-cta-bg); outline-offset: 2px; border-radius: var(--k-r-pill); }
+
+/* Kaygı-duyarlı motion tabanı */
+@media (prefers-reduced-motion: no-preference) {
+  a, button, [role='button'] { transition: transform var(--k-dur-fast) ease, filter var(--k-dur-base) ease; }
+}
+
+/* Sakin mod (calmMode) — kök <html>'e .k-calm eklenir (theme.tsx). JS store yalnız
+   JS-motion'ı (useReducedMotion) kısar; CSS-@media ambient motion (Skeleton kiroSweep,
+   konfeti keyframe'leri) store'u göremez. Bu blok prefers-reduced-motion'ı aynalayıp
+   CSS-ambient motion'ı da etkisizler. ADDITIVE: sınıf yoksa hiçbir etki yok. */
+.k-calm *, .k-calm *::before, .k-calm *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* ============================================================================
+   KÜLTÜREL TEMA MOTORU (Theme Engine 2.0)
+   HTML root seviyesinde uygulanan .k-cezeri vb. sınıflar, altındaki .k-dusk
+   ve .k-paper değerlerini ezerek renk paletini derinleştirir.
+   ============================================================================ */
+
+/* ---- 1. Cezeri'nin Çarkları (Ahşap, Pirinç, Bakır) ---- */
+html.k-cezeri .k-dusk {
+  --k-bg: #16120E;
+  --k-surface: #221A15;
+  --k-surface-subtle: #291F19;
+  --k-coral: #C5832B; /* Pirinç/Altın */
+  --k-coral-2: #E6A754;
+  --k-border: rgba(197, 131, 43, 0.2);
+  --k-border-strong: rgba(197, 131, 43, 0.35);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #16120E 0%, #291F19 17%, #4A3320 51%, #C5832B 100%);
+}
+
+/* ---- 2. Fergani'nin Gök Küresi (Derin Uzay, Altın Usturlap) ---- */
+html.k-fergani .k-dusk {
+  --k-bg: #070B19;
+  --k-surface: #0A1128;
+  --k-surface-subtle: #0F1A3A;
+  --k-coral: #FCD34D; /* Altın Yıldızlar */
+  --k-coral-2: #FDE68A;
+  --k-border: rgba(252, 211, 77, 0.15);
+  --k-border-strong: rgba(252, 211, 77, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #070B19 0%, #0A1128 30%, #1A2E65 70%, #FCD34D 100%);
+}
+
+/* ---- 3. Harezmi'nin Algoritması (Saf Geometri, İndigo ve Turkuaz) ---- */
+html.k-harezmi .k-dusk {
+  --k-bg: #09090B;
+  --k-surface: #121217;
+  --k-surface-subtle: #1A1A22;
+  --k-coral: #00F0FF; /* Neon Turkuaz */
+  --k-coral-2: #66F5FF;
+  --k-border: rgba(0, 240, 255, 0.15);
+  --k-border-strong: rgba(0, 240, 255, 0.4);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #09090B 0%, #121217 40%, #004D52 100%);
+}
+
+/* ---- 4. Killigil İradesi (Çelik Grisi, Taktiksel, Barut Kırmızısı) ---- */
+html.k-killigil .k-dusk {
+  --k-bg: #121212;
+  --k-surface: #1E1E1E;
+  --k-surface-subtle: #252525;
+  --k-coral: #D32F2F; /* Barut Kırmızısı */
+  --k-coral-2: #EF5350;
+  --k-border: rgba(255, 255, 255, 0.1);
+  --k-border-strong: rgba(255, 255, 255, 0.2);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #121212 0%, #1E1E1E 50%, #5C1A1A 100%);
+}
+
+/* ---- 5. Ebru'nun Akışı (Pastel, Akıcı, Kırık Beyaz / Light Mode Override) ---- */
+html.k-ebru .k-paper {
+  --k-bg: #FAF8F5;
+  --k-surface: #FFFFFF;
+  --k-surface-subtle: #F3EFE9;
+  --k-coral: #6B5B95; /* Lofi Moru / Lavanta */
+  --k-coral-2: #8A7BAE;
+  --k-border: #E8E0D5;
+  --k-border-strong: #D5C8B8;
+  --k-text: #3D3545;
+}
+html.k-ebru .k-dusk {
+  /* Ebru teması gece modunda pastel/soft bir dark mode sunar */
+  --k-bg: #2B2532;
+  --k-surface: #342D3C;
+  --k-surface-subtle: #3D3547;
+  --k-coral: #B59CDA; /* Lila */
+  --k-coral-2: #D1BDE8;
+  --k-border: rgba(181, 156, 218, 0.2);
+}
+
+/* ---- İbni Sina (El-Kanun) ---- */
+html.k-ibnisina .k-dusk {
+  --k-bg: #0A1A12;
+  --k-surface: #143324; 
+  --k-surface-subtle: #1F4C36;
+  --k-coral: #2DD4A7;
+  --k-coral-2: #2DD4A7;
+  --k-border: rgba(45, 212, 167, 0.15);
+  --k-border-strong: rgba(45, 212, 167, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0A1A12 0%, #143324 40%, rgba(45, 212, 167, 0.2) 100%);
+}
+
+/* ---- Farabi (Muallim-i Sani) ---- */
+html.k-farabi .k-dusk {
+  --k-bg: #0F1626;
+  --k-surface: #1E2C4C; 
+  --k-surface-subtle: #2D4272;
+  --k-coral: #E3C263;
+  --k-coral-2: #E3C263;
+  --k-border: rgba(227, 194, 99, 0.15);
+  --k-border-strong: rgba(227, 194, 99, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0F1626 0%, #1E2C4C 40%, rgba(227, 194, 99, 0.2) 100%);
+}
+
+/* ---- Biruni ---- */
+html.k-biruni .k-dusk {
+  --k-bg: #1A1813;
+  --k-surface: #333026; 
+  --k-surface-subtle: #4D4839;
+  --k-coral: #4DB8B8;
+  --k-coral-2: #4DB8B8;
+  --k-border: rgba(77, 184, 184, 0.15);
+  --k-border-strong: rgba(77, 184, 184, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1A1813 0%, #333026 40%, rgba(77, 184, 184, 0.2) 100%);
+}
+
+/* ---- Piri Reis ---- */
+html.k-pirireis .k-dusk {
+  --k-bg: #0B1C24;
+  --k-surface: #163848; 
+  --k-surface-subtle: #21546C;
+  --k-coral: #66E0C2;
+  --k-coral-2: #66E0C2;
+  --k-border: rgba(102, 224, 194, 0.15);
+  --k-border-strong: rgba(102, 224, 194, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0B1C24 0%, #163848 40%, rgba(102, 224, 194, 0.2) 100%);
+}
+
+/* ---- Evliya Çelebi ---- */
+html.k-evliyacelebi .k-dusk {
+  --k-bg: #241B18;
+  --k-surface: #483630; 
+  --k-surface-subtle: #6C5148;
+  --k-coral: #D49A89;
+  --k-coral-2: #D49A89;
+  --k-border: rgba(212, 154, 137, 0.15);
+  --k-border-strong: rgba(212, 154, 137, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #241B18 0%, #483630 40%, rgba(212, 154, 137, 0.2) 100%);
+}
+
+/* ---- Şair Nabi ---- */
+html.k-sairnabi .k-dusk {
+  --k-bg: #1B0F1C;
+  --k-surface: #361E38; 
+  --k-surface-subtle: #512D54;
+  --k-coral: #C792EA;
+  --k-coral-2: #C792EA;
+  --k-border: rgba(199, 146, 234, 0.15);
+  --k-border-strong: rgba(199, 146, 234, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1B0F1C 0%, #361E38 40%, rgba(199, 146, 234, 0.2) 100%);
+}
+
+/* ---- Ali Kuşçu ---- */
+html.k-alikuscu .k-dusk {
+  --k-bg: #101216;
+  --k-surface: #20242C; 
+  --k-surface-subtle: #303642;
+  --k-coral: #A3B8CC;
+  --k-coral-2: #A3B8CC;
+  --k-border: rgba(163, 184, 204, 0.15);
+  --k-border-strong: rgba(163, 184, 204, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #101216 0%, #20242C 40%, rgba(163, 184, 204, 0.2) 100%);
+}
+
+/* ---- Vecihi Hürkuş ---- */
+html.k-vecihi .k-dusk {
+  --k-bg: #101B26;
+  --k-surface: #20364C; 
+  --k-surface-subtle: #305172;
+  --k-coral: #7FB0FF;
+  --k-coral-2: #7FB0FF;
+  --k-border: rgba(127, 176, 255, 0.15);
+  --k-border-strong: rgba(127, 176, 255, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #101B26 0%, #20364C 40%, rgba(127, 176, 255, 0.2) 100%);
+}
+
+/* ---- Mimar Sinan ---- */
+html.k-mimarsinan .k-dusk {
+  --k-bg: #1A1C1C;
+  --k-surface: #343838; 
+  --k-surface-subtle: #4E5454;
+  --k-coral: #D1D5DB;
+  --k-coral-2: #D1D5DB;
+  --k-border: rgba(209, 213, 219, 0.15);
+  --k-border-strong: rgba(209, 213, 219, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1A1C1C 0%, #343838 40%, rgba(209, 213, 219, 0.2) 100%);
+}
+
+/* ---- Selçuk Bayraktar ---- */
+html.k-bayraktar .k-dusk {
+  --k-bg: #120A0A;
+  --k-surface: #241414; 
+  --k-surface-subtle: #361E1E;
+  --k-coral: #EF4444;
+  --k-coral-2: #EF4444;
+  --k-border: rgba(239, 68, 68, 0.15);
+  --k-border-strong: rgba(239, 68, 68, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #120A0A 0%, #241414 40%, rgba(239, 68, 68, 0.2) 100%);
+}
+
+/* ---- Aziz Sancar ---- */
+html.k-azizsancar .k-dusk {
+  --k-bg: #0B1A1E;
+  --k-surface: #16343C; 
+  --k-surface-subtle: #214E5A;
+  --k-coral: #1FB683;
+  --k-coral-2: #1FB683;
+  --k-border: rgba(31, 182, 131, 0.15);
+  --k-border-strong: rgba(31, 182, 131, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0B1A1E 0%, #16343C 40%, rgba(31, 182, 131, 0.2) 100%);
+}
+
+/* ---- Cahit Arf ---- */
+html.k-cahitarf .k-dusk {
+  --k-bg: #12121A;
+  --k-surface: #242434; 
+  --k-surface-subtle: #36364E;
+  --k-coral: #A78BFA;
+  --k-coral-2: #A78BFA;
+  --k-border: rgba(167, 139, 250, 0.15);
+  --k-border-strong: rgba(167, 139, 250, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #12121A 0%, #242434 40%, rgba(167, 139, 250, 0.2) 100%);
+}
+
+/* ---- Oktay Sinanoğlu ---- */
+html.k-oktaysinanoglu .k-dusk {
+  --k-bg: #221100;
+  --k-surface: #442200; 
+  --k-surface-subtle: #663300;
+  --k-coral: #FB923C;
+  --k-coral-2: #FB923C;
+  --k-border: rgba(251, 146, 60, 0.15);
+  --k-border-strong: rgba(251, 146, 60, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #221100 0%, #442200 40%, rgba(251, 146, 60, 0.2) 100%);
+}
+
+/* ---- Hulusi Behçet ---- */
+html.k-hulusibehcet .k-dusk {
+  --k-bg: #240F11;
+  --k-surface: #481E22; 
+  --k-surface-subtle: #6C2D33;
+  --k-coral: #F43F5E;
+  --k-coral-2: #F43F5E;
+  --k-border: rgba(244, 63, 94, 0.15);
+  --k-border-strong: rgba(244, 63, 94, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #240F11 0%, #481E22 40%, rgba(244, 63, 94, 0.2) 100%);
+}
+
+/* ---- Canan Dağdeviren ---- */
+html.k-canandagdeviren .k-dusk {
+  --k-bg: #26141E;
+  --k-surface: #4C283C; 
+  --k-surface-subtle: #723C5A;
+  --k-coral: #F472B6;
+  --k-coral-2: #F472B6;
+  --k-border: rgba(244, 114, 182, 0.15);
+  --k-border-strong: rgba(244, 114, 182, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #26141E 0%, #4C283C 40%, rgba(244, 114, 182, 0.2) 100%);
+}
+
+/* ---- Feryal Özel ---- */
+html.k-feryalozel .k-dusk {
+  --k-bg: #050505;
+  --k-surface: #0A0A0A; 
+  --k-surface-subtle: #0F0F0F;
+  --k-coral: #F97316;
+  --k-coral-2: #F97316;
+  --k-border: rgba(249, 115, 22, 0.15);
+  --k-border-strong: rgba(249, 115, 22, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #050505 0%, #0A0A0A 40%, rgba(249, 115, 22, 0.2) 100%);
+}
+
+/* ---- Bilge Demirköz ---- */
+html.k-bilgedemirkoz .k-dusk {
+  --k-bg: #081226;
+  --k-surface: #10244C; 
+  --k-surface-subtle: #183672;
+  --k-coral: #38BDF8;
+  --k-coral-2: #38BDF8;
+  --k-border: rgba(56, 189, 248, 0.15);
+  --k-border-strong: rgba(56, 189, 248, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #081226 0%, #10244C 40%, rgba(56, 189, 248, 0.2) 100%);
+}
+
+/* ---- Mete Atatüre ---- */
+html.k-meteatature .k-dusk {
+  --k-bg: #1A1C08;
+  --k-surface: #343810; 
+  --k-surface-subtle: #4E5418;
+  --k-coral: #FDE047;
+  --k-coral-2: #FDE047;
+  --k-border: rgba(253, 224, 71, 0.15);
+  --k-border-strong: rgba(253, 224, 71, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1A1C08 0%, #343810 40%, rgba(253, 224, 71, 0.2) 100%);
+}
+
+/* ---- Gazi Yaşargil ---- */
+html.k-gaziyasargil .k-dusk {
+  --k-bg: #17101B;
+  --k-surface: #2E2036; 
+  --k-surface-subtle: #453051;
+  --k-coral: #E879F9;
+  --k-coral-2: #E879F9;
+  --k-border: rgba(232, 121, 249, 0.15);
+  --k-border-strong: rgba(232, 121, 249, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #17101B 0%, #2E2036 40%, rgba(232, 121, 249, 0.2) 100%);
+}
+
+/* ---- Behram Kurşunoğlu ---- */
+html.k-behramkursunoglu .k-dusk {
+  --k-bg: #0C0C11;
+  --k-surface: #181822; 
+  --k-surface-subtle: #242433;
+  --k-coral: #9CA3AF;
+  --k-coral-2: #9CA3AF;
+  --k-border: rgba(156, 163, 175, 0.15);
+  --k-border-strong: rgba(156, 163, 175, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0C0C11 0%, #181822 40%, rgba(156, 163, 175, 0.2) 100%);
+}
+
+/* ---- Nüzhet Gökdoğan ---- */
+html.k-nuzhetgokdogan .k-dusk {
+  --k-bg: #0E1526;
+  --k-surface: #1C2A4C; 
+  --k-surface-subtle: #2A3F72;
+  --k-coral: #818CF8;
+  --k-coral-2: #818CF8;
+  --k-border: rgba(129, 140, 248, 0.15);
+  --k-border-strong: rgba(129, 140, 248, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0E1526 0%, #1C2A4C 40%, rgba(129, 140, 248, 0.2) 100%);
+}
+
+/* ---- Halil İnalcık ---- */
+html.k-halilinalcik .k-dusk {
+  --k-bg: #260B12;
+  --k-surface: #4C1624; 
+  --k-surface-subtle: #722136;
+  --k-coral: #FCD34D;
+  --k-coral-2: #FCD34D;
+  --k-border: rgba(252, 211, 77, 0.15);
+  --k-border-strong: rgba(252, 211, 77, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #260B12 0%, #4C1624 40%, rgba(252, 211, 77, 0.2) 100%);
+}
+
+/* ---- İlber Ortaylı ---- */
+html.k-ilberortayli .k-dusk {
+  --k-bg: #1F1813;
+  --k-surface: #3E3026; 
+  --k-surface-subtle: #5D4839;
+  --k-coral: #D4A373;
+  --k-coral-2: #D4A373;
+  --k-border: rgba(212, 163, 115, 0.15);
+  --k-border-strong: rgba(212, 163, 115, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1F1813 0%, #3E3026 40%, rgba(212, 163, 115, 0.2) 100%);
+}
+
+/* ---- Uluğ Bey ---- */
+html.k-ulugbey .k-dusk {
+  --k-bg: #0A0C22;
+  --k-surface: #141844; 
+  --k-surface-subtle: #1E2466;
+  --k-coral: #60A5FA;
+  --k-coral-2: #60A5FA;
+  --k-border: rgba(96, 165, 250, 0.15);
+  --k-border-strong: rgba(96, 165, 250, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0A0C22 0%, #141844 40%, rgba(96, 165, 250, 0.2) 100%);
+}
+
+/* ---- Ebül Vefa el-Buzcani ---- */
+html.k-elbuzcani .k-dusk {
+  --k-bg: #0E1C18;
+  --k-surface: #1C3830; 
+  --k-surface-subtle: #2A5448;
+  --k-coral: #34D399;
+  --k-coral-2: #34D399;
+  --k-border: rgba(52, 211, 153, 0.15);
+  --k-border-strong: rgba(52, 211, 153, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0E1C18 0%, #1C3830 40%, rgba(52, 211, 153, 0.2) 100%);
+}
+
+/* ---- Gıyaseddin Cemşid ---- */
+html.k-cemsid .k-dusk {
+  --k-bg: #0A1C12;
+  --k-surface: #143824; 
+  --k-surface-subtle: #1E5436;
+  --k-coral: #22C55E;
+  --k-coral-2: #22C55E;
+  --k-border: rgba(34, 197, 94, 0.15);
+  --k-border-strong: rgba(34, 197, 94, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0A1C12 0%, #143824 40%, rgba(34, 197, 94, 0.2) 100%);
+}
+
+/* ---- Hâzinî ---- */
+html.k-hazini .k-dusk {
+  --k-bg: #0D1A26;
+  --k-surface: #1A344C; 
+  --k-surface-subtle: #274E72;
+  --k-coral: #38BDF8;
+  --k-coral-2: #38BDF8;
+  --k-border: rgba(56, 189, 248, 0.15);
+  --k-border-strong: rgba(56, 189, 248, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0D1A26 0%, #1A344C 40%, rgba(56, 189, 248, 0.2) 100%);
+}
+
+/* ---- Cabir bin Hayyan ---- */
+html.k-cabirbinhayyan .k-dusk {
+  --k-bg: #122615;
+  --k-surface: #244C2A; 
+  --k-surface-subtle: #36723F;
+  --k-coral: #4ADE80;
+  --k-coral-2: #4ADE80;
+  --k-border: rgba(74, 222, 128, 0.15);
+  --k-border-strong: rgba(74, 222, 128, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #122615 0%, #244C2A 40%, rgba(74, 222, 128, 0.2) 100%);
+}
+
+/* ---- Ebubekir er-Razi ---- */
+html.k-errazi .k-dusk {
+  --k-bg: #1B1024;
+  --k-surface: #362048; 
+  --k-surface-subtle: #51306C;
+  --k-coral: #C084FC;
+  --k-coral-2: #C084FC;
+  --k-border: rgba(192, 132, 252, 0.15);
+  --k-border-strong: rgba(192, 132, 252, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1B1024 0%, #362048 40%, rgba(192, 132, 252, 0.2) 100%);
+}
+
+/* ---- Seydi Ali Reis ---- */
+html.k-seydialireis .k-dusk {
+  --k-bg: #061924;
+  --k-surface: #0C3248; 
+  --k-surface-subtle: #124B6C;
+  --k-coral: #06B6D4;
+  --k-coral-2: #06B6D4;
+  --k-border: rgba(6, 182, 212, 0.15);
+  --k-border-strong: rgba(6, 182, 212, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #061924 0%, #0C3248 40%, rgba(6, 182, 212, 0.2) 100%);
+}
+
+/* ---- Lagari Hasan Çelebi ---- */
+html.k-lagari .k-dusk {
+  --k-bg: #26120D;
+  --k-surface: #4C241A; 
+  --k-surface-subtle: #723627;
+  --k-coral: #FB7185;
+  --k-coral-2: #FB7185;
+  --k-border: rgba(251, 113, 133, 0.15);
+  --k-border-strong: rgba(251, 113, 133, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #26120D 0%, #4C241A 40%, rgba(251, 113, 133, 0.2) 100%);
+}
+
+/* ---- Hezarfen Ahmed Çelebi ---- */
+html.k-hezarfen .k-dusk {
+  --k-bg: #101B24;
+  --k-surface: #203648; 
+  --k-surface-subtle: #30516C;
+  --k-coral: #94A3B8;
+  --k-coral-2: #94A3B8;
+  --k-border: rgba(148, 163, 184, 0.15);
+  --k-border-strong: rgba(148, 163, 184, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #101B24 0%, #203648 40%, rgba(148, 163, 184, 0.2) 100%);
+}
+
+/* ---- Yusuf Has Hacib ---- */
+html.k-yusufhashacib .k-dusk {
+  --k-bg: #0C1C1D;
+  --k-surface: #18383A; 
+  --k-surface-subtle: #245457;
+  --k-coral: #2DD4A7;
+  --k-coral-2: #2DD4A7;
+  --k-border: rgba(45, 212, 167, 0.15);
+  --k-border-strong: rgba(45, 212, 167, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #0C1C1D 0%, #18383A 40%, rgba(45, 212, 167, 0.2) 100%);
+}
+
+/* ---- Aşıkpaşazade ---- */
+html.k-asikpasazade .k-dusk {
+  --k-bg: #171510;
+  --k-surface: #2E2A20; 
+  --k-surface-subtle: #453F30;
+  --k-coral: #EAB308;
+  --k-coral-2: #EAB308;
+  --k-border: rgba(234, 179, 8, 0.15);
+  --k-border-strong: rgba(234, 179, 8, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #171510 0%, #2E2A20 40%, rgba(234, 179, 8, 0.2) 100%);
+}
+
+/* ---- Yanyalı Esad Efendi ---- */
+html.k-yanyaliesad .k-dusk {
+  --k-bg: #1B1C22;
+  --k-surface: #363844; 
+  --k-surface-subtle: #515466;
+  --k-coral: #A3A3A3;
+  --k-coral-2: #A3A3A3;
+  --k-border: rgba(163, 163, 163, 0.15);
+  --k-border-strong: rgba(163, 163, 163, 0.3);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #1B1C22 0%, #363844 40%, rgba(163, 163, 163, 0.2) 100%);
+}

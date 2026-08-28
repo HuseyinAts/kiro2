@@ -4,7 +4,7 @@ import json
 
 async def test_endpoint():
     url = "https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud"
-    
+
     # Test with Turkish content
     prompt = """### System:
 Sen Türkiye'deki öğrenciler için kişiselleştirilmiş öğrenme planları oluşturan bir eğitim asistanısın. Öğrenci dostu, anlaşılır ve motive edici bir dil kullan.
@@ -13,7 +13,7 @@ Sen Türkiye'deki öğrenciler için kişiselleştirilmiş öğrenme planları o
 Merhaba, Python öğrenmek istiyorum
 
 ### Assistant:"""
-    
+
     payload = {
         "inputs": prompt,
         "parameters": {
@@ -24,14 +24,14 @@ Merhaba, Python öğrenmek istiyorum
             "return_full_text": False
         }
     }
-    
+
     headers = {
         "Content-Type": "application/json"
     }
-    
+
     print(f"Sending request to: {url}")
     print(f"Payload: {json.dumps(payload, indent=2)}")
-    
+
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(

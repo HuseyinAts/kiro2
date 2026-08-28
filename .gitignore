@@ -1,6 +1,22 @@
 # Minimal AI Education Platform
 # Simple .gitignore for minimal system
 
+# KIRO2 tasarım handoff — redundant zip export (design/ ağacı zaten repoda)
+design/**/*.zip
+# Ham Deckset export wrapper — design_handoff_kiro2 zaten design/ köküne düzleştirildi (kanonik).
+# .dc.html piksel referansları Faz 2/3'te temiz bir konuma bilinçli alınır (şimdilik disk'te, izlenmez).
+design/Kiro2 Projesi Frontend Stratejisi/
+
+# Kiro scoped typecheck config (dev-only hızlı tsc; commit edilmez)
+frontend/tsconfig.kiro.json
+
+# Storybook build çıktısı + log
+frontend/storybook-static/
+*storybook.log
+
+# Kiro BackstopJS bitmaps/report (env-özel, cross-OS render; commit edilmez)
+frontend/backstop_data_kiro/
+
 # Leaked secrets / session cookies (NEVER commit)
 cookies*.txt
 
@@ -178,6 +194,21 @@ d-dataset/scripts/*.bak*
 # MCP
 .mcp_pids/
 
+# ML model cache (root cache/ — backend/cache/ already ignored above)
+cache/
+
+# Generated health reports (reports/*.json only catches direct children)
+reports/health/
+
+# Pipeline scratch outputs (quality _-prefixed dirs)
+backend/scripts/quality/_content_*/
+backend/scripts/quality/_keyverify*/
+backend/scripts/quality/_ormwire/
+docs/audits/_*/
+
+# Dangerous self-modifying one-off (rewrites all .py) — keep out of repo
+backend/auto_audit.py
+
 # Broken directory names (Windows path issues)
 c:Usershusey*/
 
@@ -190,6 +221,7 @@ mobile/
 agent/
 annotation/
 archive/
+.archive/
 yolo_dataset/
 veriseti/
 !veriseti/
@@ -201,8 +233,26 @@ veriseti/zkitap/*
 !veriseti/zkitap/screenshots_allowlist.txt
 qwen_extended_vocab/
 zemberek/
-models/
+# ANKRAJLI olmali (30 Tem 2026). Ankrajsiz `models/` HER derinlikte esler ve
+# git kurali geregi "ebeveyni haric tutulmus dosya yeniden dahil edilemez" —
+# yani `!backend/models/` yalnizca o tek yolu kurtariyordu. Sonradan dogan
+# her */models/ paketi SESSIZCE izlenmedi. Olculdu: 3 paket / 10 kaynak dosya
+# depoda yoktu ve taze checkout'ta ImportError veriyordu:
+#   backend/hooks/reward_hacking/models/      -> pre-push bekcisi hic kosamiyordu
+#   backend/app/guardrails/models/            -> guardrails/__init__.py:55 import ediyor
+#   backend/mcp_servers/zemberek_nlp/models/
+# Ankrajlamanin blast radius'u OLCULDU: `git status -uall` 3 -> 14, cop 0
+# (venv/site-packages/mypy_cache icindeki models/ dizinleri `.venv/`,
+# `venv/`, `.mypy_cache/` kurallariyla zaten kapsaniyor).
+/models/
 !backend/models/
+
+# 30 Tem 2026 (#456): backend/backend/ — kok dizinde `backend/...` yazan bir
+# yol hatasi yuzunden olusmus artik dizini. 6592 dosya IZLENIYORDU (6590'i
+# BOS metrics JSON'u: {"metrics": {}, "performance": {}, "recent_errors": []},
+# Eyl 2025) ve hicbir kod referansi yoktu. Takipten cikarildi + silindi.
+# Ankrajli: yalnizca bu yol, `backend` adli baska dizinler etkilenmez.
+/backend/backend/
 
 # Training data (large)
 ai_training_data/
@@ -214,6 +264,11 @@ coverage_reports/
 raporlar/
 test_results/
 performance/
+# Ankrajsiz `performance/` her derinlikte esliyor ve TEST KAYNAGINI de eliyordu:
+# backend/tests/performance/{__init__,test_chromadb_latency,test_elk_performance}.py
+# taze klonda kayboluyordu (31 Tem 2026 olcumu, Y6). Kural "uretilen raporlar"
+# icin; test kaynagi geri alinir.
+!backend/tests/performance/
 
 # Additional caches
 *.pickle
@@ -347,3 +402,43 @@ backend/scripts/quality/_pool_growth_wave*/batches/
 backend/scripts/quality/_calib_fazA/master.csv
 backend/scripts/quality/_calib_fazA/input.jsonl
 backend/scripts/quality/_calib_fazA/preds.json
+
+# poolA retag scratch SQL output
+backend/scripts/quality/_poolA_retag/export_*.sql
+
+# Tek kullanimlik hata-ayiklama artiklari (6 Agu 2026, S205 temizligi).
+# ACIK LISTE, glob DEGIL: backend/(check|debug|fix|scratch)_*.py desenine
+# ZATEN TAKIPLI 6 dosya uyuyor (debug_stub.py, fix_syntax_errors.py,
+# fix_test_api_batch2*.py). Glob yazmak, o dosyalar silinip yeniden
+# eklendiginde sessizce yok sayilmalarina yol acardi.
+backend/check_cols.py
+backend/check_db.py
+backend/check_db2.py
+backend/check_q.py
+backend/check_qrs.py
+backend/check_unfiltered_def.py
+backend/check_v_unfiltered.py
+backend/check_vdef.py
+backend/check_views.py
+backend/debug_500.py
+backend/debug_beta_cmd.py
+backend/debug_lp.py
+backend/debug_lp2.py
+backend/fix_all_org.py
+backend/fix_extra.py
+backend/fix_org_id.py
+backend/fix_passwords.py
+backend/fix_q_gate.py
+backend/fix_wc.py
+backend/scratch_check_alembic.py
+backend/scratch_check_db_type.py
+backend/scratch_test_gf5w.py
+scratch/
+
+# Sema yedekleri (alembic squash artefaktlari) - baseline SQL zaten repoda
+backend/backups/
+
+# A1 uctan uca olcum test hesabi (S241)
+.a1_e2e_kimlik.json
+.a1_kayit_ham.txt
+.a1_giris_ham.txt

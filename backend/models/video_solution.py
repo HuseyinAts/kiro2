@@ -12,7 +12,6 @@ Requirements: REQ-14.1, REQ-14.2, REQ-14.3, REQ-14.4, REQ-14.5, REQ-14.6
 """
 
 import enum
-import uuid
 from datetime import datetime
 
 from sqlalchemy import (
@@ -30,6 +29,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -96,7 +96,7 @@ class VideoSolution(Base):
     __tablename__ = "video_solutions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
 
     # ========================================================================
@@ -130,7 +130,7 @@ class VideoSolution(Base):
 
     # Format validation sonuçları
     is_format_valid: Mapped[bool] = mapped_column(Boolean, default=False)
-    validation_errors: Mapped[dict | None] = mapped_column(JSON)
+    validation_errors: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Compression bilgileri
     compressed_size_bytes: Mapped[int | None] = mapped_column(Integer)
@@ -147,7 +147,7 @@ class VideoSolution(Base):
 
     # Adaptive bitrate variants
     available_qualities: Mapped[dict | None] = mapped_column(
-        JSON
+        JSON, deferred=True
     )  # {quality: url} mapping
 
     # Streaming istatistikleri
@@ -169,7 +169,7 @@ class VideoSolution(Base):
     # Video Metadata
     # ========================================================================
     title: Mapped[str] = mapped_column(String(500), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Video içerik bilgileri
     solution_method: Mapped[str | None] = mapped_column(
@@ -196,7 +196,7 @@ class VideoSolution(Base):
     processing_completed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
-    processing_error: Mapped[str | None] = mapped_column(Text)
+    processing_error: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # ========================================================================
     # Quality and Moderation
@@ -208,7 +208,7 @@ class VideoSolution(Base):
     )
     approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    moderation_notes: Mapped[str | None] = mapped_column(Text)
+    moderation_notes: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # ========================================================================
     # Accessibility
@@ -220,7 +220,7 @@ class VideoSolution(Base):
     # ========================================================================
     # System Fields
     # ========================================================================
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     is_public: Mapped[bool] = mapped_column(Boolean, default=False)
 
     created_at: Mapped[datetime] = mapped_column(
@@ -277,7 +277,7 @@ class VideoTranscript(Base):
     __tablename__ = "video_transcripts"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     video_id: Mapped[str] = mapped_column(
         String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False
@@ -289,11 +289,13 @@ class VideoTranscript(Base):
     language: Mapped[str] = mapped_column(String(10), default="tr")
 
     # Tam transkript metni (searchable)
-    full_text: Mapped[str] = mapped_column(Text, nullable=False)
+    full_text: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
 
     # Zaman damgalı transkript (JSON format)
     # [{"start": 0.0, "end": 5.2, "text": "Merhaba..."}, ...]
-    timestamped_segments: Mapped[dict] = mapped_column(JSON, nullable=False)
+    timestamped_segments: Mapped[dict] = mapped_column(
+        JSON, nullable=False, deferred=True
+    )
 
     # ========================================================================
     # Generation Information
@@ -306,20 +308,14 @@ class VideoTranscript(Base):
     auto_generated_by: Mapped[str | None] = mapped_column(
         String(100)
     )  # Whisper, Google Speech, vb.
-    auto_generation_confidence: Mapped[float | None] = mapped_column(
-        Float
-    )  # 0-1 arası
-    auto_generated_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True)
-    )
+    auto_generation_confidence: Mapped[float | None] = mapped_column(Float)  # 0-1 arası
+    auto_generated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Manual editing bilgileri
     manually_edited_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="SET NULL")
     )
-    manually_edited_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True)
-    )
+    manually_edited_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     edit_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # Verification bilgileri
@@ -332,13 +328,13 @@ class VideoTranscript(Base):
     # Search and Analysis
     # ========================================================================
     # Anahtar kelimeler (otomatik çıkarılmış)
-    keywords: Mapped[list | None] = mapped_column(JSON)
+    keywords: Mapped[list | None] = mapped_column(JSON, deferred=True)
 
     # Konu etiketleri
-    topics: Mapped[list | None] = mapped_column(JSON)
+    topics: Mapped[list | None] = mapped_column(JSON, deferred=True)
 
     # Matematik formülleri (LaTeX format)
-    math_formulas: Mapped[list | None] = mapped_column(JSON)
+    math_formulas: Mapped[list | None] = mapped_column(JSON, deferred=True)
 
     # ========================================================================
     # Quality Metrics
@@ -350,7 +346,7 @@ class VideoTranscript(Base):
     # ========================================================================
     # System Fields
     # ========================================================================
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -398,7 +394,7 @@ class VideoAnalytics(Base):
     __tablename__ = "video_analytics"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     video_id: Mapped[str] = mapped_column(
         String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False

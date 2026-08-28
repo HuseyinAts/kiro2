@@ -80,11 +80,16 @@ Her gorev tamamlanmadan once bu listeyi kontrol et:
 - [ ] Reward hacking pattern yok mu?
 - [ ] Guvenlik kontrolleri gecti mi?
 - [ ] Coverage dusmus mu?
-- [ ] Dogru tablo mu? (`question_bank` = 77K production, `questions` = BOS legacy)
+- [ ] Dogru tablo mu? (`question_bank` = production ~187K, `questions` = **36.381 satirlik
+      legacy — BOS DEGIL**. "BOS legacy" ifadesi 30 Tem 2026 olcumunde curutuldu.)
 - [ ] `is_active == True` filtresi var mi? (soru sorgularinda ZORUNLU)
 - [ ] Infra calisiyor mu? (ONCE health check, SONRA koda bak — detay asagida)
 - [ ] En basit cozum mu? (Daha basit alternatif varsa ONU sec — YAGNI)
 - [ ] Root Cause Analysis tablosu yazildi mi? (debugging-first.md gate)
+- [ ] **Severity/aciliyet iddiasi OLCULDU mu?** ("acil", "P0", "kritik", "guvenli",
+      "temiz" de birer iddiadir ve cogu tek komutla curutulebilir — audit-methodology.md
+      "Severity de bir olcumdur". 28 Tem: "sizmis anahtar P0 acil" cikarimi olcununce
+      14/14 anahtarin olu oldugu goruldu.)
 
 ## INFRA-FIRST HATA AYIKLAMA (Infrastructure Check First)
 
@@ -94,7 +99,10 @@ Endpoint/servis hatasi goruldugunde ONCE altyapiyi kontrol et:
 2. PostgreSQL (port 5434 — native Windows): `pg_isready -p 5434`
    - Docker ise: `docker exec kiro2_postgres pg_isready`
 3. Redis: `redis-cli ping` veya `docker exec kiro2_redis redis-cli ping`
-4. Backend health: `curl -s http://localhost:8000/api/v1/health`
+4. Backend health: `curl -s http://localhost:8000/health`
+   - **`/api/v1/health` DEGIL** — `api/health.py:29` router'inda prefix YOK.
+     Olculdu (1 Agu 2026): `/health` -> 200, `/api/v1/health` -> **404**.
+     Yanlis yol saglikli backend'i "coktu" diye teshis ettirir.
 
 Kural: 503/500 donuyorsa %75 ihtimalle altyapi sorunu.
 ONCE altyapi kontrolu yap, SONRA koda bak.
@@ -178,6 +186,44 @@ Ayni sorun 2+ session'da gorulurse ROOT CAUSE cozulmeli, patch yapilmamali.
 - 1. kez: Fix + not al
 - 2. kez: ROOT CAUSE coz + enforcement ekle (lint/hook)
 - 3. kez: ASLA olmasin - CI/CD'de blokla
+
+## GERI ALIM BIR IDDIADIR (30 Tem 2026 — iki veri kaybi)
+
+Mutasyon/olcum icin dosya gecici degistirildiginde **geri aldigini SANMAK** iki kez
+veri kaybina yol acti. Ikisi de sessizdi; biri ancak dev bir diff ciktisindan,
+digeri `git status` ile fark edildi.
+
+| Vaka | Sessiz basarisizlik | Kural |
+|---|---|---|
+| `stash push --staged` + `pop` sonrasi `git checkout -- <dosya>` | `pop` index'e DEGIL calisma agacina koyar; checkout HEAD'den geri yukler ve staged fix'i siler | Mutasyondan ONCE commit et. Commit'siz isi mutasyona sokma |
+| bash `cp` ile yedek + Python `shutil.copy` ile geri alim | bash `/tmp` = MSYS (`AppData\Local\Temp`), Python `/tmp` = `C:\tmp` — iki namespace; geri alim "dosya yok" ile dustu | Yedegi tek araçla yaz+oku, yolu **depo icinde** tut |
+
+**Tek guvenilir yordam (commit'li dosya):**
+```bash
+# mutasyonu uygula -> olc -> geri al -> DOGRULA (ayni komutta)
+git checkout HEAD -- <yol> && git status --short   # cikti BOS olmali
+```
+Bu oturumda 3 kez kullanildi, 3 kez calisti. `diff` veya `git status` ile
+dogrulanmayan hicbir geri alim "yapildi" sayilmaz.
+
+**Ilgili:** `.claude/rules/audit-methodology.md` — "Olcum aletini dogrula".
+
+## DOGRULAMA KAPSAMI = DEGISIKLIGIN KAPSAMI (30 Tem 2026)
+
+`base_detector.py` (8 dedektorun ortak yolu) degistirildi ve yalnizca kendi test
+paketi kosuldu; `tests/unit/test_hooks/` (179 test, `hooks/orchestrator.py`
+uzerinden ayni kodu tuketiyor) push'tan ONCE hic kosulmadi. Sonradan kosuldu,
+regresyon yoktu — **ama bu sans, disiplin degil.**
+
+**Kural:** Test kapsamini dizin yakinligiyla degil **grep ile** belirle:
+
+```bash
+# degistirilen sembolun/paketin TUKETICILERINI bul, onlarin testlerini de kosur
+grep -rl "<degisen_paket>" backend/ --include="*.py" | grep -v "^backend/<degisen_paket>"
+```
+
+Ortak taban sinifa (base/abstract/mixin) veya paylasilan yardimciya dokunuldugunda
+bu adim ATLANAMAZ.
 
 ## FIX/SKIP METRIK TAKIBI
 

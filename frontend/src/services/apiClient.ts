@@ -3,10 +3,19 @@
  * Axios tabanlı API çağrıları için temel yapılandırma
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+} from "axios";
 
-import config from '../config';
-import { getErrorMessage, API_ERROR_MESSAGES } from '../constants/errorMessages';
+import config from "../config";
+import {
+  getErrorMessage,
+  API_ERROR_MESSAGES,
+} from "../constants/errorMessages";
+import { girisYonlendirmesiGerekli } from "../utils/publicRoutes";
 
 // API Base URL - standardized to use config
 const API_BASE_URL = config.api.baseURL;
@@ -25,8 +34,8 @@ class ApiClient {
       baseURL: API_BASE_URL,
       timeout: 30000, // 30 saniye timeout
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
       // SECURITY: Enable cookie-based auth for all requests
       withCredentials: true,
@@ -58,7 +67,9 @@ class ApiClient {
         return response;
       },
       async (error: AxiosError) => {
-        const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+        const originalRequest = error.config as AxiosRequestConfig & {
+          _retry?: boolean;
+        };
 
         // 401 Unauthorized - Try to refresh token via secure endpoint
         if (error.response?.status === 401 && !originalRequest._retry) {
@@ -73,8 +84,8 @@ class ApiClient {
           } catch (refreshError) {
             // Refresh failed - redirect to login
             // Skip redirect if already on /login to prevent infinite reload loop
-            if (window.location.pathname !== '/login') {
-              window.location.href = '/login';
+            if (girisYonlendirmesiGerekli(window.location.pathname)) {
+              window.location.href = "/login";
             }
             return Promise.reject(refreshError);
           }
@@ -96,12 +107,18 @@ class ApiClient {
    */
   private getErrorMessage(response: AxiosResponse): string {
     // ✅ Handle 422 Validation Errors (FastAPI/Pydantic)
-    if (response.status === 422 && response.data?.detail && Array.isArray(response.data.detail)) {
-      const validationErrors = response.data.detail.map((err: any) => {
-        const field = err.loc?.slice(1).join('.') || 'bilinmeyen alan';  // Skip "body" prefix
-        const message = err.msg || 'doğrulama hatası';
-        return `${field}: ${message}`;
-      }).join(', ');
+    if (
+      response.status === 422 &&
+      response.data?.detail &&
+      Array.isArray(response.data.detail)
+    ) {
+      const validationErrors = response.data.detail
+        .map((err: any) => {
+          const field = err.loc?.slice(1).join(".") || "bilinmeyen alan"; // Skip "body" prefix
+          const message = err.msg || "doğrulama hatası";
+          return `${field}: ${message}`;
+        })
+        .join(", ");
       return `Doğrulama hatası: ${validationErrors}`;
     }
 
@@ -118,7 +135,7 @@ class ApiClient {
     }
 
     // Fallback to response data message
-    if (response.data?.detail && typeof response.data.detail === 'string') {
+    if (response.data?.detail && typeof response.data.detail === "string") {
       return response.data.detail;
     }
 
@@ -126,7 +143,7 @@ class ApiClient {
       return response.data.message;
     }
 
-    return 'Bilinmeyen hata oluştu';
+    return "Bilinmeyen hata oluştu";
   }
 
   /**
@@ -146,7 +163,7 @@ class ApiClient {
    */
   public async logout(): Promise<void> {
     try {
-      await this.client.post('/api/v1/auth/logout/secure');
+      await this.client.post("/api/v1/auth/logout/secure");
     } catch {
       // Logout request failed, but we should still redirect
       // Server may have already cleared cookies
@@ -160,7 +177,7 @@ class ApiClient {
    */
   public async isAuthenticated(): Promise<boolean> {
     try {
-      await this.client.get('/api/v1/auth/me');
+      await this.client.get("/api/v1/auth/me");
       return true;
     } catch {
       return false;
@@ -168,40 +185,64 @@ class ApiClient {
   }
 
   // HTTP metodları
-  public async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public async get<T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
     return this.client.get<T>(url, config);
   }
 
-  public async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public async post<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
     return this.client.post<T>(url, data, config);
   }
 
-  public async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public async put<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
     return this.client.put<T>(url, data, config);
   }
 
-  public async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public async patch<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
     return this.client.patch<T>(url, data, config);
   }
 
-  public async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public async delete<T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
     return this.client.delete<T>(url, config);
   }
 
   /**
    * File upload için özel metod
    */
-  public async uploadFile<T = any>(url: string, file: File, onProgress?: (progress: number) => void): Promise<AxiosResponse<T>> {
+  public async uploadFile<T = any>(
+    url: string,
+    file: File,
+    onProgress?: (progress: number) => void,
+  ): Promise<AxiosResponse<T>> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     return this.client.post<T>(url, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          );
           onProgress(progress);
         }
       },

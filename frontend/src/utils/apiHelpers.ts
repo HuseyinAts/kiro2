@@ -6,6 +6,7 @@
 import type { AxiosResponse } from 'axios';
 
 import { apiClient } from '../services/apiClient';
+import { girisYonlendirmesiGerekli } from './publicRoutes';
 
 interface ApiResponse<T = any> {
   success: boolean
@@ -16,12 +17,28 @@ interface ApiResponse<T = any> {
 
 class ApiHelpers {
   /**
+   * Yanıtı standardize et: Backend eğer zaten {success, data, message} dönüyorsa aynen bırak,
+   * eğer doğrudan raw data dönüyorsa (CQRS endpoint'leri gibi), sahte bir {success, data} sarmalayıcısı ekle
+   * ki servisler .data çağırırken undefined yemesin.
+   */
+  private normalizeResponse<T>(data: any): ApiResponse<T> {
+    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+      return data as ApiResponse<T>;
+    }
+    return {
+      success: true,
+      data: data as T,
+      message: 'Success'
+    };
+  }
+
+  /**
    * GET isteği gönder
    */
   async get<T = any>(url: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.get(url, { params });
-      return response.data;
+      const response: AxiosResponse = await apiClient.get(url, { params });
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -32,8 +49,8 @@ class ApiHelpers {
    */
   async post<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.post(url, data);
-      return response.data;
+      const response: AxiosResponse = await apiClient.post(url, data);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -44,8 +61,8 @@ class ApiHelpers {
    */
   async put<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.put(url, data);
-      return response.data;
+      const response: AxiosResponse = await apiClient.put(url, data);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -56,8 +73,8 @@ class ApiHelpers {
    */
   async delete<T = any>(url: string): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.delete(url);
-      return response.data;
+      const response: AxiosResponse = await apiClient.delete(url);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -68,8 +85,8 @@ class ApiHelpers {
    */
   async patch<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.patch(url, data);
-      return response.data;
+      const response: AxiosResponse = await apiClient.patch(url, data);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -80,8 +97,8 @@ class ApiHelpers {
    */
   async uploadFile<T = any>(url: string, file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.uploadFile(url, file, onProgress);
-      return response.data;
+      const response: AxiosResponse = await apiClient.uploadFile(url, file, onProgress);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -444,16 +461,30 @@ export async function apiRequest<T = any>(
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+
       // Handle 401 — session expired, redirect to login
       // Skip redirect if already on /login to prevent infinite reload loop
       if (response.status === 401) {
-        if (window.location.pathname !== '/login') {
+        if (girisYonlendirmesiGerekli(window.location.pathname)) {
           window.location.href = '/login';
         }
-        throw new Error('Oturum süresi doldu');
+        // 🔴 Gövde ARTIK OKUNUYOR. Eskiden bu dal gövdeye HİÇ bakmadan
+        // "Oturum süresi doldu" fırlatıyordu; sonuç (26 Ağu 2026 canlı ölçümü)
+        // `/login`de yanlış şifre giren, HİÇ OTURUMU OLMAYAN kullanıcıya
+        // "oturumun doldu" denmesiydi — BLOKE-1 ile aynı yanlış-teşhis sınıfı.
+        // Yönlendirme davranışı DEĞİŞMEDİ; yalnız mesaj sunucudan geliyor.
+        const oturumDetayi: unknown = errorData?.detail;
+        const oturumMesaji =
+          typeof oturumDetayi === 'string'
+            ? oturumDetayi
+            : oturumDetayi && typeof oturumDetayi === 'object' && !Array.isArray(oturumDetayi)
+              ? (oturumDetayi as { message?: unknown }).message
+              : undefined;
+        throw new Error(
+          typeof oturumMesaji === 'string' && oturumMesaji ? oturumMesaji : 'Oturum süresi doldu',
+        );
       }
-
-      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
 
       // Handle 422 validation errors from FastAPI
       if (response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {
@@ -465,7 +496,34 @@ export async function apiRequest<T = any>(
         throw new Error(`Doğrulama hatası: ${validationErrors}`);
       }
 
-      throw new Error(errorData.message || `HTTP ${response.status}`);
+      // Rate limit — backend'in İngilizce "Rate limit exceeded: N per M second"
+      // metnini göstermeyiz. `extractErrorDetail.ts:35-37` ile AYNI politika.
+      if (response.status === 429) {
+        throw new Error('Çok fazla istek gönderdiniz, lütfen biraz bekleyin');
+      }
+
+      // 5xx — sunucu içini ASLA sızdırma (`extractErrorDetail.ts:56-58`).
+      // `detail` okumasından ÖNCE gelmeli: 500 gövdeleri traceback taşıyabilir.
+      if (response.status >= 500) {
+        throw new Error('Sunucu hatası, lütfen daha sonra tekrar deneyin');
+      }
+
+      // 🔴 FastAPI mesajı `detail` ALTINDA gönderir; üst düzey `message` nadir.
+      // Eskiden yalnız `errorData.message` okunuyordu, dolayısıyla backend'in
+      // Türkçe metni HER SEFERİNDE yutulup `HTTP <kod>` gösteriliyordu
+      // (26 Ağu 2026 canlı ölçümü: ekranda birebir "HTTP 400"). İki şekil var:
+      //   düz string   {"detail": "…"}                        api/auth.py:2251
+      //   iç içe nesne {"detail": {"code","message","email"}}  api/auth.py:802-805
+      const detay: unknown = errorData?.detail;
+      const detayMesaji =
+        typeof detay === 'string'
+          ? detay
+          : detay && typeof detay === 'object' && !Array.isArray(detay)
+            ? (detay as { message?: unknown }).message
+            : undefined;
+
+      const mesaj = typeof detayMesaji === 'string' ? detayMesaji : errorData?.message;
+      throw new Error(mesaj || `HTTP ${response.status}`);
     }
 
     return await response.json();

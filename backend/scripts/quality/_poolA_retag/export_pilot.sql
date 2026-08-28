@@ -1,0 +1,5 @@
+-- Pool A re-tag+solve CALIBRATION pilot: 25 stratified per top-6 subject (150 total).
+-- Fallback-unverified candidates (the 16K pool). Includes correct_answer for APPLY-side
+-- comparison only — solver agents NEVER see this column (blindness preserved).
+SELECT setseed(0.31);
+\copy (SELECT id, subject_area, q, oa, ob, oc, od, oe, key FROM (SELECT u.id::text AS id, u.subject_area, u.question_text AS q, u.option_a oa, u.option_b ob, u.option_c oc, u.option_d od, u.option_e oe, upper(trim(u.correct_answer)) AS key, row_number() OVER (PARTITION BY u.subject_area ORDER BY random()) AS rn FROM v_safe_for_beta_unfiltered u WHERE u.quality_review_status='unverified' AND u.option_a<>'' AND u.option_e<>'' AND upper(trim(u.correct_answer)) IN ('A','B','C','D','E') AND u.word_count>=8 AND NOT (u.pipeline_metadata::jsonb ? 'blind_seen') AND (u.pipeline_metadata::jsonb->'ai_extras'->>'topic_match_quality')='fallback' AND u.subject_area IN ('KIMYA','MATEMATIK','FIZIK','GEOMETRI','BIYOLOJI','TURKCE')) s WHERE s.rn<=25 ORDER BY subject_area, id) TO 'C:/Users/husey/kiro2/backend/scripts/quality/_poolA_retag/pilot_master.csv' WITH (FORMAT csv, HEADER true);

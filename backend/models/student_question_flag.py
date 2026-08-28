@@ -9,12 +9,12 @@ API: api/student_feedback_api.py
 
 from __future__ import annotations
 
-import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -23,9 +23,16 @@ class StudentQuestionFlag(Base):
     """Öğrenci tarafından raporlanmış soru hatası."""
 
     __tablename__ = "student_question_flags"
-
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "question_id",
+            "flag_type",
+            name="uq_student_flags_user_question_type",
+        ),
+    )
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -34,7 +41,7 @@ class StudentQuestionFlag(Base):
         String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
     )
     flag_type: Mapped[str] = mapped_column(String(32), nullable=False)
-    note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    note: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

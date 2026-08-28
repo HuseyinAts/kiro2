@@ -3,6 +3,13 @@ name: security-rules
 description: KIRO2 guvenlik kurallari ve kisilamalar
 trigger: always
 priority: critical
+paths:
+  - "backend/**/*.py"
+  - "frontend/src/**/*.ts"
+  - "frontend/src/**/*.tsx"
+  - "**/.env.example"
+  - "docker/**"
+  - "docker-compose*.yml"
 ---
 
 # Security Rules - KIRO2 Standards
@@ -60,7 +67,7 @@ import os
 API_KEY = os.environ.get("API_KEY")
 
 # YANLIS - Hardcoded
-API_KEY = "sk-abc123..."  # YASAK!
+API_KEY = "<BURAYA-DUZ-METIN-ANAHTAR>"  # YASAK!
 ```
 
 ## INPUT VALIDATION

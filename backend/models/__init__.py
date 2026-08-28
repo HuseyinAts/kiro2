@@ -60,7 +60,6 @@ from .database import (
     LearningStyle,
     ParentProfile,
     # Question and Exam models
-    Question,
     QuestionDifficulty,
     StudentAnswer,
     StudentProfile,
@@ -118,6 +117,7 @@ from .gamification import (
     Oba,
     ObaUye,
     ParentChild,
+    ParentLinkCode,
     Realm,
     RealmProgress,
     Streak,
@@ -258,7 +258,6 @@ __all__ = [
     "TeacherProfile",
     "ParentProfile",
     # Question and Exam models
-    "Question",
     "ExamSession",
     "ExamQuestion",
     "StudentAnswer",
@@ -362,6 +361,7 @@ __all__ = [
     "UserBadge",
     "Duel",
     "ParentChild",
+    "ParentLinkCode",
     "StudentAbility",
     "ManipulativeActivity",
     "ManipulativeProgress",

@@ -73,8 +73,8 @@ const OPTION_KEYS: Array<'A' | 'B' | 'C' | 'D' | 'E'> = ['A', 'B', 'C', 'D', 'E'
 // ============================================================================
 
 function formatVelocity(seconds: number | null | undefined): string {
-  if (seconds == null) return '-';
-  if (seconds < 60) return `${seconds.toFixed(0)} sn`;
+  if (seconds == null) {return '-';}
+  if (seconds < 60) {return `${seconds.toFixed(0)} sn`;}
   const m = Math.floor(seconds / 60);
   const s = Math.round(seconds % 60);
   return `${m} dk ${s} sn`;
@@ -329,7 +329,7 @@ function QuestionView({ item, highlightedOption, onHighlight }: QuestionViewProp
       <div className="space-y-2" data-testid="curator-question-options">
         {OPTION_KEYS.map((key) => {
           const text = item.options?.[key];
-          if (!text) return null;
+          if (!text) {return null;}
           const isCorrect = item.correct_answer?.toUpperCase() === key;
           const isHighlighted = highlightedOption === key;
           return (
@@ -493,7 +493,7 @@ function HelpOverlay({ open, onClose }: { open: boolean; onClose: () => void }) 
   // useEffect for Escape + initial focus is hooks-rules safe because
   // we return null AFTER the hooks fire.
   useEffect(() => {
-    if (!open) return;
+    if (!open) {return;}
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -503,7 +503,7 @@ function HelpOverlay({ open, onClose }: { open: boolean; onClose: () => void }) 
     return () => document.removeEventListener('keydown', handleEsc);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open) {return null;}
   return (
     <div
       className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-6"
@@ -601,9 +601,9 @@ export function CuratorPage() {
 
   const goToOffset = useCallback(
     (offset: number) => {
-      if (items.length === 0) return;
+      if (items.length === 0) {return;}
       const next = currentIndex + offset;
-      if (next < 0 || next >= items.length) return;
+      if (next < 0 || next >= items.length) {return;}
       setSelectedId(items[next].id);
     },
     [items, currentIndex],
@@ -611,7 +611,7 @@ export function CuratorPage() {
 
   const handleAction = useCallback(
     async (verdict: CuratorVerdict | 'skip') => {
-      if (!currentItem) return;
+      if (!currentItem) {return;}
       if (verdict === 'skip') {
         goToOffset(1);
         return;

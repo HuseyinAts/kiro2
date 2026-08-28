@@ -13,3 +13,9 @@
 *.md text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+
+# Goc artefaktlari (id listeleri) — araclar LF yazar, `core.autocrlf=true` bunlari
+# checkout'ta CRLF'e cevirirdi ve secici her kosumda agaci KIRLI gosterirdi.
+# Determinizm iddiasi (iki kosum birebir) ancak bu pin ile olculebilir kalir.
+backend/scripts/quality/y11_*_aday.txt text eol=lf
+backend/scripts/quality/y11_*_kumesi.txt text eol=lf

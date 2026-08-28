@@ -205,3 +205,19 @@ def test_cascade_migration_exists(alembic_versions_dir: Path) -> None:
     assert (
         '4aec28c6c9e0' in content
     ), "Cascade migration must have revision ID 4aec28c6c9e0"
+
+
+def test_alembic_heads_single_head_revision(backend_root: Path) -> None:
+    """Test that alembic migration tree has a single unified head revision (no branch split)."""
+    from alembic.config import Config
+    from alembic.script import ScriptDirectory
+
+    alembic_cfg = Config(str(backend_root / "alembic.ini"))
+    alembic_cfg.set_main_option("script_location", str(backend_root / "alembic"))
+    script = ScriptDirectory.from_config(alembic_cfg)
+
+    heads = script.get_heads()
+    assert (
+        len(heads) == 1
+    ), f"Alembic migration history must have exactly 1 head revision, but found {len(heads)}: {heads}"
+

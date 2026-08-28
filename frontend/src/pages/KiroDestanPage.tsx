@@ -27,48 +27,48 @@ const DONEM_EMOJI: Record<string, string> = {
 
 const DONEMLER: Donem[] = [
   { id:'orta-asya', ad:'Orta Asya Bozkiri', yil:'MS 552-744', ders:'mat',
-    dersAd:'Matematik', renk:'#1565c0', acikRenk:'#e3f2fd', emoji:'swords',
+    dersAd:'Matematik', renk:'var(--k-subj-mat)', acikRenk:'color-mix(in srgb, var(--k-subj-mat) 15%, transparent)', emoji:'swords',
     npc:'Bilge Kagan', hikaye:'Goktürk yazitlarinda matematiksel hesaplar gizlidir. Bilge Kagan izinde sayi sirlarini coz.' },
   { id:'hunlar', ad:'Hun Imparatorlugu', yil:'MO 209-MS 48', ders:'fen',
-    dersAd:'Fen Bilimleri', renk:'#880e4f', acikRenk:'#fce4ec', emoji:'bow',
+    dersAd:'Fen Bilimleri', renk:'var(--k-subj-fen)', acikRenk:'color-mix(in srgb, var(--k-subj-fen) 15%, transparent)', emoji:'bow',
     npc:'Mete Han', hikaye:'Fen gucu ile ok yapiminda fizik ve kimya gizlidir. Hun bilgeligini kesfet.' },
   { id:'goktürkler', ad:'Goktürk Kaganlik', yil:'552-744', ders:'fizik',
-    dersAd:'Fizik', renk:'#4a148c', acikRenk:'#f3e5f5', emoji:'moon',
+    dersAd:'Fizik', renk:'var(--k-subj-fiz)', acikRenk:'color-mix(in srgb, var(--k-subj-fiz) 15%, transparent)', emoji:'moon',
     npc:'Kültigin', hikaye:'Atli okculugun fizigini, yayin gerilimini ve okun balistik gücünü anla.' },
   { id:'uygurlar', ad:'Uygur Kaganlik', yil:'744-840', ders:'turkce',
-    dersAd:'Türkce', renk:'#1b5e20', acikRenk:'#e8f5e9', emoji:'scroll',
+    dersAd:'Türkce', renk:'var(--k-subj-tur)', acikRenk:'color-mix(in srgb, var(--k-subj-tur) 15%, transparent)', emoji:'scroll',
     npc:'Alp Er Tunga', hikaye:'Türkce ilk yazili destanlar. Dilin köküne in, sözcüklerin gücünü kesfet.' },
   { id:'selcuklular', ad:'Büyük Selcuklu', yil:'1037-1194', ders:'mat',
-    dersAd:'Geometri', renk:'#e65100', acikRenk:'#fff3e0', emoji:'mosque',
+    dersAd:'Geometri', renk:'var(--k-subj-geo)', acikRenk:'color-mix(in srgb, var(--k-subj-geo) 15%, transparent)', emoji:'mosque',
     npc:'Nizamülmülk', hikaye:'Selcuklu mimarisinin geometrik sirlari — kubbelerde gizli matematik.' },
   { id:'beylikler', ad:'Anadolu Beylikleri', yil:'1243-1300', ders:'kimya',
-    dersAd:'Kimya', renk:'#006064', acikRenk:'#e0f7fa', emoji:'lab',
+    dersAd:'Kimya', renk:'var(--k-subj-kim)', acikRenk:'color-mix(in srgb, var(--k-subj-kim) 15%, transparent)', emoji:'lab',
     npc:'Ahi Evran', hikaye:'Ahi teskilatinin zanaat kimyasi — metal isleme, boyama ve ilac yapimi.' },
   { id:'osmkuruluş', ad:'Osmanli Kurulus', yil:'1299-1453', ders:'tarih1',
-    dersAd:'Tarih', renk:'#bf360c', acikRenk:'#fbe9e7', emoji:'castle',
+    dersAd:'Tarih', renk:'var(--k-subj-tar)', acikRenk:'color-mix(in srgb, var(--k-subj-tar) 15%, transparent)', emoji:'castle',
     npc:'Osman Gazi', hikaye:'Osmanli kurulus sirri: uc beylikler, akinci ve devlet insasi.' },
   { id:'osmyüksek', ad:'Osmanli Yükselis', yil:'1453-1566', ders:'cografya1',
-    dersAd:'Cografya', renk:'#1a237e', acikRenk:'#e8eaf6', emoji:'map',
+    dersAd:'Cografya', renk:'var(--k-subj-cog)', acikRenk:'color-mix(in srgb, var(--k-subj-cog) 15%, transparent)', emoji:'map',
     npc:'Piri Reis', hikaye:'Piri Reis haritalarinda gizlenen cografya bilimi. Okyanus sirlari.' },
   { id:'osmdurak', ad:'Osmanli Duraklama', yil:'1566-1699', ders:'biyoloji',
-    dersAd:'Biyoloji', renk:'#33691e', acikRenk:'#f1f8e9', emoji:'plant',
+    dersAd:'Biyoloji', renk:'var(--k-subj-biy)', acikRenk:'color-mix(in srgb, var(--k-subj-biy) 15%, transparent)', emoji:'plant',
     npc:'Evliya Celebi', hikaye:'Seyahatname bitkiler ve hayvanlar. Osmanli doga bilimi.' },
   { id:'osmgerileme', ad:'Osmanli Gerileme', yil:'1699-1789', ders:'edebiyat',
-    dersAd:'Edebiyat', renk:'#4e342e', acikRenk:'#efebe9', emoji:'pen',
+    dersAd:'Edebiyat', renk:'var(--k-subj-edb)', acikRenk:'color-mix(in srgb, var(--k-subj-edb) 15%, transparent)', emoji:'pen',
     npc:'Nedim', hikaye:'Lale devri siirinin derinligi. Divan edebiyatinin zirvesi.' },
   { id:'tanzimat', ad:'Tanzimat Donemi', yil:'1839-1876', ders:'sosyal',
-    dersAd:'Sosyal Bil.', renk:'#37474f', acikRenk:'#eceff1', emoji:'scale',
+    dersAd:'Sosyal Bil.', renk:'var(--k-subj-sos)', acikRenk:'color-mix(in srgb, var(--k-subj-sos) 15%, transparent)', emoji:'scale',
     npc:'Mustafa Resit Pasa', hikaye:'Modern devletin temelleri: hukuk, egitim ve sosyal degisim.' },
   { id:'cumhuriyet', ad:'Türkiye Cumhuriyeti', yil:'1923-', ders:'turkce',
-    dersAd:'TYT Genel', renk:'#b71c1c', acikRenk:'#ffebee', emoji:'star',
+    dersAd:'TYT Genel', renk:'var(--k-coral)', acikRenk:'color-mix(in srgb, var(--k-coral) 15%, transparent)', emoji:'star',
     npc:'Ataturk', hikaye:'Tüm derslerin doruk noktasi. Cumhuriyetin bilgi mirasi.' },
 ];
 
 function thetaToStars(theta: number): number {
-  if (theta >= 1.5) return 5;
-  if (theta >= 0.5) return 4;
-  if (theta >= -0.5) return 3;
-  if (theta >= -1.5) return 2;
+  if (theta >= 1.5) {return 5;}
+  if (theta >= 0.5) {return 4;}
+  if (theta >= -0.5) {return 3;}
+  if (theta >= -1.5) {return 2;}
   return 1;
 }
 
@@ -88,7 +88,7 @@ function DonemKart({ donem, theta, onClick }: {
       transition:'all 0.2s',
       '&:hover': locked ? {} : { transform:'translateY(-3px)', boxShadow:4 },
     }}>
-      <CardContent sx={{ p:2, '&:last-child':{pb:2} }}>
+      <CardContent sx={{ p:2, '&:last-child':{ pb:2 } }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
           <Typography fontSize={28}>{locked ? '🔒' : emoji}</Typography>
           {!locked && (
@@ -104,7 +104,7 @@ function DonemKart({ donem, theta, onClick }: {
         <Typography variant="caption" color="text.secondary">{donem.yil}</Typography>
         <Box mt={1}>
           <Chip size="small" label={donem.dersAd}
-            sx={{ bgcolor: locked ? '#eee' : donem.renk, color: locked ? '#999' : '#fff', fontSize:11 }} />
+            sx={{ bgcolor: locked ? 'var(--k-border)' : donem.renk, color: locked ? 'var(--k-text-muted)' : 'var(--k-surface)', fontSize:11 }} />
         </Box>
         {!locked && (
           <LinearProgress variant="determinate" value={pct}
@@ -129,7 +129,7 @@ function NPCDialog({ donem, theta, onClose, onStart }: {
   const emoji = DONEM_EMOJI[donem.emoji] ?? '🌟';
   return (
     <Dialog open maxWidth="sm" fullWidth onClose={onClose}>
-      <DialogTitle sx={{ bgcolor:donem.renk, color:'#fff', pb:1 }}>
+      <DialogTitle sx={{ bgcolor:donem.renk, color:'var(--k-surface)', pb:1 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1.5} alignItems="center">
             <Typography fontSize={32}>{emoji}</Typography>
@@ -138,7 +138,7 @@ function NPCDialog({ donem, theta, onClose, onStart }: {
               <Typography variant="caption" sx={{ opacity:0.85 }}>{donem.yil}</Typography>
             </Box>
           </Stack>
-          <IconButton onClick={onClose} sx={{ color:'#fff' }}><Close /></IconButton>
+          <IconButton onClick={onClose} sx={{ color:'var(--k-surface)' }}><Close /></IconButton>
         </Stack>
       </DialogTitle>
       <DialogContent sx={{ pt:3 }}>
@@ -155,11 +155,11 @@ function NPCDialog({ donem, theta, onClose, onStart }: {
           </Box>
         </Stack>
         <Stack direction="row" spacing={2} mb={2}>
-          <Chip label={donem.dersAd} sx={{ bgcolor:donem.renk, color:'#fff' }} />
+          <Chip label={donem.dersAd} sx={{ bgcolor:donem.renk, color:'var(--k-surface)' }} />
           {theta !== null && (
             <Stack direction="row" spacing={0.3}>
               {Array(5).fill(0).map((_,i) => (
-                <Star key={i} sx={{ color: i<stars ? donem.renk : '#e0e0e0' }} />
+                <Star key={i} sx={{ color: i<stars ? donem.renk : 'var(--k-border)' }} />
               ))}
             </Stack>
           )}
@@ -172,7 +172,7 @@ function NPCDialog({ donem, theta, onClose, onStart }: {
         <Stack direction="row" spacing={1.5} justifyContent="flex-end">
           <Chip icon={<PlayArrow />} label="Adaptif Test Basla" clickable
             onClick={() => onStart(donem)}
-            sx={{ bgcolor:donem.renk, color:'#fff',
+            sx={{ bgcolor:donem.renk, color:'var(--k-surface)',
               '&:hover':{ bgcolor:donem.renk, filter:'brightness(0.9)' } }} />
         </Stack>
       </DialogContent>

@@ -1,0 +1,318 @@
+=== AW CONSENSUS BATCH 00 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [MATEMATIK]
+  Q: a ve b pozitif tam sayılar olmak üzere, a ve b nin en küçük ortak katı 200'dür. a ve b nin en büyük ortak böleni 20'dir. a ve b nin toplamı kaçtır?
+  A) 220
+  B) 240
+  C) 260
+  D) 280
+  E) 300
+
+#2 [TURKCE]
+  Q: En ufak ayrıntıya varıncaya dek her şeyi tuvale ya da sayfaya aktararak gerçeği tümüyle yansıtmaya çalışmak hem doğal hem yaşa bir çaba. Ama çizginin ve yüzeyin silindiği yerde kala kala bulanık ve bizimsiz renk katmanları kaldı ki bu gerçek değildir. Saint-Exupéry söyleminiştir mi? Kusursuzluk; elbette çok bir şeyimiz kalmadığı zaman değil, çıkaracak bir şeyimiz kalmadığı zaman ulaştığımız şeydir.
+
+Bu parçanın anlatımında aşağıdakilerden hangisi yoktur?
+  A) Karşılaştırma
+  B) Niteleme
+  C) Mecazi söyleyiş
+  D) İkleme
+  E) Tanımlama
+
+#3 [MATEMATIK]
+  Q: Bir trigonometrik denklemi çözerken, aşağıdaki adımlardan hangisi yanlış?
+  A) Denklemin her iki tarafını aynı sayıya bölmek
+  B) Denklemin her iki tarafını aynı sayıya çarpmak
+  C) Denklemin her iki tarafını aynı sayıya kademeli bölmek
+  D) Denklemin her iki tarafını aynı sayıya kademeli çarpmak
+  E) Denklemin her iki tarafını aynı sayıya kademeli karekök almak
+
+#4 [SOSYAL]
+  Q: Felsefe insanın kendisi, hayatı, yaşadığı toplum ve dünya üzerine akla dayalı, düşünsel bir çaba olup, görünenlerin arkasındaki şeyleri görebilme çabasıdır. Bu ifadeden felsefe için; I. Eleştirel düşünceye dayalıdır. II. Mantık ilkelerine göre hareket eder. III. Bulunduğu çağın koşullarından etkilenir. yargılarından hangileri çıkarılabilir?
+  A) I ve II
+  B) Yalnız II
+  C) II ve III
+  D) Yalnız III
+  E) I, II ve III
+
+#5 [TURKCE]
+  Q: Film, bir endüstri dalıdır. Pazar, yapımcı, işletme gibi koşullara bağlıdır. Bu nedenle, bir yazarın kağıt ve kalemle köşesine çekilip derinlemesine ve dilediğince yazması gibi bireysel bir çalışma filme olmaktan; yönetmenin, yazarın sahip olduğu özgürlüğe sahip değildir. Film, toplu çalışma gerektiren bir aygıttır. Ama sanat dalı olarak özgünlüğü kanıtlanmış bir biçimdir. Sinema, kendi gelişmesini yine kendi yollarıyla aramalı, kendi içinden çıkarmalıdır; edebiyat ve diğer sanat dallarından değil.
+
+Bu parçada aşağıdakilerden hangisi ağır basmaktadır?
+  A) Betimleme
+  B) Açıklama
+  C) Tartışma
+  D) Tanımlama
+  E) Karşılaştırma
+
+#6 [TURKCE]
+  Q: Ben olağanüstü bir doğa ile kuşatılmış bir şehirde dünyaya geldim. Bu şehrin bir dağ köyünde. Artvin'in bilinen bilneler nasıl bir coğrafyalardan, doğadan bahsettiğini anlatırlarbilinirler. Çimen, ağaç, toprak, çiçek, hayvan hatıra yağmur kokuları, doğanın içinden gelen seslerle, sessizliğin sesiyle, derin karanlığın kulakları çınlatan sesiyle büyülen. Emenni evlerin arası bahçelendirilmiş, her yolcu yukarı veya aşağı dar sokaklarda ümülüş... Çoklu Nehri ne tepeden bakar Artvin'in o gizemli arka sokaklarında gerilimli keşiş yolculukların yürümeyi he-nüz özcerebilirliği zamanlara kadar gider. Nisan yağmurunda sokakta saldırmak bile yağmur sularıyla islamlanıyor idi. İs-tanbul'daki üniversite yıllarım boyunca karada yağmur altında sırılslak yürüme zevkini kimse elimden alamadı. Koşa koşa islamlama çıkardım şehrin göbeğinde.
+
+Bu parçanın anlatımında aşağıdakilerden hangisi yoktur?
+  A) Karşılaştırma
+  B) Benzetme
+  C) İkleme
+  D) Niteleme
+  E) Mecazi söyleyiş
+
+#7 [MATEMATIK]
+  Q: 5. Bir okulda 100 öğrenci vardır. Okulda 30 öğrenci matematik dersini, 40 öğrenci fizik dersini ve 20 öğrenci hem matematik hem de fizik dersini seçmiştir. Bu durumda, okulda matematik veya fizik dersini seçmeyen öğrenci sayısı kaçtır?
+  A) 10
+  B) 20
+  C) 30
+  D) 40
+  E) 50
+
+#8 [MATEMATIK]
+  Q: Her birinin fiyatı diğerinin fiyatının %20 fazlasına satılan 3 boy kahvenin bulunduğu bir kahve dükkânında 5 adet büyük boy, 4 adet orta boy ve 2 adet küçük boy kahve satın alan Hakan toplamda 140 TL ödemiştir.
+Buna göre, 1 adet küçük boy ve 1 adet orta boy kahvenin fiyatı kaç TL dir?
+  A) 22
+  B) 20
+  C) 18
+  D) 16
+  E) 14
+
+#9 [MATEMATIK]
+  Q: GÖLÜ DİAGRAMLAR VE DENKLEMLER
+Hakkı Baydar
+
+1. Bir şapka toplam 10 eşit parçadan oluşuyor. Bu parçaların 7 tanesi 10 TL değerinde, 3 tanesi 5 TL değerinde. Bu şapka toplam kaç TL değerindedir?
+  A) 70 TL
+  B) 75 TL
+  C) 80 TL
+  D) 85 TL
+  E) 90 TL
+
+#10 [TURKCE]
+  Q: Türkiye'de trafik kazaları bakımından durum oldukça iç karartıcıdır. Rakamlara göre her yıl yaklaşık en az 4.000 kişi trafik kazaları sebebiyle hayatını kaybetmektedir. Nüfusu oranlandığında her 100.000 kişiden 13'ünün ölüm sebebi trafik kazaları olduğu görülmektedir. Ölenlerin çoğunluğunu % 55 ile sürücüler ve yolcular oluştururken % 19'luk gibi bir bölümünü de yayalar oluşturmaktadır. Bu özelliği nedeniyle trafik bazen "terör" olarak nitelendirilmekte ve Kurtuluş Savaşı'nı da daha sonraki dönemlerde yaşanan savaşlar ve doğal afetlerde hayatını kaybetme oranlarıyla karşılaştırılmaktadır. Yapılan bir karşılaştırmada 1855-2006 yılları arasında 7.759.004 kazada 291.482 kişinin öldüğü, bu rakamın Kurtuluş Savaşı'nda hayatını kaybedenler açısından 25 kat büyüklüğünde olduğu belirtilmiştir.
+
+Bu köşe yazısıyla ilgili aşağıdakilerden hangisi söylenebilir?
+  A) İstatistiki verilerin gerçekçiliği sorgulanmaktadır.
+  B) Güncel bir konunun tarih bilimine katkısına değinilmektedir.
+  C) Kanıtlanabilir veriler ile karşılaştırma yapılmaktadır.
+  D) Toplumun her kesimini ilgilendiren bir konu yani genel bir anlatım sunulmaktadır.
+  E) Sayısal veriler ile tarihi bir konu açıklanmaktadır.
+
+#11 [GEOMETRI]
+  Q: ABCD kareli dörtgen (AB) = (BC) = (CD) = (DA) = 8 cm. Yanbaşılı verteksler göre, ABD açısının ölçüsü kaç derecedir?
+  A) 45°
+  B) 60°
+  C) 90°
+  D) 120°
+  E) 135°
+
+#12 [GEOMETRI]
+  Q: Bir doğru çemberin çevresi 30 cm'dir. Bu çevrenin yarısının çevresi kaç cm'dir?
+  A) 15 cm
+  B) 20 cm
+  C) 25 cm
+  D) 30 cm
+  E) 35 cm
+
+#13 [TARIH]
+  Q: (I) Başlangıçta şehir devletleri olarak şekillenen organizasyonlar Mısır'da "nom", Mezopotamya'da "site", Ege ve Yunan medeniyetlerinde ise "polis" adı verildi. (II) Şehir devletlerinin siyasi, askeri ve ekonomik güçlerini artırıp hâkimiyet sahalarını genişletme isteğine bağlı olarak da daha büyük devletler ve imparatorluklar kuruldu. (III) Aristokratların güçlenmesiyle birlikte Yunan sitelerinde yönetimi bu sınıfın eline geçti. (IV) Böylece siyasi gücün meslekîye değil toprak zenginliğinden gelen asilliğe dayandığı bir yönetim biçimi başladı. (V) Aristokrasi adı verilen bu yönetimde sınıfa yakın gelmiş toprak sahipleri, agora veya forum denilen merkezde toplanarak şehrin yönetimi ile ilgili kararlar alırlardı. (VI) Kararların uygulanması için de "arhon" denilen yüksek memurlar seçilirdi. Bu parçada numaralanmış cümlelerden hangisi düşünce akışını bozmaktadır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#14 [MATEMATIK]
+  Q: $0 < x < \frac{\pi}{2}$ olmak üzere, $\frac{7 + \cos2x}{2 + \sin x} = 3\sin x$ olduğuna göre, $\tan \left(\frac{\pi}{2} + x\right)$ değeri kaçtır?
+  A) $-\frac{5}{3}$
+  B) $-\frac{3}{4}$
+  C) $-1$
+  D) $-\frac{2}{3}$
+  E) $-\frac{1}{3}$
+
+#15 [MATEMATIK]
+  Q: f(x) = tanx cosx fonksiyonunun en kısa periyodu kaçı?
+  A) 2π
+  B) π
+  C) π/2
+  D) π/4
+  E) π/3
+
+#16 [MATEMATIK]
+  Q: Soru 1: Aşağıdaki ifadelerden hangisi x > 0 ve y > 0 olmak üzere x + y = 10 eşitliğinden elde edilen x^2 + y^2 ifadesinin minimum değerini verir?
+  A) 20
+  B) 25
+  C) 30
+  D) 35
+  E) 40
+
+#17 [GEOMETRI]
+  Q: 1. Çemberin çevresi 12 cm ise çemberin yarıçapı kaç cm'dir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm
+
+#18 [MATEMATIK]
+  Q: Fibonacci dizisi, bir önceki terimlerin toplamından oluşan bir seridir. Örneğin, 1, 1, 2, 3, 5, 8, 13, 21, ... şeklinde devam eder. Bu dizideki her bir terim, önceki iki terimin toplamıdır. Örneğin, 3 = 1 + 2, 5 = 2 + 3, 8 = 3 + 5, ... şeklinde devam eder. Bu dizideki her bir terim, önceki iki terimin toplamıdır. Örneğin, 3 = 1 + 2, 5 = 2 + 3, 8 = 3 + 5, ... şeklinde devam eder.
+  A) Fibonacci dizisinin 10. terimi 55'tir.
+  B) Fibonacci dizisinin 10. terimi 89'dur.
+  C) Fibonacci dizisinin 10. terimi 144'tür.
+  D) Fibonacci dizisinin 10. terimi 233'tür.
+  E) Fibonacci dizisinin 10. terimi 377'dür.
+
+#19 [GENEL]
+  Q: 11. Yabancı ülkelerden gelen öğrencilerin toplam sayısı 100'dür. Bu öğrencilerin %20'si Türkiye'den gelmektedir. Diğer ülkelerden gelen öğrencilerin sayısı kaçtır?
+  A) 20
+  B) 40
+  C) 60
+  D) 80
+  E) 100
+
+#20 [MATEMATIK]
+  Q: Aşağıdakilerden hangisi iki farklı sayının toplamının karesi değildir?
+  A) x^2 + y^2
+  B) x^2 + y^2 + 2xy
+  C) x^2 + y^2 - 2xy
+  D) x^2 + y^2 + 4xy
+  E) x^2 + y^2 - 4xy
+
+#21 [MATEMATIK]
+  Q: Bir kutu içinde 12 adet 100 gram, 12 adet 200 gram ve 12 adet 300 gram teneke kutusu bulunmaktadır. Bu kutuların toplam ağırlığı kaç gramdır?
+  A) 1200
+  B) 1440
+  C) 1680
+  D) 1800
+  E) 2040
+
+#22 [TURKCE]
+  Q: Edebiyatımızın Avrupa'ya yönelmesiyle birlikte bizde halk kültürü ve halk sanatı eserleri, milli geçmişimizin ve sağlam dayanağı olarak görülmüştür. Sanat ve edebiyat adamı; Cumhuriyet'e kadar halk kültürüne, özellikle halk şiirine sanata ham maddesi gözükte bakmış olsalar da halk şiirine gittikçe daha fazla değer veren bir anlayış zemini hazırlamıştır. Milliyeçi düşüncenin uyanışından sonra sanatçılarımız bu ham maddeyi millî sanat ölçüsüyle bakmaya başlamışlardır. Bir yandan da Cumhuriyet'le birlikte milliyeçilik düşüncesinin uzlaşıkarak halkın çeşitli kültür kaynaklarına değer verilmiş, özellikle şiirimizde bir 'yeniden doğuş' tazeligi getirilmistir.
+
+Bu parçadan çıkarılabilecek en kapsamlı yargı aşağıdakilerden hangisidir?
+  A) Halk şiiri, sanatçılarımızın Avrupa'yı örnek almaya başlamasından sonra değer kazanmıştır.
+  B) Milliyeçi düşünce, edebiyatımız Avrupa'ya yönelince uyanmıştır.
+  C) Cumhuriyet'le birlikte, milliyeçilik düşüncesinden uzaklaşıldığı, halk kültürüne değer verilerek şiirde yenileşmeye gidilmiştir.
+  D) Milli bir geçmişi olmayan toplumlarda sanatin gelişme göstermesi beklenemeyeceği için milli kaynaklara dönmemiz zorunludur.
+  E) Cumhuriyet'e gelincye kadar halk sanatı oldukça küçümsemistir.
+
+#23 [MATEMATIK]
+  Q: Bir havaalanı otogarı bir kafes şeklinde düzenlenmiş. Her kafesin içinde 4 otobüs bulunur. Otoparkta toplam 160 otobüs bulunmaktadır. Kaç kafes vardır?
+  A) 20
+  B) 40
+  C) 60
+  D) 80
+  E) 100
+
+#24 [TURKCE]
+  Q: Holi Festivali ya da diğer adıyla 'Renklerin Festivali', Hindistan'ın dört bir yanında milyonlarca insanı bir araya getiren kutladığı son derece eski ve renkli bir gelenek. Köklerinin 4. yüzyıla dayandığı bilinen bu çoçukluk festivali her sene bahar ayında düzenleniyor ve o gün halka genelinde resmi tatil ilan ediliyor. Doğanın canlandığı, güneşin sıcak yüzünü yeniden göstermeye başladığı bahar mevsiminin gelişini bazen bir hafta boyunca süren etkinliklerle müjdeleyen, aile üyeleri ve arkadaşları bir arada vakit geçirdikleri, festival sürecince kast ve yay ayrımı ortadan kalkıyor. Festivali son derece ilgi çeken ise yaşından cinsine herkesin sembolik olarak doğan coşkunluğunun temsil edildiği rengarenk toz boylarıyla kendilerini ve bütün ülkeyi baharın renklerine boyaması. Gökkubbenin her rengine boyanmış insanlar, sokakları dolduran eğlenceli müzikler eşliğinde yakın büyük ateşlerin etrafında dans ediyor.
+  A) Tarihi süreçten
+  B) Katılımcıların çokluğundan
+  C) Düzenlenme döneminden
+  D) Ekonomiye katkısından
+  E) Sosyolojik etkisinden
+
+#25 [SOSYAL]
+  Q: Dünya son yüzyıl içinde belki de son bin yıl içinde gerçek-leşen değişim ve dönüşümlerin toplamından daha fazla ve hızlı bir değişim geçirdi. Ham madde arayışından kaynaklı yaşanılan 1. ve 2. Dünya Savaşı sonucunda savaştan etkilenen ya da etkilenmesin, yaşanılan kayıplar berabe-rinde insanların varoluşsal bir bunalım içine girmesini getirmişti. Bununla birlikte bilim ve teknoloji hızla ilerlemiş bilimsel yöntem ve bilimdeki önermelerin analiz edilmesi ele alınan konular arasına girmişti.
+
+Buna göre aşağıdakilerden hangisinin 20. Yüzyıl felsefesinin temel konuları arasına girdiği söylene-mez?
+  A) Analitik felsefe
+  B) Mantıksal pozitivizm
+  C) Yeni Ontoloji
+  D) Diyalektik materyalizm
+  E) Tümeller problemi
+
+#26 [TURKCE]
+  Q: Çayır çiçekleri, çiçeklerdeki ak kızuları boyamaya koyuldu. Öteki yine gülmuş, yine güle güle çekilip gitmişti. O da gülüşünün suların aktığı ovaları dahi irkilenlerle çerceveleyip bezedi. Saplarının boyu biraz büküldü. Şaşı. O gece, eli ayağına dolananak dört bir köşeye altın sarısı birer yarm ay kondurdu. "Gönlünce yap, başga başka kulak asma!" Babasının sesiydi. O da başını kaldırdı, kuşkuya bakıp babasına "Dünya gönlümüz mü kalmış baba?" diye sordu. Yanıt alamadı. Renkler ovdu, fazla ovdu.
+
+Bu paragrafta aşağıdakilerden hangisine başvurulmamıştır?
+  A) Niteleyici sözcüklere
+  B) Yorumu dayalı anlatıma
+  C) Deyimlere
+  D) Önkarşılıktan yararlanmaya
+  E) Olay anlatımına
+
+#27 [MATEMATIK]
+  Q: aşağıdaki verilen eşitliklerden hangisi tam negatif tam sayıdır?
+  A) x + 7 = 0
+  B) x - 10 = 0
+  C) x + 10 = 0
+  D) x - 7 = 0
+  E) x + 10 = 10
+
+#28 [TURKCE]
+  Q: I. Yazma becerisi, öğrencilerin uygulanmakta en çok zorlandıkları dil becerisidir.
+II. Ayrıca sözlü anlatımda konuşmalar anlık olduğu için ve yazıdaki gibi dönüp tekrar inceleme imkânı olmadığı için de anlatım hatalarının fark edilmesi yazıya göre daha zordur.
+III. Bunun sebebi yazarken karşılıklı etkileşimin olmaması, bireyin kendini ifade etmede yaşadığı güçlükler ve ayrıca dil bilgisi kurallarını yanlış uygulama endişesidir.
+IV. Sözlü anlatım bu özellikleri nedeniyle yazma becerisine nispetle öğrencilerin uygulamakta daha az sıkıntı yaşadığı dil becerisidir.
+V. Öte yandan sözlü anlatım sırasında yapılan hatalar daha az dikkat çekmekte veya şive ya da ağız farklılıklarına bağlanmaktadır.
+
+Numaralanmış cümlelerle anlamlı bir paragraf oluşturulmak istenirse sıralama aşağıdakilerden hangisi olur?
+  A) I – III – II – IV – V
+  B) IV – V – I – II – III
+  C) I – III – V – II – IV
+  D) V – III – II – I – IV
+  E) IV – III – V – II – I
+
+#29 [MATEMATIK]
+  Q: Bir futbol takımının kadrosunda bulunan oyuncuların yaş aralıklarına göre dağılımı aşağıdaki gibidir.
+Yaş Aralığı 20 yaş altı 20-30 yaş 30 yaş üstü
+Yüzde oranı %10 %60 %30
+Bu takım yaz transfer sezonunda 5 tane 30 yaş üstü, 4 tane 20-30 yaş aralığındaki oyuncu ile yollarını ayırmış ve 2 tane 20 yaş altı 2 tane de 20-30 yaş aralığında sporcu transfer etmiştir.
+Son durumda takımdaki 20 yaş altı oyuncu sayısı takımın %20'sini oluşturmaktadır.
+Buna göre, başlangıçta takımda 30 yaş üstü kaç oyuncu vardı?
+  A) 6
+  B) 9
+  C) 12
+  D) 15
+  E) 18
+
+#30 [TURKCE]
+  Q: Barcelona; bütün İspanya için bir kültür merkezi olmasının yanı sıra, Katalan dilinin ve kültürünün zenginliğidir, özgün bir tarihsel geleneğe de sahiptir. Katalonyanın siyasi ve toplumsal tarihinde belirleyici olan Katalan kıtaları, keşif ve yerel bir kimliği bünyesinde barındırırken, tersine dünyadaki diğer akımlarla özellikle Avrupa'ya açılarak gelişmiştir. 1450'de kurulan Barcelona Üniversitesi ve 1968'de kurulan Özerk Barselona Üniversitesi, kentte önemi gelen bilim ve araştırma kurumları. Kentte büyük önem taşıyan müzeler arasında romanesk ve gotik resimlerin yapıtlarının barındıran Katalonya Güzel Sanatlar Müzesi, 12-18. yüzyıl heykellerinin sergilendiği Federico Marès Müzesi ve gonggünde dokuz yıl burada yaşamış olan Pablo Picasso'nun pek çok yapınının bulunduğu Picasso Müzesi, Deniz Müzesi ve Joan Miró Vakfı yerler.
+
+Bu parçanın anlatımında aşağıdakilerden hangileri kullanılmıştır?
+  A) Açıklama - tartışma
+  B) Tartışma - öyküleme
+  C) Örneklemeler - açıklama
+  D) Betimleme - açıklama
+  E) Karşılaştırma - tartışma
+
+#31 [TURKCE]
+  Q: Milyenum çocukları, net jenerasyonu, kuşakçı, çevrimiçi nesil, netgiller, kar tanesi kuşağı derken liste uzayıp gidiyor. Bu lanetlerinden biri olan 'kar tanesi kuşağı'nı açıklamak fayda var çünkü teknolojiyle yatkınlığının yanı sıra alıntılanan konusuna da yakından bakıyor. Kavram, Chuck Palahniuk'un kaleme aldığı ve 1998 yılında sinemaya uyarlanan Dövüş Kulübü adlı eserin kahramanı Tyler Durden'in, 'Özge değiliz. Sın gızıl ve eşsiz bir kar tanesi değiliz.' cümlelerinden geliyor. Dijital yerleşikler teknoloji bağımlılığının yanında her birinin kendini o kadar özel ve biricik hissettiğine, dolayısıyla böyle olamayacağını fark etmede yaşayacağı bilin krizlerine atıfta bulunan kavram üzerine 2018 yılında bol bol yazı yazılmaya başlandı.
+
+Bu parçanın anlatımında aşağıdakilerden hangisine başvurulmuştur?
+  A) Karşılaştırma - kişileştirme - tartışma
+  B) Örnekleme - kişileştirme - açıklama
+  C) Tanımlama - benzetme - betimleme
+  D) Tanımlama - örnekleme - betimleme
+  E) Tanık gösterme - örnekleme - açıklama
+
+#32 [GENEL]
+  Q: Dik koordinat düzleminde A(-1, 3) ve B(0, 5) noktalarından geçen doğru ile bir d doğrusu veriliyor.
+d doğrusu üzerinde alınan herhangi bir nokta C olmak üzere, çizilen her ABC üçgeninin alanı eşit olmaktadır.
+d doğrusunun x-eksenini kestiği noktanın apsisi 4 olduğuna göre, y-eksenini kestiği noktanın ordinatı kaçtır?
+  A) -8
+  B) -6
+  C) -2
+  D) 2
+  E) 8
+
+#33 [GEOMETRI]
+  Q: ABC üçgenü veriliyor. A, B, C noktaları verilen düzlemdeki noktalar olup, A(0,0), B(12,0), C(0,12) koordinatları veriliyor. ABC üçgeninin çevresi ve alanını bulunuz.
+  A) Çevre: 36, Alan: 36
+  B) Çevre: 36, Alan: 72
+  C) Çevre: 36, Alan: 48
+  D) Çevre: 36, Alan: 60
+  E) Çevre: 36, Alan: 54
+
+#34 [MATEMATIK]
+  Q: Bir davete katılacak 100 kişinin adının bulunduğu liste aşağıdaki gibi 1'den 100'e kadar numaralandırılmıştır.
+Davetlilerden Yusuf sondan n., Sultan ise baştan 2n. sıradadır.
+İkisinin sıra numaraları toplamı 122 olduğuna göre, davetiye listesinde Sultan ile Yusuf arasında kaç kişi vardır?
+  A) 34
+  B) 35
+  C) 36
+  D) 37
+  E) 38
+
+#35 [GENEL]
+  Q: Aşağıdaki seçeneklerden hangisi 'Yazılı' için uygun olmayan bir yöntemdir?
+  A) Ödevi yapma
+  B) Sınav yapma
+  C) Proje yapma
+  D) Ders notu almak
+  E) Sınıf çalışması yapmak

@@ -11,5 +11,6 @@ Usage:
 from core.celery_app import celery_app
 
 # Import all task modules to register tasks
+import tasks.ai_tasks  # noqa
 
 __all__ = ["celery_app"]

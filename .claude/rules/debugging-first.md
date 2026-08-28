@@ -15,7 +15,7 @@ Edit veya Write CAGIRMADAN ONCE asagidaki blogu kullaniciya GOSTER.
 |------|-------|
 | Hata ne? | [curl/pytest/log ciktisi — tahmin degil, gercek output] |
 | Root cause? | [dosya:satir — neden bozuk] |
-| Dogru tablo mu? | [question_bank=77K prod / questions=BOS legacy] |
+| Dogru tablo mu? | [question_bank=prod ~187K / questions=36.381 legacy, BOS DEGIL] |
 | Altyapi OK mu? | [pg_isready -p 5434, redis-cli ping, curl /health] |
 | Fix scope? | [dosya listesi, max 3 dosya] |
 

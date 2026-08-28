@@ -1,0 +1,306 @@
+=== OPUS EXTRA REVIEW — gemma3 'unsolvable' dedi. Her biri: OK / GARBLE / FIGURE / DEGENERATE
+
+#1 [MATEMATIK]
+  Q: 10. Sayılar sırası üzerinde aşağıdaki işlemlerden hangisi yapılamaz?
+  A) 1 + 2 = 3
+  B) 1 - 2 = -1
+  C) 1 × 2 = 2
+  D) 1 ÷ 2 = 0,5
+  E) 1² = 1
+
+#2 [TURKCE]
+  Q: Bazı çocuklar için "Okumaya hevesi yok, kitaplara karşı ilgisiz." yorumlarını işitiriz. Harfleri ve sayıları ters yazan, yanlış seslendiren, yavaş ve heceleyerek okuyan çocuklar aslında bunu bilinçli yapmıyor; disleksi rahatsızlığı bu neden oluyor. Doktorlar, aileleri çocukların tembel ya da isteksiz olarak nitelenmeden önce bir uzmana başvurmasını gerektiği konusunda uyarıyor. Özel öğrenme güçlüğü adı altı olan ve "okuma bozukluğu" da denilen disleksi; harflerin ya da sayıların okunamaması, yanlış okunması, okuma hızında yavaşlık ve heceleyerek okuma şeklinde ortaya çıkabiliyor. Çocuğun bilerek okumadığı ya da isteksiz olduğu yönündeki yanlış algılar ise rahatsızlığın tanısının geç konulmasına neden oluyor.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Okuma konusunda çocukların tembel ve isteksiz davranışları karşısında ailelerin uzmanlardan görüş almaları gerekir.
+  B) Disleksi; harflerin ya da sayıların okunamaması, yanlış okunması, okuma hızında yavaşlık ve heceleyerek okuma şeklinde ortaya çıkabilir.
+  C) Rahatsızlığın tanısının geç konulmasının başlıca sebebi ailelerin yanlış algılarıdır.
+  D) Dislekside çocukların farklı yöntemlerle olsa öğrenme sorunu çözemeyeceği unutulmamalıdır.
+  E) Disleksi tedavisinde önemli noktaların başında erken tanı gelmektedir.
+
+#3 [TURKCE]
+  Q: Dünyamızın oksijen kaynakları ağaçlar, bulundukları yeri güzelleştirirken içimizi de ferahlatıyordur. Nice sırada, şarkıya o lam olan bu doğa harikalarını; serin gölgeliklerini yazın bunaltıcı sıcağından tüm canılara kucağını açmak kalıyor, sel ya da erozyon gibi pek çok afetten korunmamızı sağlıyor. Ağaçlar, büyümenin önemli bir problem olduğu günümüz dünyasında yüzeyimizin sahip çıkılması gereken değerler olarak hayatımızdaki vazgeçilmez yerinin korumaya devam ediyor.
+
+Bu parçada sözü edilen ağaçlarla ilgili aşağıdakilerin hangisine ulaşılamaz?
+  A) Ağaçlar ülkenizin güzelleştirilmesi için korunması gerekir vardır.
+  B) Doğal afetlere karşı gelebilecek engellerin başında ağaçların geldiği bilinmektedir.
+  C) Her şeyiyle dünyayı daha güzelleştirip yaşamımızda en önemli yeri korumaktadır.
+  D) Dünyanın sonuna yaklaşırken sahip çıkılması gereken değerlerin sahipsiz kalmaması gerekmektedir.
+  E) Ağaç ve türevlerinin dünyada yeteri kadar kıymetinin bilinmemesi dünyanın kalitesini düşürmektedir.
+
+#4 [TURKCE]
+  Q: Sağlığın korunması ve geliştirilmesi, hastalanmamak ve kaliteli bir yaşam sürdürebilmek için bireyin bedensel ve ruhsal yönden doğuştan sahip olduğu potansiyelinin güçlendirilmesidir. Bunun için günlük hayatta düzenli olarak fiziksel aktivite yapmaya önem verilir. Fiziksel aktivite, enerji harcamak amacıyla kas ve eklemlerle yapılan tüm vücut hareketlerinden oluşur. Yürüyüş yapma, koşma, yüzmeye, bisiklet binme ile orman, kol, bacak, baş ve gövde hareketleri bunlara örnek verilebilir. Dans etmek, oyun oynamak ve merdiven çıkıp inmek gibi etkinlikler de fiziksel aktivite olarak kabul edilebilir. Ancak maraton koşusu ya da rekabete dayalı sporların yapılması bu kapsamda değerlendirilemez.
+
+Bu parçadan harekete aşağıdakilerden hangisine ulaşılamaz?
+  A) Fiziksel aktiviteler, hem bedensel hem de psikolojik yönden faydalıdır.
+  B) Fiziksel aktiviteler insana kaliteli bir yaşam sunar.
+  C) Kas ve eklemlerle yapılan vücut hareketleri enerji harcanmasını sağlar.
+  D) Tüm sporlar hareket içerdiği için birer fiziksel aktivite olarak kabul edilebilir.
+  E) Saklanmak, ev süpürmek veya otomobil yıkamak da birer fiziksel aktivitedir.
+
+#5 [TURKCE]
+  Q: Avcılık ve toplayıcılıktan yerleşik hayata geçişişle, şehir devletleri ve imparatorlukların kurulması, siyasi, askeri ve ekonomik mücadeleler, antlaşmalar, bilimsel alandaki gelişmeler, dinlerin doğuşu ve yayılışı gibi insan ilgisinin yoğun olduğu birçok tarihî olayın incelenmesi gerekir. Tarihten geçmişten bugüne yaşanan olaylarla ilgilenmekle beraber bunları bütünüyle arastırıp incelemek ve anlaması mümkün değildir. O sebeple pek çok olay içinden kendi için anlamlı olanları seçmek zorundadır. Böylece genişçi bir olay ancak tarihi önemi taşıdıkça incelenmeye başlıdı ve zaman tarihi olay haline gelir. Bu bağlamda elbette yöntemin yanında, tercih edilen olaylar incelenen konuyu ne kadar iyi açıklığıyla ortaya o derece güzel bir eser çıkar.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Tarih'in ilgi alanına insan yaşamı ile ilgili pek çok konu girer.
+  B) Tarih araştırmacıları, hem geçmişteki hem de gelecekteki olaylarla ilgilenmektedir.
+  C) Tarihçiler, olaylar içinden kendiliğinden seçtikleri çalışma mecburiyetinde kalmaktadır.
+  D) Geçmişte yaşanmış bir olay tarihinin o olayı incelemeyle başladığından itibaren tarihi olay kimliği kazanır.
+  E) İyi bir tarih araştırmasının ortaya çıkmasında konu seçimi ve metot önemlidir.
+
+#6 [TURKCE]
+  Q: İnsanın doğaya ve evrene anlam kazandırma çabasının bir ürünü olan mitoloji, belirli bir toplum ya da halka özgü millet bütünü olarak tanınabilirliktedir. İnsana özel bir karakteristiği taşıyıcı olmasından ve hayal gücünden yakınlık almamasından yani aynı zaman ve mekân sınırlarını aşan bir niteliğe sahip olmasıdır. Evrensel bir olgu olarak mitoloji, kolektif yapıda var olan bir bilinçli mekanizması aracılığıyla nesilden nesile aktarılmaktadır. Dolayısıyla köklerini bildiklerinden ötürü mitoloji ve insanda mevcut olan tepkiler aracılığıyla geçmişe doğru gidecek yolculuk etmektedir. Tüm insanlığın ortak mirası olarak nitelenebilen mitoloji, kültürün ve bilimin ortaya çıkışında ve gelişiminde önemli bir rol üstlenmiştir. Mitoloji ile bilim arasındaki semantik ortaktanlık hareketle bilimsel terminolojinin dildeki göstermelere dikkat çekmek ve bilimsel terminolojiye tam anlamıyla hâkim olmanın söz konusu simgesel dili gözlemlerle hüküm olduğuna ilişkin sürmek mümkündür.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Mitoloji; tıpkı bilim gibi insanın evreni ve dünyayı algılama, açıklama ve anlamlandırma çabasının bir ürünüdür.
+  B) İnsan yaratılışının dışavurumu olan mitoloji, günümüz bilminde özellikle terminolojik bağlamda yoğun olarak kullanılmaktadır.
+  C) Miterler; bir süre sonra kendilerini üretenlere ait olmaktan çıkarak başkalarına da ait olmaya başlamış, zaman ve mekân sınırlarını aşan bir nitelikte biçimlenmiştir.
+  D) İnsan doğasına özgü semboller topluluğu olarak tanımlanabilen mitoloji; kültürün ana dinamikleri olarak nitelenebileceğimiz din, bilim ve sanatın gelişiminde öncü bir rol üstlenmiştir.
+  E) İnsanın hayal gücünün ürünü olan mitoloji; doğum-yaşam-ölüm döngüsüne bir açıklama getirmek için farklı bilim dallarından faydalanmaktadır.
+
+#7 [TURKCE]
+  Q: Öznelliği, genellikle keyfilik olarak algılayan bir toplumuz.
+
+İncelemelerde, akla estiği gibi, kaynaklara, belgelere, bilgilere dayanmadan konuşmadır özel konuşma. Nesnel ve bilimsel olmaya çalışırdıkken, yazılarımızda değersizizdir.
+
+Değer; goparalı kuramın, gerektirmeli terminolojisi beklenen bir entelektüel ölte ortaya koyduğumuzda belirir. İşte sıkıntı da tam bu noktadadır: Öznellikten kaçıp derken basmak-baskı bakış biçimlerini, işi düşüncelere mahkum ediyoruz.
+
+Nesnel ya da bilimsel olduğunu iddia eden düşünceyi kuramları, bilim insanı, filozof, yazar adlarını kullandığımızdan düşünceyi anlattığımızı, anlatıklarımızın değersiz olduğu sanıyoruz.
+
+Ne kadar bilgili, donanımlı, özgün düşünce sahibi olduğumuzu göstermek için söyleyebilirlerse gerekli gerekçsiz eklemeler yapıp asıl dördümüze anlamada sıkıntı çekiyoruz.
+
+Kendi sığır, dar, kalıp düşüncelerimizin üstünü sözde nesnel-bilimsel bilgiyle örtüyoruz.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Yazarların ortaya koydukları özel düşüncelerini çoğu kez keyfilik olarak değerlendiriyoruz.
+  B) Sanatçının duygularını katkı öznel yargıları okuyucu kabul etmek ve benimsemek zorunda değildir.
+  C) Öznellikten uzak duralım diyerek özgünlüğü olmayan yaklaşımlara, dönürlü olmayan düşüncelere tutsak oluyoruz.
+  D) Bilgi düzeyimizi göstermek için söyleyebilirlerse lüzumsuz eklemeler yapıp asıl dördümüze anlamada sıkıntı çekiyoruz.
+  E) Kendi sığır, dar, herkesin söylediği düşüncelerimizin üstü sözde "nesnel-bilimsel" bilgiyle örtüyoruz.
+
+#8 [TURKCE]
+  Q: (I) Amerika'nın keşfinden sonra kıtanın her yerinde çok büyük nüfus değişimleri yaşanmıştır. (II) Banok Kızılderilileri, 1878'de yaşayan kabileleri nedeniyle sıkıntıları geçirmişlerdir. (III) ABD hükümetinden hiçbir yardım alamadıklarından kapattıkları bölgelerden kaçtılar. (IV) Reis Buffalo Hock tarafından yönetilen kızılderiler, yücecek bulabilmek için beyazlara saldırdılar. (V) Bölgeye gönderilen ABD askerleri, Kızılderilere karşı işkale zafere ulaştılar. (VI) Sonrasında kıyım başladı; 140 erkek, kadın ve çocuğun katledilmesinden sonra Banoklar teslim oldu. Bu parçadaki numaralanmış cümlelerden hangisi düşünce akışını bozmaktadır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#9 [TURKCE]
+  Q: (I) Balon çoğu kez kendi aralarında farklılıklar göstermektedir. (II) Günümüzde balonların ilk uçuşu 1800'lerde Michael Faraday tarafından icat edilmesine rağmen hayatta kalmayı ancak 1930'larda gerçekleştirebilmiştir. (III) Normal haldeki helyum gazı ile şişirilen reklam balonlarının bazıları helyum gazı ile şişirilip, bazılarında ise gaz kullanılmamıştır. (IV) Bunun sebebi ise balonların dikiliği üretilmesidir. (V) Sağlık alanlarından dolayı almak için kullanılan balonlardır.
+
+Bu parçadaki numaralanmış cümlelerden hangisi düşünce akışını bozmaktadır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#10 [TURKCE]
+  Q: Türkiye'nin içinde bulunduğu konum nedeniyle Türkiyegen yabancılara öğretimi ihtiyacı her geçen gün biraz da olsa artmaktadır. Bugün bu ihtiyaç gereği Türkiye'de bulunan yabancılar için gerekse dışarıda yaşayan Türkçe öğrenmek isteyen yabancılar için daha da bölgenleşmiştir. Bunun en önemli di olarak Türkçe öğretimine yönelik kaynak değiş aramaları ve incelemeler yapılmaktadır. Yabancı dil olarak Türkçe öğretimi, aynı bir disiplin olarak görülmesi ve bu alana kullanılacak bir eğitim programı hazırlanmalıdır. Türkiyegen yabancı dil olarak Türkçe öğretilmesine yönelik eğitimcilerin donanımlı olmasına ve verilen eğitimin çağdaş dünyadaki paralel yürütülmesine önem verilmelidir. Bu gün yabancı dil olarak Türkçe öğretiminde; geleneksel yöntemler bir kenara bırakılarak çağdaş yaklaşım, yöntem ve tekniklerin kullanımıyla uygun, doğal materyallerle zenginleştirilmiş ve kültürel unsurlarla desteklenmiş çok yönlü etkinlik ortamlarında gerçekleştirilmesi sağlanmalıdır.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Yabancılara Türkçe öğretimi konusunda araştırmalar yapıp eğitim programları oluşturulmalıdır.
+  B) Yabancılara Türkçe öğretiminin temel sorunlarından biri de bu eğitimi veren eğiticilerin yabancının dil seviyelerini iyi düzeyde olmamasıdır.
+  C) Gerek Türkiye'deki yabancılara Türkçe öğretimi gerekse farklı ülkelerde Türkçe öğretimine ait alanlarda yabancıların Türkçe öğrenme alanının son yıllarda önemini artmıştır.
+  D) Ülkemizdeki uygulamalara göz attığımızda Türkiyenin yabancı dili olarak öğretilmesinde bir yöntem sorunu fark edilmektedir.
+  E) Yabancılara Türkçe öğretiminde geleneksel yöntemler yerine çağdaş yöntemlerin tercih edilmesi Türkiyenin içinde bulunduğu durum itibariyle önemlidir.
+
+#11 [TURKCE]
+  Q: Şiir, anlam ve anlatımıyla bir bütündür. Geçmişin günümüze gelebilecek şiir örnekleri; özgün düşünce ve düşünceye, evrensel konulara yer vermelerinin yanı sıra dilin gücünden ve anlatım özelliklerinden de yaralanıldık için yaşayabilmişlerdir. Şiir; güzel ve kalıcı yapısı yapan anlatım özelliklerinin başında şüphesiz doğal söyleyiş gelir. Bu doğal söyleyiş, o günün zamanlı konuşma dilinin anlamlı yollarından yararlanarak gerçekleştirilir. Konuşma dili, edebiyat ve kısa anlatımı etkileyici osarılır. Bu nedenle günlük konuşma dilinde içinde, kısa ve devrik cümleler, soru cümleleri kullanılır, deyime, kalıp ifadeler, hitap ya da seslenme kelimelerine yer verilir. Konuşma dilinde tonlama ve vurgu önemlidir. Öteden beri söz konusu bu unsurlardan şiirde kullanılmak konuşma dilini etkili, rahat, zorlamadan uzade söyleyiş; şiirin daha etkileyici, dolayısıyla kalıcı olmasını sağlamaktadır.
+
+Bu parçadan aşağıdakilerden hangisine ulaşılamaz?
+  A) Konuşmanın özelliklerinden olan vurgu ve tonlamaların şiire kullanımını şiire etkileyicilik ve ilgi çekicilik kazandırır.
+  B) Şiire etkileyicilik sağlayan unsurlardan biri de sade bir konuşma dilinin kullanılmasıdır.
+  C) Şiirdeki doğal söyleyiş, şiire ilgi çekicilik sağlarken birlikte bu durum bağımlılığı, düşme tehlikesi de içinde barındırır.
+  D) Şiirde zaman engelsiz aşarak günümüze kadar gelebilmenin yöntemi, özgün düşüncenin yanında dil ve anlatım özelliklerinden de ustaca yararlanmaktan geçmektedir.
+  E) Şiirde doğal söyleyiş, konuşma dilinin kısa ve etkileyici kullanımı ile sağlanır.
+
+#12 [TURKCE]
+  Q: Sait Faik, eserlerinde gündelik yaşamımızda varlıkları-nı bile hissetmediğimiz insanların yaşamlarını anlatır-ken mevcut düzene ve yapılanmaya muhalif bir tutum sergiler. Ama onun bu muhalefeti bir teklife, aşılamaya dönüşmez. Sadece tespit eder. Çünkü onun peşinde ol-duğu, adı konmuş toplumsal bir proje yoktur. İnsanların hayallerinin gerçek olduğu, mutlu olduğu, haksızlıkların olmadığı, özgür bir dünyayı arzuladığını vurgulamakla birlikte bu beklentilerini bir siyasi hareketle irtibatlandır-maz. Sabahattin Ali'de bu, sosyalizmin yansımasıyken Sait Faik'te sadece bireysel bir temennidir. O, insanın toplumsal baskıları hissetmediği bir özgürlüğü savun-muştur. Bu tavrıyla da öykücülüğümüzün ana damarları olan Ömer Seyfettin ve Sabahattin Ali çizgisinden ayrı, yepyeni bir alan yaratmıştır.
+
+Bu parçadan Sait Faik ile ilgili aşağıdakilerden han-gisine ulaşılamaz?
+  A) Savunduğu görüşleri, ideolojik bir dayatmadan uzak bir şekilde okura sunmuştur.
+  B) Öyküleriyle Türk hikâyeciliğini beslemiş ve toplumcu yazarlara yön vermiştir.
+  C) Öykücülük anlayışı bakımından kendine has bir çiz-gide ilerlemiştir.
+  D) Öykülerinde sıradan insanların yaşantılarına yer ver-miştir.
+  E) Öykülerinde ele aldığı konuları işlerken eleştirel bir tutum sergilemiştir.
+
+#13 [TURKCE]
+  Q: Hukuk devletinin en önemli özelliklerinden biri de vatandaşın devletin keyfi muamelelerine karşı korunmasıdır. Bu korumayı sağlayan ilkenin başında suçta ve cezada kanunilik ilkesi gelir. Bu ilke gereğince devlet, hangi fiillerin suç teşkil ettiğini ve bu fiillere işlenmesi halinde ne tür yaptırımlar uygulanacağını önceden belirlemelidir. Bu yapıldığında da taraftan devletin sınırları belirlenmiş suretiyle ceza hukuku uygulamasına bireyler keyfi muamelede bulunmaktan önlenmiş olur. Böylece tarafların hiçbir fiilinin suç sayılarak yasaklanmadan öngörücü hareket etmeleri sağlanmış olacaktır. Böylece bireyler, suç teşkil etmeyen bir fiil işlemeleri nedeniyle bir ceza tehdidiyle karşılaşma güvensizliğine kavuşturulacaktır.
+
+Yukarıda parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Haksızlık teşkil eden fiillerden hangilerinin suç teşkil ettiği kanunda geçmelidir.
+  B) Kanunun açıkça suç saymadığı bir fiilden dolayı kimseye ceza verilemez.
+  C) Bir kimseye ne tür ve ne miktarda bir ceza yaptırımı uygulanacağının yine kanunla belirlenmesi gerekir.
+  D) Hangi fiillerin suç oluşturduğu, bütün unsurlarıyla birlikte kanunda açıkça tanımlanmış olmalıdır.
+  E) İşlendiği zamana göre kanun suç saymayan bir fiille işlenen cinayet, daha sonra yürürlüğe giren ve o fiili suç haline getiren bir kanun geriye yürütülerek ceza verilebilir.
+
+#14 [EDEBIYAT]
+  Q: Sunay Akın şiirinin başlıca kaynaklarından biri olan oyunun oynanmayan amacı, çocuk gerçekliği üzerine kurulu yeni bir dünya yaratmaktır. Bu amaç, oyunun doğasından çok uzak değildir. Huizinga'ya göre oyunun temel özelliklerinden biri serbestliği, özgürlüğüdür. "Oyun serbesttir, oyun özgürlüktür. Oyun gündelik ve aş hayal değildir. Oyun bu hayattan kaçarak kendine özgü eğilimleri olan geçici bir faaliyet alanına girme bahanesi sunmaktadır." Sunay Akın da şiirlerinde oyunu çocuk özü, özgür olma özelliği ile yeniden yaratmanın bilincindedir. O, çocukluğun hayatın koşulları, şartları ve serüvenleri olarak kabul etmiş ve bu serüveni çocuğa aktifliklere anlatmaya çalışmıştır. Bu yolculukta onun yolu arkadaşları oyun ve oyuncaklardır.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Çocuğun dünyasını şekillendiren oyun ve oyuncaklar, Sunay Akın şiirinin de önemli varlık sebepleridir.
+  B) Gerçek ile hayal zıtlığının yetişkinler tarafından ayrıştırılamaması ve bunun insan iradesinde yarattığı çatışma Sunay Akın, şiirinin dikkat çekici özelliğidir.
+  C) Sunay Akın, çocuğun oyun dünyasının sınırsızlığına ve özgürlüğüne inanmış ve bu sınırsızlığı kullanmak için vazgeçmemiştir.
+  D) Sunay Akın; insan ile ilgili vermek istediği her türlü iletiyi, tema ne olursa olsun çocuğun dünyasını esas alarak ulaştırmayı amaç edinmiştir.
+  E) Sunay Akın'ın kaleminde çocukluk ve çocukça bakış açısı belirleyici bir özelliğe sahiptir.
+
+#15 [GEOMETRI]
+  Q: Aşağıda y = f(x) parabolü verilmiştir.
+Buna göre, R(0, 10) ile P(0, 5) arasında uzaklık kaç cm?
+  A) 10
+  B) 5
+  C) 15
+  D) 20
+  E) 25
+
+#16 [TURKCE]
+  Q: Toplumda zaman zaman felaketseverliğe varan mesajlar yayan, pek çok şeyi üstü kapalı veya açıktan eleştiren, samimi ve dost tavırlarına rağmen karamsar insanların sayısı azımsanamayacak kadar fazladır. Bu kişiler toplumda fark edilmezler çünkü çevrelerine bu özellikleri kendi yaşam tarzları olarak sunarlar ve depresyonun temelindeki bunalım hâli ile öfkeyi bu sayede maskeleyebilirler. "Maskelenmiş depresyon"daki insanlar; hayata hakkını vererek katılamaz, hayatın güzelliklerini deneyimlemek ve risk almaktan kaçınırlar. Ayrıca bu insanların hissettiklerinin aksine hayata bağlı ve mutlu görünmeye çalışmaları da yine depresyonun sonuçlarıyla yüzleşme korkularından kaynaklanır.
+
+Bu parçadan maskelenmiş depresyonla ilgili aşağıdakilerin hangisine ulaşılamaz?
+  A) Kişinin, yaşamın zevklerini doyasıya tatmasını engeller.
+  B) Olumsuz duyguların aktarımı, özelliklerinden biridir.
+  C) Kişinin baş edebilmesi için konfor alanından çıkması gerekir.
+  D) Olumsuz duygular, sözde neşeli tavırlarla gizlenir.
+  E) Kişiyi yeni atılımlar yapmaktan alıkoyan duygu durumudur.
+
+#17 [TURKCE]
+  Q: Lev Nikolayevic Tolstoy, herkesce kabul gördüğü üzere Rus edebiyatının aşılması mümkün görünmeyen zirvesidir. Kişisel tarihiyle de yegâne bir noktada duran Tolstoy'un eserleri, özellikle karakterlerinin karmaşıklığı ruh hâlleri ve topluma yaşadıkları ikircikli ilişkilerle öne çıkar. Devasa boyutlardaki romanları, sıradan bir izlek üzerinden geçen metinler olmakla ziyade, ayrıntıları belirleyici olduğu benzersiz sanat eserleridir. Bir düzineyi bulan romanlarının yanı sıra, kısa hikâyeleri ve oyunlarıyla da bakışını okurla paylaşan yazar; dinsel ve politik görüşleriyle de döneminin düşünsel iklimine etki yapar. "Hristiyan anarşist" sözcüğü geliştirilen Tolstoy, "pasifist" yanıyla öne çıkan ve "Tolstoyculuk" olarak anılan bir akımı da kitleleri peşine takmayı başaran.
+
+Bu parçada Tolstoy ile ilgili aşağıdakilerden hangisi söylenemez?
+  A) Rus edebiyatının önemli yazarlarından biri olduğu
+  B) Roman dışındaki edebi türlerde de etkili ve çok okunan eserler ortaya koyduğu
+  C) Eserlerinin hacimli olduğu
+  D) Eserlerinde ayrıntıların ön plana çıktığı
+  E) Fikirleriyle etkilediği
+
+#18 [TURKCE]
+  Q: Gezi yazısı, en genel ve yerleşik tanımıyla seyahatname, dar veya geniş bir coğrafyada seyyahın gezip gördüğü yerler hakkındaki izlenimlerini anlattığı eserdir. Son zamanlarda seyahat ve seyahat eseri karşılığı olarak "gezi, gezi yazısı" kavramları kullanılmaktadır. Gezi eserleri içerikleri bakımından kendi zamanlarına olduğu kadar sonraki zamanlara, sonraki çağlara da seslenebilme özelliğine sahiptir. Tarih boyunca, Batı ve Doğu uygarlıklarında seyahatname türünde, örnek birçok eser yazılmıştır. Batı'da seyahatnamelere ilk örnekler, Eski Yunan'da Antik Çağ medeniyetlerini, halklarını ve inançlarını tanıtan seyahatnamelerle verilmiştir. Yunanlı coğrafyacı Strabon ve Pausanias'ın seyahatnameleri bu özelliği taşır. Marco Polo'nun Doğu ülkelerine yaptığı geziyi anlattığı seyahatnamesi, üslup ve metin olarak değerlendirildiğinde Batı edebiyatının ilk seyahatnamesi olarak kabul edilir. Bu parçada gezi yazısı ile ilgili olarak aşağıdakilerden hangisine ulaşılamaz?
+  A) Gezginlerin gezip gördüğü yerler hakkında izlenimlerini aktardığı yazılardır.
+  B) Dünya edebiyatında bu türde birçok yapıt kaleme alınmıştır.
+  C) Marco Polo'nun kaleme aldığı seyahatname, dünya edebiyatında bu türün ilk örneği kabul edilir.
+  D) Bu türde yazılan eserler kendi dönemlerinin yanında geleceğe de yöneliktir.
+  E) Batı'da bu türün ilk örnekleri Eski Yunan'a kadar uzanmaktadır.
+
+#19 [TURKCE]
+  Q: Hayatımda ilk kez bir kediyi gördüğüm günü hiç unutmam. Aklımda sadece bir avuç siyah-pembe yün yumruğu, esnemek için açılmış minik bir ağız ve pembe bir dil kalmıştı. O sırada ben küçüktüm, kediyse bebek. O günden sonra hep bir kerdim olmuş istedim. Evimizde yaşayan, yatağımızda bana sanıp uyuyan, kucağımda mırıldanan, biz yokken evi derhemle kötü adamlardan koruyan eve girişimizde bizi kapıda özlemla karşılayan, en yüksek raflara bile az kahraman gibi tırmanan, uzun bir ipin peşinde birbirine barablar olan, dağları ve ormanları açık koridorda koşup oynayan bir kedi... Hayatımda ilk kez dayımın evinde bir keçiği yakından gördüğümde büyümüştim. Ona yakından bakınca nefesim kesilmiş, ağzım açık kalmıştı. İki örnece o kadar, ki benim bir oyuncağa sarılıp uzanıp elime alacakken o, minik ağzını açıp beni göstererek esnemesi başlamıştı, bu da korkup geri çekilmiştir. Onu sokakta yapayalnız ve ölmek üzereyken bulup eve getiren dayım, biberosla söit içirip yün kazasına sararak hayatı kurtarmıştı.
+
+Bu parçanın anlatımında aşağıdakilerden hangisi yoktur?
+  A) Betimleyici unsurlar
+  B) İkileme
+  C) Öyküleme
+  D) Duyuşsal öğeler
+  E) Birinci kişi anlatım
+
+#20 [EDEBIYAT]
+  Q: Divan şiirinde sanat ve hüner göstermek her ne kadar asıl amaçlardan olsa da sadece bunların ön planda tutulduğunu söylemek güçtür. Öne vücuda gelen sanılar; devrin inancı, tıkat, gelenek ve bilim gibi unsurlardan kuvvetle etkilenerek bu etkili şiirlerine türlü yönlerden yansıtılmıştır. Divan şiiri yansıyan bu tür etkilerden biri de eskilerin tabiriyle "ilmi tencini" denen kozmoğrafik leştirir. Kozmoğrafik unsurlar eski şairimizde kolaylıkla tespit edilm mümkün değildir. Bunun iki sebebi vardır: İlk, hen çok hem yeni dönemlerde divan şiirinde kozmoğrafik unsurlar, bu şiir geleneğinde geçen biçimde ele alan "gökbilim" ya da "tufat" adlı müstakil eserler olmamıştır. İkinci, kozmoğrafik kavram ve ifadelerin; çoğu kez teşbih, mecaz, incaye ve tevriye gibi edebi sanatların arkasına gizlenmesidir.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Divan şiirinde kozmoğrafik kavramlarının kullanılmasıyla ilgili eserlerin özellikle de sözcüklerin azlığı bugünün araştırmacıları için bir problemdir.
+  B) Divan şiirinde kullanılan kozmoğrafik kavramlarla sözliklerin olmamasının sebebi, kavramların o döneme aydınlan ve halk çevrelerinden zaten biliniyor olması olabilir.
+  C) Divan şiirinde edebi sanatların arkasına gizlenen söz konusu edilen kozmik unsurların varlığı şiirlerin anlatışını zorlaştırmaktadır.
+  D) Divan şiiri; tarihinde inanç, tıkat, gelenek, mitoloji ve çeşitli bilimlere ait pek çok sahadan kavram işleyen bir şiir geleneğidir.
+  E) Divan şairlerinin asıl gayesi, şiirde sözde ve manada sanat sergilemektir.
+
+#21 [MATEMATIK]
+  Q: 1. Bir fonksiyonun tanım kümesi ve görüntü kümesi veriliyor. Tanım kümesi P = {1, 2, 3, 4, 5} ve görüntü kümesi Q = {2, 4, 6, 8, 10} ise, fonksiyonun her elemanının görüntüye hangisi karşılık gelir?
+  A) 1, 2, 3, 4, 5
+  B) 2, 4, 6, 8, 10
+  C) 1, 3, 5
+  D) 2, 4, 6
+  E) 1, 2, 3, 4, 5, 6, 8, 10
+
+#22 [TURKCE]
+  Q: Türkiye Satranç Federasyonu satrancı yararlarından bazılarını aşağıdaki gibi sıralamaktadır:
+
+• Dikkatini tek konu üzerinde yoğunlaştırabilme alışkanlığı kazandırır.
+• Bilimselliği ön plana alarak araştırmalar yapmaya yönlendirir.
+• Konulara karşı şüpheci yaklaşımı benimser, ezberci zihniyetten arındırır.
+• Kişileri düşünen, araştıran, yargılayan varlıklar haline getirir ve yaratıcılıklarında özgür birikimleri ortaya hazırlar.
+• Başarıya ancak ve ancak sistemli ve disiplinli bir çalışmayla ulaşılacağını gösterir.
+• Mücadeleci bir ruh yapısına sahip olmanın gerekliliğini belirtmiştir.
+• Başarısızlıklar karşısında yılmaymayı, başarının çok daha fazla çaba sarf etmek gerektiğini öğretir.
+
+Verilen bilgilerden hareketle satrancın yararları arasında aşağıdakilerden hangisine ulaşılamaz?
+  A) Odaklanma sağladığına
+  B) Branşlar için en iyi takviye olduğuna
+  C) Düşünsel anlamda yaratıcılık kazandırdığına
+  D) Kişiye bir plan ve sistem kazandırdığına
+  E) Başarı için kişilerin çabalayacağına
+
+#23 [TURKCE]
+  Q: Büyük nehirlerden uzakta bulundukları için, büyük topluluklar çeşitli alanlara yayılmış demektir. Çalışmanın bir parçası olan Doktor Jonas Gregorio de Souza, "Amazon'un el değmemiş bir alan olduğunu ve göçebe toplulukların el değmemiş olan yanını bir kırm mevcut. Durum bu değil." dedi. "Dünyanın daha eski çağlarda büyük nehirlerden uzakta bazı popülasyonlar bulduk ve bu insanların, çevreye kolonimize edilse hâlâ bulabildiğimiz etkileri var." Bölgede Kolomb öncesi arazi kullanımıyn niteliği ve ölçütü tartışmalı bir konu olmaya devam ediyor. Çalışmanın içinden olanlardan Profesör Jose Iriarte "Araştırmalarımız gösteriyor ki Amazon'un tarihi tekrar incelenmeli. Kesinlikle sadece büyük nehirlerin kıyılarında yerleşen bir bölge değildi ve orada yaşayan insanlar manzarayı değiştirdi." dedi.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Çalışmalarının sonucunun başka alanlardan da sorgulamalar oluşturduğu
+  B) İnsanların yerleşim yeri olarak büyük akarsuların çevresini kullandıkları
+  C) Çevre konusunda insanların her dönem etki ettikleri
+  D) Amazon çevresinde dünyaya yön vermiş bir kültürün yaşadığı
+  E) Çevre konusunda bilimsel anlamda bir araştırma yapıldığı
+
+#24 [TURKCE]
+  Q: Tarih öncesi çağlardan başlayarak günümüze dek sanatın en önemli konusu insan biçimi olmuştur. İnsan, dünyaya yolladığı ve ibaretin çevresini ve kendisini gözlemleyip yaşantısı boyunca kendisine benzeyene yakınlık duyar. Çevresini ve kendi görselliği içindekileri anlamlandırmada her zaman kendi kişisel ölçüt olarak kullanır. İnsan biçimi betimlenmiş tarihi zamlardadır. farklı toplumlarda sanatta, farklı anlamlarla işlenmiştir. Günümüze kadar gelen ve büyük değişiklikler gösteren figüratif sanat geleneği, hâla insandan sıkılıkla işlediği bir sanatsal dışa vuruş özelliği durumundadır.
+
+Bu parçadan hareketle aşağıdakilerden hangisi söylenemez?
+  A) Figüratif analizin tarihsel gelişimine bakıldığında, insan betimlemelerinin varlığı görülmektedir.
+  B) Günümüzde insan figürü betimlemeleri, milletlerin geleceksel kimliklerini yansıtmaktadır.
+  C) İnsanoğlunun kendi görselliğini tercih etmesinin altında kendisine hayranlık yatmaktadır.
+  D) Sanatsal bir dünya oluş olan insan biçimi, tarihsel gelişim içinde değişikliklere uğramıştır.
+  E) Pek çok sanatçı duygu ve düşüncelerini en iyi şekilde ifade edebilmek için araç olarak kendi görsel biçimini kullanmıştır.
+
+#25 [TURKCE]
+  Q: 7. Dünya tarihine baktığımızda ulusların geleceğini yönlendiren bütün büyük liderlerin sanat ve edebiyata yakın ilgilerine hatta bu alandaki uğraşlarına tanık oluruz. Ayrıca şurası bir gerçek ki sanatın gerekliliğine inanan ve bu bilinçle olan tüm önderlerin düşünce yapıtları demokrat ve ilerici nitelikler taşıdığına görürüz. Sanatın temelinde var olan insan sevgisini, hoşgörüyü, yaratma özgürlüğünü büyük önem veren bu liderler; sanatın gerekliliğine inanırken sanatçının da toplum içindeki saygınlığını ve önemini özdeş nitelikteki sözlerle yerli yerinde her zaman vurgulamışlardır.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Dünya tarihinde ulusların geleceğine yön veren bütün liderler sanat ve edebiyata meşgul olmuştur.
+  B) Sanat ve edebiyatı önemseyen büyük liderler genellikle ilerici ve demokrat özellikler taşımaktadır.
+  C) Kimi büyük liderler, sanat ve edebiyata ilgi göstermekle kalmayıp bu alanda uğraş da vermiştir.
+  D) Ulusların geleceğine yön veren büyük liderler, sanatın temelini oluşturan unsurlara göz ardı etmemişlerdir.
+  E) Dünyadaki bütün büyük liderler, sanatçının değerini bilmiş ve bunu kimi konuşmalarında dile getirmişlerdir.
+
+#26 [MATEMATIK]
+  Q: 1. a ve b doğrusal bağımlı değişkenlerdir. f(x) = ax + b fonksiyonu veriliyor. f(x) = 0 denkleminin çözüm kümesi A ve f(x) = 1 denkleminin çözüm kümesi B ise, A ve B'nin kesişim kümesi hangi noktadır?
+  A) A ve B'nin kesişim kümesi boş kümedir.
+  B) A ve B'nin kesişim kümesi A kümesidir.
+  C) A ve B'nin kesişim kümesi B kümesidir.
+  D) A ve B'nin kesişim kümesi A ve B'nin birleşim kümesidir.
+  E) Verilen bilgilere göre A ve B'nin kesişim kümesi belirlenemez.
+
+#27 [KIMYA]
+  Q: Aşağıdaki ikişerlemelerin hangisinin eşitliği doğru bir ikişerlemeyi ifade etmez?
+  A) K_2SO_4 + H_2O → 2KOH + SO_2
+  B) CaCO_3 + 2HCl → CaCl_2 + H_2O + CO_2
+  C) NaOH + HCl → NaCl + H_2O
+  D) H_2SO_4 + BaCl_2 → BaSO_4 + 2HCl
+  E) Fe + 2HCl → FeCl_2 + H_2
+
+#28 [TURKCE]
+  Q: Yaşadığım sorunları dile getirmek, bir başka deyişle onları somutlama çabasından başka bir şey olmadı yazdıkça. Kimi zaman, bunu başaramadığımda, sinirlerin alına çıkarmaya geldim. Yazmak benim bir parçamda ona emniyetle yaşamak değil, onlardan kurtulmak istiyordum. Yazdıktan sonra da onları unuttum. Yazıp yayınladıktan sonra büyük çoğunluğunun sarkıcı olduğunu duymuştum. Bu durumun bana neler mal olduğunu bilmiyor değildim. Yazar olarak çok şey yitirdim. Ama kazanmak için yitirmek gerekir.
+
+Bu parçada aşağıdaki sorulardan hangisinin cevabı yoktur?
+  A) Yazılarınızda her şeyi açık açık yazabilmiş misiniz?
+  B) Bir yazar olarak hayıflandığınız bir şey var mı?
+  C) Yazmak sizin için ne anlam ifade ediyor?
+  D) Her zaman, yazarlıkteki amacınıza ulaşabildiniz mi?
+  E) Yazılarınız ile kendiniz arasında bir bağ var mıydı?
+
+#29 [TURKCE]
+  Q: Yalnızca Fransa'da değil, birçok Batı ülkesinde de az çok böyledir. Bugün de çok sayıda tarihsel roman yazılıyor, oldukça geniş bir okur kitlesinin tarihsel roman niteliğinde romanları öteki romanlara tercih ettiği yeterince bilinmediğini düşündükleri gibi gerçekleri onlara aradıklarını biliyoruz. Romanın gerçeğe uygunluğu yalnızca tarihsel romanlarda da aranmayor. Ne için bir yazarın yazdığı olayların, olgularının ve en yüze yattığı romanının gerçeğe uygun olması istenir, kendisinin gerçek diye bildiğini ve üstüne basarak gösterdiği hemen çiziyor altını, eserinin değersiz ya da tutarsız olduğunu belirtiyor. Politikadaki değişiklik sapıtmalarla gerçeğin tersine çevirmesi kimseyi fazla rahatsız etmiyor. bilim adamlarının günümü çoktan doldurmuş yontemlerle geçersiz bilginin üretilmesine karşılık kimse ses çıkarmıyor. Ama romancı; belkilecekmiş ters düzene bir yorum getirdi mi, başta eleştirmen olmak üzere, herkesin tepası yazar.
+
+Bu parçanın yazarı aşağıdakilerden hangisini söylemesi beklenmez?
+  A) Genelde edebiyat özelle de romanla nesnel gerçeklik arasında ilişki kurmak yadırganmamalıdır.
+  B) Bir edebi eserin doğasına uygun olmayan işlevler beklenmemelidir.
+  C) Günümüzde coğrafi bilgiyle, tarihsel bilgi birbirinden ayrılmayacak kadar da ele alınıyor.
+  D) Bir romanda verilen bilgiler tarih kitaplarındakilerle aynı düzlemde ele alınmaz.
+  E) Belli bir dönem üzerine roman yazmak o dönem hakkında nesnel bilgi vermek değildir.
+
+#30 [TURKCE]
+  Q: Bir yazarın, şairin yazınsal yolculuğunda 'ilk'i oluşturması her zaman zorudur. Oysa yazardan iz taşımayan bir 'ilk metin' pek düşünülemez. Bundan şairin, yazarın kendi döneminde anlattığı anlatışmalı olabileceği ortaya çıkar. Oradan sözülenlerden o yazardan yaşayarak çıkarak bir anlatı kurmak- tır asıl olan. Bir anlatıcı bunu kurma çizgisine gelen birim- dir önemlidir. Çünkü her anlatıcı kendinden öncekilerin bıraktığı yerden başlayamıyabilir, bilmedir ki. Yinelemeleme- ler, taklitlere düşmekten öte bolbol kaçınılmazdır anlatıcı için. İşte bu yönü bağırdığından parçalanmış edebiyata taşır ki bu da bir zana sonra onun sanat çizgisiyi yükseltir. Çün- kü o başlama noktasında hayata ve yazıya dair söylediği şeyleri, elbette toplumun vicdanına çarpmak bulacaktır.
+
+Bu paragrafta anlatılanlardan yola çıkarak aşağıdakilerden hangisine ulaşılamaz?
+  A) Bir sanatçının yazınsal kumaşının niteliği ilk yapısında kendisini belli eder.
+  B) Sanatçı geçmişin birikimlerinden yarattığında yapıt- larının sanatsal değeri de zamanla yükselecektir.
+  C) Bir yazarın kendi tarzını bulması kolay değildir.
+  D) Sanatçı özgün olmak istiyorsa kendinden öncekileri iyi tanımalıdır.
+  E) Yazarlar kaleme aldıkları ilk ürünlerde kendi yaşamıla- rından yola çıkarlar.

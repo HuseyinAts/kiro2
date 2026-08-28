@@ -16,9 +16,12 @@ Claude Code's built-in mechanism and more reliable.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 import sys
+from functools import lru_cache
+from pathlib import Path
 
 # Windows cp1254 crash fix
 if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
@@ -49,6 +52,47 @@ REWARD_HACKING_PATTERNS: list[tuple[str, str]] = [
 SKIP_PATH_PARTS = {".claude", "node_modules", ".git", "__pycache__"}
 
 
+@lru_cache(maxsize=1)
+def _bastirici():
+    """String literal / yorum bastiricisini yukle; yoksa None (#452).
+
+    Backend bekcisiyle AYNI mantik kullanilir — kopyalanmaz. `literal_spans.py`
+    yalnizca stdlib'e (io, tokenize, functools) baglidir ve goreli import
+    icermez, bu yuzden paket baglami olmadan dosya yolundan yuklenebilir.
+
+    HATA DURUMUNDA None -> hicbir bastirma yapilmaz, yani hook BUGUNKU gibi
+    bloklamaya devam eder. Belirsizlikte bekci kor degil ACIK kalir; bu,
+    literal_spans.py'nin kendi FAIL-OPEN politikasiyla ayni yon.
+    """
+    try:
+        yol = (
+            Path(__file__).resolve().parents[2]
+            / "backend"
+            / "hooks"
+            / "reward_hacking"
+            / "literal_spans.py"
+        )
+        spec = importlib.util.spec_from_file_location("_kiro2_literal_spans", yol)
+        if spec is None or spec.loader is None:
+            return None
+        modul = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(modul)
+        return modul.bulgu_bastirilmali
+    except Exception:
+        return None
+
+
+def _kod_disi(file_path: str, content: str, offset: int, desen: str) -> bool:
+    """Eslesme string literali / yorum icinde mi (yani TEST VERISI mi)?"""
+    bastir = _bastirici()
+    if bastir is None:
+        return False
+    try:
+        return bool(bastir(file_path, content, offset, desen))
+    except Exception:
+        return False
+
+
 def extract_content(hook_input: dict) -> tuple[str, str]:
     """Extract writable content and file_path from hook input.
 
@@ -66,12 +110,22 @@ def extract_content(hook_input: dict) -> tuple[str, str]:
     return "", file_path
 
 
-def check_reward_hacking(content: str) -> list[tuple[str, str]]:
-    """Check content for reward hacking patterns. Returns (pattern, label) matches."""
+def check_reward_hacking(content: str, file_path: str = "") -> list[tuple[str, str]]:
+    """Check content for reward hacking patterns. Returns (pattern, label) matches.
+
+    String literali icindeki eslesme TEST VERISIDIR, kod degil (#452). Bu hook
+    BLOKLAYICI oldugu icin yanlis-pozitif pahalidir: gelistirici mesru bir
+    dosyayi kaydedemez. Olculdu — uclu tirnakli bir fixture icindeki fake
+    assertion yazmayi engelliyordu (bu dosyanin kendi testinin ilk surumu de
+    bu yuzden bloklandi).
+    """
     matches = []
     for pattern, label in REWARD_HACKING_PATTERNS:
-        if re.search(pattern, content, re.MULTILINE):
+        for m in re.finditer(pattern, content, re.MULTILINE):
+            if _kod_disi(file_path, content, m.start(), pattern):
+                continue
             matches.append((pattern, label))
+            break
     return matches
 
 
@@ -92,17 +146,25 @@ def is_test_file(path: str) -> bool:
     )
 
 
-def check_empty_test(content: str) -> bool:
-    """Check for empty test bodies (CRLF-safe, Python + TS/JS)."""
-    # Python: def test_xxx(): \n    pass
-    if re.search(r"def\s+test_\w+\([^)]*\):\s*\r?\n\s*(pass|\.\.\.)\s*\r?\n", content):
-        return True
-    # Python async def
-    if re.search(r"async\s+def\s+test_\w+\([^)]*\):\s*\r?\n\s*(pass|\.\.\.)\s*\r?\n", content):
-        return True
-    # TS/JS: it('...', () => {}) or test('...', () => {})
-    if re.search(r"(it|test)\s*\([^)]*,\s*\(\)\s*=>\s*\{\s*\}\s*\)", content):
-        return True
+def check_empty_test(content: str, file_path: str = "") -> bool:
+    """Check for empty test bodies (CRLF-safe, Python + TS/JS).
+
+    `check_reward_hacking` ile ayni literal kurali gecerli (#452): fixture
+    string'i icindeki bos test govdesi test VERISIDIR, kod degil.
+    """
+    desenler = (
+        # Python: def test_xxx(): \n    pass
+        r"def\s+test_\w+\([^)]*\):\s*\r?\n\s*(pass|\.\.\.)\s*\r?\n",
+        # Python async def
+        r"async\s+def\s+test_\w+\([^)]*\):\s*\r?\n\s*(pass|\.\.\.)\s*\r?\n",
+        # TS/JS: it('...', () => {}) or test('...', () => {})
+        r"(it|test)\s*\([^)]*,\s*\(\)\s*=>\s*\{\s*\}\s*\)",
+    )
+    for desen in desenler:
+        for m in re.finditer(desen, content):
+            if _kod_disi(file_path, content, m.start(), desen):
+                continue
+            return True
     return False
 
 
@@ -126,12 +188,12 @@ def main() -> int:
     errors: list[str] = []
 
     # 1. Reward hacking detection
-    matches = check_reward_hacking(content)
+    matches = check_reward_hacking(content, file_path)
     for _pattern, label in matches:
         errors.append(f"Reward hacking: '{label}'")
 
     # 2. Empty test body detection
-    if is_test_file(file_path) and check_empty_test(content):
+    if is_test_file(file_path) and check_empty_test(content, file_path):
         errors.append("Empty test body (pass/...) — tests must have real assertions")
 
     # Verdict

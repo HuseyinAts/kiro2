@@ -18,11 +18,7 @@ logger = logging.getLogger(__name__)
 # DISABLED ROUTERS — Yüklenmez ama kodda kalır (re-enable: setten çıkar)
 # Sebep: Eksik tablo, deprecated, veya henüz aktif değil
 # ============================================================================
-DISABLED_ROUTERS = {
-    # RE-ENABLED (2026-04-06): 58 eksik tablo oluşturuldu, UUID->VARCHAR fix uygulandı
-    # Tüm 13 router test edildi ve başarıyla import ediliyor
-    # ChromaDB/YOLO yokluğunda graceful degradation ile çalışıyorlar
-}
+DISABLED_ROUTERS: dict[str, str] = {}
 
 # Router mapping - gerçek dosya adlarıyla eşleştirildi
 ROUTER_MAPPING = {
@@ -35,11 +31,19 @@ ROUTER_MAPPING = {
     "api.enhanced_auth_api": ("auth", "api.enhanced_auth_api"),
     "api.two_factor_auth_api": ("auth", "api.two_factor_auth_api"),
     "api.billing_api": ("security", "api.billing_api"),
+    # #447: frontend getMe() tek veri kaynagi. Kayitsiz router = 404 (testing.md #27).
+    "api.me": ("core", "api.me"),
     "api.kvkk_consent_api": ("security", "api.kvkk_consent_api"),
     "api.kvkk_privacy_api": ("security", "api.kvkk_privacy_api"),
+    "api.kvkk_notice_api": ("security", "api.kvkk_notice_api"),  # KVKK Md.10 aydınlatma
     "api.rate_limit_api": ("security", "api.rate_limit_api"),
     "api.ddos_management_api": ("security", "api.ddos_management_api"),
     "api.audit_api": ("security", "api.audit_api"),
+    "api.org_api": ("security", "api.org_api"),  # Faz 0 multi-tenancy
+    "api.org_billing_api": (
+        "security",
+        "api.org_billing_api",
+    ),  # Faz 1 B2B DPA/license/invoice
     "api.audit_logs_api": ("security", "api.audit_logs_api"),
     "api.encryption_management": ("security", "api.encryption_management"),
     "api.api_key_api": ("security", "api.api_key_api"),
@@ -61,10 +65,7 @@ ROUTER_MAPPING = {
     "api.curriculum_compliance": ("learning", "api.curriculum_compliance"),
     # Content & Questions
     "api.soru_bankasi": ("content", "api.soru_bankasi"),
-    "api.question_crud_api": ("content", "api.question_crud_api"),
     # "api.questions_api": ("content", "api.questions_api"),  # REMOVED - deprecated/non-existent
-    "api.content_management": ("content", "api.content_management"),
-    "api.content_api": ("content", "api.content_api"),
     "api.osym_questions_api": ("content", "api.osym_questions_api"),
     "api.osym_routes": ("content", "api.osym_routes"),
     "api.osym_inspired_routes": ("content", "api.osym_inspired_routes"),
@@ -90,7 +91,6 @@ ROUTER_MAPPING = {
     "api.turkish_nlp": ("ai", "api.turkish_nlp"),
     "api.cultural_adaptation_api": ("ai", "api.cultural_adaptation_api"),
     "api.sequential_reasoning_api": ("ai", "api.sequential_reasoning_api"),
-    "api.litellm_chat": ("ai", "api.litellm_chat"),
     "api.enhanced_chat": ("ai", "api.enhanced_chat"),
     # Integrations
     "api.youtube_routes": ("integrations", "api.youtube_routes"),
@@ -105,6 +105,7 @@ ROUTER_MAPPING = {
     # Admin & Management
     "api.admin": ("admin", "api.admin"),
     "api.teacher_routes": ("admin", "api.teacher_routes"),
+    "api.teacher_copilot_api": ("teacher", "api.teacher_copilot_api"),
     "app.api.teacher_classroom": ("teacher", "app.api.teacher_classroom"),
     "api.ogretmen": ("admin", "api.ogretmen"),
     "api.veli": ("admin", "api.veli"),
@@ -196,6 +197,7 @@ ROUTER_MAPPING = {
     "api.diary_api": ("learning", "api.diary_api"),
     # Faz 2: Study Planner, Leagues, Coaching (Mega Feature Plan)
     "api.study_planner_api": ("learning", "api.study_planner_api"),
+    "api.plan_api": ("learning", "api.plan_api"),
     "api.league_api": ("integrations", "api.league_api"),
     "api.coaching_api": ("learning", "api.coaching_api"),
     # Faz 3: Duel, Photo Ask, Placement Assessment (Mega Feature Plan)
@@ -298,7 +300,7 @@ class RouterLoader:
 
     def _register_to_app(self):
         """Tüm router'ları FastAPI app'e kaydet."""
-        for name, router, prefix in router_registry.get_all_routers():
+        for name, router, _prefix in router_registry.get_all_routers():
             try:
                 # P0 FIX: Don't strip /api prefix - routes need to be accessible at /api/...
                 # The router already defines its full prefix (e.g., /api/learning-path)

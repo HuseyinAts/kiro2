@@ -128,7 +128,6 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       aria-modal="true"
-      role="dialog"
       TransitionComponent={settings.reducedMotion ? undefined : Fade}
       TransitionProps={{
         timeout: settings.reducedMotion ? 0 : 300,
@@ -142,6 +141,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
         },
       }}
       PaperProps={{
+        'aria-modal': 'true',
         sx: {
           borderRadius: 2,
           boxShadow: theme.shadows[24],

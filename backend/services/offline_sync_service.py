@@ -12,10 +12,17 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import select, func, and_, text
+from sqlalchemy import and_, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
+from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
+
+# Import garantisi: SQLAlchemy mapper registry'sine kayit olsun ki Alembic
+# autogenerate offline_sync_packages'i bir daha "yetim" tablo sanip DUSURMESIN
+# (kok neden: bu import hic yoktu, bkz models/offline_sync_models.py docstring).
+from models.offline_sync_models import OfflineSyncPackage  # noqa: F401
 
 logger = get_logger("offline_sync_service")
 
@@ -47,7 +54,7 @@ async def build_sync_package(
         Dict matching SyncPackageResponse schema.
     """
     from models.fsrs_models import FSRSCard
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionBankItem, QuestionMetadata
 
     now = datetime.now(UTC)
     package_id = str(uuid.uuid4())
@@ -104,41 +111,39 @@ async def build_sync_package(
     if remaining_slots < 1:
         remaining_slots = 10  # always include at least some questions
 
-    dialect = db.bind.dialect.name if db.bind else "sqlite"
-    if dialect == "postgresql":
-        q_query = (
-            select(QuestionBankItem)
-            .tablesample(func.bernoulli(20))
-            .where(QuestionBankItem.is_active == True)  # noqa: E712
+    # NOT: Select.tablesample() SQLAlchemy 2.0'da mevcut değil (kaldırıldı/hiç
+    # eklenmedi) — postgresql dalı bu API'yi kullanmaya çalışıyordu ve HER ZAMAN
+    # 500 ile patlıyordu (canlı doğrulandı). func.random() her iki dialect'te de
+    # (postgresql RANDOM(), sqlite RANDOM()) çalışır — dialect ayrımına gerek yok.
+    # #485 split: asagida q.question_text/.option_*/.correct_answer (content),
+    # q.subject_area (metadata_info) ve q.difficulty_level (statistics) ORNEK
+    # duzeyinde okunuyor. Uc iliski de lazy='select' -> async oturumda
+    # eager-load'suz erisim MissingGreenlet atar.
+    q_query = (
+        select(QuestionBankItem)
+        .options(
+            selectinload(QuestionBankItem.content),
+            selectinload(QuestionBankItem.metadata_info),
+            selectinload(QuestionBankItem.statistics),
         )
-    else:
-        q_query = (
-            select(QuestionBankItem)
-            .where(QuestionBankItem.is_active == True)  # noqa: E712
-        )
+        .where(QuestionBankItem.is_active == True)  # noqa: E712
+        # Kalite kapısı — tanım core/quality_gate.py.
+        .where(safe_for_beta_gate(QuestionBankItem.id))
+    )
 
     if subject:
-        q_query = q_query.where(QuestionBankItem.subject_area == subject.upper())
+        q_query = q_query.join(
+            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+        ).where(QuestionMetadata.subject_area == subject.upper())
 
-    if dialect == "postgresql":
-        q_query = q_query.limit(remaining_slots)
-    else:
-        q_query = q_query.order_by(func.random()).limit(remaining_slots)
+    q_query = q_query.order_by(func.random()).limit(remaining_slots)
 
     q_result = await db.execute(q_query)
     questions_db = q_result.scalars().all()
 
-    if dialect == "postgresql" and len(questions_db) < remaining_slots:
-        fallback_query = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
-        if subject:
-            fallback_query = fallback_query.where(QuestionBankItem.subject_area == subject.upper())
-        fallback_query = fallback_query.limit(remaining_slots)
-        q_result = await db.execute(fallback_query)
-        questions_db = q_result.scalars().all()
-
     questions: list[dict[str, Any]] = []
     for q in questions_db:
-        # QuestionBankItem ORM has option_a..option_e columns (Text).
+        # option_a..option_e artik QuestionContent'te (delegate ile okunuyor).
         # Compose into a dict for the OfflineQuestion.options payload.
         raw_options: dict[str, str] = {
             "A": q.option_a or "",
@@ -211,9 +216,36 @@ async def process_sync_results(
 
     For each result:
     - Validates the question exists and belongs to question_bank.
-    - Inserts a record into student_answers (using a synthetic exam session or
-      the offline_sync pseudo-session id).
-    - Updates FSRS card scheduling when a matching card is found.
+    - Updates FSRS card scheduling **when a matching card is found** (`:322-328`).
+
+    NOT PERSISTED: student answers. (S249, 23 Aug 2026 — measured.)
+    ------------------------------------------------------------------
+    This docstring used to promise an insert into the student-answers table
+    (verbatim text in the audit ledger, X11 second limb — deliberately not
+    repeated here so that grepping for the false claim yields zero hits).
+    It was never true: `StudentAnswer` appears **zero** times in this module and
+    `git log -S` shows it never did. The only write is `db.add(card)` at `:328`.
+
+    The claim was not made true because measurement said the path is unused:
+      - `offline_sync_packages` -> 0 rows; `process_sync_results` rejects every
+        batch with `unknown_package` when no package exists (`:238-256`).
+      - `POST /api/v1/offline/sync-results` has **no caller** in `frontend/`;
+        the live client syncs through the separate `/api/v1/sync/*` router
+        (`backgroundSyncService.ts`, `sw.ts`).
+      - `student_answers.exam_session_id` is NOT NULL, so persisting here would
+        require inventing a synthetic-session design — a feature decision, not a
+        docstring fix, on a path nothing calls.
+    Writing the feature would violate YAGNI and risk a second, divergent write
+    path next to `/api/v1/sync/*`. If a client ever wires this endpoint, the
+    answer-persistence decision must be made **before** it ships.
+
+    KNOWN ISSUE — `synced_count` over-reports.
+    ------------------------------------------
+    `synced += 1` (`:330`) sits OUTSIDE the `if card is not None:` block, so an
+    item with no matching FSRS card counts as "synced" while **nothing at all**
+    is written. Left unchanged deliberately: altering it changes the response
+    contract on a path with no consumer (+0 user value). Recorded in the audit
+    ledger (X11, second limb) instead of silently fixed.
 
     Args:
         db: Async database session.
@@ -223,12 +255,18 @@ async def process_sync_results(
         completed_at: ISO-8601 string of when the offline session ended.
 
     Returns:
-        Dict with synced_count, failed_count, next_sync_recommended_at.
+        Dict with synced_count, skipped_count, failed_count,
+        next_sync_recommended_at.
+        `synced_count` counts items whose FSRS card was actually updated.
+        Items whose question exists but has no FSRS card are `skipped_count`
+        (nothing persisted, but not the student's fault); invalid/unknown
+        items are `failed_count`. The three always sum to len(results).
     """
     from models.fsrs_models import FSRSCard
     from models.question_bank import QuestionBankItem
 
     synced = 0
+    skipped = 0
     failed = 0
     package_row = await db.execute(
         text(
@@ -269,6 +307,25 @@ async def process_sync_results(
             result_count=len(results),
         )
 
+    # Pre-fetch referenced questions (existence + active) and the student's FSRS
+    # cards. Bu map'ler aşağıda kullanılıyordu ama hiç oluşturulmamıştı (F821):
+    # sonuçta her yüklenen cevap NameError'a düşüp sessizce "failed" sayılıyordu.
+    result_qids = [str(r.get("question_id")) for r in results if r.get("question_id")]
+    questions_map: dict[str, QuestionBankItem] = {}
+    if result_qids:
+        q_rows = await db.execute(
+            select(QuestionBankItem).where(
+                QuestionBankItem.id.in_(result_qids),
+                QuestionBankItem.is_active == True,  # noqa: E712
+            )
+        )
+        questions_map = {str(q.id): q for q in q_rows.scalars().all()}
+
+    card_rows = await db.execute(
+        select(FSRSCard).where(FSRSCard.student_id == student_id)
+    )
+    cards = list(card_rows.scalars().all())
+
     for item in results:
         try:
             question_id = item["question_id"]
@@ -297,12 +354,22 @@ async def process_sync_results(
 
             # Find matching FSRS card in pre-fetched list
             card = next((c for c in cards if question_id in c.front_text), None)
-            if card is not None:
-                _apply_fsrs_grade(
-                    card=card, is_correct=is_correct, time_seconds=time_seconds
+            if card is None:
+                # Karti olmayan soru: hicbir sey KALICI OLMADI. Onceden burada da
+                # `synced += 1` calisiyordu -- ogrenci "40 senkronlandi" gorup
+                # ertesi gun hicbirini tekrar listesinde bulamiyordu.
+                # `failed` demek de yanlis: kart yoklugu ogrencinin hatasi degil.
+                logger.info(
+                    f"FSRS card missing, result skipped: {question_id}",
+                    extra_data={"student_id": student_id},
                 )
-                db.add(card)
+                skipped += 1
+                continue
 
+            _apply_fsrs_grade(
+                card=card, is_correct=is_correct, time_seconds=time_seconds
+            )
+            db.add(card)
             synced += 1
 
         except Exception as exc:
@@ -327,6 +394,7 @@ async def process_sync_results(
 
     return {
         "synced_count": synced,
+        "skipped_count": skipped,
         "failed_count": failed,
         "next_sync_recommended_at": _next_sync_at_iso(),
     }
@@ -351,6 +419,7 @@ def _reject_batch(
 
     return {
         "synced_count": 0,
+        "skipped_count": 0,
         "failed_count": result_count,
         "next_sync_recommended_at": _next_sync_at_iso(),
     }
@@ -358,7 +427,7 @@ def _reject_batch(
 
 def _next_sync_at_iso() -> str:
     # Recommend next sync in ~6 hours
-    next_sync = datetime.now(timezone.utc) + timedelta(hours=6)
+    next_sync = datetime.now(UTC) + timedelta(hours=6)
     return next_sync.isoformat()
 
 

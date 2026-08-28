@@ -3,20 +3,22 @@ Alembic Migration Test Suite for KIRO2 Platform
 
 Tests migration integrity, upgrade/downgrade cycles, and schema consistency.
 """
+
 from __future__ import annotations
 
 import os
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
+from urllib.parse import urlsplit
 
 import pytest
-from alembic.config import Config
-from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import OperationalError
 
 from alembic import command
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -33,10 +35,74 @@ sys.path.insert(0, str(backend_dir))
 # ============================================================================
 
 
+# Bu adlara sahip veritabanlarina karsi goc testi KOSULMAZ. Sebep asagidaki
+# UYARI blogunda: bu testler hedef DB'de `downgrade(..., "base")` calistirir.
+URETIM_DB_ADLARI = frozenset({"kiro2", "kiro2_db", "kiro2_temp"})
 
-pytestmark = pytest.mark.skipif(
-    True,
-    reason="Migration tests require real PostgreSQL, 1F + 10E",
+
+def _dsn_veritabani_adi(dsn: str) -> str:
+    """DSN'in yolundaki veritabani adi; surucu eki ve query-string haric.
+
+    Elle `rsplit("/")` YAPILMIYOR: 'postgresql://u@h/' gibi bos-yollu DSN'de
+    host'u veritabani adi saniyordu (bekci yakaladi). urlsplit authority ile
+    path'i dogru ayirir ve 'postgresql+psycopg' gibi surucu eklerini tolere eder.
+    """
+    return urlsplit(dsn).path.lstrip("/")
+
+
+def _kosma_engeli() -> str | None:
+    """Bu testlerin kosmasini engelleyen sebep; ``None`` ise kosabilirler.
+
+    Bool yerine SEBEP donuyor cunku uc farkli ret var ve skip gerekcesinin
+    hangisi oldugunu SOYLEMESI gerekiyor -- "PostgreSQL yok" demek, aslinda
+    uretim korumasina takilmis bir kosumu yanlis raporlardi.
+    """
+    dsn = os.getenv("TEST_DATABASE_URL") or os.getenv("DATABASE_URL") or ""
+    if "postgresql" not in dsn:
+        return (
+            "Gercek PostgreSQL yok (TEST_DATABASE_URL/DATABASE_URL postgresql degil). "
+            "SABIT True DEGIL: PG varsa bu testler KOSAR."
+        )
+    ad = _dsn_veritabani_adi(dsn)
+    if ad in URETIM_DB_ADLARI:
+        return (
+            f"URETIM KORUMASI: DSN '{ad}' veritabanina bakiyor. Bu testler hedef "
+            "veritabaninda downgrade(base) calistirir ve 'mevcut tabloyu atla' "
+            "korumasi YOKTUR -- uretime karsi CALISTIRILMAZ."
+        )
+    try:
+        with create_engine(dsn).connect() as baglanti:
+            baglanti.execute(text("SELECT 1"))
+        return None
+    except Exception as hata:
+        return f"PostgreSQL'e baglanilamadi: {type(hata).__name__}: {hata}"
+
+
+def _postgres_erisilebilir() -> bool:
+    """Geriye donuk ad: engel yoksa True."""
+    try:
+        return _kosma_engeli() is None
+    except Exception:
+        return False
+
+
+# OLCULDU (24 Agu 2026, sabit True kaldirilarak): 16 testin 6'si HIC veritabani
+# istemiyor (alembic script dizinini okur) ve GECER; yalnizca 10'u DB'ye baglidir.
+# Bu yuzden kapi modul duzeyinde DEGIL, DB'ye bagli 3 sinifin uzerindedir --
+# aksi halde `test_no_manual_table_drops_without_backup` gibi CALISAN bir bekci
+# de karanlikta kalir (5 Agu 2026 icerik kaybi tam o siniftandi).
+#
+# UYARI: Bu kapi acildiginda TestSchemaAfterMigration ve TestDowngradeSafety
+# HEDEF VERITABANINDA `command.downgrade(..., "base")` calistirir (satir ~542,
+# ~576) ve bunlarda "mevcut tablo varsa atla" korumasi YOKTUR.
+# Bu uyari YAPTIRIMA cevrildi: `URETIM_DB_ADLARI` icindeki bir DSN verilirse kapi
+# acilmaz. Yorum satiri yaptirim degildir -- 5 Agu 2026'da takipsiz bir TRUNCATE
+# icerik kaybettirdi. Bekci: tests/unit/test_migration_uretim_korumasi.py
+_ENGEL = _kosma_engeli()
+
+gercek_postgres_gerekir = pytest.mark.skipif(
+    _ENGEL is not None,
+    reason=_ENGEL or "",
 )
 
 
@@ -97,7 +163,9 @@ def db_engine(alembic_config: Config) -> Generator[Engine, None, None]:
 
 
 @pytest.fixture
-def clean_database(db_engine: Engine, alembic_config: Config) -> Generator[None, None, None]:
+def clean_database(
+    db_engine: Engine, alembic_config: Config
+) -> Generator[None, None, None]:
     """
     Drop alembic_version table before each test for clean state.
 
@@ -204,6 +272,7 @@ class TestMigrationHistory:
 # ============================================================================
 
 
+@gercek_postgres_gerekir
 @pytest.mark.slow
 class TestMigrationUpgradeDowngrade:
     """Test upgrade and downgrade cycles for migrations."""
@@ -229,7 +298,9 @@ class TestMigrationUpgradeDowngrade:
         existing_tables = inspector.get_table_names()
 
         # Skip if critical tables already exist (indicates non-clean DB)
-        conflicting_tables = {"users", "questions", "exam_sessions"} & set(existing_tables)
+        conflicting_tables = {"users", "questions", "exam_sessions"} & set(
+            existing_tables
+        )
         if conflicting_tables:
             pytest.skip(
                 f"Database has existing tables: {conflicting_tables}. "
@@ -275,7 +346,9 @@ class TestMigrationUpgradeDowngrade:
         existing_tables = inspector.get_table_names()
 
         # Skip if critical tables already exist (indicates non-clean DB)
-        conflicting_tables = {"users", "questions", "exam_sessions"} & set(existing_tables)
+        conflicting_tables = {"users", "questions", "exam_sessions"} & set(
+            existing_tables
+        )
         if conflicting_tables:
             pytest.skip(
                 f"Database has existing tables: {conflicting_tables}. "
@@ -312,7 +385,9 @@ class TestMigrationUpgradeDowngrade:
         existing_tables = inspector.get_table_names()
 
         # Skip if critical tables already exist (indicates non-clean DB)
-        conflicting_tables = {"users", "questions", "exam_sessions"} & set(existing_tables)
+        conflicting_tables = {"users", "questions", "exam_sessions"} & set(
+            existing_tables
+        )
         if conflicting_tables:
             pytest.skip(
                 f"Database has existing tables: {conflicting_tables}. "
@@ -330,21 +405,21 @@ class TestMigrationUpgradeDowngrade:
             try:
                 command.upgrade(alembic_config, rev.revision)
             except Exception as e:
-                pytest.fail(
-                    f"Upgrade to {rev.revision} ({rev.doc}) failed: {e}"
-                )
+                pytest.fail(f"Upgrade to {rev.revision} ({rev.doc}) failed: {e}")
 
         # Downgrade back
         for rev in reversed(all_revisions[:5]):
             try:
                 if rev.down_revision:
                     # down_revision can be str, list, or tuple - ensure it's str
-                    down_rev = rev.down_revision if isinstance(rev.down_revision, str) else rev.down_revision[0]
+                    down_rev = (
+                        rev.down_revision
+                        if isinstance(rev.down_revision, str)
+                        else rev.down_revision[0]
+                    )
                     command.downgrade(alembic_config, down_rev)
             except Exception as e:
-                pytest.fail(
-                    f"Downgrade from {rev.revision} ({rev.doc}) failed: {e}"
-                )
+                pytest.fail(f"Downgrade from {rev.revision} ({rev.doc}) failed: {e}")
 
 
 # ============================================================================
@@ -352,6 +427,7 @@ class TestMigrationUpgradeDowngrade:
 # ============================================================================
 
 
+@gercek_postgres_gerekir
 @pytest.mark.slow
 @pytest.mark.slow
 class TestSchemaAfterMigration:
@@ -480,7 +556,9 @@ class TestSchemaAfterMigration:
                 continue  # Skip if table doesn't exist
 
             fks = inspector.get_foreign_keys(table)
-            fk_columns = {fk["constrained_columns"][0] for fk in fks if fk["constrained_columns"]}
+            fk_columns = {
+                fk["constrained_columns"][0] for fk in fks if fk["constrained_columns"]
+            }
 
             missing = set(expected_fk_columns) - fk_columns
             assert len(missing) == 0, (
@@ -506,7 +584,9 @@ class TestSchemaAfterMigration:
         # Check indexes on users table (if exists)
         if "users" in inspector.get_table_names():
             indexes = inspector.get_indexes("users")
-            index_columns = {idx["column_names"][0] for idx in indexes if idx["column_names"]}
+            index_columns = {
+                idx["column_names"][0] for idx in indexes if idx["column_names"]
+            }
 
             # Email should be indexed for login performance
             assert "email" in index_columns, (
@@ -520,6 +600,7 @@ class TestSchemaAfterMigration:
 # ============================================================================
 
 
+@gercek_postgres_gerekir
 @pytest.mark.slow
 class TestDowngradeSafety:
     """Test that downgrades preserve critical schema elements."""
@@ -575,9 +656,7 @@ class TestDowngradeSafety:
         try:
             command.downgrade(alembic_config, middle_rev.revision)
         except Exception as e:
-            pytest.fail(
-                f"Partial downgrade to {middle_rev.revision} failed: {e}"
-            )
+            pytest.fail(f"Partial downgrade to {middle_rev.revision} failed: {e}")
 
 
 # ============================================================================
@@ -633,14 +712,15 @@ class TestMigrationMetadata:
             if "op.drop_table(" in content:
                 # Should have comment about backup or data migration
                 has_backup_comment = (
-                    "backup" in content.lower() or
-                    "data migration" in content.lower() or
-                    "safe to drop" in content.lower()
+                    "backup" in content.lower()
+                    or "data migration" in content.lower()
+                    or "safe to drop" in content.lower()
                 )
 
                 # This is a warning, not a failure (for review purposes)
                 if not has_backup_comment:
                     import warnings
+
                     warnings.warn(
                         f"Migration {rev.revision} drops tables without backup comment. "
                         "Consider adding data preservation notes.",

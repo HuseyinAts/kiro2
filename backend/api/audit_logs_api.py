@@ -4,9 +4,10 @@ TASK 48.5: Audit log viewer and export
 
 Admin-only endpoints for viewing and exporting audit logs.
 """
+
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
@@ -21,7 +22,10 @@ router = APIRouter(prefix="/admin/audit-logs", tags=["Admin - Audit Logs"])
 class AuditLogResponse(BaseModel):
     """Audit log response model"""
 
-    id: int
+    # VARCHAR kimlik — `int` DEGIL (canli olcum 2 Agu 2026:
+    # information_schema audit_logs.id = character varying). gf25'in
+    # kacan kardesi; ayni sinif, ayni sonuc: ilk gercek satirda 500.
+    id: str
     timestamp: datetime
     event_type: str
     severity: str
@@ -60,7 +64,7 @@ class AuditStatsResponse(BaseModel):
 
 
 @router.get("/", response_model=AuditLogListResponse)
-def get_audit_logs(
+async def get_audit_logs(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=500),
     event_type: str | None = None,
@@ -87,34 +91,43 @@ def get_audit_logs(
         - end_date: Filter until this date
         - search: Search in description and user email
     """
-    query = db.query(AuditLog)
+    from fastapi.concurrency import run_in_threadpool
 
-    # Apply filters
-    if event_type:
-        query = query.filter(AuditLog.event_type == event_type)
-    if user_id:
-        query = query.filter(AuditLog.user_id == user_id)
-    if severity:
-        query = query.filter(AuditLog.severity == severity)
-    if start_date:
-        query = query.filter(AuditLog.timestamp >= start_date)
-    if end_date:
-        query = query.filter(AuditLog.timestamp <= end_date)
-    if search:
-        search_filter = f"%{search}%"
-        query = query.filter(
-            (AuditLog.description.ilike(search_filter))
-            | (AuditLog.user_email.ilike(search_filter))
+    def fetch_data():
+        query = db.query(AuditLog)
+
+        # Apply filters
+        if event_type:
+            query = query.filter(AuditLog.event_type == event_type)
+        if user_id:
+            query = query.filter(AuditLog.user_id == user_id)
+        if severity:
+            query = query.filter(AuditLog.severity == severity)
+        if start_date:
+            query = query.filter(AuditLog.timestamp >= start_date)
+        if end_date:
+            query = query.filter(AuditLog.timestamp <= end_date)
+        if search:
+            search_filter = f"%{search}%"
+            query = query.filter(
+                (AuditLog.description.ilike(search_filter))
+                | (AuditLog.user_email.ilike(search_filter))
+            )
+
+        # Get total count
+        total = query.count()
+
+        # Apply pagination
+        offset = (page - 1) * per_page
+        logs = (
+            query.order_by(AuditLog.timestamp.desc())
+            .offset(offset)
+            .limit(per_page)
+            .all()
         )
+        return total, logs
 
-    # Get total count
-    total = query.count()
-
-    # Apply pagination
-    offset = (page - 1) * per_page
-    logs = (
-        query.order_by(AuditLog.timestamp.desc()).offset(offset).limit(per_page).all()
-    )
+    total, logs = await run_in_threadpool(fetch_data)
 
     return AuditLogListResponse(
         total=total,

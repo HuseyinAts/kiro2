@@ -70,37 +70,37 @@ try:
     ocr_results = rec([img], det_predictor=det)
     print(f"Sonuç tipi: {type(ocr_results)}")
     print(f"Sonuç uzunluğu: {len(ocr_results)}")
-    
+
     if ocr_results:
         result = ocr_results[0]
         print(f"\nResult tipi: {type(result)}")
         print(f"Result attributes: {dir(result)}")
-        
+
         # text_lines var mı?
         if hasattr(result, 'text_lines'):
             print(f"\ntext_lines tipi: {type(result.text_lines)}")
             print(f"text_lines uzunluğu: {len(result.text_lines)}")
-            
+
             if result.text_lines:
                 line = result.text_lines[0]
                 print(f"\nİlk satır tipi: {type(line)}")
                 print(f"İlk satır attributes: {dir(line)}")
-                
+
                 if hasattr(line, 'text'):
                     print(f"İlk satır text: {line.text[:100]}..." if len(line.text) > 100 else f"İlk satır text: {line.text}")
-                
+
                 if hasattr(line, 'confidence'):
                     print(f"İlk satır confidence: {line.confidence}")
-        
+
         # Tüm metni birleştir
         if hasattr(result, 'text_lines'):
             full_text = ' '.join([
-                line.text for line in result.text_lines 
+                line.text for line in result.text_lines
                 if hasattr(line, 'text') and line.text
             ])
             print(f"\n📝 Tam metin ({len(full_text)} karakter):")
             print(full_text[:500] + "..." if len(full_text) > 500 else full_text)
-            
+
 except Exception as e:
     print(f"❌ OCR hatası: {e}")
     import traceback
@@ -115,12 +115,12 @@ try:
     table_results = table([img])
     print(f"Sonuç tipi: {type(table_results)}")
     print(f"Sonuç uzunluğu: {len(table_results)}")
-    
+
     if table_results:
         result = table_results[0]
         print(f"\nResult tipi: {type(result)}")
         print(f"Result attributes: {dir(result)}")
-        
+
         # Farklı attribute'ları kontrol et
         for attr in ['cells', 'table_cells', 'rows', 'columns', 'text', 'tables']:
             if hasattr(result, attr):
@@ -133,7 +133,7 @@ try:
                         print(f"   İlk eleman tipi: {type(val[0])}")
                         if hasattr(val[0], '__dict__'):
                             print(f"   İlk eleman attributes: {dir(val[0])}")
-                        
+
 except Exception as e:
     print(f"❌ Tablo hatası: {e}")
     import traceback
@@ -148,15 +148,15 @@ try:
     det_results = det([img])
     print(f"Sonuç tipi: {type(det_results)}")
     print(f"Sonuç uzunluğu: {len(det_results)}")
-    
+
     if det_results:
         result = det_results[0]
         print(f"\nResult tipi: {type(result)}")
         print(f"Result attributes: {dir(result)}")
-        
+
         if hasattr(result, 'bboxes'):
             print(f"\nbboxes sayısı: {len(result.bboxes)}")
-            
+
 except Exception as e:
     print(f"❌ Detection hatası: {e}")
     import traceback

@@ -12,14 +12,23 @@ Bu dosya ayrıca eski FSRS API uyumluluğunu da korur.
 
 from __future__ import annotations
 
+import inspect
 import logging
-from uuid import UUID
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+
+async def _maybe_await(val: Any) -> Any:
+    if inspect.isawaitable(val):
+        return await val
+    return val
+
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -35,7 +44,8 @@ from app.schemas.fsrs_schemas import (
 from app.services.fsrs_service import FSRSService
 
 # Eski API bağımlılıkları
-from core.dependencies import get_current_user as get_current_user_old, get_db as get_db_old
+from core.dependencies import get_current_user as get_current_user_old
+from core.dependencies import get_db as get_db_old
 from models.database import User as DBUser
 from services._deprecated.fsrs_service import FSRSService as DeprecatedFSRSService
 
@@ -48,8 +58,10 @@ fsrs_service = DeprecatedFSRSService()
 
 # ==================== ESKİ API PYDANTIC MODELLERİ ====================
 
+
 class CreateFlashcardRequest(BaseModel):
     """Flashcard oluşturma isteği"""
+
     subject: str = Field(..., description="Konu (Matematik, Türkçe, vb.)")
     topic: str = Field(..., description="Alt konu")
     content: str = Field(..., description="Kart içeriği")
@@ -58,6 +70,7 @@ class CreateFlashcardRequest(BaseModel):
 
 class ReviewFlashcardRequest(BaseModel):
     """Flashcard inceleme isteği"""
+
     grade: int = Field(
         ..., ge=1, le=4, description="Değerlendirme (1=Again, 2=Hard, 3=Good, 4=Easy)"
     )
@@ -66,6 +79,7 @@ class ReviewFlashcardRequest(BaseModel):
 
 class FlashcardResponse(BaseModel):
     """Flashcard yanıt modeli"""
+
     id: str
     subject: str
     topic: str
@@ -84,6 +98,7 @@ class FlashcardResponse(BaseModel):
 
 class StudyRecommendationsResponse(BaseModel):
     """Çalışma önerileri yanıt modeli"""
+
     due_cards_count: int
     upcoming_cards_count: int
     difficult_cards_count: int
@@ -99,6 +114,7 @@ class StudyRecommendationsResponse(BaseModel):
 
 class StudySessionResponse(BaseModel):
     """Çalışma oturumu yanıt modeli"""
+
     session_id: str
     duration_minutes: int | None = None
     cards_reviewed: int = 0
@@ -109,6 +125,7 @@ class StudySessionResponse(BaseModel):
 
 # ==================== YENİ API ENDPOINT'LERİ ====================
 
+
 @router.get(
     "/due",
     response_model=list[DueItemResponse],
@@ -117,15 +134,28 @@ class StudySessionResponse(BaseModel):
 async def get_due_items(
     subject_id: UUID | None = Query(None, description="Derse göre filtrele"),
     limit: int = Query(20, ge=1, le=100),
+    mercy: bool = Query(
+        False,
+        description="Catch-up modu: uzun devamsızlık sonrası yığılmış vadesi geçmiş "
+        "kartları bilişsel yük limitiyle (stability/zorluk önceliğiyle) getir",
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[DueItemResponse]:
     svc = FSRSService(db)
-    items = await svc.get_due_items(
-        str(current_user.id),
-        subject_id=str(subject_id) if subject_id else None,
-        limit=limit,
-    )
+    subject = str(subject_id) if subject_id else None
+    if mercy:
+        items = await svc.get_due_items_with_mercy(
+            str(current_user.id),
+            subject_id=subject,
+            max_cognitive_load=limit,
+        )
+    else:
+        items = await svc.get_due_items(
+            str(current_user.id),
+            subject_id=subject,
+            limit=limit,
+        )
     results = []
     for s, irt in items:
         if not isinstance(irt, dict):
@@ -168,13 +198,24 @@ async def submit_review(
     db: AsyncSession = Depends(get_db),
 ) -> ReviewResponse:
     svc = FSRSService(db)
-    result = await svc.apply_review(
-        user_id=str(current_user.id),
-        question_id=str(body.question_id),
-        is_correct=body.is_correct,
-        response_ms=body.response_ms,
-        item_b=body.item_b,
-    )
+    try:
+        result = await svc.apply_review(
+            user_id=str(current_user.id),
+            question_id=str(body.question_id),
+            is_correct=body.is_correct,
+            response_ms=body.response_ms,
+            item_b=body.item_b,
+        )
+    except IntegrityError as exc:
+        # GF12: soru bankasinda olmayan question_id FK ihlali uretir; bu bir
+        # istemci hatasidir (404), sunucu cokusu (500) degil. Sozlesme: 200|404.
+        await db.rollback()
+        if "question_id" in str(exc.orig):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Soru bulunamadi: question_id soru bankasinda yok",
+            ) from exc
+        raise
     ns = result.new_state
     return ReviewResponse(
         question_id=ns.question_id,
@@ -247,113 +288,99 @@ async def get_stats(
 
 # ==================== ESKİ API ENDPOINT'LERİ (UYUMLULUK KATMANI) ====================
 
-@router.post("/flashcards", response_model=dict[str, Any])
+
+# ==================== KALDIRILAN FLASHCARD UYUMLULUK KATMANI ====================
+#
+# Uc uc (POST /flashcards · GET /flashcards/due · POST /flashcards/{id}/review)
+# 2 Agu 2026'da 410 Gone'a cevrildi. OLCUM (canli, ayni gun):
+#   POST /api/v1/fsrs/flashcards              -> 500
+#   GET  /api/v1/fsrs/flashcards/due          -> 500   (gf130)
+#   POST /api/v1/fsrs/flashcards/{id}/review  -> 500
+# Ucu de `services/_deprecated/fsrs_service.py`e gidiyordu; o modul SENKRON
+# ORM API'si kullaniyor (16 adet `db.query`, `await`siz commit/rollback) ama
+# uclar AsyncSession aliyor:
+#   AttributeError: 'AsyncSession' object has no attribute 'query'
+#   (_deprecated/fsrs_service.py:253)
+#
+# TUKETICI OLCUMU: frontend'de bu uc uca yapilan TEK BIR cagri yok
+# (`grep -rn "fsrs/flashcards" frontend/src` -> 0). Frontend yalniz kanonik
+# uclari kullaniyor: /due /review /stats /due-count (FSRSReviewPage.tsx,
+# services/fsrsService.ts). Bu yuzden ISLEVSEL kayip yok.
+#
+# 404 yerine 410: "burada bir sey vardi, kalici olarak kaldirildi" bilgisini
+# tasir; sessiz 404 istemciye yanlis-yol izlenimi verirdi.
+# `fsrs_cards` tablosu (122 satir) DB'de KALIR — veri silinmedi.
+#
+# NOT: `fsrs_service` (deprecated) hala /recommendations, /statistics,
+# /study-sessions/* ve /health tarafindan kullaniliyor. Bunlarin UCU de
+# ayni sinif yuzunden 500 veriyor ve /study-sessions/* FRONTEND TARAFINDAN
+# CAGRILIYOR (useLearningPath.ts:395,412) — ayri gorev, ayri karar.
+# ================================================================================
+
+_FLASHCARD_KALDIRILDI = (
+    "Bu uc kaldirildi. FSRS tekrar akisi icin kanonik uclari kullanin: "
+    "GET /api/v1/fsrs/due · POST /api/v1/fsrs/review · GET /api/v1/fsrs/stats"
+)
+
+
+@router.post("/flashcards", response_model=dict[str, Any], deprecated=True)
 async def create_flashcard(
     request: CreateFlashcardRequest,
     current_user: DBUser = Depends(get_current_user_old),
     db: Session = Depends(get_db_old),
-):
-    try:
-        card = await fsrs_service.create_flashcard(
-            student_id=current_user.id,
-            subject=request.subject,
-            topic=request.topic,
-            content=request.content,
-            answer=request.answer,
-            db=db,
-        )
-        return {
-            "success": True,
-            "message": "Flashcard başarıyla oluşturuldu",
-            "data": {
-                "id": card.id,
-                "subject": card.subject,
-                "topic": card.topic,
-                "content": card.content,
-                "answer": card.answer,
-                "due_date": card.due_date.isoformat() if card.due_date else None,
-                "state": card.state,
-            },
-        }
-    except Exception as e:
-        logger.error(f"Flashcard oluşturma hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+) -> dict[str, Any]:
+    """Flashcard oluştur (Eski API - Geriye dönük uyumluluk)"""
+    # Karar ve olcum: yukaridaki KALDIRILAN FLASHCARD UYUMLULUK KATMANI
+    # blogu (2 Agu 2026). Deprecated senkron servis AsyncSession ile
+    # calisamiyor (AttributeError -> 500) ve frontend'de 0 cagri var;
+    # sessiz 404 yerine bilgilendirici 410 Gone.
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail=_FLASHCARD_KALDIRILDI,
+    )
 
 
-@router.get("/flashcards/due", response_model=dict[str, Any])
+@router.get("/flashcards/due", response_model=dict[str, Any], deprecated=True)
 async def get_due_flashcards(
-    limit: int = Query(20, ge=1, le=100, description="Maksimum kart sayısı"),
+    limit: int = Query(20, ge=1, le=100),
     current_user: DBUser = Depends(get_current_user_old),
     db: Session = Depends(get_db_old),
-):
-    try:
-        due_cards = await fsrs_service.get_due_cards(
-            student_id=current_user.id, limit=limit, db=db
-        )
-        return {
-            "success": True,
-            "message": f"{len(due_cards)} vadesi gelen kart bulundu",
-            "data": {"cards": due_cards, "total_count": len(due_cards)},
-        }
-    except Exception as e:
-        logger.error(f"Vadesi gelen kartları getirme hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+) -> dict[str, Any]:
+    """Vadesi gelen kartlar (Eski API - Geriye dönük uyumluluk)"""
+    # Karar ve olcum: yukaridaki KALDIRILAN FLASHCARD UYUMLULUK KATMANI
+    # blogu (2 Agu 2026). Deprecated senkron servis AsyncSession ile
+    # calisamiyor (AttributeError -> 500) ve frontend'de 0 cagri var;
+    # sessiz 404 yerine bilgilendirici 410 Gone.
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail=_FLASHCARD_KALDIRILDI,
+    )
 
 
-@router.post("/flashcards/{card_id}/review", response_model=dict[str, Any])
+@router.post(
+    "/flashcards/{card_id}/review", response_model=dict[str, Any], deprecated=True
+)
 async def review_flashcard(
     card_id: str,
     request: ReviewFlashcardRequest,
     current_user: DBUser = Depends(get_current_user_old),
     db: Session = Depends(get_db_old),
-):
-    try:
-        result = await fsrs_service.review_flashcard(
-            card_id=card_id,
-            grade=request.grade,
-            response_time_ms=request.response_time_ms,
-            student_id=current_user.id,
-            db=db,
-        )
-        grade_descriptions = {
-            1: "Tekrar et (Again) - Kartı hatırlamadınız",
-            2: "Zor (Hard) - Kartı zorlanarak hatırladınız",
-            3: "İyi (Good) - Kartı başarıyla hatırladınız",
-            4: "Kolay (Easy) - Kartı çok kolay hatırladınız",
-        }
-        result["grade_description"] = grade_descriptions.get(
-            request.grade, "Bilinmeyen"
-        )
-        result["message"] = (
-            f"Kart incelendi. Sonraki tekrar: {result['interval_days']} gün sonra"
-        )
-        return {
-            "success": True,
-            "message": "Flashcard başarıyla incelendi",
-            "data": result,
-        }
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
-    except Exception as e:
-        logger.error(f"Flashcard inceleme hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+) -> dict[str, Any]:
+    """Kart incele (Eski API - Geriye dönük uyumluluk)"""
+    # Karar ve olcum: yukaridaki KALDIRILAN FLASHCARD UYUMLULUK KATMANI
+    # blogu (2 Agu 2026). Deprecated senkron servis AsyncSession ile
+    # calisamiyor (AttributeError -> 500) ve frontend'de 0 cagri var;
+    # sessiz 404 yerine bilgilendirici 410 Gone.
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail=_FLASHCARD_KALDIRILDI,
+    )
 
 
 @router.get("/recommendations", response_model=dict[str, Any])
 async def get_study_recommendations(
-    current_user: DBUser = Depends(get_current_user_old), db: Session = Depends(get_db_old)
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
 ):
     try:
         recommendations = await fsrs_service.get_study_recommendations(
@@ -374,7 +401,8 @@ async def get_study_recommendations(
 
 @router.get("/statistics", response_model=dict[str, Any])
 async def get_student_statistics(
-    current_user: DBUser = Depends(get_current_user_old), db: Session = Depends(get_db_old)
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
 ):
     try:
         statistics = await fsrs_service.get_student_statistics(
@@ -393,14 +421,36 @@ async def get_student_statistics(
         )
 
 
+# ==================== CALISMA OTURUMU (gercek modele karsi yeniden yazildi) ====
+#
+# 2 Agu 2026: bu iki uc `services/_deprecated/fsrs_service.py`ye gidiyordu ve
+# POST /study-sessions/start canlida 500 veriyordu:
+#     TypeError: 'session_type' is an invalid keyword argument for FSRSStudySession
+#
+# KOK NEDEN sema uyusmazligi — senkron/async DEGIL. Deprecated servis su
+# alanlara yaziyordu: `session_type` `session_start` `session_end`
+# `cards_learned`. Gercek model (models/fsrs_models.py:231) ve canli tablo
+# `fsrs_study_sessions` (ikisi birebir uyumlu, olculdu) yalniz sunlari tasiyor:
+#     id · student_id · session_date · duration_minutes · cards_reviewed
+#     correct_reviews · average_response_time · cultural_context · organization_id
+# Yani dort alanin HICBIRI yok -> "async'e port et" yetmezdi.
+#
+# Frontend bu ikisini ogrenme yolu ekraninda cagiriyor:
+#     frontend/src/hooks/useLearningPath.ts:395  (start)
+#     frontend/src/hooks/useLearningPath.ts:412  (end)
+# Bekci: backend/tests/e2e/test_fsrs_calisma_oturumu.py
+# ==============================================================================
+
+
 @router.post("/study-sessions/start", response_model=dict[str, Any])
 async def start_study_session(
     session_type: str = Query(
         "regular", description="Oturum türü (regular, exam_prep, review)"
     ),
     current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
+    db: AsyncSession = Depends(get_db_old),
 ):
+    """Yeni FSRS calisma oturumu baslatir ve oturum kimligini dondurur."""
     try:
         session_id = await fsrs_service.start_study_session(
             student_id=current_user.id, session_type=session_type, db=db
@@ -411,7 +461,7 @@ async def start_study_session(
             "data": {
                 "session_id": session_id,
                 "session_type": session_type,
-                "started_at": datetime.now().isoformat(),
+                "started_at": datetime.now(UTC).isoformat(),
             },
         }
     except Exception as e:
@@ -426,8 +476,9 @@ async def start_study_session(
 async def end_study_session(
     session_id: str,
     current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
+    db: AsyncSession = Depends(get_db_old),
 ):
+    """Oturumu sonlandirir: sureyi hesaplar ve ozeti dondurur."""
     try:
         summary = await fsrs_service.end_study_session(session_id=session_id, db=db)
         return {
@@ -435,12 +486,52 @@ async def end_study_session(
             "message": "Çalışma oturumu sonlandırıldı",
             "data": summary,
         }
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+
+        if oturum is None or oturum.student_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Çalışma oturumu bulunamadı",
+            )
+
+        bitis = datetime.now(UTC)
+        baslangic = oturum.session_date
+        if baslangic.tzinfo is None:
+            # Savunma: kolon timestamptz ama eski satirlar naive olabilir.
+            baslangic = baslangic.replace(tzinfo=UTC)
+
+        oturum.duration_minutes = max(0, int((bitis - baslangic).total_seconds() // 60))
+        await db.commit()
+        await db.refresh(oturum)
+
+        return {
+            "success": True,
+            "message": "Çalışma oturumu sonlandırıldı",
+            "data": {
+                "session_id": oturum.id,
+                "duration_minutes": oturum.duration_minutes,
+                "cards_reviewed": oturum.cards_reviewed,
+                "correct_reviews": oturum.correct_reviews,
+                "average_response_time": oturum.average_response_time,
+                "ended_at": bitis.isoformat(),
+            },
+        }
+    except HTTPException:
+        raise
     except Exception as e:
+        await db.rollback()
         logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

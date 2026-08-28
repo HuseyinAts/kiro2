@@ -75,6 +75,39 @@ describe('AuthService', () => {
     })
   })
 
+  // ─── 2FA login verify (S200 audit: 2FA dead-end fix) ──────
+
+  describe('loginVerify2FA', () => {
+    it('should call the registered 2fa/login-verify endpoint with email+password+totp_code', async () => {
+      const loginResponse = { success: true, user: mockUser }
+      mockApiRequest.mockResolvedValueOnce(loginResponse)
+
+      const result = await authService.loginVerify2FA('ogrenci@example.com', 'Sifre123!', '123456')
+
+      expect(result).toEqual(loginResponse)
+      expect(mockApiRequest).toHaveBeenCalledWith(
+        '/api/v1/auth/2fa/login-verify',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            email: 'ogrenci@example.com',
+            password: 'Sifre123!',
+            totp_code: '123456',
+          }),
+          credentials: 'include',
+        }),
+      )
+    })
+
+    it('should throw with server error message on invalid code', async () => {
+      mockApiRequest.mockRejectedValueOnce(new Error('Geçersiz 2FA kodu'))
+
+      await expect(
+        authService.loginVerify2FA('ogrenci@example.com', 'Sifre123!', '000000'),
+      ).rejects.toThrow('Geçersiz 2FA kodu')
+    })
+  })
+
   // ─── Register ────────────────────────────────────────────
 
   describe('register', () => {
@@ -86,20 +119,37 @@ describe('AuthService', () => {
       rol: 'ogrenci' as const,
     }
 
-    it('should return success on valid registration', async () => {
+    it('should return success on valid registration and map fields to the backend contract', async () => {
       mockApiRequest.mockResolvedValueOnce({ success: true, message: 'Kayıt başarılı' })
 
       const result = await authService.register(registerData)
 
       expect(result.success).toBe(true)
+      // Backend (KullaniciOlustur) expects ad_soyad/sifre, not ad+soyad/password —
+      // see the S200 audit note above authService.register()'s payload transform.
       expect(mockApiRequest).toHaveBeenCalledWith(
         '/api/v1/auth/register',
         expect.objectContaining({
           method: 'POST',
-          body: JSON.stringify(registerData),
+          body: JSON.stringify({
+            email: 'yeni@example.com',
+            ad_soyad: 'Ayse Demir',
+            sifre: 'GuvenliSifre1!',
+            rol: 'ogrenci',
+          }),
           credentials: 'include',
         }),
       )
+    })
+
+    it('should forward telefon when provided (backend KullaniciBase.telefon)', async () => {
+      mockApiRequest.mockResolvedValueOnce({ success: true })
+
+      await authService.register({ ...registerData, telefon: '5551234567' })
+
+      const [, options] = mockApiRequest.mock.calls[0]
+      const sentBody = JSON.parse((options as RequestInit).body as string)
+      expect(sentBody.telefon).toBe('5551234567')
     })
 
     it('should throw on duplicate email', async () => {

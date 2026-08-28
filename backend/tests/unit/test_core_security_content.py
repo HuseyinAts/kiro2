@@ -52,7 +52,7 @@ sys.modules["core.enhanced_database"].get_enhanced_db_manager = MagicMock(
 # S197: Use the real models.curriculum module (which is lightweight and has no database side effects)
 # to prevent poisoning of other tests like test_exam_curriculum_models.
 try:
-    import models.curriculum
+    pass
 except Exception:
     pass
 
@@ -70,7 +70,6 @@ import asyncio as _asyncio
 _orig_create_task = _asyncio.create_task
 _asyncio.create_task = MagicMock()  # suppress at module load
 
-sys.modules["yaml"] = MagicMock()
 
 # ============================================================
 # Now import the modules under test

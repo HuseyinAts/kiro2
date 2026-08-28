@@ -20,6 +20,7 @@ Beat schedule entries must be added to core/celery_app.py:
         "schedule": crontab(hour=23, minute=0, day_of_week=0),
     },
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -323,7 +324,7 @@ async def _build_peer_recommendations(*, db: Any, subject: str) -> int:
 
     from models.error_cluster import ErrorCluster, PeerRecommendation
     from models.exam_db import ExamSession, StudentAnswer
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionBankItem, QuestionMetadata
 
     created = 0
 
@@ -368,7 +369,7 @@ async def _build_peer_recommendations(*, db: Any, subject: str) -> int:
         improvement_result = await db.execute(
             select(
                 QuestionBankItem.primary_topic_id.label("topic_id"),
-                QuestionBankItem.subject_area.label("subject_area"),
+                QuestionMetadata.subject_area.label("subject_area"),
                 sa_func.count().label("total"),
                 sa_func.sum(
                     case((StudentAnswer.is_correct.is_(True), 1), else_=0)
@@ -377,6 +378,16 @@ async def _build_peer_recommendations(*, db: Any, subject: str) -> int:
             .join(
                 StudentAnswer,
                 StudentAnswer.question_id == QuestionBankItem.id,
+            )
+            # #485 split gocu: `subject_area` question_bank'ta DEGIL
+            # question_metadata'da; sinif duzeyi erisim uyumluluk
+            # katmaninda BILEREK AttributeError atiyor. Bu task beat'te
+            # Pazar 23:00'e zamanli (celery_app.py:188) ve worker ayakta,
+            # yani duzeltilmezse SONRAKI KOSUMDA sessizce patlardi.
+            # 1:1 ve ayni PK; yetim 0 olculdu -> INNER JOIN satir dusurmez.
+            .join(
+                QuestionMetadata,
+                QuestionMetadata.id == QuestionBankItem.id,
             )
             .join(
                 ExamSession,
@@ -390,7 +401,7 @@ async def _build_peer_recommendations(*, db: Any, subject: str) -> int:
             )
             .group_by(
                 QuestionBankItem.primary_topic_id,
-                QuestionBankItem.subject_area,
+                QuestionMetadata.subject_area,
             )
             .having(sa_func.count() >= 10)
         )

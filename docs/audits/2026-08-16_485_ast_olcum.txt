@@ -1,0 +1,282 @@
+
+services\alternative_solutions_service.py  [SINIF=0 KWARG=0 ENTITY=6]
+    ENTITY  :76    select(QuestionBankItem)
+    ENTITY  :162   select(QuestionBankItem)
+    ENTITY  :245   select(QuestionBankItem)
+    ENTITY  :305   select(QuestionBankItem)
+    ENTITY  :1758  select(QuestionBankItem)
+    ENTITY  :2175  select(QuestionBankItem)
+
+services\difficulty_classification_service.py  [SINIF=2 KWARG=0 ENTITY=2]
+    SINIF   :610   .irt_difficulty  -> QuestionStatistics
+    SINIF   :611   .irt_difficulty  -> QuestionStatistics
+    ENTITY  :642   query(QuestionBankItem)
+    ENTITY  :287   query(QuestionBankItem)
+
+services\exam_performance_service.py  [SINIF=11 KWARG=0 ENTITY=0]
+    SINIF   :356   .subject_area  -> QuestionMetadata
+    SINIF   :371   .subject_area  -> QuestionMetadata
+    SINIF   :371   .difficulty_level  -> QuestionStatistics
+    SINIF   :659   .subject_area  -> QuestionMetadata
+    SINIF   :322   .subject_area  -> QuestionMetadata
+    SINIF   :362   .subject_area  -> QuestionMetadata
+    SINIF   :364   .difficulty_level  -> QuestionStatistics
+    SINIF   :651   .subject_area  -> QuestionMetadata
+    SINIF   :350   .irt_difficulty  -> QuestionStatistics
+    SINIF   :327   .correct_answer  -> QuestionContent
+    SINIF   :336   .correct_answer  -> QuestionContent
+
+services\irt_analysis_service.py  [SINIF=1 KWARG=4 ENTITY=3]
+    SINIF   :288   .subject_area  -> QuestionMetadata
+    KWARG   :235   .values(irt_discrimination=...)  -> QuestionStatistics
+    KWARG   :235   .values(irt_difficulty=...)  -> QuestionStatistics
+    KWARG   :235   .values(irt_guessing=...)  -> QuestionStatistics
+    KWARG   :235   .values(is_calibrated=...)  -> QuestionStatistics
+    ENTITY  :74    select(Soru)
+    ENTITY  :204   select(Soru)
+    ENTITY  :288   select(Soru)
+
+services\mnemonic_service.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :70    select(QuestionBankItem)
+
+services\offline_sync_service.py  [SINIF=0 KWARG=0 ENTITY=2]
+    ENTITY  :284   select(QuestionBankItem)
+    ENTITY  :123   select(QuestionBankItem)
+
+services\placement_assessment_service.py  [SINIF=2 KWARG=0 ENTITY=1]
+    SINIF   :203   .difficulty_level  -> QuestionStatistics
+    SINIF   :211   .subject_area  -> QuestionMetadata
+    ENTITY  :201   select(QuestionBankItem)
+
+services\question_bank_service.py  [SINIF=0 KWARG=0 ENTITY=4]
+    ENTITY  :130   select(QuestionBankItem)
+    ENTITY  :427   select(QuestionBankItem)
+    ENTITY  :601   select(QuestionBankItem)
+    ENTITY  :656   select(QuestionBankItem)
+
+services\question_crud_service.py  [SINIF=0 KWARG=0 ENTITY=11]
+    ENTITY  :453   select(QuestionBankItem)
+    ENTITY  :480   select(QuestionBankItem)
+    ENTITY  :517   select(QuestionBankItem)
+    ENTITY  :554   select(QuestionBankItem)
+    ENTITY  :588   select(QuestionBankItem)
+    ENTITY  :985   select(QuestionBankItem)
+    ENTITY  :1193  select(QuestionBankItem)
+    ENTITY  :356   select(QuestionBankItem)
+    ENTITY  :1034  select(QuestionBankItem)
+    ENTITY  :626   select(QuestionBankItem)
+    ENTITY  :679   select(QuestionBankItem)
+
+services\question_review_adapter.py  [SINIF=0 KWARG=0 ENTITY=2]
+    ENTITY  :68    select(QuestionBankItem)
+    ENTITY  :167   select(QuestionBankItem)
+
+services\solutions\base.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :33    select(QuestionBankItem)
+
+services\soru_bankasi_service.py  [SINIF=41 KWARG=0 ENTITY=15]
+    SINIF   :1472  .difficulty_level  -> QuestionStatistics
+    SINIF   :1362  .exam_type  -> QuestionMetadata
+    SINIF   :1374  .subject_area  -> QuestionMetadata
+    SINIF   :1385  .difficulty_level  -> QuestionStatistics
+    SINIF   :947   .subject_area  -> QuestionMetadata
+    SINIF   :1456  .irt_discrimination  -> QuestionStatistics
+    SINIF   :658   .exam_type  -> QuestionMetadata
+    SINIF   :953   .exam_type  -> QuestionMetadata
+    SINIF   :1030  .subject_area  -> QuestionMetadata
+    SINIF   :1031  .exam_type  -> QuestionMetadata
+    SINIF   :1330  .exam_type  -> QuestionMetadata
+    SINIF   :1527  .morphology_complexity  -> QuestionMetadata
+    SINIF   :1528  .morphology_complexity  -> QuestionMetadata
+    SINIF   :1577  .irt_discrimination  -> QuestionStatistics
+    SINIF   :534   .exam_type  -> QuestionMetadata
+    SINIF   :539   .subject_area  -> QuestionMetadata
+    SINIF   :542   .difficulty_level  -> QuestionStatistics
+    SINIF   :569   .exam_type  -> QuestionMetadata
+    SINIF   :575   .subject_area  -> QuestionMetadata
+    SINIF   :579   .difficulty_level  -> QuestionStatistics
+    SINIF   :662   .subject_area  -> QuestionMetadata
+    SINIF   :818   .subject_area  -> QuestionMetadata
+    SINIF   :824   .exam_type  -> QuestionMetadata
+    SINIF   :1016  .difficulty_level  -> QuestionStatistics
+    SINIF   :1470  .difficulty_level  -> QuestionStatistics
+    SINIF   :826   .difficulty_level  -> QuestionStatistics
+    SINIF   :1036  .difficulty_level  -> QuestionStatistics
+    SINIF   :1320  .subject_area  -> QuestionMetadata
+    SINIF   :1360  .exam_type  -> QuestionMetadata
+    SINIF   :1372  .subject_area  -> QuestionMetadata
+    SINIF   :1383  .difficulty_level  -> QuestionStatistics
+    SINIF   :1571  .exam_type  -> QuestionMetadata
+    SINIF   :1572  .irt_difficulty  -> QuestionStatistics
+    SINIF   :1573  .irt_difficulty  -> QuestionStatistics
+    SINIF   :1394  .irt_difficulty  -> QuestionStatistics
+    SINIF   :1395  .irt_difficulty  -> QuestionStatistics
+    SINIF   :1396  .irt_difficulty  -> QuestionStatistics
+    SINIF   :1397  .irt_discrimination  -> QuestionStatistics
+    SINIF   :1398  .morphology_complexity  -> QuestionMetadata
+    SINIF   :1399  .readability_score  -> QuestionMetadata
+    SINIF   :1011  .question_text  -> QuestionContent
+    ENTITY  :653   select(Question)
+    ENTITY  :945   select(Question)
+    ENTITY  :1227  select(Question)
+    ENTITY  :1284  select(Question)
+    ENTITY  :1689  select(Question)
+    ENTITY  :1734  select(Question)
+    ENTITY  :464   select(Question)
+    ENTITY  :482   select(Question)
+    ENTITY  :529   select(Question)
+    ENTITY  :563   select(Question)
+    ENTITY  :816   select(Question)
+    ENTITY  :1028  select(Question)
+    ENTITY  :357   select(Question)
+    ENTITY  :367   select(Question)
+    ENTITY  :1567  select(Question)
+
+services\student_dashboard_service.py  [SINIF=2 KWARG=0 ENTITY=0]
+    SINIF   :296   .subject_area  -> QuestionMetadata
+    SINIF   :286   .subject_area  -> QuestionMetadata
+
+services\video_solution_service.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :148   select(QuestionBankItem)
+
+api\curator.py  [SINIF=0 KWARG=0 ENTITY=3]
+    ENTITY  :585   select(QuestionBankItem)
+    ENTITY  :358   select(QuestionBankItem)
+    ENTITY  :501   select(QuestionBankItem)
+
+api\difficulty_classification_api.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :407   query(QuestionBankItem)
+
+api\elasticsearch.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :435   select(Question)
+
+api\osym_routes.py  [SINIF=0 KWARG=0 ENTITY=2]
+    ENTITY  :338   select(QuestionBankItem)
+    ENTITY  :348   select(QuestionBankItem)
+
+api\photo_ask_api.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :147   select(QuestionBankItem)
+
+core\irt_daemon.py  [SINIF=2 KWARG=6 ENTITY=1]
+    SINIF   :168   .is_calibrated  -> QuestionStatistics
+    SINIF   :169   .irt_difficulty  -> QuestionStatistics
+    KWARG   :211   .values(irt_difficulty=...)  -> QuestionStatistics
+    KWARG   :211   .values(irt_discrimination=...)  -> QuestionStatistics
+    KWARG   :211   .values(irt_guessing=...)  -> QuestionStatistics
+    KWARG   :211   .values(morphology_complexity=...)  -> QuestionMetadata
+    KWARG   :211   .values(readability_score=...)  -> QuestionMetadata
+    KWARG   :211   .values(is_calibrated=...)  -> QuestionStatistics
+    ENTITY  :165   select(QuestionBankItem)
+
+core\osym_exam_engine.py  [SINIF=42 KWARG=2 ENTITY=5]
+    SINIF   :1487  .exam_type  -> QuestionMetadata
+    SINIF   :1488  .subject_area  -> QuestionMetadata
+    SINIF   :1506  .option_a  -> QuestionContent
+    SINIF   :1506  .option_b  -> QuestionContent
+    SINIF   :1496  .question_text  -> QuestionContent
+    SINIF   :1497  .question_text  -> QuestionContent
+    SINIF   :1498  .option_a  -> QuestionContent
+    SINIF   :1499  .option_a  -> QuestionContent
+    SINIF   :1500  .option_b  -> QuestionContent
+    SINIF   :1501  .option_b  -> QuestionContent
+    SINIF   :1502  .option_c  -> QuestionContent
+    SINIF   :1503  .option_c  -> QuestionContent
+    SINIF   :1504  .option_d  -> QuestionContent
+    SINIF   :1505  .option_d  -> QuestionContent
+    SINIF   :1508  .option_a  -> QuestionContent
+    SINIF   :1509  .option_b  -> QuestionContent
+    SINIF   :1510  .option_c  -> QuestionContent
+    SINIF   :1511  .option_d  -> QuestionContent
+    SINIF   :1548  .quality_review_status  -> QuestionStatistics
+    SINIF   :1523  .question_text  -> QuestionContent
+    SINIF   :1530  .question_text  -> QuestionContent
+    SINIF   :1537  .question_text  -> QuestionContent
+    SINIF   :1542  .question_image_url  -> QuestionContent
+    SINIF   :1543  .question_text  -> QuestionContent
+    SINIF   :1547  .quality_review_status  -> QuestionStatistics
+    SINIF   :1541  .subject_area  -> QuestionMetadata
+    SINIF   :1555  .difficulty_level  -> QuestionStatistics
+    SINIF   :1567  .question_text  -> QuestionContent
+    SINIF   :1568  .question_text  -> QuestionContent
+    SINIF   :1569  .question_text  -> QuestionContent
+    SINIF   :1570  .question_text  -> QuestionContent
+    SINIF   :1716  .correct_answer  -> QuestionContent
+    SINIF   :1436  .pipeline_metadata  -> QuestionMetadata
+    SINIF   :1516  .question_text  -> QuestionContent
+    SINIF   :1519  .question_text  -> QuestionContent
+    SINIF   :1527  .question_text  -> QuestionContent
+    SINIF   :1528  .question_text  -> QuestionContent
+    SINIF   :1534  .question_text  -> QuestionContent
+    SINIF   :1535  .question_text  -> QuestionContent
+    SINIF   :1781  .times_asked  -> QuestionStatistics
+    SINIF   :1787  .times_correct  -> QuestionStatistics
+    SINIF   :697   .correct_answer  -> QuestionContent
+    KWARG   :1779  .values(times_asked=...)  -> QuestionStatistics
+    KWARG   :1785  .values(times_correct=...)  -> QuestionStatistics
+    ENTITY  :1456  select(Question)
+    ENTITY  :567   select(Question)
+    ENTITY  :1615  select(Question)
+    ENTITY  :1665  select(Question)
+    ENTITY  :1313  select(Question)
+
+tasks\mega_feature_tasks.py  [SINIF=2 KWARG=0 ENTITY=0]
+    SINIF   :393   .subject_area  -> QuestionMetadata
+    SINIF   :371   .subject_area  -> QuestionMetadata
+
+analytics\exam_results_reporting.py  [SINIF=4 KWARG=0 ENTITY=0]
+    SINIF   :534   .subject_area  -> QuestionMetadata
+    SINIF   :529   .irt_difficulty  -> QuestionStatistics
+    SINIF   :1457  .subject_area  -> QuestionMetadata
+    SINIF   :1518  .subject_area  -> QuestionMetadata
+
+application\commands\learning_path.py  [SINIF=5 KWARG=0 ENTITY=1]
+    SINIF   :826   .correct_answer  -> QuestionContent
+    SINIF   :828   .subject_area  -> QuestionMetadata
+    SINIF   :829   .irt_discrimination  -> QuestionStatistics
+    SINIF   :830   .irt_difficulty  -> QuestionStatistics
+    SINIF   :831   .irt_guessing  -> QuestionStatistics
+    ENTITY  :801   select(Question)
+
+application\commands\sinav.py  [SINIF=16 KWARG=0 ENTITY=0]
+    SINIF   :475   .correct_answer  -> QuestionContent
+    SINIF   :477   .subject_area  -> QuestionMetadata
+    SINIF   :478   .irt_discrimination  -> QuestionStatistics
+    SINIF   :479   .irt_difficulty  -> QuestionStatistics
+    SINIF   :480   .irt_guessing  -> QuestionStatistics
+    SINIF   :314   .correct_answer  -> QuestionContent
+    SINIF   :316   .subject_area  -> QuestionMetadata
+    SINIF   :317   .irt_discrimination  -> QuestionStatistics
+    SINIF   :318   .irt_difficulty  -> QuestionStatistics
+    SINIF   :319   .irt_guessing  -> QuestionStatistics
+    SINIF   :516   .irt_discrimination  -> QuestionStatistics
+    SINIF   :517   .irt_difficulty  -> QuestionStatistics
+    SINIF   :518   .irt_guessing  -> QuestionStatistics
+    SINIF   :363   .irt_discrimination  -> QuestionStatistics
+    SINIF   :364   .irt_difficulty  -> QuestionStatistics
+    SINIF   :365   .irt_guessing  -> QuestionStatistics
+
+repositories\question_repository.py  [SINIF=16 KWARG=0 ENTITY=5]
+    SINIF   :110   .exam_type  -> QuestionMetadata
+    SINIF   :111   .subject_area  -> QuestionMetadata
+    SINIF   :101   .exam_type  -> QuestionMetadata
+    SINIF   :102   .subject_area  -> QuestionMetadata
+    SINIF   :137   .exam_type  -> QuestionMetadata
+    SINIF   :138   .subject_area  -> QuestionMetadata
+    SINIF   :139   .irt_difficulty  -> QuestionStatistics
+    SINIF   :140   .irt_difficulty  -> QuestionStatistics
+    SINIF   :168   .exam_type  -> QuestionMetadata
+    SINIF   :169   .subject_area  -> QuestionMetadata
+    SINIF   :170   .irt_difficulty  -> QuestionStatistics
+    SINIF   :171   .irt_difficulty  -> QuestionStatistics
+    SINIF   :152   .exam_type  -> QuestionMetadata
+    SINIF   :153   .subject_area  -> QuestionMetadata
+    SINIF   :154   .irt_difficulty  -> QuestionStatistics
+    SINIF   :155   .irt_difficulty  -> QuestionStatistics
+    ENTITY  :398   select(Question)
+    ENTITY  :165   select(Question)
+    ENTITY  :133   select(Question)
+    ENTITY  :90    select(Question)
+    ENTITY  :149   select(Question)
+
+============================================================
+TOPLAM  SINIF=146  KWARG=12  ENTITY=69  (parse edilemeyen dosya: 0)

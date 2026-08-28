@@ -1,7 +1,8 @@
 # Core FastAPI
-fastapi>=0.115.0
+fastapi==0.141.1
+starlette==1.4.1
 uvicorn[standard]==0.24.0
-pydantic>=2.8.0
+pydantic[email]>=2.8.0  # [email] = email-validator; models/user.py EmailStr kullaniyor (alembic env.py import zinciri)
 pydantic-settings>=2.4.0
 orjson>=3.9.0
 
@@ -36,7 +37,7 @@ elasticsearch[async]==8.11.0
 # S179 fix (B-P0-48): aiohttp 3.13.3 has 10 CVEs incl CVE-2026-34515;
 # 3.13.4 is the one-patch-away fix.
 aiohttp>=3.13.4
-httpx>=0.27.0
+httpx==0.28.1
 
 # Scheduling
 APScheduler>=3.10.0
@@ -67,6 +68,7 @@ Pillow>=12.0.0
 zemberek-python==0.1.3
 hijri-converter==2.3.1
 langdetect>=1.0.9
+emoji>=2.0.0  # GF34: soru-meydani icerik filtresinin emoji-spam katmani
 
 # Monitoring
 psutil>=5.9.8
@@ -126,6 +128,7 @@ sentry-sdk[fastapi]==1.40.0
 
 # Gemini API
 google-generativeai==0.8.3
+google-genai==2.0.0  # new SDK — gemini MCP servers migrated to google.genai Client API
 
 # MCP
 mcp==1.0.0
@@ -158,3 +161,7 @@ setuptools>=78.1.1
 
 # Security (Additional)
 bcrypt>=4.0.0,<4.1.0  # passlib uyumluluğu için (4.1.0+ 72-byte limit enforce ediyor)
+pgvector>=0.2.1
+uuid6>=2024.1.1
+
+pgvector>=0.2.1

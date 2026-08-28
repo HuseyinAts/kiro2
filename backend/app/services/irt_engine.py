@@ -283,3 +283,148 @@ def should_terminate(
     if n_items >= max_items:
         return True, "max_questions"
     return False, ""
+
+
+# ------------------------------------------------------------------
+# Yerleştirme paneli türevleri
+# ------------------------------------------------------------------
+# θ/SE'den öğrenciye gösterilecek özetler. İstemci BUNLARIN HİÇBİRİNİ
+# hesaplamaz (sunucu-otoriter) — bkz. AdaptifTestPage motor paneli.
+
+# Beklenen net referansı: TYT Matematik 40 soru, YKS'de 4 yanlış 1 doğruyu götürür.
+NET_REFERENCE_ITEMS = 40
+NET_WRONG_PENALTY = 0.25
+# Referans testin madde profili = üretim havuzunun ölçülen ortalaması
+# (MATEMATIK 14,119 soru: a≈1.00, c=0.20 — 26 Tem 2026 DB ölçümü).
+REF_ITEM_A = 1.0
+REF_ITEM_C = 0.20
+
+
+def theta_percentile(theta: float, se: float = 0.0) -> int:
+    """
+    θ'nın ÜST yüzdesi: "≈ üst %12" gibi. Yetenek dağılımı θ~N(0,1).
+
+    ÖLÇÜM HATASI HESABA KATILIR. θ̂ bir nokta tahmin değil, posterior
+    ortalamasıdır: θ|veri ~ N(θ̂, SE²). Öğrencinin yüzdeliği Φ(θ̂) DEĞİL,
+    onun posterior beklentisidir:
+
+        E[Φ(θ)] = Φ( θ̂ / √(1 + SE²) )
+
+    (Φ doğrusal olmadığı için Φ(E[θ]) ≠ E[Φ(θ)] — Jensen.) Bunu atlamak
+    gürültülü bir ölçümden aşırı özgüvenli bir iddia üretir: bu havuzda
+    12 maddede SE≈0.62 ve θ̂=+1.0 için Φ(θ̂) "üst %16" derken dürüst
+    cevap "üst %20"dir. SE büyüdükçe iddia %50'ye çekilir — istenen budur.
+
+    se=0.0 (varsayılan) kesin ölçüm demektir ve klasik Φ(θ)'ya indirger.
+
+    Ekran ham basar, %0/%100 anlamsız olur → [1, 99] aralığına kırpılır.
+    """
+    olcek = math.sqrt(1.0 + float(se) ** 2)
+    pct = 100.0 * float(stats.norm.sf(float(theta) / olcek))
+    return int(max(1, min(99, round(pct))))
+
+
+def marginal_reliability(se: float) -> int:
+    """
+    Marjinal güvenilirlik yüzdesi: 1 - SE²  (θ~N(0,1) iken standart IRT formülü).
+
+    Prior SE=1.0 → %0. İlk maddelerde SE>1 görülebilir → negatife düşmez.
+    """
+    return round(100 * max(0.0, min(1.0, 1.0 - float(se) ** 2)))
+
+
+def ability_band(theta: float) -> str:
+    """
+    θ → 'zayif' | 'orta' | 'guclu'.
+
+    Frontend SEVIYE sözlüğünde fallback YOKTUR; bu üç değerin dışına çıkmak
+    ekranı kırar. Eşikler tasarım rozetiyle birebir (AdaptifTestPage).
+    """
+    if theta < -0.3:
+        return "zayif"
+    if theta < 0.5:
+        return "orta"
+    return "guclu"
+
+
+def expected_net(
+    theta: float,
+    n_items: int = NET_REFERENCE_ITEMS,
+    a: float = REF_ITEM_A,
+    c: float = REF_ITEM_C,
+) -> int:
+    """
+    θ'daki öğrencinin referans testte beklenen NETİ (doğru − yanlış/4).
+
+    Referans test: güçlükleri b~N(0,1) dağılmış n_items maddelik bir sınav.
+    Havuzun kendi adaylarını kullanmak yanıltıcı olurdu — aday havuzu ZPD ile
+    θ etrafında filtrelendiği için p̄ her θ'da ~0.6 çıkar ve net θ'dan bağımsız
+    sabitlenirdi. Sabit referans, neti θ'da monoton ve karşılaştırılabilir yapar.
+
+    Not: c=0.20 ve 1/4 ceza ile saf tahmin tam başabaştır (net=0).
+    """
+    b_grid = THETA_GRID
+    weights = stats.norm.pdf(b_grid, PRIOR_MEAN, PRIOR_SD)
+    p = p_correct(theta, a, b_grid, c)
+    p_bar = float(np.trapezoid(p * weights, b_grid) / np.trapezoid(weights, b_grid))
+    net = n_items * (p_bar - (1.0 - p_bar) * NET_WRONG_PENALTY)
+    return round(max(0.0, net))
+
+
+def items_to_target_se(
+    se: float,
+    theta: float,
+    item_params: list[ItemParams],
+    target_se: float = SE_STOP,
+    remaining_budget: int | None = None,
+) -> int:
+    """
+    Hedef SE'ye ulaşmak için gereken TAHMİNİ ek madde sayısı ("~3 soru kaldı").
+
+    SE = 1/√I olduğundan gereken ek bilgi I_hedef − I_şimdi; bunu uygulanmış
+    maddelerin θ'daki ortalama Fisher bilgisine böleriz. Uygulanmış madde yoksa
+    (ilk çağrı) referans madde profili kullanılır.
+
+    remaining_budget verilirse sonuç oraya kırpılır — kalan madde bütçesinden
+    fazlasını vaat etmek yalan olur (bu havuzda SE eşiği çoğu zaman
+    bütçe bitmeden yakalanmaz).
+    """
+    se = float(se)
+    if se <= target_se:
+        return 0
+
+    info_now = 1.0 / (se * se)
+    info_target = 1.0 / (target_se * target_se)
+
+    if item_params:
+        per_item = float(
+            np.mean([fisher_information(theta, p.a, p.b, p.c) for p in item_params])
+        )
+    else:
+        per_item = float(fisher_information(theta, REF_ITEM_A, theta, REF_ITEM_C))
+
+    if per_item <= 1e-9:
+        need = remaining_budget if remaining_budget is not None else MAX_ITEMS
+    else:
+        need = math.ceil((info_target - info_now) / per_item)
+
+    need = max(0, int(need))
+    if remaining_budget is not None:
+        need = min(need, max(0, int(remaining_budget)))
+    return need
+
+
+def replay_theta_history(
+    responses: list[int], item_params: list[ItemParams]
+) -> list[IRTResult]:
+    """
+    Her maddeden SONRAKİ θ/SE dizisi — motor panelinin yakınsama grafiği.
+
+    Oturum state'inde θ geçmişi saklanmaz; prefix'ler üzerinde EAP'yi yeniden
+    çalıştırmak aynı sonucu deterministik olarak verir. Böylece paylaşılan
+    Redis şeması hiç değişmez (mevcut oturumlar geriye uyumlu kalır).
+    """
+    return [
+        eap_update(responses[: i + 1], item_params[: i + 1])
+        for i in range(len(responses))
+    ]

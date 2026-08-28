@@ -88,7 +88,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 };
 
 // Rol bazlı varsayılan yönlendirme yolları
-function getRedirectPathByRole(role?: UserRole): string {
+export function getRedirectPathByRole(role?: UserRole): string {
   switch (role) {
     case 'ogrenci':
       return '/dashboard';

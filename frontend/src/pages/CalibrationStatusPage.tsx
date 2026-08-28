@@ -46,8 +46,8 @@ export default function CalibrationStatusPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Box textAlign="center" py={8}><CircularProgress /></Box>;
-  if (error || !data) return <Box maxWidth={520} mx="auto" mt={4}><Alert severity="error">{error ?? 'Veri alınamadı'}</Alert></Box>;
+  if (loading) {return <Box textAlign="center" py={8}><CircularProgress /></Box>;}
+  if (error || !data) {return <Box maxWidth={520} mx="auto" mt={4}><Alert severity="error">{error ?? 'Veri alınamadı'}</Alert></Box>;}
 
   const sc = STATUS_CONFIG[data.pipeline_status];
   const genuinePct = data.genuinely_calibrated_pct;

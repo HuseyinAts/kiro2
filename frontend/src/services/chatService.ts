@@ -123,23 +123,23 @@ class ChatService {
     }
 
     const reader = response.body?.getReader();
-    if (!reader) throw new Error('No response body');
+    if (!reader) {throw new Error('No response body');}
 
     const decoder = new TextDecoder();
     let buffer = '';
 
     while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
+      if (done) {break;}
 
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
       buffer = lines.pop() || '';
 
       for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
+        if (!line.startsWith('data: ')) {continue;}
         const payload = line.slice(6).trim();
-        if (payload === '[DONE]') break;
+        if (payload === '[DONE]') {break;}
         try {
           const parsed = JSON.parse(payload);
           // Capture session_id from first SSE event (backend sends it)
@@ -193,8 +193,8 @@ class ChatService {
     this.initSession();
 
     const formData = new FormData();
-    if (options.file) formData.append('file', options.file);
-    if (options.url) formData.append('url', options.url);
+    if (options.file) {formData.append('file', options.file);}
+    if (options.url) {formData.append('url', options.url);}
     formData.append('message', options.message || '');
     formData.append('subject', options.subject || '');
     formData.append('session_id', this.sessionId || '');
@@ -234,7 +234,7 @@ class ChatService {
       const response = await fetch(SESSIONS_ENDPOINT, {
         credentials: 'include',
       });
-      if (!response.ok) return [];
+      if (!response.ok) {return [];}
       const result = await response.json();
       return result.sessions || [];
     } catch {
@@ -250,7 +250,7 @@ class ChatService {
       const response = await fetch(`${SESSIONS_ENDPOINT}/${sessionId}/messages`, {
         credentials: 'include',
       });
-      if (!response.ok) return [];
+      if (!response.ok) {return [];}
       const result = await response.json();
       const messages: ChatMessage[] = (result.messages || []).map((msg: any) => ({
         id: msg.id || this.generateMessageId(),
@@ -424,7 +424,7 @@ class ChatService {
       const response = await fetch(`${ENHANCED_CHAT_API}/sessions/${id}`, {
         credentials: 'include',
       });
-      if (!response.ok) throw new Error('Failed to load session');
+      if (!response.ok) {throw new Error('Failed to load session');}
       const session = await response.json();
       this.messages = (session.messages || []).map((msg: any, index: number) => ({
         id: `msg-${index}`,

@@ -3,10 +3,10 @@ SQLAlchemy ORM Exam Models
 database.py'den ayrıştırıldı (2026-01-10)
 """
 
-import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+import sqlalchemy as sa
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
@@ -21,6 +21,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 from .enums_db import ExamType
@@ -44,7 +45,14 @@ class ExamSession(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(
         String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
@@ -90,10 +98,14 @@ class ExamSession(Base):
         "StudentProfile", back_populates="exam_sessions"
     )
     exam_questions: Mapped[list["ExamQuestion"]] = relationship(
-        "ExamQuestion", back_populates="exam_session"
+        "ExamQuestion",
+        back_populates="exam_session",
+        cascade="all, delete-orphan",
     )
     student_answers: Mapped[list["StudentAnswer"]] = relationship(
-        "StudentAnswer", back_populates="exam_session"
+        "StudentAnswer",
+        back_populates="exam_session",
+        cascade="all, delete-orphan",
     )
 
 
@@ -107,10 +119,11 @@ class ExamQuestion(Base):
         ),
         Index("idx_exam_question_session", "exam_session_id"),
         Index("idx_exam_question_order", "question_order"),
+        Index("idx_exam_question_question", "question_id"),
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     exam_session_id: Mapped[str] = mapped_column(
         String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
@@ -128,7 +141,6 @@ class ExamQuestion(Base):
     question: Mapped["QuestionBankItem"] = relationship(
         "QuestionBankItem",
         foreign_keys=[question_id],
-        lazy="selectin",
     )
 
 
@@ -144,10 +156,16 @@ class StudentAnswer(Base):
         ),
         Index("idx_student_answer_session", "exam_session_id"),
         Index("idx_student_answer_question", "question_id"),
+        Index(
+            "idx_student_answer_incorrect",
+            "is_correct",
+            postgresql_where=sa.text("is_correct = false"),
+        ),
+        Index("idx_student_answer_answered_at", "answered_at"),
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     exam_session_id: Mapped[str] = mapped_column(
         String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
@@ -184,5 +202,4 @@ class StudentAnswer(Base):
         "QuestionBankItem",
         foreign_keys=[question_id],
         primaryjoin="StudentAnswer.question_id == QuestionBankItem.id",
-        lazy="selectin",
     )

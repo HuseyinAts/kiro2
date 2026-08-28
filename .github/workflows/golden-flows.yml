@@ -17,9 +17,9 @@ name: Golden Flows
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, master, develop, feature/self-evolution-optimization]
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, master, develop, feature/self-evolution-optimization]
   workflow_dispatch:
 
 concurrency:
@@ -34,10 +34,10 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: pgvector/pgvector:pg15  # pgvector gerekli (baseline CREATE EXTENSION vector)
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
           POSTGRES_DB: kiro2
         ports:
           - 5434:5432
@@ -58,10 +58,10 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2
-      REDIS_URL: redis://localhost:6379/0
-      JWT_SECRET: test-jwt-secret-for-golden-flows-ci-not-for-production-use-only
-      BACKEND_URL: http://localhost:8000
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@127.0.0.1:5434/kiro2  # pragma: allowlist secret
+      REDIS_URL: redis://127.0.0.1:6379/0
+      JWT_SECRET: test-jwt-secret-for-golden-flows-ci-not-for-production-use-only  # pragma: allowlist secret
+      BACKEND_URL: http://127.0.0.1:8000
       PYTHONIOENCODING: utf-8
 
     steps:
@@ -169,7 +169,7 @@ jobs:
           # Baseline: 0 risky blocks across backend/api/**/*.py.
           python scripts/audit_httpexception_guard.py --fail
 
-      - name: AST lint — Pydantic `user_id: int` type lie (rule-of-five)
+      - name: "AST lint — Pydantic `user_id: int` type lie (rule-of-five)"
         working-directory: backend
         run: |
           # Session 148 CI gate (seventh linter in the family):
@@ -188,12 +188,24 @@ jobs:
       - name: Run migrations
         working-directory: backend
         run: |
-          alembic upgrade head || echo "::warning::alembic upgrade failed — continuing with raw schema"
+          set +e
+          alembic upgrade head > /tmp/alembic.log 2>&1
+          rc=$?
+          cat /tmp/alembic.log
+          if [ "$rc" -ne 0 ]; then
+            tail_msg=$(tail -12 /tmp/alembic.log | tr '\n\r\t' '   ' | sed 's/  */ /g')
+            echo "::error title=alembic-hata::rc=$rc :: ${tail_msg: -700}"
+            echo "::warning::alembic upgrade failed — continuing with raw schema"
+          fi
+          exit 0
 
       - name: Seed MVP users
         working-directory: backend
         run: |
-          python scripts/seed_mvp_data.py || echo "::warning::seed script failed — GF tests will skip unauthenticated flows"
+          # `|| echo` KALDIRILDI (#462/B4-x). Seed cokerse HER test login'de
+          # skip'e duser ve is YESIL biter — adim metni bunu aciklikla yaziyordu
+          # ama sonuc yine geciyordu. Seed bu kapinin on kosulu, opsiyonu degil.
+          python scripts/seed_mvp_data.py
 
       - name: Start backend
         working-directory: backend
@@ -204,7 +216,7 @@ jobs:
       - name: Wait for backend
         run: |
           for i in {1..30}; do
-            if curl -sf http://localhost:8000/health > /dev/null; then
+            if curl -sf http://127.0.0.1:8000/health > /dev/null; then
               echo "Backend is up after ${i}s"
               exit 0
             fi
@@ -214,10 +226,69 @@ jobs:
           tail -100 backend/backend.log || true
           exit 1
 
+      - name: Router yukleme teshisi (annotation)
+        run: |
+          # Anonim teshis (28 Agu): yuklenemeyen router'lar backend.log'a
+          # WARNING dusuyor ama log goruntulemek giris istiyor. Annotation'a
+          # cikar ki '404 Not Found' sinifi hatalarin kaynagi (import cokmesi)
+          # oturum acmadan gorulsun. Salt rapor — kapi karari degil.
+          grep -E "Failed to import|Unexpected error loading" backend/backend.log \
+            | head -15 \
+            | while IFS= read -r satir; do
+                temiz=$(printf '%s' "$satir" | tr -d '\r' | cut -c1-350)
+                echo "::warning title=router-yuk::${temiz}"
+              done || true
+          if curl -sf http://127.0.0.1:8000/openapi.json | grep -q "veli-onay/verify"; then
+            echo "::notice title=rota-veli-onay::verify rotasi openapi'de VAR"
+          else
+            echo "::warning title=rota-veli-onay::verify rotasi openapi'de YOK"
+          fi
+
       - name: Run Golden Flow tests
+        continue-on-error: true
         working-directory: backend
         run: |
-          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short -x
+          # `-x` KALDIRILDI (A.2): kapi artik `hata == 0` sartini KENDI olcuyor
+          # (scripts/gf_esik_kapisi.py), dolayisiyla ilk hatada durmaya gerek yok.
+          # `-x` ile rapor tek hatada kesiliyordu ve gercek tablo gorulmuyordu —
+          # 1 Agu 2026 canli kosumu 12 ayri kirik akis oldugunu gosterdi (94 sn).
+          # Adim `continue-on-error`: karar tek yerde, asagidaki kapida verilir.
+          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short \
+            --junitxml=gf-results.xml
+
+      - name: Enforce Golden Flow gate
+        if: always()
+        working-directory: backend
+        run: |
+          # Mantik ARTIK BURADA DEGIL — inline heredoc'un testi yoktu (A.2).
+          # Sozlesme: tests/unit/test_gf_esik_kapisi.py (11 test, mutasyonla civili)
+          # Kural: toplam >= 170 · hata == 0 · atlanan <= 5
+          #
+          # Anonim teshis (28 Agu 2026): adim log'lari GitHub'da giris istiyor;
+          # annotation'lar istemiyor. Dusen/erroren testlerin ADI ve ilk mesaj
+          # satiri annotation olarak yazilir ki kirik akis oturum acmadan da
+          # gorulebilsin (alembic-hata deseninin devami). Kapi karari ASLA
+          # burada verilmez — bu blok yalnizca raporlar, son soz asagidaki
+          # gf_esik_kapisi.py'dedir.
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          try:
+              root = ET.parse("gf-results.xml").getroot()
+          except Exception as exc:  # noqa: BLE001 - rapor katmani, kapi degil
+              print(f"::warning title=gf-annot::gf-results.xml okunamadi: {exc}")
+              raise SystemExit(0)
+
+          dusen = 0
+          for tc in root.iter("testcase"):
+              for kayit in list(tc.findall("failure")) + list(tc.findall("error")):
+                  dusen += 1
+                  mesaj = (kayit.get("message") or kayit.text or "").strip()
+                  mesaj = " ".join(mesaj.split())[:220]
+                  print(f"::error title=gf-dusen::{tc.get('name')} :: {mesaj}")
+          print(f"::notice title=gf-dusen-ozet::dusen_test_sayisi={dusen}")
+          PY
+          python scripts/gf_esik_kapisi.py gf-results.xml
 
       - name: Backend log on failure
         if: failure()

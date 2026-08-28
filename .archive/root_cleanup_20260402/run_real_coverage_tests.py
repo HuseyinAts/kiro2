@@ -14,17 +14,17 @@ if sys.platform == 'win32':
 
 def run_real_coverage_tests():
     """Gerçek coverage testlerini çalıştır"""
-    
+
     print("=" * 70)
     print("🚀 GERÇEK COVERAGE BOOST TESTLERİ")
     print("=" * 70)
     print()
-    
+
     backend_dir = Path(__file__).parent / "backend"
-    
+
     print("📊 Coverage artışı için gerçek testler çalıştırılıyor...")
     print("-" * 70)
-    
+
     # Gerçek coverage testleri
     result = subprocess.run([
         sys.executable, "-m", "pytest",
@@ -36,10 +36,10 @@ def run_real_coverage_tests():
         "--cov-report=term-missing",
         "--cov-report=html"
     ], cwd=backend_dir)
-    
+
     print()
     print("=" * 70)
-    
+
     if result.returncode == 0:
         print("✅ TESTLER BAŞARILI!")
         print()
@@ -57,7 +57,7 @@ def run_real_coverage_tests():
         print("⚠️ Bazı testler başarısız!")
         print("   Ancak coverage yine de artmış olabilir.")
         print("   Raporu kontrol edin: backend/htmlcov/index.html")
-    
+
     print()
     print("=" * 70)
 

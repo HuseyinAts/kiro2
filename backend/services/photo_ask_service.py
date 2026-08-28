@@ -20,6 +20,7 @@ import httpx
 from sqlalchemy import text as sa_text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.quality_gate import safe_for_beta_sql
 from core.structured_logger import get_logger
 
 logger = get_logger("photo_ask_service")
@@ -29,7 +30,7 @@ UPLOAD_DIR = Path(os.getenv("PHOTO_ASK_UPLOAD_DIR", "uploads/photo_ask"))
 
 # Similarity thresholds
 HIGH_SIMILARITY = 0.75  # Strong match — show directly
-MIN_SIMILARITY = 0.40   # Minimum to consider as a potential match
+MIN_SIMILARITY = 0.40  # Minimum to consider as a potential match
 
 
 async def save_upload(file_content: bytes, filename: str) -> Path:
@@ -136,7 +137,15 @@ async def find_similar_questions(
     vec_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
 
     # Build pgvector query
-    filters = ["q.embedding IS NOT NULL", "q.is_active = true"]
+    # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731 yargılanmamış/
+    # reddedilmiş soruyu öğrenciye servis ediyordu. Burada dönen dict
+    # correct_answer + explanation içerdiği için sızıntı doğrudan çözüm veriyor.
+    # is_active YANINA gelir, yerine değil (bayat matview'a karşı canlı güvence).
+    filters = [
+        "q.embedding IS NOT NULL",
+        "q.is_active = true",
+        safe_for_beta_sql("q.id"),
+    ]
     params: dict[str, Any] = {"emb": vec_str, "min_sim": min_similarity, "top_k": top_k}
 
     if subject_area:
@@ -173,8 +182,11 @@ async def find_similar_questions(
             "difficulty": r.difficulty_level,
             "correct_answer": r.correct_answer,
             "options": {
-                "A": r.option_a, "B": r.option_b, "C": r.option_c,
-                "D": r.option_d, "E": r.option_e,
+                "A": r.option_a,
+                "B": r.option_b,
+                "C": r.option_c,
+                "D": r.option_d,
+                "E": r.option_e,
             },
             "explanation": r.explanation,
             "similarity": round(float(r.similarity), 4),

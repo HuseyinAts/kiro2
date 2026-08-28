@@ -43,6 +43,13 @@ class CatSession(Base):
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),
     )
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(UUID(as_uuid=True), nullable=False)
     subject_id = Column(Text, nullable=False)
     theta_final = Column(Numeric, nullable=False, server_default="0.0")
@@ -76,6 +83,13 @@ class LearningEvent(Base):
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),
+    )
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id = Column(UUID(as_uuid=True), nullable=False)
     question_id = Column(Text, nullable=False)
@@ -135,6 +149,13 @@ class UserTheta(Base):
 
     user_id = Column(String(255), nullable=False, primary_key=True)
     subject_area = Column(String(50), nullable=False, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     theta_estimate = Column(Float, nullable=False, server_default="0.0")
     theta_se = Column(Float, nullable=False, server_default="0.5")
     response_count = Column(Integer, nullable=False, server_default="0")

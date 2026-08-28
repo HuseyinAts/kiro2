@@ -24,18 +24,18 @@ try:
         text=True,
         timeout=300
     )
-    
+
     print("\n" + "STDOUT:" + "\n" + "=" * 70)
     print(result.stdout)
-    
+
     if result.stderr:
         print("\n" + "STDERR:" + "\n" + "=" * 70)
         print(result.stderr)
-    
+
     print("\n" + "=" * 70)
     print(f"EXIT CODE: {result.returncode}")
     print("=" * 70)
-    
+
 except Exception as e:
     print(f"\nERROR: {e}")
     import traceback

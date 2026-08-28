@@ -18,7 +18,6 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 # ---------------------------------------------------------------------------
 # Heavy dependency mocks BEFORE any project imports
 # ---------------------------------------------------------------------------
-import asyncio
 
 # Patch redis so modules that do `import redis.asyncio as redis` at module-level
 # work without an actual Redis server.

@@ -1,0 +1,1204 @@
+# KIRO2 DERS KAYDI — tek kayit defteri. Sema ve yasam dongusu: README.md
+# Bekci: backend/tests/unit/test_ders_kaydi.py
+- id: L-test-01
+  baslik: Fixture/Scope Kurali
+  kaynak: .claude/rules/testing.md#1
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-02
+  baslik: Hibrit Yaklasim (DRY + Guvenlik)
+  kaynak: .claude/rules/testing.md#2
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-03
+  baslik: Adim Adim Ilerleme
+  kaynak: .claude/rules/testing.md#3
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-04
+  baslik: Geri Alma Stratejisi
+  kaynak: .claude/rules/testing.md#4
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-05
+  baslik: Test Sonrasi Dogrulama Zorunlu
+  kaynak: .claude/rules/testing.md#5
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-06
+  baslik: Karma Import Stili SQLAlchemy Cakismasi (Session 11)
+  kaynak: .claude/rules/testing.md#6
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-07
+  baslik: Session-Scoped Fixture Graceful Degradation (Session 11)
+  kaynak: .claude/rules/testing.md#7
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-08
+  baslik: Turkce Enum Adlari (Session 11, KIRO2 Spesifik)
+  kaynak: .claude/rules/testing.md#8
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-09
+  baslik: pytestmark MODULE DEGISKENIDIR, Preprocessor Direktifi DEGIL (Session 17)
+  kaynak: .claude/rules/testing.md#9
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-10
+  baslik: Toplu Dosya Modifikasyonunda IDEMPOTENT Script Kullan (Session 17)
+  kaynak: .claude/rules/testing.md#10
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-11
+  baslik: Metin Isleme Python Blok Yapisini Anlayamaz (Session 17)
+  kaynak: .claude/rules/testing.md#11
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-12
+  baslik: Toplu Islemden Once 2-3 Dosyada Sample Dogrulama Yap (Session 17)
+  kaynak: .claude/rules/testing.md#12
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-13
+  baslik: Fix/Skip Oranini Takip Et (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#13
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-14
+  baslik: Tekrarlayan Sorunlari ROOT CAUSE'dan Coz (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#14
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-15
+  baslik: Ogrenilen Dersleri ENFORCE Et (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#15
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-16
+  baslik: Model/ORM Degisiklikleri En Yuksek Oncelik (Session 19)
+  kaynak: .claude/rules/testing.md#16
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-17
+  baslik: Yeni Service/Agent Olusturdugunda Test ZORUNLU (Session 9)
+  kaynak: .claude/rules/testing.md#17
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-18
+  baslik: Session Notu Standart Formati (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#18
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-19
+  baslik: Toplu Script Dry-Run ZORUNLU (Session 17)
+  kaynak: .claude/rules/testing.md#19
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-20
+  baslik: httpx ASGITransport Toplu Migration (Session 8, 12)
+  kaynak: .claude/rules/testing.md#20
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-21
+  baslik: Windows Path Replace Hatasi (Session 48)
+  kaynak: .claude/rules/testing.md#21
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-22
+  baslik: Empirical > Platt Scaling (Session 48)
+  kaynak: .claude/rules/testing.md#22
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-23
+  baslik: Dual Table Trap — Yanlis Model Import (Session 78)
+  kaynak: .claude/rules/testing.md#23
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-24
+  baslik: Devre Disi Birakma Sonrasi is_active Audit (Session 78)
+  kaynak: .claude/rules/testing.md#24
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-25
+  baslik: async generator vs context manager Karistirma (Session 78)
+  kaynak: .claude/rules/testing.md#25
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-26
+  baslik: Case Convention Tutarliligi (Session 78)
+  kaynak: .claude/rules/testing.md#26
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-27
+  baslik: Yeni Router = loader.py Kaydı ZORUNLU (Session 120)
+  kaynak: .claude/rules/testing.md#27
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-28
+  baslik: Migration SQL ↔ DB Şema Doğrulaması ZORUNLU (Session 120)
+  kaynak: .claude/rules/testing.md#28
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-29
+  baslik: Phantom Sorun Filtresi — Raporu Dogrula ONCE (Session 121)
+  kaynak: .claude/rules/testing.md#29
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-30
+  baslik: Docker Image Staleness — Container vs Local Farki (Session 121)
+  kaynak: .claude/rules/testing.md#30
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-31
+  baslik: Status Yargisi ≠ Servis Disi — is_active Sizinti Tuzagi (3 Haz 2026)
+  kaynak: .claude/rules/testing.md#31
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-olcum-c2-audit-faz-0-2
+  baslik: C2 audit (Faz 0.2)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 14 May 2026 olcumu (tablo satiri)
+- id: L-olcum-garble-efsanesi
+  baslik: Garble efsanesi
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 3 Haz 2026 olcumu (tablo satiri)
+- id: L-olcum-garble-tail-silme
+  baslik: Garble-tail silme
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 3 Haz 2026 olcumu (tablo satiri)
+- id: L-olcum-s-zm-anahtar-aciliyeti
+  baslik: Sızmış anahtar aciliyeti
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 28 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-bek-i-k-k-nedeni-451
+  baslik: Bekçi kök nedeni (#451)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 30 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-fix-in-de-eri-l-lmedi
+  baslik: Fix'in değeri ölçülmedi
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 30 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-l-m-aleti-ge-ersiz-4-kez
+  baslik: Ölçüm aleti geçersiz (4 kez)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 30 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-bare-s-re-te-app-tasks-celer
+  baslik: Bare süreçte `app.tasks` (celery)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 31 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-mutasyon-kabuk-t-rna-nda-boz
+  baslik: Mutasyon kabuk tırnağında bozuldu
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 1 Ağu 2026 olcumu (tablo satiri)
+- id: L-olcum-bu-bek-i-ci-da-ko-muyor
+  baslik: '"Bu bekçi CI''da koşmuyor"'
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 1 Ağu 2026 olcumu (tablo satiri)
+- id: L-olcum-sabit-e-ik-l-ld-san-ld
+  baslik: Sabit eşik "ölçüldü" sanıldı
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 1 Ağu 2026 olcumu (tablo satiri)
+- id: L-tekrar-health-503
+  baslik: Health 503
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 7, 12, 19 — kok neden: Test ortaminda Redis/DB yok"
+- id: L-tekrar-httpx-asyncclient
+  baslik: httpx AsyncClient
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 8, 12 — kok neden: 0.27+ deprecated"
+- id: L-tekrar-sqlalchemy-import
+  baslik: SQLAlchemy import
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 11, 19 — kok neden: absolute vs relative"
+- id: L-tekrar-password-validator
+  baslik: Password validator
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 7, 8 — kok neden: Sequential char rejection"
+- id: L-tekrar-duplicatetable
+  baslik: DuplicateTable
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 12 — kok neden: PostgreSQL index conflict"
+- id: L-s202-geri-alim-try-finally
+  baslik:
+    Mutasyon uygulayan script geri alimi try/finally'ye almali; surec olurse depo sessizce yalan
+    soyler
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "1 Agu 2026: PC kapanmasi M2 mutasyonunu calisma agacinda birakti; git status ile yakalandi"
+- id: L-s202-ci-kosuyor-iki-olcum
+  baslik:
+    "'CI'da kosuyor mu' IKI ayri olcum ister: (a) is tetikleniyor mu (on: + dal/PR), (b) dosya
+    toplaniyor mu (pytest marker filtresi)"
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/test_ci_collection_guard.py
+  kanit: 75c70dab5 — ci.yml:281 marker filtresiz -> dosya TOPLANIYOR; kosmama sebebi dal tetiklenmemesi
+- id: L-s202-korumasiz-opsiyonel-import
+  baslik:
+    Toplanan test modulunde korumasiz opsiyonel-bagimlilik import'u `-x` ile TUM test job'unu dusurur;
+    pytest.importorskip sart
+  kaynak: .claude/sessions/latest.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/test_ci_collection_guard.py
+  kanit: "75c70dab5 — A/B: golgelenmis psycopg2 ile korumasiz ERROR, korumali 2 skipped"
+- id: L-s202-vakum-saf-fonksiyon
+  baslik:
+    Canli sistemde URETILEMEYEN vakum (79 politika silme, organizations=0) saf fonksiyona ayrilip
+    sentetik girdiyle civilenmeli
+  kaynak: .claude/sessions/latest.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/integration/test_rls_tenant_isolation_guard.py
+  kanit: 2e439f40a — _kalip_ihlali(1,1,79) ve _kiracilik_yargisi(0) sentetik olarak uretildi
+- id: L-s202-dagitim-adi-modul-adi
+  baslik:
+    "Pozitif kanit ara: dagitim adi != modul adi ve yerel modul ayni adi golgeleyebilir (websocket
+    -> backend/websocket.py)"
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: 75c70dab5 — `websocket` bekci listesine ALINMADI, yanlis fix onlendi
+- id: L-s202-mutasyon-error-gecersiz
+  baslik:
+    Mutasyon 'failed' degil 'error' (collection) veriyorsa olcum GECERSIZ — syntax hatasi testin
+    yuk tasidigini kanitlamaz
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "1 Agu 2026 M4: kabuk tirnaklamasi dosyaya syntax hatasi yazdi, mutasyon Python ile tekrarlandi"
+- id: L-s202-sabit-esik-gevser
+  baslik:
+    Mutlak sayiya bagli esik, olculen evren buyudukce SESSIZCE gevser; orana/farka bagla (hata==0
+    . atlanan<=N . toplam>=taban)
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/unit/test_gf_esik_kapisi.py
+  kanit: d5f07039d — 178 testte ESIK=150 dogru, 250 testte 90 skip'i yesil gecirirdi
+- id: L-s202-fiilen-kullanilan-konfig
+  baslik:
+    Kontrol kolu secmeden once sistemin FIILEN kullandigi konfigurasyonu kanitla; alembic env.py
+    filtresi olmadan olcum '86 tablo dusecek' dedi, gercek 65 index'ti
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_alembic_autogen_guard.py
+  kanit: 5bbdaa401 — filtresiz 86/134 vs env.py gercek filtresi 0/65
+- id: L-s202-ddl-orm-den-render
+  baslik:
+    Restore migration DDL'i ELLE yazilmaz; ORM modellerinden alembic.autogenerate.render_python_code
+    ile uretilir (transkripsiyon hatasi = tablo var ama uc yine 500)
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: null
+  kanit: 2f31b0c3a — 179 satir DDL uretildi
+- id: L-s202-drop-table-enum-birakir
+  baslik:
+    DROP TABLE PG enum TIPINI dusurmez; restore'da duz sa.Enum 'type already exists' ile patlar
+    -> postgresql.ENUM(create_type=False)
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: null
+  kanit: 2f31b0c3a (8/8 tip) + 232a80472 (4/4 tip) — hepsi canlida ZATEN VARDI
+- id: L-s202-fk-gecisli-kapanis
+  baslik:
+    Tablo restore'unda FK GECISLI KAPANISI olculmeden migration yazilmaz; hedef 6 tabloydu, kapanis
+    7 cikardi
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/integration/test_gf_k1_tablo_restore.py
+  kanit: 2f31b0c3a — appointments -> teacher_availability (o da yoktu)
+- id: L-s202-varlik-yetmez-kolon
+  baslik:
+    "Tablo VARLIGI yetmez: ORM modelinin HER kolonu canli tabloda aranmali; tablo var/kolon eksik
+    uc yine 500 verir (GF106)"
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/integration/test_gf_k1_tablo_restore.py
+  kanit: 2f31b0c3a — parametrize kolon esitligi testi
+- id: L-s202-katmanli-hata-sistemik-tara
+  baslik:
+    "Katmanli hata: ilk engel kalkinca ikincisi gorunur. Uc uca kesfetmek kaybeden strateji — model/DB
+    farkini SISTEMIK tara"
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: 232a80472 — 7 tablo restore -> goals cikti -> tam tarama 67 tablo gosterdi
+- id: L-s202-onbellek-sira-civile
+  baslik:
+    Onbellek gecersizlestirme SIRASI testle civilenmeli; temizlenmezse 'guncelleme' eski degeri
+    donup 200 ile SESSIZCE yalan soyler (500'den kotu)
+  kaynak: .claude/sessions/latest.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/unit/test_learning_style_update.py
+  kanit: 4ab90f809 — delete -> detect sirasi assert ediliyor
+- id: L-s202-ruff-mypy-config-konumu
+  baslik:
+    ruff dosyaya EN YAKIN config'i, mypy ise cwd'deki KOK config'i okur; override yanlis dosyaya
+    yazilirsa sessizce tutmaz
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: 4ab90f809 — once backend/pyproject.toml'a yazildi, tutmadi; kok pyproject.toml'a tasindi
+- id: L-s202-msys-path-conv
+  baslik:
+    Git Bash `/app/...` gibi mutlak yollari Windows yoluna cevirir; docker exec argumanlarinda MSYS_NO_PATHCONV=1
+    sart
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "1 Agu 2026 deploy adimi: find /app/services -> 'C:/Program Files/Git/app/services' hatasi"
+- id: L-s202-pep526-gizli-nameerror
+  baslik:
+    "PEP 526 nitelik-hedefli annotation'i (self.x: T) degerlendirmez; import edilmemis tip SESSIZCE
+    calisir — gizli NameError"
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: 4ab90f809 — Dict 4 yerde kullaniliyordu, import YOKTU; dict[...] yapildi
+- id: L-s202-onceden-var-borc
+  baslik:
+    Onceden var olan lint/tip borcu dosyaya dokunan her commit'i bloklar; --no-verify ile ATLANMAZ,
+    olculup gerekceli per-file-ignore ile GORUNUR kilinir
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: 4ab90f809 + 5bbdaa401 — hicbiri yazilan satirlarda degildi, kanitlandi
+- id: L-s202-olcmeyen-kapi-sayaci-dusurur
+  baslik:
+    Olcmeyen bir kapi acik kalem sayisini DUSUK gosterir; olcum sonrasi sayacin ARTMASI gerileme
+    degil
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: 645055e07 — A.2 kapaninca 12 kirik Golden Flow ortaya cikti, sayac 95->97
+- id: L-alet-tip-vs-paketleyici
+  baslik: Eksik-dosya sorusu her derleyiciye ayri sorulur (tip grafigi != paketleyici grafigi)
+  kaynak: .claude/rules/audit-methodology.md#grafigi-sordugun-derleyici-kadar-gorursun
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — tsc sabit-noktada '0 eksik modul' dedi; vite 5 CSS daha istedi. 19 ImportMeta.env hatasinin kaynagi silinmis vite-env.d.ts idi (import edilmez, import-grafiginde gorunmez)"
+- id: L-alet-mypy-bailout
+  baslik: mypy 'errors prevented further checking' ile durursa 0 sonuc artefakttir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — numpy stub syntax hatasi govdeleri hic analiz ettirmedi; --python-version 3.13 ile 1363 satir cikti"
+- id: L-alet-mypy-anotasyonsuz-kor
+  baslik: Tipsiz kodda mypy attr dedektoru KORDUR; 0 sonucu olcum degildir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — question = await self.get_question(...) anotasyonsuz -> Any; pozitif kontrol ayni kosuda LearningPath icin hata uretiyordu"
+- id: L-alet-read-son-satir
+  baslik: newline'siz son satiri bash 'while read' yutar
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — Python '\n'.join() sondaki newline'i yazmaz; geri-yukleme dongusunde her turda tam 1 dosya sessizce dustu (tur4: '1 bulundu, 0 geri alindi')"
+- id: L-alet-crlf-pathspec
+  baslik: Windows'ta Python'un yazdigi CRLF git pathspec'i bozar
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — open(...,'w') CRLF yazdi, git checkout 'App.tsx\r' pathspec'ini reddetti; newline='\n' + tr -d '\r' ile cozuldu"
+- id: L-alet-hasattr-descriptor
+  baslik: Sinif duzeyinde hata firlatan descriptor'u hasattr GOREMEZ
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_compat.py
+  kanit: "S210 — compat dedup guard'i hasattr'a dayaniyordu; kurulan devredici sinif erisiminde AttributeError firlattigi icin hasattr False donuyor -> sessiz 'son kazanir'. 71 alanda cakisma olmadigi olculdu, yine de acik kume eklendi"
+- id: L-olcum-tasima-silme-degil
+  baslik: git status 'D' silme degil TASIMA da olabilir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — 142 silinen .py'nin 75'i script_mezarligi/'na birebir tasinmis, 7'si tasinmis+duzenlenmis, 60'i gercek silme (hicbiri import edilmiyor)"
+- id: L-olcum-sert-cekirdek
+  baslik: Gocun boyutu toplam kullanim degil KARSILANAMAYAN alt kumedir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — 69 alanlik split '2542 erisim / 340 dosya' gorundu; ayrisinca yalniz 108'i sinif duzeyi (SQL ifadesi) / 17 dosya cikti, strangler uygulanabilir oldu"
+- id: L-sema-shim-sessiz-none-yasak
+  baslik: Uyumluluk katmani kor noktasinda ACIK hata vermeli, sessiz varsayilan degil
+  kaynak: .claude/rules/audit-methodology.md#uyumluluk-katmani-yardim-edemedigi-yerde-sessiz-kalmamali
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_compat.py
+  kanit: "S210 0fd9b8413 — sinif duzeyi erisim AttributeError veriyor; sessiz None JOIN'e cevrilecek 108 yeri gorunmez kilardi. M3 mutasyonu (korumayi kaldir) 4 testi oldurdu"
+- id: L-s212-sorgu-derlenmeli
+  baslik: Sema gocunde sorguyu DERLE — gozle okumak ve yesil test yakalamaz
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_service_split.py
+  kanit: "S212 8d5ebe761 — get_topic_statistics'te select(func.avg(QuestionStatistics.x)).join(QuestionStatistics,...) sol tarafi split tablo sanip kendine JOIN ediyordu: InvalidRequestError, sorgu DERLEME aninda patliyordu. Gozle okuma kacirdi (diger 3 sorgu ayni gorunuyordu), 212 yesil test de o metoda hic dokunmuyordu. .select_from(QuestionBankItem) ile kapandi"
+- id: L-s212-kartezyen-yapisal
+  baslik: Kartezyen kontrolunu get_final_froms() ile yap — METIN ile degil
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_duel_api_split.py
+  kanit: "S212 — metinsel 'FROM'da virgul' kontrolu search_questions'i YANLIS bayrakladi (virgul count(*) alt-sorgusunun SELECT listesindeydi). Dahasi ilk surum sql.split(' from ') kullaniyordu ve SQLAlchemy FROM'u yeni satira koydugu icin HIC eslesmiyordu: 'temiz' ciktisi bosluktaydi. get_final_froms() semantik; kontrol kolu testle civili (gercek kartezyen 2, alt-sorgu 1)"
+- id: L-s212-split-eager-load
+  baslik: JOIN yalniz SQL katmanini duzeltir — delege okuyan yol EAGER-LOAD etmeli
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S212 44924c574 + f91470250 — content/metadata_info/statistics hepsi lazy='select' (olculdu); async'te yuklenmemis erisim MissingGreenlet atar. Iki serviste 4 gercek kusur, hepsi SESSIZ: update_question -> _create_question_version 10 delege okuyor -> versiyon gecmisi sessizce kayboluyordu; get_question_by_id'nin 'except Exception: return None' sarmalayicisi kusuru 'soru bulunamadi'ya ceviriyordu"
+- id: L-s212-stub-model-testi-kor
+  baslik: Sahte-model stub'iyla yazilmis test KIRIK kodda da yesil kalir
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_service_split.py
+  kanit: "S212 44924c574 — create_question split sonrasi KOSULSUZ kirikti (taze nesnede statistics yok -> AttributeError, girdiden bagimsiz), ama tests/unit/test_coverage_final_50.py'deki test_create_question GECIYORDU: o dosya sys.modules'e kendi models.question_bank stub'ini koyuyor, gercek modeli hic gormuyor"
+- id: L-s212-kolon-vs-entity
+  baslik: Eager-load gerekliligini KOLON/ENTITY ayrimiyla olc, varsayma
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_duel_api_split.py
+  kanit: "S212 2fb518b1e — duel_api'nin 12 erisiminin hepsi kolon secimiydi (select(Model.alan,...)), Row doner, lazy-load riski YOK -> eager-load N/A. Varsayilmadi, olculdu: grep 'select(QuestionBankItem)' api/duel_api.py = 0 sonuc. Kardes dosyalarda ayni sinif 4 kusur uretmisti"
+- id: L-s212-bicimlendirici-import-siler
+  baslik: Alan tasirken bicimlendirici kullanilmayan import'u siler — yenisi eklenmeyi bekler
+  kaynak: .claude/rules/audit-methodology.md#alan-tasirken-bicimlendirici-importu-siler
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S212 2fb518b1e — correct_answer erisimi QuestionContent'e cevrilince QuestionBankItem o fonksiyonda kullanilmaz kaldi ve import OTOMATIK silindi; QuestionContent import'u ise henuz eklenmemisti -> NameError olacakti. grep ile yakalandi (import satirlari yeniden sayildi)"
+- id: L-s212-stash-pathspec
+  baslik: Kirli agacta pathspec'siz git stash kullanma
+  kaynak: .claude/rules/audit-methodology.md#kirli-agacta-pathspecsiz-git-stash-kullanma
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S212 near-miss — baseline olcumu icin pathspec'siz git stash 3390 pre-existing kirli dosyayi da aldi; arada pre-commit baseline'i bicimlendirdi; git stash pop CONFLICT verip durdu, stash KEPT kaldi. Kurtarma: git checkout HEAD -- <dosya> sonra pop. Ayni turda pathspec'li form (git stash push -- <dosya>) 2 kez kullanildi, 2 kez sorunsuz dondu"
+- id: L-s214-where-iddiasi-whereclause
+  baslik: Entity secen sorguda WHERE iddiasini tam SQL'de arama — whereclause derle
+  kaynak: .claude/rules/audit-methodology.md#entity-secen-sorguda-where-iddiasini-tam-sqlde-arama
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_mnemonic_service_split.py
+  kanit: "S214 3c2580332 — test_is_active_filter_preserved tam SQL'de 'question_bank.is_active' aliyordu. select(QuestionBankItem) TUM kolonlari SELECT listesine koydugu icin filtre WHERE'den TAMAMEN silinse bile eslesiyordu (olculdu: filtresiz sorguda True, whereclause sadece question_bank.id). Mutasyon M5 HAYATTA kaldi; testin degersizligi ancak mutasyonla gorundu. Duzeltme sonrasi 8/8 oldurüldu"
+- id: L-s214-select-from-kosullu
+  baslik: select_from SELECT listesi split-only ise ZORUNLU, degilse sus
+  kaynak: .claude/rules/audit-methodology.md#select_from-her-yerde-degil--select-listesi-split-only-ise
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_mnemonic_service_split.py
+  kanit: "S214 3c2580332 — S212'den 'sart' diye tasindi ama kosullu. advanced_reports'ta yuk tasiyordu (M1 mutasyonu 5 test dusurdu, SELECT listesi yalniz QuestionStatistics kolonlariydi). mnemonic'te listede QuestionBankItem.id var: derlenmis SQL select_from'lu ve'suz BIREBIR AYNI, mutasyon hayatta kaldi -> kaldirildi. Kapatilan riski 'FROM question_bank JOIN' assert'i karsiliyor"
+- id: L-s214-sayac-ornek-duzeyini-gormez
+  baslik: Goc sayaci sinif duzeyini sayar — ornek duzeyi kusur sayacta gorunmez
+  kaynak: .claude/rules/audit-methodology.md#sayac-sinif-duzeyini-sayar-ornek-duzeyini-gormez
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_mnemonic_service_split.py
+  kanit: "S214 8713ab8e3 — #485 sayaci QuestionBankItem.<alan> deseniyle mnemonic_service'te 3 saydi. Asil riski tasiyan kusur sayacta 0 gorundu: generate_mnemonic select(QuestionBankItem) ile entity secip question.question_text/.correct_answer/.subject_area okuyordu (lazy='select', async -> MissingGreenlet). Kalan sayisi ALT SINIR; dosya basina grep 'select(QuestionBankItem)' sart"
+- id: L-s215-dosya-hic-commit-edilmemis-olabilir
+  baslik: Kapi borcu kontrol kolu HEAD'e karsi anlamsizlasabilir — dosya hic commit edilmemis olabilir
+  kaynak: .claude/rules/audit-methodology.md#dosya-hic-commit-edilmemis-olabilir-15-16-agu-2026-s215
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S215 3a1aabd0d — api/osym_routes.py'de git diff alininca auto_assign_anchors/run_equating/analyze_osym_pdf fonksiyonlarinin HICBIRI HEAD'de yoktu (S210 devrinden kalma commit'siz calisan-agac icerigi). 'HEAD'de de var miydi' kontrol kolu bu kisim icin anlamsizdi; karar olcutu (dokunulan/dokunulmayan fonksiyon) degismedi ama gerekce metni yanlis sorulunca zaman kaybettirdi"
+- id: L-s215-kosulsuz-hook-konu-disi-kirilir
+  baslik: Dosya-filtresiz pre-commit hook'u konu-disi sebeple kirilabilir — SKIP ayri gorev olarak dusmeli
+  kaynak: .claude/rules/audit-methodology.md#kosulsuz-pre-commit-hooku-konu-disi-sebeple-kirilabilir-16-agu-2026-s215
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S215 — pytest-fast hook'u (pass_filenames:false, files: filtresiz) api/osym_routes.py commit'inde kirildi; kok neden #485 ile ilgisizdi (test_fsrs_card_persistence.py bkt_states.student_id -> users FK ihlali, ardindan ayni worker'da 2 test PendingRollbackError ile cascading ERROR verdi). Kullanici onayiyla SKIP=pytest-fast ile gecildi VE latest.md'ye ayri acik is olarak duzuldu (kiro2-api-import-smoke S211'den beri sessizce tasiniyor olmasi emsal alindi). ** S219 DUZELTMESI: bu dersin genel kurali (kosulsuz hook konu-disi kirilir -> SKIP + ayri gorev) gecerli, ama 'pytest-fast git commit'te kosar' varsayimi CURUTULDU — bkz. L-s219-precommit-yanlis-cwd **"
+- id: L-s219-ilerleme-sayaci-da-alet
+  baslik: Ilerleme sayaci da bir olcum aletidir — regex sayac iki yonde birden yanilir
+  kaynak: .claude/rules/audit-methodology.md#ilerleme-sayaci-da-bir-olcum-aletidir-16-agu-2026-s219
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_scan_split_accesses.py
+  kanit: "S219 bdc84e9bc — #485'in sekiz oturumluk ilerleme olcutu re.finditer(r'QuestionBankItem\\.(\\w+)') idi. FAZLA sayiyordu: osym_exam_engine.py:1327 ve models/question_bank.py:528 birer YORUM satiri (10 kalemin 2'si fantom). EKSIK sayiyordu: 15 alias'li import / 11 dosya (as Question x13, as Soru, as _QB) gorunmuyordu; S214'un yedegi grep 'select(QuestionBankItem)' de ayni kor. AST ile gercek kapsam: 146 SINIF / 12 KWARG / 69 ENTITY / 26 dosya. En buyuk uc dosya (42+41+11=94, %90) tamamen gorunmezdi. Kontrol kolu: irt_daemon=2, mega_feature_tasks=2 eski sayacla birebir ortustu"
+- id: L-s219-yanlis-sifir-tek-kabul-edilemez-hata
+  baslik: Olcum aletinde YANLIS-SIFIR tek kabul edilemez hata turudur
+  kaynak: .claude/rules/audit-methodology.md#bir-olcum-aletinde-yanlis-sifir-tek-kabul-edilemez-hata-turudur
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_scan_split_accesses.py
+  kanit: "S219 2222337fb — AST'ye gecmek YETMEDI. Ilk AST surumu iki kor noktayla sifir raporluyordu: update(X).values(<tasinmis>=...) (kwarg ADI, Attribute dugumu yok) 12 kalem / 3 dosya; db.query(<alias>) 3 kalem. Olumcul senaryo olculdu: sayac irt_daemon.py [SINIF=2] diyordu; o 2 goc edilince dosya ciktidan kaybolur ve 'bitti' denir, ama irt_daemon.py:211 alti tasinmis alani update(QuestionBankItem).values(...)'a geciriyor -> her IRT kalibrasyon yazimi 'CompileError: Unconsumed column names: morphology_complexity, irt_difficulty'. Ayrica sessiz 'except SyntaxError: return 0' isi bitmis gosterir (BOM ornegi: dosya [1,1] -> [0,0]) -> gurultulu yapildi"
+- id: L-s219-test-paketi-dilim-olcer
+  baslik: Test paketi de bir dilim olcer — ayirt edici mutasyon olmadan kapsama kordur
+  kaynak: .claude/rules/audit-methodology.md#test-paketi-de-bir-dilim-olcer-16-agu-2026-s219
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S219 fc276b35d — 15 RED testin hepsi MATEMATIK/FIZIK kullaniyordu; osym_exam_engine.py:1564-1572 dort ek sinif-duzeyi erisimi YALNIZ TURKCE/EDEBIYAT/TARIH/COGRAFYA/SOSYAL'de ekliyor. Ayirt edici mutasyon (tum alanlari dogru goc ettiren ama question_text'in 12. erisiminden sonrasini reddeden vekil = 'base_filters gocuruldu, filters.extend kacirildi' fix'i): MATEMATIK KURULDU (mutasyon KACAR, satirlar hic kosmuyor) / TURKCE DUSTU. Erisim: MATEMATIK 36-12, TURKCE 40-16 -> +4, satir atfiyla 1567-1570. Parametrize edilmeseydi TYT Turkce (40 soru, en buyuk ders) uretimde kirik kalirdi"
+- id: L-s219-goc-ettin-mi-vs-korudun-mu
+  baslik: Bir filtreyi goc ettiren test o filtrenin HALA ETKILI oldugunu da iddia etmeli
+  kaynak: .claude/rules/audit-methodology.md#goc-ettin-mi--korudun-mu
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S219 e32ab0ace — parametrize etmek YETMEDI: test yalniz 'sorgu kuruluyor mu' diyordu. Bir ajan AttributeError'dan kurtulmak icin filters.extend blogunu SILEBILIRDI; iki parametre de yesil kalir, Turkce sinavlar sessizce LaTeX formullu soru servis ederdi. Cozum: dogru fix'in urettigi kosul SAYISINI assert et (where.count('question_content.question_text NOT LIKE') == 4, MATEMATIK'te 0). Sayinin ayirt ediciligi de dogrulandi: pasaj suzgecleri 'question_text) NOT LIKE' uretiyor (arada parantez), TURKCE'deki 6 tanesi sayima girmiyor. Mutasyon (blogu sil) testi dusurdu"
+- id: L-s219-yorum-cida-dusmez
+  baslik: Mesajdaki bilgi kaybolur, yorumdaki silinebilir, yalniz TEST CI'da duser
+  kaynak: .claude/rules/audit-methodology.md#yorum-cida-dusmez
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S219 e32ab0ace — 'filters = base_filters AYNI NESNE, sonra filters.extend(...) base_filters'i mutasyona ugratiyor' tehlikesi olculdu (bugun zararsiz: ders dongusu icinde :1486'da yeniden kuruluyor) ama once yalniz bir handoff MESAJINDA duruyordu. Sonraki ajan mesaji gormeyecek, dosyayi gorecek. Hem yorum hem test yazildi: test_latex_filter_does_not_leak_to_next_subject ({TURKCE:3, MATEMATIK:3}) — mutasyon 'base_filters dongu disinda' -> 'MATEMATIK'e sizmis: 4 kosul' ile dustu. Implementer'in formulasyonu: 'bir yorum CI'da dusmez'"
+- id: L-s219-precommit-yanlis-cwd
+  baslik: pre-commit run yanlis CWD'den kapinin olcumu degildir — farkli config yuklenir
+  kaynak: .claude/rules/audit-methodology.md#pre-commit-run-yanlis-cwdden-kapinin-olcumu-degildir-16-agu-2026-s219
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S219 05148d0ee — .git/hooks/pre-commit kok config'i sabitliyor (ARGS=(hook-impl --config=.pre-commit-config.yaml ...)) ve git kancalari depo kokunden kosar, dolayisiyla backend/.pre-commit-config.yaml git commit'te HIC yuklenmiyor. backend/ icinden 'pre-commit run --files' kosmak kapida OLMAYAN hook'lari devreye sokuyor: black (kok config satir 35: 'Ruff (replaces black, isort, flake8)') dokunulmamis satirlari yeniden bicimlendirdi = supurme, ayrica random.sample(...) # nosec B311'de yorumu kapanis parantezine tasiyor -> bandit bastirmasini kirabilir; backend bandit'i ModuleNotFoundError: pbr. DOGRUDAN SONUC: S215-S218'in SKIP=pytest-fast engelleyicisi FANTOM. git log -S 'pytest-fast' -- .pre-commit-config.yaml BOS (dize kok config gecmisinde hic bulunmadi); koktaki 'KALDIRILDI (28 Tem)' blogu baska bir hook'a (pre-push tam-paket pytest) ait. Task 2 ve Task 3 SKIP'siz commit edildi, kapi tam yesil"
+- id: L-s219-write-text-geri-alimi-bozar
+  baslik: Path.write_text() Windows'ta geri alim dogrulamasini YANLIS-POZITIF bozar
+  kaynak: .claude/rules/audit-methodology.md#pathwrite_text-geri-alim-dogrulamasini-bozar-16-agu-2026-s219
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S219 — Task 2 mutasyon harness'inin ilk surumu Path.read_text()/write_text() kullandi. Windows'ta read LF'e cevirir, write geri yazarken CRLF yapar: icerik BIREBIR AYNI ama git status dosyayi KIRLI gosterir ve harness 'geri alim basarisiz' diye durur. Olculdu: git diff --stat BOS, yalniz 'CRLF will be replaced by LF' uyarisi. read_bytes()/write_bytes()'a cevrilince M2/M3 temiz kostu (geri alim: TEMIZ). verification.md#GERI-ALIM-BIR-IDDIADIR'in yanlis-pozitif tarafi"
+- id: L-s219-agac-kirli-supurme-gerekcesi-degil
+  baslik: "'Agac kirli' supurme gerekcesi degildir — git stash push -- <dosya> tek komut"
+  kaynak: .claude/rules/audit-methodology.md#agac-kirli-supurme-gerekcesi-degildir-16-agu-2026-s219
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S219 d7eaeb3b1 — 2 satirlik bir fix commit'i 73/40 satir oldu; fark S210 devrinden commit'siz bir bloktu. Gerekce 'agacta 3389 kirli dosya var' idi ve OLCUME DAYANMIYORDU: gereken agaci temizlemek degil TEK DOSYAYI ayirmakti (git stash push -- <dosya>, audit-methodology.md'de zaten yazili, S212'de iki kez calismis). Bedel: commit iki BILDIRILMEMIS davranis degisikligi tasidi — bos havuzun kosulsuz cache'lenmesi (HEAD~1'de 'if pool:' guard vardi; TTL 3600 -> 60 dk sessizce bos sinav) ve her sinava %15 IRT-ankraj kotasi. Ikisi de o an ULASILAMAZ koddaydi, yani sonraki task'in JOIN isi onlari ilk kez canlandiracak ve suc O TASK'a yazilacakti. Task 3'te ayirma uygulandi: diff 12/2, supurme yok"
+- id: L-s223-mutasyon-recetesi-vakum-olabilir
+  baslik: Plandaki mutasyon recetesi VAKUM olabilir — failed almak yetmez, hangi assert oldurdugunu olc
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 69ee2566b/c59326863 — plan Task 6 Step 6'daki M8 mutasyonu iki UPDATE'ten YALNIZ BIRINI bozuyordu. Test o gun `[u for u in updates if 'times_asked' in u or 'times_correct' in u]` ile suzup sadece VARLIK iddia ediyordu; hayatta kalan digeri hem listeyi dolu hem prefix'i dogru tutuyor. OLCULDU (duzeltilmis motor + o gunku test): M8a ve M8b'nin IKISI DE '4 passed' — mutasyon HAYATTA KALDI. Kontrol kolu beklendigi gibi calistigi icin olcum gecerliydi. Bagimsiz spec reviewer kendi harness'iyle tekrar uretti. Test S219 dersi geregi SAYIYA baglandi; sonrasinda ikisi de failed"
+- id: L-s223-assert-gereksiz-iddiasi-da-olcumdur
+  baslik: "'Bu assert gereksiz, sil' de bir iddiadir — silmeden once onu TEK BASINA olduren mutasyon ara"
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 07eb98d8a — kalite reviewer `len(stat_updates) == 2` icin 'tamamen subsumed, silmek KESIN iyilestirme' raporladi; gerekcesi 'kostugum mutasyonlarin hicbirini oldurmuyor' idi. Bu, iddianin ERISIMI hakkinda degil KOSULAN KUMENIN KAPSAMI hakkinda bir olgu. M-SPURIOUS ile olculdu (ucuncu bir question_statistics UPDATE'i, times_asked/times_correct ICERMEYEN): sayi iddiasi VARKEN '1 failed', SILININCE '4 passed' — kaciyor. Evrensel iddia onu hic incelemiyor (suzgeci times_asked/times_correct sarti ariyor), iki sum(...)==1 de doyuyor. Assert KORUNDU, yaniltici yorum duzeltildi"
+- id: L-s223-golden-kapsami-da-iddiadir
+  baslik: Karakterizasyon (golden) testinin KAPSAMI da bir iddiadir — 'diger testler kapsiyor' olculmeden yazilmaz
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 340b1e2d9 -> 5b709a802 — golden WHERE testi 7 hayatta kalan mutasyonu oldurdu ama MATEMATIK + zorluksuz dala kuruldu; commit mesaji LaTeX ve zorluk dallarinin 'baska testlerle civili' oldugunu yazdi. Kalite reviewer OLCTU, iddia YANLIS: her iki ikame assert de ICERIK-KORU — where.count(_LATEX_FILTER_NEEDLE) == 4 bir SAYI (igne dizesi serbestce degisir), 'question_statistics.difficulty_level' in where bir KOLON ADI (yerine her predicate gelebilir). Uc mutasyon hayatta kaldi: difficulty_level.in_() -> .isnot(None) (zorluk secimi sessiz no-op) · contains('x^2') -> contains('y^2') · contains('x^2') -> contains('') her satiri eslestirir, negatiflenir -> TURKCE/EDEBIYAT/TARIH/COGRAFYA/SOSYAL havuzu HER SINAVDA BOS (TYT'de TURKCE tek basina 40 soru, en buyuk blok). Golden 3 parametreye genisletildi, ucu de dustu"
+- id: L-s223-golden-hata-ciktisi-tasarim-konusudur
+  baslik: Golden testin BASARISIZLIK ciktisi da tasarimdir — tek dize karsilastirmasi okunamaz
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 5b709a802 — golden'i tek dize olarak assert etmek pytest'te 'Skipping 259 identical leading characters' + yalniz '-' tarafi + 'Full output truncated' veriyor; -vv iki adet ~2100 karakterlik tek satir SQL duvari basiyor ve 24 kosuldan HANGISININ degistigi anlasilmiyor (MX1 uygulanarak olculdu). split(' AND ') ile liste karsilastirmasina cevrilince ayni kesinlik, okunur cikti: 'At index 5 diff: length(question_content.question_text) > 50 != ... >= 50'. Yan bulgu: golden'i OKUMAK gercek bir hata yakaladi — uretilen SQL cift ters bolu tasiyor, elle yazilan tekti (kabuk heredoc'u ayrica collapse etmisti); ayrica onceki commit'in docstring'indeki '24 predicate' sayisi yanlisti, split 27 veriyor (uc pasaj filtresi ic AND tasiyor)"
+- id: L-s223-sayac-kwarg-hedef-korudur
+  baslik: Goc sayaci .values(alan=...) kwarg'ini UPDATE HEDEFINDEN bagimsiz sayar — DOGRU kod da raporlanir
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_scan_split_accesses.py
+  kanit: "S223 — Task 7 sonrasi scan_split_accesses.py 'core/osym_exam_engine.py [SINIF=0 KWARG=2 ENTITY=5]' veriyor. KWARG=2 (:1882 times_asked, :1888 times_correct) Task 6'nin DOGRU update(QuestionStatistics).values(...) satirlari; sayac kwarg ADINA bakiyor, UPDATE hedefine degil. S219'un 'yanlis-SIFIR tek kabul edilemez hata turudur' dersinin ters yonu: yanlis-POZITIF de 'kalan is' okumasini bozar. Bu dosyada dogru bitis kosulu KWARG=0 DEGIL, SINIF=0 + KWARG'larin hedef-dogrulugunun elle teyidi"
+- id: L-s223-eager-load-tuketiciden-olculur
+  baslik: Entity sorgusunda eager-load gerekliligi SORGUDAN degil TUKETICIDEN olculur
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 — ayni dosyada ayni desen (select(Question)) iki zit sonuc verdi. Task 4/5 (:568, :1321): donen ornekten api/sinav.py:493-508 12 split alan, get_subject_performance dongusu 3 split alan okuyor -> lazy='select' + async = MissingGreenlet -> selectinload SART. Task 7 (:1640, :1696): tek uretim tuketicisi create_exam_session:403 ve yalniz len(questions) ile q.id okuyor (:418 liste-kavrama, :437 dongu) -> eager-load N/A, EKLENMEDI (civilenemez agirlik olurdu, S214). Sayac ikisini de 'ENTITY' diye ayni etiketle raporluyor; ayrimi yapan sey tuketici tarafini OKUMAK"
+- id: L-s223-guard-katmani-sorgu-sonucuna-konur
+  baslik: Tek sorgu iki havuz uretiyorsa guard HAVUZA degil SORGU SONUCUNA konur
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: kod
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 f2428eb81 (H1) — bos havuz TTLCache(ttl=3600)'e kosulsuz yaziliyordu: bos/import-ortasi question_bank'a karsi tek sorgu 60 dakikaya kadar sessizce bos sinav uretir (pre-split kod 295f34d9d'de 'if pool:' ile kendini onariyordu). Naif duzeltme 'if anchor_pool:' OLURDU ve YANLIS olurdu: tek sorgu iki havuz uretiyor, bos ANCHOR alt kumesi MESRU (bir dersin hic ankraj maddesi olmayabilir) -> saglikli veride sonsuza dek yeniden sorgu. Patolojik olan bos SORGU SONUCU -> guard 'if rows:' / 'if fb_rows:' uzerine kuruldu ve iki cache yazimini birden sariyor (yarim zehirlenme imkansiz). Iki yonde de civili: M-H1 guard'in varligini, M-H1b (if False:) cache'i yok etmedigini olduruyor"
+- id: L-s224-arac-surumu-giris-noktasina-bagli
+  baslik: "`ruff --version` KAPININ surumu degildir — ayni aracin uc surumu var ve kapiyi EN ESKISI tutuyor"
+  kaynak: .claude/rules/audit-methodology.md#ayni-aracin-uc-surumu-var-ve-kapiyi-en-eskisi-tutuyor-17-agu-2026-s224
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S224 — reference_precommit-vs-bare-linter'in (yanlis CWD -> yanlis CONFIG) bir adim otesi: yanlis GIRIS NOKTASI -> yanlis SURUM. Uc ayri ruff ikilisi `--version` ile olculdu: (a) kabuk PATH'i ve PostToolUse kancasi (.claude/hooks/post-edit-format.py:48,53 CIPLAK `ruff` cagiriyor) -> 0.14.13; (b) `git commit` KAPISI, kok .pre-commit-config.yaml:37 `rev: v0.7.1`, izole venv ~/.cache/pre-commit/repobiv5dj3f -> 0.7.1; (c) backend/.pre-commit-config.yaml:7 `rev: v0.13.2` -> 0.13.2 ama commit aninda HIC YUKLENMIYOR (S219). Karari veren surum, baska hicbir giris noktasinin kullanmadigi EN ESKI olani. Kanca her Edit/Write sonrasi 0.14.13 ile bicimlendirdigi icin dongu kendi kendine kuruluyor: kapi 0.7.1 ile YENIDEN bicimlendirip 'files were modified by this hook' + EXIT 1 veriyor. Yordam: `pre-commit run ruff-format --files <dosya>` (kapinin surumu) -> ikinci kez kos, 'Passed' = sabit nokta -> `git add` + amend"
+- id: L-s224-amend-sessizce-iptal-olur
+  baslik: "commit/amend 'oldu' bir IDDIADIR — cikti degil, HASH'in degistigi olculur"
+  kaynak: .claude/rules/audit-methodology.md#ayni-aracin-uc-surumu-var-ve-kapiyi-en-eskisi-tutuyor-17-agu-2026-s224
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S224 — bir pre-commit hook'u dosyayi degistirip 1 dondurunce `git commit --amend` CALISMAZ, ama `git log --oneline -1` AYNI HASH'i gosterir (eski commit hala orada). Ciktiya bakan 'amend oldu' sanir ve eski icerigi push etmeye calisir; bu oturumda 2 kez dusuldu, 3. denemede cikis kodu olculunce goruldu. Ikinci tuzak ayni yerde: hook basarisiz olunca pre-commit geri alma icin `git checkout -- .` kosuyor; 3399 kirli dosyali agacta bu ILGISIZ bir dosyada NTFS `Invalid argument` ile patliyor ve hata mesaji YANLIS dosyayi (_blindsolve/w22batches/g28.json) isaret ediyor -> teshis oradan baslarsa saatler kaybediliyor. Kural: amend/commit sonrasi `git log --oneline -1` hash'inin DEGISTIGINI dogrula. verification.md#GERI-ALIM-BIR-IDDIADIR'in commit tarafi"
+- id: L-s228-precommit-run-yazma-yapar
+  baslik: "`pre-commit run` SALT-OKUNUR bir olcum araci degildir — kontrol kolu dosyayi degistirir"
+  kaynak: .claude/rules/audit-methodology.md#ama-pre-commit-run-salt-okunur-bir-olcum-araci-da-degildir-17-agu-2026-s228
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S228 — 'HEAD'de de ayni ruff kalemleri var miydi' kontrol kolu icin `git stash push -- <dosya>` -> `pre-commit run ruff --files <dosya>` -> `git stash pop` dizisi kuruldu. Olcum GECERLIYDI (HEAD 19 kalem, benim surumum 14 -> silme borcu azaltti) ama orta adim yan etkiliydi: kok config ruff hook'una `--fix --exit-non-zero-on-fix` veriyor (.pre-commit-config.yaml:39), HEAD surumu 1747->1745 satira dustu, `pop` 'Your local changes would be overwritten' ile REDDETTI ve stash SAKLI kaldi. Agacta ne HEAD ne benim surumum olan ucuncu bir hal vardi (1745 satir, QCS bloklari GERI GELMIS: grep -c = 37). Kurtarma olculdu: `git checkout HEAD -- <dosya>` (yan etkiyi at) -> `git status --short` BOS -> `git stash pop` -> 1428 satir, QCS atfi 0. S212 near-miss'inin ayni sinifi, farkli tetikleyici. Genel hali: bir aracin CIKTISINI okumak, o aracin GIRDIYI degistirmedigi anlamina gelmez"
+- id: L-s228-autofix-kapsam-disi-supurmeyi-stageler
+  baslik: "Auto-fix'li kanca, silme-only commit'e kapsam-disi bicimlendirmeyi SESSIZCE bindirir"
+  kaynak: .claude/rules/audit-methodology.md#ama-pre-commit-run-salt-okunur-bir-olcum-araci-da-degildir-17-agu-2026-s228
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S228 — ayni koşumda `ruff-format` dokunulmadigim koda +21/-4 satir uyguladi (bos satir ekleme, `class MockRateLimitExceeded(Exception): pass` bolme, `with patch(...)` satir sarma). Bunlar staged silmenin USTUNE bindi (`git status` MM) ve fark edilmeden 'silme-only' diye commit'lenebilirdi; `git diff --numstat` ile yakalandi. Geri alim ARACI KRITIK: `git checkout -- <dosya>` (INDEX'ten geri yukler, silme korunur) DOGRU; `git checkout HEAD -- <dosya>` silmeyi de geri getirirdi. Yan olcum: numstat 'final.py 2 eklenen' dedi ama `grep -E '^\\+[^+]'` 0 verdi -> celiski degil, iki satir da BOS (`^\\+$`), ruff-format'in `class _MockVector` oncesine koydugu E302 ayrimi. audit-methodology.md#AGAC-KIRLI-SUPURME-GEREKCESI-DEGILDIR'in alet tarafi"
+- id: L-s228-detect-secrets-yeni-bulgu-yeni-degil
+  baslik: "`detect-secrets`in 'yeni sir' bulgusu, dosyaya ilk kez dokundugun icin cikmis olabilir"
+  kaynak: .claude/rules/audit-methodology.md#ama-pre-commit-run-salt-okunur-bir-olcum-araci-da-degildir-17-agu-2026-s228
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S228 — silme-only bir commit'te (0 icerik satiri eklendi) detect-secrets 3 kalem dusurdu: test_api_coverage_batch14.py:951/1542/1627. Ilk hipotez 'baseline satir-numarasi tutuyor, silme satirlari kaydirdi' idi ve OLCULUNCE CURUDU: baseline'da o dosya icin kayit sayisi 0. Gercek sebep kancanin yalniz DEGISEN dosyalari taramasi -> dosya ilk kez taraniyor. Ucu de HEAD'de birebir mevcut (`git show HEAD:<dosya> | grep -cF` = 1,1,1) ve ucu de test literali (user.secret_2fa = 'SECRET', 'ValidPass1!', 'Admin1Pass!'). Ayrim iki olcumle yapilir: (a) satir HEAD'de var mi, (b) baseline'da o dosya icin kayit sayisi (0 = hic taranmamis, >0 = kayma olabilir). Ikisi olmadan 'yeni sir' ile 'eski borc' ayrilamaz"
+- id: L-s229-bekci-hakli-olabilir
+  baslik: "Bekci kirmizi verdiginde ayrim tek soru: bulgu BENIM bu turda yazdigim satirda mi?"
+  kaynak: .claude/rules/audit-methodology.md#bekci-hakli-olabilir-hep-fantom-bir-olcum-degildir-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — S228 bir bekciyi olcup SKIP etmisti ve HAKLIYDI (20/20 bulgu HEAD'de zaten vardi); bu sessizce 'bekci kirmiziysa muhtemelen fantomdur' aliskanligina donustu. S229'da IKI ayri bekci kirmizi verdi ve IKISI DE HAKLIYDI, cunku bulgular bu turun KENDI kodundaydi: (a) reward-hacking-check -> yeni testte `# pragma: no cover`; olculdu ki .coveragerc:8-10 `*/tests/*` ve `*/test_*` omit ediyor -> pragma KANITLANABILIR no-op, dogru fix SILMEK (regex'i gecsin diye yeniden yazmak oyunlamak olurdu, patterns.py:189 ikinci bir `#` istiyor). (b) detect-secrets -> yeni testte DB parolasi; DSN conftest'e tasinip env/.env'den cozuldu. Ayrim olcutu: bulgu bu turda yazilan satirda ise SKIP tartismasi YOK; dokunulmamis kodda ise S228'in olculmus SKIP'i gecerli"
+- id: L-s229-bir-kez-gecmis-olmak-guvenlik-kaniti-degil
+  baslik: "Sir dedektorden gecmis olabilir cunku BICIMI gormedi — 'gecti' guvenli demek degil"
+  kaynak: .claude/rules/audit-methodology.md#bekci-hakli-olabilir-hep-fantom-bir-olcum-degildir-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — ayni DSN satiri (parola iceren) bir ONCEKI commit'te (5673ef0e9) repoya GIRDI ve detect-secrets 'Passed' dedi. Sonraki turda ayni satir bloklandi. Sebep olculdu: formatter ilk turda satiri uc satira sarmisti, BasicAuthDetector'in regex'i TEK satira bakiyor; ikinci turda satir tek satir kalinca eslesti. Yani dedektorden gecmek sirri guvenli yapmaz, yalnizca dedektorün o BICIMI gormedigini gosterir. Dogrulama dedektore degil grep'e dayanmali: `grep -rn '<sir>' <yol>` + `git show HEAD:<dosya> | grep -c`. Iki dosyadan da kaldirildi (test_split_migration_admin_osym.py, test_question_bank_defaults.py)"
+- id: L-s229-commit-yarim-gidebilir
+  baslik: "Commit cikis kodu 0 + YENI hash, yine de staged dosyalarin bir kismi DUSMUS olabilir"
+  kaynak: .claude/rules/audit-methodology.md#commit-cikis-kodu-0-yeni-hash-her-sey-girdi-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — L-s224-amend-sessizce-iptal-olur 'hash'i olc' diyordu; burada hash DEGISTI ve commit BASARILI gorundu ama icerik yarimdi. Pre-commit'in '[WARNING] Unstaged files detected' -> stash -> restore dizisi, bir hook basarisiz olduktan sonra dosyalari UNSTAGED birakiyor; ikinci deneme yalniz kalanlari aliyor. Bu oturumda IKI kez oldu: `5673ef0e9` yalniz test dosyasini aldi, asil JOIN fix'i (api/admin.py + api/osym_questions_api.py) disarida kaldi; `git log` yepyeni hash gosterdigi icin 'oldu' sanildi. Yakalayan olcum `git show --stat HEAD` oldu -> beklenen dosya listesi degilse commit yarimdir. Duzeltme ayri commit'te (e0a823131)"
+- id: L-s229-mutasyon-reddedilmis-olabilir
+  baslik: "Mutasyon hic uygulanmamis olabilir — 'uygulandi' yazdirmak olcum degildir"
+  kaynak: .claude/rules/audit-methodology.md#mutasyon-reddedilmis-olabilir-uygulandi-yazdirmak-olcum-degildir-18-agu-2026-s229
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — L-s223 mutasyonun kendisinin bir alet oldugunu soyluyor; yeni kor nokta mutasyonun HIC UYGULANMAMASI. DDL mutasyonu (M2) `psql -U kiro2_app -c 'ALTER TABLE question_bank ALTER COLUMN is_active DROP DEFAULT'` ile denendi, Postgres `ERROR: must be owner of table question_bank` dondu; script'in sonraki satiri KOSULSUZ `echo 'M2 uygulandi'` yazdi. Sonuc `4 passed` gorundu ve 'DDL testleri yuk tasimiyor' diye okunabilirdi — oysa mutasyon hic olmamisti. Dogru olcum: information_schema.column_default (`true` -> `YOK`). Yetki gerektiren mutasyonda yetkisi olan yolu kullan: `alembic downgrade` hem yetkiliydi hem downgrade() yolunu da sinadi. Tekrar edilince gercek sonuc cikti: M2 test 3-4'u oldurdu, 1-2'yi yasatti (M1'in tam tumleyeni)"
+- id: L-s229-server-default-fantom-olabilir
+  baslik: "ORM'de `server_default` yazmasi DDL'de VAR oldugu anlamina gelmez"
+  kaynak: .claude/rules/audit-methodology.md#server_default-beyani-ddlde-olmayabilir-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_question_bank_defaults.py
+  kanit: 'S229 — models/question_bank.py `is_active` yillardir `server_default="true"` beyan ediyordu. Olculdu: `SELECT column_default FROM information_schema.columns WHERE table_name=''question_bank'' AND column_name=''is_active''` -> NULL. Davranisla dogrulandi: kolonu ATLAYAN ham INSERT `NotNullViolationError` verdi, yani ORM''i atlayan her yazma yolu kirikti. server_default yalnizca DDL uretilirken (create_all/migration) kullanilir; tablo onu icermeyen bir yoldan olustuysa beyan FANTOM kalir. Kardes tuzak ayni satirda: Python-side `default=` INSERT''e kolonu DAHIL ETTIGI icin server_default gercek olsa bile hic ateslenmez -> `default=False` her yeni soruyu gorunmez yapiyordu. Ikisi ayni yone bakmali. Fix: ORM default=True + alembic 0002_is_active_default (SET DEFAULT true); information_schema NULL->true, satirlar degismedi 36.967/36.967'
+- id: L-s229-test-dsn-sessizce-sqlite-olur
+  baslik: "Canli-DB testinin DSN cozucusu `DATABASE_URL`'e guvenemez — test ortami onu sqlite yapar"
+  kaynak: .claude/rules/audit-methodology.md#test-dsni-database_urle-guvenemez-sessizce-sqlitea-duser-18-agu-2026-s229
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/integration/test_question_bank_defaults.py
+  kanit: "S229 — sirri kaynak koddan cikarmak icin DSN'i env'den cozen yardimci yazildi (sira: KIRO2_TEST_DSN -> KVKK_VERIFY_DSN -> DATABASE_URL). 11 test dustu: `sqlite3.OperationalError: no such table: information_schema.columns`. Sebep: test kosum ortami (tests/conftest.py ve bazi test modulleri `os.environ.setdefault` ile) DATABASE_URL'i `sqlite+aiosqlite:///:memory:` yapiyor ve cozucu ona guvendi. Bu, deponun kayitli 'testler sqlite else dalini kostugu icin yesildi' dersinin ayni sinifi; orada SESSIZ (yesil) hali uretimde ay boyu kirik kod tasimisti — burada kirmizi verdigi icin gorunur oldu, sans/disiplin degil. Guard: postgres olmayan DSN REDDEDILIR + pytest.skip, sessizce sqlite'a DUSULMEZ. Alet: backend/tests/integration/conftest.py::canli_dsn_cozumle"
+- id: L-s229-cd-kalici-sifir-collected
+  baslik: "Beklenmedik '0 collected / 0 bulgu' gordugunde ONCE `pwd` — kabuk cd'si kalicidir"
+  kaynak: .claude/rules/audit-methodology.md#kabuk-cdsi-kalicidir-0-collected-bulgu-degil-alet-arizasi-18-agu-2026-s229
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — bir duzenlemeden sonra `pytest tests/integration/test_question_bank_defaults.py` `collected 0 items` verdi; ilk okuma 'dosyayi bozdum' idi. Gercek sebep: onceki bir komutta `cd /c/Users/husey/kiro2` kosulmustu ve Bash oturumunun cwd'si KALICI, yol depo kokunun pytest.ini'sine cozuluyordu (cikti farkliydi: 'timeout func_only: True', xdist worker satiri yok). `backend/`'den kosunca 8/8 PASS. Bu dosyadaki 'olcum aletini dogrula' ailesinin en ucuz uyesi — kontrol kolu tek komut: `pwd`"
+- id: L-s229-maskenin-altinda-maske
+  baslik: "Bir fix'in degerini olcerken HANGI sayinin degismesi gerektigini ONCEDEN soyle"
+  kaynak: docs/audits/2026-08-18_api_yuzeyi_kok_neden.md#y1--y5-uygulandi--813a8ac9b-18-agu-2026
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_rate_limit_tutarliligi.py
+  kanit: "S229 — Y1 (login hiz siniri 5->300) icin kabul kriteri 'GF'deki 15x429 dusmeli' diye konmustu ve TUTTU: cikti da 429/rate-limit gecen satir 15 -> 0. Ama tam tablo baska sey soyledi: passed 124 -> 124 (DEGISMEDI), failed 39 -> 28, skipped 15 -> 26. Yani 11 test duzelmedi, `failed`den `skipped`e gecti. Sebep test_golden_flows.py:137-145'te kodlu (429 -> pytest.fail, diger non-200 -> pytest.skip): o 11 test artik 401 aliyor cunku `users` tablosunda 3 satir var ve HEPSI STUDENT; admin@/ogretmen@/veli@kiro2.com HIC YOK. Yalniz `failed` dususune bakmak '11 test duzeldi' yanilsamasi verirdi. Kural: fix'in urune ne kazandirdigini olcen sayiyi (burada `passed`) fix'ten ONCE ilan et; maskeyi kaldirmak bulguyu cozmez, bir sonraki maskeyi gosterir. Yan bulgu bagimsiz bir acik is oldu (Y9): admin/ogretmen/veli akislari merge kapisinda SIFIR bilgi tasiyor"
+- id: L-s229-esitlik-testi-tek-basina-yetmez
+  baslik: "Iki kaynagi hizalayan test, ikisi BIRDEN yanlis olunca yesil kalir — ayrica ALT SINIR assert et"
+  kaynak: docs/audits/2026-08-18_api_yuzeyi_kok_neden.md#civi-backendtestsfasttest_rate_limit_tutarliligipy-3-test
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_rate_limit_tutarliligi.py
+  kanit: "S229 — login hiz siniri iki yerde tanimliydi (api/auth.py=300, advanced_rate_limiter=5) ve middleware once kostugu icin KUCUK olan sessizce kazaniyordu. Ilk refleks 'ikisinin esit oldugunu assert eden bir bekci' yazmakti. O bekci tek basina YETERSIZ: `b3be80686` ikisini BIRDEN 5'e dusurmustu, yani esitlik testi o regresyonda GECERDI ve urun yine kirik olurdu (paylasimli NAT'ta 6. ogrenci giremiyor). Ikinci, kaynaktan BAGIMSIZ assert eklendi: `login >= 30` (olculmus vaka: 10 esszamanli ayni-WiFi ogrenci = 10/10 HTTP 429). Mutasyonla ayirt edildi: _LOGIN_RPM -> 5 => 2 test duser (esitlik + alt sinir); register testi dogru sekilde hayatta kalir. Genel kural: 'A == B' testi yalniz AYRISMAYI yakalar, ORTAK KAYMAYI yakalamaz"
+- id: L-s229-toplu-commit-gerekce-tasimaz
+  baslik: "Bir degeri geri almadan once o degisiklige GEREKCE var miydi diye olc — bos govdeli toplu commit karar degildir"
+  kaynak: docs/audits/2026-08-18_api_yuzeyi_kok_neden.md#kok-neden-olcumle-daraltildi
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — login limitini 5'ten 300'e cikarmak, yuzeyde 'bir guvenlik sertlestirmesini geri almak' gibi gorunuyordu; bu haliyle kullaniciya sorulmasi gereken bir karar olurdu. Olculdu: degeri dusuren `b3be80686` (7 Agu) toplu bir 'update core services, guardrails, algorithms...' commit'i ve GOVDESI BOS; `git log -p` ile o commit'ten ONCEKI hale bakilinca advanced_rate_limiter'daki deger de 300'du -- yani iki taraf hizaliydi ve supurme ikisini BIRDEN dusurdu. Test yok, yorum yok, gerekce yok. Karsi tarafta ise api/auth.py:90-93 OLCUME dayali bir yorum tasiyor. Boylece 'geri alma' degil 'kazayla dusurulen degeri iade' oldugu kanitlandi ve is onay beklemeden ilerledi. Kural: bir degeri degistirmeden once `git log -S '<deger>'` + commit govdesi oku; gerekcesiz toplu supurme bir tasarim karari DEGILDIR"
+- id: L-s229-msys-yol-yeniden-yazimi
+  baslik: "Git Bash `docker exec`'e verilen /app/... yolunu YENIDEN YAZAR — MSYS_NO_PATHCONV=1 sart"
+  kaynak: .claude/rules/audit-methodology.md#olcum-aletini-dogrula-ayni-gun-4-gecersiz-olcum
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — deploy dogrulamasi icin `docker exec kiro2-backend grep -n '/api/v1/auth/login' /app/core/advanced_rate_limiter.py` kosuldu. Cikti: `grep: C:/Program Files/Git/app/core/advanced_rate_limiter.py: No such file or directory`. Yani MSYS, / ile baslayan argumani WINDOWS yoluna cevirdi ve container'a hic ulasmayan bir yol gonderdi. Hata mesaji dosyanin YOK oldugunu soyluyor -- 'docker cp basarisiz oldu' diye okunabilirdi; gercekte cp basariliydi. Fix: `MSYS_NO_PATHCONV=1 docker exec ...` (ayni komut sonra 3 satiri dogru dondurdu). Bu, verification.md'deki 'bash /tmp = MSYS temp, Python /tmp = C:\tmp' dersinin kardesi: Git Bash'te MUTLAK YOL iceren her dis-arac cagrisinda (docker exec, docker run -v, psql -f, wsl) yol donusumu sorgulanmali. Genel kural: container/uzak sistem yolu iceren komutta 'dosya yok' hatasi bir BULGU degil, once yol-donusumu kontrolu ister"
+- id: L-s229-kapi-borcu-karari-uc-olcum-ister
+  baslik: "Pre-commit kapisi kirmiziysa SKIP mi FIX mi -- karar UC olcume dayanir, sezgiye degil"
+  kaynak: .claude/rules/audit-methodology.md#ayni-aracin-uc-surumu-var-ve-kapiyi-en-eskisi-tutuyor-17-agu-2026-s224
+  sinif: surec
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — Y1 commit'inde ruff kancasi `PLW0603` ile kirmizi verdi. Ucu de olculdu, sonra karar verildi: (1) BENIM KODUM temiz mi? kapinin surumuyle (0.7.1) GERCEK YOLDA kosuldu -- test dosyasi 'All checks passed', limiter'da ihlali haric tutunca 'All checks passed' => yeni borc yok. (2) KONTROL KOLU: ayni ifade HEAD'de var mi? `git show HEAD:<dosya> | grep -n 'global _rate_limiter'` -> HEAD:369, dokunmadigim fonksiyon => onceden var olan borc. (3) YAYGINLIK: `ruff check --select PLW0603 backend/{core,api,services}` -> 132 kalem => sistemik, dosya-basina kapatmak yanlis katman. Karar: SKIP=ruff + gerekceyi commit mesajina yaz + AYRI acik is (Y8). Uc olcumden biri eksik olsaydi karar savunulamazdi: (1) yoksa kendi borcunu gizlemis olurdun, (2) yoksa 'ben mi getirdim' bilinemez, (3) yoksa tek dosyayi duzeltip sistemik borcu gormezden gelirdin. Kural: SKIP bir MUAFIYET degil, OLCULMUS bir ertelemedir"
+- id: L-s229-yarim-commitin-artigi-sessiz-kalir
+  baslik: "Yarim kalan commit'in artigi calisan agacta SESSIZCE bekler — oturum sonunda takipli-kirliyi supur"
+  kaynak: .claude/sessions/latest.md
+  sinif: surec
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — [[L-s229-commit-yarim-gidebilir]] 'commit aninda `git show --stat` ile olc' diyor. Eksik kalan yarisi: o an KACIRILIRSA artik dosya kalici olarak calisan agacta kalir ve fark edilmez. Somut vaka: `1dd12579d` (A1, surum matrisi) yalniz `backend/requirements-minimal.txt`'i commit'ledi; `backend/requirements.txt` ayni pinlerle KIRLI kaldi ve gunler sonra, tamamen baska bir isin push'undan sonra `git status --short --branch` ciktisinda goruldu. Bu depoda ~3400 TAKIPSIZ dosya oldugu icin `git status` ciplak haliyle kullanilamaz -- artik gorunmez olur. Isleyen filtre: `git status --porcelain | grep -v '^??'` -- yani TAKIPSIZ olanlari DISLA, kalanini say. S229 sonunda bu sayi 1 idi ve o 1 dosya gercek bir eksikti. Kural: oturum kapanisinda takipsiz gurultuyu FILTRELEYEREK takipli-kirli sayisini olc; 0 degilse her birinin sahibini bul. DUZELTME (S231): bu dersin ilk yazimi filtreyi 'bas harfi M olanlari say' diye tarif ediyordu ve BU YANLISTIR -- bkz. [[L-s231-porcelain-bas-harfi-staged-sutunudur]]"
+- id: L-s230-ast-sayaci-ham-sql-goremez
+  baslik: "AST tabanli gocu sayacinda `SINIF=0` 'gocu bitti' DEGIL 'alet bakamadi' demek olabilir — ham SQL yapisal kor noktadir"
+  kaynak: backend/scripts/scan_split_accesses.py
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/integration/test_es_index_schema_split.py
+  kanit: "S230 — `scan_split_accesses.py` S219'da regex'ten AST'ye tasindi ve o gun kor noktalari docstring'e yazildi; ama listenin BASINDAKI kalem eksikti. Alet `QuestionBankItem.<alan>` bicimindeki `Attribute` dugumunu arar; tasinmis alan bir SQL DIZESI icinde gectiginde AST'de hicbir dugum yoktur, yani alet 0 raporlar. Olculdu: Y2'nin iki P0'inin IKISI DE ham SQL kullaniyordu (`services/cat_session.py`, `services/placement_service.py`) ve sayac o dosyalari temiz gosterirken uretimde `asyncpg.UndefinedColumnError` -> `/api/v1/cat/next` ve `/placement/start` HTTP 500 donuyordu. Ayrica devrin `scan.txt` dosyasi BAYATTI (45 diyordu, taze olcum 63). Iki hata birlesince 'gocu neredeyse bitti' okumasi cikiyordu. Kor nokta artik docstring'de AYRI ve one cikan bir paragraf olarak yazili (listedeki digerleri 'bugun 0 kalem' diyor; bu kalem 0 DEGILDI, o yuzden onlarin arasina konulamazdi). Yedek kontrol: `grep -rn 'question_bank' backend/{services,api,core} --include='*.py' | grep -i 'select|update|insert|text('`. ZORLAYICI YOK: `backend/tests/fast/test_scan_split_accesses.py` (10 test, yesil) ham SQL korlugunu SINAMIYOR -- bu bosluk bilincli olarak gorunur birakildi. Kural: bir ilerleme sayacinin cikitisi ALT SINIRDIR; yanlis-sifir isi sessizce bitirir ([[L-s219-olcum-aletinde-yanlis-sifir]]). S239 GUNCELLEME -- BOSLUK ISIRDI VE KAPATILDI: ayni kor nokta `core/es_index_schema.SORGU`'da da vardi (f-string ile kurulan ham SQL, split oncesi `q.question_text` varsayiyordu). Senkron HER kosumda `UndefinedColumnError` ile dusuyordu ve canli ES index AYLARDIR 0 dokumandi; #433 bunu 'index'i yeniden kur' diye yanlis teshis etmisti. Zorlayici artik VAR: `tests/integration/test_es_index_schema_split.py` sorgunun METNINI okumaz, canli semaya karsi KOSTURUR ve donen satir sayisini kapiyla karsilastirir (5 test)."
+- id: L-s230-yavru-tablonun-pk-si-id
+  baslik: "Split yavru tablolarin PK'si `id` ve AYNI ZAMANDA parent'a FK — `question_id` kolonu YOKTUR"
+  kaynak: .claude/rules/database.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_split_migration_cat_session.py
+  kanit: "S230 — Y2 icin ilk onerilen JOIN kosulu `question_content.question_id = question_bank.id` idi; makul gorunuyordu ve uygulansa ayni `UndefinedColumnError`'i YENIDEN uretirdi. `information_schema` ile olculdu: uc yavru tablonun da (`question_content`/`question_metadata`/`question_statistics`) birincil anahtari `id` ve bu kolon ayni zamanda `question_bank.id`'ye FK; `question_id` adinda kolon HICBIRINDE yok. Dogru kosul `qc.id = qb.id`. LEFT JOIN secildi: canli 1:1 veride tam tutuyor (36967 x 4, yetim 0) ama bu YAPISAL bir garanti degil (bkz. S222 bulgusu -- `INSERT INTO question_statistics` depoda hicbir yerde yok, 1:1 trigger/constraint ile zorlanmiyor). Mutasyonla civili: JOIN anahtari `qc.id` -> `qb.created_by` yapilinca 9 test duser. Kural: bir JOIN anahtarini semadan OKUMADAN yazma; ad tahmini (`<tablo>_id`) bu semada yanlis"
+- id: L-s230-hayatta-kalan-mutasyon-gecersiz-olabilir
+  baslik: "LEFT JOIN'li sorguda niteliksiz kolon tek tabloda cozulur — 'onek silme' mutasyonu testi degil KENDISINI olcer"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S230 — Y2 testlerini civilemek icin ilk denenen mutasyon SQL'deki `qs.` tablo onekini silmekti; mutasyon HAYATTA KALDI. Ilk okuma 'testler yuk tasimiyor' olurdu ve test paketi bosuna sertlestirilirdi. Gercek sebep olculdu: sorguda LEFT JOIN varken niteliksiz bir kolon adi Postgres tarafindan yine TEK tabloda cozuluyor, yani mutasyon SQL'in anlamini hic degistirmiyor -- gecersiz bir mutasyondu. Gecerli mutasyon (JOIN anahtarini `qc.id` -> `qb.created_by` degistirmek) uygulanip 9 test dustu (iki uc testi dahil). [[L-s223-mutasyonun-kendisi-de-bir-alet]] 'mutasyonun `failed` vermesi testin yuk tasidigini kanitlamaz' diyordu; bu vaka TERS yonu gosteriyor: mutasyonun HAYATTA KALMASI da testin zayif oldugunu kanitlamaz. Kural: hayatta kalan mutasyonda once 'bu mutasyon davranisi gercekten degistirdi mi' sorusunu olc; degistirmiyorsa bulgu testte degil aletdedir"
+- id: L-s231-porcelain-bas-harfi-staged-sutunudur
+  baslik: "`git status --porcelain` bas harfi INDEX sutunudur — `grep '^[MAD]'` unstaged degisikligi GORMEZ ve HER ZAMAN 0 der"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S231 — kapanis turunda takipli-kirli sayisi olculdu ve `0` bildirildi; YANLISTI, gercek deger 4. Kok neden: `git status --porcelain` ciktisi iki sutunludur (XY) -- X = INDEX/staged durumu, Y = CALISMA AGACI durumu. Stage'lenmemis bir degisiklik ` M` olarak cikar, yani BAS KARAKTER BOSLUKTUR. Dolayisiyla `grep '^[MAD]'` yalniz STAGED degisiklikleri sayar ve hicbir sey `git add`lenmemisken HER ZAMAN 0 dondurur -- yani sessizce yanlis-sifir uretir. Daha kotusu: bu hatali yordam [[L-s229-yarim-commitin-artigi-sessiz-kalir]] dersinin ICINE 'bas harfi M olanlari say' diye YAZILMISTI, yani defter kendi kuralini bozan bir tarif tasiyordu ve bir sonraki tur onu izleyip ayni hataya dustu. Dogru filtre TAKIPSIZ olani DISLAMAKTIR: `git status --porcelain | grep -v '^??'`. Kontrol kolu (ayirt edici): hicbir sey add'lenmemisken yanlis filtre 0, dogru filtre 4 dondurdu; ayrica devralinan `backend/semantic_cache.pkl` yalniz dogru filtrede gorundu. Kural: bir sayaci 'temiz' okumasi verirken KONTROL KOLU sart -- bilinen-kirli bir dosyanin o sayacta GORUNDUGUNU kanitla ([[L-s219-olcum-aletinde-yanlis-sifir]]: yanlis-sifir tek kabul edilemez hata turudur)"
+- id: L-s230-limiter-deposu-import-aninda-baglanir
+  baslik: "Hiz siniri DEPOSU `settings.redis_url`e IMPORT ANINDA baglanir — `@limiter.limit` tasiyan her uc testi KONU-DISI 500 verir"
+  kaynak: backend/conftest.py
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/integration/test_split_migration_cat_session.py
+  kanit: "S230 — Y2'nin uc testleri once 500 donuyordu ve bu 'split gocu calismiyor' diye okunabilirdi. Olculdu: kok neden split ile ILGISIZ. `backend/conftest.py:25` `REDIS_URL`i `redis://localhost:6380/1` yapiyor, bu makinede 6380'de hicbir sey dinlemiyor (`[Errno 10061] Connect call failed`); hiz siniri deposu `settings.redis_url`e IMPORT ANINDA baglandigi icin istek islenmeden ham `ConnectionError` firliyor ve islenicisi olmadigindan 500 oluyor. Servis istemcisini kurtarmak (`_canli_redis()`) YETMIYOR -- limiter deposu ayri. Fix: `cat_client` fixture'inda limiter devre disi; ayni uc limiter kapaliyken 200 + gercek soru donuyor. KAPSAM: bu kusur Y2'ye ozgu DEGIL, bu makinede `@limiter.limit` tasiyan HER endpoint testi ayni sekilde duser -- yani ayni sinifta baska kirmizilar gorulurse once bu elenmeli. Kural: bir uc testinde 500 gorunce once 'istek isleniciye ULASTI mi' diye olc; import-aninda baglanan yan sistemler (limiter deposu, cache, metrik) testi konu-disi sebeple kirmiziya boyar"
+- id: L-s231-hacim-vekil-olcum-icerik-degil
+  baslik: "Satir sayisi ve invaryantlar YESILKEN icerik tamamen gecersiz olabilir — hacim bir VEKIL olcumdur"
+  kaynak: docs/audits/2026-08-19_beta_kapisi_icerik_gecerliligi.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S231 — MEMORY'nin en ustunde 'DB DOLU: 36.967 her biri, yetim 0, kapi 27.073' yaziyordu ve bu SAYISAL OLARAK DOGRUYDU. Dort tablo senkron, yetim yok, kapi satir donduruyor, `student_coherent=true`, `quality_review_status='auto_judged_high'` -- her invaryant yesil. Y4 pilotu icin kapidan 40 soru cekilip (5 ders x 8, md5 siralamasi, TRUNCATE YOK) 40'i TEK TEK OKUNDU: yanitlanabilir VE anahtari dogru = 0 (%0); yanitlanabilir ama anahtar YANLIS = 5 (%12,5, aritmetigi elle dogrulandi: f(x)+f(-x)=2x^2+2 ama DB 'D' diyor; ucgenin ic acilari 180 ama DB '360' diyor); yanitlanamaz/bozuk/soru degil = 35 (%87,5 -- 'Parabol (Kismi Ozet)' baslik parcasi, 5 sikki AYNI olanlar, 10'un kuvvetleri sikki, 'Prazesente vla. ogur for evet cose servosu' gibi anlamsiz metin, paragrafi EKSIK sorular). Orneklem sansi degil: `source_book` NULL = 27.073/27.073, `auto_imported=true` = 36.967/36.967 -> CLAUDE.md'nin anlattigi 405-kitap korpusu BU DB'DE DEGIL. Kural: bir veri havuzuna dayanan isi 'deger uretiyor' saymadan once HACIM DISI bir olcum yap -- orneklemi OKU. Hacim, yetim sayisi, senkronluk ve bayraklar icerik gecerliligi hakkinda SIFIR bilgi tasir. ZORLAYICI YOK: bu sinifi yakalayan hicbir test mevcut degil ve bosluk bilincli olarak gorunur birakildi -- onerilen bekci kapidan orneklem alip yanitlanabilirlik/sik-tekrari/anahtar-tutarliligi sinar"
+- id: L-s231-bayrak-tasidigi-iddiayi-kanitlamaz
+  baslik: "Adi dogrulamak istedigin ozellik olan bir bayrak, en tehlikeli vekil olcumdur — toptan basilmis olabilir"
+  kaynak: docs/audits/2026-08-19_beta_kapisi_icerik_gecerliligi.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S231 — `pipeline_metadata->>'student_coherent'` bayragi tam olarak 'bu soru ogrenci icin anlamli mi' sorusunu yanitliyormus gibi duruyor ve ogrenci kapisi (`mv_safe_for_beta`) buna dayaniyor. Olculdu: `student_coherent=true` = 27.073/27.073 -- yani TEK bir satir bile 'false' degil, dagilim YOK. Bir yargi surecinin cikti dagiliminin tekil olmasi, yargilama YAPILMADIGININ gostergesidir (ayni desen 3 Haz 2026'da da vardi: kor-judge yalniz keep'leri isaretledi, drop nedenleri persist EDILMEDI -> 'student_coherent=false' 0 satir). Okunan 40 sorunun en az 35'inde bayrak YANLIS. Kural: bir bayraga dayanmadan once (a) DAGILIMINI sorgula -- tek deger ise yargi degil varsayimdir, (b) bayragin iddia ettigi seyi BAGIMSIZ olarak orneklemle sina. Kardes ders: [[L-s229-server-default-fantom-olabilir]] deseninin veri-yargisi ayagi"
+- id: L-s231-ters-tirnak-commit-mesajinda-komut-kosar
+  baslik: "Bash cift-tirnakli commit mesajindaki TERS TIRNAK komut olarak kosar — mesaji dosyadan ver"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/unit/test_hooks/test_ders_dedektorleri.py
+  kanit: 'S231 — `git commit -m "...`del kayitlar` ile bitiyordu..."` yazildi ve kabuk `del: command not found` dondurdu: cift tirnak icindeki ters tirnak komut ikamesidir, yani mesaj metni SESSIZCE degisir. O commit ayrica ruff N802 yuzunden dustu, ama dusmeseydi mesaj bozuk halde repoya girecekti. Daha kotusu: ayni tuzak DOGRULAMA komutunu da bozdu -- `git log ... | grep -c "``"` calistirildi, ters tirnaklar bos komut ikamesine cozuldu, desen BOS DIZE oldu ve her satira esletti (43/43) -> ''bozulma yok'' diye YANLIS-POZITIF okundu. Dogru yordam: mesaji bir dosyaya yaz ve `git commit -F <dosya>` kullan (bu turda 2 commit boyle atildi, ikisi de temiz). Genel kural: metni kabuktan gecirirken ters tirnak / `$(...)` / `$VAR` iceriyorsa dosya kullan; ozellikle DOGRULAMA komutlarinda -- bozuk bir dogrulayici ''sorun yok'' der'
+- id: L-s231-zorlayici-var-ama-otomatik-kosmuyor
+  baslik: "Ders defterinin %29'unun zorlayicisi var ama zorlayicilarin %0'i OTOMATIK kosuyor — enforcement kagit uzerinde"
+  kaynak: .claude/lessons/README.md
+  sinif: surec
+  durum: aktif
+  zorlayici: backend/tests/unit/test_ders_kaydi.py
+  kanit: "S231 — 'dersler etkin kullaniliyor mu yoksa yalniz yazili mi' sorusu OLCULDU. Defter: 125 ders, 83 `aktif` (%66), 42 `dogrulanmadi`; `zorlayici` (koruyan test) VAR = 36 (%29), YOK = 89 (%71); `aktif` ama zorlayicisiz = 47. Sonra asil soru soruldu -- o 36 zorlayici FIILEN kosuyor mu? IKI ayri olcum (L-s219): (a) pre-commit: kok `.pre-commit-config.yaml`de test kosan hook YOK, tek pytest hook'u `:211`de '`KALDIRILDI (28 Tem 2026)`' yorumu olarak duruyor -> commit aninda HICBIR test kosmuyor. (b) CI: dal listesi olan her workflow (`ci.yml`, `golden-flows.yml`, `quality-gate.yml`, `security.yml`) yalniz `main`/`master` hedefliyor; calisilan dal `feature/self-evolution-optimization` -> 0 workflow tetikleniyor. Yani zorlayicilar OTOMATIK olarak hic kosmuyor; yalniz birinin elle `pytest` cagirmasiyla kosuyorlar. KARSI TARAF da olculdu ve dersler OLU DEGIL: bu oturumda 14 ders fiilen uygulandi (kabuk `cd` kaliciligi, `-p no:xdist` usage-error tuzagi, mutasyondan once commit, `git show --stat` ile ne girdigini olcmek, `read_bytes` CRLF tuzagi, her olcumde kontrol kolu, truncate'siz orneklem, SKIP oncesi uc olcum, mock DB yerine gercek Postgres, vakum testi tespit+silme, `failed` vs `error` ayrimi, `n_live_tup` tahmin -> gercek COUNT, SQL'i yeniden yazmak yerine uretim fonksiyonunu cagirmak, mutasyon ankrajinin tekilligini dogrulamak) ve 3 ihlal oldu (porcelain `^[MAD]` -- dersin KENDI yordami yanlisti; commit mesajinda ters tirnak -- ders YOKTU; kusur kapsamini gurultulu yollari saymadan genis ilan etmek -- ders VARDI, tekrar ihlal). Kural: dersler ajan BAGLAMI uzerinden isliyor, arac zinciri uzerinden DEGIL. Bu, baglam kaybinda / farkli ajanda / insan unuttugunda SESSIZCE bozulur. Enforcement iddiasi 'zorlayici alani dolu' ile degil, 'o test otomatik bir kapida kosuyor' ile olculur"
+- id: L-s231-kusur-kapsamini-gurultulu-yollari-sayarak-ilan-et
+  baslik: "Bir kusur sinifinin KAPSAMINI ilan etmeden once ZATEN GURULTULU olan yollari say"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S231 — CAT motoru icin 'motor sessizce anlamsiz cikti uretiyor' diye genis bir cerceve kuruldu ve kullaniciya oyle sunuldu. Sonra kod okundu ve cerceve YANLIS cikti: `submit_answer` havuz tukenince `termination_reason='pool_exhausted'` ile ACIKCA bitiriyor; `start_session` hic soru bulamayinca `ValueError` -> `cat.py:150` -> HTTP 422 donuyor (500 bile degil). Gercekten sessiz olan TEK yol `start_session:489` warm-up fallback'iydi (4 dalin 4'u bos, hicbir log yok). Yani 'sessiz kusur' sinifinin uc uyesinden ikisi zaten gurultuluydu ve kapsam 1/3'e indirildi. Bu, `audit-methodology.md#SEVERITY DE BIR OLCUMDUR` dersinin TEKRAR ihlaliydi (ders yaziliydi). Kural: 'X sessizce basarisiz oluyor' / 'her yerde kirik' gibi kapsam iddialarini yazmadan once ilgili yollari TEK TEK ac ve hangilerinin zaten log/exception/HTTP kodu urettigini SAY. Kapsami daraltmak bulguyu zayiflatmaz -- guvenilir kilar ve dogru yere odaklar"
+- id: L-s232-kontrol-kolu-bekciyi-DUZELTIR
+  baslik: "Yalniz bilinen-KOTU'ye kosulan bir bekci HER ZAMAN dogru gorunur — bilinen-IYI kol iki gercek kusur buldu"
+  kaynak: docs/audits/2026-08-19_y12_kontrol_kolu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_icerik_gecerliligi.py
+  kanit: "S232 — Y12 icerik-gecerliligi bekcisi yazildi, canli kapiya kosuldu, `8 xfailed` verdi ve DOGRU gorundu. Sonra audit-methodology.md#Metrik-Dogrulama-Gate geregi bilinen-IYI kola (kiro2_temp, 34.982 satir, gercek 420 kitap) kosuldu ve IKI KUSUR cikti. (1) I4 KOR DEDEKTORDU: iddia count(DISTINCT reviewed_at) > 1 idi; canli 1 -> duser (dogru), kiro2_temp 0 (hepsi NULL) -> DE duser (YANLIS). Iki kolda birden dusen dedektor hicbir sey olcmez. Kusur kavramsaldi: iddia 'hic incelenmemis' (durust, 0) ile 'incelendi YALANI' (toplu UPDATE imzasi, 1) durumlarini karistiriyordu -> != 1 yapildi. (2) K2 esigi bilinen-IYIYI REDDEDIYORDU: esik 0,02 idi ve BASKA bir populasyondan (jsonl page_inline katmani, 0,007) alinmisti; kiro2_temp olculunce 0,0256 cikti -> Y11 mukemmel calissa bile bekci kirmizi kalacakti. Esik iki koldan olculup 0,05'e cekildi (bilinen-iyinin ~2 kati, bilinen-kotunun ~4'te biri; canli 0,2075). Kural: bir bekcinin ayirt edici oldugu, bilinen-kotude kirmizi vermesiyle DEGIL, bilinen-iyide YESIL vermesiyle kanitlanir. Kontrol kolu kosulmasaydi bu dosya '8 xfailed' ile dogru gorunup iki kusuru tasiyacakti. Mutasyon 4/4 oldu (hepsi failed, hicbiri error, 4 geri alim git status BOS ile dogrulandi)"
+- id: L-s232-acik-devre-dedektor-makul-sayi-dondurur
+  baslik: "Baglantisi kopan bir dedektor 'her sey bozuk' deyip MAKUL bir skor dondurebilir — saglik kontrolu bulgudan once"
+  kaynak: docs/audits/2026-08-19_y12_kontrol_kolu.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — Turkce garble tespiti icin zemberek_spell_check MCP araci denendi (CLAUDE.md'de 'Zemberek Integration' bolumu var ve calistigi VARSAYILIYOR). Bilinen-KOTU girdi ('Prazesente vla. ogur for evet cose servosu') -> accuracy 0.0. Bu tek basina 'alet calisiyor' diye okunurdu. Kontrol kolu kosuldu: bilinen-IYI Turkce ('Buna gore paralelkenarin alani kac santimetrekaredir?' -- gore/kac/alani tartismasiz dogru) -> DE accuracy 0.0. Sebep her kelimenin error alaninda gomuluydu: 'All connection attempts failed'. zemberek_health teyit etti: status unhealthy, zemberek_available false, http_backend_available false. Yani arac ACIK-DEVRE basarisiz oluyor: istisna FIRLATMIYOR, her kelimeyi is_correct=false isaretleyip cagirana toplu accuracy 0.0 donduruyor. Bir kalite kapisi buna baglansaydi 'yasak kelime var mi' sorusunda HER metni reddederdi (gurultulu, fark edilir) ama 'Turkcesi duzgun mu' sorusunda HICBIR metni onaylamazdi ve accuracy 0.0 bir OLCUM gibi gorunurdu. Karar: Zemberek Y12'den ELENDI, dedektor yuku dile bagli olmayan yapisal kurallara birakildi. Kural: bir dedektore guvenmeden once (a) saglik ucunu cagir, (b) BILINEN-IYI girdiyle sina; agrega skor makul gorunse bile satir/kelime duzeyindeki error alanlarina bak"
+- id: L-s232-kaynak-diskte-degil-YAN-VERITABANINDA
+  baslik: "'Veri kayip, diskteki dosyadan kurtaralim' demeden once veritabani listesini cek — gercek korpus ayni sunucudaydi"
+  kaynak: docs/audits/2026-08-19_y12_kontrol_kolu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S231 kapi icerigini gecersiz buldu ve kurtarma kaynagi olarak d-dataset/eslesmis_sorucevap.jsonl'i (116 MB, 77.336 satir) isaret etti; Y11 boylece '116 MB dosya ice-aktarma' isi olarak planlandi. S232'de TEK komut (SELECT datname, pg_size_pretty(pg_database_size(datname)) FROM pg_database) ayni sunucuda kiro2_temp (2209 MB) veritabanini gosterdi: question_bank 187.835 satir / 187.725'i source_book dolu / 420 kaynak kitap / 5 zorluk seviyesi / 68.022 farkli irt_difficulty. Bagimsiz hash tuzuyla 12 soru cekilip ELLE COZULDU: 11'i servis edilebilir ve anahtari dogru (Kepler yasalari -> A; teget cember -> C; EBOB(a,b)=6 ve EBOB(b,c)=15 -> 51 -> A; tan(arcsin 7/25)=7/24 -> A; cift yarik girisimi -> C). Dahasi JSONL'in GERCEK katmani (answer_source=page_inline, 55.867 satir) DB'ye HIC girmemis (%0,0 gecis); DB'ye giren AI turevi katman (bayes_ai_upgrade %96,8 + jsonl_v11 %99,2). Yani JSONL'den ice aktarmak copu TEKRAR getirirdi. Adli isaret: canli 36.967/36.967 UUIDv4 ve tamami 17 Agu 04:47-04:49 (3 dakika) vs kiro2_temp 187.629 UUIDv5 ve 4 Mar-22 Haz; soru_hash kesisimi 0 -> ustune yazma DEGIL, tamamen AYRIK bir ikame. Kural: 'veri kayip, diskten kurtaralim' bir KAYNAK iddiasidir ve en ucuz olcumu veritabani listesidir. Kaynak secmeden once listeyi cek, sonra aday kaynaktan ORNEKLEM OKU (hacim degil icerik)"
+- id: L-s232-yanlis-pozitifi-OKU-esigi-tahmin-etme
+  baslik: "Bayrakli satirlari OKUMAK, esigi tahmin etmekten daha iyi kural uretir — ayirt edicilik VE FP birlikte iyilesti"
+  kaynak: docs/audits/2026-08-19_y12_kontrol_kolu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_icerik_gecerliligi.py
+  kanit: "S232 — Y12'nin R6 kurali ('bir sik govdenin birebir alt dizesi, >=15 karakter') bilinen-IYI kolda 232 satir bayrakliyordu. Esigi yukseltmek ya da kurali atmak yerine bayraklardan 10'u OKUNDU: 8 gercek kusur, 1 sinirda, 1 DOGRULANMIS YANLIS-POZITIF -- 'Nufus artis hizinin dusurulmesi ya da yukseltilmesi yonunde uygulanan nufus politikalarinin, asagidakilerden hangisine etkisi beklenmez?' + sik B) 'Nufus artis hizi' (17 karakter, uzunluk tabanini geciyor). Soru gercek, yanitlanabilir, anahtari dogru (D). FP'yi OKUMAK kuralin gercek sinyalini gosterdi: 'bir sik govdede geciyor' degil, 'SIK BLOGU govdeye kopyalanmis'. Kural >=1 sik -> >=3 sik yapildi, IKI KOLDA da olculdu: >=1 -> canli 968 / temp 232 (5,4x); >=3 -> canli 593 / temp 103 (7,4x); birlesim orani 0,2145/0,0288 -> 0,2075/0,0256 (8,1x). Yani sikilastirma hem ayirt ediciligi ARTIRDI hem FP sinifini KALDIRDI -- nadir bir ikili kazanc ve yalnizca bayraklari okuyarak gorulebilirdi. Kardes ders: L-olcum-garble-tail-silme (ucuz filtre tuzagi); orada da cozum sayilara degil orneklere bakmakti"
+- id: L-s232-bayat-esik-mi-yoksa-susturulmus-gercek-alarm-mi
+  baslik: "Bir esigi 'bayat' ilan etmeden once esigin KALIBRE EDILDIGI degeri ara — gercek alarm olabilir"
+  kaynak: backend/tests/db/test_question_bank_invariants.py
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/db/test_question_bank_invariants.py
+  kanit: "S232 — Bir denetim ajani test_question_bank_invariants.py'nin MIN_SATIR=150.000 esigini 'bayat' diye raporladi (canli DB 36.967 satir, yani esik hep dusuyor). Olculdu ve TERSI cikti: dosyanin kendi docstring'i '5 Agu 2026'da tablo 187.835 satirdan 2.304'e dustu' diyor ve kiro2_temp'te olculen deger tam olarak 187.835. Yani esik GERCEK korpusa gore kalibre edilmis; canlinin 36.967'de kalmasi 17 Agu'daki IKINCI icerik ikamesinin DOGRU bir alarmi. Esige dokunulmadi. ASIL kusur baskaydi ve ayni dosyadaydi: benzersizlik sorgusu 'SELECT count(DISTINCT question_text) FROM question_bank' diyordu ve o kolon S210'un 69-alan split'inde (0fd9b8413) question_content'e tasinmisti -> UndefinedColumnError. Yani benzersizlik invaryanti split'ten BERI hic olcmemisti; gorulmedi cunku DSN'siz kosumda test zaten skip oluyordu (iki kusur ust uste: sessiz skip + bayat sema). JOIN'e cevrildi, artik kosuyor (0,928 >= 0,90 GECIYOR). Kural: 'esik bayat' bir OLCUMDUR. Once esigin turedigi sayiyi bul (docstring / commit mesaji / kalibrasyon kaydi); o sayi baska bir yerde HALA gecerliyse esik bayat degil, ALARM GERCEKTIR. Ve her zaman sor: bu bekci gercekten KOSUYOR mu yoksa skip mi ediyor?"
+- id: L-s232-kurtarma-kaynagi-da-olculur
+  baslik: "Kurtarma kaynagini 'temiz' saymak, kaybettigin havuzu 'dolu' saymakla ayni hatadir"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — kiro2_temp bulundugunda hemen 12 soru okundu, 11'i servis edilebilir cikti (%92) ve bu 'kaynak saglam' gibi okundu. Kullanici esigi (>=%95) icin 60 soruluk ORANTILI STRATIFIYE kor okuma yapildi ve sonuc cok farkli cikti: Claude 39/60 (%65), ajanlar 43/60 (%71,7), figur duzeltmesiyle tavan 45/60 (%75). Yani ilk 12'lik cekim SANSLIYDI; nokta tahmin populasyon degeri degildir. Kalan kusur figurler hesaba katildiktan SONRA bile %21,7 ve siniflari somut: anlamsiz Turkce ('Atomojiklerin', 'denge notasi'), GEOMETRIK OLARAK IMKANSIZ veri (A=60, AB=3, BC=2 -> kosinus teoremi b^2-3b+5=0, diskriminant -11), birebir ayni iki sik, eksik onceki-veri. Kural: bir kurtarma kaynagini kullanmadan once HEDEF ESIGE gore olc, kucuk bir orneklemin verdigi izlenime gore degil. Kardes ders: L-s231-hacim-vekil-olcum-icerik-degil (orada hacim vekildi, burada KUCUK ORNEKLEM vekil)"
+- id: L-s232-kendi-yargin-da-bir-olcum-aletidir
+  baslik: "Metne bakip 'yanitlanamaz' demek, figur varsa OLCUM DEGIL VARSAYIMDIR"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — 60 soruluk orneklemde 19 soru 'yanitlanamaz' diye yargilandi; bunlarin 6'si 'figur-bagimli, figur yok' gerekcesiyle elenmisti. Ama yargi YALNIZ METNE bakilarak verilmisti. Olculdu: kiro2_temp'te question_image_url 34.901/34.982 (%99,8) dolu; d-dataset/output/crops altinda 528.651 PNG var ve container'a /app/static/crops olarak BAGLI; 6 sorunun 6'sinda da dosya diskte MEVCUT. Iki gorsel acilip bakildi (eskenar ucgen boyali bolgeler, A x B kartezyen grafigi) ve ikisi de soruyu KURTARIYOR. Yani %65 rakamý bir TABAN, %75 tavan. Bu, canli kapiyla en keskin farklardan biri: canlida question_image_url 0/27.073 -> orada 'figur yok' gercek kusur, kiro2_temp'te DEGIL. Kural: 'bu soru yanitlanamaz' demeden once sorunun TASIDIGI TUM varliklari (gorsel, pasaj, tablo) kontrol et; metin tek basina sorunun tamami olmayabilir. Yargilayan da bir olcum aletidir ve kendi kor noktasi vardir"
+- id: L-s232-mekanik-siralamayi-insan-yargisiyla-dogrula
+  baslik: "Ucuz bir metrikle KUME elemeden once, o metrigin insan yargisini ONGORDUGUNU dogrula"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — 60'lik orneklemde ayni kitaptan CIFT bozuk soru cikti (Neofizik Fizik 2/2, Esen Aps Tarih 2/2, Aramot Fen 2/2). Buradan makul bir hipotez kuruldu: cop KITAP duzeyinde yogunlasmis olabilir -> deterministik kitap elemesi ucuz ve geri alinabilir bir filtre olur. Uygulanmadan ONCE kontrol kolu kosuldu: Y12'nin dogrulanmis 6 kurali 350 kitaba tek tek uygulandi ve insan-bozuk kitaplarin MEKANIK SIRASI arandi. CURUDU: Neofizik %3,7 (sira 80/350), Esen Aps Tarih %1,8 (127/350), Aramot Fen %1,6 (135/350) -- hepsi ortalarda. Mekanik olarak EN KIRLI kitaplar (%24,6'ya kadar) Turkce/Dil Bilgisi/Paragraf kitaplariydi ve orneklemde ozellikle bozuk cikmamislardi. Yani kitap elemesi gercek copu YERINDE BIRAKIP muhtemelen saglam kitaplari atardi. Genel mekanik bayrak %2,40 iken insan yargisiyla cop %21,7 -- 9 kat boslugu. Kural: bir siralama/skor ile TOPLU eleme yapmadan once, o skorun elle dogrulanmis ornekleri ONGORDUGUNU olc. Ongormuyorsa skor o is icin kordur; hipotezi CURUTMEK uygulamaktan ucuzdur"
+- id: L-s232-tur-kimligi-sonuc-semasinda-olmali
+  baslik: "Paralel turlari AYIRT etmek istiyorsan tur kimligini SONUC SEMASINA koy — harness etiketi hash olabilir"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — kor cozumde iki bagimsiz tur tasarlandi (A: dogrudan cozum, B: eleme) cunku deponun kayitli dersi 'same-model DISPUTE != DB hatasi; ikinci sinyal sart' diyor. 8 ajanin 8'i dondu, 128 kayit uretti. Ama turlar AYRISTIRILAMADI: workflow journal'inda `key` alani hash (`v2:35c02da1...`), ajanin `label`'i sonuc nesnesinde yok, ve script'in koydugu `is` alani journal'a tasinmamis. Iki tur ayni sozluge yazip uzerine bindi -> turA=64, turB=0. Sonuc: tur-arasi anlasmazlik sinyali URETILEMEDI ve olcum tek kor tur olarak raporlandi. Kritik nokta: bu bir BULGU gibi gorunuyordu ('turB bos') ama ALET ARIZASIYDI. Kural: paralel turlari ayirt etmen gerekiyorsa tur kimligini ajanin DONDURDUGU semanin icine zorunlu alan olarak koy (orn. `tur: {enum: [A,B]}`); harness'in etiketleme mekanizmasina guvenme"
+- id: L-s232-cevap-harfi-sik-listesi-olmadan-anlamsizdir
+  baslik: "`correct_answer` bir DEGER degil, sik listesine KONUMSAL referanstir — govdeye gore eslestirip harf karsilastirmak fantom celiski uretir"
+  kaynak: backend/scripts/quality/y11_celiski_curutme.sql
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S232-C — kiro2_temp'te mukerrer olcumu yapildi: `question_text` normalize edilip gruplandi, sonra grup icinde `count(DISTINCT correct_answer) > 1` olanlar 'korpus kendi kendiyle celisiyor' diye raporlandi. Sonuc etkileyiciydi: '118 metin, ayni soru farkli anahtar -> BEDAVA deterministik anahtar-hatasi dedektoru, LLM gerekmiyor'. Esik kontrolu (metin<80 karakter 'supheli birlesim') yapilirken SUPHELI orneklerinin 'ayni govde FARKLI SIKLAR' oldugu goruldu ve ayni riskin MUKERRER sinifinda da olabilecegi fark edildi. Olculdu: yalniz govde -> 669 fazlalik; govde+SIKLAR -> **153** fazlalik; yani **516 mesru soru YANLISLIKLA silinecekti** (%77). Ve govde+sik ayni olan gruplarda farkli anahtar tasiyan grup sayisi **0** -> '118 celiski' iddiasi TAMAMEN FANTOM. Cift kontrolu: ayni ucgen sorusunun iki satiri, biri A) 24 B) 30 C) 36... anahtar=B, digeri A) 30 B) 40 C) 50... anahtar=A -> **ikisi de 30'u isaret ediyor** (10x6/2=30, dogru). Harfler farkli cunku SIK SIRASI farkli. Kural: soru esitligi/celiskisi olcerken govde TEK BASINA yetmez; `correct_answer` karsilastirmasi ancak sik listeleri de ayni ise anlamlidir. Genel hali: bir alanin degeri baska bir alanin SIRASINA bagliysa, o iki alan ayrilamaz. Ilgili: [[L-s232-kendi-yargin-da-bir-olcum-aletidir]] — orada da yargi eksik girdiyle verilmisti (metne bakip figuru gormemek)"
+- id: L-s232-bulguyu-degil-aleti-sina
+  baslik: "Carpici bir bulgu geldiginde once ALETI sina — 'bedava dedektor buldum' iki kez ustuste alet arizasi cikti"
+  kaynak: docs/audits/2026-08-19_y11_kaynak_olcumu.md
+  sinif: surec
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 boyunca UC kez 'carpici bulgu' cikti ve UCUNDE de asil sorun ALETTEYDI. (1) 'Y12 bekcisi 8 xfailed, dogru calisiyor' -> kontrol kolu (kiro2_temp) kosulunca IKI kusur cikti: I4 iki kolda da dusuyordu (kor dedektor), K2 esigi bilinen-IYIYI reddediyordu. (2) 'KIMYA-555 metni kesik, olculemedi' -> kesen korpus degil BENIM cikarma script'imdi (`[:700]`); gercek metin 1076 karakter ve tam, ve cozulunce DB anahtarinin yanlis oldugu goruldu -> kendi olcum hatam bir kitap hatasini GIZLEMISTI. (3) '118 kendi-kendini celen cift, bedava anahtar dedektoru' -> normalizasyon yalniz question_text'e bakiyordu; siklar dahil edilince celiski sayisi 0, ve 516 mesru soru yanlislikla silinecekti. Ortak desen: bulgu ne kadar carpiciysa, aletin o bulguyu URETMIS olma ihtimali o kadar yuksek. Yordam: (a) bulguyu dogrulamadan once aleti bilinen-iyi girdiyle sina, (b) 'bedava/kolay kazanc' iddialarina ekstra suphe uygula, (c) aletin GORMEDIGI alanlari say (govde var ama sik yok; metin var ama figur yok)"
+- id: L-s232-enforcement-listesi-defterden-turetilmeli
+  baslik: "Bir dersi 'zorunlu' yapan sey defterdeki `zorlayici` alani DEGIL, o alanin bir kapiyi BESLEMESIDIR"
+  kaynak: backend/hooks/ders_zorlayici_kos.py
+  sinif: surec
+  durum: aktif
+  zorlayici: backend/tests/unit/test_ders_zorlayici_hook.py
+  kanit: "S231 olctu: 141 dersin 40'inda (%28) `zorlayici` doluydu ama o zorlayicilarin **%0'i otomatik kosuyordu** — pre-commit'te test hook'u 28 Tem'de kaldirilmis, CI yalnizca main/master'da tetikleniyor, dal ise feature/self-evolution-optimization. Yani defter 'bu ders korunuyor' diyordu ve KORUNMUYORDU; dersler yalnizca AJAN BAGLAMI uzerinden isliyordu (baglam kaybinda sessizce sifira duser). S232'de 18 zorlayici dosyasi tek tek kosuldu: 17 yesil, 1 kirmizi (hacim bekcisi 36.967 < 150.000 — GERCEK alarm, xfail(strict=True) ile isaretlendi). Hook (`ders_zorlayici_kos.py`) pre-push'a baglandi. KRITIK TASARIM KARARI: liste ELLE YAZILMADI, defterden TURETILIYOR — cunku elle yazilan liste bayatlar ve enforcement gerilerken sayi dogru gorunur (`L-s219-ilerleme-sayaci-da-bir-olcum-aletidir`). Boylece 'bir derse zorlayici yazmak' = 'onu kapiya baglamak'; defter dokumantasyon degil YUK TASIYAN yapi olur. Kapi iki yonde de mutasyonla sinandi: defter var olmayan dosya gosterince exit 1, bekci kirmizi olunca exit 1, mutasyonsuz exit 0 (155 passed/3 skipped/8 xfailed, 45 sn). Bos liste de HATA sayilir (yanlis-sifir = alet arizasi). Kural: bir dersin 'zorunlu uygulandigini' iddia etmeden once **kapinin o dosyayi fiilen kostugunu** olc; `zorlayici` alani dolu olmasi tek basina hicbir sey kanitlamaz"
+- id: L-s232-boru-hattinda-exit-kodu-SON-komutundur
+  baslik: "`komut | tail` sonrasi `$?` boru hattinin SON halkasini olcer — 'EXIT 0' yanlis-pozitifi commit'i basarili gosterdi"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S232 — enforcement commit'i `git commit -F ... 2>&1 | tail -25; echo EXIT: $?` ile calistirildi ve **EXIT: 0** yazdi. Gercekte `git commit` **exit 1** ile dusmustu (kapinin ruff'i 3 bulgu verdi); `$?` `tail`'in kodunu olcuyordu ve tail her zaman 0 doner. Yakalayan sey sans degil disiplindi: `L-s229-commit-yarim-gidebilir` geregi `git show --stat HEAD` kosuldu ve HEAD'in HALA eski commit oldugu goruldu. Yani deponun bir dersi, baska bir dersin olcum aletindeki arizayi yakaladi. Bu, `L-s224-amend-sessizce-iptal-olur` ile ayni sinif: **basarili gorunen bir kabuk ciktisi, komutun basarili oldugunu gostermez**. Yordam: cikis kodu onemliyse boru KULLANMA — `komut > /tmp/out.txt 2>&1; KOD=$?` yaz, sonra dosyayi ayri oku. Ya da `set -o pipefail` / `${PIPESTATUS[0]}`. Genel hali: **olcum aletinin kendisi olculmeden bulgu bildirilmez** ve bu depoda kabuk borusu tekrar eden bir alet arizasi kaynagi"
+- id: L-s233-pg-dump-t-yedegi-kendi-kendine-yeterli-degil
+  baslik: "`pg_dump -t <tablo>` yedegi enum/uzanti TIPLERINI tasimaz — 'satir sayildi' geri yuklenebilirlik kaniti DEGILDIR"
+  kaynak: backend/scripts/quality/yedek_onkosul_uret.py
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/db/test_yedek_onkosul_kapsami.py
+  kanit: "S233 (19 Agu) — S232-G bir yedek alip 'DOGRULANDI: dump icinde 147.880 satir' demisti ve bu olcum DOGRUYDU: dump'in ICERIGI birebir sayildi. Ama yedek bir felakette GERI YUKLENEBILIR olmali; o hic denenmemisti. Bos bir hedefe pg_restore kosuldu ve DUSTU: `ERROR: type public.questiondifficultylevel does not exist` -> question_statistics TABLOSU HIC OLUSMADI -> 36.967 satir HIC YUKLENMEDI. 5 tablodan 4'u yuklendi, biri tamamen kayboldu ve pg_restore yalnizca EXIT=1 dedi (hata satirlari da Turkce locale'de `pg_restore: hata` yaziyordu, `error` grep'i 0 buldu -- bkz L-s233-aletin-cikti-dili-kor-nokta). Sebep: `-t` ile alinan dump, tablonun bagli oldugu KULLANICI TIPLERINI ve UZANTI TIPLERINI icermez. Tip eklenince IKINCI katman cikti (`public.vector`, pgvector) -> tek tek kesif yerine pg_catalog'dan SISTEMIK cikarildi (`L-s202-katmanli-hata-sistemik-tara`), bagimliliklarin tamami 2 tane. Onkosul dosyasi URETILDI (elle yazilmadi, `L-s202-ddl-orm-den-render`) ve ikinci prova 147.894/147.894 ile gecti. Bu, `L-s202-drop-table-enum-birakir` dersinin YEDEK ayagi. Kural: bir yedegi 'dogrulandi' saymadan once GERCEK bir hedefe pg_restore et; icerik sayimi ile geri yuklenebilirlik AYRI iki olcumdur. Bekci uretece bagli, dosyaya degil -- backups/* gitignore'da ve taze klonda anlamsiz olurdu"
+- id: L-s233-devir-notundaki-engelleyici-de-olculur
+  baslik: "Devir notundan tasinan bir ENGELLEYICI de bir iddiadir — 'parolam yok' iki oturum boyunca olculmeden tasindi"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S233 — S232-G ve S232-H handoff'lari 'kiro2_app CREATE TABLE yetkisiz; DDL gereken is icin postgres parolasi lazim, ELIMDE YOK' engelleyicisini tasiyordu ve bu, planin FAZ 0'ini (yedek restore + matview REFRESH + backup tablo) bloke eden tek kalemdi. Hic olculmemisti. Tek komut cozdu: `grep -vE '^#|^$' pg_hba.conf` -> `local all all trust`, `host all all 127.0.0.1/32 trust`. PAROLA GEREKMIYOR. Kanit: `psql -U postgres -d kiro2 -c 'SELECT current_user, usesuper'` -> `postgres|t`, EXIT=0; kontrol kolu ayni komut kiro2_app ile -> `kiro2_app` (ayrim yapiyor). Uc P0 aninda kalkti. Bu, `audit-methodology.md#SEVERITY DE BIR OLCUMDUR` dersinin ENGELLEYICI ayagi: o bolum 'acil/P0/kritik/guvenli' iddialarini kapsiyordu ama 'X yapilamaz cunku Y yok' bicimindeki engelleyicileri kapsamiyordu ve o bosluktan dusuldu. Kural: bir engelleyiciyi devralirken sor -- bu iddianin yanlis oldugunu gosterecek TEK komut nedir? Ozellikle 'yetkim yok / erisimim yok / arac kurulu degil' sinifinda, cunku bunlar ORTAMA baglidir ve ortam degisir. YAN BULGU (ayri acik is, P1): trust yalniz localhost degil docker agi (172.17/172.18) ve LAN (192.168.65.0/24) icin de acik"
+- id: L-s233-aletin-cikti-dili-kor-nokta
+  baslik: "Dedektor grep'i aracin CIKTI DILINE bagli olabilir — Turkce locale'de `pg_restore: hata`, `error` degil"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S233 — pg_restore EXIT=1 dondu ve hatalari saymak icin `grep -c '^pg_restore: error'` kosuldu: sonuc 0. 'Exit 1 ama 0 hata' celiskisi fark edilmeseydi 'kucuk bir uyari' diye gecilecek ve KIRIK bir yedek 'dogrulandi' diye kaydedilecekti. Gercek sebep: bu kurulum Turkce locale'de calisiyor ve satirlar `pg_restore: hata: ERROR: ...` bicimindeydi. Dogru olcum grep'e degil SONUCA bakmakti: probe DB'de `SELECT count(*) FROM question_statistics` -> `relation does not exist`, yani tablo HIC olusmamisti. Ayrica ayni dosyada `grep` ciktiyi BINARY sandi (Turkce karakter) ve `-a` gerekti. Bu, `L-s219-yanlis-sifir` ailesinin dil ayagi: 0 bulundu bir BULGU degil ALET ARIZASI adayidir. Kural: bir aracin ciktisini desenle sayacaksan once o desenin GERCEKTEN eslestigini bilinen-pozitif bir ornekle goster; locale/dil, renk kodlari ve satir sarmasi deseni sessizce bozar. Daha guvenlisi: aracin metnini degil ISINI olc (tablo olustu mu, satir yuklendi mi)"
+- id: L-s233-bekci-dosya-sayimi-assert-sayimi-degil
+  baslik: "'N bekci her push'ta kosuyor' bir DOSYA sayimidir — o dosyalarin ASSERT ettigini ayrica olc"
+  kaynak: backend/hooks/ders_zorlayici_kos.py
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/unit/test_ders_zorlayici_hook.py
+  kanit: "S233 — S232-H 'enforcement KAPANDI: %0 kosan -> 19 bekci her push'ta' diye kapatmisti ve 19 dosya gercekten kosuyordu. Ama `tests/db/test_question_bank_invariants.py` her push'ta `sss` (3 skipped, EXIT=0) veriyordu: DSN ve KIRO2_STRICT_DB_INVARIANTS yoktu. Yani hacim ve benzersizlik invaryantlari -- 5 Agu icerik kaybinin bekcileri, tam da Y11 gocu sirasinda ihtiyac duyulacak olanlar -- KAPALIYDI ve kapi YESIL gorunuyordu. Fix: hook DSN'i backend/.env'den cozup enjekte ediyor. Olculdu: kapi 172 passed/3 skipped/8 xfailed -> 182/0/9. Sayinin AYRISTIRMASI onemli (`L-s229-maskenin-altinda-maske`): +2 fix'in gercek kazanci, +8 ayni commit'te yazilan yeni testler. Mutasyon 2/2: DSN'i kaldir -> 3 skipped (bekci KOR), esik 0.90->0.99 -> 1 failed `assert 0.9286661076094895 >= 0.99` (bekci OLCUYOR). Yalniz birincisi kosulsaydi hicbir sey assert etmeyen bir bekci de yesil gorunurdu. Kural: enforcement iddiasini uc kademede olc -- (a) dosya kapida mi, (b) testler KOSUYOR mu (skip degil), (c) kostuklarinda gercekten ASSERT ediyorlar mi. S231 (a)'yi, S232 (b)'yi kismen, S233 (c)'yi kapatti"
+- id: L-s233-commitsiz-dosya-mutasyona-sokulmaz
+  baslik: "Yeni (takipsiz) bir dosyada `git checkout HEAD --` geri alimi CALISMAZ — mutasyonlar ust uste biner"
+  kaynak: .claude/rules/verification.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S233 — A2b'nin mutasyon bataryasi henuz COMMIT EDILMEMIS bir script uzerinde kosuldu. Her turdan sonra `git checkout HEAD -- <dosya>` cagriliyordu ve `error: pathspec ... did not match any file(s) known to git` ile DUSTU: dosya git'in bilmedigi yeni bir dosyaydi. Sonuc: M1 geri alinmadi, M2 onun USTUNE bindi ve M2'nin '3 failed' ciktisi aslinda M1+M2 birlesimiydi -- GECERSIZ olcum. M1 (temiz baseline'da kosan) gecerli kaldi. Kural zaten yaziliydi ve ihlal edildi: `verification.md#GERI-ALIM-BIR-IDDIADIR` -> 'Mutasyondan ONCE commit et. Commit'siz isi mutasyona sokma.' (S226'da veri kaybi olarak yasanmisti; burada veri kaybi olmadi cunku geri alim dogrulamasi `git status --porcelain` ile yapiliyordu ve BASARISIZ dedi). Iki ek gozlem: (1) harness'in `assert count == 1` ankraj kontrolu M3'u dogru sekilde REDDETTI -- kabuk `\\n`'i literal ters-bolu-n olarak gecirmisti, yani ankraj hic eslesmedi ve 'uygulandi' yalani uretilmedi (`L-s229-mutasyon-reddedilmis-olabilir`); (2) geri alim BASARISIZ raporlandigi icin kayip fark edildi -- sessiz bir geri alim daha pahaliya mal olurdu. Yordam: yeni dosyayi ONCE commit et, mutasyonu SONRA kos; ya da geri alimi git'e degil dosya iceriginin baytina dayandir"
+- id: L-s233-split-1e1-yapisal-garanti-degil-kismi-insert-sessizdir
+  baslik: "4-tablo split'te 1:1 hicbir kisitla zorlanmiyor — yavrusuz ebeveyn satiri kapida GORUNMEZ ama tabloda DURUR"
+  kaynak: backend/tests/db/test_soru_tablolari_parity.py
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/db/test_soru_tablolari_parity.py
+  kanit: "S233 (A4) — S210'un 69-alan split'i question_bank'i dorde ayirdi ama 1:1'i zorlayan HICBIR YAPI yok: (a) `INSERT INTO question_statistics` depoda hicbir yerde YOK (S222 olctu; backfill yok, split migration'i da yok), (b) FK yonu cocuk->ebeveyn ON DELETE CASCADE -- yetim COCUGU yasaklar, her ebeveynin cocugu olmasini SART KOSMAZ, (c) hedef tablolarda 0 trigger, (d) `rowcount` hicbir yazim noktasinda kontrol edilmiyor. Sonuc: question_bank'a yazip yavruya yazmayan bir yol SESSIZCE yarim satir birakir; o satir ogrenci kapisinda GORUNMEZ (v_safe_for_beta LEFT JOIN'liyor -> quality_review_status NULL -> elenir), question_bank'ta DURUR ve hacim sayimini sisirir, ve HICBIR TEST GORMEZ -- 19 Agu olcumu: parity/yetim assert eden test sayisi depoda 0 (grep). Bekci 6 yonlu (her yavru icin yetim-yavru + yavrusuz-ebeveyn). JOIN anahtari `c.id = qb.id`: yavru tablolarin PK'si `id` ve AYNI ZAMANDA parent'a FK; `question_id` adinda kolon HICBIRINDE yok (`L-s230-yavru-tablonun-pk-si-id`, ad tahmini bu semada bir kez yanlis fix uretti). ONEMLI: bu bekci dogustan YESIL cikti cunku invaryant bugun sagam (36.967 x 4, yetim 0) -- yani RED->GREEN yok. Boyle bir bekcinin yuk tasidigini yalnizca KONTROL KOLU ve MUTASYON gosterebilir, o yuzden ikisi de kalici olarak dosyada: sentetik yetim testi (VALUES ile, yazma YOK) `LEFT JOIN ... IS NULL` deseninin GORDUGUNU kanitlar; bos-tablo testi vakum-yesili engeller (5 Agu'da tablo 187.835->2.304 dustugunde hacim testi kirmizi verirken parity testi YESIL kalacakti)"
+- id: L-s233-curutucunun-bulgusu-da-bir-iddiadir
+  baslik: "Adversarial ajanin bulgusu da bir IDDIADIR — testin HANGI POPULASYONU olctugu sorgudan OKUNUR"
+  kaynak: docs/audits/2026-08-19_y11_adim2-4_uygulama_plani.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S233 (A5) — 8 ajanli olcum turunun adversarial elestirmeni 8 P0 buldu ve 7'sinde HAKLIYDI (soru_hash UUID4, kapi is_active filtrelemiyor, 11 FK CASCADE, bayat yedek, 3/3 SKIP, REFRESH yetkisi, embedding 768/1536). P0-6'da ise CIKARIM yapti: 'Y12'nin 8 xfail'inden 4-5'i INSERT aninda XPASS verir, yani gocu yapan commit kendi pre-push kapisini kirar.' Bu, testlerin `question_bank`'i olctugu VARSAYIMINA dayaniyordu ve plana bir 'once veriyi yaz, sonra xfail'leri kaldir' adimi ekletti. OLCULDU ve CURUDU: kaynak sayimi `FROM mv_safe_for_beta` = 7, `FROM question_bank qb` = 1 (o da i6'nin ikinci ayagi). Yani i1-i5 ve k2'lerin hepsi KAPIYI olcuyor, tabloyu degil; `pending` yazilan satir ne kapiya girer (status filtresi) ne matview yenilenir -> hicbiri degismez. i6 icin DOGAL DENEY kosuldu: canlida ZATEN 9.894 `pending` satir var ve kapida OLANI 0; i6'nin IN listesine 'pending' eklenince sayi 0 -> 9.894 firliyor, eklenmeyince 0 kaliyor. Yani gelecekteki goc satirlarinin davranisi bugun olculebilir durumdaydi. Sonuc: 8 xfail'in 8'i de FAZ D'yi sag atlatir; xfail kaldirma isi tamamen FAZ E'ye (terfi) kayar. Olculmeseydi FAZ D'ye GEREKSIZ bir adim eklenecek ve o adim testleri GERCEKTEN kiracakti. Kural: bir curutucu/hakem/elestirmen ajanin ciktisi bulgu degil ADAY bulgudur; ozellikle 'su test su durumda kirilir' bicimindeki ONGORULER, testin fiilen sorguladigi tabloyu/kolonu okuyarak dogrulanir. Kardes ders: L-s232-bulguyu-degil-aleti-sina (orada alet benim script'imdi, burada bir AJAN)"
+- id: L-s233-iki-sinifi-AYRI-olc-karistirici-cakisir
+  baslik: "Bir sinif iddiasini test ederken KARISTIRICI degisken sinif degiskeniyle cakisabilir — iki sinifi AYRI AYRI ve cok katmanda olc"
+  kaynak: docs/audits/2026-08-19_y11_adim2-4_uygulama_plani.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S233 — `question_image_url` tasinsin mi karari icin gorsel sizintisi olculdu ve olcum IKI KEZ yon degistirdi. (1) TEK tam-sayfa goruntusu acildi, uzerinde 6 sorunun cevabi pembe daire icindeydi -> '_PAGE sinifinin %57,8'i sizdiriyor' denildi. YANLIS: acilan sayfa, sonradan el yazisiyla isaretli oldugu anlasilan TEK kitaptandi (Apotemi 2024 Ayt Kimya SB) -- karistirici (kitap) sinif degiskeniyle (PAGE/crop) CAKISMISTI. (2) 32 tekil crop, 16 kitaba yayilarak kor okundu: 30/30 temiz, sizintili 2'nin 2'si de o ayni isaretli kitaptan -> 'sizinti KITAP-kosullu' denildi. Kismen dogru ama PAGE'i aciklamiyordu. (3) 26 tam-sayfa, 27 ISARETSIZ kitaptan kor okundu: **23/26 sizintili (%88,5)** ve mekanizma tamamen farkli cikti -- el yazisi degil, YAYINEVININ SAYFA ALTINA BASTIGI CEVAP ANAHTARI seridi ('Soru 21a/ D', '1.E 2.E 3.A', biri 180 DERECE TERS basili, 'Ornek' sorularinda tam cozum + 'Cevap: B'). Sayfa basina ortalama 5,2 soru -> bir sayfa sizdiginda 5 sorunun cevabi birden aciliyor. Temiz cikan 3 sayfada serit kirpma disinda kalmisti (sans, tasarim degil). Crop'larin temiz olmasinin sebebi de ayni: kirpma siniri alt seridi disarida birakiyor. Yani UC ayri sizinti sinifi vardi (basili anahtar = sinif-kosullu · basili cozum = soru-tipi-kosullu · el yazisi = kitap-kosullu) ve tek orneklem hicbirini dogru gostermiyordu. Kural: bir SINIF iddiasini (bu sinif guvenli/guvensiz) test ederken orneklemi sinifin ICINDE de katmanla; tek katmandan (tek kitap, tek sayfa, tek yayinevi) cikan sonuc siniftan cok karistiriciyi olcuyor olabilir. Ipucu: iki alt-sinif AYNI yonde sonuc veriyorsa ama MEKANIZMA aciklamalari farkliysa, henuz dogru degiskeni bulmamissindir. Ilgili: [[L-s232-kurtarma-kaynagi-da-olculur]] (kucuk orneklem vekil), [[L-s232-kendi-yargin-da-bir-olcum-aletidir]]"
+- id: L-s233-ayni-linter-iki-config-kural-ailesi-secili-degil
+  baslik: "Ayni ruff, IKI pyproject, farkli kural ailesi — kok config'te `N` YOK, backend'de VAR; kanca ciktiyi da atiyor"
+  kaynak: pyproject.toml
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/unit/test_hooks/test_ders_dedektorleri.py
+  kanit: 'S233 — ayni oturumda BES kez ayni lint hatasini (N802, BUYUK harfli test adi) yaptim; her seferinde ancak COMMIT aninda gordum ve toplam 28 test yeniden adlandirildi. Kok neden ezbere degil olculdu, iki kademe: (1) `.claude/hooks/post-edit-format.py:46-52` her Edit/Write sonrasi `ruff check --fix --quiet` kosuyor ama `capture_output=True` + `--quiet` -> bulgular TAMAMEN ATILIYOR, ustelik N802 auto-fix EDILEBILIR DEGIL, yani `--fix` onu zaten duzeltemez. (2) Daha temeli: `pyproject.toml` (kok) `select = [E,W,F,I,B,C4,UP,ARG,SIM]` -- `N` YOK; `backend/pyproject.toml:143` ise `select` icinde `"N"` (pep8-naming) TASIYOR. Yani ayni linter, ayni dosya, iki config ve **iki farkli kural kumesi**. Bu, `reference_precommit-vs-bare-linter` (yanlis CWD -> yanlis config) ve `L-s224-arac-surumu-giris-noktasina-bagli` (yanlis giris noktasi -> yanlis SURUM) ailesinin UCUNCU uyesi: yanlis config -> yanlis KURAL AILESI. OLCUM ALETI ARIZASI DA YASANDI: kontrol kolu icin dosyaya kasitli bir N802 enjekte edilmeye calisildi, uc kol da EXIT=0 verdi ve bu ''kanca gormuyor'' diye okunacakti; ama once `''def ... BOS_DONER('' in metin` ile dogrulandi -> **False**, yani enjeksiyon hic uygulanmamisti. Kontrol kolu beklediğini vermiyorsa olcum bitmistir (`audit-methodology.md#OLCUM-ALETINI-DOGRULA`). KARAR: kanca DEGISTIRILMEDI. Gerekce `#451` deseni -- kapi N802''yi 5/5 yakaladi, yani enforcement eksik degil; eksik olan ERKEN sinyal. Bir hole''un varligi kapatmak icin yeterli gerekce degildir, kapatmanin bedeli de olculur: kancayi oturum kapanisinda, testsiz ve gurultu olcumu yapilmadan degistirmek yeni bir sessiz kusur sinifi acabilirdi. Olcum kayitli, degisiklik AYRI IS (handoff''ta Y13). S240 -- Y13 KAPANDI, S233 HAKLIYDI: kanca ancak bugun, tam da onun sart kostugu kosullarla degistirildi (24 dedektor testi + yanlis-pozitif kontrol kolu + oturum kapanisinda DEGIL). OLCUM HIPOTEZI DUZELTTI: susturan sey --quiet DEGILMIS; ruff 0.14.13 --fix --quiet ile N802''yi YINE basiyor (EXIT=1), ciktiyi yutan sey capture_output=True ve yakalananin HIC OKUNMAMASI. Ayrica ruff 0.14 varsayilani YENI tani bicimi, dedektor regex''i klasigi bekler -> --output-format=concise sart. DEDEKTOR ILK KULLANIMDA YANLIS-POZITIF VERDI ve kendi defter-guncellememi blokladi: ilk regex dizeyi NEREDE gecerse esliyordu, heredoc icindeki ders METNINI komut sandi; segment-basi daraltmasi eklendi (3 regresyon testi). Artik yazma aninda [lint] satiri cikiyor -- once cikmiyordu, olculdu.'
+- id: L-s233-benzerlik-metrigi-TERS-calisabilir
+  baslik: "Karakter-benzerligi bu korpusta TERS calisiyor: en YUKSEK benzerlik FARKLI soru, ORTA benzerlik AYNI soru"
+  kaynak: backend/scripts/quality/y11_dedup.py
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_y11_dedup.py
+  kanit: "S233 — dedup icin uc yontem 3.666 KABUL satirinda karsilastirildi: GOVDE-ONLY 74 grup/79 fazlalik · GOVDE+SIK sirali (SIKI) 16/16 · GOVDE+SIK sirasiz 17/17. Iki olcum CELISMIYOR, FARKLI SEY sayiyor (S233 olcum ajani 'benzersiz METNE' demis = govde-only). Farki olusturan 58 grup benzerlik oranina gore ayrildi ve metrik TERS cikti: benzerlik >=0,95 -> 32 grup ve bunlar FARKLI SORU; benzerlik 0,80-0,95 -> 11 grup ve bunlar AYNI SORU (yalniz `\\to` vs `\\rightarrow` LaTeX gosterimi); <0,80 -> 15 grup farkli sik kumeleri. Sebep OKUNARAK bulundu, tahmin edilmedi: 'yalniz I / I ve II / I ve III' ailesinde siklar KARAKTER olarak neredeyse ayni ama KUME olarak farkli (A: '...| ı ve ıı | ı ve ııı | ıı ve ııı' vs B: '...| ı ve ıı | ıı ve ııı | ı, ıı ve ııı'). KARAR: silme olcutu SIKI kimlik (16 grup); 58 grup RAPORLANIR, SILINMEZ. LaTeX-gosterimi normalizasyonu 11 grubu kurtarabilir ama kendi dogrulamasini GECMEDEN eklenmeyecek (32 farkli soruyu birlestirme riski). Regresyon bekcisi yazildi: biri ileride bulanik esleme eklerse `test_yalniz_i_ailesi_birlestirilmez_regresyon` DUSER. Kural: bir metrikle TOPLU eleme yapmadan once metrigin insan yargisini ONGORDUGUNU olc; ongormuyorsa metrik o is icin KORDUR ve daha kotusu YANLIS YONDE korduT. Ilgili: [[L-s232-mekanik-siralamayi-insan-yargisiyla-dogrula]], [[L-s232-cevap-harfi-sik-listesi-olmadan-anlamsizdir]]"
+- id: L-s233-kendi-harness-in-alt-ajanin-girdisini-bozar
+  baslik: "Alt ajana giden paketi kirpan bir satir, o ajanin raporunu 'veri eksik' diye yanlis yazdirir"
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S233 — 8 ajanli olcum turunda sentez ajani raporuna soyle basladi: 'Girdi olarak 6 olcum vaat edildi, fiilen 3 tam + 1 yarim geldi; olcum 5 ve 6 HIC GELMEDI.' Bu, ciddi bir bulgu gibi duruyordu (ajanlar duserse tur gecersiz olurdu). Journal okununca ALTI olcumun ALTISI da tam ve yapisal semayla donmustu; eksiklik benim workflow script'imdeki `JSON.stringify(gecerli).slice(0, 60000)` satirindan geliyordu -- paket kesilmis, sentezci de kesilen yerden sonrasini 'gelmemis' saymisti. Yani ALT AJANIN RAPORUNDAKI KUSUR, ONU CAGIRAN HARNESS'IN KUSURUYDU. Iki sonucu var: (1) bir ajanin 'veri eksik/gelmedi' bildirimi once HARNESS'te aranir, ajanda degil; (2) kirpma sessiz olmamali -- kesildiyse pakete acik bir isaret konmali ('...[KESILDI: N kalem]') ki ajan 'gelmedi' ile 'kesildi'yi ayirabilsin. Bu, `L-s232-bulguyu-degil-aleti-sina` dersinin ORKESTRASYON ayagi: orada alet bir SQL/script'ti, burada ajanin GIRDISINI hazirlayan kod."
+- id: L-s241-bir-katmanda-kapatilan-sizinti-digerini-kapatmaz
+  baslik: "Bir sizintiyi bir katmanda kapatmak, ayni sizintinin diger katmanlarini kapatmaz"
+  kaynak: docs/audits/2026-08-20_a1_altin_yol_olcum.md
+  sinif: kod
+  durum: aktif
+  zorlayici: backend/tests/unit/test_cevap_kapisi.py
+  kanit: "S241 - #432'de cevap anahtari sizintisi Elasticsearch katmaninda kapatilmisti (core/es_index_schema.py:51 YASAKLI_ALANLAR + :172 sizinti bekcisi) ve kapali sayilmisti. 20 Agu 2026'da olculdu: HTTP katmaninda UC uc hala siziyordu. Duz ogrenci token'iyla GET /sorular -> HTTP 200, correct_answer='B' + tam explanation; GET /api/v1/osym/questions ve /osym/random-questions ayni sinif (ikincisinde with_answers ISTEMCI kontrollu ve varsayilani True). Sizan degerler question_content'teki gercekle 3/3 BIREBIR tuttu ve uc sorunun ucu de ogrenci kapisindaydi (mv_safe_for_beta). Yani kavram vardi, TEK BIR KATMANA uygulanmisti. Ikinci ders: bu bulguyu BES olcucu ajanin HICBIRI bulmadi -- L3 'cevap sizintisi YOK' dedi ve DOGRUYDU, ama yalniz SINAV ucuna bakmisti; o uc zaten RLS yuzunden acilamiyordu. Bulgu ancak 'ne olculmedi' diye soran eksiklik elestirmeninden cikti. Kural: bir sizinti sinifini 'kapandi' saymadan once o verinin ISTEMCIYE ULASTIGI TUM yollari say (arama, oneri, rapor, offline sync, ES, liste uclari), ve kapanis bekcisini VERI KAYNAGINA degil CIKIS KATMANINA koy. Ilgili: [[L-s231-hacim-vekil-olcum-icerik-degil]]"
+- id: L-s241-kardinalite-degisiminde-SAYAN-tuketici
+  baslik: Kardinalite degistiren degisikligin en kirilgan tuketicisi listeyi OKUYAN degil, listeyi SAYAN / etiketi ANAHTAR SANAN koddur
+  kaynak: docs/audits/2026-08-21_b3_konu_kirilimi.md
+  sinif: kod
+  durum: aktif
+  zorlayici: backend/tests/integration/test_osym_exam_konu_tuketiciler.py
+  kanit: "S241 FAZ 2 (21 Agu 2026) - core/osym_exam_engine.py:1394 gruplama anahtari (subject) -> (subject, primary_topic_id) yapildi ve tuketiciler tarandi. Motor+API olculdu ve gecti (kova 1 -> 13, API kumesi == DB kumesi, SQL execute 4 -> 4, sum(total_questions) 40 -> 40) ama UC uretim tuketicisi SESSIZCE bozuldu ve hicbir test yakalamadi. Olculen: konu_performanslari.konu [matematik] x13 -> ayni ders hem zayif hem guclu listesinde; advanced_reports.py:1528 ogrenciye 11 BIREBIR AYNI oneri; ogretmen_service.py:210 (sinav_sayisi += 1) TEK sinavi 13 sinav saydi. Degisiklikten ONCE (tek kova) bu ciktilar YAPISAL OLARAK IMKANSIZDI. Ayirt edici gozlem: OKUYAN tuketici bozulmadi, SAYAN tuketici bozuldu. utils/pdf_generator.py:346-401 (for p in konu_performanslari) ile okuyor -- += 1 / len( / Counter / groupby eslesmesi 0 -- ve 1 satir yerine 13 satir basiyor, ISTENEN davranis. Bozulanlarin hepsi dort desenden biri: (a) SOZLUK ANAHTARI d[konu][...] += 1, (b) KUME UYELIGI (zayif/guclu ayni etiketle dolar), (c) BOLEN toplam / len(liste) -- advanced_reports.py:761/869/873 len(konu_zpd_analizleri) olculdu: kova 2 -> 13 olunca agirliksiz ortalama 41,67 -> 51,58, +9,91 puan SESSIZ kayma, HTTP 200 ve sema ayni, (d) KIMLIK VARSAYIMI f(etiket) -- advanced_reports.py:474 _get_subject_irt_aggregate(konu_perf.konu) girdiyi .upper() yapip subject_area'ya esitliyor: sample_size 391 -> 0 dustu, AMA topic_hierarchy'de adi tam olarak Kimya olan bir level-1 konu var ve Kimya.upper() == KIMYA == subject_area -> o TEK konu tum dersin 3531 satirlik istatistigini yiyor (tekduzelik bozan bozulma, sabit-varsayilan halinden DAHA ZOR fark edilir); ayni cakisma MAT|Matematik|1 icin de var ama bugun 0 soru tasidigi icin LATENT. KOK NEDEN BIR SUREC KUSURU: faz 1 tuketici taramasi application/ dizinini HIC taramadi (commands/sinav.py:831 konu_data yalniz 8 alan map ediyordu, topic_code/topic_name o sinirda dustu) ve GECISLI tuketiciyi izlemedi (adaptor -> SinavSonucu -> 5 rapor ucu -> ogretmen servisi -> PDF; cagri grafiginde IKI adim oteydi). verification.md#DOGRULAMA-KAPSAMI zaten (kapsami dizin yakinligiyla degil grep ile belirle) diyor; kural VARDI ve ihlal edildi. NEDEN TESTLER YESIL KALDI: grep -rn session_to_sinav_sonucu backend/tests -> 4/4 referans AsyncMock(return_value=None); tuketici test paketleri regresyondan SONRA 58/58 yesil kaldi -- mock'lu test bu kusur sinifini YAPISAL OLARAK goremez. CIVILEME: gercek Postgres'e karsi T1/T2/T3 yazildi (AsyncMock YOK, kalici yazim SIFIR -- motorun oturumu fikstur AsyncSession'ina yonlendirildi, teardown ROLLBACK); mutasyon M5 (konu=sp.topic_name or sp.subject -> sp.subject) UCUNU DE BAGIMSIZ olarak oldurdu. AYRICA BU DERS AYNI TURDA IHLAL EDILDI: faz 2 kok nedeni (SAYAN tuketicileri ara) diye teshis etti, tarama tablosunu yazdi, ve advanced_reports.py:761 len() cagrisini (sayan/dedup eden kod yok) diye YANLIS sinifladi -- bagimsiz bir curutucu mercek buldu. Ders yazmak dersi uygulamak DEGILDIR: tarama sonucu ikinci bir mercekle TEKRAR olculur. Aranacak desenler: += 1 · len( · Counter · groupby · set( · in normalize_tr( · X[etiket] · f(etiket). Ayrinti: docs/audits/2026-08-21_b3_konu_kirilimi.md#f2-2"
+
+- id: L-s244-kovalama-degismez-metrik
+  baslik: Kova sayisina bagli ortalama kardinalite degisiminde SESSIZCE kayar; agirlikli bicim kovalamadan BAGIMSIZDIR
+  kaynak: docs/audits/2026-08-21_b3_konu_kirilimi.md
+  sinif: kod
+  durum: aktif
+  zorlayici: backend/tests/unit/test_konu_kimligi.py
+  kanit: "S244 (21 Agu 2026) — advanced_reports.py:761/869/873 ZPD genel profili `toplam / len(kova)` idi. B3 kova kardinalitesini 1 -> 13 yapinca ortalama +9,91 puan SESSIZCE kaydi (HTTP 200, sema ayni, hicbir test dusmedi). Fix `_agirlikli_ortalama(kayitlar, alan)`: agirlik = kovadaki soru sayisi. ASIL KAZANC bugunku sapmanin duzelmesi DEGIL -- agirlikli bicim kovalamadan BAGIMSIZDIR: ayni sinav ister 2 ders kovasi ister 13 konu kovasi olarak verilsin AYNI ortalamayi uretir, yani BIR SONRAKI kardinalite degisiminde (konu -> alt-konu) de kaymaz. Bu, L-s241-kardinalite-degisiminde-SAYAN-tuketici dersinin YAPISAL PANZEHIRIDIR: o ders 'boleni ara' diyor, bu ders 'boleni kovalamadan BAGIMSIZ yap' diyor. IKINCI VE DAHA ONEMLI OLCUM -- INVARYANT TESTININ KENDISI DEJENERE OLABILIR: plan `test_kovalama_degismez` icin 2-kova [(8,10),(4,30)] vs 4-kova [(8,4),(8,6),(4,12),(4,18)] verisi onerdi. Implementer aritmetigi KONTROL EDINCE yakaladi: ikisinin de AGIRLIKSIZ ortalamasi 6.0 -- yani test HATALI (agirliksiz) implementasyona karsi da GECERDI ve mutasyon gereksinimi tatmin edilemezdi. Bagimsiz hakem hesabi tekrarlayip dogruladi. Veri asimetrik yapildi (4-kova [(8,3),(8,3),(8,4),(4,30)]: agirlikli 5.0 == 5.0, agirliksiz 6.0 != 7.0). KURAL: bir INVARYANT testi yazarken invaryantin BOZULDUGU durumda testin GERCEKTEN dustugunu aritmetikle onceden dogrula; simetrik test verisi invaryanti kendiliginden saglar ve testi bos kumede gecen bir teste cevirir. Kontrol kolu testi (agirliksiz bicimin AYNI veride FARKLI verdigini kanitlayan) bu yuzden ZORUNLU. Ilgili: [[L-s241-kardinalite-degisiminde-SAYAN-tuketici]], [[L-s231-bayrak-tasidigi-iddiayi-kanitlamaz]]"
+
+- id: L-s244-paralel-ajanlar-tek-git-index
+  baslik: Depoda TEK git index vardir; `git add .` yapmamak paralel ajanlar icin yeterli koruma DEGILDIR -- commit'in kendisi pathspec ister
+  kaynak: docs/audits/2026-08-21_b3_konu_kirilimi.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S244 — B3 FAZ 3 dosya-AYRIK iki gorevi (Task 4: api/advanced_reports.py + yeni test dosyasi; Task 5: tests/integration/... + sinav.py mutasyonu) paralel kosturuldu. Dosya kumeleri gercekten ayrikti, ama GIT INDEX ayrik DEGIL: Task 5 commit'e hazirlanirken `git status` Task 4'un `M backend/api/advanced_reports.py` ve `A backend/tests/fast/test_irt_aggregate_topic_split.py` satirlarini STAGED gosterdi. Duz bir `git commit` o iki dosyayi Task 5'in mesajiyla commit ederdi -- yarim kalmis is, yanlis mesaj, yanlis yazar. Task 5 bunu fark edip `git commit -F msg -- <kendi dosyasi>` (pathspec'li) ve `git commit --amend --only` kullandi; sonradan bagimsiz dogrulandi: commit tam 1 dosya. IKINCI TUZAK AYNI TURDA ISIRDI: Task 2'nin spec inceleyicisine 'mutasyonu bagimsiz tekrarla' talimati verilmisti; inceleyici `cp` yedek/geri-yukleme dongusu kosarken Task 3 AYNI dosyayi (advanced_reports.py) duzenliyordu. Olasi veri kaybi penceresi olustu -- Task 3 uc edit'inin kayboldugunu gordu ve 'bicimlendirici kancasi' sandi; ana baglamdan butunluk sonradan olculdu (fonksiyon sayilari, AST, 19 test) ve KAYIP YOKTU, ama bu SANS. KURAL: (1) paralel ajan commit'i DAIMA pathspec'li olmali; (2) dosya-DEGISTIREN inceleyici (mutasyon kosan) ayni dosyadaki implementer ile PARALEL kosturulmaz -- inceleme salt-okunur yapilir ve `git show <sha>:<yol>` uzerinden calisir. Ilgili: [[L-s233-kendi-harness-in-alt-ajanin-girdisini-bozar]]"
+
+- id: L-s255-kurulum-hatasi-skip-degil-fail
+  baslik: Ortam yoklugu SKIP, KURULUM hatasi FAIL -- ikisi ayri sozlesmedir
+  kaynak: .claude/rules/golden-flows.md
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/unit/test_golden_flow_exam_setup_gate.py
+  kanit: "S255 (27 Agu 2026) -- tests/e2e/test_golden_flows.py::_create_exam_session kurulum reddini pytest.skip'e ceviriyordu. Olculdu: GF3c/GF3d/GF1w/GF3w tek baslarina kosulunca '4 skipped ... EXIT KODU: 0'; golden-flows.md bu pakete 'Merge block' yetkisi verdigi halde save-answer / complete / BKT / dogrulama yollarinin HICBIRI olculmuyordu. AYIRT EDICI SORU: basarisiz olan sey TESTIN OLCMEK ISTEDIGI SEY mi, yoksa ONA GIDEN KURULUM mu? Kardes yardimci _login 401'de skip ediyor ve OYLE KALMALI (seed yoklugu gercekten ortam eksikligidir; test_golden_flow_login_gate.py'de civili), ama bir kurulum cagrisinin 400 donmesi 'ortam yok' degil 'kurulum yanlis' demektir ve FAIL uretmelidir. IKINCI VE ASIL AYAK: yalniz aleti dogrultmak paketi KALICI KIRMIZI yapardi, cunku kurulumun ISTEDIGI SEKIL de yanlisti. Helper ciplak {'exam_type':'TYT'} gonderiyordu; core/osym_exam_engine.py:415-420 dagitimi ancak custom_config['subject'] varsa tek derse indiriyor, o anahtar yokken total_questions 120 kaliyor ve TYT'nin dokuz dersi kapili havuzda karsilanmiyor (MATEMATIK 26 + KIMYA 7 = 33) -- yani 400 DOGRU cevapti ve o sekli ureten canli bir kullanici yolu YOKTU (olculdu: ExamStart.tsx 0 importer, examService.createExamSession 0 cagiran). KURAL: bir kurulum yardimcisi, urunun FIILEN destekledigi ve ortamin servis EDEBILECEGI sekli istemeli; ancak o zaman 'kurulum hatasi = FAIL' guvenlidir. Deger SATIRDA degil GOZLEMLENEBILIR SONUCTA olculdu: ayni ariza duzeltmeden ONCE '4 skipped / exit 0', SONRA ayni ariza enjekte edilince '4 failed / exit 1'. Regresyon: tam paket HEAD~1'de 12 failed / 142 passed / 25 skipped, HEAD'de 12 failed / 146 passed / 21 skipped -- fail kumesi BIREBIR AYNI. Mutasyon 6/6 (skip'e geri donus, custom_config silme, yalniz subject silme, yardimciyi yeniden adlandirma, ikiz yardimcinin delegasyonunu bozma, question_count tavanini asma). Ilgili: [[L-s232-bulguyu-degil-aleti-sina]]"
+
+- id: L-s255-bir-kapiyi-kapatmak-sinifi-kapatmaz
+  baslik: Girdiyi dogrulamak GEREKLI ama YETERSIZ -- paylasilan bir partide tek bozuk oge butun partiyi goturur
+  kaynak: .claude/rules/database.md
+  sinif: kod
+  durum: aktif
+  zorlayici: backend/tests/unit/test_toplu_cevap_dayanikliligi.py
+  kanit: "S255 (27 Agu 2026) -- S254 toplu cevap yaziminda BIR zehirlenme tetikleyicisini kapatmisti (bos dizge). Canli prob (backend/scripts/batch_zehirlenme_probu.py) UC tane daha olctu, hepsi uctan HTTP 200 donerken: 'F' (A-E disi -> CheckViolationError), 'AB' (varchar(1) -> StringDataRightTruncationError), yabanci question_id (FK ihlali). Olculen zarar: ayni gruptaki UC gecerli cevaptan IKISI yok oldu (yazilan/beklenen 1/3). UC AYRI DERS CIKTI. (1) KAPI HAM DEGERE DEGIL NORMALIZASYON SONUCUNA BAKMALI: S254'un dorduncu tetikleyiciyi kacirmasinin sebebi 'if selected_answer:' truthiness kontroluydu -- iki bosluk truthy'dir, 'else None' daline hic girmez, .strip() sonucu bos dizge batch'e girer. Yani kapatilan kapinin BOSLUKLU VARYANTI acik kaldi. (2) PAYLASILAN KUYRUKTA HATA YARICAPI KULLANICILAR ARASIDIR: osym_exam_engine = OSYMExamEngine() modul duzeyi TEK nesne, self._db_queue o worker surecindeki BUTUN ogrenciler icin ortak -> bozuk istek gonderen bir istemci BASKA ogrencilerin cevaplarini sildiriyordu. Bir hata yolunun ciddiyetini olcerken 'kimin verisi' sorusu 'hangi istek' sorusundan onemlidir. (3) GIRDIYI DOGRULAMAK GEREKLI AMA YETERSIZDIR: yalnizca BILDIGIN kapilari kapatabilirsin ve bu tur bunun kanitidir -- S254 bir kapiyi kapatti, uc tane daha vardi, biri kapattiginin varyantiydi. Bu yuzden yapisal katman eklendi: toplu yazim duserse ogeler TEK TEK yazilir, yalniz gercekten bozuk olan(lar) duser (patlama yaricapi 1000 -> 1) ve sayac tutulur (logger.error dondurulmus bir sayi vermez). Konteynerde CANLI dogrulandi: 1 gecerli + 1 bozuk oge -> (yazilan, dusen) = (1, 1), gecerli ogenin cevabi YAZILDI. OLCULMUS NEGATIF de kaydedildi: ayni soruya es zamanli ikinci yazim ON CONFLICT kardinalite ihlali URETMIYOR (asyncpg executemany her satiri ayri ifade olarak kosuyor) -- iddia edilmedi, olculdu. Mutasyon: host 5/5, canli 4/4 (host mutasyonu GF testlerini ETKILEMEZ -- onlar konteynere vurur, bu yuzden mutasyonlu kod ayrica deploy edilip olculdu). Ilgili: [[L-s255-kurulum-hatasi-skip-degil-fail]]"
+
+- id: L-s255-sekil-bekcisi-uretimin-yasadigini-kanitlamaz
+  baslik: Bir sozlesmenin SEKLINI civilemek, o degeri URETEN kodun yasadigini kanitlamaz
+  kaynak: .claude/rules/testing.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/integration/test_save_answer_clear_persists.py
+  kanit: "S255 (27 Agu 2026) -- student_answers.is_correct icin IKI bekci karsilastirildi. Var olan test_save_answer_upsert_parity.py UPSERT'in SQL SEKLINI civiliyor: set_ sozlugunde is_correct anahtarinin degeri stmt.excluded.is_correct OLMALI (AST ile, deger duzeyinde, S254'te 4/4 mutasyonla dogrulanmisti). Bu bekci saglam ama BIR SEYI GOREMEZ: notu URETEN kodu. save_answer icindeki notlama blogu (question_content.correct_answer sorgusu) 'except Exception: logger.debug' ile sarili; o blok olurse is_correct her yazimda sessizce None olur, UPSERT hala 'excluded.is_correct' yazar ve SEKIL TESTI YESIL KALIR. Iki mutasyonla olculdu: MG1 INSERT yolunda is_correct=None yap, MG2 notlama blogunu olu birak (if _ca -> if False). SONUC: DAVRANIS bekcisi 2/2 OLDU, PARITE bekcisi 2/2 HAYATTA. Yani sozlesme dogru olabilir ve URETIM olu olabilir. Eklenen bekci dort gecisi DB'de olcer: notla -> temizle (None olmali) -> dogruya gec (True) -> yanlisa gec (False). BU DERSIN IKINCI AYAGI VERI TARAFINDA: ayni sinifin gecmiste birakti fosiller olculdu -- 546 satirin 6'si bozuktu (5'i 'cevap temizlenmis ama not duruyor', 1'i 'cevap degistirilmis, not eski cevaptan kalmis'). Backfill'den ONCE URETICININ DUZELDIGI canli dogrulandi (uc gecisin ucu de), cunku uretici bozukken artigi temizlemek semptomu boyamaktir. Backfill'de iki koruma: yedek tablo IF NOT EXISTS OLMADAN olusturuldu (tablo varsa script sessizce YEDEKSIZ devam ederdi) ve >50 satir duzeltilecekse RAISE EXCEPTION ile durduruldu (karar 6 satirlik bir olcume dayaniyordu; olcum bayatlarsa script durmali). Dogrulama: kalan fosil 0/0, yedekten farkli olan TAM 6 -- yan etki yok. Ilgili: [[L-s255-bir-kapiyi-kapatmak-sinifi-kapatmaz]]"
+
+- id: L-s255-envanterde-kac-degil-kaci-canli
+  baslik: Bir goc envanterinde once KAC TANE degil KACI CANLI olculur; ve psql ile olcmek APInin gordugunu olcmek degildir
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: surec
+  durum: aktif
+  zorlayici: backend/tests/unit/test_mega_feature_peer_recommendations.py
+  kanit: "S255 (27 Agu 2026) -- #485 split gocunun kalan borcu 'yaklasik 47 erisim / 11 dosya' diye devredilmisti. Alet (scripts/scan_split_accesses.py) canli kosuldu: SINIF=34 KWARG=12 ENTITY=56, 23 dosya. Sayi da dosya sayisi da ALT SINIRMIS. Ama asil bulgu SAYIDA degil CANLILIKTA: 46 kalemin 22'si OLU KODDA -- repositories/question_repository.py 16 SINIF (tum backend'de tek referans kendi class satiri, 0 importer), analytics/exam_results_reporting.py 4 SINIF (0 importer), core/irt_daemon.py 2 SINIF + 6 KWARG (daemon hic kosmuyor: application.py:181 await irt_daemon.start() YORUM SATIRI). Ayrica 2 KWARG YANLIS POZITIF (osym_exam_engine zaten update(QuestionStatistics)'e gocmus; aletin 'KWARG sinifi sahiplik dogrulamasi yapmaz' kor noktasi artik yanlis-pozitif uretiyor ve docstring'indeki 12/12 olcumu BAYAT). Geriye CANLI ve KULLANICI-GORUNUR tek kalem kaldi ve o duzeltildi: /api/v1/student-dashboard/profil HTTP 500. KURAL: bir goc/borc envanterinde ONCE 'kac tane' degil 'kaci CANLI' olculur; aksi halde olu koda harcanan is gercek is gibi gorunur ve gercek kusur sirada bekler. Canlilik olcumu ucuzdur (importer aramasi + wiring kontrolu + uc probu) ve bu turda isin %48'ini elemistir. IKINCI DERS AYNI TURDAN: duzeltmeden sonra uc 200 dondu ama icerik HER ogrenci icin BOS geldi. '200' bir dogruluk kanitI DEGILDIR. Dort hipotez olculup CURUTULDU (onbellek: anahtar silindi sonuc degismedi; yanlis model: tek ExamSession, dogru tablo; yanlis kullanici_id: /auth/me ile DB birebir; kartezyen: FROM=1) ve gercek sebep bulundu: exam_sessions uzerinde RLS politikasi var, API kiro2_app rolunden (rolbypassrls=false) bagliyor ve app.current_org_id GUC'si kurulmadigi icin tablo 0 satir gosteriyor -- postgres rolunde ayni sorgu MATEMATIK 47/8 donerken kiro2_app rolunde 0. Yani psql ile olcmek API'nin GORDUGUNU olcmek DEGILDIR: superuser RLS'i bypass eder. Bir sorguyu 'calisiyor' ilan etmeden once UYGULAMANIN ROLUYLE kos. Ilgili: [[L-s255-sekil-bekcisi-uretimin-yasadigini-kanitlamaz]]"
+
+- id: L-s255-zamanlanmis-kod-uc-probunda-gorunmez
+  baslik: Zamanlanmis ve arka plan kodunun canliligi UC PROBUYLA olculemez; ayri alet ister
+  kaynak: .claude/rules/audit-methodology.md
+  sinif: surec
+  durum: aktif
+  zorlayici: backend/tests/unit/test_mega_feature_peer_recommendations.py
+  kanit: "S255 (27 Agu 2026) -- #485 gocunun kalan adaylarinin CANLILIGI olculdu. Uc aday bir UC PROBUYLA elendi (difficulty/filter -> kasitli 503; learning-path quiz submit -> 403; irt_analysis metotlari -> 0 cagiran). Dorduncusu tasks/mega_feature_tasks.py:371/393 ayni yontemle TEMIZ gorunuyordu, cunku onu cagiran fonksiyon hicbir HTTP ucundan erisilmiyor: _build_peer_recommendations yalniz run_weekly_error_clustering icinden cagriliyor ve o task celery_app.py:188'de beat'e Pazar 23:00'e zamanli. kiro2-celery-worker 19 saattir ayaktaydi ve beat gunlugunde task HENUZ tetiklenmemisti -> kusur bugun HICBIR probda gorunmuyordu, ama sonraki haftalik kosumda AttributeError ile SESSIZCE patlayacakti (celery task hatasi kimsenin bakmadigi bir gunluk satiridir). KURAL: canlilik olcerken 'hangi uc bunu cagirir' YETMEZ; ZAMANLANMIS ve ARKA PLAN yollari AYRI bir aletle olculur -- beat/cron zamanlamasi, worker konteynerinin ayakta olup olmadigi ve gunlukte task'in tetiklenip tetiklenmedigi. Bir kod yolunun 'olu' gorunmesi, YALNIZ senkron uc probu yaptigin anlamina gelebilir. IKINCI OLCUM AYNI TURDAN: kod celery worker'da kosacaksa fix'i oraya da dagitmak SART -- kiro2-celery-worker ve kiro2-backend AYRI IMAJLAR ve ilk olcumde ikisi de eski dosyayi tasiyordu (md5 host != imaj); yalniz backend'i rebuild etmek Pazar'a kadar hicbir seyi degistirmezdi. UCUNCU OLCUM (iki kez tekrarlandi): docker compose up + sleep 95 + /health 200'den HEMEN sonraki ilk kosumda GF90 dustu, ardisik iki turda gecti. /health 200 HAZIR demek DEGILDIR; rebuild sonrasi ilk kirmizi regresyon sanilabilir. Yordam: rebuild sonrasi iki tur kos, ilkini isinma say. Ilgili: [[L-s255-envanterde-kac-degil-kaci-canli]]"
+
+- id: L-s255-idempotent-uc-e2e-bekcisini-korlestirir
+  baslik: Erken-donuslu (idempotent) bir uctaki E2E bekcisi durum-bagimlidir ve zamanla sessizce korlesir
+  kaynak: .claude/rules/golden-flows.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/integration/test_learning_path_profile_sema_paritesi.py
+  kanit: "S255 (27 Agu 2026) -- learning_path_student_profiles tablosunda tek bir kolon (neuro_inclusive_mode, boolean, NOT NULL, server_default YOK) canli DB'de VARDI ama ORM modelinde HIC TANIMLI DEGILDI; kolonu olusturan bir alembic migration da yoktu (grep -rl -> 0 dosya), yani alembic DISINDA eklenmisti. Sonuc zincirleme: ORM INSERT kolonu atliyor -> NotNullViolationError -> POST /learning-path/create-profile 500 -> profil olusmuyor -> verify_student_access her istegi 403 ile reddediyor -> learning_path alt sisteminin TAMAMI kilitli. Iki Golden Flow (GF10 dogrudan, GF24 on kosul olarak) bu tek kolon yuzunden dusuyordu. ASIL DERS DUZELTMEDE DEGIL BEKCIDE: kolonu modelden tekrar silen mutasyon (MS1) altinda GF10 GECTI. Sebep create-profile'in mevcut profili ERKEN DONDURMESI -- INSERT'e hic gitmiyor (olculdu: farkli bir isimle istek attim, eski profil dondu). Yani bir uctan gecen E2E testi, o ucun yalnizca ILK cagriminda calisan kod yolunu bir kez profil olustuktan sonra BIR DAHA ASLA olcemez. IDEMPOTENT/ERKEN-DONUS iceren uclarda E2E bekcisi DURUM-BAGIMLIDIR ve zamanla sessizce korlesir; o sinif icin DURUMSUZ bir bekci gerekir. Burada eklenen durumsuz bekci ORM<->DB kolon paritesi testidir ve MS1 onu OLDURDU. Ikinci gozlem: bu kayma sinifinin depoda hic bekcisi yoktu -- scripts/audit_orm_vs_db_parity.py VAR ama BASKA bir sey olcuyor (S209: kirli agactaki iki MODEL SURUMUNDEN hangisi DB'ye uyuyor) ve hicbir test/CI onu kosmuyor; adi dogru sanip guvenmek de bir olcum hatasidir. Ucuncu gozlem: birinci kusur ikinciyi GIZLIYORDU -- sema kaymasi duzelir duzelmez ayni akistaki #485 goc borcu ILK KEZ erisilebilir oldu ve hemen 500 dondu; yani 'bu kod yolu calismiyor' bulgusu bir kusuru degil BIR YIGIN kusuru gizleyebilir, ve duzeltme sirasi onemlidir. Ilgili: [[L-s255-envanterde-kac-degil-kaci-canli]]"
+
+- id: L-s255-aralikli-kirmizida-once-tam-traceback
+  baslik: Araliklarla dusen testte once TAM TRACEBACK yakalanir; assert'e bakip cikarim yapmak hata assert'e hic ulasmamis olabilecegi icin gecersizdir
+  kaynak: .claude/rules/systematic-debugging.md
+  sinif: surec
+  durum: aktif
+  zorlayici: backend/tests/unit/test_golden_flow_login_gate.py
+  kanit: "S255 (27 Agu 2026) -- GF paketi ~%13 oranda araliklarla kirmizi doniyordu. Dusen test GF10'du ve GF10'un TEK assert'i `status_code != 500` oldugu icin 'demek ki 500 doniyor' diye VARSAYDIM. Konteyner gunlugunde hicbir 500 yoktu; bu CELISKIYI hipotez uretersek cozeriz sandim ve DORT hipotezi tek tek olcup curuttum (login rate-limit: 30/30 login 200; basit idle timeout: 1/4/6/8 sn bosluk 4/4 basarili; 5 sn keep-alive yarisi: POST ile 4.8-5.2 sn araliklarda 18/18 basarili; hizli ates: 40 POST, 0 hata). Dordunun de bosa gitmesinin sebebi tek bir atlanan adimdi: TAM TRACEBACK'I HIC OKUMAMISTIM (her kosumda `tail -2` almistim). Duse kadar dongu + `--tb=long` ile yakalandiginda hata bir assert DEGILDI: httpx.RemoteProtocolError 'Server disconnected without sending a response' -- yani istek uygulamaya HIC ULASMIYORDU, o yuzden gunlukte 500 da yoktu. Celiski aslinda CEVABIN KENDISIYDI. KURAL: araliklarla dusen bir testte ONCE tam traceback yakalanir (dongu + --tb=long + ciktiyi dosyaya al); testin assert'ine bakip 'demek ki su donuyor' diye cikarim yapmak, hata assert'e HIC ULASMAMIS olabilecegi icin gecersizdir. IKINCI DERS -- SUSTURMA ile TASIMA RISKINI KALDIRMA ayrimi: duzeltme `max_keepalive_connections=0` oldu; hicbir assert zayiflatilmadi, hicbir test skip'lenmedi, urun kodu degismedi. Kaldirilan sey testin OLCMEK ISTEMEDIGI bir katmandi (baglanti havuzu). Kok neden KANITLANMADI ama sinif yapisal olarak kapandi: baglanti yeniden kullanilmazsa bayat-baglanti yarisi imkansizdir. Bu mesru cunku olculdu -- A/B: oncesi ~4 dusme/30 kosum (%13), sonrasi 0/35; ayni taban oranda tesadufen 35 temiz tur olasiligi ~%0,8. Ve bir CIRCIR eklendi (AST ile ayarin varligini civiler, mutasyonla oldurulebildigi dogrulandi) cunku ayar geri alinirsa paket yeniden araliklarla kirmizi olur ve o kirmizi bir URUN kusuru sanilir. Ilgili: [[L-s255-idempotent-uc-e2e-bekcisini-korlestirir]]"

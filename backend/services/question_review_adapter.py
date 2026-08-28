@@ -18,7 +18,9 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload, undefer
 
+from core.quality_gate import safe_for_beta_gate
 from models.enums_db import SubjectArea
 from models.fsrs_models import FSRSCard as DBFSRSCard
 from models.question_bank import QuestionBankItem
@@ -58,14 +60,30 @@ class QuestionReviewAdapter:
             )
         )
         if existing.scalar_one_or_none():
-            logger.debug(f"Review card zaten mevcut: student={student_id}, q={question_id}")
+            logger.debug(
+                f"Review card zaten mevcut: student={student_id}, q={question_id}"
+            )
             return None
 
         # QuestionBankItem'ı getir
         q_result = await db.execute(
-            select(QuestionBankItem).where(
+            select(QuestionBankItem)
+            .options(
+                # GF4w1: asagida erisilen subject_area / question_text /
+                # explanation / correct_answer alanlari compat delegator
+                # uzerinden content & metadata_info ILISKILERINI okur;
+                # AsyncSession'da lazy yukleme MissingGreenlet -> 500 uretir
+                # (28 Agu suite olcumu). Pesinen yukle.
+                selectinload(QuestionBankItem.content),
+                selectinload(QuestionBankItem.metadata_info),
+            )
+            .where(
                 QuestionBankItem.id == question_id,
                 QuestionBankItem.is_active == True,
+                # Kalite kapısı (core/quality_gate.py): kapısız soru KALICI FSRS
+                # kuyruğuna girmesin — kart bir kez yazıldıktan sonra öğrenciye
+                # tekrar tekrar gösterilir, yani sızıntı burada kalıcılaşır.
+                safe_for_beta_gate(QuestionBankItem.id),
             )
         )
         question = q_result.scalar_one_or_none()
@@ -76,7 +94,11 @@ class QuestionReviewAdapter:
         # FSRS kartı oluştur — SubjectArea enum dönüşümü (UPPERCASE → lowercase)
         now = datetime.now(UTC)
         try:
-            subject = SubjectArea(question.subject_area) if question.subject_area else SubjectArea.MATEMATIK
+            subject = (
+                SubjectArea(question.subject_area)
+                if question.subject_area
+                else SubjectArea.MATEMATIK
+            )
         except (ValueError, KeyError):
             subject = SubjectArea.MATEMATIK
 
@@ -127,6 +149,7 @@ class QuestionReviewAdapter:
         # Vadesi gelen kartları getir
         cards_result = await db.execute(
             select(DBFSRSCard)
+            .options(undefer(DBFSRSCard.cultural_factors))
             .where(
                 DBFSRSCard.student_id == student_id,
                 or_(
@@ -157,9 +180,21 @@ class QuestionReviewAdapter:
 
         # QuestionBankItem'ları tek sorguda getir
         questions_result = await db.execute(
-            select(QuestionBankItem).where(
+            select(QuestionBankItem)
+            .options(
+                # GF4w1 kardes yolu: birlesim asamasi question_text/option_*/
+                # correct_answer/explanation (content), subject_area
+                # (metadata_info) ve difficulty_level (statistics) okur —
+                # lazy yukleme AsyncSession'da MissingGreenlet uretir.
+                selectinload(QuestionBankItem.content),
+                selectinload(QuestionBankItem.metadata_info),
+                selectinload(QuestionBankItem.statistics),
+            )
+            .where(
                 QuestionBankItem.id.in_(qb_ids),
                 QuestionBankItem.is_active == True,
+                # Kalite kapısı: geçmişten kalmış kapısız kartları da eler.
+                safe_for_beta_gate(QuestionBankItem.id),
             )
         )
         questions = {str(q.id): q for q in questions_result.scalars().all()}
@@ -171,32 +206,38 @@ class QuestionReviewAdapter:
             if not q:
                 continue
 
-            result.append({
-                "card_id": card.id,
-                "question_id": str(q.id),
-                "question_text": q.question_text,
-                "options": {
-                    "A": q.option_a,
-                    "B": q.option_b,
-                    "C": q.option_c,
-                    "D": q.option_d,
-                    "E": getattr(q, "option_e", None),
-                },
-                "correct_answer": q.correct_answer,
-                "explanation": q.explanation,
-                "explanation_video_url": getattr(q, "explanation_video_url", None),
-                "difficulty_level": q.difficulty_level,
-                "subject_area": q.subject_area,
-                "fsrs": {
-                    "stability": card.stability,
-                    "difficulty": card.difficulty,
-                    "state": card.state,
-                    "reps": card.reps,
-                    "due_date": card.due_date.isoformat() if card.due_date else None,
-                },
-            })
+            result.append(
+                {
+                    "card_id": card.id,
+                    "question_id": str(q.id),
+                    "question_text": q.question_text,
+                    "options": {
+                        "A": q.option_a,
+                        "B": q.option_b,
+                        "C": q.option_c,
+                        "D": q.option_d,
+                        "E": getattr(q, "option_e", None),
+                    },
+                    "correct_answer": q.correct_answer,
+                    "explanation": q.explanation,
+                    "explanation_video_url": getattr(q, "explanation_video_url", None),
+                    "difficulty_level": q.difficulty_level,
+                    "subject_area": q.subject_area,
+                    "fsrs": {
+                        "stability": card.stability,
+                        "difficulty": card.difficulty,
+                        "state": card.state,
+                        "reps": card.reps,
+                        "due_date": card.due_date.isoformat()
+                        if card.due_date
+                        else None,
+                    },
+                }
+            )
 
-        logger.debug(f"get_due_questions: {len(result)} soru döndürülüyor (student={student_id})")
+        logger.debug(
+            f"get_due_questions: {len(result)} soru döndürülüyor (student={student_id})"
+        )
         return result
 
     async def submit_review(
@@ -226,17 +267,19 @@ class QuestionReviewAdapter:
 
         # Kart sahipliği kontrolü (IDOR koruması)
         if student_id and card.student_id != student_id:
-            logger.warning(f"Kart sahiplik ihlali: card.student={card.student_id}, request={student_id}")
+            logger.warning(
+                f"Kart sahiplik ihlali: card.student={card.student_id}, request={student_id}"
+            )
             return None
 
         now = datetime.now(UTC)
 
         # Basit FSRS güncelleme (tam algoritma turkish_optimized_fsrs.py'de)
         interval_map = {
-            1: 0.25,   # AGAIN: 6 saat sonra
-            2: 1.0,    # HARD: 1 gün sonra
-            3: 2.5,    # GOOD: 2.5 gün sonra (stability * 2.5)
-            4: 7.0,    # EASY: 1 hafta sonra
+            1: 0.25,  # AGAIN: 6 saat sonra
+            2: 1.0,  # HARD: 1 gün sonra
+            3: 2.5,  # GOOD: 2.5 gün sonra (stability * 2.5)
+            4: 7.0,  # EASY: 1 hafta sonra
         }
 
         base_interval = interval_map[grade]
@@ -258,10 +301,16 @@ class QuestionReviewAdapter:
 
         # elapsed_days: ÖNCE hesapla, SONRA last_review güncelle
         old_last_review = card.last_review or card.created_at
-        card.elapsed_days = int((now - old_last_review).total_seconds() / 86400) if old_last_review else 0
+        card.elapsed_days = (
+            int((now - old_last_review).total_seconds() / 86400)
+            if old_last_review
+            else 0
+        )
 
         # Sonraki tekrar tarihini hesapla
-        actual_interval = max(base_interval, card.stability) if card.stability > 0 else base_interval
+        actual_interval = (
+            max(base_interval, card.stability) if card.stability > 0 else base_interval
+        )
         card.due_date = now + timedelta(days=actual_interval)
         card.last_review = now
         card.reps += 1
@@ -302,5 +351,7 @@ class QuestionReviewAdapter:
             if card:
                 created += 1
 
-        logger.info(f"register_wrong_answers: {created}/{len(question_ids)} kart oluşturuldu")
+        logger.info(
+            f"register_wrong_answers: {created}/{len(question_ids)} kart oluşturuldu"
+        )
         return created

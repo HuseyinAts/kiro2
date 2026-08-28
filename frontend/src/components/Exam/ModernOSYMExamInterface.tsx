@@ -54,12 +54,12 @@ import {
   QuestionResponse,
   PerformanceResponse,
 } from '../../services/examService';
+import { FlagButton } from '../Quality/FlagButton';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ModernButton } from '@/components/ui/ModernButton';
 import { MathText } from '@/components/ui/MathText';
 import { QuestionImage } from '@/components/ui/ImageZoomModal';
 import { ModernLoader } from '@/components/ui/ModernLoader';
-import { FlagButton } from '../Quality/FlagButton';
 import modernColors from '@/theme/modern-colors';
 
 interface ModernOSYMExamInterfaceProps {
@@ -544,26 +544,28 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                     narrowing (TS18047). */}
                 {(() => {
                   const cq = currentQuestion;
+                  // Figür-only gate (Bug #11 fix, 24 Haz 2026): yalnız de-leak edilmiş
+                  // /_figonly/ crop'ları göster (recrop_pipeline.py + figonly url update).
+                  // Eski leaky crop'lar (şık/işaretli-cevap içeren) gizli kalır.
+                  const showImg = cq.question_image_url?.includes('/_figonly/') ?? false;
                   return (
                     <Box sx={{
-                      display: { xs: 'block', md: cq.question_image_url ? 'flex' : 'block' },
+                      display: { xs: 'block', md: showImg ? 'flex' : 'block' },
                       gap: 3,
                       mb: 3,
                     }}>
-                      <Box sx={{ flex: cq.question_image_url ? { md: '1 1 55%' } : undefined, minWidth: 0 }}>
+                      <Box sx={{ flex: showImg ? { md: '1 1 55%' } : undefined, minWidth: 0 }}>
                         <Typography variant="h6" component="div" sx={{ lineHeight: 1.8 }}>
                           <MathText>{cq.content || cq.question_text || ''}</MathText>
                         </Typography>
                       </Box>
 
-                      {/* Bug #11 defensive suppress (18 May 2026):
-                          Vision audit ortaya koydu ki tüm question_image_url'ler
-                          solution leak içeriyor (image içinde A) B) C) D) E) görünüyor).
-                          Backend filter image-required soruları zaten pool dışı tutuyor,
-                          bu defansif katman beta'ya sızabilecek leak'leri durdurur.
-                          Sprint sonrası: Vision re-crop ile düzgün crop'lar geri eklenir,
-                          buradaki suppress kaldırılır. */}
-                      {false && cq.question_image_url && (
+                      {/* Bug #11 fix (24 Haz 2026): eski crop'lar solution-leak içeriyordu
+                          (image içinde A) B) C) D) E) + işaretli cevap). Artık yalnız layout-
+                          model ile yeniden kırpılmış FİGÜR-ONLY crop'lar (/_figonly/) gösterilir;
+                          eski leaky url'ler showImg=false ile gizli kalır. Bkz
+                          d-dataset/scripts/recrop_pipeline.py + docs/audits/2026-06-24_figure_missing_audit.md */}
+                      {showImg && (
                         <Box sx={{
                           flex: { md: '0 0 40%' },
                           position: { md: 'sticky' },

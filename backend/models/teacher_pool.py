@@ -6,7 +6,6 @@ Database models for teacher registration, expertise, availability, and appointme
 
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
 
 from sqlalchemy import (
     ARRAY,
@@ -26,6 +25,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -144,7 +144,14 @@ class TeacherPoolProfile(Base):
     __tablename__ = "teacher_pool_profiles"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Basic Information
@@ -204,19 +211,29 @@ class TeacherPoolProfile(Base):
 
     # Relationships
     expertise = relationship(
-        "TeacherExpertise", back_populates="teacher", cascade="all, delete-orphan"
+        "TeacherExpertise",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
     )
     certifications = relationship(
-        "TeacherCertification", back_populates="teacher", cascade="all, delete-orphan"
+        "TeacherCertification",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
     )
     availability = relationship(
-        "TeacherAvailability", back_populates="teacher", cascade="all, delete-orphan"
+        "TeacherAvailability",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
     )
     appointments = relationship(
-        "Appointment", back_populates="teacher", cascade="all, delete-orphan"
+        "Appointment",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
     )
     reviews = relationship(
-        "TeacherReview", back_populates="teacher", cascade="all, delete-orphan"
+        "TeacherReview",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
     )
 
 
@@ -234,7 +251,7 @@ class TeacherExpertise(Base):
 
     __tablename__ = "teacher_expertise"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
 
     # Expertise Details
@@ -280,7 +297,7 @@ class TeacherCertification(Base):
 
     __tablename__ = "teacher_certifications"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
 
     # Certification Details
@@ -332,7 +349,7 @@ class TeacherAvailability(Base):
 
     __tablename__ = "teacher_availability"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
 
     # Time Slot
@@ -379,7 +396,7 @@ class Appointment(Base):
 
     __tablename__ = "appointments"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     availability_slot_id = Column(String, ForeignKey("teacher_availability.id"))
@@ -467,7 +484,7 @@ class AppointmentReminder(Base):
 
     __tablename__ = "appointment_reminders"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     appointment_id = Column(String, ForeignKey("appointments.id"), nullable=False)
 
     # Reminder Details
@@ -508,7 +525,7 @@ class TeacherReview(Base):
 
     __tablename__ = "teacher_reviews"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     teacher_id = Column(String, ForeignKey("teacher_pool_profiles.id"), nullable=False)
     student_id = Column(String, ForeignKey("users.id"), nullable=False)
     appointment_id = Column(String, ForeignKey("appointments.id"))
@@ -558,7 +575,7 @@ class TeacherStatistics(Base):
 
     __tablename__ = "teacher_statistics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     teacher_id = Column(
         String,
         ForeignKey("teacher_pool_profiles.id"),

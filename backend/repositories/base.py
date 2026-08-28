@@ -21,9 +21,28 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseRepository(Generic[ModelType]):
     """Generic repository for CRUD operations"""
 
-    def __init__(self, model: type[ModelType], session: AsyncSession):
+    def __init__(
+        self,
+        model: type[ModelType],
+        session: AsyncSession,
+        organization_id: str | None = None,
+    ):
         self.model = model
         self.session = session
+        # Faz 0 multi-tenancy: set edilirse ve model org-scoped ise TÜM okuma
+        # sorgularına organization_id filtresi ZORUNLU uygulanır (cross-tenant
+        # sızıntı savunması). None => filtre yok (backward-compatible).
+        self.organization_id = organization_id
+
+    def _scope_tenant(self, query):
+        """org_id set + model org-scoped ise sorguya tenant filtresi ekle.
+
+        `hasattr(is_active)` savunmacı deseninin ikizi. Model organization_id
+        taşımıyorsa (global tablo, ör. question_bank) filtre uygulanmaz.
+        """
+        if self.organization_id is not None and hasattr(self.model, "organization_id"):
+            query = query.where(self.model.organization_id == self.organization_id)
+        return query
 
     async def create(self, **kwargs) -> ModelType:
         """Create a new record"""
@@ -41,9 +60,11 @@ class BaseRepository(Generic[ModelType]):
     async def get_by_id(self, id: str) -> ModelType | None:
         """Get record by ID"""
         try:
-            result = await self.session.execute(
-                select(self.model).where(self.model.id == id)
-            )
+            query = select(self.model).where(self.model.id == id)
+            if hasattr(self.model, "is_active"):
+                query = query.where(self.model.is_active == True)
+            query = self._scope_tenant(query)
+            result = await self.session.execute(query)
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             logger.error(f"Error getting {self.model.__name__} by id {id}: {e!s}")
@@ -53,14 +74,14 @@ class BaseRepository(Generic[ModelType]):
         """Get record by specific field"""
         try:
             field = getattr(self.model, field_name)
-            result = await self.session.execute(
-                select(self.model).where(field == value)
-            )
+            query = select(self.model).where(field == value)
+            if hasattr(self.model, "is_active"):
+                query = query.where(self.model.is_active == True)
+            query = self._scope_tenant(query)
+            result = await self.session.execute(query)
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
-            logger.error(
-                f"Error getting {self.model.__name__} by {field_name}: {e!s}"
-            )
+            logger.error(f"Error getting {self.model.__name__} by {field_name}: {e!s}")
             raise
 
     async def get_all(
@@ -74,6 +95,13 @@ class BaseRepository(Generic[ModelType]):
         try:
             query = select(self.model)
 
+            # Apply default active filter if applicable
+            if hasattr(self.model, "is_active"):
+                if filters is None:
+                    filters = {}
+                if "is_active" not in filters:
+                    filters["is_active"] = True
+
             # Apply filters
             if filters:
                 for field_name, value in filters.items():
@@ -83,6 +111,9 @@ class BaseRepository(Generic[ModelType]):
                             query = query.where(field.in_(value))
                         else:
                             query = query.where(field == value)
+
+            # Faz 0: tenant scoping (org-scoped model + org_id set ise ZORUNLU)
+            query = self._scope_tenant(query)
 
             # Apply ordering
             if order_by and hasattr(self.model, order_by):
@@ -133,9 +164,7 @@ class BaseRepository(Generic[ModelType]):
         """Soft delete record (set is_active = False)"""
         if hasattr(self.model, "is_active"):
             return await self.update(id, is_active=False)
-        raise NotImplementedError(
-            f"{self.model.__name__} does not support soft delete"
-        )
+        raise NotImplementedError(f"{self.model.__name__} does not support soft delete")
 
     async def count(self, filters: dict[str, Any] | None = None) -> int:
         """Count records with optional filtering"""
@@ -258,9 +287,7 @@ class BaseRepository(Generic[ModelType]):
             result = await self.session.execute(query)
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
-            logger.error(
-                f"Error getting {self.model.__name__} with relations: {e!s}"
-            )
+            logger.error(f"Error getting {self.model.__name__} with relations: {e!s}")
             raise
 
     async def commit(self):

@@ -38,9 +38,9 @@ const TIER_CONFIG: Record<string, { label: string; color: string; icon: string }
 };
 
 function rankMedal(rank: number) {
-  if (rank === 1) return '🥇';
-  if (rank === 2) return '🥈';
-  if (rank === 3) return '🥉';
+  if (rank === 1) {return '🥇';}
+  if (rank === 2) {return '🥈';}
+  if (rank === 3) {return '🥉';}
   return `#${rank}`;
 }
 
@@ -56,13 +56,13 @@ export default function LeaguePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Box textAlign="center" py={8}><CircularProgress /></Box>;
-  if (error || !data) return (
+  if (loading) {return <Box textAlign="center" py={8}><CircularProgress /></Box>;}
+  if (error || !data) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Alert severity="error">{error ?? 'Lig verisi alınamadı'}</Alert>
     </Box>
-  );
-  if (data.standings.length === 0) return (
+  );}
+  if (data.standings.length === 0) {return (
     <Box maxWidth={520} mx="auto" mt={8} textAlign="center">
       <Typography fontSize={48}>🏅</Typography>
       <Typography variant="h6" fontWeight={700} mt={1}>Henüz sıralama yok</Typography>
@@ -70,7 +70,7 @@ export default function LeaguePage() {
         Bu hafta sınav çözdükçe lig sıralamana gireceksin.
       </Typography>
     </Box>
-  );
+  );}
 
   const tier   = TIER_CONFIG[data.tier] ?? { label: data.tier, color: '#888', icon: '🏅' };
   const maxXP  = useMemo(() => Math.max(...data.standings.map(s => s.xp), 1), [data.standings]);

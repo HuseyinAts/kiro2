@@ -1,0 +1,541 @@
+=== OPUS BLIND SAMPLE — math/geo disputes (NO answer key) ===
+Solve each. Output one line per #: '#N: <A-E>'.
+
+#1 [GEOMETRI]
+  Q: Dik koordinat düzleminde, Apsisi -2 olan bir noktanın y-ekseni üzerindeki bir noktaya göre simetrisi K noktasıdır. Ordinatı -3 olan bir noktanın x-ekseni üzerindeki bir noktaya göre simetrisi K noktasıdır. Buna göre, K noktasının orijine uzaklığı kaç birimdir?
+  A) $2\sqrt{2}$
+  B) $2\sqrt{3}$
+  C) $\sqrt{13}$
+  D) $\sqrt{15}$
+  E) $3\sqrt{2}$
+
+#2 [MATEMATIK]
+  Q: Türkiye'de bulunan endemik bitki çeşidi sayısı $3800$ ile $4200$ arasındadır. Buna göre, I. $|x-200| < 4000$ II. $|x-4000| < 200$ III. $|x-400| < 4000$ ifadelerinden hangisi Türkiye'deki endemik bitki çeşidi sayısının alabileceği değerleri gösteren eşitsizliktir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#3 [MATEMATIK]
+  Q: Bir çocuk elindeki cevizleri dörderli, dokuzarlı ve onarlı gruplara ayırdığında her defasında 2 ceviz artıyor. Buna göre, çocuğun en az kaç cevizi vardır?
+  A) 177
+  B) 180
+  C) 182
+  D) 184
+  E) 186
+
+#4 [MATEMATIK]
+  Q: Salgın bir hastalığı engellemek için bir topluluktaki kişilere maske dağıtılacaktır. Topluluktaki kişilerin $\frac{1}{4}$'üne maske verilmemiş, maske verilen kişilerin $\frac{2}{3}$'ü maske takmamıştır. Toplulukta verilen maskeyi takanların sayısı $51$ olduğuna göre, bu toplulukta kaç kişi vardır?
+  A) 210
+  B) 204
+  C) 198
+  D) 194
+  E) 192
+
+#5 [MATEMATIK]
+  Q: Yarıçapı $6$ cm olan bir çemberin içine çizilen dikdörtgenin alanı en fazla kaç $cm^2$ olabilir?
+  A) 56
+  B) 60
+  C) 64
+  D) 68
+  E) 72
+
+#6 [MATEMATIK]
+  Q: $\log_2 2 + \log_2 \sqrt{3} + ... + \log_2 \sqrt{n} = \log_2 (12\sqrt{5})$ olduğuna göre, $n$ değeri kaçtır?
+  A) 1
+  B) 3
+  C) 6
+  D) 8
+  E) 10
+
+#7 [MATEMATIK]
+  Q: $x$ ve $y$ birer tam sayıdır.
+$7 > x > 2$
+$-1 < y < 3$
+olimits
+olduğuna göre, $x^2 + y^2$ nin en büyük değeri kaçtır?
+  A) 57
+  B) 39
+  C) 40
+  D) 49
+  E) 36
+
+#8 [MATEMATIK]
+  Q: 100 basamaklı bir merdivenin 13. basamağında bulunan Mustafa, basamakların bir kısmını ikişerli bir kısmını üçerli çıkarak merdivenin 92. basamağına basmıştır.
+Buna göre, Mustafa'nın attığı,
+I. İkişerli adım sayısı tek sayıdır.
+II. Üçerli adım sayısı tek sayıdır.
+III. Toplam adım sayısı çift sayıdır.
+ifadelerinden hangileri kesinlikle doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I ve III
+
+#9 [MATEMATIK]
+  Q: $f(x) = x^3 - x^2$ eğrisinin $A(-1, -2)$ noktasındaki teğeti, eğriyi bir $B$ noktasında kesiyor. Buna göre, $B$ noktasının apsisi kaçtır?
+  A) 7
+  B) 6
+  C) 5
+  D) 4
+  E) 3
+
+#10 [MATEMATIK]
+  Q: $i = \sqrt{-1}$ olmak üzere, $z = 2i^{10} - 4i^{15}$ karmaşık sayısı veriliyor. Buna göre, $z \cdot \bar{z}$ çarpımının sonucu kaçtır?
+  A) 12
+  B) 16
+  C) 20
+  D) 24
+  E) 28
+
+#11 [MATEMATIK]
+  Q: Aşağıda sayı kümeleri ve sembolleri verilmiştir.
+$\mathbb{N}$: Doğal Sayılar
+$\mathbb{Z}$: Tam Sayılar
+$\mathbb{Q}$: Rasyonel Sayılar
+$\mathbb{R}$: Gerçek Sayılar
+Buna göre,
+I. $-\frac{2}{3}$ sayısı $\mathbb{Q}-\mathbb{Z}$ kümesinin bir elemanıdır.
+II. $\sqrt{2}$ sayısı $\mathbb{R}-\mathbb{Q}$ kümesinin bir elemanıdır.
+III. $\mathbb{N}-\mathbb{Z}^{+}$ kümesinin sıfır dışında bir elemanı yoktur.
+ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#12 [MATEMATIK]
+  Q: Tuz oranı %20 olan tuzlu su karışımının $\frac{2}{5}$'i dökülerek yerine dökülen miktar kadar tuz ilave ediliyor. Buna göre, yeni karışımın tuz oranı yüzde kaçtır?
+  A) 20
+  B) 30
+  C) 46
+  D) 52
+  E) 58
+
+#13 [MATEMATIK]
+  Q: $a$ ve $b$ aralarında asal sayı olmak üzere; $a \cdot (b+2) = 2a + 90$ olduğuna göre, $EKOK(a, b)$ kaçtır?
+  A) 84
+  B) 90
+  C) 108
+  D) 100
+  E) 120
+
+#14 [MATEMATIK]
+  Q: $2(x+1)+3(x-1)=4(x+5)$ olduğuna göre, $x$ kaçtır?
+  A) 20
+  B) 21
+  C) 22
+  D) 23
+  E) 24
+
+#15 [MATEMATIK]
+  Q: $f(x)=3x-1$ olduğuna göre, $f(2x)$ fonksiyonunun $f(x)$ türünden eşiti aşağıdakilerden hangisidir?
+  A) $3 \cdot f(x)-1$
+  B) $6 \cdot f(x)-1$
+  C) $6 \cdot f(x)+1$
+  D) $2 \cdot f(x)+1$
+  E) $2 \cdot f(x)-1$
+
+#16 [MATEMATIK]
+  Q: Ağırlıkça %35'i tuz olan 60 gram tuz-su karışımı bulunmaktadır. Buna göre, karışımdaki suyun ağırlığı kaç gramdır?
+  A) 21
+  B) 32
+  C) 35
+  D) 39
+  E) 42
+
+#17 [GEOMETRI]
+  Q: ABC dik üçgen, $[AB] \perp [BC]$, $|AB|=|BD|$, $|AD|=8\sqrt{2}$ cm ve $|AC|=17$ cm'dir. Yukarıdaki verilere göre, $|DC|=x$ kaç cm dir?
+  A) 12
+  B) 10
+  C) 9
+  D) 8
+  E) 7
+
+#18 [MATEMATIK]
+  Q: Plajın eğimi $m$ ve kum taneciklerinin ortalama çapı $d$ (mm) olmak üzere, bir plajın eğimi $m = 0,159 + 0,118 \cdot \log d$ fonksiyonuyla ile modellenmiştir. Buna göre, kum taneciklerinin ortalama çapı $0,1$ mm olan bir plajın eğimi yaklaşık olarak kaçtır?
+  A) 0,041
+  B) 0,051
+  C) 0,061
+  D) 0,071
+  E) 0,081
+
+#19 [MATEMATIK]
+  Q: $6 \le x^2 - x \le 12$ eşitsizlik sisteminin çözüm kümesinde kaç farklı $x$ tam sayısı vardır?
+  A) 2
+  B) 3
+  C) 4
+  D) 6
+  E) 8
+
+#20 [MATEMATIK]
+  Q: $y=f(x)$ gerçel sayılar kümesi üzerinde türevlenebilen bir fonksiyon olmak üzere,
+$\lim_{h \to 0} \frac{f(x+h)-f(x-h)}{4h}$ limitinin değeri aşağıdakilerden hangisidir?
+  A) $-f'(x)$
+  B) $2 \cdot f'(x)$
+  C) $f'(x)$
+  D) $\frac{2}{3}f'(x)$
+  E) $\frac{f'(x)}{2}$
+
+#21 [MATEMATIK]
+  Q: $f(x) = x^2 - 4x + 1$ fonksiyonu veriliyor. $y = f(x) + f'(x)$ fonksiyonunun grafiğinin üzerindeki herhangi bir nokta $(a, b)$ dir. Buna göre, $a+b$ toplamı en az kaçtır?
+  A) -4
+  B) $-\frac{15}{4}$
+  C) $-\frac{7}{2}$
+  D) $-\frac{13}{4}$
+  E) -3
+
+#22 [MATEMATIK]
+  Q: $a$ ve $b$ gerçel sayılar
+$z=a+bi$
+$w=4-2i$
+$z$ ve $w$ karmaşık sayıları için,
+$Re(z)=Im(w)+Im(z)$
+$Im(z)=Re(w)+Im(w)$
+eşitlikleri sağlanıyor.
+Buna göre,
+I. $Re(z)+Im(\bar{z})=0$
+II. $Re(z)+Re(w)=0$
+III. $Im(z)+Im(w)=0$
+eşitliklerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#23 [MATEMATIK]
+  Q: $5A = 4B$ eşitliğine göre; A sayısı, B'nin yüzde kaçıdır?
+  A) 80
+  B) 75
+  C) 40
+  D) 60
+  E) 90
+
+#24 [MATEMATIK]
+  Q: Uygun koşullarda tanımlı $f(x) = \begin{cases} -x+9, & x<4 \\ ax+b, & x \ge 4 \end{cases}$ fonksiyonu $[5, \infty)$ aralığında örten olduğuna göre, $f(0)-f(4)$ farkı kaçtır? ($a>0$)
+  A) $1$
+  B) $2$
+  C) $3$
+  D) $4$
+  E) $5$
+
+#25 [MATEMATIK]
+  Q: $(a_n)$ dizisinde $n>1$ için $a_n=a_{n-1}+n$ ve $a_1=7$ olduğuna göre, $a_{11}$ kaçtır?
+  A) 66
+  B) 68
+  C) 70
+  D) 72
+  E) 74
+
+#26 [MATEMATIK]
+  Q: $A = 2 \cdot \sin x + 3 \cdot \cos y$ ve $B = 2 \cdot \cos x - 3 \cdot \sin y$ olduğuna göre, $A^2 + B^2$ toplamının en küçük değeri kaçtır?
+  A) -1
+  B) 0
+  C) 1
+  D) 2
+  E) 3
+
+#27 [MATEMATIK]
+  Q: $a = \sqrt{5}$, $b = \sqrt[3]{4}$ ve $c = \sqrt[6]{7}$ olduğuna göre, $a, b$ ve $c$ sayılarının doğru sıralanışı aşağıdakilerden hangisidir?
+  A) $a < b < c$
+  B) $b < a < c$
+  C) $c < a < b$
+  D) $b < c < a$
+  E) $c < b < a$
+
+#28 [MATEMATIK]
+  Q: Bir cep telefonunun bataryası sadece oyun oynayarak 8 saatte, sadece konuşma yapıldığında ise 12 saatte tamamen bitiyor. Telefonun bataryası oyun oynarken sabit bir hız ile, konuşma yaparken ise farklı bir sabit hız ile azalıyor.
+Bataryası tamamen dolu olan bir telefon ile belli bir süre oyun oynarken gelen arama ile konuşma başlamış ve konuşma aralıksız olarak devam ederken telefonun bataryası tam olarak bitmiştir.
+Telefonun bataryasının oyun oynamaya başlandıktan 9 saat sonra tamamen bittiği bilindiğine göre telefonda gelen arama, oyun oynamaya başlandıktan kaç saat sonra gerçekleşmiştir?
+  A) 4
+  B) 4,5
+  C) 5
+  D) 6
+  E) 6,5
+
+#29 [MATEMATIK]
+  Q: $\frac{\pi}{4} < \alpha < \frac{\pi}{3}$ olmak üzere,
+$x = \sin\alpha$
+$y = \sin(2\alpha)$
+$z = \sin(3\alpha)$
+sayılarının doğru sıralanışı aşağıdakilerden hangisidir?
+  A) $z < x < y$
+  B) $z < y < x$
+  C) $y < z < x$
+  D) $y < x < z$
+  E) $x < y < z$
+
+#30 [MATEMATIK]
+  Q: $|\frac{10-x}{3}| < 1$ eşitsizliğini sağlayan kaç tane $x$ tam sayı değeri vardır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#31 [MATEMATIK]
+  Q: $81^2 = a$
+olimits olduğuna göre $3^{16}$ ifadesinin $a$ türünden değeri kaçtır?
+  A) $a$
+  B) $2a$
+  C) $a^2$
+  D) $2a^2$
+  E) $4a$
+
+#32 [MATEMATIK]
+  Q: Eni 48 metre, boyu 66 metre olan dikdörtgen şeklindeki bir alanın zemini eş kare şeklindeki fayanslarla döşenecektir. Bu iş için en az kaç fayans gerekir?
+  A) 82
+  B) 84
+  C) 86
+  D) 88
+  E) 90
+
+#33 [MATEMATIK]
+  Q: $0 < x < 2\pi$ olmak üzere, $\cos(\frac{\pi}{6} - x) = \sin(x - \frac{\pi}{3})$ denklemini sağlayan değerler toplamı kaçtır?
+  A) $\frac{5\pi}{6}$
+  B) $2\pi$
+  C) $\pi$
+  D) $\frac{7\pi}{4}$
+  E) $3\pi$
+
+#34 [MATEMATIK]
+  Q: Genişliği 180 m, uzunluğu 225 m olan bir tarla kare biçiminde eşit büyüklükte hobi bahçelerine ayrılıyor. Buna göre, tarlada en az kaç kare hobi bahçesi vardır?
+  A) 20
+  B) 25
+  C) 30
+  D) 40
+  E) 45
+
+#35 [MATEMATIK]
+  Q: $0 < x < \pi$ olmak üzere, $\frac{1}{\sin x} - \frac{1}{\cos x} = \frac{2}{\sin x + \cos x}$ eşitliğini sağlayan $x$ değerlerinin toplamı kaçtır?
+  A) $\frac{\pi}{3}$
+  B) $\frac{\pi}{2}$
+  C) $\frac{2\pi}{3}$
+  D) $\frac{3\pi}{4}$
+  E) $\pi$
+
+#36 [MATEMATIK]
+  Q: İşleminin sonucu kaçtır? $\sqrt{4,5} + \sqrt{24,5}$
+  A) $2\sqrt{2}$
+  B) $3\sqrt{2}$
+  C) $4\sqrt{2}$
+  D) $5\sqrt{2}$
+  E) 7
+
+#37 [GEOMETRI]
+  Q: Dik koordinat düzleminde $A(-3, 7)$ noktasının $x$ eksenine uzaklığı ile $B(k, -5)$ noktasının $x$ eksenine uzaklığının toplamı kaç birimdir?
+  A) 13
+  B) 12
+  C) 9
+  D) 8
+  E) 4
+
+#38 [MATEMATIK]
+  Q: $f(x) = 3 - (3 \sin x + 4 \cos x)$ fonksiyonunun alabileceği en büyük değer kaçtır?
+  A) -2
+  B) 0
+  C) 2
+  D) 5
+  E) 8
+
+#39 [MATEMATIK]
+  Q: $x^2-4x-6=0$ denkleminin kökleri $x_1$ ve $x_2$ dir. Buna göre $x_1^2-4x_1+8$ ifadesinin eşiti kaçtır?
+  A) 6
+  B) 8
+  C) 12
+  D) 14
+  E) 22
+
+#40 [MATEMATIK]
+  Q: $\left( \frac{\pi}{4}, \frac{\pi}{2} \right)$ a\u00e7\u0131k aral\u0131\u011f\u0131 \u00fczerinde $f, g$ ve $h$ fonksiyonlar\u0131
+$f(x) = 2 - \sin x$
+$g(x) = 1 - \cos x$
+$h(x) = \tan x + \sin x$
+bi\u00e7iminde tan\u0131mlan\u0131yor.
+Buna g\u00f6re, verilen fonksiyonlardan hangileri ayn\u0131 aral\u0131kta artand\u0131r?
+  A) Yaln\u0131z f
+  B) Yaln\u0131z g
+  C) Yaln\u0131z h
+  D) f ve g
+  E) g ve h
+
+#41 [MATEMATIK]
+  Q: $(x-m)^2 = 2m-3$ denkleminin tek kökü olduğuna göre, $m$ kaçtır?
+  A) $\frac{3}{2}$
+  B) 1
+  C) 0
+  D) -1
+  E) $\frac{5}{2}$
+
+#42 [MATEMATIK]
+  Q: 12 kg un-tuz karışımının 5 kg'ı tuz, 13 kg un-tuz karışımının 7 kg'ı tuzdur. Bu iki karışım karıştırıldığında oluşan yeni karışımın tuz oranı yüzde kaçtır?
+  A) 36
+  B) 48
+  C) 50
+  D) 54
+  E) 60
+
+#43 [MATEMATIK]
+  Q: $f(x) = 5^{x+1}$ olduğuna göre, $f(x) - f(x-1)$ farkının $f(x)$ türünden eşiti aşağıdakilerden hangisidir?
+  A) $\frac{f(x)}{5}$
+  B) $\frac{2f(x)}{5}$
+  C) $\frac{4f(x)}{5}$
+  D) $4f(x)$
+  E) $5f(x)$
+
+#44 [MATEMATIK]
+  Q: İkinci dereceden gerçel katsayılı $x^2 - ax + b = 0$ denkleminin köklerinden biri $4+i$ olduğuna göre, $a+b$ toplamı kaçtır?
+  A) 30
+  B) 25
+  C) 24
+  D) 17
+  E) 9
+
+#45 [MATEMATIK]
+  Q: $x^2-3x-7=0$ denkleminin köklerinin $3$'er katını kök kabul eden ikinci dereceden denklem aşağıdakilerden hangisidir?
+  A) $x^2-3x-21=0$
+  B) $x^2-3x-63=0$
+  C) $x^2-6x-21=0$
+  D) $x^2-9x-21=0$
+  E) $x^2-9x-63=0$
+
+#46 [MATEMATIK]
+  Q: 5 mühendis ve 4 doktorun olduğu bir toplulukta en fazla 2 mühendisin olduğu 4 kişilik bir ekip kaç farklı yolla seçilebilir?
+  A) 64
+  B) 72
+  C) 78
+  D) 81
+  E) 84
+
+#47 [MATEMATIK]
+  Q: AB, AC, BA, BC ve CA iki basamaklı doğal sayılarından yalnızca üç tanesi tek sayıdır.
+Buna göre,
+I. $A \cdot (B + C)$
+II. $B \cdot (A + C)$
+III. $C \cdot (A + B)$
+ifadelerinden hangileri kesinlikle tek sayıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+#48 [GEOMETRI]
+  Q: Dik koordinat düzleminde $2x+y-8=0$ ve $2x+y+2=0$ doğrularına teğet olan çemberlerin merkezlerinin geometrik yerinin denklemi aşağıdakilerden hangisidir?
+  A) $x^2+y^2=20$
+  B) $x^2+y^2=10$
+  C) $2x+y-3=0$
+  D) $2x-y+3=0$
+  E) $(x-2)^2+y^2=20$
+
+#49 [MATEMATIK]
+  Q: Bir zar atma deneyinde oluşan örnek uzayın eleman sayısı $x$, üst yüze asal sayı gelmesi olayının eleman sayısı $y$'dir. Buna göre, $x+y$ toplamı kaçtır?
+  A) 3
+  B) 6
+  C) 9
+  D) 12
+  E) 18
+
+#50 [MATEMATIK]
+  Q: $f(x) = x^2 + ax + 2$ olmak üzere, $\lim_{x \to 3} \frac{f(x) - f(3)}{x - 3} = 4$ olduğuna göre, $a$ kaçtır?
+  A) -2
+  B) -3
+  C) 1
+  D) 2
+  E) 3
+
+#51 [MATEMATIK]
+  Q: $n$ pozitif tam sayı olmak üzere, $A_n = \\int_0^1 x^n (1-x) dx$ biçiminde tanımlanıyor. Buna göre, $A_1 + A_2 + ... + A_{10}$ toplamı kaçtır?
+  A) $\\frac{5}{12}$
+  B) $\\frac{1}{2}$
+  C) $\\frac{7}{12}$
+  D) $\\frac{2}{3}$
+  E) $\\frac{3}{4}$
+
+#52 [GEOMETRI]
+  Q: Dik koordinat düzleminde, $x^2+y^2-8x-14y-16=0$ ve $x^2+y^2+4x+k-4=0$ çemberleri dik kesiştiğine göre, $k$ kaçtır?
+  A) -3
+  B) -2
+  C) 0
+  D) 4
+  E) 6
+
+#53 [MATEMATIK]
+  Q: 1'den 10'a kadar ardışık tam sayıların çarpımının sonucu yedi basamaklı $362a00$ sayısıdır. Buna göre, $a$ kaçtır?
+  A) 2
+  B) 5
+  C) 6
+  D) 7
+  E) 8
+
+#54 [MATEMATIK]
+  Q: $(x-1)^{2020} \cdot (x-3) \ge 0$ eşitsizliğinin en geniş çözüm kümesi aşağıdakilerden hangisidir?
+  A) $[3, \infty)$
+  B) $[3, \infty) \cup \{1\}$
+  C) $(- \infty, 3]$
+  D) $[1, \infty)$
+  E) $[1, 3]$
+
+#55 [MATEMATIK]
+  Q: Mehmet Bey bankadan aldığı kredinin $\frac{1}{5}$'ini mayıs ayında, $\frac{1}{4}$'ünü ise haziran ayında geri ödüyor. Geri ödeyeceği kredinin kalan kısmının $\frac{1}{3}$'ünü de temmuz ayında ödediğinde ağustos ayında tüm kredinin geri ödemesinin tamamlanması için 44 bin TL daha gerekiyor.
+Buna göre, Mehmet Bey'in bankadan aldığı kredi toplam kaç bin TL'dir?
+  A) 80
+  B) 120
+  C) 160
+  D) 200
+  E) 240
+
+#56 [MATEMATIK]
+  Q: $\text{X}^	ext{o}$ açısının derece cinsinden esas ölçüsü
+$\text{Y}$ radyan açısının radyan cinsinden esas ölçüsü
+şeklinde tanımlanan ifadeler için,
+I. $\frac{37\pi}{3} = 60^	ext{o}$
+II. $1005^	ext{o} = \frac{5\pi}{12}$
+III. $-\frac{48\pi}{5} = 72^	ext{o}$
+gösterimlerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#57 [MATEMATIK]
+  Q: Bir makineye ait elektrik panosunda yan yana duran kırmızı, beyaz ve mavi lambalar makinede parçaların çalışmasına göre yanmaktadır. Makine bir işlemi tamamlamak için çalıştırılmaya başlanınca ilk olarak kırmızı ışık 15 dakika, daha sonra beyaz ışık 10 dakika, ardından da mavi ışık 5 dakika boyunca yanmaktadır. Mavi ışık yandıktan sonra beyaz ışık 3 dakika daha yanıp makine işlemini sonlandırıyor. Yeni işlem için makine vakit kaybı olmadan tekrar çalışmaya başladığında aynı döngü her işlemde bu şekilde devam etmektedir. Panoda beyaz ışık yanıyorsa makinenin çalıştırılmasından itibaren geçen süre, aşağıdakilerden hangisi olamaz?
+  A) 248
+  B) 315
+  C) 326
+  D) 460
+  E) 479
+
+#58 [MATEMATIK]
+  Q: $\frac{1 + cos2x}{1 - cos2x}$ ifadesinin eşit aşağıdakilerden hangisidir?
+  A) $2 \cdot tan^2x$
+  B) $2 \cdot cot^2x$
+  C) $sin^2x$
+  D) $tan^2x$
+  E) $cot^2x$
+
+#59 [MATEMATIK]
+  Q: Deniz, Engin ve Funda'nın kendi aralarında yapmış oldukları satranç maçlarıyla ilgili aşağıdakiler bilinmektedir.
+* En az maç yapan Funda'dır ve 13 maç yapmıştır.
+* En çok maç yapan Engin'dir ve 16 maç yapmıştır.
+Buna göre, Deniz ve Funda kendi aralarında kaç maç yapmışlardır?
+  A) 5
+  B) 6
+  C) 8
+  D) 9
+  E) 10
+
+#60 [MATEMATIK]
+  Q: Tarkan, kitabının ilk 128 sayfasını kopardıktan sonra kopardığı bu sayfaları üst üste gelecek şekilde koyup makasla keserek iki eş parçaya ayırıyor.
+Elde ettiği kağıtları tekrar üst üste koyarak makasla kesip iki eş parçaya ayırıyor ve bu işlemi 3. kez yaptıktan sonra elinde $2^x$ tane kağıt parçası oluyor.
+Buna göre, x kaçtır?
+  A) 7
+  B) 8
+  C) 9
+  D) 10
+  E) 11

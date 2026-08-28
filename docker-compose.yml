@@ -19,6 +19,21 @@ services:
       context: ./backend
       dockerfile: Dockerfile.minimal
     container_name: kiro2-backend
+    command:
+      [
+        "uvicorn",
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--workers",
+        "1",
+        "--limit-concurrency",
+        "10000",
+        "--backlog",
+        "10000",
+      ]
     ports:
       - "8000:8000"
     env_file:
@@ -31,9 +46,62 @@ services:
       - ./d-dataset/output/crops:/app/static/crops:ro
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
+      # Kullaniciya gonderilen baglantilarin (e-posta dogrulama, veli onayi) kok
+      # adresi. Tanimsiz birakilirsa kod `http://localhost:3001` (Vite DEV portu)
+      # kullanir ve bu yiginda hicbir sey orada dinlemez -> her link olu dogar.
+      # 23 Agu 2026 olcumu: curl :3001 -> 000, curl :3000 -> 200.
+      # Bekci: backend/tests/unit/test_compose_frontend_url.py
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
+      # uvicorn'un X-Forwarded-For'una GUVENECEGI tek adres = nginx'in statik IP'si.
+      # Bu deger asagidaki frontend.networks.default.ipv4_address ile AYNI olmali;
+      # ayrisirlarsa duzeltme SESSIZCE oler (bekci:
+      # backend/tests/unit/test_proxy_guven_yapilandirmasi.py).
+      #
+      # NEDEN GEREKLI (26 Agu 2026 canli olcumu): uvicorn ProxyHeadersMiddleware
+      # VARSAYILAN OLARAK ACIK (proxy_headers=True) ama forwarded_allow_ips
+      # varsayilani 127.0.0.1 oldugu icin nginx'i TANIMIYOR. Sonuc: nginx
+      # arkasindaki TUM kullanicilar tek rate-limit kovasi paylasiyordu
+      # (ratelimit:eposta_dogrulama_gonder:172.25.0.2 -- iki farkli kaynak
+      # ayni kovayi artirdi, 3 farkli X-Forwarded-For ile 3. istek 429 aldi).
+      # Canli yigindaki UC limiter de istemciyi request.client.host'tan okuyor,
+      # dolayisiyla bu tek deger ucunu birden duzeltir.
+      #
+      # 🔴 SUBNET DEGIL TAM IP: uvicorn zincirin EN SAGDAKI guvenilmez adresini
+      # secer; tek elemanli zincirde bu istemcinin dikte ettigi degerdir. Backend
+      # :8000 disariya acik oldugundan, subnet guvenilirse gateway (172.25.0.1)
+      # de guvenilir olur ve nginx'i ATLAYAN istek kendi IP'sini uydurabilir.
+      - FORWARDED_ALLOW_IPS=172.25.255.10
+      # ── A1 L2 KAPISI ────────────────────────────────────────────────────
+      # Dogrulanmamis kullanici giris YAPAMAZ. Politika core/eposta_dogrulama.py;
+      # burasi yalnizca bayragi aciyor.
+      #
+      # NEDEN .env.mvp'de DEGIL: bu bir SIR degil, bir POLITIKA karari. Git'te
+      # olmasi denetlenebilir kilar ve testle korunabilir. SMTP kimlik bilgileri
+      # .env.mvp'de KALIYOR.
+      #
+      # ACILMADAN ONCE OLCULEN 8 ON KOSULUN 8'i (27 Agu 2026):
+      #   1 hata govdesi `detail` okunuyor      5 kayitta sessiz cikmaz yok
+      #   2 giriste kurtarma yolu var           6 bloklanacak kume: GEREKSIZ cikti
+      #   3 /giris -> /login olu link yok       7 MUAFIYET_SINIRI 27 Agu'ya alindi
+      #   4 rate-limit kovasi ayristi           8 SMTP probu + KUTU TEYIDI alindi
+      #
+      # ACILIS ANI OLCUMU: kapi_engeli()=None · toplam 52 · girebilen 50 ·
+      # bloklanan 2 (ikisi de prob hesabi, gercek adrese gidiyor ve postalari
+      # ULASTI). GERCEK kullanici: 0.
+      #
+      # 🔴 SIRA YAPTIRIMI: bayrak TEK BASINA yetmez. SMTP olmadan kapi acilsaydi
+      # dogrulanmamis kullanicilar ne girebilir ne dogrulama postasi alabilirdi
+      # (kalici kilitlenme). `kapi_engeli()` bunu KODDA zorluyor: SMTP yoksa kapi
+      # kendini ACMAZ ve hata loglar.
+      #
+      # GERI ALMA (tek adim): bu satiri kaldir + docker compose up -d --no-deps
+      # backend. RESTART YETMEZ -- env degisikligi icin recreate sart.
+      - EPOSTA_DOGRULAMA_ZORUNLU=true
     restart: unless-stopped
     networks:
       - default
@@ -50,8 +118,13 @@ services:
     container_name: kiro2-redis
     # Host'a 6379 yayınla — native script/araçların localhost:6379 erişimi için.
     # (Eski kiro2_redis orphan'ı kaldırıldı; tek kanonik redis bu.)
+    # 127.0.0.1'e BAĞLI: 30 Tem 2026'da ölçüldü — "6379:6379" Docker'da
+    # 0.0.0.0 demek ve LAN'dan kimliksiz "PING" -> "+PONG" alınıyordu.
+    # Konteynerler birbirine docker ağı üzerinden konuşuyor
+    # (REDIS_URL=redis://kiro2-redis:6379/0), yayınlanan host portundan
+    # DEĞİL — bu yüzden kısıtlama uygulamayı etkilemez, yalnız LAN'ı keser.
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     command: >
       redis-server
       --appendonly yes
@@ -69,6 +142,60 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+
+  # 30 Tem 2026'da compose'a GERİ KONDU. Konteyner 2025-10-18'de yaratılmış ve
+  # o günden beri hiçbir compose dosyası tarafından yönetilmiyordu — ama kendi
+  # etiketleri hâlâ project=kiro2 / service=elasticsearch diyordu, yani compose
+  # onu kendi servisi sayıyor, sadece dosyadan silinmişti. Geri koymak ikisini
+  # birleştirir ve port bağlaması artık test edilebilir hâle gelir
+  # (backend/tests/unit/test_compose_port_binding.py).
+  #
+  # Aşağıdaki değerlerin TAMAMI çalışan konteynerden okundu, tahmin DEĞİL:
+  #   docker inspect turkiye_sinav_elasticsearch
+  # `bootstrap.memory_lock=true` + `ulimits.memlock=-1` birlikte zorunlu —
+  # ulimit olmadan ES açılmaz. İki ağ alias'ı da korunuyor: backend
+  # ELASTICSEARCH_URL=http://turkiye_sinav_elasticsearch:9200 kullanıyor.
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: turkiye_sinav_elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      # NOT: kimlik doğrulama AÇIK.
+      # xpack.security.enabled=true ile ağ üzerinden gelen isteklere şifre sorulur.
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    # 127.0.0.1: 30 Tem 2026 ölçümü — 0.0.0.0'dayken LAN'dan (192.168.8.2:9200)
+    # kimliksiz olarak cevap anahtarı çekilebiliyordu (64.270/64.270 doküman
+    # correct_answer taşıyor). Konteynerler birbirine docker ağı üzerinden
+    # konuştuğu için bu kısıtlama uygulamayı etkilemez.
+    ports:
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      turkiye_sinav_network:
+        aliases:
+          - turkiye_sinav_elasticsearch
+          - elasticsearch
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'curl -u elastic:${ELASTIC_PASSWORD:-Kiro2Elastic2026!} -s http://localhost:9200/_cluster/health | grep -vq ''"status":"red"''',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
   celery-worker:
     build:
       context: ./backend
@@ -82,6 +209,8 @@ services:
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -95,7 +224,17 @@ services:
       - default
       - turkiye_sinav_network
     healthcheck:
-      test: ["CMD", "celery", "-A", "celery_worker", "inspect", "ping", "--timeout", "5"]
+      test:
+        [
+          "CMD",
+          "celery",
+          "-A",
+          "celery_worker",
+          "inspect",
+          "ping",
+          "--timeout",
+          "5",
+        ]
       interval: 60s
       timeout: 20s
       start_period: 30s
@@ -114,6 +253,8 @@ services:
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -127,7 +268,11 @@ services:
       # Pings celery-beat scheduler liveness. Beat lacks built-in ping, so we
       # check that the heartbeat file (touched on each schedule tick) was
       # written within the last 5 minutes. See celery_worker.py beat schedule.
-      test: ["CMD-SHELL", "celery -A celery_worker inspect ping --timeout 5 || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "celery -A celery_worker inspect ping --timeout 5 || exit 1",
+        ]
       interval: 60s
       timeout: 20s
       start_period: 60s
@@ -143,6 +288,15 @@ services:
     container_name: kiro2-frontend
     ports:
       - "3000:3000"
+    networks:
+      default:
+        # SABIT IP: backend'in FORWARDED_ALLOW_IPS'i bu adresi gosteriyor.
+        # Dinamik atama kullanilamaz -- backend, frontend'den ONCE basliyor
+        # (asagidaki depends_on) ve acilista DNS ile cozmek YAPISAL OLARAK
+        # bos doner. Adres bilerek YUKSEK: Docker dusuk adresleri sirayla
+        # dagitir (26 Agu 2026 olcumu: mevcut 6 konteyner .2-.7), .255.10
+        # o araligin cok disinda.
+        ipv4_address: 172.25.255.10
     depends_on:
       backend:
         condition: service_healthy
@@ -161,9 +315,26 @@ volumes:
   redis-data:
     external: true
     name: kiro2_redis-data
+
+  # external + açık ad: bu volume 2025-10-18'de yaratıldı ve 64.270 dokümanlık
+  # arama index'ini tutuyor. `external: true` compose'un onu YENİDEN YARATMASINI
+  # veya `down -v` ile SİLMESİNİ engeller. Ad birebir mevcut volume'ün adı
+  # (etiketleri doğruladı: project=kiro2, volume=elasticsearch_data).
+  elasticsearch_data:
+    external: true
+    name: kiro2_elasticsearch_data
 networks:
   default:
     driver: bridge
+    # Subnet ACIKCA ilan ediliyor: frontend'e sabit IP atanabilmesi icin sart.
+    # Ilan edilmezse Docker rastgele bir blok secer ve statik adres her ag
+    # yeniden yaratildiginda kayar. 172.25.0.0/16 zaten bu yiginin kullandigi
+    # blok (26 Agu 2026 olcumu) ve host'taki diger aglarla CAKISMIYOR:
+    #   bridge 172.17 · kiro2-dev 172.18 · turkiye_sinav 172.19 ·
+    #   tohum-nexus 172.20 · openwebui 172.24
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
   turkiye_sinav_network:
     external: true
     name: kiro2_turkiye_sinav_network

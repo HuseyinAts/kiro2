@@ -15,7 +15,7 @@ for book in book_dirs:
     book_path = CROPS_DIR / book
     pngs = [f for f in os.listdir(str(book_path)) if f.endswith('.png')][:2]
     results.append(f'\n{book}: {len(pngs)} crop')
-    
+
     for png in pngs:
         img_path = book_path / png
         try:

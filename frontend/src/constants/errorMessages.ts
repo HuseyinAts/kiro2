@@ -53,6 +53,12 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   // Question errors
   QUESTION_NOT_FOUND: 'Soru bulunamadı.',
   NO_QUESTIONS_AVAILABLE: 'Uygun soru bulunamadı. Lütfen filtrelerinizi kontrol edin.',
+  // Kalite kapısı boş havuz (27 Tem 2026). NO_QUESTIONS_AVAILABLE'dan AYRI:
+  // orada sorun kullanıcının filtresi, burada içeriğin kendisi — "filtrelerinizi
+  // kontrol edin" demek kullanıcıyı düzeltemeyeceği bir şeye yönlendirir.
+  // Ürün kararı: kapı gevşetilmez, komşu konudan doldurulmaz, durum söylenir.
+  NO_VERIFIED_QUESTIONS:
+    'Bu konuda henüz doğrulanmış soru yok. İçerik ekibimiz üzerinde çalışıyor.',
 
   // Learning path errors
   LEARNING_PATH_NOT_FOUND: 'Öğrenme yolu bulunamadı.',

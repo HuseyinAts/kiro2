@@ -75,14 +75,21 @@ class LearningPathStudentProfile(Base):
 
     # Primary Key
     student_id = Column(String(100), primary_key=True, index=True)
-    user_id = Column(
-        String(100), ForeignKey("users.id"), nullable=True, index=True
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
+    user_id = Column(String(100), ForeignKey("users.id"), nullable=True, index=True)
 
     # Profile Info
     name = Column(String(200), nullable=False)
     grade = Column(String(20), nullable=False)  # "9", "10", "11", "12", "mezun"
-    exam_target = Column(String(50), nullable=False)  # "LGS", "YKS-TYT", "YKS-AYT-SAY", etc.
+    exam_target = Column(
+        String(50), nullable=False
+    )  # "LGS", "YKS-TYT", "YKS-AYT-SAY", etc.
 
     # Learning Preferences
     learning_style = Column(
@@ -91,6 +98,17 @@ class LearningPathStudentProfile(Base):
     knowledge_level = Column(
         String(50), nullable=False, default="beginner"
     )  # beginner, elementary, intermediate, advanced, expert
+
+    # ORM<->DB KAYMASI (olculdu 27 Agu 2026): bu kolon canli DB'de VARDI
+    # (boolean, NOT NULL, server_default YOK) ama modelde HIC TANIMLI DEGILDI.
+    # Kolonu olusturan bir alembic migration da yok -> alembic disinda eklenmis.
+    # Sonuc: ORM'in INSERT'i kolonu ATLIYOR, PG'nin doldurabilecegi bir default
+    # olmadigi icin her profil olusturma NotNullViolationError ile dusuyordu:
+    #   POST /api/v1/learning-path/create-profile -> HTTP 500  (GF10, GF24)
+    # Python tarafi default veriliyor; DB'ye server_default EKLENMIYOR (bu bir
+    # sema degisikligi olur ve ayri migration ister -- ayri kalem).
+    # Bekci: tests/integration/test_learning_path_profile_sema_paritesi.py
+    neuro_inclusive_mode = Column(Boolean, nullable=False, default=False)
     interests = Column(JSON, nullable=False, default=list)  # List[str]
     goals = Column(JSON, nullable=False, default=list)  # List[str]
     available_time = Column(Integer, nullable=False, default=60)  # Daily minutes
@@ -134,23 +152,31 @@ class LearningPathStudentProfile(Base):
 
     # Relationships
     learning_paths = relationship(
-        "LearningPath", back_populates="student", cascade="all, delete-orphan"
+        "LearningPath",
+        back_populates="student",
+        cascade="all, delete-orphan",
     )
     completion_statuses = relationship(
-        "TopicCompletion", back_populates="student", cascade="all, delete-orphan"
+        "TopicCompletion",
+        back_populates="student",
+        cascade="all, delete-orphan",
     )
     quiz_submissions = relationship(
-        "QuizSubmission", back_populates="student", cascade="all, delete-orphan"
+        "QuizSubmission",
+        back_populates="student",
+        cascade="all, delete-orphan",
     )
     progress_updates = relationship(
-        "TopicProgress", back_populates="student", cascade="all, delete-orphan"
+        "TopicProgress",
+        back_populates="student",
+        cascade="all, delete-orphan",
     )
 
     # Table configuration
     __table_args__ = (
         Index("idx_student_grade", "grade"),
         Index("idx_student_exam_target", "exam_target"),
-        Index("idx_student_learning_style", "learning_style"),
+        Index("idx_lp_student_learning_style", "learning_style"),
         Index("idx_student_user_id", "user_id"),
         Index("idx_student_last_activity", "last_activity_at"),
         {"extend_existing": True},
@@ -171,23 +197,35 @@ class LearningPathStudentProfile(Base):
             ValueError: If legacy profile type is unknown
         """
         # Handle StudentProfile (from user_models.py)
-        if hasattr(legacy_profile, 'user_id') and hasattr(legacy_profile, 'grade_level'):
+        if hasattr(legacy_profile, "user_id") and hasattr(
+            legacy_profile, "grade_level"
+        ):
             return cls(
                 student_id=legacy_profile.id,
                 user_id=legacy_profile.user_id,
-                name=f"{legacy_profile.user.first_name} {legacy_profile.user.last_name}" if hasattr(legacy_profile, 'user') else "",
+                name=f"{legacy_profile.user.first_name} {legacy_profile.user.last_name}"
+                if hasattr(legacy_profile, "user")
+                else "",
                 grade=str(legacy_profile.grade_level),
                 exam_target=legacy_profile.hedef_sinav or "YKS",
-                learning_style=legacy_profile.learning_style.value if legacy_profile.learning_style else "mixed",
-                available_time=legacy_profile.study_hours_per_day * 60 if legacy_profile.study_hours_per_day else 60,
+                learning_style=legacy_profile.learning_style.value
+                if legacy_profile.learning_style
+                else "mixed",
+                available_time=legacy_profile.study_hours_per_day * 60
+                if legacy_profile.study_hours_per_day
+                else 60,
                 target_university=legacy_profile.target_university,
                 target_department=legacy_profile.target_department,
-                total_study_time_minutes=legacy_profile.total_study_hours * 60 if legacy_profile.total_study_hours else 0,
+                total_study_time_minutes=legacy_profile.total_study_hours * 60
+                if legacy_profile.total_study_hours
+                else 0,
                 created_at=legacy_profile.created_at,
                 updated_at=legacy_profile.updated_at,
             )
         # Handle StudentLearningProfile (from student_learning_profile.py)
-        if hasattr(legacy_profile, 'vark_visual') and hasattr(legacy_profile, 'student_id'):
+        if hasattr(legacy_profile, "vark_visual") and hasattr(
+            legacy_profile, "student_id"
+        ):
             return cls(
                 student_id=legacy_profile.id,
                 user_id=legacy_profile.student_id,
@@ -216,6 +254,13 @@ class LearningPath(Base):
 
     # Primary Key
     path_id = Column(String(100), primary_key=True, index=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(
         String(100),
         ForeignKey("learning_path_student_profiles.student_id"),
@@ -256,7 +301,9 @@ class LearningPath(Base):
     )
 
     # Relationships
-    student = relationship("LearningPathStudentProfile", back_populates="learning_paths")
+    student = relationship(
+        "LearningPathStudentProfile", back_populates="learning_paths"
+    )
 
     # Indexes
     __table_args__ = (
@@ -276,6 +323,13 @@ class TopicCompletion(Base):
 
     # Composite Primary Key
     id = Column(Integer, primary_key=True, autoincrement=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(
         String(100),
         ForeignKey("learning_path_student_profiles.student_id"),
@@ -295,7 +349,10 @@ class TopicCompletion(Base):
     )
 
     # Relationships
-    student = relationship("LearningPathStudentProfile", back_populates="completion_statuses")
+    student = relationship(
+        "LearningPathStudentProfile",
+        back_populates="completion_statuses",
+    )
 
     # Indexes
     __table_args__ = (
@@ -310,6 +367,13 @@ class TopicProgress(Base):
 
     # Primary Key
     id = Column(Integer, primary_key=True, autoincrement=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(
         String(100),
         ForeignKey("learning_path_student_profiles.student_id"),
@@ -330,7 +394,9 @@ class TopicProgress(Base):
     )
 
     # Relationships
-    student = relationship("LearningPathStudentProfile", back_populates="progress_updates")
+    student = relationship(
+        "LearningPathStudentProfile", back_populates="progress_updates"
+    )
 
     # Indexes
     __table_args__ = (
@@ -348,6 +414,13 @@ class QuizSubmission(Base):
 
     # Primary Key
     id = Column(Integer, primary_key=True, autoincrement=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(
         String(100),
         ForeignKey("learning_path_student_profiles.student_id"),
@@ -373,7 +446,9 @@ class QuizSubmission(Base):
     submitted_at = Column(DateTime, nullable=False, default=datetime.now)
 
     # Relationships
-    student = relationship("LearningPathStudentProfile", back_populates="quiz_submissions")
+    student = relationship(
+        "LearningPathStudentProfile", back_populates="quiz_submissions"
+    )
 
     # Indexes
     __table_args__ = (
@@ -417,12 +492,12 @@ class Quiz(Base):
 
     # Relationships
     questions = relationship(
-        "QuizQuestion", back_populates="quiz", cascade="all, delete-orphan"
+        "QuizQuestion",
+        back_populates="quiz",
+        cascade="all, delete-orphan",
     )
 
-    __table_args__ = (
-        Index("idx_quiz_subject_topic", "subject", "topic"),
-    )
+    __table_args__ = (Index("idx_quiz_subject_topic", "subject", "topic"),)
 
 
 class QuizQuestion(Base):
@@ -442,13 +517,13 @@ class QuizQuestion(Base):
         String(100),
         ForeignKey("quizzes.id", ondelete="CASCADE"),
         nullable=False,
-        index=True
+        index=True,
     )
     question_id = Column(
         String,
         ForeignKey("question_bank.id", ondelete="CASCADE"),
         nullable=False,
-        index=True
+        index=True,
     )
 
     # Question Settings for this Quiz
@@ -458,9 +533,7 @@ class QuizQuestion(Base):
     # Relationships
     quiz = relationship("Quiz", back_populates="questions")
 
-    __table_args__ = (
-        Index("idx_quiz_question_order", "quiz_id", "order_number"),
-    )
+    __table_args__ = (Index("idx_quiz_question_order", "quiz_id", "order_number"),)
 
 
 class FallbackVideo(Base):
@@ -524,6 +597,13 @@ class StudySession(Base):
     __tablename__ = "study_sessions"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id = Column(
         String(100),
         ForeignKey("learning_path_student_profiles.student_id"),
@@ -542,6 +622,4 @@ class StudySession(Base):
     correct_count = Column(Integer, default=0)
 
     # Indexes
-    __table_args__ = (
-        Index("idx_session_student_started", "student_id", "started_at"),
-    )
+    __table_args__ = (Index("idx_session_student_started", "student_id", "started_at"),)

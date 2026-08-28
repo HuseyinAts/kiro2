@@ -22,18 +22,21 @@ from enum import Enum
 
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
 
 try:
     import chromadb
+
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
 
 try:
     from sentence_transformers import SentenceTransformer
+
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
@@ -46,6 +49,7 @@ logger = logging.getLogger(__name__)
 
 class InteractionType(str, Enum):
     """Kullanıcı etkileşim tipleri."""
+
     VIEW = "view"
     LIKE = "like"
     COMPLETE = "complete"
@@ -70,6 +74,7 @@ INTERACTION_WEIGHTS: dict[InteractionType, float] = {
 @dataclass
 class UserInteraction:
     """Kullanıcı etkileşim kaydı."""
+
     user_id: str
     content_id: str
     interaction_type: InteractionType
@@ -81,6 +86,7 @@ class UserInteraction:
 @dataclass
 class UserProfile:
     """Kullanıcı profil embedding'i."""
+
     user_id: str
     embedding: list[float]
     interaction_count: int
@@ -93,16 +99,20 @@ class UserProfile:
 @dataclass
 class RecommendationResult:
     """Öneri sonucu."""
+
     content_id: str
     content_preview: str
     score: float
     metadata: dict
-    recommendation_type: str  # "content_based", "collaborative", "popularity", "diversity"
+    recommendation_type: (
+        str  # "content_based", "collaborative", "popularity", "diversity"
+    )
 
 
 @dataclass
 class RecommendationResponse:
     """Öneri response'u."""
+
     user_id: str
     recommendations: list[RecommendationResult]
     is_cold_start: bool
@@ -133,7 +143,7 @@ class ContentRecommendationService:
     def __init__(
         self,
         persist_directory: str | None = None,
-        collection_name: str = "kiro2_content"
+        collection_name: str = "kiro2_content",
     ):
         """
         ContentRecommendationService başlat.
@@ -156,7 +166,9 @@ class ContentRecommendationService:
         # In-memory caches
         self._user_profiles: dict[str, UserProfile] = {}
         self._interactions: list[UserInteraction] = []
-        self._click_tracking: dict[str, dict] = {}  # content_id -> {clicks, impressions}
+        self._click_tracking: dict[
+            str, dict
+        ] = {}  # content_id -> {clicks, impressions}
 
     async def initialize(self) -> bool:
         """Servisi başlat."""
@@ -173,8 +185,7 @@ class ContentRecommendationService:
             )
 
             self._collection = self._client.get_or_create_collection(
-                name=self.collection_name,
-                metadata={"hnsw:space": "cosine"}
+                name=self.collection_name, metadata={"hnsw:space": "cosine"}
             )
 
             if EMBEDDINGS_AVAILABLE:
@@ -191,8 +202,14 @@ class ContentRecommendationService:
 
     def _embed_text(self, text: str) -> list[float]:
         """Metin için embedding oluştur."""
+        # 2026 Ultra Expert NLP Lens Fix: Normalize Turkish text before embedding
+        from core.turkish_nlp_utils import normalize_tr
+
+        text = normalize_tr(text)
+
         if self._embedding_model is None:
             import hashlib
+
             hash_bytes = hashlib.sha256(text.encode()).digest()
             return [float(b) / 255.0 for b in hash_bytes[:128]]
 
@@ -237,7 +254,10 @@ class ContentRecommendationService:
 
         if interaction.interaction_type == InteractionType.VIEW:
             self._click_tracking[content_id]["impressions"] += 1
-        elif interaction.interaction_type in [InteractionType.LIKE, InteractionType.COMPLETE]:
+        elif interaction.interaction_type in [
+            InteractionType.LIKE,
+            InteractionType.COMPLETE,
+        ]:
             self._click_tracking[content_id]["clicks"] += 1
 
     async def _update_user_profile(self, user_id: str) -> UserProfile:
@@ -258,14 +278,11 @@ class ContentRecommendationService:
                 embedding=[0.0] * 768,
                 interaction_count=0,
                 last_updated=datetime.now(),
-                is_cold_start=True
+                is_cold_start=True,
             )
 
         # Kullanıcının etkileşimlerini al
-        user_interactions = [
-            i for i in self._interactions
-            if i.user_id == user_id
-        ]
+        user_interactions = [i for i in self._interactions if i.user_id == user_id]
 
         interaction_count = len(user_interactions)
         is_cold_start = interaction_count < self.COLD_START_THRESHOLD
@@ -276,7 +293,7 @@ class ContentRecommendationService:
                 embedding=[0.0] * EmbeddingConfig.get_model_dimension(),
                 interaction_count=0,
                 last_updated=datetime.now(),
-                is_cold_start=True
+                is_cold_start=True,
             )
             self._user_profiles[user_id] = profile
             return profile
@@ -290,8 +307,7 @@ class ContentRecommendationService:
             try:
                 # İçerik embedding'ini al
                 content = self._collection.get(
-                    ids=[interaction.content_id],
-                    include=["embeddings", "metadatas"]
+                    ids=[interaction.content_id], include=["embeddings", "metadatas"]
                 )
 
                 if content and content.get("embeddings"):
@@ -321,7 +337,9 @@ class ContentRecommendationService:
             weights_array = np.array(weights)
             weights_array = weights_array / weights_array.sum()  # Normalize
 
-            profile_embedding = np.average(embeddings_array, axis=0, weights=weights_array)
+            profile_embedding = np.average(
+                embeddings_array, axis=0, weights=weights_array
+            )
             profile_embedding = profile_embedding.tolist()
         elif weighted_embeddings:
             # Fallback: simple average
@@ -335,6 +353,7 @@ class ContentRecommendationService:
 
         # Preferred subjects
         from collections import Counter
+
         subject_counts = Counter(subjects)
         preferred_subjects = [s for s, _ in subject_counts.most_common(5)]
 
@@ -344,7 +363,7 @@ class ContentRecommendationService:
             interaction_count=interaction_count,
             last_updated=datetime.now(),
             preferred_subjects=preferred_subjects,
-            is_cold_start=is_cold_start
+            is_cold_start=is_cold_start,
         )
 
         self._user_profiles[user_id] = profile
@@ -355,7 +374,7 @@ class ContentRecommendationService:
         user_id: str,
         limit: int = 10,
         subject_filter: str | None = None,
-        ensure_diversity: bool = True
+        ensure_diversity: bool = True,
     ) -> RecommendationResponse:
         """
         Kullanıcı için içerik önerileri getir.
@@ -377,7 +396,7 @@ class ContentRecommendationService:
                 recommendations=[],
                 is_cold_start=True,
                 strategy_used="error",
-                diversity_score=0.0
+                diversity_score=0.0,
             )
 
         # User profile al veya oluştur
@@ -391,7 +410,9 @@ class ContentRecommendationService:
 
         # Hybrid recommendations (REQ-4.3)
         recommendations = await self._get_hybrid_recommendations(
-            profile, limit * 2, subject_filter  # Diversity için fazla al
+            profile,
+            limit * 2,
+            subject_filter,  # Diversity için fazla al
         )
 
         # Diversity sağla (REQ-4.5)
@@ -408,14 +429,11 @@ class ContentRecommendationService:
             recommendations=recommendations,
             is_cold_start=False,
             strategy_used="hybrid",
-            diversity_score=diversity_score
+            diversity_score=diversity_score,
         )
 
     async def _get_cold_start_recommendations(
-        self,
-        user_id: str,
-        limit: int,
-        subject_filter: str | None
+        self, user_id: str, limit: int, subject_filter: str | None
     ) -> RecommendationResponse:
         """
         Cold start kullanıcılar için popularity-based öneriler.
@@ -435,9 +453,7 @@ class ContentRecommendationService:
             where_clause = {"subject": subject_filter} if subject_filter else None
 
             results = self._collection.get(
-                where=where_clause,
-                include=["documents", "metadatas"],
-                limit=limit * 3
+                where=where_clause, include=["documents", "metadatas"], limit=limit * 3
             )
 
             if not results or not results.get("ids"):
@@ -446,7 +462,7 @@ class ContentRecommendationService:
                     recommendations=[],
                     is_cold_start=True,
                     strategy_used="cold_start_empty",
-                    diversity_score=0.0
+                    diversity_score=0.0,
                 )
 
             # Popularity'ye göre sırala
@@ -460,13 +476,15 @@ class ContentRecommendationService:
                 like_count = metadata.get("like_count", 0)
                 popularity = view_count + like_count * 2
 
-                recommendations.append(RecommendationResult(
-                    content_id=doc_id,
-                    content_preview=doc[:150] + "..." if len(doc) > 150 else doc,
-                    score=popularity,
-                    metadata=metadata,
-                    recommendation_type="popularity"
-                ))
+                recommendations.append(
+                    RecommendationResult(
+                        content_id=doc_id,
+                        content_preview=doc[:150] + "..." if len(doc) > 150 else doc,
+                        score=popularity,
+                        metadata=metadata,
+                        recommendation_type="popularity",
+                    )
+                )
 
             # Popularity'ye göre sırala ve limit uygula
             recommendations.sort(key=lambda x: x.score, reverse=True)
@@ -480,7 +498,7 @@ class ContentRecommendationService:
                 recommendations=recommendations,
                 is_cold_start=True,
                 strategy_used="cold_start_popularity",
-                diversity_score=self._calculate_diversity_score(recommendations)
+                diversity_score=self._calculate_diversity_score(recommendations),
             )
 
         except Exception as e:
@@ -490,14 +508,11 @@ class ContentRecommendationService:
                 recommendations=[],
                 is_cold_start=True,
                 strategy_used="error",
-                diversity_score=0.0
+                diversity_score=0.0,
             )
 
     async def _get_hybrid_recommendations(
-        self,
-        profile: UserProfile,
-        limit: int,
-        subject_filter: str | None
+        self, profile: UserProfile, limit: int, subject_filter: str | None
     ) -> list[RecommendationResult]:
         """
         Hybrid filtering ile öneriler.
@@ -520,7 +535,7 @@ class ContentRecommendationService:
                 query_embeddings=[profile.embedding],
                 n_results=limit,
                 where=where_clause,
-                include=["documents", "metadatas", "distances"]
+                include=["documents", "metadatas", "distances"],
             )
 
             recommendations = []
@@ -528,39 +543,50 @@ class ContentRecommendationService:
                 for i, doc_id in enumerate(results["ids"][0]):
                     # Zaten etkileşimde bulunulan içerikleri atla
                     user_content_ids = {
-                        inter.content_id for inter in self._interactions
+                        inter.content_id
+                        for inter in self._interactions
                         if inter.user_id == profile.user_id
                     }
                     if doc_id in user_content_ids:
                         continue
 
-                    metadata = results["metadatas"][0][i] if results.get("metadatas") else {}
+                    metadata = (
+                        results["metadatas"][0][i] if results.get("metadatas") else {}
+                    )
                     doc = results["documents"][0][i] if results.get("documents") else ""
-                    distance = results["distances"][0][i] if results.get("distances") else 1.0
+                    distance = (
+                        results["distances"][0][i] if results.get("distances") else 1.0
+                    )
 
                     # Content-based score
                     content_score = 1 - distance
 
                     # Collaborative score (simplified: similar users)
-                    collab_score = self._get_collaborative_score(doc_id, profile.user_id)
+                    collab_score = self._get_collaborative_score(
+                        doc_id, profile.user_id
+                    )
 
                     # Popularity score
                     popularity_score = self._get_popularity_score(doc_id)
 
                     # Hybrid score
                     hybrid_score = (
-                        self.CONTENT_WEIGHT * content_score +
-                        self.COLLABORATIVE_WEIGHT * collab_score +
-                        self.POPULARITY_WEIGHT * popularity_score
+                        self.CONTENT_WEIGHT * content_score
+                        + self.COLLABORATIVE_WEIGHT * collab_score
+                        + self.POPULARITY_WEIGHT * popularity_score
                     )
 
-                    recommendations.append(RecommendationResult(
-                        content_id=doc_id,
-                        content_preview=doc[:150] + "..." if len(doc) > 150 else doc,
-                        score=round(hybrid_score, 4),
-                        metadata=metadata,
-                        recommendation_type="hybrid"
-                    ))
+                    recommendations.append(
+                        RecommendationResult(
+                            content_id=doc_id,
+                            content_preview=doc[:150] + "..."
+                            if len(doc) > 150
+                            else doc,
+                            score=round(hybrid_score, 4),
+                            metadata=metadata,
+                            recommendation_type="hybrid",
+                        )
+                    )
 
             # Score'a göre sırala
             recommendations.sort(key=lambda x: x.score, reverse=True)
@@ -580,7 +606,10 @@ class ContentRecommendationService:
         other_users = set()
         for inter in self._interactions:
             if inter.content_id == content_id and inter.user_id != user_id:
-                if inter.interaction_type in [InteractionType.LIKE, InteractionType.COMPLETE]:
+                if inter.interaction_type in [
+                    InteractionType.LIKE,
+                    InteractionType.COMPLETE,
+                ]:
                     other_users.add(inter.user_id)
 
         # Normalize (0-1)
@@ -598,9 +627,7 @@ class ContentRecommendationService:
         return min(ctr, 1.0)
 
     def _ensure_diversity(
-        self,
-        recommendations: list[RecommendationResult],
-        limit: int
+        self, recommendations: list[RecommendationResult], limit: int
     ) -> list[RecommendationResult]:
         """
         Öneri çeşitliliğini sağla.
@@ -646,8 +673,7 @@ class ContentRecommendationService:
         return diverse_recs
 
     def _calculate_diversity_score(
-        self,
-        recommendations: list[RecommendationResult]
+        self, recommendations: list[RecommendationResult]
     ) -> float:
         """Çeşitlilik skorunu hesapla."""
         if not recommendations:
@@ -681,7 +707,7 @@ class ContentRecommendationService:
                 "total_content": 0,
                 "average_ctr": 0.0,
                 "top_performing": [],
-                "bottom_performing": []
+                "bottom_performing": [],
             }
 
         ctr_data = []
@@ -690,12 +716,14 @@ class ContentRecommendationService:
             clicks = data["clicks"]
             ctr = clicks / impressions
 
-            ctr_data.append({
-                "content_id": content_id,
-                "impressions": impressions,
-                "clicks": clicks,
-                "ctr": round(ctr * 100, 2)  # Percentage
-            })
+            ctr_data.append(
+                {
+                    "content_id": content_id,
+                    "impressions": impressions,
+                    "clicks": clicks,
+                    "ctr": round(ctr * 100, 2),  # Percentage
+                }
+            )
 
         # Sort by CTR
         ctr_data.sort(key=lambda x: x["ctr"], reverse=True)
@@ -706,7 +734,7 @@ class ContentRecommendationService:
             "total_content": len(ctr_data),
             "average_ctr": round(avg_ctr, 2),
             "top_performing": ctr_data[:5],
-            "bottom_performing": ctr_data[-5:] if len(ctr_data) > 5 else []
+            "bottom_performing": ctr_data[-5:] if len(ctr_data) > 5 else [],
         }
 
 
@@ -715,8 +743,7 @@ _recommendation_service: ContentRecommendationService | None = None
 
 
 def get_recommendation_service(
-    persist_directory: str = "./vector_db",
-    collection_name: str = "kiro2_content"
+    persist_directory: str = "./vector_db", collection_name: str = "kiro2_content"
 ) -> ContentRecommendationService:
     """
     Singleton ContentRecommendationService instance döndür.
@@ -731,7 +758,6 @@ def get_recommendation_service(
     global _recommendation_service
     if _recommendation_service is None:
         _recommendation_service = ContentRecommendationService(
-            persist_directory=persist_directory,
-            collection_name=collection_name
+            persist_directory=persist_directory, collection_name=collection_name
         )
     return _recommendation_service

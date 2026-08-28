@@ -306,7 +306,7 @@ class TestRealAgentsModules:
                     asyncio.run(agent.initialize())
                 else:
                     agent.initialize()
-            except:
+            except Exception:
                 pass  # Initialize başarısız olsa da test et
 
         if hasattr(agent, "get_study_suggestions"):
@@ -315,7 +315,7 @@ class TestRealAgentsModules:
                     subject="matematik", difficulty="orta", student_level="lise"
                 )
                 assert suggestions is not None
-            except:
+            except Exception:
                 pass
 
     def test_real_learning_path_agent_usage(self):
@@ -345,7 +345,7 @@ class TestRealAgentsModules:
                     learning_goals=["TYT hazırlık", "AYT matematik"],
                 )
                 assert path is not None
-            except:
+            except Exception:
                 pass
 
 
@@ -367,7 +367,7 @@ class TestRealAlgorithmsModules:
                     asyncio.run(engine.initialize())
                 else:
                     engine.initialize()
-            except:
+            except Exception:
                 pass
 
         # Available metodları test et
@@ -410,7 +410,7 @@ class TestRealAlgorithmsModules:
 
                     # Result test et
                     assert result is not None or result == {}
-                except:
+                except Exception:
                     pass  # Method çağrısı başarısız olsa da coverage sayılır
 
     def test_real_recommendation_engine_usage(self):
@@ -433,7 +433,7 @@ class TestRealAlgorithmsModules:
                     },
                 )
                 assert recommendations is not None
-            except:
+            except Exception:
                 pass
 
         if hasattr(engine, "train_model"):
@@ -444,7 +444,7 @@ class TestRealAlgorithmsModules:
                         {"user_id": "u2", "content_id": "c2", "rating": 3.8},
                     ]
                 )
-            except:
+            except Exception:
                 pass
 
     def test_real_personalized_content_recommender_usage(self):
@@ -492,7 +492,7 @@ class TestRealAlgorithmsModules:
                 )
                 assert recommendations is not None
                 assert isinstance(recommendations, (list, dict))
-            except:
+            except Exception:
                 pass
 
     def test_real_hybrid_learning_style_detector_usage(self):
@@ -525,14 +525,14 @@ class TestRealAlgorithmsModules:
                 learning_style = detector.detect_learning_style(user_data)
                 assert learning_style is not None
                 assert isinstance(learning_style, (dict, str))
-            except:
+            except Exception:
                 pass
 
         if hasattr(detector, "analyze_behavior_patterns"):
             try:
                 patterns = detector.analyze_behavior_patterns(user_data["interactions"])
                 assert patterns is not None
-            except:
+            except Exception:
                 pass
 
 
@@ -569,7 +569,7 @@ class TestRealServicesModules:
                     mock_db.return_value = MagicMock()
                     user = service.get_user_by_username("test_user")
                     # Method çağrıldı, coverage arttı
-            except:
+            except Exception:
                 pass
 
     def test_real_content_management_service_usage(self):
@@ -585,7 +585,7 @@ class TestRealServicesModules:
             try:
                 content = service.get_content("test_content_id")
                 assert content is not None or content is None
-            except:
+            except Exception:
                 pass
 
         if hasattr(service, "create_content"):
@@ -598,7 +598,7 @@ class TestRealServicesModules:
                 }
                 result = service.create_content(content_data)
                 assert result is not None or result is None
-            except:
+            except Exception:
                 pass
 
 
@@ -690,7 +690,7 @@ class TestRealIntegrationsModules:
                         query="matematik dersi", max_results=5
                     )
                     assert results is not None
-            except:
+            except Exception:
                 pass
 
     def test_real_wikipedia_service_usage(self):
@@ -722,7 +722,7 @@ class TestRealIntegrationsModules:
 
                     results = service.search("matematik")
                     assert results is not None
-            except:
+            except Exception:
                 pass
 
 

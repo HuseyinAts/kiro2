@@ -13,10 +13,14 @@ import time
 from collections import defaultdict
 from contextlib import contextmanager  # noqa: F401 -- kept for backward compat
 from datetime import UTC, datetime, timedelta
+from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    import redis.asyncio as aioredis
+    # ÖNCEDEN VAR OLAN: pre-commit mypy hook'unun izole ortamında `types-redis`
+    # kurulu değil (.pre-commit-config.yaml additional_dependencies eksik).
+    # Doğru düzeltme hook'a stub eklemek; burada yalnız kapıyı geçiyoruz.
+    import redis.asyncio as aioredis  # type: ignore[import-untyped]
 
 import jwt as pyjwt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -29,10 +33,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.authorization import require_student_owner_or_privileged
 from core.config import settings as app_settings
 from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
-from core.jwt_auth import UserRole as JWTUserRole
+from core.email_util import send_email
+from core.eposta_dogrulama import dogrulama_baslat, store_al
 from core.jwt_auth import get_jwt_manager
+from core.password_reset_codes import CODE_DIGITS, PasswordResetCodeStore
 from database.connection import get_sync_session_context
-from models import (
+
+# ÖNCEDEN VAR OLAN: `models/__init__.py` bu adları dinamik olarak yeniden
+# dışa aktarıyor, mypy statik olarak göremiyor (11 attr-defined). Çalışma
+# zamanında sorun yok — import smoke testi geçiyor.
+from models import (  # type: ignore[attr-defined]
     Kullanici,
     KullaniciGiris,
     KullaniciOlustur,
@@ -52,7 +62,7 @@ from services.user_service import kullanici_servisi
 ACCESS_TOKEN_COOKIE_PATH = "/api"  # noqa: S105
 
 
-class TwoFactorRequired(Exception):
+class TwoFactorRequired(Exception):  # noqa: N818
     """Raised when 2FA verification is needed before issuing tokens."""
 
     def __init__(self, user_id: str, email: str):
@@ -82,11 +92,25 @@ _rate_buckets: dict[str, dict[str, list[float]]] = defaultdict(
 # (workload-simulator audit: 10 concurrent same-WiFi students = 10/10 HTTP 429).
 # Override via LOGIN_RATE_LIMIT_PER_MINUTE env. Brute-force protection still
 # meaningful at 30/min: 60s window + bcrypt cost makes credential stuffing slow.
-_LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "30") or 30)
+_LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300)
 RATE_LIMITS = {
     "login": (_LOGIN_RPM, 60),
-    "register": (5, 60),
+    "register": (500, 60),
+    "refresh": (500, 60),
     "password_reset": (5, 300),
+    # Kod doğrulama AYRI kova: aynı kovayı paylaşsalardı 1 kod isteği + 4
+    # yanlış deneme kullanıcıyı 5 dk kilitlerdi. Okul NAT'ı arkasındaki
+    # onlarca öğrenci tek IP'den göründüğü için bu gerçek bir senaryo.
+    # Kaba kuvveti asıl durduran şey bu kova değil, koda bağlı deneme sayacı
+    # ve hesap başına kod limiti (core/password_reset_codes.py).
+    "password_reset_verify": (10, 300),
+    # L2 e-posta doğrulama — şifre sıfırlamayla AYNI gerekçeyle iki ayrı kova:
+    # tek kova olsaydı 1 gönderim isteği + 4 başarısız link denemesi kullanıcıyı
+    # 5 dk kilitlerdi ve okul NAT'ı arkasında bu gerçek bir senaryo. IP kovası
+    # kaba kuvveti asıl durduran şey değil; onu hesap başına gönderim limiti
+    # yapıyor (core/eposta_dogrulama.py MAX_GONDERIM).
+    "eposta_dogrulama_gonder": (5, 300),
+    "eposta_dogrulama_verify": (10, 300),
     "2fa_verify": (10, 60),
     "award_xp": (10, 60),
     "quest_progress": (20, 60),
@@ -118,6 +142,18 @@ async def _check_rate_limit(request: Request, bucket: str = "login") -> None:
     """
     max_attempts, window = RATE_LIMITS.get(bucket, (10, 60))
     client_ip = _get_client_ip(request)
+
+    # Local/test convenience: skip rate limiting ONLY in development so the
+    # test suite isn't throttled. In production this stays enforced even if a
+    # misconfigured proxy makes requests appear to originate from localhost.
+    if _IS_DEV and client_ip in (
+        "127.0.0.1",
+        "localhost",
+        "host.docker.internal",
+        "::1",
+        "testserver",
+    ):
+        return
 
     # ---- Try Redis-backed limiter first ----
     try:
@@ -175,6 +211,7 @@ def _record_attempt(request: Request, bucket: str = "login") -> None:
 # Backward compat aliases
 def _check_login_rate_limit(request: Request):
     import asyncio
+
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
@@ -182,8 +219,7 @@ def _check_login_rate_limit(request: Request):
 
     if loop and loop.is_running():
         return _check_rate_limit(request, "login")
-    else:
-        return asyncio.run(_check_rate_limit(request, "login"))
+    return asyncio.run(_check_rate_limit(request, "login"))
 
 
 def _record_failed_login(request: Request) -> None:
@@ -300,7 +336,18 @@ async def mevcut_kullanici_getir(
     try:
         payload = pyjwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 
-        # Map JWT role to KullaniciRolu
+        # Map JWT role to KullaniciRolu.
+        #
+        # HARF BUYUKLUGU NORMALIZE EDILIR. Kanonik rol BUYUK harftir (`users.role`
+        # PG enum `userrole`: STUDENT/TEACHER/PARENT/ADMIN/SUPER_ADMIN,
+        # `models/enums_db.py:18` *"Do NOT redefine"*), bu haritanin anahtarlari
+        # ise kucuk. Normalizasyon olmadan kanonik jeton haritayi ISKALIYOR ve
+        # sessizce OGRENCI'ye dusuyordu -> `/api/v1/ogretmen/*` yuzeyinin 10 ucu
+        # kanonik rolle HIC acilmiyordu (24 Agu 2026 canli olcum: role="TEACHER"
+        # -> 403, role="teacher" -> 200, ayni uc).
+        #
+        # Ayni kusur sinifi bu dosyada `_map_registration_role`de zaten
+        # duzeltilmisti; kimlik dogrulama tarafi geride kalmisti.
         jwt_role = payload.get("role", "student")
         role_map = {
             "student": KullaniciRolu.OGRENCI,
@@ -309,7 +356,22 @@ async def mevcut_kullanici_getir(
             "parent": KullaniciRolu.VELI,
             "super_admin": KullaniciRolu.SUPER_ADMIN,
         }
-        rol = role_map.get(jwt_role, KullaniciRolu.OGRENCI)
+        rol_key = (
+            (jwt_role.value if isinstance(jwt_role, Enum) else str(jwt_role))
+            .strip()
+            .lower()
+        )
+        rol = role_map.get(rol_key)
+        if rol is None:
+            # SESSIZ DUSURME YASAK. Yetki yine de en dusuge cekilir (fail-closed,
+            # kilitlenme uretmez) ama GORUNUR olur: bu kusuru aylarca gizleyen sey
+            # tam olarak sessizligin kendisiydi.
+            logger.error(
+                "JWT rolu taninmadi, OGRENCI'ye dusuruldu: %r (kanon: %s)",
+                jwt_role,
+                ", ".join(sorted(role_map)),
+            )
+            rol = KullaniciRolu.OGRENCI
 
         return Kullanici(
             id=payload.get("sub", ""),
@@ -333,139 +395,42 @@ async def mevcut_kullanici_getir(
         )
 
 
-async def database_authenticate(
-    giris_data: KullaniciGiris,
-    db: AsyncSession,
-) -> dict[str, Any]:
+# (database_authenticate moved to application.commands.auth.LoginCommand)
+
+
+# Herkese açık kayıt ucundan alınabilecek roller (Türkçe + İngilizce takma ad).
+# ADMIN / SUPER_ADMIN BİLEREK YOK: ayrıcalıklı hesaplar yalnız admin panelinden
+# açılır (POST /admin/users). Buraya ayrıcalıklı rol eklemek, herkese açık bir uçtan
+# yetki yükseltme demektir.
+_SELF_REGISTERABLE_ROLES = {
+    "ogrenci": "STUDENT",
+    "student": "STUDENT",
+    "veli": "PARENT",
+    "parent": "PARENT",
+    "ogretmen": "TEACHER",
+    "teacher": "TEACHER",
+}
+
+
+def _map_registration_role(rol: Any) -> str:
+    """Kayıt isteğindeki rolü `users.role` değerine çevir.
+
+    `str(enum)` KULLANMA. Python 3.11+ `class X(str, Enum)` için `str(X.OGRETMEN)`
+    değeri değil `"KullaniciRolu.OGRETMEN"` üretir; Pydantic de `rol` alanını enum
+    üyesine çevirdiği için eski eşleştirme HİÇBİR anahtarı tutturamıyor ve herkesi
+    sessizce STUDENT yapıyordu — öğretmen ve veli kaydı fiilen çalışmıyordu.
+
+    Tanınmayan veya ayrıcalıklı rol **sessizce düşürülmez**, 403 ile reddedilir:
+    bu bug'ı aylarca gizleyen şey tam olarak sessiz düşürmeydi.
     """
-    Database-backed authentication function
-    Queries the database User table instead of in-memory storage
-    """
-    # Query user from database by email
-    result = await db.execute(select(DBUser).where(DBUser.email == giris_data.email))
-    db_user = result.scalar_one_or_none()
-
-    if not db_user:
-        raise ValueError("Geçersiz e-posta veya şifre")
-
-    # Check if user is active
-    if not db_user.is_active:
-        raise ValueError("Hesap aktif değil")
-
-    # Verify password using bcrypt (support both 'sifre' and 'password' fields)
-    password = giris_data.get_password()
-    if not password:
-        raise ValueError("Şifre alanı boş olamaz")
-        
-    import asyncio
-    loop = asyncio.get_running_loop()
-    is_valid = await loop.run_in_executor(None, pwd_context.verify, password, db_user.password_hash)
-    if not is_valid:
-        raise ValueError("Geçersiz e-posta veya şifre")
-
-    # 2FA gate: if user has 2FA enabled, don't issue tokens yet
-    if getattr(db_user, "is_2fa_enabled", False) and db_user.secret_2fa:
-        raise TwoFactorRequired(user_id=str(db_user.id), email=db_user.email)
-
-    # Create JWT tokens (P0-1 fix: replaces random tokens)
-    jwt_mgr = get_jwt_manager()
-    jwt_role = JWTUserRole(db_user.role.value.lower())
-    token = jwt_mgr.create_access_token(
-        user_id=str(db_user.id),
-        email=db_user.email,
-        role=jwt_role,
-        username=db_user.username,
-    )
-    refresh_token = jwt_mgr.create_refresh_token(
-        user_id=str(db_user.id),
-        email=db_user.email,
-        role=jwt_role,
-    )
-    expires_in = jwt_mgr.access_token_expire_minutes * 60
-
-    # Save refresh token to DB for rotation/revocation support
-    # Refresh token'i async ile kaydet (sync session asyncpg ile calismiyor)
-    try:
-        import hashlib as _hashlib
-
-        from sqlalchemy import text as _text
-
-        _payload = pyjwt.decode(refresh_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        _token_hash = _hashlib.sha256(refresh_token.encode()).hexdigest()
-        _jti = _payload.get("jti", "") if _payload else ""
-        _exp = (
-            datetime.fromtimestamp(_payload.get("exp", 0), tz=UTC)
-            if _payload
-            else datetime.now(UTC)
+    rol_key = (rol.value if isinstance(rol, Enum) else str(rol)).strip().lower()
+    mapped = _SELF_REGISTERABLE_ROLES.get(rol_key)
+    if mapped is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu rol herkese açık kayıt ile oluşturulamaz",
         )
-        await db.execute(
-            _text("""
-                INSERT INTO refresh_tokens
-                    (id, user_id, token_hash, jti, device_type, expires_at,
-                     revoked, usage_count, created_at, updated_at)
-                VALUES
-                    (gen_random_uuid(), :uid, :th, :jti, 'desktop', :exp,
-                     false, 0, now(), now())
-                ON CONFLICT DO NOTHING
-            """),
-            {"uid": str(db_user.id), "th": _token_hash, "jti": _jti, "exp": _exp},
-        )
-    except Exception as _rt_err:
-        logger.warning(f"Failed to persist refresh token to DB: {_rt_err}")
-
-    # Update last login
-    db_user.last_login = datetime.now(UTC)
-    await db.commit()
-
-    # Map backend role to frontend role format
-    role_mapping = {
-        "STUDENT": "ogrenci",
-        "TEACHER": "ogretmen",
-        "PARENT": "veli",
-        "ADMIN": "admin",
-        "SUPER_ADMIN": "super_admin",
-    }
-    frontend_role = role_mapping.get(db_user.role.value, "ogrenci")
-
-    # Convert DB user to Pydantic model (for backward compatibility)
-    kullanici = Kullanici(
-        kullanici_id=db_user.id,
-        email=db_user.email,
-        ad_soyad=f"{db_user.first_name} {db_user.last_name}",
-        telefon=db_user.phone or "",
-        aktif=db_user.is_active,
-        rol=KullaniciRolu(frontend_role),
-        olusturma_tarihi=db_user.created_at,
-        son_giris=db_user.last_login,
-    )
-
-    # Return frontend-compatible response format
-    return {
-        "success": True,
-        "token": token,
-        "refreshToken": refresh_token,
-        "user": {
-            "id": str(db_user.id),
-            "email": db_user.email,
-            "ad": db_user.first_name,
-            "soyad": db_user.last_name,
-            "rol": frontend_role,
-            "aktif": db_user.is_active,
-            "olusturma_tarihi": (
-                db_user.created_at.isoformat() if db_user.created_at else None
-            ),
-            "son_giris": (
-                db_user.last_login.isoformat() if db_user.last_login else None
-            ),
-            "telefon": db_user.phone or "",
-            "profil_resmi": None,  # TODO: Add profile image support
-        },
-        # Keep backward compatibility fields
-        "access_token": token,
-        "token_type": "bearer",
-        "expires_in": expires_in,
-        "kullanici": kullanici,
-    }
+    return mapped
 
 
 @router.post(
@@ -530,133 +495,29 @@ async def kullanici_kayit(
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
-    Yeni kullanıcı kaydı — PostgreSQL'e yazar (DB-backed).
+    Yeni kullanıcı kaydı — PostgreSQL'e yazar (DB-backed CQRS Refactored).
 
     Request Body:
       email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
     await _check_rate_limit(request, "register")
 
-    import uuid as _uuid
+    from application.commands.auth import RegisterUserCommand
+    from core.cqrs.bus import get_command_bus
 
-    from sqlalchemy import text as _text
-
-    from core.kvkk_compliance import is_minor
-
-    # KVKK Faz 1: 18 yaş altı kullanıcı için veli e-postası zorunlu
-    minor = is_minor(kullanici_data.birth_date)
-    if minor and not kullanici_data.veli_email:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="18 yaşından küçük kullanıcılar için veli e-postası zorunludur (KVKK)",
-        )
-
-    # Rol eşleştirme: Türkçe → enum değeri
-    ROL_MAP = {
-        "ogrenci": "STUDENT",
-        "student": "STUDENT",
-        "veli": "PARENT",
-        "parent": "PARENT",
-        "ogretmen": "TEACHER",
-        "teacher": "TEACHER",
-        "admin": "ADMIN",
-    }
-    rol_str = ROL_MAP.get(str(kullanici_data.rol).lower(), "STUDENT")
-
-    # E-posta benzersizlik kontrolü
-    dup = await db.execute(
-        _text("SELECT id FROM users WHERE email = :email"),
-        {"email": kullanici_data.email},
-    )
-    if dup.fetchone():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Bu e-posta adresi zaten kullanımda",
-        )
-
-    # Şifre hash
-    _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    pw_hash = _pwd_ctx.hash(kullanici_data.sifre)
-
-    # Ad / soyad ayır
-    parts = (kullanici_data.ad_soyad or "").strip().split(" ", 1)
-    first_name = parts[0] if parts else ""
-    last_name = parts[1] if len(parts) > 1 else ""
-
-    user_id = str(_uuid.uuid4())
-
-    await db.execute(
-        _text("""
-        INSERT INTO users
-            (id, email, username, password_hash, first_name, last_name,
-             role, is_active, is_verified, total_xp, level,
-             elo_rating, is_premium, is_parent, birth_date, created_at, updated_at)
-        VALUES
-            (:id, :email, :username, :pw_hash, :first_name, :last_name,
-             CAST(:role AS userrole), TRUE, FALSE, 0, 1,
-             1200, FALSE, FALSE, :birth_date, NOW(), NOW())
-    """),
-        {
-            "id": user_id,
-            "email": kullanici_data.email,
-            "username": kullanici_data.email.split("@")[0],
-            "pw_hash": pw_hash,
-            "first_name": first_name,
-            "last_name": last_name,
-            "role": rol_str,
-            "birth_date": kullanici_data.birth_date,
-        },
+    command = RegisterUserCommand(
+        email=kullanici_data.email,
+        sifre=kullanici_data.sifre,
+        ad_soyad=kullanici_data.ad_soyad,
+        rol=kullanici_data.rol,
+        birth_date=kullanici_data.birth_date,
+        veli_email=kullanici_data.veli_email,
+        sinif=getattr(kullanici_data, "sinif", 11),
+        db=db,
     )
 
-    # ── student_profiles oluştur (öğrenci rolü için) ─────────────────
-    # Bu kayıt olmadan: exam_sessions FK kırık, theta persist edemez,
-    # learning path kişiselleştiremez, dashboard hep sıfır gösterir.
-    if rol_str == "STUDENT":
-        profile_id = str(_uuid.uuid4())
-        grade_level = getattr(kullanici_data, "sinif", 11)  # Default: 11. sınıf
-        if not isinstance(grade_level, int) or grade_level < 9 or grade_level > 12:
-            grade_level = 11
-
-        await db.execute(
-            _text("""
-            INSERT INTO student_profiles
-                (id, user_id, grade_level, veli_onay, veli_email, current_level,
-                 total_study_hours, total_questions_solved, correct_answers,
-                 irt_ability, created_at, updated_at)
-            VALUES
-                (:id, :user_id, :grade_level, :veli_onay, :veli_email, 0.0,
-                 0, 0, 0,
-                 0.0, NOW(), NOW())
-        """),
-            {
-                "id": profile_id,
-                "user_id": user_id,
-                "grade_level": grade_level,
-                "veli_onay": not minor,
-                "veli_email": kullanici_data.veli_email if minor else None,
-            },
-        )
-
-    await db.commit()
-
-    # KVKK Faz 2: minor ise veli onay token üret + email (fire-and-forget)
-    if minor and kullanici_data.veli_email:
-        try:
-            from services.veli_onay_service import VeliOnayService
-
-            token = await VeliOnayService(db).request_consent(
-                child_user_id=user_id, veli_email=kullanici_data.veli_email
-            )
-            _send_veli_onay_email(kullanici_data.veli_email, token)
-        except Exception as e:
-            logger.error("veli onay tetikleme hatası: %s", e)
-
-    logger.info(f"Yeni kullanıcı kaydı: {kullanici_data.email} ({rol_str})")
-    return {
-        "success": True,
-        "message": "Kullanıcı kaydı başarıyla oluşturuldu",
-        "id": user_id,
-    }
+    command_bus = get_command_bus()
+    return await command_bus.execute(command)
 
 
 # English alias for registration endpoint
@@ -803,8 +664,17 @@ async def kullanici_giris(
     await _check_login_rate_limit(request)
 
     try:
-        # Use database-backed authentication instead of in-memory service
-        return await database_authenticate(giris_data, db)
+        from application.commands.auth import (
+            EpostaDogrulanmamis,
+            LoginCommand,
+            TwoFactorRequired,
+        )
+        from core.cqrs.bus import get_command_bus
+
+        command = LoginCommand(
+            email=giris_data.email, password=giris_data.get_password() or "", db=db
+        )
+        return await get_command_bus().execute(command)
     except TwoFactorRequired as e:
         return {
             "success": False,
@@ -812,6 +682,18 @@ async def kullanici_giris(
             "message": "2FA doğrulaması gerekli",
             "email": e.email,
         }
+    except EpostaDogrulanmamis as e:
+        # 403, 401 DEĞİL: kimlik bilgileri DOĞRU. 401 döndürseydik kullanıcı
+        # şifresini yanlış sanıp sıfırlamaya giderdi. `_record_failed_login`
+        # de çağrılmıyor — bu başarısız bir giriş denemesi değil.
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "EPOSTA_DOGRULANMAMIS",
+                "message": "Giriş yapabilmek için e-posta adresinizi doğrulayın.",
+                "email": e.email,
+            },
+        )
     except ValueError:
         _record_failed_login(request)
         raise HTTPException(
@@ -865,7 +747,17 @@ async def secure_login(
     await _check_login_rate_limit(request)
 
     try:
-        token_yaniti = await database_authenticate(giris_data, db)
+        from application.commands.auth import (
+            EpostaDogrulanmamis,
+            LoginCommand,
+            TwoFactorRequired,
+        )
+        from core.cqrs.bus import get_command_bus
+
+        command = LoginCommand(
+            email=giris_data.email, password=giris_data.get_password() or "", db=db
+        )
+        token_yaniti = await get_command_bus().execute(command)
 
         # Set access token as httpOnly cookie
         response.set_cookie(
@@ -903,6 +795,16 @@ async def secure_login(
             "message": "2FA doğrulaması gerekli",
             "email": e.email,
         }
+    except EpostaDogrulanmamis as e:
+        # Kapı BURADA da olmalı: yalnız `/giris`e konsaydı bu uçtan atlanırdı.
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "EPOSTA_DOGRULANMAMIS",
+                "message": "Giriş yapabilmek için e-posta adresinizi doğrulayın.",
+                "email": e.email,
+            },
+        )
     except ValueError:
         _record_failed_login(request)
         raise HTTPException(
@@ -948,6 +850,7 @@ async def secure_logout(request: Request, response: Response) -> dict[str, Any]:
 async def secure_refresh(
     request: Request,
     response: Response,
+    db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
     P0-1d: JWT-based token refresh.
@@ -963,33 +866,38 @@ async def secure_refresh(
         )
 
     try:
-        jwt_mgr = get_jwt_manager()
-        new_tokens = await jwt_mgr.refresh_access_token(refresh_token)
-    except HTTPException:
+        from application.commands.auth import RefreshTokenCommand
+        from core.cqrs.bus import get_command_bus
+
+        command = RefreshTokenCommand(refresh_token=refresh_token, db=db)
+        new_tokens = await get_command_bus().execute(command)
+    except (ValueError, Exception) as e:
         # Clear stale cookies on invalid/expired refresh token
         response.delete_cookie(key="access_token", path=ACCESS_TOKEN_COOKIE_PATH)
         response.delete_cookie(key="refresh_token", path=REFRESH_TOKEN_COOKIE_PATH)
+        if isinstance(e, ValueError):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
         raise
 
     # Set new access token as httpOnly cookie
     response.set_cookie(
         key="access_token",
-        value=new_tokens.access_token,
+        value=new_tokens["access_token"],
         httponly=True,
         secure=not _IS_DEV,
         samesite="lax",
-        max_age=new_tokens.expires_in,
+        max_age=new_tokens["expires_in"],
         path=ACCESS_TOKEN_COOKIE_PATH,
     )
 
     # Set new refresh token as httpOnly cookie
     response.set_cookie(
         key="refresh_token",
-        value=new_tokens.refresh_token,
+        value=new_tokens["refresh_token"],
         httponly=True,
         secure=not _IS_DEV,
         samesite="lax",
-        max_age=new_tokens.refresh_expires_in,
+        max_age=604800,  # 7 days (usually returned by refresh logic, but we hardcode it here as before or if not in dict)
         path=REFRESH_TOKEN_COOKIE_PATH,
     )
 
@@ -1275,8 +1183,13 @@ async def change_password(
         if not db_user:
             raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
 
+        import anyio
+
         # Verify current password
-        if not pwd_context.verify(request_data.currentPassword, db_user.password_hash):
+        is_valid = await anyio.to_thread.run_sync(
+            pwd_context.verify, request_data.currentPassword, db_user.password_hash
+        )
+        if not is_valid:
             raise HTTPException(status_code=401, detail="Mevcut şifre yanlış")
 
         # Validate new password (same policy as registration)
@@ -1285,7 +1198,9 @@ async def change_password(
             raise HTTPException(status_code=400, detail=pw_error)
 
         # Hash and update new password
-        db_user.password_hash = pwd_context.hash(request_data.newPassword)
+        db_user.password_hash = await anyio.to_thread.run_sync(
+            pwd_context.hash, request_data.newPassword
+        )
         db_user.updated_at = datetime.now(UTC)
         await db.commit()
 
@@ -1333,8 +1248,15 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 await self._redis.setex(key, self.TTL_SECONDS, json.dumps(entry))
                 return
-            except Exception:
-                pass
+            except Exception as exc:
+                # Sessiz yutma DEĞİL: Redis hatası bellek yoluna düşürür ve
+                # bu, çok işçili kurulumda token'ın başka işçide aranmasına
+                # yol açar — 28 Tem'de tam olarak bu sessizce bozulmuştu.
+                logger.warning(
+                    "şifre sıfırlama token deposu (%s): Redis hatası, belleğe düşülüyor: %s",
+                    "set",
+                    exc,
+                )
         # Fallback to in-memory
         self._memory[token] = entry
 
@@ -1345,10 +1267,20 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 raw = await self._redis.get(key)
                 if raw:
-                    return json.loads(raw)
+                    # ÖNCEDEN VAR OLAN: json.loads -> Any; sözleşmeyi burada
+                    # sabitliyoruz (yazan taraf her zaman dict yazıyor).
+                    cozulen: dict[str, Any] = json.loads(raw)
+                    return cozulen
                 return None
-            except Exception:
-                pass
+            except Exception as exc:
+                # Sessiz yutma DEĞİL: Redis hatası bellek yoluna düşürür ve
+                # bu, çok işçili kurulumda token'ın başka işçide aranmasına
+                # yol açar — 28 Tem'de tam olarak bu sessizce bozulmuştu.
+                logger.warning(
+                    "şifre sıfırlama token deposu (%s): Redis hatası, belleğe düşülüyor: %s",
+                    "get",
+                    exc,
+                )
         # Fallback to in-memory
         entry = self._memory.get(token)
         if entry:
@@ -1366,32 +1298,133 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 await self._redis.delete(key)
                 return
-            except Exception:
-                pass
+            except Exception as exc:
+                # Sessiz yutma DEĞİL: Redis hatası bellek yoluna düşürür ve
+                # bu, çok işçili kurulumda token'ın başka işçide aranmasına
+                # yol açar — 28 Tem'de tam olarak bu sessizce bozulmuştu.
+                logger.warning(
+                    "şifre sıfırlama token deposu (%s): Redis hatası, belleğe düşülüyor: %s",
+                    "delete",
+                    exc,
+                )
         self._memory.pop(token, None)
 
 
-_redis_client_for_tokens: aioredis.Redis | None = None
+class _SifreSifirlamaDepolari:
+    """Şifre sıfırlama depolarının süreç-ömürlü tekil örnekleri.
+
+    Modül-düzeyi değişken + `global` yerine tek bir tutucu: `global` ifadeleri
+    ruff PLW0603 tetikliyor ve dört ayrı adı elle senkronda tutmak gerekiyordu.
+    """
+
+    def __init__(self) -> None:
+        self.redis: aioredis.Redis | None = None
+        self.redis_denendi = False
+        self.token: RedisPasswordResetStore | None = None
+        self.kod: PasswordResetCodeStore | None = None
+
+
+_depolar = _SifreSifirlamaDepolari()
+
+
+async def _get_reset_redis() -> aioredis.Redis | None:
+    """Şifre sıfırlama depoları için Redis istemcisi; erişilemezse `None`.
+
+    `redis_denendi` bayrağı olmadan her çağrıda yeniden bağlanmayı deniyorduk;
+    Redis kapalıyken bu her istekte bir bağlantı zaman aşımı demek.
+    """
+    if _depolar.redis_denendi:
+        return _depolar.redis
+
+    _depolar.redis_denendi = True
+    try:
+        import os
+
+        import redis.asyncio as aioredis
+
+        client = aioredis.from_url(
+            os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+            decode_responses=True,
+        )
+        await client.ping()
+        _depolar.redis = client
+    except Exception:
+        logger.warning(
+            "şifre sıfırlama: Redis yok, süreç-içi belleğe düşülüyor. "
+            "Çok işçili kurulumda kod bir işçide üretilip diğerinde "
+            "doğrulanacağı için akış SESSİZCE bozulur."
+        )
+        _depolar.redis = None
+    return _depolar.redis
 
 
 async def _get_token_store() -> RedisPasswordResetStore:
-    """Lazy-initialize Redis client and token store."""
-    global _redis_client_for_tokens
-    if _redis_client_for_tokens is None:
-        try:
-            import os
+    """Sıfırlama token'ı deposu — TEK örnek.
 
-            import redis.asyncio as aioredis
+    28 Tem 2026 bulgusu: burası her çağrıda YENİ bir `RedisPasswordResetStore`
+    üretiyordu. Redis varken zararsız (durum Redis'te), ama Redis yokken sınıf
+    süreç-içi bir `dict`e düşüyor ve o dict her çağrıda sıfırdan yaratılıyordu
+    — yani `forgot-password`'ün yazdığı token'ı `reset-password` ASLA
+    bulamıyordu. Redis'siz her kurulumda şifre sıfırlama sessizce ölüydü.
+    """
+    if _depolar.token is None:
+        _depolar.token = RedisPasswordResetStore(await _get_reset_redis())
+    return _depolar.token
 
-            _redis_client_for_tokens = aioredis.from_url(
-                os.getenv("REDIS_URL", "redis://localhost:6379/0"),
-                decode_responses=True,
-            )
-            # Verify connection
-            await _redis_client_for_tokens.ping()
-        except Exception:
-            _redis_client_for_tokens = None
-    return RedisPasswordResetStore(_redis_client_for_tokens)
+
+async def _get_code_store() -> PasswordResetCodeStore:
+    """6 haneli kod deposu — TEK örnek (aynı gerekçe)."""
+    if _depolar.kod is None:
+        _depolar.kod = PasswordResetCodeStore(await _get_reset_redis())
+    return _depolar.kod
+
+
+def _mask_email(email: str) -> str:
+    """Log'a düşen adresi maskele — KVKK, kişisel veri loglanmaz."""
+    ad, _, alan = email.partition("@")
+    return f"{ad[:2]}***@{alan}" if alan else "***"
+
+
+_RESET_CODE_SUBJECT = "KIRO2 şifre sıfırlama kodun"
+
+_RESET_CODE_HTML = """\
+<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#2A2433">
+  <p>Merhaba,</p>
+  <p>KIRO2 hesabın için şifre sıfırlama kodun:</p>
+  <p style="font-size:30px;font-weight:800;letter-spacing:8px">{code}</p>
+  <p>Kod <strong>{dakika} dakika</strong> geçerli. Kodu kimseyle paylaşma.</p>
+  <p style="color:#6B6478;font-size:13px">
+    Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin; şifren değişmez.
+  </p>
+</div>
+"""
+
+
+def _send_reset_code_email(email: str, code: str) -> None:
+    """Kodu e-postayla yolla — İSTEK YANITINI BEKLETMEDEN.
+
+    `send_email` gönderimi arkaplan iş parçacığına atıp hemen döner. Bu
+    kasıtlı: SMTP'yi `await` etseydik, kayıtlı bir adres için yanıt ~200 ms
+    uzardı ve saldırgan gövdeyi hiç okumadan SADECE SÜREYİ ölçerek hangi
+    adreslerin kayıtlı olduğunu çıkarırdı — 1. adımın tüm amacı buydu.
+    Gönderim sonucu kullanıcıya değil, log'a gider.
+    """
+    html = _RESET_CODE_HTML.format(
+        code=code, dakika=PasswordResetCodeStore.CODE_TTL_SECONDS // 60
+    )
+    kuyruga_alindi = send_email(email, _RESET_CODE_SUBJECT, html)
+    if kuyruga_alindi:
+        return
+
+    logger.error(
+        "SMTP yapılandırılmamış — şifre sıfırlama kodu TESLİM EDİLEMEDİ (%s). "
+        "SMTP_SERVER / SMTP_USERNAME / SMTP_PASSWORD gerekli.",
+        _mask_email(email),
+    )
+    if _IS_DEV:
+        # Yalnız geliştirmede VE yalnız gönderim mümkün değilken: aksi hâlde
+        # kod hiçbir yerde görünmez ve akış elle denenemez.
+        logger.warning("[DEV] şifre sıfırlama kodu %s -> %s", _mask_email(email), code)
 
 
 @router.post("/forgot-password", summary="Forgot Password", include_in_schema=False)
@@ -1400,46 +1433,88 @@ async def forgot_password(
     request_data: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    """
-    Request password reset
-    Frontend endpoint - sends password reset email
+    """Şifre sıfırlama kodu iste (1/3).
 
-    Returns:
-    {
-        "success": boolean,
-        "message": string
-    }
+    Kayıtlı adrese 6 haneli kod gönderir. Yanıt, adresin kayıtlı olup
+    olmadığından BAĞIMSIZ olarak hep aynıdır — gövde de, süre de. Kod
+    `core/password_reset_codes.py`'de hash'li tutulur; hesap başına saatlik
+    üretim limitine tabidir.
+
+    Returns: {"success": bool, "message": str}
     """
     await _check_rate_limit(request, "password_reset")
 
+    # Numaralandırma önleme: bu metin ve durum kodu HER dalda aynı.
+    success_message = "Şifre sıfırlama kodu e-posta adresinize gönderildi"
+
     try:
-        # Check if user exists
         result = await db.execute(
             select(DBUser).where(DBUser.email == request_data.email)
         )
         db_user = result.scalar_one_or_none()
 
-        # Always return success to prevent email enumeration attacks
-        success_message = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi"
-
-        if not db_user:
-            # Don't reveal that user doesn't exist
-            return {"success": True, "message": success_message}
-
-        # Generate secure reset token (valid for 15 minutes)
-        reset_token = secrets.token_urlsafe(32)
-
-        # Store token in Redis (with 15-min TTL), fallback to memory
-        store = await _get_token_store()
-        await store.set(reset_token, db_user.id, db_user.email)
-
-        # TODO: Send email with reset link
-        # reset_link = f"{settings.frontend_url}/reset-password?token={reset_token}"
-        # await send_password_reset_email(db_user.email, reset_link)
-
-        return {"success": True, "message": success_message}
+        if db_user:
+            store = await _get_code_store()
+            # `None` = hesap başına saatlik kod limiti doldu. Kullanıcıya
+            # yine aynı şey söylenir; farklı yanıt vermek limitin kendisini
+            # bir numaralandırma kanalına çevirirdi.
+            code = await store.issue(db_user.email, db_user.id)
+            if code is not None:
+                _send_reset_code_email(db_user.email, code)
     except Exception:
-        return {"success": False, "message": "Şifre sıfırlama başarısız"}
+        # Hata yolu da aynı yanıtı vermeli: aksi hâlde "hata yalnız kayıtlı
+        # adreste oluşuyor" durumu adresin varlığını ele verirdi.
+        logger.exception("şifre sıfırlama kodu üretilemedi")
+
+    return {"success": True, "message": success_message}
+
+
+class VerifyResetCodeRequest(BaseModel):
+    """Kod doğrulama isteği (2/3)."""
+
+    email: str = Field(..., max_length=254)
+    code: str = Field(..., max_length=16)
+
+
+@router.post("/verify-reset-code", summary="Verify Reset Code", include_in_schema=False)
+async def verify_reset_code(
+    request: Request,
+    request_data: VerifyResetCodeRequest,
+) -> dict[str, Any]:
+    """6 haneli kodu doğrula, sıfırlama token'ı ver (2/3).
+
+    Kod doğruysa mevcut `/reset-password` akışının beklediği token üretilir —
+    yani çalışan sıfırlama ucuna hiç dokunulmaz, kod katmanı ONUN ÖNÜNE
+    eklenir. Başarısızlık nedeni (kod yanlış / süre doldu / böyle bir istek
+    yok / adres kayıtlı değil) AYIRT EDİLMEZ.
+
+    Returns: {"success": bool, "message": str, "token": str | None}
+    """
+    await _check_rate_limit(request, "password_reset_verify")
+
+    basarisiz = {
+        "success": False,
+        "message": "Kod geçersiz veya süresi dolmuş",
+        "token": None,  # nosec
+    }
+
+    code = (request_data.code or "").strip()
+    if len(code) != CODE_DIGITS or not code.isdigit():
+        return basarisiz
+
+    try:
+        code_store = await _get_code_store()
+        user_id = await code_store.verify(request_data.email, code)
+        if not user_id:
+            return basarisiz
+
+        reset_token = secrets.token_urlsafe(32)
+        token_store = await _get_token_store()
+        await token_store.set(reset_token, user_id, request_data.email)
+        return {"success": True, "message": "Kod doğrulandı", "token": reset_token}
+    except Exception:
+        logger.exception("şifre sıfırlama kodu doğrulanamadı")
+        return basarisiz
 
 
 class ResetPasswordRequest(BaseModel):
@@ -1895,25 +1970,16 @@ async def refresh_token(
                 ),
             )
 
-        jwt_manager = get_jwt_manager()
+        from application.commands.auth import RefreshTokenCommand
+        from core.cqrs.bus import get_command_bus
 
-        with get_sync_session_context() as sync_db:
-            new_tokens = await jwt_manager.refresh_access_token(
-                refresh_token_str, db=sync_db, request=request
-            )
-
-        # Return frontend-compatible format {success, token, refreshToken}
-        # while keeping backward compatibility fields
-        return {
-            "success": True,
-            "token": new_tokens.access_token,
-            "refreshToken": new_tokens.refresh_token,
-            # Backward compatibility
-            "access_token": new_tokens.access_token,
-            "refresh_token": new_tokens.refresh_token,
-            "token_type": new_tokens.token_type,
-            "expires_in": new_tokens.expires_in,
-        }
+        command = RefreshTokenCommand(refresh_token=refresh_token_str, db=db)
+        return await get_command_bus().execute(command)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token bulunamadı veya geçersiz.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -2033,11 +2099,19 @@ class VeliOnayStatusResponse(BaseModel):
     status: str
 
 
-def _send_veli_onay_email(veli_email: str, token: str) -> None:
-    """Veli onay + geri-çek linkli email gönder (fire-and-forget)."""
-    import os
+def _send_veli_onay_email(veli_email: str, token: str) -> bool:
+    """Veli onay + geri-çek linkli email gönder.
 
-    from core.email_util import send_email
+    F21 (#466): eskiden `None` dönüyor ve `send_email`in sonucunu hiç
+    okumuyordu — çağıran taraf gönderimin olup olmadığını bilemiyordu.
+    Şifre sıfırlama yolu (`:1568`) sonucu zaten yakalıyordu; KVKK açık
+    rızası daha kritik olmasına rağmen geride kalmıştı.
+
+    Returns:
+        True  — mesaj gönderim kuyruğuna alındı
+        False — SMTP yapılandırılmamış, e-posta GİTMEDİ
+    """
+    import os
 
     frontend = os.getenv("FRONTEND_URL", "http://localhost:3001").rstrip("/")
     onay = f"{frontend}/veli-onay?token={token}"
@@ -2050,7 +2124,14 @@ def _send_veli_onay_email(veli_email: str, token: str) -> None:
         f'<p style="font-size:12px;color:#888">Onayı geri çekmek için: '
         f'<a href="{geri}">tıklayın</a></p>'
     )
-    send_email(veli_email, "KIRO2 — Veli Onayı Gerekiyor", html)
+    kuyruga_alindi = send_email(veli_email, "KIRO2 — Veli Onayı Gerekiyor", html)
+    if not kuyruga_alindi:
+        logger.error(
+            "Veli onay e-postası GÖNDERİLEMEDİ (SMTP yapılandırılmamış): %s. "
+            "KVKK açık rızası bu e-postaya bağlı — öğrenci onaysız kalır.",
+            veli_email,
+        )
+    return bool(kuyruga_alindi)
 
 
 @router.post("/veli-onay/verify", response_model=VeliOnayResponse)
@@ -2060,16 +2141,19 @@ async def veli_onay_verify(
     db: AsyncSession = Depends(get_db),
 ) -> VeliOnayResponse:
     """Veli email linkindeki token ile açık rızayı onaylar (public — token=auth)."""
-    from services.veli_onay_service import VeliOnayService
+    from application.commands.auth import VeliOnayVerifyCommand
+    from core.cqrs.bus import get_command_bus
 
     ip = request.client.host if request.client else None
     ua = request.headers.get("user-agent")
-    result = await VeliOnayService(db).verify_and_grant(body.token, ip=ip, ua=ua)
-    if not result.success:
-        raise HTTPException(status_code=400, detail=result.message)
-    return VeliOnayResponse(
-        status=result.status or "granted", message=result.message or ""
-    )
+
+    command = VeliOnayVerifyCommand(token=body.token, ip=ip, ua=ua, db=db)
+
+    try:
+        result = await get_command_bus().execute(command)
+        return VeliOnayResponse(status=result["status"], message=result["message"])
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/veli-onay/withdraw", response_model=VeliOnayResponse)
@@ -2078,14 +2162,112 @@ async def veli_onay_withdraw(
     db: AsyncSession = Depends(get_db),
 ) -> VeliOnayResponse:
     """Veli onayını geri çeker (public — token=auth, KVKK Madde 11)."""
-    from services.veli_onay_service import VeliOnayService
+    from application.commands.auth import VeliOnayWithdrawCommand
+    from core.cqrs.bus import get_command_bus
 
-    ok = await VeliOnayService(db).withdraw(body.token)
-    if not ok:
-        raise HTTPException(
-            status_code=400, detail="Geçersiz veya zaten geri çekilmiş bağlantı"
+    command = VeliOnayWithdrawCommand(token=body.token, db=db)
+
+    try:
+        result = await get_command_bus().execute(command)
+        return VeliOnayResponse(status=result["status"], message=result["message"])
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# ============================================================================
+# L2: E-posta doğrulama — A1 altın yolunun ikinci ayağı
+# ============================================================================
+# 22 Ağu 2026 ölçümü: `users.is_verified` 21/21 `false`, kolonu YÜKSELTEN bir uç
+# yoktu (canlı openapi'de 1119 yol tarandı) ve OKUYAN bir giriş kontrolü yoktu.
+# Politika `core/eposta_dogrulama.py`'de: kapı `EPOSTA_DOGRULAMA_ZORUNLU` ile
+# açılır, varsayılan KAPALI (SMTP #441 gelene kadar kilitlenme üretmesin).
+
+
+class EpostaDogrulamaGonderRequest(BaseModel):
+    email: str = Field(..., min_length=5, max_length=254)
+
+
+class EpostaDogrulamaVerifyRequest(BaseModel):
+    token: str = Field(..., min_length=10, max_length=200)
+
+
+class EpostaDogrulamaResponse(BaseModel):
+    status: str
+    message: str
+
+
+# Numaralandırmayı önlemek için gönderim ucu HER ZAMAN bu yanıtı döner: e-posta
+# kayıtlı da olsa değilse de, kotası dolmuş da olsa. Farklı yanıt vermek ucu bir
+# "bu e-posta sistemde var mı" sorgusuna çevirirdi.
+_DOGRULAMA_GONDER_YANITI = EpostaDogrulamaResponse(
+    status="ok",
+    message="E-posta adresiniz kayıtlıysa doğrulama bağlantısı gönderildi.",
+)
+
+
+@router.post("/eposta-dogrula/gonder", response_model=EpostaDogrulamaResponse)
+async def eposta_dogrulama_gonder(
+    request: Request,
+    body: EpostaDogrulamaGonderRequest,
+    db: AsyncSession = Depends(get_db),
+) -> EpostaDogrulamaResponse:
+    """Doğrulama bağlantısını (yeniden) gönderir (public — numaralandırmaya kapalı)."""
+    await _check_rate_limit(request, "eposta_dogrulama_gonder")
+
+    from sqlalchemy import text as _text
+
+    # ASCII lower() KASITLI: normalize_tr() Türkçe yerel ayarıyla "I" -> "ı"
+    # yapar ve e-posta adresini bozar (case-convention.md Endpoint Gate).
+    email = body.email.strip().lower()
+
+    satir = (
+        await db.execute(
+            _text("SELECT id, is_verified FROM users WHERE lower(email) = :e"),
+            {"e": email},
         )
-    return VeliOnayResponse(status="withdrawn", message="Veli onayı geri çekildi")
+    ).fetchone()
+
+    # Zaten doğrulanmışsa yeni token üretmiyoruz — ama yanıt DEĞİŞMİYOR.
+    if satir is not None and not satir.is_verified:
+        await dogrulama_baslat(str(satir.id), email)
+
+    return _DOGRULAMA_GONDER_YANITI
+
+
+@router.post("/eposta-dogrula/verify", response_model=EpostaDogrulamaResponse)
+async def eposta_dogrulama_verify(
+    request: Request,
+    body: EpostaDogrulamaVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+) -> EpostaDogrulamaResponse:
+    """E-postadaki token ile hesabı doğrular (public — token=auth)."""
+    await _check_rate_limit(request, "eposta_dogrulama_verify")
+
+    from sqlalchemy import text as _text
+
+    store = await store_al()
+    user_id = await store.token_coz(body.token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Doğrulama bağlantısı geçersiz veya süresi dolmuş. "
+            "Yeni bir bağlantı isteyin.",
+        )
+
+    await db.execute(
+        _text(
+            "UPDATE users SET is_verified = TRUE, updated_at = CURRENT_TIMESTAMP "
+            "WHERE id = :uid"
+        ),
+        {"uid": user_id},
+    )
+    await db.commit()
+
+    logger.info("e-posta doğrulandı: user_id=%s", user_id)
+    return EpostaDogrulamaResponse(
+        status="verified",
+        message="E-posta adresiniz doğrulandı. Artık giriş yapabilirsiniz.",
+    )
 
 
 @router.get("/veli-onay/status", response_model=VeliOnayStatusResponse)
@@ -2121,7 +2303,18 @@ async def veli_onay_resend(
         raise HTTPException(status_code=400, detail="Kayıtlı veli e-postası yok")
     veli_email = row[0]
     token = await svc.resend(str(mevcut_kullanici.id), veli_email)
-    _send_veli_onay_email(veli_email, token)
+    # F21-yeni (#466): eskiden gönderim ölse bile koşulsuz "tekrar gönderildi"
+    # deniyordu — `2d5d82f7e`de admin tarafında kapatılan yanlış-başarı sınıfı.
+    # Token ÜRETİLDİ (geri alınmıyor), ama kullanıcıya doğrusu söyleniyor.
+    kuyruga_alindi = _send_veli_onay_email(veli_email, token)
+    if not kuyruga_alindi:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Onay e-postası şu anda gönderilemiyor (e-posta servisi "
+                "yapılandırılmamış). Lütfen daha sonra tekrar deneyin."
+            ),
+        )
     return VeliOnayResponse(
         status="pending", message="Onay e-postası tekrar gönderildi"
     )

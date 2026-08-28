@@ -71,7 +71,7 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
 
   const handleStartReview = useCallback(() => {
     const withQuestions = cards.filter(hasQuestion);
-    if (withQuestions.length === 0) return;
+    if (withQuestions.length === 0) {return;}
 
     setActiveCardIds(withQuestions.map(c => c.card_id));
     setReviewQuestions(
@@ -86,7 +86,7 @@ export function ReviewQueuePanel({ onClose }: ReviewQueuePanelProps) {
 
     const promises = activeCardIds.map(async (cardId, i) => {
       const mappedQ = mappedQuestions[i];
-      if (!mappedQ) return;
+      if (!mappedQ) {return;}
 
       const userAnswer = results.answers[mappedQ.id];
       const isCorrect = userAnswer === mappedQ.correctAnswer;

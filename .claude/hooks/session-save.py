@@ -34,33 +34,21 @@ STATE_JSON = PROJECT_ROOT / ".claude" / "session_state.json"
 BACKUP_DIR = Path.home() / ".claude" / "session-backups"
 MAX_BACKUPS_PER_TYPE = 20
 
-# Detect bash availability once at module load
-_BASH_AVAILABLE: bool | None = None
+def run_exe(args: list[str], cwd: str | None = None, timeout: int = 15) -> str:
+    """Run an executable DIRECTLY — no shell, no bash indirection.
 
-
-def _check_bash() -> bool:
-    """Check if bash is available in PATH."""
-    global _BASH_AVAILABLE
-    if _BASH_AVAILABLE is None:
-        try:
-            subprocess.run(["bash", "--version"], capture_output=True, timeout=3)
-            _BASH_AVAILABLE = True
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            _BASH_AVAILABLE = False
-            print("[WARN] bash not found in PATH — git/curl commands will fail", file=sys.stderr)
-    return _BASH_AVAILABLE
-
-
-def run_cmd(cmd: str, cwd: str | None = None) -> str:
-    """Run a shell command via bash. Returns '' if bash missing or command fails."""
-    if not _check_bash():
-        return ""
+    Neden bash yok (20 Agu 2026'da olculdu): bu makinede SOGUK `bash` spawn
+    **7,11 sn**. Eski `_check_bash()` `timeout=3` kullaniyordu, yani her soguk
+    kosumda `False` donuyor ve `run_cmd` turevi HER alani sessizce bosaltiyordu
+    (branch="", services="DOWN", uncommitted=0). Hook'lar daima soguk kosar.
+    Dogrudan `git.exe`: 0,06 sn.
+    """
     try:
         result = subprocess.run(
-            ["bash", "-c", cmd],
+            args,
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=timeout,
             cwd=cwd or str(PROJECT_ROOT),
             encoding="utf-8",
             errors="replace",
@@ -68,6 +56,25 @@ def run_cmd(cmd: str, cwd: str | None = None) -> str:
         return result.stdout.strip()
     except Exception:
         return ""
+
+
+def run_git(*args: str) -> str:
+    """Run a git command directly (git.exe on PATH)."""
+    return run_exe(["git", *args])
+
+
+def http_status(url: str, timeout: float = 3.0) -> str:
+    """Return HTTP status code as string, or 'DOWN'. urllib — curl/bash gerekmez."""
+    import urllib.error
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as resp:
+            return str(resp.status)
+    except urllib.error.HTTPError as exc:  # sunucu yanit verdi, 2xx degil
+        return str(exc.code)
+    except Exception:
+        return "DOWN"
 
 
 def atomic_write(path: Path, content: str) -> None:
@@ -102,12 +109,19 @@ def _fast_line_count(path: Path) -> int:
 # === Data collection ===
 
 def get_git_state() -> dict:
-    """Capture git state."""
-    branch = run_cmd("git branch --show-current")
-    last_commits = run_cmd("git log -5 --oneline")
-    uncommitted = run_cmd("git status --short")
-    staged = run_cmd("git diff --cached --stat")
-    recent_files = run_cmd("git diff --name-only HEAD~3 2>/dev/null")
+    """Capture git state.
+
+    `--untracked-files=no` ZORUNLU: bu depoda ~3.400 takipsiz dosya ve
+    `d-dataset/output/crops` altinda 528.651 PNG var; takipsiz taramali
+    `git status` **60 sn'de bitmiyor** (olculdu), `-uno` ile **0,09 sn**.
+    Takipsiz gurultuyu saymak zaten anlamsizdi — S229-B dersi takipli-kirli
+    sayisini istiyor.
+    """
+    branch = run_git("rev-parse", "--abbrev-ref", "HEAD")
+    last_commits = run_git("log", "-5", "--oneline")
+    uncommitted = run_git("status", "--porcelain", "--untracked-files=no")
+    staged = run_git("diff", "--cached", "--stat")
+    recent_files = run_git("diff", "--name-only", "HEAD~3")
 
     py_changes = len([line for line in uncommitted.splitlines() if line.strip().endswith(".py")])
 
@@ -125,13 +139,13 @@ def get_git_state() -> dict:
 def get_services_state() -> dict:
     """Check running services (with connect timeout)."""
     services = {}
-    services["docker"] = (run_cmd("docker ps --format '{{.Names}}: {{.Status}}' 2>/dev/null").splitlines() or [])
+    services["docker"] = run_exe(
+        ["docker", "ps", "--format", "{{.Names}}: {{.Status}}"], timeout=10
+    ).splitlines()
 
-    backend = run_cmd('curl -s --connect-timeout 2 --max-time 3 -o /dev/null -w "%{http_code}" http://localhost:8000/health')
-    services["backend"] = backend if backend else "DOWN"
-
-    frontend = run_cmd('curl -s --connect-timeout 2 --max-time 3 -o /dev/null -w "%{http_code}" http://localhost:3000')
-    services["frontend"] = frontend if frontend else "DOWN"
+    # `/health` DOGRU yol; `/api/v1/health` 404 doner (api/health.py'de prefix YOK).
+    services["backend"] = http_status("http://localhost:8000/health")
+    services["frontend"] = http_status("http://localhost:3000")
 
     return services
 
@@ -163,10 +177,40 @@ def get_tasks_state() -> dict:
             "total": len(active) + len(pending) + completed_count}
 
 
+PSQL_ADAYLARI = (
+    r"C:/Program Files/PostgreSQL/18/bin/psql.exe",
+    "psql",
+)
+
+
+def _db_sayimi(sorgu: str) -> int | None:
+    """Canli DB'den tek sayi oku. Olculemezse None — BAYAT SAYI GOSTERME."""
+    for psql in PSQL_ADAYLARI:
+        cikti = run_exe(
+            [psql, "-U", "postgres", "-p", "5434", "-d", "kiro2", "-t", "-A", "-c", sorgu],
+            timeout=8,
+        )
+        if cikti.strip().isdigit():
+            return int(cikti.strip())
+    return None
+
+
 def get_production_state() -> dict:
-    """Get production data state."""
+    """Icerik durumu — KAYNAGI ADIYLA raporla.
+
+    Eski hali `d-dataset/eslesmis_sorucevap.jsonl` satir sayisini (77.336)
+    `question_count` diye raporluyor, banner da "Production: 77,336 questions"
+    yaziyordu. Bu bir VEKIL olcumdu: canli DB'de `question_bank`=36.967,
+    ogrenci kapisi `mv_safe_for_beta`=27.073 (20 Agu 2026). Diskteki dosya ile
+    servis edilen havuzun kesisimi olculdu ve SIFIR. Artik ucu de ayri ayri,
+    kendi adiyla raporlaniyor; olculemeyen alan `None` kalir.
+    """
     jsonl_path = PROJECT_ROOT / "d-dataset" / "eslesmis_sorucevap.jsonl"
-    return {"question_count": _fast_line_count(jsonl_path) if jsonl_path.exists() else 0}
+    return {
+        "jsonl_rows": _fast_line_count(jsonl_path) if jsonl_path.exists() else 0,
+        "db_question_bank": _db_sayimi("SELECT count(*) FROM question_bank"),
+        "db_safe_pool": _db_sayimi("SELECT count(*) FROM mv_safe_for_beta"),
+    }
 
 
 def get_coverage_state() -> dict:
@@ -192,6 +236,36 @@ def get_coverage_state() -> dict:
     return {"available": False}
 
 
+KULLANICI_GORUNUR_YOLLAR = (
+    "frontend/src",
+    "backend/api",
+    "backend/services",
+    "backend/algorithms",
+)
+
+
+def get_visible_output_state() -> dict:
+    """E3: bugun kullanici-gorunur cikti uretildi mi — BEYAN degil OLCUM.
+
+    Neden gerekli (20 Agu 2026 olcumu): son 30 gunde 443 commit atildi;
+    tur dagilimi chore 125 + docs 78 + test 34 = **%53 surec isi**.
+    `frontend/src`'ye dokunan 69 commit'e karsilik `backend/tests`'e 153.
+    Bir kural yalniz yorumda yasarsa silinir; olculup her oturum sonunda
+    yuzune bakilirsa yasar (S219: mesaj kaybolur -> yorum silinir -> olcum kalir).
+    """
+    bugun = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    hepsi = run_git("log", f"--since={bugun} 00:00", "--oneline")
+    gorunur = run_git(
+        "log", f"--since={bugun} 00:00", "--oneline", "--", *KULLANICI_GORUNUR_YOLLAR
+    )
+    say = lambda s: len([x for x in s.splitlines() if x.strip()])  # noqa: E731
+    return {
+        "commits_today": say(hepsi),
+        "user_visible_today": say(gorunur),
+        "paths": list(KULLANICI_GORUNUR_YOLLAR),
+    }
+
+
 def get_migration_state() -> dict:
     """Count alembic migration files (no subprocess — just glob)."""
     versions_dir = PROJECT_ROOT / "backend" / "alembic" / "versions"
@@ -210,8 +284,14 @@ def get_migration_state() -> dict:
 
 # === Output ===
 
+def _sayi(deger: int | None) -> str:
+    """Olculemeyen sayiyi BAYAT bir rakamla degil, acikca 'olculemedi' diye yaz."""
+    return f"{deger:,}" if isinstance(deger, int) else "olculemedi"
+
+
 def build_state_md(git: dict, services: dict, tasks: dict, production: dict,
-                   coverage: dict | None = None, migrations: dict | None = None) -> str:
+                   coverage: dict | None = None, migrations: dict | None = None,
+                   visible: dict | None = None) -> str:
     """Build SESSION_STATE.md content."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = [
@@ -220,14 +300,29 @@ def build_state_md(git: dict, services: dict, tasks: dict, production: dict,
         "## Quick Resume",
         f"- **Branch:** {git['branch']}",
         f"- **Last commit:** {git['last_commits'][0] if git['last_commits'] else 'N/A'}",
-        f"- **Uncommitted:** {git['uncommitted_count']} files ({git['uncommitted_py']} .py)",
-        f"- **Production:** {production['question_count']:,} questions",
+        f"- **Uncommitted (takipli):** {git['uncommitted_count']} files ({git['uncommitted_py']} .py)",
+        f"- **DB question_bank:** {_sayi(production.get('db_question_bank'))}"
+        f" · **ogrenci kapisi (mv_safe_for_beta):** {_sayi(production.get('db_safe_pool'))}",
+        f"- **d-dataset JSONL satiri:** {_sayi(production.get('jsonl_rows'))}"
+        " _(diskteki dosya — servis edilen havuz DEGIL)_",
         f"- **Coverage:** {coverage['percent']}% ({coverage['report_date']})" if coverage and coverage.get('available') else "- **Coverage:** No report found",
         f"- **Migrations:** {migrations['count']} files, latest: {migrations['latest']}" if migrations else "- **Migrations:** N/A",
         f"- **Backend:** {services['backend']}",
         f"- **Frontend:** {services['frontend']}",
         "",
     ]
+
+    if visible is not None:
+        toplam = visible.get("commits_today", 0)
+        gorunur = visible.get("user_visible_today", 0)
+        if toplam and not gorunur:
+            lines.append(
+                f"> ⚠ **E3: bugun {toplam} commit atildi, kullanici-gorunur cikti 0.** "
+                f"Dokunulmasi beklenen yollar: {', '.join(visible.get('paths', []))}"
+            )
+        else:
+            lines.append(f"- **E3 kullanici-gorunur commit (bugun):** {gorunur}/{toplam}")
+        lines.append("")
 
     if tasks["active"]:
         lines.append("## Active Tasks (in_progress)")
@@ -286,8 +381,12 @@ def run_backup() -> None:
         if src.exists():
             shutil.copy2(src, BACKUP_DIR / f"{prefix}-{ts}{src.suffix}")
 
-    # Git state snapshot
-    git_output = run_cmd("git status --short") + "\n" + run_cmd("git log -3 --oneline")
+    # Git state snapshot (-uno: takipsiz tarama bu depoda >60 sn)
+    git_output = (
+        run_git("status", "--porcelain", "--untracked-files=no")
+        + "\n"
+        + run_git("log", "-3", "--oneline")
+    )
     if git_output.strip():
         (BACKUP_DIR / f"git-{ts}.txt").write_text(git_output, encoding="utf-8")
 
@@ -319,9 +418,12 @@ def main() -> int:
         production = get_production_state()
         coverage = get_coverage_state()
         migrations = get_migration_state()
+        visible = get_visible_output_state()
 
         # Atomic writes
-        md_content = build_state_md(git, services, tasks, production, coverage, migrations)
+        md_content = build_state_md(
+            git, services, tasks, production, coverage, migrations, visible
+        )
         atomic_write(STATE_FILE, md_content)
 
         state_json = {
@@ -332,6 +434,7 @@ def main() -> int:
             "production": production,
             "coverage": coverage,
             "migrations": migrations,
+            "visible_output": visible,
         }
         atomic_write(STATE_JSON, json.dumps(state_json, indent=2, ensure_ascii=False))
 

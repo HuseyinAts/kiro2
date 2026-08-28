@@ -50,42 +50,42 @@ export default function FSRSReviewPage() {
 
   const submitAnswer = useCallback(async (isCorrect: boolean) => {
     const card = cards[idx];
-    if (!card || submitting) return;
+    if (!card || submitting) {return;}
     setSubmitting(true);
     try {
       await apiRequest('/api/v1/fsrs/review', {
         method: 'POST',
         body: JSON.stringify({ question_id: card.question_id, is_correct: isCorrect }),
       });
-      if (isCorrect) setCorrect(c => c + 1); else setWrong(c => c + 1);
-      if (idx + 1 >= cards.length) setDone(true);
+      if (isCorrect) {setCorrect(c => c + 1);} else {setWrong(c => c + 1);}
+      if (idx + 1 >= cards.length) {setDone(true);}
       else { setIdx(i => i + 1); setRevealed(false); setSelected(null); }
     } catch (e) { setError(String(e)); }
     finally { setSubmitting(false); }
   }, [cards, idx, submitting]);
 
-  if (loading) return (
+  if (loading) {return (
     <Box textAlign="center" py={8}><CircularProgress size={52} />
       <Typography mt={2} color="text.secondary">Tekrar kartları yükleniyor...</Typography>
     </Box>
-  );
+  );}
 
-  if (error) return (
+  if (error) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Alert severity="error">{error}</Alert>
     </Box>
-  );
+  );}
 
-  if (cards.length === 0) return (
+  if (cards.length === 0) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Alert severity="success" icon={<EmojiEvents />}>
         <Typography fontWeight={700}>Tebrikler! 🎉</Typography>
         <Typography variant="body2">Bugün için vadesi gelen kart yok. Yarın tekrar kontrol et.</Typography>
       </Alert>
     </Box>
-  );
+  );}
 
-  if (done) return (
+  if (done) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Paper elevation={2} sx={{ p: 4, borderRadius: 3, textAlign: 'center' }}>
         <EmojiEvents sx={{ fontSize: 52, color: 'primary.main' }} />
@@ -103,7 +103,7 @@ export default function FSRSReviewPage() {
         </Button>
       </Paper>
     </Box>
-  );
+  );}
 
   const card = cards[idx];
   const progress = ((idx) / cards.length) * 100;
@@ -132,7 +132,7 @@ export default function FSRSReviewPage() {
         <CardContent sx={{ p: 3 }}>
           <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1} mb={3}>
             <Typography variant="h6" fontWeight={600} sx={{ lineHeight: 1.6, flex: 1 }}>
-              {card.stem ?? 'Soru metni yükleniyor...'}
+              {card.stem}
             </Typography>
             <FlagButton questionId={card.question_id} />
           </Stack>
@@ -142,9 +142,6 @@ export default function FSRSReviewPage() {
             <Stack spacing={1.5}>
               {Object.entries(card.options).filter(([, v]) => v).map(([key, val]) => {
                 const isSelected = selected === key;
-                const _isCorrectOpt = revealed && selected && key === Object.entries(card.options!)
-                  .find(() => false)?.[ 0]; // correct_answer gizli — seçim sonrası revealed
-                void _isCorrectOpt; // TODO: implement correct answer highlighting
                 return (
                   <Button
                     key={key}

@@ -1,0 +1,276 @@
+=== student_coherent AUDIT (NO key). Per #N: coherence (OK/GARBLE/FIGURE) + answer (A-E).
+
+#1 [MATEMATIK]
+  Q: 1. $\frac{x-2}{x+1}+\frac{x-2}{x+2}=2$ denkleminin köklerini bulunuz.
+  A) x = 2
+  B) x = -2
+  C) x = 0
+  D) x = 1
+  E) x = -1
+
+#2 [TARIH]
+  Q: 10. Aşağıdaki cümlelerden hangisi bir tarih cümlesi değildir?
+  A) A) Çanakkale Savaşı
+  B) B) 1915
+  C) C) 1918
+  D) D) 1919
+  E) E) Devrimci
+
+#3 [COGRAFYA]
+  Q: Türkiye'de yer alan akarsuların özellikleri ile ilgili,
+I. Genellikle rejimleri düzensizdir.
+II. Denge profiline ulaşmışlardır.
+III. Tamamı açık havza özelliği taşır.
+IV. Hidroelektrik potansiyelleri yüksektir.
+ifadelerinden hangileri doğrudur?
+  A) I ve II
+  B) I ve IV
+  C) II ve III
+  D) II ve IV
+  E) III ve IV
+
+#4 [GEOMETRI]
+  Q: ABC üçgenünde A = 60°, B = 45° ise C kaç derecedir?
+  A) 60°
+  B) 45°
+  C) 75°
+  D) 30°
+  E) 90°
+
+#5 [FIZIK]
+  Q: 5. Bir landscape parçacığı sabit hızla doğu doğru 1000 km/s hızla hareket ediyor. Bu parçacığın 10 saniyede yaptığı yola ne denir?
+  A) 1000000 km
+  B) 100000 km
+  C) 10000 km
+  D) 1000 km
+  E) 100 km
+
+#6 [MATEMATIK]
+  Q: Kanalı A ve B, 1 litrelik suyu eşit hızda boşaltan iki pompadan oluşuyor. Kanal A, 20 dakikada suyunu tamamen boşaltıyor. Kanal B, 30 dakikada suyunu tamamen boşaltıyor. Kanal A ve B birlikte suyunu kaç dakikada boşaltır?
+  A) 10 dakika
+  B) 12 dakika
+  C) 15 dakika
+  D) 18 dakika
+  E) 20 dakika
+
+#7 [BIYOLOJI]
+  Q: Kanda oksijen taşınması ile ilgili iki olay aşağıda verilmiştir.
+• X olayı: Hb + O₂ → HbO₂
+• Y olayı: HbO₂ → Hb + O₂
+Verilen olaylara ilişkin aşağıdakilerden hangisi yanlıştır?
+  A) X olayı alveol kılcal damarlarında gerçekleşir.
+  B) X olayında hemoglobin görev yapar.
+  C) X olayında oksihemoglobin oluşur.
+  D) Y olayında hemoglobin oksijeni bırakır.
+  E) Y olayı sırasında enzim kullanılır.
+
+#8 [COGRAFYA]
+  Q: Aynı üniversitede okuyan Alper ve Bülent mezun olduktan sonra dil öğrenmek için farklı ülkelere gitmişlerdir. Aralarında telefonda aşağıdaki mesajlaşma geçmiştir. Merhaba Bülent. Nasılsın? İyiyim Alper. Ben de uyumak üzereydim. Saat 02.20 ve günlerden salı Saat farkını unutmuşum. Pardon. Burada saat 22.00 ve günlerden pazartesi Sorun değil Alper. Seni yarın arayayım ben. İyi geceler. İyi geceler. Bu mesajlaşmalara bakılarak Alper ve Bülent'in yaşadığı ülkeler arasında kaç derecelik boylam farkı olduğu söylenebilir?
+  A) 40
+  B) 65
+  C) 90
+  D) 100
+  E) 120
+
+#9 [COGRAFYA]
+  Q: 1 Yer kabuğunun fay hatları boyunca çöktüğü alanlarda oluşan göllerdir. 2 Krater, kaldera ve maar gibi çukurlukların içinde oluşan göllerdir. 3 Kalkerli arazilerde erime sonucu gelişen çukurluklar içinde oluşan göllerdir. Şemada oluşumları verilen göl türleri, aşağıdakilerin hangisinde doğru eşleştirilmiştir?
+  A) 1) Kastik göl, 2) Volkanik göl, 3) Tektonik göl
+  B) 1) Tektonik göl, 2) Kastik göl, 3) Volkanik göl
+  C) 1) Tektonik göl, 2) Volkanik göl, 3) Kastik göl
+  D) 1) Volkanik göl, 2) Kastik göl, 3) Tektonik göl
+  E) 1) Kastik göl, 2) Tektonik göl, 3) Volkanik göl
+
+#10 [MATEMATIK]
+  Q: Aşağıdaki ifadelerden hangisi x^2 - 2x - 3 ifadesini çarpanlarına ayırabilir?
+  A) (x - 1)(x + 3)
+  B) (x + 1)(x - 3)
+  C) (x - 1)(x - 3)
+  D) (x + 1)(x + 3)
+  E) x^2 - 2x - 3
+
+#11 [MATEMATIK]
+  Q: Matematik dersinde Ayşe ve Ali sırasıyla $(6 + 1)^n$ ve $(3 + 8)^n$ açılımını yapmak istemektedir. Her ikisi de ilk terimin azalan kuvvetlerine göre açılım yaptığında Ayşe'nin bulduğu baştan 3. terim, Ali'nin bulduğu baştan 4. terim ile aynıdır. Buna göre, n kaçtır?
+  A) 11
+  B) 10
+  C) 9
+  D) 8
+  E) 7
+
+#12 [MATEMATIK]
+  Q: 1. $x^2 + 2x + 1 = 0$ denkleminin köklerini bulun.
+  A) -1, -1
+  B) 1, 1
+  C) -1, 1
+  D) 0, 0
+  E) 2, 2
+
+#13 [COGRAFYA]
+  Q: Kimi bölge sınırları kesin hatlarla birbirinden ayrılırken kimi bölgeler arasında geçiş bölgeleri olduğu için sınırlar kesin olarak ayrılamaz.
+I. İklim bölgeleri
+II. Orman bölgeleri
+III. AB siyasi bölgesi
+IV. Türkiye'nin idari bölgeleri
+Buna göre yukarıda verilen bölgelerden hangilerinin sınırları kesin hatlarla birbirinden ayrılamaz?
+  A) I ve II
+  B) II ve III
+  C) III ve IV
+  D) I ve III
+  E) II ve IV
+
+#14 [TARIH]
+  Q: "Kırk asırlık Türk yurdu yabancı elinde kalamaz. Günü gelecek siz de kurtulacaksınız.' Mustafa Kemal Atatürk bu sözüyle aşağıda verilen bölgelerin hangisinin bir gün ana vatana bağlanacağını vurgulamıştır?
+  A) Musul
+  B) Hatay
+  C) Batum
+  D) Kerkük
+  E) Batı Trakya
+
+#15 [MATEMATIK]
+  Q: a ve b gerçel sayılar için aşağıdaki eşitlikler veriliyor:
+a + b = 5
+a - b = 1
+a ve b nin değerleri kaçtır?
+  A) a = 3, b = 2
+  B) a = 2, b = 3
+  C) a = 4, b = 1
+  D) a = 1, b = 4
+  E) a = 5, b = 0
+
+#16 [MATEMATIK]
+  Q: Bir geometrik serinin 1. ve 2. terimleri sırasıyla 2 ve 3'tür. Serinin 5. terimi kaçtır?
+  A) 8
+  B) 10
+  C) 12
+  D) 14
+  E) 16
+
+#17 [MATEMATIK]
+  Q: Aşağıdaki ifadeler hangisinde x'nin karesi ve x'nin karekökü bulunur?
+  A) x^2 + x
+  B) x^2 - x
+  C) x^2 + \sqrt{x}
+  D) x^2 - \sqrt{x}
+  E) x^2 + x^2
+
+#18 [MATEMATIK]
+  Q: 6. a + b = 20 ve a - b = 4 ise a ve b değerleri kaçtır?
+  A) 4, 16
+  B) 4, 12
+  C) 8, 12
+  D) 8, 16
+  E) 12, 8
+
+#19 [TURKCE]
+  Q: Tolstoy'un ölümden önceki son konuşması:
+
+- İnsanlar acıyla büyür.
+- Yaşam, bedence değil ruhtadır.
+- Ölüm yalnızca bedenden kurtuluştur.
+- Zihninizde neyin bedensel olmadığını ayıklayın.
+- Gelecek için endişe etmeyin, günlük gelecek diye bir şey yoktur. Sadece şimdi vardır. Onun için yaşayın.
+
+Buna göre Tolstoy'un vermek istediği mesajlar arasında aşağıdakilerden hangisi yoktur?
+  A) Hayatın gelecekle dolu olduğu
+  B) Kişinin fizikinden ziyade beyninin önemli olduğu
+  C) Kişi için ölümün yokluk olmadığı
+  D) Beyin ile ruhun çok iyi uyum sağlaması gerektiği
+  E) Anı çok iyi değerlendirmek gerektiği
+
+#20 [TARIH]
+  Q: Hititler tarihte ilk meşruti krallığı kurmuşlardır.
+Hititlerle ilgili aşağıda verilenlerden hangisi bu bilgiyi destekler niteliktedir?
+  A) Hitit kralları baş rahip, baş yargıç unvanlarına sahiptir.
+  B) Pankuş Meclisi zaman zaman kralların yetkilerini kısıtlamıştır.
+  C) Kraliçe yönetimde geniş yetkilere sahiptir.
+  D) Hitit kanunları, dönemine göre insancıldır, fidye içermektedir.
+  E) Hititler kadınlara çeşitli haklar vermişlerdir.
+
+#21 [TURKCE]
+  Q: (I) Eski Yunan'ın büyük filozofu Sokrat, hiç yazmadı.
+(II) Eğer yerleşiklik Platon da böyle yapsaydı; baldıran zehrinde değil, yazı yazmaklamak kendi öldürmüş olurdu.
+(III) Kendinden büyüklerin ne düşündüğünü öğrenmek için onların yazılarını okumak, öğretilerini-sin seyrini çoğaltmak.
+(IV) Okulda insanın ele olsa ona hocası olur.
+(V) Halbuki kitap okuyan için her özlü yazıcı bir değeri öğretmendir.
+
+Bu parçada asıl anlatılmak istenen numaralanmış cümlelerin hangisinde verilmiştir?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#22 [MATEMATIK]
+  Q: a + b = 0 olmak üzere x genel bir sayı olmak üzere aşağıdaki eşitliklerin hangisi pozitifdir?
+  A) x^2 - ab
+  B) x^2 + ab
+  C) x^2 - a^2
+  D) x^2 + a^2
+  E) x^2 - a^2 - b^2
+
+#23 [MATEMATIK]
+  Q: 4. a) eşitlik (x-2)(x+3)=0 için, x değerlerini bulunuz.
+
+b) Bu eşitlikin çözüm kümesi nedir?
+  A) x = 2 ve x = 3
+  B) x = -2 ve x = 3
+  C) x = 2 ve x = -3
+  D) x = -2 ve x = -3
+  E) x = 2 ve x = 0
+
+#24 [GEOMETRI]
+  Q: ABC üçgenün çevresi 60 cm, A = 60° ve B = 45° olduğuna göre, C açısının ölçüsü kaç derecedir?
+  A) 30°
+  B) 45°
+  C) 60°
+  D) 75°
+  E) 90°
+
+#25 [MATEMATIK]
+  Q: Buna göre, for y = x + 1 eksenlerine göre simetriği olan grafikin denklemi hangisi olabilir?
+  A) y = x - 1
+  B) y = -x + 1
+  C) y = -x - 1
+  D) y = x + 1
+  E) y = x + 2
+
+#26 [TURKCE]
+  Q: Bilindiği üzere Sibirya'nın çoğu toprağı donmuş ince bir buz tabakasından oluşuyor ve bu donmuş toprağa "permafrost" deniyor. Ancak iklim koşulları değiştiğinde, erimeler gerçekleşerek bölgeye hâkim olan tundra bitki örtüsünün altında delikler açıyor ve çökmeiler oluyor. Bunlardan en önemlisi Batagayka krateri ve bölgedeki Yakutların dediği gibi yeri bir yer altı dünyasının kapısı. Bir kilometre genişliğinde, 86 metre derinliğinde olan ve her geçen yıl daha da büyüyen Batagayka krateri; araştırmacıların yer altından kalma ormanları, iskaleleri, bilki örtüsüne ve 200.000 yıllık iklim değişikliği kayıtlarına ulaşmalarını sağlıyor. Kraterde o ana kadar antik çokçok toz (polen) örnekleri, arktik bölgelere özel küçük öküzü kalıntılarıyla birlikte mamut ve 4.400 yıllık at kalıntılarına rastlandı. Ayrıca orman yatakları ve elde edilen diğer veriler, araştırmacılara Sibirya'nın ikliminin eskiden günümüze göre daha sıcak olduğunu gösterdi. Kraterde araştırmalar hâlâ devam ediyor.
+
+Bu parçanın anlatımında aşağıdakilerden hangileri kullanılmıştır?
+  A) Açıklama - tartışma
+  B) Tartışma - tanık gösterme
+  C) Sayısal verilerden yararlanma - açıklama
+  D) Betimleme - açıklama
+  E) Tartışma - sayısal verilerden yararlanma
+
+#27 [GEOMETRI]
+  Q: ABC üçgenünde, [AB] kenarının uzunluğu 10 cm, [BC] kenarının uzunluğu 8 cm ve [AC] kenarının uzunluğu 6 cm'dir. Bu üçgenin çevresi kaç cm'dir?
+  A) 24 cm
+  B) 26 cm
+  C) 28 cm
+  D) 30 cm
+  E) 32 cm
+
+#28 [MATEMATIK]
+  Q: Doğal sayılarla ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) Her doğal sayının karesi doğal sayıdır.
+  B) Her doğal sayının karesi tam sayıdır.
+  C) Her doğal sayının karesi rasyonel sayıdır.
+  D) Her doğal sayının karesi irrasyonel sayıdır.
+  E) Her doğal sayının karesi gerçek sayıdır.
+
+#29 [MATEMATIK]
+  Q: f(x) = x^2 + 4x + 3 fonksiyonunun grafiğinin x ekseniyle kesim noktalarını bulunuz.
+  A) (-3, 0) ve (-1, 0)
+  B) (-3, 0) ve (1, 0)
+  C) (-1, 0) ve (3, 0)
+  D) (-1, 0) ve (1, 0)
+  E) (-3, 0) ve (3, 0)
+
+#30 [GEOMETRI]
+  Q: Bir dörtgenin bir köşesinden diğer köşeye doğru bir çizgi çizilmiştir. Bu çizgi, dörtgenin alanı ve çevresini nasıl etkiler?
+  A) Alanı ve çevresini artırmaz
+  B) Alanı artar, çevresini azaltır
+  C) Alanı azaltır, çevresini artırır
+  D) Alanı ve çevresini azaltır
+  E) Alanı ve çevresini değiştirmez

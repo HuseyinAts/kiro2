@@ -195,13 +195,19 @@ class StudentReview(Base):
 
     # Relationships
     ratings = relationship(
-        "ReviewRating", back_populates="review", cascade="all, delete-orphan"
+        "ReviewRating",
+        back_populates="review",
+        cascade="all, delete-orphan",
     )
     votes = relationship(
-        "ReviewVote", back_populates="review", cascade="all, delete-orphan"
+        "ReviewVote",
+        back_populates="review",
+        cascade="all, delete-orphan",
     )
     reports = relationship(
-        "ReviewReport", back_populates="review", cascade="all, delete-orphan"
+        "ReviewReport",
+        back_populates="review",
+        cascade="all, delete-orphan",
     )
 
     # Indexes

@@ -76,7 +76,7 @@ export const useExamResults = (sinavId: string): UseExamResultsReturn => {
     let isMounted = true;
 
     const fetchResults = async () => {
-      if (!sinavId) return;
+      if (!sinavId) {return;}
       try {
         setLoading(true);
         setError(null);
@@ -86,7 +86,7 @@ export const useExamResults = (sinavId: string): UseExamResultsReturn => {
           advancedReportsService.getAdvancedExamReport(sinavId),
         ]);
 
-        if (!isMounted) return;
+        if (!isMounted) {return;}
 
         if (sonucData.status === 'fulfilled') {
           const performanceData = sonucData.value;

@@ -16,7 +16,6 @@ import {
   InsertDriveFile,
 } from '@mui/icons-material';
 import {
-  Container,
   Typography,
   Box,
   Grid,
@@ -33,7 +32,7 @@ import { useState, useEffect } from 'react';
 
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
-import { ModernLoader } from '../components/ui/ModernLoader';
+import { DashboardScaffold } from '../components/Layout/DashboardScaffold';
 import apiClient from '../services/apiClient';
 import modernColors from '../theme/modern-colors';
 import { useAuthStore } from '@/store/authStore';
@@ -65,82 +64,8 @@ export function ModernTeacherReportsPage() {
       const response = await apiClient.get('/api/v1/teacher/reports');
       setReports(response?.data?.reports || []);
     } catch (error) {
-      console.error('Raporlar yüklenemedi:', error);
-      // Mock data
-      setReports([
-        {
-          id: '1',
-          baslik: 'Sınıf Performans Raporu - 12-A',
-          aciklama: 'Matematik dersi genel performans analizi',
-          tarih: '2025-11-19T10:00:00',
-          tip: 'sinif',
-          format: 'pdf',
-          boyut: '2.4 MB',
-        },
-        {
-          id: '2',
-          baslik: 'Öğrenci Başarı Analizi',
-          aciklama: 'Bireysel öğrenci başarı raporları',
-          tarih: '2025-11-18T14:30:00',
-          tip: 'ogrenci',
-          format: 'excel',
-          boyut: '1.8 MB',
-        },
-        {
-          id: '3',
-          baslik: 'Konu Bazlı Analiz - Türev',
-          aciklama: 'Türev konusu öğrenci başarı analizi',
-          tarih: '2025-11-17T09:15:00',
-          tip: 'konu',
-          format: 'pdf',
-          boyut: '1.2 MB',
-        },
-        {
-          id: '4',
-          baslik: 'TYT Deneme Sınavı Sonuçları',
-          aciklama: 'İlk dönem TYT deneme sınav analizi',
-          tarih: '2025-11-15T16:45:00',
-          tip: 'sinav',
-          format: 'pdf',
-          boyut: '3.1 MB',
-        },
-        {
-          id: '5',
-          baslik: 'Dönemlik Genel Rapor',
-          aciklama: 'Birinci dönem genel performans raporu',
-          tarih: '2025-11-10T11:00:00',
-          tip: 'genel',
-          format: 'excel',
-          boyut: '4.5 MB',
-        },
-        {
-          id: '6',
-          baslik: 'AYT Matematik Sınav Raporu',
-          aciklama: 'AYT matematik sınav detaylı analizi',
-          tarih: '2025-11-08T13:20:00',
-          tip: 'sinav',
-          format: 'pdf',
-          boyut: '2.9 MB',
-        },
-        {
-          id: '7',
-          baslik: 'Öğrenci Gelişim Raporu',
-          aciklama: 'Öğrenci gelişim takip raporu',
-          tarih: '2025-11-05T10:30:00',
-          tip: 'ogrenci',
-          format: 'csv',
-          boyut: '856 KB',
-        },
-        {
-          id: '8',
-          baslik: 'Sınıf Karşılaştırma Raporu',
-          aciklama: '12-A ve 12-B sınıf karşılaştırması',
-          tarih: '2025-11-01T15:00:00',
-          tip: 'sinif',
-          format: 'excel',
-          boyut: '2.1 MB',
-        },
-      ]);
+      setReports([]);
+      // ErrorBoundary or Empty State will handle the missing items
     } finally {
       setLoading(false);
     }
@@ -214,7 +139,7 @@ export function ModernTeacherReportsPage() {
       // Simulate download
       alert(`${report.baslik} raporu indiriliyor...`);
     } catch (error) {
-      console.error('Rapor indirilemedi:', error);
+      throw error;
     }
   };
 
@@ -230,73 +155,17 @@ export function ModernTeacherReportsPage() {
     return reports.filter((r) => r.tip === tip).length;
   };
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: modernColors.gradients.mesh,
-        }}
-      >
-        <ModernLoader message="Raporlar yükleniyor..." size="large" />
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: modernColors.gradients.mesh,
-        py: 4,
-      }}
+    <DashboardScaffold
+      loading={loading}
+      loadingMessage="Raporlar yükleniyor..."
+      icon={<Assessment />}
+      iconGradient={modernColors.gradients.forest}
+      title="Raporlar ve Analizler"
+      titleGradient={modernColors.gradients.forest}
+      subtitle="Detaylı performans raporlarını görüntüleyin ve indirin"
+      maxWidth="lg"
     >
-      <Container maxWidth="lg">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 3,
-                  background: modernColors.gradients.forest,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Assessment sx={{ fontSize: 32, color: 'white' }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    fontWeight: 900,
-                    background: modernColors.gradients.forest,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  Raporlar ve Analizler
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Detaylı performans raporlarını görüntüleyin ve indirin
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </motion.div>
-
         {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -552,8 +421,7 @@ export function ModernTeacherReportsPage() {
             </motion.div>
           )}
         </AnimatePresence>
-      </Container>
-    </Box>
+    </DashboardScaffold>
   );
 }
 

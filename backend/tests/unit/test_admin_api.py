@@ -249,7 +249,14 @@ class TestCreateUser:
         """Endpoint returns 501 Not Implemented and directs to /auth/kayit."""
         response = await admin_client.post(
             "/api/v1/admin/users",
-            json={"email": "new@test.com", "password": "pass"},
+            # Uydurma yuk; uc zaten 501 donuyor, kimlik hic dogrulanmiyor.
+            # ONCEDEN VAR OLAN satir (ede451a57b, 6 Nis 2026) — detect-secrets
+            # yalniz DEGISEN dosyalari tarar, bu dosyaya dokununca tamami
+            # denetime girdi ve commit'i blokladi.
+            json={
+                "email": "new@test.com",
+                "password": "pass",  # pragma: allowlist secret
+            },
         )
         assert response.status_code == 501
         assert "kayit" in response.json()["detail"].lower()
@@ -664,16 +671,27 @@ class TestAddQuestion:
     @pytest.mark.asyncio
     async def test_add_question_success(self, admin_client: AsyncClient):
         """Valid question data returns 200 with success flag."""
-        new_question = MagicMock()
-        new_question.id = "newq1"
-        new_question.question_text = "Soru?"
-        new_question.exam_type = "TYT"
-        new_question.subject_area = "matematik"
+
+        # 1 Agu 2026: MagicMock KULLANILAMAZ. Router `getattr(soru,
+        # "zaten_mevcuttu", False)` ile cakisma kontrolu yapiyor (2d5d82f7e);
+        # MagicMock her nitelige truthy bir sahte dondurdugu icin uc 409
+        # veriyordu. Gercek nitelikleri tasiyan sade bir nesne kullaniliyor.
+        class _YeniSoru:
+            id = "newq1"
+            question_text = "Soru?"
+            exam_type = "TYT"
+            subject_area = "matematik"
+            created_at = None
+            zaten_mevcuttu = False  # cakisma YOK -> 200 beklenir
+
+        new_question = _YeniSoru()
         new_question.difficulty_level = MagicMock()
         new_question.difficulty_level.value = "ORTA"
-        new_question.created_at = None
 
-        with patch("services.soru_bankasi_service.soru_bankasi_servisi.soru_ekle") as mock_soru_ekle:
+        with patch(
+            "services.soru_bankasi_service.soru_bankasi_servisi.soru_ekle",
+            new_callable=AsyncMock,
+        ) as mock_soru_ekle:
             mock_soru_ekle.return_value = new_question
 
             response = await admin_client.post(
@@ -698,7 +716,9 @@ class TestAddQuestion:
         self, admin_client: AsyncClient
     ):
         """Service raises ValueError → endpoint returns 400."""
-        with patch("services.soru_bankasi_service.soru_bankasi_servisi.soru_ekle") as mock_soru_ekle:
+        with patch(
+            "services.soru_bankasi_service.soru_bankasi_servisi.soru_ekle"
+        ) as mock_soru_ekle:
             mock_soru_ekle.side_effect = ValueError("Alan eksik")
 
             response = await admin_client.post(
@@ -731,9 +751,20 @@ class TestUpdateQuestion:
     @pytest.mark.asyncio
     async def test_update_question_success(self, admin_client: AsyncClient):
         """Valid update returns 200 with updated data."""
-        updated = {"id": "q5", "soru_metni": "Updated?", "konu": "fizik"}
-        with patch("api.admin.admin_servisi") as mock_service:
-            mock_service.soru_guncelle = AsyncMock(return_value=updated)
+
+        # 1 Agu 2026 (#465/YENI-1): router artik `admin_servisi.soru_guncelle`
+        # DEGIL dogrudan `soru_bankasi_servisi.soru_guncelle` cagiriyor
+        # (@admin_required soru_id'yi kullanici sanip 500 uretiyordu).
+        # Ayrica yanit ACIK sozluk kuruyor, ham ORM nesnesi dondurmuyor.
+        class _GuncelSoru:
+            id = "q5"
+            question_text = "Updated?"
+
+        with patch(
+            "services.soru_bankasi_service.soru_bankasi_servisi.soru_guncelle",
+            new_callable=AsyncMock,
+        ) as mock_guncelle:
+            mock_guncelle.return_value = _GuncelSoru()
 
             response = await admin_client.put(
                 "/api/v1/admin/content/questions/q5",
@@ -744,23 +775,32 @@ class TestUpdateQuestion:
         body = response.json()
         assert body["success"] is True
         assert body["data"]["soru_metni"] == "Updated?"
+        assert body["data"]["id"] == "q5"
 
     @pytest.mark.asyncio
-    async def test_update_question_not_found_raises_400(
+    async def test_update_question_not_found_returns_404(
         self, admin_client: AsyncClient
     ):
-        """Service raises ValueError for unknown id → 400."""
-        with patch("api.admin.admin_servisi") as mock_service:
-            mock_service.soru_guncelle = AsyncMock(
-                side_effect=ValueError("Soru bulunamadi")
-            )
+        """Bilinmeyen id -> 404.
+
+        1 Agu 2026 (#465/YENI-1): eski surum servisin ValueError atmasini
+        bekleyip 400 dogruluyordu. Gercek servis
+        (`soru_bankasi_servisi.soru_guncelle`) bulunamayan satir icin `None`
+        donuyor ve router bunu 404'e ceviriyor. "Veri yok" bir istemci
+        dogrulama hatasi (400) DEGIL, bir kaynak-yok durumudur.
+        """
+        with patch(
+            "services.soru_bankasi_service.soru_bankasi_servisi.soru_guncelle",
+            new_callable=AsyncMock,
+        ) as mock_guncelle:
+            mock_guncelle.return_value = None
 
             response = await admin_client.put(
                 "/api/v1/admin/content/questions/doesnotexist",
                 json={"soru_metni": "x"},
             )
 
-        assert response.status_code == 400
+        assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_update_question_returns_403_for_student(
@@ -784,9 +824,17 @@ class TestDeleteQuestion:
 
     @pytest.mark.asyncio
     async def test_delete_question_success(self, admin_client: AsyncClient):
-        """Deleting existing question returns 200 with success message."""
-        with patch("api.admin.admin_servisi") as mock_service:
-            mock_service.soru_sil = AsyncMock(return_value=True)
+        """Deleting existing question returns 200 with success message.
+
+        1 Agu 2026: `a30416f34` router'i `admin_servisi.soru_sil`den
+        `soru_bankasi_servisi.soru_sil`e tasidi (@admin_required soru_id'yi
+        kullanici sanip 500 uretiyordu). Eski patch hedefi artik cagrilmiyor.
+        """
+        with patch(
+            "services.soru_bankasi_service.soru_bankasi_servisi.soru_sil",
+            new_callable=AsyncMock,
+        ) as mock_sil:
+            mock_sil.return_value = True
 
             response = await admin_client.delete("/api/v1/admin/content/questions/q1")
 
@@ -806,15 +854,23 @@ class TestDeleteQuestion:
         This test documents the current (buggy) behaviour so any fix shows up
         as a test change that must be reviewed.
         """
-        with patch("api.admin.admin_servisi") as mock_service:
-            mock_service.soru_sil = AsyncMock(return_value=False)
+        # 1 Agu 2026: eski patch hedefi (`api.admin.admin_servisi`) artik
+        # cagrilmiyor -> patch NO-OP'a donmustu ve test gercek servisi/DB'yi
+        # kosarak "tesadufen" geciyordu (vakum test). Hedef gercek cagri
+        # yoluna tasindi; artik False donusunun 404 uretmesini OLCUYOR.
+        with patch(
+            "services.soru_bankasi_service.soru_bankasi_servisi.soru_sil",
+            new_callable=AsyncMock,
+        ) as mock_sil:
+            mock_sil.return_value = False
 
             response = await admin_client.delete(
                 "/api/v1/admin/content/questions/missing"
             )
 
-        # The bare-except bug is fixed in soru_sil, now returns 404
+        # bare-except hatasi soru_sil'de duzeltildi, artik 404 doner
         assert response.status_code == 404
+        mock_sil.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_delete_question_returns_403_for_student(

@@ -9,6 +9,7 @@ from uuid import uuid4
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -18,7 +19,14 @@ class StreakTracking(Base):
 
     __tablename__ = "streak_tracking"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Current streak
@@ -67,6 +75,13 @@ class PerformanceHistory(Base):
     __tablename__ = "performance_history"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Performance data

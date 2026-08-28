@@ -74,8 +74,11 @@ class BERTurkEmbeddingService:
         self.model.to(self.device)
         self.model.eval()  # Evaluation mode
 
-        # Embedding cache
-        self.embedding_cache: dict[str, np.ndarray] = {}
+        # Embedding cache - LRU Cache to prevent OOM
+        from collections import OrderedDict
+
+        self.embedding_cache: OrderedDict[str, np.ndarray] = OrderedDict()
+        self.max_cache_size = 10000
 
         logger.info(f"BERTurk model loaded successfully: {model_name}")
 
@@ -98,7 +101,8 @@ class BERTurkEmbeddingService:
         # Cache kontrolü
         cache_key = f"{text}_{pooling_strategy}"
         if use_cache and cache_key in self.embedding_cache:
-            embedding = self.embedding_cache[cache_key]
+            embedding = self.embedding_cache.pop(cache_key)
+            self.embedding_cache[cache_key] = embedding  # Move to end (LRU)
             return EmbeddingResult(
                 text=text,
                 embedding=embedding,
@@ -149,6 +153,8 @@ class BERTurkEmbeddingService:
 
         # Cache'e ekle
         if use_cache:
+            if len(self.embedding_cache) >= self.max_cache_size:
+                self.embedding_cache.popitem(last=False)
             self.embedding_cache[cache_key] = embedding_np
 
         result = EmbeddingResult(
@@ -222,7 +228,7 @@ class BERTurkEmbeddingService:
             embeddings_np = embeddings.cpu().numpy()
 
             # Results oluştur
-            for text, embedding in zip(batch_texts, embeddings_np):
+            for text, embedding in zip(batch_texts, embeddings_np, strict=False):
                 results.append(
                     EmbeddingResult(
                         text=text,
@@ -352,7 +358,7 @@ class BERTurkEmbeddingService:
 
         # Cluster'ları organize et
         clusters: dict[int, list[str]] = {i: [] for i in range(n_clusters)}
-        for text, label in zip(texts, cluster_labels):
+        for text, label in zip(texts, cluster_labels, strict=False):
             clusters[int(label)].append(text)
 
         logger.info(f"Clustered {len(texts)} texts into {n_clusters} clusters")

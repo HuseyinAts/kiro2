@@ -16,3 +16,15 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+// Background Sync API — TS'in DOM lib'inde yok (henüz standart değil).
+// backgroundSyncService.ts kullanımı runtime'da zaten
+// `'sync' in ServiceWorkerRegistration.prototype` ile korunuyor.
+interface SyncManager {
+  register(tag: string): Promise<void>
+  getTags(): Promise<string[]>
+}
+
+interface ServiceWorkerRegistration {
+  readonly sync: SyncManager
+}

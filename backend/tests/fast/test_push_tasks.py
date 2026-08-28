@@ -12,6 +12,8 @@ Kapsam:
 
 from __future__ import annotations
 
+import logging
+
 from tasks.push_tasks import (
     _send_streak_reminders_impl,
     build_streak_reminder_notifications,
@@ -56,7 +58,7 @@ class _FakeConn:
 
 
 def test_build_one_notification_per_at_risk_user():
-    notifs = build_streak_reminder_notifications([("user-1", 7)])
+    notifs = build_streak_reminder_notifications([("user-1", 7, "org-1")])
     assert len(notifs) == 1
     n = notifs[0]
     assert n["user_id"] == "user-1"
@@ -68,7 +70,7 @@ def test_build_one_notification_per_at_risk_user():
 
 def test_build_does_not_truncate_over_ten_users():
     """Eski bug: users[:10] sadece ilk 10'a hatırlatıcı atıyordu."""
-    rows = [(f"u{i}", i + 1) for i in range(15)]
+    rows = [(f"u{i}", i + 1, "org-1") for i in range(15)]
     notifs = build_streak_reminder_notifications(rows)
     assert len(notifs) == 15
     assert len({n["id"] for n in notifs}) == 15  # her id benzersiz
@@ -78,7 +80,7 @@ def test_build_does_not_truncate_over_ten_users():
 
 
 def test_impl_inserts_one_notification_per_user_no_truncation():
-    rows = [(f"u{i}", 5) for i in range(15)]
+    rows = [(f"u{i}", 5, "org-1") for i in range(15)]
     conn = _FakeConn(rows)
     result = _send_streak_reminders_impl(connect=lambda _url: conn, db_url="x")
 
@@ -108,3 +110,83 @@ def test_streak_reminders_registered_in_beat_and_include():
     beat_tasks = {v["task"] for v in celery_app.conf.beat_schedule.values()}
     assert "tasks.push_tasks.send_streak_reminders" in beat_tasks
     assert "tasks.push_tasks" in celery_app.conf.include
+
+
+# --- DSN çözümleme + sır sızıntısı (6 Ağu 2026, canlı log'dan ölçüldü) ---
+#
+# Yukarıdaki testlerin HEPSİ `db_url="x"` + sahte connect enjekte ediyor, yani
+# env'den DSN çözümleme yolu hiç koşulmuyordu. Sonuç: görev üretimde 4 gün
+# boyunca her koşuda patladı (`sent: 0, status: error`) ve psycopg2'nin hata
+# metni DSN'i gömdüğü için `kiro2_app` parolası worker log'una 14 kez düştü.
+
+
+def test_sqlalchemy_driver_suffix_stripped_before_psycopg2(monkeypatch):
+    """DATABASE_URL SQLAlchemy formatındaysa psycopg2'ye ham libpq DSN gitmeli.
+
+    Container'da DATABASE_URL = postgresql+asyncpg://... psycopg2 '+asyncpg'
+    ekini anlamaz, dizeyi key=value sanır ve `invalid dsn` atar.
+    """
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://kiro2_app:gizli@host.docker.internal:5434/kiro2",  # pragma: allowlist secret
+    )
+    gorulen: dict[str, str] = {}
+
+    def _spy(url):
+        gorulen["url"] = url
+        return _FakeConn([])
+
+    _send_streak_reminders_impl(connect=_spy)
+
+    assert "+asyncpg" not in gorulen["url"], (
+        "psycopg2'ye SQLAlchemy DSN'i verildi: "
+        + gorulen["url"].replace("gizli", "***")
+    )
+    assert gorulen["url"].startswith("postgresql://")
+
+
+def test_notification_carries_organization_id():
+    """notifications.organization_id VARCHAR NOT NULL (varsayilansiz).
+
+    DSN kusuru duzeltilince ortaya cikti: baglanti kurulamadigi icin INSERT'e
+    hic sira gelmiyordu, bu yuzden eksik kolon gorunmuyordu (seri bagli sebep).
+    """
+    notifs = build_streak_reminder_notifications([("user-1", 7, "org-42")])
+    assert notifs[0]["organization_id"] == "org-42"
+
+
+def test_insert_includes_organization_id():
+    """INSERT kiracı kimligini tasimali; yoksa NOT NULL ihlali."""
+    conn = _FakeConn([("u1", 5, "org-42")])
+    _send_streak_reminders_impl(connect=lambda _url: conn, db_url="x")
+
+    inserts = [
+        e for e in conn.cursor_obj.executed if "INSERT INTO notifications" in e[0]
+    ]
+    assert len(inserts) == 1
+    sql, params = inserts[0]
+    assert "organization_id" in sql, "INSERT organization_id kolonunu icermiyor"
+    assert "org-42" in params, "Kiracı kimligi parametrelerde yok"
+
+
+def test_connection_error_does_not_leak_password(caplog):
+    """psycopg2 hata metni DSN'i gömer; parola ne log'a ne sonuca sızmalı.
+
+    Dönen sözlük Celery sonuç backend'ine de yazıldığı için iki ayrı sızıntı
+    yüzeyi var — ikisi de assert ediliyor.
+    """
+    parola = "sup3r-gizli-parola"
+
+    def _patlayan_connect(url):
+        raise RuntimeError(
+            'invalid dsn: missing "=" after '
+            f'"postgresql+asyncpg://kiro2_app:{parola}@host.docker.internal:5434/kiro2"'
+            " in connection info string"
+        )
+
+    with caplog.at_level(logging.ERROR):
+        sonuc = _send_streak_reminders_impl(connect=_patlayan_connect, db_url="x")
+
+    assert sonuc["status"] == "error"
+    assert parola not in sonuc["error"], "Parola dönüş değerinde sızdı"
+    assert parola not in caplog.text, "Parola log kaydında sızdı"

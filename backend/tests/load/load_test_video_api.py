@@ -245,7 +245,7 @@ class VideoAPIUser(HttpUser):
                         response.success()
                     else:
                         response.failure("API test endpoint returned non-ok status")
-                except:
+                except Exception:
                     response.failure("API test endpoint response parsing error")
             else:
                 response.failure(

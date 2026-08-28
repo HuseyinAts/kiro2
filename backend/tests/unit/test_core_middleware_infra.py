@@ -66,9 +66,6 @@ for _mod, _mock in _CPO_MOCKS.items():
     if _mod not in sys.modules:
         sys.modules[_mod] = _mock
 
-# -- plugin_architecture deps ------------------------------------------------
-if "yaml" not in sys.modules:
-    sys.modules["yaml"] = MagicMock()
 
 # -- distributed_monitoring deps ---------------------------------------------
 if "prometheus_client" not in sys.modules:

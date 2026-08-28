@@ -10,7 +10,6 @@ Models for:
 - Audit logging
 """
 
-import uuid
 from datetime import datetime
 from enum import Enum
 
@@ -18,6 +17,7 @@ from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Tex
 from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -186,7 +186,14 @@ class KVKKConsent(Base):
     __tablename__ = "kvkk_consents"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
@@ -203,7 +210,9 @@ class KVKKConsent(Base):
     )
 
     # Consent metadata
-    consent_text: Mapped[str] = mapped_column(Text, nullable=False)  # Shown to user
+    consent_text: Mapped[str] = mapped_column(
+        Text, nullable=False, deferred=True
+    )  # Shown to user
     privacy_policy_version: Mapped[str] = mapped_column(String(20), nullable=False)
 
     # Timestamps
@@ -220,7 +229,7 @@ class KVKKConsent(Base):
     # Metadata
     ip_address: Mapped[str | None] = mapped_column(String(45))  # IPv6 support
     user_agent: Mapped[str | None] = mapped_column(String(500))
-    additional_data: Mapped[dict | None] = mapped_column(JSON)
+    additional_data: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Indexes
     __table_args__ = {"extend_existing": True}
@@ -236,15 +245,15 @@ class KVKKPrivacyPolicyVersion(Base):
     __tablename__ = "kvkk_privacy_policy_versions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
 
     version: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
 
     # Metadata
-    is_active: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     effective_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
@@ -269,7 +278,14 @@ class KVKKDataExportRequest(Base):
     __tablename__ = "kvkk_data_export_requests"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
@@ -281,13 +297,15 @@ class KVKKDataExportRequest(Base):
         nullable=False,
         default=ExportRequestStatus.PENDING,
     )
-    request_reason: Mapped[str | None] = mapped_column(Text)
+    request_reason: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Export details
     export_format: Mapped[str] = mapped_column(
         String(20), nullable=False, default="json"
     )  # json, csv, pdf
-    data_categories: Mapped[dict | None] = mapped_column(JSON)  # Which data to export
+    data_categories: Mapped[dict | None] = mapped_column(
+        JSON, deferred=True
+    )  # Which data to export
 
     # File details
     file_path: Mapped[str | None] = mapped_column(String(500))
@@ -305,7 +323,7 @@ class KVKKDataExportRequest(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Processing details
-    error_message: Mapped[str | None] = mapped_column(Text)
+    error_message: Mapped[str | None] = mapped_column(Text, deferred=True)
 
 
 class KVKKDataDeletionRequest(Base):
@@ -318,7 +336,7 @@ class KVKKDataDeletionRequest(Base):
     __tablename__ = "kvkk_data_deletion_requests"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
@@ -330,18 +348,18 @@ class KVKKDataDeletionRequest(Base):
         nullable=False,
         default=DeletionRequestStatus.PENDING,
     )
-    request_reason: Mapped[str] = mapped_column(Text, nullable=False)
+    request_reason: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     deletion_type: Mapped[str] = mapped_column(
         String(50), nullable=False, default="full"
     )  # full, partial
 
     # Data to delete
-    data_categories: Mapped[dict | None] = mapped_column(JSON)
+    data_categories: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Review details
     reviewed_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
-    review_notes: Mapped[str | None] = mapped_column(Text)
-    rejection_reason: Mapped[str | None] = mapped_column(Text)
+    review_notes: Mapped[str | None] = mapped_column(Text, deferred=True)
+    rejection_reason: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Timestamps
     requested_at: Mapped[datetime] = mapped_column(
@@ -367,7 +385,7 @@ class KVKKAuditLog(Base):
     __tablename__ = "kvkk_audit_logs"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
 
     # Who accessed data
@@ -397,7 +415,7 @@ class KVKKAuditLog(Base):
     request_path: Mapped[str | None] = mapped_column(String(500))
 
     # Additional data
-    details: Mapped[dict | None] = mapped_column(JSON)
+    details: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Timestamp
     created_at: Mapped[datetime] = mapped_column(

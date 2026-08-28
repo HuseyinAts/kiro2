@@ -1378,6 +1378,7 @@ class LearningPathAgent:
             from sqlalchemy import select
 
             from core.database import get_db_session_context
+            from core.quality_gate import safe_for_beta_gate
             from models.question_bank import QuestionBankItem
 
             # Ordered difficulty levels for progressive ramping
@@ -1412,25 +1413,47 @@ class LearningPathAgent:
 
                     dialect = session.bind.dialect.name if session.bind else "sqlite"
                     if dialect == "postgresql":
+                        # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — bu dal
+                        # sorgu kurulurken AttributeError atıyordu, dıştaki except onu
+                        # yutuyordu, yani her faz `quiz` anahtarsız dönüyordu.
+                        # func.random() her iki dialect'te de çalışır
+                        # (bkz offline_sync_service.py:112, commit ead9e9948).
                         query = (
-                            select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
-                            .tablesample(sa_func.bernoulli(20))
+                            select(
+                                QuestionBankItem.id, QuestionBankItem.difficulty_level
+                            )
                             .where(
                                 QuestionBankItem.is_active == True,
                                 QuestionBankItem.subject_area == subject.upper(),
-                                QuestionBankItem.difficulty_level.in_(target_difficulties),
+                                QuestionBankItem.difficulty_level.in_(
+                                    target_difficulties
+                                ),
+                                # Kalite kapısı (core/quality_gate.py) — kapısız sorgu
+                                # 85.731 yargılanmamış/reddedilmiş soruyu öğrenciye
+                                # servis ediyordu.
+                                safe_for_beta_gate(QuestionBankItem.id),
                             )
+                            .order_by(sa_func.random())
                             .limit(10)
                         )
                         result = await session.execute(query)
                         questions = result.all()
                         if len(questions) < 10:
                             query = (
-                                select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
+                                select(
+                                    QuestionBankItem.id,
+                                    QuestionBankItem.difficulty_level,
+                                )
                                 .where(
                                     QuestionBankItem.is_active == True,
                                     QuestionBankItem.subject_area == subject.upper(),
-                                    QuestionBankItem.difficulty_level.in_(target_difficulties),
+                                    QuestionBankItem.difficulty_level.in_(
+                                        target_difficulties
+                                    ),
+                                    # Kalite kapısı — az-sonuç fallback'i de kapılı
+                                    # olmalı, aksi halde havuz inceldiğinde sızıntı
+                                    # buradan geri gelir.
+                                    safe_for_beta_gate(QuestionBankItem.id),
                                 )
                                 .limit(10)
                             )
@@ -1438,11 +1461,18 @@ class LearningPathAgent:
                             questions = result.all()
                     else:
                         query = (
-                            select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
+                            select(
+                                QuestionBankItem.id, QuestionBankItem.difficulty_level
+                            )
                             .where(
                                 QuestionBankItem.is_active == True,
                                 QuestionBankItem.subject_area == subject.upper(),
-                                QuestionBankItem.difficulty_level.in_(target_difficulties),
+                                QuestionBankItem.difficulty_level.in_(
+                                    target_difficulties
+                                ),
+                                # Kalite kapısı (core/quality_gate.py) — sqlite dalı da
+                                # kapılı olmalı ki test/üretim davranışı ayrışmasın.
+                                safe_for_beta_gate(QuestionBankItem.id),
                             )
                             .order_by(sa_func.random())
                             .limit(10)

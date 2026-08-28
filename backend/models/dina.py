@@ -5,7 +5,6 @@ NanoSkill, QMatrix, DINAParameter ve StudentNanoSkillMastery modelleri.
 DINA (Deterministic Input Noisy AND-gate) bilişsel tanı modeli.
 """
 
-import uuid
 from datetime import datetime
 
 from sqlalchemy import (
@@ -21,6 +20,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -31,11 +31,11 @@ class NanoSkill(Base):
     __tablename__ = "nano_skills"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     knowledge_point_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -51,7 +51,7 @@ class QMatrix(Base):
     __tablename__ = "q_matrix"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     question_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     nano_skill_id: Mapped[str] = mapped_column(
@@ -66,9 +66,7 @@ class QMatrix(Base):
         UniqueConstraint(
             "question_id", "nano_skill_id", name="uq_qmatrix_question_skill"
         ),
-        Index(
-            "idx_qmatrix_pair", "question_id", "nano_skill_id", unique=True
-        ),
+        Index("idx_qmatrix_pair", "question_id", "nano_skill_id", unique=True),
     )
 
     def __repr__(self) -> str:
@@ -84,7 +82,7 @@ class DINAParameter(Base):
     __tablename__ = "dina_parameters"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     question_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     slip: Mapped[float] = mapped_column(Float, default=0.1)
@@ -106,7 +104,14 @@ class StudentNanoSkillMastery(Base):
     __tablename__ = "student_nano_skill_mastery"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -122,9 +127,7 @@ class StudentNanoSkillMastery(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint(
-            "student_id", "nano_skill_id", name="uq_student_nano_skill"
-        ),
+        UniqueConstraint("student_id", "nano_skill_id", name="uq_student_nano_skill"),
     )
 
     def __repr__(self) -> str:

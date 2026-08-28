@@ -12,12 +12,12 @@ mock-real contract, not service-level behaviour (covered elsewhere).
 from __future__ import annotations
 
 import sys
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
+
 sys.modules["utils.pdf_generator"] = MagicMock()
 
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -166,11 +166,32 @@ async def test_osym_ets_real_keys_match_mock():
         "avg_guessing": 0.2,
         "sample_size": 100,
     }
-    with patch(
-        "api.advanced_reports._get_subject_irt_aggregate",
-        new=AsyncMock(return_value=fake_agg),
-    ):
+    # B3 FAZ 3: hedef `_get_subject_irt_aggregate` DEGIL `_get_irt_aggregate`.
+    # Cagri yeri konu-bazli fonksiyona tasindi; eski ada yapilan patch artik
+    # HICBIR SEYI yakalamiyordu ve test sessizce GERCEK sorguya dusuyordu
+    # (sqlite'ta "no such table: question_bank" ile patladi -- bu sefer
+    # gurultulu oldu, ama sinif olarak BAYAT MOCK ANKRAJI: S226-S228'de ayni
+    # sinif 50 testi aylarca mock dalinda kosturmustu).
+    sahte = AsyncMock(return_value=fake_agg)
+    with patch("api.advanced_reports._get_irt_aggregate", new=sahte):
         real_result = await _get_osym_ets_karsilastirmasi_real("s1", temel)
+
+    # Ankrajin CANLI oldugunu civiler: `patch` var OLMAYAN ada yapilirsa
+    # AttributeError verir, ama var olup CAGRILMAYAN ada yapilirsa SESSIZ
+    # gecer -- mock devreye girmez, gercek kod kosar.
+    #
+    # DURUST SINIR (olculdu): bu assert'in ateslendigi MUTASYONLA
+    # KANITLANMADI. Ankraji eski ada geri alan mutasyon denendi; test
+    # FAIL verdi ama asagidaki assert'e ULASMADAN -- gercek sorgu sqlite'ta
+    # "no such table: question_bank" ile once patladi. Yani bu ortamda bayat
+    # ankraji yakalayan sey bu assert DEGIL, DB'nin bos olmasi.
+    # Assert yine de savunma katmanidir: testler bir gun gercek Postgres'e
+    # kosarsa (ki bu depoda integration testleri oyle kosuyor) sorgu BASARILI
+    # olur, sessiz mock-kacirma tek yakalayici olarak bunu birakir.
+    assert sahte.await_count > 0, (
+        "bayat mock ankraji: `_get_irt_aggregate` hic cagrilmadi -- cagri yeri "
+        "tasinmis olabilir, test gercek sorguya dusuyor"
+    )
 
     assert set(real_result.keys()) == set(mock_result.keys()), (
         f"OSYM-ETS schema drift: real-only={set(real_result) - set(mock_result)}, "
@@ -178,9 +199,9 @@ async def test_osym_ets_real_keys_match_mock():
     )
     # Nested contract — these are what the frontend renders.
     for nested in ("osym_karsilastirma", "ets_karsilastirma"):
-        assert set(real_result[nested].keys()) == set(mock_result[nested].keys()), (
-            f"{nested} nested drift"
-        )
+        assert set(real_result[nested].keys()) == set(
+            mock_result[nested].keys()
+        ), f"{nested} nested drift"
 
 
 @pytest.mark.asyncio

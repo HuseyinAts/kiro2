@@ -1,0 +1,366 @@
+=== OPUS COHERENCE — her soru için: OK / GARBLE / FIGURE / DEGENERATE
+
+#1 [TARIH]
+  Q: Sevr Barış Antlaşması'nın Bazı Maddeleri: Doğu Trakya, Batı Anadolu ve Ege Adaları Yunanistan'a bırakılacak. Güneybatı Anadolu, Rodos ve On iki Ada İtalya'ya bırakılacak. Kapitülasyonlar kaldırılacak. Doğu Anadolu'da iki yeni devlet kurulacak. (Ermenistan, Kürdistan) Osmanlı Devleti savaş tazminatı ödeyecek. Lozan Barış Antlaşması'nın Bazı Maddeleri: Yunanistan, Karaağaç ve çevresini savaş tazminatı olarak Türkiye'ye verecek. Kapitülasyonlar kaldırılacak. Anadolu'daki bütün gayrimüslimler Türk vatandaşı sayılacak. İtilaf Devletleri, I. Dünya Savaşı nedeniyle istedikleri savaş tazminatlarından vazgeçtiler. Bu bilgilere göre Yeni Türk Devleti'nin Lozan Barış Antlaşması ile; I. bağımsız devlet anlayışı ilkesinin uygulanması, II. iç işlerine müdahale edilmesi, III. bazı ekonomik yaptırımların uygulanması durumlarından hangilerini engellediği söylenebilir?
+  A) Yalnız I
+  B) Yalnız III
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#2 [MATEMATIK]
+  Q: Örneğin, 12 sayısının pozitif tam bölenleri şunlardır: 1, 2, 3, 4, 6, 12. Bu sayının negatif tam bölenleri de şunlardır: -1, -2, -3, -4, -6, -12. Bu sayının kaç pozitif tam böleni vardır?
+  A) 6
+  B) 5
+  C) 4
+  D) 3
+  E) 2
+
+#3 [MATEMATIK]
+  Q: Kazanım Hedef - 2
+1. Aşağıdaki ifadelerden hangisi tam kare ifadedir?
+  A) x^2 + 4x + 4
+  B) x^2 - 4x + 4
+  C) x^2 + 4x - 4
+  D) x^2 - 4x - 4
+  E) x^2 + 4x
+
+#4 [EDEBIYAT]
+  Q: 1908 - 1923 yıllarını konu alan romancılardan ilk grup İttihat ve Terakki, I. Dünya Savaşı ve Milli Mücadele yıllarını --- yazarlar, kendi dönemlerinin tanıklığını yapmışlardır. İkinci grup ise Milli Mücadele yıllarını --- yazarlarımızdır: Kemal Tahir, Tank Buğra ve Samim Kocagöz. Kemal Tahir, İttihat ve Terakkinin iştaha geldiği dönemde doğmuş, Milli Mücadele yıllarına çocuk gözleriyle tanıklık etmiştir. Üçüncü grupta ise ---, Milli Mücadele yıllarını kurgulayan yazarlarımız vardır. Bu gruptaki yazarlar, yazdıkları ve belgeleri hareket noktası olarak almış yorumlamışlardır.
+
+Bu parçada boş bırakılan yerlere aşağıdakilerden hangisi sırasıyla getirilmelidir?
+  A) kurgulayan - eğitimsiz olan - deneysel verilere dayalı
+  B) yaşayan - çocuk olan - belgeler ışığında
+  C) okuyan - deneyimsiz olan - gözleme dayalı
+  D) sorgulayan - hazırlıksız olan - tanıklığa dayalı
+  E) belgeleyen - farkında olan - tecrübeye dayalı
+
+#5 [MATEMATIK]
+  Q: m ve n birer gerçek sayı olmak üzere,
+$ \sqrt[4]{m^4} = 12 - m $
+$ \sqrt[6]{n^6} = n + 4 $
+eşitlikleri veriliyor.
+Buna göre,
+$ \sqrt[3]{n-m} $
+ifadesinin değeri kaçtır?
+  A) 2
+  B) $ \sqrt[3]{7} $
+  C) -2
+  D) $ -\sqrt[3]{5} $
+  E) -1
+
+#6 [GEOMETRI]
+  Q: ABC üçgenünde, A = 90°, BC = 10 cm, AB = 6 cm olduguına göre, AC uzunluğu kaç cm'dir?
+  A) 8 cm
+  B) 10 cm
+  C) 12 cm
+  D) 14 cm
+  E) 16 cm
+
+#7 [TURKCE]
+  Q: Yaşadığım sorunları dile getirmek, bir başka deyişle onları somutlama çabasından başka bir şey olmadı yazdıkça. Kimi zaman, bunu başaramadığımda, sinirlerin alına çıkarmaya geldim. Yazmak benim bir parçamda ona emniyetle yaşamak değil, onlardan kurtulmak istiyordum. Yazdıktan sonra da onları unuttum. Yazıp yayınladıktan sonra büyük çoğunluğunun sarkıcı olduğunu duymuştum. Bu durumun bana neler mal olduğunu bilmiyor değildim. Yazar olarak çok şey yitirdim. Ama kazanmak için yitirmek gerekir.
+
+Bu parçada aşağıdaki sorulardan hangisinin cevabı yoktur?
+  A) Yazılarınızda her şeyi açık açık yazabilmiş misiniz?
+  B) Bir yazar olarak hayıflandığınız bir şey var mı?
+  C) Yazmak sizin için ne anlam ifade ediyor?
+  D) Her zaman, yazarlıkteki amacınıza ulaşabildiniz mi?
+  E) Yazılarınız ile kendiniz arasında bir bağ var mıydı?
+
+#8 [MATEMATIK]
+  Q: A ve B pozitif tam sayılar için, aşağıdaki eşitlikler veriliyor:
+A + B = 1000
+A - B = 200
+Buna göre, A ve B'nin toplamı kaçtır?
+  A) 1200
+  B) 1400
+  C) 1600
+  D) 1800
+  E) 2000
+
+#9 [TURKCE]
+  Q: 5. Şiirleri İtalyanca, Rumence ve Arnavutça'ya da çevrilen şairin en büyük takdirlerinden biri şüphesiz yazıları geçirdiği o şirin kıyı kasabası Akçay'dır. 1992'den beri her yıl ağustos ayının son üç günü gerçekleşen Akçay Şiirler ve Bestekârlar Festivali'nin organize eden sanatçı, maalesef yaşamının yaklaşık son bir yılını hastanede yoğun bakımda geçirmişti. Cemal Safî, 20 Nisan 2018'de aramızdan ayrıldı. Cenazesi çok kalabalık. Defalcılar farklı ödüllerle layık görülmüş usta, Ankara'dan ve ülkenin dört bir yanından koşup gelmiş sanatçı dostlarının ve hayranlarının omuzlarında uğurlandı; son yolculuğuna. "İçim ürperiyor ya evde yoksan" diye yazmıştı geri. Keşke fesidâyide-seydim kulagına, "An be usta, evde olmadığını bilmek de inan çok can yakıyor." Bu parçanın anlatımıyla ilgili; I. Nitelleyici sözlere yer verilmemiştir. II. Birinci kişi anlatımı kullanılmıştır. III. Örneklemeğe başvurulmuştur. yargılarından hangisi söylenebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+#10 [TURKCE]
+  Q: I. Bu etkileyici yaratan faktörler; karşılaştığı kişinin beden dilinden, kullandığı kelimelere ve fiziksel taşıdığı bütün aksesuarlardan içinde bulunduğu, fiziki ortam nesnelerine kadar geniş bir dağılım gösterir.
+
+II. Bu kararlar olumlu veya olumsuz olabilir.
+
+III. Bütün bu faktörlerin bileşkeği algılayan kişinin değerlerinde bir yer bulur ve o çerçevede yorumlanır.
+
+IV. Algılamanın kişisel özellikleri ve toplumsal normları ile kaplamış olduğu yargılar, etkileyici verilerine bağlı olarak ilişkimizin anında bir karar verir ve insan karşındaki kişiye bir etiket yapıştırır.
+
+V. Karşı karşıya gelen iki kişi arasındaki ilk etkileşim, iletişim sürecinin önemli bir belirleyicisi olmaktadır.
+
+Yukarıdaki cümlelerin anlamlı bir bütün oluşturacak biçimde sıralanışı aşağıdakilerden hangisidir?
+  A) I - III - II - IV - V
+  B) V - I - III - IV - II
+  C) II - III - IV - I - V
+  D) III - I - V - IV - II
+  E) IV - V - I - II - III
+
+#11 [GEOMETRI]
+  Q: Bir tane silindirin yüksekliği 10 cm ve çapı 5 cm olsun. Bu silindirin hacmini bulmak için hangi formül kullanılmalıdır?
+  A) V = πr^2h
+  B) V = 2πrh
+  C) V = πr^3h
+  D) V = πr^2h^2
+  E) V = πr^2h^3
+
+#12 [GEOMETRI]
+  Q: ABC üçgeni veriliyor. ABD ve ADE üçgenleri birbirine benzerdir. ABD üçgeninin bir kenarı 10 cm, ADE üçgeninin bir kenarı 5 cm ve ABD üçgeninin bir açısı 60° ise, ADE üçgeninin bir açısı kaç derecedir?
+  A) 60°
+  B) 30°
+  C) 45°
+  D) 75°
+  E) 90°
+
+#13 [GEOMETRI]
+  Q: Bir dairesel dikdörtgen, bir kenarının uzunluğu 10 cm ve diğer kenarının uzunluğu 5 cm'dir. Bu dikdörtgenin çevresi kaç cm'dir?
+  A) 30 cm
+  B) 40 cm
+  C) 50 cm
+  D) 60 cm
+  E) 70 cm
+
+#14 [MATEMATIK]
+  Q: a ve b iki pozitif tam sayıdır. a ve b'nin en küçük ortak katı 12'dir. a ve b'nin en büyük ortak böleni 3'tür. a ve b'nin toplamı kaçtır?
+  A) 15
+  B) 18
+  C) 21
+  D) 24
+  E) 27
+
+#15 [GEOMETRI]
+  Q: ABC üçgeni verilmiştir. A, B, C noktalarında dik açılar vardır. A, B, C noktalarında dik açılar vardır. ABC üçgeninin iç açılarının ölçülerinin toplamı kaç derecedir?
+  A) 180°
+  B) 270°
+  C) 360°
+  D) 450°
+  E) 540°
+
+#16 [FIZIK]
+  Q: 1. Bir nesne sabit bir hızla hareket ederse, bu nesnenin konumunun zamanla nasıl değiştiği?
+  A) Konumunun zamanla artar.
+  B) Konumunun zamanla azalır.
+  C) Konumunun zamanla sabit kalır.
+  D) Konumunun zamanla azalır ve sonra artar.
+  E) Konumunun zamanla artar ve sonra azalır.
+
+#17 [GEOMETRI]
+  Q: Dik koordinat düzleminde merkezleri $(9, 0)$ ve $(0, 12)$ noktaları olan çemberlerin yarıçap uzunlukları sırasıyla 4 birim ve 6 birimdir. Bu çemberlerin birbirine en yakın noktaları ile orijini köşe kabul eden üçgensel bölgenin alanı kaç birimkaredir?
+  A) 18
+  B) 27
+  C) 36
+  D) 45
+  E) 54
+
+#18 [MATEMATIK]
+  Q: 1. Sıra ve eşitliklerle ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) a + b = b + a
+  B) a × b = b × a
+  C) a ÷ b = b ÷ a
+  D) a × b = a + b
+  E) a ÷ b = a - b
+
+#19 [GEOMETRI]
+  Q: Dik koordinat düzleminde köşe noktalarının koordinatları A(2, 0), B($-\sqrt{3}$, -1) ve C($\sqrt{3}$, -1) olan ABC eşkenar üçgeni aşağıda verilmiştir.
+Bu eşkenar üçgen için,
+I. O noktası etrafında saat yönünün tersine $30^\circ$ döndürüldüğünde [AB] kenarı y eksenine paralel olur.
+II. O noktası etrafında saat yönünde $60^\circ$ döndürüldüğünde C noktasının yeni koordinatları (0, -2) olur.
+III. Sırasıyla x ile y eksenine göre simetriği alındığında A noktasının koordinatları aynı kalır.
+ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#20 [MATEMATIK]
+  Q: a ve b 1'den farklı pozitif gerçel sayılar olsun. Bu sayılar için aşağıdaki eşitlikler veriliyor:
+
+\[\frac{a^2}{b} + \frac{b^2}{a} = 2\]
+
+Bu eşitlikten hangileri doğrudur?
+  A) a = b
+  B) a + b = 1
+  C) a^2 + b^2 = 1
+  D) a^2b + ab^2 = 1
+  E) a^2b^2 = 1
+
+#21 [MATEMATIK]
+  Q: a ve b iki tam sayı olmak üzere, aşağıdaki eşitlikler veriliyor:
+
+a + b = 10
+a - b = 2
+
+Bu eşitliklerden hangileri doğrudur?
+  A) a = 4, b = 6
+  B) a = 6, b = 4
+  C) a = 8, b = 2
+  D) a = 2, b = 8
+  E) a = 3, b = 7
+
+#22 [GEOMETRI]
+  Q: Bir üçgenin bir kenarı 10 cm uzunluğunda, üçgenin yüksekliği 8 cm ise bu üçgenin alanını hesaplayınız.
+  A) 40 cm²
+  B) 50 cm²
+  C) 60 cm²
+  D) 70 cm²
+  E) 80 cm²
+
+#23 [MATEMATIK]
+  Q: ABC üçgeni verilmiştir. ABC üçgeninin A açısının ölçüsü 60° ve BC = 8 cm olduguna göre, A açısının cosinusu kaçtır?
+  A) 0.5
+  B) 0.7
+  C) 0.75
+  D) 0.75/2
+  E) 0.75/4
+
+#24 [FIZIK]
+  Q: Dalgaların mekaniksel hareketi ile ilgili olarak, aşağıdaki ifadelerden hangisi doğrudur?
+  A) Dalgaların hızı, dalganın uzunluğu ile doğrudan ilgilidir.
+  B) Dalgaların hızı, dalganın uzunluğu ile ters orantılıdır.
+  C) Dalgaların hızı, dalganın uzunluğu ile ilgili bir sabit katsayının etkisiyle değişmez.
+  D) Dalgaların hızı, dalganın uzunluğu ile ilgili bir sabit katsayının etkisiyle değişir.
+  E) Dalgaların hızı, dalganın uzunluğu ile ilgili bir sabit katsayının etkisiyle değişmez.
+
+#25 [GEOMETRI]
+  Q: 17. Çapında bir çemberde, merkezi açı ölçüsü 120° olan bir kesenin alanının, çemberin alanının % kaçına denk gelmektedir?
+  A) 25
+  B) 30
+  C) 35
+  D) 40
+  E) 45
+
+#26 [KIMYA]
+  Q: X, Y ve Z elementlerinin atomik ağırlıkları sırasıyla A_X, A_Y ve A_Z'dir. Bu elementlerin bir bileşikteki ağırlık oranları sırasıyla 2:3:4'tür. Bu bileşikteki atomik ağırlık ortalaması A oluyor. A_X, A_Y ve A_Z'yi veren ifadeyi bulun.
+  A) A = 2A_X + 3A_Y + 4A_Z
+  B) A = \frac{2A_X + 3A_Y + 4A_Z}{9}
+  C) A = \frac{2A_X + 3A_Y + 4A_Z}{10}
+  D) A = \frac{2A_X + 3A_Y + 4A_Z}{11}
+  E) A = \frac{2A_X + 3A_Y + 4A_Z}{12}
+
+#27 [TARIH]
+  Q: Soru: Aşağıdaki cümlelerden hangisi 'Modern Sosyal Bilimler' kavramını doğru tanımlar?
+  A) A) Felsefe ve siyaset bilgisi
+  B) B) Tarih ve siyaset bilgisi
+  C) C) Tıp ve siyaset bilgisi
+  D) D) Tıp ve felsefe bilgisi
+  E) E) Tıp ve ekonomi bilgisi
+
+#28 [GEOMETRI]
+  Q: ABC üçgenü veriliyor. A açısının ölçüsü 30°, B açısının ölçüsü 45° ve BC kenarı 3 cm uzunluğunda olduğuna göre, A açısına ait sinüs değeri kaçtır?
+  A) 0.5
+  B) 0.707
+  C) 0.866
+  D) 0.966
+  E) 1
+
+#29 [MATEMATIK]
+  Q: Karakterlerin sayısal değerlerini kullanarak aşağıdaki ifadelerden hangisi doğrudur?
+  A) A) 12 + 15 = 27
+  B) B) 12 - 15 = 27
+  C) C) 12 × 15 = 27
+  D) D) 12 ÷ 15 = 27
+  E) E) 12 + 15 = 27
+
+#30 [FIZIK]
+  Q: Bir cismin kinetik enerjisi P ve potansiyel enerjisi Q olsun. Bu cismin kinetik enerjisi 20 J, potansiyel enerjisi 30 J ise, bu cisme verilen toplam enerji kaç J'dir?
+  A) 50 J
+  B) 10 J
+  C) 40 J
+  D) 30 J
+  E) 20 J
+
+#31 [TURKCE]
+  Q: (I) Rüyâ görmemizin temel işlevlerinden biri uyarıldığımız uyku dışı durumlarda sorunu bize yansımalı sorunumuz üzerinde aralıklarla çalışmasına izin vermektir. (II) Bu tür bir zaman olmasa, birtakır aydınlık zihinsel gerilimler ortaya çıkar. (III) Zor bir zaman yaşadıkların sonrasına daha fazla uykuya ihtiyaç duyuyoruzun farkındayızdır. (IV) Bir anlamda uyku zamanlarımızı sorumluluklarımızdan kaçmak için kullanıyoruz; bu sorun çözme zamanında da diyebiliriz. (V) Rüyalar, gelecekteki olaylar olarak da kullanılabilirler. Bunun en saf hali, ilk Çığrış-ka incubalo yönetime benzeri istiare gerçekleştiğinde görürüz. (VI) Kişi bu yolla, bir sorunun cevabını, bir eylemin çözümünü görmeyebilir.
+
+Bu parça iki paragrafta ayrılmak istense ikinci paragrafta numaralı cümlelerden hangisiyle başlar?
+  A) II
+  B) III
+  C) IV
+  D) V
+  E) VI
+
+#32 [TURKCE]
+  Q: ??? - Kabaca söylemek gerekirse estetik: doğada ve sanatta güzeli araştıran, sanat felsefesi ise sanatı araştıran. Böylece sanat estetiği hem sanat felsefesi tarafından araştırılmaktadır. Bu noktada önemli olan ise neyin hangi alt alanda araştırıldığıdır; neyin nasıl araştırıldığıdır. Yani, ister sanat felsefesi ister estetik olsun alt alanda, önemli olan sanata ilişkin sorulara nasıl bir bakışla bakıldığıdır.
+
+Bu parçanın başına düşüncenin akışına göre aşağıdakilerden hangisi getirilmelidir?
+  A) Estetik ile sanat felsefesi aynı anlama mı gelmektedir.
+  B) Estetiğin alanı sanat felsefesinin alanından daha mı geniştir.
+  C) Güzellik nedir, sanat eserlerinin doğayla ilişkisi nedir.
+  D) Sanat eserini diğer rastgele eserlerden ayıran unsurlar nelerdir.
+  E) Sanat felsefesi sadece sanat alanında karşılaşıp çıkan güzelliği mi irderler
+
+#33 [MATEMATIK]
+  Q: $\frac{1,\overline{829} + 7,\overline{169}}{0,\overline{569} + 2,\overline{429}} = A$ olduğuna göre, $A,\overline{3} + A,\overline{2} + A,\overline{4}$ işleminin sonucu kaçtır?
+  A) 12
+  B) 11
+  C) 10
+  D) 9
+  E) 8
+
+#34 [GEOMETRI]
+  Q: ABC üçgenü ADE üçgeni benzerdir. ADE üçgeninin A açısının ölçüsü 30° ise, ABC üçgeninin A açısının ölçüsü kaç derecedir?
+  A) 30°
+  B) 45°
+  C) 60°
+  D) 90°
+  E) 120°
+
+#35 [MATEMATIK]
+  Q: a ve b pozitif gerçel sayılar olmak üzere, logaritmalar aşağıdaki gibi veriliyor:
+loga = 3, logb = 5
+a ve b'nin çarpımının logaritmasının değeri kaçtır?
+  A) 8
+  B) 15
+  C) 2
+  D) 18
+  E) 12
+
+#36 [FIZIK]
+  Q: Fermionlar
+Maddiye oluşturan temel parçacıklardır. Kuarklar, leptonlar, hadronlar, baryonlar ve mezonlar fermion ailesinden oluşur.
+  A) Kuarklar ve leptonlar
+  B) Hadronlar ve baryonlar
+  C) Kuarklar ve hadronlar
+  D) Baryonlar ve mezonlar
+  E) Leptonlar ve mezonlar
+
+#37 [MATEMATIK]
+  Q: Aşağıdaki ifadelerden hangisi x > 0 ve y > 0 olmak üzere x + y = 10 ve xy = 24 ise?
+  A) x = 6, y = 4
+  B) x = 4, y = 6
+  C) x = 5, y = 5
+  D) x = 7, y = 3
+  E) x = 8, y = 2
+
+#38 [FIZIK]
+  Q: Bir havaalanında, bir uçağın pist üzerindeki hızını ve yönünü ölçmek için kullanılan bir cihazın adı nedir?
+  A) Radar
+  B) GPS
+  C) Aerodinamik model
+  D) Kamera
+  E) Hız metre
+
+#39 [GEOMETRI]
+  Q: Bir paralel kenarlı üçgenin bir kenarı 6 cm, diğer kenarı 8 cm ve yüksekliği 4 cm ise, üçgenin alanı kaç cm²'dir?
+  A) 12 cm²
+  B) 24 cm²
+  C) 36 cm²
+  D) 48 cm²
+  E) 72 cm²
+
+#40 [GEOMETRI]
+  Q: ABC üçgenünde Şekil 1'de verilen A, B, C noktaları bir doğru parçası üzerinde yer alır. A ve B noktaları birbirinden 6 birim uzaklıkta, B ve C noktaları birbirinden 8 birim uzaklıkta yer alır. A ve C noktaları birbirinden kaç birim uzaklıkta yer alır?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18

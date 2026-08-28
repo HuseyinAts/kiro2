@@ -60,7 +60,7 @@ function computeLayout(
   const nodeMap = new Map<string, { x: number; y: number }>();
   g.nodes().forEach((id) => {
     const node = g.node(id);
-    if (node) nodeMap.set(id, { x: node.x, y: node.y });
+    if (node) {nodeMap.set(id, { x: node.x, y: node.y });}
   });
 
   const layoutNodes: LayoutNode[] = rooms.map((r) => ({
@@ -88,7 +88,7 @@ export function useDungeonMap(subject: string): UseDungeonMapReturn {
   const [error, setError] = useState<string | null>(null);
 
   const fetchMap = useCallback(async () => {
-    if (!subject) return;
+    if (!subject) {return;}
     setLoading(true);
     setError(null);
     try {
@@ -108,7 +108,7 @@ export function useDungeonMap(subject: string): UseDungeonMapReturn {
   }, [fetchMap]);
 
   const layout = useMemo(() => {
-    if (!data) return { nodes: [], edges: [] };
+    if (!data) {return { nodes: [], edges: [] };}
     return computeLayout(data.rooms, data.edges);
   }, [data]);
 

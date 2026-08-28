@@ -13,12 +13,12 @@ print("TESTING environment variable set to:", os.environ.get('TESTING'))
 if __name__ == "__main__":
     # Run pytest with the environment variable set
     cmd = [
-        sys.executable, "-m", "pytest", 
+        sys.executable, "-m", "pytest",
         "tests/", "--tb=no", "-q"
     ]
-    
+
     env = os.environ.copy()
     env['TESTING'] = 'true'
-    
+
     result = subprocess.run(cmd, env=env)
     sys.exit(result.returncode)

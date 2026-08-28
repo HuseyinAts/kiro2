@@ -8,7 +8,7 @@ REQ-13.1: Makale/Soru içerik yönetimi - Alternatif çözüm yolları
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +21,9 @@ from services.alternative_solutions_service import AlternativeSolutionsService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/questions/alternatives", tags=["Alternative Solutions"])
+router = APIRouter(
+    prefix="/api/v1/questions/alternatives", tags=["Alternative Solutions"]
+)
 
 
 # ========================================================================
@@ -88,8 +90,12 @@ async def get_solutions_service(
 
 @router.post("/{question_id}/solutions", status_code=status.HTTP_201_CREATED)
 async def add_alternative_solution(
-    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
+    # DİKKAT: defaultsuz parametre (gövde modeli) defaultlu olanlardan ÖNCE
+    # gelmeli — aksi halde Python modül ayrıştırmada SyntaxError verir ve
+    # router HİÇ yüklenmez (tüm endpoint'leri sessizce 404 olur).
+    # FastAPI bağlamayı sıraya göre değil tipe/Path()'e göre yapar; davranış aynı.
     solution: AlternativeSolutionCreate,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):
@@ -229,8 +235,8 @@ async def get_student_submissions(
     "/{question_id}/solutions/{solution_id}/reviews", status_code=status.HTTP_200_OK
 )
 async def get_solution_reviews(
-    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     solution_id: str,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):
     """
@@ -328,9 +334,9 @@ async def get_top_rated_solutions(
     "/{question_id}/solutions/{solution_id}/vote", status_code=status.HTTP_200_OK
 )
 async def vote_solution(
-    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     solution_id: str,
     vote: SolutionVote,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):
@@ -379,8 +385,8 @@ async def vote_solution(
     "/{question_id}/solutions/{solution_id}/vote", status_code=status.HTTP_200_OK
 )
 async def remove_vote(
-    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     solution_id: str,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
 ):

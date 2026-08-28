@@ -9,8 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from core.dependencies import (
+    STUDENT_DATA_ACCESS_ROLES,
     AuthenticatedUser,
-    UserRole,
     get_current_admin_user,
     get_current_user,
 )
@@ -26,11 +26,7 @@ router = APIRouter(prefix="/api/v1/math-solution-steps", tags=["Math Solution St
 
 def _verify_student_access(current_user: AuthenticatedUser, student_id: str) -> None:
     """IDOR: student own data only, admin/teacher any."""
-    if current_user.role in (
-        UserRole.ADMIN,
-        UserRole.TEACHER,
-        UserRole.SUPER_ADMIN,
-    ):
+    if current_user.role in STUDENT_DATA_ACCESS_ROLES:
         return
     if str(current_user.id) != student_id:
         raise HTTPException(

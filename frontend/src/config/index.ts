@@ -5,8 +5,8 @@
 
 // Check environment
 const isTestEnv = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
-const isDev = import.meta.env.DEV;
-const isProd = import.meta.env.PROD;
+const isDev = !isTestEnv && import.meta.env.DEV;
+const isProd = !isTestEnv && import.meta.env.PROD;
 
 export const config = {
   api: {

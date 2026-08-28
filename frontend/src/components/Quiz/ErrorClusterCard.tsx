@@ -77,7 +77,7 @@ export function ErrorClusterCard({ subject, topicId, onNavigateToTopic }: ErrorC
     );
   }
 
-  if (recommendations.length === 0) return null;
+  if (recommendations.length === 0) {return null;}
 
   return (
     <Card variant="outlined" sx={{ mb: 2, borderColor: 'info.light' }}>

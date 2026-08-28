@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { useDungeonMap, type LayoutNode } from '@/hooks/useDungeonMap';
-import { fogOpacity } from '@/types/dungeon';
 import { ParchmentBackground } from './ParchmentBackground';
 import { FogOfWarDefs, FogWrapper } from './FogOfWar';
 import { DungeonRoom } from './DungeonRoom';
 import { OrganicPath } from './OrganicPath';
+import { fogOpacity } from '@/types/dungeon';
+import { useDungeonMap, type LayoutNode } from '@/hooks/useDungeonMap';
 
 interface DungeonMapProps {
   subject: string;

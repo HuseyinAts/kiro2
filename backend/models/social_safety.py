@@ -12,12 +12,12 @@ Tablolar:
 from __future__ import annotations
 
 import enum
-import uuid
 from datetime import datetime
 
 from sqlalchemy import (
     Boolean,
     DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
@@ -26,6 +26,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -99,7 +100,7 @@ class ContentReport(Base):
     __tablename__ = "content_reports"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     reporter_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     reported_user_id: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -107,9 +108,11 @@ class ContentReport(Base):
         String, nullable=True, index=True
     )
     content_type: Mapped[str] = mapped_column(String(30), nullable=False)
-    content_snapshot: Mapped[str | None] = mapped_column(Text, nullable=True)
+    content_snapshot: Mapped[str | None] = mapped_column(
+        Text, nullable=True, deferred=True
+    )
     reason: Mapped[str] = mapped_column(String(20), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default="pending", index=True
     )
@@ -117,7 +120,9 @@ class ContentReport(Base):
     reviewed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    resolution_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resolution_note: Mapped[str | None] = mapped_column(
+        Text, nullable=True, deferred=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -134,14 +139,14 @@ class ModerationAction(Base):
     __tablename__ = "moderation_actions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     moderator_id: Mapped[str | None] = mapped_column(String, nullable=True)
     target_user_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     content_id: Mapped[str | None] = mapped_column(String, nullable=True)
     content_type: Mapped[str | None] = mapped_column(String(30), nullable=True)
     action_type: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
-    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     report_id: Mapped[str | None] = mapped_column(String, nullable=True)
     expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, index=True
@@ -165,11 +170,11 @@ class BlockedUser(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     blocker_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     blocked_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -189,7 +194,14 @@ class ParentSocialSettings(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     parent_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
@@ -222,7 +234,7 @@ class MessageAuditLog(Base):
     __tablename__ = "message_audit_log"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     sender_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     content_type: Mapped[str] = mapped_column(String(30), nullable=False)
@@ -230,7 +242,9 @@ class MessageAuditLog(Base):
     content_length: Mapped[int] = mapped_column(Integer, nullable=False)
     flagged: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     flag_reason: Mapped[str] = mapped_column(String(20), default="clean")
-    flag_details: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    flag_details: Mapped[dict | None] = mapped_column(
+        JSONB, nullable=True, deferred=True
+    )
     pipeline_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

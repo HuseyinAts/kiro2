@@ -39,11 +39,16 @@ class EBAVideoWatch(Base):
     __tablename__ = "eba_video_watches"
 
     id = Column(String, primary_key=True, default=uuid.uuid4)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Foreign keys
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     eba_video_id = Column(
         String, ForeignKey("eba_videos.id"), nullable=False, index=True
     )

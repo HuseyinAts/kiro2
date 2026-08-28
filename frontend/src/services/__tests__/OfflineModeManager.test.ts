@@ -1,8 +1,8 @@
 /**
  * OfflineModeManager Tests
- * 
+ *
  * Unit tests for OfflineModeManager service
- * 
+ *
  * @requires Requirements: 5.19, 10.6, 10.7
  */
 
@@ -42,7 +42,7 @@ describe('OfflineModeManager', () => {
   describe('Constructor', () => {
     it('should initialize with online state', () => {
       const state = manager.getState();
-      
+
       expect(state.isOffline).toBe(false);
       expect(state.showOfflineUI).toBe(false);
       expect(state.pendingRequests.size).toBe(0);
@@ -58,10 +58,10 @@ describe('OfflineModeManager', () => {
       const offlineNetworkDetector = new NetworkDetector();
       const offlineManager = new OfflineModeManager(offlineNetworkDetector);
       const state = offlineManager.getState();
-      
+
       expect(state.isOffline).toBe(true);
       expect(state.showOfflineUI).toBe(true);
-      
+
       offlineManager.destroy();
       offlineNetworkDetector.destroy();
     });
@@ -76,7 +76,7 @@ describe('OfflineModeManager', () => {
   describe('State Management', () => {
     it('should return current state', () => {
       const state = manager.getState();
-      
+
       expect(state).toHaveProperty('isOffline');
       expect(state).toHaveProperty('showOfflineUI');
       expect(state).toHaveProperty('offlineDuration');
@@ -87,7 +87,7 @@ describe('OfflineModeManager', () => {
 
     it('should notify subscribers on state change', () => {
       const callback = vi.fn();
-      
+
       manager.subscribe(callback);
 
       // Trigger offline
@@ -98,10 +98,10 @@ describe('OfflineModeManager', () => {
 
     it('should allow unsubscribing', () => {
       const callback = vi.fn();
-      
+
       const unsubscribe = manager.subscribe(callback);
       unsubscribe();
-      
+
       // Trigger offline
       window.dispatchEvent(new Event('offline'));
 
@@ -122,7 +122,7 @@ describe('OfflineModeManager', () => {
     it('should update state when going online', () => {
       // Go offline first
       window.dispatchEvent(new Event('offline'));
-      
+
       // Then go online
       window.dispatchEvent(new Event('online'));
 
@@ -131,8 +131,10 @@ describe('OfflineModeManager', () => {
     });
 
     it('should update offline duration', () => {
+      const now = 1000000;
+      vi.setSystemTime(now);
       window.dispatchEvent(new Event('offline'));
-      vi.advanceTimersByTime(5000);
+      vi.setSystemTime(now + 5000);
 
       const duration = manager.getOfflineDuration();
       expect(duration).toBeGreaterThan(0);
@@ -172,36 +174,38 @@ describe('OfflineModeManager', () => {
   describe('Helper Methods', () => {
     it('should check if offline', () => {
       expect(manager.isOffline()).toBe(false);
-      
+
       window.dispatchEvent(new Event('offline'));
-      
+
       expect(manager.isOffline()).toBe(true);
     });
 
     it('should check if should show offline UI', () => {
       expect(manager.shouldShowOfflineUI()).toBe(false);
-      
+
       window.dispatchEvent(new Event('offline'));
-      
+
       expect(manager.shouldShowOfflineUI()).toBe(true);
     });
 
     it('should get offline duration', () => {
       expect(manager.getOfflineDuration()).toBeNull();
-      
+
+      const now = 1000000;
+      vi.setSystemTime(now);
       window.dispatchEvent(new Event('offline'));
-      vi.advanceTimersByTime(3000);
-      
+      vi.setSystemTime(now + 3000);
+
       const duration = manager.getOfflineDuration();
       expect(duration).toBeGreaterThan(0);
     });
 
     it('should get pending requests count', () => {
       expect(manager.getPendingRequestsCount()).toBe(0);
-      
+
       manager.registerPendingRequest('req_1');
       manager.registerPendingRequest('req_2');
-      
+
       expect(manager.getPendingRequestsCount()).toBe(2);
     });
   });
@@ -214,7 +218,7 @@ describe('OfflineModeManager', () => {
       });
 
       const result = await manager.checkConnection();
-      
+
       expect(result).toBe(true);
     });
   });
@@ -222,26 +226,26 @@ describe('OfflineModeManager', () => {
   describe('Retry Cancelled Requests', () => {
     it('should retry cancelled requests', () => {
       manager.registerPendingRequest('req_123');
-      
+
       // Go offline to cancel requests
       window.dispatchEvent(new Event('offline'));
-      
+
       const state = manager.getState();
       expect(state.cancelledRequests.size).toBe(1);
-      
+
       // Go online
       window.dispatchEvent(new Event('online'));
-      
+
       // Manually retry
       manager.retryCancelledRequests();
-      
+
       const newState = manager.getState();
       expect(newState.cancelledRequests.size).toBe(0);
     });
 
     it('should not retry if no cancelled requests', () => {
       manager.retryCancelledRequests();
-      
+
       const state = manager.getState();
       expect(state.cancelledRequests.size).toBe(0);
     });
@@ -250,19 +254,19 @@ describe('OfflineModeManager', () => {
   describe('VideoLoadingManager Integration', () => {
     it('should set VideoLoadingManager', () => {
       const newVideoManager = new VideoLoadingManager();
-      
+
       manager.setVideoLoadingManager(newVideoManager);
-      
+
       // Should not throw
       expect(() => manager.setVideoLoadingManager(newVideoManager)).not.toThrow();
     });
 
     it('should cancel video loading when going offline', () => {
       const cancelSpy = vi.spyOn(videoLoadingManager, 'cancelLoad');
-      
+
       manager.registerPendingRequest('req_123');
       window.dispatchEvent(new Event('offline'));
-      
+
       expect(cancelSpy).toHaveBeenCalled();
     });
   });
@@ -270,15 +274,14 @@ describe('OfflineModeManager', () => {
   describe('Before Unload Handler', () => {
     it('should handle beforeunload event with pending requests', () => {
       manager.registerPendingRequest('req_123');
-      
+
       const event = new Event('beforeunload') as BeforeUnloadEvent;
       const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
-      
+
       window.dispatchEvent(event);
-      
-      // Should prevent default when there are pending requests
-      // Note: This test might not work perfectly due to browser security
-      expect(manager.getPendingRequestsCount()).toBeGreaterThan(0);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+      expect(manager.getState().cancelledRequests.has('req_123')).toBe(true);
     });
   });
 
@@ -286,12 +289,12 @@ describe('OfflineModeManager', () => {
     it('should cleanup on destroy', () => {
       const callback = vi.fn();
       manager.subscribe(callback);
-      
+
       manager.destroy();
-      
+
       // Trigger event after destroy
       window.dispatchEvent(new Event('offline'));
-      
+
       // Callback should not be called after destroy
       expect(callback).toHaveBeenCalledTimes(1); // Only initial call
     });
@@ -300,9 +303,9 @@ describe('OfflineModeManager', () => {
   describe('Factory Function', () => {
     it('should create instance from factory', () => {
       const instance = createOfflineModeManager(networkDetector, videoLoadingManager);
-      
+
       expect(instance).toBeInstanceOf(OfflineModeManager);
-      
+
       instance.destroy();
     });
   });

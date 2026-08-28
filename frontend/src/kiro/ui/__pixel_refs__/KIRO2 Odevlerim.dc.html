@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./kiro-seed.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #F7F4EF; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  :focus-visible { outline: 2px solid rgba(255,111,92,0.7); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) {
+    a, button, [role="button"] { transition: transform 0.12s ease, filter 0.15s ease; }
+  }
+  @media (max-width: 480px) { .rnav { display: none; } }
+</style>
+</helmet>
+
+<div data-screen-label="Ödevlerim" style="display:flex; min-height:100vh; width:100%; background:#F7F4EF; font-family:'Hanken Grotesk',-apple-system,sans-serif; color:#2A2433; font-size:14px;">
+
+  <div class="rnav" style="width:250px; flex-shrink:0; overflow:hidden;">
+    <dc-import name="KIRO Kenar" active="odev" accent="{{ accent }}" hint-size="100%,100%"></dc-import>
+  </div>
+
+  <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+
+    <header style="height:66px; flex-shrink:0; display:flex; align-items:center; gap:14px; padding:0 30px; background:rgba(250,247,242,0.86); border-bottom:1px solid #ECE6DD; position:sticky; top:0; z-index:5; backdrop-filter:blur(8px);">
+      <div>
+        <div style="font-size:16px; font-weight:800;">Ödevlerim</div>
+        <div style="font-size:12px; color:#6B6478;">12-A · Mehmet Öztürk</div>
+      </div>
+
+    </header>
+
+    <main style="flex:1; padding:26px 30px 40px; display:flex; justify-content:center;">
+      <div style="width:100%; max-width:820px; display:flex; flex-direction:column; gap:14px;">
+
+        <!-- boş durum -->
+        <sc-if value="{{ isBos }}" hint-placeholder-val="">
+          <div style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:46px 34px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <svg aria-hidden="true" width="170" height="52" viewBox="0 0 170 52" fill="none" style="margin-bottom:14px;">
+              <defs>
+                <radialGradient id="odvBosGlow" cx="50%" cy="100%" r="72%"><stop offset="0%" stop-color="#FFC76F" stop-opacity="0.5"></stop><stop offset="100%" stop-color="#FFC76F" stop-opacity="0"></stop></radialGradient>
+                <linearGradient id="odvBosSun" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFD98C"></stop><stop offset="100%" stop-color="#FF8A5B"></stop></linearGradient>
+              </defs>
+              <rect x="30" y="2" width="110" height="42" fill="url(#odvBosGlow)"></rect>
+              <path d="M64 44a21 21 0 0 1 42 0Z" fill="url(#odvBosSun)"></path>
+              <line x1="10" y1="44" x2="160" y2="44" stroke="#E3D5C2" stroke-width="2" stroke-linecap="round"></line>
+              <line x1="28" y1="50" x2="62" y2="50" stroke="#EDE2D2" stroke-width="2" stroke-linecap="round"></line>
+              <line x1="108" y1="50" x2="142" y2="50" stroke="#EDE2D2" stroke-width="2" stroke-linecap="round"></line>
+            </svg>
+            <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:22px; margin-bottom:6px;">Şu an ödevin yok.</div>
+            <p style="margin:0 0 18px; font-size:13.5px; color:#6B6478; line-height:1.6; max-width:360px;">Plan sende — istersen bugünkü tekrar kartlarına bak ya da zayıf konunda birkaç soru çöz.</p>
+            <a href="KIRO2 Haftalik Plan.dc.html" style="display:inline-flex; align-items:center; height:42px; padding:0 20px; border-radius:11px; background-color:{{ accent }}; color:#fff; font-size:13.5px; font-weight:700; text-decoration:none;" style-hover="filter:brightness(0.94);">Haftalık plana git</a>
+          </div>
+        </sc-if>
+
+        <!-- ödev kartları -->
+        <sc-if value="{{ isDolu }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; align-items:flex-end; gap:16px; padding:2px 4px 10px;">
+            <div>
+              <div style="font-size:36px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-0.02em;">{{ kalanDkBuyuk }}</div>
+              <div style="margin-top:6px; font-size:12.5px; color:#6B6478;">bugün kalan · {{ acikLabel }}</div>
+            </div>
+            <svg aria-hidden="true" width="96" height="34" viewBox="0 0 96 34" fill="none" style="margin-left:auto; flex-shrink:0;">
+              <defs><linearGradient id="odvSun" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFD98C"></stop><stop offset="100%" stop-color="#FF8A5B"></stop></linearGradient></defs>
+              <path d="M34 28a14 14 0 0 1 28 0Z" fill="url(#odvSun)"></path>
+              <line x1="6" y1="28" x2="90" y2="28" stroke="#E3D5C2" stroke-width="2" stroke-linecap="round"></line>
+            </svg>
+          </div>
+          <sc-for list="{{ liste }}" as="o" hint-placeholder-count="3">
+            <div style="background:#fff; border:1px solid {{ o.kenar }}; border-radius:18px; padding:20px 22px; display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; align-items:flex-start; gap:12px;">
+                <div style="width:40px; height:40px; flex-shrink:0; border-radius:12px; background-color:{{ o.dersBg }}; display:flex; align-items:center; justify-content:center;">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ o.dersFg }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M9 12h6M9 16h4"></path></svg>
+                </div>
+                <div style="min-width:0;">
+                  <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+                    <span style="font-size:15px; font-weight:800;">{{ o.baslik }}</span>
+                    <span style="font-size:11px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; padding:3px 9px; border-radius:99px; background-color:{{ o.chipBg }}; color:{{ o.chipFg }};">{{ o.chipLabel }}</span>
+                  </div>
+                  <div style="margin-top:3px; font-size:12.5px; color:#6B6478;">{{ o.altSatir }}</div>
+                </div>
+                <div style="margin-left:auto; flex-shrink:0; text-align:right;">
+                  <div style="font-size:13px; font-weight:800; font-variant-numeric:tabular-nums;">{{ o.ilerlemeLabel }}</div>
+                  <div style="font-size:11.5px; color:#6B6478;">{{ o.dkLabel }}</div>
+                </div>
+              </div>
+
+              <div aria-label="{{ o.barAria }}" style="height:7px; border-radius:99px; background:#F0EAE1; overflow:hidden;">
+                <div style="height:100%; width:{{ o.pct }}; border-radius:99px; background-color:{{ o.barRenk }};"></div>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:12px;">
+                <sc-if value="{{ o.kisisel }}" hint-placeholder-val="">
+                  <span style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:#6B6478;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                    Sorular seviyene göre seçildi
+                  </span>
+                </sc-if>
+                <span style="font-size:11.5px; color:#6B6478;">Teslim: <strong style="color:#4A4456;">{{ o.teslim }}</strong></span>
+                <a href="{{ o.ctaHref }}" style="margin-left:auto; display:inline-flex; align-items:center; gap:7px; height:38px; padding:0 16px; border-radius:10px; font-size:13px; font-weight:700; text-decoration:none; background-color:{{ o.ctaBg }}; color:{{ o.ctaFg }}; border:1px solid {{ o.ctaKenar }};" style-hover="filter:brightness(0.96);">
+                  {{ o.ctaLabel }}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+                </a>
+              </div>
+
+              <sc-if value="{{ o.hasNot }}" hint-placeholder-val="">
+                <div style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:#FBF0DE; border:1px solid #F2D9AC; border-radius:10px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A5D0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                  <span style="font-size:12px; font-weight:600; color:#9A5D0D;">{{ o.not }}</span>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+
+          <p style="margin:6px 0 0; font-size:12px; color:#6B6478; line-height:1.6; text-align:center;">Geciken ödev "eksik" değil, <strong style="color:#9A5D0D;">bekliyor</strong> — kaldığın yerden devam etmen yeter. Sınıf sıralaması yayınlanmaz.</p>
+        </sc-if>
+
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF6F5C&quot;,&quot;options&quot;:[&quot;#FF6F5C&quot;,&quot;#FF8A5B&quot;,&quot;#E8A33D&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Görünüm&quot;},&quot;bos&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Durum&quot;}}">
+class Component extends DCLogic {
+  state = { K: null };
+  async componentDidMount() {
+    if (!window.__KIRO) {
+      try { const m = await import('./kiro-data.js'); window.__KIRO = m; this.setState({ K: m }); } catch (e) {}
+    }
+  }
+  renderVals() {
+    const K = this.state.K || window.__KIRO;
+    if (!K) return {};
+    const accent = this.props.accent || '#FF6F5C';
+    const bos = !!this.props.bos;
+    const odevler = K.odevler || [];
+
+    const dersRenk = { mat: '#3B82F6', fiz: '#8B5CF6', kim: '#E0593F', biy: '#1FB683', tur: '#F59E0B' };
+    const dersAd = { mat: 'Matematik', fiz: 'Fizik', kim: 'Kimya', biy: 'Biyoloji', tur: 'Türkçe' };
+
+    const CHIP = {
+      acik:     { bg: '#FFF3EE', fg: '#C2452B', label: 'Açık' },
+      bekliyor: { bg: '#FBF0DE', fg: '#9A5D0D', label: 'Bekliyor' },
+      tamam:    { bg: '#E4F7F0', fg: '#17936B', label: 'Tamam' },
+    };
+
+    const liste = odevler.map((o) => {
+      const chip = CHIP[o.durum] || CHIP.acik;
+      const renk = dersRenk[o.ders] || '#3B82F6';
+      const tamamMi = o.durum === 'tamam';
+      const pctN = Math.round((o.yapilan / o.adet) * 100);
+      const chipLabel = o.durum === 'acik' && o.kalan ? chip.label + ' · ' + o.kalan : chip.label;
+      return {
+        baslik: o.baslik,
+        chipBg: chip.bg, chipFg: chip.fg, chipLabel,
+        kenar: o.durum === 'bekliyor' ? '#F2D9AC' : '#ECE6DD',
+        dersBg: renk + '1A', dersFg: renk,
+        altSatir: (dersAd[o.ders] || o.ders) + ' · ' + o.konu + ' · ' + o.atayan,
+        ilerlemeLabel: o.yapilan + ' / ' + o.adet + ' soru',
+        dkLabel: tamamMi ? 'bitti' : '~' + Math.max(1, Math.round((o.adet - o.yapilan) * 1.6)) + ' dk',
+        pct: pctN + '%',
+        barRenk: tamamMi ? '#1FB683' : renk,
+        barAria: o.baslik + ' — ilerleme yüzde ' + pctN,
+        kisisel: o.kisisel,
+        teslim: o.teslim,
+        ctaHref: 'KIRO2 Soru Cozme.dc.html',
+        ctaLabel: tamamMi ? 'Çözümlere bak' : (o.yapilan > 0 ? 'Devam et' : 'Başlayalım'),
+        ctaBg: tamamMi ? '#fff' : accent,
+        ctaFg: tamamMi ? '#4A4456' : '#fff',
+        ctaKenar: tamamMi ? '#ECE6DD' : accent,
+        hasNot: o.durum === 'bekliyor',
+        not: 'Teslim geçti ama kapanmadı — çözdüğün her soru hâlâ sayılır.',
+      };
+    });
+
+    const acikSayi = odevler.filter((o) => o.durum !== 'tamam').length;
+    const kalanDk = odevler.filter((o) => o.durum !== 'tamam').reduce((t, o) => t + Math.round((o.adet - o.yapilan) * 1.6), 0);
+
+    return {
+      accent, liste,
+      isBos: bos || odevler.length === 0,
+      isDolu: !bos && odevler.length > 0,
+      kalanDkBuyuk: '~' + kalanDk + ' dk',
+      acikLabel: acikSayi + ' açık ödev',
+    };
+  }
+}
+</script>
+</body>
+</html>

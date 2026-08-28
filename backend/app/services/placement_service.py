@@ -35,6 +35,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
+from core.quality_gate import safe_for_beta_sql
+
 logger = logging.getLogger(__name__)
 
 # ─── Lise türüne göre prior ayarı ────────────────────────────────────────────
@@ -279,37 +281,55 @@ class PlacementTestService:
         from sqlalchemy import text
 
         result = await self.db.execute(
-            text(r"""
+            text(
+                r"""
             SELECT
-                id::text                AS question_id,
-                question_text,
-                option_a,
-                option_b,
-                option_c,
-                option_d,
-                irt_discrimination      AS a,
-                irt_difficulty          AS b,
-                irt_guessing            AS c,
-                subject_area            AS subject_id,
-                primary_topic_id        AS topic_id
-            FROM question_bank
-            WHERE LOWER(subject_area) = LOWER(:sid)
-              AND is_active = TRUE
+                qb.id::text             AS question_id,
+                qc.question_text,
+                qc.option_a,
+                qc.option_b,
+                qc.option_c,
+                qc.option_d,
+                qs.irt_discrimination   AS a,
+                qs.irt_difficulty       AS b,
+                qs.irt_guessing         AS c,
+                qm.subject_area         AS subject_id,
+                qb.primary_topic_id     AS topic_id
+            -- 18 Agu 2026: 69 alan question_bank'tan content/metadata/statistics
+            -- tablolarina tasindi. JOIN kosulu `id` uzerinde (cocuk tablolarin PK'si
+            -- question_bank.id'ye FK); `question_id` diye bir kolon YOK.
+            -- LEFT JOIN: 1:1 kayit yapisal olarak GARANTI degil, eksik cocuk satiri
+            -- havuzu sessizce daraltmasin diye (asagidaki filtreler zaten eleyecek).
+            FROM question_bank qb
+            LEFT JOIN question_content    qc ON qc.id = qb.id
+            LEFT JOIN question_metadata   qm ON qm.id = qb.id
+            LEFT JOIN question_statistics qs ON qs.id = qb.id
+            WHERE LOWER(qm.subject_area) = LOWER(:sid)
+              AND qb.is_active = TRUE
               -- 15 May 2026: Convention v2 — eski 'approved' (hardcoded literal,
               -- %87 hatalı) yasak. Sadece gerçek manuel onay (human_verified)
               -- veya LLM-as-judge yüksek güven (auto_judged_high) kabul.
               -- Bkz: docs/quality_review_status_convention.md
-              AND quality_review_status IN ('human_verified', 'auto_judged_high')
+              AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')
               -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ.
               -- Vision audit (10/10 sample) tüm question_image_url'lerin
               -- options leak içerdiğini ortaya koydu. Geçici çözüm: text-self-contained
               -- sorulara dar (image olmadan çözülebilen).
               -- Bug #11 v3: PostgreSQL C locale fix (LOWER('Ş')='Ş')
               -- char class [şŞ] her Türkçe ilk-harf için
-              AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+              AND qc.question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+            """
+                # Kalite kapısı (core/quality_gate.py). Bu sorgunun kapısız
+                # havuzu 19.873, kapılı 13.756 (27 Tem ölçümü): 6.117
+                # demote/tek-sinyal/fallback-topic soru placement testinde
+                # öğrenciye servis ediliyordu. is_active YANINDA durur,
+                # yerine değil (bayat matview'a karşı canlı arşiv filtresi).
+                + f"AND {safe_for_beta_sql('qb.id')}\n"
+                + r"""
             ORDER BY RANDOM()
             LIMIT 80
-        """),
+        """
+            ),
             {"sid": subject_id},
         )
         return [dict(r._mapping) for r in result.fetchall()]
@@ -405,7 +425,7 @@ class PlacementTestService:
         row = await self.db.execute(
             text("""
             SELECT irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
-            FROM question_bank WHERE id = :qid
+            FROM question_statistics WHERE id = :qid
         """),
             {"qid": question_id},
         )

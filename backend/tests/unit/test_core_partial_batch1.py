@@ -18,9 +18,8 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 # ---------------------------------------------------------------------------
 # Heavy dependency stubs — must happen BEFORE any project imports
 # ---------------------------------------------------------------------------
-from unittest.mock import AsyncMock, MagicMock, patch
-
 import types
+from unittest.mock import AsyncMock, MagicMock, patch
 
 # Stub out modules that are not installed in the test environment
 _STUB_MODULES = [

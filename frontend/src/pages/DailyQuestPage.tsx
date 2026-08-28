@@ -86,20 +86,20 @@ export default function DailyQuestPage() {
     }
   };
 
-  if (loading) return (
+  if (loading) {return (
     <Box textAlign="center" py={8}>
       <CircularProgress size={52} />
       <Typography mt={2} color="text.secondary">Gorevler yukleniyor...</Typography>
     </Box>
-  );
+  );}
 
-  if (error) return (
+  if (error) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Alert severity="error">{error}</Alert>
     </Box>
-  );
+  );}
 
-  if (!data) return null;
+  if (!data) {return null;}
 
   const progress = (data.completed_count / data.total_count) * 100;
 
@@ -107,7 +107,7 @@ export default function DailyQuestPage() {
     <Box maxWidth={600} mx="auto" py={3}>
       {/* Header */}
       <Stack direction="row" spacing={2} alignItems="center" mb={1}>
-        <EmojiEvents color="primary" sx={{ fontSize: 36 }} />
+        <EmojiEvents sx={{ fontSize: 36, color: 'var(--k-coral)' }} />
         <Box flex={1}>
           <Typography variant="h5" fontWeight={800}>Gunluk Gorevler</Typography>
           <Typography variant="body2" color="text.secondary">
@@ -204,24 +204,24 @@ export default function DailyQuestPage() {
         sx={{
           borderRadius: 3,
           background: data.bonus_available
-            ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+            ? 'linear-gradient(135deg, var(--k-coral) 0%, var(--k-coral-2) 100%)'
             : data.all_completed
-              ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+              ? 'linear-gradient(135deg, var(--k-success) 0%, var(--k-success-2) 100%)'
               : undefined,
           border: data.bonus_available ? 'none' : '1px solid',
           borderColor: 'divider',
         }}
       >
         <CardContent sx={{ textAlign: 'center', py: 3 }}>
-          <CardGiftcard sx={{ fontSize: 40, mb: 1, color: data.bonus_available ? '#fff' : 'text.disabled' }} />
+          <CardGiftcard sx={{ fontSize: 40, mb: 1, color: data.bonus_available ? 'var(--k-surface)' : 'text.disabled' }} />
           {data.bonus_available ? (
             <>
-              <Typography variant="h6" fontWeight={800} color="#fff" mb={1}>
+              <Typography variant="h6" fontWeight={800} color="var(--k-surface)" mb={1}>
                 Bonus Hazir!
               </Typography>
               <Button
                 variant="contained"
-                sx={{ bgcolor: '#fff', color: '#f59e0b', fontWeight: 700, '&:hover': { bgcolor: '#fef3c7' } }}
+                sx={{ bgcolor: 'var(--k-surface)', color: 'var(--k-coral)', fontWeight: 700, '&:hover': { bgcolor: 'var(--k-border)' } }}
                 onClick={claimBonus}
                 disabled={claiming}
               >
@@ -230,7 +230,7 @@ export default function DailyQuestPage() {
             </>
           ) : data.all_completed ? (
             <>
-              <Typography variant="h6" fontWeight={800} color="#fff" mb={0.5}>
+              <Typography variant="h6" fontWeight={800} color="var(--k-surface)" mb={0.5}>
                 Tebrikler!
               </Typography>
               <Typography variant="body2" color="rgba(255,255,255,0.8)">

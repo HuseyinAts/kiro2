@@ -47,7 +47,7 @@ export function useCATSession(token?: string | null) {
 
   // httpOnly cookie ile auth — token sadece varsa Bearer ekle
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) {headers['Authorization'] = `Bearer ${token}`;}
 
   const startSession = useCallback(async (subject_id: string) => {
     setPhase('loading');
@@ -73,7 +73,7 @@ export function useCATSession(token?: string | null) {
   }, [token]);
 
   const submitAnswer = useCallback(async (selected_option: string, response_ms?: number) => {
-    if (!session) return;
+    if (!session) {return;}
     setPhase('answering');
     try {
       const res = await fetch(`${API}/api/v1/cat/sessions/${session.session_id}/answer`, {

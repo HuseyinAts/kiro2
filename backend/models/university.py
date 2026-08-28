@@ -120,7 +120,9 @@ class University(Base):
     # NOTE: departments relationship removed - University links to Department through UniversityProgram
     # Use university.programs to access associated programs, which have department references
     programs = relationship(
-        "UniversityProgram", back_populates="university", cascade="all, delete-orphan"
+        "UniversityProgram",
+        back_populates="university",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
@@ -185,7 +187,9 @@ class Department(Base):
 
     # Relationships
     programs = relationship(
-        "UniversityProgram", back_populates="department", cascade="all, delete-orphan"
+        "UniversityProgram",
+        back_populates="department",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):
@@ -273,7 +277,9 @@ class UniversityProgram(Base):
     university = relationship("University", back_populates="programs")
     department = relationship("Department", back_populates="programs")
     score_history = relationship(
-        "ProgramScoreHistory", back_populates="program", cascade="all, delete-orphan"
+        "ProgramScoreHistory",
+        back_populates="program",
+        cascade="all, delete-orphan",
     )
 
     __table_args__ = (

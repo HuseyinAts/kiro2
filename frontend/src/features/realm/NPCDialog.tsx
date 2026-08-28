@@ -88,7 +88,7 @@ export const NPCDialog: React.FC<NPCDialogProps> = ({
 
   const sendMessage = useCallback(
     async (text: string) => {
-      if (!text.trim() || isStreaming) return;
+      if (!text.trim() || isStreaming) {return;}
 
       const userMsg: Message = { role: 'user', content: text };
       setMessages((prev) => [...prev, userMsg]);
@@ -122,8 +122,8 @@ export const NPCDialog: React.FC<NPCDialogProps> = ({
           signal: ctrl.signal,
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        if (!res.body) throw new Error('No response body');
+        if (!res.ok) {throw new Error(`HTTP ${res.status}`);}
+        if (!res.body) {throw new Error('No response body');}
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -131,14 +131,14 @@ export const NPCDialog: React.FC<NPCDialogProps> = ({
 
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {break;}
 
           const chunk = decoder.decode(value, { stream: true });
           // Parse SSE: "data: <token>\n\n"
           for (const line of chunk.split('\n')) {
             if (line.startsWith('data: ')) {
               const token = line.slice(6);
-              if (token === '[DONE]') break;
+              if (token === '[DONE]') {break;}
               npcText += token;
               setMessages((prev) => {
                 const updated = [...prev];
@@ -162,7 +162,7 @@ export const NPCDialog: React.FC<NPCDialogProps> = ({
           return updated;
         });
       } catch (err) {
-        if ((err as Error).name === 'AbortError') return;
+        if ((err as Error).name === 'AbortError') {return;}
         setMessages((prev) => {
           const updated = [...prev];
           const last = updated[updated.length - 1];
@@ -180,7 +180,7 @@ export const NPCDialog: React.FC<NPCDialogProps> = ({
         abortRef.current = null;
       }
     },
-    [isStreaming, realmSlug, bktScore, questStep, messages]
+    [isStreaming, realmSlug, bktScore, questStep, messages],
   );
 
   const handleSubmit = (e: React.FormEvent) => {

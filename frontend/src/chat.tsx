@@ -140,6 +140,11 @@ export function Chat({ messages, onSendMessage, isLoading, currentAgent }: ChatP
             />
           ))}
         </div>
+
+        {/* Legal Disclaimer */}
+        <div className="text-[10px] text-gray-400 mt-3 p-1 text-center">
+          ⚠️ Yapay zeka asistanı hata yapabilir. Üretilen akademik çözümleri daima MEB ders kitapları veya öğretmenleriniz ile teyit ediniz.
+        </div>
       </form>
     </div>
   );

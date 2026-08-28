@@ -39,7 +39,7 @@ class TestTurkishOptimizedFSRS:
 
     def test_algorithm_initialization(self):
         """Algoritma başlatma testi"""
-        assert len(self.fsrs.turkish_params) == 17
+        assert len(self.fsrs.turkish_params) == 19
         assert self.fsrs.turkish_params[0] == 0.4072  # Initial stability
         assert len(self.fsrs.cultural_adjustments) == 8
         assert self.fsrs.cultural_adjustments["ramadan_factor"] == 0.75
@@ -564,7 +564,8 @@ class TestFSRSService:
         self.mock_db.refresh.return_value = None
 
         with patch(
-            "services.fsrs_service.DBFSRSStudySession", return_value=mock_session
+            "services._deprecated.fsrs_service.DBFSRSStudySession",
+            return_value=mock_session,
         ):
             result = await self.fsrs_service.start_study_session(
                 student_id="test_student", session_type="exam_prep", db=self.mock_db

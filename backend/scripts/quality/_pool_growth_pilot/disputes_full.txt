@@ -1,0 +1,1522 @@
+=== ALL DISPUTES (gemma3 != DB key), sorted by gemma3 confidence DESC ===
+High confidence at top = gemma3 most sure it disagrees = DB-error candidates.
+
+#1  [MATEMATIK] id=913a2b5d-5a78-5c0d-af0a-1b0316fc910d  DB_key=C  gemma3=A  conf=1.0
+  Q: $2x^2 - 4x + 6 = 0$ denkleminin kökleri $x_1$ ve $x_2$'dir. Kökleri $(x_1+1)$ ve $(x_2+1)$ olan ikinci dereceden denklem aşağıdakilerden hangisidir?
+  A) $x^2 - 4x - 5 = 0$
+  B) $x^2 - 4x - 6 = 0$
+  C) $x^2 - 4x + 6 = 0$
+  D) $-x^2 - 3x + 2 = 0$
+  E) $x^2 - 2x + 3 = 0$
+
+#2  [KIMYA] id=cd5be9ee-14de-5ab2-9bf7-3cf5181c1bfc  DB_key=C  gemma3=E  conf=1.0
+  Q: Metallerle ilgili,
+I. Isı ve elektriği iletirler.
+II. Tel ve levha haline gelebilirler.
+III. Kendi arasında bileşik oluştururlar.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#3  [MATEMATIK] id=7171edee-6018-510d-91a9-aee459da7e7a  DB_key=A  gemma3=B  conf=1.0
+  Q: $\theta \in \left( \frac{\pi}{24}, \frac{\pi}{12} \right)$ olmak üzere,
+$a = \sin(6\theta)$
+$b = \tan(6\theta)$
+$c = \cos(6\theta)$
+oldug\u011funa g\u00f6re; $a, b, c$ say\u0131lar\u0131n\u0131n do\u011fru s\u0131ralan\u0131\u015f\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?
+  A) $c < a < b$
+  B) $c < b < a$
+  C) $a < c < b$
+  D) $a < b < c$
+  E) $b < a < c$
+
+#4  [MATEMATIK] id=56ace33d-fdf6-5f4e-9448-e633e0d559ef  DB_key=E  gemma3=A  conf=1.0
+  Q: '$|x-a|$ ifadesi, sayı doğrusu üzerinde $x$ sayısının $a$ sayısına uzaklığını ifade eder.'
+Yukarıdaki tanıma göre,
+$|x-7|+|7-x|=5$
+ise $x$'in alabileceği değerlerin toplamı kaçtır?
+  A) 7
+  B) 8
+  C) 9
+  D) 11
+  E) 14
+
+#5  [EDEBIYAT] id=175b41f4-39da-523e-a676-23ecf3186c58  DB_key=A  gemma3=C  conf=1.0
+  Q: Aşağıdakilerden hangisinde "divan nesri" ile ilgili bir bilgi yanlışı vardır?
+  A) İç uyaklı süslü nesirlerde yabancı kelimelere yer vermeden güzel bir dil kullanılmıştır.
+  B) Dil olarak sade, orta ve süslü nesir olarak sınıflandırılmıştır.
+  C) Velayetname, siyer gibi dinî yönü olan eserler; halkın anlayacağı dille yazılmıştır.
+  D) Divan edebiyatında bilimsel eserler, terimlerle yüklü bir üslupla kaleme alınmıştır.
+  E) Şiirlerde olduğu gibi ses uyumuna ve anlam sanatlarına yer verilmiştir.
+
+#6  [MATEMATIK] id=406fa6d3-ed89-5061-8ec1-f3613eccaf08  DB_key=B  gemma3=A  conf=1.0
+  Q: Pozitif iki sayının birbirine oranı $\frac{2}{7}$'dir. Büyük sayı, küçüğünden 35 fazla olduğuna göre, küçük sayı kaçtır?
+  A) 21
+  B) 14
+  C) 16
+  D) 28
+  E) 7
+
+#7  [KIMYA] id=4dad0620-1500-5c49-8225-bdb6a544c671  DB_key=D  gemma3=B  conf=1.0
+  Q: Seri bağlı iki elektroliz kabından birinde $CaCl_2$, diğerinde $AlCl_3$ sıvısı bulunmaktadır. $CaCl_2$ sıvısının bulunduğu hücrede katodunda 12 gram Ca metali toplandığına göre diğer hücrenin katodunda kaç gram Al metali toplanır? ($Ca=40 \ g/mol$, $Al=27 \ g/mol$)
+  A) 2,7
+  B) 3,6
+  C) 4,2
+  D) 5,4
+  E) 6,3
+
+#8  [KIMYA] id=69e92ccf-3992-599b-a676-926f535f93f2  DB_key=E  gemma3=A  conf=1.0
+  Q: I. İzotop atomlar aynı element atomlarıdır. II. İzoton atomlar farklı element atomlarıdır. III. İzobar atomların kimyasal özellikleri farklıdır. Yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#9  [MATEMATIK] id=6ca91837-25c6-52c6-930f-c122c92262a2  DB_key=E  gemma3=A  conf=1.0
+  Q: Bir $A$ sayısı $0,024$ ile çarpıldıktan sonra $0,12$ ile bölünüyor. Buna göre, elde edilen sayı $A$ sayısının kaç katıdır?
+  A) 5
+  B) 4
+  C) 2
+  D) $\frac{1}{4}$
+  E) $\frac{1}{5}$
+
+#10  [GEOMETRI] id=4f314ec5-298f-5e8e-b65f-fc1ddfce9be0  DB_key=B  gemma3=D  conf=1.0
+  Q: Dik koordinat düzleminde $(-6, a)$ ve $(a+2, 2)$ noktaları bir merkezil çember üzerinde olduğuna göre, bu çemberin yarıçapı kaç birimdir?
+  A) 7
+  B) $\sqrt{85}$
+  C) 10
+  D) 13
+  E) 15
+
+#11  [MATEMATIK] id=aadfea47-68ee-5be6-a9f6-77f1355713c2  DB_key=B  gemma3=D  conf=1.0
+  Q: $rac{n!}{(n-2)!} < 20$ eşitsizliğini sağlayan kaç tane $n$ tam sayısı vardır?
+  A) 2
+  B) 3
+  C) 4
+  D) 5
+  E) 6
+
+#12  [MATEMATIK] id=c9b0e3d0-6f48-58a2-a516-7792470e6025  DB_key=B  gemma3=A  conf=1.0
+  Q: $x^4-7x^2-8$ ifadesinin çarpanlarına ayrılmış hali aşağıdakilerden hangisidir?
+  A) $(x^2-4)\cdot(x^2+2)$
+  B) $(x^2-8)\cdot(x^2+1)$
+  C) $(x^2-4)^2$
+  D) $(x^2-2)\cdot(x^2+4)$
+  E) $(x^2-1)\cdot(x^2+8)$
+
+#13  [MATEMATIK] id=1b24d416-dd3f-5b07-991a-1a33f8520ae6  DB_key=B  gemma3=A  conf=1.0
+  Q: 6 siyah ve 4 beyaz renkli bilye arasından rastgele iki bilye seçiliyor. Buna göre, seçilen bilyelerin aynı renkte olma olasılığı kaçtır?
+  A) $\frac{8}{15}$
+  B) $\frac{7}{15}$
+  C) $\frac{3}{5}$
+  D) $\frac{2}{5}$
+  E) $\frac{1}{5}$
+
+#14  [MATEMATIK] id=ff33b8aa-1723-5bbf-867f-8e0c2a9310c1  DB_key=C  gemma3=B  conf=1.0
+  Q: $x$ pozitif bir tam sayıdır. Buna göre $\frac{x-20}{4} \le -x$ eşitsizliğini sağlayan $x$ değerlerinin toplamı kaçtır?
+  A) 12
+  B) 11
+  C) 10
+  D) 9
+  E) 8
+
+#15  [MATEMATIK] id=21a07f5e-7510-56d5-a8ca-80226f9f2310  DB_key=D  gemma3=C  conf=1.0
+  Q: Bir yarış pistinde sabit hızlarla koşan üç atletten birincisi yarış bitirdiğinde ikincisinin yarış bitirmesine 50 metre, üçüncüsünün yarış bitirmesine 75 metre kalmıştır. İkinci olan yarış bitirdiğinde, üçüncünün yarış bitirmesine 35 metre kaldığına göre, yarış pisti kaç metredir?
+  A) 120
+  B) 145
+  C) 150
+  D) 175
+  E) 250
+
+#16  [FIZIK] id=287edc87-2f7c-5031-ab53-a6d0c7e5a494  DB_key=D  gemma3=E  conf=1.0
+  Q: Süper iletkenlik ile ilgili, I. Bakır, gümüş gibi elektriği ileten metaller, belli şartlarda süper iletkenlik özelliği gösterebilir. II. Süper iletken bir cisim, bir mıknatıs havada asılı tutabilir. III. Süper iletkenler elektrik iletiminde tasarruf sağlar. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#17  [KIMYA] id=fc390f2e-6d87-5a45-b28c-776d7d56e0f0  DB_key=E  gemma3=D  conf=1.0
+  Q: • Hidroksil grubu sayısı aynı olan alkollerde karbon sayısı arttıkça kaynama noktası artarken, sudaki çözünürlük azalır.
+• Karbon sayısı aynı olan alkollerde hidroksil grubu sayısı arttıkça kaynama noktası ve sudaki çözünürlük artar.
+Buna göre aynı koşullarda,
+I. Etanolün kaynama noktası metanolden yüksektir.
+II. 1-propanolün sudaki çözünürlüğü 1-bütanolden fazladır.
+III. 1,2-propandiolün hem kaynama noktası hem de sudaki çözünürlüğü 1-propanolden fazladır.
+ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#18  [KIMYA] id=fc9e8b8e-31e2-5cfa-a69a-ee189b3bf2e8  DB_key=D  gemma3=B  conf=1.0
+  Q: N.K. da 8,96 litre hacim kaplayan $NH_3$ gazı kaç gramdır? (N: 14 H: 1)
+  A) 68
+  B) 34
+  C) 17
+  D) 6,8
+  E) 3,4
+
+#19  [MATEMATIK] id=2e94b317-940d-5460-99b3-95c7736a675c  DB_key=A  gemma3=D  conf=1.0
+  Q: Bir fabrikada paketleme işi yapan Nermin'in çalışma hızı, aynı işi yapan Pervin'in çalışma hızının 3 katıdır.
+Nermin ve Pervin beraber 3 saatte yaptığı bir işi Nermin tek başına kaç saatte yapabilir?
+  A) 4
+  B) 6
+  C) 8
+  D) 9
+  E) 12
+
+#20  [MATEMATIK] id=0d2e4b29-f258-57b5-b5ed-e611415fac3c  DB_key=C  gemma3=D  conf=1.0
+  Q: $\int_{1}^{2} (4x^3 - 2)dx$ integralinin değeri kaçtır?
+  A) 11
+  B) 12
+  C) 13
+  D) 14
+  E) 15
+
+#21  [KIMYA] id=c618bd5a-c08f-5d2a-ab6e-8df558092526  DB_key=D  gemma3=B  conf=1.0
+  Q: $X_{(k)} + 2HCl_{(suda)} \rightarrow CaCl_{2(suda)} + H_2O_{(s)} + CO_{2(g)}$ Denklemi verilen tepkimede yer alan X bileşiği ile ilgili, I. Yapısındaki anyonu bikarbonattır. II. Tuz sınıfı bir bileşiktir. III. Nötr kararlıdır. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#22  [GEOMETRI] id=6b9062f3-1f5a-55b6-b1c1-f9ee9d1dd093  DB_key=D  gemma3=C  conf=1.0
+  Q: Dik koordinat düzleminde $A(-1, 4)$ noktasının $y=1$ doğrusuna göre simetrisi $B$, $x=3$ doğrusuna göre simetrisi $C$ noktasıdır. Buna göre, $ABC$ üçgeninin çevresi kaç birimdir?
+  A) 12
+  B) 15
+  C) 18
+  D) 24
+  E) 30
+
+#23  [KIMYA] id=671d2105-cfdc-57df-93cb-5f82e6ddec6b  DB_key=D  gemma3=E  conf=1.0
+  Q: Aşağıda bazı bileşik çiftleri verilmiştir.
+I. $\text{HClO}_4$ - $\text{MnO}_4^-$ 
+II. $\text{SO}_4^{2-}$ - $\text{HCO}_3^-$ 
+III. $\text{CaSO}_4$ - $\text{K}_2\text{CrO}_4$
+Buna göre, hangilerinde altı çizili elementlerin yükseltgenme basamakları aynıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+#24  [FIZIK] id=590ddbba-725c-5c67-9a6e-1c7284711780  DB_key=C  gemma3=A  conf=1.0
+  Q: I. Leptonlar temel parçacıktır. II. Mezonlar birer bozondur. III. Fotonlar durgun hâlde bulunabilirler. Yukarıda verilen bilgilerden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#25  [MATEMATIK] id=cd0d3234-21db-5be1-a907-39afd5f08872  DB_key=C  gemma3=B  conf=1.0
+  Q: $i^2=-1$ olmak üzere, $z=5+i^{23}$ ve $w=4+i^{25}$ karmaşık sayıları veriliyor. Buna göre, $z+w$ toplamının sonucu kaçtır?
+  A) 9-2i
+  B) 9+2i
+  C) 9
+  D) -2i
+  E) 0
+
+#26  [MATEMATIK] id=ea2e4070-f8bf-5a18-91b7-664945fccb5f  DB_key=D  gemma3=C  conf=1.0
+  Q: Bir gömlek için ortalama
+• $1,5$ TL enerji gideri
+• $14$ TL işçilik gideri
+• $44,5$ TL hammadde gideri
+vardır. Bu ürünün birim satış fiyatı $54$ TL olursa zarar yüzdesi kaç olur?
+  A) 5
+  B) 8
+  C) 20
+  D) 10
+  E) 15
+
+#27  [EDEBIYAT] id=afd4b86b-c8ee-5e94-8c99-f6923f3de5b2  DB_key=C  gemma3=D  conf=1.0
+  Q: I. Esaret
+II. Küçük Şeyler
+III. Bahariyye
+IV. Kıssadan Hisse
+V. Letaif-i Rivayat
+Numaralanmış hikâyelerden hangisi, herhangi bir özelliği taşımaz?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#28  [EDEBIYAT] id=9a0de2bb-349b-5d78-be25-76466111f396  DB_key=C  gemma3=D  conf=1.0
+  Q: Numaralanmış cümlelerdeki maddelerden hangileri Kutadgu Bilig'in özelliklerinden değildir?
+I. Türk edebiyatının ilk mesnevisidir.
+II. 40 beyit 101 dörtlükten oluşmaktadır.
+III. Karahanlı hükümdarı Tabgaç Buğra Han'a sunulmuştur.
+IV. Devrinin Türk dünyasını gösteren bir harita içerir.
+V. Yusuf Has Hacip tarafından alegorik anlatım yöntemiyle 11. yy. da yazılmıştır.
+  A) I ve II
+  B) II ve III
+  C) II ve IV
+  D) III ve IV
+  E) IV ve V
+
+#29  [GEOMETRI] id=88431278-b97e-513d-a00e-a3d4cdb8db37  DB_key=A  gemma3=B  conf=1.0
+  Q: Merkezi $2x+y-5=0$ ve $x-y-4=0$ doğruları üzerinde bulunan çember $3x+4y=0$ doğrusuna teğet olduğuna göre, bu çemberin yarıçapı kaç birimdir?
+  A) 1
+  B) 2
+  C) $\sqrt{3}$
+  D) 3
+  E) 5
+
+#30  [MATEMATIK] id=7ac00936-1247-5768-8c1c-2c627c4c90f0  DB_key=A  gemma3=B  conf=1.0
+  Q: $\cos5x = \sqrt{3} \cdot \sin5x$ denkleminin bir kökü aşağıdakilerden hangisidir?
+  A) $\frac{\pi}{30}$
+  B) $\frac{\pi}{15}$
+  C) $\frac{\pi}{10}$
+  D) $\frac{2\pi}{15}$
+  E) $\frac{\pi}{6}$
+
+#31  [KIMYA] id=4683c1f5-0339-54b2-bce9-da35846ddf38  DB_key=A  gemma3=B  conf=1.0
+  Q: MgCl$_{2}$ sıvısının elektrolizinde devreden 19300 coulomb yük geçtiği bilinmektedir. Buna göre, katotta kaç gram Mg toplanır? (Mg: 24)
+  A) 2,4
+  B) 4,8
+  C) 12
+  D) 24
+  E) 48
+
+#32  [FIZIK] id=f02bc690-6b8e-5c14-8193-f37e9a110b8c  DB_key=D  gemma3=B  conf=1.0
+  Q: Düz bir telden d kadar ötede oluşturulan manye-tik alan şiddeti, aşağıdakilerden hangisine bağlı değildir?
+  A) d uzaklığı
+  B) d uzaklığının tele dik olup olmaması
+  C) Tel ile nokta arası ortamın türü
+  D) Telden geçen akımın yönü
+  E) Telden geçen akımın şiddeti
+
+#33  [MATEMATIK] id=2fa7f01a-c18e-5002-9352-8ca805b2a1bb  DB_key=E  gemma3=C  conf=1.0
+  Q: $a$ sıfırdan farklı bir gerçel sayı olmak üzere, $\lim_{x \to a} \frac{x^2-a^2}{x-a}$ limitinin değeri kaçtır?
+  A) $\frac{1}{3}$
+  B) $\frac{1}{2}$
+  C) 1
+  D) $\frac{3}{2}$
+  E) 2
+
+#34  [MATEMATIK] id=fd154458-cc64-5bab-adef-c667a52b7b55  DB_key=B  gemma3=C  conf=1.0
+  Q: Gerçel sayılar kümesi üzerinde tanımlı $f(x) = \begin{cases} \frac{8}{x-5} & , x<1 \\ -2x & , 1 \le x < 3 \\ \frac{2}{x} & , x \ge 3 \end{cases}$ fonksiyonu kaç noktada süreksizdir?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#35  [MATEMATIK] id=0949e42b-ae8e-5a1b-9411-0f15329e3dbc  DB_key=E  gemma3=A  conf=1.0
+  Q: Akın'ın çalışma hızı, Metin'in çalışma hızının 2 katıdır. Akın bir işi 36 günde yapabildiğine göre, aynı işi Metin kaç günde yapar?
+  A) 18
+  B) 9
+  C) 48
+  D) 54
+  E) 72
+
+#36  [MATEMATIK] id=4b12ce37-9091-5fab-8766-26fec2bff19e  DB_key=D  gemma3=C  conf=1.0
+  Q: Bir $a_n$ aritmetik dizisinin 9. terimi $x$ olduğuna göre, $a_3 + a_{15}$ toplamı aşağıdakilerden hangisidir?
+  A) $\frac{x}{4}$
+  B) $\frac{x}{2}$
+  C) $x$
+  D) $2x$
+  E) $4x$
+
+#37  [MATEMATIK] id=158d6d4d-9a56-5e50-b4a2-0b6139531622  DB_key=B  gemma3=C  conf=1.0
+  Q: Bir market sahibinin satmak için aldığı pirinç ile ilgili olarak aşağıdaki bilgiler bilinmektedir.
+• Kilogramı $36$ TL'den bir miktar pirinç almıştır.
+• Pirinçleri $2$ kg'lık paketler hâlinde satacaktır.
+• $1$ paket pirincin paketleme maliyeti $8$ TL'dir.
+• Market sahibi tüm pirinçleri paketleyip, sattığında %$20$ kâr elde etmek istemektedir.
+Buna göre, bu market sahibi $1$ paket pirinci kaç TL'den satmalıdır?
+  A) 84
+  B) 92
+  C) 98
+  D) 100
+  E) 104
+
+#38  [MATEMATIK] id=a596ed26-2ece-52ef-87da-130bd42f1152  DB_key=E  gemma3=B  conf=1.0
+  Q: $2^a = 5$ ve $5^b = 16$ olduğuna göre, $a \cdot b$ çarpımı kaçtır?
+  A) 3
+  B) \frac{8}{3}
+  C) 2
+  D) \frac{5}{3}
+  E) 4
+
+#39  [MATEMATIK] id=36ae8d84-df9a-54e8-90e5-a3b8b1b94654  DB_key=C  gemma3=B  conf=1.0
+  Q: Ali ve Yusuf bir işi tek başlarına sırasıyla $80$ ve $120$ günde bitiriyorlar. Buna göre, ikisi bu işi beraber kaç günde bitirirler?
+  A) 24
+  B) 36
+  C) 48
+  D) 60
+  E) 72
+
+#40  [TURKCE] id=df38d4c4-3318-59d6-aa15-47cb16381fd3  DB_key=D  gemma3=C  conf=1.0
+  Q: Can evimden sana baktım İstanbul! Bu cümle ile ilgili aşağıdakilerden hangisi söylenemez?
+  A) Cümle dışı unsur vardır.
+  B) Gizli özne vardır.
+  C) Üç ögeli bir cümledir.
+  D) Zarf tümleci kullanılmıştır.
+  E) İsim tamlaması, yer tamlayıcısı olmuştur.
+
+#41  [MATEMATIK] id=f01de96a-54a7-5472-ae0e-81547770e258  DB_key=A  gemma3=B  conf=1.0
+  Q: $6x^2-26x-20$ ifadesinin çarpanlarına ayrılmış hali aşağıdakilerden hangisidir?
+  A) $(6x+4)(x-5)$
+  B) $(3x+4)(2x-5)$
+  C) $(3x-4)(2x-5)$
+  D) $(6x+10)(x-2)$
+  E) $(2x+4)(3x-5)$
+
+#42  [COGRAFYA] id=2a45c75b-495c-5fd9-b206-fc40c87ddede  DB_key=D  gemma3=E  conf=1.0
+  Q: I. İzmir'den Van'a doğru gittikçe sıcaklık farkının artması $\rightarrow$ Karasallık
+II. Ağrı'dan İzmir'e gidildikçe yıllık sıcaklık ortalamasının artması $\rightarrow$ Yükselti
+III. Samsun'da kış sıcaklıklarının Ankara'dan yüksek olması $\rightarrow$ Denizellik-karasallık
+IV. Ocak ayında Ordu'nun sıcaklık ortalamasının Hakkâri'den yüksek olması $\rightarrow$ Enlem
+V. Türkiye'deki dağların daima aynı yamaçlarının bakı durumunda olması $\rightarrow$ Dönencelerin dışında olması
+Yukarıda bazı durumlar nedenleri ile eşleştirilmiştir.
+Bu eşleştirmelerden hangisi yanlıştır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#43  [MATEMATIK] id=ec6b97cf-8e82-568d-b5e1-41980fa00429  DB_key=D  gemma3=A  conf=1.0
+  Q: $f(x)=2x^3-x^2+x+1$ fonksiyonu veriliyor. Buna göre, $\lim_{x \to -1} \frac{f(x)-f(-1)}{x-(-1)}$ ifadesinin değeri kaçtır?
+  A) $6$
+  B) $7$
+  C) $8$
+  D) $9$
+  E) $10$
+
+#44  [MATEMATIK] id=563cf5e6-d980-550a-baa7-677c9060cdea  DB_key=D  gemma3=B  conf=1.0
+  Q: $f: \mathbb{R} \to \mathbb{R}$ olmak üzere, $y=f(x)$ fonksiyonu çift fonksiyondur. $f(-x) + 4 + f(x) = 2x^2$ olduğuna göre, $f(-1)$ kaçtır?
+  A) -4
+  B) -3
+  C) -2
+  D) -1
+  E) 0
+
+#45  [MATEMATIK] id=1cc49563-353b-577e-888f-14d6beb69aa4  DB_key=C  gemma3=B  conf=1.0
+  Q: $x$ ve $y$ birer rakamdır. $\frac{20}{x-y}=y$ eşitliğini sağlayan kaç tane $(x,y)$ ikilisi vardır?
+  A) 1
+  B) 3
+  C) 2
+  D) 5
+  E) 4
+
+#46  [MATEMATIK] id=12a47cf7-cdb4-5a2b-9346-1ddbec998cf5  DB_key=E  gemma3=A  conf=1.0
+  Q: Bir otobüse 5 bayan yolcu binerse yolcuların $\frac{2}{5}$'i bayan oluyor. Eğer otobüsten 5 erkek yolcu inseydi yolcuların $\frac{4}{5}$'i erkek olacaktı. Buna göre, otobüste kaç erkek yolcu vardır?
+  A) 15
+  B) 12
+  C) 11
+  D) 10
+  E) 9
+
+#47  [MATEMATIK] id=8f01e2e6-9ad2-5672-8f0e-add3754280fd  DB_key=A  gemma3=C  conf=1.0
+  Q: Hızları 40 m/dk ve 50 m/dk olan iki koşucu 360 metrelik bir çembersel parkurda, aynı anda ve aynı yönde koşmaya başlarlarsa kaç dakika sonra ilk kez yan yana gelirler?
+  A) 36
+  B) 40
+  C) 45
+  D) 50
+  E) 60
+
+#48  [BIYOLOJI] id=b7f04b56-70fb-5166-abbe-1d9b1c210ee5  DB_key=B  gemma3=C  conf=1.0
+  Q: Mayoz bölünme geçirmekte olan bir hücrede;
+I. DNA'nın kendini eşlemesi,
+II. kardeş kromatitlerin birbirinden ayrılması,
+III. krossing over,
+IV. homolog kromozomların birbirinden ayrılması
+olayları, aşağıdakilerin hangisinde verilen sıraya göre gerçekleşir?
+  A) I - II - III - IV
+  B) I - III - IV - II
+  C) I - IV - III - II
+  D) III - I - IV - II
+  E) III - II - IV - I
+
+#49  [FIZIK] id=45d19c9a-da69-5348-9caa-998767822e84  DB_key=E  gemma3=D  conf=1.0
+  Q: Paralel levhalı bir kondansatörün sığası
+I. kondansatörün levhalarındaki yük miktarı
+II. levhaların yüzey alanı
+III. levhalar arasındaki ortamın elektriksel geçirgenliği
+niceliklerinden hangilerine bağlıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#50  [MATEMATIK] id=d1c1567f-4d48-5b3b-8ea9-0da153b7210d  DB_key=A  gemma3=B  conf=1.0
+  Q: 360 adet şeker 4, 5 ve 7 yaşındaki çocuklara yaşlarının karesi ile doğru orantılı olacak şekilde dağıtılıyor. Buna göre, 4 yaşındaki çocuğa kaç tane şeker verilmiştir?
+  A) 64
+  B) 96
+  C) 100
+  D) 120
+  E) 156
+
+#51  [GEOMETRI] id=a3a1eb0c-996a-57f5-bde3-02136557cfce  DB_key=E  gemma3=D  conf=1.0
+  Q: Dik koordinat düzleminde $A(-17, 13)$ noktasından $(x-3)^2 + (y+2)^2 = 49$ çemberine çizilen teğetin uzunluğu kaç birimdir?
+  A) 15
+  B) 17
+  C) 18
+  D) 20
+  E) 24
+
+#52  [GEOMETRI] id=3910fd1e-3e42-5cc7-8469-da877b7bf819  DB_key=A  gemma3=D  conf=1.0
+  Q: Dik koordinat düzleminde $A(5, 2)$ noktasının orijine göre simetriği B noktası, y-eksenine göre simetriği C noktasıdır.
+Buna göre, $|BC|$ kaç birimdir?
+  A) 4
+  B) 6
+  C) $\sqrt{29}$
+  D) 10
+  E) $2\sqrt{29}$
+
+#53  [MATEMATIK] id=f898a30e-7901-5e47-b0a0-c64d2769ecf1  DB_key=E  gemma3=D  conf=1.0
+  Q: $P(x)$ ve $Q(x)$, üçüncü dereceden iki polinomdur. Buna göre, I. $P(x) + Q(x)$ polinomu, ikinci dereceden bir polinom olabilir. II. $P(x) \cdot Q(x)$ polinomu, altıncı dereceden bir polinomdur. III. $P(x) - Q(x)$ polinomu, birinci dereceden bir polinom olabilir. ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#54  [MATEMATIK] id=27e043d3-9ca3-5536-bf66-7088f2e38415  DB_key=C  gemma3=D  conf=1.0
+  Q: Bir $\{a_n\}$ dizisi, $a_n = (a-2)n^2 + (b+3)n + a-b$ biçiminde tanımlanıyor. $\{a_n\}$ dizisi sabit dizi olduğuna göre, $a+b$ toplamı kaçtır?
+  A) -3
+  B) -2
+  C) -1
+  D) 1
+  E) 2
+
+#55  [MATEMATIK] id=f6d87eed-1a05-5ab7-9dcf-e522a3c314ae  DB_key=E  gemma3=D  conf=1.0
+  Q: $0 < x < \frac{\pi}{2}$ olmak üzere, $\frac{\sqrt{1+\cos 2x} + \sqrt{1-\cos 2x}}{\sqrt{1+\sin 2x}}$ işleminin sonucu kaçtır?
+  A) $-\frac{\sqrt{2}}{2}$
+  B) $-1$
+  C) $-\sqrt{2}$
+  D) $\frac{\sqrt{2}}{2}$
+  E) $\sqrt{2}$
+
+#56  [MATEMATIK] id=aee5df1f-25dc-517c-b81e-bd4abec0a8ea  DB_key=E  gemma3=C  conf=1.0
+  Q: Arzu, Berivan ve Ceyda'nın paralarıyla ilgili olarak aşağıdakiler bilinmektedir:
+• Üçünün paralarının toplamı 234 TL'dir.
+• Arzu parasının %25'ini Berivan'a, %10'unu Ceyda'ya veriyor.
+• Berivan son durumda oluşan parasının %22'sini Ceyda'ya veriyor.
+Son durumda üçünün de paraları eşit olduğuna göre, Arzu'nun başlangıçta kaç TL'si vardı?
+  A) 44
+  B) 70
+  C) 84
+  D) 108
+  E) 120
+
+#57  [KIMYA] id=418f8f11-a241-5890-8e48-3f1c3ce6cded  DB_key=E  gemma3=B  conf=1.0
+  Q: $CaCO_{3(k)} \rightarrow CaO_{(k)} + CO_{2(g)}$
+Tepkimesine göre kütlece %20 saflıktaki 400 gram $CaCO_3$ katısının tam verimli tepkimesinden elde edilen $CO_2$ gazı kaç mol atom içerir? ($CaCO_3 = 100 g/mol$)
+  A) 0,1
+  B) 0,6
+  C) 0,8
+  D) 1,2
+  E) 2,4
+
+#58  [MATEMATIK] id=3cd6aa60-f48a-5308-a2b0-7cd36d0cc129  DB_key=E  gemma3=A  conf=1.0
+  Q: İşleminin sonucu kaçtır? $\frac{4}{\sqrt{2}}-\frac{2}{\sqrt{2}-1}$
+  A) 2
+  B) 1
+  C) 0
+  D) -1
+  E) -2
+
+#59  [MATEMATIK] id=2eb36901-6f77-532b-82af-f052ee1bb1b1  DB_key=D  gemma3=C  conf=1.0
+  Q: $\sec \alpha - \tan \alpha = 4$ olduğuna göre, $\sec \alpha + \tan \alpha$ toplamının değeri kaçtır?
+  A) -\frac{1}{4}
+  B) -\frac{1}{2}
+  C) $\frac{1}{2}$
+  D) $\frac{1}{4}$
+  E) 4
+
+#60  [FIZIK] id=5d9d69d3-b28a-5d05-8223-65c6b834c135  DB_key=D  gemma3=A  conf=1.0
+  Q: Yaz günlerinde $1 \text{ m}^2$ sine 1 saniyede ortalama 1000 joule Güneş enerjisi düşen bir yerde, $2000 \text{ m}^2$ lik bir alanda, 5 saatte kaç joule enerji elde edilir? (Kayıplar önemsenmiyor.)
+  A) $3,6.10^9$
+  B) $2,4.10^8$
+  C) $1,8.10^8$
+  D) $3,6.10^{10}$
+  E) $3,6.10^{12}$
+
+#61  [TARIH] id=0a664117-a08b-55f4-a199-80874c49af10  DB_key=C  gemma3=B  conf=1.0
+  Q: Osmanlı Devleti'nde Enderun-ı Hümayun bölümünde hizmet edenlere genel olarak Enderun halkı veya hademeleri adı verilirdi.
+Bu bilgiye göre, aşağıdakilerden hangisi Enderun halkı veya hademelerinden biri değildir?
+  A) Silahdar ağa
+  B) Çuhadar ağa
+  C) Çeşnigir başı
+  D) Rikabdar
+  E) Tülbent ağası
+
+#62  [MATEMATIK] id=d6537c7f-c86f-52ef-8bea-d1c0dfd00494  DB_key=C  gemma3=B  conf=1.0
+  Q: $ (x+25)^2 = A $ olduğuna göre, $ (x+20) \cdot (x+30) $ çarpımının sonucu A türünden aşağıdakilerden hangisidir?
+  A) A
+  B) A - 50
+  C) A - 25
+  D) A - 5
+  E) A - 58
+
+#63  [TARIH] id=abe1ce21-6311-527b-9315-d9cbfdb8ead4  DB_key=D  gemma3=C  conf=1.0
+  Q: İkinci Dünya Savaşı'nın sonunda imzalanan Paris Antlaşması'nda;
+I. Almanya,
+II. İtalya,
+III. Finlandiya,
+IV. Ukrayna,
+V. Bulgaristan
+devletlerinden hangilerinin yer aldığı söylenemez?
+  A) I ve II
+  B) III ve V
+  C) IV ve V
+  D) I ve IV
+  E) II ve III
+
+#64  [GEOMETRI] id=8ffda28e-de51-574e-90db-1e195a31ed5e  DB_key=B  gemma3=D  conf=1.0
+  Q: $m: ax+2y-6=0$
+$n: 3x-by+7=0$
+doğruları $y=x$ doğrusu üzerinde dik kesiştiğine göre, $a+b$ toplamı kaçtır?
+  A) 42
+  B) 40
+  C) 35
+  D) 32
+  E) 30
+
+#65  [MATEMATIK] id=e88b2ae8-ab66-5ab1-9ea1-f790faa919b5  DB_key=E  gemma3=C  conf=1.0
+  Q: %20'si şeker olan 160 gram şekerli su ile %64'ü su olan 240 gram şekerli su boş bir kapta karıştırılıyor. Buna göre, oluşan bu karışımın su oranı % kaç olur?
+  A) 68
+  B) 68,6
+  C) 69,8
+  D) 70
+  E) 70,4
+
+#66  [MATEMATIK] id=d9340930-e3c8-5479-99ac-df0811eeecbb  DB_key=C  gemma3=A  conf=1.0
+  Q: Maliyeti $130$ TL olan bir ürün, %$20$ kâr ile kaç TL'ye satılır?
+  A) 150
+  B) 165
+  C) 156
+  D) 172
+  E) 190
+
+#67  [MATEMATIK] id=a6fff7c8-c114-583a-868c-446f4826d0ac  DB_key=C  gemma3=B  conf=1.0
+  Q: %10 kâr ile 22 TL'ye satılan ürün, %20 zararla kaç TL'ye satılır?
+  A) 18
+  B) 14
+  C) 16
+  D) 12
+  E) 19
+
+#68  [MATEMATIK] id=dbb28c91-ec3e-5149-aa0b-b70f665036cf  DB_key=A  gemma3=C  conf=1.0
+  Q: $N$ doğal sayılar kümesi olmak üzere,
+$x^2-4>0$ eşitsizliğinin çözüm kümesi $A$,
+$x^2-3x-4<0$ eşitsizliğinin çözüm kümesi $B$
+olarak veriliyor.
+Buna göre,
+$N \cap (A \cap B)$
+kümesinin eleman sayısı kaçtır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#69  [EDEBIYAT] id=73912664-8b58-5a4e-b9f9-428f34d62edb  DB_key=E  gemma3=D  conf=1.0
+  Q: Yazar, bu romanda kıskançlık konusunu ele alır. Eser, yazarın ölümünden sonra arkadaşı Mahmut Sadık tarafından Servet-i Fünun dergisinde yayımlanmıştır. Edebiyatımızda natüralizm akımının ilk örneklerinden olduğu ilk roman olarak kabul edilir. Romanın kahramanları iki aile vardır: Eşini kaybetmiş, kuzularla beraber oturan Şevket Efendi'nin ailesi ve babasını birkaç sene evvel kaybetmiş, annesi Münire Hanım'la birlikte oturan Suphi'nin ailesi. Bu parçada söz edilen yazar ve eseri aşağıdakilerden hangisidir?
+  A) Namık Kemal - İntibah
+  B) Recaizade Mahmut Ekrem - Araba Sevdası
+  C) Ahmet Mithat Efendi - Felâtun Bey ile Râkım Efendi
+  D) Sami Paşazade Sezai - Sergüzeşt
+  E) Nabizade Nazım - Zehra
+
+#70  [KIMYA] id=00b94a2f-3e2f-5768-b9f5-fc6e11aa14d7  DB_key=A  gemma3=B  conf=1.0
+  Q: $N_{2(g)} + 2H_{2(g)} \rightarrow N_2H_{4(g)}$
+Tek basamakta gerçekleşen tepkimesi ile ilgili,
+I. Tepkime 3. derecedendir.
+II. Sadece $H_2$ gazının derişimi iki katına çıkarıldığında tepkime hızı dört katına çıkar.
+III. Aynı sıcaklıkta tepkime kabının hacmi iki katına çıkarıldığında tepkime hızı 8 katına çıkar.
+ifadelerinden hangileri doğrudur?
+  A) I ve II
+  B) II ve III
+  C) I, II ve III
+  D) I ve III
+  E) Yalnız II
+
+#71  [KIMYA] id=9c90c0ef-ef11-58df-a4b3-436a23f098fe  DB_key=E  gemma3=B  conf=1.0
+  Q: Dalton atom modelinin bazı varsayımları aşağıda verilmiştir.
+I. Atomlar, içi tamamen dolu kürelerdir.
+II. Atomlar parçalanamaz, bölünemez.
+III. Bir elementin bütün atomları büyüklük, şekil ve kütle bakımından özdeştir.
+Bu varsayımlardan hangileri günümüzde geçerli değildir?
+  A) Yalnız II
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#72  [KIMYA] id=bd1ab2e7-d28a-5304-9f69-4d86513afd47  DB_key=D  gemma3=B  conf=1.0
+  Q: 500 gram $CaCO_3$ katısı alınarak başlatılan, $CaCO_3(k) \to CaO(k) + CO_2(g)$ tepkimesi 2 mol $CO_2$ gazı oluştuğunda sonlanmaktadır. Buna göre, tepkime sonucunda kaç gram $CaCO_3$ katısı artar? (C: 12 g/mol, O: 16 g/mol, Ca: 40 g/mol)
+  A) 50
+  B) 100
+  C) 200
+  D) 300
+  E) 400
+
+#73  [MATEMATIK] id=d50b2086-6ac4-513b-81b6-eecba52b2b8d  DB_key=A  gemma3=E  conf=1.0
+  Q: Gerçel sayı kümesi üzerinde tanımlı $f(x) = x^2 - 4x - 12$ ikinci dereceden fonksiyonu, $\int_{a}^{b} (2x+b) dx$ şeklinde ifade edilebildiğine göre $(a+b)$ toplamının alabileceği değerler toplamı kaçtır?
+  A) -4
+  B) -2
+  C) 0
+  D) 2
+  E) 4
+
+#74  [KIMYA] id=bb6a9fc0-d15c-5e81-a3d8-3e9e84a00b4a  DB_key=D  gemma3=E  conf=1.0
+  Q: Aşağıda verilen tepkimelerden hangisi hem endotermik hem de yanma tepkimesidir?
+  A) $C_{(k)} + O_{2(g)} \to CO_{2(g)}$
+  B) $CO_{(g)} + \frac{1}{2}O_{2(g)} \to CO_{2(g)}$
+  C) $CaCO_{3(k)} \to CaO_{(k)} + CO_{2(g)}$
+  D) $N_{2(g)} + O_{2(g)} \to 2NO_{(g)}$
+  E) $CH_{4(g)} + 2O_{2(g)} \to CO_{2(g)} + 2H_2O_{(g)}$
+
+#75  [GEOMETRI] id=fc634258-2e38-53d2-ae56-80412b1f45b3  DB_key=E  gemma3=C  conf=1.0
+  Q: Pelin, İrem'e eşkenar dörtgen ile ilgili beş soru sormuş, İrem'de yukarıdaki cevapları vermiştir.
+Buna göre, İrem'in verdiği cevaplardan kaç tanesi doğrudur?
+S1) Kenar uzunlukları eşittir. C1) Evet
+S2) Karşılıklı kenarları paraleldir. C2) Evet
+S3) Köşegenleri birbirini ortalar. C3) Evet
+S4) Köşegenleri birbirine diktir. C4) Evet
+S5) Köşegenleri açıortaydır. C5) Evet
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#76  [KIMYA] id=cf3091e4-f0a4-5273-a387-0a515b1dc61d  DB_key=D  gemma3=C  conf=1.0
+  Q: 1,8 $\text{N}_\text{A}$ tane H atomu içeren $\text{NH}_3$ molekülü N.Ş.A. kaç litre hacim kaplar?
+  A) 2,24
+  B) 4,48
+  C) 6,72
+  D) 13,44
+  E) 67,2
+
+#77  [MATEMATIK] id=7d3173ab-7e25-54c1-8f83-59a5c7c7b21a  DB_key=E  gemma3=C  conf=1.0
+  Q: $a$ bir gerçek sayı olmak üzere, $\int_a^2 (2x-1)dx$ ifadesinin en küçük değerini alabilmesi için $a$ kaç olmalıdır?
+  A) $\frac{1}{6}$
+  B) $\frac{1}{5}$
+  C) $\frac{1}{4}$
+  D) $\frac{1}{3}$
+  E) $\frac{1}{2}$
+
+#78  [MATEMATIK] id=a775d0e5-33db-52ca-8b91-af8971e399d8  DB_key=B  gemma3=A  conf=1.0
+  Q: Türkiye'de bulunan endemik bitki çeşidi sayısı $3800$ ile $4200$ arasındadır. Buna göre, I. $|x-200| < 4000$ II. $|x-4000| < 200$ III. $|x-400| < 4000$ ifadelerinden hangisi Türkiye'deki endemik bitki çeşidi sayısının alabileceği değerleri gösteren eşitsizliktir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#79  [MATEMATIK] id=abd59547-5bdc-5bed-a95b-47c1610dd1cd  DB_key=E  gemma3=D  conf=1.0
+  Q: Gerçek sayılar kümesi üzerinde tanımlı $y=f(x)$ fonksiyonu
+
+$f(x) = \begin{cases} 2x-a & x \ge 2 \\ a-x & x < 2 \end{cases}$
+
+biçiminde tanımlanıyor.
+
+$f$ fonksiyonunun $x=2$ apsisli noktada limiti olmadığına göre, $f(4)$ değeri aşağıdakilerden hangisi olamaz?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#80  [MATEMATIK] id=77b1ef73-1811-564c-925c-aa56ffcb101a  DB_key=D  gemma3=C  conf=1.0
+  Q: 36 öğrencinin bulunduğu bir sınıfın $\frac{4}{9}$'ü erkek öğrencidir. Buna göre, bu sınıfta kaç kız öğrenci vardır?
+  A) 12
+  B) 16
+  C) 18
+  D) 20
+  E) 24
+
+#81  [MATEMATIK] id=a9514b5f-a1e8-53c2-b231-deabd9394f8a  DB_key=C  gemma3=D  conf=1.0
+  Q: $6 \le x^2 - x \le 12$ eşitsizlik sisteminin çözüm kümesinde kaç farklı $x$ tam sayısı vardır?
+  A) 2
+  B) 3
+  C) 4
+  D) 6
+  E) 8
+
+#82  [MATEMATIK] id=3c1f3e00-0629-538a-8955-76b7c9bb8270  DB_key=C  gemma3=A  conf=1.0
+  Q: Bir sepetteki yumurtalar sekizerli kutulara yerleştirilince 7 yumurta, altışarlı kutulara yerleştirilince 5 yumurta, dokuzarlı kutulara yerleştirilince 8 yumurta artmaktadır. Buna göre, sepetteki yumurta sayısı en az kaçtır?
+  A) 73
+  B) 72
+  C) 71
+  D) 63
+  E) 61
+
+#83  [MATEMATIK] id=0b1ede90-652c-5519-8bb5-6d7b5a480e15  DB_key=A  gemma3=B  conf=1.0
+  Q: $|x-2| + |y+1| = 0$ olduğuna göre, $\frac{x}{y}$ oranı kaçtır?
+  A) -2
+  B) -1
+  C) $-\frac{1}{2}$
+  D) $\frac{1}{2}$
+  E) 2
+
+#84  [MATEMATIK] id=d9660ecc-1c52-518a-b8cb-74f83a493246  DB_key=A  gemma3=C  conf=1.0
+  Q: $a$ ve $b$ birer gerçek sayı olmak üzere, gerçek sayılar kümesi üzerinde sürekli olan bir $f$ fonksiyonu $f(x) = \begin{cases} x^2-4 & , x \le a \\ 5x-8 & , a < x \le b \\ 7 & , x > b \end{cases}$ biçiminde tanımlanıyor. Buna göre, $a+b$ toplamı kaçtır?
+  A) 4
+  B) 5
+  C) 6
+  D) 7
+  E) 8
+
+#85  [BIYOLOJI] id=9850e331-1e79-51fa-9b96-3fad00d3b280  DB_key=B  gemma3=D  conf=1.0
+  Q: İnsanlarda proteinlerin yıkımı sonucunda oluşan;
+I. $H_2O$,
+II. $NH_3$,
+III. $CO_2$
+moleküllerinden hangileri üriner sistem aracılığıyla vücuttan uzaklaştırıldığı hâlde solunum sistemi aracılığıyla vücuttan uzaklaştırılmaz?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+#86  [EDEBIYAT] id=ed193b68-10e7-5bc8-9770-57619b590b7e  DB_key=B  gemma3=A  conf=1.0
+  Q: I. Örnek:
+Dilberin haddi gül-i handan durur
+Şol mutarra sünbülü reyhan durur
+Can eğer tenden revan olsa ne gam
+Ehl-i aşkın canı canan durur
+II. Örnek:
+Ahvâl-i cihânı her zaman söyleşelim
+Amma gam-ı aşkımızı nihân söyleşelim
+Ey vâkıf-ı râz-ı aşk olan ârif-i cân
+Ney gibi seninle bî-zebân söyleşelim
+I ve II. dörtlükle ilgili aşağıdakilerden hangisine ulaşılamaz?
+  A) I. dörtlük bir tuyuğdan alınmıştır.
+  B) II. dörtlük bir şarkıdan alınmıştır.
+  C) Her iki dörtlüğün de kafiye örgüsü aynıdır.
+  D) Her iki dörtlüğün de ölçüsü aynıdır.
+  E) Her iki dörtlükte de redif ve kafiyeye yer verilmiştir.
+
+#87  [EDEBIYAT] id=c75e2f72-8924-5372-a935-d1e6c90bf77a  DB_key=D  gemma3=A  conf=1.0
+  Q: Aşağıdakilerden hangisi Cumhuriyet Dönemi halk ozanlarından biri değildir?
+  A) Şeref Taşlıova
+  B) Neşet Ertaş
+  C) Murat Çobanoğlu
+  D) Aşık Ruhsati
+  E) Aşık Veysel
+
+#88  [MATEMATIK] id=9c14ca9c-c4f2-52d2-9841-1653da4835dd  DB_key=C  gemma3=B  conf=1.0
+  Q: Motorlu araçların yakıt tüketimleri $l/100 \text{ km}$ şeklinde ifade edilmektedir. Bu değer aracın $100 \text{ km}$'deki ortalama yakıt tüketimini litre $(l)$ cinsinden ifade eder. Örneğin: $10 \text{ km}$'lik bir yolculukta toplam $0,67 \text{ litre}$ yakıt tüketen bir aracın ortalama yakıt tüketimi $6,7 \text{ l}/100 \text{ km}$'dir. $150 \text{ km}$'lik bir yolculukta ortalama yakıt tüketimi $4 \text{ l}/100 \text{ km}$ olan bir araç yolculuğun ilk $120 \text{ km}$'si için ortalama yakıt tüketimi $4,50 \text{ l}/100 \text{ km}$ olduğuna göre, yolun son $30 \text{ km}$'sinde toplam kaç litre yakıt tüketmiştir?
+  A) 0,4
+  B) 0,5
+  C) 0,6
+  D) 0,7
+  E) 0,8
+
+#89  [MATEMATIK] id=7bedc257-0bb6-5ccb-b057-d9d2927aa8b4  DB_key=E  gemma3=A  conf=1.0
+  Q: $a$ ve $n$ sıfırdan farklı gerçel sayılar olmak üzere, gerçel sayılarda tanımlı $f$ fonksiyonu $f(x) = (x^2-2x) \cdot (x+a)$ şeklinde verilmiştir. Dik koordinat düzleminde $(n, f(n))$ noktası ile $(-n, f(-n))$ noktasını birleştiren doğru parçası orijinden geçmektedir. Buna göre, $a$ kaçtır?
+  A) -2
+  B) -1
+  C) 0
+  D) 1
+  E) 2
+
+#90  [MATEMATIK] id=4d687580-f904-5440-b174-175733cfbab8  DB_key=B  gemma3=C  conf=1.0
+  Q: $a$ ve $b$ aralarında asal sayı olmak üzere; $a \cdot (b+2) = 2a + 90$ olduğuna göre, $EKOK(a, b)$ kaçtır?
+  A) 84
+  B) 90
+  C) 108
+  D) 100
+  E) 120
+
+#91  [KIMYA] id=0b197a53-c008-5e95-902c-b89d5c4413d9  DB_key=D  gemma3=C  conf=1.0
+  Q: 0,1 mol $C_nH_{2n+2}$ bileşiğinin mol kütlesi 5,8 gram olduğuna göre n kaçtır? (C: 12 H: 1)
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#92  [MATEMATIK] id=27e95d79-2318-5f6b-8b66-811188c4fd36  DB_key=A  gemma3=D  conf=1.0
+  Q: Sercan diyet yapmaya karar verdiğinde ağırlığı $x$ kilodur. Sercan bir ayda ağırlığının en az 46, en çok 60 kilo olduğunu gözlemliyor. Buna göre, aşağıdaki aralıklardan hangisi $x$'e ait olabilir?
+  A) $|x-63|<17$
+  B) $|x-14|<66$
+  C) $|x-70|<10$
+  D) $|x-40|<40$
+  E) $|x-34|<46$
+
+#93  [MATEMATIK] id=f7792d0a-aae2-538a-a0e9-aaf59d5c9140  DB_key=D  gemma3=C  conf=1.0
+  Q: Tuz oranı %20 olan tuzlu su karışımının $\frac{2}{5}$'i dökülerek yerine dökülen miktar kadar tuz ilave ediliyor. Buna göre, yeni karışımın tuz oranı yüzde kaçtır?
+  A) 20
+  B) 30
+  C) 46
+  D) 52
+  E) 58
+
+#94  [MATEMATIK] id=fc56d1e7-f77b-5618-a851-fe817e7ccb65  DB_key=D  gemma3=C  conf=1.0
+  Q: Bir fabrikanın paketleme bölümündeki bir makine saatte 48 paketleme işi yapmaktadır. Bu makinenin hızı $\frac{1}{4}$ oranında artırılıyor. Buna göre, bu makine son hızı ile saatte kaç paketleme işi yapabilir?
+  A) 36
+  B) 40
+  C) 56
+  D) 60
+  E) 64
+
+#95  [MATEMATIK] id=e015769e-9c5e-5e51-ad00-eb4370f762a7  DB_key=D  gemma3=A  conf=1.0
+  Q: $(7x-2)^8 = (x+10)^8$ olduğuna göre, $x$'in alabileceği değerlerin toplamı kaçtır?
+  A) -3
+  B) -2
+  C) -1
+  D) 1
+  E) 2
+
+#96  [MATEMATIK] id=76bf0ec9-2b8f-5ad2-b00a-8be7dc7ccf52  DB_key=C  gemma3=B  conf=1.0
+  Q: Şarj edilebilir bir tıraş makinesi ile ilgili olarak aşağıdakiler bilinmektedir.
+• Bataryası $\frac{1}{4}$ oranında doludur.
+• Şarja takıldığında her 10 dakikada bir bataryası $\frac{5}{32}$ oranında dolmaktadır.
+• Şarjdan çıkarılıp kullanılmaya başlandığında her 30 dakikada bir bataryası $\frac{3}{64}$ oranında boşalmaktadır.
+Tıraş makinesinin bataryası $\frac{1}{4}$ oranında dolu iken makineyi şarja takıp tıraş olmaya başlayan Baran 20 dakikada tıraşını bitirip makineyi kapatır ve makine şarj olmaya devam ederse, makine Baran'ın tıraşı bittiği andan kaç dakika sonra tamamen dolar?
+  A) 20
+  B) 25
+  C) 30
+  D) 35
+  E) 40
+
+#97  [MATEMATIK] id=dcd46ee0-3cee-5f07-86c2-0a43322aaa5e  DB_key=A  gemma3=B  conf=1.0
+  Q: Bir yayınevi, hazırladığı 2 kolay, 3 orta ve 1 zor seviye olmak üzere toplam 6 denemenin her birine 1'den 6'ya kadar farklı bir numara verecektir. Kolay denemelerin numaraları 4'ten küçük, zor denemenin numarası 3'ten büyük olacak biçimde bu işlem kaç farklı şekilde yapılabilir?
+  A) 108
+  B) 96
+  C) 72
+  D) 144
+  E) 120
+
+#98  [KIMYA] id=c5b5a4cc-fc52-5f0b-8822-4ddeb36fa04c  DB_key=D  gemma3=A  conf=1.0
+  Q: Aşağıdaki tanecikler ve bu tanecikler arasındaki etkin çekim gücü hangi seçenekte doğru verilmiştir?
+  A) $NH_{3(s)}$ London kuvveti
+  B) $CCl_{4(s)}$ Dipol - dipol kuvveti
+  C) $HCl_{(s)}$ Hidrojen bağı
+  D) $Fe_{(k)}$ Metalik bağ
+  E) $H_2O_{(s)}$ Dipol - dipol kuvveti
+
+#99  [FIZIK] id=8d09bb6c-f590-51b6-93dc-f29330508446  DB_key=E  gemma3=C  conf=1.0
+  Q: Aşağıda, bazı fiziksel niceliklerin SI birim sistemindeki birimleri verilmiştir.
+• metre,
+• joule,
+• kelvin
+Buna göre, bu birimlerden tek başına hangileri, temel bir büyüklüğün birimi olabilir?
+  A) Yalnız metre
+  B) Yalnız joule
+  C) Yalnız kelvin
+  D) joule ve kelvin
+  E) metre ve kelvin
+
+#100  [FIZIK] id=96938a93-62df-53ea-ae35-52baaffc6535  DB_key=E  gemma3=B  conf=1.0
+  Q: Hulusi Bey, otomobiliyle yolculuk yaparken bir yakıt istasyonuna girerek, otomobilin arka tekerleklerinden birine yeterli miktarda hava basmaktadır.
+Buna göre, Hulusi Bey yaptığı eylemle lastik içindeki havaya ait;
+I. Basınç
+II. Molekül sayısı
+III. Özkütle
+niceliklerinden hangilerini artırmış olabilir?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#101  [MATEMATIK] id=30b48cbd-aee2-5172-ab7b-a6535f7f9fcf  DB_key=B  gemma3=D  conf=1.0
+  Q: $f: \mathbb{R} \to \mathbb{R}$ olmak üzere, $f(x) = \begin{cases} \frac{x^2-a^2}{x-a} & , x<a \\ x^2 & , x \ge a \end{cases}$ fonksiyonu $x=a$ noktasında sürekli olduğuna göre, $a$'nın alabileceği en büyük değer kaçtır?
+  A) 0
+  B) 2
+  C) 4
+  D) 9
+  E) 10
+
+#102  [MATEMATIK] id=5fe7cf61-1475-5b07-b5d9-682b07411b08  DB_key=C  gemma3=A  conf=1.0
+  Q: $a \cdot (x-y) - 3 \cdot (y-x)$ ifadesinin çarpanlarına ayrılmış biçimi aşağıdakilerden hangisidir?
+  A) $(a-3) \cdot (x-y)$
+  B) $(x-y) \cdot (3-a)$
+  C) $(a+3) \cdot (x-y)$
+  D) $(a-3) \cdot (x+y)$
+  E) $(a-3) \cdot (y-x)$
+
+#103  [FIZIK] id=cdf73ef9-a008-5df0-930b-49d13ba11b8e  DB_key=C  gemma3=B  conf=1.0
+  Q: Derinliği sabit olan bir dalga leğeninde, özdeş kaynakların aynı anda çalışması sonucu oluşan dairesel dalgaların oluşturduğu girişim deseninde;
+- Bir tepe ile bir çukurun üst üste geldiği noktaların genliği $A_1$
+- İki tepenin üst üste geldiği noktaların genliği $A_2$
+- İki çukurun üst üste geldiği noktaların genliği $A_3$
+tür.
+Buna göre $A_1$, $A_2$ ve $A_3$ ün büyüklük sıralaması aşağıdakilerden hangisinde doğru verilmiş olabilir? (Kaynaklardan uzaklaştıkça genliğin değişmediği kabul edilecektir.)
+  A) $A_1 > A_2 > A_3$
+  B) $A_1 = A_2 = A_3$
+  C) $A_2 = A_3 > A_1$
+  D) $A_2 = A_1 > A_3$
+  E) $A_2 > A_1 = A_3$
+
+#104  [MATEMATIK] id=c1cb831a-0377-5ac5-a259-bd751f3199ca  DB_key=E  gemma3=D  conf=1.0
+  Q: $x^2+2x+10=0$ denkleminin bir kökü $z$, diğer kökü $w$ olduğuna göre, $Im(z)+Im(w)$ toplamı kaçtır?
+  A) -6
+  B) -6i
+  C) 3
+  D) -3
+  E) 0
+
+#105  [FIZIK] id=88b9d1c7-fd33-50a0-b2c9-cdd812363b05  DB_key=A  gemma3=E  conf=1.0
+  Q: Elektrikli bir su ısıtıcısının, suyu daha çabuk kaynatması için aşağıdakilerden hangisini yapmak yanlış olur?
+  A) Isıtıcı direncini büyütmek
+  B) Isıtıcı gücünü büyütmek
+  C) Suyun miktarını azaltmak
+  D) Suyun ilk sıcaklığını yüksek tutmak
+  E) Isıtıcıya daha yüksek gerilimli prize takmak
+
+#106  [MATEMATIK] id=8ea03ff2-9f96-5217-b3ab-3a3ee6ec2b92  DB_key=E  gemma3=B  conf=1.0
+  Q: $\sqrt{x-2} + x = 2$ denkleminin çözüm kümesi aşağıdakilerden hangisidir?
+  A) $\{-2, -1\}$
+  B) $\{-1\}$
+  C) $\emptyset$
+  D) $\{1, 2\}$
+  E) $\{2\}$
+
+#107  [MATEMATIK] id=8a7db6d2-9092-5fa1-9efd-ecc28992df08  DB_key=C  gemma3=E  conf=1.0
+  Q: $m$ ve $n$ tam sayıdır. $m < n$ ve $k \cdot m > k \cdot n$ ifadesine göre aşağıdakilerden hangisi kesinlikle doğrudur?
+  A) $k+m > k+n$
+  B) $m-k > n+k$
+  C) $\frac{m}{k} > \frac{n}{k}$
+  D) $m-n > 0$
+  E) $k \cdot (m-n) < 0$
+
+#108  [EDEBIYAT] id=e170dde5-c38f-5888-be21-d36193bbc23d  DB_key=E  gemma3=C  conf=1.0
+  Q: Cumhuriyet Dönemi köy oyunlarının bir kısmı da, köy kadınının değişik sorunlarını yansıtır. "Köy kadınının özgürlüğünün çok kısıtlı oluşu, kadının bir mal gibi satılması, kadınların erkeklerden çok çalışıp düşüncelerinin alınmayışı" gibi konular; Nalinlar, Ana Hanım Kız Hanım, İsyancılar, Keziban, Kurban oyunlarında ele alınmıştır. Bu parçada tiyatrosu anılmayan yazar, aşağıdakilerden hangisidir?
+  A) Recep Bilginer
+  B) Necati Cumalı
+  C) Cahit Atay
+  D) Güngör Dilmen
+  E) Behçet Necatigil
+
+#109  [KIMYA] id=f61b26ee-96e6-582d-b3e8-6a43155a2f06  DB_key=D  gemma3=B  conf=1.0
+  Q: $_{25}X^{2+}$ ve $_{y}S^{3-}$ iyonları ile ilgili,
+• İzoelektroniktirler.
+• İzotondurlar.
+bilgileri veriliyor.
+Buna göre, $_{25}X^{2+}$ iyonunun kütle numarası aşağıdakilerden hangisidir?
+  A) 52
+  B) 53
+  C) 54
+  D) 55
+  E) 56
+
+#110  [MATEMATIK] id=bb6f0609-1499-5cc9-9b4c-20803ff71af8  DB_key=B  gemma3=C  conf=1.0
+  Q: Aykut, Burak ve Cihan adlı üç kişinin bulunduğu bir grupta 2018 yılında Aykut'un yaşı Burak'ın yaşının 2 katıdır. 2030 yılına gelindiğinde bu 3 kişinin yaşları toplamı 104 ve Aykut'un yaşının 5 katı, Burak'ın yaşının 8 katına eşit olacaktır. Buna göre, Cihan hangi yılda doğmuştur?
+  A) 2002
+  B) 2004
+  C) 2006
+  D) 2008
+  E) 2010
+
+#111  [FIZIK] id=27dd7d04-fa81-5c18-a498-2475fb408aad  DB_key=C  gemma3=D  conf=1.0
+  Q: Eşik enerjisi $3 \text{ eV}$ olan bir metale enerjisi $7 \text{ eV}$ olan fotonlar gönderilerek fotoelektrik etki gerçekleştiriliyor.
+Buna göre;
+I. Metalden $2 \text{ elektron}$ kopar, foton $1 \text{ eV}$ enerji ile metalden uzaklaşır.
+II. Metalden $1 \text{ elektron}$ kopar, foton $4 \text{ eV}$ enerji ile metalden uzaklaşır.
+III. Metalden $4 \text{ eV}$ kinetik enerjili $1 \text{ elektron}$ kopar, foton yok olur.
+durumlarından hangileri gerçekleşebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#112  [MATEMATIK] id=8a2bc184-7a88-5253-a591-40f1d1ac01fd  DB_key=D  gemma3=C  conf=1.0
+  Q: $a$ ve $b$ birer gerçel sayı olmak üzere,
+$R \to R$ ye bir $f$ fonksiyonu
+$f(x) = \begin{cases} 4x-1, & x > 2 \\ ax+b, & 0 \le x \le 2 \\ x+1, & x < 0 \end{cases}$
+şeklinde tanımlanıyor.
+$f$ fonksiyonu bire bir ve örten olduğuna göre $a$ gerçel sayısının değeri aşağıdakilerden hangisi olabilir?
+  A) 1
+  B) -1
+  C) -2
+  D) -3
+  E) -4
+
+#113  [MATEMATIK] id=6d140b57-0b22-5d6a-9fb3-12ffe69aab5c  DB_key=E  gemma3=C  conf=1.0
+  Q: $(x-4) \cdot P(x) = x^3 - 64$ eşitliğini sağlayan $P(x)$ polinomunun $x-4$ ile bölümünden kalan kaçtır?
+  A) 0
+  B) 12
+  C) 24
+  D) 36
+  E) 48
+
+#114  [MATEMATIK] id=aaf7897a-6634-558a-b6b1-2d7362488ed7  DB_key=D  gemma3=C  conf=1.0
+  Q: $a, b, c, d$ birer çift sayı olmak üzere, $1 < a < b < c < d < 9$ olduğuna göre, $\frac{a \cdot d}{b \cdot c}$ işleminin sonucu kaçtır?
+  A) $\frac{1}{6}$
+  B) $\frac{1}{3}$
+  C) $\frac{3}{8}$
+  D) $\frac{2}{3}$
+  E) $1$
+
+#115  [MATEMATIK] id=aa18b8b3-04e1-56f3-a7b6-61b5c946040f  DB_key=E  gemma3=D  conf=1.0
+  Q: $\operatorname{Arcsin}x=\operatorname{Arccos}y$ olduğuna göre, I. $0\le x\le 1$ II. $0\le y\le 1$ III. $x^2+y^2=1$ ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+#116  [EDEBIYAT] id=aa188ab4-46a3-5338-8278-1270d0fd9830  DB_key=B  gemma3=A  conf=1.0
+  Q: 16. yy'da Türk divan şiiri, kendi içinde özgünlüğüne kavuşmuştur. Bu yüzyılda Azeri ve Çağatay Türkçesi de önem kazanmıştır. Türkçe, Arapça ve Farsça sözcüklerin terkibi Osmanlı Türkçesi; her türlü duygu ve hayal inceliğini anlatmaya elverişli bir şiir dili hâline gelmiş ve şairlerin gittikçe Türkçeden uzaklaşmalarına yol açmıştır. Bu durumdan kaygılanan bazı şairler, salt Türkçe şiirler yazmaya yönelmişler ve bu yönelim Türkî-i Basit (Sade Türkçecilik) akımına dönüşmüştür. Türk Divan edebiyatında Türkçeciliğin temelleri de bu yüzyılda atılmıştır. 16. yy şairleri arasında ---- sayılabilir. Bu parçada boş bırakılan yere aşağıdakilerden hangisi getirilebilir?
+  A) Hoca Dehhani
+  B) Bağdatlı Ruhi
+  C) Şeyh Galip
+  D) Şeyyat Hamza
+  E) Kecceci İzzet Molla
+
+#117  [TURKCE] id=352a8781-c0c0-5b58-b07c-55169300f3d8  DB_key=E  gemma3=A  conf=1.0
+  Q: Aşağıdaki cümlelerden hangisinde kişi zamiri yönelme durum ekini aldığı için ses değişimine uğramıştır?
+  A) Zorlu bir kış geçirdim, seninki gibi narin.
+  B) Biliriz dünyadaki yorgunluk habire mızraklanır dağlarda gürbüz bir ölümdür bizim arkadaşlarımız.
+  C) Yazık ki uzaktaki kuşları, sokaklarıyla bizim olan şehir ama ancak lanetli hırsla tırpanlayamayız koyuyor insana.
+  D) Pusmuş bir şahınız şimdilik, ne kadar şahan olsak ama budandıkça fışkıran da bizleriz.
+  E) Sana durulanmış kelimeler getireceğim pörsümüş bir dünyayı kahreden kelimeler.
+
+#118  [MATEMATIK] id=7eab2700-ec71-5a12-a934-fc049d516fc6  DB_key=D  gemma3=B  conf=1.0
+  Q: İki basamaklı en büyük asal sayı ile rakamları farklı iki basamaklı en küçük asal sayının toplamı kaçtır?
+  A) 102
+  B) 104
+  C) 108
+  D) 110
+  E) 114
+
+#119  [MATEMATIK] id=0419ec81-5040-5228-b598-92480b372eec  DB_key=C  gemma3=B  conf=1.0
+  Q: Tüm dünyada 2000 yılı milenyum yılı olarak anılmış ve bu yılda doğan çocuklara "Milenyum Çocuğu" denilmiştir. Pınar, milenyum çocuğu olup annesinden 24 yaş küçük olduğuna göre, Pınar'ın annesinin doğum yılı aşağıdakilerden hangisidir?
+  A) 1966
+  B) 1974
+  C) 1976
+  D) 1984
+  E) 1986
+
+#120  [EDEBIYAT] id=e3deff07-bcee-52fc-a910-6b6d7db1f89a  DB_key=C  gemma3=A  conf=1.0
+  Q: (I) Tanzimat Dönemi'nde tiyatro alanında atılan ilk adımlar Batı edebiyatlarında yer alan oyunların birebir Türkçeye çevrilmesi ya da bizim kültürümüze uyarlanmasıyla olmuştur. (II) Bu dönemde başta Ahmet Vefik Paşa olmak üzere sanatçılar özellikle Fransız yazar Moliere'den yaptıkları çevirilerle bu alanda önemli adımlar atmışlardır. (III) Yine Ahmet Mithat Efendi, Bursa valisi iken burada ilk tiyatro binasını yaptırmış, oyuncu kadrosu oluşturmuş ve yapmış olduğu çevirileri burada sahnelemiştir. (IV) Türk edebiyatında yazılan ilk tiyatro eseri, Şinasi'nin kaleme aldığı 1860 yılında yazılan Şair Evlenmesi adlı oyundur. (V) Edebiyatımızda sahnelenen ilk oyun ise Namık Kemal'e ait olan dört perdelik Vatan Yahut Silistre adlı eserdir. Bu parçadaki numaralanmış cümlelerin hangisinde bir bilgi yanlışı vardır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#121  [MATEMATIK] id=a26209bb-9331-5faa-9f10-00be83e139e0  DB_key=C  gemma3=D  conf=1.0
+  Q: 2 tabanında logaritması 3'e eşit olan sayı kaçtır?
+  A) $\log_2 3$
+  B) $\log_3 2$
+  C) 8
+  D) 9
+  E) 17
+
+#122  [MATEMATIK] id=cc26cbf7-d440-59ce-99c0-1172a00680ab  DB_key=A  gemma3=C  conf=1.0
+  Q: $m, n, p \in \mathbb{R}$, $m$ ve $n$ sıfırdan farklı sayılardır. $|m-n| = |m| + |n|$ olduğuna göre, $mx^2 + px + n = 0$ denklemi ile ilgili olarak aşağıdakilerden hangisi kesinlikle doğrudur?
+  A) Denklemin iki reel kökü vardır.
+  B) $B = m+n = 0$
+  C) $p^2 = 4mn$
+  D) Denklemin iki pozitif kökü vardır.
+  E) Denklemin kökler toplamı negatiftir.
+
+#123  [MATEMATIK] id=d5a34c5b-a978-5cca-afc1-cc86c5bed294  DB_key=A  gemma3=B  conf=1.0
+  Q: $(x-m)^2 = 2m-3$ denkleminin tek kökü olduğuna göre, $m$ kaçtır?
+  A) $\frac{3}{2}$
+  B) 1
+  C) 0
+  D) -1
+  E) $\frac{5}{2}$
+
+#124  [BIYOLOJI] id=83b9af4e-8f04-50e7-a096-bc124ffd60bb  DB_key=B  gemma3=A  conf=1.0
+  Q: Bir bitki hücresinde kloroplast organelinin aktivitesine bağlı olarak; I. hücre dışına oksijen verilmesi, II. hücredeki diğer organellerin kullanacağı ATP enerjisinin sentezlenmesi, III. hücreye gerekli organik besinlerin üretilmesi olaylarından hangilerinin gerçekleşmesi beklenmez?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#125  [GEOMETRI] id=afafe27f-af45-51d2-b68b-377985c2b0f9  DB_key=E  gemma3=D  conf=1.0
+  Q: ABC eşkenar üçgen, $[ED] \parallel [BC]$, Çevre$(ABC) = 36$ cm, Çevre$(ADE) = 24$ cm olduğuna göre, Çevre$(BDEC)$ kaç santimetredir?
+  A) 24
+  B) 25
+  C) 26
+  D) 27
+  E) 28
+
+#126  [MATEMATIK] id=ab7df1ef-e8e1-55d9-93d4-04a41a0f258a  DB_key=B  gemma3=D  conf=1.0
+  Q: $y=16-x^2$ parabolü ile $y=16-4x$ doğrusu arasında kalan bölgenin alanı kaç birimkaredir?
+  A) 10
+  B) $\frac{32}{3}$
+  C) 11
+  D) $\frac{64}{3}$
+  E) 22
+
+#127  [MATEMATIK] id=6dc120b2-4219-5d32-923d-cdcbbd85d4d2  DB_key=E  gemma3=B  conf=1.0
+  Q: Bir sinema salonunda yetişkin bilet fiyatı $x$ TL, çocuk bilet fiyatı $y$ TL'dir.
+• 3 yetişkin, 4 çocuk bileti toplam 74 TL
+• 5 yetişkin, 2 çocuk bileti toplam 72 TL
+olduğuna göre $x+y$ toplamı kaçtır?
+  A) 10
+  B) 11
+  C) 17
+  D) 20
+  E) 21
+
+#128  [GEOMETRI] id=0f0d5968-2bfd-5e2f-96dc-6aa6eed6fb14  DB_key=E  gemma3=C  conf=1.0
+  Q: $A(-1, 2)$ noktasının orijine göre simetriği $B(b-3, a+1)$ noktasıdır. Buna göre, $C(a, b)$ noktasının orijine uzaklığı kaçtır?
+  A) 6
+  B) $2\sqrt{7}$
+  C) $2\sqrt{5}$
+  D) $3\sqrt{2}$
+  E) 5
+
+#129  [MATEMATIK] id=eb46c4c3-0330-5fda-97f0-b07b0412a01f  DB_key=E  gemma3=C  conf=1.0
+  Q: 1'den 10'a kadar ardışık tam sayıların çarpımının sonucu yedi basamaklı $362a00$ sayısıdır. Buna göre, $a$ kaçtır?
+  A) 2
+  B) 5
+  C) 6
+  D) 7
+  E) 8
+
+#130  [MATEMATIK] id=a39c1c58-efdb-5fd2-86d7-7b706491619e  DB_key=C  gemma3=D  conf=1.0
+  Q: Üçte birinin, iki katına 10 eklendiğinde kendisi elde edilen sayının, %20'sinin yarısı kaçtır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#131  [MATEMATIK] id=13c12a5b-7c5d-50e1-ab50-4977c4d8fd32  DB_key=E  gemma3=D  conf=0.95
+  Q: $a = \sqrt{5}$, $b = \sqrt[3]{4}$ ve $c = \sqrt[6]{7}$ olduğuna göre, $a, b$ ve $c$ sayılarının doğru sıralanışı aşağıdakilerden hangisidir?
+  A) $a < b < c$
+  B) $b < a < c$
+  C) $c < a < b$
+  D) $b < c < a$
+  E) $c < b < a$
+
+#132  [EDEBIYAT] id=eb340281-ae99-5af6-b778-1f82d5b3970d  DB_key=B  gemma3=C  conf=0.95
+  Q: Dokuz bölümden oluşan bu Hasan Ali Toptaş romanının olay örgüsü kahraman anlatıcının Alaaddin isminde birini aramasına dayanır. Ancak aranan kişinin nasıl biri olduğu, neyi temsil ettiği pek net değildir. Aynı şekilde ben anlatıcının da kim olduğu ve Alaaddin'i niye aradığı hakkında ayrıntılı bilgi mevcut değildir. Kahraman anlatıcı bir ayağı gerçekte, diğer ayağı ise hayal âleminde bir vaziyette aramaya koyulur. Anlatı ormanlarında, adeta metinlerarası gezintiler yapan kahraman anlatıcı, Kırmızı Başlıklı Kız'dan Kürk Haramiler, Donkişot'tan Kafka'nın Dönüşümü'ne ve oradan Binbir Gece Masalları'na uzanan gerçeküstü bir maceraya çıkar.
+Bu parçada hakkında bilgi verilen roman aşağıdakilerden hangisidir?
+  A) Fındık Sekiz
+  B) Bin Hüzünlü Haz
+  C) Mahrem
+  D) Kafes
+  E) Sessiz Ev
+
+#133  [MATEMATIK] id=1c53c324-dab0-5e74-8872-28f6dd896d95  DB_key=C  gemma3=B  conf=0.95
+  Q: Aralarında $780 \text{ km}$ mesafe bulunan iki araç aynı anda birbirine doğru harekete başlıyor. Balıkçı aracı $1 \text{ saat}$ sabit hızlarla hareket ettikten sonra aralarındaki mesafe $580 \text{ km}$ oluyor ve hızı fazla olan araç hızını yarıya düşürerek, hızı az olan araç ise hızını değiştirmeden yoluna devam ediyor.
+Bu iki araç harekete başladıktan $5 \text{ saat}$ sonra karşılaştığına göre, hızı az olan aracın saatteki hızı kaç kilometredir?
+  A) 60
+  B) 85
+  C) 90
+  D) 95
+  E) 100
+
+#134  [KIMYA] id=7c1ecab5-e3ad-5f45-abd7-abb248edc804  DB_key=A  gemma3=D  conf=0.95
+  Q: Gaz fazında gerçekleşen kimyasal tepkimeye ait aşağıdaki bilgiler verilmiştir: I. X gazının derişimi sabit tutularak hacim iki katına çıkarılırsa hız 16'da 1'ine düşüyor. II. Y gazının derişimi sabit tutularak hacim yarıya indirilirse hız 32 katına çıkıyor. III. Z gazının derişimi sabit tutularak hacim yarıya indirilirse hız 8 katına çıkıyor. Buna göre, tepkime denklemi aşağıdakilerden hangisi doğru olarak verilmiştir?
+  A) $2X + Y + 3Z \rightarrow$
+  B) $X + Y + 2Z \rightarrow$
+  C) $X + 3Y + 2Z \rightarrow$
+  D) $2X + Y + 2Z \rightarrow$
+  E) $2X + 2Y + 3Z \rightarrow$
+
+#135  [MATEMATIK] id=c57aa11d-57ec-5494-898f-b626416d0710  DB_key=E  gemma3=D  conf=0.95
+  Q: $ \frac{x}{2} \ge \frac{2}{x} $ eşitsizliğinin en geniş çözüm kümesi aşağıdakilerden hangisidir?
+  A) $ (-\infty, -2] $
+  B) $ [0, 2] $
+  C) $ (0, 2] $
+  D) $ (-2, 0) \cup [2, \infty) $
+  E) $ [-2, 0) \cup [2, \infty) $
+
+#136  [MATEMATIK] id=ac381c57-0d0c-5f24-8184-bfed51136617  DB_key=E  gemma3=B  conf=0.95
+  Q: Bir şehrin nüfusu için, $t_0$: Bir önceki sayım yılı, $t$: Yeni sayım yapılan yıl, $N_0$: Bir önceki sayımdaki nüfus, $p$: Nüfus artış oranı olmak üzere, $N$, yeni nüfus sayısı: $N = N_0 (1+p)^{t-t_0}$ formülü ile hesaplanmaktadır. 2016 yılında yaklaşık 80 milyon nüfusu olan Türkiye'nin nüfus artış oranı %1,6 dır. $\log_2 = 0,301$ ve $\log(1,016) = 0,007$ olduğuna göre, hangi yılda Türkiye'nin yaklaşık nüfusu 160 milyon olur?
+  A) 2039
+  B) 2044
+  C) 2049
+  D) 2054
+  E) 2059
+
+#137  [GEOMETRI] id=0b052f16-763d-5ccc-9472-7c41e57f77ef  DB_key=E  gemma3=C  conf=0.95
+  Q: $d_1: 3x - y - 6 = 0$ ve $d_2: -6x + 2y - 28 = 0$ doğruları arasındaki uzaklık kaç birimdir?
+  A) 5
+  B) $2\sqrt{5}$
+  C) $2\sqrt{7}$
+  D) 6
+  E) $2\sqrt{10}$
+
+#138  [GEOMETRI] id=cd6c1a64-5e4e-565f-b5a0-fcabc3112445  DB_key=D  gemma3=B  conf=0.95
+  Q: Dik koordinat düzleminde $3x+4y-24=0$ doğrusunun koordinat eksenleri ile oluşturduğu bölgenin iç teğet çemberinin denklemi nedir?
+  A) $(x-1)^2 + (y+1)^2 = 1$
+  B) $(x-1)^2 + (y-1)^2 = 1$
+  C) $(x+2)^2 + (y+2)^2 = 4$
+  D) $(x-2)^2 + (y-2)^2 = 4$
+  E) $(x-1)^2 + (y-2)^2 = 4$
+
+#139  [KIMYA] id=0b3626b3-3f94-5eb0-b59f-b702a128c2a9  DB_key=B  gemma3=A  conf=0.9
+  Q: 25°C'de $PbCl_2$ katısının 0,1 M NaCl çözeltisi içindeki çözünürlüğü kaç $\frac{mol}{L}$'dir? (25°C'de $PbCl_2$ için $K_{çç} = 1,6 \cdot 10^{-5}$)
+  A) $4 \cdot 10^{-3}$
+  B) $1,6 \cdot 10^{-3}$
+  C) $2 \cdot 10^{-3}$
+  D) $1 \cdot 10^{-2}$
+  E) $1,6 \cdot 10^{-1}$
+
+#140  [COGRAFYA] id=250e53d3-0dda-5ac3-8e51-4f73952cc2f4  DB_key=C  gemma3=D  conf=0.9
+  Q: Ekvator'dan kutuplara gidildikçe bitki türlerinin görüldüğü üst sınır deniz seviyesine yaklaşır.
+Buna göre, aşağıdaki yerlerin hangisinde orman üst sınırının daha yüksek­tir?
+  A) Sibirya
+  B) Batı Kanada
+  C) Amazon Havzası
+  D) Grönland Adası
+  E) Akdeniz Havzası
+
+#141  [BIYOLOJI] id=20ef3033-92d7-5643-a60e-b5b68b71758f  DB_key=C  gemma3=B  conf=0.9
+  Q: Popülasyonları oluşturan bireylerin yayılış alanında gösterdikleri düzenli dağılım modeli ile ilgili aşağıdaki bilgilerden hangisi doğrudur?
+  A) Bireyler arasındaki uzaklıklar çok az ya da çok fazladır.
+  B) Bireyler arasındaki etkileşimin en zayıf olduğu dağılım modelidir.
+  C) Besin ve çiftleşme rekabeti nedeniyle ortaya çıkabilir.
+  D) Doğada en yaygın görülen dağılım modelidir.
+  E) Tohumları rüzgarla rastgele taşınan karahindiba gibi bitkilerde görülür.
+
+#142  [EDEBIYAT] id=eee2bde9-4e28-53e7-a3b9-c028e516ae94  DB_key=E  gemma3=C  conf=0.9
+  Q: Görüp ahkâm-ı asrı münharif sıdk u selametten
+Çekildik izzet ü ikbal-i bî-hürmetten
+
+(ahkam-ı asr: devrin kanunları
+münharif: sapmış
+sıdk-u selamet: doğruluk ve dürüstlük
+izzet ü ikbal: şan şeref)
+
+Usanmaz kendini insan bilenler halka hizmetten
+Mürüvvet-mend olan mazluma el çekmez ianetten
+
+(mürüvvet-mend: yardımsever
+ianet: yardım)
+
+Hakîr olduysa millet, sanma noksan gelir şanına
+Yere düşmekle cevher sâkıt olmaz kadr ü kıymetten
+
+(Hakîr: düşkün, zor duruma düşmüş
+cevher: mücevherin özü
+sâkıt olmaz: düşmez)
+
+Müni'i zalimin dünyada erbab-ı denâettir
+Köpektir zevk alan sayyad-ı bî insafa hizmetten
+
+(mün'i: yardımcı
+erbab-ı denaet: alçak kişi
+sayyad-ı bîinsaf: vicdansız avcı)
+
+Namık Kemal'in Hürriyet Kasidesi'nden alınan bu dizeler için aşağıdaki çıkarımlardan hangisi yapılamaz?
+  A) Nazım biçimi ve nazım ölçüsü bakımından divan şiiri geleneğine uygundur.
+  B) Arapça-Farsça sözcük ve tamlamalar, divan şiirinin üslup zevkinden kopulamadığını göstermektedir.
+  C) Coşkulu bir dille duygusal bir söyleyiş oluşturulması romantizm akımının etkisini yansıtır.
+  D) Teşbih ve istiare sanatlarına başvurulması, üslupçu bir yaklaşımın göstergesidir.
+  E) İşlenen konunun divan şiirindeki geleneksel konular dan biri olması geleneklere bağlılığın bir başka kanıtıdır.
+
+#143  [FIZIK] id=af14638d-b4cb-50a7-b48b-d4a31308ff2d  DB_key=C  gemma3=D  conf=0.9
+  Q: Bir öğrenci, aynı maddeden yapılmış ince ve kalın iki yayı birleştirerek iki ucundan gergin bir şekilde sabitliyor. Daha sonra, ince yayda oluşturduğu bir atmanın kalın yaya geçtikten sonraki hareketini gözlemliyor. Buna göre kalın yaya geçen atmanın gelen atmaya göre, I. Hızı artmıştır. II. Genliği artmıştır. III. Genişliği azalmıştır. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve III
+  E) II ve III
+
+#144  [FIZIK] id=1aa3b1a6-5fac-51c9-b9a0-1643cb0e70b8  DB_key=A  gemma3=B  conf=0.9
+  Q: Bir otomobil doğrusal yolda $0-t_1$ zaman aralığında hızını sıfırdan $100 \text{ km/h}$'e çıkarıyor. Otomobil, $t_1-t_2$ zaman aralığında sabit hızla hareketine devam ediyor. $t_2-t_3$ zaman aralığında ise otomobilin hızı $100 \text{ km/h}$'ten $50 \text{ km/h}$'e düşüyor. Otomobil üzerinde net kuvvetin yaptığı işler sırasıyla $W_1$, $W_2$ ve $W_3$ olduğuna göre aşağıdakilerden hangisi doğrudur?
+  A) $W_1 > W_2 > W_3$
+  B) $W_3 > W_2 > W_1$
+  C) $W_1 = W_2 = W_3$
+  D) $W_3 > W_1 > W_2$
+  E) $W_2 > W_1$
+
+#145  [TURKCE] id=f9cb5bda-f92e-5ca0-8621-1c50387102f5  DB_key=A  gemma3=B  conf=0.9
+  Q: Modern medeniyetin geldiği noktada insan, dünyanın kendi çevresinde döndüğüne inanmaya başladı. Sosyal medyanın "Yalnız sen önemlisin!" söylemiyle dolu videoları ve yazıları, insanı kendi benliği ile dopdolu hâle getirdi. Bu noktada şu soruyu sormak gerekiyor: Benim dışımdakiler benden daha mı az önemli? Bu soruyu doğru doğru cevaplamak isteyen insan, kendi "ben"i etrafında kurduğu düzenden vazgeçip ötekinin varlığıyla yüzleşmek zorunda.
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılabilir?
+  A) İnsanın kendi eksiklerini fark etme süreci, ötekinin varlığıyla yüzleştiğinde başlar.
+  B) Modern hayat; kabul edebilen insan dünyasının sadece kendi etrafında dönmediğini bilir.
+  C) İnsanların kendi dışındaki insanları önemsiz görmesi, sosyal medyanın dayattığı bir ezberdir.
+  D) İnsanlar arasındaki ilişkilerin sosyal medya üzerinden yürümesi modern hayatın getirisidir.
+  E) Sadece kendi benliğini ön planda tutan insan, toplum içerisinde daha kolay kabul görür.
+
+#146  [TURKCE] id=07de5374-0c53-525f-bbd4-129549cd5533  DB_key=A  gemma3=E  conf=0.9
+  Q: Bence masalları, insanların temel endişelerini anlatan birtakım deneyimlerdir. Yalnız şöyle bir farkı vardır: Masallardaki insanlar kalıplaşmış kişiliklerdir. Dülgördür, tüccardır. Yani büyük harfle yazılır bunların isimleri; sanki mesleklerine ya da yaşadıkları sınıfa, bulundukları sınıfa dair birtakım kişiliklerin sembolleri gibi bulunurlar masallarda. --- Her terzi değil de, belli bir terzi nasıl terzi olur? Her dülger değil de belli bir dülger nasıl dülger olur çağdaş dünyada, diye düşündüm.
+Bu parçada boş bırakılan yere düşüncenin akışına göre aşağıdakilerden hangisi getirilmelidir?
+  A) Masallardaki kişilikleri, birey ve meslek sahibi olmaları nasıl olur, sorusu benim kafamı her zaman kurcalamış bir soru, belki de o yüzden masallarla ilgilendim
+  B) Bunu sadece benim yaptığımı söyleyemem, birçok edebiyatçı bunu denemiştir sanıyorum
+  C) Masallardaki korkuları bireysel çağdaş korkular hâline getirmeyi istedim
+  D) Masallardaki anlatım özelliklerinden, içeriğinden faydalanarak çağdaş anlatıverdim
+  E) Masallardaki kişiliklerin ve mesleklerin olay örgüsündeki yeri üzerine incelemelerde bulundum
+
+#147  [TURKCE] id=c798609c-bd91-5b24-a147-cca7259d117f  DB_key=D  gemma3=B  conf=0.9
+  Q: Hem okur hem de izleyici olarak son görmeye o kadar alışmışız ki... Kitapçı raflarını kolluyorum için yazdığım Reşat Nuri'nin Batı'da ilgi uyandıran öykülerinde gençler en sık şunu soruyor: Ana karakter Duygu, İstanbul'a dönecek mi yoksa Ayvalık'ta mı kalacak? Devam kitabını yazacak mısın? Oysa ben, okur bunu kendisi yazabilir diyorum. Bu nedenle Ay Doland'ın sonunda böyle bir belirsizlik var.
+Bu parçada vurgulanmak istenen düşünce aşağıdakilerden hangisidir?
+  A) Genç bir okuyucu kitlesine seslenmenin yapıtın olgunlaştırdığı
+  B) Yazarla yapıt arasında sağlıklı ve içten bir bağın kurulması gerektiği
+  C) Okurunun tepkilerine kulak vermeyen yazarların kalıcı olamayacağı
+  D) Yazarın her şeyi söylemesi gerektiği düşüncesinin yanlış olduğu
+  E) Okurun beklenmeyen sondan hoşlanmadığı
+
+#148  [FIZIK] id=db788c08-bf8b-5084-a392-bea100dfa08a  DB_key=B  gemma3=D  conf=0.9
+  Q: Böbreklerindeki taştan dolayı ağrılar çeken Fatih Bey doktora gitmeye karar veriyor. Doktor Fatih Bey'i muayene ettikten sonra Fatih Bey'in bir müddet hastanede yatması gerektiğini ve tedavinin ses dalgası kullanılarak yapılacağını söylüyor.
+Fatih Bey doktora tedavinin nasıl olacağını sorduğun da doktor,
+I. Yüksek hızlı ses dalgaları kullanacağız.
+II. Yüksek frekanslı ses dalgaları kullanacağız.
+III. Düşük frekanslı ses dalgaları kullanacağız.
+cevaplarından hangilerini vermiş olmalıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#149  [KIMYA] id=82b6e7a1-1db4-5c2c-9ca5-c79681e3d8ea  DB_key=A  gemma3=E  conf=0.9
+  Q: Aynı periyotta bulunan elementlerden, X: Alkali metal, Y: Toprak alkali metal olduğuna göre X ve Y elementleri ile ilgili, I. Kararlı bileşiklerinde aynı soygaz elektron düzenine sahiptirler. II. X'in 1. iyonlaşma enerjisi Y'nin 2. iyonlaşma enerjisine eşittir. III. $X^{+}$ ve $Y^{2+}$ iyonlarının çapları eşittir. ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#150  [MATEMATIK] id=475f30d7-3e1b-54ad-9756-6835e72a3cec  DB_key=B  gemma3=E  conf=0.9
+  Q: Trigonometrik fonksiyonları birim çember yardımıyla açıklayabilen Ahmet Öğretmen, "Her $x \in (0, \frac{\pi}{2}]$ için $\sin x < x$" önermesinin doğru olduğunu söylüyor.
+Buna göre, Ahmet
+I. $\sin x > x$
+II. $\tan x > x$
+III. $\cos^2 x > x^2$
+önermelerinden hangilerinin doğruluğunu gösterebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+#151  [EDEBIYAT] id=c6dc8a01-e2b7-5fe6-ba0b-ee6256e6e4f8  DB_key=E  gemma3=D  conf=0.9
+  Q: Hüseyin Nihal Atsız ile ilgili verilen bilgilerden hangisi yanlıştır?
+  A) Türk edebiyatının önemli teorisyen, milliyetçi, tarihçi yazarlarındandır.
+  B) Turan felsefesi çerçevesinde "Mecmua", "Orhun", "Orkun" ve "Ötüken" gibi dergileri çıkarmıştır.
+  C) Romanlarında Türk töresini, ahlakını, yaşam biçimini işlemiştir.
+  D) Osmanlı tarihinin dönüm noktalarını destansı bir dille eserlerine aktarmıştır.
+  E) Milliyetçi akımın etkisiyle kaleme aldığı eserlerinde Şamanizm önemli bir yer tutar.
+
+#152  [KIMYA] id=23c7d6e7-db6f-505d-b85c-bdced7c60c8b  DB_key=E  gemma3=B  conf=0.9
+  Q: Fonksiyonel grubu olan bileşikler ve bileşiklerin özellikleri ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?
+  A) $CH_3-CH(OH)-CH_3$ bileşiği sekonder alkoldür.
+  B) Eterler polarliği az olduğu için organik maddeler için iyi çözücüdür.
+  C) Aldehitler, ketonlar, karboksilli asitler ve esterler karbonil grubu içerirler.
+  D) Aldehitler indirgendiğinde primer alkol oluşur.
+  E) Etanoik asit ve metil alkolün tepkimesinden etil metanoat oluşur.
+
+#153  [KIMYA] id=126ad284-6994-5645-9896-8cbb8a1836c8  DB_key=A  gemma3=C  conf=0.9
+  Q: I. Kullanım kolaylığı açısından plastiklerin kullanımı yaygın hâle getirilmelidir.
+II. Enerji elde etmek için termik santrallerin sayısı artırılmalıdır.
+III. Doğal gübreler yerine kimyasal gübreler kullanılmalıdır.
+IV. Pil atıkları evsel atıklarla beraber geri dönüşüme gönderilmelidir.
+V. Fabrikalar ve yerleşim yerleri su havzalarından uzaklarda kurulmalıdır.
+Yukarıdakilerden kaç tanesi doğrudur?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#154  [KIMYA] id=afa232f5-3dcc-5b06-807e-f4b1e60634a9  DB_key=D  gemma3=C  conf=0.9
+  Q: Bir element atomunun temel hâl elektron dizilimi yazıldığında, açısal momentum kuantum sayısı ($l=1$) değerine sahip 17 elektron bulunmaktadır. Buna göre, bu element ile ilgili; I. Değerlik elektron sayısı 7'dir. II. Bileşiklerinde yalnızca 1- değerlik alır. III. Doğada diatomik yapıda bulunur. ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#155  [EDEBIYAT] id=d546b575-6e7b-5585-b1aa-858f6b43c267  DB_key=C  gemma3=E  conf=0.9
+  Q: Cumhuriyet Dönemi'nde yazılan bazı romanlarda insanları üzen, yıpratan koşullar; bu koşulları ortaya çıkaran etkenler ele alınmıştır. Yani özellikle halkın sorunlarını yansıtmak, bu doğrultuda okurları bilinçlendirmek amacı güdülmüştür. Aşağıdaki romanlardan hangisi bu parçada belirtilen bir tutumla oluşturulmamıştır?
+  A) Kaplumbağalar
+  B) İnce Memed
+  C) Ruh Üşümesi
+  D) Kuyucaklı Yusuf
+  E) Murtaza
+
+#156  [MATEMATIK] id=46495c66-4878-5040-bb26-bc1cff510c31  DB_key=C  gemma3=B  conf=0.9
+  Q: $f(x) = \frac{\cot x}{\cos x - \sin x}$ fonksiyonunun sürekli olduğu en geniş aralık $\mathbb{R} - A$ olduğuna göre, $A$ kümesinin $[0, \pi]$ aralığında kaç elemanı vardır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#157  [TARIH] id=5e78da07-f3be-5eb7-bd50-7601184cfbd4  DB_key=A  gemma3=D  conf=0.9
+  Q: Osmanlı Devleti'nin Kuruluş Dönemi'nde uygulanan iskan politikasının;
+
+I. İskan edileceklerin yakın bölgelerden seçilmesi
+II. Aralarında anlaşmazlık olan ailelerden birinin tercih edilmesi
+III. İskan edilen ailelere zirai yardım yapılması
+
+durumlarından hangilerinin kültür çatışmasını engelleme amacı taşıdığı savunulabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#158  [TARIH] id=4226957a-18cb-5bbb-9d0f-d6057e22fac0  DB_key=C  gemma3=D  conf=0.9
+  Q: Türkiye yoğun ısrarlara rağmen II. Dünya Savaşı'na fiilen katılmamıştır. Türkiye'nin II. Dünya Savaşı'na fiilen katılmamış olmasına rağmen savaşın getirdiği ekonomik zorlukları savaşa giren devletler ile beraber yaşamıştır. Türkiye'nin savaşa girmemesine rağmen ekonomik zorluklar yaşamasının nedenleri arasında; I. millî bankaların kurulması, II. okuryazar oranının artması, III. Müttefik grubunun baskısıyla Avrupalı bazı devletler ile ticari bağların kopartılması durumlarından hangileri olduğu söylenemez?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#159  [FIZIK] id=c5a8c06f-3a69-5e4e-add8-f0223e28cf8e  DB_key=A  gemma3=C  conf=0.9
+  Q: Bir fotosel devresinin maksimum akımı I, kesme potansiyel farkı V dir. Bu fotoselde düşürülen ışınların yalnız frekansı artırılırsa, I ve V nasıl değişir?
+  A) Değişmez, Artar
+  B) Artar, Değişmez
+  C) Artar, Azalır
+  D) Azalır, Artar
+  E) Artar, Artar
+
+#160  [GEOMETRI] id=dd6c8ea5-c939-585e-921c-feca7c32674c  DB_key=B  gemma3=A  conf=0.9
+  Q: $(x+3)^2+y^2=20$ çemberinin 4 birim uzunluğundaki kirişlerinin orta noktalarının geometrik yer denklemi aşağıdakilerden hangisidir?
+  A) $(x+3)^2+y^2=12$
+  B) $(x+3)^2+y^2=16$
+  C) $(x+3)^2+y^2=18$
+  D) $(x-3)^2+y^2=16$
+  E) $(x+3)^2+y^2=24$
+
+#161  [MATEMATIK] id=4dca5853-7841-5ff1-8319-700d8d2a78e6  DB_key=A  gemma3=C  conf=0.9
+  Q: Kilo kontrolü için diyetisyene başvuran Sümeyye ile diyetisyen arasında aşağıdaki konuşma geçiyor.
+Diyetisyen: "Hazırladığım yeni detoks suyundan 100 litre tüketirsen 4 kg verebilirsin."
+Sümeyye: "Hedefim 12 kg zayıflamak."
+Diyetisyen: "Metabolizma hızına göre bu oran değişebilir. Örneğin, metabolizması hızlı olan bir kişi 10 kg zayıflamak için tüketmesi gereken detoks suyu ile 12 kg zayıflayabilir."
+Bu durumda $\frac{2}{10}$ oranında bir hata payı vardır. Bu ise %20'ye tekabül eder. İşte biz bu yüzdeye "metabolizma hata yüzdesi" diyoruz.
+Bu konuşmadan sonra 300 litre detoks suyu tüketen Sümeyye 15 kg zayıfladığına göre, Sümeyye'nin metabolizma hızı ve hata yüzdesi hakkında aşağıdakilerden hangisi doğrudur?
+
+Metabolizma hızı | Metabolizma hata yüzdesi
+-----------------|------------------------
+A) Hızlı | 25
+B) Hızlı | 20
+C) Hızlı | 30
+D) Yavaş | 25
+E) Yavaş | 20
+  A) Hızlı, 25
+  B) Hızlı, 20
+  C) Hızlı, 30
+  D) Yavaş, 25
+  E) Yavaş, 20
+
+#162  [EDEBIYAT] id=6eec73ed-3600-5fc3-9efb-7f268ae5cc1f  DB_key=C  gemma3=B  conf=0.9
+  Q: Servetifünun Dönemi'nin az tercih edilen türleri hakkında bir çalışma yapmak istedim dört arkadaşımla. Dönem ve sanatçılarına dair tüm gelişmeleri bir şiir, roman ve öykü üçlüsünün mutlak hâkimiyetine karşı ben araştırmamı sadece öteki türler üzerine yaptım. Yine de Servetifünun şiir ve yazarlarınca yazılan tüm şiir, roman ve öykü kitaplarını da okudum. Aslında Recaizade'nin ve Abdülhak Hamit'in yaşadığı, harcadığı o edebî etkiyi dikkate almam ve onları okuyarak başlamam gerekirdi ancak bunun için yeterli zamanım yoktu. Bir araştırmacı olarak kabul etmeliyim ki Servetifünun Dönemi'nin portresi, bu iki sanatçının eserlerini okumadığım ve değerlendirmediğim için eksik kaldı. Hatta bu süreçte çalışmamda Servetifünun'un şimdiye değin pek çizilmemiş bir edebî türler portresini çizdim. Servetifünun'dan şiir, roman ve öyküyü çıkardığınızda geriye ne kalır sorusuna yanıt aradım.
+Bu parçada söz edilen araştırmacı hakkında aşağıdakilerden hangisi söylenemez?
+  A) Röbaab-ı Şikeste ve Kırık Hayatlar'ı çalışmasına katmamış fakat okumuştur.
+  B) Tanzimat'ın II. dönemi ile Servetifünun arasında bir geçiş olduğunu düşünür.
+  C) Teklîf-i Edebiyat, Çok Bilen Çok Yanılır ve Sahra adlı eserleri değerlendirmiştir.
+  D) Kırk Yıl, Saray ve Ötesi, Kavgalaşma adlı eserleri değerlendirmemiştir.
+  E) Hüseyin Cahit, çalışmasında yer verdiği sanatçılardandır.
+
+#163  [KIMYA] id=d63f3472-81c1-5f63-9596-910fe1b316bc  DB_key=D  gemma3=C  conf=0.9
+  Q: Bir organik bileşik olan asetilenin (etinin) çizgi bağ formülü aşağıda verilmiştir: $H-C \equiv C-H$
+Asetilende atomlar arası bağların oluşumuyla ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) Hidrojen atomları $sp$ hibritleşmesi yapmıştır.
+  B) Karbon atomları $sp^3$ hibritleşmesi yapmıştır.
+  C) $C-C$ orbital örtüşmesiyle oluşan toplam iki bağ vardır.
+  D) $s-p$ orbitallerinin örtüşmesiyle oluşan toplam iki bağ vardır.
+  E) Karbon ve hidrojen atomları arasındaki bağ, $\pi$ (pi) bağıdır.

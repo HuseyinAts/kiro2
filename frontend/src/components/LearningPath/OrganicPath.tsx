@@ -25,12 +25,12 @@ export const OrganicPath: React.FC<OrganicPathProps> = ({
 
   useEffect(() => {
     const g = gRef.current;
-    if (!g) return;
+    if (!g) {return;}
 
     const svg = g.ownerSVGElement;
-    if (!svg) return;
+    if (!svg) {return;}
 
-    while (g.firstChild) g.removeChild(g.firstChild);
+    while (g.firstChild) {g.removeChild(g.firstChild);}
 
     const rc = rough.svg(svg);
     const seed = seededRandom(`${fromTopic}-${toTopic}`);
@@ -49,7 +49,7 @@ export const OrganicPath: React.FC<OrganicPathProps> = ({
     g.appendChild(pathNode);
 
     return () => {
-      while (g.firstChild) g.removeChild(g.firstChild);
+      while (g.firstChild) {g.removeChild(g.firstChild);}
     };
   }, [fromX, fromY, toX, toY, fromTopic, toTopic, prereqType]);
 

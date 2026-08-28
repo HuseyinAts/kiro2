@@ -2,6 +2,13 @@
 # Run: pre-commit install
 # Manual run: pre-commit run --all-files
 
+# Arsivlenmis alembic revizyonlari (14 Agu 2026 squash, bkz.
+# alembic/versions/0001_baseline_squash.py). Bunlar TARIHSEL kayittir ve
+# alembic tarafindan YUKLENMEZ -- formatlamak/duzeltmek kaydin sadakatini
+# bozar, hicbir sey de kazandirmaz. Yeni revizyonlar versions/ altinda
+# yazilir ve tum hook'lardan gecer.
+exclude: "^backend/alembic/versions_archive/"
+
 repos:
   # General hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -16,7 +23,7 @@ repos:
       - id: check-xml
       - id: check-merge-conflict
       - id: check-added-large-files
-        args: ['--maxkb=10000']
+        args: ["--maxkb=10000"]
       - id: detect-private-key
       - id: check-case-conflict
       - id: mixed-line-ending
@@ -31,20 +38,64 @@ repos:
     hooks:
       - id: ruff
         name: Ruff linter
-        args: ['--fix', '--exit-non-zero-on-fix']
+        args: ["--fix", "--exit-non-zero-on-fix"]
         files: ^backend/.*\.py$
         exclude: ^backend/(alembic/versions/|migrations/)
-      
+
       - id: ruff-format
         name: Ruff formatter
         files: ^backend/.*\.py$
         exclude: ^backend/(alembic/versions/|migrations/)
 
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.7.5
+  # bandit — PyPI wheel'inden, kaynak repodan DEĞİL.
+  #
+  # 27 Tem 2026 (2. tur) — hook bu makinede HİÇ KURULAMIYORDU, yani hiç
+  # koşmamıştı. `repo: https://github.com/pycqa/bandit` pre-commit'e depoyu
+  # klonlatıp `pip install .` yaptırır; bandit paketlemede `pbr` kullanır ve
+  # klonda git tag bağlamı olmadığı için sürümü `0.0.0` üretir. Windows'ta
+  # bdist_wheel bu adla çakışıyor:
+  #
+  #     error: [WinError 183] Halen varolan bir dosya oluşturulamaz:
+  #            'build\bdist.win-amd64\wheel\bandit-0.0.0.dist-info'
+  #     ERROR: Failed building wheel for bandit
+  #
+  # Etkisi kozmetik değildi: pre-commit bir hook'un ortamını kuramayınca TÜM
+  # koşumu düşürür — yani bandit'in çökmesi, aynı config'deki sır tarayıcısı
+  # dahil her hook'u ve dolayısıyla her commit'i bloke ediyordu.
+  #
+  # Aynı turda eklenen `additional_dependencies: ['pbr']` bu çöküşü YARATMADI,
+  # sadece görünür kıldı: ortam imzasını değiştirip yeniden kurulumu tetikledi.
+  # Önceki `ModuleNotFoundError: pbr` de aynı kökün başka bir yüzüydü.
+  #
+  # Çözüm: `repo: local` + `language: python` + sürümü sabitlenmiş PyPI
+  # bağımlılığı. pip hazır wheel'i indirir, kaynak build hiç olmaz.
+  # Ölçüldü: temiz venv'de `pip install --only-binary=:all: bandit` -> 1.9.4 OK.
+  #
+  # NOT: ruff `S` (flake8-bandit) kural seti backend/pyproject.toml'da zaten
+  # açık, yani bu hook'un çoğu kuralı ruff'ta da var. Yine de kaldırılmadı —
+  # bandit'in AST tabanlı kontrolleri (B3xx/B5xx ailesi) ruff'ta birebir
+  # karşılanmıyor ve çalışmayan bir güvenlik hook'unu silmek yerine
+  # çalıştırmak doğrusu.
+  - repo: local
     hooks:
       - id: bandit
-        args: [-r, --skip=B101,B601]
+        name: bandit (PyPI wheel)
+        entry: bandit
+        language: python
+        additional_dependencies: ["bandit==1.9.4"]
+        # args TIRNAKLI kalmalı: prettier YAML akış dizisini yeniden
+        # biçimlerken `--skip=B101,B601`'i `--skip=B101, B601` yapıp İKİ
+        # argümana bölüyordu; bandit `B601`'i yol sanardı.
+        #
+        # B105 (28 Tem 2026): `api/auth.py`de 8 yanlış pozitif üretiyordu —
+        # rota önekleri ("/api", "/api/v1/auth"), "bearer" kelimesi ve
+        # OpenAPI örnek JWT metinleri. Atlanması KONTROL KAYBI DEĞİL: ruff'ın
+        # `S` seti (backend/pyproject.toml:139) aynı denetimi yapıyor ve
+        # ölçüldü — `backend/api/` altına konan sahte `API_TOKEN = "sk-..."`
+        # sabiti ruff tarafından S105 ile yakalandı. Gerçek sır denetimi
+        # ayrıca detect-secrets + kiro2-secret-detector hook'larında.
+        args: ["-r", "--skip=B101,B601,B105"]
+        types: [python]
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py)
 
@@ -58,15 +109,22 @@ repos:
           - pydantic==2.5.0
           - sqlalchemy==2.0.23
           - fastapi==0.104.1
+          # `types-redis` DEĞİL: redis>=5 kendi py.typed'ini taşır ve
+          # types-redis kullanımdan kalktı. mypy'ın verdiği "pip install
+          # types-redis" ipucu bayat. Ölçüldü: redis 6.4.0, py.typed=True.
+          # backend/core altında 16 dosya redis import ediyor; bu satır
+          # olmadan hook o dosyalara her dokunuşta commit'i bloklar.
+          - redis==6.4.0
           - types-requests
           - types-passlib
           - types-PyYAML
           - types-python-dateutil
-        args: [
-          '--config-file=pyproject.toml',
-          '--ignore-missing-imports',
-          '--no-strict-optional',
-        ]
+        args:
+          [
+            "--config-file=pyproject.toml",
+            "--ignore-missing-imports",
+            "--no-strict-optional",
+          ]
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py|migrations/|alembic/)
 
@@ -75,7 +133,7 @@ repos:
     rev: v1.4.0
     hooks:
       - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
+        args: ["--baseline", ".secrets.baseline"]
         exclude: package.lock.json
 
   # Jupyter notebooks (using ruff)
@@ -84,9 +142,9 @@ repos:
     hooks:
       - id: nbqa-ruff
         name: Ruff on notebooks
-        args: ['--fix']
+        args: ["--fix"]
         files: '\.ipynb$'
-      
+
       - id: nbqa-mypy
         name: MyPy on notebooks
         files: '\.ipynb$'
@@ -109,29 +167,107 @@ repos:
   - repo: local
     hooks:
       # SECURITY: Custom secret detector for KIRO2-specific patterns
+      #
+      # 27 Tem 2026 — ÜÇ SESSİZ KUSUR DÜZELTİLDİ:
+      #  1. `types: [python]` -> sadece .py taranıyordu. Sızan 11 anahtarın
+      #     yaşayabileceği .env / .json / .yml / .md / .sh dosyaları KAPSAM
+      #     DIŞIYDI. `types: [text]` tüm metin dosyalarını kapsar.
+      #  2. `stages: [commit]` -> pre-commit 3.x'te `pre-commit` olarak
+      #     yeniden adlandırıldı, 4.x'te `commit` GEÇERSİZ. Yanlış stage adı
+      #     hook'un sessizce hiç koşmaması demekti.
+      #  3. Kurulu .git/hooks/pre-commit bu kök config'i DEĞİL
+      #     backend/.pre-commit-config.yaml'ı çağırıyordu — orada sır taraması
+      #     hiç yok. Üstüne `core.hooksPath = nul` ayarlıydı, yani hiçbir hook
+      #     çalışmıyordu (koşulsuz `exit 1` yapan bir hook bile commit'i
+      #     bloklamadı — canlı deneyle ölçüldü).
       - id: kiro2-secret-detector
         name: KIRO2 Secret Detector
         entry: python backend/hooks/secret_detector.py
         language: system
-        types: [python]
+        types: [text]
+        exclude: '^(\.secrets\.baseline|.*\.lock|package-lock\.json|.*\.min\.(js|css))$'
         pass_filenames: true
-        stages: [commit]
+        stages: [pre-commit]
         verbose: true
 
-      - id: pytest-changed
-        name: Pytest on changed files
-        entry: pytest
+      # SON SAVUNMA HATTI — push edilen ARALIĞIN TAMAMINDA sır taraması.
+      #
+      # 28 Tem 2026: depo GitHub'da PUBLIC (auth'suz API 200 ile doğrulandı).
+      # İçeriğin geri alınamaz biçimde kamuya çıktığı an push'tur, commit değil;
+      # commit bekçisi bir gün yine sessizce ölürse (27 Tem'de tam olarak bu
+      # oldu, 12 anahtar o pencerede geçmişe girdi) bu kapı yakalar.
+      #
+      # `pass_filenames: false` + `always_run: true`: aralık bilgisi stdin'den
+      # geliyor, dosya listesinden değil.
+      - id: push-secret-guard
+        name: Push edilen aralıkta sır taraması
+        entry: python backend/hooks/push_secret_guard.py
         language: system
         pass_filenames: false
-        always_run: false
+        always_run: true
         stages: [pre-push]
-        args: [-x, --tb=short, -q, backend/tests/]
+        verbose: true
+
+      # KALDIRILDI (28 Tem 2026): `pytest -x --tb=short -q backend/tests/`
+      #
+      # Bu kapı hiç koşmamıştı (pre-push hook'u ölüydü) ve koşsaydı da
+      # yürütülebilir değildi: 16.743 test + `-x` demek, bilinen tek bir
+      # pre-existing fail'in HER push'u bloke etmesi demek. Böyle bir kapının
+      # tek sonucu `--no-verify`'ın alışkanlığa dönüşmesidir — bu depoda sır
+      # tarayıcısının fiilen kapanmasının hikâyesi tam olarak budur.
+      # Tam paket CI'ın işi; pre-push dar ve hızlı kalmalı.
+
+      # ...ve iste o "dar ve hizli" kapinin ilk uyesi (19 Agu 2026, Y12).
+      #
+      # NEDEN PRE-PUSH, CI DEGIL — olculdu (S231/S232):
+      #   ci.yml'de `services: postgres` VAR, yani engel Postgres degil.
+      #   Engel ICERIK: `seed_mvp_data.py` soru tablolarina 0 referans iceriyor
+      #   ve tek gercek korpus `.gitignore:216` ile takip disi (116 MB). Runner'da
+      #   ne DB icerigi ne dosya korpusu olur -> bekci orada YAPISAL OLARAK
+      #   olcemez. Ayrica bu dal (`feature/*`) hicbir workflow'u tetiklemiyor:
+      #   11 workflow'un 11'i main/master/develop filtreli.
+      #
+      # NEDEN 8 TESTIN 8'I DE `xfail(strict=True)` VE BU KAPI BUGUN BLOKLAMAZ:
+      #   Esikler hedef degerde; icerik duzelene kadar hepsi xfailed. Y11 kapanip
+      #   icerik gercek korpustan kuruldugunda XPASS verip KIRARLAR -> "duzeldi,
+      #   xfail isaretini kaldir" sinyali otomatik gelir. Esikleri bugune gore
+      #   ayarlamak (orn. bayrak orani <= %25) 0/40 servis edilebilir bir havuzu
+      #   TEST TARAFINDAN ONAYLANMIS hale getirirdi.
+      #
+      # Maliyet olculdu: 7,7 sn (canli PG, -n0). DSN backend/.env'den cozuluyor;
+      # DB yoksa fixture skip eder (taze makinede gurultu uretmez).
+      #
+      # 19 Agu 2026 — TEK DOSYADAN DEFTERE GENISLETILDI.
+      # Olculdu: ders_kaydi.yaml'in 141 dersinin 40'inda `zorlayici` dolu (18 benzersiz
+      # dosya) ama bu kapi onlarin YALNIZ 1'ini kosuyordu (%5,6). S231 zaten enforcement'in
+      # %0 oldugunu olcmustu; tek dosya bagladigimizda %5,6 oldu — yeterli degil.
+      #
+      # LISTE SABIT DEGIL, DEFTERDEN TURETILIYOR. Hook'a 18 dosyayi elle yazmak bayatlar:
+      # yeni ders eklendiginde kimse listeyi guncellemez ve enforcement sessizce gerilerken
+      # sayi dogru gorunur (`L-s219-ilerleme-sayaci-da-bir-olcum-aletidir`).
+      # Sonuc: bir derse `zorlayici` yazmak = onu otomatik kapiya baglamak.
+      #
+      # Kapi ayrica DEFTERIN YALAN SOYLEMEDIGINI de sinar: `zorlayici` bir dosyayi
+      # gosteriyor ama dosya diskte yoksa HATA.
+      #
+      # Maliyet olculdu: 18 dosya / 156 passed + 1 skipped + 9 xfailed / **49 sn**.
+      - id: ders-zorlayici
+        name: Ders defterindeki ZORLAYICI testler (liste defterden turetilir)
+        entry: python backend/hooks/ders_zorlayici_kos.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+        verbose: true
 
       - id: reward-hacking-check
         name: Reward Hacking Prevention (Daisy Stanton Standards)
         entry: python -m backend.hooks.reward_hacking.cli
         language: system
         types: [python]
+        # 13 Ağu 2026: .archive/ arşivlenmiş/ölü kod — aktif standarda tutulmaz
+        # (bkz. .archive/root_cleanup_20260402/*.py, 26 pre-existing bulgu).
+        exclude: ^\.archive/
         pass_filenames: true
         always_run: false
         stages: [pre-push]
@@ -159,8 +295,28 @@ repos:
         stages: [commit-msg]
 
 # Configuration
+
+# 28 Tem 2026 — ZORUNLU. pre-commit'te `stages:` belirtilmeyen bir hook
+# TÜM aşamalarda koşar. Bu config'deki hook'ların çoğunda `stages:` yok, yani
+# pre-push hook'u onarılır onarılmaz biçimlendiriciler/linter'lar da push'ta
+# koşmaya başladı ve push, depoda önceden var olan sorunlara takıldı
+# (`openapi.json` UTF-16 olduğu için check-json çöküyor).
+#
+# Böyle bir kapının tek sonucu `--no-verify`'ın alışkanlığa dönüşmesidir —
+# bu depoda sır tarayıcısının fiilen kapanma hikâyesi tam olarak budur.
+# Bu yüzden varsayılan aşama pre-commit'e sabitlendi; push'ta YALNIZ
+# `stages: [pre-push]` diyen hook'lar koşar (şu an: push-secret-guard,
+# reward-hacking-check).
+default_stages: [pre-commit]
+
 default_language_version:
-  python: python3.11
+  # 27 Tem 2026: 'python3.11' pin'lenmişti ama o yorumlayıcı bu makinede YOK
+  # (PEP-514 registry kaydı bozuk: HKCU/PythonCore/3.11 var olmayan exe'yi
+  # gösteriyor). Sonuç: kök config'i kullanan HER pre-commit koşumu
+  # 'failed to find interpreter' ile çöküyordu — yani config koşulamıyordu.
+  # Bu, hook'un neden sır taraması olmayan backend/ config'ine yönlendirilmiş
+  # olabileceğini de açıklıyor. Sabit sürüm pin'i yerine çalışan yorumlayıcı.
+  python: python3
 
 ci:
   autofix_commit_msg: |
@@ -168,8 +324,8 @@ ci:
 
     for more information, see https://pre-commit.ci
   autofix_prs: true
-  autoupdate_branch: ''
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
   autoupdate_schedule: weekly
   skip: []
   submodules: false

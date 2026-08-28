@@ -79,7 +79,7 @@ export default function DuelPage() {
     try {
       const r = await apiRequest<{status:string;session_id:string|null;message:string}>(
         '/api/v1/duel/matchmake',
-        { method:'POST', body: JSON.stringify({ subject }) }
+        { method:'POST', body: JSON.stringify({ subject }) },
       );
       if (r.status === 'matched' && r.session_id) {
         await loadDuelSession(r.session_id);
@@ -90,7 +90,7 @@ export default function DuelPage() {
           try {
             const pr = await apiRequest<{status:string;session_id:string|null;message:string}>(
               '/api/v1/duel/matchmake',
-              { method:'POST', body: JSON.stringify({ subject }) }
+              { method:'POST', body: JSON.stringify({ subject }) },
             );
             if (pr.status === 'matched' && pr.session_id) {
               clearInterval(pollRef.current!);
@@ -107,7 +107,7 @@ export default function DuelPage() {
     // Fetch first question via SSE events endpoint (simplified: HTTP fallback)
     try {
       const q = await apiRequest<{question:Question;total:number}>(
-        `/api/v1/duel/${session_id}/current-question`
+        `/api/v1/duel/${session_id}/current-question`,
       );
       setDuel({ session_id, my_score:0, opp_score:0, question:q.question,
                 q_index:0, total_q:q.total, time_left:30 });
@@ -122,16 +122,16 @@ export default function DuelPage() {
   };
 
   const startTimer = (session_id: string, qIdx: number) => {
-    setDuel(prev => prev ? {...prev, time_left:30} : prev);
+    setDuel(prev => prev ? { ...prev, time_left:30 } : prev);
     timerRef.current = setInterval(() => {
       setDuel(prev => {
-        if (!prev) return prev;
+        if (!prev) {return prev;}
         if (prev.time_left <= 1) {
           clearInterval(timerRef.current!);
           submitAnswer(session_id, qIdx, 'X', 30000); // timeout
-          return {...prev, time_left:0};
+          return { ...prev, time_left:0 };
         }
-        return {...prev, time_left: prev.time_left - 1};
+        return { ...prev, time_left: prev.time_left - 1 };
       });
     }, 1000);
   };
@@ -142,9 +142,9 @@ export default function DuelPage() {
     try {
       const r = await apiRequest<{round_complete:boolean;player1_score:number;player2_score:number;is_correct:boolean}>(
         `/api/v1/duel/${session_id}/answer`,
-        { method:'POST', body: JSON.stringify({ question_order:qIdx, answer:ans, time_ms:ms }) }
+        { method:'POST', body: JSON.stringify({ question_order:qIdx, answer:ans, time_ms:ms }) },
       );
-      setDuel(prev => prev ? {...prev, my_score:r.player1_score, opp_score:r.player2_score} : prev);
+      setDuel(prev => prev ? { ...prev, my_score:r.player1_score, opp_score:r.player2_score } : prev);
       if (r.round_complete) {
         // Tüm sorular bitti — sonuç al
         setTimeout(() => fetchResult(session_id), 1000);
@@ -153,9 +153,9 @@ export default function DuelPage() {
         setTimeout(async () => {
           try {
             const q = await apiRequest<{question:Question;total:number}>(
-              `/api/v1/duel/${session_id}/current-question`
+              `/api/v1/duel/${session_id}/current-question`,
             );
-            setDuel(prev => prev ? {...prev, question:q.question, q_index:qIdx+1, time_left:30} : prev);
+            setDuel(prev => prev ? { ...prev, question:q.question, q_index:qIdx+1, time_left:30 } : prev);
             setSelected(null);
             startTimer(session_id, qIdx+1);
           } catch {}
@@ -169,7 +169,7 @@ export default function DuelPage() {
       const r = await apiRequest<DuelResult>(`/api/v1/duel/${session_id}/result`);
       setResult(r); setPhase('result');
     } catch {
-      setResult({won:false, draw:true, my_score:0, opp_score:0, elo_change:0});
+      setResult({ won:false, draw:true, my_score:0, opp_score:0, elo_change:0 });
       setPhase('result');
     }
   };
@@ -180,7 +180,7 @@ export default function DuelPage() {
   };
 
   // ── LOBBY ─────────────────────────────────────────────────────────────────
-  if (phase === 'lobby') return (
+  if (phase === 'lobby') {return (
     <Box maxWidth={520} mx="auto" py={4}>
       <Card elevation={2} sx={{ borderRadius: 3, p: 1 }}>
         <CardContent>
@@ -203,7 +203,7 @@ export default function DuelPage() {
             ))}
           </Box>
 
-          {error && <Alert severity="error" sx={{mb:2}}>{error}</Alert>}
+          {error && <Alert severity="error" sx={{ mb:2 }}>{error}</Alert>}
 
           <Button fullWidth variant="contained" size="large"
             startIcon={loading ? <CircularProgress size={20} /> : <SportsEsports />}
@@ -217,10 +217,10 @@ export default function DuelPage() {
         </CardContent>
       </Card>
     </Box>
-  );
+  );}
 
   // ── QUEUED ────────────────────────────────────────────────────────────────
-  if (phase === 'queued') return (
+  if (phase === 'queued') {return (
     <Box maxWidth={400} mx="auto" py={6} textAlign="center">
       <CircularProgress size={64} />
       <Typography variant="h6" mt={3} fontWeight={600}>Rakip Aranıyor...</Typography>
@@ -229,7 +229,7 @@ export default function DuelPage() {
       </Typography>
       <Button variant="outlined" sx={{ mt: 3 }} onClick={reset}>İptal</Button>
     </Box>
-  );
+  );}
 
   // ── PLAYING ───────────────────────────────────────────────────────────────
   if (phase === 'playing' && duel) {
@@ -238,7 +238,7 @@ export default function DuelPage() {
       <Box maxWidth={680} mx="auto" py={2}>
         {/* Skor */}
         <Card sx={{ mb: 2, borderRadius: 2 }}>
-          <CardContent sx={{ py: 1.5, '&:last-child':{pb:1.5} }}>
+          <CardContent sx={{ py: 1.5, '&:last-child':{ pb:1.5 } }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" spacing={1} alignItems="center">
                 <Person color="primary" />
@@ -300,7 +300,7 @@ export default function DuelPage() {
   }
 
   // ── RESULT ────────────────────────────────────────────────────────────────
-  if (phase === 'result' && result) return (
+  if (phase === 'result' && result) {return (
     <Box maxWidth={440} mx="auto" py={4}>
       <Card elevation={2} sx={{ borderRadius: 3, p:1, textAlign:'center' }}>
         <CardContent>
@@ -332,7 +332,7 @@ export default function DuelPage() {
         </CardContent>
       </Card>
     </Box>
-  );
+  );}
 
   return null;
 }

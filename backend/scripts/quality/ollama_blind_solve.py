@@ -115,12 +115,19 @@ async def solve_file(in_path: Path, out_path: Path):
 
 
 async def main():
+    global MODEL
     ap = argparse.ArgumentParser()
     ap.add_argument("--in", dest="inp")
     ap.add_argument("--out")
     ap.add_argument("--batch-dir")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--model", default=MODEL, help="Ollama model tag (default qwen3:14b)")
+    ap.add_argument("--cooldown", type=float, default=0, help="sleep seconds between batches (GPU cool-down)")
+    ap.add_argument("--max-new", dest="max_new", type=int, default=0, help="stop after N newly-solved batches (chunking)")
     args = ap.parse_args()
+
+    MODEL = args.model
+    print(f"[solver] MODEL={MODEL}", flush=True)
 
     t0 = time.time()
     if args.inp:
@@ -132,7 +139,7 @@ async def main():
     batches = sorted(bdir.glob("batch_*.jsonl"))
     if args.limit:
         batches = batches[: args.limit]
-    tot = tot_solved = 0
+    tot = tot_solved = new_done = 0
     for i, b in enumerate(batches, 1):
         out = b.parent / f"preds_{b.stem.split('_')[1]}.json"
         if out.exists():
@@ -141,6 +148,7 @@ async def main():
         n, s = await solve_file(b, out)
         tot += n
         tot_solved += s
+        new_done += 1
         el = time.time() - t0
         eta = el / i * (len(batches) - i)
         print(
@@ -148,6 +156,11 @@ async def main():
             f"cum {tot_solved}/{tot} | {el:.0f}s eta {eta:.0f}s",
             flush=True,
         )
+        if args.max_new and new_done >= args.max_new:
+            print(f"[chunk] {new_done} yeni batch bitti, durdum (--max-new). Tekrar çalıştır: kaldığından devam eder.", flush=True)
+            break
+        if args.cooldown:
+            await asyncio.sleep(args.cooldown)
     print(
         f"\n=== DONE: {tot_solved}/{tot} solved across {len(batches)} batches "
         f"in {time.time() - t0:.0f}s ==="

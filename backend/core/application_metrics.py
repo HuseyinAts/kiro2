@@ -23,7 +23,7 @@ class MetricType(str, Enum):
     THROUGHPUT = "throughput"
     LATENCY = "latency"
     SUCCESS_RATE = "success_rate"
-    
+
     # Custom metric types referenced across core/analytics
     API_REQUEST = "api_request"
     API_RESPONSE_TIME = "api_response_time"

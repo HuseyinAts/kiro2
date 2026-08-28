@@ -48,6 +48,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import '../ui/mathText.css';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -152,7 +153,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
       await handleSubmitWithAttachment();
       return;
     }
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) {return;}
 
     const text = input.trim();
     setInput('');
@@ -188,7 +189,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
       // Get final message for callback
       setMessages(prev => {
         const final = prev.find(m => m.id === botMsgId);
-        if (final) onAgentResponse?.(final);
+        if (final) {onAgentResponse?.(final);}
         return prev;
       });
     } catch (error) {
@@ -214,7 +215,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
   // --- Attachment handlers ---
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
     if (file.size > 10 * 1024 * 1024) {
       alert('Dosya boyutu 10MB\'yi asamaz.');
       return;
@@ -229,7 +230,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
       setAttachmentPreview(null);
     }
     // Reset file input
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) {fileInputRef.current.value = '';}
   }, []);
 
   const clearAttachment = useCallback(() => {
@@ -238,7 +239,7 @@ export const TurkishChatInterface: React.FC<TurkishChatInterfaceProps> = ({
   }, []);
 
   const handleSubmitWithAttachment = useCallback(async () => {
-    if (!attachment || isLoading) return;
+    if (!attachment || isLoading) {return;}
     const text = input.trim();
     setInput('');
     setIsLoading(true);

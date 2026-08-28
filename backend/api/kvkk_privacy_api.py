@@ -8,10 +8,12 @@ Endpoints for:
 """
 
 import json
+import os
 import uuid
 from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -85,6 +87,75 @@ class DeletionRequestResponse(BaseModel):
 # Background Tasks
 # ============================================================================
 
+# Dışa aktarma dosyalarının geçici (private) dizini — StaticFiles ile SERVE EDİLMEZ,
+# yalnız kimlik-doğrulamalı download endpoint'i okur (KVKK verisi public URL'de sızmaz).
+EXPORT_DIR = "/app/kvkk_exports"
+
+
+async def _collect_user_data(db: AsyncSession, user_id: str) -> dict:
+    """KVKK Md.11 — kullanıcının kişisel verisini şema genelinden toplar (generic).
+
+    information_schema'dan `user_id` kolonu olan tüm public tabloları bulur ve her
+    birinden yalnız bu kullanıcının satırlarını çeker (tablo başına LIMIT). `users`
+    tablosu `id` ile eklenir. Tablo adları information_schema'dan geldiği + güvenli
+    desenle süzüldüğü için identifier-injection yok.
+
+    RLS: process_data_export kendi engine'ini açar (GUC set EDİLMEZ → permissive),
+    WHERE user_id filtresi veriyi kullanıcının kendisine sınırlar.
+    """
+    import re
+
+    from sqlalchemy import text as _t
+
+    out: dict = {
+        "exported_at": datetime.now(UTC).isoformat(),
+        "user_id": user_id,
+        "tables": {},
+    }
+    try:
+        r = (
+            (await db.execute(_t("SELECT * FROM users WHERE id = :u"), {"u": user_id}))
+            .mappings()
+            .first()
+        )
+        out["tables"]["users"] = [dict(r)] if r else []
+    except Exception:
+        out["tables"]["users"] = []
+
+    tabs = (
+        (
+            await db.execute(
+                _t(
+                    "SELECT table_name FROM information_schema.columns "
+                    "WHERE table_schema='public' AND column_name='user_id' "
+                    "ORDER BY table_name"
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    safe = re.compile(r"^[a-z_][a-z0-9_]*$")
+    for t in tabs:
+        if not safe.match(t):
+            continue
+        try:
+            rows = (
+                (
+                    await db.execute(
+                        _t(f'SELECT * FROM "{t}" WHERE user_id = :u LIMIT 5000'),
+                        {"u": user_id},
+                    )
+                )
+                .mappings()
+                .all()
+            )
+            if rows:
+                out["tables"][t] = [dict(x) for x in rows]
+        except Exception:
+            continue
+    return out
+
 
 async def process_data_export(
     request_id: str,
@@ -123,20 +194,20 @@ async def process_data_export(
             await db.execute(stmt)
             await db.commit()
 
-            # TODO: Implement actual data collection
-            # For now, create a placeholder export
-            user_data = {
-                "user_id": user_id,
-                "export_date": datetime.now(UTC).isoformat(),
-                "format": export_format,
-                "categories": data_categories or ["all"],
-                "data": {"profile": {}, "exams": [], "progress": [], "consents": []},
-            }
+            # Gerçek veri toplama — kullanıcının şema genelindeki tüm PII'ı.
+            user_data = await _collect_user_data(db, user_id)
+            user_data["format"] = export_format
+            user_data["categories"] = data_categories or ["all"]
 
-            # Simulated file creation
-            file_path = f"/exports/{user_id}/{request_id}.{export_format}"
-            download_url = f"https://api.kiro2.com/downloads/{request_id}"
-            file_size = len(json.dumps(user_data).encode())
+            # Private dizine yaz (StaticFiles ile serve EDİLMEZ; authed download okur).
+            os.makedirs(EXPORT_DIR, exist_ok=True)
+            file_path = f"{EXPORT_DIR}/{request_id}.json"
+            payload = json.dumps(user_data, default=str, ensure_ascii=False)
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(payload)
+            file_size = len(payload.encode("utf-8"))
+            # Public URL DEĞİL — kimlik-doğrulamalı endpoint (KVKK verisi sızmasın).
+            download_url = f"/api/v1/kvkk/privacy/export/{request_id}/download"
             expires_at = datetime.now(UTC) + timedelta(days=7)
 
             # Update request as completed
@@ -257,7 +328,7 @@ async def request_data_export(
             user_id=current_user.sub,
             export_format=export_req.export_format,
             data_categories=export_req.data_categories,
-            db_url=str(settings.DATABASE_URL),
+            db_url=str(settings.database_url),
         )
 
         logger.info(
@@ -272,7 +343,9 @@ async def request_data_export(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("data_export_request_error", user_id=current_user.sub, error=str(e))
+        logger.error(
+            "data_export_request_error", user_id=current_user.sub, error=str(e)
+        )
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -300,7 +373,9 @@ async def get_export_requests(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("get_export_requests_error", user_id=current_user.sub, error=str(e))
+        logger.error(
+            "get_export_requests_error", user_id=current_user.sub, error=str(e)
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve export requests",
@@ -337,6 +412,58 @@ async def get_export_request(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve export request",
         )
+
+
+@router.get("/export/{request_id}/download")
+async def download_export(
+    request_id: str,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Tamamlanmış dışa aktarmayı indir (KVKK Md.11).
+
+    Kimlik-doğrulamalı + sahiplik kontrollü — public URL YOK (veri sızmaz). Dosya
+    (7 gün) mevcutsa okunur; container yeniden yaratılıp dosya kaybolduysa veri
+    anlık yeniden toplanır (fallback). JSON attachment olarak döner.
+    """
+    stmt = select(KVKKDataExportRequest).where(
+        KVKKDataExportRequest.id == request_id,
+        KVKKDataExportRequest.user_id == current_user.sub,
+    )
+    export_request = (await db.execute(stmt)).scalar_one_or_none()
+    if not export_request:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Export request not found"
+        )
+    if export_request.status != ExportRequestStatus.COMPLETED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Export not ready (status: {export_request.status})",
+        )
+    if export_request.download_expires_at and export_request.download_expires_at < (
+        datetime.now(UTC)
+    ):
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="Export expired")
+
+    payload: str | None = None
+    fp = export_request.file_path
+    if fp and os.path.exists(fp):
+        with open(fp, encoding="utf-8") as f:
+            payload = f.read()
+    else:
+        # Dosya kaybolmuş (ephemeral) → anlık yeniden topla (sahiplik zaten doğrulandı).
+        data = await _collect_user_data(db, current_user.sub)
+        payload = json.dumps(data, default=str, ensure_ascii=False)
+
+    return Response(
+        content=payload,
+        media_type="application/json",
+        headers={
+            "Content-Disposition": (
+                f'attachment; filename="kvkk_export_{request_id}.json"'
+            )
+        },
+    )
 
 
 # ============================================================================
@@ -495,7 +622,9 @@ async def cancel_deletion_request(
         await db.commit()
 
         logger.info(
-            "deletion_request_cancelled", user_id=current_user.sub, request_id=request_id
+            "deletion_request_cancelled",
+            user_id=current_user.sub,
+            request_id=request_id,
         )
 
         return {"success": True, "message": "Deletion request cancelled"}
@@ -509,6 +638,177 @@ async def cancel_deletion_request(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to cancel deletion request",
         )
+
+
+# ============================================================================
+# Data Erasure Executor (KVKK Md.7) — admin onaylı, anonimleştirme
+# ============================================================================
+
+
+async def process_data_erasure(request_id: str, user_id: str, db_url: str):
+    """APPROVED silme talebini işle: PII anonimleştir (backup'lı), COMPLETED yap.
+
+    Yıkıcı-değil (anonimleştirme). Yalnız admin onayı sonrası approve endpoint'inden
+    dispatch edilir. Hata olursa talep PROCESSING'de kalır + audit'e yazılır.
+    """
+    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from services.kvkk_erasure_service import anonymize_user
+
+    engine = create_async_engine(db_url)
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    async with async_session() as db:
+        try:
+            await db.execute(
+                update(KVKKDataDeletionRequest)
+                .where(KVKKDataDeletionRequest.id == request_id)
+                .values(
+                    status=DeletionRequestStatus.PROCESSING,
+                    processed_at=datetime.now(UTC),
+                )
+            )
+            await db.commit()
+
+            touched = await anonymize_user(db, user_id, request_id)
+
+            await db.execute(
+                update(KVKKDataDeletionRequest)
+                .where(KVKKDataDeletionRequest.id == request_id)
+                .values(
+                    status=DeletionRequestStatus.COMPLETED,
+                    completed_at=datetime.now(UTC),
+                )
+            )
+            db.add(
+                KVKKAuditLog(
+                    id=str(uuid.uuid4()),
+                    user_id=user_id,
+                    accessed_by=user_id,
+                    action="data_erasure_completed",
+                    resource_type="user_data",
+                    resource_id=user_id,
+                    details={"request_id": request_id, "anonymized_tables": touched},
+                )
+            )
+            await db.commit()
+            logger.info(
+                "data_erasure_completed",
+                request_id=request_id,
+                user_id=user_id,
+                tables=touched,
+            )
+        except Exception as e:
+            logger.error("data_erasure_failed", request_id=request_id, error=str(e))
+            await db.rollback()
+
+
+class DeletionRejectRequest(BaseModel):
+    """Silme talebi reddi (gerekçe zorunlu)."""
+
+    reason: str
+
+
+def _require_admin(current_user: TokenPayload) -> None:
+    """Silme onay/red yetkisi — yalnız admin/super_admin.
+
+    role enum ('ADMIN') veya jwt string ('admin') olabilir → normalize et.
+    """
+    raw = getattr(current_user.role, "value", current_user.role)
+    role = str(raw).lower().replace("userrole.", "")
+    if role not in ("admin", "super_admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlem için admin yetkisi gerekli.",
+        )
+
+
+@router.post("/delete/{request_id}/approve")
+async def approve_deletion(
+    request_id: str,
+    background_tasks: BackgroundTasks,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Silme talebini ONAYLA (admin) → anonimleştirme executor'ını dispatch et.
+
+    İnsan-döngüsü: gerçek silme yalnız bir admin bu ucu çağırınca çalışır.
+    """
+    _require_admin(current_user)
+    req = (
+        await db.execute(
+            select(KVKKDataDeletionRequest).where(
+                KVKKDataDeletionRequest.id == request_id
+            )
+        )
+    ).scalar_one_or_none()
+    if not req:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Deletion request not found"
+        )
+    if req.status not in (
+        DeletionRequestStatus.PENDING,
+        DeletionRequestStatus.APPROVED,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Request not approvable (status: {req.status})",
+        )
+
+    await db.execute(
+        update(KVKKDataDeletionRequest)
+        .where(KVKKDataDeletionRequest.id == request_id)
+        .values(
+            status=DeletionRequestStatus.APPROVED,
+            reviewed_by=current_user.sub,
+            reviewed_at=datetime.now(UTC),
+        )
+    )
+    await db.commit()
+
+    from core.config import settings
+
+    background_tasks.add_task(
+        process_data_erasure,
+        request_id=request_id,
+        user_id=req.user_id,
+        db_url=str(settings.database_url),
+    )
+    return {"success": True, "status": "approved", "message": "Erasure scheduled"}
+
+
+@router.post("/delete/{request_id}/reject")
+async def reject_deletion(
+    request_id: str,
+    payload: DeletionRejectRequest,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Silme talebini REDDET (admin, gerekçeli)."""
+    _require_admin(current_user)
+    req = (
+        await db.execute(
+            select(KVKKDataDeletionRequest).where(
+                KVKKDataDeletionRequest.id == request_id
+            )
+        )
+    ).scalar_one_or_none()
+    if not req:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Deletion request not found"
+        )
+    await db.execute(
+        update(KVKKDataDeletionRequest)
+        .where(KVKKDataDeletionRequest.id == request_id)
+        .values(
+            status=DeletionRequestStatus.REJECTED,
+            rejection_reason=payload.reason,
+            reviewed_by=current_user.sub,
+            reviewed_at=datetime.now(UTC),
+        )
+    )
+    await db.commit()
+    return {"success": True, "status": "rejected"}
 
 
 __all__ = ["router"]

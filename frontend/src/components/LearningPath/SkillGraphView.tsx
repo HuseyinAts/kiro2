@@ -114,7 +114,7 @@ const STATIC_FALLBACK: Record<string, DagResponse> = {
 
 function getFallbackDag(subject: string): DagResponse {
   const key = subject.toLowerCase();
-  if (STATIC_FALLBACK[key]) return STATIC_FALLBACK[key];
+  if (STATIC_FALLBACK[key]) {return STATIC_FALLBACK[key];}
   // Generic single-node fallback for unknown subjects
   return {
     subject: key,
@@ -312,18 +312,18 @@ export function SkillGraphView({ subject }: SkillGraphViewProps) {
         const data = await apiRequest<DagResponse>(
           `/api/v1/knowledge-map/${encodeURIComponent(subject.toLowerCase())}`,
         );
-        if (cancelled) return;
+        if (cancelled) {return;}
         resolvedDag = data;
         setDag(data);
         setEnrichedNodes(mergeState(data, []));
       } catch {
-        if (cancelled) return;
+        if (cancelled) {return;}
         resolvedDag = getFallbackDag(subject);
         setDag(resolvedDag);
         setEnrichedNodes(mergeState(resolvedDag, []));
         setUsingFallback(true);
       } finally {
-        if (!cancelled) setLoadingDag(false);
+        if (!cancelled) {setLoadingDag(false);}
       }
 
       // Fetch mastery overlay (best-effort, only if DAG loaded from API)
@@ -339,7 +339,7 @@ export function SkillGraphView({ subject }: SkillGraphViewProps) {
         } catch {
           // Silently ignore — zero-mastery is acceptable fallback
         } finally {
-          if (!cancelled) setLoadingState(false);
+          if (!cancelled) {setLoadingState(false);}
         }
       }
     }
@@ -413,7 +413,7 @@ export function SkillGraphView({ subject }: SkillGraphViewProps) {
               onClick={() => {
                 if (dag) {
                   fetchDag();
-                  if (!usingFallback) fetchKnowledgeState(dag);
+                  if (!usingFallback) {fetchKnowledgeState(dag);}
                 }
               }}
               sx={{

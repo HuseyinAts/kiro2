@@ -33,12 +33,14 @@ from app.services.fsrs_engine import (
     combined_priority_score,
     fsrs_update,
 )
+from core.quality_gate import safe_for_beta_sql
 
 logger = logging.getLogger(__name__)
 
 # ─── SQL sorguları ────────────────────────────────────────────────────────────
 
-_FETCH_DUE_SQL = text("""
+_FETCH_DUE_SQL = text(
+    """
     SELECT
         f.question_id::text,
         f.stability,
@@ -50,25 +52,75 @@ _FETCH_DUE_SQL = text("""
         f.lapses,
         f.scheduled_days,
         f.elapsed_days,
-        q.irt_discrimination  AS irt_a,
-        q.irt_difficulty      AS irt_b,
-        q.irt_guessing        AS irt_c,
-        q.subject_area        AS subject_id,
+        qs.irt_discrimination AS irt_a,
+        qs.irt_difficulty     AS irt_b,
+        qs.irt_guessing       AS irt_c,
+        qm.subject_area       AS subject_id,
         q.primary_topic_id    AS topic_id,
-        q.question_text,
-        q.option_a,
-        q.option_b,
-        q.option_c,
-        q.option_d
+        qc.question_text,
+        qc.option_a,
+        qc.option_b,
+        qc.option_c,
+        qc.option_d
     FROM user_item_fsrs f
     JOIN question_bank q ON q.id = f.question_id
+    JOIN question_content qc ON qc.id = q.id
+    JOIN question_metadata qm ON qm.id = q.id
+    JOIN question_statistics qs ON qs.id = q.id
     WHERE f.user_id = :user_id
       AND f.due_date <= NOW() + INTERVAL '4 hours'
       AND f.state IN (1, 2, 3)
       AND q.is_active = TRUE
-    ORDER BY f.due_date ASC
+"""
+    # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731 yargılanmamış/
+    # reddedilmiş soruyu öğrenciye servis ediyordu. is_active'in YERİNE değil
+    # YANINA gelir: bayat matview'a rağmen arşivleme anında etki etsin.
+    + f"      AND {safe_for_beta_sql('q.id')}\n"
+    + """    ORDER BY f.due_date ASC
     LIMIT :limit
-""")
+"""
+)
+
+_FETCH_DUE_MERCY_SQL = text(
+    """
+    SELECT
+        f.question_id::text,
+        f.stability,
+        f.difficulty,
+        f.due_date,
+        f.last_review,
+        f.state,
+        f.reps,
+        f.lapses,
+        f.scheduled_days,
+        f.elapsed_days,
+        qs.irt_discrimination AS irt_a,
+        qs.irt_difficulty     AS irt_b,
+        qs.irt_guessing       AS irt_c,
+        qm.subject_area       AS subject_id,
+        q.primary_topic_id    AS topic_id,
+        qc.question_text,
+        qc.option_a,
+        qc.option_b,
+        qc.option_c,
+        qc.option_d
+    FROM user_item_fsrs f
+    JOIN question_bank q ON q.id = f.question_id
+    JOIN question_content qc ON qc.id = q.id
+    JOIN question_metadata qm ON qm.id = q.id
+    JOIN question_statistics qs ON qs.id = q.id
+    WHERE f.user_id = :user_id
+      AND f.due_date <= NOW()
+      AND f.state IN (1, 2, 3)
+      AND q.is_active = TRUE
+"""
+    # Kalite kapısı (core/quality_gate.py) — merhamet yolu da öğrenciye soru
+    # metni/şık servis ediyor; kapısız 85.731 soruluk sızıntının parçasıydı.
+    + f"      AND {safe_for_beta_sql('q.id')}\n"
+    + """    ORDER BY f.stability ASC, f.difficulty DESC
+    LIMIT :limit
+"""
+)
 
 _FETCH_ITEM_SQL = text("""
     SELECT
@@ -136,6 +188,59 @@ class FSRSService:
         """
         result = await self.db.execute(
             _FETCH_DUE_SQL, {"user_id": user_id, "limit": limit}
+        )
+        rows = result.fetchall()
+
+        items = []
+        for row in rows:
+            if subject_id and row.subject_id != subject_id:
+                continue
+
+            state = FSRSState(
+                user_id=user_id,
+                question_id=row.question_id,
+                stability=float(row.stability),
+                difficulty=float(row.difficulty),
+                due_date=row.due_date.replace(tzinfo=UTC)
+                if row.due_date.tzinfo is None
+                else row.due_date,
+                last_review=row.last_review,
+                state=row.state,
+                reps=row.reps,
+                lapses=row.lapses,
+                scheduled_days=row.scheduled_days,
+                elapsed_days=float(row.elapsed_days),
+            )
+            irt = {
+                "a": float(row.irt_a),
+                "b": float(row.irt_b),
+                "c": float(row.irt_c),
+                "subject_id": row.subject_id,
+                "topic_id": row.topic_id,
+                "question_text": row.question_text or "",
+                "option_a": row.option_a or "",
+                "option_b": row.option_b or "",
+                "option_c": row.option_c or "",
+                "option_d": row.option_d or "",
+            }
+            items.append((state, irt))
+
+        return items
+
+    async def get_due_items_with_mercy(
+        self,
+        user_id: str,
+        subject_id: str | None = None,
+        max_cognitive_load: int = 50,
+    ) -> list[tuple[FSRSState, dict]]:
+        """
+        FSRS Merhamet Algoritması (Catch-up Mode)
+        Öğrenci günlerce sisteme girmediyse FSRS Avalanche (Yığılma) krizini önler.
+        Vadesi geçmiş kartları stability (retrievability proxy) ve zorluğa göre sıralar,
+        sadece en kritik olanları sınırlar.
+        """
+        result = await self.db.execute(
+            _FETCH_DUE_MERCY_SQL, {"user_id": user_id, "limit": max_cognitive_load}
         )
         rows = result.fetchall()
 

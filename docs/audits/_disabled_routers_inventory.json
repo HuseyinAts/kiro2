@@ -1,0 +1,556 @@
+{
+  "kullanilan": [
+    [
+      "api.adhd_task_management_api",
+      "/api/v1/adhd-support/tasks (14 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.adhd_focus_mode_api",
+      "/api/v1/adhd-support/focus-mode (12 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.adhd_support_api",
+      "/api/v1/adhd-support (45 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.osb_settings_api",
+      "/api/v1/osb/settings (10 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.instant_feedback_api",
+      "/api/v1/adhd-support/feedback (4 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.text_simplification",
+      "/api/v1/text-simplification (4 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.bionic_reading",
+      "/api/v1/bionic-reading (9 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.math_solution_steps",
+      "/api/v1/math-solution-steps (14 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.video_solution",
+      "/api/v1/video-solutions (12 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.alternative_solutions_api",
+      "/api/v1/questions/alternatives (6 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.manipulatives_api",
+      "/api/v1/manipulatives (33 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.manipulatives_progress_api",
+      "/api/v1/manipulatives/progress (7 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.visual_supports_api",
+      "/api/v1/visual-supports (23 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.multisensory_learning_api",
+      "/api/v1/multisensory (17 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.team_challenges_api",
+      "/api/v1/challenges (5 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.study_rooms_stub",
+      "/api/v1/study-rooms (101 cagri)",
+      "Deprecated stub"
+    ],
+    [
+      "api.pomodoro_api",
+      "/api/v1/pomodoro (4 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.birlikte_streak_api",
+      "/api/v1/birlikte-streak (3 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.usta_cirak_api",
+      "/api/v1/usta-cirak (5 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.cozum_duellosu_api",
+      "/api/v1/cozum-duellosu (5 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.oba_seferleri_api",
+      "/api/v1/oba-seferleri (4 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.social_summary_api",
+      "/api/v1/social (2 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.revolutionary_features",
+      "/api/v1/revolutionary-features (15 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.v1.batch",
+      "/api/v1/batch (10 cagri)",
+      "Redundant / Experimental"
+    ],
+    [
+      "api.v1.semantic_search",
+      "/api/v1/search (4 cagri)",
+      "Redundant / Experimental"
+    ],
+    [
+      "api.clustering_api",
+      "/api/v1/clustering (6 cagri)",
+      "Redundant / Experimental"
+    ],
+    [
+      "api.v1.content_recommendation",
+      "/api/v1/recommendations (8 cagri)",
+      "Redundant / Experimental"
+    ],
+    [
+      "api.v1.duplicate_detection",
+      "/api/v1/duplicates (7 cagri)",
+      "Redundant / Experimental"
+    ],
+    [
+      "api.diary_api",
+      "/api/v1/diary (40 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.study_planner_api",
+      "/api/v1/study-plan (13 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.plan_api",
+      "/api/v1/plan (1 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.league_api",
+      "/api/v1/leagues (12 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.coaching_api",
+      "/api/v1/coaching (8 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.duel_api",
+      "/api/v1/duel (40 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.photo_ask_api",
+      "/api/v1/photo-ask (8 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.placement_assessment_api",
+      "/api/v1/assessment (3 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.knowledge_graph_api",
+      "/api/v1/knowledge-map (10 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.mastery_confidence_api",
+      "/api/v1/mastery-confidence (2 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.dina_api",
+      "/api/v1/dina (3 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.productive_failure_api",
+      "/api/v1/productive-failure (6 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.error_cluster_api",
+      "/api/v1/error-clusters (5 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.mnemonic_api",
+      "/api/v1/mnemonics (5 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.offline_sync_api",
+      "/api/v1/offline (4 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.pwa_sync_api",
+      "/api/v1/sync (6 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "app.api.learning_path_dungeon",
+      "/api/v1/dungeon (4 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.turkish_nlp",
+      "/api/v1/turkish-nlp (13 cagri)",
+      "Redundant NLP (Use turkish_nlp_chat)"
+    ],
+    [
+      "api.berturk_api",
+      "/api/v1/berturk (8 cagri)",
+      "Redundant NLP (Use turkish_nlp_chat)"
+    ],
+    [
+      "api.zemberek",
+      "/api/v1/zemberek (8 cagri)",
+      "Redundant NLP (Use turkish_nlp_chat)"
+    ],
+    [
+      "api.parent",
+      "/api/v1/parent (55 cagri)",
+      "Duplicate of veli.py"
+    ],
+    [
+      "api.parent_social_api",
+      "/api/v1/parent-social (4 cagri)",
+      "Duplicate of veli.py"
+    ],
+    [
+      "api.study_rooms",
+      "/api/v1/study-rooms (101 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.student_review_routes",
+      "/api/v1/reviews (16 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.university_advisory_routes",
+      "/api/v1/university-advisory (18 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.university_info_routes",
+      "/api/v1/university-info (19 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.department_info_routes",
+      "/api/v1/department-info (16 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.preference_simulation_routes",
+      "/api/v1/preference-simulation (12 cagri)",
+      "Over-engineering / Phase 3"
+    ],
+    [
+      "api.analytics",
+      "/api/v1/analytics (10 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.monitoring",
+      "/api/v1/monitoring (19 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.production_monitoring",
+      "/api/v1/monitoring/quality (4 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.performance_monitoring",
+      "/api/v1/performance-monitoring (7 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.performance",
+      "/api/v1/performance (23 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.elasticsearch",
+      "/api/v1/elasticsearch (7 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.video_analytics_routes",
+      "/api/v1/video-analytics (20 cagri)",
+      "Over-engineering / Analytics"
+    ],
+    [
+      "api.kvkk_consent_api",
+      "/api/v1/kvkk/consent (9 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.kvkk_privacy_api",
+      "/api/v1/kvkk/privacy (6 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.kvkk_notice_api",
+      "/api/v1/kvkk/notice (3 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.audit_api",
+      "/api/v1/audit (6 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.audit_logs_api",
+      "/admin/audit-logs (4 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.org_api",
+      "/api/v1/org (12 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.org_billing_api",
+      "/api/v1/org/billing (3 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.encryption_management",
+      "/admin/encryption (4 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.ferpa_coppa_compliance_api",
+      "/api/v1/compliance (6 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.ddos_management_api",
+      "/api/v1/ddos (10 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.rate_limit_api",
+      "/api/v1/rate-limit (5 cagri)",
+      "Over-engineering / Security"
+    ],
+    [
+      "api.youtube_routes",
+      "/api/v1/youtube (53 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.eba_routes",
+      "/api/v1/eba (27 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.ebatv",
+      "/api/v1/eba-tv (10 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.khan_routes",
+      "/api/v1/khan (12 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.gamification_api",
+      "/api/v1/gamification (20 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.oba_api",
+      "/api/v1/oba (17 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.daily_quest_api",
+      "/api/v1/daily-quests (6 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.realms",
+      "/api/v1/realms (8 cagri)",
+      "Over-engineering / Integrations"
+    ],
+    [
+      "api.advanced_reports",
+      "/api/v1/reports (9 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.cache",
+      "/api/v1/cache (13 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.cache_metrics",
+      "/api/v1/cache-metrics (4 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.celery_tasks_api",
+      "/api/v1/tasks (4 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.orchestrator_api",
+      "/api/v1/admin/orchestrator (3 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.curator",
+      "/api/v1/curator (16 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.student_dashboard",
+      "/api/v1/student-dashboard (31 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.config_routes",
+      "/api/v1/config (9 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.enhanced_user_management_api",
+      "/api/v1/users (5 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.validation",
+      "/api/v1/validation (7 cagri)",
+      "Over-engineering / Admin"
+    ],
+    [
+      "api.quality_gates_api",
+      "/api/v1/quality-gates (8 cagri)",
+      "Over-engineering / DevOps"
+    ],
+    [
+      "api.cultural_adaptation_api",
+      "/api/v1/cultural-adaptation (7 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.sequential_reasoning_api",
+      "/api/v1/reasoning (11 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.enhanced_chat",
+      "/api/v1/enhanced-chat (12 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.multi_agent",
+      "/api/v1/multi-agent (12 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.vision_api",
+      "/api/v1/vision (7 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.yolo_detection_api",
+      "/api/v1/yolo (23 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.ocr_api",
+      "/api/v1/ocr (9 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.bilge_alp",
+      "/api/v1/bilge-alp (4 cagri)",
+      "Over-engineering / AI"
+    ],
+    [
+      "api.live_session_routes",
+      "/api/v1/live-sessions (21 cagri)",
+      "Over-engineering / Features"
+    ],
+    [
+      "api.moderation_api",
+      "/api/v1/moderation (7 cagri)",
+      "Over-engineering / Features"
+    ],
+    [
+      "api.soru_meydani_api",
+      "/api/v1/soru-meydani (6 cagri)",
+      "Over-engineering / Features"
+    ],
+    [
+      "api.pdf_processing_api",
+      "/api/v1/pdf (8 cagri)",
+      "Over-engineering / Content"
+    ],
+    [
+      "api.batch_generation_api",
+      "/api/v1/batch (10 cagri)",
+      "Over-engineering / Content"
+    ],
+    [
+      "api.wave2b_quality_routes",
+      "/api/v2/quality (5 cagri)",
+      "Over-engineering / Content"
+    ],
+    [
+      "api.student_feedback_api",
+      "/api/v1/quality/feedback (3 cagri)",
+      "Over-engineering / Content"
+    ],
+    [
+      "api.difficulty_classification_api",
+      "/api/v1/difficulty (8 cagri)",
+      "Over-engineering / Content"
+    ],
+    [
+      "api.hybrid_question_generation",
+      "/api/v1/questions/hybrid (4 cagri)",
+      "Over-engineering / Content"
+    ]
+  ],
+  "olu": [],
+  "dosyasiz": []
+}

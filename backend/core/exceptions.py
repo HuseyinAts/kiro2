@@ -45,29 +45,47 @@ class NotFoundError(ServiceError):
         message: str,
         resource_type: str | None = None,
         resource_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = {}
+        detay: dict[str, Any] = {}
         if resource_type:
-            details["resource_type"] = resource_type
+            detay["resource_type"] = resource_type
         if resource_id:
-            details["resource_id"] = resource_id
-
-        super().__init__(message, "NOT_FOUND", details)
+            detay["resource_id"] = resource_id
+        if details:
+            detay.update(details)
+        super().__init__(message, "NOT_FOUND", detay)
 
 
 class AuthorizationError(ServiceError):
     """Authorization error exception"""
 
-    def __init__(self, message: str = "Insufficient permissions"):
-        super().__init__(message, "AUTHORIZATION_ERROR")
+    def __init__(
+        self,
+        message: str = "Insufficient permissions",
+        details: dict[str, Any] | None = None,
+    ):
+        super().__init__(
+            message, "AUTHORIZATION_ERROR", dict(details) if details else {}
+        )
 
 
 class DatabaseError(ServiceError):
     """Database operation error exception"""
 
-    def __init__(self, message: str, operation: str | None = None):
-        details = {"operation": operation} if operation else {}
-        super().__init__(message, "DATABASE_ERROR", details)
+    def __init__(
+        self,
+        message: str,
+        operation: str | None = None,
+        details: dict[str, Any] | None = None,
+    ):
+        # ``details`` ServiceError'un zaten kabul ettigi parametredir; bu sinif onu
+        # daraltmisti ve 22 cagri yeri onu gonderdigi icin TypeError firliyordu.
+        # ``operation`` once yazilir, acikca verilen ``details`` uzerine yazabilir.
+        birlesik: dict[str, Any] = {"operation": operation} if operation else {}
+        if details:
+            birlesik.update(details)
+        super().__init__(message, "DATABASE_ERROR", birlesik)
 
 
 class ExternalServiceError(ServiceError):
@@ -78,40 +96,61 @@ class ExternalServiceError(ServiceError):
         message: str,
         service_name: str | None = None,
         status_code: int | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = {}
+        detay: dict[str, Any] = {}
         if service_name:
-            details["service_name"] = service_name
+            detay["service_name"] = service_name
         if status_code:
-            details["status_code"] = status_code
-
-        super().__init__(message, "EXTERNAL_SERVICE_ERROR", details)
+            detay["status_code"] = status_code
+        if details:
+            detay.update(details)
+        super().__init__(message, "EXTERNAL_SERVICE_ERROR", detay)
 
 
 class ConfigurationError(ServiceError):
     """Configuration error exception"""
 
-    def __init__(self, message: str, config_key: str | None = None):
-        details = {"config_key": config_key} if config_key else {}
-        super().__init__(message, "CONFIGURATION_ERROR", details)
+    def __init__(
+        self,
+        message: str,
+        config_key: str | None = None,
+        details: dict[str, Any] | None = None,
+    ):
+        detay: dict[str, Any] = {"config_key": config_key} if config_key else {}
+        if details:
+            detay.update(details)
+        super().__init__(message, "CONFIGURATION_ERROR", detay)
 
 
 class BusinessLogicError(ServiceError):
     """Business logic error exception"""
 
-    def __init__(self, message: str, rule: str | None = None):
-        details = {"rule": rule} if rule else {}
-        super().__init__(message, "BUSINESS_LOGIC_ERROR", details)
+    def __init__(
+        self,
+        message: str,
+        rule: str | None = None,
+        details: dict[str, Any] | None = None,
+    ):
+        detay: dict[str, Any] = {"rule": rule} if rule else {}
+        if details:
+            detay.update(details)
+        super().__init__(message, "BUSINESS_LOGIC_ERROR", detay)
 
 
 class AuthenticationError(ServiceError):
     """Authentication error exception"""
 
     def __init__(
-        self, message: str = "Authentication failed", token_type: str | None = None
+        self,
+        message: str = "Authentication failed",
+        token_type: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = {"token_type": token_type} if token_type else {}
-        super().__init__(message, "AUTHENTICATION_ERROR", details)
+        detay: dict[str, Any] = {"token_type": token_type} if token_type else {}
+        if details:
+            detay.update(details)
+        super().__init__(message, "AUTHENTICATION_ERROR", detay)
 
 
 class RateLimitError(ServiceError):
@@ -122,29 +161,48 @@ class RateLimitError(ServiceError):
         message: str = "Rate limit exceeded",
         limit: int | None = None,
         reset_time: datetime | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = {}
+        detay: dict[str, Any] = {}
         if limit:
-            details["limit"] = limit
+            detay["limit"] = limit
         if reset_time:
-            details["reset_time"] = reset_time.isoformat()
-        super().__init__(message, "RATE_LIMIT_ERROR", details)
+            detay["reset_time"] = reset_time.isoformat()
+        if details:
+            detay.update(details)
+        super().__init__(message, "RATE_LIMIT_ERROR", detay)
 
 
 class TimeoutError(ServiceError):
     """Operation timeout exception"""
 
-    def __init__(self, message: str, timeout_seconds: float | None = None):
-        details = {"timeout_seconds": timeout_seconds} if timeout_seconds else {}
-        super().__init__(message, "TIMEOUT_ERROR", details)
+    def __init__(
+        self,
+        message: str,
+        timeout_seconds: float | None = None,
+        details: dict[str, Any] | None = None,
+    ):
+        detay: dict[str, Any] = (
+            {"timeout_seconds": timeout_seconds} if timeout_seconds else {}
+        )
+        if details:
+            detay.update(details)
+        super().__init__(message, "TIMEOUT_ERROR", detay)
 
 
 class ConcurrencyError(ServiceError):
     """Concurrency/locking error exception"""
 
-    def __init__(self, message: str, resource: str | None = None):
-        details = {"resource": resource} if resource else {}
-        super().__init__(message, "CONCURRENCY_ERROR", details)
+    def __init__(
+        self,
+        message: str,
+        resource: str | None = None,
+        details: dict[str, Any] | None = None,
+    ):
+        detay: dict[str, Any] = {"resource": resource} if resource else {}
+        if details:
+            detay.update(details)
+        super().__init__(message, "CONCURRENCY_ERROR", detay)
 
 
 class IntegrationError(ServiceError):
@@ -155,13 +213,16 @@ class IntegrationError(ServiceError):
         message: str,
         system_name: str | None = None,
         error_code: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = {}
+        detay: dict[str, Any] = {}
         if system_name:
-            details["system_name"] = system_name
+            detay["system_name"] = system_name
         if error_code:
-            details["integration_error_code"] = error_code
-        super().__init__(message, "INTEGRATION_ERROR", details)
+            detay["integration_error_code"] = error_code
+        if details:
+            detay.update(details)
+        super().__init__(message, "INTEGRATION_ERROR", detay)
 
 
 class MaintenanceError(ServiceError):
@@ -171,11 +232,14 @@ class MaintenanceError(ServiceError):
         self,
         message: str = "Service is under maintenance",
         estimated_duration: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = (
+        detay: dict[str, Any] = (
             {"estimated_duration": estimated_duration} if estimated_duration else {}
         )
-        super().__init__(message, "MAINTENANCE_ERROR", details)
+        if details:
+            detay.update(details)
+        super().__init__(message, "MAINTENANCE_ERROR", detay)
 
 
 class QuotaExceededError(ServiceError):
@@ -187,15 +251,18 @@ class QuotaExceededError(ServiceError):
         resource_type: str | None = None,
         current_usage: int | None = None,
         limit: int | None = None,
+        details: dict[str, Any] | None = None,
     ):
-        details = {}
+        detay: dict[str, Any] = {}
         if resource_type:
-            details["resource_type"] = resource_type
+            detay["resource_type"] = resource_type
         if current_usage is not None:
-            details["current_usage"] = current_usage
+            detay["current_usage"] = current_usage
         if limit is not None:
-            details["limit"] = limit
-        super().__init__(message, "QUOTA_EXCEEDED_ERROR", details)
+            detay["limit"] = limit
+        if details:
+            detay.update(details)
+        super().__init__(message, "QUOTA_EXCEEDED_ERROR", detay)
 
 
 class SecurityError(ServiceError):
@@ -206,13 +273,16 @@ class SecurityError(ServiceError):
         message: str,
         security_context: str | None = None,
         threat_level: str | None = "low",
+        details: dict[str, Any] | None = None,
     ):
-        details = {}
+        detay: dict[str, Any] = {}
         if security_context:
-            details["security_context"] = security_context
+            detay["security_context"] = security_context
         if threat_level:
-            details["threat_level"] = threat_level
-        super().__init__(message, "SECURITY_ERROR", details)
+            detay["threat_level"] = threat_level
+        if details:
+            detay.update(details)
+        super().__init__(message, "SECURITY_ERROR", detay)
 
 
 # ==================== ERROR SEVERITY LEVELS ====================
@@ -270,7 +340,11 @@ class EnhancedServiceError(ServiceError):
                     "line": caller_frame.f_lineno,
                 }
         except Exception:
-            pass
+            # Kaynak konumu SADECE teshis icin; alinamamasi hatanin kendisini
+            # gizlememeli. Bos `pass` yerine acikca bos sozluk donuyoruz:
+            # davranis birebir ayni, ama niyet okunur ve bos-handler dedektoru
+            # (backend/hooks/reward_hacking) yanlis-pozitif uretmiyor.
+            return {}
         return {}
 
     def to_dict(self) -> dict[str, Any]:

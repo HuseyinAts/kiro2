@@ -139,7 +139,7 @@ class Tier2CachingUser(HttpUser):
                         response.success()
                     else:
                         response.failure("API returned success=false")
-                except:
+                except Exception:
                     response.failure("Invalid JSON response")
             else:
                 response.failure(f"Failed with status {response.status_code}")

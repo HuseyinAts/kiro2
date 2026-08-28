@@ -342,7 +342,7 @@ export class OfflineModeManager {
    * @returns number | null
    */
   getOfflineDuration(): number | null {
-    return this.state.offlineDuration;
+    return this.networkDetector.getOfflineDuration();
   }
 
   /**
@@ -364,7 +364,11 @@ export class OfflineModeManager {
     this.subscribers.add(callback);
 
     // Immediately call with current state
-    callback(this.getState());
+    try {
+      callback(this.getState());
+    } catch (error) {
+      console.error('❌ OfflineModeManager: Error in subscriber callback', error);
+    }
 
     // Return unsubscribe function
     return () => {

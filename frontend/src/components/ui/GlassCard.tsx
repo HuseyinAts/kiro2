@@ -41,18 +41,13 @@ export interface GlassCardProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
   sx?: SxProps<Theme>
 }
 
-const glassIntensities = {
-  light: modernColors.glass.white.light,
-  medium: modernColors.glass.white.medium,
-  dark: modernColors.glass.white.dark,
-};
+
 
 export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
   title,
   subtitle,
   icon,
   gradient = modernColors.gradients.primary,
-  glassIntensity = 'medium',
   hoverable = false,
   onMenuClick,
   elevated = false,
@@ -64,8 +59,6 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
   sx,
   ...motionProps
 }, ref) => {
-  const backgroundOpacity = glassIntensities[glassIntensity];
-
   return (
     <motion.div
       ref={ref}
@@ -103,18 +96,19 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
       {/* Glass Background */}
       <Box
         sx={{
-          background: backgroundOpacity,
+          background: 'color-mix(in srgb, var(--k-surface) 60%, transparent)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          border: `1px solid ${borderColor}`,
+          border: '1px solid var(--k-border)',
           borderTop: 'none',
           borderRadius: '20px',
           padding: '24px',
+          color: 'var(--k-text)',
           boxShadow: elevated ? modernColors.shadow.glass : modernColors.shadow.md,
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': hoverable ? {
             boxShadow: modernColors.shadow.modern,
-            borderColor: modernColors.glass.white.medium,
+            borderColor: 'var(--k-coral)',
           } : {},
           ...sx as object,
         }}
@@ -127,14 +121,14 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
               <Box
                 sx={{
                   mr: 2,
-                  color: 'primary.main',
+                  color: 'var(--k-coral)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   width: 48,
                   height: 48,
                   borderRadius: '12px',
-                  background: modernColors.glass.white.light,
+                  background: 'color-mix(in srgb, var(--k-surface) 40%, transparent)',
                   backdropFilter: 'blur(8px)',
                 }}
               >
@@ -181,10 +175,12 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
                 }}
                 sx={{
                   ml: 1,
-                  background: modernColors.glass.white.light,
+                  background: 'color-mix(in srgb, var(--k-surface) 40%, transparent)',
+                  color: 'var(--k-text-muted)',
                   backdropFilter: 'blur(8px)',
                   '&:hover': {
-                    background: modernColors.glass.white.medium,
+                    background: 'color-mix(in srgb, var(--k-surface) 80%, transparent)',
+                    color: 'var(--k-text)',
                   },
                 }}
               >

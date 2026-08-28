@@ -20,16 +20,20 @@ from typing import Any
 
 from cachetools import TTLCache
 from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy.orm import selectinload
 
 from core.database import get_db_session_context
+from core.osym_puanlama import osym_net
+from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
-from models.database import (
-    ExamQuestion,
-    ExamSession,
-    ExamType,
-    StudentAnswer,
-)
+from models.database import ExamQuestion, ExamSession, ExamType, StudentAnswer
 from models.question_bank import QuestionBankItem as Question
+from models.question_bank import (
+    QuestionContent,
+    QuestionMetadata,
+    QuestionStatistics,
+    TopicHierarchy,
+)
 
 logger = get_logger("osym_exam_engine")
 
@@ -107,6 +111,11 @@ class SubjectPerformance:
     success_rate: float
     average_response_time: float
     difficulty_level: float
+    # B3: konu kırılımı. SONA + VARSAYILANLI eklendi — dataclass pozisyonel
+    # çağrılıyor (tests/unit/test_sinav_api.py:1118), başa/ortaya eklenen alan
+    # o çağrıyı sessizce yanlış alana bağlar.
+    topic_code: str | None = None
+    topic_name: str | None = None
 
 
 @dataclass
@@ -139,6 +148,26 @@ class OSYMExamEngine:
     - IRT tabanlı soru seçimi ve analizi
     """
 
+    # H2 (#485, 16 Agu 2026 kullanici onayi): %15 IRT-ankraj kotasi KAPALI.
+    #
+    # Ankraj maddeleri IRT esitleme (equating) icin ayrilmistir; her sinavin
+    # ~%15'ine servis etmek ankraj setini yakar ve gelecekteki equating
+    # kosumlarini kirletebilir. Kota S210 devrinden geldi ve `_select_questions`
+    # o tarihten beri OLU KOD oldugu icin (`:1512` sinif-duzeyi `AttributeError`)
+    # bir kez bile kosmadi — yani bu bir davranis geri alma DEGIL, hic
+    # etkinlesmemis bir davranisin devreye girmesini onleme.
+    #
+    # Psikometrik urun karari: ayri bir oturumda (ankraj seti buyuklugu +
+    # kullanim gecmisi + equating durumu olculerek) yeniden acilacak. Oran 0
+    # iken kota tamamen devre disi; tek geri alinabilir dugme olmasi icin
+    # sabit olarak tutuldu (deger iki ayri yerde kullaniliyor ve o iki kopya
+    # gecmiste bir kez birbirinden ayrismisti).
+    #
+    # DIKKAT: kullanim yerindeki `> 0` korumasi ZORUNLU — `max(1, round(n*0.0))`
+    # 0 DEGIL 1 dondurur (olculdu: count=3/5/10/40 icin hepsinde 1). Naif bir
+    # oran degisimi kotayi kismen ACIK birakirdi.
+    ANCHOR_QUOTA_RATIO: float = 0.0
+
     def __init__(self):
         self.active_sessions: dict[str, ExamSessionData] = {}
         self.auto_save_tasks: dict[str, asyncio.Task] = {}
@@ -146,6 +175,12 @@ class OSYMExamEngine:
         self._question_pool_cache: TTLCache = TTLCache(maxsize=200, ttl=3600)
         # P2: Performance analysis cache — idempotent re-call protection (TTL 1 hour, max 500 sessions)
         self._performance_cache: TTLCache = TTLCache(maxsize=500, ttl=3600)
+
+        # S255: toplu cevap yazımının SESSİZ kayıpları ölçülebilir olsun.
+        # `logger.error` tek başına yetmiyordu — günlük dondurulmuş bir sayı
+        # vermez ve "bugün kaç öğrenci cevabı düştü" sorusu cevapsız kalır.
+        self.toplu_yazim_hata_sayaci: int = 0
+        self.dusen_cevap_sayaci: int = 0
 
         # ÖSYM sınav konfigürasyonları
         # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
@@ -563,9 +598,17 @@ class OSYMExamEngine:
 
             async with get_db_session_context() as db_session:
                 result = await db_session.execute(
-                    select(Question).where(
-                        Question.id == question_id, Question.is_active.is_(True)
+                    # #485: donen nesneden api/sinav.py:493-508 12 split alan okuyor
+                    # (content 10 + metadata 1 + statistics 1). Iliskiler lazy='select'
+                    # (models/question_bank.py:201-218) -> eager-load olmadan
+                    # async oturumda MissingGreenlet.
+                    select(Question)
+                    .options(
+                        selectinload(Question.content),
+                        selectinload(Question.metadata_info),
+                        selectinload(Question.statistics),
                     )
+                    .where(Question.id == question_id, Question.is_active.is_(True))
                 )
                 question = result.scalar_one_or_none()
 
@@ -577,6 +620,63 @@ class OSYMExamEngine:
                 extra_data={"session_id": session_id},
             )
             return None
+
+    async def _toplu_yaz_kurtarmali(
+        self, stmt: Any, batch: list[dict[str, Any]]
+    ) -> tuple[int, int]:
+        """Toplu UPSERT'i dener; düşerse öğeleri TEK TEK yazar.
+
+        Returns:
+            (yazilan, dusen)
+
+        NEDEN VAR (ölçüldü 27 Ağu 2026, `scripts/batch_zehirlenme_probu.py`):
+        PostgreSQL tek bir bozuk satırda TÜM işlemi geri alır, `commit()`e hiç
+        ulaşılmaz. Kuyruk modül düzeyinde TEK nesnede (`:2180`) olduğu için
+        düşen cevaplar **başka öğrencilerin** cevapları olabiliyordu ve
+        istemci HTTP 200 görüyordu:
+
+            "F" / "AB" / yabancı question_id  ->  3 geçerli cevaptan 2'si YOK
+
+        Katman A (girdi kapısı) ve B (soru üyeliği) bugün bilinen dört
+        tetikleyiciyi kapatıyor. Bu metot BEŞİNCİ, HENÜZ BİLİNMEYEN tetikleyici
+        içindir: patlama yarıçapını 1000'den 1'e indirir.
+
+        Tek-tek yol YALNIZCA hata dalında koşar; sağlam batch tek işlemde
+        yazılır (çivi: `tests/unit/test_toplu_cevap_dayanikliligi.py`).
+        """
+        from core.database import get_db_session_context
+
+        try:
+            async with get_db_session_context() as db_session:
+                await db_session.execute(stmt, batch)
+                await db_session.commit()
+            return len(batch), 0
+        except Exception as toplu_hata:
+            self.toplu_yazim_hata_sayaci += 1
+            logger.error(
+                f"Bulk DB worker error: {toplu_hata} — {len(batch)} öğe tek tek "
+                "yeniden denenecek"
+            )
+
+        yazilan = dusen = 0
+        for oge in batch:
+            try:
+                async with get_db_session_context() as tekil_oturum:
+                    await tekil_oturum.execute(stmt, [oge])
+                    await tekil_oturum.commit()
+                yazilan += 1
+            except Exception as oge_hatasi:
+                dusen += 1
+                self.dusen_cevap_sayaci += 1
+                logger.error(
+                    "Cevap SATIRI düşürüldü (toplu yazım kurtarması)",
+                    extra_data={
+                        "session_id": oge.get("exam_session_id"),
+                        "question_id": oge.get("question_id"),
+                        "hata": str(oge_hatasi)[:200],
+                    },
+                )
+        return yazilan, dusen
 
     async def save_answer(
         self,
@@ -612,6 +712,25 @@ class OSYMExamEngine:
             if session_data.status != ExamStatus.IN_PROGRESS:
                 return False
 
+            # S255 — Katman B: soru bu oturuma AİT Mİ?
+            # `student_answers.question_id` `question_bank(id)`'ye FK'lı. Yabancı
+            # bir id yazılırsa ForeignKeyViolationError toplu yazımı düşürür ve
+            # kuyruk TEK nesnede paylaşıldığı için AYNI gruptaki BAŞKA
+            # ÖĞRENCİLERİN cevapları da geri alınır. Canlı ölçüldü (27 Ağu 2026):
+            # uydurma question_id -> uç 200, 3 geçerli cevaptan 2'si YOK OLDU.
+            # `session_data.questions` oturum kurulduktan sonra hiç değişmiyor
+            # (ölçüldü: depoda `.questions.append/extend` yok), yani öğrencinin
+            # meşru olarak cevaplayabileceği her soru bu listededir.
+            if question_id not in session_data.questions:
+                logger.warning(
+                    "save_answer: oturuma ait olmayan question_id reddedildi",
+                    extra_data={
+                        "session_id": session_id,
+                        "question_id": str(question_id)[:64],
+                    },
+                )
+                return False
+
             # Cevabı kaydet (normalize: uppercase + strip)
             if selected_answer:
                 session_data.answers[question_id] = selected_answer.strip().upper()
@@ -624,16 +743,19 @@ class OSYMExamEngine:
 
             # Veritabanına kaydet — UPSERT işlemini arka plana al (DB pool starvation'u engellemek için)
             import asyncio
+            import uuid
+
+            from sqlalchemy.dialects.postgresql import insert as pg_insert
+
             from core.database import get_db_session_context
             from models.exam_db import StudentAnswer
-            from sqlalchemy.dialects.postgresql import insert as pg_insert
-            import uuid
 
             if not hasattr(self, "_db_queue"):
                 self._db_queue = asyncio.Queue()
                 self._db_worker_task = None
 
             if self._db_worker_task is None or self._db_worker_task.done():
+
                 async def _db_worker():
                     while True:
                         batch = []
@@ -641,44 +763,76 @@ class OSYMExamEngine:
                             # Wait for at least 1 item
                             item = await self._db_queue.get()
                             batch.append(item)
-                            
+
                             # Drain the queue up to 1000 items
                             while len(batch) < 1000:
                                 try:
                                     batch.append(self._db_queue.get_nowait())
                                 except asyncio.QueueEmpty:
                                     break
-                            
+
                             # Bulk UPSERT
                             if batch:
-                                async with get_db_session_context() as db_session:
-                                    stmt = pg_insert(StudentAnswer)
-                                    stmt = stmt.on_conflict_do_update(
-                                        constraint="uq_student_answer",
-                                        set_={
-                                            "selected_answer": stmt.excluded.selected_answer,
-                                            "response_time_seconds": stmt.excluded.response_time_seconds,
-                                            "answered_at": datetime.now(),
-                                            "answer_changes": StudentAnswer.answer_changes + 1,
-                                        },
-                                    )
-                                    await db_session.execute(stmt, batch)
-                                    await db_session.commit()
+                                stmt = pg_insert(StudentAnswer)
+                                stmt = stmt.on_conflict_do_update(
+                                    constraint="uq_student_answer",
+                                    set_={
+                                        "selected_answer": stmt.excluded.selected_answer,
+                                        "response_time_seconds": stmt.excluded.response_time_seconds,
+                                        "is_correct": stmt.excluded.is_correct,
+                                        "answered_at": datetime.now(),
+                                        "answer_changes": StudentAnswer.answer_changes
+                                        + 1,
+                                    },
+                                )
+                                # S255: tek bozuk öğe TÜM grubu (1000'e kadar
+                                # cevap, farklı öğrencilerin) geri aldırıyordu.
+                                await self._toplu_yaz_kurtarmali(stmt, batch)
                         except Exception as e:
-                            logger.error(f"Bulk DB worker error: {e}")
+                            logger.error(f"Bulk DB worker error (kuyruk): {e}")
                         finally:
                             for _ in batch:
                                 self._db_queue.task_done()
-                
+
                 self._db_worker_task = asyncio.create_task(_db_worker())
 
+            # `else None` ZORUNLU, `else selected_answer` DEGIL: frontend'in
+            # `clearAnswer`'i bos dizge gonderiyor (examStore.ts:412) ve
+            # `student_answers.check_selected_answer` kisiti `''`i REDDEDER
+            # (yalniz NULL veya 'A'..'E'). Bos dizge buradan gecerse INSERT
+            # CheckViolation ile duser, :709/:824 hatayi yutar, uc 200 doner ve
+            # toplu dalda AYNI batch'teki 1000'e kadar cevap birlikte kaybolur.
+            # Bu satir :653-656'daki "bos cevap = kaydi sil" semantigiyle ayni.
             normalized_answer = (
-                selected_answer.strip().upper()
-                if selected_answer
-                else selected_answer
+                selected_answer.strip().upper() if selected_answer else None
             )
-            
+
+            # Grade the answer at write time so student_answers.is_correct is
+            # populated. The mastery pipeline filters on is_correct; it was always
+            # NULL because save_answer never compared the answer to correct_answer.
+            is_correct_val: bool | None = None
+            if normalized_answer:
+                try:
+                    from sqlalchemy import select as _select
+
+                    # #485: correct_answer artik QuestionContent'te.
+                    # Paylasilan PK (id) sayesinde JOIN gerekmez — dogrudan
+                    # yavru tabloya filtrelemek yeterli.
+                    from models.question_bank import QuestionContent as _QC
+
+                    async with get_db_session_context() as _grade_db:
+                        _ca = (
+                            await _grade_db.execute(
+                                _select(_QC.correct_answer).where(_QC.id == question_id)
+                            )
+                        ).scalar_one_or_none()
+                    if _ca:
+                        is_correct_val = normalized_answer == str(_ca).strip().upper()
+                except Exception as _ge:
+                    logger.debug("save_answer grade skipped: %s", _ge)
+
             import os
+
             if os.environ.get("TESTING") == "true":
                 # Testlerde senkron çalıştır
                 async def _sync_save():
@@ -689,21 +843,25 @@ class OSYMExamEngine:
                             question_id=question_id,
                             selected_answer=normalized_answer,
                             response_time_seconds=response_time or 0.0,
+                            is_correct=is_correct_val,
                         )
                         stmt = stmt.on_conflict_do_update(
                             constraint="uq_student_answer",
                             set_={
                                 "selected_answer": stmt.excluded.selected_answer,
                                 "response_time_seconds": stmt.excluded.response_time_seconds,
+                                "is_correct": stmt.excluded.is_correct,
                                 "answered_at": datetime.now(),
                                 "answer_changes": StudentAnswer.answer_changes + 1,
                             },
                         )
                         await db_session.execute(stmt)
                         await db_session.commit()
+
                 await _sync_save()
             else:
                 import uuid
+
                 # Gerçek yük altında global batch queue'ya at
                 self._db_queue.put_nowait(
                     {
@@ -712,6 +870,7 @@ class OSYMExamEngine:
                         "question_id": question_id,
                         "selected_answer": normalized_answer,
                         "response_time_seconds": response_time or 0.0,
+                        "is_correct": is_correct_val,
                         "answer_changes": 0,
                         "time_to_first_answer": 0.0,
                     }
@@ -725,16 +884,19 @@ class OSYMExamEngine:
             else:
                 if not hasattr(self, "_persist_tasks"):
                     self._persist_tasks = {}
-                    
+
                 if session_id not in self._persist_tasks:
+
                     async def _debounced_persist():
                         try:
                             await asyncio.sleep(0.2)  # Wait for burst to finish
                             await persist_session(session_data)
                         finally:
                             self._persist_tasks.pop(session_id, None)
-                            
-                    self._persist_tasks[session_id] = asyncio.create_task(_debounced_persist())
+
+                    self._persist_tasks[session_id] = asyncio.create_task(
+                        _debounced_persist()
+                    )
 
             logger.debug(
                 "Cevap kaydedildi",
@@ -990,44 +1152,48 @@ class OSYMExamEngine:
         # L1 cache stampede protection
         if not hasattr(self, "_session_locks"):
             self._session_locks = {}
-            
+
         if session_id not in self._session_locks:
             import asyncio
+
             self._session_locks[session_id] = asyncio.Lock()
-            
+
         # L1 cache stampede protection WITHOUT asyncio.Lock convoys
         if not hasattr(self, "_session_loading"):
             self._session_loading = {}
-            
+
         session = self.active_sessions.get(session_id)
         if session:
             return session
-            
+
         if session_id in self._session_loading:
             # Wait for the first request to finish loading
             return await self._session_loading[session_id]
-            
+
         # We are the first request, let's load it
         import asyncio
+
         loop = asyncio.get_running_loop()
         future = loop.create_future()
         self._session_loading[session_id] = future
-        
+
         try:
             # L2: Redis fallback (restart recovery)
             from core.exam_session_store import load_session
+
             session = await load_session(session_id)
-            
+
             # L3: DB fallback
             if not session:
                 session = await self._reconstruct_session_from_db(session_id)
                 if session and session.status != ExamStatus.COMPLETED:
                     from core.exam_session_store import persist_session
+
                     await persist_session(session)
-                    
+
             if session:
                 self.active_sessions[session_id] = session
-                
+
             # Resolve future so all waiters wake up
             future.set_result(session)
         except Exception as e:
@@ -1038,9 +1204,15 @@ class OSYMExamEngine:
             self._session_loading.pop(session_id, None)
 
             # Restore auto_complete timer for IN_PROGRESS sessions (EX-12)
+            # `session` UC katmanin (L1/L2/L3) ucu de bos donerse None kalir.
+            # None kapisi ZORUNLU: `finally` icinde firlayan istisna normal
+            # donusun YERINE gecer, yani fonksiyon `None` dondurEMEZ ve
+            # cagiranin `if not session_data: 404` dali olu kalir -> 28 cagri
+            # yerinin hepsi 404 yerine 500 uretirdi (gf88, 2 Agu 2026 olcumu).
             autoclose_key = f"autoclose:{session_id}"
             if (
-                session.status == ExamStatus.IN_PROGRESS
+                session is not None
+                and session.status == ExamStatus.IN_PROGRESS
                 and autoclose_key not in self.auto_save_tasks
             ):
                 self.auto_save_tasks[autoclose_key] = asyncio.create_task(
@@ -1109,7 +1281,7 @@ class OSYMExamEngine:
                     correct_answers=_c,
                     wrong_answers=_w,
                     empty_answers=_e,
-                    net_score=float(_c),  # ÖSYM 2023+ ceza yok → net = doğru
+                    net_score=osym_net(_c, _w),
                     raw_score=float(row.raw_score or 0.0),
                     percentile=row.percentile,
                     estimated_ability=float(row.estimated_ability or 0.0),
@@ -1267,7 +1439,22 @@ class OSYMExamEngine:
             async with get_db_session_context() as db_session:
                 # Sınav sorularını ve cevapları getir
                 result = await db_session.execute(
-                    select(Question, StudentAnswer)
+                    # B3: topic_code/name_tr KOLON olarak seçilir (Row döner,
+                    # ek eager-load gerekmez — S220'nin 361->4 SELECT kazancı korunur).
+                    select(
+                        Question,
+                        StudentAnswer,
+                        TopicHierarchy.code,
+                        TopicHierarchy.name_tr,
+                    )
+                    # #485: dongude :1345 subject_area(metadata) · :1362
+                    # irt_difficulty(statistics) · :1367 correct_answer(content)
+                    # okunuyor; lazy='select' -> eager-load sart.
+                    .options(
+                        selectinload(Question.content),
+                        selectinload(Question.metadata_info),
+                        selectinload(Question.statistics),
+                    )
                     .join(ExamQuestion, Question.id == ExamQuestion.question_id)
                     .outerjoin(
                         StudentAnswer,
@@ -1276,11 +1463,16 @@ class OSYMExamEngine:
                             StudentAnswer.exam_session_id == session_id,
                         ),
                     )
+                    # outerjoin (inner DEĞİL): konusu çözülemeyen soru DÜŞMEMELİ.
+                    .outerjoin(
+                        TopicHierarchy,
+                        TopicHierarchy.id == Question.primary_topic_id,
+                    )
                     .where(ExamQuestion.exam_session_id == session_id)
                     .order_by(ExamQuestion.question_order)
                 )
 
-                for question, answer in result:
+                for question, answer, topic_code, topic_name in result:
                     # QuestionBankItem.subject_area is String, not Enum
                     subject = (
                         question.subject_area.lower()
@@ -1288,8 +1480,15 @@ class OSYMExamEngine:
                         else question.subject_area.value
                     )
 
-                    if subject not in subject_stats:
-                        subject_stats[subject] = {
+                    # B3: kova anahtarı (ders, konu). Konu satırı yoksa sessiz
+                    # varsayılan YOK — görünür "Konu atanmamış" kovası.
+                    kova_anahtari = (subject, question.primary_topic_id)
+
+                    if kova_anahtari not in subject_stats:
+                        subject_stats[kova_anahtari] = {
+                            "subject": subject,
+                            "topic_code": topic_code,
+                            "topic_name": topic_name or "Konu atanmamis",
                             "total": 0,
                             "correct": 0,
                             "wrong": 0,
@@ -1298,7 +1497,7 @@ class OSYMExamEngine:
                             "total_difficulty": 0.0,
                         }
 
-                    stats = subject_stats[subject]
+                    stats = subject_stats[kova_anahtari]
                     stats["total"] += 1
                     stats["total_difficulty"] += question.irt_difficulty or 0.0
 
@@ -1318,7 +1517,7 @@ class OSYMExamEngine:
 
             # SubjectPerformance objelerini oluştur
             subject_performances = []
-            for subject, stats in subject_stats.items():
+            for stats in subject_stats.values():
                 success_rate = (
                     (stats["correct"] / stats["total"]) * 100
                     if stats["total"] > 0
@@ -1336,7 +1535,7 @@ class OSYMExamEngine:
                 )
 
                 subject_performance = SubjectPerformance(
-                    subject=subject,
+                    subject=stats["subject"],
                     total_questions=stats["total"],
                     correct_answers=stats["correct"],
                     wrong_answers=stats["wrong"],
@@ -1344,9 +1543,17 @@ class OSYMExamEngine:
                     success_rate=success_rate,
                     average_response_time=avg_response_time,
                     difficulty_level=avg_difficulty,
+                    topic_code=stats["topic_code"],
+                    topic_name=stats["topic_name"],
                 )
 
                 subject_performances.append(subject_performance)
+
+            # B3: total_questions AZALAN, eşitlikte topic_name alfabetik
+            # (deterministik sıra). Az soruluk kova gizlenmez/birleştirilmez.
+            subject_performances.sort(
+                key=lambda p: (-p.total_questions, p.topic_name or "")
+            )
 
             return subject_performances
 
@@ -1366,7 +1573,9 @@ class OSYMExamEngine:
         "cok_zor": ["HARD", "VERY_HARD"],
     }
 
-    async def _select_beta_questions(self, count: int) -> list[Question]:
+    async def _select_beta_questions(
+        self, count: int, exam_type: str
+    ) -> list[Question]:
         """Beta pratik için soru seç.
 
         Kör-çözüm doğrulamasından geçmiş (pipeline_metadata.verified_provisional
@@ -1380,17 +1589,37 @@ class OSYMExamEngine:
         SAYILMAZ (K1b dairesellik tekrarı riski). İkinci bağımsız sinyal (farklı
         model re-solve veya insan-GT) ile teyit edilince ``verified_gold``'a terfi.
 
+        Kör-çözüm doğrulaması bir KALİTE kanıtıdır, ÖĞRENCİ KAPISI değildir:
+        ``core/quality_gate.py`` politikası gereği öğrenciye içerik dönen her
+        sorgu ``mv_safe_for_beta``dan da geçer (ölçüldü: havuzun 317/3868'i
+        kapı dışındaydı). Kapı ``is_active``in YANINA gelir, yerine değil.
+        Ayrıca ``exam_type`` süzülür — "tyt" ilan edilen oturumlara AYT sorusu
+        giriyordu (3/20, 5/60, 1/60).
+
         Cache anahtarı ``BETA:*`` ile standart subject havuzundan ayrıdır;
-        beta-dışı sorunun beta moduna sızması mümkün değildir.
+        beta-dışı sorunun beta moduna sızması mümkün değildir. Anahtar
+        ``exam_type`` de taşır: taşımazsa TTLCache(ttl=3600) ilk çağrılan dalın
+        havuzunu diğer dala servis eder.
         """
-        cache_key = "BETA:verified_provisional:all"
+        cache_key = f"BETA:verified_provisional:{exam_type}"
         pool = self._question_pool_cache.get(cache_key)
         if pool is None:
             async with get_db_session_context() as db_session:
                 id_result = await db_session.execute(
-                    select(Question.id).where(
+                    # #485: pipeline_metadata artik QuestionMetadata'da.
+                    # SELECT listesinde Question.id (parent kolonu) var -> SQLAlchemy
+                    # sol tarafi cikarir, select_from() GEREKMEZ (S214 dersi: SELECT
+                    # listesi split-only degilse select_from SUS olur ve hicbir
+                    # mutasyonla civilenemez).
+                    select(Question.id)
+                    .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                    .where(
                         Question.is_active.is_(True),
-                        Question.pipeline_metadata.op("->>")("verified_provisional")
+                        QuestionMetadata.exam_type == exam_type,
+                        safe_for_beta_gate(Question.id),
+                        QuestionMetadata.pipeline_metadata.op("->>")(
+                            "verified_provisional"
+                        )
                         == "true",
                     )
                 )
@@ -1402,7 +1631,12 @@ class OSYMExamEngine:
             logger.warning("Beta clean havuzu boş — beta pratik soru seçilemedi")
             return []
 
-        sampled_ids = random.sample(pool, min(count, len(pool)))
+        # nosec B311 gerekcesi (3 cagri yeri: burasi, _select_questions ve
+        # fallback dali): `random` soru HAVUZUNDAN ornekleme icin kullaniliyor,
+        # kimlik/jeton/parola uretimi icin DEGIL. Tahmin edilebilirligi bir
+        # yetki kazanci vermez — sorular zaten ogrenciye servis ediliyor.
+        # Kripto-guclu RNG'ye gecmek sinav olusturmayi olcusuz yavaslatir.
+        sampled_ids = random.sample(pool, min(count, len(pool)))  # nosec B311
         async with get_db_session_context() as db_session:
             result = await db_session.execute(
                 select(Question).where(
@@ -1425,7 +1659,11 @@ class OSYMExamEngine:
         # Beta pratik: subject_distribution ve proxy base_filters'ı atla,
         # doğrudan beta_clean havuzundan karışık seç.
         if getattr(exam_config, "beta_practice", False):
-            return await self._select_beta_questions(exam_config.total_questions)
+            return await self._select_beta_questions(
+                exam_config.total_questions,
+                # Ders #26: enum lowercase ("tyt"), DB UPPERCASE ("TYT").
+                exam_config.exam_type.value.upper(),
+            )
 
         selected_questions = []
         difficulty_levels = None
@@ -1436,69 +1674,83 @@ class OSYMExamEngine:
             for subject, count in exam_config.subject_distribution.items():
                 # Base quality filters
                 base_filters = [
-                    Question.exam_type == exam_config.exam_type.value.upper(),
-                    Question.subject_area == subject,
+                    QuestionMetadata.exam_type == exam_config.exam_type.value.upper(),
+                    QuestionMetadata.subject_area == subject,
                     Question.is_active == True,  # noqa: E712
-                    Question.question_text.isnot(None),
-                    func.length(Question.question_text) >= 50,
-                    Question.option_a.isnot(None),
-                    func.length(Question.option_a) > 0,
-                    Question.option_b.isnot(None),
-                    func.length(Question.option_b) > 0,
-                    Question.option_c.isnot(None),
-                    func.length(Question.option_c) > 0,
-                    Question.option_d.isnot(None),
-                    func.length(Question.option_d) > 0,
-                    Question.option_a != Question.option_b,
+                    # Kalite kapısı (core/quality_gate.py) — is_active'in YANINA
+                    # gelir, yerine DEĞİL. Kapısız havuz 85.731 yargılanmamış/
+                    # reddedilmiş soruyu öğrenciye servis ediyordu. base_filters'a
+                    # konuldu: hem id-havuzu cache'e YAZILMADAN önce, hem de
+                    # zorluk-fallback havuzu bu listeyi kullandığı için otomatik kapanır.
+                    safe_for_beta_gate(Question.id),
+                    QuestionContent.question_text.isnot(None),
+                    func.length(QuestionContent.question_text) >= 50,
+                    QuestionContent.option_a.isnot(None),
+                    func.length(QuestionContent.option_a) > 0,
+                    QuestionContent.option_b.isnot(None),
+                    func.length(QuestionContent.option_b) > 0,
+                    QuestionContent.option_c.isnot(None),
+                    func.length(QuestionContent.option_c) > 0,
+                    QuestionContent.option_d.isnot(None),
+                    func.length(QuestionContent.option_d) > 0,
+                    QuestionContent.option_a != QuestionContent.option_b,
                     # P1-3: Seçenek minimum uzunluğu
-                    func.length(Question.option_a) >= 2,
-                    func.length(Question.option_b) >= 2,
-                    func.length(Question.option_c) >= 2,
-                    func.length(Question.option_d) >= 2,
+                    func.length(QuestionContent.option_a) >= 2,
+                    func.length(QuestionContent.option_b) >= 2,
+                    func.length(QuestionContent.option_c) >= 2,
+                    func.length(QuestionContent.option_d) >= 2,
                     # P0-2: Passage kontrolü — kısa metin + passage referansı = paragraf eksik
                     # Her iki form: diacritics'siz (OCR) ve Türkçe karakterli
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains(
+                            ~func.lower(QuestionContent.question_text).contains(
                                 "parcaya gore"
                             ),
-                            ~func.lower(Question.question_text).contains(
+                            ~func.lower(QuestionContent.question_text).contains(
                                 "parçaya göre"
                             ),
                         ),
-                        func.length(Question.question_text) >= 300,
+                        func.length(QuestionContent.question_text) >= 300,
                     ),
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains("metne gore"),
-                            ~func.lower(Question.question_text).contains("metne göre"),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "metne gore"
+                            ),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "metne göre"
+                            ),
                         ),
-                        func.length(Question.question_text) >= 300,
+                        func.length(QuestionContent.question_text) >= 300,
                     ),
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains("bu parcada"),
-                            ~func.lower(Question.question_text).contains("bu parçada"),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "bu parcada"
+                            ),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "bu parçada"
+                            ),
                         ),
-                        func.length(Question.question_text) >= 300,
+                        func.length(QuestionContent.question_text) >= 300,
                     ),
                     # P0-3: Geometri/Fizik görsel bağımlılık filtresi
                     or_(
-                        ~Question.subject_area.in_(["GEOMETRI", "FIZIK"]),
-                        Question.question_image_url.isnot(None),
-                        func.length(Question.question_text) >= 500,
+                        ~QuestionMetadata.subject_area.in_(["GEOMETRI", "FIZIK"]),
+                        QuestionContent.question_image_url.isnot(None),
+                        func.length(QuestionContent.question_text) >= 500,
                     ),
                     # P2-3: Reddedilen sorular hariç
                     or_(
-                        Question.quality_review_status.is_(None),
-                        Question.quality_review_status != "rejected",
+                        QuestionStatistics.quality_review_status.is_(None),
+                        QuestionStatistics.quality_review_status != "rejected",
                     ),
                 ]
 
                 # Difficulty filter (if specified)
                 if difficulty_levels:
                     filters = base_filters + [
-                        Question.difficulty_level.in_(difficulty_levels),
+                        QuestionStatistics.difficulty_level.in_(difficulty_levels),
                     ]
                 else:
                     filters = base_filters
@@ -1510,10 +1762,10 @@ class OSYMExamEngine:
                 if subject in ("TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL"):
                     filters.extend(
                         [
-                            ~Question.question_text.contains("$\\frac"),
-                            ~Question.question_text.contains("$\\sqrt"),
-                            ~Question.question_text.contains("x^2"),
-                            ~Question.question_text.contains("2x +"),
+                            ~QuestionContent.question_text.contains("$\\frac"),
+                            ~QuestionContent.question_text.contains("$\\sqrt"),
+                            ~QuestionContent.question_text.contains("x^2"),
+                            ~QuestionContent.question_text.contains("2x +"),
                         ]
                     )
 
@@ -1523,28 +1775,67 @@ class OSYMExamEngine:
                 )
                 cache_key = f"{exam_config.exam_type.value}:{subject}:{difficulty_key}"
 
-                pool = self._question_pool_cache.get(cache_key)
-                if pool is None:
-                    id_result = await db_session.execute(
-                        select(Question.id).where(and_(*filters))
-                    )
-                    pool = [row[0] for row in id_result.all()]
-                    if pool:
-                        self._question_pool_cache[cache_key] = pool
+                anchor_cache_key = f"{cache_key}:anchor"
+                normal_cache_key = f"{cache_key}:normal"
 
-                if len(pool) >= count:
-                    sampled_ids = random.sample(pool, count)
+                anchor_pool = self._question_pool_cache.get(anchor_cache_key)
+                normal_pool = self._question_pool_cache.get(normal_cache_key)
+
+                if anchor_pool is None or normal_pool is None:
+                    id_result = await db_session.execute(
+                        select(Question.id, Question.is_anchor)
+                        .join(QuestionContent, QuestionContent.id == Question.id)
+                        .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                        .join(QuestionStatistics, QuestionStatistics.id == Question.id)
+                        .where(and_(*filters))
+                    )
+                    rows = id_result.all()
+                    anchor_pool = [row[0] for row in rows if row[1] is True]
+                    normal_pool = [row[0] for row in rows if not row[1]]
+
+                    # H1 (#485): BOS sorgu sonucu cache'e YAZILMAZ.
+                    # `_question_pool_cache` bir `TTLCache(ttl=3600)`; bos ya da
+                    # yarim-import bir `question_bank`'a karsi kosan TEK sorgu
+                    # cache'i 60 dakikaya kadar zehirler ve o sure boyunca
+                    # sessizce BOS sinav uretilir. HEAD~1'de `if pool:` korumasi
+                    # vardi (eski kod bir sonraki istekte kendini onariyordu),
+                    # S210 devrinde supuruldu.
+                    #
+                    # Koruma HAVUZ BASINA DEGIL, SORGU SONUCU (`rows`) uzerine
+                    # kurulu: tek sorgu iki havuz uretiyor ve BOS bir ankraj alt
+                    # kumesi MESRUDUR (bir dersin hic ankraj maddesi olmayabilir).
+                    # `if anchor_pool:` denseydi saglikli veride her istekte
+                    # yeniden sorgulanir, cache'in amaci yok olurdu.
+                    if rows:
+                        self._question_pool_cache[anchor_cache_key] = anchor_pool
+                        self._question_pool_cache[normal_cache_key] = normal_pool
+
+                # H2: kota kapali (ANCHOR_QUOTA_RATIO). `> 0` korumasi sart:
+                # `max(1, round(n*0.0))` 0 degil 1 dondurur.
+                anchor_target = (
+                    max(1, round(count * self.ANCHOR_QUOTA_RATIO))
+                    if count >= 5 and self.ANCHOR_QUOTA_RATIO > 0
+                    else 0
+                )
+                normal_target = count - anchor_target
+
+                sampled_ids = []
+
+                if len(anchor_pool) >= anchor_target:
+                    sampled_ids.extend(random.sample(anchor_pool, anchor_target))  # nosec B311
+                else:
+                    sampled_ids.extend(anchor_pool)
+                    normal_target += anchor_target - len(anchor_pool)
+
+                if len(normal_pool) >= normal_target:
+                    sampled_ids.extend(random.sample(normal_pool, normal_target))  # nosec B311
+                else:
+                    sampled_ids.extend(normal_pool)
+
+                if sampled_ids:
                     result = await db_session.execute(
                         select(Question).where(
                             Question.id.in_(sampled_ids),
-                            Question.is_active.is_(True),
-                        )
-                    )
-                    questions = result.scalars().all()
-                elif pool:
-                    result = await db_session.execute(
-                        select(Question).where(
-                            Question.id.in_(pool),
                             Question.is_active.is_(True),
                         )
                     )
@@ -1559,28 +1850,60 @@ class OSYMExamEngine:
                         f"({len(questions)}/{count}), filtre kaldırılıyor"
                     )
                     fallback_key = f"{exam_config.exam_type.value}:{subject}:all"
-                    fallback_pool = self._question_pool_cache.get(fallback_key)
-                    if fallback_pool is None:
-                        fb_result = await db_session.execute(
-                            select(Question.id).where(and_(*base_filters))
-                        )
-                        fallback_pool = [row[0] for row in fb_result.all()]
-                        if fallback_pool:
-                            self._question_pool_cache[fallback_key] = fallback_pool
+                    fb_anchor_key = f"{fallback_key}:anchor"
+                    fb_normal_key = f"{fallback_key}:normal"
 
-                    if len(fallback_pool) >= count:
-                        sampled_ids = random.sample(fallback_pool, count)
-                        fb_q = await db_session.execute(
-                            select(Question).where(
-                                Question.id.in_(sampled_ids),
-                                Question.is_active.is_(True),
+                    fb_anchor_pool = self._question_pool_cache.get(fb_anchor_key)
+                    fb_normal_pool = self._question_pool_cache.get(fb_normal_key)
+
+                    if fb_anchor_pool is None or fb_normal_pool is None:
+                        fb_result = await db_session.execute(
+                            select(Question.id, Question.is_anchor)
+                            .join(QuestionContent, QuestionContent.id == Question.id)
+                            .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                            .join(
+                                QuestionStatistics, QuestionStatistics.id == Question.id
                             )
+                            .where(and_(*base_filters))
                         )
-                        questions = fb_q.scalars().all()
-                    elif fallback_pool:
+                        fb_rows = fb_result.all()
+                        fb_anchor_pool = [row[0] for row in fb_rows if row[1] is True]
+                        fb_normal_pool = [row[0] for row in fb_rows if not row[1]]
+
+                        # H1 (#485): ana daldaki koruma ile ayni gerekce —
+                        # bos fallback havuzu 60 dakika boyunca cache'lenmez.
+                        if fb_rows:
+                            self._question_pool_cache[fb_anchor_key] = fb_anchor_pool
+                            self._question_pool_cache[fb_normal_key] = fb_normal_pool
+
+                    fb_sampled_ids = []
+                    # H2: kota kapali (ANCHOR_QUOTA_RATIO), ana dalla ayni.
+                    anchor_target = (
+                        max(1, round(count * self.ANCHOR_QUOTA_RATIO))
+                        if count >= 5 and self.ANCHOR_QUOTA_RATIO > 0
+                        else 0
+                    )
+                    normal_target = count - anchor_target
+
+                    if len(fb_anchor_pool) >= anchor_target:
+                        fb_sampled_ids.extend(
+                            random.sample(fb_anchor_pool, anchor_target)  # nosec B311
+                        )
+                    else:
+                        fb_sampled_ids.extend(fb_anchor_pool)
+                        normal_target += anchor_target - len(fb_anchor_pool)
+
+                    if len(fb_normal_pool) >= normal_target:
+                        fb_sampled_ids.extend(
+                            random.sample(fb_normal_pool, normal_target)  # nosec B311
+                        )
+                    else:
+                        fb_sampled_ids.extend(fb_normal_pool)
+
+                    if fb_sampled_ids:
                         fb_q = await db_session.execute(
                             select(Question).where(
-                                Question.id.in_(fallback_pool),
+                                Question.id.in_(fb_sampled_ids),
                                 Question.is_active.is_(True),
                             )
                         )
@@ -1630,7 +1953,11 @@ class OSYMExamEngine:
                 question_ids = list(session_data.answers.keys())
                 if question_ids:
                     result = await db_session.execute(
-                        select(Question.id, Question.correct_answer).where(
+                        # #485: correct_answer QuestionContent'te; id ana tabloda
+                        # kaldigi icin JOIN sart (iki tablodan da kolon seciliyor).
+                        select(Question.id, QuestionContent.correct_answer)
+                        .join(QuestionContent, QuestionContent.id == Question.id)
+                        .where(
                             Question.id.in_(question_ids),
                             Question.is_active.is_(True),
                         )
@@ -1691,17 +2018,21 @@ class OSYMExamEngine:
 
                     # --- times_asked / times_correct batch update ---
 
+                    # #485: times_asked / times_correct QuestionStatistics'e
+                    # tasindi. Ana tabloya yazan bir UPDATE yavru tabloyu
+                    # guncelleyemez — hedef, WHERE ve values'in ucu de
+                    # question_statistics olmali (PK paylasildigi icin id ayni).
                     if all_answered_ids:
                         await db_session.execute(
-                            update(Question)
-                            .where(Question.id.in_(all_answered_ids))
-                            .values(times_asked=Question.times_asked + 1)
+                            update(QuestionStatistics)
+                            .where(QuestionStatistics.id.in_(all_answered_ids))
+                            .values(times_asked=QuestionStatistics.times_asked + 1)
                         )
                     if correct_ids:
                         await db_session.execute(
-                            update(Question)
-                            .where(Question.id.in_(correct_ids))
-                            .values(times_correct=Question.times_correct + 1)
+                            update(QuestionStatistics)
+                            .where(QuestionStatistics.id.in_(correct_ids))
+                            .values(times_correct=QuestionStatistics.times_correct + 1)
                         )
 
                     await db_session.commit()
@@ -1713,8 +2044,10 @@ class OSYMExamEngine:
 
             empty_answers = total_questions - answered_questions
 
-            # Net hesaplama — ÖSYM 2023'ten itibaren 1/4 ceza kaldırıldı
-            net_score = float(correct_answers)
+            # ÖSYM neti TEK KAYNAKTAN: core/osym_puanlama.osym_net
+            # (eski satır `float(correct_answers)` idi ve yorumu YANLIŞTI —
+            #  1/4 cezası kaldırılmadı, 27 Ağu 2026'da operatör doğruladı)
+            net_score = osym_net(correct_answers, wrong_answers)
             raw_score = (
                 (correct_answers / total_questions) * 100 if total_questions > 0 else 0
             )
@@ -1943,15 +2276,32 @@ async def session_to_sinav_sonucu(session_id: str):
     exam_type_map = {"tyt": SinavTipi.TYT, "ayt": SinavTipi.AYT, "ydt": SinavTipi.YDT}
     sinav_tipi = exam_type_map.get(session.exam_config.exam_type.value, SinavTipi.TYT)
     subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
+    # B3: `KonuPerformansi.konu` artık DERS değil KONU adı taşır. Tek satır, üç
+    # kusuru birden kapatır — çünkü üçü de "etiket ayırt edici mi" sorusuna bağlıydı:
+    #  1) zayif/guclu ayrışır: aynı ders altındaki 13 kova tek 'matematik' etiketine
+    #     çöktüğü için aynı ders hem zayıf hem güçlü listesinde görünüyordu.
+    #  2) öneri metni benzersizleşir: advanced_reports.py:1528 etiket başına öneri
+    #     üretiyor; 13 birebir aynı öneri yerine konu başına 1 öneri çıkar.
+    #  3) ogretmen_service.py:210 `sinav_sayisi += 1` etiket başına sayıyor; tek
+    #     sınav 13 sınav görünmesi durur, sayaç konu başına 1 olur.
+    # Düz konu adı kullanılır (ders adıyla nitelenmez) — öneri metni doğal Türkçe
+    # okunmalı. `or sp.subject` yalnız topic_name boş/None ise devreye girer.
     konu_performanslari = [
         KonuPerformansi(
-            konu=sp.subject,
+            konu=sp.topic_name or sp.subject,
             toplam_soru=sp.total_questions,
             dogru_sayisi=sp.correct_answers,
             yanlis_sayisi=sp.wrong_answers,
             bos_sayisi=sp.empty_answers,
             basari_yuzdesi=sp.success_rate,
             ortalama_sure=sp.average_response_time,
+            # B3 FAZ 3: kimlik alanlari. `konu` KONU adi tasidigi icin ders
+            # kimligi ayrica tasinmali -- tuketici dizeyi ders SANMASIN.
+            # `topic_hierarchy.subject_area` KULLANILAMAZ: olculdu, NULL
+            # (MAT|Matematik||1). Ders kimligi yalniz question_metadata
+            # uzerinden gelir, o da motorda `sp.subject`tir (kucuk harf).
+            ders=sp.subject,
+            konu_kodu=sp.topic_code,
         )
         for sp in subject_perfs
     ]

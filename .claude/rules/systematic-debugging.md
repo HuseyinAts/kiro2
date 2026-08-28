@@ -3,6 +3,13 @@ name: systematic-debugging
 description: Sistematik hata ayiklama metodolojisi — phantom sorun ayiklama, kanit toplama, katmanli analiz
 trigger: always
 priority: high
+paths:
+  - "backend/**/*.py"
+  - "orchestrator/**/*.py"
+  - "docker/**"
+  - "docker-compose*.yml"
+  - "**/Dockerfile*"
+  - "backend/routers/loader.py"
 ---
 
 # Systematic Debugging Methodology

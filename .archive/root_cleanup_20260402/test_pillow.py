@@ -8,7 +8,7 @@ import io
 try:
     from PIL import Image, ImageDraw, ImageFont
     print(f"[OK] Pillow {Image.__version__} imported successfully")
-    
+
     # Create a test image
     img = Image.new('RGB', (100, 100), color='red')
     draw = ImageDraw.Draw(img)
@@ -22,22 +22,22 @@ except ImportError as e:
 try:
     import qrcode
     print(f"[OK] QRCode library imported successfully")
-    
+
     # Generate a test QR code
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data('KIRO2 Test QR Code')
     qr.make(fit=True)
-    
+
     # Create QR image using Pillow
     qr_img = qr.make_image(fill_color="black", back_color="white")
     print("[OK] QR code generated successfully")
-    
+
     # Save to bytes (simulating what happens in the app)
     buffer = io.BytesIO()
     qr_img.save(buffer, format='PNG')
     buffer.seek(0)
     print(f"[OK] QR code saved to buffer ({len(buffer.getvalue())} bytes)")
-    
+
 except ImportError as e:
     print(f"[ERROR] QRCode import failed: {e}")
     sys.exit(1)

@@ -28,7 +28,7 @@ export default function CATPage() {
   const [completedResults, setCompletedResults] = useState<Record<string, { theta: number; n: number }>>({});
 
   const handleComplete = (theta: number, _se: number, n: number) => {
-    if (!selectedSubject) return;
+    if (!selectedSubject) {return;}
     setCompletedResults(prev => ({
       ...prev,
       [selectedSubject.id]: { theta, n },

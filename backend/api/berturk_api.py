@@ -15,11 +15,14 @@ try:
 except (ImportError, TypeError):
     berturk_service = None
 
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
-
-_STAFF_CAN_TARGET_STUDENT = frozenset(
-    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+from core.dependencies import (
+    STUDENT_DATA_ACCESS_ROLES,
+    AuthenticatedUser,
+    UserRole,
+    get_current_user,
 )
+
+_STAFF_CAN_TARGET_STUDENT = STUDENT_DATA_ACCESS_ROLES
 _BERTURK_ADMIN_ROLES = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
 
 logger = logging.getLogger(__name__)

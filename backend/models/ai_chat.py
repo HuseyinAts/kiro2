@@ -5,7 +5,6 @@ Database models for enhanced chat system with image upload and OCR
 """
 
 from enum import Enum
-from uuid import uuid4
 
 from sqlalchemy import (
     Boolean,
@@ -24,6 +23,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -85,7 +85,14 @@ class ChatSession(Base):
 
     __tablename__ = "chat_sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Session info
@@ -125,10 +132,14 @@ class ChatSession(Base):
 
     # Relationships
     messages = relationship(
-        "ChatMessage", back_populates="session", cascade="all, delete-orphan"
+        "ChatMessage",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
     images = relationship(
-        "ImageUpload", back_populates="session", cascade="all, delete-orphan"
+        "ImageUpload",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
 
     # Indexes
@@ -154,7 +165,7 @@ class ChatMessage(Base):
 
     __tablename__ = "chat_messages"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(
         String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
@@ -215,7 +226,14 @@ class ImageUpload(Base):
 
     __tablename__ = "image_uploads"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     session_id = Column(
         String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
@@ -294,7 +312,7 @@ class SolutionStep(Base):
 
     __tablename__ = "solution_steps"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     message_id = Column(
         String,
         ForeignKey("chat_messages.id", ondelete="CASCADE"),
@@ -346,7 +364,14 @@ class ChatAnalytics(Base):
 
     __tablename__ = "chat_analytics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"))
 
     # Time period

@@ -8,9 +8,25 @@ import os
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from core.auth_dependencies import require_role
 from core.dependencies import AuthenticatedUser, get_current_user
 
 router = APIRouter(prefix="/api/v1/osym-inspired", tags=["OSYM-Inspired Generation"])
+
+# Bu modüldeki okuma uçları içerik-ÜRETİM aracıdır: gerçek ÖSYM sorularını
+# CEVAPLARIYLA birlikte döndürürler (few-shot prompt malzemesi).
+#
+# 28 Tem 2026 ÖLÇÜMÜ — hiçbir token/çerez olmadan:
+#   GET /examples/MATEMATIK?count=2 -> 200, data[0].correct_answer = 'C'
+#   GET /statistics                 -> 200, total_osym_questions = 110.858
+#   GET /style-guide/MATEMATIK      -> 200, 50 sorunun kök metin analizi
+#
+# Aynı dosyadaki /generate `Depends(get_current_user)` taşıyor; bu üçünde hiç
+# yoktu. Yani koruma unutulmuş, bilinçli bir "public" tasarım değil.
+#
+# Sadece oturum açmış olmak YETMEZ: öğrenciye açık bırakmak, kapatılan
+# sızıntının rol değiştirmiş hâli olurdu. Personel (öğretmen/admin) şartı.
+_STAFF_ONLY = Depends(require_role("teacher", "admin", "super_admin"))
 
 
 class OSYMInspiredRequest(BaseModel):
@@ -58,7 +74,11 @@ async def generate_osym_inspired_question(
 
 
 @router.get("/style-guide/{subject}")
-async def get_osym_style_guide(subject: str, exam_type: str = Query("TYT")) -> dict:
+async def get_osym_style_guide(
+    subject: str,
+    exam_type: str = Query("TYT"),
+    _: None = _STAFF_ONLY,
+) -> dict:
     """Get OSYM style guide for a subject."""
     try:
         from services.osym_inspired_generator import OSYMInspiredGenerator
@@ -83,7 +103,10 @@ async def get_osym_style_guide(subject: str, exam_type: str = Query("TYT")) -> d
 
 @router.get("/examples/{subject}")
 async def get_osym_examples(
-    subject: str, exam_type: str = Query("TYT"), count: int = Query(3, ge=1, le=10)
+    subject: str,
+    exam_type: str = Query("TYT"),
+    count: int = Query(3, ge=1, le=10),
+    _: None = _STAFF_ONLY,
 ) -> dict:
     """Get real OSYM questions as examples for few-shot prompting."""
     try:
@@ -109,7 +132,7 @@ async def get_osym_examples(
 
 
 @router.get("/statistics")
-async def get_training_statistics() -> dict:
+async def get_training_statistics(_: None = _STAFF_ONLY) -> dict:
     """Get OSYM question bank statistics."""
     try:
         from services.osym_inspired_generator import OSYMInspiredGenerator

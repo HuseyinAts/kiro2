@@ -886,7 +886,6 @@ class TestGetNearbyUsers:
         assert result["data"] == nearby_data
 
     async def test_manager_called_with_correct_args(self):
-        from uuid import UUID
 
         from api.gamification_api import get_nearby_users_in_leaderboard
 

@@ -38,15 +38,15 @@ export interface MasteryConfidenceBarProps {
 
 /** Return a semantic colour based on mastery level. */
 function getMasteryColor(mastery: number): string {
-  if (mastery >= 0.7) return '#4CAF50'; // green
-  if (mastery >= 0.3) return '#FF9800'; // amber
+  if (mastery >= 0.7) {return '#4CAF50';} // green
+  if (mastery >= 0.3) {return '#FF9800';} // amber
   return '#F44336'; // red
 }
 
 /** Muted variant of the mastery colour used for the CI band border. */
 function getMasteryColorMuted(mastery: number): string {
-  if (mastery >= 0.7) return 'rgba(76,175,80,0.25)';
-  if (mastery >= 0.3) return 'rgba(255,152,0,0.25)';
+  if (mastery >= 0.7) {return 'rgba(76,175,80,0.25)';}
+  if (mastery >= 0.3) {return 'rgba(255,152,0,0.25)';}
   return 'rgba(244,67,54,0.25)';
 }
 

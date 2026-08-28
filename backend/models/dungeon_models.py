@@ -21,6 +21,13 @@ class DungeonProgress(Base):
 
     user_id = Column(String, ForeignKey("users.id"), primary_key=True)
     topic_id = Column(String, ForeignKey("topic_hierarchy.id"), primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     attempt_count = Column(Integer, nullable=False, server_default="0")
     best_score = Column(Integer, nullable=False, server_default="0")
     last_score = Column(Integer, nullable=False, server_default="0")

@@ -48,7 +48,7 @@ export default function PomodoroPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchRoom = useCallback(async () => {
-    if (!roomId) return;
+    if (!roomId) {return;}
     try {
       const res = await pomodoro.getRoom(roomId);
       setRoom(res.data.room);
@@ -72,13 +72,13 @@ export default function PomodoroPage() {
       timerRef.current = setInterval(() => {
         setTimer(prev => {
           if (prev <= 1) {
-            if (timerRef.current) clearInterval(timerRef.current);
+            if (timerRef.current) {clearInterval(timerRef.current);}
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
-      return () => { if (timerRef.current) clearInterval(timerRef.current); };
+      return () => { if (timerRef.current) {clearInterval(timerRef.current);} };
     }
   }, [timer > 0]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -96,7 +96,7 @@ export default function PomodoroPage() {
   };
 
   const startWork = async () => {
-    if (!roomId) return;
+    if (!roomId) {return;}
     await pomodoro.updateStatus(roomId, 'working');
     setIsWork(true);
     setTimer((room?.work_minutes || 25) * 60);
@@ -104,7 +104,7 @@ export default function PomodoroPage() {
   };
 
   const startBreak = async () => {
-    if (!roomId) return;
+    if (!roomId) {return;}
     await pomodoro.updateStatus(roomId, 'on_break');
     setIsWork(false);
     setTimer((room?.break_minutes || 5) * 60);
@@ -112,7 +112,7 @@ export default function PomodoroPage() {
   };
 
   const completeRound = async () => {
-    if (!roomId) return;
+    if (!roomId) {return;}
     try {
       await pomodoro.completeRound(roomId);
       setError('');
@@ -123,7 +123,7 @@ export default function PomodoroPage() {
   };
 
   const leaveRoom = async () => {
-    if (!roomId) return;
+    if (!roomId) {return;}
     await pomodoro.updateStatus(roomId, 'left');
     setRoomId(null);
     setRoom(null);

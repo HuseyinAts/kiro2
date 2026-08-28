@@ -1,185 +1,117 @@
-# Audit Methodology
-
-Bu kural Faz 0.8 OCR truncation investigation (Session 156, 14 May 2026) sonrasi olusturuldu.
-Kok neden: Audit sample TSV'de `LEFT(question_text, 200)` ile yapay truncate edilmis metin,
-gercek OCR cut-off ile karistirildi. 50 sample audit'te %24 cut-off raporlandi, gercekte DB'de
-%2.15. Plan v1'de Faz 1.10 (re-OCR) scope ~5x asiriya tahmin edildi (~17K vs gercek ~3.6K).
-
+---
+name: audit-methodology
+description: Ölçüm disiplini — varsayımı ölçümden ayırma kuralları
 ---
 
-## Altın Kural
+# Ölçüm Disiplini
 
-**Audit sample TSV uretirken metin TRUNCATE ETME.**
+> **Her oturumda bağlama yükleniyor** (`paths:` frontmatter'ı yok). Bu yüzden yalnız
+> **kural** tutar. Her kuralın arkasındaki vaka, ölçüm çıktısı ve tarih:
+> **`docs/dersler/2026_olcum-hatalari-arsiv.md`** (1.022 satır, birebir korundu,
+> 20 Ağu 2026'da ayrıldı). Bir kuralı tartışmaya açmadan önce arşivdeki vakasını oku —
+> çoğu, tam tersi savunulduğu için oraya yazıldı.
 
-```sql
--- ❌ YANLIŞ — sample insan-okunurluk için truncate
-\copy (SELECT id, LEFT(question_text, 200) AS question_text, ...)
-       FROM question_bank ORDER BY md5(...) LIMIT 50
+## Altın kural
 
--- ✅ DOĞRU — full text export, sample size düşür
-\copy (SELECT id, question_text, ...)
-       FROM question_bank ORDER BY md5(...) LIMIT 30
+**İddia ≠ ölçüm.** Bir şeyi raporlamadan önce sor: *bu iddianın yanlış olduğunu
+gösterecek tek bir ölçüm var mı?* Varsa **onu yap**.
 
--- ✅ ALTERNATİF — preview + full birlikte
-\copy (SELECT id,
-              LEFT(question_text, 200) AS preview,
-              question_text AS full_text, ...)
-```
+Bu, sanılandan fazlasını kapsar. Hepsi bu depoda en az bir kez yanlış çıktı:
 
-**Sebep:** Truncated metin "OCR cut-off" gibi görünür. Audit yapan kişi
-(insan veya LLM) preview'i gerçek metin sanır. Yanlış teşhis → yanlış strateji → wasted effort.
-
----
-
-## Audit RAW TSV Üretim Kuralları
-
-### 1. Full text always
-
-Question text, option metinleri, OCR çıktıları → tam metin export et.
-Sample size'i düşürerek dosya boyutunu kontrol et (200 satır × 200 char ≈ 30 satır × full).
-
-### 2. Truncate gerekiyorsa AÇIKÇA İŞARETLE
-
-```sql
--- Eğer text uzunluğu >2000 ise readability için kısalt, ama belirt
-SELECT id,
-       CASE WHEN LENGTH(question_text) > 2000
-            THEN LEFT(question_text, 2000) || '...[TRUNCATED]'
-            ELSE question_text
-       END AS question_text,
-       LENGTH(question_text) AS original_text_len
-FROM question_bank
-```
-
-### 3. Audit sırasında DB'den re-verify
-
-Cut-off / OCR / incomplete şüphesi olduğunda **DB'yi doğrudan sorgula**:
-
-```sql
-SELECT id::text, LENGTH(question_text), RIGHT(question_text, 50)
-FROM question_bank
-WHERE id::text = '<suspicious_id>';
-```
-
-**Kural:** "Bu cut-off görünüyor" tahmin etme — DB'den `RIGHT(question_text, N)` ile doğrula.
-
----
-
-## Audit RESULT Yazım Kuralları
-
-### Sample-based istatistikleri evren-bazlı doğrulama
-
-Sample %24 cut-off → DB'de gerçekten %24 mi? Doğrula:
-
-```sql
-SELECT COUNT(*) FILTER (WHERE question_text !~ '[\?\.\!»"''\)\]\s]$') / COUNT(*)::float
-FROM question_bank WHERE is_active = TRUE;
-```
-
-Sample ile evren tutmuyorsa **sample bias var** veya **measurement error** — RESULT'a yaz.
-
-### Methodology bölümü zorunlu
-
-Her RESULT.md'nin başında:
-
-```markdown
-## Methodology
-
-- Sample SQL: [tam SQL veya dosya referansı]
-- Sample size: N
-- Sample selection: [random seed, stratified, vs]
-- Truncation: [yok / belirtilmiş / sınır]
-- Reproducible: [evet/hayır]
-```
-
----
-
-## Phantom Sorun Filtresi (audit context)
-
-Audit'te "X probleminin oranı %Y" raporlandığında ÖNCE:
-
-| Soru | Doğrulama yöntemi |
+| İddia türü | Onu çürütecek ölçüm |
 |---|---|
-| Sample mı evren mı? | Evren-level SQL ile spot check |
-| Sample bias var mı? | Stratified mi, random mi? Seed reproducible mi? |
-| Measurement artifact mı? | Audit script'i tek başına problem mi yaratıyor? |
-| TSV/JSON format truncation mı? | Ham veriyi DB'den re-verify et |
+| **Sayı** ("61K garble var") | Etiket satır-bazında sorgulanabiliyor mu? Sorgulanamıyorsa o sayı tahmindir |
+| **Severity** ("P0/acil", "güvenli", "temiz") | Sızmış anahtar hâlâ geçerli mi? Kapı gerçekten blokluyor mu? Atlatmayı DENE |
+| **Kök neden** ("sebebi şu dal") | Y'yi **kaldır** — X kayboluyor mu? Kaybolmuyorsa Y sebep değil (veya tek sebep değil) |
+| **Kalan iş** ("N erişim kaldı") | Sayaç AST tabanlı mı? Alias/yorum/kwarg görüyor mu? |
+| **Fix'in değeri** | Kaç bulgu değişiyor? **+0 ise fix yapılmaz** — hole'un varlığı kapatmak için gerekçe değil |
+| **Kapsam** ("bu kural şunu kapsar") | Kaç satıra dokunuyor? Bir kural 4.419'un **27**'sini kapsıyordu ve uyardığı kusuru üretiyordu |
 
-**Audit sonucu acil aksiyon planlanmadan önce:** evren-level doğrulama zorunlu.
+## Ölçüm aletini doğrula
 
----
+**Kontrol kolu bilinen sonucu vermiyorsa ölçüm bitmiştir — bulgu değil, alet arızası vardır.**
 
-## Varsayım ≠ Ölçüm (3 Haz 2026, garble efsanesi)
+- **Yanlış-SIFIR** bir ilerleme sayacında tek kabul edilemez hata türüdür: işi sessizce bitmiş gösterir.
+- Aracın çıktısını okumak, aracın **girdiyi değiştirmediği** anlamına gelmez (`pre-commit run` auto-fix yazar).
+- Bir aracın **yokluğu** değil **yavaşlığı** da sessiz boşaltır: `timeout=3`'e karşı **7,11 sn** soğuk `bash` spawn, hook'un tüm alanlarını boşalttı (20 Ağu 2026).
+- Beklenmedik "0 test / 0 bulgu" → önce **`pwd`**. Kabuk `cd`'si kalıcıdır.
+- Boru hattında **`$?` son halkayı** ölçer: `git commit … | tail` sonrası `$?` **0** görünür ama commit düşmüş olabilir. Çıkış kodunu ayrı değişkene al.
+- Bir deseni **anlatan yorum**, o deseni **içerir** — dedektör onu kusur sanar. Kusur aramadan önce yorumları at; bozuk görünen veriyi düzeltmeden önce **tüketicisine** bak (bir test onu *onarmak* için mi kullanıyor?).
 
-Bir sayı MEMORY/audit-doc'ta "toplam" olarak geçiyor diye **satır-bazında kanıt** sanma.
+## Örneklem ve rapor
 
-**Vaka:** "61K garble soru" 198 oturum boyunca tekrarlandı, plan kararlarını yönlendirdi.
-Ölçünce: `unverified=61,482` sadece **incelenmemiş** demekti — garble-yargılı değil.
-DB'de `student_coherent='false'` = **0 satır** (kör-yargı yalnız keep'leri işaretledi,
-drop nedenleri persist EDİLMEDİ). Yani "61K garble" hiç ölçülmemiş bir varsayımdı.
+- Audit örneği üretirken metni **TRUNCATE ETME** (yapay kesik, OCR cut-off sanılır). Örneklem boyutunu düşür.
+- Truncate şartsa `…[TRUNCATED]` + `original_len` ile **açıkça işaretle**.
+- Şüphe varsa **DB'den re-verify** et (`RIGHT(text, 50)`), gözle tahmin etme.
+- Örneklem istatistiğini **evren-bazlı** SQL ile doğrula. Tutmuyorsa bias veya ölçüm hatası var — RESULT'a yaz.
+- Her RESULT başında **Methodology**: örnek SQL · N · seçim/seed · truncation · reproducible mi.
+- **Hacim bir vekil ölçümdür.** 27.073 satır her invaryantı geçti, içerik **0/40** çıktı. Havuza dayanan işi "değer üretiyor" saymadan önce **örneklemi OKU**.
+- **Tek değerli bayrak yargı değil varsayımdır.** Dağılımı sorgula; tek değer = o yargı hiç yapılmadı.
+- **"Sürükleme var/yok" EVREN-BAĞIMLI bir iddiadır.** Hangi evrende ölçtüğünü YAZ.
 
-**Kural:** Bir kategoriyi (garble, figure-dependent, wrong-answer) "şu kadar var" diye
-kullanmadan önce, o etiketin **satır-bazında DB'de sorgulanabilir** olduğunu doğrula.
-Sorgulanamıyorsa o sayı bir tahmindir — "ölçülmedi" diye işaretle, aksiyona temel yapma.
+## Metrik / ucuz filtre uygulamadan önce
 
-> Karpathy bağı: "61K garble → re-OCR → Gemini-bloke → çıkmaz" ezberi 3 oturum üst üste
-> yazıldı. Kullanıcı itince ölçüm yapıldı, ezber çürüdü. **Ezbere kategori-sayısı yazma.**
+İki zorunlu test — geçemeyen metrikle **aksiyon alma**:
 
-## Metrik Doğrulama Gate (detector'a güvenmeden önce)
+1. **Bilinen-iyi vs bilinen-kötü** ayrımı yapıyor mu? Medyanlar çakışıyorsa metrik kördür.
+2. **Sentetik bozma**: temiz veriye bilinen hata enjekte et, skor yükselmeli.
 
-Bir ölçüm metriği (garble skoru, kalite skoru, benzerlik) uygulamadan ÖNCE
-**kendi doğrulamasını geçmeli.** Geçemezse o metrikle aksiyon ALMA.
+Ucuz deterministik filtreyle **içerik silerken** (Türkçe STEM'de yanlış-pozitif riski yüksek):
 
-İki zorunlu test:
+- **Pozitif kanıt** ara, yokluk değil ("İngilizce kelime VAR" ≠ "Türkçe karakter yok").
+- Türkçe karakter (ç/ğ/ı/ö/ş/ü) içereni silme listesinden **zorunlu çıkar**.
+- **Yargılanmamışı silme.** `unverified` = incelenmemiş; silmek varsayımdır. Yalnız **yargılanmış-kötü** silinir.
 
-1. **Bilinen-iyi vs bilinen-kötü ayrımı:** metrik, etiketli temiz seti (örn.
-   `student_coherent=true`) etiketli bozuk setten ayırıyor mu? Medyanlar çakışıyorsa
-   metrik kördür.
-2. **Sentetik bozma testi:** temiz veriye bilinen hata enjekte et (OCR char-swap,
-   l↔t/o↔e), skor YÜKSELMELİ. Yükselmiyorsa metrik o hataya duyarsız.
+## Şema göçü / sorgu değişikliği — 4 ölçüm (biri atlanırsa kusur sessizce girer)
 
-**Vaka:** word-DF "nadir-token" metriği DOĞRULAMA-1'i geçemedi (auto_judged_high garble
-skoru unverified'den yüksek — çünkü nadir=meşru özel ad/teknik terim). Atıldı.
-Char-trigram LM her iki testi de geçti (sentetik bozma 2.68→4.27), uygulandı.
-(`backend/scripts/quality/garble_char_lm.py`)
+1. Sorguyu **derle** (`compile(dialect=postgresql, literal_binds)`) — bazıları çalışma anında değil **kurulurken** patlar.
+2. Kartezyeni **`stmt.get_final_froms()`** ile say — metinsel virgül kontrolü alt-sorguya takılır.
+3. **WHERE iddiasını yalnız `stmt.whereclause`'da ara** — `select(Entity)` tüm kolonları SELECT'e koyar, filtre silinse bile dize tam SQL'de durur (mutasyon hayatta kalır).
+4. **Gerçek modele** karşı test yaz. `sys.modules` stub'lı test kırık kodda da yeşil kalır.
 
-## Ucuz Filtre Tuzağı (içerik silmeden önce)
+Yan kurallar:
 
-Deterministik ucuz kural (regex, sözlük-yokluğu, char-yokluğu) ile içerik silerken
-**geçerli içeriği yanlış-pozitif yakalama riski yüksektir.** Türkçe STEM özellikle.
+- Eager-load gerekliliğini sorgudan değil **tüketiciden** ölç: `select(Model.alan, …)` `Row` döner (risk yok); `select(Model)` + delege okuma async'te `MissingGreenlet`.
+- `.select_from()` **koşulludur**: SELECT listesi split-only ise zorunlu; `Model.id` de içeriyorsa süs (çivilenemez ağırlık ekleme).
+- Sayaç **sınıf düzeyini** sayar, **örnek düzeyini** görmez → çıktısı **alt sınırdır**.
+- `server_default` beyanı DDL'de **olmayabilir** — `information_schema.column_default` + kolonu **atlayan** INSERT ile ölç.
+- Alan taşırken biçimlendirici kullanılmayan import'u siler: **kullanımı önce yaz**, import'u sonra doğrula.
+- Uyumluluk katmanı (shim/strangler) kör noktasında **sessiz varsayılan dönmemeli**, yol gösteren hata vermeli — yoksa borç ölçülemez olur.
 
-**Vaka:** garble-tail'i silmek için 3 ucuz filtre denendi, her biri geçerli Türkçe'yi
-çöpe attı: word-DF (MmBb genotip), no-Türkçe-char ("olduguna gore" ASCII-Türkçe +
-"3-Metil-3-heksen" kimya), no-Türkçe-word ("Otozomal çekinik özelliği" biyoloji).
+## Test, mutasyon, bekçi
 
-**Kurallar:**
-- **Pozitif kanıt** ara, negatif yokluk değil. "Yabancı" = İngilizce/Romance kelime VAR,
-  "Türkçe-char yok" DEĞİL.
-- **Guard zinciri:** Türkçe karakter (ç/ğ/ı/ö/ş/ü) içereni silme listesinden ZORUNLU çıkar.
-- **Yargılanmamışı silme:** `unverified` (incelenmemiş) "işe yaramaz" sayılamaz — silmek
-  varsayımdır. Sadece **yargılanmış-kötü** (`rejected`, kör-judge drop) silinir.
-- Tail küçük + heterojense (geçerli + çöp karışık) → ucuz kuralı bırak, gözle/LLM-yargı.
+- **Test paketi de bir dilim ölçer.** Tek parametreyle (`MATEMATIK`) yazılmış test başka dalı (`TURKCE`) hiç koşmaz.
+- **"Göç ettin mi" ≠ "koruduğun mu"**: bir filtreyi taşıyan test, filtrenin **hâlâ etkili** olduğunu da assert etmeli (koşul **sayısı**, "sorgu kuruldu" değil).
+- **Mutasyon bir alettir ve o da yanılır:** `error` ise ölçüm **geçersiz** (syntax bozulmuş) · **hangi assert** öldürdü ve **tek başına** yük taşıyor mu? · mutasyon kümesinin **dokunmadığı dal = ölçülmemiş dal** · ankraj **tekil** mi? · mutasyonun **uygulandığını bağımsız ölç** (uygulayan komut sessizce reddedilmiş olabilir) · **commit SONRASI** koş — commit'siz iş mutasyona sokulmaz, geri alım onu siler.
+- **"Bu assert gereksiz" de bir iddiadır** — silmeden önce onu **tek başına** öldüren bir mutasyon ara.
+- **Bekçi haklı olabilir.** "Hep fantom" bir ölçüm değil. Ayırt edici tek soru: **bulgu benim bu turda yazdığım satırda mı?** Evetse SKIP tartışması yok.
+- **Bir kez geçmiş olmak güvenlik kanıtı değildir** — dedektör o biçimi görmemiş olabilir. Sır tespiti `grep` ile doğrulanır.
+- **Yorum CI'da düşmez.** Mesaj kaybolur → yorum silinir → yalnız **test** kalır. Yük taşıyan bilgiyi teste yaz.
 
----
+## Kapı (pre-commit) ve commit
 
-## İlişkili Kurallar
+- Kapıyı **depo kökünden** ölç (`cd <root> && pre-commit run --files …`); alt dizinden koşmak **farklı config** yükler.
+- **Aynı aracın üç sürümü var ve kapıyı en eskisi tutuyor** (kabuk + PostToolUse `ruff 0.14.13`, kapı **0.7.1**). "Biçim temiz" demeden önce **kapının sürümüyle** biçimlendir ve **sabit noktayı** doğrula. Kural iki yönde de ısırır: 0.7.1'de var olan `UP038`, 0.14.13'te **kaldırılmış**.
+- **`--amend` sessizce iptal olur** ve `git log` aynı hash'i gösterir → **hash'in değiştiğini** ölç.
+- **Exit 0 + yeni hash ≠ her şey girdi** → `git show --stat HEAD` ile **ne girdiğini** oku. Yarım commit'in artığı takipsiz gürültüde kaybolur; oturum sonunda **takipli-kirli** sayısını ölç.
+- **SKIP bir muafiyet değil, ölçülmüş bir ertelemedir.** Üçü de gerekli: (a) benim kodum temiz mi — kapının sürümüyle, (b) kontrol kolu — `git show HEAD:<dosya>`'da da var mı, (c) yaygınlık — sistemik mi. Ve SKIP **ayrı bir açık iş** olarak kaydedilir.
+- Kirli ağaçta **pathspec'siz `git stash` kullanma** → `git stash push -- <dosya>`.
+- Geçici düzenleme/mutasyonda **`read_bytes`/`write_bytes`** kullan: `write_text` CRLF'i çevirir ve `git status` dosyayı yanlışlıkla kirli gösterir. Aynı sebeple **çok satırlı ankraj CRLF içermeli** (LF ankraj CRLF dosyada eşleşmez).
+- Geri alım bir iddiadır: `git checkout HEAD -- <yol> && git status --short` → çıktı **boş** olmalı.
+- **"Ağaç kirli" süpürme gerekçesi değildir** — `git stash push -- <dosya>`yı DENE. Süpürme kaçınılmazsa davranış değiştirip değiştirmediğini **ölç** ve commit mesajına yaz.
 
-- `.claude/rules/systematic-debugging.md` — Phantom sorun filtresi (gercek/fake ayrimi)
-- `.claude/rules/debugging-first.md` — Root cause analysis tablosu
-- `.claude/rules/verification.md` — Boris Cherny verification standards
-- `.claude/rules/testing.md` — Lesson #31 (rejected+is_active=true servis sızıntısı)
+## Ortam (Windows / Git Bash)
 
----
+- Git Bash **mutlak yolu yeniden yazar**: `docker exec … /app/x` → `C:/Program Files/Git/app/x`. Container yolu içeren komuttan gelen "dosya yok" önce **yol dönüşümü** kontrolü ister → `MSYS_NO_PATHCONV=1`.
+- NTFS'te Türkçe `İ/ı/ğ` **NFC-NFD** farkı: bash `[ -f ]` var olan dosyaya "yok" der. Aynı soruyu **ikinci bir araca** sor (container'dan `os.path.isfile`).
+- Türkçe içerikli SQL: `psql -f dosya.sql` (inline `-c` `0xfe` hatası verir).
+- Bu depoda `git status` takipsiz taramayla **>60 sn** (528.651 crop PNG); `--untracked-files=no` ile **0,09 sn**.
+- Test DSN'i `DATABASE_URL`'e güvenemez — sessizce **sqlite'a düşer**. Postgres olmayan DSN'i **reddet + skip**.
+- **Grafiği sorduğun derleyici kadar görürsün**: `tsc` (tip) ≠ `vite build` (paketleyici) ≠ çalışma zamanı. Biri "temiz" dediğinde bitmiş sayma.
 
-## Bilinen Audit Methodology Hataları (referans)
+## İlişkili
 
-| Tarih | Audit | Hata | Fix |
-|---|---|---|---|
-| 14 May 2026 | C2 audit (Faz 0.2) | LEFT(question_text, 200) truncation | Sample size 30 LIMIT, full text |
-| 3 Haz 2026 | Garble efsanesi | "61K garble" = ölçülmemiş varsayım (unverified=incelenmemiş); word-DF metriği doğrulama geçemedi | Char-trigram LM (sentetik-bozma doğrulamalı); satır-bazında etiket şartı |
-| 3 Haz 2026 | Garble-tail silme | 3 ucuz filtre geçerli Türkçe STEM'i yanlış-pozitif sildi | Pozitif yabancı-kanıt + Türkçe-char guard |
-| ... | ... | ... | ... |
-
----
-
-*Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*
+`systematic-debugging.md` (phantom filtresi) · `debugging-first.md` (root cause tablosu) ·
+`verification.md` (doğrulama standartları) · `testing.md` (#31 servis sızıntısı) ·
+`.claude/lessons/ders_kaydi.yaml` (ders yaşam döngüsü) ·
+**`docs/dersler/2026_olcum-hatalari-arsiv.md`** (vaka kanıtları + tarihli hata tablosu)

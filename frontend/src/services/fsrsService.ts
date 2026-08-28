@@ -86,7 +86,7 @@ class FSRSService {
         credentials: 'include',
         body: JSON.stringify({ student_id: studentId, ...request }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
@@ -115,7 +115,7 @@ class FSRSService {
           response_ms: request.response_time_ms,
         }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       // Backend ReviewResponse döndürür ({question_id, new_stability, ...}), {success,data} değil
       return { success: true, data: data, message: 'OK' };
@@ -140,7 +140,7 @@ class FSRSService {
         method: 'GET',
         credentials: 'include',
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       // Backend düz array döndürür — {success,data} wrapper değil
       const items: any[] = await response.json();
       return {
@@ -166,7 +166,7 @@ class FSRSService {
         method: 'GET',
         credentials: 'include',
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
@@ -188,7 +188,7 @@ class FSRSService {
         method: 'GET',
         credentials: 'include',
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       // Backend StatsResponse döndürür ({total_cards, due_now, ...}), {success,data} değil
       const data = await response.json();
       return { success: true, data: data, message: 'OK' };
@@ -207,7 +207,7 @@ class FSRSService {
         credentials: 'include',
         body: JSON.stringify({ session_type: sessionType }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
@@ -223,7 +223,7 @@ class FSRSService {
         method: 'POST',
         credentials: 'include',
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
@@ -241,7 +241,7 @@ class FSRSService {
         credentials: 'include',
         body: JSON.stringify({ card_id: cardId, grade }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       return { success: data.success, data: data.data, message: data.message };
     } catch (error) {
@@ -254,7 +254,7 @@ class FSRSService {
   async healthCheck(): Promise<ApiResponse<any>> {
     try {
       const response = await fetch(`${this.baseUrl}/health`, { method: 'GET', credentials: 'include' });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {throw new Error(`HTTP error! status: ${response.status}`);}
       const data = await response.json();
       return { success: data.status === 'healthy', data, message: data.status };
     } catch (error) {

@@ -11,6 +11,7 @@ Background task infrastructure for:
 """
 
 import os
+from typing import ClassVar
 
 from celery import Celery
 from celery.schedules import crontab
@@ -34,6 +35,8 @@ celery_app = Celery(
         "tasks.social_tasks",
         "tasks.daily_plan_tasks",  # Günlük plan yenileme
         "tasks.push_tasks",  # Streak retention push (P0.1)
+        "tasks.quality_gate_tasks",  # mv_safe_for_beta yenileme
+        "tasks.es_sync_tasks",  # 04:00 ES ↔ kalite kapısı senkronu
     ],
 )
 
@@ -53,9 +56,19 @@ celery_app.conf.update(
         "tasks.bulk_tasks.*": {"queue": "bulk"},
         "tasks.claude_md_improvement_tasks.*": {"queue": "claude_md"},
         "tasks.mega_feature_tasks.*": {"queue": "features"},
+        "tasks.quality_gate_tasks.*": {"queue": "features"},
     },
+    # Rotası olmayan görevlerin varsayılan kuyruğu. Celery'nin kendi varsayılanı
+    # "celery"dir ve worker onu dinlemez (docker-compose: -Q default,emails,...),
+    # yani rotasız her görev sessizce çürürdü — 29 Tem 2026'da Redis'in "celery"
+    # kuyruğunda 3.367 tüketilmemiş mesaj ölçüldü. Sözleşme:
+    # tests/unit/test_celery_routing_contract.py
+    task_default_queue="default",
     # Task queues with priorities
     task_queues=(
+        Queue(
+            "default", Exchange("default"), routing_key="default", priority=5
+        ),  # task_default_queue hedefi — rotasız görevler buraya düşer
         Queue(
             "emails", Exchange("emails"), routing_key="email", priority=9
         ),  # High priority
@@ -107,6 +120,26 @@ celery_app.conf.update(
         "generate-weekly-reports": {
             "task": "tasks.report_tasks.generate_weekly_summary_report",
             "schedule": crontab(hour=9, minute=0, day_of_week=1),
+        },
+        # Kalite kapısı: mv_safe_for_beta gecelik yenileme (03:30).
+        # Asıl tetik küratör yargısıdır (tasks.quality_gate_tasks.
+        # schedule_safe_pool_refresh); bu yalnız emniyet ağı — offline demote
+        # script'leri uygulama dışından çalıştığı için tetiklenemiyor.
+        # 03:00 IRT kalibrasyonuyla çakışmasın diye 03:30.
+        "refresh-safe-pool-nightly": {
+            "task": "tasks.quality_gate_tasks.refresh_safe_pool",
+            "schedule": crontab(hour=3, minute=30),
+        },
+        # Arama index'ini kalite kapısıyla eşitle (04:00).
+        # SIRA KRİTİK: 03:30 matview yenilemesinden SONRA. Ters sıra bir gün
+        # eski havuzu indeksler.
+        # 31 Tem 2026'da ölçüldü: PG↔ES arasında hiç senkron yolu yoktu; index
+        # 1 Nis'ta tek toplu yüklemeyle yazılmış ve o günden beri hiç
+        # değişmemişti. Sonuç: ES'te 60.605 kayıt kapıdan geçmiyordu, kapıdaki
+        # 21.462 kayıt ise ES'te hiç yoktu.
+        "sync-search-index-nightly": {
+            "task": "tasks.es_sync_tasks.sync_search_index",
+            "schedule": crontab(hour=4, minute=0),
         },
         # Cache cleanup (every hour)
         "cleanup-expired-cache": {
@@ -192,13 +225,14 @@ celery_app.conf.update(
 
 
 # Task base class with common functionality
-class BaseTask(celery_app.Task):
+# `.Task` uygulama örneğine bağlı olarak çalışma anında üretilir; mypy statik olarak göremez.
+class BaseTask(celery_app.Task):  # type: ignore[name-defined]
     """Base task with retry and logging"""
 
     # Only retry transient failures — broad Exception retry causes non-recoverable
     # errors (bad data, validation errors) to waste retries before final failure
     autoretry_for = (ConnectionError, TimeoutError, OSError)
-    retry_kwargs = {"max_retries": 3, "countdown": 60}
+    retry_kwargs: ClassVar[dict[str, int]] = {"max_retries": 3, "countdown": 60}
     retry_backoff = True
     retry_backoff_max = 600
     retry_jitter = True

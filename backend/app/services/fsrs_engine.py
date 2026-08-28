@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 # ─── FSRS v6 sabit parametreleri (open-spaced-repetition/fsrs4anki'den) ───────
 # Bu ağırlıklar büyük ölçekli Anki verisiyle optimize edilmiştir.
@@ -63,6 +63,26 @@ FACTOR = 0.9 ** (1 / DECAY) - 1  # ≈ 0.8122
 
 MAX_INTERVAL_DAYS: int = 36_500  # 100 yıl — FSRS+ standardı
 MIN_INTERVAL_DAYS: int = 1
+
+# YKS sınav tarihi — ÖSYM oturumları haziranın ilk hafta sonunda.
+# Aynı varsayılan `app/api/learning_path_daily.py:125` içinde de kullanılıyor.
+YKS_AY: int = 6
+YKS_GUN: int = 7
+
+
+def yks_gun_kalan(bugun: date | None = None) -> int:
+    """Bugünden en yakın YKS tarihine kalan gün sayısı.
+
+    Bu yılınki geçtiyse (veya BUGÜNSE) gelecek yılınkine bakar; dolayısıyla
+    dönüş değeri **her zaman >= 1**. Sınav günü 0 dönmek, o gün için cap'i
+    etkisiz kılardı (U02'nin tam olarak kaçırdığı sınıf).
+    """
+    bugun = bugun or datetime.now(UTC).date()
+    hedef = date(bugun.year, YKS_AY, YKS_GUN)
+    if hedef <= bugun:
+        hedef = date(bugun.year + 1, YKS_AY, YKS_GUN)
+    return (hedef - bugun).days
+
 
 # Puan tanımları (Anki tarzı)
 PUAN_TEKRAR = 1  # Tekrar: hiç hatırlamadı
@@ -232,7 +252,12 @@ def _interval_from_stability(s: float, desired_r: float = 0.90) -> int:
 # ─── Ana FSRS güncelleme fonksiyonu ──────────────────────────────────────────
 
 
-def fsrs_update(state: FSRSState, puan: int, desired_r: float = 0.90) -> FSRSResult:
+def fsrs_update(
+    state: FSRSState,
+    puan: int,
+    desired_r: float = 0.90,
+    max_interval_days: int | None = None,
+) -> FSRSResult:
     """
     Bir tekrarı işle → yeni FSRS state döndür.
 
@@ -331,6 +356,17 @@ def fsrs_update(state: FSRSState, puan: int, desired_r: float = 0.90) -> FSRSRes
             interval = 1
     else:
         raise ValueError(f"Bilinmeyen durum: {state.state}")
+
+    # U02 — SINAV TARİHİ CAP'İ.
+    # `_interval_from_stability` yalnız MAX_INTERVAL_DAYS (100 yıl) ile clamp'liyor;
+    # ölçüldü (22 Ağu 2026): 5 ardışık PUAN_İYİ -> 194 gün, rep4 -> 6055 gün.
+    # YKS'den sonrasına planlanan tekrar öğrenci için değersizdir.
+    # Cap BURADA uygulanır çünkü dört dalın (ÖĞRENME/TEKRAR/YENİDEN/lapse)
+    # hepsi `interval`i tek noktada scheduled_days + due_date'e yazıyor.
+    # Dal yerine ternary: `fsrs_update` zaten PLR0912 sınırında (16>12);
+    # yeni bir `if` onu 17'ye çıkarırdı — mevcut ihlali kötüleştirmiyoruz.
+    cap = yks_gun_kalan() if max_interval_days is None else max_interval_days
+    interval = max(MIN_INTERVAL_DAYS, min(interval, cap))
 
     new.scheduled_days = interval
     new.elapsed_days = elapsed

@@ -1,0 +1,394 @@
+=== GATE2b OPUS VALIDATION — judge coherence: OK / GARBLE / FIGURE / DEGENERATE.
+
+#1 [COGRAFYA]
+  Q: Bir su kuyusu, tabanı dikdörtgen şeklindedir. Kuyunun tabanı dikdörtgen şeklinde, uzun kenarı 10 m, kısa kenarı 5 m ve yüksekliği 3 m'dir. Kuyunun içi tamamen dolu olduğunda suyun hacmi kaç m³'dür?
+  A) 150
+  B) 125
+  C) 100
+  D) 75
+  E) 50
+
+#2 [TARIH]
+  Q: Kurtuluş Savaşı sona erdikten sonra iç politikada rejim tartışmaları başlamıştır. Hangi rejimin nasıl uygulanacağı Meclis'te, aydınlar arasında ve sokakta tartışılmaya başlanmıştır. Ancak Mustafa Kemal bu tartışmaları bitirecek önemli bir gelişmeye öncülük etmiştir.
+Paragrafta sözü edilen rejim tartışmalarını sona erdiren gelişme aşağıdakilerden hangisidir?
+  A) Halifeliğin kaldırılması
+  B) Cumhuriyet'in ilanı
+  C) Saltanatın kaldırılması
+  D) TBMM'nin açılması
+  E) 1921 Anayasası'nın kabulü
+
+#3 [BIYOLOJI]
+  Q: Hücresel genetik operasyonlar arasında mevcut olan aşağıdaki işlemlerden hangileri doğrudur?
+  A) A) Dış çoğaltma
+  B) B) Genlerin aktif olmasına
+  C) C) Transkripsiyon ve translasyon
+  D) D) Genlerin mutasyonu nedeniyle mutasyonlar
+  E) E) Yalıtım
+
+#4 [EDEBIYAT]
+  Q: Divan şiirinde sanat ve hüner göstermek her ne kadar asıl amaçlardan olsa da sadece bunların ön planda tutulduğunu söylemek güçtür. Öne vücuda gelen sanılar; devrin inancı, tıkat, gelenek ve bilim gibi unsurlardan kuvvetle etkilenerek bu etkili şiirlerine türlü yönlerden yansıtılmıştır. Divan şiiri yansıyan bu tür etkilerden biri de eskilerin tabiriyle "ilmi tencini" denen kozmoğrafik leştirir. Kozmoğrafik unsurlar eski şairimizde kolaylıkla tespit edilm mümkün değildir. Bunun iki sebebi vardır: İlk, hen çok hem yeni dönemlerde divan şiirinde kozmoğrafik unsurlar, bu şiir geleneğinde geçen biçimde ele alan "gökbilim" ya da "tufat" adlı müstakil eserler olmamıştır. İkinci, kozmoğrafik kavram ve ifadelerin; çoğu kez teşbih, mecaz, incaye ve tevriye gibi edebi sanatların arkasına gizlenmesidir.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Divan şiirinde kozmoğrafik kavramlarının kullanılmasıyla ilgili eserlerin özellikle de sözcüklerin azlığı bugünün araştırmacıları için bir problemdir.
+  B) Divan şiirinde kullanılan kozmoğrafik kavramlarla sözliklerin olmamasının sebebi, kavramların o döneme aydınlan ve halk çevrelerinden zaten biliniyor olması olabilir.
+  C) Divan şiirinde edebi sanatların arkasına gizlenen söz konusu edilen kozmik unsurların varlığı şiirlerin anlatışını zorlaştırmaktadır.
+  D) Divan şiiri; tarihinde inanç, tıkat, gelenek, mitoloji ve çeşitli bilimlere ait pek çok sahadan kavram işleyen bir şiir geleneğidir.
+  E) Divan şairlerinin asıl gayesi, şiirde sözde ve manada sanat sergilemektir.
+
+#5 [MATEMATIK]
+  Q: 1. $x = 0$ olduğunda $y = x^2$ grafikinin hangi noktasında yer alır?
+  A) A) $(-1, 1)$
+  B) B) $(0, 0)$
+  C) C) $(1, 1)$
+  D) D) $(2, 4)$
+  E) E) $(3, 9)$
+
+#6 [TURKCE]
+  Q: Şiir, anlam ve anlatımıyla bir bütündür. Geçmişin günümüze gelebilecek şiir örnekleri; özgün düşünce ve düşünceye, evrensel konulara yer vermelerinin yanı sıra dilin gücünden ve anlatım özelliklerinden de yaralanıldık için yaşayabilmişlerdir. Şiir; güzel ve kalıcı yapısı yapan anlatım özelliklerinin başında şüphesiz doğal söyleyiş gelir. Bu doğal söyleyiş, o günün zamanlı konuşma dilinin anlamlı yollarından yararlanarak gerçekleştirilir. Konuşma dili, edebiyat ve kısa anlatımı etkileyici osarılır. Bu nedenle günlük konuşma dilinde içinde, kısa ve devrik cümleler, soru cümleleri kullanılır, deyime, kalıp ifadeler, hitap ya da seslenme kelimelerine yer verilir. Konuşma dilinde tonlama ve vurgu önemlidir. Öteden beri söz konusu bu unsurlardan şiirde kullanılmak konuşma dilini etkili, rahat, zorlamadan uzade söyleyiş; şiirin daha etkileyici, dolayısıyla kalıcı olmasını sağlamaktadır.
+
+Bu parçadan aşağıdakilerden hangisine ulaşılamaz?
+  A) Konuşmanın özelliklerinden olan vurgu ve tonlamaların şiire kullanımını şiire etkileyicilik ve ilgi çekicilik kazandırır.
+  B) Şiire etkileyicilik sağlayan unsurlardan biri de sade bir konuşma dilinin kullanılmasıdır.
+  C) Şiirdeki doğal söyleyiş, şiire ilgi çekicilik sağlarken birlikte bu durum bağımlılığı, düşme tehlikesi de içinde barındırır.
+  D) Şiirde zaman engelsiz aşarak günümüze kadar gelebilmenin yöntemi, özgün düşüncenin yanında dil ve anlatım özelliklerinden de ustaca yararlanmaktan geçmektedir.
+  E) Şiirde doğal söyleyiş, konuşma dilinin kısa ve etkileyici kullanımı ile sağlanır.
+
+#7 [COGRAFYA]
+  Q: Ülkemizin de içerisinde yer aldığı Akdeniz Havzası, küresel iklim değişikliğine karşı yerkürenin en hassas bölgelerinden birisidir. Akdeniz Havzası'nda gerçekleşecek 2°C'lik bir sıcaklık artışı, beklenmeyen hava olayları, sıcak hava dalgaları ve orman yangınlarının artışı gibi durumlar turizm gelirlerinde azalmaya neden olacaktır.
+Aşağıdakilerden hangisi iklim değişikliğinden daha fazla etkilenmesi beklenen turizm türüdür?
+  A) İnanç Turizmi
+  B) Mağara Turizmi
+  C) Kış Turizmi
+  D) Kongre Turizmi
+  E) Termal Turizm
+
+#8 [GEOMETRI]
+  Q: Soru: Bir dörtgenel ABCD, köşelerinin uzunlukları a, b, c, d ve köşegenlerinin uzunlukları p ve q olsun. Dörtgenelin alanı A olursa, A = (a + b)(c + d) / 2 eşitliği doğru mu?
+  A) Evet
+  B) Hayır
+  C) Bilmiyorum
+  D) Verilen bilgilere göre判断
+  E) Verilen bilgilere göre判断
+
+#9 [GENEL]
+  Q: 18. Sosyal medya kullanırken aşağıdaki durumlar hangisinde güvenli bir iletişim kurulabilir?
+  A) A) Sosyal medya hesabını paylaşmak
+  B) B) Kişisel bilgileri paylaşmak
+  C) C) Kişisel fotoğrafını paylaşmak
+  D) D) Kişisel mesajlar göndermek
+  E) E) Kişisel bilgileri paylaşmamak
+
+#10 [TURKCE]
+  Q: 7. Dünya tarihine baktığımızda ulusların geleceğini yönlendiren bütün büyük liderlerin sanat ve edebiyata yakın ilgilerine hatta bu alandaki uğraşlarına tanık oluruz. Ayrıca şurası bir gerçek ki sanatın gerekliliğine inanan ve bu bilinçle olan tüm önderlerin düşünce yapıtları demokrat ve ilerici nitelikler taşıdığına görürüz. Sanatın temelinde var olan insan sevgisini, hoşgörüyü, yaratma özgürlüğünü büyük önem veren bu liderler; sanatın gerekliliğine inanırken sanatçının da toplum içindeki saygınlığını ve önemini özdeş nitelikteki sözlerle yerli yerinde her zaman vurgulamışlardır.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Dünya tarihinde ulusların geleceğine yön veren bütün liderler sanat ve edebiyata meşgul olmuştur.
+  B) Sanat ve edebiyatı önemseyen büyük liderler genellikle ilerici ve demokrat özellikler taşımaktadır.
+  C) Kimi büyük liderler, sanat ve edebiyata ilgi göstermekle kalmayıp bu alanda uğraş da vermiştir.
+  D) Ulusların geleceğine yön veren büyük liderler, sanatın temelini oluşturan unsurlara göz ardı etmemişlerdir.
+  E) Dünyadaki bütün büyük liderler, sanatçının değerini bilmiş ve bunu kimi konuşmalarında dile getirmişlerdir.
+
+#11 [GEOMETRI]
+  Q: Bir çemberin çevresi 40 cm'dir. Bu çemberin iç çemberinin çevresi 30 cm'dir. Çemberin iç çemberinin yarıçapı kaç cm'dir?
+  A) 5 cm
+  B) 6 cm
+  C) 7 cm
+  D) 8 cm
+  E) 9 cm
+
+#12 [TURKCE]
+  Q: Bazı çocuklar için "Okumaya hevesi yok, kitaplara karşı ilgisiz." yorumlarını işitiriz. Harfleri ve sayıları ters yazan, yanlış seslendiren, yavaş ve heceleyerek okuyan çocuklar aslında bunu bilinçli yapmıyor; disleksi rahatsızlığı bu neden oluyor. Doktorlar, aileleri çocukların tembel ya da isteksiz olarak nitelenmeden önce bir uzmana başvurmasını gerektiği konusunda uyarıyor. Özel öğrenme güçlüğü adı altı olan ve "okuma bozukluğu" da denilen disleksi; harflerin ya da sayıların okunamaması, yanlış okunması, okuma hızında yavaşlık ve heceleyerek okuma şeklinde ortaya çıkabiliyor. Çocuğun bilerek okumadığı ya da isteksiz olduğu yönündeki yanlış algılar ise rahatsızlığın tanısının geç konulmasına neden oluyor.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Okuma konusunda çocukların tembel ve isteksiz davranışları karşısında ailelerin uzmanlardan görüş almaları gerekir.
+  B) Disleksi; harflerin ya da sayıların okunamaması, yanlış okunması, okuma hızında yavaşlık ve heceleyerek okuma şeklinde ortaya çıkabilir.
+  C) Rahatsızlığın tanısının geç konulmasının başlıca sebebi ailelerin yanlış algılarıdır.
+  D) Dislekside çocukların farklı yöntemlerle olsa öğrenme sorunu çözemeyeceği unutulmamalıdır.
+  E) Disleksi tedavisinde önemli noktaların başında erken tanı gelmektedir.
+
+#13 [SOSYAL]
+  Q: • Bedir Savaşında tutulan mevziyle ilgili sahabelerden biri;
+"Ey Allah'ın elçisi, Bedir köyünün sonundaki kuyu etrafında mevzi alalım, böylece putperestleri susuz bırakmış oluruz." demiş ve mevzi değiştirilmiştir.
+• Hz. Peygamber bir beyanda bulunduğunda, ashaptan;
+"Ey Allah'ın elçisi, bu sözler senin sözlerin midir yoksa Allah'ın ayetleri mi?" mealinde sorular yöneltilmiştir.
+Bu bilgilerden hareketle ulaşılabilecek en kapsamlı yargı aşağıdakilerden hangisidir?
+  A) Peygamber efendimiz zorba bir lider asla olmamıştır.
+  B) Peygamberimizin ortaya koyduğu bütün kural ve kararlar ilahi kaynaklıdır.
+  C) Peygamberimiz askerî kararlarda bazı komutanların görüşlerini dinlemiştir.
+  D) Peygamber efendimiz, istişare ve meşverete büyük önem veren bir önder ve örnek olmuştur.
+  E) Peygamberimizin bildirdiği her görüş, hadis olarak kaydedilmiş ve İslam'ın nass'ının iki parçasından birini teşkil etmiştir.
+
+#14 [MATEMATIK]
+  Q: 1. İkinci dereceden bir denklemin köklerinin toplamı 6 ve çarpımının 8 olduğunu biliyoruz. Bu denklemin genel formüllerini yazınız.
+  A) x^2 - 6x + 8 = 0
+  B) x^2 + 6x + 8 = 0
+  C) x^2 - 6x - 8 = 0
+  D) x^2 + 6x - 8 = 0
+  E) x^2 + 6x + 8 = 0
+
+#15 [MATEMATIK]
+  Q: f(x) = x^2 - 4 fonksiyonunun grafiğinin x = 1 eksenine göre simetriği bulunuz.
+  A) f(x) = x^2 + 4
+  B) f(x) = -x^2 + 4
+  C) f(x) = x^2 - 4
+  D) f(x) = x^2 + 4
+  E) f(x) = -x^2 - 4
+
+#16 [GEOMETRI]
+  Q: Analitik geometride verilen iki noktanın arasındaki uzaklık formülü nedir?
+  A) a^2 + b^2 = c^2
+  B) x^2 + y^2 = r^2
+  C) d = √((x2 - x1)^2 + (y2 - y1)^2
+  D) x = y
+  E) x + y = r
+
+#17 [TURKCE]
+  Q: (I) Balon çoğu kez kendi aralarında farklılıklar göstermektedir. (II) Günümüzde balonların ilk uçuşu 1800'lerde Michael Faraday tarafından icat edilmesine rağmen hayatta kalmayı ancak 1930'larda gerçekleştirebilmiştir. (III) Normal haldeki helyum gazı ile şişirilen reklam balonlarının bazıları helyum gazı ile şişirilip, bazılarında ise gaz kullanılmamıştır. (IV) Bunun sebebi ise balonların dikiliği üretilmesidir. (V) Sağlık alanlarından dolayı almak için kullanılan balonlardır.
+
+Bu parçadaki numaralanmış cümlelerden hangisi düşünce akışını bozmaktadır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#18 [TURKCE]
+  Q: Lev Nikolayevic Tolstoy, herkesce kabul gördüğü üzere Rus edebiyatının aşılması mümkün görünmeyen zirvesidir. Kişisel tarihiyle de yegâne bir noktada duran Tolstoy'un eserleri, özellikle karakterlerinin karmaşıklığı ruh hâlleri ve topluma yaşadıkları ikircikli ilişkilerle öne çıkar. Devasa boyutlardaki romanları, sıradan bir izlek üzerinden geçen metinler olmakla ziyade, ayrıntıları belirleyici olduğu benzersiz sanat eserleridir. Bir düzineyi bulan romanlarının yanı sıra, kısa hikâyeleri ve oyunlarıyla da bakışını okurla paylaşan yazar; dinsel ve politik görüşleriyle de döneminin düşünsel iklimine etki yapar. "Hristiyan anarşist" sözcüğü geliştirilen Tolstoy, "pasifist" yanıyla öne çıkan ve "Tolstoyculuk" olarak anılan bir akımı da kitleleri peşine takmayı başaran.
+
+Bu parçada Tolstoy ile ilgili aşağıdakilerden hangisi söylenemez?
+  A) Rus edebiyatının önemli yazarlarından biri olduğu
+  B) Roman dışındaki edebi türlerde de etkili ve çok okunan eserler ortaya koyduğu
+  C) Eserlerinin hacimli olduğu
+  D) Eserlerinde ayrıntıların ön plana çıktığı
+  E) Fikirleriyle etkilediği
+
+#19 [MATEMATIK]
+  Q: İki sayının toplamının ve farkının aynı olduğu durumlar hangileridir?
+  A) a + b = 0 ve a - b = 0
+  B) a + b = 0 ve a - b = 1
+  C) a + b = 1 ve a - b = 0
+  D) a + b = 1 ve a - b = 1
+  E) a + b = 0 ve a - b = 1
+
+#20 [TURKCE]
+  Q: Türkiye'nin içinde bulunduğu konum nedeniyle Türkiyegen yabancılara öğretimi ihtiyacı her geçen gün biraz da olsa artmaktadır. Bugün bu ihtiyaç gereği Türkiye'de bulunan yabancılar için gerekse dışarıda yaşayan Türkçe öğrenmek isteyen yabancılar için daha da bölgenleşmiştir. Bunun en önemli di olarak Türkçe öğretimine yönelik kaynak değiş aramaları ve incelemeler yapılmaktadır. Yabancı dil olarak Türkçe öğretimi, aynı bir disiplin olarak görülmesi ve bu alana kullanılacak bir eğitim programı hazırlanmalıdır. Türkiyegen yabancı dil olarak Türkçe öğretilmesine yönelik eğitimcilerin donanımlı olmasına ve verilen eğitimin çağdaş dünyadaki paralel yürütülmesine önem verilmelidir. Bu gün yabancı dil olarak Türkçe öğretiminde; geleneksel yöntemler bir kenara bırakılarak çağdaş yaklaşım, yöntem ve tekniklerin kullanımıyla uygun, doğal materyallerle zenginleştirilmiş ve kültürel unsurlarla desteklenmiş çok yönlü etkinlik ortamlarında gerçekleştirilmesi sağlanmalıdır.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Yabancılara Türkçe öğretimi konusunda araştırmalar yapıp eğitim programları oluşturulmalıdır.
+  B) Yabancılara Türkçe öğretiminin temel sorunlarından biri de bu eğitimi veren eğiticilerin yabancının dil seviyelerini iyi düzeyde olmamasıdır.
+  C) Gerek Türkiye'deki yabancılara Türkçe öğretimi gerekse farklı ülkelerde Türkçe öğretimine ait alanlarda yabancıların Türkçe öğrenme alanının son yıllarda önemini artmıştır.
+  D) Ülkemizdeki uygulamalara göz attığımızda Türkiyenin yabancı dili olarak öğretilmesinde bir yöntem sorunu fark edilmektedir.
+  E) Yabancılara Türkçe öğretiminde geleneksel yöntemler yerine çağdaş yöntemlerin tercih edilmesi Türkiyenin içinde bulunduğu durum itibariyle önemlidir.
+
+#21 [MATEMATIK]
+  Q: Bir sayı pozitif ise, o sayı negatif değildir. Bu ifade hangi ifadeyle ifade edilebilir?
+  A) a) |x| = x
+  B) b) x > 0
+  C) c) x < 0
+  D) d) x = 0
+  E) e) x ≠ 0
+
+#22 [TURKCE]
+  Q: Bir yazarın, şairin yazınsal yolculuğunda 'ilk'i oluşturması her zaman zorudur. Oysa yazardan iz taşımayan bir 'ilk metin' pek düşünülemez. Bundan şairin, yazarın kendi döneminde anlattığı anlatışmalı olabileceği ortaya çıkar. Oradan sözülenlerden o yazardan yaşayarak çıkarak bir anlatı kurmak- tır asıl olan. Bir anlatıcı bunu kurma çizgisine gelen birim- dir önemlidir. Çünkü her anlatıcı kendinden öncekilerin bıraktığı yerden başlayamıyabilir, bilmedir ki. Yinelemeleme- ler, taklitlere düşmekten öte bolbol kaçınılmazdır anlatıcı için. İşte bu yönü bağırdığından parçalanmış edebiyata taşır ki bu da bir zana sonra onun sanat çizgisiyi yükseltir. Çün- kü o başlama noktasında hayata ve yazıya dair söylediği şeyleri, elbette toplumun vicdanına çarpmak bulacaktır.
+
+Bu paragrafta anlatılanlardan yola çıkarak aşağıdakilerden hangisine ulaşılamaz?
+  A) Bir sanatçının yazınsal kumaşının niteliği ilk yapısında kendisini belli eder.
+  B) Sanatçı geçmişin birikimlerinden yarattığında yapıt- larının sanatsal değeri de zamanla yükselecektir.
+  C) Bir yazarın kendi tarzını bulması kolay değildir.
+  D) Sanatçı özgün olmak istiyorsa kendinden öncekileri iyi tanımalıdır.
+  E) Yazarlar kaleme aldıkları ilk ürünlerde kendi yaşamıla- rından yola çıkarlar.
+
+#23 [FIZIK]
+  Q: 1. Elektronik devrelerde kullanılan bazı elemanların isimleri ve işlevleri aşağıdaki gibidir. Hangi elemanın işlevi doğru olarak verilmemiştir?
+  A) A) Kondansatör - Enerji depolama
+  B) B) Diod - Direnç
+  C) C) Transistör - Kipçak
+  D) D) Optik sensör - Işık algılama
+  E) E) Amplifikatör - Güç放大器
+
+#24 [COGRAFYA]
+  Q: Çölleşme; kurak, yarı-kurak iklim bölgelerinde arazinin yağış alma, su tutma kapasitesinin azalması ve doğal bitki örtüsünün tahrip olarak toprak erozyonunun yaşanmasıdır. Kısacası çölleşme, toprağın susuz kalması ve çoraklaşmasıdır. Aşağıdakilerden hangisi çölleşmenin önlenmesi için yapılması gereken faaliyetlere örnek verilemez?
+  A) Arazi kullanım planlarının yapılması
+  B) Mera ve otlakların aşırı otlatmaya karşı korunması
+  C) Halkın çölleşme ile mücadele konusunda bilinçlendirilmesi
+  D) Bitki örtüsünün korunması ve ağaçlandırma çalışmalarının yapılması
+  E) Kurak bölgelerde yer altı sularını kullanarak sulamalı tarım yapılması
+
+#25 [TURKCE]
+  Q: Türkçe'de söyleyiş ile ilgili olarak birçok sorun bulunmaktadır. Bu sorunlar, çoğu zaman göz ardı edilmiş olup söyleyiş konusu kişisel eğilimlere bırakılmıştır. Bu yaklaşım ise söyleyişi tutarsızlıklarına yol açmıştır. Kişisel tercihler veya kitle etkileri, dilin söyleyişi ile ilgili ilkeler ve kurallarının tek başına belirleyicisi olamaz. Bu noktada söyleyişin dayanacağı kaynak çok sağlam kaynaktır ve belirlenmesi ihtiyaç vardır. İşte özeti, söyleyiş konusunda -tupi yazımda olduğu gibi- üstünde görüş birliğine varılmış bir ortak anlayış ve uygulama birlikteliği gidilmesi gerekir.
+
+Bu parçada asıl anlatılmak istenen aşağıdakilerden hangisidir?
+  A) Söyleyiş sorunlarını kalıcı ve sağlam olarak çözebilmek için Türkçenin ses, yapı ve anlam bilgisi göz önünde bulundurulmalıdır.
+  B) Türkçe söyleyiş, konuşma eylemi içinde geçen bireysel tercihlere dayalı gerçekleşen bir işlemdir.
+  C) Türkçenin söyleyişi konusunda ortak anlayış ve uygulama birlikteliğine gidilmesi gerekir.
+  D) Dillerin ortaya çıkışı dikkate alınırsa söyleyiş, yazılışı daha eski ve öncüldür.
+  E) Türkçe, birçok dünya dilinden farklı olarak söyleyişi ve yazılışı birbirine oldukça yakın bir dildir.
+
+#26 [MATEMATIK]
+  Q: Bir işteki işçilerin toplam sayısı 100'dür. Bu işteki işçilerin %20'si kadın işçilerdir. Bu işteki kadın işçilerin sayısı kaçtır?
+  A) 20
+  B) 25
+  C) 30
+  D) 35
+  E) 40
+
+#27 [TURKCE]
+  Q: 3. Glasgow Üniversitesinden Dr. Heather Woods ve Dr. Holly Scott, aşırı sürelerde ve özellikle geceleri sosyal medya aktif olan 467 genç üzerinde bir araştırma yaptılar. Burada, uyku kalitesi, kendine güven, kaygı, depresyon ve sosyal medyanın yarattığı duygusal kuşatmaya ilgili ileri psikolojik bir test yöntemi olarak kullanıldı. Katılımcılar 7/24 sosyal medya kullanıcılarıydı ve örneğin en ufak bir iletişim bile yanıt vermede kaygılanıyorlardı. Sonuçları değerlendiren Dr. Cieland Woods'a göre ergenlik dönemi, zaten depresyon başlangıcı ve kaygı bozukluğu gibi rahatsızlıklara hassas olan bir dönemdir. Sosyal medya kullanımının sıklığı ile bu hassasiyet arasındaki ilişki çok belirginir ve giderek artış göstermektedir. Analizlerde, aşırı sürelerle ve özellikle gece boyu sosyal medya kullanımıyla azalmış uyku kalitesiyle birlikte düşük öz güven, yüksek kaygılamada ve depresyon görülmektedir.
+
+Bu paragrafta sözü edilen araştırmanın amacı aşağıdakilerden hangisidir?
+  A) Ergenlik döneminin gençlerin kaygı düzeyi ve öz güvenleri üzerindeki etkisini gözlemlemek
+  B) Sürekli sosyal medya kullanan gençlerin başarı düzeylerini ölçmek
+  C) Gençlerde sosyal medya kullanımının sıklığı ile depresif davranışlarının ilişkisini görmek
+  D) Yüz faktörlerinin uyku düzeni üzerindeki etkisini tespit etmek
+  E) Yoğun sosyal medya kullanımının yaş düzeylerine olan etkilerini izlemek
+
+#28 [MATEMATIK]
+  Q: Türkiye'de 1961-1965 yılları arasında yapılan bir demografik araştırmasında, aşağıdaki veriler verildi:
+
+- 1961 yılında nüfus: 52.100.000
+- 1965 yılında nüfus: 56.000.000
+
+Bu dönemde nüfusun değişim oranı kaçtır?
+  A) 10%
+  B) 15%
+  C) 20%
+  D) 25%
+  E) 30%
+
+#29 [TURKCE]
+  Q: 1. Aşağıdaki cümlelerden hangisi cümle yapısında hata içermez?
+  A) a) Bu kitap, okuyuculara çok fayda sağlayacak.
+  B) b) Okuyucular bu kitap, çok fayda sağlayacak.
+  C) c) Bu kitap, çok fayda sağlayacak, okuyuculara.
+  D) d) Okuyuculara, bu kitap çok fayda sağlayacak.
+  E) e) Bu kitap, çok fayda sağlayacak, okuyuculara.
+
+#30 [MATEMATIK]
+  Q: 4. Rasyonel sayılarla ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) Rasyonel sayılar tam sayılarla birlikte sıralanabilir.
+  B) Rasyonel sayılar tam sayılarla birlikte sıralanamaz.
+  C) Rasyonel sayılar tam sayılarla birlikte sıralanabilir ve sıralanamaz.
+  D) Rasyonel sayılar tam sayılarla birlikte sıralanamaz ve sıralanabilir.
+  E) Rasyonel sayılar tam sayılarla birlikte sıralanamaz ve sıralanabilir.
+
+#31 [GEOMETRI]
+  Q: Soru 1: Bir dairesel tabanlı silindirin yüksekliği 10 cm ve taban çapı 6 cm'dir. Bu silindirin hacmini bulmak için hangi formül kullanılır?
+  A) V = πr^2h
+  B) V = πr^3h
+  C) V = πr^2h^2
+  D) V = πr^3h^2
+  E) V = πr^2h^3
+
+#32 [TARIH]
+  Q: 1. Aşağıdaki cümlelerden hangisinin tam olarak doğru bir cümle değildir?
+  A) A) Bir dörtgenin çevresi, kenar uzunluklarının toplamıdır.
+  B) B) Bir dikdörtgen dikdörtgen bir dörtgendir.
+  C) C) Bir dikdörtgenin çevresi, kenar uzunluklarının toplamıdır.
+  D) D) Bir dikdörtgenin alanı, kenar uzunluklarının toplamıdır.
+  E) E) Bir dikdörtgenin çevresi, kenar uzunluklarının toplamıdır.
+
+#33 [MATEMATIK]
+  Q: Polinomların köklerini bulmak için hangi yöntem kullanılır?
+  A) Köksel formül
+  B) Koordinat düzlemi
+  C) Koordinat eksenleri
+  D) Koordinat sistemi
+  E) Koordinat düzlemi
+
+#34 [GEOMETRI]
+  Q: ABC üçgenünde A açısının ölçüsü 100° olduguna göre, A açısının yarısı olan A/2 açısının ölçüsü kaç derecedir?
+  A) 50°
+  B) 40°
+  C) 30°
+  D) 20°
+  E) 10°
+
+#35 [TARIH]
+  Q: Soru: Aşağıdaki cümlelerden hangisi 'Modern Sosyal Bilimler' kavramını doğru tanımlar?
+  A) A) Felsefe ve siyaset bilgisi
+  B) B) Tarih ve siyaset bilgisi
+  C) C) Tıp ve siyaset bilgisi
+  D) D) Tıp ve felsefe bilgisi
+  E) E) Tıp ve ekonomi bilgisi
+
+#36 [MATEMATIK]
+  Q: 10. Sayılar sırası üzerinde aşağıdaki işlemlerden hangisi yapılamaz?
+  A) 1 + 2 = 3
+  B) 1 - 2 = -1
+  C) 1 × 2 = 2
+  D) 1 ÷ 2 = 0,5
+  E) 1² = 1
+
+#37 [GEOMETRI]
+  Q: ABC üçgenünde A açısının ölçüsü 60°, B açısının ölçüsü 45° ise C açısının ölçüsü kaç derecedir?
+  A) 75°
+  B) 85°
+  C) 90°
+  D) 105°
+  E) 120°
+
+#38 [FIZIK]
+  Q: Dalgaların mekaniksel hareketi ile ilgili olarak, aşağıdaki ifadelerden hangisi doğrudur?
+  A) Dalgaların hızı, dalganın uzunluğu ile doğrudan ilgilidir.
+  B) Dalgaların hızı, dalganın uzunluğu ile ters orantılıdır.
+  C) Dalgaların hızı, dalganın uzunluğu ile ilgili bir sabit katsayının etkisiyle değişmez.
+  D) Dalgaların hızı, dalganın uzunluğu ile ilgili bir sabit katsayının etkisiyle değişir.
+  E) Dalgaların hızı, dalganın uzunluğu ile ilgili bir sabit katsayının etkisiyle değişmez.
+
+#39 [MATEMATIK]
+  Q: Birinci dereceden bir denklemin köklerinin toplamı 3 ve çarpımının 2 olduğunu biliyoruz. Bu denklemin genel formüllerini yazınız.
+  A) x^2 - 3x + 2 = 0
+  B) x^2 + 3x + 2 = 0
+  C) x^2 - 3x - 2 = 0
+  D) x^2 + 3x - 2 = 0
+  E) x^2 + 3x + 2 = 0
+
+#40 [TURKCE]
+  Q: Avcılık ve toplayıcılıktan yerleşik hayata geçişişle, şehir devletleri ve imparatorlukların kurulması, siyasi, askeri ve ekonomik mücadeleler, antlaşmalar, bilimsel alandaki gelişmeler, dinlerin doğuşu ve yayılışı gibi insan ilgisinin yoğun olduğu birçok tarihî olayın incelenmesi gerekir. Tarihten geçmişten bugüne yaşanan olaylarla ilgilenmekle beraber bunları bütünüyle arastırıp incelemek ve anlaması mümkün değildir. O sebeple pek çok olay içinden kendi için anlamlı olanları seçmek zorundadır. Böylece genişçi bir olay ancak tarihi önemi taşıdıkça incelenmeye başlıdı ve zaman tarihi olay haline gelir. Bu bağlamda elbette yöntemin yanında, tercih edilen olaylar incelenen konuyu ne kadar iyi açıklığıyla ortaya o derece güzel bir eser çıkar.
+
+Bu parçadan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Tarih'in ilgi alanına insan yaşamı ile ilgili pek çok konu girer.
+  B) Tarih araştırmacıları, hem geçmişteki hem de gelecekteki olaylarla ilgilenmektedir.
+  C) Tarihçiler, olaylar içinden kendiliğinden seçtikleri çalışma mecburiyetinde kalmaktadır.
+  D) Geçmişte yaşanmış bir olay tarihinin o olayı incelemeyle başladığından itibaren tarihi olay kimliği kazanır.
+  E) İyi bir tarih araştırmasının ortaya çıkmasında konu seçimi ve metot önemlidir.
+
+#41 [MATEMATIK]
+  Q: 4. İncelemelerin sonucu göre karşılıklı değerlerin karşılaştırılması aşağıdaki gibi verilmiştir. Bu verilere göre, aşağıdaki eşleştirmelerden hangisi doğrudur?
+  A) A) 100 kg = 1000 g
+  B) B) 100 kg = 10000 g
+  C) C) 100 kg = 100000 g
+  D) D) 100 kg = 1000000 g
+  E) E) 100 kg = 10000000 g
+
+#42 [FIZIK]
+  Q: Ferdi elektronik cihazların kullanımı ve elektronik atık üretimi hakkında bilgi veren cümlelerden hangisi doğru?
+  A) Elektronik cihazların kullanımının artması, elektronik atık üretiminin azalmasına neden olur.
+  B) Elektronik cihazların kullanımının azalması, elektronik atık üretiminin azalmasına neden olur.
+  C) Elektronik cihazların kullanımının artması, elektronik atık üretiminin artmasına neden olur.
+  D) Elektronik cihazların kullanımının azalması, elektronik atık üretiminin artmasına neden olur.
+  E) Elektronik cihazların kullanımının artması, elektronik atık üretiminin azalmasına neden olur.
+
+#43 [GEOMETRI]
+  Q: 13. Bir eşkenar üçgenin her kenarının uzunluğu 6 cm ise, bu üçgenin çevresi kaç cm'dir?
+  A) 18 cm
+  B) 24 cm
+  C) 30 cm
+  D) 36 cm
+  E) 42 cm
+
+#44 [MATEMATIK]
+  Q: Bir konumda dönen bir nesnenin yörüngesi bir parabol şeklindedir. Bu parabolun denklemi aşağıdaki gibi verilmiştir: $y = ax^2 + bx + c$. Bu denklemin katsayıları $a$, $b$ ve $c$ olarak belirtilmiştir. Bu denklemin $x$ ekseni üzerindeki etrafı kesme noktaları $x_1$ ve $x_2$ olarak verilmiştir. Bu noktaların toplamı ve çarpanı nedir?
+  A) x_1 + x_2 = -b/a, x_1 * x_2 = c/a
+  B) x_1 + x_2 = b/a, x_1 * x_2 = -c/a
+  C) x_1 + x_2 = -b/a, x_1 * x_2 = -c/a
+  D) x_1 + x_2 = b/a, x_1 * x_2 = c/a
+  E) x_1 + x_2 = b/a, x_1 * x_2 = c/a
+
+#45 [MATEMATIK]
+  Q: 4. Aşağıdaki ifadelerden hangisi tüm karekök sayılar gösterir?
+  A) A) $\sqrt{2}$, $\sqrt{3}$, $\sqrt{5}$, $\sqrt{7}$
+  B) B) $\sqrt{2}$, $\sqrt{3}$, $\sqrt{5}$, $\sqrt{9}$
+  C) C) $\sqrt{2}$, $\sqrt{3}$, $\sqrt{5}$, $\sqrt{11}$
+  D) D) $\sqrt{2}$, $\sqrt{3}$, $\sqrt{5}$, $\sqrt{13}$
+  E) E) $\sqrt{2}$, $\sqrt{3}$, $\sqrt{5}$, $\sqrt{15}$

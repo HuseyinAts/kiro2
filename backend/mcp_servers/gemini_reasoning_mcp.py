@@ -6,8 +6,14 @@ Google Gemini 3 modelini MCP protokolü üzerinden sunar
 import os
 import sys
 
-import google.generativeai as genai
+from google import genai
 from fastmcp import FastMCP
+from dotenv import load_dotenv
+
+# Try to load environment variables from .env files
+load_dotenv(".env.local")
+load_dotenv(".env.development")
+load_dotenv(".env")
 
 # Initialize MCP server
 mcp = FastMCP("Gemini Reasoning Engine")
@@ -19,19 +25,9 @@ if not API_KEY:
     sys.exit(1)
 
 # Gemini yapılandırması
-genai.configure(api_key=API_KEY)
+client = genai.Client(api_key=API_KEY)
 
-# Model seçimi (Gemini 3 Pro veya fallback)
-try:
-    MODEL = genai.GenerativeModel("gemini-exp-1206")  # En yeni experimental model
-    print("✅ Gemini Experimental 1206 modeli yüklendi", file=sys.stderr)
-except Exception:
-    try:
-        MODEL = genai.GenerativeModel("gemini-2.0-flash-exp")
-        print("✅ Gemini 2.0 Flash Experimental modeli yüklendi", file=sys.stderr)
-    except Exception as e:
-        print(f"❌ Gemini model yüklenemedi: {e}", file=sys.stderr)
-        sys.exit(1)
+MODEL_NAME = "gemini-2.0-flash-exp"
 
 
 @mcp.tool()
@@ -74,7 +70,10 @@ async def gemini_reasoning_engine(
             )
 
         # Gemini'ye istek gönder
-        response = MODEL.generate_content(full_prompt)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=full_prompt
+        )
         result_text = response.text
 
         return f"🤖 Gemini Yanıtı:\n\n{result_text}"
@@ -111,7 +110,10 @@ Lütfen şunları analiz et:
 """
 
     try:
-        response = MODEL.generate_content(prompt)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt
+        )
         return f"🔍 Kod İncelemesi:\n\n{response.text}"
     except Exception as e:
         return f"❌ Hata: {e!s}"
@@ -143,7 +145,10 @@ Lütfen şunları değerlendir:
 """
 
     try:
-        response = MODEL.generate_content(prompt)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt
+        )
         return f"🏗️ Tasarım Analizi:\n\n{response.text}"
     except Exception as e:
         return f"❌ Hata: {e!s}"
@@ -175,7 +180,10 @@ Lütfen şunları kontrol et:
 """
 
     try:
-        response = MODEL.generate_content(prompt)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt
+        )
         return f"📋 Gereksinim Analizi:\n\n{response.text}"
     except Exception as e:
         return f"❌ Hata: {e!s}"
@@ -186,8 +194,11 @@ async def gemini_health() -> str:
     """Gemini servis sağlık kontrolü"""
     try:
         # Basit bir test isteği
-        response = MODEL.generate_content("Test")
-        return f"✅ Gemini servisi aktif. Model: {MODEL.model_name}"
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents="Test"
+        )
+        return f"✅ Gemini servisi aktif. Model: {MODEL_NAME}"
     except Exception as e:
         return f"❌ Gemini servisi kullanılamıyor: {e!s}"
 

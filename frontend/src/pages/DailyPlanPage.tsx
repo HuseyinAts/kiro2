@@ -87,13 +87,13 @@ export default function DailyPlanPage() {
     setLoading(true);
     setError('');
     Promise.all([
-      fetch(`${API}/today`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
-      fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
+      fetch(`${API}/today`, { credentials: 'include' }).then(r => { if (!r.ok) {throw new Error(`HTTP ${r.status}`);} return r.json(); }),
+      fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) {throw new Error(`HTTP ${r.status}`);} return r.json(); }),
     ])
       .then(([planData, statusData]) => {
-        if (planData.detail) setError(planData.detail);
-        else setPlan(planData);
-        if (Array.isArray(statusData)) setStatuses(statusData);
+        if (planData.detail) {setError(planData.detail);}
+        else {setPlan(planData);}
+        if (Array.isArray(statusData)) {setStatuses(statusData);}
       })
       .catch(() => setError('Sunucuya bağlanılamadı.'))
       .finally(() => setLoading(false));
@@ -108,17 +108,17 @@ export default function DailyPlanPage() {
   }, [fetchPlan]);
 
   const startActivity = (block: StudyBlock) => {
-    if (block.activity_type === 'cat') navigate('/cat');
-    else if (block.activity_type === 'fsrs_review') navigate('/fsrs-review');
-    else navigate('/cat');
+    if (block.activity_type === 'cat') {navigate('/cat');}
+    else if (block.activity_type === 'fsrs_review') {navigate('/fsrs-review');}
+    else {navigate('/cat');}
   };
 
-  if (loading) return (
+  if (loading) {return (
     <div style={styles.center}>
       <div style={styles.spinner} />
       <p style={{ color: '#94a3b8', marginTop: 16 }}>Plan hazırlanıyor…</p>
     </div>
-  );
+  );}
 
   return (
     <div style={styles.page}>

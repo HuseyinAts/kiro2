@@ -4,12 +4,12 @@ League Models
 LeagueMembership ve LeagueHistory modelleri — haftalik lig sistemi.
 """
 
-import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -20,7 +20,14 @@ class LeagueMembership(Base):
     __tablename__ = "league_memberships"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     league_tier: Mapped[str] = mapped_column(String(20), default="BRONZE")
@@ -46,7 +53,14 @@ class LeagueHistory(Base):
     __tablename__ = "league_history"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     week_start: Mapped[datetime] = mapped_column(

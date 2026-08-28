@@ -22,8 +22,14 @@ from fastapi.responses import FileResponse
 
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import session_to_sinav_sonucu
-from core.turkish_nlp_utils import normalize_tr
-from models import SinavSonucu, SinavTipi
+from core.turkish_nlp_utils import subject_db, subject_key
+
+# Aşağıdaki ignore bir ÖLÇÜM ALETİ artefaktıdır, kod kusuru değil: pre-commit
+# mypy depo KÖKÜNDEN koşuyor ve orada bir YOLO ağırlık klasörü (`kiro2/models/`,
+# sadece .pt dosyaları) var. `models` o namespace paketine çözülüyor → 0
+# attribute. Çalışma zamanında CWD=backend olduğu için gerçek `backend/models`
+# yükleniyor ve isimler `__all__`'da mevcut.
+from models import SinavSonucu, SinavTipi  # type: ignore[attr-defined]
 from services.irt_morfoloji_service import IRTMorfolojiService
 from services.learning_style_service import LearningStyleService
 from services.zpd_maarif_service import ZPDMaarifService
@@ -38,6 +44,9 @@ irt_morfoloji_service = IRTMorfolojiService()
 zpd_maarif_service = ZPDMaarifService()
 learning_style_service = LearningStyleService()
 pdf_generator = PDFReportGenerator()
+
+# Arka plan PDF görevlerine güçlü referans (bkz. generate_pdf_report / RUF006).
+_BACKGROUND_PDF_TASKS: set[asyncio.Task[None]] = set()
 
 
 def _mock_report_guard(endpoint_name: str) -> None:
@@ -94,19 +103,21 @@ async def get_advanced_exam_report(
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Sonuçları işle
-        irt_analizi = results[0] if not isinstance(results[0], Exception) else None
-        zpd_analizi = results[1] if not isinstance(results[1], Exception) else None
+        # Sonuçları işle. `return_exceptions=True` BaseException de döndürebilir
+        # (CancelledError vb.); `Exception` ile daraltmak onları veri sanıp rapora
+        # gömerdi — bu yüzden BaseException ile daraltılıyor.
+        irt_analizi = results[0] if not isinstance(results[0], BaseException) else None
+        zpd_analizi = results[1] if not isinstance(results[1], BaseException) else None
         ogrenme_stili_analizi = (
-            results[2] if not isinstance(results[2], Exception) else None
+            results[2] if not isinstance(results[2], BaseException) else None
         )
         osym_ets_karsilastirma = (
-            results[3] if not isinstance(results[3], Exception) else None
+            results[3] if not isinstance(results[3], BaseException) else None
         )
 
         # Hataları logla
         for i, result in enumerate(results):
-            if isinstance(result, Exception):
+            if isinstance(result, BaseException):
                 logger.error(f"Gelişmiş analiz hatası {i}: {result!s}")
 
         # Kapsamlı rapor oluştur
@@ -309,6 +320,7 @@ async def generate_pdf_report(
 
         # SRE Bulkhead: Run PDF generation in the custom PDF_POOL executor
         import asyncio
+
         from core.worker_pools import PDF_POOL
 
         async def generate_pdf_in_background():
@@ -318,12 +330,16 @@ async def generate_pdf_report(
                     PDF_POOL,
                     pdf_generator.generate_advanced_exam_report,
                     gelismis_rapor,
-                    pdf_filename
+                    pdf_filename,
                 )
             except Exception as e:
                 logger.error(f"Background PDF generation error: {e}")
 
-        asyncio.create_task(generate_pdf_in_background())
+        # RUF006: create_task'ın dönüşüne güçlü referans tut. Referanssız task
+        # event loop tarafından koşarken toplanabilir → PDF sessizce üretilmez.
+        task = asyncio.create_task(generate_pdf_in_background())
+        _BACKGROUND_PDF_TASKS.add(task)
+        task.add_done_callback(_BACKGROUND_PDF_TASKS.discard)
 
         return {
             "message": "PDF rapor oluşturuluyor",
@@ -370,51 +386,76 @@ async def download_pdf_report(
 # Yardımcı fonksiyonlar
 
 
-async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int]:
-    """Aggregate IRT params for a subject_area from question_bank.
+async def _get_irt_aggregate(
+    *, topic_code: str | None, ders: str | None
+) -> dict[str, float | int]:
+    """IRT toplami -- konu kodu varsa KONU bazli, yoksa DERSE duser.
 
-    S196 Day 2 helper. Returns AVG difficulty / discrimination / guessing and
-    a sample-size confidence proxy. Sample size < 10 → caller should fall back
-    to the per-question morfoloji service for that subject.
+    B3 FAZ 3 kok nedeni: silinen ikiz `_get_subject_irt_aggregate` yalniz DERS
+    adi kabul ediyor ve iceride `.upper()` yapiyordu. Konu adi gecirilince iki
+    sessiz kusur olusuyordu (ikisi de 21 Agu 2026'da canli DB'de olculdu):
+        "Kimyasal Denge" -> "KIMYASAL DENGE" -> 0 satir     (gercek 1262)
+        "Kimya"          -> "KIMYA"          -> 3531 satir  (gercek 263)
+    Ikincisi TEHLIKELI olan: sifir donmek gurultulu, YANLIS dersin verisini
+    donmek sessizdir. Sebep `topic_hierarchy`de level-1 KONU adinin DERS
+    adiyla cakismasi (KIM|Kimya, MAT|Matematik).
 
-    Cache (S196 Day 3 follow-up): Redis cache @ 1h TTL.
+    `topic_hierarchy.code` ASCII ve cakismasizdir -- ayirt edici anahtar odur.
 
-    Why cache instead of an index: The IRT aggregate query has %30 selectivity
-    on subject_area (e.g., MATEMATIK = 57K of 187K active rows). The PostgreSQL
-    planner ignores even a tailored partial INCLUDE index because Parallel Seq
-    Scan costs less than Bitmap Index Scan + heap fetch at this selectivity.
-    Adding 9MB of index storage that the planner refuses to use is waste.
-
-    IRT aggregates change only on Curator UPDATE (rare — daily at most), so a
-    1-hour cache TTL has near-zero staleness risk and turns 175ms cold queries
-    into <2ms cache hits. With 12 subject_areas, total cache footprint is ~3KB.
+    Eski ikiz `_get_subject_irt_aggregate` #515'te SILINDI (uretimde oluydu).
+    Onu civileyen `tests/fast/test_advanced_reports_split.py` da silindi;
+    invaryantlari once mutasyonla olculup `tests/fast/
+    test_irt_aggregate_topic_split.py`e tasindi -- ucu (ders dalinda
+    kartezyen, NULL varsayilanlari, cache-hit) orada KAPSANMIYORDU.
     """
     from sqlalchemy import func, select
 
     from core.cache import cache_manager
     from core.database import get_db_session_context
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import (
+        QuestionBankItem,
+        QuestionMetadata,
+        QuestionStatistics,
+        TopicHierarchy,
+    )
 
-    canonical = subject_area.upper()
-    cache_key = f"irt_aggregate:{canonical}"
+    if topic_code:
+        cache_key = f"irt_aggregate:topic:{topic_code}"
+    else:
+        cache_key = f"irt_aggregate:subject:{subject_db(ders) or ''}"
 
-    cached = await cache_manager.get(cache_key)
+    cached: dict[str, float | int] | None = await cache_manager.get(cache_key)
     if cached is not None:
         return cached
 
     async with get_db_session_context() as session:
+        # #485 split: irt_* QuestionStatistics'te, subject_area
+        # QuestionMetadata'da. SELECT listesinde yalniz QuestionStatistics
+        # kolonlari oldugu icin explicit select_from ZORUNLU -- yoksa
+        # SQLAlchemy sol tarafi o tablo sanip kendisine JOIN etmeye calisir
+        # ve sorgu CALISMA aninda degil KURULURKEN patlar.
         stmt = (
             select(
-                func.avg(QuestionBankItem.irt_difficulty).label("avg_difficulty"),
-                func.avg(QuestionBankItem.irt_discrimination).label(
+                func.avg(QuestionStatistics.irt_difficulty).label("avg_difficulty"),
+                func.avg(QuestionStatistics.irt_discrimination).label(
                     "avg_discrimination"
                 ),
-                func.avg(QuestionBankItem.irt_guessing).label("avg_guessing"),
+                func.avg(QuestionStatistics.irt_guessing).label("avg_guessing"),
                 func.count().label("sample_size"),
             )
-            .where(QuestionBankItem.subject_area == canonical)
+            .select_from(QuestionBankItem)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
             .where(QuestionBankItem.is_active.is_(True))
         )
+        if topic_code:
+            stmt = stmt.join(
+                TopicHierarchy,
+                TopicHierarchy.id == QuestionBankItem.primary_topic_id,
+            ).where(TopicHierarchy.code == topic_code)
+        else:
+            stmt = stmt.join(
+                QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+            ).where(QuestionMetadata.subject_area == subject_db(ders))
         row = (await session.execute(stmt)).one()
 
     result = {
@@ -423,7 +464,7 @@ async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int
         "avg_guessing": float(row.avg_guessing or 0.2),
         "sample_size": int(row.sample_size or 0),
     }
-    # 1h TTL — IRT params change only on Curator update (rare).
+    # 1h TTL — IRT parametreleri yalniz Curator guncellemesinde degisir.
     await cache_manager.set(cache_key, result, ttl=3600)
     return result
 
@@ -444,7 +485,11 @@ async def _get_irt_morfoloji_analizi_real(
     konu_perfs = temel_sonuc.konu_performanslari or []
 
     for konu_perf in konu_perfs:
-        agg = await _get_subject_irt_aggregate(konu_perf.konu)
+        # B3 FAZ 3: anahtar KONU KODU. `konu_perf.konu` gecirmek "Kimya"
+        # ornegindeki gibi YANLIS dersin 3531 satirini dondururdu.
+        agg = await _get_irt_aggregate(
+            topic_code=konu_perf.konu_kodu, ders=konu_perf.ders
+        )
         sample_n = agg["sample_size"]
         morfoloji_faktoru = (
             irt_morfoloji_service.get_subject_morphology_factor(konu_perf.konu)
@@ -680,6 +725,9 @@ async def _get_zpd_analizi_real(
         konu_zpd_analizleri.append(
             {
                 "konu": konu_perf.konu,
+                # B3 FAZ 3: agirlik = kovadaki soru sayisi. Genel profil
+                # ortalamasi bununla kovalama-DEGISMEZ hale gelir.
+                "agirlik": konu_perf.toplam_soru,
                 "mevcut_seviye": zpd.mevcut_seviye,
                 "alt_sinir": zpd.alt_sinir,
                 "ust_sinir": zpd.ust_sinir,
@@ -731,18 +779,15 @@ async def _get_zpd_analizi_real(
                 }
             )
 
-    n = len(konu_zpd_analizleri)
     return {
         "konu_zpd_analizleri": konu_zpd_analizleri,
         "genel_zpd_profili": {
-            "ortalama_mevcut_seviye": sum(
-                z["mevcut_seviye"] for z in konu_zpd_analizleri
-            )
-            / n,
-            "ortalama_optimal_zorluk": sum(
-                z["optimal_zorluk"] for z in konu_zpd_analizleri
-            )
-            / n,
+            "ortalama_mevcut_seviye": _agirlikli_ortalama(
+                konu_zpd_analizleri, "mevcut_seviye"
+            ),
+            "ortalama_optimal_zorluk": _agirlikli_ortalama(
+                konu_zpd_analizleri, "optimal_zorluk"
+            ),
             "kulturel_uyum_seviyesi": "yuksek",
             "maarif_degerleri_uyumu": "iyi",
         },
@@ -779,6 +824,8 @@ async def _get_zpd_analizi_mock(
             # ZPD aralığını hesapla (mock)
             zpd_araligi = {
                 "konu": konu_performansi.konu,
+                # B3 FAZ 3: real yolla ayni sozlesme (schema parity).
+                "agirlik": konu_performansi.toplam_soru,
                 "mevcut_seviye": konu_seviye,
                 "alt_sinir": max(0, konu_seviye - 0.5),
                 "ust_sinir": min(10, konu_seviye + 1.5),
@@ -836,14 +883,12 @@ async def _get_zpd_analizi_mock(
         return {
             "konu_zpd_analizleri": konu_zpd_analizleri,
             "genel_zpd_profili": {
-                "ortalama_mevcut_seviye": sum(
-                    z["mevcut_seviye"] for z in konu_zpd_analizleri
-                )
-                / len(konu_zpd_analizleri),
-                "ortalama_optimal_zorluk": sum(
-                    z["optimal_zorluk"] for z in konu_zpd_analizleri
-                )
-                / len(konu_zpd_analizleri),
+                "ortalama_mevcut_seviye": _agirlikli_ortalama(
+                    konu_zpd_analizleri, "mevcut_seviye"
+                ),
+                "ortalama_optimal_zorluk": _agirlikli_ortalama(
+                    konu_zpd_analizleri, "optimal_zorluk"
+                ),
                 "kulturel_uyum_seviyesi": "yuksek",
                 "maarif_degerleri_uyumu": "iyi",
             },
@@ -903,18 +948,9 @@ async def _get_hibrit_ogrenme_stili_analizi_real(
 
     performans_uyumu = []
     for konu_perf in temel_sonuc.konu_performanslari:
-        konu_norm = normalize_tr(konu_perf.konu)
-        if "matematik" in konu_norm:
-            uyum_skoru = (
-                vark_profili["visual"]
-                + abs(felder_silverman_profili["sequential_global"])
-            ) / 2
-        elif "türkçe" in konu_norm:
-            uyum_skoru = (
-                vark_profili["reading"] + abs(felder_silverman_profili["visual_verbal"])
-            ) / 2
-        else:
-            uyum_skoru = sum(vark_profili.values()) / 4
+        uyum_skoru = _ders_uyum_skoru(
+            konu_perf.ders, vark_profili, felder_silverman_profili
+        )
 
         performans_uyumu.append(
             {
@@ -1020,19 +1056,10 @@ async def _get_hibrit_ogrenme_stili_analizi_mock(
         performans_uyumu = []
 
         for konu_performansi in temel_sonuc.konu_performanslari:
-            # Konu tipine göre öğrenme stili uyumu hesapla
-            if "matematik" in normalize_tr(konu_performansi.konu):
-                uyum_skoru = (
-                    vark_profili["visual"]
-                    + abs(felder_silverman_profili["sequential_global"])
-                ) / 2
-            elif "türkçe" in normalize_tr(konu_performansi.konu):
-                uyum_skoru = (
-                    vark_profili["reading"]
-                    + abs(felder_silverman_profili["visual_verbal"])
-                ) / 2
-            else:
-                uyum_skoru = sum(vark_profili.values()) / 4
+            # Ders kimligine gore ogrenme stili uyumu (B3 FAZ 3)
+            uyum_skoru = _ders_uyum_skoru(
+                konu_performansi.ders, vark_profili, felder_silverman_profili
+            )
 
             performans_uyumu.append(
                 {
@@ -1117,14 +1144,14 @@ async def _get_osym_ets_karsilastirmasi_real(
     — a different domain than exam-level IRT benchmark comparison. Forcing
     it would break frontend contract. See S196 Day 3 design discussion.
     """
-    osym_standartlari = {
+    osym_standartlari: dict[str, Any] = {
         "ayirt_edicilik_min": 0.3,
         "ayirt_edicilik_ideal": 1.0,
         "zorluk_araligi": (-2.0, 2.0),
         "sans_faktoru_max": 0.25,
         "guvenilirlik_min": 0.8,
     }
-    ets_standartlari = {
+    ets_standartlari: dict[str, Any] = {
         "ayirt_edicilik_min": 0.4,
         "ayirt_edicilik_ideal": 1.2,
         "zorluk_araligi": (-2.5, 2.5),
@@ -1137,7 +1164,7 @@ async def _get_osym_ets_karsilastirmasi_real(
         total_weight = 0
         wsum_disc = wsum_diff = wsum_guess = 0.0
         for kp in konu_perfs:
-            agg = await _get_subject_irt_aggregate(kp.konu)
+            agg = await _get_irt_aggregate(topic_code=kp.konu_kodu, ders=kp.ders)
             w = max(1, kp.toplam_soru)  # weight by # of questions in this konu
             wsum_disc += agg["avg_discrimination"] * w
             wsum_diff += agg["avg_difficulty"] * w
@@ -1160,7 +1187,7 @@ async def _get_osym_ets_karsilastirmasi_real(
             "morfoloji_avantaji": 0.15,
         }
 
-    osym_karsilastirma = {
+    osym_karsilastirma: dict[str, Any] = {
         "ayirt_edicilik_durumu": _karsilastir_parametre(
             sinav_parametreleri["ortalama_ayirt_edicilik"],
             osym_standartlari["ayirt_edicilik_min"],
@@ -1176,7 +1203,7 @@ async def _get_osym_ets_karsilastirmasi_real(
         ),
         "genel_uyum_skoru": 0.0,
     }
-    ets_karsilastirma = {
+    ets_karsilastirma: dict[str, Any] = {
         "ayirt_edicilik_durumu": _karsilastir_parametre(
             sinav_parametreleri["ortalama_ayirt_edicilik"],
             ets_standartlari["ayirt_edicilik_min"],
@@ -1242,7 +1269,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
     """ÖSYM/ETS karsilastirma — mock path (S180 fallback)."""
     try:
         # ÖSYM standartları
-        osym_standartlari = {
+        osym_standartlari: dict[str, Any] = {
             "ayirt_edicilik_min": 0.3,
             "ayirt_edicilik_ideal": 1.0,
             "zorluk_araligi": (-2.0, 2.0),
@@ -1251,7 +1278,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
         }
 
         # ETS standartları
-        ets_standartlari = {
+        ets_standartlari: dict[str, Any] = {
             "ayirt_edicilik_min": 0.4,
             "ayirt_edicilik_ideal": 1.2,
             "zorluk_araligi": (-2.5, 2.5),
@@ -1269,7 +1296,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
         }
 
         # ÖSYM karşılaştırması
-        osym_karsilastirma = {
+        osym_karsilastirma: dict[str, Any] = {
             "ayirt_edicilik_durumu": _karsilastir_parametre(
                 sinav_parametreleri["ortalama_ayirt_edicilik"],
                 osym_standartlari["ayirt_edicilik_min"],
@@ -1287,7 +1314,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
         }
 
         # ETS karşılaştırması
-        ets_karsilastirma = {
+        ets_karsilastirma: dict[str, Any] = {
             "ayirt_edicilik_durumu": _karsilastir_parametre(
                 sinav_parametreleri["ortalama_ayirt_edicilik"],
                 ets_standartlari["ayirt_edicilik_min"],
@@ -1377,6 +1404,49 @@ def _serialize_temel_sonuc(sonuc: SinavSonucu) -> dict[str, Any]:
     }
 
 
+def _agirlikli_ortalama(kayitlar: list[dict], alan: str) -> float:
+    """Soru-agirlikli ortalama -- kova SAYISINDAN bagimsiz.
+
+    B3 FAZ 3: onceki bicim `sum(...) / len(kayitlar)` idi. Kova kardinalitesi
+    1 -> 13 olunca ortalama sessizce kaydi (olculdu: +9,91 puan). Agirlikli
+    bicim ayni veriyi hangi kovalamayla verirsen ver AYNI sonucu uretir --
+    yani bir SONRAKI kardinalite degisiminde de kaymaz.
+
+    `agirlik` = o kovadaki soru sayisi. Toplam agirlik 0 ise 0.0 (sifira
+    bolme AYRI bir kaynaktir: `len(kayitlar) > 0` iken de olusabilir).
+    """
+    toplam_agirlik = sum(float(k.get("agirlik", 0)) for k in kayitlar)
+    if not toplam_agirlik:
+        return 0.0
+    return sum(float(k[alan]) * float(k.get("agirlik", 0)) for k in kayitlar) / (
+        toplam_agirlik
+    )
+
+
+def _ders_uyum_skoru(
+    ders: str | None, vark: dict[str, float], felder: dict[str, float]
+) -> float:
+    """Ogrenme stili uyum skoru -- DERS kimligine gore dallanir.
+
+    B3 FAZ 3: onceki bicim `if "matematik" in normalize_tr(kp.konu)` idi ve
+    iki sebeple kirilgandi:
+      1) `konu` B3'ten sonra KONU adi tasiyor -> dal hic girilmiyordu (olu).
+      2) `normalize_tr` bir SUBJECT IDENTIFIER'a uygulanmamali: Turkce locale
+         I->i donusumu yapar (`.claude/rules/case-convention.md` yasagi).
+    Kimlik artik `ders` alanindan gelir ve `subject_key` ile kanonlanir.
+
+    Kanon kume OLCULDU (21 Agu 2026): {KIMYA, MATEMATIK} -- ASCII. Turkce
+    dersi kanonda 'TURKCE' bicimindedir; eski koddaki Turkce harfli dize
+    hicbir zaman eslesemezdi.
+    """
+    anahtar = subject_key(ders)
+    if anahtar == "matematik":
+        return (vark["visual"] + abs(felder["sequential_global"])) / 2
+    if anahtar == "turkce":
+        return (vark["reading"] + abs(felder["visual_verbal"])) / 2
+    return sum(vark.values()) / 4
+
+
 def _get_onerilen_ogrenme_yontemi(konu: str, vark: dict, felder: dict) -> str:
     """Konu ve öğrenme stiline göre önerilen yöntem"""
     if vark["visual"] > 0.7:
@@ -1444,9 +1514,9 @@ def _karsilastir_sans_faktoru(deger: float, maksimum: float) -> dict[str, Any]:
     return {"durum": durum, "skor": skor, "deger": deger}
 
 
-def _hesapla_genel_uyum_skoru(karsilastirma: dict) -> float:
+def _hesapla_genel_uyum_skoru(karsilastirma: dict[str, Any]) -> float:
     """Genel uyum skorunu hesapla"""
-    skorlar = [
+    skorlar: list[float] = [
         karsilastirma["ayirt_edicilik_durumu"]["skor"],
         karsilastirma["zorluk_durumu"]["skor"],
         karsilastirma["sans_faktoru_durumu"]["skor"],
@@ -1490,9 +1560,9 @@ def _generate_improvement_suggestions(osym: dict, _: dict, params: dict) -> list
 async def _generate_personalized_recommendations(
     ogrenci_id: str,
     temel_sonuc: SinavSonucu,
-    irt_analizi: dict,
-    zpd_analizi: dict,
-    ogrenme_stili_analizi: dict,
+    irt_analizi: dict[str, Any] | None,
+    zpd_analizi: dict[str, Any] | None,
+    ogrenme_stili_analizi: dict[str, Any] | None,
 ) -> list[dict[str, Any]]:
     """Kişiselleştirilmiş öneriler oluştur"""
     oneriler = []
@@ -1636,7 +1706,10 @@ async def _get_performance_trend_mock(
 
 
 async def _generate_development_suggestions(
-    ogrenci_id: str, temel_sonuc: SinavSonucu, irt_analizi: dict, zpd_analizi: dict
+    ogrenci_id: str,
+    temel_sonuc: SinavSonucu,
+    irt_analizi: dict[str, Any] | None,
+    zpd_analizi: dict[str, Any] | None,
 ) -> list[str]:
     """Gelişim önerileri oluştur"""
     oneriler = []

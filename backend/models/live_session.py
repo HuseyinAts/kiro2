@@ -6,7 +6,6 @@ Database models for video conferencing, screen sharing, whiteboard, and recordin
 
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
 
 from sqlalchemy import (
     ARRAY,
@@ -24,6 +23,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -111,7 +111,7 @@ class LiveSession(Base):
 
     __tablename__ = "live_sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
 
     # Basic Information
     title = Column(String(255), nullable=False)
@@ -181,19 +181,29 @@ class LiveSession(Base):
 
     # Relationships
     participants = relationship(
-        "SessionParticipant", back_populates="session", cascade="all, delete-orphan"
+        "SessionParticipant",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
     recordings = relationship(
-        "SessionRecording", back_populates="session", cascade="all, delete-orphan"
+        "SessionRecording",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
     whiteboard_sessions = relationship(
-        "WhiteboardSession", back_populates="session", cascade="all, delete-orphan"
+        "WhiteboardSession",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
     screen_shares = relationship(
-        "ScreenShare", back_populates="session", cascade="all, delete-orphan"
+        "ScreenShare",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
     chat_messages = relationship(
-        "SessionChatMessage", back_populates="session", cascade="all, delete-orphan"
+        "SessionChatMessage",
+        back_populates="session",
+        cascade="all, delete-orphan",
     )
 
 
@@ -209,7 +219,7 @@ class SessionParticipant(Base):
 
     __tablename__ = "session_participants"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -263,7 +273,7 @@ class ScreenShare(Base):
 
     __tablename__ = "screen_shares"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -302,7 +312,7 @@ class WhiteboardSession(Base):
 
     __tablename__ = "whiteboard_sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
 
     # Whiteboard Info
@@ -328,10 +338,14 @@ class WhiteboardSession(Base):
     # Relationships
     session = relationship("LiveSession", back_populates="whiteboard_sessions")
     strokes = relationship(
-        "WhiteboardStroke", back_populates="whiteboard", cascade="all, delete-orphan"
+        "WhiteboardStroke",
+        back_populates="whiteboard",
+        cascade="all, delete-orphan",
     )
     equations = relationship(
-        "WhiteboardEquation", back_populates="whiteboard", cascade="all, delete-orphan"
+        "WhiteboardEquation",
+        back_populates="whiteboard",
+        cascade="all, delete-orphan",
     )
 
 
@@ -344,7 +358,7 @@ class WhiteboardStroke(Base):
 
     __tablename__ = "whiteboard_strokes"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     whiteboard_id = Column(String, ForeignKey("whiteboard_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -392,7 +406,7 @@ class WhiteboardEquation(Base):
 
     __tablename__ = "whiteboard_equations"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     whiteboard_id = Column(String, ForeignKey("whiteboard_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -444,7 +458,7 @@ class SessionRecording(Base):
 
     __tablename__ = "session_recordings"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
 
     # Recording Info
@@ -506,10 +520,14 @@ class SessionRecording(Base):
     # Relationships
     session = relationship("LiveSession", back_populates="recordings")
     views = relationship(
-        "RecordingView", back_populates="recording", cascade="all, delete-orphan"
+        "RecordingView",
+        back_populates="recording",
+        cascade="all, delete-orphan",
     )
     bookmarks = relationship(
-        "RecordingBookmark", back_populates="recording", cascade="all, delete-orphan"
+        "RecordingBookmark",
+        back_populates="recording",
+        cascade="all, delete-orphan",
     )
 
 
@@ -520,7 +538,7 @@ class RecordingView(Base):
 
     __tablename__ = "recording_views"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     recording_id = Column(String, ForeignKey("session_recordings.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"))
 
@@ -555,7 +573,7 @@ class RecordingBookmark(Base):
 
     __tablename__ = "recording_bookmarks"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     recording_id = Column(String, ForeignKey("session_recordings.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -582,7 +600,7 @@ class SessionChatMessage(Base):
 
     __tablename__ = "session_chat_messages"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -621,7 +639,7 @@ class SessionAnalytics(Base):
 
     __tablename__ = "session_analytics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(
         String,
         ForeignKey("live_sessions.id"),

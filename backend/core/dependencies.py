@@ -14,6 +14,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.tenant_context import aktif_kullaniciyi_kur
+
 logger = logging.getLogger(__name__)
 
 # JWT Security
@@ -126,14 +128,19 @@ async def get_current_user(
 
     try:
         import time
+
         t0 = time.perf_counter()
-        
+
         # P0-1e: Check blacklist before decoding (Redis-backed with in-memory fallback)
         from core.jwt_auth import get_jwt_manager
 
         jwt_mgr = get_jwt_manager()
-        await jwt_mgr.is_blacklisted_async(token)
-        t1 = time.perf_counter()
+        if await jwt_mgr.is_blacklisted_async(token):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been revoked",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
         # JWT token'ı decode et
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
@@ -169,6 +176,12 @@ async def get_current_user(
                 detail=f"Invalid token: {e}",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        # RLS kiraci baglami (S241 B1): bu istekte acilacak HER DB oturumu bu
+        # kimlikten `app.current_org_id` GUC'unu turetir (core/database.py,
+        # after_begin dinleyicisi). Burada set edilir cunku `get_current_user`
+        # kimlikli her ucta kosar; `get_current_tenant` ise 153 router'in
+        # yalnizca 2'sinde bagimlilik olarak bildirilmis.
+        aktif_kullaniciyi_kur(user.id)
         return user
 
     except jwt.ExpiredSignatureError:
@@ -200,6 +213,28 @@ async def get_current_user(
 # Admin-only dependencies: SUPER_ADMIN must match ADMIN API surface (F4 / operasyon).
 PLATFORM_ADMIN_ROLES: frozenset[UserRole] = frozenset(
     {UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
+
+#: BAŞKA BİR ÖĞRENCİNİN verisine erişebilen roller (KVKK-ilgili tek politika).
+#:
+#: S252 ölçümü: bu üçlü **17 yerde literal kopyalanmıştı** ve kopyaların 12'si tam
+#: olarak bu niyete hizmet ediyordu (`_STAFF_CAN_TARGET_STUDENT`,
+#: `_STUDENT_ANALYTICS_STAFF`, `_verify_student_access`, `verify_student_access`,
+#: `_STAFF_VIEW_STUDENT_PERFORMANCE` …). Her kopya bağımsız kayabilirdi; aynı
+#: oturumda tam bu sınıftan İKİ canlı kusur çıktı (`api/ogretmen.py:46` ADMIN'i
+#: dışarıda bırakıyordu, `api/auth.py:348` kanonik yazımı tanımıyordu).
+#:
+#: ⚠️ KAPSAM SINIRI — bu sabit ŞU ÜÇÜNÜN YERİNE GEÇMEZ, üyeleri bugün çakışsa bile:
+#:   · içerik/kalite yetkisi   (`soru_guncelle`, `soru_sil`, `_OVERRIDE_APPROVERS`)
+#:   · uyumluluk               (`_STAFF_COMPLIANCE`)
+#:   · öğretmen yüzeyi kapısı  (`get_current_teacher_user`)
+#: Hepsini tek sabite bağlamak, yarın "öğretmen artık başka öğrencinin verisini
+#: göremez" kararı geldiğinde soru düzenleme yetkisini de SESSİZCE alırdı.
+#: Aynı üyeler ≠ aynı politika.
+#:
+#: Bekçi: `tests/unit/test_rol_kapisi_yakinsama.py`
+STUDENT_DATA_ACCESS_ROLES: frozenset[UserRole] = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
 )
 
 
@@ -294,8 +329,15 @@ async def get_db():
     """
     from core.database import get_async_session
 
-    async for session in get_async_session():
-        yield session
+    try:
+        async for session in get_async_session():
+            yield session
+    except Exception:
+        import sys
+        import traceback
+
+        sys.stderr.write(f"GET_DB EXCEPTION: {traceback.format_exc()}\n")
+        raise
 
 
 async def get_redis():
@@ -409,3 +451,133 @@ async def require_veli_consent(
         status_code=403,
         detail="Bu özellik için veli onayı gereklidir (KVKK reşit olmayan kullanıcı).",
     )
+
+
+# ============================================================================
+# Faz 0 Multi-tenancy: tenant bağlamı resolver
+# ============================================================================
+async def get_current_tenant(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> str:
+    """Geçerli kullanıcının organization_id'sini döndürür (tenant bağlamı).
+
+    Faz 0 Step 3: repositories/base.py zorunlu org filtresi + org-scoped
+    endpoint'ler bunu kullanır. Kaynak: users.organization_id (Step 2 retrofit;
+    tüm mevcut kullanıcılar org_legacy_default'a bağlı).
+
+    org_id çözülemezse 403 — tenant'sız kullanıcı korumalı kaynağa erişemez.
+    """
+    from sqlalchemy import text as _text
+
+    row = (
+        await db.execute(
+            _text("SELECT organization_id FROM users WHERE id = :uid"),
+            {"uid": str(current_user.id)},
+        )
+    ).first()
+    if row is None or row[0] is None:
+        raise HTTPException(
+            status_code=403,
+            detail="Kullanıcı bir kuruma bağlı değil (tenant bağlamı yok).",
+        )
+    org_id = str(row[0])
+    # RLS aktivasyon prerequisite: transaction-local GUC.
+    #
+    # S241 DUZELTMESI: buradaki eski yorum "App superuser (postgres) oldugundan
+    # RLS su an bypass edilir (no-op)" diyordu ve CANLIDA GECERSIZDI -- uygulama
+    # `kiro2_app` ile bagli (rolsuper=f, rolbypassrls=f), yani RLS UYGULANIYOR.
+    # O bayat varsayim `exam_sessions`'in aylarca BOS kalmasinin sebebiydi.
+    #
+    # Bu cagri artik TEK savunma degil: `core/database.py` `after_begin`
+    # dinleyicisi GUC'u HER transaction'da kuruyor. Burasi istek oturumu icin
+    # erken/yedek kurulum olarak kaliyor.
+    try:
+        await db.execute(
+            _text("SELECT set_config('app.current_org_id', :org, true)"),
+            {"org": org_id},
+        )
+    except Exception as exc:
+        # SESSIZ GECMEZ (#495 sinifi): GUC kurulamadiysa bu istekteki RLS'li
+        # sorgular fail-closed davranir ve semptom "bos sonuc / 500" olur.
+        # Sebebi log'da GORUNUR olmali, yoksa kok neden aylarca aranir.
+        logger.warning("RLS GUC kurulamadi (org=%s): %s", org_id, exc)
+    return org_id
+
+
+async def get_current_membership(
+    organization_id: str = Depends(get_current_tenant),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Kullanıcının OPERATED tenant'taki aktif org üyeliğini döndürür.
+
+    Kaynak: org_memberships (Step 4 backfill). Bu org'da aktif üyelik yoksa 403.
+
+    GÜVENLİK (cross-tenant authz divergence guard): rol daima operated-tenant
+    (get_current_tenant → users.organization_id) ile aynı org'da doğrulanır — yetki
+    kaynağı (org_memberships) ile operated-org iki ayrı kaynaktan gelip AYRIŞAMAZ.
+    get_current_tenant önce çözülür → RLS GUC set edilir → bu okuma da RLS-scoped
+    olur (defense-in-depth). ORDER BY created_at → LIMIT-1 non-determinizmi giderilir.
+    """
+    from sqlalchemy import text as _text
+
+    row = (
+        await db.execute(
+            _text(
+                "SELECT organization_id, org_role FROM org_memberships "
+                "WHERE user_id = :uid AND organization_id = :org AND is_active = true "
+                "ORDER BY created_at LIMIT 1"
+            ),
+            {"uid": str(current_user.id), "org": organization_id},
+        )
+    ).first()
+    if row is None:
+        raise HTTPException(
+            status_code=403, detail="Kullanıcının bu kurumda aktif üyeliği yok."
+        )
+    return {"organization_id": str(row[0]), "org_role": str(row[1])}
+
+
+def require_org_role(*allowed_roles: str):
+    """org_role tabanlı erişim guard'ı (factory).
+
+    Örn: `Depends(require_org_role("SCHOOL_ADMIN"))`. SCHOOL_ADMIN kurum içi
+    süper-yetkili sayılır (her guard'ı geçer). İzin yoksa 403.
+    """
+    allowed = set(allowed_roles)
+
+    async def _guard(
+        membership: dict = Depends(get_current_membership),
+    ) -> dict:
+        role = membership["org_role"]
+        if role == "SCHOOL_ADMIN" or role in allowed:
+            return membership
+        raise HTTPException(
+            status_code=403,
+            detail=f"Bu işlem için yetki yok (gerekli: {sorted(allowed)}).",
+        )
+
+    return _guard
+
+
+async def require_dpa_signed(
+    organization_id: str = Depends(get_current_tenant),
+    db: AsyncSession = Depends(get_db),
+) -> str:
+    """Aktivasyon gate'i: kurumun imzalı DPA'sı yoksa 403.
+
+    B2B akışında okul (veri sorumlusu) DPA imzalamadan ürünü aktive edemez
+    (KVKK işleyen sözleşmesi). DPA imzalıysa organization_id döner (tenant bağlamı
+    zaten get_current_tenant ile GUC'a set edilmiştir).
+    """
+    from services.billing_service import is_dpa_signed
+
+    if not await is_dpa_signed(db, organization_id):
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Kurum DPA (veri işleme sözleşmesi) imzalamadı — aktivasyon bekliyor."
+            ),
+        )
+    return organization_id

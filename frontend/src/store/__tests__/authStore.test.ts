@@ -16,6 +16,7 @@ import type { User, UserRole } from '../../types'
 vi.mock('../../services/authService', () => ({
   authService: {
     login: vi.fn(),
+    loginVerify2FA: vi.fn(),
     register: vi.fn(),
     logout: vi.fn(),
     refreshToken: vi.fn(),
@@ -175,6 +176,42 @@ describe('authStore', () => {
       })
 
       expect(useAuthStore.getState().error).toContain('ba')
+    })
+  })
+
+  describe('Two-Factor Verification (S200 audit: 2FA dead-end fix)', () => {
+    it('should set user and isAuthenticated on successful TOTP verification', async () => {
+      const mockUser = createMockUser()
+      ;(authService.loginVerify2FA as Mock).mockResolvedValue({
+        success: true,
+        user: mockUser,
+      })
+
+      let result: boolean
+      await act(async () => {
+        result = await useAuthStore.getState().verifyTwoFactor('test@example.com', 'password123', '123456')
+      })
+
+      expect(authService.loginVerify2FA).toHaveBeenCalledWith('test@example.com', 'password123', '123456')
+      const state = useAuthStore.getState()
+      expect(result!).toBe(true)
+      expect(state.isAuthenticated).toBe(true)
+      expect(state.user).toEqual(mockUser)
+      expect(state.error).toBeNull()
+    })
+
+    it('should set error and return false on invalid TOTP code', async () => {
+      ;(authService.loginVerify2FA as Mock).mockRejectedValue(new Error('Geçersiz 2FA kodu'))
+
+      let result: boolean
+      await act(async () => {
+        result = await useAuthStore.getState().verifyTwoFactor('test@example.com', 'password123', '000000')
+      })
+
+      const state = useAuthStore.getState()
+      expect(result!).toBe(false)
+      expect(state.isAuthenticated).toBe(false)
+      expect(state.error).toBe('Geçersiz 2FA kodu')
     })
   })
 
@@ -344,6 +381,61 @@ describe('authStore', () => {
         password: 'pass123',
       })
       expect(useAuthStore.getState().isAuthenticated).toBe(true)
+    })
+
+    it('kayit BASARILI ama otomatik giris ENGELLENDI: false DEGIL, sebep doner', async () => {
+      // MUTASYON BOSLUGU (26 Agu 2026): `return loginResult === true` katlamasini
+      // geri getirmek ModernRegisterPage testlerinin HICBIRINI dusurmuyordu --
+      // o testler store'u `vi.mock`'luyor, yani SOZLESMEYI hic olcmuyorlar.
+      // Yuk tasiyan yer burasi.
+      //
+      // Gercek senaryo: EPOSTA_DOGRULAMA_ZORUNLU acikken kayit 201 doner (hesap
+      // OLUSUR) ama otomatik giris 403 EPOSTA_DOGRULANMAMIS alir. Bunu "kayit
+      // basarisiz" saymak ekrani SESSIZ birakiyordu.
+      ;(authService.register as Mock).mockResolvedValue({ success: true })
+      ;(authService.login as Mock).mockResolvedValue({
+        success: false,
+        message: 'Giris yapabilmek icin e-posta adresinizi dogrulayin.',
+      })
+
+      let result: unknown
+      await act(async () => {
+        result = await useAuthStore.getState().register({
+          email: 'dogrulanmamis@example.com',
+          password: 'pass123', // pragma: allowlist secret
+          ad: 'Dogrulanmamis',
+          soyad: 'User',
+          rol: 'ogrenci',
+        })
+      })
+
+      expect(result).not.toBe(false)
+      expect(result).toMatchObject({ kayitOldu: true })
+      expect((result as { girisEngellendi: string | null }).girisEngellendi).toBe(
+        'Giris yapabilmek icin e-posta adresinizi dogrulayin.',
+      )
+      // KONTROL KOLU: hesap olustu ama kullanici GIRMIS sayilmamali.
+      expect(useAuthStore.getState().isAuthenticated).toBe(false)
+    })
+
+    it('kayit BASARISIZ ise hala duz false doner (geriye uyum)', async () => {
+      // Sozlesme GENISLETILDI, kirilmadi: cagiranin `=== true` ve dogrudan
+      // falsy kontrolleri calismaya devam etmeli.
+      ;(authService.register as Mock).mockResolvedValue({ success: false })
+
+      let result: unknown
+      await act(async () => {
+        result = await useAuthStore.getState().register({
+          email: 'dup@example.com',
+          password: 'pass123', // pragma: allowlist secret
+          ad: 'Dup',
+          soyad: 'User',
+          rol: 'ogrenci',
+        })
+      })
+
+      expect(result).toBe(false)
+      expect(authService.login).not.toHaveBeenCalled()
     })
 
     it('should set error on failed registration', async () => {

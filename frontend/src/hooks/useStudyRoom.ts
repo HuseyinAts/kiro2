@@ -29,7 +29,7 @@ export function useStudyRoom(id: string): UseStudyRoomReturn {
   const [isActionPending, setIsActionPending] = useState(false);
 
   const refetch = useCallback(async () => {
-    if (!id) return;
+    if (!id) {return;}
     setIsLoading(true);
     setError(null);
     try {

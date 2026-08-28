@@ -14,20 +14,29 @@ import unicodedata
 from datetime import datetime
 
 from sqlalchemy import and_, func, or_, select, text
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 # PERFORMANCE: Redis cache integration
 from core.cache import cache_manager
 from core.database import db_manager
+from core.quality_gate import safe_for_beta_gate
 from core.turkish_nlp_utils import subject_db
 from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
 from models.question_bank import QuestionBankItem as Question
-from models.question_bank import QuestionDifficultyLevel, TopicHierarchy
+from models.question_bank import (
+    QuestionContent,
+    QuestionDifficultyLevel,
+    QuestionMetadata,
+    QuestionStatistics,
+    TopicHierarchy,
+)
 from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
+
 
 # Convention v3 (12 Haz 2026) — student-facing seçim TEK doğruluk kaynağı
 # olarak v_safe_for_beta view'ini kullanır. View; is_active + status
@@ -41,13 +50,15 @@ logger = logging.getLogger(__name__)
 # olarak filtrelenmez — atanmış soruların resume/review akışını korumak için.
 # Bkz: docs/quality_review_status_convention.md, .claude/rules/testing.md #31
 def _safe_for_beta_gate():
-    """student-facing seçim filtresi: yalnız v_safe_for_beta'daki id'ler.
+    """student-facing seçim filtresi — tanım core/quality_gate.py'de.
 
-    Tek doğruluk kaynağı view'dir; status/pipeline_metadata filtreleri kodda
-    replike edilmez. Canlı view (~256ms, planlayıcı inline eder); sonuçlar
-    çağıran tarafta Redis ile cache'lenir.
+    27 Tem 2026: kapı canlı view yerine `mv_safe_for_beta` matview'ini okur
+    (sıcak yol 730-907 ms -> 58-87 ms, EXPLAIN ANALYZE ile ölçüldü) ve tanım
+    tek modüle taşındı; üç dosyada elle yazılan `text("SELECT id FROM ...")`
+    kopyaları ad sürüklenmesine açıktı.
     """
-    return Question.id.in_(text("SELECT id FROM v_safe_for_beta"))
+    return safe_for_beta_gate(Question.id)
+
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
 _KONU_MAP: dict[str, str] = {
@@ -121,6 +132,128 @@ def _normalize_topic(topic: str) -> str:
     return text
 
 
+# ---------------------------------------------------------------------------
+# YAZMA YOLU — iki cagri yerinin ORTAK normalizasyonu (#485)
+# ---------------------------------------------------------------------------
+# `soru_ekle` ve `toplu_soru_ekle` ayni satiri kurar ama split sonrasi AYRI
+# AYRI evrildiler ve toplu yol 5 kusur biriktirdi (olculdu 17 Agu, canli PG):
+# soru_hash/primary_topic_id/grade_level hic doldurulmuyordu, difficulty icin
+# YANLIS enum ailesi kullaniliyordu ve exam_type/subject_area kucuk harf
+# yaziliyordu. Kok neden tek: normalizasyonun KOPYALANMIS olmasi. Asagidaki iki
+# yardimci onu tek dogruluk kaynagina indirir.
+
+
+# 5 seviyeli `QuestionDifficultyLevel` (question_bank.py:41). PG enum etiketleri
+# BUYUK harf (VERY_EASY|EASY|MEDIUM|HARD|VERY_HARD) ve SQLAlchemy uyenin ADINI
+# yazar. `enums_db.QuestionDifficulty` (3 seviyeli) buraya GECIRILMEZ: o bir
+# `str` alt sinifidir, kolonun `validate_strings` degeri False oldugu icin
+# SQLAlchemy onu ham dize sanip aynen gecirir ve PG
+# `invalid input value for enum questiondifficultylevel: "medium"` der (olculdu).
+_ZORLUK_MAP: dict[str, QuestionDifficultyLevel] = {
+    "cok_kolay": QuestionDifficultyLevel.VERY_EASY,
+    "very_easy": QuestionDifficultyLevel.VERY_EASY,
+    "kolay": QuestionDifficultyLevel.EASY,
+    "easy": QuestionDifficultyLevel.EASY,
+    "orta": QuestionDifficultyLevel.MEDIUM,
+    "medium": QuestionDifficultyLevel.MEDIUM,
+    "zor": QuestionDifficultyLevel.HARD,
+    "hard": QuestionDifficultyLevel.HARD,
+    "cok_zor": QuestionDifficultyLevel.VERY_HARD,
+    "very_hard": QuestionDifficultyLevel.VERY_HARD,
+}
+
+# `topic_hierarchy` icinde ders-ustu genel konu. Bu DB'de 12 topic satirinin
+# 12'sinde de `subject_area` NULL (olculdu), yani ders-bazli arama SONUC
+# VERMEZ; ayrica mevcut 36.967 sorunun 36.967'si zaten bu topic'e bagli.
+# Ders bilgisi `question_metadata.subject_area`da yasiyor, topic'te degil.
+_GENEL_TOPIC_KODU = "GEN"
+
+
+def _soru_hash_uret(soru_metni: str, secenekler: list) -> str:
+    """`question_bank.soru_hash` (NOT NULL, DB-default YOK) icin icerik hash'i.
+
+    `uq_qb_soru_hash_active` kismi benzersizlik indeksini besler, yani ayni
+    soru iki kez aktif eklenemez. Bu yuzden hash ICERIGE bagli olmali —
+    sabit/rastgele bir deger benzersizlik kapisini sessizce ise yaramaz kilardi.
+
+    Normalizasyon: HTML etiketleri, sifir-genislikli karakterler ve tekrarli
+    bosluklar atilir, kucuk harfe cevrilir, secenek on ekleri (`A)`) silinir.
+    Alan sinirini (String(32)) asmamak icin sha256'nin ilk 32 hanesi alinir.
+    """
+    import hashlib
+    import re
+
+    cleaned_text = re.sub(r"<[^>]+>", "", soru_metni)
+    for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+        cleaned_text = cleaned_text.replace(space_char, "")
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip().lower()
+
+    cleaned_opts = []
+    for opt in secenekler[:5]:
+        if isinstance(opt, str):
+            opt_cleaned = re.sub(r"<[^>]+>", "", opt)
+            for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+                opt_cleaned = opt_cleaned.replace(space_char, "")
+            opt_cleaned = re.sub(r"\s+", " ", opt_cleaned).strip().lower()
+            opt_cleaned = re.sub(r"^[a-e]\)\s*", "", opt_cleaned)
+            cleaned_opts.append(opt_cleaned)
+        else:
+            cleaned_opts.append("")
+
+    hash_input = cleaned_text
+    for opt in cleaned_opts:
+        hash_input += "|" + opt
+    if len(cleaned_opts) < 5:
+        hash_input += "|"
+
+    return hashlib.sha256(hash_input.encode("utf-8")).hexdigest()[:32]
+
+
+def _yazma_alanlarini_normalize_et(soru_data: dict) -> dict:
+    """Girdi sozlugunu 4 yavru tablonun BEKLEDIGI kanonik sekle cevirir.
+
+    Tek dogruluk kaynagi: her iki yazma yolu da burayi cagirir.
+
+    Kanon (canli DB'den olculdu, `.claude/rules/case-convention.md`):
+      * `exam_type`    -> BUYUK harf duz `str`  (TYT 28.204 / AYT 8.763)
+      * `subject_area` -> BUYUK harf duz `str`  (`subject_db` ile)
+      * `difficulty_level` -> `QuestionDifficultyLevel` UYESI (str DEGIL)
+      * `grade_level`  -> int, `check_grade_level` geregi 9..12
+
+    `ExamType`/`SubjectArea` (enums_db) uyeleri BURADAN GECMEZ: `str` alt sinifi
+    olduklari icin String kolona kucuk harf (`'tyt'`) yazilir ve
+    `exam_type='TYT'` filtreleyen gercek sorgulardan DUSERLER. `str(uye)` ile
+    "duzeltmek" ucuncu bir bozulmadir — Python 3.13'te `'ExamType.TYT'` yazar.
+    """
+    konu_raw = soru_data.get("konu") or "Matematik"
+    subject_area_str = subject_db(_KONU_MAP.get(konu_raw, konu_raw))
+    exam_type_str = (soru_data.get("sinav_tipi") or "TYT").strip().upper()
+
+    difficulty_input = (soru_data.get("zorluk_seviyesi") or "orta").strip().lower()
+    difficulty_level = _ZORLUK_MAP.get(difficulty_input, QuestionDifficultyLevel.MEDIUM)
+
+    # grade_level: int NOT NULL, DB-default YOK. YKS icin 11 varsayilan.
+    try:
+        grade_level = int(soru_data.get("sinif_seviyesi") or 11)
+    except (TypeError, ValueError):
+        grade_level = 11
+    grade_level = min(12, max(9, grade_level))
+
+    secenekler = soru_data["secenekler"]
+
+    return {
+        "konu_raw": konu_raw,
+        "subject_area": subject_area_str,
+        "exam_type": exam_type_str,
+        "difficulty_level": difficulty_level,
+        "grade_level": grade_level,
+        "secenekler": secenekler,
+        "option_e": secenekler[4].replace("E) ", "") if len(secenekler) > 4 else None,
+        "soru_hash": soru_data.get("soru_hash")
+        or _soru_hash_uret(soru_data["soru_metni"], secenekler),
+    }
+
+
 class SoruBankasiServisi:
     """
     Gelişmiş soru bankası yönetimi servisi
@@ -181,6 +314,67 @@ class SoruBankasiServisi:
             subject_map.get(subject, SubjectArea.MATEMATIK),
         )
 
+    async def _primary_topic_id_cozumle(
+        self, session: AsyncSession, subject_area_str: str, alt_konu: str | None
+    ) -> str:
+        """`question_bank.primary_topic_id` (NOT NULL FK) icin topic id uretir.
+
+        Uc kademe, en ozelden en genele:
+          1. `alt_konu` adiyla birebir eslesen topic (ders icinde)
+          2. dersin (subject_area) ilk topic'i
+          3. GENEL topic (`code='GEN'`) — SABIT FALLBACK
+
+        3. kademe neden var (olculdu 17 Agu, canli DB): `topic_hierarchy`in 12
+        satirinin **12'sinde de** `subject_area` NULL, yani 1. ve 2. kademe
+        HER ZAMAN bos doner. Fallback yokken bu fonksiyonun eski hali
+        `ValueError` atiyordu ve `POST /soru-ekle` ucu KOSULSUZ HTTP 500
+        veriyordu — yani tekil ekleme yolu tamamen kirikti.
+
+        GEN'e dusmek veri kaybi DEGIL: ders bilgisi `question_metadata.
+        subject_area`da yasiyor, `primary_topic_id`de degil. Mevcut 36.967
+        sorunun 36.967'si zaten GEN'e bagli, yani yeni satirlar evrenin geri
+        kalaniyla TUTARLI oluyor.
+
+        `topic_hierarchy` ileride ders bazinda seed edilirse 1./2. kademe
+        kendiliginden devreye girer; bu yuzden onlar korundu.
+        """
+        alt_konu = (alt_konu or "").strip()
+
+        if alt_konu:
+            row = await session.execute(
+                select(TopicHierarchy.id)
+                .where(
+                    TopicHierarchy.subject_area == subject_area_str,
+                    func.lower(TopicHierarchy.name_tr) == alt_konu.lower(),
+                )
+                .limit(1)
+            )
+            if topic_id := row.scalar_one_or_none():
+                return topic_id
+
+        row = await session.execute(
+            select(TopicHierarchy.id)
+            .where(TopicHierarchy.subject_area == subject_area_str)
+            .order_by(TopicHierarchy.level.asc())
+            .limit(1)
+        )
+        if topic_id := row.scalar_one_or_none():
+            return topic_id
+
+        row = await session.execute(
+            select(TopicHierarchy.id)
+            .where(TopicHierarchy.code == _GENEL_TOPIC_KODU)
+            .limit(1)
+        )
+        if topic_id := row.scalar_one_or_none():
+            return topic_id
+
+        # Buraya dusmek sema/seed arizasidir: NOT NULL FK doldurulamaz.
+        raise ValueError(
+            f"topic_hierarchy'de ne '{subject_area_str}' ne de genel "
+            f"'{_GENEL_TOPIC_KODU}' topic'i var. Once TopicHierarchy seed edilmeli."
+        )
+
     async def soru_ekle(self, soru_data: dict) -> Question:
         """
         Yeni soru ekle - Database entegrasyonu ile
@@ -194,146 +388,78 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # --- Normalize inputs to QuestionBankItem schema ---
-                # Canonical UPPERCASE string for subject_area + exam_type
-                # (question_bank.py:431-433 — plain String, not Enum).
-                konu_raw = soru_data.get("konu") or "Matematik"
-                subject_area_str = subject_db(_KONU_MAP.get(konu_raw, konu_raw))
-                exam_type_str = (soru_data.get("sinav_tipi") or "TYT").strip().upper()
-
-                # 5-level difficulty Enum (question_bank.QuestionDifficultyLevel)
-                # Input "kolay/orta/zor" (Turkish) or "easy/medium/hard" (ASCII).
-                difficulty_input = (
-                    (soru_data.get("zorluk_seviyesi") or "orta").strip().lower()
-                )
-                difficulty_level_map = {
-                    "cok_kolay": QuestionDifficultyLevel.VERY_EASY,
-                    "very_easy": QuestionDifficultyLevel.VERY_EASY,
-                    "kolay": QuestionDifficultyLevel.EASY,
-                    "easy": QuestionDifficultyLevel.EASY,
-                    "orta": QuestionDifficultyLevel.MEDIUM,
-                    "medium": QuestionDifficultyLevel.MEDIUM,
-                    "zor": QuestionDifficultyLevel.HARD,
-                    "hard": QuestionDifficultyLevel.HARD,
-                    "cok_zor": QuestionDifficultyLevel.VERY_HARD,
-                    "very_hard": QuestionDifficultyLevel.VERY_HARD,
-                }
-                difficulty_level = difficulty_level_map.get(
-                    difficulty_input, QuestionDifficultyLevel.MEDIUM
-                )
+                # ORTAK yardimci: `toplu_soru_ekle` de ayni cagriyi yapar, yani
+                # iki yazma yolu artik TEK kanondan besleniyor (#485). Kopyalanmis
+                # normalizasyon bu dosyada 5 kusur uretmisti (olculdu 17 Agu).
+                alanlar = _yazma_alanlarini_normalize_et(soru_data)
+                secenekler = alanlar["secenekler"]
 
                 # IRT parametrelerini hesapla (legacy helper uses easy/medium/hard)
                 irt_params = await self._hesapla_irt_parametreleri(
-                    difficulty_level.value.replace("very_", "").replace("_", " "),
-                    konu_raw,
+                    alanlar["difficulty_level"]
+                    .value.replace("very_", "")
+                    .replace("_", " "),
+                    alanlar["konu_raw"],
                 )
 
-                # --- primary_topic_id lookup (NOT NULL FK → topic_hierarchy) ---
-                # Strategy: match by subject_area + (sub_topic name or subject fallback).
-                # Prefer the most specific topic; fall back to any root topic of the subject.
-                alt_konu = (soru_data.get("alt_konu") or "").strip()
-                primary_topic_id: str | None = None
-
-                if alt_konu:
-                    row = await session.execute(
-                        select(TopicHierarchy.id)
-                        .where(
-                            TopicHierarchy.subject_area == subject_area_str,
-                            func.lower(TopicHierarchy.name_tr) == alt_konu.lower(),
-                        )
-                        .limit(1)
-                    )
-                    primary_topic_id = row.scalar_one_or_none()
-
-                if not primary_topic_id:
-                    # Fallback: first topic of the subject (any level).
-                    row = await session.execute(
-                        select(TopicHierarchy.id)
-                        .where(TopicHierarchy.subject_area == subject_area_str)
-                        .order_by(TopicHierarchy.level.asc())
-                        .limit(1)
-                    )
-                    primary_topic_id = row.scalar_one_or_none()
-
-                if not primary_topic_id:
-                    raise ValueError(
-                        f"topic_hierarchy'de '{subject_area_str}' için kayıt yok "
-                        f"(alt_konu={alt_konu!r}). Önce TopicHierarchy seed edilmeli."
-                    )
-
-                # grade_level: int NOT NULL (question_bank.py:434) — default 11 for YKS.
-                try:
-                    grade_level = int(soru_data.get("sinif_seviyesi") or 11)
-                except (TypeError, ValueError):
-                    grade_level = 11
-
-                # --- Options (Text NOT NULL a..d, option_e nullable) ---
-                secenekler = soru_data["secenekler"]
-                option_e = (
-                    secenekler[4].replace("E) ", "") if len(secenekler) > 4 else None
+                primary_topic_id = await self._primary_topic_id_cozumle(
+                    session, alanlar["subject_area"], soru_data.get("alt_konu")
                 )
-
-                # --- soru_hash calculation fallback (if not provided by API/schema) ---
-                soru_hash = soru_data.get("soru_hash")
-                if not soru_hash:
-                    import re
-                    import hashlib
-                    
-                    # Clean question text
-                    cleaned_text = re.sub(r'<[^>]+>', '', soru_data["soru_metni"])
-                    for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
-                        cleaned_text = cleaned_text.replace(space_char, '')
-                    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
-                    cleaned_text = cleaned_text.lower()
-                    
-                    # Clean options (up to 5 options)
-                    cleaned_opts = []
-                    for opt in secenekler[:5]:
-                        if isinstance(opt, str):
-                            opt_cleaned = re.sub(r'<[^>]+>', '', opt)
-                            for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
-                                opt_cleaned = opt_cleaned.replace(space_char, '')
-                            opt_cleaned = re.sub(r'\s+', ' ', opt_cleaned).strip()
-                            opt_cleaned = opt_cleaned.lower()
-                            opt_cleaned = re.sub(r'^[a-e]\)\s*', '', opt_cleaned)
-                            cleaned_opts.append(opt_cleaned)
-                        else:
-                            cleaned_opts.append("")
-                            
-                    hash_input = cleaned_text
-                    for opt in cleaned_opts:
-                        hash_input += '|' + opt
-                    if len(cleaned_opts) < 5:
-                        hash_input += '|'
-                        
-                    soru_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()[:32]
 
                 # --- Build QuestionBankItem (no legacy topic/subtopic/difficulty) ---
                 yeni_soru = Question(
+                    primary_topic_id=primary_topic_id,
+                    created_by=soru_data.get("created_by"),
+                    soru_hash=alanlar["soru_hash"],
+                    # `toplu_soru_ekle` ile ayni gerekce — oradaki uzun yoruma bak.
+                    # Ozetle: ORM `default=False` INSERT'te `server_default="true"`i
+                    # eziyor; sonucu `uq_qb_soru_hash_active` kismi indeksinin
+                    # uygulanmamasi (mukerrer engelleme olu) ve yeni sorunun
+                    # ogrenciye gorunmemesi. Bu satir olmadan asagidaki
+                    # IntegrityError dali HIC tetiklenmez (olculdu).
+                    is_active=True,
+                )
+                yeni_soru.content = QuestionContent(
                     question_text=soru_data["soru_metni"],
                     option_a=secenekler[0].replace("A) ", ""),
                     option_b=secenekler[1].replace("B) ", ""),
                     option_c=secenekler[2].replace("C) ", ""),
                     option_d=secenekler[3].replace("D) ", ""),
-                    option_e=option_e,
+                    option_e=alanlar["option_e"],
                     correct_answer=soru_data["dogru_cevap"],
                     explanation=soru_data.get("cozum_aciklamasi"),
-                    exam_type=exam_type_str,
-                    subject_area=subject_area_str,
-                    grade_level=grade_level,
-                    primary_topic_id=primary_topic_id,
-                    difficulty_level=difficulty_level,
+                )
+                yeni_soru.metadata_info = QuestionMetadata(
+                    exam_type=alanlar["exam_type"],
+                    subject_area=alanlar["subject_area"],
+                    grade_level=alanlar["grade_level"],
+                )
+                yeni_soru.statistics = QuestionStatistics(
+                    difficulty_level=alanlar["difficulty_level"],
                     irt_difficulty=irt_params["difficulty"],
                     irt_discrimination=irt_params["discrimination"],
                     irt_guessing=irt_params["guessing"],
-                    created_by=soru_data.get("created_by"),
-                    soru_hash=soru_hash,
                 )
 
                 try:
                     async with session.begin_nested():
                         session.add(yeni_soru)
                     await session.commit()
-                    await session.refresh(yeni_soru)
+                    # SADECE sunucu-uretimli PARENT kolonlari tazelenir.
+                    # Argumansiz `refresh()` uc split iliskisini de `__dict__`ten
+                    # SILER (olculdu); cagiran oturum kapandiktan sonra
+                    # `soru.content.question_text` okudugunda lazy-load'a duser
+                    # ve `DetachedInstanceError` alir (oturum aciksa
+                    # `MissingGreenlet`). `api/soru_bankasi.py` tam bunu yapiyordu
+                    # ve `except Exception` yutup HTTP 500 donduruyordu — soru ise
+                    # ZATEN yazilmis oluyordu.
+                    await session.refresh(
+                        yeni_soru, attribute_names=["created_at", "updated_at"]
+                    )
+                    # Geçici (map'lenmemiş) bayrak: çağıran GERÇEKTEN oluşturuldu
+                    # mu yoksa mevcut kayıt mı döndü, ayırt edebilsin. DB'ye
+                    # yazılmaz. Aşağıdaki IntegrityError dalı bunu True yapar.
+                    yeni_soru.zaten_mevcuttu = False
                     return yeni_soru
                 except IntegrityError as ie:
                     # Savepoint is rolled back automatically by context manager.
@@ -341,27 +467,29 @@ class SoruBankasiServisi:
                     logger.warning(
                         "Duplicate question detected (IntegrityError on soru_hash). "
                         "Returning existing question. Error: %s",
-                        ie
+                        ie,
                     )
                     # Fetch and return the existing record by soru_hash
                     stmt = select(Question).where(
-                        Question.soru_hash == soru_hash,
-                        Question.is_active == True
+                        Question.soru_hash == alanlar["soru_hash"],
+                        Question.is_active == True,
                     )
                     res = await session.execute(stmt)
                     existing = res.scalar_one_or_none()
                     if existing:
+                        existing.zaten_mevcuttu = True
                         return existing
-                        
+
                     # If it wasn't found under is_active=True, search without active status filter
                     stmt_any = select(Question).where(
-                        Question.soru_hash == soru_hash
+                        Question.soru_hash == alanlar["soru_hash"]
                     )
                     res_any = await session.execute(stmt_any)
                     existing_any = res_any.scalar_one_or_none()
                     if existing_any:
+                        existing_any.zaten_mevcuttu = True
                         return existing_any
-                    
+
                     # If still not found, propagate exception
                     raise
 
@@ -390,7 +518,7 @@ class SoruBankasiServisi:
 
         return {
             "difficulty": base_difficulty + konu_bonus,
-            "discrimination": random.uniform(
+            "discrimination": random.uniform(  # nosec B311 - kriptografik degil: IRT/soru secimi icin istatistiksel rastgelelik
                 0.8, 2.0
             ),  # Gerçek verilerle kalibre edilecek
             "guessing": 0.25,  # 4 seçenekli sorular için
@@ -442,45 +570,40 @@ class SoruBankasiServisi:
         cache_key = f"soru:{soru_id}"
 
         # If cache is mocked in unit tests, use the mocked get path
-        from unittest.mock import AsyncMock
-        if isinstance(cache_manager.get, AsyncMock):
-            cached_soru = await cache_manager.get(cache_key)
-            if cached_soru:
-                logger.debug(f"Soru cache hit (mock): {soru_id}")
-                return cached_soru
-
+        async def fetch_db() -> Question | None:
             async with db_manager.get_session() as session:
-                try:
-                    stmt = select(Question).where(
+                stmt = (
+                    select(Question)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
                         Question.id == soru_id,
                         Question.is_active == True,
                     )
-                    result = await session.execute(stmt)
-                    soru = result.scalar_one_or_none()
+                )
+                result = await session.execute(stmt)
+                return result.scalar_one_or_none()
 
-                    if soru:
-                        await cache_manager.set(cache_key, soru, ttl=7200)
-
-                    return soru
-                except Exception as e:
-                    logger.error(f"Soru getirme hatası: {e}", exc_info=True)
-                    return None
-        else:
-            # Production: get_or_compute with Cache Stampede & Penetration protections
-            async def fetch_db() -> Question | None:
-                async with db_manager.get_session() as session:
-                    stmt = select(Question).where(
-                        Question.id == soru_id,
-                        Question.is_active == True,
-                    )
-                    result = await session.execute(stmt)
-                    return result.scalar_one_or_none()
-
-            try:
-                return await cache_manager.get_or_compute(cache_key, fetch_db, ttl=7200)
-            except Exception as e:
-                logger.error(f"Soru getirme hatası: {e}", exc_info=True)
-                return None
+        try:
+            # `get_or_set` — `CacheManager`in GERCEK metodu. Eskiden burada
+            # `get_or_compute` cagriliyordu ve o metot bu sinifta HIC YOKTU:
+            # `AttributeError` asagidaki ciplak `except` tarafindan yutuluyor,
+            # metot `None` donuyordu -> uc, VAR OLAN bir soru icin HTTP 404
+            # veriyordu (olculdu: 36.967 aktif soru, gercek id ile None).
+            #
+            # NOT: eski cagrinin yorumu 'Cache Stampede & Penetration protections'
+            # diyordu; `get_or_set`te ikisi de YOK (olculdu). O korumalar
+            # `MultiLayerCache.get_or_compute`ta var, ama bu servis 12 yerde
+            # `cache_manager` kullaniyor — yalniz bu 2'sini baska bir cache
+            # nesnesine cevirmek SPLIT-BRAIN yaratirdi (yazma bir store'a, okuma
+            # digerine). Kapsamli gecis ayri bir isin konusu.
+            return await cache_manager.get_or_set(cache_key, fetch_db, ttl=7200)
+        except Exception as e:
+            logger.error(f"Soru getirme hatası: {e}", exc_info=True)
+            return None
 
     async def sorular_listele(
         self,
@@ -507,80 +630,56 @@ class SoruBankasiServisi:
             f"sorular_liste:{sinav_tipi}:{konu}:{zorluk_seviyesi}:{limit}:{offset}"
         )
 
-        from unittest.mock import AsyncMock
-        if isinstance(cache_manager.get, AsyncMock):
-            cached = await cache_manager.get(cache_key)
-            if cached is not None:
-                return cached
-
+        async def fetch_db() -> list[Question]:
             async with db_manager.get_session() as session:
-                try:
-                    stmt = select(Question).where(
+                stmt = (
+                    select(Question)
+                    .join(Question.metadata_info)
+                    .join(Question.statistics)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
                         Question.is_active.is_(True),
                         _safe_for_beta_gate(),
                     )
-                    if sinav_tipi:
-                        stmt = stmt.where(Question.exam_type == sinav_tipi.upper())
-                    if konu:
-                        subject = _KONU_MAP.get(
-                            konu, _KONU_MAP.get(konu.lower(), konu.upper())
-                        )
-                        stmt = stmt.where(Question.subject_area == subject)
-                    if zorluk_seviyesi:
-                        zorluk_lower = zorluk_seviyesi.lower()
-                        stmt = stmt.where(Question.difficulty_level == zorluk_lower)
-                    stmt = (
-                        stmt.order_by(Question.created_at.desc())
-                        .offset(offset)
-                        .limit(limit)
+                )
+
+                if sinav_tipi:
+                    stmt = stmt.where(QuestionMetadata.exam_type == sinav_tipi.upper())
+
+                if konu:
+                    subject = _KONU_MAP.get(
+                        konu, _KONU_MAP.get(konu.lower(), konu.upper())
+                    )
+                    stmt = stmt.where(QuestionMetadata.subject_area == subject)
+
+                if zorluk_seviyesi:
+                    zorluk_lower = zorluk_seviyesi.lower()
+                    stmt = stmt.where(
+                        QuestionStatistics.difficulty_level == zorluk_lower
                     )
 
-                    result = await session.execute(stmt)
-                    questions = result.scalars().all()
+                stmt = (
+                    stmt.order_by(Question.created_at.desc())
+                    .offset(offset)
+                    .limit(limit)
+                )
 
-                    if questions:
-                        await cache_manager.set(cache_key, questions, ttl=300)
+                result = await session.execute(stmt)
+                return list(result.scalars().all())
 
-                    return list(questions)
-                except Exception as e:
-                    logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
-                    return []
-        else:
-            # Production: get_or_compute with Cache Stampede & Penetration protections
-            async def fetch_db() -> list[Question]:
-                async with db_manager.get_session() as session:
-                    stmt = select(Question).where(
-                        Question.is_active.is_(True),
-                        _safe_for_beta_gate(),
-                    )
-
-                    if sinav_tipi:
-                        stmt = stmt.where(Question.exam_type == sinav_tipi.upper())
-
-                    if konu:
-                        subject = _KONU_MAP.get(
-                            konu, _KONU_MAP.get(konu.lower(), konu.upper())
-                        )
-                        stmt = stmt.where(Question.subject_area == subject)
-
-                    if zorluk_seviyesi:
-                        zorluk_lower = zorluk_seviyesi.lower()
-                        stmt = stmt.where(Question.difficulty_level == zorluk_lower)
-
-                    stmt = (
-                        stmt.order_by(Question.created_at.desc())
-                        .offset(offset)
-                        .limit(limit)
-                    )
-
-                    result = await session.execute(stmt)
-                    return list(result.scalars().all())
-
-            try:
-                return await cache_manager.get_or_compute(cache_key, fetch_db, ttl=300)
-            except Exception as e:
-                logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
-                return []
+        try:
+            # `soru_getir` ile ayni kusur, ayni gerekce (oradaki uzun nota bak):
+            # `get_or_compute` bu sinifta yok -> `AttributeError` -> ciplak
+            # `except` -> `[]`. Uc HTTP 200 + BOS liste donuyordu (olculdu:
+            # 36.967 aktif soru varken).
+            return await cache_manager.get_or_set(cache_key, fetch_db, ttl=300)
+        except Exception as e:
+            logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
+            return []
 
     async def rastgele_sorular_sec(
         self,
@@ -617,7 +716,7 @@ class SoruBankasiServisi:
 
                     # Yeterli soru varsa rastgele seç, yoksa tümünü döndür
                     if len(tum_sorular) >= soru_sayisi:
-                        return random.sample(tum_sorular, soru_sayisi)
+                        return random.sample(tum_sorular, soru_sayisi)  # nosec B311 - kriptografik degil: IRT/soru secimi icin istatistiksel rastgelelik
                     logger.debug(
                         f"İstenen: {soru_sayisi}, Mevcut: {len(tum_sorular)} - Tümü döndürülüyor"
                     )
@@ -634,46 +733,34 @@ class SoruBankasiServisi:
 
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
                 sinav_upper = sinav_tipi.upper() if sinav_tipi else None
-                dialect = session.bind.dialect.name if session.bind else "sqlite"
-                sinav_upper = sinav_tipi.upper() if sinav_tipi else None
-                if dialect == "postgresql":
-                    stmt = select(Question).tablesample(func.bernoulli(20)).where(
+                # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
+                # dalı AttributeError ile patlıyor ve bu blok dıştaki
+                # `except Exception: return []` tarafından yutuluyordu, yani sınav
+                # üretimi sessizce "soru yok" diyordu. func.random() her iki
+                # dialect'te de çalışır (bkz offline_sync_service.py:112).
+                stmt = (
+                    select(Question)
+                    .join(Question.metadata_info)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
                         Question.is_active.is_(True),
                         _safe_for_beta_gate(),
                     )
-                else:
-                    stmt = select(Question).where(
-                        Question.is_active.is_(True),
-                        _safe_for_beta_gate(),
-                    )
+                )
                 if sinav_upper:
-                    stmt = stmt.where(Question.exam_type == sinav_upper)
+                    stmt = stmt.where(QuestionMetadata.exam_type == sinav_upper)
 
                 # Konu filtresi - IN clause ile tek sorgu
                 if konu_listesi:
-                    stmt = stmt.where(Question.subject_area.in_(konu_listesi))
+                    stmt = stmt.where(QuestionMetadata.subject_area.in_(konu_listesi))
 
-                if dialect == "postgresql":
-                    stmt = stmt.limit(toplam_ihtiyac)
-                    result = await session.execute(stmt)
-                    tum_sorular = result.scalars().all()
-                    
-                    if len(tum_sorular) < toplam_ihtiyac:
-                        stmt_fallback = select(Question).where(
-                            Question.is_active.is_(True),
-                            _safe_for_beta_gate(),
-                        )
-                        if sinav_upper:
-                            stmt_fallback = stmt_fallback.where(Question.exam_type == sinav_upper)
-                        if konu_listesi:
-                            stmt_fallback = stmt_fallback.where(Question.subject_area.in_(konu_listesi))
-                        stmt_fallback = stmt_fallback.limit(toplam_ihtiyac)
-                        result = await session.execute(stmt_fallback)
-                        tum_sorular = result.scalars().all()
-                else:
-                    stmt = stmt.order_by(func.random()).limit(toplam_ihtiyac)
-                    result = await session.execute(stmt)
-                    tum_sorular = result.scalars().all()
+                stmt = stmt.order_by(func.random()).limit(toplam_ihtiyac)
+                result = await session.execute(stmt)
+                tum_sorular = result.scalars().all()
 
                 logger.debug(f"FIX N+1: Tek sorguda {len(tum_sorular)} soru getirildi")
 
@@ -697,7 +784,7 @@ class SoruBankasiServisi:
 
                     if len(konu_sorulari) >= sayi:
                         # Rastgele seçim yap
-                        secilen = random.sample(konu_sorulari, sayi)
+                        secilen = random.sample(konu_sorulari, sayi)  # nosec B311 - kriptografik degil: IRT/soru secimi icin istatistiksel rastgelelik
                         secilen_sorular.extend(secilen)
                     else:
                         # Yeterli soru yoksa mevcut tümünü al
@@ -817,46 +904,44 @@ class SoruBankasiServisi:
 
         async with db_manager.get_session() as session:
             try:
-                dialect = session.bind.dialect.name if session.bind else "sqlite"
-
-                def _base_stmt(et: str | None, use_tablesample: bool = False):
-                    if use_tablesample and dialect == "postgresql":
-                        s = select(Question).tablesample(func.bernoulli(20)).where(
+                # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
+                # dalı AttributeError ile patlıyordu (dıştaki
+                # `except Exception: return []` yutuyordu). func.random() her iki
+                # dialect'te de çalışır (bkz offline_sync_service.py:112), bu yüzden
+                # use_tablesample parametresi ve dialect dalları kaldırıldı.
+                def _base_stmt(et: str | None):
+                    s = (
+                        select(Question)
+                        .join(Question.metadata_info)
+                        .join(Question.content)
+                        .join(Question.statistics)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
                             Question.is_active == True,
-                            Question.subject_area.in_(subjects_upper),
+                            QuestionMetadata.subject_area.in_(subjects_upper),
                             _safe_for_beta_gate(),
                             # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
-                            text(f"question_text !~* '{_img_required_pattern}'"),
+                            text(
+                                f"question_content.question_text !~* '{_img_required_pattern}'"
+                            ),
                         )
-                    else:
-                        s = select(Question).where(
-                            Question.is_active == True,
-                            Question.subject_area.in_(subjects_upper),
-                            _safe_for_beta_gate(),
-                            # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
-                            text(f"question_text !~* '{_img_required_pattern}'"),
-                        )
+                    )
                     if et is not None:
-                        s = s.where(Question.exam_type == et)
+                        s = s.where(QuestionMetadata.exam_type == et)
                     if difficulty_levels:
-                        s = s.where(Question.difficulty_level.in_(difficulty_levels))
-                    
-                    if dialect == "postgresql":
-                        return s.limit(pool_size)
-                    else:
-                        return s.order_by(func.random()).limit(pool_size)
+                        s = s.where(
+                            QuestionStatistics.difficulty_level.in_(difficulty_levels)
+                        )
+
+                    return s.order_by(func.random()).limit(pool_size)
 
                 # Önce exam_type ile dene
-                if dialect == "postgresql":
-                    result = await session.execute(_base_stmt(exam_type_upper, use_tablesample=True))
-                    pool: list[Question] = list(result.scalars().all())
-                    
-                    if len(pool) < pool_size:
-                        result = await session.execute(_base_stmt(exam_type_upper, use_tablesample=False))
-                        pool = list(result.scalars().all())
-                else:
-                    result = await session.execute(_base_stmt(exam_type_upper))
-                    pool: list[Question] = list(result.scalars().all())
+                result = await session.execute(_base_stmt(exam_type_upper))
+                pool: list[Question] = list(result.scalars().all())
 
                 # Edebiyat TYT yok gibi durumlar için fallback: exam_type kısıtını kaldır
                 if not pool:
@@ -864,15 +949,8 @@ class SoruBankasiServisi:
                         f"get_interleaved_questions: exam_type={exam_type_upper} "
                         f"havuz boş, fallback uygulanıyor (konular={subjects_upper})"
                     )
-                    if dialect == "postgresql":
-                        result = await session.execute(_base_stmt(None, use_tablesample=True))
-                        pool = list(result.scalars().all())
-                        if len(pool) < pool_size:
-                            result = await session.execute(_base_stmt(None, use_tablesample=False))
-                            pool = list(result.scalars().all())
-                    else:
-                        result = await session.execute(_base_stmt(None))
-                        pool = list(result.scalars().all())
+                    result = await session.execute(_base_stmt(None))
+                    pool = list(result.scalars().all())
 
                 logger.debug(
                     f"get_interleaved_questions: havuzdan {len(pool)} soru çekildi "
@@ -973,23 +1051,29 @@ class SoruBankasiServisi:
                 # Topic normalization (Türkçe karakter desteği)
                 normalized_topic = _normalize_topic(topic) if topic else None
 
-                dialect = session.bind.dialect.name if session.bind else "sqlite"
-                if dialect == "postgresql":
-                    stmt = select(Question).tablesample(func.bernoulli(20)).where(
+                # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
+                # dalı AttributeError ile patlıyordu (dıştaki except yutuyordu).
+                # func.random() her iki dialect'te de çalışır.
+                stmt = (
+                    select(Question)
+                    .join(Question.metadata_info)
+                    .join(Question.content)
+                    .join(Question.statistics)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
                         Question.is_active == True,
-                        Question.subject_area == subject_upper,
+                        QuestionMetadata.subject_area == subject_upper,
                         _safe_for_beta_gate(),
                     )
-                else:
-                    stmt = select(Question).where(
-                        Question.is_active == True,
-                        Question.subject_area == subject_upper,
-                        _safe_for_beta_gate(),
-                    )
+                )
 
                 # Topic varsa exam_type filtresi uygulanmaz (Türev=AYT, Çarpan=TYT olabilir)
                 if not topic:
-                    stmt = stmt.where(Question.exam_type == exam_type_upper)
+                    stmt = stmt.where(QuestionMetadata.exam_type == exam_type_upper)
 
                 # Konu bazlı filtre: topic_hierarchy tablosundan ID bul
                 if normalized_topic:
@@ -1047,40 +1131,20 @@ class SoruBankasiServisi:
                                 # Kök bazlı arama: kelimenin ilk 4+ harfini kullan
                                 stem = kw[: max(4, len(kw) - 2)]
                                 pattern = f"%{stem}%"
-                                conditions.append(Question.question_text.ilike(pattern))
+                                conditions.append(
+                                    QuestionContent.question_text.ilike(pattern)
+                                )
                             # En az bir kelime eşleşmesi yeterli
                             stmt = stmt.where(or_(*conditions))
 
                 if difficulty_levels:
-                    stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
+                    stmt = stmt.where(
+                        QuestionStatistics.difficulty_level.in_(difficulty_levels)
+                    )
 
-                if dialect == "postgresql":
-                    stmt = stmt.limit(count)
-                    result = await session.execute(stmt)
-                    questions: list[Question] = list(result.scalars().all())
-                    
-                    if len(questions) < count:
-                        stmt_no_sample = select(Question).where(
-                            Question.is_active == True,
-                            Question.subject_area == subject_upper,
-                            _safe_for_beta_gate(),
-                        )
-                        if not topic:
-                            stmt_no_sample = stmt_no_sample.where(Question.exam_type == exam_type_upper)
-                        if normalized_topic:
-                            if topic_id:
-                                stmt_no_sample = stmt_no_sample.where(Question.primary_topic_id == topic_id)
-                            elif keywords:
-                                stmt_no_sample = stmt_no_sample.where(or_(*conditions))
-                        if difficulty_levels:
-                            stmt_no_sample = stmt_no_sample.where(Question.difficulty_level.in_(difficulty_levels))
-                        stmt_no_sample = stmt_no_sample.limit(count)
-                        result = await session.execute(stmt_no_sample)
-                        questions = list(result.scalars().all())
-                else:
-                    stmt = stmt.order_by(func.random()).limit(count)
-                    result = await session.execute(stmt)
-                    questions: list[Question] = list(result.scalars().all())
+                stmt = stmt.order_by(func.random()).limit(count)
+                result = await session.execute(stmt)
+                questions: list[Question] = list(result.scalars().all())
 
                 # Fallback: Topic bulunamazsa, topic filtresiz tekrar dene
                 if use_topic_filter and len(questions) == 0 and normalized_topic:
@@ -1088,49 +1152,29 @@ class SoruBankasiServisi:
                         f"Konu '{topic}' için soru bulunamadı, fallback: sadece ders filtresi"
                     )
 
-                    if dialect == "postgresql":
-                        stmt_fallback = select(Question).tablesample(func.bernoulli(20)).where(
+                    stmt_fallback = (
+                        select(Question)
+                        .join(Question.metadata_info)
+                        .join(Question.statistics)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
                             Question.is_active == True,
-                            Question.subject_area == subject_upper,
-                            Question.exam_type == exam_type_upper,
+                            QuestionMetadata.subject_area == subject_upper,
+                            QuestionMetadata.exam_type == exam_type_upper,
                             _safe_for_beta_gate(),
                         )
-                        if difficulty_levels:
-                            stmt_fallback = stmt_fallback.where(
-                                Question.difficulty_level.in_(difficulty_levels)
-                            )
-                        stmt_fallback = stmt_fallback.limit(count)
-                        result_fallback = await session.execute(stmt_fallback)
-                        questions = list(result_fallback.scalars().all())
-                        
-                        if len(questions) < count:
-                            stmt_fallback = select(Question).where(
-                                Question.is_active == True,
-                                Question.subject_area == subject_upper,
-                                Question.exam_type == exam_type_upper,
-                                _safe_for_beta_gate(),
-                            )
-                            if difficulty_levels:
-                                stmt_fallback = stmt_fallback.where(
-                                    Question.difficulty_level.in_(difficulty_levels)
-                                )
-                            stmt_fallback = stmt_fallback.limit(count)
-                            result_fallback = await session.execute(stmt_fallback)
-                            questions = list(result_fallback.scalars().all())
-                    else:
-                        stmt_fallback = select(Question).where(
-                            Question.is_active == True,
-                            Question.subject_area == subject_upper,
-                            Question.exam_type == exam_type_upper,
-                            _safe_for_beta_gate(),
+                    )
+                    if difficulty_levels:
+                        stmt_fallback = stmt_fallback.where(
+                            QuestionStatistics.difficulty_level.in_(difficulty_levels)
                         )
-                        if difficulty_levels:
-                            stmt_fallback = stmt_fallback.where(
-                                Question.difficulty_level.in_(difficulty_levels)
-                            )
-                        stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
-                        result_fallback = await session.execute(stmt_fallback)
-                        questions = list(result_fallback.scalars().all())
+                    stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
+                    result_fallback = await session.execute(stmt_fallback)
+                    questions = list(result_fallback.scalars().all())
 
                     logger.info(
                         f"Fallback: {len(questions)} soru (ders={subject_upper}, konu yok)"
@@ -1183,16 +1227,18 @@ class SoruBankasiServisi:
             for soru in tum_sorular:
                 bilgi_degeri = await self._hesapla_bilgi_fonksiyonu(
                     ogrenci_yetenek,
-                    soru.irt_difficulty,
-                    soru.irt_discrimination,
-                    soru.irt_guessing,
+                    soru.statistics.irt_difficulty,
+                    soru.statistics.irt_discrimination,
+                    soru.statistics.irt_guessing,
                 )
 
                 soru_bilgi_listesi.append(
                     {
                         "soru": soru,
                         "bilgi_degeri": bilgi_degeri,
-                        "zorluk_farki": abs(soru.irt_difficulty - ogrenci_yetenek),
+                        "zorluk_farki": abs(
+                            soru.statistics.irt_difficulty - ogrenci_yetenek
+                        ),
                     }
                 )
 
@@ -1205,7 +1251,11 @@ class SoruBankasiServisi:
 
             for item in soru_bilgi_listesi:
                 soru = item["soru"]
-                konu = str(soru.subject_area)
+                konu = (
+                    str(soru.metadata_info.subject_area)
+                    if soru.metadata_info
+                    else "Genel"
+                )
 
                 # Konu dağılımını kontrol et
                 if konu not in konu_sayaclari:
@@ -1317,9 +1367,17 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Mevcut soruyu getir
-                stmt = select(Question).where(
-                    Question.id == soru_id,
-                    Question.is_active == True,
+                stmt = (
+                    select(Question)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
+                    )
                 )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
@@ -1410,7 +1468,9 @@ class SoruBankasiServisi:
             try:
                 # Base query
                 stmt = (
-                    select(Question.subject_area)
+                    select(QuestionMetadata.subject_area)
+                    .select_from(Question)
+                    .join(QuestionMetadata, Question.id == QuestionMetadata.id)
                     .distinct()
                     .where(Question.is_active == True)
                 )
@@ -1420,13 +1480,13 @@ class SoruBankasiServisi:
                     exam_type, _, _ = await self._enum_donusturucu(
                         sinav_tipi, "orta", "Matematik"
                     )
-                    stmt = stmt.where(Question.exam_type == exam_type)
+                    stmt = stmt.where(QuestionMetadata.exam_type == exam_type)
 
                 result = await session.execute(stmt)
                 subject_areas = result.scalars().all()
 
-                # Enum değerlerini string'e çevir
-                return sorted([subject.value for subject in subject_areas])
+                # subject_area split sonrasi String kolon — .value YOK
+                return sorted(subject_areas)
 
             except Exception as e:
                 logger.error(f"Konu listesi getirme hatası: {e}", exc_info=True)
@@ -1450,32 +1510,30 @@ class SoruBankasiServisi:
 
                 # Sınav tipi dağılımı
                 sinav_tipi_stmt = (
-                    select(Question.exam_type, func.count(Question.id))
+                    select(QuestionMetadata.exam_type, func.count(Question.id))
+                    .join(QuestionMetadata, Question.id == QuestionMetadata.id)
                     .where(Question.is_active == True)
-                    .group_by(Question.exam_type)
+                    .group_by(QuestionMetadata.exam_type)
                 )
                 sinav_tipi_result = await session.execute(sinav_tipi_stmt)
-                sinav_tipi_dagilimi = {
-                    exam_type.value: count
-                    for exam_type, count in sinav_tipi_result.all()
-                }
+                sinav_tipi_dagilimi = dict(sinav_tipi_result.all())
 
                 # Konu dağılımı
                 konu_stmt = (
-                    select(Question.subject_area, func.count(Question.id))
+                    select(QuestionMetadata.subject_area, func.count(Question.id))
+                    .join(QuestionMetadata, Question.id == QuestionMetadata.id)
                     .where(Question.is_active == True)
-                    .group_by(Question.subject_area)
+                    .group_by(QuestionMetadata.subject_area)
                 )
                 konu_result = await session.execute(konu_stmt)
-                konu_dagilimi = {
-                    subject.value: count for subject, count in konu_result.all()
-                }
+                konu_dagilimi = dict(konu_result.all())
 
                 # Zorluk dağılımı
                 zorluk_stmt = (
-                    select(Question.difficulty_level, func.count(Question.id))
+                    select(QuestionStatistics.difficulty_level, func.count(Question.id))
+                    .join(QuestionStatistics, Question.id == QuestionStatistics.id)
                     .where(Question.is_active == True)
-                    .group_by(Question.difficulty_level)
+                    .group_by(QuestionStatistics.difficulty_level)
                 )
                 zorluk_result = await session.execute(zorluk_stmt)
                 zorluk_dagilimi = {
@@ -1483,14 +1541,32 @@ class SoruBankasiServisi:
                 }
 
                 # IRT parametreleri istatistikleri
-                irt_stmt = select(
-                    func.avg(Question.irt_difficulty).label("avg_difficulty"),
-                    func.min(Question.irt_difficulty).label("min_difficulty"),
-                    func.max(Question.irt_difficulty).label("max_difficulty"),
-                    func.avg(Question.irt_discrimination).label("avg_discrimination"),
-                    func.avg(Question.morphology_complexity).label("avg_morphology"),
-                    func.avg(Question.readability_score).label("avg_readability"),
-                ).where(Question.is_active == True)
+                irt_stmt = (
+                    select(
+                        func.avg(QuestionStatistics.irt_difficulty).label(
+                            "avg_difficulty"
+                        ),
+                        func.min(QuestionStatistics.irt_difficulty).label(
+                            "min_difficulty"
+                        ),
+                        func.max(QuestionStatistics.irt_difficulty).label(
+                            "max_difficulty"
+                        ),
+                        func.avg(QuestionStatistics.irt_discrimination).label(
+                            "avg_discrimination"
+                        ),
+                        func.avg(QuestionMetadata.morphology_complexity).label(
+                            "avg_morphology"
+                        ),
+                        func.avg(QuestionMetadata.readability_score).label(
+                            "avg_readability"
+                        ),
+                    )
+                    .select_from(Question)
+                    .join(QuestionStatistics)
+                    .join(QuestionMetadata)
+                    .where(Question.is_active == True)
+                )
                 irt_result = await session.execute(irt_stmt)
                 irt_stats = irt_result.first()
 
@@ -1545,8 +1621,15 @@ class SoruBankasiServisi:
             if toplam == 0:
                 return 0.0
 
-            yuksek_stmt = select(func.count(Question.id)).where(
-                and_(Question.is_active == True, Question.irt_discrimination >= 1.5)
+            yuksek_stmt = (
+                select(func.count(Question.id))
+                .join(QuestionStatistics)
+                .where(
+                    and_(
+                        Question.is_active == True,
+                        QuestionStatistics.irt_discrimination >= 1.5,
+                    )
+                )
             )
             yuksek_result = await session.execute(yuksek_stmt)
             yuksek = yuksek_result.scalar()
@@ -1560,9 +1643,10 @@ class SoruBankasiServisi:
         """Zorluk dağılımının dengesini hesapla (0-100 arası)"""
         try:
             zorluk_stmt = (
-                select(Question.difficulty_level, func.count(Question.id))
+                select(QuestionStatistics.difficulty_level, func.count(Question.id))
+                .join(QuestionStatistics)
                 .where(Question.is_active == True)
-                .group_by(Question.difficulty_level)
+                .group_by(QuestionStatistics.difficulty_level)
             )
             zorluk_result = await session.execute(zorluk_stmt)
             zorluk_counts = dict(zorluk_result.all())
@@ -1614,11 +1698,15 @@ class SoruBankasiServisi:
 
             kapsam_sayisi = 0
             for min_val, max_val, _ in seviyeler:
-                seviye_stmt = select(func.count(Question.id)).where(
-                    and_(
-                        Question.is_active == True,
-                        Question.morphology_complexity >= min_val,
-                        Question.morphology_complexity < max_val,
+                seviye_stmt = (
+                    select(func.count(Question.id))
+                    .join(QuestionMetadata)
+                    .where(
+                        and_(
+                            Question.is_active == True,
+                            QuestionMetadata.morphology_complexity >= min_val,
+                            QuestionMetadata.morphology_complexity < max_val,
+                        )
                     )
                 )
                 seviye_result = await session.execute(seviye_stmt)
@@ -1658,16 +1746,23 @@ class SoruBankasiServisi:
 
                 stmt = (
                     select(Question)
+                    .join(Question.metadata_info)
+                    .join(Question.statistics)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
                     .where(
                         and_(
                             Question.is_active == True,
-                            Question.exam_type == exam_type,
-                            Question.irt_difficulty >= min_zorluk,
-                            Question.irt_difficulty <= max_zorluk,
+                            QuestionMetadata.exam_type == exam_type,
+                            QuestionStatistics.irt_difficulty >= min_zorluk,
+                            QuestionStatistics.irt_difficulty <= max_zorluk,
                             _safe_for_beta_gate(),
                         )
                     )
-                    .order_by(Question.irt_discrimination.desc())
+                    .order_by(QuestionStatistics.irt_discrimination.desc())
                 )
 
                 result = await session.execute(stmt)
@@ -1697,45 +1792,76 @@ class SoruBankasiServisi:
 
             for i, soru_data in enumerate(sorular_listesi):
                 try:
-                    # Enum dönüştürmeleri
-                    exam_type, difficulty, subject_area = await self._enum_donusturucu(
-                        soru_data.get("sinav_tipi", "TYT"),
-                        soru_data.get("zorluk_seviyesi", "orta"),
-                        soru_data.get("konu", "Matematik"),
+                    # ORTAK normalizasyon — `soru_ekle` ile TEK kanon (#485).
+                    # Onceki hali `_enum_donusturucu` kullaniyordu ve o, `enums_db`
+                    # ailesinden KUCUK HARF `str` alt-sinifi uyeler donduruyordu:
+                    #   * `difficulty` -> 3 seviyeli QuestionDifficulty; 5 seviyeli
+                    #     PG enum'una yazilinca `invalid input value for enum
+                    #     questiondifficultylevel: "medium"` (olculdu)
+                    #   * `exam_type`/`subject_area` -> String kolona 'tyt'/'matematik'
+                    #     yazilirdi ve `exam_type='TYT'` filtreleyen sorgulardan DUSERDI
+                    alanlar = _yazma_alanlarini_normalize_et(soru_data)
+                    secenekler = alanlar["secenekler"]
+
+                    # IRT parametrelerini hesapla (helper easy/medium/hard bekler)
+                    irt_params = await self._hesapla_irt_parametreleri(
+                        alanlar["difficulty_level"]
+                        .value.replace("very_", "")
+                        .replace("_", " "),
+                        alanlar["konu_raw"],
                     )
 
-                    # IRT parametrelerini hesapla
-                    irt_params = await self._hesapla_irt_parametreleri(
-                        difficulty.value, soru_data.get("konu", "Matematik")
+                    # `soru_hash` ve `primary_topic_id` NOT NULL + DB-default'suz;
+                    # ikisi de doldurulmadigi icin batch TAMAMEN dusuyordu.
+                    primary_topic_id = await self._primary_topic_id_cozumle(
+                        session, alanlar["subject_area"], soru_data.get("alt_konu")
                     )
 
                     # Question object oluştur
                     yeni_soru = Question(
+                        primary_topic_id=primary_topic_id,
+                        created_by=soru_data.get("created_by"),
+                        soru_hash=alanlar["soru_hash"],
+                        # ACIKCA True: model `default=False, server_default="true"`
+                        # tanimliyor ve INSERT'te ORM varsayilani KAZANIYOR ->
+                        # yeni satir `is_active=False` yaziliyordu. Iki sonucu
+                        # olculdu: (1) `uq_qb_soru_hash_active` KISMI indeksi
+                        # (`WHERE is_active = true`) uygulanmiyor, yani mukerrer
+                        # engelleme OLU; (2) yeni soru ogrenciye gorunmuyor (tum
+                        # ogrenci sorgulari `is_active == True` filtreliyor).
+                        # Canli 36.967 satirin 36.967'si `is_active=true`.
+                        # Inceleme kapisi `review_status`/`quality_review_status`
+                        # + `mv_safe_for_beta`, `is_active` DEGIL.
+                        is_active=True,
+                    )
+                    yeni_soru.content = QuestionContent(
                         question_text=soru_data["soru_metni"],
-                        option_a=soru_data["secenekler"][0].replace("A) ", ""),
-                        option_b=soru_data["secenekler"][1].replace("B) ", ""),
-                        option_c=soru_data["secenekler"][2].replace("C) ", ""),
-                        option_d=soru_data["secenekler"][3].replace("D) ", ""),
-                        option_e=soru_data["secenekler"][4].replace("E) ", "")
-                        if len(soru_data["secenekler"]) > 4
-                        else None,
+                        option_a=secenekler[0].replace("A) ", ""),
+                        option_b=secenekler[1].replace("B) ", ""),
+                        option_c=secenekler[2].replace("C) ", ""),
+                        option_d=secenekler[3].replace("D) ", ""),
+                        option_e=alanlar["option_e"],
                         correct_answer=soru_data["dogru_cevap"],
                         explanation=soru_data.get("cozum_aciklamasi"),
-                        exam_type=exam_type,
-                        subject_area=subject_area,
-                        topic=soru_data.get("konu", "Genel"),
-                        subtopic=soru_data.get("alt_konu"),
-                        difficulty=difficulty,
-                        irt_difficulty=irt_params["difficulty"],
-                        irt_discrimination=irt_params["discrimination"],
-                        irt_guessing=irt_params["guessing"],
+                    )
+                    yeni_soru.metadata_info = QuestionMetadata(
+                        exam_type=alanlar["exam_type"],
+                        subject_area=alanlar["subject_area"],
+                        # grade_level: int NOT NULL, DB-default YOK -> eksikligi
+                        # butun batch'i dusuruyordu.
+                        grade_level=alanlar["grade_level"],
                         morphology_complexity=await self._hesapla_morfoloji_karmasikligi(
                             soru_data["soru_metni"]
                         ),
                         readability_score=await self._hesapla_okunabilirlik(
                             soru_data["soru_metni"]
                         ),
-                        created_by=soru_data.get("created_by"),
+                    )
+                    yeni_soru.statistics = QuestionStatistics(
+                        difficulty_level=alanlar["difficulty_level"],
+                        irt_difficulty=irt_params["difficulty"],
+                        irt_discrimination=irt_params["discrimination"],
+                        irt_guessing=irt_params["guessing"],
                     )
                     questions_to_add.append(yeni_soru)
                     basarili += 1
@@ -1779,30 +1905,35 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(
-                    Question.id == soru_id,
-                    Question.is_active == True,
+                stmt = (
+                    select(Question)
+                    .options(joinedload(Question.statistics))
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
+                    )
                 )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
-                if not soru:
+                if not soru or not soru.statistics:
                     return False
 
                 # İstatistikleri güncelle
-                soru.times_asked += 1
+                soru.statistics.times_asked += 1
                 if dogru_cevap:
-                    soru.times_correct += 1
+                    soru.statistics.times_correct += 1
 
                 # Ortalama cevap süresini güncelle
-                if soru.average_response_time == 0:
-                    soru.average_response_time = cevap_suresi
+                if soru.statistics.average_response_time == 0:
+                    soru.statistics.average_response_time = cevap_suresi
                 else:
                     # Hareketli ortalama
-                    soru.average_response_time = (
-                        soru.average_response_time * (soru.times_asked - 1)
+                    soru.statistics.average_response_time = (
+                        soru.statistics.average_response_time
+                        * (soru.statistics.times_asked - 1)
                         + cevap_suresi
-                    ) / soru.times_asked
+                    ) / soru.statistics.times_asked
 
                 await session.commit()
                 return True
@@ -1824,18 +1955,26 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(
-                    Question.id == soru_id,
-                    Question.is_active == True,
+                stmt = (
+                    select(Question)
+                    .options(joinedload(Question.statistics))
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
+                    )
                 )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
-                if not soru or soru.times_asked < 10:  # Minimum 10 cevap gerekli
+                if (
+                    not soru or not soru.statistics or soru.statistics.times_asked < 10
+                ):  # Minimum 10 cevap gerekli
                     return False
 
                 # Başarı oranına göre zorluk parametresini ayarla
-                basari_orani = soru.times_correct / soru.times_asked
+                basari_orani = (
+                    soru.statistics.times_correct / soru.statistics.times_asked
+                )
 
                 # Logit dönüşümü ile zorluk hesapla
                 if basari_orani <= 0.01:
@@ -1846,15 +1985,17 @@ class SoruBankasiServisi:
                 yeni_zorluk = -math.log(basari_orani / (1 - basari_orani))
 
                 # Zorluk parametresini güncelle
-                soru.irt_difficulty = max(-3.0, min(3.0, yeni_zorluk))
+                soru.statistics.irt_difficulty = max(-3.0, min(3.0, yeni_zorluk))
 
                 # Ayırıcılık parametresini cevap süresi varyansına göre ayarla
-                if soru.average_response_time > 0:
+                if soru.statistics.average_response_time > 0:
                     # Hızlı cevaplanan sorular daha az ayırıcı olabilir
                     sure_faktoru = min(
-                        2.0, soru.average_response_time / 60
+                        2.0, soru.statistics.average_response_time / 60
                     )  # 60 saniye referans
-                    soru.irt_discrimination = max(0.5, min(2.5, sure_faktoru))
+                    soru.statistics.irt_discrimination = max(
+                        0.5, min(2.5, sure_faktoru)
+                    )
 
                 await session.commit()
                 return True

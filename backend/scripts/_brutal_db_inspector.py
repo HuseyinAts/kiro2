@@ -1,5 +1,6 @@
 import asyncio
 import json
+
 import asyncpg
 
 DATABASE_URL = "postgresql://postgres:postgres@localhost:5434/kiro2"
@@ -65,7 +66,7 @@ async def inspect_db():
             clm = col['column_name']
             if (tbl, clm) not in gin_indexed_cols:
                 missing_gin_indexes.append({"table_name": tbl, "column_name": clm})
-        
+
         results['missing_gin_indexes'] = missing_gin_indexes
 
         # Output in JSON format

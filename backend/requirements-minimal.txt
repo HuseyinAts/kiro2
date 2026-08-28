@@ -2,7 +2,9 @@
 # Use this for the backend Docker image
 
 # Core Dependencies
-fastapi>=0.104.1
+# S229: host<->container surum ucurumu + build determinizmi (requirements.txt ile ayni)
+fastapi==0.141.1
+starlette==1.4.1
 uvicorn[standard]>=0.24.0
 python-dotenv>=1.0.0
 pydantic>=2.5.0
@@ -22,10 +24,12 @@ bcrypt>=4.0.1,<5
 
 # Cache & Redis
 redis>=5.0.0
+cachetools>=5.0.0  # TTLCache — required by core.osym_exam_engine + agents.learning_path (GF3/GF7)
 
 # Async & HTTP
 aiohttp>=3.9.1
-httpx>=0.25.2
+# S229: host<->container surum ucurumu + build determinizmi (requirements.txt ile ayni)
+httpx==0.28.1
 
 # Logging
 structlog>=23.1.0
@@ -110,3 +114,6 @@ pyttsx3>=2.90
 
 # JWT (python-jose)
 python-jose[cryptography]>=3.3.0
+uuid6>=2024.1.1
+
+pgvector>=0.2.1

@@ -204,10 +204,14 @@ const lightThemeOptions: ThemeOptions = {
       styleOverrides: {
         root: {
           borderRadius: 16,
-          boxShadow: modernColors.shadow.sm,
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: modernColors.shadow.glass,
+          backgroundColor: modernColors.glass.white.light,
+          backdropFilter: 'blur(16px) saturate(180%)',
+          border: `1px solid ${modernColors.glass.border}`,
+          transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', // Spring-like feel
           '&:hover': {
-            boxShadow: modernColors.shadow.md,
+            boxShadow: modernColors.shadow.modern,
+            transform: 'translateY(-2px) scale(1.01)',
           },
         },
       },
@@ -217,16 +221,19 @@ const lightThemeOptions: ThemeOptions = {
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 16,
+          backgroundColor: modernColors.glass.white.light,
+          backdropFilter: 'blur(16px) saturate(180%)',
+          border: `1px solid ${modernColors.glass.border}`,
         },
         elevation1: {
-          boxShadow: modernColors.shadow.sm,
+          boxShadow: modernColors.shadow.glass,
         },
         elevation2: {
-          boxShadow: modernColors.shadow.md,
+          boxShadow: modernColors.shadow.modern,
         },
         elevation3: {
-          boxShadow: modernColors.shadow.lg,
+          boxShadow: modernColors.shadow.glow,
         },
       },
     },
@@ -345,6 +352,18 @@ const lightThemeOptions: ThemeOptions = {
         },
         arrow: {
           color: 'rgba(55, 65, 81, 0.95)',
+        },
+      },
+    },
+
+    // ==== MuiCssBaseline ====
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          background: 'radial-gradient(circle at 15% 50%, rgba(235, 244, 255, 0.4), rgba(255, 255, 255, 0)), radial-gradient(circle at 85% 30%, rgba(243, 232, 255, 0.4), rgba(255, 255, 255, 0)), #F9FAFB',
+          backgroundAttachment: 'fixed',
+          minHeight: '100vh',
+          transition: 'background 0.5s ease',
         },
       },
     },

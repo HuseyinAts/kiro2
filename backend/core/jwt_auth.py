@@ -5,6 +5,7 @@ blacklisting, and security features.
 
 Blacklist: Redis-backed with in-memory fallback.
 """
+
 import hashlib
 import logging
 import secrets
@@ -55,7 +56,7 @@ class JWTTokens(BaseModel):
 
     access_token: str
     refresh_token: str
-    token_type: str = "bearer"  # noqa: S105
+    token_type: str = "bearer"
     expires_in: int
     refresh_expires_in: int
 
@@ -104,9 +105,7 @@ class JWTManager:
         if permissions is None:
             permissions = self._get_default_permissions(role)
 
-        expire = datetime.now(UTC) + timedelta(
-            minutes=self.access_token_expire_minutes
-        )
+        expire = datetime.now(UTC) + timedelta(minutes=self.access_token_expire_minutes)
 
         payload = {
             "sub": user_id,
@@ -127,9 +126,7 @@ class JWTManager:
         self, user_id: str, email: str, role: UserRole, device_id: str | None = None
     ) -> str:
         """Refresh token oluştur"""
-        expire = datetime.now(UTC) + timedelta(
-            days=self.refresh_token_expire_days
-        )
+        expire = datetime.now(UTC) + timedelta(days=self.refresh_token_expire_days)
 
         payload = {
             "sub": user_id,
@@ -219,6 +216,8 @@ class JWTManager:
                 permissions=payload.get("permissions", []),
             )
 
+        except HTTPException:
+            raise
         except jwt.ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
@@ -252,18 +251,25 @@ class JWTManager:
 
         # Database persistence varsa, refresh token'ı kontrol et
         if db:
+            from sqlalchemy import select as sa_select
+            from sqlalchemy.ext.asyncio import AsyncSession as SAAsyncSession
+
             from models.database import RefreshToken
 
             token_hash = hashlib.sha256(refresh_token.encode()).hexdigest()
-            db_token = (
-                db.query(RefreshToken)
-                .filter(
-                    RefreshToken.jti == payload.jti,
-                    RefreshToken.token_hash == token_hash,
-                    RefreshToken.revoked.is_(False),
-                )
-                .first()
+            kosullar = (
+                RefreshToken.jti == payload.jti,
+                RefreshToken.token_hash == token_hash,
+                RefreshToken.revoked.is_(False),
             )
+            if isinstance(db, SAAsyncSession):
+                # GF1z: CQRS RefreshTokenCommandHandler AsyncSession gecirir;
+                # sync .query() AttributeError firlatiyor ve handler bunu
+                # ValueError -> 401'e maskeliyordu. Async yolda select() kullan.
+                sonuc = await db.execute(sa_select(RefreshToken).where(*kosullar))
+                db_token = sonuc.scalar_one_or_none()
+            else:
+                db_token = db.query(RefreshToken).filter(*kosullar).first()
 
             if not db_token:
                 raise HTTPException(
@@ -320,6 +326,7 @@ class JWTManager:
         for attempt in range(1, max_retries + 1):
             try:
                 from redis import asyncio as aioredis
+
                 redis_url = self.settings.redis_url
                 self._redis = await aioredis.from_url(
                     redis_url,
@@ -340,6 +347,7 @@ class JWTManager:
                         f"Retrying in {retry_delay}s..."
                     )
                     import asyncio
+
                     await asyncio.sleep(retry_delay)
                 else:
                     logger.warning(
@@ -395,7 +403,8 @@ class JWTManager:
         if len(self.blacklisted_tokens) >= self.MAX_MEMORY_BLACKLIST:
             evict_count = self.MAX_MEMORY_BLACKLIST // 5
             sorted_keys = sorted(
-                self.blacklisted_tokens, key=self.blacklisted_tokens.get,
+                self.blacklisted_tokens,
+                key=self.blacklisted_tokens.get,
             )
             for k in sorted_keys[:evict_count]:
                 del self.blacklisted_tokens[k]
@@ -427,6 +436,9 @@ class JWTManager:
         # Always add to in-memory (immediate effect for current process)
         self._enforce_memory_limit()
         self.blacklisted_tokens[identifier] = time.time()
+        # Evict any positive-cache entry so is_blacklisted_async cannot
+        # short-circuit a freshly-blacklisted token within the 60s window (GF1x).
+        self.valid_tokens.pop(identifier, None)
 
         # Persist to Redis if available
         if self._redis_available and self._redis:
@@ -457,14 +469,15 @@ class JWTManager:
         if not identifier:
             return False
 
-        # Fast path: in-memory check for valid tokens
+        # Blacklist takes precedence over the positive cache (GF1x): a token
+        # validated within the last 60s must still be rejected once blacklisted.
+        if identifier in self.blacklisted_tokens:
+            return True
+
+        # Fast path: in-memory positive cache for known-valid tokens
         valid_ts = self.valid_tokens.get(identifier)
         if valid_ts and time.time() - valid_ts < 60:
             return False
-
-        # Fast path: in-memory check
-        if identifier in self.blacklisted_tokens:
-            return True
 
         # Redis check for cross-process/restart persistence
         if self._redis_available and self._redis:
@@ -475,8 +488,7 @@ class JWTManager:
                     # Sync to in-memory for faster subsequent checks
                     self.blacklisted_tokens[identifier] = time.time()
                     return True
-                else:
-                    self.valid_tokens[identifier] = time.time()
+                self.valid_tokens[identifier] = time.time()
             except Exception as e:
                 logger.warning(
                     "Redis blacklist read failed, disabling Redis "
@@ -486,11 +498,13 @@ class JWTManager:
 
         if identifier not in self.valid_tokens:
             self.valid_tokens[identifier] = time.time()
-            
+
         # Periodically clean up cache
         if len(self.valid_tokens) > 10000:
             now = time.time()
-            self.valid_tokens = {k: v for k, v in self.valid_tokens.items() if now - v < 60}
+            self.valid_tokens = {
+                k: v for k, v in self.valid_tokens.items() if now - v < 60
+            }
 
         return False
 
@@ -549,7 +563,8 @@ class JWTManager:
         now = datetime.now(UTC)
         cutoff = timedelta(minutes=max_age_minutes)
         stale = [
-            k for k, v in self.device_attempts.items()
+            k
+            for k, v in self.device_attempts.items()
             if now - v["window_start"] > cutoff
         ]
         for k in stale:
@@ -824,7 +839,6 @@ async def get_current_user(
         )
 
     return jwt_mgr.verify_token(token, TokenType.ACCESS)
-
 
 
 async def get_current_active_user(

@@ -265,7 +265,7 @@ def test_card_state_management(fsrs_system):
     new_card = FSRSCard(id="NEW001", subject="fizik", state="new")
     updated = fsrs_system._update_card_parameters(
         card=new_card,
-        grade=FSRSGrade.GOOD,
+        grade=FSRSGrade.AGAIN,
         current_date=datetime.now()
     )
     assert updated.state == "learning"

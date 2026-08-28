@@ -215,7 +215,7 @@ class TestEmbeddingServiceWithMocks:
             emb_module.REDIS_AVAILABLE = False
 
             try:
-                with patch.object(emb_module, 'SentenceTransformer', mock_st_class):
+                with patch.object(emb_module, 'SentenceTransformer', mock_st_class, create=True):
                     service = emb_module.EmbeddingService()
                     service._model = mock_model
                     service._redis = None

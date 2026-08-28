@@ -34,7 +34,7 @@ from services.bkt_service import BKTService
 
 TEST_TOPIC_ID = "00000000-0000-0000-0000-000000000001"
 REAL_USER_ID = "41411c25-5c85-4470-a6ac-ac31c60ce732"
-DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"
+DB_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5434/kiro2"
 
 _FSRS_MOCK_RETURN = {
     "stability": 1.0,
@@ -71,6 +71,27 @@ async def db_session():
                 text(f"DELETE FROM {table} WHERE student_id = :sid"),
                 {"sid": REAL_USER_ID},
             )
+        # Ensure org_legacy_default exists in organizations table
+        await session.execute(
+            text("""
+                INSERT INTO organizations (id, name, created_at, updated_at)
+                VALUES ('org_legacy_default', 'Legacy Default Org', now(), now())
+                ON CONFLICT (id) DO NOTHING
+            """)
+        )
+        # Ensure REAL_USER_ID seed user exists (FK for BKTState.student_id)
+        await session.execute(
+            text("""
+                INSERT INTO users (id, email, username, first_name, last_name, password_hash, role, organization_id, is_active, created_at, updated_at)
+                VALUES (:id, :email, :username, 'Test', 'User', 'hashed_pwd', 'STUDENT', 'org_legacy_default', true, now(), now())
+                ON CONFLICT (id) DO NOTHING
+            """),
+            {
+                "id": REAL_USER_ID,
+                "email": f"{REAL_USER_ID}@test.batch1b_err.com",
+                "username": f"user_err_{REAL_USER_ID[:8]}",
+            },
+        )
         await session.execute(
             text("""
                 INSERT INTO topic_hierarchy
@@ -107,9 +128,9 @@ async def bkt_state_seed(db_session):
     async with db_session() as session:
         await session.execute(
             text("""
-                INSERT INTO bkt_states (student_id, topic_id, p_learn, p_transit, p_guess,
+                INSERT INTO bkt_states (student_id, topic_id, organization_id, p_learn, p_transit, p_guess,
                                         p_slip, attempt_count, mastery_status, last_attempt)
-                VALUES (:student_id, :topic_id, :p_learn, :p_transit, :p_guess,
+                VALUES (:student_id, :topic_id, 'org_legacy_default', :p_learn, :p_transit, :p_guess,
                         :p_slip, :attempt_count, :mastery_status, :last_attempt)
                 ON CONFLICT (student_id, topic_id) DO UPDATE SET p_learn = EXCLUDED.p_learn
             """),

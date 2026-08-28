@@ -236,7 +236,7 @@ class VideoRecommendationUser(HttpUser):
                         response.success()
                     else:
                         response.failure("API test returned non-ok status")
-                except:
+                except Exception:
                     response.failure("API test response parsing error")
             else:
                 response.failure(f"API test failed: {response.status_code}")

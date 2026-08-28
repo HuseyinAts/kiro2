@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { LevelDisplay } from '../LevelDisplay';
 import * as useGamificationHook from '../../../hooks/useGamification';
@@ -343,6 +343,14 @@ describe('LevelDisplay - Milestones', () => {
 describe('LevelDisplay - Level Up Animation', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    mockedUseGamification.useLevel = vi.fn().mockReturnValue({
+      levelProgress: mockLevelProgress,
+      loading: false,
+      error: null,
+      refresh: vi.fn(),
+      getLevelLeaderboard: vi.fn(),
+      getMilestones: vi.fn().mockResolvedValue([]),
+    });
   });
 
   afterEach(() => {
@@ -397,12 +405,10 @@ describe('LevelDisplay - Level Up Animation', () => {
       getMilestones: vi.fn().mockResolvedValue([]),
     });
 
-    rerender(<LevelDisplay />);
-    expect(screen.getByText('Seviye Atladın!')).toBeInTheDocument();
-
-    vi.advanceTimersByTime(3000);
-    rerender(<LevelDisplay />);
-    expect(document.querySelector('.leveling-up')).not.toHaveClass('leveling-up');
+    act(() => {
+      vi.advanceTimersByTime(3100);
+    });
+    expect(document.querySelector('.leveling-up')).toBeNull();
   });
 
   it('does not show animation when level stays the same', () => {

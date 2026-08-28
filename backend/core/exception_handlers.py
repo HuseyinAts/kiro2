@@ -6,6 +6,7 @@ Standardized exception handling for consistent error responses
 import logging
 
 from fastapi import HTTPException, Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError as PydanticValidationError
@@ -189,8 +190,15 @@ class ExceptionHandlers:
             .build()
         )
 
+        # `jsonable_encoder` ZORUNLU: `.dict()` `meta.timestamp`'i ham `datetime`
+        # olarak birakiyor ve `JSONResponse` duz `json.dumps` kullandigi icin
+        # "Object of type datetime is not JSON serializable" ile PATLIYOR.
+        # Handler patlayinca istek generic catch-all'a duser -> 500. Yani bu
+        # metot kaydedilse bile dogru kodu URETEMIYORDU (S252'de olculdu; bu
+        # modulun depoda hic cagirani olmamasinin sebebi de bu olabilir).
         return JSONResponse(
-            content=response_data.dict(exclude_none=True), status_code=http_status
+            content=jsonable_encoder(response_data, exclude_none=True),
+            status_code=http_status,
         )
 
     async def validation_error_handler(

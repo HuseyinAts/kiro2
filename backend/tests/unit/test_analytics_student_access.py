@@ -1,6 +1,6 @@
 """F4: analytics GET /student/{student_id} — profil student_id ile uyum."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import HTTPException

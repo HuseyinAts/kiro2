@@ -1,0 +1,581 @@
+--- [ORAN/BIYOLOJI-1]  id=ed62a698-a17b-5f56-af9e-941ba3751210  sinav=TYT  kitap=Aromat 2024 Ayt Fen Bilimleri Model Sorular
+SORU: RNA çeşitleri ile ilgili, I. Protein sentezi için kalıp görevi görür. II. Proteinlerle birlikte ribozomların yapısında bulunur. III. Protein sentezinde kullanılacak olan aminoasitleri sitoplazmadan ribozoma taşır. bilgilerinden hangileri sadece tRNA için doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) II ve III
+  E) I, II ve III
+
+--- [ORAN/BIYOLOJI-2]  id=109e0c9a-6974-51c0-a3f6-14fff518d23b  sinav=TYT  kitap=345 2025 Tyt Biyoloji Soru Bankası
+SORU: Plastit çeşitlerinin görevleri şöyledir: I. Fotosentez olayını gerçekleştirmek II. Besin depo etmek III. Çiçek ve meyvelere sarı, kırmızı, turuncu renkleri vermek Bu görevleri yerine getiren plastit çeşitleri, aşağıdakilerin hangisinde doğru eşleştirilmiştir?
+  A) Kromoplast, Kromoplast, Lökoplast
+  B) Kromoplast, Lökoplast, Kloroplast
+  C) Kloroplast, Kromoplast, Kromoplast
+  D) Kloroplast, Lökoplast, Kromoplast
+  E) Kromoplast, Kloroplast, Lökoplast
+
+--- [ORAN/BIYOLOJI-3]  id=5ae7ea66-24f7-5836-88ee-8c4aeb817580  sinav=TYT  kitap=345 2025 Ayt Biyoloji Soru Bankası
+SORU: Kronik böbrek yetmezliği olan hastalarda genellikle aneminin ortaya çıkması aşağıdaki hormonlardan hangisinin yeterince üretilememesinden kaynaklanabilir?
+  A) Adrenalin
+  B) Eritropoietin
+  C) Oksitosin
+  D) Antidiüretik hormon
+  E) Kalsitonin
+
+--- [ORAN/COGRAFYA-1]  id=04e10013-e507-56d6-b70a-3a700e662205  sinav=TYT  kitap=Esen Ayt Tarih Soru Bankası
+SORU: Bir ülkedeki nüfusun büyük bölümünün; • yeterli gıda alamaması nedeniyle beslenme bozukluğu görülmesi, • okuma yazma bilmemesi, • temiz sudan yoksun olması, • yeterli sağlık hizmeti alamaması durumlarıyla ilgili, aşağıdaki yargılardan hangisine ulaşılabilir?
+  A) İnsani gelişim endeksi düşüktür.
+  B) Nüfus artış hızı düşük, aritmetik nüfus yoğunluğu azdır.
+  C) Doğal kaynak potansiyeli fazladır.
+  D) Nüfusunun büyük bölümü kentlerde yaşamaktadır.
+  E) Ortalama yaşam süresi uzundur.
+
+--- [ORAN/EDEBIYAT-1]  id=dc55a75a-d206-54a2-a42e-524eda823cd0  sinav=AYT  kitap=Esen Aps Ayt Edebiyat Soru Bankası
+SORU: Aşağıdakilerin hangisinde boş bırakılan yere parantez () içindeki terim getirilemez?
+  A) ----, bir kişinin konuşmasına dayalı, tek kişilik oyunlardır. (Monolog)
+  B) ----, piyesdeki kişilerden birinin oyunun bir bölümünde uzun bir konuşma yapmasıdır. (Diyalog)
+  C) ----, ikiden fazla kişinin karşılıklı konuşmasına denir. (Polilog)
+  D) ----, piyesin başında bulunan ve oyunla ilgili herhangi bir içeriği sunan konuşmadır. (Prolog)
+  E) ----, piyesin sonunda bulunan konuşmaya denir. (Epilog)
+
+--- [ORAN/EDEBIYAT-2]  id=c082d21b-4cc3-525c-99ec-e220b1f0a458  sinav=AYT  kitap=Aromat Ayt Edebiyat
+SORU: Salih; şimdi bunları duyuyor ve sağ kolunun yokluğuna, yüzünün harap hâline rağmen saadet denen şeyi sezer gibi oluyordu. Yalnız kol ve yüz meselesi de değildi; herkesin, çolak Salih'de dâhil, dört elle sarıldığı bahtı hayatı artık dul ve ihtiyar bir kadınla sakat oğlunun karşısında, günleri hatta saatleri sıra dağlar, yalçın yarlar gibi dizecek, her günü bir, Kütülmmare veya Demmer Tepesi savaşına döndürecekti. Amma uyku göz kapaklarını ağırlaştırıyor, karnının akışı ağırlaşıyor ve Salih, hazla gülümsüyordu. Bu parçadan hareketle aşağıdakilerden hangisi söylenemez?
+  A) Dil, sade ve anlaşılırdır.
+  B) Hâkim bakış açısı kullanılmıştır.
+  C) Karakterlerin içinden geçenler bilinir.
+  D) III. kişili anlatım vardır.
+  E) Diyalog tekniğine yer verilmiştir.
+
+--- [ORAN/EDEBIYAT-3]  id=f4dc49fb-fee4-5467-a71f-ac6651b4addf  sinav=AYT  kitap=Edebiyat Denizi Ayt Edebiyat Soru Bankasi
+SORU: Aşağıdaki ifadelerden hangisi doğrudan bir eksenin doğrusu olduğunu göstermez?
+  A) x + y = 0
+  B) x = 0
+  C) y = 0
+  D) x^2 + y^2 = 0
+  E) x = y
+
+--- [ORAN/FIZIK-1]  id=829b9267-1eaa-538c-b91d-e81168976189  sinav=AYT  kitap=Neofizik Ayt Fizik Soru Bankası 2025
+SORU: Atomojiklerin atomik ağırlıklarının toplamı atom ağırlığıdır. Atom ağırlığı atomik ağırlıkların toplamı değildir.
+  A) A) atomik ağırlık
+  B) B) atom ağırlığı
+  C) C) atomik ağırlıkların toplamı
+  D) D) atomik ağırlıkların ortalaması
+  E) E) atom ağırlığı + atomik ağırlıkların toplamı
+
+--- [ORAN/FIZIK-2]  id=0e23d334-620e-5e84-b09a-851e2ed7dc81  sinav=AYT  kitap=Neofizik Ayt Fizik Soru Bankası 2025
+SORU: En az genelde K, L notaları arasında, denge notası (D) olup olmadığını belirleyen parametrenin hangisidır?
+  A) K ve L notalarının toplamı
+  B) K ve L notalarının farkı
+  C) K ve L notalarının toplamının K notasının iki katı
+  D) K ve L notalarının toplamının L notasının iki katı
+  E) K ve L notalarının toplamının K ve L notalarının toplamının iki katı
+
+--- [ORAN/FIZIK-3]  id=68ade624-83e9-5874-a67a-abe135eae76b  sinav=TYT  kitap=Fizipedia Tyt Fizik Soru Bankası 2025
+SORU: Ahmet, yatay bir yolda ok yönünde hareket eden bir otobüsün koltuğunda şekli gibi oturmaktadır.
+
+Buna göre,
+I. Ahmet'in ağırlığı 1 yönündedir.
+II. Otobüs hızlanırsa Ahmet'e 3 yönünde eylemsizlik kuvveti etki eder.
+III. Otobüs sabit hızla giderken koltuk Ahmet'e 2 yönünde kuvvet uygular.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [ORAN/FIZIK-4]  id=57563b88-2fe2-5c20-8029-f8be9f4a790b  sinav=TYT  kitap=Aktif Ogrenme 2025 Tyt Fizik Soru Bankası
+SORU: Görseldeki alanların alanları topllamak için hangi formül kullanılır?
+  A) A = l × w
+  B) A = 2(l + w)
+  C) A = l² + w²
+  D) A = 2l + 2w
+  E) A = l + w
+
+--- [ORAN/FIZIK-5]  id=78748a63-e377-5a20-b16f-0df10ea0e1fb  sinav=TYT  kitap=Aromat Ayt 2024 Fen Bilimleri Model Sorular Net 30
+SORU: Einstein'ın Özel Görelilik Kuramı'na göre, I. İvmeli hareket yapan araçta ışığın hızı daha küçük algılanır. II. Fizik yasaları tüm eylemsiz referans sistemlerinde aynıdır. III. Durmakta olan bir aracın ön farından çıkan ışığın hızı ile ileri doğru hareket eden aracın ön farından çıkan ışığın hızı eşit büyüklüktedir. ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+--- [ORAN/FIZIK-6]  id=7e871fe8-9dc1-5359-904f-8ddd3c573cac  sinav=TYT  kitap=Apotemi 2019 2020 Modern Fizik Konu Anlatımlı Soru Bankası
+SORU: Tek yarıkla yapılan deneyde tek dalga boylu sarı ışık kullanılmıştır. Merkezi aydınlık saçağın parlaklığı $I_0$, 1. ve 2. aydınlık saçaklarınınki de sırayla $I_1$, $I_2$ dir. Buna göre, $I_0$, $I_1$, $I_2$ arasındaki ilişki aşağıdakilerden hangisi gibidir?
+  A) $I_0 > I_1 > I_2$
+  B) $I_0 = I_1 = I_2$
+  C) $I_0 > I_1 = I_2$
+  D) $I_2 > I_1 > I_0$
+  E) $I_1 = I_2 > I_0$
+
+--- [ORAN/GEOMETRI-1]  id=71a746f4-c56b-505b-95db-78bc7193774f  sinav=TYT  kitap=2023-2024-ACİL-TYT-AYT-Geometrinin İlacı
+SORU: ABC üçgeni, A = 90°, AB = 3 cm, AC = 4 cm olduğunda, BC uzunluğu kaç cm'dir?
+  A) 5 cm
+  B) 6 cm
+  C) 7 cm
+  D) 8 cm
+  E) 9 cm
+
+--- [ORAN/GEOMETRI-2]  id=a1ab7ea6-2cd6-550a-af14-4a2970073fd7  sinav=TYT  kitap=345 Tyt Ayt Geometri Soru Bankası 2
+SORU: Dik koordinat düzleminde $y = 2x$ doğrusu üzerinde I. bölgede alınan $A$ noktasının $3x - 4y + 10 = 0$ doğrusuna uzaklığı 4 birimdir. Buna göre, $A$ noktasının koordinatları toplamı kaçtır?
+  A) 18
+  B) 21
+  C) 15
+  D) 12
+  E) 24
+
+--- [ORAN/GEOMETRI-3]  id=f9a8d078-6604-5c96-b16b-ed4bc5256235  sinav=TYT  kitap=Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2
+SORU: ABC üçgenünde A = 60°, BC = 2 cm, AB = 3 cm ise, AC uzunluğu kaç cm'dir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm
+
+--- [ORAN/GEOMETRI-4]  id=5eb7eba2-f1da-5c51-80c3-aa2daf8a48f3  sinav=TYT  kitap=345 Tyt Ayt Geometri Soru Bankası
+SORU: Aşağıdaki ABC eşkenar üçgeni, kenarlarına paralel çizilen doğru parçalarına göre eşkenar üçgensel bölgelere ayrılmıştır.
+
+Boyalı bölgelerin alanları toplamı 12 cm² olduğuna göre, A(ABC) kaç cm² dir?
+  A) 30
+  B) 32
+  C) 36
+  D) 20
+  E) 24
+
+--- [ORAN/GEOMETRI-5]  id=de38dc40-40b7-54e3-9b5d-7aac2eaa45e4  sinav=TYT  kitap=Full Matematik-2022-2023-Tyt Ayt-Geometri Soru Bankası
+SORU: Dört adet ikizkenar yamuk üst üste gelmeyecek ve arasında boşluk kalmayacak biçimde birleştirilerek aşağıdaki gibi bir çerçeve yapılmıştır.
+
+İkizkenar yamuğun içine yerleştirilen kara şeklindeki resmin çevresi, çerçevenin çevresinin yarısına eşit ve 6 birimdir.
+
+Buna göre, kullanılan ikizkenar yamuklardan birinin yüksekliği kaç birimdir?
+  A) $\frac{3}{4}$
+  B) 1
+  C) $\frac{5}{4}$
+  D) $\frac{3}{2}$
+  E) $\frac{7}{4}$
+
+--- [ORAN/KIMYA-1]  id=9927e6bc-83ba-5f78-a34c-3d5f6a2ff159  sinav=TYT  kitap=345 Tyt Kimya Soru Bankası
+SORU: I. ............ canlıların yapısında bulunan kimyasal maddeleri, bu maddelerin reaksiyonlarını ve etkileşimlerini inceler.
+II. ............ karbon kökenli bileşiklerin yapısını, tepkimelerini ve kullanım alanlarını inceler.
+Yukarıda ilgilendikleri konular verilen kimya alt dallarından I ve II nolu yerlere aşağıdakilerden hangisi gelmelidir?
+  A) Biyokimya, Organik kimya
+  B) Analitik kimya, Organik kimya
+  C) Biyokimya, Anorganik kimya
+  D) Anorganik kimya, Organik kimya
+  E) Analitik kimya, Fizikokimya
+
+--- [ORAN/KIMYA-2]  id=730b5e47-021d-5d8b-b088-51bffe471410  sinav=AYT  kitap=Bilgi Sarmal 2024 Ayt Kimya Sopru Bankasi
+SORU: Sıvıların hafiflik değerlerini ölçmek için kullanılan en yaygın yöntem nedir?
+  A) Farklı ağırlıklar
+  B) Farklı hacimler
+  C) Farklı yoğunluklar
+  D) Farklı boyutlar
+  E) Farklı renkler
+
+--- [ORAN/KIMYA-3]  id=9c80b79a-7c63-52e2-95ec-6b8677494d76  sinav=TYT  kitap=Aktif Ogrenme 0 Baslayanlara Kimya 2019 2020
+SORU: $X^{2+}$ iyonunun atom numarası 13 ise $X^{2+}$ iyonunda elektron sayısı kaçtır?
+  A) 16
+  B) 15
+  C) 13
+  D) 11
+  E) 10
+
+--- [ORAN/KIMYA-4]  id=fa8d37ea-cf49-52fe-91d3-c29ab2d0ff8a  sinav=TYT  kitap=Aktif Ogrenme Ayt Kimya 2019 2020
+SORU: Tek basamakta gerçekleşen
+$X_{(g)} + 2Y_{(g)} \rightarrow XY_{2(g)}$
+tepkimesi ile ilgili,
+I. X'in derişimi 3 katına çıkarıldığında tepkime hızı 3 katına çıkar.
+II. Y'nin derişimi yarıya düşürüldüğünde tepkime hızı $\frac{1}{4}$ katına çıkar.
+III. X'in derişimi 2 katına, Y'nin derişimi 3 katına çıkarıldığında tepkime hızı 18 katına çıkar.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+--- [ORAN/KIMYA-5]  id=817be286-47c9-50d3-a18e-c812c5ea1b01  sinav=TYT  kitap=Aktif Ogrenme 0 Baslayanlara Kimya 2019 2020
+SORU: I. Naftalinin süblimleşmesi
+II. Bitkilerin fotosentez yapması
+III. Yemek tuzunun suda çözünmesi
+Yukarıdaki olaylardan hangilerinde sadece fiziksel değişim meydana gelir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [ORAN/KIMYA-6]  id=1a3f25ed-d299-500f-a160-11c665523f4d  sinav=TYT  kitap=Apotemi 2020 2021 Modern Kimya
+SORU: Aşağıdaki tepkimelerden hangisi yer değiştirme tepkimesidir?
+A) $CH_3OH + O_2 \to$
+B) $CH_3CH_2OH \xrightarrow{[O]}$
+C) $CH_3CH_2Br + NaOH \to$
+D) $HC \equiv CH + H_2O \to$
+E) $CH_2 = CH_2 + H_2O \to$
+  A) $CH_3OH + O_2 \to$
+  B) $CH_3CH_2OH \xrightarrow{[O]}$
+  C) $CH_3CH_2Br + NaOH \to$
+  D) $HC \equiv CH + H_2O \to$
+  E) $CH_2 = CH_2 + H_2O \to$
+
+--- [ORAN/KIMYA-7]  id=e85c022f-5d36-5867-807d-ad1066142892  sinav=TYT  kitap=Esen Yks Motivasyon Kimya Soru Bankası
+SORU: $X^{2+}$ ve $Y^{3-}$ iyonlarının elektron dağılımı, periyodik sistemde 3. periyotta bulunan soy gazın elektron dağılımı ile aynıdır.
+Buna göre, X ve Y elementleri ile ilgili;
+I. X'in atom numarası 20, Y'nin atom numarası 15'tir.
+II. X ve Y periyodik sistemde aynı periyotta bulunur.
+III. Periyodik sistemde X 2A grubunda, Y ise 5A grubunda bulunur.
+yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+--- [ORAN/KIMYA-8]  id=5af7b790-5608-5745-9b7f-cbc64f20e1fb  sinav=TYT  kitap=Apotemi Tyt Ayt Kimya 2019-2020
+SORU: X'in molar çözünme ısısı $-4 \text{ kJ/mol}$'dür.
+Buna göre, X'in $0,2 \text{ M}$ $500 \text{ mL}$ sulu çözeltisi hazırlandığında kaç Joule ısı açığa çıkar?
+  A) $0,4$
+  B) $4$
+  C) $40$
+  D) $400$
+  E) $800$
+
+--- [ORAN/MATEMATIK-1]  id=6d3d4484-27aa-55be-a364-59f78d7905f6  sinav=TYT  kitap=Mikro Orijinal-2024-matematik Soru Bankası
+SORU: $\frac{24}{8}+\frac{56}{7}$ işleminin sonucu kaçtır?
+  A) 7
+  B) 8
+  C) 9
+  D) 10
+  E) 11
+
+--- [ORAN/MATEMATIK-2]  id=d78763c1-54c6-54aa-bdf6-89e1a5f6bb11  sinav=TYT  kitap=Viral-2025-Tyt Matematik
+SORU: 1. 1'den 30'a kadar olan tam sayılar kutulara yazılarak asal sayı olan kutular sarıya boyanıyor.
+
+Buna göre sarıya boyanmayan kaç tane kutu vardır?
+  A) 10
+  B) 13
+  C) 15
+  D) 20
+  E) 25
+
+--- [ORAN/MATEMATIK-3]  id=ff422411-72d0-553f-9c24-32798fec164f  sinav=TYT  kitap=2019-2020-Acil-Matematiğin ilacı Tyt Matematik Soru Bankası
+SORU: Fatih Sultan Mehmet, 1453 yılında henüz 21 yaşındayken İstanbul'u fethetmiştir. 1481 yılında ise vefat etmiştir. Buna göre, Fatih Sultan Mehmet kaç yaşında vefat etmiştir?
+  A) 21
+  B) 28
+  C) 38
+  D) 49
+  E) 60
+
+--- [ORAN/MATEMATIK-4]  id=6d866d1a-c6d8-5dfd-a6a8-ef204970b9e7  sinav=TYT  kitap=345 2024 Tyt Matematik Soru Bankası
+SORU: $\frac{5!+4!}{5!-4!}$ işleminin sonucu kaçtır?
+  A) $\frac{4}{3}$
+  B) $\frac{5}{4}$
+  C) $\frac{7}{2}$
+  D) $\frac{5}{2}$
+  E) $\frac{3}{2}$
+
+--- [ORAN/MATEMATIK-5]  id=3fcac338-9fcd-5387-92da-801b84ef5ee4  sinav=TYT  kitap=Bilgi Sarmalı-2024-Ayt-Matematik Soru Bankası
+SORU: $(a_n)$ dizisinde $a_n=a_{n-1}\cdot\frac{n}{n-1}$ ve $a_1=5$ olduğuna göre, $a_7$ kaçtır?
+  A) 20
+  B) 25
+  C) 30
+  D) 35
+  E) 40
+
+--- [ORAN/MATEMATIK-6]  id=3a978b2f-7e4d-51bd-b340-3c8eddbac551  sinav=TYT  kitap=2023-2024-ACİL-TYT Matematik Soru Bankası
+SORU: $x^2 - 4x - 1 = 0$ olmak üzere, $x^2 + \frac{1}{x^2}$ ifadesinin sonucu kaçtır?
+  A) 24
+  B) 22
+  C) 20
+  D) 18
+  E) 16
+
+--- [ORAN/MATEMATIK-7]  id=71bb9b9e-0381-5a4b-b3bf-04c69d19a96e  sinav=TYT  kitap=Orijinal-Tyt Ayt Geometri Soru Bankası
+SORU: 11. Sayısal dizilerde A1 = 5, A2 = 7, A3 = 9 veriliyor. Bu dizideki her bir sayı, önceki sayıdan 2 fazla olup, sonraki sayıdan 2 azaldırsa, bu sayı dizisi hangi türdür?
+  A) Artan
+  B) Azalan
+  C) Dengeli
+  D) Alternatif
+  E) Konstant
+
+--- [ORAN/MATEMATIK-8]  id=83d392e4-e772-5d81-8742-bdcf237e4d25  sinav=TYT  kitap=ACİL-2025-Matematiğin İlacı Sayılar-1
+SORU: $A$ pozitif doğal sayıdır. $EBOB(5A, 20A) + EKOK(2A + 3, 8A + 12) = 207$ olduğuna göre, $A$ değeri kaçtır?
+  A) 15
+  B) 16
+  C) 17
+  D) 18
+  E) 19
+
+--- [ORAN/MATEMATIK-9]  id=615cbe61-4ec6-5c79-897e-10697aa90ae6  sinav=TYT  kitap=345 2025 Tyt Matematik Soru Bankası
+SORU: $a = 2b$ ve $b = 3c$ olduğuna göre, $\frac{a}{c}$ kaçtır?
+  A) $\frac{1}{6}$
+  B) $\frac{2}{3}$
+  C) 2
+  D) 6
+  E) 5
+
+--- [ORAN/MATEMATIK-10]  id=d74cf0de-ac12-5a9e-a758-2d3e7207fc31  sinav=TYT  kitap=345 2024 Tyt Matematik Soru Bankası
+SORU: Semih, 5 günde 30 takım elbise, Hakan, 7 günde 21 takım elbise dikebiliyor. Buna göre, ikisi birlikte 36 takım elbiseyi kaç günde dikebilir?
+  A) 8
+  B) 6
+  C) 9
+  D) 4
+  E) 10
+
+--- [ORAN/MATEMATIK-11]  id=83c66f39-1773-542c-ba0c-57992183d5b4  sinav=AYT  kitap=2019-2020-ACİL-AYT-Matematik Soru Bankası
+SORU: 1. Bir prizma düzgün bir yuvarlak tabanlı prizmadır. Yuvarlak tabanının çapı 10 cm ve yüksekliği 15 cm'dir. Bu prizmanın hacmini hesaplayınız.
+  A) 1500 cm³
+  B) 15000 cm³
+  C) 3000 cm³
+  D) 30000 cm³
+  E) 150000 cm³
+
+--- [ORAN/MATEMATIK-12]  id=3e213ca8-ab6f-5fcf-a0bd-cfe41d6bb822  sinav=TYT  kitap=Orijinal-2025-Limit
+SORU: Dik koordinat düzlemi üzerinde verilen grafiklerle ilgili soru. Grafiklerin y = x^2 ve y = x^3 fonksiyonlarını gösteriyor. Grafiklerin kesişme noktalarını bulun.
+  A) x = 0 ve x = 1
+  B) x = 0 ve x = 2
+  C) x = 0 ve x = 3
+  D) x = 0 ve x = 4
+  E) x = 0 ve x = 5
+
+--- [ORAN/MATEMATIK-13]  id=4dc3e0da-f433-5497-81ae-d932913e6e19  sinav=TYT  kitap=Bilgi Sarmalı-2025-Tyt-Matematik Soru Bankası
+SORU: 6. Daha önce verilen verilerle birlikte, aşağıdaki bilgiler veriliyor:
+
+- Bir sayının karesi, bu sayının iki katının toplamı ile eşittir.
+
+Buna göre, 12'nin karesi kaçtır?
+  A) 144
+  B) 132
+  C) 120
+  D) 114
+  E) 108
+
+--- [ORAN/MATEMATIK-14]  id=06d7be58-d849-51a9-85ac-2f86c371039a  sinav=TYT  kitap=Mikro Orijinal-2024-matematik Soru Bankası
+SORU: $(-1) + (+1) + (-1) + (+1) + (-1)$ işleminin sonucu kaçtır?
+  A) -1
+  B) 0
+  C) 1
+  D) 2
+  E) 3
+
+--- [ORAN/MATEMATIK-15]  id=9b87be53-582c-5027-bf9c-711f367176ab  sinav=TYT  kitap=C1CELL-2024-TYT-Matematik Soru Bankası
+SORU: A = {1, 2, 3}
+B = {-1, 1}
+kümeleri veriliyor.
+Buna göre, A x B Kartezyen çarpım kümesinin grafiği aşağıdakilerden hangisidir?
+  A) Grafik A
+  B) Grafik B
+  C) Grafik C
+  D) Grafik D
+  E) Grafik E
+
+--- [ORAN/MATEMATIK-16]  id=6b4afe68-4abf-5ad9-9b5e-c5e2e31ac07e  sinav=TYT  kitap=ACİL-2025-Matematiğin İlacı Sayılar-1
+SORU: 1 ve kendisinden başka doğal sayı böleni olmayan 1'den büyük sayılara asal sayı denir.
+
+Buna göre, aşağıdakilerden hangisi asal sayı değildir?
+  A) 11
+  B) 13
+  C) 17
+  D) 31
+  E) 57
+
+--- [ORAN/MATEMATIK-17]  id=b104af83-ecae-59bb-89f4-eb127dd8cc61  sinav=TYT  kitap=345 2024 Ayt Matematik Soru Bankası
+SORU: $P(x) = x^4 - 3x^2 + 1$ polinomunun $x^2 - 3$ ile bölümünden kalan hangisidir?
+  A) $x$
+  B) $x+1$
+  C) $1$
+  D) -1
+  E) $x-1$
+
+--- [ORAN/MATEMATIK-18]  id=597f7b2e-5fd2-5d11-9760-a41a640ce6e6  sinav=AYT  kitap=Orijinal-2024-Ayt-Trigonometri
+SORU: 1. sinüs fonksiyonu grafiklerini çizmek için aşağıdaki adımlardan hangisi yanlış?
+  A) Grafikteki her noktanın x koordinatını bul.
+  B) Grafikteki her noktanın y koordinatını bul.
+  C) Grafikteki her noktanın x koordinatını y koordinatına göre böle.
+  D) Grafikteki her noktanın y koordinatını x koordinatına göre böle.
+  E) Grafikteki her noktanın x koordinatını y koordinatına göre böle.
+
+--- [ORAN/MATEMATIK-19]  id=0d340f51-b054-5d04-a82f-b7d21716db7d  sinav=TYT  kitap=Bilgi Sarmalı-2025-Ayt-Matematik Soru Bankası
+SORU: 3. dereceden bir $P(x)$ polinomu $(x-1)$, $(x-2)$ ve $(x-3)$'e kalansız bölünebilmektedir. Buna göre, $P(x)$ polinomunun grafiğinin $x$ eksenini kestiği noktaların apsisler toplamı kaçtır?
+  A) 2
+  B) 4
+  C) 6
+  D) 8
+  E) 10
+
+--- [ORAN/MATEMATIK-20]  id=01021c5f-252e-5c89-967e-b0ac9240c01b  sinav=TYT  kitap=ACİL-2025-TYT-Soeu Bankası
+SORU: $\log_3(9-a^2)$ ifadesi $a$'nın kaç farklı tam sayı değeri için bir gerçek sayıdır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+--- [ORAN/MATEMATIK-21]  id=63d50d46-501d-5210-b58c-be3c593bd13f  sinav=TYT  kitap=Bilgi Sarmalı-2023-2024-Ayt-Matematik Soru Bankası
+SORU: $f(x) = x^2 - 4x + 7$ eğrisinin üzerindeki $x = 2$ apsisli noktasındaki teğetinin eğimi kaçtır?
+  A) -2
+  B) -1
+  C) 0
+  D) 2
+  E) 4
+
+--- [ORAN/MATEMATIK-22]  id=e844bb1b-4ddf-5091-adaf-53cdc2be1f55  sinav=TYT  kitap=Orijinal-2024-Ayt-Trigonometri
+SORU: $a_n$ geometrik dizisinin ilk üç terimi sırasıyla $\frac{1}{2}$, $\sin\alpha$, $\cos2\alpha$ olarak verildiğinden
+Buna göre, $\alpha$ aşağıdakilerden hangisidir?
+  A) $\frac{\pi}{6}$
+  B) $\frac{\pi}{4}$
+  C) $\frac{\pi}{3}$
+  D) $\frac{\pi}{2}$
+  E) $\frac{3\pi}{4}$
+
+--- [ORAN/MATEMATIK-23]  id=57f122b3-b4e8-5c13-b29c-f18912be68ca  sinav=TYT  kitap=Mikro Orijinal-2024-Ayt-Matematik Soru Bankası
+SORU: $(a_n)$ gerçel sayı dizisinin genel terimi, $(a_n) = (n^2 - 6n + 1)$ olarak veriliyor. Buna göre, $(a_n)$ dizisinin en küçük terimi kaçtır?
+  A) -10
+  B) -9
+  C) -8
+  D) -6
+  E) -4
+
+--- [ORAN/MATEMATIK-24]  id=2d936aee-32e9-5663-abc4-0174275e4a17  sinav=TYT  kitap=Bilgi Sarmalı-2024-Tyt Problemler Soru Bankası
+SORU: 10. Bir açısal gerilim sinyali, saat yönünde 100 ms arayla 1000 kez tekrarlanıyor. Bu sinyalin birim zamanda geçen açısal açı miktarı kaç radian/saattir?
+  A) 100
+  B) 10
+  C) 1
+  D) 0.1
+  E) 0.01
+
+--- [ORAN/SOSYAL-1]  id=0956bc5f-05c0-5e3a-943b-1440e5e62a64  sinav=TYT  kitap=krallar karması tyt sosyal bilimler branş denemesi-5
+SORU: Aşağıdaki haritada bazı alanlar kırmızı renkle gösterilmiştir.
+Haritada gösterilen alanlardan hangisi yer şekillerinin engebeli olması nedeniyle seyrek nüfuslanmıştır?
+  A) V
+  B) IV
+  C) III
+  D) II
+  E) I
+
+--- [ORAN/TARIH-1]  id=acd71db7-0214-57e7-aa67-ac61c6f1bef3  sinav=TYT  kitap=Bilgi Sarmali Ayt Tarih Soru Bankasi 2021 2022
+SORU: Osmanlı Devleti istimalet politikası ile fethedilen bölgelerdeki gayrimüslim ahaliyi Osmanlı yönetimine sindirebilmeyi amaçlamış, onları himaye etmiş, dinî serbestlik tanımış ve bazı vergilerden muaf tutmuştur. Buna göre Osmanlı Devleti'nin uyguladığı istimalet politikasının aşağıdakilerden hangisinin ortaya çıkmasında etkili olduğu söylenebilir?
+  A) Pençik sisteminin kalkınması
+  B) Feodal bir taşra teşkilatının oluşturulması
+  C) Ahilik teşkilatının kurulması
+  D) Balkanlara uzun süre hâkim olunması
+  E) Haçlı birliğinin kurulması
+
+--- [ORAN/TARIH-2]  id=2ce792cf-4ba7-517f-a07a-38c8f260005f  sinav=TYT  kitap=Esen Aps Tyt Ayt Tarih Soru Bankası
+SORU: 10. Dışarıdan gelen verilerin analizinde kullanılan bir yöntemdir.
+  A) A. Veri analizi
+  B) B. Veri analiz
+  C) C. Veri analiz
+  D) D. Veri analiz
+  E) E. Veri analiz
+
+--- [ORAN/TARIH-3]  id=206f8566-bc7e-5831-a8ee-b0d597382d10  sinav=TYT  kitap=Esen Aps Tyt Ayt Tarih Soru Bankası
+SORU: Dünya Sınavı (PISA) 2015'te, Türkiye'nin öğrencilerinin matematik becerileri hakkında bilgi veren bir raporun sonuçları açıklandı. Bu raporda, Türkiye'nin matematik becerileri hakkında hangi bilgi verilmiştir?
+  A) Türkiye'nin matematik becerileri hakkında genel bir değerlendirmeler
+  B) Türkiye'nin matematik becerileri hakkında detaylı bir analiz
+  C) Türkiye'nin matematik becerileri hakkında bir karşılaştırma
+  D) Türkiye'nin matematik becerileri hakkında bir öngörü
+  E) Türkiye'nin matematik becerileri hakkında bir rapor
+
+--- [ORAN/TURKCE-1]  id=ce4fcc69-28ac-5cdc-b605-b90a439e6749  sinav=TYT  kitap=Bilgi Sarmal Tyt Turkce Video Dets Kitabı 2025
+SORU: Eleştirmenlerin çoğu, gazetelerin ve dergilerin kültür sanat sayfalarında yeni çıkan bir eser için "özgün bir biçem, imgelerle yoğrulmuş mükemmel bir şiir, okuru güzel diyarlara götüren bir şiir..." gibi sözler kullanıyor. Oysa genç bir şairin sanatı gerekse eleştiri için bu ve benzer ifadelerin hiçbir önemi yoktur. Mesele bu yazılan nasıl özgün olabilir, büyüleyici kullanımlar yerine göre böyle söyleyebilir? Bunun ölçütü nedir? Bir şiirin beni güzel diyarlara götürme garantisi nedir? Bundan dolayı birçok değerlendirmenin, kanıtlanabilirliği tartışılabilecek yargılardan oluştuğunu söyleyebiliriz.
+Bu parçada asıl vurgulanmak istenen düşünce aşağıdakilerden hangisidir?
+  A) Doğru bir eleştirinin sadece bir yapıta yönelik yapılmasına yönelik bir yanılgı
+  B) Sanatsal bir yapıtın eleştirilmemesi gerektiği
+  C) Gerçek bir eleştirinin uzun zaman içerisinde yapılabileceği
+  D) Bir yapıtın sadece olumlu yönlerinin söylenmemesi gerektiği
+  E) Eleştirideki yargıların nesnel dayanaklarının olması gerektiği
+
+--- [ORAN/TURKCE-2]  id=da23867c-37c7-5d61-9ed7-544404f9251d  sinav=TYT  kitap=Edebiyat Sokagi Paragraf ileri Duzey
+SORU: Bilim, sadece birikmiş sonuçlar değildir; bilim bilim yapan, tüm bilimsel sonuçları var eden bilim kafasıdır: insanıdır; insana özgü yaratıcılıktır. Soran, arayan, araştıran, deneyen ve deneleyen. Sonra bilinen bu başarımları yeniden, sonra gene yeniden ele alan; onaran, düzelten; daha sonra yeni yeri atılmaları yönelen; bunu hep böyle sürdürüp giden insandır. Bu etkinliklerin tümüne birden açık düşünme diyebiliriz. Böyle ki bilimle açık düşünme, katlaşmayı önleyen, bilim durmadan yenileşip durmayi gücü. Bilim kafası, düşüneyi hiçbir zaman kapamayan, bu uğurda hiçbir emeği esirgemeyen kafadır. Bilimdeki rastgele bir düzeye çakılıp kalmayan, bilim dünyasına özenle bakış gösteren bir uygarlık bilim uygular.
+
+Bu parçada asıl anlatılmak istenen aşağıdakilerden hangisidir?
+  A) Bilim, bilimsel bir kafa ve açık düşünme ile yapılabilir.
+  B) Açık düşünme, bilimsel çalışmaların en önemli özelliklerinden biridir.
+  C) Bilim sadece bilimsel çalışmaların sonuçlarından ibaret değildir.
+  D) Bilim insanları; soran, arayan ve eleştiren insanlar olmalıdır.
+  E) Bilimin gelişimi ancak bilim kafasına sahip insanlarla mümkündür.
+
+--- [ORAN/TURKCE-3]  id=34de54da-3c83-5471-a6a4-87e351df8f63  sinav=TYT  kitap=Aktif Ogrenme Tyt Dilbilgisi Soru Bankası 2025
+SORU: Aşağıdakilerden hangisinde kısaltmaların yazımıyla ilgili bir yanlışlık yapılmıştır?
+  A) Ersin, bu yılki sınavda ODTÜ'yü kazandı.
+  B) TV'da hafta sonları çok güzel sinema filmleri çıkıyor.
+  C) TDK'de Türkçe sözlük çalışmaları devam ediyor.
+  D) THY'nin filosuna yeni uçaklar dahil oluyor.
+  E) TBMM'de yeni yasama yılının çalışma hazırlıkları yapılıyor.
+
+--- [ORAN/TURKCE-4]  id=54b7bf21-e1b0-53f2-8e2a-4d74e85fd2e9  sinav=TYT  kitap=Edebiyat Sokagi Paragraf ileri Duzey
+SORU: Dijitalleşmenin tarihine baktığımızda ilk olarak analog kayıtların dijital ortama aktarıldığını, bir diğer ifadeyle otomasyonun teorebe edildiğini görüyoruz. İş ve işlemlerin dijital platforma taşınmasının ardından kapasitenin genişlemesi, verimliliğin artırılması ve sunulan hizmetlerin daha etkin kullanılmasi için atılan adımlar ise dijital dönüşüm başlığı altında ele alınıyor. Her devletlerin hem şirketlerin gündeminde önemli yere sahip olan dijital dönüşüm, inovatif ve sürdürülebilir bir bakış açısıyla desteklenerek önemli avantajlar sunuyor.
+
+Buna göre bu parçada dijitalleşme ile ilgili:
+
+I. verimliliği artırdığı,
+II. ekonomik getiri sağladığı,
+III. güvenlik açığını kapattığı
+
+ifadelerinden hangilerine ulaşılır?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+--- [ORAN/TURKCE-5]  id=0a48d6e8-47e5-5cbe-bd0f-2295280f978a  sinav=TYT  kitap=Cap Tyt Turkce Soru Bankası
+SORU: Birbirine benzer iki boyutlu geometrik şekiller arasında olan benzerlik oranını bulun.
+  A) 1:2
+  B) 2:1
+  C) 1:1
+  D) 3:2
+  E) 2:3
+
+--- [ORAN/TURKCE-6]  id=c47b44e7-71f0-5340-a722-fd63bb04b324  sinav=TYT  kitap=Edebiyat Sokagi Paragraf ileri Duzey
+SORU: Birçok mobil uygulama bizden bazı bilgilerimize erişim ister: SMS'lerimize, fotoğraflarımıza, konum bilgimize, rehberimize... Bizler de bu istekleri okumadan veya istenen bilginin önemini düşünmeden erişim izni kabul eder ve uygulamayı telefonumuzda kullanmaya başlarız. Bir söz vardır: "Bedava peynir sadece peynir kapanında bulunur." Yani bir ürün ücretsiz ise ürünün sizsiniz, bunu unutmamak lazım. Hiç düşünmeden verdiğimiz kişisel verilerimizle birlikte, bu bilgiler tarafımızdan toplanıyor ve birtakım amaçlar için kullanılabiliyor ya da satılabiliyor. Örneğin, siz biraz önce bahsettiğimiz uygulamayı indirdiğinizde aynı zamanda rehberinizde kayıtlı kişilerin kişisel verilerinin de izinli olmadan paylaşılmış oluyorsunuz.
+Bu parçada,
+I. Kişisel veri nedir ve neleri kapsar?
+II. Dijital dünyaya ne kadar hakimiz?
+III. Sanal oyunlarda ücretsiz ürünler var mı?
+hangilerinin cevabı vardır?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+--- [KAPSAMA/FEN-1]  id=36d312dc-2e1f-5b61-adfa-c424c475b386  sinav=TYT  kitap=Aramot Tyt 2023 Fen Bilimleri Model Sorular
+SORU: Açır modelde değişik yapılandırılarak hangi model oluşturulur?
+  A) Dalton-Rowe Modeli
+  B) Thomson-Rowe Modeli
+  C) Heisenberg Modeli
+  D) Modern Item-Response teorisi
+  E) Heisenberg Modeli
+
+--- [KAPSAMA/FEN-2]  id=570fdb87-e77a-50c4-ae0a-39f88a8da04b  sinav=TYT  kitap=Aramot Tyt 2023 Fen Bilimleri Model Sorular
+SORU: Aşağıdaki hücrelerin bazı yapı ve modelleri verilmiştir. Hücrelerin hangileri genetik olarak benzer?
+  A) 1 ve 2
+  B) 2 ve 3
+  C) 1 ve 3
+  D) 2 ve 4
+  E) 3 ve 4
+
+--- [KAPSAMA/GENEL-1]  id=8672c1d6-a7b7-55fe-a3ea-4951b1079d4a  sinav=TYT  kitap=ACİL-2025-TYT-Soru Bankası
+SORU: 1. Dik koordinat düzleminde [0, 1] kapalı aralığı üzerinde tanımlı f fonksiyonu ile y = x doğrusunun grafikleri aşağıda verilmiştir.
+
+(0, 1) açık aralığındaki a, b ve c gerçel sayıları için
+a > f(a)
+b = f(b)
+c < f(c)
+olduğuna göre f(a), f(b) ve f(c) değerleri için aşağıdaki sıralamalardan hangisi doğrudur?
+  A) f(a) < f(b) < f(c)
+  B) f(a) < f(c) < f(b)
+  C) f(b) < f(a) < f(c)
+  D) f(c) < f(a) < f(b)
+  E) f(a) < f(b) < f(a)
+
+--- [KAPSAMA/GENEL-2]  id=21aceb57-96e6-53ee-8aa5-f2d829086607  sinav=TYT  kitap=ACİL-2025-TYT-Soeu Bankası
+SORU: Şekil 6 özdeş birim kareden oluşmuştur.
+Buna göre, cotx kaçtır?
+  A) 9/4
+  B) 2
+  C) 7/4
+  D) 3/2
+  E) 5/4

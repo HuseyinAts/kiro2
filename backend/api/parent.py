@@ -14,6 +14,7 @@ from models.parent import (
     ParentDashboardData,
     ParentNotificationCreate,
     ParentNotificationResponse,
+    VerifyCodeRequest,
     WeeklyReportData,
 )
 from services.parent_service import ParentService
@@ -59,9 +60,67 @@ async def create_parent_child_relation(
         )
 
 
+@router.post("/link-code")
+async def create_link_code(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Öğrenci: veli bağlama için 6-hane kısa-ömürlü kod üret (10 dk geçerli).
+
+    Yanıt: {"code": "<6-hane>", "expires_at": <ISO datetime>}.
+    """
+    if current_user.role != UserRole.STUDENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlem sadece öğrenci hesapları tarafından yapılabilir",
+        )
+
+    try:
+        parent_service = ParentService(db)
+        return await parent_service.generate_link_code(current_user.id)
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
+
+
+@router.post("/verify-code")
+async def verify_link_code(
+    payload: VerifyCodeRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Veli: 6-hane kodu doğrula ve veli-öğrenci ilişkisini başlat.
+
+    Geçersiz/süresi geçmiş kod → HTTP 200 + {"valid": false} (4xx DEĞİL) —
+    böylece frontend "doğrulanamadı" ipucunu render eder. Geçerli →
+    {"valid": true, "child_name", "child_initials", "relation_id"}.
+    """
+    if current_user.role != UserRole.PARENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlem sadece veli hesapları tarafından yapılabilir",
+        )
+
+    try:
+        parent_service = ParentService(db)
+        return await parent_service.verify_link_code(current_user.id, payload.code)
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
+
+
 @router.get("/children", response_model=list[ParentChildRelationResponse])
 async def get_parent_children(
-    current_user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Velinin onaylanmış çocuklarını listele
@@ -266,7 +325,8 @@ async def mark_notification_as_read(
 
 @router.get("/dashboard", response_model=ParentDashboardData)
 async def get_parent_dashboard(
-    current_user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Veli dashboard verilerini getir
@@ -331,5 +391,3 @@ async def approve_parent_relation(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
-
-

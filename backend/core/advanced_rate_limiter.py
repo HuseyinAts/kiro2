@@ -11,6 +11,7 @@ Features:
 - IP & User-based limiting
 """
 
+import os
 import time
 from enum import Enum
 from typing import Any
@@ -21,6 +22,14 @@ from fastapi import HTTPException, Request, status
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
+
+# Kimlik uclarinin hiz siniri: politikanin kaynagi `api/auth.py::RATE_LIMITS`.
+# Buradaki degerler onunla AYNI olmali -- bu middleware ONCE calistigi icin
+# kucuk olan sessizce kazanir ve belgelenmis politika yalana doner.
+# `api/auth.py` ile ayni env degiskeni ve ayni varsayilan kullaniliyor ki
+# operator tek yerden ayar yapabilsin. Civi: tests/fast/test_rate_limit_tutarliligi.py
+_LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300)
+_REGISTER_RPM = 500
 
 
 class UserTier(str, Enum):
@@ -122,11 +131,24 @@ class AdvancedRateLimiter:
         }
 
         # Endpoint-specific limits (overrides tier defaults)
+        #
+        # DIKKAT: login/register icin hiz siniri IKI yerde tanimli ve burasi
+        # middleware oldugu icin ONCE calisir -> kucuk olan sessizce kazanir.
+        # Politikanin kaynagi `api/auth.py::RATE_LIMITS`; buradaki degerler onunla
+        # AYNI olmali. Ayrisirsa belgelenmis politika yalana doner.
+        # Civi: tests/fast/test_rate_limit_tutarliligi.py
+        #
+        # S229: `b3be80686` (7 Agu, govdesi bos toplu commit) bu iki degeri
+        # 300/300 -> 5/5 yapmisti. Gerekce/test/yorum yoktu ve `api/auth.py`'deki
+        # OLCUME dayali karari (workload-simulator: 10 esszamanli ayni-WiFi
+        # ogrenci = 10/10 HTTP 429) sessizce geri aliyordu. 6 Agu tarihli imaj bu
+        # commit'ten onceydi; 18 Agu rebuild'i kusuru ilk kez canliya tasidi ve
+        # Golden Flow'da 15 test 429 ile dustu. Belgelenmis politikaya donuldu.
         self.endpoint_limits = {
-            "/api/v1/auth/login": {"limit": 5, "window": 60},  # 5 per minute
-            "/api/v1/auth/register": {"limit": 3, "window": 60},  # 3 per minute
-            "/api/v1/kvkk/privacy/export": {"limit": 2, "window": 3600},  # 2 per hour
-            "/api/v1/ai/chat": {"limit": 20, "window": 60},  # 20 per minute (free)
+            "/api/v1/auth/login": {"limit": _LOGIN_RPM, "window": 60},
+            "/api/v1/auth/register": {"limit": _REGISTER_RPM, "window": 60},
+            "/api/v1/kvkk/privacy/export": {"limit": 2, "window": 3600},
+            "/api/v1/ai/chat": {"limit": 20, "window": 60},
         }
 
     async def connect(self):
@@ -368,8 +390,8 @@ def get_rate_limiter() -> AdvancedRateLimiter:
     """
     global _rate_limiter
     if _rate_limiter is None:
-        import os
-
+        # `import os` modul duzeyine tasindi (bkz. _LOGIN_RPM) -- buradaki
+        # fonksiyon-ici kopya bu degisiklikle gereksiz kaldi.
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         _rate_limiter = AdvancedRateLimiter(redis_url)
     return _rate_limiter

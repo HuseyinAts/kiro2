@@ -12,7 +12,7 @@ def check_schema():
         user="postgres",
         cursor_factory=RealDictCursor
     )
-    
+
     with conn.cursor() as cur:
         # Tablo sütunlarını kontrol et
         cur.execute("""
@@ -21,27 +21,27 @@ def check_schema():
             WHERE table_name = 'questions'
             ORDER BY ordinal_position
         """)
-        
+
         print("Questions tablosu sütunları:")
         print("-" * 50)
         for col in cur.fetchall():
             print(f"{col['column_name']:30} {col['data_type']:20} {col['is_nullable']}")
-        
+
         # Toplam soru sayısı
         cur.execute("SELECT COUNT(*) as total FROM questions")
         total = cur.fetchone()
         print(f"\nToplam soru sayısı: {total['total']}")
-        
+
         # İlk 3 soruyu kontrol et
         cur.execute("SELECT * FROM questions LIMIT 3")
         rows = cur.fetchall()
-        
+
         if rows:
             print("\nÖrnek soru alanları:")
             print("-" * 50)
             for key in rows[0].keys():
                 print(f"- {key}")
-    
+
     conn.close()
 
 if __name__ == "__main__":

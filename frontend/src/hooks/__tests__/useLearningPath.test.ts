@@ -1,431 +1,232 @@
 /**
  * useLearningPath Hook Tests
- * Comprehensive test suite for learning path hook functionality
+ *
+ * Rewritten 2026-06-12 for the cookie-auth architecture (apiRequest +
+ * useAuthStore + createStudentProfile/createLearningPath). The previous
+ * suite mocked the removed `learningPathService` and was obsolete.
  *
  * KIRO2 - YKS Hazirlik Platformu
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor, act } from '@testing-library/react'
-import { useLearningPath } from '../useLearningPath'
-import learningPathService from '../../services/learningPathService'
-import { detectLearningStyle } from '../../api'
-import { convertPathToNodes } from '../../utils/learningPathHelpers'
 
-// Mock dependencies
-vi.mock('../../services/learningPathService', () => ({
-  default: {
-    getStudentId: vi.fn(),
-    createProfile: vi.fn(),
-    getCurrentPath: vi.fn(),
-    generateLearningPath: vi.fn(),
-  },
-}))
-
-vi.mock('../../api', () => ({
-  detectLearningStyle: vi.fn(),
-}))
-
-vi.mock('../../utils/learningPathHelpers', () => ({
-  convertPathToNodes: vi.fn(),
-}))
-
-vi.mock('../../config', () => ({
-  default: {
-    api: {
-      baseURL: 'http://localhost:8000',
-    },
-  },
-}))
-
-// Mock fetch
-const mockFetch = vi.fn()
-global.fetch = mockFetch
-
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(() => 'mock-token'),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+// --- Mutable auth state ---
+const mockAuthState = {
+  user: { id: 'user-1', ad: 'Test' } as any,
+  isAuthenticated: true,
 }
-Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+
+vi.mock('../../store/authStore', () => ({
+  useAuthStore: vi.fn((selector: (state: any) => any) => selector(mockAuthState)),
+}))
+
+const mockCreateStudentProfile = vi.fn()
+const mockCreateLearningPath = vi.fn()
+const mockDetectLearningStyle = vi.fn()
+const mockSubmitQuestionnaire = vi.fn()
+vi.mock('../../api', () => ({
+  createStudentProfile: (...a: any[]) => mockCreateStudentProfile(...a),
+  createLearningPath: (...a: any[]) => mockCreateLearningPath(...a),
+  detectLearningStyle: (...a: any[]) => mockDetectLearningStyle(...a),
+  submitQuestionnaire: (...a: any[]) => mockSubmitQuestionnaire(...a),
+}))
+
+const mockApiRequest = vi.fn()
+vi.mock('../../utils/apiHelpers', () => ({
+  apiRequest: (...a: any[]) => mockApiRequest(...a),
+}))
+
+const mockConvert = vi.fn()
+vi.mock('../../utils/learningPathHelpers', () => ({
+  convertPathToNodes: (...a: any[]) => mockConvert(...a),
+}))
+
+import { useLearningPath } from '../useLearningPath'
+
+const makeNodes = (statuses: Array<'completed' | 'current' | 'available'>) =>
+  statuses.map((status, i) => ({
+    id: `n${i + 1}`,
+    title: `Node ${i + 1}`,
+    status,
+    progress: status === 'completed' ? 100 : status === 'current' ? 50 : 0,
+  }))
 
 describe('useLearningPath', () => {
-  const mockStudentId = 'student-123'
-  const mockPath = {
-    id: 'path-1',
-    subject: 'matematik',
-    nodes: [
-      { id: 'node-1', title: 'Temel Matematik', status: 'completed' },
-      { id: 'node-2', title: 'Denklemler', status: 'current' },
-      { id: 'node-3', title: 'Fonksiyonlar', status: 'available' },
-    ],
-  }
-  const mockNodes = [
-    {
-      id: 'node-1',
-      title: 'Temel Matematik',
-      status: 'completed',
-      progress: 100,
-    },
-    { id: 'node-2', title: 'Denklemler', status: 'current', progress: 50 },
-    { id: 'node-3', title: 'Fonksiyonlar', status: 'available', progress: 0 },
-  ]
-  const mockLearningStyle = 'V-ASVS'
-
   beforeEach(() => {
     vi.clearAllMocks()
+    mockAuthState.user = { id: 'user-1', ad: 'Test' }
+    mockAuthState.isAuthenticated = true
 
-    // Default mock implementations
-    vi.mocked(learningPathService.getStudentId).mockReturnValue(mockStudentId)
-    vi.mocked(learningPathService.getCurrentPath).mockReturnValue(mockPath)
-    vi.mocked(convertPathToNodes).mockReturnValue(mockNodes)
-    vi.mocked(detectLearningStyle).mockResolvedValue({
+    // /my-profile resolves (existing profile) + completion empty
+    mockApiRequest.mockImplementation(async (url: string) => {
+      if (url.includes('/my-profile')) return { student_id: 'sid-1' }
+      if (url.includes('/completion/')) return { data: {} }
+      if (url.includes('/streak')) return { daily_streak: 0, best_streak: 0, last_study_date: null }
+      return {}
+    })
+
+    // Real VARK data exists → no onboarding, learningStyle set
+    mockDetectLearningStyle.mockResolvedValue({
       success: true,
-      learning_style: { hybrid_code: mockLearningStyle },
+      data: {
+        confidence: { score: 0.8 },
+        data_points_used: 10,
+        hybrid_code: 'V-ASVS',
+        vark_profile: { dominant: 'V' },
+      },
     })
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({ data: { 'node-1': true } }),
+    mockCreateLearningPath.mockResolvedValue({
+      success: true,
+      learning_path: { id: 'path-1', subject: 'matematik', nodes: [] },
     })
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
+    mockConvert.mockReturnValue(makeNodes(['completed', 'current', 'available']))
   })
 
   describe('Initial State', () => {
-    it('starts with loading true', async () => {
+    it('starts with loading true then resolves to false', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      // Initially loading
       expect(result.current.loading).toBe(true)
-
-      // Wait for loading to complete
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
+      await waitFor(() => expect(result.current.loading).toBe(false))
     })
 
-    it('starts with no error', async () => {
+    it('starts with no error on success', async () => {
       const { result } = renderHook(() => useLearningPath())
-
+      await waitFor(() => expect(result.current.loading).toBe(false))
       expect(result.current.error).toBeNull()
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-    })
-
-    it('starts with empty path nodes', async () => {
-      // Temporarily return empty
-      vi.mocked(convertPathToNodes).mockReturnValueOnce([])
-
-      const { result } = renderHook(() => useLearningPath())
-
-      // Nodes should be empty initially
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
     })
   })
 
   describe('Loading Path Data', () => {
     it('loads path nodes on mount', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.pathNodes).toEqual(mockNodes)
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.pathNodes).toEqual(makeNodes(['completed', 'current', 'available']))
     })
 
-    it('sets current node ID from path data', async () => {
+    it('sets current node ID from the node with status "current"', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      // node-2 has status 'current'
-      expect(result.current.currentNodeId).toBe('node-2')
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.currentNodeId).toBe('n2')
     })
 
-    it('loads learning style', async () => {
+    it('sets learning style from detection', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.learningStyle).toBe(mockLearningStyle)
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.learningStyle).toBe('V-ASVS')
     })
 
     it('fetches completion status from backend', async () => {
       renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith(
+      await waitFor(() =>
+        expect(mockApiRequest).toHaveBeenCalledWith(
           expect.stringContaining('/api/v1/learning-path/completion/'),
-          expect.objectContaining({
-            headers: expect.objectContaining({
-              Authorization: 'Bearer mock-token',
-            }),
-          })
-        )
-      })
+        ),
+      )
     })
   })
 
-  describe('Creating Demo Profile', () => {
-    it('creates demo profile when no student ID exists', async () => {
-      vi.mocked(learningPathService.getStudentId)
-        .mockReturnValueOnce(null)
-        .mockReturnValue(mockStudentId)
-
-      vi.mocked(learningPathService.createProfile).mockResolvedValue({
-        student_id: mockStudentId,
+  describe('Onboarding', () => {
+    it('requests onboarding when no real VARK data exists', async () => {
+      // Low confidence / no data points → quiz needed
+      mockDetectLearningStyle.mockResolvedValue({
+        success: true,
+        data: { confidence: { score: 0.3 }, data_points_used: 0 },
       })
-
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(learningPathService.createProfile).toHaveBeenCalledWith({
-        name: 'Demo Öğrenci',
-        grade: 12,
-        subjects: ['matematik', 'fizik', 'kimya'],
-        goals: ['YKS hazırlık', 'Matematik geliştirme'],
-        learning_style: 'visual',
-        available_time: 120,
-      })
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.needsOnboarding).toBe(true)
+      expect(result.current.pathNodes).toEqual([])
     })
-  })
 
-  describe('Generating Learning Path', () => {
-    it('generates path when no current path exists', async () => {
-      vi.mocked(learningPathService.getCurrentPath).mockReturnValue(null)
-      vi.mocked(learningPathService.generateLearningPath).mockResolvedValue(
-        mockPath
-      )
-
-      const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
+    it('creates a profile when none exists yet', async () => {
+      mockApiRequest.mockImplementation(async (url: string) => {
+        if (url.includes('/my-profile')) throw new Error('404 not found')
+        if (url.includes('/completion/')) return { data: {} }
+        if (url.includes('/streak')) return { daily_streak: 0, best_streak: 0, last_study_date: null }
+        return {}
       })
-
-      expect(learningPathService.generateLearningPath).toHaveBeenCalledWith(
-        'matematik',
-        4
-      )
+      mockCreateStudentProfile.mockResolvedValue({ student_id: 'sid-new' })
+      const { result } = renderHook(() => useLearningPath())
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(mockCreateStudentProfile).toHaveBeenCalled()
     })
   })
 
   describe('Error Handling', () => {
-    it('sets error when path loading fails', async () => {
-      const errorMessage = 'Network error'
-      vi.mocked(learningPathService.getCurrentPath).mockImplementation(() => {
-        throw new Error(errorMessage)
-      })
-
+    it('sets error when user is not authenticated', async () => {
+      mockAuthState.user = null
+      mockAuthState.isAuthenticated = false
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.error).toBe(errorMessage)
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      expect(result.current.error).toBe('Giriş yapmanız gerekiyor')
     })
 
-    it('handles completion status fetch failure gracefully', async () => {
-      mockFetch.mockRejectedValue(new Error('Fetch failed'))
-
-      const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
+    it('handles completion fetch failure gracefully', async () => {
+      mockApiRequest.mockImplementation(async (url: string) => {
+        if (url.includes('/my-profile')) return { student_id: 'sid-1' }
+        if (url.includes('/completion/')) throw new Error('Fetch failed')
+        if (url.includes('/streak')) return { daily_streak: 0, best_streak: 0, last_study_date: null }
+        return {}
       })
-
-      // Should not throw, just log warning
-      expect(result.current.error).toBeNull()
-      expect(result.current.pathNodes).toEqual(mockNodes)
-    })
-
-    it('uses default learning style when detection fails', async () => {
-      vi.mocked(detectLearningStyle).mockRejectedValue(new Error('API error'))
-
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.learningStyle).toBe('V-ASVS')
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      // Path still loads (completion failure is non-fatal)
+      expect(result.current.pathNodes).toEqual(makeNodes(['completed', 'current', 'available']))
     })
   })
 
   describe('Actions', () => {
-    it('reload() triggers path reload', async () => {
+    it('reload() re-triggers a path load', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      // Clear mocks to track new calls
-      vi.clearAllMocks()
-
-      // Trigger reload
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      mockCreateLearningPath.mockClear()
       await act(async () => {
         result.current.reload()
       })
-
-      await waitFor(() => {
-        expect(learningPathService.getCurrentPath).toHaveBeenCalled()
-      })
+      await waitFor(() => expect(mockCreateLearningPath).toHaveBeenCalled())
     })
 
     it('setCurrentNode() updates current node ID', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
+      await waitFor(() => expect(result.current.loading).toBe(false))
       act(() => {
-        result.current.setCurrentNode('node-3')
+        result.current.setCurrentNode('n3')
       })
-
-      expect(result.current.currentNodeId).toBe('node-3')
+      expect(result.current.currentNodeId).toBe('n3')
     })
 
-    it('loadPath() can be called manually', async () => {
+    it('changeSubject() reloads the path for the new subject', async () => {
       const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      vi.clearAllMocks()
-
+      await waitFor(() => expect(result.current.loading).toBe(false))
+      mockCreateLearningPath.mockClear()
       await act(async () => {
-        await result.current.loadPath()
+        result.current.changeSubject('fizik')
       })
-
-      expect(learningPathService.getCurrentPath).toHaveBeenCalled()
-    })
-  })
-
-  describe('Learning Style Detection', () => {
-    it('extracts hybrid_code from response', async () => {
-      vi.mocked(detectLearningStyle).mockResolvedValue({
-        success: true,
-        learning_style: { hybrid_code: 'A-KVRS' },
-      })
-
-      const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.learningStyle).toBe('A-KVRS')
-    })
-
-    it('uses default when response has no learning_style', async () => {
-      vi.mocked(detectLearningStyle).mockResolvedValue({
-        success: true,
-        learning_style: {},
-      })
-
-      const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.learningStyle).toBe('V-ASVS')
-    })
-
-    it('uses default when detection returns success: false', async () => {
-      vi.mocked(detectLearningStyle).mockResolvedValue({
-        success: false,
-      })
-
-      const { result } = renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      expect(result.current.learningStyle).toBe('V-ASVS')
-    })
-  })
-
-  describe('Completion Status', () => {
-    it('passes completion status to node converter', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          data: { 'node-1': true, 'node-2': false },
-        }),
-      })
-
-      renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(convertPathToNodes).toHaveBeenCalledWith(mockPath, {
-          'node-1': true,
-          'node-2': false,
-        })
-      })
-    })
-
-    it('uses empty object when fetch returns non-ok response', async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 404,
-      })
-
-      renderHook(() => useLearningPath())
-
-      await waitFor(() => {
-        expect(convertPathToNodes).toHaveBeenCalledWith(mockPath, {})
-      })
+      await waitFor(() =>
+        expect(mockCreateLearningPath).toHaveBeenCalledWith(
+          expect.objectContaining({ subject: 'fizik' }),
+        ),
+      )
+      expect(result.current.selectedSubject).toBe('fizik')
     })
   })
 
   describe('Return Interface', () => {
     it('returns all expected properties', async () => {
       const { result } = renderHook(() => useLearningPath())
+      await waitFor(() => expect(result.current.loading).toBe(false))
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-
-      // Data
-      expect(result.current).toHaveProperty('pathNodes')
-      expect(result.current).toHaveProperty('learningStyle')
-      expect(result.current).toHaveProperty('currentNodeId')
-
-      // State
-      expect(result.current).toHaveProperty('loading')
-      expect(result.current).toHaveProperty('error')
-
-      // Actions
-      expect(result.current).toHaveProperty('loadPath')
-      expect(result.current).toHaveProperty('reload')
-      expect(result.current).toHaveProperty('setCurrentNode')
-
-      // Types
-      expect(typeof result.current.loadPath).toBe('function')
+      for (const key of [
+        'pathNodes', 'learningStyle', 'currentNodeId', 'loading', 'error',
+        'needsOnboarding', 'studentId', 'selectedSubject', 'loadPath',
+        'reload', 'setCurrentNode', 'updateProgress', 'markNodeComplete',
+        'changeSubject', 'startSession', 'endSession',
+      ]) {
+        expect(result.current).toHaveProperty(key)
+      }
       expect(typeof result.current.reload).toBe('function')
-      expect(typeof result.current.setCurrentNode).toBe('function')
+      expect(typeof result.current.changeSubject).toBe('function')
     })
   })
 })

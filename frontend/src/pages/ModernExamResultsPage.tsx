@@ -46,7 +46,10 @@ interface ExamResult {
   correct_count: number
   wrong_count: number
   empty_count: number
+  /** `raw_score` — YÜZDE (0-100). Eşik mantığını (85/70/50) besler, net DEĞİLDİR. */
   score: number
+  /** `net_score` — ÖSYM neti (`doğru - yanlış/4`). Negatif olabilir. */
+  net: number
   duration: number
   duration_limit: number
   completed_at: string
@@ -60,6 +63,7 @@ interface ExamResult {
   }>
   subject_breakdown: Array<{
     subject: string
+    topic: string
     correct: number
     wrong: number
     empty: number
@@ -116,12 +120,27 @@ export const ModernExamResultsPage: React.FC = () => {
         wrong_count: perfData.wrong_answers,
         empty_count: perfData.empty_answers,
         score: perfData.raw_score,
+        // 🔴 İSTEMCİDE YENİDEN HESAPLANMIYOR — KASITLI. `correct/wrong` elimizde,
+        // yani `doğru - yanlış/4` buraya yazılabilirdi. Yazılmıyor: net hesabı
+        // backend'de tam da bu yüzden 5 kopyaya çıkmış ve ikisi çelişmişti
+        // (`core/osym_puanlama.py` docstring'i). İstemciye 6. kopyayı koymak,
+        // az önce tek kaynağa bağladığımız kuralı yeniden çatallardı. Backend
+        // `net_score` göndermezse alan BOŞ görünür — ki bu doğrusudur: sessizce
+        // "makul" bir sayı uydurmak, sunucu regresyonunu öğrenciye doğru bir
+        // netmiş gibi gösterirdi.
+        net: perfData.net_score,
         duration: durationMinutes,
         duration_limit: sessionData?.duration_minutes || 0,
         completed_at: sessionData?.completed_at || new Date().toISOString(),
         questions: [],
         subject_breakdown: subjectData.map((s: any) => ({
           subject: s.subject,
+          // Backend (core/osym_exam_engine.py) topic_name'i HER ZAMAN doldurur:
+          // konu atanmamış sorular için "Konu atanmamis" yazar, hiç null bırakmaz.
+          // `|| s.subject` yalnızca backend `topic_name` alanını henüz göndermeyen
+          // ESKİ bir sürümdeyse devreye girer (sözleşme geriye dönük uyumluluğu) —
+          // o durumda tablo eskisi gibi ders adını gösterir, boş hücre kalmaz.
+          topic: s.topic_name || s.subject,
           correct: s.correct_answers,
           wrong: s.wrong_answers,
           empty: s.empty_answers,
@@ -177,11 +196,21 @@ export const ModernExamResultsPage: React.FC = () => {
   };
 
   const getScoreMessage = (score: number) => {
-    if (score >= 85) {return 'Mükemmel! Harika bir performans sergiledinizyürümeye devam edin!';}
+    if (score >= 85) {return 'Mükemmel! Harika bir performans sergilediniz, yürümeye devam edin!';}
     if (score >= 70) {return 'Çok iyi! Biraz daha çalışarak daha da iyiye gidebilirsiniz.';}
     if (score >= 50) {return 'İyi bir başlangıç! Eksik konularınızı çalışmaya devam edin.';}
-    return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarısız olabilirsiniz!';
+    // "başarısız olabilirsiniz" yazıyordu: cesaretlendirmesi gereken cümle
+    // öğrenciye "pes etme, başaramayabilirsin" diyordu. Bu mesajı en çok
+    // öğrenci görüyor (score < 50), yani en görünür metin en bozuk olanıydı.
+    return 'Daha fazla çalışmanız gerekiyor. Pes etmeyin, başarabilirsiniz!';
   };
+
+  // Backend `raw_score`'u ham kayan nokta dondurur: 11/40 -> 27.500000000000004.
+  // Daire bunu oldugu gibi basiyordu; 17 hane hem yanlis hem de dairenin
+  // disina tasiyordu (canli proplandi, 27 Agu). Alt karttaki "Basari Orani"
+  // zaten `.toFixed(1)` kullaniyor -- ev gelenegi bu, daire ona uymuyordu.
+  // `Number(...)` sondaki sifiri duser: 85.0 -> 85, 27.5 -> 27.5.
+  const yuzde = Number(result.score.toFixed(1));
 
   const successRate = result.question_count > 0
     ? ((result.correct_count / result.question_count) * 100).toFixed(1)
@@ -262,11 +291,25 @@ export const ModernExamResultsPage: React.FC = () => {
             }}
           >
             <Typography variant="h2" fontWeight={700} color="white">
-              {result.score}
+              {yuzde}
             </Typography>
           </Box>
 
-          <Typography variant="h6" gutterBottom>{getScoreMessage(result.score)}</Typography>
+          {/* Daire ETİKETLENİYOR: içindeki sayı bir YÜZDE. Etiketsizken öğrenci
+              onu net sanıyordu — 40 soruluk bir testte "30" görmek net gibi
+              okunuyor ama burada %30 demek. İki sayı ekranda yan yana
+              duracaksa hangisinin ne olduğu YAZILMALI. */}
+          <Typography variant="body2" color="text.secondary">% başarı</Typography>
+
+          {/* A1 kabul kriterinin teslim ayağı: "netini görür". */}
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">Net</Typography>
+            <Typography variant="h3" fontWeight={700} color="primary.main">
+              {result.net}
+            </Typography>
+          </Box>
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>{getScoreMessage(result.score)}</Typography>
 
           <Grid container spacing={2} sx={{ mt: 3 }}>
             <Grid item xs={12} sm={4}>
@@ -397,6 +440,7 @@ export const ModernExamResultsPage: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell><strong>Ders</strong></TableCell>
                 <TableCell><strong>Konu</strong></TableCell>
                 <TableCell align="center"><strong>Doğru</strong></TableCell>
                 <TableCell align="center"><strong>Yanlış</strong></TableCell>
@@ -411,6 +455,7 @@ export const ModernExamResultsPage: React.FC = () => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{item.subject}</TableCell>
+                    <TableCell>{item.topic}</TableCell>
                     <TableCell align="center">
                       <Chip label={item.correct} size="small" color="success" />
                     </TableCell>

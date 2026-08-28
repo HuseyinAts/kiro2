@@ -1,0 +1,22 @@
+=== PILOT DEEP ANALYSIS ===
+total_with_pred=300  AGREE=137  DISPUTE=163
+AGREE conf: mean=0.978 median=1.000 min=0.9 max=1.0
+DISPUTE conf: mean=0.982 median=1.000 min=0.9 max=1.0
+
+--- DISPUTE confidence histogram (high conf = DB-error OR confident-gemma3-error) ---
+  conf [0.9,1.0): 163
+  conf [0.8,0.9): 0
+  conf [0.7,0.8): 0
+  conf [0.6,0.7): 0
+  conf [0.0,0.6): 0
+
+--- per subject: agree / dispute / mean-dispute-conf ---
+  MATEMATIK    n=136 agree= 52 dispute= 84 agree%=38.2 mean_disp_conf=0.99
+  KIMYA        n= 41 agree= 17 dispute= 24 agree%=41.5 mean_disp_conf=0.97
+  EDEBIYAT     n= 27 agree= 13 dispute= 14 agree%=48.1 mean_disp_conf=0.97
+  FIZIK        n= 23 agree=  9 dispute= 14 agree%=39.1 mean_disp_conf=0.97
+  TURKCE       n= 20 agree= 15 dispute=  5 agree%=75.0 mean_disp_conf=0.94
+  TARIH        n= 18 agree= 14 dispute=  4 agree%=77.8 mean_disp_conf=0.95
+  BIYOLOJI     n= 17 agree= 13 dispute=  4 agree%=76.5 mean_disp_conf=0.97
+  GEOMETRI     n= 15 agree=  3 dispute= 12 agree%=20.0 mean_disp_conf=0.98
+  COGRAFYA     n=  3 agree=  1 dispute=  2 agree%=33.3 mean_disp_conf=0.95

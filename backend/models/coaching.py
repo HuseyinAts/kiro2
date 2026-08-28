@@ -4,12 +4,12 @@ Coaching Models
 CoachingEvent ve StudentEngagementSignal modelleri — AI koçluk ve etkileşim sinyalleri.
 """
 
-import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Float, Integer, String, Text
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -20,12 +20,21 @@ class CoachingEvent(Base):
     __tablename__ = "coaching_events"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     event_type: Mapped[str] = mapped_column(String(30), nullable=False)
-    trigger_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    message: Mapped[str] = mapped_column(Text, nullable=False)
+    trigger_data: Mapped[dict | None] = mapped_column(
+        JSON, nullable=True, deferred=True
+    )
+    message: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     priority: Mapped[int] = mapped_column(Integer, default=0)
     action_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     shown_at: Mapped[datetime | None] = mapped_column(
@@ -54,7 +63,14 @@ class StudentEngagementSignal(Base):
     __tablename__ = "student_engagement_signals"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     signal_type: Mapped[str] = mapped_column(String(50), nullable=False)

@@ -32,7 +32,7 @@ function setCacheEntry(key: string, videos: VideoResponse[]) {
         oldestKey = k;
       }
     }
-    if (oldestKey) videoCache.delete(oldestKey);
+    if (oldestKey) {videoCache.delete(oldestKey);}
   }
   videoCache.set(key, { videos, timestamp: Date.now() });
 }

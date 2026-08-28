@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 // ─── Inject global styles ────────────────────────────────────────────────────
 
@@ -42,14 +42,14 @@ const GHOST_CSS = `
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   opacity:.4; mix-blend-mode:screen;
 }
-`
+`;
 
 function injectStyles() {
-  if (document.getElementById('ghost-debug-css')) return
-  const el = document.createElement('style')
-  el.id = 'ghost-debug-css'
-  el.textContent = GHOST_CSS
-  document.head.appendChild(el)
+  if (document.getElementById('ghost-debug-css')) {return;}
+  const el = document.createElement('style');
+  el.id = 'ghost-debug-css';
+  el.textContent = GHOST_CSS;
+  document.head.appendChild(el);
 }
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ const INFRA_INITIAL: InfraItem[] = [
   { key: 'redis',    name: 'Redis',       cmd: 'redis-cli ping',             detail: ':6379',           status: 'idle' },
   { key: 'backend',  name: 'Backend',     cmd: 'curl /api/v1/health',        detail: ':8000',           status: 'idle' },
   { key: 'frontend', name: 'Frontend',    cmd: 'curl /healthz',              detail: ':3000',           status: 'idle' },
-]
+];
 
 const RCA_FIELDS_INITIAL: RCAField[] = [
   { key: 'error',  label: 'HATA NEDİR?',       hint: 'curl/pytest/log çıktısı — tahmin değil, gerçek output', value: '' },
@@ -100,7 +100,7 @@ const RCA_FIELDS_INITIAL: RCAField[] = [
   { key: 'table',  label: 'DOĞRU TABLO MU?',    hint: 'question_bank=77K prod  /  questions=BOŞ legacy',      value: '' },
   { key: 'infra',  label: 'ALTYAPI OK MU?',     hint: 'pg_isready -p 5434, redis-cli ping, curl /health',     value: '' },
   { key: 'scope',  label: 'FIX SCOPE?',         hint: 'dosya listesi — max 3 dosya',                          value: '' },
-]
+];
 
 const CHECKS_INITIAL: CheckItem[] = [
   { id: 'c1',  label: 'RCA tablosu dolduruldu',                   checked: false, critical: true  },
@@ -113,18 +113,18 @@ const CHECKS_INITIAL: CheckItem[] = [
   { id: 'c8',  label: 'Altyapı kontrol edildi',                    checked: false, critical: false },
   { id: 'c9',  label: 'Max 3 dosya fix scope',                     checked: false, critical: false },
   { id: 'c10', label: 'Reward hacking pattern yok',                checked: false, critical: false },
-]
+];
 
 const LOG_SEED: LogEntry[] = [
   { id: 1, ts: now(), level: 'INFO', msg: 'GHOST-DEBUG v2.0 initialized' },
   { id: 2, ts: now(), level: 'INFO', msg: 'Awaiting RCA gate unlock...' },
-]
+];
 
 function now(): string {
-  return new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  return new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
-let _logId = 10
+let _logId = 10;
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -421,75 +421,75 @@ const s = {
     flexDirection: 'column' as const,
     gap: '16px',
   },
-}
+};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const SystematicDebuggingPage: React.FC = () => {
-  const [infra, setInfra] = useState<InfraItem[]>(INFRA_INITIAL)
-  const [rca, setRca] = useState<RCAField[]>(RCA_FIELDS_INITIAL)
-  const [checks, setChecks] = useState<CheckItem[]>(CHECKS_INITIAL)
-  const [logs, setLogs] = useState<LogEntry[]>(LOG_SEED)
-  const [clock, setClock] = useState(now())
-  const [bugTitle, setBugTitle] = useState('')
-  const [checkingInfra, setCheckingInfra] = useState(false)
-  const focusRef = useRef<HTMLInputElement>(null)
+  const [infra, setInfra] = useState<InfraItem[]>(INFRA_INITIAL);
+  const [rca, setRca] = useState<RCAField[]>(RCA_FIELDS_INITIAL);
+  const [checks, setChecks] = useState<CheckItem[]>(CHECKS_INITIAL);
+  const [logs, setLogs] = useState<LogEntry[]>(LOG_SEED);
+  const [clock, setClock] = useState(now());
+  const [bugTitle, setBugTitle] = useState('');
+  const [checkingInfra, setCheckingInfra] = useState(false);
+  const focusRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { injectStyles() }, [])
+  useEffect(() => { injectStyles(); }, []);
   useEffect(() => {
-    const t = setInterval(() => setClock(now()), 1000)
-    return () => clearInterval(t)
-  }, [])
+    const t = setInterval(() => setClock(now()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const addLog = useCallback((level: LogEntry['level'], msg: string) => {
-    setLogs(prev => [{ id: ++_logId, ts: now(), level, msg }, ...prev.slice(0, 99)])
-  }, [])
+    setLogs(prev => [{ id: ++_logId, ts: now(), level, msg }, ...prev.slice(0, 99)]);
+  }, []);
 
   // RCA gate: all 5 fields must have content
-  const rcaFilled = rca.every(f => f.value.trim().length >= 3)
-  const criticalChecked = checks.filter(c => c.critical && c.checked).length
-  const criticalTotal = checks.filter(c => c.critical).length
-  const allChecked = checks.every(c => c.checked)
+  const rcaFilled = rca.every(f => f.value.trim().length >= 3);
+  const criticalChecked = checks.filter(c => c.critical && c.checked).length;
+  const criticalTotal = checks.filter(c => c.critical).length;
+  const allChecked = checks.every(c => c.checked);
 
   const handleRcaChange = (key: string, val: string) => {
-    setRca(prev => prev.map(f => f.key === key ? { ...f, value: val } : f))
+    setRca(prev => prev.map(f => f.key === key ? { ...f, value: val } : f));
     if (val.trim().length === 3) {
-      addLog('DEBUG', `RCA field [${key}] unlocked`)
+      addLog('DEBUG', `RCA field [${key}] unlocked`);
     }
-  }
+  };
 
   const handleCheck = (id: string) => {
     if (!rcaFilled && id !== 'c1') {
-      addLog('GATE', 'RCA tablosu önce doldurulmalı — edit/write YAPMA')
-      return
+      addLog('GATE', 'RCA tablosu önce doldurulmalı — edit/write YAPMA');
+      return;
     }
-    setChecks(prev => prev.map(c => c.id === id ? { ...c, checked: !c.checked } : c))
-    const item = checks.find(c => c.id === id)
-    if (item) addLog(item.checked ? 'DEBUG' : 'PASS', `[${item.id.toUpperCase()}] ${item.label}`)
-  }
+    setChecks(prev => prev.map(c => c.id === id ? { ...c, checked: !c.checked } : c));
+    const item = checks.find(c => c.id === id);
+    if (item) {addLog(item.checked ? 'DEBUG' : 'PASS', `[${item.id.toUpperCase()}] ${item.label}`);}
+  };
 
   const runInfraCheck = async () => {
-    if (checkingInfra) return
-    setCheckingInfra(true)
-    addLog('INFO', 'Altyapi kontrolu baslatildi...')
-    setInfra(prev => prev.map(i => ({ ...i, status: 'checking' })))
+    if (checkingInfra) {return;}
+    setCheckingInfra(true);
+    addLog('INFO', 'Altyapi kontrolu baslatildi...');
+    setInfra(prev => prev.map(i => ({ ...i, status: 'checking' })));
 
-    const delays = [800, 1400, 2000, 2600]
-    const statuses: InfraStatus[] = ['ok', 'ok', 'ok', 'ok']
+    const delays = [800, 1400, 2000, 2600];
+    const statuses: InfraStatus[] = ['ok', 'ok', 'ok', 'ok'];
 
     for (let i = 0; i < INFRA_INITIAL.length; i++) {
-      await new Promise<void>(r => setTimeout(r, delays[i]))
-      const status = statuses[i]
-      setInfra(prev => prev.map((item, idx) => idx === i ? { ...item, status } : item))
-      addLog(status === 'ok' ? 'PASS' : 'ERROR', `${INFRA_INITIAL[i].name}: ${status.toUpperCase()}`)
+      await new Promise<void>(r => setTimeout(r, delays[i]));
+      const status = statuses[i];
+      setInfra(prev => prev.map((item, idx) => idx === i ? { ...item, status } : item));
+      addLog(status === 'ok' ? 'PASS' : 'ERROR', `${INFRA_INITIAL[i].name}: ${status.toUpperCase()}`);
     }
 
-    addLog('INFO', 'Altyapi kontrolu tamamlandi')
-    setCheckingInfra(false)
-  }
+    addLog('INFO', 'Altyapi kontrolu tamamlandi');
+    setCheckingInfra(false);
+  };
 
-  const infraOk = infra.every(i => i.status === 'ok')
-  const progress = { checks: Math.round((checks.filter(c => c.checked).length / checks.length) * 100) }
+  const infraOk = infra.every(i => i.status === 'ok');
+  const progress = { checks: Math.round((checks.filter(c => c.checked).length / checks.length) * 100) };
 
   return (
     <div style={s.page}>
@@ -606,7 +606,7 @@ const SystematicDebuggingPage: React.FC = () => {
             <div style={s.progressBar}>
               <div style={s.progressFill(
                 Math.round((rca.filter(f => f.value.trim().length >= 3).length / rca.length) * 100),
-                rcaFilled ? 'var(--ph)' : 'var(--red)'
+                rcaFilled ? 'var(--ph)' : 'var(--red)',
               )} />
             </div>
           </div>
@@ -783,7 +783,7 @@ const SystematicDebuggingPage: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SystematicDebuggingPage
+export default SystematicDebuggingPage;

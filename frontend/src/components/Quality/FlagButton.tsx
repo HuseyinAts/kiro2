@@ -53,7 +53,7 @@ export const FlagButton: React.FC<FlagButtonProps> = ({ questionId, size = 'smal
   });
 
   const handleClose = () => {
-    if (submitting) return;
+    if (submitting) {return;}
     setOpen(false);
     // Form state reset on close (not on submit success, so user sees "submitted" state briefly)
     setTimeout(() => {
@@ -63,7 +63,7 @@ export const FlagButton: React.FC<FlagButtonProps> = ({ questionId, size = 'smal
   };
 
   const handleSubmit = async () => {
-    if (!flagType) return;
+    if (!flagType) {return;}
     setSubmitting(true);
     try {
       await feedbackService.submitFlag({

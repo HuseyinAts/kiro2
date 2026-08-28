@@ -51,6 +51,15 @@ from api.schemas.diary import (
     SuccessResponse,
 )
 from core.auth_dependencies import AuthenticationDependency
+from core.cqrs.bus import CommandBus, get_command_bus
+from application.commands.diary import (
+    CreateSummaryCommand, UpdateSummaryCommand, DeleteSummaryCommand,
+    CreateGoalCommand, UpdateGoalCommand, UpdateGoalProgressCommand, AdjustGoalCommand, CreateGoalRetrospectiveCommand, DeleteGoalCommand,
+    AnalyzeEntriesForInsightsCommand, DeleteInsightCommand,
+    CreateReflectionCommand, CreateLearningEntryCommand, RecordReviewCommand, LinkConceptsCommand,
+    TrackEmotionalStateCommand, CreateExportCommand, CreateShareLinkCommand, CreateEncryptedBackupCommand
+)
+
 from core.database import get_async_session
 from core.service_dependencies import get_diary_service
 from models.diary import (
@@ -240,6 +249,7 @@ async def create_summary(
     persist_file: bool = Query(True, description="Dosyaya kaydet"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> DiaryEntryResponse:
     """
     Manuel gunluk ozeti olustur.
@@ -252,39 +262,13 @@ async def create_summary(
         DiaryEntryResponse
     """
     user_id = current_user.id
-    service = DiaryService(db)
-
-    # Mevcut kayit kontrolu
-    existing = await service.get_summary(user_id, request.date)
-    if existing:
-        raise HTTPException(
-            status_code=400, detail=f"{request.date} tarihi icin kayit zaten mevcut"
-        )
-
-    entry = await service.generate_summary(
-        user_id=user_id,
-        entry_date=request.date,
-        tasks=request.tasks,
+    command = CreateSummaryCommand(
+        request=request,
         persist_file=persist_file,
+        user_id=user_id,
+        db=db,
     )
-
-    return DiaryEntryResponse(
-        id=entry.id,
-        user_id=entry.user_id,
-        date=entry.date,
-        success_count=entry.success_count,
-        failure_count=entry.failure_count,
-        total_tasks=entry.total_tasks,
-        total_duration_minutes=entry.total_duration_minutes,
-        highlights=entry.highlights or [],
-        learnings=entry.learnings or [],
-        challenges=entry.challenges or [],
-        markdown_content=entry.markdown_content,
-        file_path=entry.file_path,
-        created_at=entry.created_at,
-        updated_at=entry.updated_at,
-        success_rate=entry.success_rate,
-    )
+    return await command_bus.execute(command)
 
 
 @router.put("/summary/{entry_id}", response_model=DiaryEntryResponse)
@@ -293,6 +277,7 @@ async def update_summary(
     request: DiaryEntryUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> DiaryEntryResponse:
     """
     Gunluk ozetini guncelle.
@@ -304,35 +289,14 @@ async def update_summary(
     Returns:
         DiaryEntryResponse
     """
-    await _verify_ownership(db, DiaryEntry, entry_id, current_user, "Ozet")
-    service = DiaryService(db)
-    entry = await service.update_summary(
+    user_id = current_user.id
+    command = UpdateSummaryCommand(
         entry_id=entry_id,
-        highlights=request.highlights,
-        learnings=request.learnings,
-        challenges=request.challenges,
+        request=request,
+        user_id=user_id,
+        db=db,
     )
-
-    if not entry:
-        raise HTTPException(status_code=404, detail="Kayit bulunamadi")
-
-    return DiaryEntryResponse(
-        id=entry.id,
-        user_id=entry.user_id,
-        date=entry.date,
-        success_count=entry.success_count,
-        failure_count=entry.failure_count,
-        total_tasks=entry.total_tasks,
-        total_duration_minutes=entry.total_duration_minutes,
-        highlights=entry.highlights or [],
-        learnings=entry.learnings or [],
-        challenges=entry.challenges or [],
-        markdown_content=entry.markdown_content,
-        file_path=entry.file_path,
-        created_at=entry.created_at,
-        updated_at=entry.updated_at,
-        success_rate=entry.success_rate,
-    )
+    return await command_bus.execute(command)
 
 
 @router.delete("/summary/{entry_id}", response_model=SuccessResponse)
@@ -340,6 +304,7 @@ async def delete_summary(
     entry_id: UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> SuccessResponse:
     """
     Gunluk ozetini sil.
@@ -350,14 +315,13 @@ async def delete_summary(
     Returns:
         SuccessResponse
     """
-    await _verify_ownership(db, DiaryEntry, entry_id, current_user, "Ozet")
-    service = DiaryService(db)
-    deleted = await service.delete_summary(entry_id)
-
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Kayit bulunamadi")
-
-    return SuccessResponse(success=True, message="Kayit silindi")
+    user_id = current_user.id
+    command = DeleteSummaryCommand(
+        entry_id=entry_id,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 # =============================================================================
@@ -476,6 +440,7 @@ async def create_goal(
     request: GoalCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> GoalResponse:
     """
     Yeni hedef olustur.
@@ -487,22 +452,12 @@ async def create_goal(
         GoalResponse
     """
     user_id = current_user.id
-    service = GoalService(db)
-
-    # SMART validasyonu
-    smart_result = service.validate_smart(request)
-    if not smart_result["is_valid"]:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "message": "SMART kriterleri karsilanmiyor",
-                "missing": smart_result["missing"],
-                "warnings": smart_result["warnings"],
-            },
-        )
-
-    goal = await service.create_goal(user_id, request)
-    return _goal_to_response(goal)
+    command = CreateGoalCommand(
+        request=request,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 @router.post("/goals/validate-smart")
@@ -530,6 +485,7 @@ async def update_goal(
     request: GoalUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> GoalResponse:
     """
     Hedef guncelle.
@@ -541,14 +497,14 @@ async def update_goal(
     Returns:
         GoalResponse
     """
-    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
-    service = GoalService(db)
-    goal = await service.update_goal(goal_id, request)
-
-    if not goal:
-        raise HTTPException(status_code=404, detail="Hedef bulunamadi")
-
-    return _goal_to_response(goal)
+    user_id = current_user.id
+    command = UpdateGoalCommand(
+        goal_id=goal_id,
+        request=request,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 @router.patch("/goals/{goal_id}/progress")
@@ -557,6 +513,7 @@ async def update_goal_progress(
     request: GoalProgressUpdate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ):
     """
     Hedef ilerlemesini guncelle.
@@ -568,26 +525,14 @@ async def update_goal_progress(
     Returns:
         Dict - Guncelleme sonucu (milestone celebrations dahil)
     """
-    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
-    service = GoalService(db)
-    result = await service.update_progress(goal_id, request)
-
-    if not result:
-        raise HTTPException(status_code=404, detail="Hedef bulunamadi")
-
-    return {
-        "success": True,
-        "goal": _goal_to_response(result["goal"]),
-        "old_progress": result["old_progress"],
-        "new_progress": result["new_progress"],
-        "celebrations": result["celebrations"],
-        "risk": {
-            "is_at_risk": result["risk"].is_at_risk,
-            "risk_level": result["risk"].risk_level,
-            "risk_factors": result["risk"].risk_factors,
-            "recommendations": result["risk"].recommendations,
-        },
-    }
+    user_id = current_user.id
+    command = UpdateGoalProgressCommand(
+        goal_id=goal_id,
+        request=request,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 @router.get("/goals/{goal_id}/risk", response_model=GoalRiskResponse)
@@ -623,6 +568,7 @@ async def adjust_goal(
     new_target_date: datetime | None = Query(None, description="Yeni hedef tarihi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> GoalResponse:
     """
     Hedefi ayarla (REQ-6.5).
@@ -636,19 +582,16 @@ async def adjust_goal(
     Returns:
         GoalResponse
     """
-    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
-    service = GoalService(db)
-    goal = await service.adjust_goal(
+    user_id = current_user.id
+    command = AdjustGoalCommand(
         goal_id=goal_id,
         reason=reason,
         new_target_value=new_target_value,
         new_target_date=new_target_date,
+        user_id=user_id,
+        db=db,
     )
-
-    if not goal:
-        raise HTTPException(status_code=404, detail="Hedef bulunamadi")
-
-    return _goal_to_response(goal)
+    return await command_bus.execute(command)
 
 
 @router.post("/goals/{goal_id}/retrospective", response_model=GoalResponse)
@@ -661,6 +604,7 @@ async def create_goal_retrospective(
     ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> GoalResponse:
     """
     Hedef retrospektifi olustur (REQ-6.6).
@@ -674,19 +618,16 @@ async def create_goal_retrospective(
     Returns:
         GoalResponse
     """
-    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
-    service = GoalService(db)
-    goal = await service.create_retrospective(
+    user_id = current_user.id
+    command = CreateGoalRetrospectiveCommand(
         goal_id=goal_id,
         lessons_learned=lessons_learned,
         success_factors=success_factors,
         challenges_faced=challenges_faced,
+        user_id=user_id,
+        db=db,
     )
-
-    if not goal:
-        raise HTTPException(status_code=404, detail="Hedef bulunamadi")
-
-    return _goal_to_response(goal)
+    return await command_bus.execute(command)
 
 
 @router.delete("/goals/{goal_id}", response_model=SuccessResponse)
@@ -694,6 +635,7 @@ async def delete_goal(
     goal_id: UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> SuccessResponse:
     """
     Hedef sil.
@@ -704,14 +646,13 @@ async def delete_goal(
     Returns:
         SuccessResponse
     """
-    await _verify_ownership(db, Goal, goal_id, current_user, "Hedef")
-    service = GoalService(db)
-    deleted = await service.delete_goal(goal_id)
-
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Hedef bulunamadi")
-
-    return SuccessResponse(success=True, message="Hedef silindi")
+    user_id = current_user.id
+    command = DeleteGoalCommand(
+        goal_id=goal_id,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 # =============================================================================
@@ -801,6 +742,7 @@ async def analyze_entries_for_insights(
     end_date: date | None = Query(None, description="Bitis tarihi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> list[InsightResponse]:
     """
     Gunluk kayitlarini analiz edip yeni insightlar olustur.
@@ -813,13 +755,13 @@ async def analyze_entries_for_insights(
         List[InsightResponse] - Yeni olusturulan insightlar
     """
     user_id = current_user.id
-    service = InsightService(db)
-    insights = await service.analyze_and_generate_insights(
-        user_id=user_id,
+    command = AnalyzeEntriesForInsightsCommand(
         start_date=start_date,
         end_date=end_date,
+        user_id=user_id,
+        db=db,
     )
-    return [_insight_to_response(i) for i in insights]
+    return await command_bus.execute(command)
 
 
 @router.get("/insights/{insight_id}", response_model=InsightResponse)
@@ -852,6 +794,7 @@ async def delete_insight(
     insight_id: UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> SuccessResponse:
     """
     Insight sil.
@@ -862,14 +805,13 @@ async def delete_insight(
     Returns:
         SuccessResponse
     """
-    await _verify_ownership(db, Insight, insight_id, current_user, "Insight")
-    service = InsightService(db)
-    deleted = await service.delete_insight(insight_id)
-
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Insight bulunamadi")
-
-    return SuccessResponse(success=True, message="Insight silindi")
+    user_id = current_user.id
+    command = DeleteInsightCommand(
+        insight_id=insight_id,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 def _insight_to_response(insight) -> InsightResponse:
@@ -929,6 +871,7 @@ async def create_reflection(
     request: ReflectionCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> ReflectionResponse:
     """
     Yeni yansitma olustur.
@@ -940,10 +883,12 @@ async def create_reflection(
         ReflectionResponse
     """
     user_id = current_user.id
-    service = ReflectionService(db)
-
-    reflection = await service.create_reflection(user_id, request)
-    return _reflection_to_response(reflection)
+    command = CreateReflectionCommand(
+        request=request,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 @router.get("/reflections", response_model=list[ReflectionResponse])
@@ -1036,6 +981,7 @@ async def create_learning_entry(
     request: LearningEntryCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> LearningEntryResponse:
     """
     Yeni ogrenme kaydi olustur.
@@ -1047,10 +993,12 @@ async def create_learning_entry(
         LearningEntryResponse
     """
     user_id = current_user.id
-    service = LearningJournalService(db)
-
-    entry = await service.create_entry(user_id, request)
-    return _learning_to_response(entry)
+    command = CreateLearningEntryCommand(
+        request=request,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 @router.get("/learning", response_model=list[LearningEntryResponse])
@@ -1114,6 +1062,7 @@ async def record_review(
     quality: int = Query(..., ge=1, le=5, description="Kalite (1-5)"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> LearningReviewResponse:
     """
     Ogrenme tekrari kaydet (FSRS benzeri).
@@ -1126,25 +1075,15 @@ async def record_review(
     Returns:
         LearningReviewResponse
     """
-    await _verify_ownership(db, LearningEntry, entry_id, current_user, "Ogrenme kaydi")
-    service = LearningJournalService(db)
-
-    result = await service.record_review(
+    user_id = current_user.id
+    command = RecordReviewCommand(
         entry_id=entry_id,
         remembered=remembered,
         quality=quality,
+        user_id=user_id,
+        db=db,
     )
-
-    if not result:
-        raise HTTPException(status_code=404, detail="Ogrenme kaydi bulunamadi")
-
-    return LearningReviewResponse(
-        entry_id=result["entry_id"],
-        next_review=result["next_review"],
-        new_interval_days=result["new_interval_days"],
-        retention_score=result["retention_score"],
-        mastery_level=result["mastery_level"],
-    )
+    return await command_bus.execute(command)
 
 
 @router.get("/learning/graph")
@@ -1214,6 +1153,7 @@ async def link_concepts(
     concepts: list[str] = Query(..., description="Ilgili kavramlar"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> SuccessResponse:
     """
     Ogrenme kaydina kavram baglantilari ekle.
@@ -1225,15 +1165,14 @@ async def link_concepts(
     Returns:
         SuccessResponse
     """
-    await _verify_ownership(db, LearningEntry, entry_id, current_user, "Ogrenme kaydi")
-    service = LearningJournalService(db)
-
-    result = await service.link_concepts(entry_id, concepts)
-
-    if not result:
-        raise HTTPException(status_code=404, detail="Ogrenme kaydi bulunamadi")
-
-    return SuccessResponse(success=True, message=f"{len(concepts)} kavram baglandi")
+    user_id = current_user.id
+    command = LinkConceptsCommand(
+        entry_id=entry_id,
+        concepts=concepts,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 def _learning_to_response(entry) -> LearningEntryResponse:
@@ -1268,6 +1207,7 @@ async def track_emotional_state(
     request: EmotionalStateCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> EmotionalStateResponse:
     """
     Duygusal durum kaydet.
@@ -1279,10 +1219,12 @@ async def track_emotional_state(
         EmotionalStateResponse
     """
     user_id = current_user.id
-    service = EmotionalService(db)
-
-    state = await service.track_state(user_id, request)
-    return _emotional_to_response(state)
+    command = TrackEmotionalStateCommand(
+        request=request,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)
 
 
 @router.get("/emotional", response_model=list[EmotionalStateResponse])
@@ -1506,6 +1448,7 @@ async def create_export(
     request: ExportRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> ExportResponse:
     """
     Gunluk verilerini export et.
@@ -1517,21 +1460,12 @@ async def create_export(
         ExportResponse
     """
     user_id = current_user.id
-    service = ExportService(db)
-
-    export = await service.export(user_id, request)
-
-    return ExportResponse(
-        id=export.id,
-        user_id=export.user_id,
-        format=export.format,
-        date_from=export.date_from,
-        date_to=export.date_to,
-        file_path=export.file_path,
-        file_size=export.file_size,
-        privacy_filter_applied=export.privacy_filter_applied,
-        created_at=export.created_at,
+    command = CreateExportCommand(
+        request=request,
+        user_id=user_id,
+        db=db,
     )
+    return await command_bus.execute(command)
 
 
 @router.get("/export/{export_id}/download")
@@ -1586,6 +1520,7 @@ async def create_share_link(
     request: ShareLinkCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> ShareLinkResponse:
     """
     Paylasim linki olustur.
@@ -1597,23 +1532,12 @@ async def create_share_link(
         ShareLinkResponse
     """
     user_id = current_user.id
-    service = ExportService(db)
-
-    share = await service.create_share_link(
+    command = CreateShareLinkCommand(
+        request=request,
         user_id=user_id,
-        export_id=request.export_id,
-        expires_in_days=request.expires_in_days,
+        db=db,
     )
-
-    if not share:
-        raise HTTPException(status_code=404, detail="Export bulunamadi")
-
-    return ShareLinkResponse(
-        export_id=share["export_id"],
-        share_token=share["share_token"],
-        share_url=share["share_url"],
-        expires_at=share["expires_at"],
-    )
+    return await command_bus.execute(command)
 
 
 @router.get("/export/shared/{share_token}")
@@ -1698,6 +1622,7 @@ async def create_encrypted_backup(
     password: str = Query(..., min_length=8, description="Sifreleme sifresi"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
     """
     Sifrelenmis yedek olustur.
@@ -1709,15 +1634,9 @@ async def create_encrypted_backup(
         Dict - Yedek bilgileri
     """
     user_id = current_user.id
-    service = ExportService(db)
-
-    backup = await service.create_encrypted_backup(user_id, password)
-
-    return {
-        "success": True,
-        "backup_id": str(backup["backup_id"]),
-        "file_size": backup["file_size"],
-        "created_at": backup["created_at"].isoformat(),
-        "encryption": "AES-256-GCM",
-        "warning": "Sifreyi kaybederseniz yedege erisemezsiniz!",
-    }
+    command = CreateEncryptedBackupCommand(
+        password=password,
+        user_id=user_id,
+        db=db,
+    )
+    return await command_bus.execute(command)

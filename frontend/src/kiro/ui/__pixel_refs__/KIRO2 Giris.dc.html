@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #F7F4EF; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  :focus-visible { outline: 2px solid rgba(255,111,92,0.7); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) {
+    a, button, [role="button"] { transition: transform 0.12s ease, filter 0.15s ease; }
+  }
+  input::placeholder { color: #B0A9B8; }
+</style>
+</helmet>
+
+<div data-screen-label="Giriş" style="min-height:100vh; width:100%; background:radial-gradient(1200px 500px at 50% -10%, #FFF3EE 0%, #F7F4EF 60%); font-family:'Hanken Grotesk',-apple-system,sans-serif; color:#2A2433; font-size:14px; display:flex; flex-direction:column; align-items:center;">
+
+  <!-- top bar -->
+  <div style="width:100%; max-width:760px; display:flex; align-items:center; padding:22px 24px 0;">
+    <div style="display:flex; align-items:center; gap:9px;">
+      <div style="width:30px; height:30px; border-radius:9px; background-color:{{ accent }}; display:flex; align-items:center; justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"></path><path d="M3 16l9 5 9-5M3 12l9 5 9-5"></path></svg>
+      </div>
+      <span style="font-weight:800; font-size:16px;">KIRO<span style="color:{{ accent }};">2</span></span>
+    </div>
+    <div style="margin-left:auto;">
+      <a href="KIRO2 Onboarding.dc.html" style="font-size:12.5px; font-weight:700; color:#6B6478; text-decoration:none;">İlk kez mi? Önce değerini gör</a>
+    </div>
+  </div>
+
+  <!-- imza anı: şafak ufku — giriş = gün başlıyor -->
+  <div aria-hidden="true" style="width:100%; max-width:460px; padding:0 24px; margin-top:6vh; display:flex; justify-content:center;">
+    <svg width="210" height="60" viewBox="0 0 210 60" fill="none">
+      <defs>
+        <radialGradient id="grsGlow" cx="50%" cy="100%" r="72%"><stop offset="0%" stop-color="#FFC76F" stop-opacity="0.5"></stop><stop offset="100%" stop-color="#FFC76F" stop-opacity="0"></stop></radialGradient>
+        <linearGradient id="grsSun" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFD98C"></stop><stop offset="100%" stop-color="#FF8A5B"></stop></linearGradient>
+      </defs>
+      <rect x="35" y="2" width="140" height="50" fill="url(#grsGlow)"></rect>
+      <path d="M79 52a26 26 0 0 1 52 0Z" fill="url(#grsSun)"></path>
+      <line x1="12" y1="52" x2="198" y2="52" stroke="#E3D5C2" stroke-width="2" stroke-linecap="round"></line>
+      <line x1="30" y1="59" x2="72" y2="59" stroke="#EDE2D2" stroke-width="2" stroke-linecap="round"></line>
+      <line x1="138" y1="59" x2="180" y2="59" stroke="#EDE2D2" stroke-width="2" stroke-linecap="round"></line>
+    </svg>
+  </div>
+
+  <!-- card -->
+  <div style="width:100%; max-width:460px; padding:0 24px; margin-top:16px;">
+    <div style="background:#fff; border:1px solid #ECE6DD; border-radius:20px; padding:34px 34px 30px; box-shadow:0 1px 2px rgba(16,24,40,.04), 0 12px 34px -20px rgba(16,24,40,.16);">
+
+      <!-- sekme -->
+      <div style="display:flex; padding:4px; border-radius:12px; background:#F0EAE1; gap:3px; margin-bottom:24px;" role="tablist">
+        <button onClick="{{ modGiris }}" role="tab" aria-label="Giriş sekmesi" style="{{ tabGiris }} color:{{ tabGirisFg }};">Giriş</button>
+        <button onClick="{{ modKayit }}" role="tab" aria-label="Kayıt sekmesi" style="{{ tabKayit }} color:{{ tabKayitFg }};">Kayıt</button>
+      </div>
+
+      <!-- ============ GİRİŞ ============ -->
+      <sc-if value="{{ isGiris }}" hint-placeholder-val="{{ true }}">
+        <h1 style="margin:0 0 8px; font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-style:italic; font-size:31px; line-height:1.12; letter-spacing:-0.01em;">Tekrar hoş geldin.</h1>
+        <p style="margin:0 0 22px; font-size:13.5px; color:#6B6478; line-height:1.6;">Serin ve ilerlemen seni bekliyor — kaldığın yerden devam.</p>
+        <label for="gr-eposta" style="display:block; font-size:12.5px; font-weight:700; color:#4A4456; margin-bottom:7px;">E-posta adresin</label>
+        <input id="gr-eposta" type="email" value="{{ eposta }}" onChange="{{ setEposta }}" placeholder="ornek@eposta.com" style="width:100%; height:46px; padding:0 15px; border:1px solid #E6DFD4; border-radius:12px; background:#FBF8F3; font-family:inherit; font-size:14.5px; color:#2A2433;">
+        <div style="display:flex; align-items:center; margin:16px 0 7px;">
+          <label for="gr-sifre" style="font-size:12.5px; font-weight:700; color:#4A4456;">Şifren</label>
+          <a href="KIRO2 Hesap Kurtarma.dc.html" style="margin-left:auto; font-size:12px; font-weight:700; color:#C2452B; text-decoration:none;">Şifreni mi unuttun?</a>
+        </div>
+        <div style="position:relative;">
+          <input id="gr-sifre" type="{{ sifreTip }}" value="{{ sifre }}" onChange="{{ setSifre }}" placeholder="••••••••" style="width:100%; height:46px; padding:0 76px 0 15px; border:1px solid #E6DFD4; border-radius:12px; background:#FBF8F3; font-family:inherit; font-size:14.5px; color:#2A2433;">
+          <button onClick="{{ sifreGoster }}" aria-label="Şifreyi göster veya gizle" style="position:absolute; right:8px; top:8px; height:30px; padding:0 11px; border:1px solid #ECE6DD; border-radius:8px; background:#fff; font-family:inherit; font-size:11.5px; font-weight:700; color:#6B6478; cursor:pointer;" style-hover="background:#F2EEE7;">{{ gosterLabel }}</button>
+        </div>
+        <sc-if value="{{ hasHint }}" hint-placeholder-val="">
+          <div style="margin-top:10px; display:flex; align-items:center; gap:8px; padding:9px 12px; background:#FBF0DE; border:1px solid #F2D9AC; border-radius:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A5D0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span style="font-size:12px; font-weight:600; color:#9A5D0D;">{{ hint }}</span>
+          </div>
+        </sc-if>
+        <button onClick="{{ girisYap }}" style="margin-top:18px; width:100%; height:47px; border:none; border-radius:12px; background-color:{{ accent }}; color:#fff; font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="filter:brightness(0.94);">Devam edelim</button>
+        <p style="margin:16px 0 0; font-size:12px; color:#6B6478; line-height:1.55; text-align:center;">Girişte sıralama yok, alarm yok — sadece bugünkü planın.</p>
+      </sc-if>
+
+      <!-- ============ KAYIT ============ -->
+      <sc-if value="{{ isKayit }}" hint-placeholder-val="">
+        <h1 style="margin:0 0 8px; font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-style:italic; font-size:31px; line-height:1.12; letter-spacing:-0.01em;">Başlayalım.</h1>
+        <p style="margin:0 0 22px; font-size:13.5px; color:#6B6478; line-height:1.6;">Hesap açmak 1 dakika. İstersen önce <a href="KIRO2 Onboarding.dc.html" style="color:#C2452B; font-weight:700; text-decoration:none;">6 soruluk seviye ölçümünü</a> dene — kayıt sonrası da yapabilirsin.</p>
+        <label for="ky-ad" style="display:block; font-size:12.5px; font-weight:700; color:#4A4456; margin-bottom:7px;">Adın</label>
+        <input id="ky-ad" type="text" value="{{ ad }}" onChange="{{ setAd }}" placeholder="Adın Soyadın" style="width:100%; height:46px; padding:0 15px; border:1px solid #E6DFD4; border-radius:12px; background:#FBF8F3; font-family:inherit; font-size:14.5px; color:#2A2433;">
+        <label for="ky-eposta" style="display:block; font-size:12.5px; font-weight:700; color:#4A4456; margin:16px 0 7px;">E-posta adresin</label>
+        <input id="ky-eposta" type="email" value="{{ eposta }}" onChange="{{ setEposta }}" placeholder="ornek@eposta.com" style="width:100%; height:46px; padding:0 15px; border:1px solid #E6DFD4; border-radius:12px; background:#FBF8F3; font-family:inherit; font-size:14.5px; color:#2A2433;">
+        <label for="ky-sifre" style="display:block; font-size:12.5px; font-weight:700; color:#4A4456; margin:16px 0 7px;">Şifre seç</label>
+        <div style="position:relative;">
+          <input id="ky-sifre" type="{{ sifreTip }}" value="{{ sifre }}" onChange="{{ setSifre }}" placeholder="En az 8 karakter" style="width:100%; height:46px; padding:0 76px 0 15px; border:1px solid #E6DFD4; border-radius:12px; background:#FBF8F3; font-family:inherit; font-size:14.5px; color:#2A2433;">
+          <button onClick="{{ sifreGoster }}" aria-label="Şifreyi göster veya gizle" style="position:absolute; right:8px; top:8px; height:30px; padding:0 11px; border:1px solid #ECE6DD; border-radius:8px; background:#fff; font-family:inherit; font-size:11.5px; font-weight:700; color:#6B6478; cursor:pointer;" style-hover="background:#F2EEE7;">{{ gosterLabel }}</button>
+        </div>
+        <sc-if value="{{ hasHint }}" hint-placeholder-val="">
+          <div style="margin-top:10px; display:flex; align-items:center; gap:8px; padding:9px 12px; background:#FBF0DE; border:1px solid #F2D9AC; border-radius:10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A5D0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span style="font-size:12px; font-weight:600; color:#9A5D0D;">{{ hint }}</span>
+          </div>
+        </sc-if>
+        <button onClick="{{ kayitOl }}" style="margin-top:18px; width:100%; height:47px; border:none; border-radius:12px; background-color:{{ accent }}; color:#fff; font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer;" style-hover="filter:brightness(0.94);">Hesabımı aç</button>
+        <p style="margin:16px 0 0; font-size:12px; color:#6B6478; line-height:1.55; text-align:center;">Verilerin sende kalır; sınıf arkadaşlarına hiçbir şey yayınlanmaz.</p>
+      </sc-if>
+
+      <!-- ============ HOŞ GELDİN (giriş başarılı) ============ -->
+      <sc-if value="{{ isTamam }}" hint-placeholder-val="">
+        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:8px 0 4px;">
+          <div style="width:58px; height:58px; border-radius:50%; background:#E4F7F0; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#17936B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </div>
+          <h1 style="margin:0 0 8px; font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-style:italic; font-size:31px; line-height:1.12; letter-spacing:-0.01em;">{{ tamamBaslik }}</h1>
+          <p style="margin:0 0 24px; font-size:13.5px; color:#6B6478; line-height:1.6; max-width:300px;">{{ tamamMetin }}</p>
+          <a href="{{ tamamHref }}" style="display:inline-flex; align-items:center; gap:9px; height:47px; padding:0 26px; border-radius:12px; background-color:{{ accent }}; color:#fff; font-size:14.5px; font-weight:700; text-decoration:none;" style-hover="filter:brightness(0.94);">
+            {{ tamamCta }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <p style="margin:18px 0 0; text-align:center; font-size:12px; color:#6B6478; line-height:1.6;">Takıldıysan <a href="KIRO2 AI Sohbet.dc.html" style="color:#C2452B; font-weight:700; text-decoration:none;">destek ekibine yaz</a> — gerçek bir insan, okul saatlerinde ~10 dk içinde döner.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1100,&quot;height&quot;:760},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF6F5C&quot;,&quot;options&quot;:[&quot;#FF6F5C&quot;,&quot;#FF8A5B&quot;,&quot;#E8A33D&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Görünüm&quot;},&quot;mod&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Giriş&quot;,&quot;options&quot;:[&quot;Giriş&quot;,&quot;Kayıt&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Akış&quot;}}">
+class Component extends DCLogic {
+  state = { mod: null, ad: '', eposta: '', sifre: '', goster: false, hint: '', tamam: false };
+
+  renderVals() {
+    const accent = this.props.accent || '#FF6F5C';
+    const mod = this.state.tamam ? 'tamam' : (this.state.mod || (this.props.mod === 'Kayıt' ? 'kayit' : 'giris'));
+    const { ad, eposta, sifre, goster, hint } = this.state;
+    const kayitAkisi = this.state.mod === 'kayit' || (!this.state.mod && this.props.mod === 'Kayıt');
+
+    const tabBase = 'flex:1; height:36px; border:none; border-radius:9px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer;';
+    const tabOn = tabBase + ' background:#fff; box-shadow:0 1px 2px rgba(16,24,40,.08);';
+    const tabOff = tabBase + ' background:transparent;';
+
+    const epostaGecerli = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(eposta);
+    const sifreGecerli = sifre.length >= 8 && /\d/.test(sifre) && /[a-zA-ZçğıöşüÇĞİÖŞÜ]/.test(sifre);
+
+    return {
+      accent,
+      isGiris: mod === 'giris', isKayit: mod === 'kayit', isTamam: mod === 'tamam',
+      tabGiris: mod === 'giris' ? tabOn : tabOff, tabGirisFg: mod === 'giris' ? '#2A2433' : '#6B6478',
+      tabKayit: mod === 'kayit' ? tabOn : tabOff, tabKayitFg: mod === 'kayit' ? '#2A2433' : '#6B6478',
+      ad, eposta, sifre,
+      hint, hasHint: !!hint,
+      sifreTip: goster ? 'text' : 'password',
+      gosterLabel: goster ? 'Gizle' : 'Göster',
+      tamamBaslik: kayitAkisi ? 'Hesabın hazır.' : 'İçerdesin.',
+      tamamMetin: kayitAkisi
+        ? 'Şimdi 6 soruluk seviye ölçümüyle sana özel planını çıkaralım — 2 dakika.'
+        : 'Serin ve ilerlemen aynen yerinde. Bugünkü planın hazır.',
+      tamamHref: kayitAkisi ? 'KIRO2 Onboarding.dc.html' : 'KIRO2 Ogrenci Paneli.dc.html',
+      tamamCta: kayitAkisi ? 'Seviyeni ölçelim' : 'Panele geç',
+      modGiris: () => this.setState({ mod: 'giris', hint: '', tamam: false }),
+      modKayit: () => this.setState({ mod: 'kayit', hint: '', tamam: false }),
+      setAd: (e) => this.setState({ ad: e.target.value, hint: '' }),
+      setEposta: (e) => this.setState({ eposta: e.target.value, hint: '' }),
+      setSifre: (e) => this.setState({ sifre: e.target.value, hint: '' }),
+      sifreGoster: () => this.setState((s) => ({ goster: !s.goster })),
+      girisYap: () => {
+        if (!epostaGecerli) { this.setState({ hint: 'Bu adres eksik görünüyor — bir kez daha bakar mısın?' }); return; }
+        if (sifre.length === 0) { this.setState({ hint: 'Şifreni yazmayı unuttun gibi — acele yok.' }); return; }
+        this.setState({ tamam: true, mod: 'giris' });
+      },
+      kayitOl: () => {
+        if (ad.trim().length < 2) { this.setState({ hint: 'Adını da alalım — sana adınla seslenelim.' }); return; }
+        if (!epostaGecerli) { this.setState({ hint: 'Bu adres eksik görünüyor — bir kez daha bakar mısın?' }); return; }
+        if (!sifreGecerli) { this.setState({ hint: 'Şifre en az 8 karakter, harf + rakam bir arada olsun.' }); return; }
+        this.setState({ tamam: true, mod: 'kayit' });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

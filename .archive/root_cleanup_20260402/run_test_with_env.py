@@ -16,11 +16,11 @@ if __name__ == "__main__":
         "tests/test_database_models.py::TestEnums::test_sinav_tipi_enum",
         "-v", "--tb=short"
     ]
-    
+
     cmd = [sys.executable, "-m", "pytest"] + test_args
-    
+
     env = os.environ.copy()
     env['TESTING'] = 'true'
-    
+
     result = subprocess.run(cmd, env=env)
     sys.exit(result.returncode)

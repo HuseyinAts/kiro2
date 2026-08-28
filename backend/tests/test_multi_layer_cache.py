@@ -35,7 +35,7 @@ async def cache():
     try:
         await cache.clear_all()
         await cache.close()
-    except:
+    except Exception:
         pass
 
 

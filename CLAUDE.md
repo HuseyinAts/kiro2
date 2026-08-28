@@ -1,5 +1,29 @@
 # KIRO2 Project Instructions
 
+## 🎯 Tek Kabul Kriteri (A1 — 20 Ağu 2026)
+
+> **Altın Yol:** *Yeni bir öğrenci kayıt olur → e-postasını doğrular → 40 soruluk bir
+> TYT Matematik testi çözer → netini ve konu kırılımını görür.*
+
+Her oturum tek soruyla ölçülür: **bu kritere kaç adım yaklaştım?** Bu kriteri
+ilerletmeyen iş, ne kadar doğru yapılırsa yapılsın, ürünü ilerletmez.
+
+**Neden var (ölçüldü, 20 Ağu 2026):** son 30 günde **443 commit**; tür dağılımı
+`chore 125 + docs 78 + test 34 = %53 süreç işi`. `frontend/src`'ye dokunan **69**,
+`backend/tests`'e dokunan **153**. 487 görevin hiçbiri "bitti" diyemiyordu çünkü
+**bitmişliğin tanımı yoktu**.
+
+### E3 — oturum başına en az 1 kullanıcı-görünür çıktı
+
+Kullanıcı-görünür yollar: `frontend/src` · `backend/api` · `backend/services` ·
+`backend/algorithms`. Bu **beyan değil ölçüm**: `.claude/hooks/session-save.py`
+her oturum sonunda günün commit'lerinin kaçının bu yollara dokunduğunu sayar ve
+0 ise `SESSION_STATE.md`'ye + sonraki oturumun banner'ına uyarı düşer.
+İstisna meşru (altyapı/ölçüm turu) — ama **gerekçesi devir notuna yazılır**.
+
+---
+
+
 ## 🧭 Behavioral Foundation (Karpathy Guidelines)
 
 KIRO2 üzerinde çalışan Claude için 4 davranış prensibi. Andrej Karpathy'nin LLM kodlama gözlemlerinden türetildi. Bu bölüm **davranış**, sonraki bölümler **proje detayı** içindir.
@@ -95,7 +119,10 @@ Bu kurallar canlı sistemden defalarca doğrulandı. İhlal edilirse veri bozulu
   2. `docker cp [dosya] kiro2-backend:/app/[yol]`
   3. `docker exec kiro2-backend find /app/[dizin] -name "*.pyc" -delete`
   4. `docker restart kiro2-backend`
-  5. `Start-Sleep 22`
+  5. `Start-Sleep 90` — **22 DEĞİL.** 18 Ağu 2026'da ölçüldü: imaj yenilendikten sonra
+     backend 40 değil **150 router** yüklüyor ve açılış **~60-85 sn** sürüyor. 22 sn'de
+     `curl` boş yanıt (`000`) döner ve "backend çöktü" yanlış teşhisi üretilir.
+     Compose healthcheck `start_period: 60s` de sınırda.
   6. Health check
 - **Env değişkeni değişikliği:** `docker compose up -d --no-deps backend` (restart yetmez).
 - **Kalıcı değişiklik için:** `docker compose build backend` + `up -d --no-deps backend`.
@@ -117,7 +144,7 @@ KIRO2'de Claude **otonom yürütücü değildir**. Pattern:
 
 Onaysız `bash`, `docker exec`, `psql` çalıştırma. Her bulgu **gerçek çıktıyla** desteklenmeli. Tek istisna: salt-okunur keşif (dosya görüntüleme).
 
-**Bu kurallar işe yarıyor demektir:** diff'lerde gereksiz değişiklik azaldıysa, hatalı tabloya yazan kod commit'e girmediyse, açıklayıcı sorular **uygulamadan önce** geliyorsa ve `Start-Sleep 22` atlanmadıysa.
+**Bu kurallar işe yarıyor demektir:** diff'lerde gereksiz değişiklik azaldıysa, hatalı tabloya yazan kod commit'e girmediyse, açıklayıcı sorular **uygulamadan önce** geliyorsa ve restart sonrası bekleme (`Start-Sleep 90`) atlanmadıysa.
 
 ---
 
@@ -253,9 +280,9 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 
 | Katman | Yol | Notlar |
 |--------|-----|--------|
-| API Routers | `backend/api/` | FastAPI, **1,163 endpoint** (619 GET + 456 POST + 35 PUT + 43 DELETE + 10 PATCH), 770 Pydantic schemas |
+| API Routers | `backend/api/` | FastAPI, **1,226 operasyon / 1,148 yol / 800 schema** (canlı `/openapi.json`, 1 Ağu 2026) |
 | Services | `backend/services/` | Is mantigi |
-| Models | `backend/models/` | SQLAlchemy — `question_bank` = 192K prod, `questions` = **36,381 row legacy** (NOT BOS — ANALYZE missing) |
+| Models | `backend/models/` | SQLAlchemy — `question_bank` = **187,835 toplam / 110,858 aktif**; öğrenci kapısı `mv_safe_for_beta` = **25,127**; `questions` = **36,381 row legacy** (NOT BOS — ANALYZE missing) |
 | Frontend Pages | `frontend/src/pages/` | React 18 + TypeScript |
 | Frontend Hooks | `frontend/src/hooks/` | Custom hooks (useLearningPath vb.) |
 | State | `frontend/src/store/` | Zustand (authStore, NOT stores/) |
@@ -329,7 +356,7 @@ python create_answers_v8.py --validate
 |-------|------------|---------|
 | Backend | FastAPI (Python 3.11+), Uvicorn | Latest |
 | Frontend | React 18 + TypeScript (Vite) | 18.x |
-| Database | PostgreSQL 15 | 15.x |
+| Database | PostgreSQL 18 | 18.1 (`SHOW server_version`, port 5434) |
 | Cache | Redis 7 | 7.x |
 | AI/NLP | Qwen3-8B (fine-tuned for Turkish) | Custom |
 | Search | pgvector for semantic search | Latest |
@@ -342,7 +369,7 @@ python create_answers_v8.py --validate
 kiro2/
 ├── backend/
 │   ├── app/
-│   │   ├── api/           # FastAPI routers (1,163 endpoints, 770 schemas)
+│   │   ├── api/           # FastAPI routers (1,226 operasyon, 800 schema)
 │   │   ├── core/          # Config, security, deps
 │   │   ├── models/        # SQLAlchemy models
 │   │   ├── schemas/       # Pydantic schemas
@@ -562,30 +589,30 @@ import unicodedata
 def normalize_tr(text: str) -> str:
     """
     Normalize Turkish text for matching/comparison.
-    
+
     CRITICAL RULES:
     1. NFC normalization FIRST (prevents İ decomposition)
     2. Turkish mapping: İ→i, I→ı (NOT İ→I!)
     3. Standard lowercase LAST
-    
+
     ❌ WRONG: text.replace('İ', 'I')  # Breaks Turkish!
     ✅ CORRECT: See below
     """
     if not text:
         return text
-    
+
     # Step 1: Unicode NFC normalization (prevents decomposition issues)
     text = unicodedata.normalize("NFC", text)
-    
+
     # Step 2: Turkish-specific lowercase mapping
     text = text.replace("İ", "i").replace("I", "ı")
-    
+
     # Step 3: Standard lowercase
     return text.lower()
 
 def tr_casefold(text: str) -> str:
     """Case-insensitive comparison key for Turkish.
-    
+
     Use this for:
     - Search queries
     - String comparison
@@ -656,12 +683,16 @@ E) {secenek_e}
 ## 📈 Quality Metrics
 
 ### Current Status (as of 17 Mar 2026)
-- Backend test results: **~1,223 passed, 169 skipped, 1 fail** (unrelated auth legacy test)
-  - Backend line coverage (api+core+services+models+algorithms): **~53%** (109K lines, massive codebase)
+- Backend test results: ⚠️ **ÖLÇÜLEMİYOR** — paket uçtan uca koşamıyor (`pytest_asyncio`
+  teardown deadlock). Eski "~1,223 passed" rakamı geçersiz: 30 Tem'de **16,931 test toplandı**.
+  Bkz. `docs/audits/2026-07-31_eksiklik_durum_dogrulamasi.md` T1/T2, görev #468.
+  - Backend line coverage: ⚠️ **ÖLÇÜLEMİYOR** (aynı deadlock). En son artefakt 27 May 2026
+    tarihli **%39,74** (dal-dahil) — hangi test alt kümesiyle üretildiği bilinmiyor.
+    Eşik `backend/.coveragerc:103` = 60.0. Eski "~53%" rakamı doğrulanamadı.
   - Run: `cd backend && pytest --cov=api --cov=core --cov=services --cov=models --cov=algorithms --cov-report=term`
-- Orchestrator test results: **71 passed, 0 failures**
+- Orchestrator test results: **85 test fonksiyonu** (`grep -rh "def test_" orchestrator/tests/*.py | wc -l`, 1 Ağu 2026)
   - Run: `cd orchestrator && pytest tests/ -v`
-- Frontend test files: **86 test files** (vitest, run takes 10+ minutes)
+- Frontend test files: **197 test dosyası** (git-takipli sayım, 1 Ağu 2026; 17'si hiç koşamaz — bkz. T5)
   - Run: `cd frontend && npx vitest run --coverage`
 
 ### Success Criteria
@@ -839,7 +870,21 @@ Configure in: Repository Settings → Secrets and variables → Actions
 
 ## 📚 Lessons Learned
 
-See `.claude/rules/testing.md` (26 lessons) and `.claude/rules/verification.md` for detailed patterns and anti-patterns.
+**Tek defter: `.claude/lessons/ders_kaydi.yaml`** — 66 ders, her biri kimlik +
+kaynak ankrajı + durum + kanıt + (varsa) zorlayıcı test taşır.
+Yordam: `.claude/lessons/README.md` · Bekçi: `backend/tests/unit/test_ders_kaydi.py`
+
+- `aktif` = **ÖLÇÜLDÜ** (kanıtsız `aktif` bekçide düşer)
+- `dogrulanmadi` = defterde var ama bu turda doğrulanmadı (göç edilen 42 ders)
+- `curutuldu` / `devredildi` = **sessiz silme yok**, kanıt zorunlu
+
+Uzun anlatım hâlâ `.claude/rules/*.md` içinde (testing.md **31** numaralı ders,
+audit-methodology.md ölçüm-hatası tablosu, verification.md tekrarlayan sorunlar).
+Defter onların yerine geçmez; üstlerinde yaşam döngüsü katmanıdır.
+
+**Yeni ders çıkarsan:** prose'a yaz → deftere satır ekle (`aktif` + kanıt) →
+koruyan test varsa `zorlayici` alanına yolunu koy, yoksa `null` bırak (boşluk
+görünür kalsın).
 
 ## 🧠 Brainstorming
 
@@ -852,6 +897,14 @@ See `.claude/rules/testing.md` (26 lessons) and `.claude/rules/verification.md` 
 
 ---
 
-**Last Updated:** April 27, 2026
-**Document Version:** 3.6
+**Last Updated:** 1 Ağustos 2026 (sayısal alanlar canlı ölçümle senkronlandı)
+**Document Version:** 3.7
+**Changes v3.7:** 30-31 Tem denetimi + 1 Ağu doğrulama turu sonrası bayat sayılar düzeltildi:
+question_bank 192K → **187.835 / 110.858 aktif** (+ kapı `mv_safe_for_beta` 25.127) · endpoint
+1.163 → **1.226 operasyon / 1.148 yol / 800 schema** (canlı `/openapi.json`) · PostgreSQL
+Tech Stack 15.x → **18.1** (dosya kendi içinde çelişiyordu) · orchestrator 71 → **85** ·
+frontend test dosyası 86 → **197**. Backend test sayısı ve coverage **ÖLÇÜLEMİYOR** olarak
+işaretlendi (paket uçtan uca koşamıyor) — eski "~1.223 / %53" rakamları kaldırıldı.
+Durum tablosu: `docs/audits/2026-07-31_eksiklik_durum_dogrulamasi.md`.
+**Document Version (önceki):** 3.6
 **Changes:** v3.6 — Karpathy Behavioral Foundation eklendi (4 prensip: Önce Düşün / Önce Sadelik / Cerrahi Müdahale / Hedef Odaklı Yürütme) + KIRO2 Hard Rules bölümü (emergency_content deprecated, iki postgres örneği, VARCHAR PK, KullaniciServisi deprecated, ENVIRONMENT trap, deploy cycle, Türkçe SQL/Python kuralları) + İnsan Döngüsünde çalışma protokolü.

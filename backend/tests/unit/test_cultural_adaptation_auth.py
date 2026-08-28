@@ -1,6 +1,6 @@
 """F4: cultural_adaptation_api öğrenci path yetkisi (staff + self)."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import HTTPException

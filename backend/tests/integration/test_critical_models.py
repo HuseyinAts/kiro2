@@ -321,7 +321,7 @@ class TestCriticalModels:
                 encoded = text.encode("utf-8")
                 decoded = encoded.decode("utf-8")
                 encoding_ok = decoded == text
-            except:
+            except Exception:
                 encoding_ok = False
 
             return encoding_ok

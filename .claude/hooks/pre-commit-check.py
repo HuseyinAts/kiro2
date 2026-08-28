@@ -29,6 +29,10 @@ MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 LFS_EXTENSIONS = {".jsonl", ".bin", ".pt", ".db", ".pkl", ".h5", ".onnx", ".safetensors"}
 
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ders_dedektorleri import ters_tirnak_riski, tmp_ad_alani_riski  # noqa: E402
+
+
 def is_git_commit_or_add(command: str) -> bool:
     """Check if the bash command is git add or git commit."""
     cmd = command.strip()
@@ -58,8 +62,11 @@ def check_staged_files() -> list[str]:
                     if ext in LFS_EXTENSIONS:
                         msg += " — use git-lfs or add to .gitignore"
                     warnings.append(msg)
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
+        # SESSIZCE YUTMA (#495): bu kancanin kendisi bir kontrol; sessizce
+        # bos donerse "temiz" sanilir. Bloklamiyoruz (kontrol basarisizligi
+        # commit'i durdurmamali) ama GORUNUR oluyor.
+        print(f"[uyari] kontrol kosulamadi: {type(e).__name__}: {e}", file=sys.stderr)
     return warnings
 
 
@@ -115,8 +122,11 @@ def check_case_duplicates() -> list[str]:
                 warnings.append(
                     f"Case duplicate: {' vs '.join(paths)} — will break Docker/Linux builds"
                 )
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
+        # SESSIZCE YUTMA (#495): bu kancanin kendisi bir kontrol; sessizce
+        # bos donerse "temiz" sanilir. Bloklamiyoruz (kontrol basarisizligi
+        # commit'i durdurmamali) ama GORUNUR oluyor.
+        print(f"[uyari] kontrol kosulamadi: {type(e).__name__}: {e}", file=sys.stderr)
     return warnings
 
 
@@ -150,8 +160,11 @@ def check_model_imports() -> list[str]:
         if check_result.returncode != 0:
             err = check_result.stderr.strip()[-200:] if check_result.stderr else "unknown error"
             warnings.append(f"Model import failed: {err}")
-    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        pass
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
+        # SESSIZCE YUTMA (#495): bu kancanin kendisi bir kontrol; sessizce
+        # bos donerse "temiz" sanilir. Bloklamiyoruz (kontrol basarisizligi
+        # commit'i durdurmamali) ama GORUNUR oluyor.
+        print(f"[uyari] kontrol kosulamadi: {type(e).__name__}: {e}", file=sys.stderr)
     return warnings
 
 
@@ -166,6 +179,35 @@ def main() -> int:
         return 0
 
     command = hook_input.get("tool_input", {}).get("command", "")
+
+    # --- /tmp ad-alani: UYARIR, BLOKLAMAZ ---------------------------------
+    # `is_git_commit_or_add` kapisinin ONUNDE olmali: /tmp her bash komutunda
+    # gecerli, yalniz git'te degil. Bloklamiyor cunku mesru kullanimi var
+    # (tek komutluk gecici dosya); bloklasaydik surtusme yaratir, kapatilir ve
+    # kontrol yine olurdu. Gorunur olmasi yeterli.
+    tmp_uyari = tmp_ad_alani_riski(command)
+    if tmp_uyari:
+        print(f"[uyari] {tmp_uyari}", file=sys.stderr)
+
+    # --- ters tirnak: BLOKLAR ---------------------------------------------
+    # Bloklamak orantili: maliyeti sifir (`-F` ile dosyadan ver) ama ihlali
+    # SESSIZCE mesaji bozuyor. d03674d9d'de defter kimligi silindi, commit
+    # EXIT=0 verdi, push gecti — hicbir kapi otmedi.
+    tirnak_uyari = ters_tirnak_riski(command)
+    if tirnak_uyari:
+        json.dump(
+            {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "deny",
+                    "permissionDecisionReason": tirnak_uyari,
+                }
+            },
+            sys.stdout,
+        )
+        print(f"\nBLOCKED: {tirnak_uyari}", file=sys.stderr)
+        return 2
+
     if not is_git_commit_or_add(command):
         return 0
 

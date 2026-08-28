@@ -134,6 +134,11 @@ export interface SubjectPerformanceResponse {
   success_rate: number
   average_response_time: number
   difficulty_level: number
+  // B3 konu kırılımı: backend api/sinav.py SubjectPerformanceResponse ile parite.
+  // Opsiyonel — kırılım artık (ders, konu) çiftinde gruplanıyor; konu atanmamış
+  // sorularda topic_code null, topic_name "Konu atanmamis" döner.
+  topic_code?: string | null
+  topic_name?: string | null
 }
 
 export interface RemainingTimeResponse {

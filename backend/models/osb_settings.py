@@ -33,6 +33,13 @@ class OSBSettings(Base):
     # `models/_deprecated/*.py`. No migration needed — the DB has been `uuid`
     # all along.
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Genel OSB modu

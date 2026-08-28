@@ -7,6 +7,7 @@ Tests target:
 - _TRUSTED_PROXIES: expected set members
 - role_mapping dicts: SUPER_ADMIN key presence
 """
+
 import sys
 
 sys.path.insert(0, "C:/Users/husey/kiro2/backend")
@@ -102,7 +103,9 @@ class TestValidatePasswordSpecialChar:
     def test_each_special_char_satisfies_requirement(self, char: str) -> None:
         password = f"Abcde1{char}xyz"
         result = _validate_password(password)
-        assert result is None, f"Expected None for password with '{char}', got: {result}"
+        assert (
+            result is None
+        ), f"Expected None for password with '{char}', got: {result}"
 
     def test_bracket_special_chars_satisfy_requirement(self) -> None:
         result = _validate_password("Abcde1[xyz")
@@ -267,7 +270,10 @@ class TestRoleMappingCompleteness:
 
         source = inspect.getsource(auth_module)
         # All three role_mapping blocks must map SUPER_ADMIN → super_admin
-        assert '"SUPER_ADMIN": "super_admin"' in source or "'SUPER_ADMIN': 'super_admin'" in source
+        assert (
+            '"SUPER_ADMIN": "super_admin"' in source
+            or "'SUPER_ADMIN': 'super_admin'" in source
+        )
 
     def test_role_mapping_contains_all_roles(self) -> None:
         """Source must map all five roles without omission."""
@@ -289,10 +295,12 @@ class TestCheckLoginRateLimit:
     def _fresh_ip(self, prefix: str = "192.0.2.") -> str:
         """Return an IP string unlikely to collide with other tests."""
         import uuid
+
         return prefix + str(abs(hash(str(uuid.uuid4()))) % 200 + 10)
 
     def test_first_attempt_does_not_raise(self) -> None:
         import api.auth as auth_mod
+
         ip = self._fresh_ip("192.0.2.")
         request = _make_request(ip)
         # No HTTPException on first attempt.
@@ -300,6 +308,7 @@ class TestCheckLoginRateLimit:
 
     def test_attempts_below_limit_do_not_raise(self) -> None:
         import api.auth as auth_mod
+
         ip = self._fresh_ip("192.0.3.")
         request = _make_request(ip)
         for _ in range(auth_mod.LOGIN_RATE_LIMIT - 1):
@@ -309,6 +318,7 @@ class TestCheckLoginRateLimit:
         from fastapi import HTTPException
 
         import api.auth as auth_mod
+
         ip = self._fresh_ip("192.0.4.")
         request = _make_request(ip)
         # Fill up the window.
@@ -323,6 +333,7 @@ class TestCheckLoginRateLimit:
         import time as _time
 
         import api.auth as auth_mod
+
         ip = self._fresh_ip("192.0.5.")
         request = _make_request(ip)
         old_ts = _time.time() - auth_mod.LOGIN_RATE_WINDOW - 10
@@ -334,6 +345,7 @@ class TestCheckLoginRateLimit:
 
     def test_rate_limit_constants_are_positive(self) -> None:
         import api.auth as auth_mod
+
         assert auth_mod.LOGIN_RATE_LIMIT > 0
         assert auth_mod.LOGIN_RATE_WINDOW > 0
 
@@ -346,9 +358,11 @@ class TestRecordFailedLogin:
 
     def test_records_attempt_for_ip(self) -> None:
         import time as _time
+        import uuid
 
         import api.auth as auth_mod
-        ip = "198.51.100.5"
+
+        ip = "198.51.100." + str(abs(hash(str(uuid.uuid4()))) % 200 + 10)
         request = _make_request(ip)
         before = _time.time()
         auth_mod._record_failed_login(request)
@@ -359,8 +373,11 @@ class TestRecordFailedLogin:
         assert before <= attempts[-1] <= after
 
     def test_multiple_failures_accumulate(self) -> None:
+        import uuid
+
         import api.auth as auth_mod
-        ip = "198.51.100.6"
+
+        ip = "198.51.100." + str(abs(hash(str(uuid.uuid4()))) % 200 + 10)
         request = _make_request(ip)
         initial_count = len(auth_mod._login_attempts[ip])
         auth_mod._record_failed_login(request)
@@ -370,6 +387,7 @@ class TestRecordFailedLogin:
 
     def test_trusted_proxy_records_forwarded_ip(self) -> None:
         import api.auth as auth_mod
+
         real_client = "203.0.113.77"
         request = _make_request("127.0.0.1", x_forwarded_for=real_client)
         auth_mod._record_failed_login(request)

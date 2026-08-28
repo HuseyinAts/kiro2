@@ -13,7 +13,7 @@ def main() -> None:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else default
     backend_root = Path(__file__).resolve().parent.parent
     sys.path.insert(0, str(backend_root))
-    from main import app  # noqa: PLC0415 — after path setup
+    from main import app
 
     out.write_text(
         json.dumps(app.openapi(), ensure_ascii=False, indent=2),

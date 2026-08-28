@@ -19,7 +19,6 @@ interface Molecule {
   radius: number;
 }
 
-
 const MOLECULE_COLORS: Record<string, string> = {
   A: '#3B82F6',
   B: '#EF4444',
@@ -72,7 +71,7 @@ function drawMolecules(
   ctx: CanvasRenderingContext2D,
   molecules: Molecule[],
   w: number,
-  h: number
+  h: number,
 ) {
   ctx.clearRect(0, 0, w, h);
 
@@ -217,14 +216,14 @@ const ChemSimCore: React.FC = () => {
 
       return updated;
     },
-    []
+    [],
   );
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return;}
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     let frame = 0;
 

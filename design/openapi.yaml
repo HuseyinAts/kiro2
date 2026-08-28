@@ -1,0 +1,1010 @@
+openapi: 3.1.0
+# ============================================================================
+# KIRO2 — API Sözleşmesi (makine-okur form)
+# Kaynak: KIRO2 API Sozlesmesi.dc.html (otoriter görsel sözleşme) +
+#         design_handoff_kiro2/api-client.ts + URETIM_YOL_HARITASI Faz 4.
+# 2026-07-04: Sprint 1-12 port spec'lerinde önerilen uçlar topluca eklendi
+#             (plan, mood, settings, boss, friends, streak, parent, teacher,
+#              interactive, research, katalog; FSRS derece enum'u 4'lü oldu).
+#             ÖNERİ durumundakiler "(öneri…)" notuyla işaretli — kullanıcı
+#             onayı/ürün kararı bekliyor (liste: YENI_SOHBET_DEVIR.md).
+# Kullanım:
+#   - Backend bu şemaya karşı contract-test edilir (Faz 4.1).
+#   - Frontend zod şemaları buradan üretilir (openapi-zod-client vb.).
+# KANON:
+#   - Motorlar SUNUCUDA: θ güncelleme, FSRS zamanlama, BKT — istemciye taşınmaz.
+#   - `dogru` şıkkı ve çözümler istemciye YALNIZ yanıt sonrası iner.
+#   - Ödev durumu: acik | bekliyor | tamam — "eksik" hiçbir katmanda yok.
+#   - Öğrenci rolüne fiyat gösterilmez (billing veli yüzü).
+# ============================================================================
+info:
+  title: KIRO2 API
+  version: 0.1.0
+  description: >
+    YKS hazırlık uygulaması sözleşmesi. Tüm sayısal kestirimler (θ, BKT, FSRS)
+    sunucu-otoriterdir; istemci yalnız sonuçları gösterir.
+servers:
+  - url: https://api.kiro2.app/v1
+security:
+  - bearerAuth: []
+
+paths:
+  # ---------- Genel / Öğrenci ----------
+  /me:
+    get:
+      summary: Aktif öğrenci profili
+      tags: [ogrenci]
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/Persona" } } }
+  /engine:
+    get:
+      summary: Motor & soru bankası meta (paywall / vitrin)
+      tags: [motor]
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/Engine" } } }
+  /level:
+    get:
+      summary: Seviye + XP eşiği
+      tags: [oyunlastirma]
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/SeviyeBilgi" } } }
+
+  # ---------- Dersler / Curriculum ----------
+  /subjects:
+    get:
+      summary: 5 ders + hâkimiyet
+      tags: [dersler]
+      responses:
+        "200":
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Subject" } } } }
+  /topics:
+    get:
+      summary: Konu düzeyi hâkimiyet + durum
+      tags: [dersler]
+      parameters:
+        - { name: ders, in: query, schema: { $ref: "#/components/schemas/SubjectKey" } }
+      responses:
+        "200":
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Topic" } } } }
+  /curriculum:
+    get:
+      summary: Tüm derslerin ünite ağacı
+      tags: [curriculum]
+      responses:
+        "200": { description: "ders → CurriculumDers haritası" }
+  /curriculum/{ders}:
+    get:
+      summary: Bir dersin ünite ağacı
+      tags: [curriculum]
+      parameters:
+        - { name: ders, in: path, required: true, schema: { $ref: "#/components/schemas/SubjectKey" } }
+      responses:
+        "200": { description: CurriculumDers }
+  /topics/{konu}/atoms:
+    get:
+      summary: Konu-altı bilgi atomu kırılımı
+      tags: [curriculum]
+      parameters:
+        - { name: konu, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: AtomKirilim }
+  /katalog/{ders}/konular:
+    get:
+      summary: EA/Sözel dahil persona-bağımsız konu envanteri
+      tags: [curriculum]
+      parameters:
+        - { name: ders, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          content: { application/json: { schema: { type: array, items: { type: string } } } }
+  /katalog:
+    get:
+      summary: Tam katalog — alanlar (Sayısal/EA/Sözel) + dersler + üniteler + örnek soru sayıları (S12 Alan Kütüphanesi)
+      tags: [curriculum]
+      responses:
+        "200": { description: "{ alanlar[], dersler[], uniteler{}, soruSayilari{} }" }
+
+  # ---------- FSRS ----------
+  /review/due:
+    get:
+      summary: Bugün bekleyen tekrar kartları + 7 gün yük projeksiyonu + harman bileşimi (karar 2026-07-04 — ikisi de sunucudan)
+      tags: [fsrs]
+      responses:
+        "200":
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/ReviewItem" } } } }
+  /review/{kartId}/grade:
+    post:
+      summary: Kartı değerlendir → FSRS sunucuda yeniden zamanlar
+      tags: [fsrs]
+      parameters:
+        - { name: kartId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [grade]
+              properties:
+                grade: { type: string, enum: [tekrar, zor, iyi, kolay], description: "4 derece (S3 spec) — aralık etiketleri ('3 gün' vb.) SUNUCU yanıtından gelir, sabit yazılmaz" }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nextDueIn: { type: integer, description: "gün" }
+                  etiket: { type: string, description: "UI aralık etiketi, örn. '3 gün'" }
+
+  # ---------- Soru / CAT ----------
+  /questions/{id}/answer:
+    post:
+      summary: Cevap gönder → çözüm + sunucu-otoriter θ/BKT güncellemesi
+      description: "`dogru`, `cozum`, `neden` YALNIZ bu yanıtla iner — soru payload'ında asla."
+      tags: [soru]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [secilen]
+              properties:
+                secilen: { type: integer }
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/AnswerResult" } } }
+  /cat/next:
+    post:
+      summary: "Adaptif test: sonraki madde + θ kestirimi (MLE/EAP sunucuda)"
+      tags: [cat]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                konu: { type: string }
+                correct: { type: boolean }
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/CatNextResult" } } }
+
+  # ---------- Denemeler ----------
+  /exams/last:
+    get:
+      summary: Son deneme dökümü (net-birincil hiyerarşi)
+      description: >
+        S4 spec ekleri: `trend` (örn. "+8,5 net · son denemeye göre") ve `aiAnaliz`
+        (hazır metin — istemci şablon doldurmaz) alanları yanıta dahildir.
+        `tahminiSiralama` UI'da HER ZAMAN "yalnız yön göstergesi" etiketiyle gösterilir.
+      tags: [denemeler]
+      responses:
+        "200": { description: LastExam }
+  /exams/{id}:
+    get:
+      summary: Belirli deneme sonucu (Sınav Sonuç rotası /sinav/:id/sonuc)
+      tags: [denemeler]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: LastExam }
+
+  # ---------- Plan (S5 — kritik eksikti) ----------
+  /plan/week:
+    get:
+      summary: Haftalık plan — gün × blok (görev/tekrar/deneme/mola); plan motoru SUNUCUDA
+      tags: [plan]
+      responses:
+        "200": { description: "PlanHafta — bloklar {tur, ders?, konu?, dk, durum}; Bugün hub'ı ve Panel 'Bugünün planı' aynı kaynaktan" }
+  /plan/block/{id}/complete:
+    post:
+      summary: Plan bloğunu tamamla (XP + seri etkisi sunucuda)
+      tags: [plan]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ durum, xpKazanilan }" }
+
+  # ---------- Oyunlaştırma ----------
+  /achievements:
+    get:
+      summary: Hâkimiyet tier'ları + seri kilometre taşları
+      tags: [oyunlastirma]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tiers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ders: { $ref: "#/components/schemas/SubjectKey" }
+                        hakimiyet: { type: integer }
+                        tier: { type: string, enum: [tanidik, yetkin, usta, fethedildi] }
+                  milestones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        gun: { type: integer }
+                        earned: { type: boolean }
+  /streak/checkin:
+    post:
+      summary: Günlük seri kaydı
+      tags: [oyunlastirma]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  seri: { type: integer }
+                  seriRekor: { type: integer }
+                  dondurmaHakki: { type: integer }
+  /streak:
+    get:
+      summary: Seri durumu — hafta karoları + dondurma (S8; dondurma OTOMATİK sunucuda uygulanır, istemcide buton yok)
+      tags: [oyunlastirma]
+      responses:
+        "200": { description: "{ seri, seriRekor, dondurmaHak, hafta: [{gun, durum: tamam|dondurma|bos|bugun}] }" }
+  /league:
+    get:
+      summary: Haftalık lig (gizli=true → kullanıcı sıralamayı kapattı)
+      tags: [oyunlastirma]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hafta: { type: string, example: 2026-W27 }
+                  sira: { type: integer }
+                  uyeler: { type: array, items: { type: object } }
+                  gizli: { type: boolean }
+  /duel/match:
+    post:
+      summary: Adil eşleşme (θ ±0.3 bandı sunucuda)
+      tags: [oyunlastirma]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  duelId: { type: string }
+                  rakip: { type: object }
+                  esitlik: { type: string }
+  /duel/{id}:
+    get:
+      summary: "Düello durumu — poll (ASENKRON model, karar 2026-07-04; ADR-003 uyumlu — rakip kendi hızında oynar). Güçler MVP'de yok."
+      tags: [oyunlastirma]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ turlar[], rakipDurum, macSonucu? } — rakip sonuçları kendi hızında gelir" }
+  /duel/{id}/answer:
+    post:
+      summary: Düello turu cevabı — puan formülü (100 + kalan sn × 5) SUNUCUDA
+      tags: [oyunlastirma]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [secim, sureSn]
+              properties:
+                secim: { type: [integer, "null"] }
+                sureSn: { type: integer }
+      responses:
+        "200": { description: "{ dogru, turSonucu?, xp? }" }
+
+  # ---------- Boss (S7 — HP/kombo/hasar SUNUCUDA; istemci simülasyonu yasak) ----------
+  /boss/session:
+    post:
+      summary: Boss oturumu başlat — tema = en zayıf konu, sunucu seçer
+      tags: [oyunlastirma]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                konuId: { type: string }
+      responses:
+        "200": { description: "{ sessionId, bossAd, bossSeviye, maxHP, zayifAtom, ilkSoru }" }
+  /boss/answer:
+    post:
+      summary: Boss saldırı cevabı — hasar/kombo/can sunucu-otoriter; çevrimdışı OYNANMAZ
+      tags: [oyunlastirma]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sessionId, secim]
+              properties:
+                sessionId: { type: string }
+                secim: { type: integer }
+      responses:
+        "200": { description: "{ dogru, hasar, kalanHP, kombo, can, sonrakiSoru | sonuc: {won, xp, rozet} }" }
+
+  # ---------- Arkadaşlar (S8) ----------
+  /friends:
+    get:
+      summary: Arkadaş listesi + ortak seri + co-op görev durumu
+      tags: [sosyal]
+      responses:
+        "200": { description: "{ arkadaslar[], ortakSeri, quest }" }
+  /friends/invite:
+    post:
+      summary: Arkadaş daveti
+      tags: [sosyal]
+      responses:
+        "200": { description: "{ davetKodu }" }
+  /friends/{id}/nudge:
+    post:
+      summary: Nazik dürtme — günde 1 sınırı SUNUCUDA; kopya kaygı-duyarlı şablondan
+      tags: [sosyal]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: ok }
+        "429": { description: bugünkü dürtme kullanıldı }
+  /friends/{id}/congrats:
+    post:
+      summary: Tebrik gönder
+      tags: [sosyal]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: ok }
+
+  # ---------- Auth ----------
+  /auth/login:
+    post:
+      summary: Giriş
+      tags: [auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eposta, sifre]
+              properties:
+                eposta: { type: string, format: email }
+                sifre: { type: string }
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/AuthTokens" } } }
+  /auth/register:
+    post:
+      summary: Kayıt — misafir yerleştirme sonucu (θ başlangıcı) hesaba taşınır
+      tags: [auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eposta, sifre, ad]
+              properties:
+                eposta: { type: string, format: email }
+                sifre: { type: string }
+                ad: { type: string }
+                misafirYerlestirme:
+                  type: object
+                  description: >-
+                    Onboarding'de hesapsız toplanan başlangıç: θ (yerleştirme) + kaygiTonu
+                    (Adım 1 tek soruluk ton — AI ton kişiselleştirmesine girdi; /me/mood ile
+                    aynı gizlilik kuralı: VELİYE/ÖĞRETMENE ASLA gösterilmez)
+                  properties:
+                    theta: { type: number }
+                    kaygiTonu: { type: string, enum: [agir, gelgit, sakin], nullable: true }
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/AuthTokens" } } }
+  /auth/refresh:
+    post:
+      summary: 401 → refresh → tek tekrar
+      tags: [auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh]
+              properties: { refresh: { type: string } }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { token: { type: string } }
+  /auth/recover:
+    post:
+      summary: Kurtarma 1/3 — e-posta ile kod gönder
+      tags: [auth]
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eposta]
+              properties: { eposta: { type: string, format: email } }
+      responses:
+        "200": { description: "{ ok: true }" }
+  /auth/recover/verify:
+    post:
+      summary: Kurtarma 2/3 — kodu doğrula
+      tags: [auth]
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eposta, kod]
+              properties:
+                eposta: { type: string, format: email }
+                kod: { type: string }
+      responses:
+        "200": { description: "{ resetToken }" }
+  /auth/recover/reset:
+    post:
+      summary: Kurtarma 3/3 — yeni şifre. Başarı kopyası "Serin ve ilerlemen aynen yerinde."
+      tags: [auth]
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resetToken, sifre]
+              properties:
+                resetToken: { type: string }
+                sifre: { type: string }
+      responses:
+        "200":
+          content: { application/json: { schema: { $ref: "#/components/schemas/AuthTokens" } } }
+
+  # ---------- Ödevler ----------
+  /assignments:
+    get:
+      summary: Öğrencinin ödev listesi
+      tags: [odevler]
+      responses:
+        "200":
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Odev" } } } }
+    post:
+      summary: Öğretmen ödev atar (kisisel=true → set sunucuda θ'ya göre seçilir)
+      tags: [odevler]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [konu, adet, teslim, kisisel, ogrenciler]
+              properties:
+                konu: { type: string }
+                adet: { type: integer }
+                teslim: { type: string, format: date }
+                kisisel: { type: boolean }
+                ogrenciler: { type: array, items: { type: string } }
+      responses:
+        "200": { description: "{ id }" }
+  /assignments/{id}/progress:
+    post:
+      summary: Ödev ilerlemesi — geciken sunucuda da "bekliyor"dur
+      tags: [odevler]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [soruId, cevap]
+              properties:
+                soruId: { type: string }
+                cevap: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  yapilan: { type: integer }
+                  durum: { $ref: "#/components/schemas/OdevDurum" }
+  /class/{id}/roster:
+    get:
+      summary: Öğretmen — sınıf listesi
+      tags: [odevler]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: SinifOgrenci[] }
+
+  # ---------- Bildirim ----------
+  /notifications:
+    get:
+      summary: Bildirim listesi — kopya kaygı-duyarlı, alarm/baskı yok (15 sn poll; zil rozeti aynı kaynaktan)
+      tags: [bildirim]
+      responses:
+        "200": { description: "{ data: Bildirim[] }" }
+    delete:
+      summary: Tüm bildirimleri temizle (UI onay ister — S10)
+      tags: [bildirim]
+      responses:
+        "200": { description: ok }
+  /notifications/read-all:
+    post:
+      summary: Tümünü okundu işaretle
+      tags: [bildirim]
+      responses:
+        "200": { description: ok }
+  /notifications/{id}/read:
+    post:
+      summary: Okundu işaretle
+      tags: [bildirim]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: ok }
+  /notifications/token:
+    post:
+      summary: Push token kaydı (FCM/APNs) — Faz 4.7 eklentisi
+      tags: [bildirim]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, token]
+              properties:
+                platform: { type: string, enum: [fcm, apns, webpush] }
+                token: { type: string }
+      responses:
+        "200": { description: ok }
+
+  # ---------- AI proxy (Faz 4.5 — sistem-prompt SUNUCUDA) ----------
+  /ai/socratic:
+    post:
+      summary: Sokratik mod — cevabı VERMEYEN ton; en zayıf topics'e dayalı prompt sunucuda
+      tags: [ai]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                soruId: { type: string }
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role: { type: string, enum: [user, assistant] }
+                      content: { type: string }
+      responses:
+        "200": { description: "{ reply } — hata durumunda istemci scripted fallback'e düşer" }
+        "429": { description: Rate limit — istemci sakin kopyayla bekletir
+        }
+  /ai/chat:
+    post:
+      summary: Genel AI sohbet — içerik güvenliği + rate limit sunucuda; günlük kota plan alanından (billing/plans)
+      tags: [ai]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages: { type: array, items: { type: object } }
+      responses:
+        "200": { description: "{ reply, eylem?: {tip: set|tekrar, ref} }" }
+
+  # ---------- Profil ayarları & mood (S6/S10) ----------
+  /me/settings:
+    get:
+      summary: Kullanıcı tercihleri (bildirimler, sakinMod, siralamaGizli, geriSayimTercihi, gunlukHedefDk)
+      tags: [ogrenci]
+      responses:
+        "200": { description: Settings }
+    patch:
+      summary: Tercih güncelle — cihazlar arası taşınır (yalnız 'yogunluk' localStorage'da kalabilir)
+      tags: [ogrenci]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: Settings }
+  /me/mood:
+    post:
+      summary: "Günlük ruh hâli (KABUL 2026-07-04) — AI ton kişiselleştirmesine girdi; VELİYE ASLA gösterilmez"
+      tags: [ogrenci]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deger]
+              properties:
+                deger: { type: string, enum: [bitkin, gergin, idare, iyi, harika] }
+      responses:
+        "200": { description: ok }
+
+  # ---------- İnteraktif içerik + araştırma (S9) ----------
+  /interactive/{id}:
+    get:
+      summary: "Etkileşimli anlatım içeriği — uç olarak kalır (karar 2026-07-04); MVP pilotu: parabol"
+      tags: [icerik]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ baslik, aciklama, parametreler, gorevler }" }
+  /interactive/{id}/complete:
+    post:
+      summary: Mini görev tamamlama (küçük XP sunucudan)
+      tags: [icerik]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ xpKazanilan }" }
+  /research/stai:
+    post:
+      summary: "(feature-flag VITE_RESEARCH — STAI lisansı + etik kurul ön koşul) Kaygı ölçüm kaydı; skor katılımcıya gösterilmez"
+      tags: [arastirma]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kod, asama, yanitlar, skor]
+              properties:
+                kod: { type: string }
+                asama: { type: string, enum: [pre, post] }
+                yanitlar: { type: object }
+                skor: { type: integer }
+      responses:
+        "200": { description: ok }
+
+  # ---------- Öğretmen (S11) ----------
+  /teacher/classes:
+    get:
+      summary: Öğretmenin sınıfları
+      tags: [ogretmen]
+      responses:
+        "200": { description: "Sinif[]" }
+    post:
+      summary: >
+        Sınıf kur (İlk sınıfını kur akışı — KIRO2 Sinif Kurulum.dc.html; KARAR 2026-07-21 MVP'ye girer).
+        Yanıttaki katilimKodu süresiz geçerli; POST /teacher/classes/{id}/code/rotate ile yenilenir.
+        Sınıf varsayılanları kanonu SUNUCU yazar: sıralama yayınlanmaz, risk bayrağı öğrenciye inmez.
+      tags: [ogretmen]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ad, duzey, alan]
+              properties:
+                ad: { type: string }
+                duzey: { type: string, enum: ["11", "12", mezun] }
+                alan: { type: string, enum: [sayisal, ea, sozel] }
+      responses:
+        "201": { description: "{ id, ad, katilimKodu }" }
+  /me/class/join:
+    post:
+      summary: Öğrenci sınıfa katılır (Ayarlar → Sınıfa katıl; kod öğretmenden)
+      tags: [ogrenci]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kod]
+              properties:
+                kod: { type: string }
+      responses:
+        "200": { description: "{ sinif: { id, ad } }" }
+  /teacher/class/{id}/summary:
+    get:
+      summary: Sınıf KPI'ları + konu hâkimiyeti
+      tags: [ogretmen]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ ortNet, aktif, bekleyenOdev, haftalikSoru, konular[] }" }
+  /teacher/class/{id}/students:
+    get:
+      summary: Öğrenci tablosu + dikkat listesi — dikkat kuralları SUNUCUDA (girişsiz≥5g, net≤−3, teslimsiz≥2); öğrenciye bayrak GÖSTERİLMEZ
+      tags: [ogretmen]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ ogrenciler[], dikkat[] }" }
+  /teacher/student/{id}/summary:
+    get:
+      summary: >
+        Öğrenci özeti (salt-okur; /ogretmen/ogrenci/:id — KIRO2 Ogretmen Ogrenci Ozet.dc.html).
+        Kimlik + son deneme netleri + genel/ders hâkimiyet + zayıf konular + ödev durumları +
+        haftalık aktivite (dk) + risk sinyali (SUNUCUDA üretilir; öğrenciye bayrak gösterilmez).
+        GİZLİLİK — sohbet, mood ve tekil cevap verisi bu uca ASLA dahil edilmez.
+      tags: [ogretmen]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "{ ogrenci, sonDeneme{tytNet,aytNet,trend}, genelHakimiyet, dersler[], zayifKonular[], odevler[], haftalikDk[7], risk? }" }
+
+  # ---------- Veli (S11 — öğrenci gizliliği: sohbet/mood verisi veliye kapalı) ----------
+  /parent/children:
+    get:
+      summary: Velinin çocukları (bağlama akışı: KIRO2 Veli Baglama.dc.html — çift taraflı onay)
+      tags: [veli]
+      responses:
+        "200": { description: "Cocuk[]" }
+  /parent/link:
+    post:
+      summary: Bağlantı isteği — çocuğun ürettiği 6 haneli kodla (10 dk geçerli)
+      tags: [veli]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kod]
+              properties: { kod: { type: string } }
+      responses:
+        "200": { description: "{ linkId, cocukAd }" }
+        "404": { description: kod geçersiz/süresi dolmuş — amber hint }
+  /parent/link/consent:
+    post:
+      summary: KVKK açık rıza kaydı (zaman damgalı; geri çekme DELETE ile tek adım) → çocuk onayına düşer
+      tags: [veli]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [linkId, riza]
+              properties:
+                linkId: { type: string }
+                riza: { type: boolean }
+                haftalikEposta: { type: boolean }
+      responses:
+        "200": { description: "{ durum: cocuk-onayi-bekleniyor }" }
+    delete:
+      summary: Rızayı geri çek — TEK adım, soru sorulmaz; bağlantı kapanır
+      tags: [veli]
+      responses:
+        "200": { description: ok }
+  /me/parent-link/approve:
+    post:
+      summary: Çocuk bağlantıyı onaylar ("Şimdi değil" = hiçbir bildirim gitmez, istek sessizce bekler)
+      tags: [ogrenci]
+      responses:
+        "200": { description: ok }
+  /parent/child/{id}/summary:
+    get:
+      summary: Çocuk özeti — KPI + aktivite + dersler + sınavlar + uyarılar (uyarı üretimi sunucuda, nazik şablonlarla)
+      tags: [veli]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: CocukOzet }
+
+  # ---------- Çevrimdışı senkron ----------
+  /sync/packages:
+    get:
+      summary: Çevrimiçiyken otomatik indirilen paketler (sıradaki plan görevi + günün kartları)
+      tags: [senkron]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paketler:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tur: { type: string, enum: [plan, tekrar, yanlis] }
+                        adet: { type: integer }
+                        boyutKb: { type: integer }
+  /sync/events:
+    post:
+      summary: Olay kuyruğu boşaltma — event id ile İDEMPOTENT; θ/FSRS sunucuda yeniden hesaplanır
+      tags: [senkron]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [events]
+              properties:
+                events:
+                  type: array
+                  items:
+                    type: object
+                    required: [id, tur, ts]
+                    properties:
+                      id: { type: string, description: idempotency anahtarı }
+                      tur: { type: string, enum: [cevap, kart] }
+                      ts: { type: string, format: date-time }
+                      payload: { type: object }
+      responses:
+        "200": { description: "{ islenen, atlanan }" }
+
+  # ---------- Fatura (veli yüzü — öğrenciye fiyat gösterilmez) ----------
+  /billing/plans:
+    get:
+      summary: Planlar (yalnız veli rolü) — fiyat + AI/soru/kart kotaları plan alanları (S10: sabit fiyat/kota yazılmaz)
+      tags: [fatura]
+      responses:
+        "200": { description: "Plan[] — {id, ad, fiyatAy, fiyatYil, indirimPct, aiGunlukMesaj, gunlukSoru, fsrsKart, maddeler[]}" }
+  /billing/trial:
+    post:
+      summary: >
+        Deneme başlat — kart YALNIZ Stripe Elements hosted alanlarında girilir (S10: ham kart
+        formu yasak), sağlayıcıda tokenize edilir, bizde tutulmaz. 3D Secure challenge akışı
+        desteklenir (bekleme durumu UI'da). Bugün ödeme alınmaz; deneme bitmeden e-posta
+        hatırlatması ZORUNLU.
+      tags: [fatura]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [planId, kartToken]
+              properties:
+                planId: { type: string }
+                kartToken: { type: string, description: Stripe token (sağlayıcı-bağımsız alan; ADR-002) }
+      responses:
+        "200":
+          description: >
+            { durum: aktif | dogrulama_gerekli, trialBitis?, hatirlatmaTarihi?, clientSecret? } —
+            dogrulama_gerekli ise clientSecret ile Stripe 3DS challenge açılır (UI: "Bankan
+            doğrulama istiyor" bekleme durumu, 2026-07-05 tasarlandı); sonuç Stripe dönüşüyle
+            alınır, ek uç yok. Ret → form'a dönüş + amber ret kopyası.
+  /billing/subscription:
+    get:
+      summary: >
+        Mevcut abonelik (plan-yönetimi görünümü — KIRO2 Plan Yonetimi.dc.html). Tarih/tutar/kart
+        SUNUCUDAN; makbuz URL'leri Stripe hosted invoice. Öğrenci rolüne fiyat gösterilmez (billing veli yüzü).
+      tags: [fatura]
+      responses:
+        "200": { description: "{ plan, fatura: aylik|yillik, durum: deneme|aktif|iptal, yenilemeTarihi, denemeBitis?, tutar, kart{marka,son4,skt}, faturalar[{tarih,aciklama,tutar,makbuzUrl}] }" }
+    delete:
+      summary: İptal — TEK adım, dark pattern yok; erişim dönem sonuna kadar açık kalır
+      tags: [fatura]
+      responses:
+        "200": { description: ok }
+  /billing/subscription/reactivate:
+    post:
+      summary: İptali geri al (dönem bitmeden) — tek dokunuş, yeniden kart gerekmez
+      tags: [fatura]
+      responses:
+        "200": { description: ok }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    SubjectKey: { type: string, enum: [mat, fiz, kim, biy, tur] }
+    OdevDurum:
+      type: string
+      enum: [acik, bekliyor, tamam]
+      description: '"bekliyor" = geciken; "eksik" kelimesi hiçbir katmanda kullanılmaz'
+    AuthTokens:
+      type: object
+      required: [token, refresh]
+      properties:
+        token: { type: string }
+        refresh: { type: string }
+    Persona:
+      type: object
+      description: Tam alan listesi types.ts → Persona
+      properties:
+        ad: { type: string }
+        sinif: { type: string }
+        alan: { type: string }
+        xp: { type: integer }
+        seri: { type: integer }
+    Engine:
+      type: object
+      description: types.ts → Engine (model + banka meta)
+    Subject:
+      type: object
+      properties:
+        key: { $ref: "#/components/schemas/SubjectKey" }
+        ad: { type: string }
+        renk: { type: string, description: koyu zemin paleti — açık panelde tokens.subject.light }
+        hakimiyet: { type: integer }
+    Topic:
+      type: object
+      properties:
+        konu: { type: string }
+        ders: { $ref: "#/components/schemas/SubjectKey" }
+        hakimiyet: { type: integer }
+        durum: { type: string }
+    ReviewItem:
+      type: object
+      properties:
+        konu: { type: string }
+        ders: { $ref: "#/components/schemas/SubjectKey" }
+        dueIn: { type: integer, description: "gün; 0 = bugün" }
+    SeviyeBilgi:
+      type: object
+      properties:
+        seviye: { type: integer }
+        mevcutEsik: { type: integer }
+        sonrakiEsik: { type: integer }
+        span: { type: integer }
+        ilerleme: { type: number }
+        kalanXp: { type: integer }
+    AnswerResult:
+      type: object
+      required: [correct, dogru, cozum, neden]
+      properties:
+        correct: { type: boolean }
+        dogru: { type: integer, description: doğru şıkkın indeksi — YALNIZ yanıttan sonra }
+        cozum: { type: array, items: { type: string } }
+        neden: { type: string }
+        theta: { type: number, description: sunucunun güncellediği kestirim }
+        bkt: { type: number }
+        xpKazanilan: { type: integer }
+    CatNextResult:
+      type: object
+      properties:
+        item: { type: object, description: CatItem — `dogru` alanı OLMADAN }
+        theta: { type: number }
+        se: { type: number }
+        done: { type: boolean }
+    Odev:
+      type: object
+      properties:
+        id: { type: string }
+        baslik: { type: string }
+        ders: { $ref: "#/components/schemas/SubjectKey" }
+        konu: { type: string }
+        adet: { type: integer }
+        yapilan: { type: integer }
+        teslim: { type: string, format: date }
+        durum: { $ref: "#/components/schemas/OdevDurum" }
+        kisisel: { type: boolean }
+        atayan: { type: string }

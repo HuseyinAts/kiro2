@@ -41,6 +41,7 @@ from models.dashboard import (
     SinavSonucu,
 )
 from models.question_bank import QuestionBankItem as Question
+from models.question_bank import QuestionMetadata
 from models.user import OgrenciProfili
 from models.video_analytics import VideoWatchSession
 
@@ -281,19 +282,26 @@ class OgrenciDashboardServisi:
         Returns: Dictionary mapping subject areas to percentage correct (0-100)
         Only includes subjects with at least min_questions answered
         """
+        # #485 split gocu: `subject_area` question_bank'ta DEGIL question_metadata'da.
+        # Sinif duzeyi erisim uyumluluk katmaninda BILEREK AttributeError atiyor ->
+        # bu uc CANLI 500 doneriyordu (olculdu 27 Agu 2026).
+        # Paylasilan PK sayesinde StudentAnswer dogrudan yavru tabloya JOIN'lenir.
+        # Yetim riski olculdu: question_bank 3922 == question_metadata 3922,
+        # cevaplanmis soruda metadata eksigi 0 -> satir kaybi YOK.
+        # Bekci: tests/e2e/test_golden_flows.py::test_gf3s_student_dashboard_profil_not_500
         stmt = (
             select(
-                Question.subject_area,
+                QuestionMetadata.subject_area,
                 func.count(StudentAnswer.id).label('total'),
                 func.sum(func.cast(StudentAnswer.is_correct, Integer)).label('correct'),
             )
-            .join(StudentAnswer, StudentAnswer.question_id == Question.id)
+            .join(StudentAnswer, StudentAnswer.question_id == QuestionMetadata.id)
             .join(ExamSession, StudentAnswer.exam_session_id == ExamSession.id)
             .where(
                 ExamSession.student_id == kullanici_id,
                 ExamSession.status == 'completed',
             )
-            .group_by(Question.subject_area)
+            .group_by(QuestionMetadata.subject_area)
         )
         result = await db.execute(stmt)
         subject_stats = result.all()

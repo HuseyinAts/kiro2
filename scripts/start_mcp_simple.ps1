@@ -66,7 +66,7 @@ function Start-Service {
 # Set environment variables
 $env:REDIS_URL = "redis://localhost:6379/0"
 $env:ELASTICSEARCH_URL = "http://localhost:9200"
-$env:DATABASE_URL = "postgresql+asyncpg://postgres:changeme_strong_password_here@localhost:5432/turkiye_sinav_db"
+$env:DATABASE_URL = "postgresql+asyncpg://postgres:changeme_strong_password_here@localhost:5434/turkiye_sinav_db"
 
 # 1. Multi-Agent Blackboard Coordinator
 Start-Service -Name "blackboard-coordinator" `

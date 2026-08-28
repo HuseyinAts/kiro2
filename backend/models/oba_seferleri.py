@@ -15,12 +15,12 @@ Kurallar:
 
 from __future__ import annotations
 
-import uuid
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Float, Integer, String
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -35,7 +35,7 @@ class ObaChallenge(Base):
     __tablename__ = "oba_challenges"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     oba_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     # Gorev tanimı
@@ -76,7 +76,14 @@ class ObaChallengeProgress(Base):
     __tablename__ = "oba_challenge_progress"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     challenge_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)

@@ -62,9 +62,9 @@ const SUBJECT_ICONS: Record<string, string> = {
 };
 
 function getMasteryRing(bkt: number) {
-  if (bkt >= 0.80) return { stroke: '#10B981', width: 3, dash: '' };
-  if (bkt >= 0.60) return { stroke: '#F59E0B', width: 2.5, dash: '6 3' };
-  if (bkt >= 0.40) return { stroke: '#3B82F6', width: 2, dash: '4 4' };
+  if (bkt >= 0.80) {return { stroke: '#10B981', width: 3, dash: '' };}
+  if (bkt >= 0.60) {return { stroke: '#F59E0B', width: 2.5, dash: '6 3' };}
+  if (bkt >= 0.40) {return { stroke: '#3B82F6', width: 2, dash: '4 4' };}
   return { stroke: '#E5E7EB', width: 1.5, dash: '3 3' };
 }
 
@@ -89,9 +89,9 @@ export const RealmMap: React.FC<RealmMapProps> = ({
   const handleClick = useCallback(
     (slug: string) => {
       const realm = realmMap[slug];
-      if (realm) onRealmSelect(realm);
+      if (realm) {onRealmSelect(realm);}
     },
-    [realmMap, onRealmSelect]
+    [realmMap, onRealmSelect],
   );
 
   return (
@@ -150,7 +150,7 @@ export const RealmMap: React.FC<RealmMapProps> = ({
         ].map(([a, b], i) => {
           const pa = REALM_POSITIONS[a];
           const pb = REALM_POSITIONS[b];
-          if (!pa || !pb) return null;
+          if (!pa || !pb) {return null;}
           return (
             <line
               key={`conn-${i}`}
@@ -166,7 +166,7 @@ export const RealmMap: React.FC<RealmMapProps> = ({
         {/* Realm hexagons */}
         {Object.entries(REALM_POSITIONS).map(([slug, pos]) => {
           const realm = realmMap[slug];
-          if (!realm) return null;
+          if (!realm) {return null;}
 
           const bkt = realm.progress?.bkt_score ?? 0;
           const ring = getMasteryRing(bkt);
@@ -210,7 +210,7 @@ export const RealmMap: React.FC<RealmMapProps> = ({
                 filter={completed ? 'url(#glow)' : undefined}
                 style={{
                   transition: 'fill-opacity 0.2s, stroke 0.2s',
-                  transform: isSelected || isHovered ? `scale(1.08)` : 'scale(1)',
+                  transform: isSelected || isHovered ? 'scale(1.08)' : 'scale(1)',
                   transformOrigin: `${pos.cx}px ${pos.cy}px`,
                 }}
               />

@@ -64,7 +64,7 @@ def _serialize_session(data: "ExamSessionData") -> str:
         "last_auto_save": data.last_auto_save.isoformat() if data.last_auto_save else None,
         "performance_metrics": perf_metrics
     }
-    
+
     return json.dumps(d, ensure_ascii=False)
 
 

@@ -16,12 +16,20 @@ Kurallar:
 
 from __future__ import annotations
 
-import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -36,7 +44,7 @@ class SolutionDuel(Base):
     __tablename__ = "solution_duels"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     # Soru
     question_bank_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
@@ -81,12 +89,19 @@ class SolutionDuelSubmission(Base):
     __tablename__ = "solution_duel_submissions"
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     duel_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     student_id: Mapped[str] = mapped_column(String, nullable=False)
     # Cozum
-    body: Mapped[str] = mapped_column(Text, nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     # Oylama
     vote_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -109,7 +124,7 @@ class SolutionDuelVote(Base):
     __table_args__ = (UniqueConstraint("duel_id", "voter_id", name="uq_duel_vote"),)
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
     duel_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     voter_id: Mapped[str] = mapped_column(String, nullable=False)

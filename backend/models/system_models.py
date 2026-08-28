@@ -4,7 +4,6 @@ database.py'den ayrıştırıldı (2026-01-10)
 RefreshToken, APIKey, SystemConfiguration, AuditLog, Session
 """
 
-import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -20,6 +19,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -44,7 +44,14 @@ class RefreshToken(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
@@ -105,7 +112,14 @@ class APIKey(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
@@ -121,11 +135,15 @@ class APIKey(Base):
     name: Mapped[str] = mapped_column(
         String(200), nullable=False
     )  # Human-readable name
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Permissions and scopes
-    scopes: Mapped[dict | None] = mapped_column(JSON)  # List of allowed permissions
-    allowed_ips: Mapped[dict | None] = mapped_column(JSON)  # IP whitelist (optional)
+    scopes: Mapped[dict | None] = mapped_column(
+        JSON, deferred=True
+    )  # List of allowed permissions
+    allowed_ips: Mapped[dict | None] = mapped_column(
+        JSON, deferred=True
+    )  # IP whitelist (optional)
     rate_limit: Mapped[int] = mapped_column(Integer, default=1000)  # Requests per hour
 
     # Status
@@ -161,16 +179,16 @@ class SystemConfiguration(Base):
     __table_args__ = (Index("idx_config_key", "config_key"),)
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
     )
 
     # Configuration
     config_key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    config_value: Mapped[str] = mapped_column(Text, nullable=False)
+    config_value: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     config_type: Mapped[str] = mapped_column(
         String(50), nullable=False
     )  # string, integer, float, boolean, json
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -193,7 +211,14 @@ class AuditLog(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
 
     # Audit information
@@ -205,8 +230,8 @@ class AuditLog(Base):
     resource_id: Mapped[str | None] = mapped_column(String)
 
     # Details
-    old_values: Mapped[dict | None] = mapped_column(JSON)
-    new_values: Mapped[dict | None] = mapped_column(JSON)
+    old_values: Mapped[dict | None] = mapped_column(JSON, deferred=True)
+    new_values: Mapped[dict | None] = mapped_column(JSON, deferred=True)
     ip_address: Mapped[str | None] = mapped_column(String(45))
     user_agent: Mapped[str | None] = mapped_column(String(500))
 
@@ -227,7 +252,14 @@ class Session(Base):
     )
 
     id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -238,10 +270,10 @@ class Session(Base):
 
     # Device & location info
     device_info: Mapped[dict | None] = mapped_column(
-        JSON, comment="Device/browser info"
+        JSON, comment="Device/browser info", deferred=True
     )
     ip_address: Mapped[str | None] = mapped_column(String(45))
-    user_agent: Mapped[str | None] = mapped_column(Text)
+    user_agent: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -253,7 +285,7 @@ class Session(Base):
     last_activity_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
     # Relationships
     user: Mapped["User"] = relationship("User")

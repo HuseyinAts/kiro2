@@ -45,7 +45,7 @@ class TestMainAppEndpoints:
                 try:
                     response = client.get(endpoint)
                     assert response.status_code in [200, 404, 405]
-                except:
+                except Exception:
                     pass
 
         except ImportError:
@@ -68,7 +68,7 @@ class TestMainAppEndpoints:
 
             assert response.status_code in [200, 404, 405]
 
-        except:
+        except Exception:
             pytest.skip("CORS not configured")
 
 
@@ -121,7 +121,7 @@ class TestUserEndpoints:
 
             app.dependency_overrides.clear()
 
-        except:
+        except Exception:
             pytest.skip("User creation not available")
 
     def test_get_user_by_id_endpoint(self):
@@ -134,7 +134,7 @@ class TestUserEndpoints:
             response = client.get("/api/users/1")
             assert response.status_code in [200, 404, 401, 403]
 
-        except:
+        except Exception:
             pytest.skip("User get by ID not available")
 
 
@@ -153,7 +153,7 @@ class TestAuthEndpoints:
             response = client.post("/api/auth/login", json=login_data)
             assert response.status_code in [200, 401, 422, 404]
 
-        except:
+        except Exception:
             pytest.skip("Login endpoint not available")
 
     def test_register_endpoint(self):
@@ -172,7 +172,7 @@ class TestAuthEndpoints:
             response = client.post("/api/auth/register", json=register_data)
             assert response.status_code in [200, 201, 422, 404]
 
-        except:
+        except Exception:
             pytest.skip("Register endpoint not available")
 
     def test_logout_endpoint(self):
@@ -185,7 +185,7 @@ class TestAuthEndpoints:
             response = client.post("/api/auth/logout")
             assert response.status_code in [200, 401, 404]
 
-        except:
+        except Exception:
             pytest.skip("Logout endpoint not available")
 
 
@@ -202,7 +202,7 @@ class TestExamEndpoints:
             response = client.get("/api/exams")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Exams endpoint not available")
 
     def test_create_exam_endpoint(self):
@@ -222,7 +222,7 @@ class TestExamEndpoints:
             response = client.post("/api/exams", json=exam_data)
             assert response.status_code in [200, 201, 422, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Exam creation not available")
 
     def test_get_exam_by_id_endpoint(self):
@@ -235,7 +235,7 @@ class TestExamEndpoints:
             response = client.get("/api/exams/1")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Exam get by ID not available")
 
     def test_submit_exam_endpoint(self):
@@ -250,7 +250,7 @@ class TestExamEndpoints:
             response = client.post("/api/exams/1/submit", json=answers)
             assert response.status_code in [200, 404, 422, 401]
 
-        except:
+        except Exception:
             pytest.skip("Exam submit not available")
 
 
@@ -267,7 +267,7 @@ class TestQuestionEndpoints:
             response = client.get("/api/questions")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Questions endpoint not available")
 
     def test_get_questions_by_subject(self):
@@ -280,7 +280,7 @@ class TestQuestionEndpoints:
             response = client.get("/api/questions?subject=matematik")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Questions filter not available")
 
     def test_create_question_endpoint(self):
@@ -300,7 +300,7 @@ class TestQuestionEndpoints:
             response = client.post("/api/questions", json=question_data)
             assert response.status_code in [200, 201, 422, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Question creation not available")
 
 
@@ -319,7 +319,7 @@ class TestAgentEndpoints:
             response = client.post("/api/agents/learning-path", json=request_data)
             assert response.status_code in [200, 404, 401, 422]
 
-        except:
+        except Exception:
             pytest.skip("Learning path endpoint not available")
 
     def test_study_buddy_endpoint(self):
@@ -334,7 +334,7 @@ class TestAgentEndpoints:
             response = client.post("/api/agents/study-buddy", json=request_data)
             assert response.status_code in [200, 404, 401, 422]
 
-        except:
+        except Exception:
             pytest.skip("Study buddy endpoint not available")
 
 
@@ -351,7 +351,7 @@ class TestAnalyticsEndpoints:
             response = client.get("/api/analytics/user/1")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("User analytics not available")
 
     def test_exam_statistics_endpoint(self):
@@ -364,7 +364,7 @@ class TestAnalyticsEndpoints:
             response = client.get("/api/analytics/exam/1/statistics")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Exam statistics not available")
 
 
@@ -381,7 +381,7 @@ class TestContentEndpoints:
             response = client.get("/api/content")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Content endpoint not available")
 
     def test_get_content_by_subject(self):
@@ -394,5 +394,5 @@ class TestContentEndpoints:
             response = client.get("/api/content?subject=matematik")
             assert response.status_code in [200, 404, 401]
 
-        except:
+        except Exception:
             pytest.skip("Content filter not available")

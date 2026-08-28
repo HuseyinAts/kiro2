@@ -1,0 +1,733 @@
+
+> ## ⚠️ BU BELGE ARTIK AKTİF REFERANS DEĞİL
+>
+> **Aktif referans: [`2026-08-01_eksiklik_master.md`](2026-08-01_eksiklik_master.md)**
+>
+> 1 Ağu öz-denetimi bu belgede "kapandı" işaretlenen işlere saldırdı ve
+> **49 kusur** buldu (biri kendi yaratılmış P0 regresyon). Master belge üç
+> kaynağı birleştirir ve **fazlara ayrılmış kontrol listesi** içerir.
+>
+> Bu dosya **kanıt arşivi** olarak kalıyor: 113 bulgunun ankrajlı envanteri
+> (Ek A) ve 1 Ağu öncesi ölçümler burada. Yeni iş için master'ı kullan.
+
+# KIRO2 Eksiklik Durum Doğrulaması — 31 Temmuz 2026
+
+**Kapsam:** 30 Tem 2026 "Gerçek Durum Ölçümü" denetiminin (`2026-07-30_gercek_durum_olcumu.md`,
+1.399 satır) tespit ettiği **113 bulgunun** + 29 Tem 12-oturum gözden geçirmesinin
+(`2026-07-29_son-12-oturum-gozden-gecirme.md`) açık bıraktığı **12 kalemin** bugünkü durumu.
+
+**Neden var:** Denetimden sonra 21 commit atıldı ve bazı bulgular kapatıldı. Hangilerinin
+gerçekten kapandığı **ölçülmemişti**. Bu belge o ölçümdür.
+
+---
+
+## 0. Bu belge nasıl kullanılır
+
+> **Bu belge, listedeki her kalem kapanana kadar KIRO2'nin tek referans durum tablosudur.**
+
+1. Bir işe başlamadan önce §3 kontrol listesinden kalemi bul, `- [ ]` kutusunu işaretle.
+2. Kalem kapandığında: Ek A'daki satırın simgesini güncelle (🔴→✅) ve **ankraj ekle**
+   (commit hash + `dosya:satır`). Ankrajsız kapanış kabul edilmez.
+3. §5'teki fantomlarla **uğraşma** — ölçüldü, çürüdü.
+4. §4'teki kapanmışları **yeniden açma** — ankrajları var.
+5. Yeni mega denetim açmadan önce `.claude/rules/audit-methodology.md` "Mega Audit Lock"
+   kuralı geçerlidir: bu listenin P0/P1'inin %80'i kapanmış olmalı.
+
+---
+
+## 0.5 İLERLEME KAYDI
+
+> Her kapanış bir ANKRAJ taşır. Ankrajsız satır eklenmez.
+
+| Tarih | Görev | Sonuç | Commit |
+|---|---|---|---|
+| 1 Ağu | **#460** Canlı ölçüm turu | 5/6 komut koşuldu (6.'sı `gh` gerektiriyor). Sonuçlar §3.2-SONUÇ | — |
+| 1 Ağu | **#463** Hızlı kazanç paketi | 9 kalem + `.gitignore` Y6. Kendi yanlış alarmımı da düzelttim (kök `performance/` "kayıp" değildi — takipliydi) | `962f7d4c9` |
+| 1 Ağu | **#461** K1 `user_item_fsrs` | ✅ **KAPANDI.** Tablo restore + GRANT; sınıf bekçisi testi (5/5, 3'ü aleti doğruluyor). Uçlar 500 → 401 | `3773b3d42` |
+| 1 Ağu | **B1-canlı** | ✅ ES alias 25.127, `correct_answer` **0** | ölçüm |
+| 1 Ağu | **DEPLOY / B6-be / #447** | ✅ Backend imajı taze, `/api/v1/me` → 401 | ölçüm |
+
+| 1 Ağu | **#462** B4+B4-x Golden Flow kapısı | ✅ **KAPANDI.** Token önbelleği (178 login→4), 429→FAIL, seed `\|\| echo` kaldırıldı + minimum-geçen eşiği. 2 mutasyonla çivili | `c5a4f2c98` |
+| 1 Ağu | **#465** Admin uçları | ✅ **KAPANDI.** PUT'ta **ÜÇÜNCÜ** bastırıcı bulundu (ham ORM → `PydanticSerializationError`). 5 bayat test (1'i vakum) onarıldı | `b93cfcd3c`, `0d0dfd069` |
+| 1 Ağu | **#464** B5/RLS | 🟡 **ÖLÇÜLEBİLİR HALE GETİRİLDİ** (kapatılmadı). Atlatma canlıda kanıtlandı; tuzak dedektörü mutasyonla çivili | `64d6452be` |
+
+| 1 Ağu | **#466** SMTP zinciri F20/F21/F21-yeni | ✅ **KAPANDI.** 3 mutasyonun 3'ü çivili | `4ddd74383`, `ef6bafe47` |
+
+**Açık P0 sayısı: 7 → 2** (`B2/#441` operatör · `B5` mimari sprint)
+
+### Bu oturumun denetimde DÜZELTTİĞİ sayılar
+
+Denetim doğruydu ama bazı sayıları eksik/fazlaydı. Ölçüldü:
+
+| Denetim ne dedi | Ölçüm ne dedi | Nerede |
+|---|---|---|
+| `@admin_required` **14** metotta bozuk | **17** metot korumalı, ama üretimden çağrılan **tek** metot (`admin.py:421`). Kalan 16 ölü kod → dekoratör düzeltilmedi (+0 değer, #451) | `#465` |
+| `YENI-4`: **1** bayat test | **4** bayat + **1 vakum** test. Atribüsyon `HEAD~1` koşularak ölçüldü: 2'si önceki fix'lerden, 2'si bu oturumdan | `#465` |
+| PUT'ta **2** bastırıcı | **3.** Üçüncüsü: `"data": soru` ham ORM → `PydanticSerializationError`. İlk ikisi aşılsa **bile** 500 sürerdi. Kod okunarak görülmezdi, testin sahte nesnesi ortaya çıkardı | `#465` |
+| `K1`: env.py düzeltilmezse yine DROP eder | **ÇÜRÜDÜ.** `include_object()` çağrılarak ölçüldü: `env.py:117-118` yapısal kapısı zaten koruyor. Exclude satırı +0 değer → eklenmedi | `#461` |
+| `Y6`: `.gitignore` 3 dosya kaybı | Doğru. Ama benim "kök `performance/` 281K kayıp" alarmım **yanlıştı** — `git check-ignore` takipli dosyayı raporlamaz | `#463` |
+
+### Bu oturumda ORTAYA ÇIKAN yeni bulgular
+
+| # | Bulgu | Durum |
+|---|---|---|
+| `YENI-8` | `soru_bankasi_servisi.soru_guncelle` "bulunamadı" ve "istisna" için **aynı `None`'ı** dönüyor (`:1265-1270`). Gerçek bir DB hatası 404 görünebilir. Servis değiştirilmedi — ikinci üretim çağıranı var (`api/soru_bankasi.py:845`) | 🔴 AÇIK, P2 |
+| `YENI-9` | `.env.mvp.example`'da **hiç SMTP anahtarı yok** — operatörün şablonu bile yok. CLAUDE.md `.env*`'ı salt-okunur ilan ettiği için **kod tarafından eklenemez**; operatör elle girmeli | 🔵 OPERATÖR |
+| `YENI-10` | ES yedek indeksi `turkiye_sinav_platform_yedek_20260731` (64.270 dok, hepsi `correct_answer`'lı) — sızıntı riski **ölçüldü: YOK**, ama **retention da yok** → her cutover'da birikir | 🔴 AÇIK, P2 |
+
+### #464 — ne yapıldı, ne yapılmadı
+
+**Canlı ölçüm (atlatma denendi, kod okunmadı):**
+
+| Senaryo | Görünen satır |
+|---|---:|
+| superuser (taban) | 5.664 |
+| `kiro2_app`, GUC **yok** | **5.664** ← tam atlatma |
+| `kiro2_app`, GUC **boş** | **5.664** ← tam atlatma |
+| `kiro2_app`, GUC **yanlış org** | **0** ← izolasyon çalışıyor |
+
+Yani **mekanizma sağlam**; eksik olan GUC'un her istekte set edilmesi.
+79/79 politika permissive, fail-closed **0**. `users`/`question_bank`/`student_answers`
+hiç RLS taşımıyor (`relrowsecurity=f`).
+
+**Yapılan:** `tests/integration/test_rls_tenant_isolation_guard.py` — 6 test.
+Kritik olanı **tuzak dedektörü**: bugün `organizations`=1 olduğu için sessiz,
+**ikinci organizasyon eklendiği an CI kırmızıya döner**. Mutasyonla kanıtlandı
+(eşik düşürülünce gerçek veriyle ateşledi: `5664 satır görüyor`).
+
+**Yapılmayan (bilinçli):** politikaları fail-closed yapmak + GUC'u middleware'e
+taşımak. 163 router dosyasını ilgilendiren mimari iş; tek oturumda güvenle
+yapılamaz. Bu commit riski **ölçülebilir** kıldı, **kapatmadı**.
+
+---
+
+## 1. Metodoloji
+
+**Aletler:** 13 paralel doğrulama ajanı (11 küme + 2 skeptik tur) + 1 bağımsız ajan (29 Tem
+kalemleri). Tümü **salt okunur**: `Read`, `Grep`, `Glob`, read-only `git`. Hiçbir ajan
+`docker exec`, `psql`, `curl`, `pytest` koşmadı (insan-döngüsünde çalışma kuralı).
+
+**Kabul kuralı:** Her verdict bir ANKRAJ taşımak zorundaydı — commit hash, `dosya:satır`,
+veya çalıştırılan grep'in çıktısı. Oturum notları ve commit mesajları **kanıt sayılmadı**,
+iddia sayıldı.
+
+**Skeptik tur:** "KAPANDI" veya "FANTOM" ilan edilen 26 verdict ikinci bir ajana çürütülmek
+üzere verildi. Sorular: fix gerçekten koşan kod yolunda mı? Test fix geri alınsa düşer mi?
+Semptomun tamamı mı ele alındı? Kayıt/dağıtım halkası tamam mı? **2 verdict düştü** (§6).
+
+**Bu ölçümde YAPILMAYANLAR** (tahminle doldurulmadı):
+
+- Canlı ES/DB/SMTP/CI durumu — 17 kalem `CANLI ÖLÇÜM GEREK` olarak işaretlendi (§3.2).
+- Test paketi koşumu — pass/fail sayıları depodan türetilemez.
+- Konteyner imaj tazeliği — `DEPLOY` ve `B6-be` kalemleri bu yüzden açık.
+- 29 Tem kalemlerinde K3'ün backend-karşılık sayısı (`~43 eksik yol`) **yaklaşıktır**;
+  kaynak koddaki `APIRouter(prefix=)` + dekoratör eşlemesiyle üretildi, canlı `openapi.json`
+  ile değil.
+
+**Alet arızası kaydı (bu turda yakalandı):** Git Bash'te `git grep` deseni `/` içerdiğinde
+MSYS yol dönüşümüne takılıyor ve **var olan metne 0 isabet** dönüyor. Kontrol kolu:
+`grep -c '"/me"' backend/api/me.py` = 1 iken `git grep -c '"/me"'` = boş. Tüm olumsuz
+bulgular düz `grep` ile yeniden koşuldu.
+
+---
+
+## 2. Karne
+
+| Durum | Sayı | Anlamı |
+|---|---:|---|
+| ✅ KAPANDI | 16 | Kod değişti, ankraj var |
+| 🟡 KISMEN | 13 | Bir kolu yapıldı, kalan iş adlandırılabiliyor |
+| 🔴 AÇIK | 59 | Hiçbir şey değişmedi, denetimdeki kanıt hâlâ geçerli |
+| 👻 FANTOM | 8 | Bulgu baştan yanlıştı veya ölçünce çürüdü |
+| 🔵 CANLI ÖLÇÜM | 17 | Kod tarafı belli, nihai yargı çalışan sistem ister |
+| **Toplam** | **113** | + 29 Tem'den 12 kalem (§7) |
+
+**Öncelik dağılımı:** P0 = 8 · P1 = 46 · P2 = 42 · P3 = 17
+(8 P0'ın **2'si zaten kapalı** — `B1/#433` ve `F2`. Açık P0 = 6, artı 29 Tem'den `K1` = **7**.)
+
+**Bu doğrulamada ORTAYA ÇIKAN yeni bulgular:** ~20 kalem denetimde hiç yoktu
+(`Y1`-`Y4` ES, `F21-yeni`, `B4-x`, `N1`-`N5`, `YENI-1`…`YENI-7`, `F17b`, `DUELLO`).
+Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
+
+---
+
+## 3. KONTROL LİSTESİ
+
+> **Durum (1 Ağu 2026 sonu): 21 kutucuk kapalı · 51 açık.**
+> Açık P0 = 2 (`B2/#441` operatör · `B5` mimari sprint).
+
+### 3.0-SONRAKI · Bir sonraki oturum buradan başlar
+
+**Kural:** Bu belgeyi aç, aşağıdaki sıradan ilk açık kalemi al, kapat, kutucuğu
+işaretle + **ankraj yaz** (commit + `dosya:satır`). Ankrajsız kapanış kabul edilmez.
+
+| Sıra | Görev | Neden bu sıra |
+|---|---|---|
+| **1** | **#467** ES `Y3` | En yüksek risk: `api/elasticsearch.py:353-491` **canlı alias'a `correct_answer` + `explanation` yazıyor**. Bugün onu kapatan tek şey bir kwarg hatası (`mapping=` yerine `mappings=` olmalı → `TypeError` → 500). Biri "düzeltirse" cevap anahtarı canlı indekse geri döner. Ayrıca `Y1` (senkron gövdesi testsiz), `Y2` (advisory kilit erken düşüyor), `Y4` (`/similar` yapısal 0 sonuç), `YENI-10` (yedek indeks retention'sız) |
+| **2** | **#468** CI tetikleme | `F8-b`: ayrıştırma düzeldi ama **kapı aktif dalda hiç tetiklenmiyor** (`on: push` → `[main,master,develop]`, aktif dal 318 commit önde). #462'de kapıyı gerçek yaptım ama **koşmuyor** → değeri sıfır. Ayrıca `T1` deadlock kaldırma deneyi, `T2` 27 kırık test, `T3` 99 `skipif(True)` triyajı |
+| **3** | **#470** Sınav oturumu kısıtı | `F17` üç katmanda da yok + `F17b` **ölü 409 bekçisini 3 test yeşil doğruluyor** (yanıltıcı yeşil, bu deponun en tehlikeli deseni) |
+| **4** | **#469** Kiro yüzey uyumu | `K3`: 70 `live()` yolundan ~43'ü backend'de yok · `K4.6` veli tek satırlık takas · `K2` route sözleşme kapısı |
+| **5** | **#471** P2/P3 hijyen | P0/P1 kapanmadan buraya geçme |
+
+**Operatör kuyruğu (kod işi değil):**
+`#441` SMTP kimlik bilgisi → `.env.mvp` + `docker compose up -d --no-deps backend` ·
+`#390`/`#436` `gh` CLI + faturalama · `#445` 73 STUDENT triyajı ·
+`OTURUM-1` DB'deki 31 çöp sınıf (silme ucu yok, SQL + onay gerek)
+
+**Yöntem — bu oturumda işe yarayan sıra:**
+1. İddiayı **ölç** (kod okuma değil: atlatmayı dene, uç çağır, `include_object()` çağır)
+2. Kontrol kolu kur — bilinen-VAR/bilinen-YOK beklendiği gibi mi
+3. RED test yaz, **düştüğünü gör**
+4. Fix
+5. Tüketici testlerini koş (`git grep` ile bul, dizin yakınlığıyla değil)
+6. **Mutasyon**: fix'i geri al, testin düştüğünü gör
+7. Geri alımı **ölç** (`git status` boş mu) — bu oturumda 3 kez sessizce başarısız oldu
+8. Commit + push + belgeyi güncelle
+
+### 3.0 Görev eşlemesi
+
+| Görev | Kapsam | Belge bölümü | Öncelik |
+|---|---|---|---|
+| **#460** | Canlı ölçüm turu (6 komut) | §3.2 | **İLK** — 4 P0'ı kesinleştirir |
+| **#461** | K1 `user_item_fsrs` restore | §3.1, §7 | P0 |
+| **#462** | B4 + B4-x Golden Flow merge kapısı | §3.1 | P0 |
+| **#463** | Hızlı kazanç paketi (9 kalem) | §3.3 | P0-yan · ~1 saat |
+| **#464** | B5 / RLS tenant izolasyonu | §3.1, §3.4 | P0 (#460-5'e bağlı) |
+| **#465** | Admin içerik uçları kardeş kusurları | §3.4 | P0/P1 |
+| **#466** | SMTP zinciri F20/F21/F21-yeni | §3.4 | P1 |
+| **#467** | ES kalanları Y1-Y4 | §3.4 | P1/P2 |
+| **#468** | CI tetikleme + test altyapısı | §3.4 | P1 |
+| **#469** | Kiro yüzey uyumu K2/K3/K4.6 | §7 | P1 |
+| **#470** | Sınav oturumu kısıtı F17/F17b | §3.4 | P1 |
+| **#471** | P2/P3 hijyen sırası (21 kalem) | §3.5 | P2/P3 |
+
+**Sıra:** #460 → (#461, #462, #463 paralel) → #464/#465 → kalanlar.
+#463 diğerlerinden bağımsız, her an yapılabilir.
+
+### 3.1 P0 — beta/satış blokerleri
+
+- [x] ✅ **K1 · `user_item_fsrs` tablosu yok, ama `/api/v1/fsrs` canlıda kayıtlı**
+  → **KAPANDI 1 Ağu, `3773b3d42`.** Restore migration `restore_uif_20260801` +
+  `kiro2_app` GRANT (SELECT/INSERT/UPDATE/DELETE, `information_schema` teyidi).
+  Sınıf bekçisi `tests/integration/test_fsrs_schema_contract.py` 5/5 — 3'ü *aleti*
+  doğruluyor. Gerçek rolle (`SET ROLE kiro2_app`) servisin gerçek SQL'i koşuldu.
+  Uçlar 500 → **401**; kontrol kolu `/api/v1/fsrs/zzz` → 404.
+  *Alt-ajanın "env.py düzeltilmezse yine düşer" iddiası ÇÜRÜTÜLDÜ:*
+  `include_object()` çağrılarak ölçüldü, `env.py:117-118` yapısal kapısı zaten
+  koruyor → exclude satırı +0 değer, #451 gereği eklenmedi.
+  `fsrs_service.py`'deki 5 raw SQL sabiti (satır 42/81/119/129/153) bu tabloya vuruyor.
+  `c555a10f4b93_sync_db_changes.py:182` DROP ediyor; 27 Tem restore migration 6 tablo
+  getirirken bunu **almadı**. `cat_session.py:1015` FSRS yazma hatasını `except Exception`
+  ile yutuyor → tekrar sistemi **sessizce** çökük olabilir.
+  **ÖLÇÜLDÜ (1 Ağu): tablo YOK, doğrulandı.** Ve kök neden bulundu — **sadece restore etmek
+  YETMEZ:**
+
+  > `backend/alembic/env.py:83` → `# "user_item_fsrs",` **yorumda.** Tablonun ORM modeli yok
+  > (kontrol kolu: `fsrs_cards` → `models/fsrs_models.py:37` isabet, bu → 0). Exclude
+  > listesinden çıkarılınca autogenerate onu "modelde yok, fazlalık" gördü ve
+  > `c555a10f4b93:183` `DROP TABLE ... CASCADE` üretti. Dosyanın **kendi uyarısı satır 79'da:**
+  > *"Bu listeye EKLE, çıkarma — çıkarmak DROP riskine yol açar."* Kural yazılıydı ve ihlal edildi.
+  > **env.py düzeltilmeden tabloyu geri getirirsen bir sonraki `--autogenerate` yine düşürür.**
+
+  **Ayrıca verdict (A) değil (C):** `fsrs_cards` üzerinde **tam ve çalışan ikinci bir**
+  tekrar döngüsü var (yazan `question_review_adapter.py:88` + `bkt_service.py:418`, okuyan
+  `learning_path_v2.py:1948/1987/2036`, frontend `ReviewQueuePanel.tsx:52`, **golden-flow
+  kapısı** `test_golden_flows.py:205/649/708`). İki paralel implementasyon öğrenciye iki ayrı
+  yüzeyden sunuluyor (`/fsrs-review` vs `ReviewQueuePanel`) — hangisinin kanonik olacağı
+  **ürün kararı**, restore bunu çözmez (`.claude/rules/path-naming.md` "duplicate implementasyon
+  yasak" buraya birebir uyuyor).
+
+  **Bugün 5 uç 500 veriyor:** `/due`, `/due?mercy=true`, `/review`, `/due-count`, `/stats`.
+  **Daha kötüsü sessiz kayıp:** `cat_session.py:1035` + `fsrs_service.py:362` her review'ı
+  tek tek yutuyor → her CAT oturumunun FSRS çıktısı sessizce çöpe gidiyor, dışarı istisna çıkmıyor.
+  **Ve DROP'tan sonra bu ölü koda iki kez özellik shiplendi** (mercy `ac4936f8b` 21 Tem
+  "TDD" etiketli, kalite kapısı `7ede1fcf9` 27 Tem) — sıfır test olduğu için fark edilmedi.
+
+  **TDD sırası:** RED-1 `test_alembic_exclude_guard.py` (`"user_item_fsrs" in
+  ALEMBIC_EXCLUDE_TABLES` — bugün FAIL, mutasyon: satırı tekrar yoruma al → kırmızı) →
+  env.py:83 yorumdan çıkar → RED-2 gerçek-DB `to_regclass IS NOT NULL` + `/due-count` < 500 →
+  yeni restore migration (`20260410_create_user_item_fsrs.py:18-36` DDL'i, `IF NOT EXISTS`).
+  **Tuzak:** uygulama `kiro2_app` non-superuser bağlanıyor —
+  `GRANT SELECT,INSERT,UPDATE,DELETE ... TO kiro2_app` eklenmezse 500 sürer, sadece
+  `UndefinedTable` yerine `InsufficientPrivilege` olur. `organization_id` kolonu yok →
+  RLS deseni uygulanamaz, "kapsam dışı" gerekçesini migration docstring'ine yaz.
+
+- [x] ✅ **B4 · Golden Flow rate-limit skip'i kodda ele alınmadı — merge kapısı boş**
+  `tests/e2e/test_golden_flows.py:88-97` hâlâ 200 dışı her yanıtı (429 dahil)
+  `pytest.skip`'e çeviriyor. Bloğun tek commit'i 10 Nis; denetimden sonra değişmedi.
+  → Üç seçenekten biri: modül-kapsamlı token önbelleği (rol başına 1 login) ·
+  CI'da `LOGIN_RATE_LIMIT_PER_MINUTE` yükseltme · `_login`'de 429'u skip değil **FAIL** sayma.
+
+- [x] ✅ **B4-x · Kapı komutu skip'i yeşil sayıyor + seed hatası yutuluyor**
+  *(Ek A'da P1 ölçüldü; burada B4'ün **yükselticisi** olduğu için P0 bloğuna alındı — bu bir
+  editoryal terfi, ölçüm değil.)*
+  `golden-flows.yml:196` `python scripts/seed_mvp_data.py || echo "::warning::…"` —
+  seed çökerse her test login'de skip'e düşer ve iş **yeşil** biter. `:220` `pytest -x`
+  yalnız FAIL'de durur.
+  → `|| echo` kaldır + minimum-geçen-test eşiği ekle. B4 düzelse bile bu ayakta.
+
+- [ ] **B5 · Tenant GUC'u 163 router dosyasının 2'sinde**
+  `core/dependencies.py:456` tek üretim satırı; dosyaya son dokunuş 5 Tem.
+  `B5-a` ölçümü alternatif yol **olmadığını** kanıtladı (16 satırın 15'i migration metni).
+  → GUC'u middleware/session katmanında tek yerde bağla, VEYA 79 politikayı fail-closed yap.
+
+- [x] ✅ **F1 · Admin POST "200 ama kalıcı değil" — okuma-yazma testi yok**
+  Kök neden **çakışma** çıktı (`soru_bankasi_service.py:349-372` IntegrityError'ı yutup
+  mevcut satırı dönüyordu), router artık dürüstçe 409 veriyor. Ama benzersiz yükle
+  ekleyip **ayrı oturumdan SELECT** ile doğrulayan test yok.
+  → `tests/unit/test_soru_ingestion_upsert.py:95` zaten iki kez ekliyor; tek assert yeter.
+
+- [ ] **B2/#441 · SMTP kimlik bilgisi** *(operatör)* — §3.2
+- [ ] **B1-canlı · ES takası canlıda mı** *(operatör)* — §3.2
+- [ ] **DEPLOY · Admin fix'leri canlı imajda mı** *(operatör)* — §3.2
+
+### 3.2 Canlı ölçüm turu — tek oturumda 6 komut
+
+> Bunların hepsi salt okunur. Çıktıları bu belgeye işlenecek.
+
+- [x] ✅ **1. `user_item_fsrs` var mı** (K1'i kesinleştirir)
+  ```
+  "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2 \
+    -c "SELECT to_regclass('public.user_item_fsrs');"
+  ```
+  `NULL` → K1 P0 onaylandı.
+
+- [x] ✅ **2. ES takası duruyor mu** (B1-canlı)
+  ```
+  curl -s localhost:9200/turkiye_sinav_platform/_count
+  curl -s -H 'Content-Type: application/json' \
+    -d '{"query":{"exists":{"field":"correct_answer"}}}' \
+    localhost:9200/turkiye_sinav_platform/_count
+  ```
+  Beklenen: ~25.127 ve **0**. İkinci sayı >0 ise takas geri alınmış/yeniden kırılmış.
+
+- [x] ✅ **3. Backend imajı taze mi** (DEPLOY)
+  ```
+  docker exec kiro2-backend grep -n "soru_bankasi_servisi.soru_sil\|zaten_mevcuttu" /app/api/admin.py
+  ```
+  İki satır da gelmiyorsa imaj bayat → `docker compose build backend && docker compose up -d --no-deps backend`.
+
+- [x] ✅ **4. SMTP env dolu mu** (B2/#441)
+  ```
+  docker exec kiro2-backend python -c "import os;print({k:bool(os.getenv(k)) for k in ['SMTP_SERVER','SMTP_USERNAME','SMTP_PASSWORD','SMTP_HOST']})"
+  ```
+  Hepsi `False` ise bulgu açık. **Not:** `SMTP_HOST` dolu + `SMTP_SERVER` boş ise F20 aktif
+  hasar veriyor demektir (validator geçer, gönderim sessizce ölür).
+
+- [x] ✅ **5. İkinci organizasyon eklendi mi** (N5 — B5/F7'nin severity'sini belirler)
+  ```
+  "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2 \
+    -c "SELECT count(*) AS org_sayisi FROM organizations;"
+  ```
+  Sonuç >1 ise **B5 ve F7 derhal P0** olur.
+
+- [ ] **6. CI fix sonrası ilk koşum yeşil mi** (B3 — önce `gh` kurulmalı)
+  ```
+  gh run list --workflow=golden-flows.yml --limit 5 --json conclusion,createdAt,event,headBranch
+  ```
+
+### 3.2-SONUÇ · Ölçüm turu KOŞULDU (1 Ağu 2026)
+
+> Beş komut da koşuldu, altıncısı (`gh`) kurulu değil. **Her ölçüme kontrol kolu kondu.**
+
+| # | Ölçüm | Sonuç | Verdict değişimi |
+|---|---|---|---|
+| 1 | `to_regclass('public.user_item_fsrs')` | **NULL** — tablo YOK. Kontrol kolu: `question_bank`→ad döndü, `zzz_olmayan_tablo`→boş. İkinci alet `information_schema`: 6 `fsrs_*` tablo var, bu yok | **K1 DOĞRULANDI, P0** |
+| 2 | ES alias `_count` | **25.127** = kapı boyutuyla birebir. `correct_answer` exists → **0**. Kontrol kolu `question_text` exists → 25.127 (sorgu çalışıyor) | **B1-canlı → ✅ KAPANDI** |
+| 3 | Backend imajı | `soru_bankasi_servisi.soru_sil` = 1, `zaten_mevcuttu` = 1. `/app/api/me.py` mevcut | **DEPLOY → ✅ KAPANDI**, **B6-be → ✅ KAPANDI** |
+| 4 | SMTP env | `SMTP_SERVER/HOST/USERNAME/PASSWORD/PORT/EMAIL_FROM` **6/6 False** | **B2/#441 AÇIK doğrulandı, P0** |
+| 5 | `organizations` | **1 satır** | **N5:** bugün çapraz-kiracı sızıntısı imkânsız; B5/F7 "ikinci kiracıda açılacak tuzak" olarak kalıyor |
+| + | `/api/v1/me` HTTP probu | **401** (kontrol kolu `/zzz_olmayan` → 404) | **#447 → ✅ CANLI KAPANDI** |
+| + | Health yolu | `/health` → **200**, `/api/v1/health` → **404** | **D7-3 doğrulandı → düzeltildi** |
+| + | `question_bank` | **187.835 toplam / 110.858 aktif** | D1/D9 için kaynak |
+| + | `/openapi.json` | **1.226 operasyon / 1.148 yol / 800 schema** | D3 için kaynak |
+| + | PostgreSQL | **18.1** | D4 için kaynak |
+
+**Ölçüm turunda ORTAYA ÇIKAN iki yeni şey:**
+
+1. **ES yedek indeksi** `turkiye_sinav_platform_yedek_20260731` — 64.270 doküman, **hepsi
+   `correct_answer` taşıyor**, alias bağlı değil. Sızıntı riski **ÖLÇÜLDÜ: YOK** — hiçbir soru
+   sorgusu joker/`_all` kullanmıyor (kontrol kolu: aynı grep `analytics-*` ve `kiro2-*`
+   jokerlerini **buldu**, yani alet çalışıyor), üstelik API katmanında index'ten bağımsız ikinci
+   bir beyaz liste var (`api/elasticsearch.py:167,219,285`). **Ama retention YOK**
+   (`es_reindex.py` yedeği hiç silmiyor, `delete_index()` sıfır çağıranlı) → her cutover'da
+   birikir. Aksiyon: yedeği sil.
+2. **`Y3` sanılandan ağır.** `api/elasticsearch.py:353-491` `/admin/reindex/questions`
+   **canlı alias'a `correct_answer` (satır 399,453) + `explanation` (400,454) yazıyor.**
+   Bugün çalışmıyor çünkü `create_index(mapping=...)` yerine `mappings=` olmalı → `TypeError`
+   → 500. Yani orijinal sızıntıyı üreten kod yolu **duruyor ve onu kapatan tek şey bir kwarg
+   hatası**. Biri "düzeltirse" cevap anahtarı canlı indekse geri döner. P1 → **P0'a yakın**.
+
+### 3.3 Hızlı kazanç — depo-kanıtlı, canlı ölçüm gerekmez
+
+> Hepsi tek satırlık veya birkaç satırlık. Toplam ~1 saat.
+
+- [x] ✅ **D7-3 · `verification.md:101` operatörü 404'e yolluyor**
+  Preflight `curl http://localhost:8000/api/v1/health` diyor; `api/health.py:29` router'ın
+  **prefix'i yok**, gerçek yol `/health`. Bu hâliyle **sağlıklı backend'i "çöktü" diye
+  teşhis ettirir**. En acil doküman kusuru.
+- [x] ✅ **D7-1 · `verification.md:83` + `debugging-first.md:18` "questions = BOŞ legacy"**
+  → `36.381 satır legacy` (CLAUDE.md:258 zaten doğru diyor; iki kural dosyası yanlış).
+- [x] ✅ **D2 · Orchestrator 71 → **85**, frontend test dosyası 86 → **197**
+  İkisi de depodan kanıtlandı (`grep -rh 'def test_' orchestrator/tests/*.py` = 85;
+  `git ls-files … | grep -E '\.(test\|spec)\.'` = 197). Canlı koşum gerekmez.
+- [x] ✅ **D6 · `golden-flows.md:27` "166 test → 164 PASS"** → 178 test.
+  `pytest.ini:36` "8 critical user journeys" → 178. **Bu bir KURAL dosyası ve "merge block"
+  yetkisi iddia ediyor** — gerçeklikle uyumlu olmadan o yetki sahte.
+- [x] ✅ **D1 · CLAUDE.md kendi içinde çelişiyor:** satır 258 "192K prod" vs satır 272
+  "77,336 in production". İkisi aynı anda doğru olamaz. Ayrıca `77.336` bir **soru sayısı
+  değil, jsonl satır sayısı** (kategori hatası) — bu not eklenmeli.
+- [x] ✅ **D4 · CLAUDE.md:269 (PG 18.1) vs :332 (PG 15.x)** — aynı dosya, iki sürüm.
+- [x] ✅ **Y6 · `.gitignore:266` ankrajsız `performance/`** → `/performance/` yap +
+  `git add -f backend/tests/performance/{__init__.py,test_chromadb_latency.py,test_elk_performance.py}`
+  (3 dosya taze klonda kayıp).
+- [x] ✅ **#458a-hook · `.kiro/hooks/04-osym-exam-validator.kiro.hook`** silinmiş dosyaya
+  pytest veriyor. Kırık hook.
+- [ ] **#458a-ref · Silinen e2e dosyasına 14 bayat referans** (2'si sahte alarm).
+
+### 3.4 P1 — küme küme
+
+**Elasticsearch**
+- [ ] `Y3` Admin reindex ucu **TypeError'la** kapalı (tasarım değil kaza) — kapıyı ve alan
+  beyaz listesini index seviyesinde geri kırabilir. Sil veya `core.es_index_schema` üzerine kabla.
+- [ ] `Y1` `_senkronla` gövdesi **hiçbir testte çağrılmıyor**; 8 test yalnız saf yardımcıları
+  çiviliyor. Sahte ES istemcisiyle 1 test + mutasyon.
+- [ ] `Y2` Advisory kilit ES işi başlamadan **düşüyor** (xact kapsamlı, blok satır 83'te bitiyor).
+- [ ] `Y4` `/similar` ucu takas sonrası **yapısal olarak 0 sonuç** döner (MLT alanları index'te yok).
+
+**SMTP**
+- [x] ✅ `F20` `SMTP_HOST` (3 doğrulayıcı) vs `SMTP_SERVER` (3 tüketici) ayrışması. Tek ada kilitle.
+- [x] ✅ `F21` Veli onay e-postasında dönüş değeri kontrol edilmiyor (`auth.py:2279`).
+- [x] ✅ `F21-yeni` **`/veli-onay/resend` gönderim ölüyken "gönderildi" diyor** —
+  admin tarafında 2d5d82f7e ile kapatılan yanlış-başarı sınıfının aynısı.
+
+**CI**
+- [ ] `F8-b` **Ayrıştırma düzeldi, tetikleme düzelmedi.** 11 workflow'un dal-push tetikleyicisi
+  `[main,master,develop]`; aktif dal master'ın **318 commit** önünde → kapı yapısal olarak devre dışı.
+- [ ] `#390` `gh` CLI kurulu değil; 20 açık PR'ın 20'si Dependabot *(operatör)*.
+
+**RLS**
+- [ ] `N1` Permissive politikayı haklı çıkaran "app-katman savunması" **kodda yok** —
+  `_scope_tenant` üretimde **0 çağrı yeri**, tüm alt sınıflar `super().__init__(Model, session)`.
+  Migration docstring'i yanlış gerekçe taşıyor.
+- [ ] `F7` 79/79 politika aynı permissive kalıpta; desen **26 Tem'de eklenen yeni tabloda da** sürüyor.
+- [ ] `B5-c` `users` / `student_answers` hiçbir RLS listesinde değil (gerekçe de yazılmamış).
+- [x] ✅ `N3` **Hiçbir test GUC/RLS davranışını sınamıyor** → F7 tuzağı CI'da yakalanmaz.
+
+**Admin içerik**
+- [ ] `YENI-1` **PUT `/admin/content/questions/{id}` aynı iki bastırıcıyla hâlâ 500** —
+  F2'nin kardeşi, düzeltilmedi.
+- [ ] `F2-B` İki "seri bağlı sebep" **kaldırılmadı, atlandı**. Bozuk `@admin_required`
+  dekoratörü 14 metotta duruyor; hangilerinin pozisyonel çağrıldığını tara.
+- [ ] `YENI-2` Fix'in servis yarısı (`zaten_mevcuttu`) **sıfır test kapsamında** — mutasyon
+  testi: bayrağı silsen 3 create testi de yeşil kalır.
+- [ ] `YENI-4` `test_admin_api.py::TestDeleteQuestion` fix'le **bayatladı** (patch artık tutmuyor).
+- [ ] `YENI-7` **Paralel yüzey `/content-management/questions` tamamen mock** —
+  F1'in tarif ettiği kusur orada aynen yaşıyor, hiçbir commit dokunmadı.
+- [ ] `YENI-6` "Denetim kaydı" DB'ye yazmıyor, `logger.debug` — B2B/KVKK için
+  "kim hangi soruyu sildi" cevaplanamaz.
+
+**Test altyapısı**
+- [ ] `T1` Paket uçtan uca koşamıyor. **Kaldırma deneyi:** `backend/conftest.py:124-135`
+  `event_loop` fixture'ını geçici devre dışı bırak → kilitlenme kayboluyor mu?
+  (İki conftest çelişiyor: biri "kaldırıldı" diyor, diğerinde duruyor.)
+- [ ] `T2` 27 kırık test — `test_analytics_api.py`'ye denetimden sonra **hiç dokunulmadı**.
+- [ ] `T3` `skipif(True)` modül sayısı 100 → **99** (yalnız silinen dosya kadar azaldı).
+  #458a dersi: silinen dosyanın gerekçesi **fantom** çıktı — kalan 99'un gerekçeleri de
+  doğrulanmadı. İlk adım: skip reason'ları listele, "fantom mu / gerçek mi" kolonuna ayır.
+- [ ] `T4` Coverage eşiği `backend/.coveragerc:103` = 60.0 duruyor; `source` listesinde
+  `models` yok (CLAUDE.md'nin komutu `--cov=models` içeriyor → "No data to report").
+
+**Veritabanı**
+- [ ] `F17` Eşzamanlı sınav oturumu kısıtı **üç katmanda da yok** (ORM/migration/uygulama).
+  Partial unique index + IntegrityError→409, önce RED testi.
+- [ ] `F17b` 409 bekçisi **kodda var ama üretimde kayıtlı değil**
+  (`turkish_exam_middleware` üretimde 0 import) — buna rağmen **3 test onu yeşil doğruluyor**.
+  Yanıltıcı yeşil; F17 kararıyla birlikte ele al.
+- [ ] `F23` CLAUDE.md 2026-05-12 tarihli **105.152 satırlık partiden** (tablonun %56'sı) hiç bahsetmiyor.
+
+**Kod borcu**
+- [ ] `Y1(kod)` `learning_path.py` ölü router (1.829 satır / 18 uç) — **2 frontend çağrısı
+  404 alıyor**; 16 uç zaten v2'de var. Önce çağrıları `/api/v1/learning-path/…`'e çevir, sonra sil.
+- [ ] `D0` **CLAUDE.md 69 gündür dokunulmadı** — 19 sapmanın ortak kök nedeni.
+
+### 3.5 P2 / P3 — hijyen (detay Ek A'da)
+
+- [ ] `Y2(kod)` `litellm_chat.py` 0 bayt, loader'da kayıtlı, git'te yok
+- [ ] `Y7` `study_rooms_stub` 7 rotayı gölgeliyor
+- [ ] `Y8` `_deprecated` importer 8 dosya / 18 satır
+- [ ] `Y4(kod)` 24 `.bak` auth dosyası git'te takipli (toplam 30)
+- [ ] `Y5` `.git` 6,52 GiB (MEMORY.md 218 MB diyor)
+- [ ] `Y3(kod)` 20 mock bayrağından 6'sı ölü
+- [ ] `F9` 4 yetim frontend testi — hedef modül diskte yok
+- [ ] `F10` 3 eksik modül + yanlış yola `ElasticsearchConfig` import'u
+- [ ] `F11` `backend/.coveragerc` source listesinde `models` yok
+- [ ] `F19` `timeout_func_only` çelişkisi (kök `true` / backend varsayılan `False`)
+- [ ] `T5` 17 frontend test dosyası hâlâ koşamaz (13 Playwright + 4 yetim)
+- [ ] `F14` `eslesmis_sorucevap.jsonl` git'te takipsiz (provenance kırılganlığı)
+- [ ] `F15` `question_number` kolon değil, metadata'ya da yazılmıyor
+- [ ] `F6` `human_verified` kolu kodda duruyor, DB'de 0 satır
+- [ ] `OTURUM-1` Sınıf silme ucu **gerçekten yok** — GF CI her koşumda çöp bırakıyor (31 sınıf)
+- [ ] `OTURUM-2` `soru_bankasi_service.py` lint borcu (E712) — önce dosyayı kapsayan test
+- [ ] `D3` `D5` `D8` `D9` CLAUDE.md/MEMORY.md kalan bayat sayılar
+- [ ] `N2` `BaseRepository.update/delete` org filtresi uygulamıyor (N1 kablolanırsa yazma açığı)
+- [ ] `N4` `dependencies.py:451-452` yorumu bayat ("App superuser, RLS bypass edilir")
+- [ ] `DUELLO` Mount edilmiş `DuelloPage` nullable `seviye`'yi çıplak basıyor
+
+---
+
+## 4. Kapananlar — yeniden açma (16)
+
+| Bulgu | Ne kapandı | Ankraj |
+|---|---|---|
+| **B1/#433** | ES index kaynağı artık kalite kapısı; `correct_answer`/`explanation`/`is_active` yasaklı ve sızıntı **veriye bakarak** reddediliyor | `core/es_index_schema.py:112-116`, `:51`, `:135-138` · 6bc1febec |
+| **F4** | Artımlı senkron var: 04:00 beat, matview 03:30 (sıra testle çivili), silme gerçek | `tasks/es_sync_tasks.py:94-113` · `core/celery_app.py:140-143` |
+| **F3** | 9 hayalet doküman iki mekanizmayla temizleniyor (cutover + sürekli fark kümesi) | `es_reindex.py:171-174` · `es_index_schema.py:148-157` |
+| **F5** | "21.462 soru ES'te yok" ile `{eklenen:0, silinen:0}` **çelişmiyor** — biri takas öncesi, diğeri sonrası | 6bc1febec (00:17) → e1034b454 (00:25) |
+| **F-mapping** | `quality_review_status` yokluğu artık **bilinçli tasarım** (index yalnız kapıdan geçeni taşıyor) | `es_index_schema.py:25-29` |
+| **F2** | Admin soru silme 500 → doğrudan `soru_bankasi_servisi.soru_sil`; 200/404 | `api/admin.py:437-473` · a30416f34 |
+| **F8-a** | İki workflow YAML'ının çift `workflow_dispatch` ayrıştırma kusuru | d304f19a9 |
+| **F8-test** | `test_workflow_yaml.py` gerçekten ayrıştırmayı sınıyor | d304f19a9 |
+| **#459** | Gecelik ES senkronu worker'a kaydedildi + 33 testlik sözleşme invaryantı | `core/celery_app.py:39` · 0b92301a5 |
+| **#447-kod** | `GET /api/v1/me` diskte ve loader'a kayıtlı | `api/me.py` · `routers/loader.py:39` |
+| **#444-be** | Roster uçları mevcut ve kayıtlı | `teacher_classroom.py` |
+| **B5-a** | "Kalan 165 router GUC'u başka yoldan set ediyor olabilir" → **ölçüldü, hayır** | 16 satır, 15'i migration metni |
+| **#437-#440** | Şifre kurtarma HTTP zinciri kodda tam ve kayıtlı | forgot → verify-reset-code → reset |
+| **#458a / #458b** | İki ölü dosya silindi, kod referansı sıfır | 0fe82b2c3 · a7e3971f9 |
+| **K5** *(29 Tem)* | 9/9 yazma ucu `_STAFF_ONLY` kapılı; bekçi **mutasyona dayanıyor**; Admin kartı gitmiş | `teacher_classroom.py:69` · d7f80175b |
+| **K4.5** *(29 Tem)* | Düello `getMe()` 404 zinciri kodda kapandı | `DuelloPage.tsx:155` → `api/me.py:28` |
+
+---
+
+## 5. Fantomlar — bunlarla UĞRAŞMA (8)
+
+| # | Neden fantom |
+|---|---|
+| `F12` | `n_live_tup` okuyan **canlı sağlık sorgusu yok** — endişe gerçek değil |
+| `#458a-2` | `test_turkish_nlp.py:131,251` mojibake'si **kasıtlı fixture**; düzeltmek testi kırar (ölçüldü: `fixes` 3→0) |
+| `AUTH` | Admin uçlarında rol kapısı var ve negatif testli |
+| `F20-alt` | `EMAIL_FROM` eksikliği gönderimi engellemiyor — üçlü fallback var |
+| `F21-alt` | "Bildirim tamamen sessizce kayboluyor" yanlış — log var |
+| `f357e4647` | Bu commit skip mekanizmasına **dokunmadı** (düzelttiği sanılıyordu) |
+| `B4-5dk` | Denetimin "5/dk login limiti" ifadesi yanlış (gerçek 30/dk) — denetim-içi çelişki |
+| `#447-schema` | `backend/schemas/persona.py` **hiç olmadı**, dizin bile yok — plan öyle diyordu, uygulama başka yaptı |
+
+---
+
+## 6. Skeptik turun düşürdüğü 2 iddia
+
+> Bu bölüm belgenin en değerli kısmı: iki "KAPANDI" verdict'i ikinci turda düştü.
+
+| Oturum notu ne diyordu | Ölçüm ne dedi |
+|---|---|
+| **ad1236cad** "Persona nullable — 8 ekranda veri yok durumu dürüstçe gösteriliyor" → KAPANDI | **KISMEN.** Guard'ların kodu gerçek (`AyarlarPage.tsx:368-372, 438-446, 531-550` doğrulandı) ama 8 ekranın tamamı taranmadı; mount edilmiş **`DuelloPage` nullable `seviye`'yi çıplak basıyor** |
+| **#444-fe** "Frontend kodu tam, 0 mock/fallback" → KAPANDI | **KISMEN.** Uydurma öğrenci fallback'inin silinmesi gerçek (`:150-158`, silineni belgeleyen yorum dahil) ama "kod tarafı tam" çürüdü — **ekleme yolu testsiz** |
+
+---
+
+## 7. 29 Tem gözden geçirmesinin kalemleri
+
+| # | Kalem | Durum | Kanıt / kalan iş |
+|---|---|---|---|
+| **K1** | `user_item_fsrs` + `c555a10f4b93` 145 DROP TABLE | 🔴 **P0** | Migration zincirde (`3dfb6239addd:16` → `down_revision='c555a10f4b93'`). Ölü kod **değil**: `fsrs_service.py` 5 SQL sabiti + `app/api/fsrs.py:248`, router `loader.py:63`'te kayıtlı. ORM modeli yok; `env.py:83` koruması **yorum satırı** |
+| **K2** | `route_contract_check.py` kapısı | 🔴 P1 | Yazılmadı. Pre-push'ta yalnız 2 hook var (`push-secret-guard`, `reward-hacking-check`). En yakın mekanizma `.github/scripts/check_new_endpoints.py` ama **backend tarafı** — frontend'in var olmayan yolu çağırmasını görmez |
+| **K3** | Kiro mount oranı + eksik yollar | 🔴 P1 | **29 Tem'in üç sayısı da yanlıştı.** Gerçek: mount **9/43** (6 değil — `kiro/routes/` sarmalayıcıları atlanmış), `live()` yolu **70** (53 değil — generic çağrılar kaçmış), backend'de karşılığı olmayan **~43** (28 değil). Çoğu "yol yok" değil **prefix uyuşmazlığı** |
+| **K4.1** | FSRS `stress_level` ölü dalı | 🔴 P3 | `turkish_optimized_fsrs.py:284` `getattr(...,'stress_level',0.0)` → dataclass'ta alan yok → `:285` hiç true olmaz. *29 Tem'in "importer yok" kısmı yanlıştı: 15+ importer var* |
+| **K4.2** | `hybrid_llm_service` semantic cache | 🔴 P3 | `HybridLLMService`/`get_hybrid_llm_service` depoda **başka hiçbir .py'de** geçmiyor |
+| **K4.3** | `chat.tsx` AI yasal uyarısı | 🔴 **P2** | Uyarı `chat.tsx:146`'da gerçekten var ama dosyanın importer'ı yok → **hiçbir kullanıcıya gösterilmiyor**. `AISohbetPage.tsx` veya `StreamingChat.tsx`'e taşı |
+| **K4.4** | FSRS mercy'yi "koruyan" 3 test | 🔴 P1 | `test_fsrs_mercy_endpoint.py:19-22` servisi **tamamen** mock'luyor; metot silinse yeşil kalır. **K1 ile birleşiyor:** gerçek metot `_FETCH_DUE_MERCY_SQL` → `FROM user_item_fsrs` |
+| **K4.5** | Düello `getMe()` 404 | ✅ | Zincir tam (§4) |
+| **K4.6** | Veli paneli 656 satır sabit veri | 🟡 **P1** | "656 satır sabit veri" **doğru ve değişmemiş** (`ModernParentDashboard.tsx`, fetch/axios/useQuery grep = 0). "VeliPaneliPage yetim" kısmı **fantom** — `App.tsx:46,590-593` mount'lu. Ama `routeGuard.ts:18` + `ModernLoginPage.tsx:61` veliyi `/parent/dashboard`'a yolluyor → tek giriş URL'yi elle yazmak. **Tek satırlık takas** |
+| **K5** | 7 kapısız uç + Admin kartı | ✅ | §4. Küçük delik: bekçi regex'i yalnız çift tırnak yakalıyor (`["\']` yap) |
+
+---
+
+## 8. İlişkili belgeler
+
+- `docs/audits/2026-07-30_gercek_durum_olcumu.md` — kaynak denetim (1.399 satır)
+- `docs/audits/2026-07-29_son-12-oturum-gozden-gecirme.md` — 29 Tem kalemleri
+- `.claude/rules/audit-methodology.md` — ölçüm disiplini (Mega Audit Lock dahil)
+- `.claude/rules/golden-flows.md` — **kendisi D6'da bayat işaretli**
+- `.claude/rules/verification.md` — **kendisi D7-1/D7-3'te hatalı işaretli**
+
+---
+
+*Oluşturulma: 2026-07-31. Ölçüm salt okunur; hiçbir ajan dosya değiştirmedi.*
+*Ölçülemeyenler §1'de açıkça listelendi; §3.2 onları kapatacak komutları içerir.*
+
+---
+
+<!-- EK-A-BASLANGIC -->
+## Ek A — Doğrulanmış bulgu envanteri (113 kalem)
+
+> Her satır bir ANKRAJ taşır: commit hash, `dosya:satır` veya çalıştırılan
+> grep'in çıktısı. Ankrajsız verdict kabul edilmedi.
+
+
+### A.4 RLS / çok-kiracılı izolasyon
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔴 | `B5` | Tenant GUC'u 163 router dosyasinin 2'sinde — kod hic degismedi | P0 | GUC'u set eden tek uretim satiri hala backend/core/dependencies.py:456 (`SELECT set_config('app.current_org_id', :org, true)`), get_current_tenant govdesinde (dependencies.py:425-461). Bu dosyaya son dokunan commit c7e87c688 (2026-07-05); `git log --since=2026-07-29 -- backend/core/dependencies.py backend/api/org_api.py backend/api/org_billing_api.py` = BOS. PAY: `get_current_tenant` backend/api/ altinda 2 dosyada (org_api.py, org_billing_api.py) — grep tum backend'de 7 dosya bulur, digerleri core/dependencies.py + 2 servis + 2 test. PAYDA (ayri olculdu): backend/api 157 .py (3 __init__) + backend/app/api 10 .py (1 __init__) = 167 toplam, __init__ haric 163; bunlarin 154'u fiilen `APIRouter(` tanimliyor (145+9). Denetimin 167 rakami 4 __init__ dosyasini iceriyor; gercek router paydasi 163 (dosya) / 154 (APIRouter tanimlayan). | Tenant GUC'unu router-basina Depends yerine tek bir yerde (session/middleware katmani) baglamak; VEYA 79 politikayi fail-closed yapip GUC'suz istegi 0 satirla dondurmek. Ikisi de yapilmadi. |
+| 🔴 | `N1` | Permissive RLS'i hakli cikaran 'aktif app-katman savunmasi' KODDA YOK | P1 | Iddia: backend/alembic/versions/faz1_rls_20260704_row_level_security.py:12. Mekanizma: backend/repositories/base.py:24-45 — `organization_id: str \| None = None` (satir 28), `_scope_tenant` yalnizca `self.organization_id is not None` ise filtre ekler (satir 43). Olcum: `grep -n "Repository(.*organization_id"` TUM backend'de (test dahil) yalniz backend/tests/unit/test_tenant_scoping_isolation.py:79,90 doner — uretimde 0 cagri yeri. Dahasi TUM alt siniflar org_id'yi hic kabul etmiyor: learning_path_repository.py:49,254 / question_repository.py:33,246,371 / user_repository.py:29,134,235,275 / video_cache_repository.py:33 hepsi `super().__init__(Model, session)`. Yani self.organization_id her uretim orneginde None → _scope_tenant sabit no-op. Yesil test (test_tenant_scoping_isolation.py) MEKANIZMAYI kanitliyor, KABLOLAMAYI degil. | Ya repository fabrikasina org_id enjeksiyonu (alt sinif imzalari + cagri yerleri), ya da migration docstring'indeki yanlis gerekce silinip RLS'in TEK savunma oldugu kabul edilerek fail-closed'a gecilmeli. B5'in duzeltme maliyetini buyutur. |
+| 🔴 | `F7` | 79/79 politika ayni permissive kalipta — desen yeni tabloda da suruyor | P1 | Migration kaynagindan dogrulandi (4 dosya, 4 predicate, hepsi ayni ucuncu-dal-permissive kalip): faz1_rls_20260704_row_level_security.py:49-53 (RLS_TABLES 13 tablo, satir 33-47), faz1_rls2_20260704_rls_extend.py:22-24 (RLS_TABLES 60 tablo — python ile sayildi), faz1_billing_rls_20260704_billing_org_rls.py:44-46 (_PRED_ORGID, ORG_ID_TABLES 4 tablo) + :51-53 (_PRED_ID, organizations), 20260726_parent_link_codes.py:36-38 (1 tablo). Toplam 13+60+4+1+1 = 79 — denetimin canli olctugu 79 ile birebir. Hepsi `FOR ALL USING(_PRED) WITH CHECK(_PRED)`. KRITIK EK: kalip sadece gecmis degil, SURUYOR — en yeni RLS eklemesi (parent_link_codes, 26 Tem, denetimden 4 gun once) da ayni permissive daliyla yazilmis. 2026-07-26'dan sonra RLS/tenant konulu commit YOK (`git log --grep='rls\|tenant\|tenancy\|multi-tenant' -i --all` en yeni: 125fb87f1 / 2026-07-26). | En az bir tablo icin fail-closed politika (GUC bos → 0 satir) + yeni tabloya RLS eklerken kalibi zorlayan migration testi. Hicbiri yok. |
+| 🔴 | `B5-c` | users / question_bank / student_answers hicbir RLS listesinde degil | P1 | 4 RLS migration'inin tablo listelerinde (`RLS_TABLES` / `ORG_ID_TABLES`) 'users', 'question_bank', 'student_answers' dizeleri icin grep = 0 eslesme. faz1_rls_20260704:32 yorumu bunu kabul ediyor: 'identity/org_memberships HARIC — ozel auth akislari' (ama org_memberships aslinda billing migration'inda korunuyor, users korunmuyor). Denetimin canli olcumu (rapor satir 975: users/question_bank/student_answers = False/False/0) migration kaynagiyla tutarli. | users icin RLS karari (org_id kolonu var ama politika yok) — ya politika ekle ya da 'kasitli disarida' gerekcesini migration'a yaz. question_bank global icerik oldugu icin muhtemelen mesru; student_answers icin gerekce yok. |
+| 🔴 | `N3` | Hicbir test GUC/RLS davranisini sinamiyor — F7 tuzagi CI'da yakalanmaz | P1 | `grep -ln "current_org_id"` backend/tests/ genelinde = 0 dosya. Var olan iki test de mekanizmayi degil imzayi sinar: backend/tests/unit/test_org_notnull_and_tenant_resolver.py:46-54 yalniz `callable(get_current_tenant)` + parametre adlarini kontrol ediyor (set_config cagrisini DEGIL); backend/tests/e2e/test_golden_flows.py:5090-5107 (test_gf_org_members_tenant_scoped) yalniz 'endpoint'te org parametresi yok' YAPISAL guvencesini ve status<500'u dogruluyor, ikinci organizasyonla capraz-kiraci sizinti denemesi YOK. test_tenant_scoping_isolation.py ise RLS'i degil app-katman _scope_tenant mekanizmasini test ediyor (bkz N1: o mekanizma uretimde kablolu degil). | Iki org seed'li bir RED testi: org_b kullanicisiyla org_a satirlari gorunmemeli (GUC set + set degil, iki kol). Yazilmadi. |
+| ✅ | `B5-a` | 'Kalan 165 router GUC'u baska yoldan set ediyor olabilir' — OLCULDU, HAYIR | P1 | Olcum: `git ls-files backend/**/*.py \| grep -v /tests/ \| xargs grep -n "current_org_id\|set_config\|SET LOCAL"` → 16 satir, hepsi 4 alembic migration dosyasindaki politika METNI + TEK uretim satiri backend/core/dependencies.py:456. Alternatif yol kontrolu: `backend/middleware/` dizini YOK (git ls-files bos); backend/core altindaki 17 middleware dosyasinin (auth_middleware, security_middleware, timezone_middleware, middleware_pipeline, core/middleware/*) hicbiri current_org_id icermiyor. SONUC: GUC'u set eden ikinci bir yol YOK; 2/163 sayisi eksiksiz. Olcum B5'i hafifletmiyor, DOGRULUYOR. | - |
+| 🔴 | `N2` | BaseRepository.update/delete org filtresi uygulamiyor (org_id kablolansa bile) | P2 | backend/repositories/base.py: okuma yollari _scope_tenant cagiriyor (get_by_id:66, get_by_field:80, get_all:116) AMA update() (:132-150) `update(self.model).where(self.model.id == id)` ile filtresiz, delete() (:151-161) `delete(self.model).where(self.model.id == id)` ile filtresiz; create() (:47) de WITH CHECK esdegeri bir kontrol yapmiyor. soft_delete (:163) update'e delege ettigi icin ayni acik. Bugun N1 nedeniyle sonucsuz (org_id hic set edilmiyor), ama org_id kablolandigi an capraz-kiraci YAZMA acigi olur. | update/delete/create'e _scope_tenant esdegeri (where + WITH CHECK) ekle — N1 kablolamasindan ONCE veya AYNI ANDA. |
+| 🔵 | `N5` | Severity nufus bagimli: ikinci organizasyon eklendi mi? | P2 | Repo tarafi: org sayisini belirleyen tek kaynak migration'lardaki `org_legacy_default` backfill (c2d3e4f5a6b7_faz0_org_id_identity_core.py, faz0_orgdefault_20260703, faz1_katmanA/A2/BC_20260704). Kod hicbir yerde org sayisini sinirlamiyor — backend/api/org_api.py org olusturma/uyelik uclarini acik tutuyor. Yani 'tek org' bir kod invaryanti DEGIL, o anki veri durumu; bir okul onboard edildigi gun B5+F7 P0'a doner. Repodan sayilamaz. | Operator TEK komut: "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2 -c "SELECT count(*) AS org_sayisi FROM organizations"  — sonuc >1 ise B5 ve F7 derhal P0. |
+| 🔴 | `N4` | dependencies.py:451-452 yorumu bayat: 'App superuser, RLS bypass edilir' | P3 | backend/core/dependencies.py:451-452: 'App superuser (postgres) oldugundan RLS su an bypass edilir (no-op); non-superuser role gecilince ...'. Ama non-superuser gecisi 2026-07-04'te yapildi (commit ac374136b 'RLS aktivasyon infra — non-superuser kiro2_app rolu (canli-kanitli)'), denetim de rolsuper=f / rolbypassrls=f olctu (rapor satir 222). Ayni bayat iddia faz1_rls_20260704_row_level_security.py:8-12 docstring'inde de duruyor. Yorumu okuyan bir muhendis RLS'i 'zaten kapali, onemsiz' sanar — F7 tuzagini gorunmez kilar. | Iki yerdeki bayat gerekceyi guncelle (dependencies.py:451-453 + faz1_rls migration docstring:8-12). Davranis degisikligi degil, yanlis-yonlendirme temizligi. |
+
+### A.6 Admin içerik uçları
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🟡 | `F1` | POST 200 ama kalici degil — kok neden cakisma, router artik 409 | P0 | Kok neden ORTUSUYOR: backend/services/soru_bankasi_service.py:349-372 IntegrityError'i yakalayip MEVCUT satiri donduruyor (log: 'Duplicate question detected ... Returning existing question'); kisitin kaynagi backend/models/question_bank.py:610-615 `uq_qb_soru_hash_active` (soru_hash UNIQUE WHERE is_active=true). PostgreSQL n_tup_ins ABORT olmus INSERT denemelerini de sayar → denetimdeki 'n_tup_ins=3 ama satir yok' kaniti cakisma hipoteziyle TUTARLI, celismiyor. Router artik durustce 409 veriyor (admin.py:370-377) ve mevcut kaydin id'sini soyluyor. AMA F1'in lafzi iddiasi ('cakisma YOKKEN de kalici olmuyor') NE olculdu NE test edildi — soru_bankasi_service.py:340-347'de `begin_nested()` + `commit()` + `refresh()` var, yani kod dogru gorunuyor; 'kod dogru gorunuyor' bu deponun kendi kuralinca kanit degil. | Benzersiz yukle 1 POST + yeni oturumdan COUNT/SELECT ile okuma-yazma dogrulamasi (bkz. DEPLOY satiri komutu). |
+| 🔵 | `DEPLOY` | Iki fix'in CANLIDA olup olmadigi repodan bilinemez | P0 | .claude/sessions/latest.md:12 'Celery imajlari rebuild + recreate' — backend imaji icin ayni ifade YOK. Bu depoda '#444 kod isi degil dagitim isiydi, imaj 13 saat eskiydi' vakasi 31 Tem'de yasandi (latest.md:23), yani 'commit atildi' ≠ 'calisiyor'. | Operator TEK komut: `docker exec kiro2-backend grep -n "soru_bankasi_servisi.soru_sil\\|zaten_mevcuttu" /app/api/admin.py` — iki satir da gelmiyorsa imaj bayat, `docker compose build backend && docker compose up -d --no-deps backend` gerekir. Sonra F1/F2 canli olcumu: benzersiz metinli POST → 200 mu, ayni yuk tekrar → 409 mu, DELETE 3faf4e57-1f38-4771-a209-30839101cd2c → 200/404 mu. |
+| ✅ | `F2` | DELETE /admin/content/questions/{id} 500 → kok neden kaldirildi | P0 | a30416f34. backend/api/admin.py:437-473 artik `admin_servisi.soru_sil` DEGIL, dogrudan `soru_bankasi_servisi.soru_sil(soru_id)` cagiriyor (satir 454). Grep: backend/api icinde `admin_servisi.soru_sil` cagirisi 0 (yalniz yorum satiri 446). Servis backend/services/soru_bankasi_service.py:1271-1304 soft delete (is_active=False + commit), hedef model `QuestionBankItem as Question` (satir 27) → question_bank, cift-tablo tuzagi yok. Yeni donusler: 200 (basarili), 404 (satir 456-459), 500 yalniz beklenmedik istisnada. 3 test (tests/unit/test_admin_content_delete.py:116/134/151) DAVRANIS civiliyor: mutasyon = router'i eski `admin_servisi.soru_sil(soru_id)` haline dondurmek → @admin_required args[0]=soru_id → AdminAuthorizationError → 500 → uc testin ucu de duser (silme taklidi hic cagrilmaz, denetim listesi bos kalir). | Canli dogrulama (bkz. DEPLOY satiri). |
+| 🔴 | `YENI-1` | PUT /admin/content/questions/{id} AYNI iki bastiriciyla hala 500 | P1 | backend/api/admin.py:411-431 → satir 421 `await admin_servisi.soru_guncelle(soru_id, soru_data)` POZISYONEL. backend/services/admin_service.py:527 `@admin_required` + 528-533 `soru_guncelle(self, soru_id, soru_data, current_user=None)`. Dekorator args[0]=soru_id'yi kullanici sanar → in-memory KullaniciServisi → None → False → AdminAuthorizationError. Router'da `except ValueError` (400) ve `except HTTPException` var ama AdminAuthorizationError ikisi de degil → `except Exception` → 500 (admin.py:428-431). F2 ile BIREBIR ayni kok neden; a30416f34 yalniz DELETE'i duzeltti. Bu uc icin fix-sonrasi davranis testi YOK (tests/unit/test_admin_api.py:749/766 sadece 400-not-found ve 403 senaryosunu, mock'lu admin_servisi uzerinden olcuyor). | DELETE ile ayni deseni PUT'a uygula (dogrudan soru_bankasi_servisi.soru_guncelle) + RED testi. |
+| 🔴 | `YENI-2` | Fix'in SERVIS yarisi (zaten_mevcuttu bayragi) sifir test kapsaminda | P1 | Bayrak servis tarafinda 3 yerde set ediliyor (soru_bankasi_service.py:346, 363, 371) ama HICBIR test onu servisten olcmuyor: tests/unit/test_admin_content_create.py bayragi `_SahteSoru`/`_ekle_taklidi` ile UYDURUYOR (satir 74-105) ve gercek `soru_ekle`yi tamamen mock'luyor. Grep `zaten_mevcuttu` → uretimde 4, testte yalniz stub tanimlari. Mutasyon: soru_bankasi_service.py:363'teki `existing.zaten_mevcuttu = True` silinirse 3 create testi de YESIL kalir, GF6w de 200 alip yesil kalir (200 kabul ediliyor) → yalan sessizce geri gelir. Yani sozlesmenin iki ucundan yalnizca router ucu civili. | Servis-duzeyi test: ayni yuku iki kez `soru_ekle` → ikinci donuste `zaten_mevcuttu is True` (tests/unit/test_soru_ingestion_upsert.py:95 zaten iki-kez-ekleme yapiyor, tek assert eklemek yeter). |
+| 🔴 | `YENI-3` | 'INSERT sonrasi satir gercekten okunabiliyor' testi YOK | P1 | Yok. tests/unit/test_admin_content_create.py `soru_ekle`yi komple mock'luyor (satir 99-105) → DB'ye hic gidilmiyor. Tek gercek-oturum testi tests/unit/test_soru_ingestion_upsert.py:51 `test_soru_ekle_upsert_fallback` ve o da (a) DONEN ORM nesnesine bakiyor, YENI bir oturumdan re-SELECT yapmiyor (satir 89-98), (b) `db_session` fixture'i backend/tests/conftest.py:558 → `test_async_engine` → TEST_DATABASE_URL varsayilani postgresql://localhost:5433/testdb; ayni dosyanin basinda `@compiles(JSONB,'sqlite')` var (satir 19-22) yani sqlite'a dusme yolu acik. Sqlite'ta `postgresql_where` kismi-unique index'i uygulanmaz → cakisma dali orada AYNI SEYI olcmez. | Benzersiz soru_hash ile ekle → AYRI oturumdan SELECT ile satiri dogrula (postgres marker'li integration testi). |
+| 🔴 | `YENI-4` | test_admin_api.py::TestDeleteQuestion a30416f34 ile bayatladi | P1 | backend/tests/unit/test_admin_api.py:784-792 `test_delete_question_success` `patch("api.admin.admin_servisi")` ile `mock_service.soru_sil = AsyncMock(return_value=True)` kuruyor ve 200 bekliyor. Router artik o cagriyi YAPMIYOR (admin.py:454 fonksiyon icinde `services.soru_bankasi_service`'ten import ediyor, patch'ten etkilenmez) → gercek servis + gercek `db_manager.get_session()` calisir. Ustelik admin.py:463 `admin_servisi.admin_aktivite_kaydet(...)` artik PATCH'LI MagicMock; `await MagicMock()` TypeError verir (MagicMock `__await__` desteklemez) → bare except → 500. Iki yoldan da 200 gelmez. Bu tam olarak .claude/rules/verification.md 'DOGRULAMA KAPSAMI = DEGISIKLIGIN KAPSAMI' kuralinin ihlali. | Operator tek komut: `cd backend && pytest tests/unit/test_admin_api.py::TestDeleteQuestion -v --tb=short` → kirmizi ise testi yeni cagri yoluna gore guncelle. |
+| 🔴 | `YENI-7` | Paralel yuzey /content-management/questions TAMAMEN MOCK (F1'in tam sinifi) | P1 | backend/api/content_management.py (prefix satir 15 `/api/v1/content-management`, loader kaydi backend/routers/loader.py:74): POST /questions satir 139-185 → sabit `mock_soru = {"soru_id": "new-soru-123", ...}` + 201 'Soru basariyla eklendi'; DELETE /questions/{id} satir 262-282 → hicbir DB dokunusu olmadan 200 'Soru basariyla silindi'; PUT satir 231-258 ve GET /questions/{id} satir 189-228 de uydurma veri donuyor. Yani F1'in tarif ettigi kusur ('uc basarili diyor, veri yok') bu yuzeyde AYNEN yasiyor ve hicbir commit dokunmadi (son ilgili commit 9094dd50c). Kapi ayrica TEACHER'a da acik (content_management.py:16-31 `_CONTENT_MGMT_STAFF` = TEACHER+ADMIN+SUPER_ADMIN). Frontend'de cagiran yok (frontend/src icinde yalniz types/api.generated.ts eslesmesi). | Ya bu 4 ucu gercek servise bagla ya 501 dondur ya router'i kaldir; 'basarili' yalanini birakma. |
+| 🟡 | `F2-B` | Iki 'seri bagli sebep' KALDIRILMADI, yalniz atlandi | P1 | Her iki bastirici da kodda AYNEN duruyor: backend/services/admin_service.py:31 `current_user = kwargs.get("current_user") or (args[0] if args else None)` ve satir 78-97 `_admin_yetkisi_kontrol` hala `.rol`/`.aktif` ariyor (AuthenticatedUser `.role` tasiyor, core/dependencies.py:48). Fix bu yolu ATLADI, onarmadi. `AdminService.soru_sil` (admin_service.py:562-563) artik SIFIR uretim cagirani olan olu kod. Ayni dekorator admin_service.py'de 14 metotta duruyor (184,227,260,273,366,447,493,527,562,584,621,656,679,693,718,766). | Kalan @admin_required metotlarindan hangilerinin router'dan POZISYONEL cagrildigini tara; ya dekoratoru onar ya da olu metotlari sil. |
+| 🟡 | `YENI-6` | 'Denetim kaydi' aslinda DB'ye yazmiyor — logger.debug | P1 | Kimlik duzeldi (admin.py:463-465 `admin.id` geciyor) ama hedef fonksiyon backend/services/admin_service.py:154-180 dict kurup `logger.debug("Admin aktivite kaydedildi: %s", aktivite)` yapiyor; kendi yorumu: 'Gercek implementasyonda database'e kaydedilecek' (satir 174) ve `ip_adresi` sabit '127.0.0.1' (satir 172). Kalici denetim izi YOK; uretim log seviyesi INFO ise satir hic yazilmaz bile. B2B/KVKK icin 'kim hangi soruyu sildi' sorusu hala cevaplanamaz. | admin_activity_log tablosu + gercek INSERT, veya iddiayi commit/dokumanda 'debug log' diye duzelt. |
+| 🟡 | `YENI-5` | GF6w pratikte artik SADECE 409 dalini kosuyor | P2 | backend/tests/e2e/test_golden_flows.py:757-838. Yuk hala SABIT ('Golden Flow write test: 2+2 kac eder?', satir 782) ve assert `resp.status_code in (200, 409)` (satir 808). Satir zaten var oldugu icin her kosumda 409 dali (satir 813-822) alinir ve `return` ile cikilir → 'olusturma' iddiasi (success=True + id) HALA hic kosulmaz. Fix teshisi dogru yazdi ama semptomu gidermedi: golden flow yine olusturma yolunu korumuyor, sadece artik yalan soylemiyor. | Ya ayri bir 'benzersiz yuk + sonra sil' e2e (temizligi zorunlu tutarak) ya da acikca 'GF6w = cakisma sozlesmesi' diye yeniden adlandir. |
+| 👻 | `AUTH` | Rol kapisi var ve negatif testli — endise fantom | P3 | backend/api/admin.py:29-47 `admin_kullanici_getir` → `Depends(get_current_user)` + `if current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN): 403`. POST (admin.py:335-338) ve DELETE (admin.py:437-439) ikisi de bu Depends'i tasiyor; DELETE'te tip degisti (`_` → `admin`) ama Depends aynen duruyor, yani a30416f34 yetki kaybi YARATMADI. Negatif testler mevcut: tests/unit/test_admin_api.py:712 (POST 403 student), 820 (DELETE 403 student), 986 (TEACHER reddedilir), 1004 (PARENT reddedilir), 946-984 (ADMIN + SUPER_ADMIN gecer). | - |
+
+### A.3 CI / merge kapısı
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔴 | `B4` | Rate-limit skip mekanizmasi kodda ELE ALINMADI | P0 | backend/tests/e2e/test_golden_flows.py:88-97 `_login()` HALA 200 disi her yaniti (429 dahil) `pytest.skip`'e ceviriyor. `git log -L 88,99` -> bu blogun tek commit'i 1571f5c57 (10 Nis 2026, dosyanin dogus commit'i) — 30 Tem denetiminden SONRA hic degismedi. Dosyada token onbellegi / 429 dali / retry / backoff / sleep YOK (grep '429\|retry\|backoff\|sleep' -> yalniz alakasiz assert yorumlari: 2122, 2242). Uygulanan limit backend/api/auth.py:95-97 `_LOGIN_RPM=30`/60s; dev-bypass auth.py:141-148 listesi Docker gateway IP'sini icermiyor. Test sayisi bugun: `grep -c '^def test_'` = 178. | Modul-kapsamli token onbellegi (rol basina 1 login) VEYA CI'da LOGIN_RATE_LIMIT_PER_MINUTE yukseltme VEYA _login'de 429'u skip degil FAIL sayma. Uc secenegin hicbiri uygulanmadi. |
+| 🔴 | `F8-b` | Ayristirma duzeldi ama TETIKLEME duzelmedi | P1 | golden-flows.yml:18-23 `push: branches:[main,master,develop]` + `pull_request: branches:[main,master,develop]`. quality-gate.yml:12-17 SADECE `pull_request: branches:[main,master]` + dispatch (push YOK). 11 .yml'nin dal-push tetikleyicisi olan yalniz 2'si (ci.yml:8-10, golden-flows.yml:19-20), ikisi de [main,master,develop]; deploy.yml:7-9 ve release.yml:8-10 yalniz `tags: v*.*.*`; kalan 7'si dispatch/PR/schedule/deployment_status. Aktif dal: `git rev-list --count master..HEAD` = 318 commit master'in onunde. Yani bu 318 commit'in HICBIRI icin kapi kosmadi. | Ya `on: push` dal listesine feature/** eklenmeli, ya da is akisi gercekten PR-uzerinden master'a birlestirilmeli. Su an ikisi de yok — kapi yapisal olarak devre disi. |
+| 🔴 | `B4-x` | Kapi komutu skip'i yesil sayiyor + seed hatasi yutuluyor | P1 | .github/workflows/golden-flows.yml:220 `pytest ... -x` — `-x` yalniz FAIL'de durur, SKIP exit 0 uretir. Ustelik ayni dosyada 191 `alembic upgrade head \|\| echo "::warning::..."` ve 196 `python scripts/seed_mvp_data.py \|\| echo "::warning::seed script failed — GF tests will skip unauthenticated flows"` — ikisi de basarisizligi yutuyor. Seed coktugunde HER test login'de skip'e duser ve is YESIL biter; adim metni bunu acikca yaziyor ama sonuc yine de gecer. | Seed adimindaki `\|\| echo` kaldirilmali; kosum sonrasi `--strict-markers` degil, minimum-gecen-test esigi (or. `pytest ... && [ $PASSED -ge N ]`) veya `-p no:skip` esdegeri bir bekci gerekiyor. B4 duzeltilse bile bu amplifikator ayakta. |
+| 🟡 | `B3` | CI 100/100 FAILURE — kok neden kismen aciklandi | P1 | d304f19a9 commit mesaji + denetim dokumani satir 1007: 'son 100'un 74'u 0-is kaydi' (created=started=updated, total_jobs=0). Bu 74, golden-flows 36 + quality-gate 36 = 72 ile ortusuyor -> gecersiz YAML ile aciklandi ve YAML duzeltildi (F8-a). Commit mesaji ayrica seri-bagli BIRINCI sebep olarak faturalama blogunu isaretliyor. Kalan ~26 kosum (health-checks 28) HALA aciklanmadi; denetim dokumani satir 723 'CIizin KOK NEDENI — job loglari cekilmedi' acik birakiyor. | Fix sonrasi ilk kosumun gercekten yesil oldugu dogrulanmadi (fix'ten sonra aktif dalda tetikleyici olmadigi icin dogal kosum da olmadi). Operator TEK komut: `gh run list --workflow=golden-flows.yml --limit 5 --json conclusion,createdAt,event,headBranch` (once gh kurulmali). |
+| ✅ | `F8-a` | Iki workflow YAML ayristirma kusuru | P1 | commit d304f19a9. Diff: golden-flows.yml:172 `- name: AST lint — Pydantic \`user_id: int\` ...` -> tirnak icine alindi; quality-gate.yml'den bir `workflow_dispatch:` satiri SILINDI. Bugunku olcum: `grep -n workflow_dispatch` -> golden-flows.yml:23 (1 kez), quality-gate.yml:17 (1 kez). 11 workflow dosyasinin hicbirinde tirnaksiz `name:` icinde ': ' kalmadi (grep -E '^\s*-?\s*name: [^"'\''].*: ' -> 0 cikti). | - |
+| 🔴 | `#390` | gh CLI kurulu degil; dependabot 4 ekosistemle aktif | P2 | `which gh` -> 'no gh in (...)' (PATH'te yok). `.github/dependabot.yml` MEVCUT, `version: 2`, 4 ekosistem dogrulandi: pip (satir 4-5, dizin /), docker (satir ~33), github-actions (satir ~44), npm (satir ~59, dizin /frontend). npm ve pip'te `open-pull-requests-limit: 10` -> teorik ust sinir 20 acik PR, denetimin 20/20 gozlemiyle tutarli. | gh kurulumu + PR triyaji. PR sayisi repodan olculemez. Operator TEK komut: `winget install --id GitHub.cli -e` sonrasi `gh pr list --state open --json number,author,title --jq 'length'` |
+| 🔴 | `F8-doc` | golden-flows.md hala '166 test -> 164 PASS' diyor | P2 | .claude/rules/golden-flows.md:27 hala aynen: 'Current distribution as of Session 152: **166 tests -> 164 PASS / 0 FAIL / 2 SKIP**.' Dosyanin son commit'i d2acacb9f (14 May, Session 156) — 30 Tem denetiminden sonra HIC guncellenmedi. Gercek: `grep -c '^def test_' backend/tests/e2e/test_golden_flows.py` = 178; denetim dokumani satir 376/392 '30 passed, 148 skipped'. Ayni dosya satir 1-3 kendini 'Merge block' kurali ilan ediyor -> yonetisim sapmasi. | golden-flows.md:27 gerceklige cekilmeli (178 test / 30 PASS / 148 SKIP + skip'in neden FAIL uretmedigi notu). Ayrica deponun kendi 'Mega Audit Lock' kurali geregi denetim dokumanina kapanan bulgular icin ustu-cizili + FIXED isareti islenmedi. |
+| 🔵 | `B3-hc` | health-checks 28 failure — dokunulmadi, hedef host'lar hayali | P2 | .github/workflows/health-checks.yml git gecmisi: son commit 1fe3a390a ('sessions 6-20') — 30 Tem denetiminden sonra HIC dokunulmadi. Satir 37-38 sabit hedefler: `STAGING_URL: https://staging-api.kiro2.com`, `PRODUCTION_URL: https://api.kiro2.com`. Tetikleyici satir 3-5 `deployment_status` + dispatch. Bu iki host'un var oldugu deponun hicbir yerinde dogrulanamadi; koddan tek basina 'DNS yok' denemez. | Operator TEK komut: `gh run list --workflow=health-checks.yml --limit 3 --json databaseId --jq '.[0].databaseId' \| xargs -I{} gh run view {} --log-failed \| head -40` |
+| ✅ | `F8-test` | test_workflow_yaml.py gercekten ayristirmayi siniyor | P2 | backend/tests/unit/test_workflow_yaml.py:47-71 `MukerrerAnahtarYukleyici(yaml.SafeLoader)` + `_mukerrer_reddet` — PyYAML'in mukerrer anahtari SESSIZCE yuttugu, dolayisiyla duz `safe_load`'un YARIM-VAKUM olacagi docstring'de aciklanmis ve giderilmis. Korlesme guvencesi var: satir 81-89 `test_workflow_dizini_bulunabiliyor` dizin var + `>=5 dosya` iddia ediyor (0-dosya tarayan yesil test sinifina karsi). Test 11 .yml uzerinde parametrize (satir 92-93). Mutasyon esdegeri olcum docstring'de: 'bu test fix'ten once IKI dosyada da kirmizi (olculdu: mapping values are not allowed here + tekrarli anahtar)'. WORKFLOW_DIZINI = parents[3]/.github/workflows -> backend/tests/unit'ten depo koku, dogru. | Test kendi docstring'inde 'BU TEST NEYI KORUMAZ' diyor: ayristirilabilirlik != tetiklenme. Ayrica bu test yalniz `pytest tests/` ile ci.yml icinde kosuyor ve ci.yml aktif dalda tetiklenmiyor (bkz. F8-b) — yani bekci de aktif dalda kosmuyor. |
+| 👻 | `f357e4647` | f357e4647 skip mekanizmasina dokunmadi | P3 | `git show f357e4647 --stat` -> 2 dosya, 6 ekleme / 4 silme. test_golden_flows.py'de tek degisiklik satir ~831-841: `try: client.delete(...) except Exception: pass` -> `with contextlib.suppress(Exception): client.delete(...)` + `import contextlib`. Ikinci dosya backend/pyproject.toml (SIM105 susturmasi geri alindi). Skip mekanizmasina, _login'e veya rate-limit'e HIC dokunulmadi. | - (bu commit'in B4 ile ilgisi olduğu iddiasi yanlis; kozmetik/hijyen) |
+| 👻 | `B4-5dk` | Denetimin '5/dk login limiti' ifadesi yanlis (denetim-ici celiski) | P3 | Uygulanan limit backend/api/auth.py:95-97 -> `_LOGIN_RPM = int(os.environ.get('LOGIN_RATE_LIMIT_PER_MINUTE','30') or 30)`, `RATE_LIMITS['login'] = (_LOGIN_RPM, 60)` = 30/60s. '5' degeri backend/core/rate_limit_config.py:53-57 `ENDPOINT_RATE_LIMITS` icindeki `/api/v1/auth/login` anonymous_limit=5 — ama bu modulun TEK dis importu backend/tests/unit/test_rate_limit_config.py:3 ve o da yalniz `UserTier`/`get_user_tier_from_roles` aliyor; `ENDPOINT_RATE_LIMITS` referanslari yalniz kendi dosyasinda (satir 50, 285, 349). Yani olu konfigurasyon. Denetimin kendi dogrulama tablosu (satir 991) zaten 'limit 30/60 s' diyor -> dokuman kendi icinde celisiyor. | Denetim §5.2 metni 30/dk olarak duzeltilmeli. Ayrica olu `ENDPOINT_RATE_LIMITS` blogu ayri bir hijyen kalemi (silme/baglama karari) — bu turda dokunulmadi. |
+
+### A.2 SMTP / şifre kurtarma
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔵 | `B2/#441` | SMTP kimlik bilgisi hala yok — kod tarafinda 0 degisiklik | P0 | backend/core/email_util.py:32-40 guard AYNEN duruyor (`if not (smtp_server and smtp_username and smtp_password): return False`); dosyanin son commit'i fcae9ca7a (2026-05-29, denetimden ONCE). `git log --since=2026-07-29 -- backend/core/email_util.py backend/api/auth.py backend/core/startup_validator.py backend/validate_production_env.py backend/scripts/backup_database.py backend/core/kvkk_compliance.py backend/analytics/health_audit_service.py` = BOS CIKTI. Takipli tek sablon: `git show HEAD:.env.mvp.example \| grep -oE '^#?\s*(SMTP\|EMAIL\|MAIL)[A-Z_]*'` = 0 satir (hic SMTP anahtari yok). Calisan backend docker-compose.yml:39 `env_file: - .env.mvp` (takipsiz, salt-okunur oturumda okunamaz). Hafifletici: auth.py:1577-1580 `_IS_DEV` (auth.py:77 environment=='development') dalinda kod log'a yaziliyor -> dev yiginda akis elle denenebilir, gercek kullanici icin degil. | Operator TEK komut: `docker exec kiro2-backend python -c "import os;print({k:bool(os.getenv(k)) for k in ['SMTP_SERVER','SMTP_USERNAME','SMTP_PASSWORD','SMTP_HOST']})"` — hepsi False ise bulgu ACIK, kimlik bilgisi girilip canli duman testi gerek |
+| 🔴 | `F20` | SMTP_HOST vs SMTP_SERVER anahtar ayrisimi duzelmedi | P1 | DOGRULAYICILAR: backend/core/startup_validator.py:158 `os.getenv("SMTP_HOST")`, backend/validate_production_env.py:75 `"SMTP_HOST"` (RECOMMENDED_VARS listesi), backend/scripts/backup_database.py:234+238 `os.getenv("SMTP_HOST")`. TUKETICILER: backend/core/email_util.py:32, backend/core/kvkk_compliance.py:812, backend/analytics/health_audit_service.py:755 -> hepsi `os.getenv("SMTP_SERVER")`. Denetimden sonra bu 6 dosyaya dokunan commit YOK (yukaridaki git log bos). Ek olcum: startup_validator.py:159 `self.warnings.append(...)` — ERROR degil WARNING, yani validator zaten hicbir zaman baslangici bloklamiyor; iddianin 'validator gecer' kismi dogru ama gecmenin bedeli yok. | Tek anahtar adina kilitle (SMTP_HOST tercih edilirse email_util/kvkk_compliance/health_audit_service'te oku; veya tersi) + tercih edilen adi .env.mvp.example'a yaz |
+| 🔴 | `F21` | Veli onay e-postasinda donus degeri hala kontrol edilmiyor | P1 | backend/api/auth.py:2279 `send_email(veli_email, "KIRO2 — Veli Onayı Gerekiyor", html)` — atama yok, dal yok. Cagiranlar: auth.py:711 (kayit, resit olmayan ogrenci) ve auth.py:2350 (resend ucu). Karsilastirma: sifre sifirlama yolu auth.py:1568-1580 donusu kontrol ediyor + ERROR logluyor + dev fallback'i var. Etki sinirli ve olculdu: backend/core/dependencies.py:397-419 `require_veli_consent` yalniz sosyal/PII uclarini 403'ler, cekirdek ogrenme (soru/sinav/plan) acik kaliyor (dependencies.py:403 yorumu + kod ayni seyi soyluyor). | auth.py:2279'da donusu yakala; en az sifre-sifirlama seviyesinde ERROR log |
+| 🔴 | `F21-yeni` | /veli-onay/resend gonderim olmesine ragmen 'gonderildi' diyor | P1 | backend/api/auth.py:2350-2353: `_send_veli_onay_email(veli_email, token)` -> hemen `return VeliOnayResponse(status="pending", message="Onay e-postası tekrar gönderildi")`. SMTP kapaliyken send_email False doner, uc yine de kullaniciya BASARI mesaji verir. Bu tam olarak 2d5d82f7e'de admin tarafinda kapatilan 'basariyla eklendi' yanlis-basari sinifi. | send_email False ise 503 + 'e-posta gonderilemedi' don; auth.py:2264-2279 imzasini bool dondurecek sekilde degistir |
+| 🔴 | `F20-k8s` | k8s/secrets.yaml'daki SMTP anahtarlari olu (ucuncu isim varyanti) | P2 | `git grep -n -i smtp -- k8s/` -> YALNIZ k8s/secrets.yaml:34-37 (`smtp-host`, `smtp-username`, `smtp-password`). Hicbir k8s deployment/manifest bu secret key'lerini env degiskenine map etmiyor (grep'te tek dosya cikti). Yani k8s yolundan deploy edilse bile ne SMTP_SERVER ne SMTP_HOST container'a girer. Ayrica isim 3. varyantta (kebab-case). monitoring/alertmanager/alertmanager.yml:6 ise `${SMTP_HOST}` bekliyor. | Ya secrets.yaml'i deployment env mapping'i ile bagla ya da olu blogu sil |
+| ✅ | `#437-#440` | Sifre kurtarma HTTP zinciri kodda TAM ve kayitli | P2 | backend/api/auth.py:1583 `@router.post("/forgot-password")`, :1632 `@router.post("/verify-reset-code")`, :1680 `@router.post("/reset-password")`. Router kaydi: backend/routers/loader.py:34 `"api.auth": ("auth", "api.auth")`. Kod deposu: backend/core/password_reset_codes.py. Testler: backend/tests/integration/test_password_recovery_flow.py, backend/tests/unit/test_password_reset_codes.py, backend/tests/unit/test_email_util.py + mutasyon: backend/scripts/mutation_check_password_reset.py. Frontend: frontend/src/kiro/api/api-client.ts + frontend/src/kiro/screens/HesapKurtarmaPage.test.tsx (grep 'verify-reset-code'). Commit 9275f84b0 (2026-07-28). | Sadece SMTP kimlik bilgisi (B2). NOT: uc ucun 3'u de `include_in_schema=False` -> /openapi.json ile varlik dogrulanamaz (denetim notu #24 ile tutarli). |
+| 👻 | `F20-alt` | EMAIL_FROM eksikligi gonderim engellemiyor — ucluk fallback var | P3 | backend/core/email_util.py:36 `from_addr = os.getenv("EMAIL_FROM") or smtp_username or "noreply@kiro2.edu.tr"` — uc kademeli fallback. Guard (satir 38) yalniz smtp_server+smtp_username+smtp_password'e bakiyor. Yani EMAIL_FROM unset olmasi gonderimi HIC etkilemiyor; yalnizca From basligini degistirir. Load-bearing anahtar 3 tane, 6 degil. | - |
+| 👻 | `F21-alt` | 'Bildirim tamamen sessizce kayboluyor' — log VAR | P3 | backend/core/email_util.py:39 `logger.warning("SMTP yapılandırılmamış; %s adresine email atlandı", to)` — her atlanan gonderimde WARNING dusuyor. Dogru olan iddia 'CAGIRAN tarafta ERROR/fallback yok' (F21). Yan bulgu: bu log alici e-postasini MASKESIZ yaziyor; sifre sifirlama yolu ayni durumda auth.py:1575 `_mask_email(email)` kullaniyor — tutarsizlik. | email_util.py:39'da alici adresini maskele (auth.py'deki _mask_email ornegi) |
+
+### A.1 Elasticsearch / kalite kapısı
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔵 | `B1-canli` | Takas canli mi: repo bunu kanitlayamaz | P0 | Kod tarafi hazir: es_reindex.py:160-176 cutover yolu (yedek kopya -> eski index sil -> alias yeni index'e). Ama ES'in BUGUNKU durumu depodan gorulemez; takas iddiasinin tek dayanagi commit mesaji (= iddia, kanit degil). Kural 3 geregi KAPANDI diyemem. | Operator TEK satir: curl -s localhost:9200/turkiye_sinav_platform/_count; curl -s -H 'Content-Type: application/json' -d '{"query":{"exists":{"field":"correct_answer"}}}' localhost:9200/turkiye_sinav_platform/_count   -> beklenen: ~25.127 ve 0. Ikinci sayi >0 ise takas geri alinmis/yeniden kirilmis demektir. |
+| ✅ | `B1/#433` | ES index kaynagi kalite kapisina baglandi (kod) | P0 | core/es_index_schema.py:112-116 SORGU = 'SELECT q.<18 alan> FROM mv_safe_for_beta g JOIN question_bank q ON q.id=g.id' — kaynak artik KAPI, question_bank+is_active DEGIL (is_active filtresi hic yok, gerek de yok). ALANLAR:30-49 18 alan; YASAKLI_ALANLAR:51 = {correct_answer, explanation, is_active}; _belge_kur:135-138 alan sizintisini VERIYE bakarak reddediyor (sorgu metnine guvenmiyor). commit 6bc1febec (uretim) + 1664d9d36 (paylasilan mantik core/'a; .dockerignore:82 'scripts/' imajdan eliyor, gorev oradan import edemezdi). | Canli alias dogrulamasi ayri bulguda (B1-canli). Kod tarafinda kalan is yok. |
+| 🔴 | `Y3` | Admin reindex ucu: TypeError'la kapali, kasitla degil | P1 | api/elasticsearch.py:364 initialize_index() -> services/elasticsearch_service.py:153-154 create_index(mapping=...) ; gercek imza core/elasticsearch_client.py:115-120 'mappings' -> TypeError -> genis except -> False -> api/elasticsearch.py:366-367 HTTP 500. Yani ucu bugun kapatan sey bir tasarim karari degil, bir kwarg hatasi. | Ucu ya sil ya da core.es_index_schema.SORGU/_belge_kur uzerine kablola (tek tanim noktasi zaten var). |
+| 🔴 | `Y1` | _senkronla govdesi (ekle/sil kablolamasi) testsiz | P1 | grep 'es_sync_tasks' backend/tests -> TEK satir: test_es_reindex.py:140, o da yalniz _SENKRON_LOCK_KEY sabitini import ediyor. tasks/es_sync_tasks.py:62-119 (_senkronla) hicbir testte CAGRILMIYOR. 8 test saf yardimcilari civiliyor (esitleme_plani, _belge_kur, MAPPING/SETTINGS pariteleri, beat saat iliskisi) — plan ile ES yazma arasindaki kablolamayi degil. | Sahte ES istemcisiyle 1 test: esitleme_plani 'silinecek' dondurdugunde bulk'a _op_type=delete op'lari gittigini dogrula; mutasyonla civile (bloku silince KIRMIZI olmali). |
+| ✅ | `F4` | Artimli senkron var: gorev+beat+worker kaydi+silme | P1 | SILME GERCEK: tasks/es_sync_tasks.py:94 esitleme_plani(set(belgeler), mevcut) -> :104-109 async_bulk ile {'_op_type':'delete'} (raise_on_error=False). 'silinen' sayaci :113 len(silinecek) = es_kimlikleri - db_kimlikleri (core/es_index_schema.py:148-157) — yani ES'te olup kapidan gecmeyen HER dokuman. Beat: core/celery_app.py:140-143 crontab 04:00, matview 03:30 (:129-132) — sira testle civili (test_es_reindex.py:115-131). Worker kaydi: celery_app.py:39 include listesinde 'tasks.es_sync_tasks' (commit 0b92301a5; oncesinde beat gonderir worker 'unregistered task' derdi, RED 1/32 -> GREEN 33). | Tasarim geregi 24 saatlik bayatlik penceresi: gun icinde kapidan dusen soru ES'te en fazla 1 gun kalir (kabul edilmis). Ayrica Y1 (govde testsiz) ve Y2 (kilit) acik. |
+| ✅ | `F5` | 0/0 celiskisi: olcumler takas ONCESI ve SONRASI | P1 | Celiski yok, SIRA farki var. 6bc1febec (31 Tem 00:17) dry-run'i ESKI index uzerinde kosup eklenecek=21.462 / silinecek=60.605 olctu. e1034b454 (00:25) cutover ile index, SORGU'nun TAMAMINDAN (25.127) sifirdan kuruldu. Kurucu (es_reindex.py:117-120) ve senkron (es_sync_tasks.py:83-85) AYNI sorguyu (core/es_index_schema.py:112) kullaniyor -> tam kurulumdan sonra kume farkinin bos olmasi matematiksel zorunluluk. Sayac dogru seyi sayiyor: es_sync_tasks.py:111-115 len(eklenecek)/len(silinecek)/len(belgeler)=kapi. | - |
+| ✅ | `F3` | Hayalet dokumanlar iki mekanizmayla da temizleniyor | P1 | (a) Yapisal: es_reindex.py:142-158 build YALNIZ PG kapi satirlarindan yaziyor, :171-174 cutover ESKI index'i siliyor ve alias'i yeni index'e ceviriyor -> eski index'e ozgu hayalet tasinamaz. (b) Surekli: core/es_index_schema.py:148-157 'es_kimlikleri - db_kimlikleri' tam olarak ES-ONLY id kumesi; es_sync_tasks.py:104-109 onlari SILIYOR. _es_kimlikleri (es_index_schema.py:160-174) async_scan ile index'in TUM id'lerini tariyor (search_after+_id ES8'de 400 verdigi icin). | 9 id'nin gittigi B1-canli komutuyla ayni turda dogrulanir (_count ~25.127 ise hayalet yok). |
+| 🔴 | `Y2` | Advisory kilit ES isi baslamadan once dusuyor | P2 | tasks/es_sync_tasks.py:76-78 pg_try_advisory_xact_lock(_SENKRON_LOCK_KEY) — XACT kapsamli. Kilit `async with db_manager.get_session()` icinde alindi, blok satir 83'te (satirlarin cekilmesiyle) bitiyor; core/database.py:290-299 cikista commit + close yapiyor -> islem biter, xact kilidi DUSER. Asil uzun is (ES id taramasi + bulk, satir 87-119) korumasiz kosuyor. | Kilidi uzun omurlu ayri baglantida pg_advisory_lock ile tut (veya redis kilidi); ya da satir 80'deki mesaji kapsamiyla durust hale getir. |
+| 🔴 | `Y4` | /similar takas sonrasi yapisal olarak 0 sonuc doner | P2 | services/elasticsearch_service.py:298-306 more_like_this fields=['text','explanation']; yeni index'te iki alan da YOK (core/es_index_schema.py:30-49 ALANLAR + :51 YASAKLI). Uc canli: api/elasticsearch.py:185-198 GET /questions/{question_id}/similar. Takas ONCESI eski index'te explanation 61.847 dokumanda doluydu, yani MLT kismen calisiyordu. | MLT alanlarini question_text + option_a..e yap. Ayni sinif ikinci site (regresyon DEGIL, takas oncesi de boyleydi): search_questions filtreleri 'subject'/'topic' (elasticsearch_service.py:239-242) ama index'te subject_area/primary_topic_id -> konu filtresi 0 sonuc. |
+| ✅ | `F-mapping` | quality_review_status yok — artik bilincli tasarim | P2 | MAPPING (core/es_index_schema.py:81-106) hala status alani tasimiyor ve TASIMAMALI: :25-29'daki gerekce — index artik yalniz kapidan gecen kayitlari tasidigi icin 'aktif/kaliteli mi' sorusu index ICINDE cevaplanmiyor. is_active bilerek YASAKLI_ALANLAR'da (:51): bayat bayragin yanlis guven vermesi kusurun ta kendisiydi (25.303 bayat kayit). Yani bulgunun onerdigi cozum (status alani ekle) uygulanmadi, ama tarif ettigi kusur (index kalite bilmiyor) kaynak degistirilerek kapatildi. | - |
+
+### A.9 Veritabanı / içerik
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔴 | `F17` | F17: es zamanli sinav oturumu kisiti hicbir katmanda yok | P1 | UC KATMANDA DA YOK, dogrulandi. (1) ORM: backend/models/exam_db.py:39-44 __table_args__ = sadece 4 duz Index (idx_exam_session_student/type/status/created). UniqueConstraint YOK. (2) Migration: backend/alembic/versions/001_create_performance_indexes.py:34, 002_performance_indexes.py:107,115, 003_real_performance_indexes.py:103,107,111 -> hepsi unique=False. `grep exam_sessions backend/alembic/versions` ciktisinda partial unique index 0 satir. (3) Uygulama: backend/api/sinav.py:379-399 (POST /create) ve :459-485 (POST /beta-practice) dogrudan osym_exam_engine.create_exam_session cagiriyor, on-kontrol yok. Motor backend/core/osym_exam_engine.py:412-470 kosulsuz INSERT ediyor; SELECT ... FOR UPDATE yok, mevcut oturum sorgusu yok. start_exam (:474-505) yalniz kendi session_id'sinin NOT_STARTED oldugunu kontrol ediyor, kullanicinin BASKA acik oturumuna bakmiyor. Denetimden sonra (68eba1dff..HEAD) bu dosyalarin hicbirine commit atilmadi: `git log --since=2026-07-30 -- backend/api/sinav.py backend/core/osym_exam_engine.py backend/models/exam_db.py` -> BOS. | Karar gerekiyor: (a) partial unique index `CREATE UNIQUE INDEX CONCURRENTLY uq_exam_session_open ON exam_sessions(student_id) WHERE status IN ('not_started','in_progress')` + IntegrityError -> 409; veya (b) create_exam_session basinda SELECT ... FOR UPDATE ile mevcut acik oturum kontrolu. Once RED testi (ayni student_id ile 2 ardisik POST /create -> 2. cagri 409 beklenmeli). |
+| 🔴 | `F23` | F23: CLAUDE.md 105.152 satirlik partiden hic bahsetmiyor | P1 | CLAUDE.md HIC GUNCELLENMEDI. `git log -1 --format='%h %ad' -- CLAUDE.md` -> 31b1f617d 2026-05-23 (denetimden 2+ ay ONCE, denetim sonrasi 0 commit). CLAUDE.md:268-280 'Database & Content' bolumu hala aynen: satir 272 '77,336 YKS questions in production (v3.5+, Target: 45K by March 2026 - EXCEEDED 172%)', satir 273 'Pipeline: 75,745 OCR -> 86,249 matched (v2.4) -> 77,336 clean (v3.5+)'. 105.152 / 187.835 / 2026-05-12 dizeleri dosyada 0 kez geciyor. Ayrica CLAUDE.md:76 'question_bank = 192K prod' diyor -> ucuncu, yine farkli bir sayi. Yani ayni dosya iki celisen rakam tasiyor (77K ve 192K) ve gercek (~187.8K) ikisinin de degil. MEMORY.md bunu zaten 'CLAUDE.md 77K/192K both stale' diye isaretlemis ama kaynak dosya duzeltilmemis. | CLAUDE.md 'Database & Content' + 'Architecture Quick Reference' (satir 76) tek olculmus rakamla senkronlanacak; parti dokumu (2026-03-04 ~77K + 2026-05-12 ~105K) ve v_safe_for_beta kapisinin gercek buyuklugu yazilacak. Rakam yazmadan once: psql -p 5434 -U postgres -d kiro2 -c "SELECT created_at::date, count(*) FROM question_bank GROUP BY 1 ORDER BY 2 DESC LIMIT 5;" |
+| 🔴 | `F17b` | F17b: 409 'aktif oturum var' bekcisi olu, testleri yesil | P1 | backend/core/turkish_exam_middleware.py:645-661 `_handle_exam_start` mevcut aktif oturum bulursa 409 + 'Zaten aktif bir sinav oturumunuz var' donuyor (:657). Oturum takibi Redis'te: `active_exam:{user_id}:{exam_type}` (:808, :833). AMA URETIMDE KAYITLI DEGIL: `grep 'turkish_exam_middleware' backend/` -> uretim kodunda 0 import; yalniz 3 test dosyasi: backend/tests/unit/test_coverage_50pct_final.py:544, test_turkish_exam_middleware_s197.py:392-398, test_core_remaining_batch1.py:428. Fabrika fonksiyonu get_turkish_exam_middleware_stack() (satir 991) uretimden hic cagrilmiyor. backend/core/application.py'de TEK aktif `app.add_middleware(...)` satir 260 (CORSMiddleware); satir 241, 287, 306, 319, 332'deki add_middleware cagrilari YORUM SATIRI. Bu deponun 'yesil test dogruluk kaniti degil' desenin birebir tekrari: testler bir bekcinin sozlesmesini dogruluyor, bekci hic kosmuyor. | Iki secenekten biri: (a) F17 fix'i DB kisitiyla yapilirsa bu olu middleware ve 3 test blogu silinsin (yaniltici yesil kaldirilsin); (b) middleware kablolanacaksa once `app.add_middleware` ile baglanip mutasyon testiyle (kapiyi kaldir -> test kirmiziya donmeli) kanitlansin. Testin sagligini once mutasyonla olc. |
+| 🔵 | `F12b` | F12b: startup ANALYZE var ama last_analyze NULL olculdu | P1 | backend/core/application.py:148-161 lifespan icinde `await db.execute(text("ANALYZE question_bank, users, topic_prerequisites"))` var; yorumu (satir 149-150) tam olarak denetimin bulgusunu tarif ediyor: 'a freshly populated question_bank (77K rows) shows n_live_tup=0 and last_analyze=NULL -> planner ignores indexes'. Blok 2026-03-31'de eklenmis (`git log -L 147,162:backend/core/application.py` -> 6dfb02bdb 'perf(startup): PostgreSQL ANALYZE hook'). CELISKI: blok try/except icinde ve hata `logger.warning('ANALYZE failed (non-fatal...)')` ile YUTULUYOR (:160-161). Yani ANALYZE 4 aydir sessizce dusuyor olabilir. Alternatif: uygulama denetimin olctugunden BASKA bir PG'ye baglaniyor (MEMORY: 'iki PostgreSQL ornegi' / PG18 servis-docker pg15 5434 catismasi). Bu, F12'nin gercek P1 kismi: bayat planner istatistigi = question_bank'ta seq scan. | TEK KOMUT: psql -p 5434 -U postgres -d kiro2 -c "SELECT relname, n_live_tup, last_analyze, last_autoanalyze, last_vacuum, last_autovacuum FROM pg_stat_user_tables WHERE relname IN ('question_bank','questions');" — last_analyze hala NULL ise ikinci komut: docker logs kiro2-backend 2>&1 \| grep -i 'ANALYZE' (basari mi 'ANALYZE failed' mi). Sessiz dusme dogrulanirsa warning'i hataya cevir veya autovacuum ayarini duzelt. |
+| 🔴 | `F15` | F15: question_number kolon degil, metadata'ya da yazilmiyor | P2 | UC AYAK DA DOGRULANDI, degisiklik yok. (1) backend/scripts/import_d_dataset.py:192-201 DIRECT_FIELDS = {text, options, answer, book_name, page_number, question_number, quality_score, confidence}. Satir 198 = 'question_number'. (2) Ayni dosyada question_number'in TEK kullanimi satir 215: generate_question_id(entry['book_name'], entry['page_number'], entry['question_number']) — yani sadece uuid5 girdisi. (3) Kolon YOK: `grep question_number backend/models/` -> tek hit backend/models/question_generation.py:86 ve o bir Pydantic uretim semasi, question_bank ORM'i degil. backend/models/question_bank.py'de 0 hit. DIRECT_FIELDS mantigi (satir 191 yorumu: 'Fields mapped directly to question_bank columns (excluded from pipeline_metadata)') question_number icin YANLIS: karsiligi olan kolon yok, ama metadata'dan da eleniyor -> alan tamamen dusuyor. | En ucuz duzeltme: DIRECT_FIELDS'tan 'question_number' cikar (tek satir) -> yeni ingest'lerde pipeline_metadata->>'question_number' dolar. Gecmis 187K satir icin geriye donuk kurtarma jsonl'den yeniden esleme ister (ve F14 yuzunden jsonl'in ingest anindaki surumu kanitlanamiyor). Once yeni-ingest yolunu duzelt, geriye donuk isi ayri karar yap. |
+| 🔴 | `F14` | F14: eslesmis_sorucevap.jsonl git'te takipsiz | P2 | TAKIPSIZLIK DOGRULANDI. `git ls-files d-dataset/ \| grep eslesmis` -> rc=1, hicbir eslesme. `git ls-files d-dataset/ \| wc -l` -> 13 dosya, hepsi .md veya scripts/*.py. .gitignore:215-218: `d-dataset/` toptan yok sayiliyor, sadece iki whitelist var (`!d-dataset/scripts/cross_validate_answers.py`, `!d-dataset/scripts/test_cross_validate.py`). jsonl icin istisna YOK. Disk: `ls -la d-dataset/eslesmis_sorucevap.jsonl` -> 116.742.178 bayt, mtime 'Mar 4 20:28' (denetimin ingest saati 08:20:30 ile ~12 saatlik fark aynen duruyor). Dosya 116 MB oldugu icin git'e koymak pratik degil — asil eksik olan checksum/manifest. Depoda bu jsonl icin SHA/manifest kaydi da yok. Denetimden beri degisiklik yok (.gitignore'a commit atilmamis). | Git'e eklemek DOGRU CEVAP DEGIL (116 MB). Yapilacak: ingest anindaki surumun SHA256'sini + satir sayisini + mtime'ini kucuk bir manifest dosyasina yaz ve ONU commit'le (orn. d-dataset/MANIFEST.json, .gitignore'a istisna). Boylece 'DB = su jsonl' iddiasi bir dahaki sefere kanitlanabilir olur. Gecmis surum icin: kurtarilamiyor, bu kayip kabul edilip yazilmali. |
+| 🔵 | `F13` | F13: yedek penceresi bosluk iddiasi script'lerle celisiyor | P2 | REPO KANITI IDDIAYI CURUTUYOR — ama nihai yargi DB'de. Denetimin 'bos' dedigi pencerede yedek tablo YARATAN 10 script var: backend/scripts/quality/p0_2_abias_recon.sql:55 -> question_bank_s198_curator_backup_20260527 backend/scripts/quality/bootstrap_irt_priors.py:37 -> question_bank_irt_bootstrap_backup_20260530 backend/scripts/quality/_beta_core_tmp/apply_beta_core.py:13-15 -> question_bank_beta_core_backup_20260530 backend/scripts/quality/_beta_core_tmp/apply_recurate.sql:3 -> question_bank_beta_recurate_backup_20260530 backend/scripts/quality/rename_verified_gold_to_provisional.sql:16 -> ..._provisional_rename_backup_20260601 backend/scripts/quality/_beta_core_tmp/apply_135.sql:5 / apply_148.sql:6 / apply_dispute.sql:6 -> ..._backup_20260601 (3 tablo) backend/scripts/quality/_beta_a1_tmp/a1_beta_cleanup.sql:33 -> ..._a1_beta_cleanup_backup_20260602 backend/scripts/quality/_beta_a1_tmp/a2_pull.sql:3 -> ..._a2_figure_sweep_backup_20260602 Hepsi 27 May - 2 Haz araligi, yani iddia edilen 'bos pencere'nin ICINDE. Iki olasilik: (a) tablolar sonradan DROP edildi, (b) denetimin listeleme sorgusu bunlari kacirdi (ad deseni/sema filtresi). Her iki durumda da 'en eski yedek 20260619' cumlesi yanlis. NOT: 4 Mart - 27 May alt-penceresi icin hala yedek kaniti yok — iddianin o kismi ayakta kalabilir. | TEK KOMUT: psql -p 5434 -U postgres -d kiro2 -c "SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename LIKE 'question_bank%' AND (tablename ~ 'backup\|bak\|bkp') ORDER BY tablename;" — yukaridaki 10 addan biri bile cikarsa F13 FANTOM'a doner (ve denetim doku duzeltilir). Hicbiri yoksa: tablolar silinmis demektir, o zaman asil bulgu 'yedek yok' degil 'yedekler DROP edilmis' olur. |
+| 🔵 | `F22` | F22: jsonl'de 1.611 metin-duzeyi tekrar | P2 | Kod tarafi mekanizmayi DOGRULUYOR: backend/scripts/import_d_dataset.py:213-217 generate_question_id(book_name, page_number, question_number) ile uuid5 uretiyor — kimlik SADECE bu ucgene bagli, question_text'e degil. Yani ayni metin farkli kitap/sayfa/soru-no ile geldiginde iki ayri satir olusur; dedup icin metin-bazli hicbir kontrol yok (`grep -n 'text' import_d_dataset.py` -> text yalniz DIRECT_FIELDS uyesi ve kolon atamasi). Sayilarin kendisi (77.336 / 75.725 / 1.611 / 32) dosya-duzeyi olcum; dosya diskte (116 MB, d-dataset/eslesmis_sorucevap.jsonl) ama salt-okunur kural geregi burada calistirilmadi. NOT: F14 yuzunden bu dosyanin ingest anindaki surumu OLMADIGI icin, bugun olculecek tekrar sayisi DB'deki durumla birebir esit olmayabilir — iki olcum ayri ayri yapilmali. | TEK KOMUT (dosya tarafi): cd C:/Users/husey/kiro2 && python -c "import json;t=[json.loads(l)['text'] for l in open('d-dataset/eslesmis_sorucevap.jsonl',encoding='utf-8')];print('kayit',len(t),'distinct',len(set(t)),'tekrar',len(t)-len(set(t)))" DB tarafi ayri: psql -p 5434 -U postgres -d kiro2 -c "SELECT count(*) AS toplam, count(DISTINCT question_text) AS distinct_metin FROM question_bank WHERE is_active=true;" — asil karar sorusu: bu tekrarlar ogrenciye ayni soruyu iki kez servis ediyor mu (v_safe_for_beta icinde kac tanesi var). |
+| 🔴 | `F6` | F6: human_verified kolu kodda duruyor, DB'de 0 satir | P3 | KOD DEGISMEDI — ama etki iddiasi ('filtreyi okuyan herkes iki katmanli bir kabul kumesi oldugunu saniyor') FANTOM cikti. Canli servis yolunda 3 yerde duruyor (ikisi de gercekten yukleniyor: backend/app/api/cat.py:46 ve app/api/placement.py:19 bu servisleri import ediyor):   backend/app/services/cat_session.py:265 ve :309   backend/app/services/placement_service.py:305 Ayrica kapinin KENDISINDE: backend/migrations/D5_safe_for_beta_coherence_gate.sql:25 (v_safe_for_beta tanimi) ve partial index predicate'inde: backend/alembic/versions/20260521_s179_hot_path_indexes.py:102. Merkezi sabit YOK — filtre elle yazilmis; merkezilesen sey status degil KAPI (backend/core/quality_gate.py, SAFE_POOL_RELATION='mv_safe_for_beta'). Status satirlari kapinin YANINDA savunma katmani olarak duruyor (cat_session.py:266-268 yorumu bunu acikca soyluyor). ETKI IDDIASI CURUDU: docs/quality_review_status_convention.md:31 human_verified'i 'Curator UI / manuel SQL' ile set edilen ileriye donuk deger olarak tanimliyor ve satir 81 aynen diyor: 'su anda hic human_verified satir yok. Bu DOGRU BIR SIFIR'. Yani 0 olmasi 2,5 ay once bilinen ve kasitli bir tasarim; gizli bir kusur degil. Denetimden beri commit yok: git log --since=2026-07-30 -- docs/quality_review_status_convention.md -> BOS. | KOD DEGISIKLIGI ONERILMIYOR — kolu silmek Curator UI acildiginda geri eklenmesi gereken bir gerilemedir (kaldirmanin bedeli > kazanci). Yapilacak tek sey dokuman: convention.md'ye 'bugun itibariyle canli sayim' satiri eklensin ki bir sonraki denetim ayni yolu tekrar yurumesin. Sayim: psql -p 5434 -U postgres -d kiro2 -c "SELECT quality_review_status, count(*) FROM question_bank GROUP BY 1 ORDER BY 2 DESC;" |
+| 🔵 | `F16` | F16: created_by ~%99.97 NULL | P3 | Saf DB olcumu — repodan dogrulanamaz. Kod tarafi mekanizmayi DESTEKLIYOR: backend/scripts/import_d_dataset.py'de created_by DIRECT_FIELDS'ta degil ve build_row (satir 208+) bu alani doldurmuyor; toplu ingest yolunun created_by yazmadigi kod okumasiyla tutarli. 65 dolu satir muhtemelen admin CRUD ucundan gelmis. Denetimden beri import_d_dataset.py'ye commit yok. | TEK KOMUT: psql -p 5434 -U postgres -d kiro2 -c "SELECT count(*) AS toplam, count(created_by) AS dolu, count(*)-count(created_by) AS bos FROM question_bank;" Sayi dogrulanirsa karar: geriye donuk doldurma (created_at + pipeline_metadata imzasindan 'ingest:2026-03-04' / 'ingest:2026-05-12' gibi sentinel deger) yapilsin mi, yoksa 'toplu ingest satirlari created_by=NULL' bir invaryant olarak dokumante mi edilsin. Ikincisi daha ucuz ve durust. |
+| 👻 | `F12` | F12: n_live_tup okuyan canli saglik sorgusu YOK | P3 | 'HER saglik/izleme sorgusu' ifadesi olculdugunde curudu: depoda n_live_tup okuyan SADECE IKI yer var ve ikisi de canli saglik/izleme yolu DEGIL. (1) backend/db/analysis/performance.py:448 — PerformanceAnalyzer.get_table_statistics icinde. URETIMDE 0 CAGRAN: `grep -rn get_table_statistics backend/` -> yalnizca iki tanim satiri (performance.py:438, database/optimization.py:468), hicbir cagri yok. Sinif tek yerden re-export ediliyor (backend/db/__init__.py:19) ve orada da cagrilmiyor. (2) backend/scripts/optimize_database_v2.py:46 — elle kosulan ops script'i (analyze_table_stats, sonucu print ediyor). Endpoint degil, izleme degil. Baska okuyucu yok: `grep -rn 'pg_stat_user_tables\|last_analyze\|last_autovacuum' backend/` -> yukaridaki 2 + application.py:150 (yorum satiri) + department_info.py:317 (alakasiz 'last_analyzed' kolonu). Yani F12'nin 'fantom uretici' kismi kendisi fantom: yanlis raporlayacak bir tuketici yok. Bulgunun GERCEK ve onemli kismi (bayat planner istatistigi) ayri satira alindi -> F12b. | F12 bu haliyle kapatilabilir; denetim dokumaninda (docs/audits/2026-07-30_gercek_durum_olcumu.md:1303-1306) 'her saglik/izleme sorgusu' ifadesi duzeltilmeli (strikethrough + tuketici sayimi). Asil is F12b'ye devredildi. |
+
+### A.11 Backlog artıkları
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔵 | `OTURUM-3` | 04:00 ES senkronunun beat tarafindan tetiklendigi henuz gorulmedi | P1 | Kod tarafi teslim zincirinin UC halkasi da yerinde: (1) beat girdisi celery_app.py:141 `"task": "tasks.es_sync_tasks.sync_search_index"`; (2) rota — docker-compose.yml:141 `-Q default,emails,reports,features,videos,bulk,claude_md` ve test_celery_routing_contract.py:70-82 rotanin bu kumeye dustugunu civiliyor; (3) kayit — celery_app.py:39 include + test satir 116-132. Ama ucunun de dogru olmasi 'beat 04:00'te fiilen atti' DEMEK DEGIL; bu ayri bir iddia ve yalnizca calisan sistemden okunur. | Operator TEK komut: `docker logs kiro2-celery-beat --since 24h 2>&1 \| grep -i "sync-search-index-nightly"` — 'Scheduler: Sending due task sync-search-index-nightly' satiri cikmali. Worker tarafi teyidi icin: `docker logs kiro2-celery-worker --since 24h 2>&1 \| grep -i "es_sync_tasks.sync_search_index"` (succeeded satiri, 'unregistered task' DEGIL). |
+| 🔵 | `B7` | Depo PUBLIC iddiasi — depodan olculemez | P1 | Depodan olculebilen tek sey remote: `git remote -v` -> `origin https://github.com/HuseyinAts/kiro2.git`. Gorunurluk git metadata'sinda YOK — GitHub API'si gerekir. Anahtar olulugu iddiasi da (14/14) yalnizca canli saglayici uclariyla sinanabilir; backend/scripts/secret_inventory.py --check-live bu is icin var ama bu oturumda kosturulmadi (salt-okunur kural). | Operator TEK komut: `gh repo view HuseyinAts/kiro2 --json isPrivate,visibility` -> `"isPrivate": false` ise depo hala public. Anahtar teyidi icin ayrica: `python backend/scripts/secret_inventory.py --check-live`. |
+| 🔵 | `#436` | Faturalama penceresi — saglayici konsollari gerekir | P1 | Iddia depo icinde olculemez: anahtarlarin public+canli oldugu pencerede ucret olusup olusmadigi Google/OpenAI/Anthropic/HuggingFace fatura konsollarinda durur, kodda degil. Depoda dogrulanabilen tek yan: uygulamanin kendi faturalama uclari kimlik istiyor — backend/api/billing_api.py:46-48 `@router.get("/me")` + `Depends(get_current_user)`; backend/api/org_billing_api.py:67/77/96/114/147 hepsi `Depends(get_current_tenant)`. Bu, saglayici faturasi sorusuna CEVAP DEGIL, ayri bir yuzey. | Operator, dort saglayicinin fatura/kullanim sayfasini 27-31 Tem araligi icin ac ve sifir-disi kullanim var mi bak. Tek otomatlanabilir adim yok (her biri ayri kimlik). Not: sizinti penceresi icin `git log --since=2026-07-20 --until=2026-07-31 --oneline` ile ilgili commit araligi cikarilabilir. |
+| ✅ | `#459` | ES senkronu worker'a kaydedildi + sozlesme testi 33 test | P1 | backend/core/celery_app.py:39 -> `"tasks.es_sync_tasks",  # 04:00 ES <-> kalite kapisi senkronu` include listesinde. Hedef modul var: backend/tasks/es_sync_tasks.py:125 `@celery_app.task(name="tasks.es_sync_tasks.sync_search_index", bind=True)`. beat girdisi celery_app.py:141. TEST OKUNDU (147 satir, 6 test fonksiyonu): invaryant test_scheduled_task_is_registered_in_the_worker (satir 115-132) HER beat girdisi icin `assert entry["task"] in _registered_tasks()`; `_registered_tasks()` (85-98) `celery_app.loader.import_default_modules()` cagirip worker onyuklemesini TAKLIT ediyor — bare surecte `celery_app.tasks`in worker defterini yansitmadigi docstring'de olcum olarak yazili. KONTROL KOLU var: test_worker_bootstrap_actually_imports_task_modules (101-112) bilinen-iyi bir gorevin (`tasks.bulk_tasks.cleanup_expired_cache_entries`) defterde oldugunu iddia ediyor -> alet arizasi ile eksik gorev ayirt ediliyor. TEST SAYISI DOGRULANDI: beat_schedule top-level anahtar sayisi 15 (python ile brace-eslesmeli ayrıştırma), 2 parametrik x 15 + 3 tekil = 33. Commit mesajindaki 'RED 1/32 -> GREEN 33 pass' ile birebir tutuyor. | - |
+| 🔴 | `OTURUM-1` | Sinif silme ucu GERCEKTEN yok — GF CI her kosumda cop birakiyor | P2 | FANTOM DEGIL, DOGRULANDI. (a) Uretim yeri: backend/tests/e2e/test_golden_flows.py:972 `"name": "GF Golden Flow Class"` -> POST /api/v1/teacher/classes, `assert resp.status_code == 200`; testin devaminda (satir 983-987) HICBIR temizlik yok. Karsilastirma: ayni dosyada GF6w (satir 827-841) `contextlib.suppress` ile `client.delete(f"/api/v1/admin/content/questions/{new_id}")` yapiyor — yani temizlik deseni dosyada VAR, sinif testinde YOK. (b) Silme ucu: `grep -rn '@router.delete' backend/api backend/app/api \| grep -iE 'class\|sinif'` -> yalnizca 4 sonuc, hepsi backend/app/api/teacher_classroom.py: satir 365 `/classes/{class_id}/students/{student_user_id}` (roster'dan ogrenci cikarma), 477 `/exams/{exam_id}`, 572 `/assignments/{assignment_id}`, 659 `/contents/{content_id}`. `DELETE /classes/{class_id}` HICBIR router'da YOK. (c) Soft-delete de yok: backend/models/teacher_classroom.py:21-27 TeacherClassroom kolonlari id/teacher_user_id/sinif_adi/seviye/ders/created_at — `is_active` YOK. (d) FK `ondelete="CASCADE"` (satir 36-41) oldugu icin ham SQL DELETE ogrenci baglarini da temizler. | Iki ayri is: (1) TEST tarafi — GF5w'ye GF6w'daki `contextlib.suppress` desenini ekle, ama once silme ucu gerekiyor (yumurta-tavuk). (2) URUN tarafi — DELETE /api/v1/teacher/classes/{class_id} ucu yaz (sahiplik kapisi: teacher_user_id == current_user). Mevcut 31 cop icin operator SQL: `DELETE FROM teacher_classrooms WHERE sinif_adi IN ('GF Golden Flow Class','DUMAN-444');` (CASCADE roster'i temizler) — ONAY gerektirir. |
+| 🟡 | `OTURUM-2` | soru_bankasi lint borcu acik; 'test yok' on kosulu kismen fantom | P2 | BORC ACIK: backend/pyproject.toml:207 `"services/soru_bankasi_service.py" = ["E712", "PLR0912", "S311", "RET504"]` hala duruyor; satir 196-206 gerekceyi (PostgreSQL'de farkli SQL) belgeliyor. Ihlal sayimi: `grep -c '== True\\|== False\\|!= True\\|!= False' backend/services/soru_bankasi_service.py` -> 23 (satir 358, 466, 484, 817, 946, 974, 1029, 1229, 1286, 1322, 1353, 1361, 1373, 1384, 1400, 1447, 1456, 1471, 1514, 1526, 1570, 1691, 1736); pyproject'teki '31 onceden var olan ihlal' 4 kural toplami -> drift YOK. ON KOSUL KISMEN FANTOM: pyproject:206 'once bu dosyayi kapsayan test gerekiyor' diyor, ama backend/tests/unit/test_soru_bankasi_service.py ZATEN VAR — 1121 satir, `grep -c 'def test_'` -> 74 test, skip/skipif 0, git log'a gore 33e314fa3'ten once mevcut. ANCAK on kosul TAMAMEN fantom degil: dosya basligi 'All DB and cache calls are mocked' diyor ve `grep -c 'compile('` -> 0 — yani uretilen SQL metnine dair TEK assertion yok. E712 riski tam da PostgreSQL'de uretilen SQL farki oldugu icin bu mock'lu paket o regresyonu YAKALAYAMAZ. | Gercek on kosul 'test yok' degil, 'derlenmis SQL'i dogrulayan test yok'. Somut is: `str(stmt.compile(dialect=postgresql.dialect()))` uzerinden 23 sorgu yolunun WHERE cumlesini civileyen bir test ekle (mock gerekmez, sadece query-builder), SONRA E712 sweep + o testle A/B. Alternatif: borcu oldugu gibi birak (pyproject'te gorunur, sessiz degil). |
+| 🟡 | `#445` | Kayit rol fix'i kodda; kalan is operator triyaji | P2 | KOD TARAFI KAPANDI: backend/api/auth.py:517 `def _map_registration_role(rol: Any) -> str:`, cagri yeri satir 621 `rol_str = _map_registration_role(kullanici_data.rol)`. Enum tuzagi kapatilmis: satir 528 `rol_key = (rol.value if isinstance(rol, Enum) else str(rol)).strip().lower()` — docstring `str(enum)` KULLANMA gerekcesini yaziyor. Sessiz dusurme YERINE 403: satir 530-535 `if mapped is None: raise HTTPException(403, 'Bu rol herkese acik kayit ile olusturulamaz')`. Beyaz liste satir 507-516 `_SELF_REGISTERABLE_ROLES` yalnizca ogrenci/student/veli/parent/ogretmen/teacher — ayricalikli rol yok. Test var: backend/tests/unit/api/test_auth_registration_role.py (satir 49 esleme, 58 takma ad, 74 `with pytest.raises` ayricalikli rol). Commit 25784449d (29 Tem 16:22:10) mesaji denetim iddiasinin ('herkes kendini yonetici ilan edebilir') FANTOM oldugunu, altindan gercek bug (ogretmen/veli kaydi calismiyor) ciktigini olcerek belgeliyor. | Depodan olculemez: 73 gecmis STUDENT hesabinin gercek rolu is-karari. Operator komutu: `psql -p 5434 -d kiro2 -c "SELECT id,email,role,created_at FROM users WHERE role='STUDENT' AND created_at < '2026-07-29 16:22:10+03' ORDER BY created_at DESC;"` -> ciktiyi elle triyaj et. |
+| 🔴 | `#458a-ref` | Silinen dosyaya 14 bayat referans kaldi (2'si sahte alarm) | P3 | `git grep -l test_end_to_end_platform \| grep -v ^.archive/` -> 15 dosya (biri .archive disi arsiv artigi). Canli/anlamli olanlar: backend/tests/integration/END_TO_END_TEST_GUIDE.md (20+ satirda silinmis dosyaya pytest komutu, tamamen olu rehber), backend/tests/TASK_44_IMPLEMENTATION_SUMMARY.md, backend/tests/integration/TASK_44_COMPLETION_REPORT.md, backend/scripts/security_audit/SECURITY_AUDIT_REPORT.md + .json, backend/C︺Usershuseykiro2test_output.txt + ...test_results_full.txt (takipli cop dosyalar). YANLIS ALARM 2 adet: backend/tests/unit/test_source_hygiene.py:6 ve backend/tests/hooks/reward_hacking/test_collect_files_determinism.py:119 — ikisi de yalnizca DOCSTRING/YORUM icinde tarihi baglam olarak aniyor; test mantigi kendi tmp_path dosyalarini uretiyor (test_source_hygiene.py:67-76 rglob, test_collect_files_determinism.py:129-135 tmp_path.write_bytes) -> silme bu testleri KIRMADI. IDDIA DUZELTMESI: TASK_44_* 'x3' degil x2 (`git ls-files \| grep TASK_44` -> 2 dosya). | END_TO_END_TEST_GUIDE.md sil (rehber ettigi dosya yok). TASK_44_* 2 dosyayi docs/archive'a tasi veya sil. 2 takipli cop .txt dosyasini (backend/C︺Usershusey...) git rm et. Iki test dosyasindaki docstring referanslarina DOKUNMA — tarihi kok-neden kaydi. |
+| 🔴 | `#458a-hook` | Kiro hook silinmis yola pytest veriyor (runner yok) | P3 | Dosya okundu: `"enabled": true`, prompt icinde 'INTEGRATION TESTS: ... 3. `pytest backend/tests/integration/test_end_to_end_platform.py::test_full_student_journey -v`' — silinmis yol. AMA etki sinirli: hook tipi `"then": {"type": "askAgent", "prompt": ...}` yani calistirilabilir komut degil, ajana verilen METIN. Ayrica `grep -rn 'kiro/hooks' .claude/` -> yalnizca .claude/sessions/latest.md ve bir worktree dokumani; .claude/settings.json'da .kiro referansi YOK -> bu hook Claude Code tarafindan hic yuklenmiyor, sadece Kiro IDE kullanilirsa devreye girer. Ikinci hata: ayni promptta `test_full_student_journey` fonksiyon adi da yanlisti — silinen dosyada sinif adi `TestFullStudentJourney` idi (END_TO_END_TEST_GUIDE.md:22). | Hook promptundaki 3. pytest satirini sil (2 satir kalir) VEYA hook'u `"enabled": false` yap. 1 satirlik duzenleme. |
+| ✅ | `#458a` | e2e testi silindi — dosya gercekten yok | P3 | `ls backend/tests/integration/test_end_to_end_platform.py` -> 'No such file or directory'. `git show --stat 0fe82b2c3`: 'chore: 6 aydir kosulsuz skip'li test_end_to_end_platform.py silindi (#458a)', 31 Tem 02:51:55. Commit govdesi skip gerekcesinin ('Multiple PointTransaction classes') FANTOM oldugunu olcerek belgeliyor. | - |
+| ✅ | `#458b` | fix_validators.py silindi, kod referansi sifir | P3 | `git grep -l fix_validators` -> 3 dosya, UCU DE dokuman: .claude/sessions/latest.md:16, docs/audits/2026-07-30_gercek_durum_olcumu.md:577/658, docs/superpowers/plans/2026-07-30-kalan-gorevler.md. Kod/config referansi 0. `grep -n per-file-ignores -A 25 backend/pyproject.toml` -> fix_validators girdisi YOK (satir 194-219 arasi yalnizca soru_bankasi_service.py, api/admin.py, test_golden_flows.py). `git show --stat a7e3971f9` govdesi: 'Silmeden ONCE script'in isinin uygulanmis oldugu olculdu' (sanitize_url/sanitize_integer/sanitize_float core/input_validation.py'de). | - |
+| 👻 | `#458a-2` | Mojibake yanlis-pozitif — kasitli fixture, karar korundu | P3 | Dogru yol backend/tests/integration/test_turkish_nlp.py (unit/ altinda degil). Satir 131: `test_text = "Ã§ocuk Ã¶rnekleri"` — `test_text_normalization_encoding_issues` testinin GIRDISI. Satir 251: `broken_text = "Ã§ocuk Ã¶rnekleri Ä±ÅŸÄ±k"` -> `fixed_text, fixes = nlp_service._fix_encoding_issues(broken_text)` + `assert fixes > 0`. Yani mojibake ONARIM fonksiyonunun test verisi; 'temizlemek' assert'i kirar. `git log --since=2026-07-29 -- backend/tests/integration/test_turkish_nlp.py` -> BOS CIKTI: dosyaya dokunulmamis, karar korunmus. | - |
+
+### A.8 Sarı borç — test altyapısı
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔴 | `T2` | 27 kirik test — test_analytics_api.py'ye hic dokunulmadi | P1 | `git log --oneline -5 -- backend/tests/unit/test_analytics_api.py` -> en son commit **f1dac5c37** (denetimden ONCE). `git log --since=2026-07-30 -- backend/tests/unit/test_analytics_api.py backend/conftest.py backend/tests/conftest.py` -> **BOS** (denetimden sonra 0 commit). Tablo model tarafinda VAR: backend/models/learning_path_models.py:74 `__tablename__ = "learning_path_student_profiles"`, `from .base import Base` (satir 33), models/__init__.py:143 import ediyor. Tablo yaratimi backend/tests/conftest.py:537 `await conn.run_sync(Base.metadata.create_all, checkfirst=True)` — ama bu `setup_database` fixture'i icinde ve test_analytics_api.py bu fixture'i ISTEMIYOR (dosyada `setup_database\|db_session\|get_db\|AsyncSession` grep -> 0 eslesme). `learning_path_student_profiles` dizesi backend/tests/ altinda HIC gecmiyor (grep 0). | Fix yok. Dogrulama komutu (operator): `cd backend && pytest tests/unit/test_analytics_api.py -q --timeout=30 -x` — 27 F hala uretiliyor mu? Sonra kok neden: hangi test dolayli olarak DB'ye vuruyor (mock kacagi) ve `setup_database` fixture'i mi eklenmeli yoksa o cagri mi mock'lanmali. |
+| 🔴 | `T4` | Coverage esigi 60.0 aynen duruyor; source listesinde `models` yok | P1 | `grep -rn fail_under pyproject.toml backend/pyproject.toml .coveragerc backend/.coveragerc backend/setup.cfg` -> TEK eslesme: **backend/.coveragerc:103 `fail_under = 60.0`**. Kok `.coveragerc` (7 satir) fail_under ICERMIYOR. `git log -3 -- backend/.coveragerc` -> en son **1fe3a390a** (denetimden cok once); denetimden sonra 0 commit. Ilgili ikinci kusur da duruyor: backend/.coveragerc:3 `source = api,services,core,algorithms,analytics,agents` — **`models` yok**, oysa CLAUDE.md'nin dokumante ettigi komut `--cov=models` iceriyor (denetim maddesi 11). | Iki ayri karar: (a) esigi gerceklige indir veya coverage'i yukselt; (b) `.coveragerc` source listesine `models` ekle ya da CLAUDE.md komutundan `--cov=models`'i cikar. Guncel yuzde icin operator: `cd backend && pytest --cov --cov-report=term -q -p no:randomly 2>&1 \| tail -5` (paket uctan uca kosamadigi icin T1 once cozulmeli — yoksa olcum yarim kalir). |
+| 🔴 | `T1` | Paket uctan uca kosamiyor — kod tarafi degismedi, iki conftest celisiyor | P1 | Ilgili hicbir dosyaya denetimden sonra dokunulmadi: `git log --since=2026-07-30 -- backend/conftest.py backend/tests/conftest.py` -> **BOS**; backend/tests/unit/test_api_batch2.py son commit **a630801f1** (denetimden once), disk tarihi Tem 28. KODDA GORULEN CELISKI (kok neden IDDIA DEGIL, sadece gozlem): backend/tests/conftest.py:112 yorumu `# Note: event_loop fixture removed - pytest-asyncio 0.21+ handles this automatically` diyor, AMA backend/conftest.py:124'te hala `@pytest.fixture(scope="session") def event_loop():` tanimli — `loop.close()` cagrilmiyor, bekleyen task'lar `task.cancel()` ediliyor ama await EDILMIYOR (satir 124-135). Denetimin yigin izi tam bu katmani gosteriyordu (`pytest_asyncio/plugin.py:817 _scoped_runner -> asyncio/runners.py:205 _cancel_all_tasks`). backend/tests/conftest.py'de ayrica 9 adet `@pytest_asyncio.fixture` (biri satir 520 session-scope). test_api_batch2.py'de 159 `async def`. | Kaldirma deneyi (audit-methodology 'kok neden de bir olcumdur'): backend/conftest.py:124-135 `event_loop` fixture'ini gecici devre disi birak, `cd backend && pytest tests/unit/test_api_batch2.py -q --timeout=60` kos — kilitlenme kayboluyor mu? Kaybolmuyorsa tek sebep DEGIL, ikinci bastiriciyi ara. Deney ONCESI `git stash` DEGIL commit kullan; geri alimi `git checkout HEAD -- backend/conftest.py && git status --short` ile DOGRULA. |
+| 🟡 | `T3` | 100 modul skipif(True) — 99'u duruyor, 1'i silindi | P1 | OLCUM (ripgrep multiline, `^pytestmark\s*=\s*pytest\.mark\.skipif\(\s*True` @ backend/tests/): **99 dosya**. Her-seviye `skipif\(\s*True` (fonksiyon/sinif dahil): **109 dosya**. Denetimden sonra SADECE 1 modul gitti: 0fe82b2c3 `backend/tests/integration/test_end_to_end_platform.py` sildi — silinen surumde `git show 0fe82b2c3^:...` satir 26-27 `pytestmark = pytest.mark.skipif(True, reason="SQLAlchemy registry conflict: Multiple PointTransaction classes")`. Yani 100 -> 99. Ornek hala-acik ankrajlar: backend/tests/unit/test_api_batch1.py, backend/tests/unit/test_kvkk_consent.py:?, backend/tests/unit/services/claude_md_improvement/test_doc_updater_service.py:42, backend/tests/fast/test_fastapi_comprehensive.py:11. | 99 modulun skip gerekcelerini triyaj et. #458a dersi: silinen dosyanin gerekcesi ("Multiple PointTransaction classes") FANTOM cikti — kalan 99'un gerekceleri de ayni sekilde dogrulanmadi. Ilk adim: her modulun skip reason'ini `grep -A2 'skipif(' ` ile listeleyip 'fantom mi / gercek mi' kolonuna ayir. |
+| 🔴 | `T5` | 17 frontend test dosyasi hala kosamaz (13 Playwright + 4 yetim) | P2 | frontend/vitest.config.ts:13 `include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']`, satir 14-20 `exclude: ['node_modules','dist','.idea','.git','.cache']` — **e2e YOK** (`grep -n e2e frontend/vitest.config.ts` -> 0 eslesme). `ls frontend/src/test/e2e/*.spec.ts` -> **13 dosya**, 13/13 `@playwright/test` import ediyor; playwright.config.ts:8 `testDir: './src/test/e2e'`. package.json:104 `"test": "... vitest --run"` -> bu 13 dosya vitest'e giriyor. 4 yetim: test dosyalari VAR (frontend/src/hooks/__tests__/useOfflineMode.test.ts, frontend/src/services/__tests__/{modernApiClient,VideoErrorHandler}.test.ts, .../VideoLoadingComponent.test.tsx) ama kaynak moduller diskte YOK (`ls frontend/src/hooks/useOfflineMode.*` / `frontend/src/services/{modernApiClient,VideoErrorHandler,VideoLoadingComponent}.*` -> hepsi 'No such file'; yalniz VideoErrorHandler.README.md var). `git log --since=2026-07-30 -- frontend/vitest.config.ts frontend/src/test/e2e/ ...` -> **BOS**. | (a) vitest.config.ts exclude'una `'src/test/e2e/**'` ekle (tek satir). (b) 4 yetim test dosyasi: modulu yaz ya da testi sil — ucuncu secenek yok, su an sessiz olu agirlik. |
+| 🔴 | `F10` | 3 eksik modul + yanlis yola ElasticsearchConfig import'u duruyor | P2 | `git ls-files \| grep -i adaptive_test_engine` -> yalniz **backend/tests/unit/test_adaptive_test_engine.py** (servis yok); dosya satir 13-21 `try: from services.adaptive_test_engine import ... except Exception as e: pytest.skip(..., allow_module_level=True)`. `question_generation_engine` -> yalniz test + **backend/services/README_question_generation_engine.md**; `ls backend/services/question_generation_engine*` -> yok; test satir 8-12 kosulsuz `pytest.skip("services.question_generation_engine module not implemented yet", allow_module_level=True)`. `ls backend/services/claude_md_improvement/` -> **dizin yok**; testi backend/tests/unit/services/claude_md_improvement/test_doc_updater_service.py:42 `skipif(True, reason="DocUpdater approval API changed, 4/4 fail")`. ElasticsearchConfig: backend/tests/integration/test_elasticsearch_client.py:13 `from core.elasticsearch_client import (... ElasticsearchConfig ...)` ama **backend/core/elasticsearch_client.py'de `ElasticsearchConfig` grep 0 eslesme** -> ImportError -> satir 20-21 module-level skip. Sinif GERCEKTE su iki yerde: backend/core/unified/elasticsearch_system.py:25 ve backend/core/unified_config.py:124. Ayrica backend/tests/integration/test_core_functional.py:343 `from core.elasticsearch_config import ElasticsearchConfig` -> **backend/core/elasticsearch_config.py diskte YOK**. Denetimden sonra bu 3 test dosyasina 0 commit (`git log --since=2026-07-30` bos). | Her biri icin ikili karar: modulu yaz veya testi sil. En ucuz kazanc ElasticsearchConfig — import yolunu `core.unified.elasticsearch_system` / `core.unified_config`'e cevirmek 2 satir, ama ONCE hangi sinifin sozlesmeye uydugunu dogrula (iki farkli tanim var: BaseModel vs BaseSettings). |
+| 🔴 | `F19` | timeout_func_only celiskisi aynen duruyor (kok true / backend varsayilan False) | P2 | pyproject.toml:316-318 `timeout = 30` / `timeout_method = "thread"` / **`timeout_func_only = true`** (testpaths satir 303 = ["backend/tests","tests"]). backend/pytest.ini: `timeout = 300` var, **`timeout_func_only` ANAHTARI HIC YOK** -> pytest-timeout varsayilani False. Yani iddia teknik olarak dogru ama ifadesi yaniltici: backend/pytest.ini'de acik `False` YAZMIYOR, varsayilan False. backend/pyproject.toml'da `[tool.pytest*]` bolumu YOK, backend/setup.cfg'de `[tool:pytest]`/`[coverage*]` YOK -> backend/ altinda pytest.ini tek otorite. pytest-timeout kurulu: backend/requirements-test.txt:5 ve backend/requirements.qa.txt:145 `pytest-timeout==2.4.0`. Denetimden sonra pyproject.toml'a tek dokunus **2d5d82f7e**, diff'i yalniz `dependencies` bloklarindaki trailing-whitespace (`git show 2d5d82f7e -- pyproject.toml` hunk @@ -25,44 +25,44 @@) — pytest bolumune dokunmadi. backend/pytest.ini'ye en son dokunan 1571f5c57 (denetimden cok once). | Tek satir: kok pyproject.toml:318 `timeout_func_only`'i kaldir veya `false` yap (teardown'i da kapsasin), YA DA backend/pytest.ini'ye acikca `timeout_func_only = false` yazip niyeti belgele. Karar oncesi olcum: `timeout_func_only=false` ile kok pytest'in kac testi zaman asimina dusurdugunu say — bedeli olculmeden degistirme (#451 dersi). |
+| 🔵 | `F18` | 3 asili pytest sureci — surec tablosu gozlemi, depodan dogrulanamaz | P2 | Bu bir surec-tablosu gozlemi (PID 33384/27336/34840); depodan dogrulanamaz. Depodan GORULEN: backend/tests/api/test_me_endpoint.py (7.402 bayt, Tem 30 17:14) icinde **async fixture / TestClient / asyncio YOK** — 6 senkron test (satir 67,72,143,150,157,164,184), `client` fixture'i backend/tests/conftest.py:1106 `def client():` (SENKRON). backend/tests/api/ altinda conftest.py yok. Yani bu dosya, test_api_batch2.py ile 159 `async def` ortakligini PAYLASMIYOR — ortak zemin yalniz kok conftest zinciri (backend/conftest.py:124 session-scope `event_loop`). Denetimden sonra dosyaya 0 commit. | Operator TEK komut: `powershell -c "Get-CimInstance Win32_Process -Filter \"Name='python.exe'\" \| Select-Object ProcessId,CreationDate,CommandLine \| Where-Object {$_.CommandLine -like '*pytest*'}"` — hala asili surec var mi, hangi dosyada? Cikti bossa bulgu o pencereye ozguydu; doluysa asili surec desenini test_api_batch2 disinda da tekrarla. |
+| 🔵 | `F10b` | huggingface-hub 1.19.0 uyumsuzlugu depoda dogrulanamiyor | P2 | Depodaki PIN'LER bu sayiyla TUTMUYOR: backend/requirements.qa.lock.txt:72 ve .linux.txt:71 `huggingface_hub==1.4.0`; transformers pini backend/requirements.qa.lock*.txt:210-211 `transformers==5.0.0`, backend/requirements.txt:87 + backend/requirements.qa.txt:80 `transformers>=4.35.0`. `grep -rn huggingface backend/requirements*.txt` -> 1.19.0 HIC gecmiyor. Yani '1.19.0' depo pini degil, olcum makinesindeki KURULU surum — depo bunu ne dogrular ne yalanlar. | Operator TEK komut: `cd backend && python -c "import huggingface_hub,transformers;print(huggingface_hub.__version__, transformers.__version__)"` — kurulu surumler lock ile ayrisiyor mu? Ayrisiyorsa sorun ortam sapmasi (lock uygulanmamis), depo pini degil; bulgu 'bagimlilik kirigi' degil 'ortam drift'i olarak yeniden etiketlenmeli. |
+
+### A.10 Dokümantasyon bayatlığı
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔴 | `D0` | CLAUDE.md denetimden sonra HIC dokunulmadi (kok neden) | P1 | git log -1 -- CLAUDE.md -> 31b1f617d 2026-05-23 'audit(s197): mega audit lock rule'. git status --short -- CLAUDE.md -> BOS (calisma agacinda da degisiklik yok). git log --since=2026-07-29 --name-only -- '*.md' -> yalnizca .claude/sessions/latest.md, .claude/rules/audit-methodology.md, docs/audits/2026-07-30_*, docs/superpowers/plans/*. CLAUDE.md / README.md / orchestrator/README.md / rules/{verification,testing,golden-flows}.md / pytest.ini'ye dokunan TEK commit YOK. Bugun 2026-07-31 -> 69 gun. | CLAUDE.md'yi olculen degerlerle guncelle. Guncelleme sonrasi 'Last Updated' damgasini gercek commit tarihine bagla (D7'deki 3-tarih celiskisi tekrarlanmasin). |
+| 🔴 | `D1` | CLAUDE.md soru sayilari — 19/19 sapmanin 3'u, hicbiri duzelmedi | P1 | grep -n CLAUDE.md: satir 272 '77,336 YKS questions in production', 273 '-> 77,336 clean (v3.5+)', 299 '58,523/77,336 (%75.7)', 308 'v3.5+: 77,336 questions (CURRENT PRODUCTION)', 683 tablo '77,336' = 5 yer, hepsi aynen duruyor. Satir 258 'question_bank = 192K prod'. DEPO-ICI CELISKI (DB'siz kanitlanabilir): ayni dosya ayni tablo icin 192K (s.258) ve 77.336 (s.272) diyor — ikisi ayni anda dogru olamaz. Denetim olcumu: 187.835 / 181.652 (%96,71). | Tek canli sorguyla teyit + 6 satirin duzeltilmesi. Ayrica '77.336 = 4 Mart tarihli DOSYA satiri' kategori hatasi notu eklenmeli (soru sayisi degil, jsonl satir sayisi). |
+| 🔴 | `D2` | CLAUDE.md test/coverage sayilari — orchestrator 71 vs 85 DEPODAN kanitlandi | P1 | CLAUDE.md:659 '~1,223 passed, 169 skipped, 1 fail' (=1.393), :660 + :284 + :797 '~53%', :664 '86 test files', :662 '71 passed, 0 failures' — dordu de aynen duruyor. CANLI KOSUM GEREKMEDEN CURUTULEN IKISI: (a) grep -rh 'def test_' orchestrator/tests/*.py \| wc -l -> 85 (test_complete_system 47 + test_core 24 + test_policy_validators 14) = denetimin '85 passed' olcumuyle BIREBIR, CLAUDE.md'nin 71'i bayat. (b) git ls-files frontend/src frontend/tests \| grep -E '\.(test\|spec)\.(ts\|tsx\|js\|jsx)$' \| wc -l -> 197 (denetim 196), iddia 86 = 2,3x. Ayrica git ls-files backend/tests \| grep 'test_.*\.py$' \| wc -l -> 623 test DOSYASI; 1.393 test iddiasi dosya basina ~2,2 test demek olurdu (makul degil). | orchestrator 71->85 ve frontend 86->197 ANINDA duzeltilebilir (depo-kanitli, canli olcum gerekmez). backend test sayisi + coverage icin tek pytest kosumu gerek. |
+| 🔴 | `D6` | golden-flows.md + pytest.ini — KURAL dosyasi gerceklikten kopuk | P1 | .claude/rules/golden-flows.md:27 'distribution as of Session 152: **166 tests -> 164 PASS / 0 FAIL / 2 SKIP**' aynen duruyor (son commit d2acacb9f 2026-05-14). backend/pytest.ini:36 'golden_flow: marks Golden Flow E2E tests (8 critical user journeys - CI merge gate)' aynen duruyor (son commit 1571f5c57 2026-04-10). GERCEK: grep -c 'def test_' backend/tests/e2e/test_golden_flows.py -> 178 test fonksiyonu (denetimle birebir). Dosyada 15+ pytest.skip cagrisi var (satir 83, 92, 342, 347, 354, 380, 386, 554, 665, 677, 680, 683, 722, 729) — cogu seed-data bagimli, '2 SKIP' iddiasini yapisal olarak imkansiz kiliyor. | Test sayilari (166->178, '8 journeys'->178) depo-kanitli, hemen duzeltilir. PASS/SKIP dagilimi (denetim: 30 PASS / 148 SKIP) canli stack ister. ONEMLI: bu bir KURAL dosyasi ve 'merge block' yetkisi iddia ediyor — 148 test seed yoklugundan skip oluyorsa kapi fiilen bos, ayri bir bulgu olarak ele alinmali. |
+| 🔴 | `D7` | Depo-ici celiskiler — 6/6 hala celisiyor, biri operatoru 404'e yolluyor | P1 | (1) questions: CLAUDE.md:258 '36,381 row legacy (NOT BOS)' vs .claude/rules/verification.md:83 'questions = BOS legacy' vs .claude/rules/debugging-first.md:18 'questions=BOS legacy' — ucu de duruyor, ikinci/ucuncu yanlis. (2) PG surumu: CLAUDE.md:269 (18.1) vs :332 (15.x). (3) HEALTH YOLU — KOD DUZEYINDE DOGRULADIM: verification.md:101 'curl -s http://localhost:8000/api/v1/health' ama backend/api/health.py:29 router = APIRouter(tags=['health']) PREFIX YOK, :32 @router.get('/health'), routers/loader.py:314 bos prefix ile include ediyor -> canli yol /health, /api/v1/health cozulmez. (4) CLAUDE.md:141 'Check Redis: redis-cli ping' (host'ta alet yok; alet yoklugu != servis yoklugu). (5) kiro2_postgres: verification.md:99 dahil 12 takipli dosyada (denetim '14' demis, olctum 11 .md + scripts/audit_docker_config.py). (6) CLAUDE.md:855 'Last Updated: April 27, 2026' vs son commit 2026-05-23; ayrica :266 'Current Status (March 2026)' ve :658 '(as of 17 Mar 2026)' = 3 farkli tarih. | En acil (3): verification.md:101 preflight yolu /health olmali — su hali saglikli backend'i 'coktu' diye yanlis teshise yonlendirir. Sonra (1) iki kural dosyasindaki 'BOS legacy' -> '36.381 legacy', (2)(6) CLAUDE.md ic tutarliligi, (5) kiro2_postgres -> gercek konteyner adi. |
+| 🔴 | `D3` | CLAUDE.md API yuzeyi — 1.163 endpoint, 5 alt-sayinin 5'i de bayat | P2 | CLAUDE.md:256 ve :345 iki yerde de aynen duruyor. Depo-ici olcum (backend/api/ + backend/app/api/, @router dekoratoru): GET 676 (iddia 619, +57), POST 512 (456, +56), PUT 38 (35, +3), DELETE 49 (43, +6), PATCH 11 (10, +1); TOPLAM 1.286 (iddia 1.163, +123) — denetimin '1.290 kaynak' olcumune yakin. Bes alt-sayinin BESI de dusuk. Not: 770 schema iddiasini reproduce EDEMEDIM — 'class X(BaseModel)' sayimi api/+app/api icin 722, backend geneli (test haric) 1.057; ne 770 ne denetimin 799'u cikiyor. | Endpoint sayilari depo-kanitli, dogrudan duzeltilebilir. Schema sayisi icin ONCE sayim yontemi tanimlanmali (hangi dizinler, alt-siniflar dahil mi) — aksi halde yeni bir reproduce-edilemez sayi yazilir. |
+| 🔴 | `D4` | CLAUDE.md altyapi sayilari — PostgreSQL surumu dosya ICINDE celisiyor | P2 | CLAUDE.md:269 'PostgreSQL 18.1 (port 5434)' ile CLAUDE.md:332 '\| Database \| PostgreSQL 15 \| 15.x \|' AYNI DOSYADA celisiyor — DB'ye bakmadan kanitlanir. CLAUDE.md:682 '\| Health Check \| <1s \| ~9s \|' duruyor (denetim: 20,1 ms medyan). CLAUDE.md:242 'LFS tracked patterns: *.jsonl (>50MB), *.bin, *.pt, *.db (>50MB)' vs gercek .gitattributes: 5 desen (*.jsonl, *.db, *.bin, *.pt, *.onnx) ve HICBIRINDE boyut esigi yok — *.onnx dokumante edilmemis, '>50MB' ise uydurma kosul. | PostgreSQL 15.x -> 18.1 ve LFS satiri depo-kanitli, hemen duzeltilir. Health ~9s icin tek olcum gerek. |
+| 🔴 | `D5` | Orchestrator modul/agent sayilari — iki dosyada birden bayat | P2 | CLAUDE.md:289 '24 modules (graph.py, routing.py, policy_engine.py, etc.)', :291 '20 active agents'. orchestrator/README.md:3 'LangGraph-based orchestration layer for KIRO2. 24 core modules, 45 policies, 20 agents.' GERCEK (git ls-files, __init__ haric): orchestrator/core/*.py = 35 modul. Agent: orchestrator/core/agents.py:27 AgentRole enum'da 7 rol (PLANNER, IMPLEMENTER, REVIEWER, FIXER, TESTER, SECURITY_AUDITOR, DOCUMENT_WRITER) + 7 somut sinif (satir 295-599: PlannerAgent..DocumentWriterAgent). 20 hicbir sayima uymuyor. Denetimin '45 policy' iddiasi ise DOGRU cikmisti — yani README'nin uc sayisindan ikisi bayat, biri saglam. | CLAUDE.md:289/:291 ve orchestrator/README.md:3 -> 35 modul / 7 agent rolu. Tamamen depo-kanitli, canli olcum gerekmez. |
+| 🟡 | `D8` | MEMORY.md / CLAUDE.local.md — .git boyutu 31x bayat, tablo sayisi kendi icinde celisiyor | P2 | CLAUDE.local.md:88 '.git 5.5GB->218MB' ve :123 'filter-repo sonrasi 218MB' duruyor. OLCTUM: du -sh /c/Users/husey/kiro2/.git -> 6,7G (~31x). MEMORY.md:33 '178 tablo/2421 sutun' ile MEMORY.md:21 'sema drift 131 tablo' AYNI DOSYADA celisiyor (denetim: 209 base tablo). MEMORY.md:8 'get_current_tenant 153 router dosyasinin 2'sinde' — payda olctum: git ls-files backend/api backend/app/api \| grep '\.py$' \| grep -v __init__ \| wc -l -> 163 (denetim 167; fark dizin tanimindan). KISMEN cunku .git boyutu ve router paydasi depodan kesin olculdu, tablo sayisi (209) DB ister. | CLAUDE.local.md:88/:123 -> 6,7 GiB (git-takipli degil, elle). MEMORY.md:8 paydasi -> 163 (veya sayim yontemi yazilarak). MEMORY.md'deki 178 vs 131 celiskisi tek canli sorguyla tek sayiya indirilmeli. |
+| 🔵 | `D9` | DB-tarafli sayilar — depo tarafi kanitli, nihai teyit tek sorgu ister | P2 | Depo tarafi KESIN: CLAUDE.md:258/:272/:299 denetimden sonra hic degismedi (git log -1 -- CLAUDE.md = 31b1f617d 2026-05-23) ve dosya kendi icinde 192K vs 77.336 celiskisi tasiyor. Ama '187.835' ve '181.652' sayilarini depodan DOGRULAYAMAM — bunlar denetimin canli DB olcumu. Bu depo kurali geregi (audit-methodology.md 'Varsayim != Olcum') denetim sayisini teyitsiz devralmiyorum. | Operator TEK komut: "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2 -c "SELECT count(*) AS toplam, count(question_image_url) AS resimli, count(*) FILTER (WHERE is_active) AS aktif FROM question_bank;" — cikti D1'deki 6 satiri kesinlestirir. |
+
+### A.5 Dağıtım + /api/v1/me + roster
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🟡 | `#444-fe` | Cikarma UI + uydurma ogrenci fallback'i: kod tarafi tam | P1 | frontend/src/pages/ModernTeacherStudentsPage.tsx satir numaralari birebir tutuyor: :86 `ogrenciEkle`, :114 `ogrenciCikar`, :127-129 `apiClient.delete('/api/v1/teacher/classes/${student.classroom_id}/students/${student.student_user_id}')`, :40 `student_user_id`, :43 `classroom_id`, :442 `<PersonRemove/>` (:438 onClick). Fallback silinmis: :150-158 catch -> `setStudents([])` + hata metni, :151-152 yorumu silineni belgeliyor ("29 Tem 2026: burada 5 UYDURMA ogrenci vardi ('Ahmet Yilmaz', 'Ayse Demir')"). Mock/hardcoded ogrenci taramasi (mock\|fallback\|Ahmet\|Ayse\|demo\|sahte\|dummy) yalniz bu iki yorum satirina ve :383'teki "sessizce sahte liste gostermek yerine" yorumuna isabet ediyor — veri YOK. Rota canli: App.tsx:52 + :551 [SKEPTIK DUZELTMESI] Uydurma-ogrenci fallback'inin silinmesi GERCEK (`pages/ModernTeacherStudentsPage.tsx:150-158` catch -> `setStudents([])` + hata metni, :151-154 silineni belgeleyen yorum; mock/Ahmet/Ayse taramasi yalniz yorumlara isabet ediyor). ANCAK 'kod tarafi TAM' iddiasi CURUDU — ekran zarf (envelope) uyusmazligi yuzunden calismaz: (1) `:148-149` `apiClient.get('/api/v1/teacher/students')` sonra `response?.data?.students`. `services/apiClient.ts` AXIOS ve UNWRAP YAPMIYOR (`public async get<T>(...): Promise<AxiosResponse<T>>`; response interceptor :56-58 `return response`). Backend `app/api/teacher_classroom.py:262` `return {"data": {"students": data}}` -> `response.data` = `{data:{students:[...]}}` -> `.students` **undefined** -> `\|\| []` -> liste HER ZAMAN BOS, dolayisiyla `:438` cikarma butonu hic render edilmez. (2) `:76-79` `const liste = response?.data ?? []; setSiniflar(liste)`; backend `teacher_classroom.py:167` `return {"success": True, "data": data}` -> `siniflar` bir NESNE; `:352` `siniflar.length === 0` false, `:353` `siniflar.map(...)` -> TypeError -> select kosulsuz render edildigi icin sayfa cokmesi. (3) `:97` POST icin `sonuc?.data` -> `{success,data}` -> `eklenen.ad` undefined -> ' sinifa eklendi.' Testler bunu YAKALAYAMAZ cunku VAKUM: `pages/__tests__/ModernTeacherStudentsPage.test.tsx:52` `{ data: { students: [SATIR] } }` ve `:53` `{ data: [{sinif_id...}] }` — backend'in gercek zarfini DEGIL, sayfanin hatali varsayimini taklit ediyor. Depo bu sorunu zaten biliyor: kiro istemcisi merkezi `unwrapData` ile `{success,data}\|{data}\|ham` cozuyor (`kiro/api/api-client.ts:164, 1038`), bu sayfa ise eski axios istemcisini kullaniyor. Oturum notundaki 'canli dogrulandi' bunu kapsamaz: `ca91a45d1`/latest.md'de dogrulanan sey (a) bundle icinde `classroom_id`/`student_user_id`/`.delete(` STRINGLERININ varligi ve (b) BACKEND dongusu (0->ekle 200->1->cikar 200->0) — ekranin listeyi doldurdugu hic gosterilmedi. | - |
+| 🔵 | `B6-be` | Backend imaji #447 icin hala bayat olabilir (rebuild kaniti YOK) | P1 | Yapisal kisim DOGRULANDI: docker-compose.yml:43-46 backend volumes = backend-logs, kiro2-vector-db, crops:ro — `./backend:/app` YOK, yani kod degisikligi rebuild ister. Kod 8d9f6738a 30 Tem 17:19, denetimdeki imaj 30 Tem ~04:43. Denetim SONRASI backend rebuild'i HICBIR yerde iddia edilmiyor: .claude/sessions/latest.md:12 yalniz "Celery imajlari rebuild + recreate" diyor. celery-worker (docker-compose.yml:136-139) ve backend (:17-20) AYRI build girdileri -> celery rebuild kiro2-backend konteynerini guncellemez. Dolayisiyla /api/v1/me canli 404 olma ihtimali duruyor | Operator TEK komut: `docker inspect -f '{{.Created}}' kiro2-backend; for p in /api/v1/me /api/v1/auth/me /zzz; do printf "%s -> " $p; curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000$p; done`  — /api/v1/me=401 ise dagitilmis; 404 iken /api/v1/auth/me=401 ise imaj hala bayat -> `docker compose build backend && docker compose up -d --no-deps backend` |
+| ✅ | `#447-kod` | GET /api/v1/me kodu diskte ve loader'a kayitli | P1 | `ls`: backend/api/me.py (1529B) + backend/services/persona_service.py (5223B) VAR, git-tracked. Router: backend/api/me.py:28 `APIRouter(prefix="/api/v1")` + :31 `@router.get("/me")`. Kayit: backend/routers/loader.py:39 `"api.me": ("core", "api.me")` (:38'de #447 + testing.md#27 yorumu). Commit 8d9f6738a (30 Tem 17:19:35) `git merge-base --is-ancestor 8d9f6738a HEAD` -> OK. NOT: denetim yolu `backend/api/routers/loader.py` yaziyordu, gercek yol `backend/routers/loader.py` | - |
+| 🟡 | `#447-test` | test_me_endpoint.py var: 7 test, ama SQL hic kosulmuyor | P2 | backend/tests/api/test_me_endpoint.py (7402B, commit e9162e6ad RED / 8d9f6738a GREEN). 7 test: :69 401 auth kapisi, :77 servis None -> 404 (monkeypatch `api.me.persona_getir`, :86'da stub'in yalniz router'da oldugu assert ediliyor), :139 15 anahtar sozlesmesi, :146 Turkce `bas` (irem+soylu -> 'İS'), :153 saat->dakika, :159 null davranisi, :177 korlesme guvencesi (sabit/varsayilan donme mutasyonunu yakalar). ANCAK `persona_getir`in kendisi (persona_service.py:62-88 `_SORGU`, 3 LEFT JOIN + RANK() window) HIC kosulmuyor — dosya bunu :95-104'te acikca yaziyor ("SQL'in kendisi canli duman testiyle dogrulanir", sqlite'ta users tablosu yok) | SQL'i kosturan tek entegrasyon testi (PG'ye karsi) veya canli duman testi — su an 3-tablo join + window function icin 0 kapsam |
+| 🟡 | `ad1236cad-guard` | Ekranlarda null guard'lari GERCEK (uc dosya okundu) | P2 | AyarlarPage.tsx:368-372 `persona?.yksTarihi ? ... : null` (onceden `new Date(persona.yksTarihi)` -> 1970); :438/:442/:446/:450 `?? '—'`; :531-532 hedefBolum/hedefUni `?? '—'`; :537-538 hedefSiralama/guncelSiralama `!== null ? trSayi(...) : '—'`; :546-550 tarih yoksa 'Sinav tarihi kayitli degil'. GeriSayimPage.tsx:269-277 `persona.yksTarihi === null` -> tam-ekran bos-durum metni, :283-284 sira alanlari `'—'`. PanelPage.tsx:138-144 hedefPct null olabiliyor, :210-215 halka yerine aria-label'li '—', :216 `?? '—'`. Yani '?? / !== null / erken-donus' uc kalibi da gercekten yazilmis, kozmetik degil [SKEPTIK DUZELTMESI] Guard'larin KODU gercek — alintilanan satirlarin hepsi dogrulandi: AyarlarPage `screens/AyarlarPage.tsx:368-372` (`persona?.yksTarihi ? ... : null`, `new Date(null)->1970` yorumu), `:438/442/446` `?? '—'`/`!== null`, `:531-538`, `:546-550` 'Sinav tarihi kayitli degil'; GeriSayimPage `:272-278` erken donus bos-durum, `:284-285` '—'; PanelPage `:141-144` hedefPct null, `:210-214` halka yerine aria-label'li '—'. AMA fix KOSAN KOD YOLUNDA DEGIL: bu uc ekran hicbir yerden mount edilmiyor. `grep -rn 'AyarlarPage\|GeriSayimPage\|PanelPage' frontend/src --include=*.tsx --include=*.ts` (kendi dosyalari, testler ve stories haric) -> yalniz 6 YORUM satiri ('PanelPage deseni' kopyasi), tek bir import YOK. `frontend/src/App.tsx` kiro import'lari (satir 16, 41-47, 108) bu ucunu icermiyor; `kiro/kiroRoutes.ts:13` full-bleed listesi 8 yol ve hicbiri panel/ayarlar/geri-sayim degil; `kiro/routes/` altinda yalniz AISohbet/Login/Sokratik route sarmalayicilari var. Yani bugun bir kullanici bu guard'lari calistiramiyor — 'davranis degisti' iddiasi kanitlanamaz. Kalan somut is: uc ekranin ProtectedRoute ile App.tsx'e mount'u + kiroRoutes kaydi. | - |
+| 🟡 | `#444-test` | Cikarma testi VAR (farkli ad), ekleme yolu TESTSIZ | P2 | Dosya `.delete.test.tsx` degil `frontend/src/pages/__tests__/ModernTeacherStudentsPage.test.tsx` (commit c92ca057b, 30 Tem 17:47). 3 test, hepsi cikarma: :68 DELETE URL'i classroom_id+student_user_id ile kurulur ve :80 `not.toContain('uyelik-999')` ile uyelik-id kullanimini MUTASYON gibi yakalar; :84 onay verilmezse istek atilmaz; :94 basarili cikarmadan sonra liste sunucudan tazelenir. Yani "test yok" bulgusu FANTOM olurdu — ama ekleme yolu (`ogrenciEkle`, :86-113: POST + sunucu detail mesajinin oldugu gibi gosterilmesi + fetchStudents tazelemesi) icin 0 test var | ogrenciEkle icin en az 2 test: (a) POST govdesi `{email}` ve URL'de seciliSinif, (b) 4xx'te sunucunun `detail` metni ekranda gosteriliyor mu (su an :103-107'deki fallback mesaji sessizce yutabilir) |
+| 🔵 | `B6-fe` | #444 canli dogrulamasi yalnizca oturum notuna dayaniyor | P2 | Tek dayanak IDDIA: commit ca91a45d1 (31 Tem 03:54) mesaji "#444 canli dogrulandi (frontend bayatmis, yeniden dagitildi)" ve .claude/sessions/latest.md:23-26 ("frontend imaji 30 Tem 04:43, kaynak c92ca057b 30 Tem 17:47 -> ~13 saat bayat. Rebuild sonrasi ModernTeacherStudentsPage-cr80cNEB.js (9.149 B): classroom_id=1, student_user_id=1, .delete(=1. Backend canli dongu 0->ekle 200->1->cikar 200->0"). ca91a45d1 SADECE latest.md'yi degistiriyor (`--stat`: 1 dosya, +19) — kod veya imaj kaniti tasimiyor. Depo tarafinda dagitim durumu dogrulanamaz. Ayrica latest.md:42-44 duman testinin DB'de `DUMAN-444` cop sinifi biraktigini kaydediyor (silme ucu yok) | Operator TEK komut: `docker exec kiro2-frontend sh -c 'grep -c classroom_id /usr/share/nginx/html/assets/ModernTeacherStudentsPage-*.js'` — >=1 ise dagitim gecerli, dosya yok/0 ise imaj yine bayat. (Bundle'da `ogrenciCikar`/`DELETE` aramak ISE YARAMAZ: minify mangle + apiClient.delete metod cagrisi — latest.md:61-63) |
+| ✅ | `ad1236cad` | Persona'da 12 alan nullable oldu (plan 3, A1 ~7 demisti) | P2 | `git show ad1236cad -- frontend/src/kiro/types/types.ts`: 15 alanin 12'si `\| null` oldu (sinif, seri, seriRekor, xp, seviye, hedefBolum, hedefUni, hedefSiralama, guncelSiralama, yksTarihi, gunlukHedefDk, bugunCozulenDk); ad/adKisa/bas non-null kaldi. Backend ile BIREBIR: persona_service.py:44-58 PersonaResponse ayni 12 alani `\| None` ilan ediyor, 3'u zorunlu. Yani uygulanan ne plan'in 3'u ne A1'in ~7'si — backend sozlesmesinin tamami (12). Tipin ustune 31 Tem olcumu yorum olarak yazilmis (77/77 null olan 6 alan dahil) | - |
+| ✅ | `#444-be` | Roster uclari mevcut ve loader'a kayitli | P2 | backend/app/api/teacher_classroom.py:45 `APIRouter(prefix="/api/v1/teacher")`, :306 `@router.post("/classes/{class_id}/students", status_code=200)`, :365 `@router.delete("/classes/{class_id}/students/{student_user_id}")`, :204 `@router.get("/students")`, :130 `@router.get("/classes")` — frontend'in kullandigi 4 ucun tamami. Kayit: backend/routers/loader.py:116 `"app.api.teacher_classroom": ("teacher", "app.api.teacher_classroom")`. NOT: bu uclar backend/api/teacher_routes.py'de DEGIL (orada roster ucu yok) — arayan yanlis dosyaya bakabilir | - |
+| 🔴 | `DUELLO` | MOUNT EDILMIS DuelloPage nullable seviye'yi ciplak basiyor | P3 | ad1236cad 8 ekrana dokundu, DuelloPage onlardan biri DEGIL — ama CANLI rota: App.tsx:108 `const DuelPage = lazy(() => import('./kiro/screens/DuelloPage')); // F4-S1 kademeli-swap → live` + App.tsx:385 `<DuelPage />`. DuelloPage.tsx:353-354 `const meLvl = persona.seviye; const oppLvl = persona.seviye;` (artik `number \| null`), :476 `Seviye {meLvl} · Sen`, :539 `Seviye {oppLvl} · Rakip`. Ciplak JSX `{null}` bos render eder -> "Seviye  · Sen". tsc bunu GECIRIR (ad1236cad commit metninin kendi tespit ettigi "tsc'nin gormedigi sizinti" sinifinin AYNISI, ama bu kez mount edilmis ekranda). Bugunku veriyle zararsiz (olculdu: seviye 0/77 null), ancak yeni kullanicida level NULL kalirsa gorunur | DuelloPage.tsx:476,539 -> `{meLvl ?? '—'}`; ayrica mount edilen 6 kiro ekraninin tamami ayni ciplak-{persona.X} taramasindan gecirilmeli |
+| 👻 | `#447-schema` | backend/schemas/persona.py hic olmadi — dizin bile yok | P3 | `ls backend/schemas` -> "No such file or directory"; `git ls-files backend/schemas` -> bos. Sema `backend/services/persona_service.py:41` icinde `class PersonaResponse(BaseModel)`. Dosya :36-40'ta bunu ev-kurali olarak gerekcelendiriyor (ornek: api/billing_api.py:26 BillingMeResponse) ve semanin api/me.py'ye konmamasini service->api ters bagimliligi ile aciklıyor. Eksik dosya degil, olmayan bir dosya beklentisi | - |
+
+### A.7 Sarı borç — kod/depo
+
+| | # | Bulgu | Önc. | Kanıt (ankraj) | Kalan iş |
+|---|---|---|---|---|---|
+| 🔴 | `Y1` | learning_path.py olu router — 2 frontend cagrisi 404 | P1 | DOSYA: backend/api/learning_path.py = 1829 satir (wc -l), 18 endpoint (grep -cE '^@router\.(get\|post\|put\|delete\|patch)' = 18), prefix='/api/learning-path' (satir 99 — /v1 YOK). KAYIT: grep '"api.learning_path"' backend/routers/loader.py -> exit 1 (yok); yalniz loader.py:60 'api.learning_path_v2' kayitli, prefix='/api/v1/learning-path' (learning_path_v2.py:113). POST-DENETIM COMMIT YOK (git log --since='2026-07-30' --name-only ciktisinda dosya gecmiyor; son commit 28b2f8083). >>> AYRIM CEVABI (denetimin atladigi kisim): HEM olu kod HEM kirik ozellik. 16/18 ucun v2'de birebir karsiligi var (exit-quiz v2:1860, weakness-report v2:2075, my-profile v2:1807, streak v2:2120 ...). AMA 2 CANLI FRONTEND CAGRISI kayitsiz v1 onekini vuruyor -> 404: (1) frontend/src/components/LearningPath/OnboardingWizard.tsx:186 `fetch('/api/learning-path/exit-quiz/${subject}?count=10')` — taniyici quiz; (2) frontend/src/components/LearningPath/Page/ProgressDashboard.tsx:74 `apiRequest('/api/learning-path/weakness-report')`. Yol yeniden yazimi YOK: frontend/src/utils/apiHelpers.ts:432 apiRequest ham `fetch(url,...)`, baseURL eklemiyor. Depo bunu zaten biliyor: frontend/src/hooks/useLearningPath.ts:390 yorumu '(The old /api/learning-path/study-session/* path was never registered by any router.)' | 2 frontend cagrisini '/api/v1/learning-path/...' olarak duzelt (v2'de her ikisi de MEVCUT: satir 1860 ve 2075). Sonra backend/api/learning_path.py'yi sil — 16 uc zaten v2'de var. |
+| 🔴 | `Y6` | Ankrajsiz .gitignore 'performance/' — 3 dosya takipsiz | P1 | .gitignore:266 = `performance/` (bas / YOK -> her derinlikte esler). git check-ignore -v ciktisi: '.gitignore:266:performance/\tbackend/tests/performance/__init__.py', ayni sekilde test_chromadb_latency.py ve test_elk_performance.py. `git ls-files backend/tests/performance/` yalnizca 2 dosya: locustfile.py, test_video_api_performance.py. Diskte 5 .py var (ls: __init__.py, locustfile.py, test_chromadb_latency.py, test_elk_performance.py, test_video_api_performance.py) -> taze klonda 3 dosya + paket isaretcisi __init__.py KAYIP. AYNI SINIF HATA 30 Tem'de KISMEN duzeltilmis: .gitignore:236-247'de `models/` icin ankrajli '/models/' + '!backend/models/' ve uzun aciklama yorumu var ('Ankrajsiz models/ HER derinlikte esler ... pre-push bekcisi hic kosamiyordu') — ama ayni taramada satir 266'daki `performance/` ATLANMIS. POST-DENETIM COMMIT YOK (.gitignore 30 Tem sonrasi commit listesinde gecmiyor). | .gitignore:266'yi ankrajla (/performance/ yap veya tamamen sil) + `git add -f backend/tests/performance/{__init__.py,test_chromadb_latency.py,test_elk_performance.py}`. Ayni taramayi diger ankrajsiz desenler icin de tekrarla (satir 266 tek kalan olmayabilir). |
+| 🔴 | `Y2` | litellm_chat.py 0 bayt, loader'da kayitli, git'te yok | P2 | ls -la backend/api/litellm_chat.py -> '0 Tem 3 01:02' (0 bayt, wc -l = 0). loader.py:101 hala kayitli: '"api.litellm_chat": ("ai", "api.litellm_chat"),'. POST-DENETIM COMMIT YOK. >>> DENETIMIN GORMEDIGI EK OLCUM: dosya git'te HIC YOK. `git ls-files --error-unmatch backend/api/litellm_chat.py` -> "error: pathspec ... did not match any file(s) known to git". `git check-ignore -v backend/api/litellm_chat.py` -> '.gitignore:333:backend/api/litellm_chat.py'. Yani sorun yalnizca 'bos dosya + warning' degil: taze klonda / Docker imajinda dosya HIC OLUSMAZ, loader import'u ModuleNotFoundError yoluna duser. Y6 ile ayni sinif — .gitignore'un sessizce dosya yok ettigi ikinci vaka. | Ya loader.py:101 satirini sil (uc zaten servis edilmiyor), ya .gitignore:333'u kaldirip gercek implementasyonu commit'le. Karar verilene kadar loader kaydini silmek daha ucuz. |
+| 🔴 | `Y8` | _deprecated importer 8 dosya / 18 satir — degismedi | P2 | PAKET YOLU ile arandi (basename DEGIL — denetimde bu alet tuzagi yakalanmisti, doc satir 689): `git grep -n '_deprecated\.' -- 'backend/**/*.py' \| grep -v '/_deprecated/'` -> 8 dosya / 18 satir. Dagilim: backend/api/team_challenges_api.py:36,57,79,109,123 (5) \| backend/tasks/claude_md_improvement_tasks.py:86,169,274,358,422 (5) \| backend/models/__init__.py:208,232 (2) \| backend/tests/integration/test_fsrs_system.py:21,379 (2 — 379 bir mock.patch dizesi, import degil) \| backend/app/api/fsrs.py:41 (1) \| backend/core/automated_question_generator.py:3 (1) \| backend/models/learning_models.py:2 (1) \| backend/models/revolutionary_models.py:2 (1). 18 satirin 17'si gercek import -> denetimin '8 dosya / 17 import' rakami BIREBIR dogru. Uretim (test-disi) = 7 dosya / 16 import. POST-DENETIM COMMIT YOK (hicbiri 30 Tem sonrasi commit listesinde gecmiyor). | 7 uretim importer'ini refactor et (gorev #369 hala DEFER); sonra services/_deprecated + core/_deprecated + models/_deprecated purge. En dus meyve: models/learning_models.py ve models/revolutionary_models.py salt re-export shim'i (tek satirlik forward). |
+| 🔴 | `F9` | 4 yetim frontend testi — hedef modul diskte yok | P2 | 4 test dosyasi da git'te TAKIPLI: frontend/src/hooks/__tests__/useOfflineMode.test.ts, frontend/src/services/__tests__/modernApiClient.test.ts, frontend/src/services/__tests__/VideoErrorHandler.test.ts, frontend/src/services/__tests__/VideoLoadingComponent.test.tsx (son ikisi ayni '../VideoErrorHandler'i import ediyor — denetimin '(x2)'si bu). Hedef moduller YOK: `git ls-files frontend/src \| grep -iE 'videoerror\|offlinemode\|apiclient'` -> VideoErrorHandler icin yalniz .README.md; modernApiClient.ts YOK (mevcut olan apiClient.ts); hooks/useOfflineMode.ts YOK (mevcut olan services/OfflineModeManager.ts). Denetim doc satir 461-464 tam ayni 4 dosyayi listeliyor -> iddia bugun de gecerli. POST-DENETIM COMMIT YOK (git log --since='2026-07-30' --name-only ciktisinda frontend/src/services/__tests__ ve frontend/src/hooks/__tests__ hic gecmiyor; tek frontend commit'i ad1236cad, yalniz frontend/src/kiro/**). | 4 dosyayi sil VEYA mevcut modullere yeniden hedefle (modernApiClient->apiClient, useOfflineMode->OfflineModeManager). Bu yapilinca vitest collection aritmetigi (denetim satir 1011: 175+17=192 != 196) kapanir. |
+| 🔴 | `F11` | backend/.coveragerc source listesinde 'models' yok | P2 | backend/.coveragerc:3 -> `source = api,services,core,algorithms,analytics,agents` — `models` LISTEDE YOK. CLAUDE.md 'Quality Metrics' bolumundeki dokumante komut: `pytest --cov=api --cov=core --cov=services --cov=models --cov=algorithms --cov-report=term`. Denetim doc satir 1299-1301 ayni iddiayi kuruyor ('artefakt 81 models dosyasi tasiyor -> coverage report/json No data to report, rc=1'). POST-DENETIM COMMIT YOK (30 Tem sonrasi commit listesinde hicbir coveragerc gecmiyor). >>> EK OLCUM: IKI ayri coveragerc var ve celisiyorlar — kok `.coveragerc` (source = ., fail_under YOK) vs `backend/.coveragerc` (kisitli source listesi + fail_under = 60.0). backend/pyproject.toml:28 'Coverage configuration: see .coveragerc (single source of truth)' diyor ama hangisini kastettigi belirsiz; coverage cwd'ye gore secer, yani `cd backend` ile kokten calistirmak farkli konfig yukler. | backend/.coveragerc:3'e `models` ekle VEYA CLAUDE.md komutundan --cov=models'i cikar (birini sec, ikisi tutarsiz kalmasin). Ayrica iki coveragerc'den birini sil — 'single source of truth' yorumu su an yalan. |
+| 🔴 | `Y4` | 24 .bak auth dosyasi git'te takipli (toplam 30) | P2 | `git ls-files '*.bak' \| wc -l` -> 30. Bunun 24'u frontend/src/.migration-backup/ altinda ve hepsi 2025-11-18 auth migration damgali (_20251118_174751 / _20251118_174758): AdminPanel, ProtectedRoute, ModernDashboard, ModernLayout, RoleBasedLayout, RoleBasedNavigation, AuthProvider, useAuth.ts (x2 farkli damga), useAuth.tsx, useRoleAccess, AdminDashboardPage, LoginPage, ParentChildrenPage, ParentDashboardPage, ProfilePage, RBACTestPage, RegisterPage, SettingsPage, StudentDashboard, TeacherClassesPage, TeacherDashboard, TeacherStudentsPage, UnauthorizedPage = tam 24 -> denetim rakami BIREBIR. Kalan 6 .bak auth-disi: .cursorignore.txt.bak, _optim_backup_20260619_225146/{Dockerfile.minimal,docker-compose.yml,nginx.conf}.bak, backend/migrations/add_eba_tables.sql.bak, backend/tests/fast/test_api_monitoring.py.bak. POST-DENETIM COMMIT YOK. | `git rm -r frontend/src/.migration-backup/` + .gitignore'a `*.bak` ekle (su an yalniz d-dataset/scripts/*.bak* satir 187 ve backend/core/*.bak_* satir 345 var — global desen yok). 6 auth-disi .bak'i ayrica triyaj et. |
+| 🔴 | `Y5` | .git 6,52 GiB — MEMORY.md 218 MB diyor | P2 | 'Olculemez' onermesi YANLIS — `git count-objects -vH` salt-okunur ve depo icinden calisiyor. OLCUM: size-pack = 6.52 GiB (4 pack, in-pack 98.093 nesne), loose size = 12.73 MiB (3.461 nesne), prune-packable 79, garbage 1 (.git/objects/62/tmp_obj_ei1Jot, 123 bayt). Yani ~6,53 GiB — denetimin 6,7 GiB rakami dogrulandi (du farki calisma-agaci/index dahil). MEMORY.md'deki 'filter-repo sonrasi 218MB' (Session 71 kaydi) ~30x BAYAT. POST-DENETIM DEGISIKLIK YOK (30 Tem sonrasi 13 commit, hepsi kucuk metin/py dosyasi). | 1) MEMORY.md + CLAUDE.local.md'deki 218MB kaydini duzelt (bayat sayi karar yonlendiriyor). 2) En buyuk blob'lari cikar: `git verify-pack -v .git/objects/pack/*.idx \| sort -k3 -n -r \| head -20` -> `git rev-list --objects --all \| grep <sha>`. 3) `git gc --prune=now` (garbage + 79 prune-packable). Klon maliyeti kararini olcumden sonra ver — filter-repo tum hash'leri yine degistirir. |
+| 🔴 | `Y7` | study_rooms_stub hala kayitli — 7 rota golgeleniyor | P2 | CIFT KAYIT DEGISMEDI: loader.py:175 '"api.study_rooms"' ve loader.py:176 '"api.study_rooms_stub"' ikisi de kayitli; loader.py:171-174 yorumu 'both routers coexist ... until next sprint' — o sprint gelmemis. Ikisi de ayni prefix: study_rooms.py:49 ve study_rooms_stub.py:30 -> '/api/v1/study-rooms'. STATIK OLCUM: tam ayni path+method 7 cift — GET /my-rooms, GET /joined, POST /create, GET /{room_id}, DELETE /{room_id}, POST /{room_id}/join, POST /{room_id}/leave (stub satir 56,61,71,76,81,86,91 vs gercek satir 215,247,164,284,341,357,410). POST-DENETIM COMMIT YOK. >>> DENETIM ATFI YANLIS: `grep -rn 'health' backend/api/study_rooms_stub.py` -> 0 satir; ne stub ne gercek study_rooms /health tanimliyor. Gercek /health cifti BASKA dosyada: backend/api/clustering_api.py ayni router'da (satir 31, prefix '/api/v1/clustering') iki kez GET /health tanimliyor — satir 34 ve satir 170; ikincisi olu (FastAPI ilkini servis eder). | 1) study_rooms_stub.py'den 7 cakisan ucu sil (kalan 16 mesaj/dosya/whiteboard/video ucu kalsin) veya loader.py:176'yi kaldir. 2) clustering_api.py:170 mukerrer /health'i sil. 3) Toplam '10' rakaminin dogrulanmasi surec-ici rota agaci yuruyusu ister — bu ikisi statik olarak kanitlanan kisim. |
+| 🔴 | `Y3` | 20 mock bayragindan 6'si olu — cagri yeri yok | P3 | KONFIG: backend/config/mock_endpoint_flags.json = 20 anahtar. TUKETICI: `grep -rn 'is_real_impl(' backend/api/ backend/app/api/` -> 18 cagri satiri, 14 BENZERSIZ anahtar (advanced_reports.{irt_analysis, zpd_recommendations, learning_style_analysis, osym_ets_comparison, performance_trend} + analytics.{d7_retention, student_performance, exam_performance, subject_performance, class_students, class_metrics, user_statistics, exam_statistics, content_usage}). CAGRI YERI OLMAYAN 6 (denetim rakamiyla BIREBIR): analytics.student, analytics.class, analytics.admin_dashboard, content_management.questions_create, content_management.questions_detail, content_management.search. DOGRULAMA: `grep -rn 'analytics\.student"\|analytics\.class"\|admin_dashboard\|content_management\.' backend/api backend/app/api backend/services` -> yalnizca 3 ILGISIZ satir (analytics.py:322 fonksiyon adi get_admin_dashboard_analytics, :343 cache_key dizesi, :395 event_type dizesi) — hicbiri is_real_impl cagrisi degil. core/mock_endpoint_flags.py:is_real_impl eksik anahtarda False dondurur, yani bu 6'yi true yapmak da no-op. POST-DENETIM COMMIT YOK. | 6 olu anahtari JSON'dan sil (yaniltici konfig) VEYA ilgili uclarda is_real_impl dispatch'ini kabla. JSON'un _comment alani da 'operator flips per endpoint' diyor — olu anahtarlar operatoru yaniltir. |

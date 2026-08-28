@@ -4,6 +4,8 @@
  */
 import React, { useEffect, useState, useCallback } from 'react';
 
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+
 interface BadgeEarnedProps {
   badge: {
     name: string;
@@ -69,6 +71,12 @@ export const BadgeEarned: React.FC<BadgeEarnedProps> = ({
   }, [autoCloseMs, handleClose]);
 
   const isUrl = badge.icon.startsWith('http') || badge.icon.startsWith('/');
+
+  // Modal modunda klavye focus'u kart icinde tutar + ESC ile kapatir (WCAG 2.1 focus trap).
+  const dialogRef = useFocusTrap<HTMLDivElement>({
+    enabled: mode === 'modal',
+    onEscape: handleClose,
+  });
 
   if (mode === 'toast') {
     return (
@@ -140,6 +148,7 @@ export const BadgeEarned: React.FC<BadgeEarnedProps> = ({
 
       {/* Card */}
       <div
+        ref={dialogRef}
         className={[
           'relative flex flex-col items-center gap-4 p-8 rounded-3xl',
           'bg-white shadow-modern-xl border border-gray-100',

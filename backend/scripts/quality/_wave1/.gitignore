@@ -1,0 +1,13 @@
+# Regenerable bulk data (not source-of-truth; reproducible from export.sql + solver)
+batches/
+preds_gemma/
+preds_qwen/
+tier1_blind/
+master.csv
+tier1_validate.csv
+tier1_validate.jsonl
+tier1_sample.jsonl
+_live_viewdef.sql
+qwen_run.log
+vp116_blind/
+vp116.csv
