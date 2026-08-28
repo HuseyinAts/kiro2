@@ -363,8 +363,10 @@ class WikipediaClient:
                 start = max(0, index - 100)
                 end = min(len(content), index + len(claim) + 100)
                 return "..." + content[start:end] + "..."
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            # İddia metni içerikte aranamadı (beklenmedik tip/biçim).
+            # Aşağıdaki "ilk 500 karakter" fallback'i devreye girer.
+            logger.debug("Alinti cikarilamadi, fallback kullanilacak: %s", exc)
 
         # Fallback: İlk 500 karakter
         return content[:500]

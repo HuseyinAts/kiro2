@@ -500,8 +500,11 @@ class UnifiedAuthService:
             if jti:
                 self._blacklisted_tokens.add(jti)
                 return True
-        except jwt.InvalidTokenError:
-            pass
+        except jwt.InvalidTokenError as exc:
+            # Gecersiz/suresi dolmus token: kara listeye alacak bir jti yok,
+            # islem zaten etkisiz. Sessiz yutmak yerine kaydediyoruz --
+            # "logout calismiyor" sikayetlerinde ilk bakilacak yer burasi.
+            logger.debug("Kara listeye alinamadi, token gecersiz: %s", exc)
         return False
 
     def refresh_tokens(self, refresh_token: str) -> TokenPair | None:

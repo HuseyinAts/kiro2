@@ -498,7 +498,12 @@ class ResourceDiscoveryService:
                 try:
                     view_count = int(resource.metadata.get("view_count", 0))
                 except (ValueError, TypeError):
-                    pass
+                    # Saglayici view_count'u sayisal vermemis; populerlik
+                    # bonusu 0 kalir, skorlama devam eder.
+                    logger.debug(
+                        "view_count sayiya cevrilemedi: %r",
+                        resource.metadata.get("view_count"),
+                    )
             if view_count >= 1_000_000:
                 score += 15
             elif view_count >= 100_000:

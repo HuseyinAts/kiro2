@@ -396,7 +396,13 @@ class CacheMiddleware(BaseHTTPMiddleware):
                         logger.debug("Response size exceeds 2MB limit, skipping ETag")
                         return response
                 except ValueError:
-                    pass
+                    # Bozuk Content-Length: boyut kontrolu yapilamiyor, ETag
+                    # uretimine devam edilir (gercek boyut asagida zaten
+                    # chunk'lar okunurken olculuyor).
+                    logger.debug(
+                        "Content-Length ayristirilamadi (%r), boyut kontrolu atlandi",
+                        content_length,
+                    )
 
             chunks_read = []
             total_size = 0

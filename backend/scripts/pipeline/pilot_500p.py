@@ -411,7 +411,13 @@ async def _run_claude_cli(png_path: Path, user_prompt: str, model: str) -> str:
         try:
             await asyncio.wait_for(proc.wait(), timeout=5)
         except TimeoutError:
-            pass
+            # kill() sonrasi 5 sn'de de kapanmadi: surec zombi kalmis olabilir.
+            # Asagidaki ClaudeCliError zaten firlatiliyor; burada sadece
+            # "PID kapanmadi" bilgisini kaybetmiyoruz.
+            log.warning(
+                "claude CLI sureci kill() sonrasi 5 sn icinde kapanmadi (pid=%s)",
+                proc.pid,
+            )
         raise ClaudeCliError(f"claude CLI timeout ({CLAUDE_TIMEOUT}s): {png_path.name}")
 
     if proc.returncode != 0:
