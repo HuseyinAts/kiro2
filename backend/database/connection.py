@@ -30,7 +30,15 @@ else:
             "CRITICAL: DATABASE_URL environment variable is required. "
             "Set it in .env file: DATABASE_URL=postgresql+asyncpg://user:pass@host:port/db"
         )
-    SYNC_DATABASE_URL = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+    # Ciplak "postgresql://" SQLAlchemy'de psycopg2 dialekti secer; CI'da
+    # (requirements: psycopg[binary] = psycopg3) psycopg2 YOK ve bu modul
+    # IMPORT ANINDA create_engine cagirdigi icin ModuleNotFoundError butun
+    # import zincirini (orn. api/auth.py -> database/__init__) coker, router
+    # yuklenmez ve uclar 404 olur. alembic/env.py'deki duzeltmenin ayni sinifi
+    # (28 Agu 2026, gf veli-onay 404 teshisi).
+    SYNC_DATABASE_URL = DATABASE_URL.replace(
+        "postgresql+asyncpg://", "postgresql+psycopg://"
+    )
 
 # Async Engine (Ana uygulama için)
 if os.getenv("TESTING") == "true" or "sqlite" in DATABASE_URL:
@@ -145,8 +153,8 @@ class DatabaseManager:
                 result = await conn.execute(
                     text(
                         """
-                    SELECT COUNT(*) as table_count 
-                    FROM information_schema.tables 
+                    SELECT COUNT(*) as table_count
+                    FROM information_schema.tables
                     WHERE table_schema = 'public'
                 """
                     )
@@ -157,8 +165,8 @@ class DatabaseManager:
                 result = await conn.execute(
                     text(
                         """
-                    SELECT table_name 
-                    FROM information_schema.tables 
+                    SELECT table_name
+                    FROM information_schema.tables
                     WHERE table_schema = 'public'
                     ORDER BY table_name
                 """

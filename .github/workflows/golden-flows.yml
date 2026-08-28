@@ -226,6 +226,24 @@ jobs:
           tail -100 backend/backend.log || true
           exit 1
 
+      - name: Router yukleme teshisi (annotation)
+        run: |
+          # Anonim teshis (28 Agu): yuklenemeyen router'lar backend.log'a
+          # WARNING dusuyor ama log goruntulemek giris istiyor. Annotation'a
+          # cikar ki '404 Not Found' sinifi hatalarin kaynagi (import cokmesi)
+          # oturum acmadan gorulsun. Salt rapor — kapi karari degil.
+          grep -E "Failed to import|Unexpected error loading" backend/backend.log \
+            | head -15 \
+            | while IFS= read -r satir; do
+                temiz=$(printf '%s' "$satir" | tr -d '\r' | cut -c1-350)
+                echo "::warning title=router-yuk::${temiz}"
+              done || true
+          if curl -sf http://127.0.0.1:8000/openapi.json | grep -q "veli-onay/verify"; then
+            echo "::notice title=rota-veli-onay::verify rotasi openapi'de VAR"
+          else
+            echo "::warning title=rota-veli-onay::verify rotasi openapi'de YOK"
+          fi
+
       - name: Run Golden Flow tests
         continue-on-error: true
         working-directory: backend
