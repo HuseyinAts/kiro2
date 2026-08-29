@@ -451,3 +451,58 @@ PR #67, `master`'ın branch-protection'ı olmadığı doğrulandıktan sonra
 `gh pr merge 67 --merge` ile merge commit `b20afb920` olarak birleştirildi
 (29 Ağu 2026, established convention: PR #59-62 de aynı şekilde regular
 merge commit kullanmış, squash değil).
+
+
+### Faz 2 -- `auth.py` refresh-token persist görünürlüğü
+
+Denetim notunun işaretlediği gerçek bulgu doğrulandı: `LoginCommandHandler`
+(`application/commands/auth.py`) login sonrası refresh-token'ı DB'ye
+"fire-and-forget" yazıyordu -- yazma sessizce başarısız olursa cookie'de
+token var ama DB'de yok (session desync), hata sadece WARNING'e düşüp
+kayboluyordu. Düzeltme: hata artık `user_id`/`jti` ile birlikte ERROR
+seviyesinde loglanıyor; login'in kendi başarı/başarısızlık sözleşmesi
+(kullanıcıya 200 dönmesi) değişmedi -- görünürlük eklendi, davranış
+korundu.
+
+PR #68, kendi dalı (`fix/refresh-token-persist-visibility`), plan'ın
+"kritik bir auth path, PR #62'den ayrı" kararına uygun. Doğrulama sırasında
+ayrı bir CI-only kırmızı daha bulundu ve düzeltildi: CI'nin PINSIZ kurulan
+ruff'ı (`uv pip install ruff`, o an 0.16.5) `test_auth_endpoints.py`'de
+40x RUF059 (kullanılmayan unpack) yakaladı -- yerel pre-commit'in PINLİ
+0.7.1'i bu kuralı hiç TANIMIYOR (per-file-ignores'a eklemek "Unknown rule
+selector" ile pre-commit'in tüm ruff çağrısını patlatıyor, ölçüldü).
+Grandfather etmek yerine `ruff --fix --unsafe-fixes --select RUF059` ile
+40 site koddan düzeltildi (`app`/`mock_db`/`window` -> alt çizgili adlar,
+46/46 test PASS) -- Faz 1'in "aynı aracın üç sürümü, kapıyı en eskisi
+tutuyor" bulgusuna dördüncü bir örnek (bkz. `audit-methodology.md`).
+
+**Kalan kırmızılar -- hepsi §9'da zaten belgelenen, bu PR'dan bağımsız
+borç, bu oturumda log'ları tek tek okunarak yeniden doğrulandı:**
+
+- **Quality Gate + Backend Tests (Python 3.11)**: ikisi de aynı
+  `transformers`/`nn` kök nedeni (§9) -- `Backend Tests` bu sefer
+  `tests/test_video_recommendation_service.py`'de collection hatası
+  verip `-x`/xdist "stopping after 2 failures" ile TÜM paketi durdurdu,
+  coverage %0'a düştü (§9'daki "3 skipped, 2 errors" ile aynı imza,
+  sadece hangi router/test'in tetiklediği farklı gündü). Yerelde
+  `pytest tests/test_router_registration.py` **3/3 passed** (CI'daki 4
+  router hatası yerel ortamda üretilemiyor -- CI'ya özgü paket sürümü).
+- **Automatic PR Review**: aynı eksik `ANTHROPIC_API_KEY`/
+  `CLAUDE_CODE_OAUTH_TOKEN` secret'ı (§9), log'da yine
+  `"anthropic_api_key": ""` doğrulandı.
+- **Frontend Tests**: aynı önceden var olan ESLint borcu (§9, 988 hata) --
+  bu PR sadece 3 backend dosyasına dokundu (`gh pr view --json files` ile
+  doğrulandı), frontend'e hiç dokunmadı.
+- **API Security Testing (ZAP)**: §9'da PR #67 için ölçülen "master'da son
+  3 çalışması da 2s44dk-3s54dk sürüp failure ile bitti" bulgusu burada da
+  geçerli kabul edildi -- bu job PR #68'de de dakikalarca `pending` kaldı
+  (ZAP scan adımında), aynı öncedenki gibi sonucu beklemeden merge kararı
+  verildi.
+
+Tüm kırmızıların önceden-var-olan/bu PR'dan bağımsız olduğu doğrulandıktan
+sonra (plan'ın "yeşil ya da sadece önceden-var-olan borç kırmızı" barı),
+**8 Golden Flow E2E tests job'u PASSED (4m29s)** -- §9'un işaret ettiği asıl
+doğrulama kanalı (GF1wB refresh-token-persist testi) CI'da gerçekten
+çalışıp geçti. PR #68, `gh pr merge 68 --merge` ile merge commit
+`8050cc499946dabc44d0dab7edbc8bee23c5fdfa` olarak birleştirildi (29 Ağu
+2026).
