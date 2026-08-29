@@ -688,6 +688,48 @@ son merge kararı kullanıcıya bırakıldı, buton basılmadı. `#47 matplotlib
 kullanıcı-görünür diyagram üretimi) -- otomasyona bırakıldı ama bu servis
 grubunun test kapsamı ayrıca doğrulanmadı, ayrı bir not olarak kayıtlı.
 
+**Faz 5 eki (aynı gün, sonraki) -- #43 ve #46 kullanıcı onayıyla merge
+edildi.** Kullanıcı risk analizini görüp doğrudan "#43 ve #46'yı merge et"
+talimatı verdi. #46 tek komutla temiz merge oldu (`c4010481d`). #43'te
+`gh pr merge` "Pull Request has merge conflicts" hatası verdi --
+`mergeable: CONFLICTING` doğrulandı, `@dependabot rebase` yorumu atıldı,
+ama Dependabot'ın kendi rebase'i ~3 dakika içinde gelmedi (branch zaten
+bir kez force-push almıştı, headRefOid sabit kaldı). `git merge-tree` ile
+kanıtlandı: gerçek bir kod çakışması değil, `requirements.qa.lock.txt` /
+`requirements.qa.lock.linux.txt`'de alfabetik olarak bitişik iki satırın
+(marshmallow, matplotlib) iki farklı PR tarafından bağımsız değiştirilmesi
+-- #43 dalı hâlâ eski `matplotlib==3.10.8`'i taşıyordu, master'da #47 ile
+zaten `3.11.1`'e çıkmıştı. Bu kilit dosyalarında hash pin YOK (düz
+`paket==versiyon` formatı), yani elle çözüm hash uydurma riski taşımıyordu
+-- her iki satır da ilgili taraftan harfiyen alındı (marshmallow==4.3.1 +
+matplotlib==3.11.1), başka hiçbir satır etkilenmedi (branch'in tüm
+diff'i zaten sadece bu 2 satırdı). Yerel branch'te merge yapıldı, pre-push
+hook'ları (320 test + reward-hacking-check) geçti, push edildi, PR
+`MERGEABLE` oldu, `gh pr merge 43 --squash` ile kapatıldı (`477e0e306`).
+`--no-verify` kullanılmadı.
+
+Bu arada, merge öncesi kırmızı check'leri kör geçmemek için ikisi de log
+seviyesinde doğrulandı (önceden merge olmuş #52 ile birebir aynı çıktı):
+"Automatic PR Review" -- Claude Code Action'ın kendi bot-actor guard'ı
+Dependabot PR'larını toptan reddediyor (`Workflow initiated by non-human
+actor: dependabot`); bu, önceden bilinen "eksik id-token: write" (SS 7)
+bulgusundan AYRI, yeni keşfedilen bir kapsam-dışı-bırakma sorunu --
+düzeltmek için `allowed_bots` listesine dependabot eklenmesi gerekir, kod
+değişikliği kolay ama repo'nun bu botu bilinçli/bilinçsiz dışladığı
+belirsiz, bu yüzden dokunulmadı, sadece not düşüldü. "Quality Gate" ->
+"Router registration check" -- `test_mapped_routers_are_importable`
+testi `api.osym_routes` (`ModuleNotFoundError: services.osym_pdf_pipeline`)
+ve `api.rag`/`api.v1.semantic_search`/`api.youtube_routes` (`NameError:
+name 'nn' is not defined`) için önceden var olan, bu PR'larla ilgisiz
+kırık router import'ları yüzünden başarısız oluyor; `loader.py` bunu
+WARNING'e çevirip sessiz 404 üretiyor. İkisi de #43/#46'dan önce zaten
+kırıktı, bu oturumun kapsamı dışında, ayrı bir borç kalemi olarak not
+edildi. "Backend Tests (Python 3.11)" / "Frontend Tests" / "API Security
+Testing" ise #47'de (zaten merge olmuş) hâlâ `pending` görünüyor -- bu üç
+kontrolün bu repoda Dependabot PR'larında hiç sonuçlanmadığı, master'da
+branch protection olmadığı için bunun merge'ü hiç engellemediği ayrıca
+doğrulandı.
+
 
 ### Faz 6 -- CodeQL false-positive dismiss'leri: iş zaten yapılmıştı, ama bozuk
 
