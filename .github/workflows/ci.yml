@@ -184,6 +184,23 @@ jobs:
     name: Backend Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: quality
+    # Ust `env:` blogunda UV_SYSTEM_PYTHON=1 acik (workflow geneli). quality
+    # job'unda sorun cikarmiyor cunku o sadece CLI entry-point cagiriyor
+    # (ruff/mypy/...) - ama bu job asagida `uv venv` + `source .venv/bin/activate`
+    # ile izole bir venv kurup "python <script>.py" / "python -m X" seklinde
+    # DOGRUDAN yorumlayici cagiriyor (seed_mvp_data.py, uvicorn, unittest).
+    # UV_SYSTEM_PYTHON=1 acikken uv, aktif venv'i yok sayip sistem Python'una
+    # kuruyor (dogrulandi: "Install dependencies" adiminda "Using Python 3.11.16
+    # environment at: /opt/hostedtoolcache/..." - .venv DEGIL). Sonuc: alembic/
+    # pytest gibi entry-point'ler PATH fallback'iyla sistem konumunu bulup
+    # calisiyor (yanilti "basarili" gorunumu), ama `.venv/bin/python` PATH'te
+    # ONCE geliyor ve o .venv bombos kaliyor -> "Seed MVP users" adiminda
+    # ModuleNotFoundError: No module named 'psycopg' (29 Agu 2026, bu job
+    # `needs: quality` zincirinde ilk kez calisip buraya kadar ilerleyince
+    # ortaya cikti). Bu job ozelinde override edip uv'nin gercekten .venv'e
+    # kurmasini sagliyoruz.
+    env:
+      UV_SYSTEM_PYTHON: "0"
     strategy:
       fail-fast: false
       matrix:
@@ -193,7 +210,13 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        # duz postgres:15 DEGIL: alembic baseline migration'i "CREATE EXTENSION
+        # vector" iceriyor (embedding/problem_embedding kolonlari icin,
+        # models/*.py pgvector kullaniyor). Bu job daha once `needs: quality`
+        # zincirinde hep engellendigi icin hic calismamisti; test-async-engine
+        # ScopeMismatch fix'i quality'i yesile cevirince ilk kez calisti ve
+        # burada patladi: "extension vector is not available" (29 Agu 2026).
+        image: pgvector/pgvector:pg15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -253,7 +276,7 @@ jobs:
         run: |
           cat > backend/.env << EOF
           DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
-          DATABASE_URL_SYNC=postgresql://postgres:postgres@localhost:5434/kiro2_test
+          DATABASE_URL_SYNC=postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test
           REDIS_URL=redis://localhost:6379/0
           JWT_SECRET_KEY=test-secret-key-for-ci
           JWT_ALGORITHM=HS256

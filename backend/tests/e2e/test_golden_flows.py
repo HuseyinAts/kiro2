@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+from collections.abc import Generator
 
 import httpx
 import pytest
@@ -66,7 +67,7 @@ pytestmark = [pytest.mark.golden_flow, pytest.mark.e2e]
 
 
 @pytest.fixture(scope="module")
-def client() -> httpx.Client:
+def client() -> Generator[httpx.Client, None, None]:
     """HTTP client pointed at the LIVE backend (BACKEND_URL).
 
     Golden Flows probe the REAL running server over HTTP — the deployed
@@ -138,7 +139,7 @@ def _login_taze(client: httpx.Client, creds: dict[str, str]) -> str:
         pytest.fail(f"login rate-limited (taze) for {creds['email']} (HTTP 429)")
     if resp.status_code != 200:
         pytest.skip(f"login failed for {creds['email']}: {resp.status_code}")
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, f"no access_token in login response: {resp.json()}"
     return token
 
@@ -166,7 +167,7 @@ def _login(client: httpx.Client, creds: dict[str, str]) -> str:
     if resp.status_code != 200:
         pytest.skip(f"login failed for {email}: {resp.status_code} {resp.text[:200]}")
 
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, f"no access_token in login response: {resp.json()}"
     _TOKEN_ONBELLEGI[email] = token
     return token
@@ -458,7 +459,7 @@ def _create_exam_session(
         f"{create_resp.text[:200]} — {question_count} soruluk {subject} "
         f"{exam_type} oturumu kurulamıyorsa öğrenci de sınav olamıyor demektir."
     )
-    session_id = create_resp.json().get("session_id")
+    session_id: str = create_resp.json().get("session_id")
     assert session_id, f"kurulum: create 200 ama session_id yok: {create_resp.json()}"
 
     start_resp = client.post(
@@ -1738,11 +1739,32 @@ def test_gf1wb_auth_refresh_token_is_persisted():
     requests the same way.
     """
     with httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT) as c:
+        # login_resp on-tanimli: pytest.skip() calisma zamaninda hep raise
+        # eder ama statik analiz bunu bilmiyor -- CodeQL "may be used before
+        # it is initialized" hatasi verdi (py/possibly-undefined-variable,
+        # 29 Agu 2026, bu testin kendisiyle ayni committe tanitildi). Asagidaki
+        # None hicbir zaman fiilen okunmaz, sadece analizoru tatmin ediyor.
+        login_resp = None
         try:
             login_resp = c.post("/api/v1/auth/login", json=STUDENT)
         except httpx.ConnectError:
             pytest.skip(f"backend unreachable at {BACKEND_URL}")
 
+        # 429 is NOT an environment problem -- it means this gate is
+        # throttling itself. Lumping it into the generic skip below (as
+        # this test used to) silently disabled the one regression guard for
+        # the auth.py:329 swallowed-persist bug -- see _login()'s docstring
+        # above for the same rationale, and
+        # docs/audits/2026-08-01_eksiklik_master.md P2 for how this was
+        # found (this test bypasses the shared _login/_login_taze helpers
+        # because it needs raw cookie-jar semantics, so the 429 contract has
+        # to be duplicated here rather than inherited from them).
+        if login_resp.status_code == 429:
+            pytest.fail(
+                f"GF1wB login rate-limited (HTTP 429) for {STUDENT['email']}. "
+                "Converting this to skip would silently stop verifying the "
+                "auth.py:329 refresh-token persist path."
+            )
         if login_resp.status_code != 200:
             pytest.skip(
                 f"login failed: {login_resp.status_code} {login_resp.text[:200]}"

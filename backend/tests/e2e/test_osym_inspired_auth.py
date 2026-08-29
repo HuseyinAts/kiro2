@@ -34,6 +34,7 @@ etmez; gerçek HTTP yüzeyini denetler.
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
 
 import httpx
 import pytest
@@ -63,7 +64,7 @@ ANSWER_FIELDS = ("correct_answer", "dogru_cevap", "answer")
 
 
 @pytest.fixture(scope="module")
-def client() -> httpx.Client:
+def client() -> Generator[httpx.Client, None, None]:
     c = httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT)
     try:
         c.get("/health")
@@ -77,9 +78,13 @@ def client() -> httpx.Client:
 @pytest.fixture(scope="module")
 def student_token(client: httpx.Client) -> str:
     resp = client.post("/api/v1/auth/login", json=STUDENT)
+    # 429 rate-limit'tir, ortam eksikliği değil -- skip'e çevirmek gerçek bir
+    # regresyonu gizler. Aynı sözleşme test_golden_flows.py::_login()'de.
+    if resp.status_code == 429:
+        pytest.fail(f"seed öğrenci girişi rate-limited (HTTP 429): {resp.text[:200]}")
     if resp.status_code != 200:
         pytest.skip(f"seed öğrenci girişi başarısız: {resp.status_code}")
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, "login yanıtında access_token yok"
     return token
 
@@ -87,9 +92,13 @@ def student_token(client: httpx.Client) -> str:
 @pytest.fixture(scope="module")
 def teacher_token(client: httpx.Client) -> str:
     resp = client.post("/api/v1/auth/login", json=TEACHER)
+    # 429 rate-limit'tir, ortam eksikliği değil -- skip'e çevirmek gerçek bir
+    # regresyonu gizler. Aynı sözleşme test_golden_flows.py::_login()'de.
+    if resp.status_code == 429:
+        pytest.fail(f"seed öğretmen girişi rate-limited (HTTP 429): {resp.text[:200]}")
     if resp.status_code != 200:
         pytest.skip(f"seed öğretmen girişi başarısız: {resp.status_code}")
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, "login yanıtında access_token yok"
     return token
 

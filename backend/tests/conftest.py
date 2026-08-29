@@ -19,17 +19,17 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 # Add backend directory to Python path for imports
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # noqa: PTH120, PTH100
 sys.path.insert(0, backend_dir)
 # Also add parent directory
-sys.path.insert(0, os.path.dirname(backend_dir))
+sys.path.insert(0, os.path.dirname(backend_dir))  # noqa: PTH120
 
 # Testcontainers support - activate with USE_TESTCONTAINERS=true
 if os.getenv("USE_TESTCONTAINERS", "false").lower() == "true":
     try:
         from conftest_testcontainers import *  # noqa: F403
     except ImportError:
-        pass
+        print("conftest_testcontainers modulu bulunamadi, atlaniyor (opsiyonel)")
 
 from httpx import ASGITransport, AsyncClient
 
@@ -49,8 +49,8 @@ except ImportError:
 # Load test environment variables
 from dotenv import load_dotenv
 
-test_env_path = os.path.join(os.path.dirname(__file__), "..", ".env.test")
-if os.path.exists(test_env_path):
+test_env_path = os.path.join(os.path.dirname(__file__), "..", ".env.test")  # noqa: PTH118, PTH120
+if os.path.exists(test_env_path):  # noqa: PTH110
     load_dotenv(test_env_path)
 
 # Set test environment variables
@@ -76,9 +76,9 @@ os.environ["CORS_ALLOWED_ORIGINS"] = (
 
 # FIX: Security keys for testing
 if "SECRET_KEY" not in os.environ:
-    os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-min-32-chars-long"
+    os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-min-32-chars-long"  # noqa: S105
 if "JWT_SECRET_KEY" not in os.environ:
-    os.environ["JWT_SECRET_KEY"] = "test-jwt-secret-key-for-testing-only-32-chars"
+    os.environ["JWT_SECRET_KEY"] = "test-jwt-secret-key-for-testing-only-32-chars"  # noqa: S105
 
 # FIX: Disable CSRF for tests (unless explicitly testing CSRF)
 os.environ["ENABLE_CSRF"] = os.getenv("TEST_CSRF", "false")
@@ -105,18 +105,18 @@ os.environ["SQLALCHEMY_WARN_20"] = "false"  # Suppress SQLAlchemy warnings
 from sqlalchemy.dialects.sqlite.base import SQLiteTypeCompiler
 
 
-def visit_JSONB(self, type_, **kw):
+def visit_JSONB(self, type_, **kw):  # noqa: N802
     return "JSON"
 
 
-SQLiteTypeCompiler.visit_JSONB = visit_JSONB
+SQLiteTypeCompiler.visit_JSONB = visit_JSONB  # type: ignore[attr-defined]
 
 try:
     from tests.fixtures.test_database import setup_test_environment
 
     setup_test_environment()
 except ImportError:
-    pass  # test_database module is optional
+    print("test_database modulu bulunamadi, atlaniyor (opsiyonel)")
 
 
 # Note: event_loop fixture removed - pytest-asyncio 0.21+ handles this automatically
@@ -233,8 +233,8 @@ async def learning_agent():
         if hasattr(agent, "llm_client"):
             try:
                 await agent.llm_client.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                print(f"learning_agent teardown: llm_client.close() basarisiz: {exc}")
 
 
 @pytest.fixture
@@ -251,8 +251,8 @@ async def study_agent():
         if hasattr(agent, "llm_client"):
             try:
                 await agent.llm_client.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                print(f"study_agent teardown: llm_client.close() basarisiz: {exc}")
 
 
 @pytest.fixture
@@ -269,8 +269,8 @@ async def exam_agent():
         if hasattr(agent, "llm_client"):
             try:
                 await agent.llm_client.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                print(f"exam_agent teardown: llm_client.close() basarisiz: {exc}")
 
 
 @pytest.fixture
@@ -325,20 +325,34 @@ def setup_test_database(test_database_url, worker_id):
     # Cleanup: Test database dosyasını sil
     if "sqlite" in test_database_url:
         db_file = test_database_url.split(":///")[-1]
-        if os.path.exists(db_file):
+        if os.path.exists(db_file):  # noqa: PTH110
             try:
-                os.remove(db_file)
+                os.remove(db_file)  # noqa: PTH107
             except Exception as e:
                 print(f"Warning: Could not remove test database {db_file}: {e}")
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def global_db_manager_cleanup():
-    """Ensure db_manager is closed to prevent hanging aiosqlite threads in pytest-asyncio teardown."""
+def global_db_manager_cleanup():
+    """Ensure db_manager is closed to prevent hanging aiosqlite threads in pytest-asyncio teardown.
+
+    Deliberately a SYNC fixture, not ``async def``. pytest-asyncio 1.3.0 ties
+    every async fixture to an event-loop fixture that defaults to
+    function-scope; a session-scoped async fixture then hits a ScopeMismatch
+    ("You tried to access the function scoped fixture event_loop with a
+    session scoped request object") and the whole collection errors out
+    before any test runs (this is what broke the Quality Gate workflow's
+    "Router registration check" step). Running the one async call we
+    actually need (`db_manager.close()`) through `asyncio.run()` inside a
+    plain sync fixture sidesteps pytest-asyncio's loop-scope machinery
+    entirely, instead of widening `asyncio_default_fixture_loop_scope`
+    globally (which would change timing/isolation for every other async
+    fixture in the suite -- a much bigger blast radius for one cleanup call).
+    """
     yield
     from core.database import db_manager
 
-    await db_manager.close()
+    asyncio.run(db_manager.close())
 
 
 @pytest.fixture
@@ -433,7 +447,7 @@ from datetime import UTC, datetime, timedelta
 
 import jwt as pyjwt
 
-TEST_JWT_SECRET = "test-secret-for-unit-tests-only"
+TEST_JWT_SECRET = "test-secret-for-unit-tests-only"  # noqa: S105
 TEST_JWT_ALGORITHM = "HS256"
 
 
@@ -735,9 +749,9 @@ def user_factory(db_session: AsyncSession):
     from models.database import User
 
     async def _create_user(
-        email: str = None,
-        username: str = None,
-        password_hash: str = "hashed_password_123",
+        email: str = None,  # noqa: RUF013
+        username: str = None,  # noqa: RUF013
+        password_hash: str = "hashed_password_123",  # noqa: S107
         first_name: str = "Test",
         last_name: str = "User",
         role: str = "STUDENT",
@@ -985,7 +999,9 @@ def isolated_test_state():
             isolated_test_state["counter"] = 0
             # test logic
     """
-    state = {}
+    from typing import Any
+
+    state: dict[str, Any] = {}
     yield state
     state.clear()
 
@@ -1031,10 +1047,10 @@ def capture_logs(caplog):
         def __init__(self, caplog):
             self._caplog = caplog
 
-        def contains(self, message: str, level: str = None) -> bool:
+        def contains(self, message: str, level: str = None) -> bool:  # noqa: RUF013
             """Check if logs contain message."""
             for record in self._caplog.records:
-                if message in record.message:
+                if message in record.message:  # noqa: SIM102
                     if level is None or record.levelname == level:
                         return True
             return False
@@ -1155,14 +1171,14 @@ async def async_cleanup_after_test():
 # Import test helpers fixtures for global availability
 try:
     from tests.utils.test_helpers import (
-        fake_cache,
-        fake_db,
-        fake_http,
-        question_builder,
-        user_builder,
+        fake_cache,  # noqa: F401
+        fake_db,  # noqa: F401
+        fake_http,  # noqa: F401
+        question_builder,  # noqa: F401
+        user_builder,  # noqa: F401
     )
 except ImportError:
-    pass  # test_helpers module is optional
+    print("test_helpers modulu bulunamadi, atlaniyor (opsiyonel)")
 
 # =========================
 # Client fixture - plain TestClient (no default Authorization)
