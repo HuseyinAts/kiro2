@@ -1078,5 +1078,69 @@ bir PR'da düzelt). İki test de `xfail(strict=True)` ile, gerekçe ve dosya/
 satır referansıyla işaretlendi -- CI yeşil kalıyor ama bulgu KAYBOLMUYOR.
 Merge: `6cd4e1e4b` (2026-08-29T22:26:16Z UTC).
 
-**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 4+7+3=14 tanesi
-commit edildi (PR #74/#75/#76). ~541 dosya hâlâ triyaj bekliyor.
+### 10.10 PR #77: growth_mindset_engine.py API'ye bağlandı + tests/integration/ event_loop boşluğu (29 Ağu 2026)
+
+**PR #77**: `services/psychology/growth_mindset_engine.py` (GrowthMindsetEngine,
+akademik durgunluk/direnç/alışkanlık mesajları) hiç API'ye bağlı değildi --
+sadece dosya + birim testi commit edilmemişti (SS10.7 grubu). Bu PR onu yeni
+bir `GET /api/v1/student-dashboard/growth-mindset` endpoint'ine
+(`api/student_dashboard.py`) bağladı ve 2 test dosyasını (unit + integration)
+commit'e ekledi.
+
+**tests/integration/'da yeni tespit edilen bir boşluk:** `test_growth_mindset_api.py`
+ilk çalıştırıldığında `ScopeMismatch: ... event_loop with a session scoped
+request object` ile setup'ta düşüyordu. Kök neden: pytest-asyncio 0.21.1
+(pinli), `pytest.ini`'nin `asyncio_default_fixture_loop_scope = session`
+ayarını yok sayıyor; kök conftest'teki session-kapsamlı async fixture zinciri
+(`setup_database` → `async_client`) session-kapsamlı bir `event_loop`
+override'ı istiyor. `tests/e2e/conftest.py`'de bu zaten çözülmüştü;
+`tests/integration/conftest.py`'de HİÇ yoktu -- bu dizindeki diğer
+`async_client` kullanan dosyalar (örn. `test_exam_api_comprehensive.py`)
+başka nedenlerle zaten skip olduğu için bu boşluk şimdiye kadar fark
+edilmemişti. Düzeltme: `tests/e2e/conftest.py`'deki override'ın birebir
+aynısı `tests/integration/conftest.py`'ye eklendi.
+
+**Gerçek, canlı bir bug daha bulundu (mock_db_session):** Aynı test
+`mock_db_session` fixture'ını (`tests/conftest.py` -- salt bir
+`unittest.mock.AsyncMock()`) kullanıyordu. Bu fixture hiçbir gerçek
+veritabanına bağlı değil; `.add()`/`.commit()` çağrıları sessizce hiçbir
+yere yazmıyordu -- yani seed edilen veri, HTTP katmanının gerçekte gördüğü
+(get_db → db_manager, `async_client` ile aynı `test_async_engine`'e bağlı)
+veritabanında hiç var olmuyordu. Endpoint gerçekten çağrılsaydı bile
+"improvement" değil "neutral" dönerdi. Gerçek `db_session` fixture'ına
+(`tests/conftest.py:634`) geçildi.
+
+**Ölçülen, pre-existing bir sınırlama (düzeltilmedi):** Yerelde de CI'da da
+`TEST_DATABASE_URL` tanımsız → SQLite fallback; `setup_database`'in
+`Base.metadata.create_all()` çağrısı `campus_info.sports_facilities`'in
+Postgres-only `ARRAY` kolonu yüzünden patlıyor ve `pytest.skip(...)`
+tetikliyor. `test_growth_mindset_api_endpoint` bu yüzden hem yerelde hem
+CI'da SKIP olarak kalıyor -- `test_student_dashboard_integration.py` ve
+`test_exam_api_comprehensive.py`'nin zaten kabul edilmiş aynı deseni.
+
+**Lint borcu:** `api/student_dashboard.py`'de 8x pre-existing RET504
+(kontrol kolu: `git show HEAD:... | ruff check ...`, PR öncesi/sonrası
+aynı) -- `pyproject.toml`'a gerekçeli per-file-ignore eklendi, 8
+fonksiyonu bu PR kapsamı dışında değiştirmemek için.
+
+**CI kırmızısı, gerçek ve yeni:** İlk push'ta ruff PLW0108 ("Lambda may be
+unnecessary") `test_growth_mindset_api.py:59`'da `lambda: MockKullanici()`
+satırını yakaladı -- yerel lint bu satırı kaçırmıştı. Düzeltme: doğrudan
+`MockKullanici` (sınıfın kendisi zaten sıfır-argümanlı bir callable).
+İkinci push'ta CI yeşil.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı (log seviyesinde teyit
+edildi):** Automatic PR Review (§10.5, secret yok), Backend Tests Python
+3.11 (§10.4, `tests/test_video_recommendation_service.py`'de
+`NameError: name 'nn' is not defined` -- bu PR'ın dokunmadığı bir
+dosya), Frontend Tests (§10.6, 988 hata -- katalogla birebir eşleşiyor),
+Quality Gate/Router registration (§10.4, `api.rag`/`api.v1.semantic_search`/
+`api.youtube_routes`), CI Summary (yukarıdakilerin salt türevi). Backend
+Tests ve Frontend Tests bu üçlü zincirde (PR #75/#76/#77) İLK KEZ gerçekten
+çalışıp kırmızı çıktı (önceki PR'larda "skipping" görünüyordu) -- ikisi de
+zaten bilinen §10.4/§10.6 borcuna işaret ediyor, yeni bir bulgu değil.
+
+Merge: `4331dff60` (2026-08-29T23:50:31Z UTC).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 4+7+3+3=17 tanesi
+commit edildi (PR #74/#75/#76/#77). ~538 dosya hâlâ triyaj bekliyor.
