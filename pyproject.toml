@@ -76,7 +76,7 @@ dependencies = [
     "numpy>=1.26.0",  # Python 3.13 uyumlu
     "scikit-learn==1.3.2",
     "sympy==1.12",
-    "matplotlib==3.8.2",
+    "matplotlib==3.11.1",
     "plotly==5.18.0",
 
     # NLP & AI
