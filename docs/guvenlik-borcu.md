@@ -778,3 +778,209 @@ gerekçe metninin göründüğü doğrulandı. `#144`/`#145` (rbac_system.py --
 gerçek, zaten kod ile düzeltilmiş bulgular, false positive DEĞİL) hiç
 dokunulmadı, hâlâ `open` -- doğrulandı, hazırlık notunun talimatına
 uygun.
+
+
+## 10. Reward-hacking-check kaçağı, `osym_routes` ve repo-geneli `requirements.txt` kırığı (29 Ağu 2026)
+
+SS9'daki Faz 0-6 (PR #62 sonrası 7 kalemlik backlog) tamamlandıktan sonra,
+SS9/Faz 5 eki'nde zaten "önceden var olan, ilgisiz borç" olarak işaretlenmiş
+`api.osym_routes` (`ModuleNotFoundError: services.osym_pdf_pipeline`)
+sorunu ele alındı. Bu iş sırasında, öngörülemeyen çok daha büyük bir
+repo-geneli kırık ortaya çıktı ve düzeltildi.
+
+### 10.1 `osym_routes` kök nedeni: 3 dosya hiç commit edilmemiş
+
+`api/osym_routes.py`'nin import ettiği `services/osym_pdf_pipeline.py`
+(131 satır), `services/turkish_readability_service.py` (101 satır) ve
+`models/osym_trends.py` (42 satır) yerel diskte vardı ama **hiçbir zaman
+git'e eklenmemişti** -- yalnızca geliştirme makinesinde duruyordu. CI'nin
+temiz checkout'unda bu üç dosya yok olduğundan import patlıyor,
+`loader.py` bunu WARNING'e çevirip router'ı sessizce düşürüyor, tüm
+osym_routes endpoint'leri 404 dönüyordu. Düzeltme: 3 dosya + `models/
+__init__.py`'a 2 satırlık OSYM model import/`__all__` girişi commit
+edildi (`15d3a1044`). `models/__init__.py`'nin geri kalanındaki 23
+önceden var olan ruff ihlali (F401 x19 kasıtlı `_deprecated` shim
+importları, SIM105 x2 kasıtlı try/except/pass, RUF022 x1 kronolojik
+sıralı `__all__`) `pyproject.toml`'da gerekçeli per-file-ignore ile
+görünür şekilde not edildi -- gizlenmedi, ayrı bir temizlik görevi olarak
+işaretli.
+
+### 10.2 Reward-hacking-check'in gerçek bulgusu: `models/__init__.py`'de sessiz yutma
+
+Aynı dosyaya yapılan 2 satırlık ekleme, pre-push `reward-hacking-check`
+hook'unu tetikledi: dosyada zaten var olan 2 adet `except ImportError:
+pass` (geriye-uyumluluk shim'leri için) CRITICAL bulgu verdi. Hook'un iki
+bağımsız tespit yolu olduğu doğrulandı -- regex tabanlı yol (yorum/log
+varlığına bakıyor) ve tamamen yorum-kör bir AST yolu (yalnız gövdenin
+`pass`/`...`/salt-docstring olup olmadığına bakıyor); yalnızca yorum
+eklemek AST yolunu atlatmıyor (yerel bir problayıcı ile doğrulandı). İki
+olası "aracı kandırma" yolu bilerek KULLANILMADI: salt-docstring gövde
+(AST'nin docstring istisnasını istismar eder) ve `context_analyzer.py`'nin
+"example" kelimesi geçirme açığı (`should_ignore()`) -- ikisi de aracın
+amacına karşı dürüst olmayan birer bypass olurdu. Gerçek düzeltme: iki
+`pass`'i de `logger.debug(...)` çağrısına çevirmek (`agents/context/
+context_manager.py:47`'deki mevcut desenle aynı örüntü) -- artık tamamen
+sessiz değil, hem regex hem AST yolunu dürüstçe tatmin ediyor. Doğrulama:
+`ruff check`/`ruff format --check` temiz, yerel prob "NO FINDINGS" (önceden
+2 CRITICAL), `test_router_registration.py` 3/3 passed. Commit `64550617a`,
+**PR #72**.
+
+### 10.3 PR #72'nin CI'ı beklenenden çok daha kırmızı çıktı -- repo-geneli, ilgisiz bir kırık
+
+PR #72 push edildiğinde CI, kampanyanın önceki hiçbir PR'ında görülmemiş
+ölçüde kırmızı döndü. Her kırmızı check'in log'u tek tek okunarak (hiçbiri
+varsayılan olarak "önceden bilinen gürültü" sayılmadan) neredeyse hiçbirinin
+bu PR'ın kendi diff'inden kaynaklanmadığı ortaya çıktı -- iki ayrı,
+repo-geneli `backend/requirements.txt` kırığı:
+
+1. **`python-dotenv` eksik**: `tests/conftest.py:50`'nin dogrudan kullandığı
+   `from dotenv import load_dotenv` `requirements.txt`'te hiç yoktu (diğer
+   kilit dosyalarında vardı) -> `ModuleNotFoundError` -> conftest.py import
+   edilemiyor -> pytest'e bağlı HER quality-gate/golden-flow job'u başarısız.
+2. **`opentelemetry-instrumentation-fastapi` aile-içi tutarsızlığı**:
+   `git log -L`/`git blame` ile izole edildi -- `1e6e6c135` (#40, Dependabot
+   tekil bump) yalnızca bu paketi 0.42b0'dan 0.65b0'a çıkarmış, kardeş
+   paketleri (`opentelemetry-sdk`/`-api`/`-instrumentation`, hepsi 1.21.0/
+   0.42b0 ailesinde) DOKUNMADAN bırakmıştı. 0.65b0 ailesi
+   `opentelemetry-semantic-conventions==0.65b0` ister, 1.21.0 ailesi
+   `==0.42b0` ister -- karşılıklı dışlayıcı, sıkı çözücülerde (`uv pip
+   install`) sert hata.
+
+Her ikisinin de **bu PR'dan bağımsız, repo-geneli** olduğu `gh run list
+--branch master --workflow ci.yml --limit 5` ile kanıtlandı: master'ın son
+5 çalışması (bu kampanyada bizzat merge edilen `477e0e306`/#43 dahil)
+`failure`/`cancelled` ile bitiyordu. Düzeltme: `opentelemetry-instrumentation-
+fastapi` `1e6e6c135`'ten önceki `0.42b0`'a geri alındı (tek kullanım yeri
+`core/opentelemetry_config.py`, etkilenmiyor); `python-dotenv==1.2.1`
+(diğer kilit dosyalarındaki pinle aynı) eklendi. İkisi de `pip install
+--dry-run` ile CI turuna hiç çıkmadan yerelde doğrulandı. Ayrı, doğru
+kapsamlı bir dala taşındı (`fix/requirements-opentelemetry-dotenv-conflict`,
+commit `31aeddec7`, **PR #73**) -- `models/__init__.py`/`osym_routes`
+fix'iyle karışmasın diye.
+
+PR #73 merge edilmeden önce, kalan kırmızıların TAMAMI (20 check yeşile
+döndü: 5 Code Quality job'u, Golden Flow E2E, License Compliance,
+Container Security, CodeQL x2, SAST, IaC, OWASP, Secret Scanning, vb.)
+tek tek doğrulandı; kalan 5 kırmızı (§10.4-10.6) ayrı ayrı önceden-var-olan
+olarak kanıtlandı. `master`'da branch protection olmadığı (`gh api repos/
+.../branches/master/protection` -> 404) doğrulandıktan sonra `gh pr merge
+73 --squash` ile birleştirildi (merge commit `6971d18cf`, 29 Ağu 2026
+20:32 UTC). Ardından `master` senkronize edildi ve PR #72'nin dalına
+merge edildi (çakışmasız) -- PR #72'nin CI'ı artık her iki düzeltmeyle
+birlikte yeniden çalışıyor.
+
+### 10.4 `nn` NameError kökeni artık kesinleşti: `torch`/`transformers` sürüm uyuşmazlığı
+
+SS9'dan beri "muhtemelen CI'a özgü paket sürümü" olarak işaretli olan
+`NameError: name 'nn' is not defined` artık tam kanıtla açıklandı. CI
+log'unda (`transformers`'ın kendi kurulum çıktısı):
+
+```
+[transformers] Disabling PyTorch because PyTorch >= 2.5 is required
+but found 2.4.1
+PyTorch was not found. Models won't be available and only tokenizers,
+configuration and file/data utilities can be used.
+```
+
+`backend/requirements.txt`: `transformers>=4.35.0` / `torch>=2.1.0` --
+ikisi de üst sınırsız, ve `git blame` ile ikisinin de `1fe3a390ac`
+(7 Şub 2026) tarihinden beri, yani **6,5 aydır**, bu haliyle durduğu
+doğrulandı. CI (temiz Linux) `torch`'u `2.4.1`'e çözüyor; kurulu
+`transformers` sürümü `torch>=2.5` şart koşuyor, karşılanmayınca PyTorch
+entegrasyonunu TAMAMEN kapatıyor (`nn` hiç import edilmiyor) --
+`api.rag`, `api.v1.semantic_search`, `api.youtube_routes` ve
+`tests/test_video_recommendation_service.py` bu yüzden patlıyor. Bu bug
+6,5 aydır potansiyel olarak oradaydı, ama §10.3'teki `requirements.txt`
+install-seviyesi hataları CI'yı bu noktaya hiç ulaştırmadığından şimdiye
+kadar gerçek bir çalıştırmada görünmemişti -- PR #73 asıl install
+kırıklarını giderince ilk kez açığa çıktı.
+
+**Gerçek düzeltme kapsam dışı bırakıldı (bu segment yapılmadı):** `torch`'u
+`>=2.5`'e çıkarmak, ardından bununla birlikte açığa çıkan İKİNCİ bir
+çakışmayı çözmek gerekiyor -- `requirements.txt`'te sabit `sympy==1.12`
+pin'i, torch >=2.5'in istediği `sympy>=1.13.x` ile uyuşmuyor. İkisi
+birlikte, kendi araştırmasını/doğrulamasını hak eden ayrı bir PR'ın
+konusu.
+
+### 10.5 "Automatic PR Review" -- yeni semptom, aynı eski kök neden
+
+PR #72/#73'te bu check `##[warning]Unexpected input(s) 'model'` uyarısının
+ardından `##[error]Action failed with error: Environment variable
+validation failed` ile başarısız oluyor. Bu, SS9/Faz1'de zaten
+belgelenmiş kök nedenle (`ANTHROPIC_API_KEY`/`CLAUDE_CODE_OAUTH_TOKEN`
+repo secret'ı YOK) AYNI hata imzası -- `'model'` uyarısı muhtemelen aynı
+eksikliğin yeni bir yan-semptomu, ayrı bir bug değil. Düzeltmesi kod
+tarafında değil: bu, yalnızca Hüseyin'in yapabileceği bir kimlik-bilgisi
+girişi (repo secret eklemek).
+
+### 10.6 Frontend Tests -- aynı önceden var olan borç, yeniden doğrulandı
+
+PR #72'de de aynı imza: `no-trailing-spaces`, `eqeqeq`, `prefer-const`,
+`comma-dangle`, `no-empty`, `@typescript-eslint/no-unused-vars` kuralları
++ iki `parserOptions.project` parse hatası, SS9/Faz'lardaki "988 önceden
+var olan ESLint hatası" bulgusuyla aynı kategori -- bu PR hiç frontend
+dosyasına dokunmadı.
+
+### Sonuç ve merge
+
+PR #72'nin CI'ı (güncellenmiş `master`'la) tam olarak beklendiği gibi
+çıktı: `test_mapped_routers_are_importable` **yalnızca** `api.rag`/
+`api.v1.semantic_search`/`api.youtube_routes` için `NameError: name 'nn'
+is not defined` ile başarısız oldu (log'u kelimesi kelimesine doğrulandı)
+-- `osym_routes` bu listede YOK, yani bu PR'ın kendi düzeltmesi çalışıyor;
+`test_all_app_api_routers_registered` ve `test_registered_app_api_modules_
+exist` PASSED (2/3 passed, 1/3 önceden-var-olan/ilgisiz kırmızı). Backend
+Tests aynı imzayı taşıyor (coverage tablosu §9'daki gibi 0.00%'e
+çöküyor -- collection hatası tüm suite'i erken durduruyor). Diğer 20+
+check (Golden Flow E2E, tüm Code Quality job'ları, CodeQL python+
+javascript, Container Security, License Compliance, SAST, IaC, OWASP,
+Secret Scanning, Checkov, Trivy, Compliance) PASSED. `gh pr merge 72
+--squash` ile birleştirildi (29 Ağu 2026 20:44 UTC). `--no-verify`
+kullanılmadı, hiçbir kırmızı check körlemesine geçilmedi -- her biri
+log seviyesinde doğrulandı.
+
+**Bu segment sonunda repo durumu:** SS9'daki Faz 0-6 (PR #62 sonrası
+backlog) ve bu bölümdeki osym_routes/requirements.txt zinciri (PR #72,
+#73) TAMAMLANDI. Geriye kalan bilinen borç: (1) `torch`/`transformers`
+sürüm uyuşmazlığı (§10.4, kod düzeltmesi gerekiyor, kapsamlı/ayrı PR);
+(2) Automatic PR Review'in eksik repo secret'ı (§10.5, yalnızca Hüseyin
+yapabilir); (3) Frontend Tests ESLint borcu (§10.6, 988 hata, ayrı
+triyaj); (4) `allow_auto_merge` repo ayarı (Faz 5, yalnızca Hüseyin
+yapabilir, önerilir); (5) kalan Dependabot PR'ları (otomasyon Faz 5
+düzeltmesiyle artık çalışıyor, düzenli izlenmeli).
+
+### 10.7 YENİ BULGU (bu segmentin sonunda, henüz düzeltilmedi): `osym_routes` deseni tek örnek değil
+
+PR #72/#73 sonrası `git status` çalıştırıldığında **120+ commit edilmemiş
+dosya** ortaya çıktı -- §10.1'deki "3 dosya hiç commit edilmemiş" bulgusu
+tekil bir olay değil, tekrarlayan bir örüntüymüş. Somut, doğrulanmış bir
+örnek: `api/osym_routes.py:391` (TRACKED, PR #72 ile az önce merge edildi)
+`run_equating` endpoint'i içinde `from services.irt_equating_service
+import MeanMeanEquator` -- fonksiyon-içi (lazy) import, bu yüzden
+`test_mapped_routers_are_importable` bunu YAKALAMADI (modül seviyesinde
+değil), ama `services/irt_equating_service.py`'nin kendisi commit edilmemiş
+-- yani `/run-equating` (admin) endpoint'i CI/temiz checkout'ta ÇAĞRILDIĞI
+AN `ModuleNotFoundError` verecek. `tests/fast/test_irt_equating.py` da
+aynı modülü import ediyor (module-level) -- CI'da collection hatası
+vermesi bekleniyor ama bu dosya `ders-zorlayici` pre-push hook'unun
+kapsadığı 320 testin arasında değil, bu yüzden yerel pre-push hiç
+yakalamıyor.
+
+Untracked listesinde AYNI şekilde eşleşen test+servis çiftleri var:
+`services/empirical_irt_calibrator.py` (+ `test_y11_goc.py`,
+`scripts/quality/calibrate_question_bank_irt.py`), `algorithms/
+isomorphic_generator.py` (+ `test_isomorphic_generator.py`), `services/
+yks_jargon_service.py` (+ `test_yks_jargon_service.py`), `services/nlp/`
+(+ `test_motivation_generator.py`, `test_osym_validator.py`), ve daha
+fazlası -- eşlik eden test dosyalarının varlığı bunların çoğunun
+YARIM/deneysel değil TAMAMLANMIŞ, test edilmiş özellikler olduğuna işaret
+ediyor. Listede ayrıca token/kimlik bilgisi gibi görünen dosya adları da
+var (`.fantom_tok`, `.e2e_token`, `.probe_tok`, `.a1_eksen1_prob_email`)
+-- bunlar ASLA commit edilmemeli, önce içerik/amaç teyit edilmeden
+dokunulmadı.
+
+**Bu segmentte YAPILMADI:** 120+ dosyanın hiçbiri incelenmedi/commit
+edilmedi -- kapsamı (gerçek kaynak kodu / scratch-debug dosyası / sızıntı
+riski taşıyan dosya ayrımı gerektiren) bu segmentin geri kalanına
+sığmayacak kadar büyük, kendi dikkatli triyaj geçişini hak ediyor. Sonraki
+en yüksek öncelikli iş olarak işaretlendi.
