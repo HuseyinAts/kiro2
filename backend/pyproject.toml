@@ -380,6 +380,41 @@ exclude = [
 # `answers_stmt` JOIN'i, bu davranisi degistirmek ayri bir konu olurdu.
 "services/parent_service.py" = ["S112"]
 
+# application/commands/auth.py — E402 x7 + N818 x1. OLCULDU (29 Agu 2026,
+# PR #62 sonrasi backlog Faz 2): kontrol kolu `git show HEAD:...| ruff
+# check --stdin-filename ... -` -> "Found 8 errors", yani HICBIRI Faz 2'nin
+# refresh_token persist-hata-gorunurlugu fix'inde degil (fix satir ~366-410,
+# bu ihlaller satir 258-269).
+#   E402 x7  :258-266 yerel importlar (jwt/sqlalchemy/core.*) kodun ALTINDA
+#            -- ayni desen api/auth.py'de de var ve orada "KASITLI" olarak
+#            belgeli (dongusel import onleme). Tasimak modul init sirasini
+#            degistirir, bu PR'in kapsami degil.
+#   N818     `TwoFactorRequired(Exception)` -- "Error" soneki yok. Baska
+#            dosyalarda (api/auth.py, tests) ayni isimle import/except
+#            ediliyor; yeniden adlandirmak cok dosyali, ilgisiz bir refactor.
+"application/commands/auth.py" = ["E402", "N818"]
+
+# tests/unit/test_auth_endpoints.py — E402 x5 + S105 x2 + N802 x1. OLCULDU
+# (29 Agu 2026, Faz 2): kontrol kolu pre-commit'in PINLEDIGI ruff (0.7.1,
+# gercek gate) -> "Found 8 errors" (asagidaki 3 kural), HICBIRI Faz 2'nin
+# yeni testinde degil. NOT: ayni dosyayi YEREL ruff (0.14.13) ile olcunce
+# 48 hata cikiyor -- fark RUF059 (kullanilmayan `app`/`mock_db` unpack,
+# 40x, `client, app, mock_db = app_client` deseni tum dosyada) 0.7.1'de
+# HENUZ YOK. UP038 girisindekiyle ayni sinif sorun (yukarida): gate'in
+# gormedigi kurali burada ignore etmenin anlami yok, o yuzden RUF059
+# BILEREK DISARIDA -- bu liste sadece pre-commit'i FIILEN bloklayan 3
+# kurali kapsiyor.
+#   E402 x5  :42-47 yerel importlar (test bootstrap'i env degiskenlerini
+#            importlardan ONCE set etmeli, dosyanin kendi yorumu bunu
+#            aciklıyor: "Imports after env is set").
+#   S105 x2  :55,57 `_TEST_PASSWORD`/`_TEST_PASSWORD_HASH` modul sabitleri
+#            -- gercek sir degil, testin kendi placeholder degerleri.
+#   N802     :255 `test_login_2fa_required_raises_twoFactorRequired_exception`
+#            -- test adi zaten var olan `TwoFactorRequired` sinif adini
+#            tasiyor (yukaridaki N818 ile ayni kok), yeniden adlandirmak
+#            testin okunurlugunu ne bozar ne duzeltir, ilgisiz.
+"tests/unit/test_auth_endpoints.py" = ["E402", "S105", "N802"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true

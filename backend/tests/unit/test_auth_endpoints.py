@@ -52,7 +52,9 @@ from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
 _TEST_SECRET = JWT_SECRET
 _TEST_USER_ID = "aabbccdd-1234-5678-abcd-ef0123456789"
 _TEST_EMAIL = "test@kiro2.com"
-_TEST_PASSWORD = "TestPass1!"
+_TEST_PASSWORD = (
+    "TestPass1!"  # pragma: allowlist secret -- test fixture, gercek sir degil
+)
 _TEST_PASSWORD_HASH = (
     "$2b$12$placeholderhashabcdefghijklmnopqrstuvwxyz012345"  # placeholder
 )
@@ -119,7 +121,9 @@ def _make_mock_db_user(
     user.password_hash = password_hash if password_hash is not None else real_hash
     user.is_active = is_active
     user.is_2fa_enabled = is_2fa_enabled
-    user.secret_2fa = "TOTP_SECRET" if is_2fa_enabled else None
+    user.secret_2fa = (
+        "TOTP_SECRET" if is_2fa_enabled else None
+    )  # pragma: allowlist secret
     user.phone = ""
     user.created_at = datetime(2026, 1, 1, tzinfo=UTC)
     user.last_login = None
@@ -291,6 +295,83 @@ class TestLogin:
 
         assert exc_info.value.email == _TEST_EMAIL
         assert exc_info.value.user_id == _TEST_USER_ID
+
+    def test_login_refresh_token_persist_failure_is_logged_visibly(self, caplog):
+        """
+        refresh_tokens INSERT'i basarisiz olursa artik SESSIZCE yutulmuyor.
+
+        Onceki davranis (Faz 2 oncesi, application/commands/auth.py):
+        `except Exception: logger.warning(...)` -- hata gorunmez, login
+        "success" doner, ama cookie'deki refresh token DB'de hic yoktur;
+        access token suresi dolunca /refresh gecerli bir JWT'yi aciklamasiz
+        401 "revoked or does not exist" ile reddeder (core/jwt_auth.py:274-278)
+        -- sessiz bir session desync.
+
+        Bu test: (1) login yine basarili doner -- access_token bu DB
+        satirindan bagimsiz kendi kendine yeterli bir JWT, bu davranis
+        BILEREK degistirilmedi; (2) ama persist hatasi artik ERROR
+        seviyesinde, exception detayi VE kullanici kimligini iceren gorunur
+        bir log satirinda -- WARNING'e dusup sessiz kalmiyor.
+        """
+        import asyncio
+        import logging as _logging
+
+        from application.commands.auth import LoginCommand, LoginCommandHandler
+        from models.user import KullaniciGiris
+
+        db_user = _make_mock_db_user()
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = db_user
+
+        class _FakeBeginNested:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *exc):
+                return False
+
+        mock_db = AsyncMock()
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_result, RuntimeError("connection reset by peer")]
+        )
+        mock_db.begin_nested = MagicMock(return_value=_FakeBeginNested())
+
+        giris = KullaniciGiris(email=_TEST_EMAIL, sifre=_TEST_PASSWORD)
+
+        with (
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
+        ):
+            mock_get_mgr.return_value = _make_mock_jwt_manager()
+            mock_pwd.return_value.verify.return_value = True
+
+            with caplog.at_level(_logging.WARNING, logger="application.commands.auth"):
+                sonuc = asyncio.run(
+                    LoginCommandHandler().handle(
+                        LoginCommand(
+                            email=giris.email,
+                            password=giris.get_password(),
+                            db=mock_db,
+                        )
+                    )
+                )
+
+        # Login yine basarili -- access_token DB satirindan bagimsiz.
+        assert sonuc["success"] is True
+        assert sonuc["token"]
+        assert sonuc["refreshToken"]
+
+        # Ama hata artik GORUNUR: ERROR seviyesinde, exception detayi ve
+        # kullanici kimligiyle -- tek satirlik sessiz WARNING degil.
+        error_records = [r for r in caplog.records if r.levelno >= _logging.ERROR]
+        assert error_records, (
+            "refresh_token persist hatasi ERROR seviyesinde loglanmadi "
+            f"(yakalanan kayitlar: "
+            f"{[(r.levelname, r.getMessage()) for r in caplog.records]})"
+        )
+        combined = " ".join(r.getMessage() for r in error_records)
+        assert "connection reset by peer" in combined
+        assert _TEST_USER_ID in combined
 
     def test_login_rate_limit_exceeded_returns_429(self, app_client):
         """
@@ -867,7 +948,7 @@ class TestPasswordChange:
                 "/api/v1/auth/change-password",
                 json={
                     "currentPassword": _TEST_PASSWORD,
-                    "newPassword": "NewStrongPass2@",
+                    "newPassword": "NewStrongPass2@",  # pragma: allowlist secret
                 },
             )
 
@@ -893,8 +974,8 @@ class TestPasswordChange:
             resp = client.post(
                 "/api/v1/auth/change-password",
                 json={
-                    "currentPassword": "WrongCurrentPass1!",
-                    "newPassword": "NewStrongPass2@",
+                    "currentPassword": "WrongCurrentPass1!",  # pragma: allowlist secret
+                    "newPassword": "NewStrongPass2@",  # pragma: allowlist secret
                 },
             )
 
@@ -925,7 +1006,8 @@ class TestPasswordChange:
                 "/api/v1/auth/change-password",
                 json={
                     "currentPassword": _TEST_PASSWORD,
-                    "newPassword": "weakpass",  # too short, no upper, no digit, no special
+                    # too short, no upper, no digit, no special
+                    "newPassword": "weakpass",  # pragma: allowlist secret
                 },
             )
 
@@ -945,7 +1027,7 @@ class TestPasswordChange:
                 "/api/v1/auth/change-password",
                 json={
                     "currentPassword": _TEST_PASSWORD,
-                    "newPassword": "NewStrongPass2@",
+                    "newPassword": "NewStrongPass2@",  # pragma: allowlist secret
                 },
             )
 
