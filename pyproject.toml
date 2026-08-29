@@ -52,7 +52,7 @@ dependencies = [
     "passlib[bcrypt]==1.7.4",
     "slowapi==0.1.9",
     "bleach==6.2.0",
-    "PyJWT==2.8.0",
+    "PyJWT==2.13.0",
 
     # 2FA
     "pyotp==2.9.0",
@@ -113,11 +113,11 @@ dependencies = [
     "opentelemetry-api==1.21.0",
     "opentelemetry-sdk==1.21.0",
     "opentelemetry-instrumentation==0.42b0",
-    "opentelemetry-instrumentation-fastapi==0.42b0",
+    "opentelemetry-instrumentation-fastapi==0.65b0",
     "opentelemetry-instrumentation-sqlalchemy==0.42b0",
     "opentelemetry-instrumentation-redis==0.42b0",
     "opentelemetry-instrumentation-requests==0.42b0",
-    "opentelemetry-instrumentation-logging==0.42b0",
+    "opentelemetry-instrumentation-logging==0.65b0",
     "opentelemetry-exporter-jaeger==1.21.0",
     "opentelemetry-exporter-jaeger-thrift==1.21.0",
     "opentelemetry-exporter-otlp==1.21.0",

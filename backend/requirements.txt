@@ -96,7 +96,7 @@ reportlab==4.0.7
 xlsxwriter==3.1.9
 
 # JWT
-PyJWT==2.8.0
+PyJWT==2.13.0
 
 # Scraping
 beautifulsoup4==4.12.2
@@ -118,7 +118,7 @@ easyocr==1.7.1
 opentelemetry-api==1.21.0
 opentelemetry-sdk==1.21.0
 opentelemetry-instrumentation==0.42b0
-opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-instrumentation-fastapi==0.65b0
 opentelemetry-exporter-jaeger==1.21.0
 opentelemetry-exporter-jaeger-thrift==1.21.0
 opentelemetry-exporter-otlp==1.21.0
