@@ -541,3 +541,68 @@ tekrar araştırmaya gerek kalmadı. 8 Golden Flow E2E tests PASSED.
 PR #69, `gh pr merge 69 --merge` ile merge commit
 `08e035dcf8d81cc6c5f089f52527ad655c3956e7` olarak birleştirildi (29 Ağu
 2026).
+
+
+### Faz 4 -- Temiz kopya güvenlik ölçüm script'i
+
+Bu kampanya boyunca "temiz kopya ölçümü" (canlı/kirli çalışma dizini --
+16.339 dosya, `.venv` dahil -- yerine `git worktree` ile HEAD'in CI'nin
+`actions/checkout`'unun gördüğü kümeyle aynı temiz bir kopyasını çıkarıp
+bandit/checkov'u orada çalıştırma) defalarca elle tekrarlandı. PR #70,
+bu §"Ölçüm yöntemi" notunu tek dosyalık, tekrar-çalıştırılabilir bir
+script'e döktü: `backend/scripts/temiz_kopya_guvenlik_olcumu.py`.
+Belgelenen CI komutlarını (SS 1-2: `bandit -r backend/ -ll`, `checkov -d .
+--framework all`) değiştirmeden kullanır, sadece JSON çıktı bayrakları
+ekler; checkov'un `-o json --output-file-path <dir>` çıktısının ampirik
+olarak doğrulanmış iki şeklini (tek framework eşleşirse tek dict, birden
+fazla eşleşirse dict listesi) doğru normalize eder.
+
+**Doğrulama:** ruff/mypy temiz. İki saf özetleme fonksiyonu
+(`bandit_json_ozetle`, `checkov_json_ozetle`) sentetik-ama-gerçek-şemalı
+veriyle ayrı unit-test edildi (her iki checkov şekli dahil). Script
+gerçekten çalıştırıldı: temiz worktree kuruldu, bandit worktree içinde
+GERÇEKTEN koşup geçerli JSON yazdı (297 bulgu, MEDIUM+); checkov bu
+**yerel geliştirme makinesinde kurulu olmadığı için** (`checkov`/`python -m
+checkov` bulunamıyor -- CI'nin `security.yml`'inde ayrı bir adımda
+kuruluyor, yerel `requirements*.txt`'in parçası değil) script kendi
+belgelediği istenen davranışla patladı: sessiz geçmedi, aleti-yok hatası
+açıkça yukarı fırladı, `finally` bloğu exception'a rağmen worktree'yi
+temizledi (`git worktree list` ile doğrulandı). Yani checkov yarısının
+CANLI bir yerel doğrulaması bu PR'ın kapsamında değil -- doğruluğu (1)
+yukarıdaki unit test + (2) checkov'un CI'daki belgelenmiş gerçek
+davranışına dayanıyor; ilk gerçek "temiz kopya" tam ölçümü (bandit +
+checkov birlikte) ayrı bir sonraki adım.
+
+**Yan bulgu -- dördüncü "aynı aracın farklı kapısı" örneği:** script'in
+ilk `git commit` denemesi sessizce başarısız oldu. Yerel pre-commit
+`bandit (PyPI wheel)` hook'u, CI'nin belgelenen SAST adımının aksine
+(`bandit -r backend/ -ll`, sadece MEDIUM+), `-ll` filtresi OLMADAN
+çalışıyor -- LOW severity bulguları da yakalıyor. Script'in kendi
+subprocess kullanımı (hepsi sabit literal komut listesi, `shell=True`
+yok, kullanıcı girdisi hiçbir komuta ulaşmıyor) 4 LOW/High-confidence
+bulguya takıldı (B404 import, B603 x2, B607). Düzeltme kod yeniden
+yapılandırma değil, gerekçeli `# nosec <KOD>` bayrakları -- bandit'in
+kendi JSON çıktısıyla doğrulandı: 4 bulgu nosec ile bastırıldı, 0 kalan
+bulgu (hiçbir severity'de); CI'nin kendi "Code Quality (bandit)" job'u da
+bu PR'da ayrıca PASSED geçerek aynı sonucu bağımsız doğruladı. Bu,
+kampanyanın tekrarlayan "aynı aracın farklı sürümü/kapısı" deseninin --
+RUF059 (Faz 2, ruff sürüm farkı) ve önceki üç CI-katmanı örneğinden (§9)
+sonra -- bu kez **versiyon değil önem-derecesi (severity) eşiği**
+uyumsuzluğu şeklinde yeni bir örneği.
+
+Kalan kırmızılar yine aynı beş önceden-var-olan kalem -- bu PR'da da
+Quality Gate (`ModuleNotFoundError: services.osym_pdf_pipeline` +
+`NameError: name 'nn' is not defined`) ve Backend Tests
+(`test_video_recommendation_service.py` aynı `NameError`, `TOTAL
+144957 144957 0.00%`, "coverage of 60% not reached") log'ları tazeden
+okunarak doğrulandı; Frontend Tests aynı "✖ 2102 problems (988 errors,
+1114 warnings)"; Automatic PR Review aynı eksik secret; API Security
+Testing beklendiği gibi pending bırakıldı (§9 emsali). PR bu kez CI'nin
+tam güvenlik/uyumluluk paketini de tetikledi (Code Quality bandit/mypy/
+ruff/safety/semgrep, CodeQL python+javascript, Checkov, Container
+Security Scan, IaC Security Scan, License Compliance Check, OWASP
+Dependency Check, SAST Scan, Secret Scanning, Compliance Checks, Trivy,
+Security Summary) -- hepsi PASSED. 8 Golden Flow E2E tests PASSED
+(3m53s). PR #70, `gh pr merge 70 --merge` ile merge commit
+`026b5055cf7e3934f44548f7dea69e4efcd03d48` olarak birleştirildi (29 Ağu
+2026).
