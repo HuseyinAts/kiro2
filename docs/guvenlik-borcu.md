@@ -506,3 +506,38 @@ doğrulama kanalı (GF1wB refresh-token-persist testi) CI'da gerçekten
 çalışıp geçti. PR #68, `gh pr merge 68 --merge` ile merge commit
 `8050cc499946dabc44d0dab7edbc8bee23c5fdfa` olarak birleştirildi (29 Ağu
 2026).
+
+
+### Faz 3 -- `fsrs.py` ölü kod + import sırası lint borcu
+
+Araştırma doğru çıktı: `end_study_session` (`backend/app/api/fsrs.py`)
+artık `fsrs_service`'e delege ediyor ve satır 482-501'de temiz biçimde
+bitiyor. 2 Ağu'daki `eba3981fe` ("fsrs: çalışma oturumu uçları gerçek
+modele karşı yeniden yazıldı") bu üst kısmı düzeltti ama ardından gelen
+eski, `oturum` değişkenine dayanan bir uygulama parçasını (satır 503-539)
+temizlemedi -- ilk `except Exception` bloğu her zaman return/raise ile
+bittiği için bu kuyruk hiçbir zaman çalışmıyordu (ruff'ın kendi B025
+"duplicate except" bulgusu bunu doğruluyor). PR #69'da bu ölü blok
+silindi, `_maybe_await` helper import sırasını bozan konumundan (E402 x12)
+`fastapi` importlarının sonrasına taşındı, `backend/api/fsrs.py`'deki
+bilinçli geriye-uyumluluk shim'i (`from app.api.fsrs import *`,
+`test_api_batch2.py:932` hâlâ kullanıyor) `# noqa: F403` + gerekçe
+yorumuyla işaretlendi. Ölçüldü: `ruff check` fix öncesi **26 hata**, fix
+sonrası **All checks passed!**. Regresyon yok: `test_api_batch2.py -k
+"fsrs or FSRS"` fix öncesi/sonrası birebir aynı -- 13 failed (bu PR'ın
+kapsamı dışında, önceden var olan borç: kaldırılan flashcard/review/
+due-flashcards uçları için güncellenmemiş eski testler, hepsi HTTP 410
+alıyor), 38 passed; `StudySession`/`study_session` testleri 7/7 passed
+(`end_study_session`'ın aktif kod yolunu doğrudan kapsıyor); yerel
+`test_router_registration.py` 3/3 passed.
+
+Kalan kırmızılar PR #68'de (§ Faz 2) tek tek log'u okunarak doğrulanan
+aynı beş kalem -- Quality Gate + Backend Tests (aynı `transformers`/`nn`
+kök nedeni, §9), Automatic PR Review (aynı eksik secret), Frontend Tests
+(aynı 988 önceden var olan ESLint hatası), API Security Testing (ZAP,
+§9'daki "master'da 2s44dk-3s54dk sürüp failure" bulgusu) -- Quality Gate
+log'u bu PR'da da tekrar okunarak aynı 4 router/aynı imza doğrulandı,
+tekrar araştırmaya gerek kalmadı. 8 Golden Flow E2E tests PASSED.
+PR #69, `gh pr merge 69 --merge` ile merge commit
+`08e035dcf8d81cc6c5f089f52527ad655c3956e7` olarak birleştirildi (29 Ağu
+2026).
