@@ -26,10 +26,10 @@ sys.path.insert(0, os.path.dirname(backend_dir))  # noqa: PTH120
 
 # Testcontainers support - activate with USE_TESTCONTAINERS=true
 if os.getenv("USE_TESTCONTAINERS", "false").lower() == "true":
-    try:  # noqa: SIM105
+    try:
         from conftest_testcontainers import *  # noqa: F403
     except ImportError:
-        pass
+        print("conftest_testcontainers modulu bulunamadi, atlaniyor (opsiyonel)")
 
 from httpx import ASGITransport, AsyncClient
 
@@ -116,7 +116,7 @@ try:
 
     setup_test_environment()
 except ImportError:
-    pass  # test_database module is optional
+    print("test_database modulu bulunamadi, atlaniyor (opsiyonel)")
 
 
 # Note: event_loop fixture removed - pytest-asyncio 0.21+ handles this automatically
@@ -231,10 +231,10 @@ async def learning_agent():
         yield agent
     finally:
         if hasattr(agent, "llm_client"):
-            try:  # noqa: SIM105
+            try:
                 await agent.llm_client.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                print(f"learning_agent teardown: llm_client.close() basarisiz: {exc}")
 
 
 @pytest.fixture
@@ -249,10 +249,10 @@ async def study_agent():
         yield agent
     finally:
         if hasattr(agent, "llm_client"):
-            try:  # noqa: SIM105
+            try:
                 await agent.llm_client.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                print(f"study_agent teardown: llm_client.close() basarisiz: {exc}")
 
 
 @pytest.fixture
@@ -267,10 +267,10 @@ async def exam_agent():
         yield agent
     finally:
         if hasattr(agent, "llm_client"):
-            try:  # noqa: SIM105
+            try:
                 await agent.llm_client.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                print(f"exam_agent teardown: llm_client.close() basarisiz: {exc}")
 
 
 @pytest.fixture
@@ -1167,7 +1167,7 @@ async def async_cleanup_after_test():
 # ============================================================================
 
 # Import test helpers fixtures for global availability
-try:  # noqa: SIM105
+try:
     from tests.utils.test_helpers import (
         fake_cache,  # noqa: F401
         fake_db,  # noqa: F401
@@ -1176,7 +1176,7 @@ try:  # noqa: SIM105
         user_builder,  # noqa: F401
     )
 except ImportError:
-    pass  # test_helpers module is optional
+    print("test_helpers modulu bulunamadi, atlaniyor (opsiyonel)")
 
 # =========================
 # Client fixture - plain TestClient (no default Authorization)
