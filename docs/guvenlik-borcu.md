@@ -687,3 +687,52 @@ son merge kararı kullanıcıya bırakıldı, buton basılmadı. `#47 matplotlib
 (minor, 3.8->3.11) düşük-orta risk olarak değerlendirilmişti (14 dosyada
 kullanıcı-görünür diyagram üretimi) -- otomasyona bırakıldı ama bu servis
 grubunun test kapsamı ayrıca doğrulanmadı, ayrı bir not olarak kayıtlı.
+
+
+### Faz 6 -- CodeQL false-positive dismiss'leri: iş zaten yapılmıştı, ama bozuk
+
+Faz 6'ya başlarken hazırlık notundaki (`py/weak-sensitive-data-hashing`
+kuralı için 5 alert: #136, #137, #138, #143, #151) numaraları canlı
+`gh api repos/.../code-scanning/alerts` ile doğrulanmaya çalışıldı --
+ama bu 5 dosya güncel `state=open` listesinde HİÇ görünmedi. Doğrudan
+numara sorgusu gerçeği ortaya çıkardı: **hepsi zaten `dismissed`,
+`dismissed_reason: "false positive"` idi** -- `dismissed_at` damgası bu
+OTURUMUN içinde, 14:01:22-27Z (bu segmentin kendi işinden önce, muhtemelen
+bu konuşmanın özetlenen/daha önceki bir kısmında). Yani asıl dismiss
+kararı zaten doğru verilmiş ve doğru 5 alert'e uygulanmıştı.
+
+**Ama bozuk bir yan etkisi vardı:** her 5 alert'in `dismissed_comment`
+alanı, gerekçe metni yerine kelimesi kelimesine
+`@C:\Users\husey\AppData\Local\Temp\kiro2_codeql_dismiss_comment.txt`
+string'ini içeriyordu -- yani `gh api -f dismissed_comment=@<dosya>`
+çağrısı dosya içeriğini OKUMAK yerine `@<yol>` metnini olduğu gibi
+gönderdi (bu ortamda `-f`'in dosya-okuma davranışı güvenilir değil).
+Düzeltmeye çalışırken **iki farklı, birbirinden bağımsız GitHub API
+kısıtı** ortaya çıktı (ikisi de canlı 4xx yanıtlarıyla doğrulandı, tahmin
+değil):
+
+1. `dismissed_reason` değeri `"false_positive"` (alt çizgi) DEĞİL,
+   `"false positive"` (boşluk) olmalı -- yanlış değer 422 "is not a
+   member of [...]" ile reddedildi.
+2. `dismissed_comment` **280 karakterle sınırlı** -- orijinal Türkçe
+   gerekçe metni 401 karakterdi, 422 "Only 280 characters are allowed;
+   401 were supplied" ile reddedildi.
+3. Zaten `dismissed` olan bir alert'e tekrar `state=dismissed` PATCH'i
+   400 "Alert is already dismissed" ile reddediliyor -- düzeltme, önce
+   `state=open`'a döndürüp sonra doğru gövdeyle tekrar dismiss etmeyi
+   gerektirdi (iki adımlı; her adım `gh api --input <json-dosyası>` ile
+   -- PowerShell'in Türkçe/tırnaklı metin içeren `-f` argümanlarını
+   güvenilir aktaramadığı bu oturumda defalarca gözlemlendiği için,
+   gövde bu kez doğrudan bir JSON dosyasından okundu, komut satırından
+   değil).
+
+280 karaktere sığan kısaltılmış gerekçe metniyle (`Yanlis pozitif: bu md5
+kullanimlari guvenlik amacli degil (hashlib.usedforsecurity=False ile
+isaretli) -- cache-key kisaltma, A/B kova atamasi, id benzersizlestirme.
+CodeQL bu parametreyi tanimiyor (arac sinirlamasi), Bandit taniyor.
+Detay: docs/guvenlik-borcu.md SS6.`, 268 karakter) 5 alert de
+reopen->redismiss edildi, `gh api` ile canlı tekrar okunarak doğru
+gerekçe metninin göründüğü doğrulandı. `#144`/`#145` (rbac_system.py --
+gerçek, zaten kod ile düzeltilmiş bulgular, false positive DEĞİL) hiç
+dokunulmadı, hâlâ `open` -- doğrulandı, hazırlık notunun talimatına
+uygun.
