@@ -253,7 +253,7 @@ jobs:
         run: |
           cat > backend/.env << EOF
           DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
-          DATABASE_URL_SYNC=postgresql://postgres:postgres@localhost:5434/kiro2_test
+          DATABASE_URL_SYNC=postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test
           REDIS_URL=redis://localhost:6379/0
           JWT_SECRET_KEY=test-secret-key-for-ci
           JWT_ALGORITHM=HS256
