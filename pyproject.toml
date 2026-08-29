@@ -52,7 +52,7 @@ dependencies = [
     "passlib[bcrypt]==1.7.4",
     "slowapi==0.1.9",
     "bleach==6.2.0",
-    "PyJWT==2.8.0",
+    "PyJWT==2.13.0",
 
     # 2FA
     "pyotp==2.9.0",
