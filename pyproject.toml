@@ -117,7 +117,7 @@ dependencies = [
     "opentelemetry-instrumentation-sqlalchemy==0.42b0",
     "opentelemetry-instrumentation-redis==0.42b0",
     "opentelemetry-instrumentation-requests==0.42b0",
-    "opentelemetry-instrumentation-logging==0.42b0",
+    "opentelemetry-instrumentation-logging==0.65b0",
     "opentelemetry-exporter-jaeger==1.21.0",
     "opentelemetry-exporter-jaeger-thrift==1.21.0",
     "opentelemetry-exporter-otlp==1.21.0",
