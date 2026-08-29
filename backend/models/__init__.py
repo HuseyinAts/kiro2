@@ -149,6 +149,7 @@ from .learning_path_models import (
 )
 from .notification import Notification
 from .oba_seferleri import ObaChallenge, ObaChallengeProgress
+from .osym_trends import OSYMLinguisticTrend
 from .pomodoro import PomodoroParticipant, PomodoroRoom
 
 # Migration utilities
@@ -204,7 +205,11 @@ CanonicalStudentProfile = LearningPathStudentProfile
 # Re-export deprecated models for backward compatibility
 # These models were moved to _deprecated/ but tests still import from models.learning_models
 try:
-    from ._deprecated.learning_models import (
+    # ONCEDEN VAR (bu PR'in kapsami disinda): asagidaki "Student" ismi
+    # yukaridaki "Student = StudentProfile" takma adiyla catisiyor, mypy
+    # bunu tip uyusmazligi sayiyor. Runtime'da sorun yok -- ikisi de
+    # gecerli siniflar, sadece son import kazanir.
+    from ._deprecated.learning_models import (  # type: ignore[assignment]
         AgentMessage,
         BionicReadingResult,
         BlackboardEntry,
@@ -228,7 +233,11 @@ except ImportError:
     pass
 
 try:
-    from ._deprecated.revolutionary_models import (
+    # ONCEDEN VAR (bu PR'in kapsami disinda): _deprecated.revolutionary_models
+    # bu 3 ismi artik tanimlamiyor -- runtime'da zaten ImportError firlatip
+    # asagidaki except ile sessizce yutuluyor (kasitli, geriye-uyumluluk
+    # shim'i); mypy statik olarak "no attribute" diye isaretliyor.
+    from ._deprecated.revolutionary_models import (  # type: ignore[attr-defined]
         RevolutionaryAchievement,
         RevolutionaryBadge,
         RevolutionaryModel,
@@ -388,6 +397,7 @@ __all__ = [
     "SolutionDuelVote",
     "ObaChallenge",
     "ObaChallengeProgress",
+    "OSYMLinguisticTrend",
     # CAT / DAG / Learning Events
     "CatSession",
     "LearningEvent",

@@ -418,6 +418,27 @@ exclude = [
 #            testin okunurlugunu ne bozar ne duzeltir, ilgisiz.
 "tests/unit/test_auth_endpoints.py" = ["E402", "S105", "N802"]
 
+# models/__init__.py — 23 ONCEDEN VAR OLAN ihlal (29 Agu 2026, PR #62 sonrasi
+# backlog disi bir bulgu: api.osym_routes CI'da sessizce 404 veriyordu cunku
+# services/osym_pdf_pipeline.py + models/osym_trends.py + turkish_readability_
+# service.py hic commit edilmemisti). Bu PR sadece 2 satir ekliyor (OSYM
+# model import + __all__ girisi); dosyanin geri kalani ONCESINDE de bu
+# durumdaydi. KONTROL KOLU (gercek yol adiyla, /tmp kopyasi DEGIL):
+#   git show HEAD:backend/models/__init__.py \
+#     | ruff check --stdin-filename backend/models/__init__.py -
+#   -> "Found 23 errors" hem bu PR'dan ONCE hem SONRA (eklenen 2 satir 0 yeni
+#   ihlal getiriyor). Ihlaller:
+#   F401 x19  `_deprecated/*` uyumluluk shim'i -- kasitli olarak yalnizca
+#             ImportError yakalamak icin import ediliyor (asagidaki SIM105
+#             ile ayni blok), kullanilmiyor GORUNMESI davranisin parcasi.
+#   SIM105 x2 `_deprecated` bloklarindaki try/except/pass -- eski modul
+#             opsiyonel, yoklugu sessizce yutuluyor (kasitli).
+#   RUF022 x1 `__all__` alfabetik degil -- 160+ satirlik liste tema/kronoloji
+#             sirali (yorum basliklariyla gruplanmis), yeniden siralamak
+#             ilgisiz, buyuk, incelemesi zor bir diff yaratirdi.
+# Borc BURADA GORUNUR, `--no-verify` ile atlanmadi. Temizlik ayri gorev.
+"models/__init__.py" = ["F401", "SIM105", "RUF022"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
