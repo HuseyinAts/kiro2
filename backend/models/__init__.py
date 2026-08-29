@@ -11,6 +11,7 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 """
 
 import importlib.util
+import logging
 
 # Base import (avoid circular import)
 from .base import Base
@@ -149,6 +150,7 @@ from .learning_path_models import (
 )
 from .notification import Notification
 from .oba_seferleri import ObaChallenge, ObaChallengeProgress
+from .osym_trends import OSYMLinguisticTrend
 from .pomodoro import PomodoroParticipant, PomodoroRoom
 
 # Migration utilities
@@ -203,8 +205,14 @@ CanonicalStudentProfile = LearningPathStudentProfile
 
 # Re-export deprecated models for backward compatibility
 # These models were moved to _deprecated/ but tests still import from models.learning_models
+logger = logging.getLogger(__name__)
+
 try:
-    from ._deprecated.learning_models import (
+    # ONCEDEN VAR (bu PR'in kapsami disinda): asagidaki "Student" ismi
+    # yukaridaki "Student = StudentProfile" takma adiyla catisiyor, mypy
+    # bunu tip uyusmazligi sayiyor. Runtime'da sorun yok -- ikisi de
+    # gecerli siniflar, sadece son import kazanir.
+    from ._deprecated.learning_models import (  # type: ignore[assignment]
         AgentMessage,
         BionicReadingResult,
         BlackboardEntry,
@@ -225,16 +233,30 @@ try:
         create_sample_zpd_range,
     )
 except ImportError:
-    pass
+    # kasitli: _deprecated.learning_models opsiyonel bir geriye-uyumluluk
+    # shim'i, ortamda yoksa/degistiyse sessizce atlanir (yukaridaki importun
+    # uzerinde aciklandigi gibi). Tamamen sessiz olmasin diye DEBUG'a loglanir.
+    logger.debug(
+        "models/__init__: _deprecated.learning_models import edilemedi (opsiyonel shim)"
+    )
 
 try:
-    from ._deprecated.revolutionary_models import (
+    # ONCEDEN VAR (bu PR'in kapsami disinda): _deprecated.revolutionary_models
+    # bu 3 ismi artik tanimlamiyor -- runtime'da zaten ImportError firlatip
+    # asagidaki except ile sessizce yutuluyor (kasitli, geriye-uyumluluk
+    # shim'i); mypy statik olarak "no attribute" diye isaretliyor.
+    from ._deprecated.revolutionary_models import (  # type: ignore[attr-defined]
         RevolutionaryAchievement,
         RevolutionaryBadge,
         RevolutionaryModel,
     )
 except ImportError:
-    pass
+    # kasitli: _deprecated.revolutionary_models bu 3 ismi tanimlamiyorsa
+    # (yukarida aciklandigi gibi) sessizce atlanir -- geriye-uyumluluk
+    # shim'inin parcasidir. Tamamen sessiz olmasin diye DEBUG'a loglanir.
+    logger.debug(
+        "models/__init__: _deprecated.revolutionary_models import edilemedi (opsiyonel shim)"
+    )
 
 __all__ = [
     # Base
@@ -388,6 +410,7 @@ __all__ = [
     "SolutionDuelVote",
     "ObaChallenge",
     "ObaChallengeProgress",
+    "OSYMLinguisticTrend",
     # CAT / DAG / Learning Events
     "CatSession",
     "LearningEvent",
