@@ -3,6 +3,7 @@ Integration tests configuration
 Use existing Docker PostgreSQL container for faster testing
 """
 
+import asyncio
 import os
 from pathlib import Path
 
@@ -11,6 +12,26 @@ import pytest_asyncio
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
+
+# 29 Agu 2026 (SS10.9 zinciri, growth_mindset_engine entegrasyon testi):
+# tests/e2e/conftest.py'deki AYNI gerekce -- pytest-asyncio 0.21.1 (pinli),
+# pytest.ini'nin `asyncio_default_fixture_loop_scope = session` ayarini
+# yok sayar; kok conftest'teki session-kapsamli async fixture (setup_database
+# -> async_client zincirinin kokü) session-kapsamli bir `event_loop` ISTER,
+# yoksa xdist worker'inda ScopeMismatch olur ve async_client kullanan HER
+# integration testi setup'ta duser (bu depoda GERCEKTEN reprodüklendi:
+# test_growth_mindset_api.py, bu override olmadan "ScopeMismatch: ... event_loop
+# with a session scoped request object" ile duestu). tests/e2e/ altinda zaten
+# cozulmustu; tests/integration/ altinda hic yoktu -- async_client kullanan
+# diger dosyalar (ornegin test_exam_api_comprehensive.py) baska nedenlerle
+# zaten skip oldugu icin bu bosluk simdiye kadar fark edilmemisti.
+@pytest.fixture(scope="session")
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
 
 # Set test environment variables before any imports that load config
 os.environ.setdefault("ENVIRONMENT", "testing")

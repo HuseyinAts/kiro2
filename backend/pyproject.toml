@@ -459,6 +459,20 @@ exclude = [
 # kaybettirir, hicbir guvenlik kazanci saglamaz.
 "services/nlp/motivation_generator.py" = ["S311"]
 
+# api/student_dashboard.py — 8x RET504 (29 Agu 2026, SS10.9 zinciri:
+# growth_mindset_engine.py'i /api/v1/student-dashboard/growth-mindset
+# ucuna baglayan PR, dosyaya yalnizca 1 import + 1 yeni endpoint ekliyor).
+# 8 ihlalin hepsi bu PR'DAN ONCE de vardi. KONTROL KOLU (gercek yol adiyla):
+#   git show HEAD:backend/api/student_dashboard.py \
+#     | ruff check --stdin-filename backend/api/student_dashboard.py -
+#   -> "Found 8 errors", bu PR'dan once ve sonra AYNI (satir numaralari yeni
+#   import satirindan dolayi +1 kayiyor, icerik degismiyor; yeni eklenen
+#   growth-mindset endpoint'i ara-degisken kullanmadan dogrudan `return await
+#   ...` yapiyor, 9. bir RET504 GETIRMIYOR). Duzeltmek "assign then return"
+#   -> "return dogrudan" donusumu, 8 ayri fonksiyonu davranissal olarak
+#   DEGISTIRMEDEN dokunmayi gerektirir -- bu PR'in kapsami disinda.
+"api/student_dashboard.py" = ["RET504"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true

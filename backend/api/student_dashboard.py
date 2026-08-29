@@ -23,6 +23,7 @@ from models.dashboard import (
     SinavSonucu,
 )
 from models.user import Kullanici, OgrenciProfili
+from services.psychology.growth_mindset_engine import GrowthMindsetEngine
 from services.student_dashboard_service import ogrenci_dashboard_servisi
 
 router = APIRouter(prefix="/api/v1/student-dashboard", tags=["Öğrenci Dashboard"])
@@ -556,6 +557,33 @@ async def dashboard_ozeti(
             "data": ozet,
             "message": "Dashboard özeti başarıyla alındı",
         }
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
+
+
+@router.get("/growth-mindset", summary="Growth Mindset Mesajı")
+async def growth_mindset_mesaji_getir(
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Öğrencinin son 7 günlük performansı ve güncel streak'ine göre
+    kişiselleştirilmiş, "growth mindset" temelli (toksik olmayan, veri
+    odaklı) bir motivasyon mesajı üretir.
+
+    GrowthMindsetEngine kendi içinde hata yakalar ve her zaman nötr bir
+    mesajla döner; buradaki try/except yalnızca bu router'ın diğer tüm
+    endpoint'leriyle tutarlı bir hata sözleşmesi sağlamak için var.
+    """
+    try:
+        return await GrowthMindsetEngine.generate_message(
+            db, mevcut_kullanici.kullanici_id
+        )
     except HTTPException:
         raise
     except Exception:
