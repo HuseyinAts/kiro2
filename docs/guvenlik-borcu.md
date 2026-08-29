@@ -984,3 +984,51 @@ edilmedi -- kapsamı (gerçek kaynak kodu / scratch-debug dosyası / sızıntı
 riski taşıyan dosya ayrımı gerektiren) bu segmentin geri kalanına
 sığmayacak kadar büyük, kendi dikkatli triyaj geçişini hak ediyor. Sonraki
 en yüksek öncelikli iş olarak işaretlendi.
+
+### 10.8 PR #74: 10.7'nin kanıtlanmış tek örneğinin düzeltilmesi (29 Ağu 2026)
+
+10.7'de tarif edilen zincirin somut, kanıtlanmış tek halkası düzeltildi:
+`services/irt_equating_service.py` (88 satır, `api/osym_routes.py:391`'in
+lazy import ile ihtiyaç duyduğu modül) artı PR #72'nin kendisinin arkada
+bıraktığı 2 test dosyası (`test_osym_pdf_pipeline.py`,
+`test_turkish_readability.py`) artı yeni `test_irt_equating.py` (4 test)
+commit edildi. Ruff N803 (4x, `A`/`B` büyük harf parametreleri) için
+`pyproject.toml`'a `models/__init__.py` emsaliyle aynı desende gerekçeli
+per-file-ignore eklendi -- `A`/`B` kasıtlı: IRT equating literatürünün
+standart notasyonu, çağıran kod (`osym_routes.py`) da aynı adlandırmayı
+kullanıyor. `test_osym_pdf_pipeline.py`'deki `os.path` çağrıları
+`pathlib.Path`'e taşındı (PTH110/PTH107, davranış değişmedi).
+
+Yerel doğrulama: 10/10 test yeşil, ruff temiz, pre-commit hook'ları
+(bandit/mypy/secret-detection dahil) ve pre-push 320-test paketi +
+reward-hacking-check temiz. **PR #74**
+(https://github.com/HuseyinAts/kiro2/pull/74), branch
+`fix/osym-routes-missing-irt-equating-and-tests`, commit `417327892`.
+
+CI'da 4 kırmızı çıktı, hepsi log seviyesinde doğrulandı ve önceden
+bilinen/ilgisiz borçlarla eşleşti (yeni hiçbir şey yok):
+- **Backend Tests**: `test_video_recommendation_service.py` collection
+  hatası, `NameError: name 'nn' is not defined` -- §10.4 (torch/
+  transformers sürüm uyuşmazlığı), bu PR'ın diff'iyle ilgisiz.
+- **Quality Gate / Router registration check**: `test_mapped_routers_
+  are_importable` yine aynı 3 router'da başarısız (`api.rag`,
+  `api.v1.semantic_search`, `api.youtube_routes`) -- `api.osym_routes`
+  listede YOK, yani bu PR'ın düzeltmesi tutuyor, yeni bir kırılma
+  eklemedi.
+- **Automatic PR Review**: aynı `Unexpected input(s) 'model'` uyarısı --
+  §10.5 (eksik repo secret), kozmetik.
+- **Frontend Tests**: aynı önceden var olan ESLint hataları (react-hooks/
+  exhaustive-deps, jsx-a11y/*) -- §10.6, bu PR backend-only.
+- **CI Summary**: yukarıdakilerin toplamı olduğu için kırmızı, ayrı bir
+  kök neden değil.
+
+Merge: `71f764c88` (2026-08-29T21:10:49Z UTC), `gh pr merge 74 --squash`.
+Local master senkronize edildi (`202de7994..71f764c88`, fast-forward, 5
+dosya, +268 satır).
+
+**Kalan kapsam:** 555 - 4 = ~551 commit edilmemiş dosya hâlâ triyaj
+bekliyor (bkz. 10.7 kategorizasyonu: scratch/probe, credential-riskli
+dosya adları, gerçek backend/frontend kaynak+test çiftleri, belirsiz
+docs/infra). Bu segmentte sadece kanıtlanmış TEK zincir kapatıldı --
+kalan ~551 dosyanın hiçbiri bu PR'a dahil edilmedi, kasıtlı olarak. Bu
+triyaj bir sonraki en yüksek öncelikli iş olarak işaretli kalıyor.
