@@ -39,7 +39,7 @@ def _get_value(obj) -> str:
     if obj is None:
         return "none"
     if hasattr(obj, "value"):
-        return obj.value
+        return str(obj.value)
     return str(obj)
 
 
@@ -194,10 +194,7 @@ class Role:
         if self.valid_from and now < self.valid_from:
             return False
 
-        if self.valid_until and now > self.valid_until:
-            return False
-
-        return True
+        return not (self.valid_until and now > self.valid_until)
 
     def add_permission(self, permission_id: str) -> None:
         """Add permission to role"""
@@ -255,10 +252,7 @@ class UserRole:
         if not self.is_active:
             return False
 
-        if self.expires_at and datetime.now(UTC) > self.expires_at:
-            return False
-
-        return True
+        return not (self.expires_at and datetime.now(UTC) > self.expires_at)
 
 
 @dataclass
@@ -778,7 +772,7 @@ class RoleManager:
             del self.role_hierarchy[role_id]
 
         # Remove as parent
-        for child_id, parents in self.role_hierarchy.items():
+        for parents in self.role_hierarchy.values():
             parents.discard(role_id)
 
     def get_inherited_permissions(self, role_id: str) -> set[str]:
@@ -959,10 +953,20 @@ class RBACManager:
                 await log_error(e, ctx.to_dict(), ErrorSeverity.HIGH)
                 raise
 
-    async def check_permission(
+    async def check_permission(  # noqa: PLR0911, PLR0912
         self, auth_context: AuthorizationContext
     ) -> AuthorizationResult:
-        """Check if user has permission for specific action on resource"""
+        """Check if user has permission for specific action on resource.
+
+        Pre-existing branch/return count (role-only, combined role+permission,
+        cache-hit, no-active-roles, granted, denied, exception paths) reflects
+        the several distinct authorization outcomes this gate must report,
+        not incidental complexity. Not restructured here: this PR's fix is
+        the cache-key/invalidation bug below, and reshaping this function's
+        control flow is a separate, higher-risk change to the core
+        authorization decision path -- out of scope for a CI/CodeQL-driven
+        fix. See docs/guvenlik-borcu.md #6.
+        """
 
         async with async_error_context(
             operation_name="check_permission",
@@ -1208,9 +1212,25 @@ class RBACManager:
         return all_permissions
 
     def _get_cache_key(self, auth_context: AuthorizationContext) -> str:
-        """Generate cache key for authorization context"""
-        key_data = f"{auth_context.user_id}:{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}:{auth_context.resource_id or 'any'}"
-        return hashlib.md5(key_data.encode(), usedforsecurity=False).hexdigest()
+        """Generate cache key for authorization context.
+
+        The key is `sha256(user_id)[:16] + ":" + sha256(rest)` rather than a
+        single hash of the whole tuple. A single opaque hash of the full
+        tuple made `_clear_user_cache` (below) unable to ever match: hashing
+        "user_id" alone and hashing "user_id:resource:..." produce
+        unrelated digests (avalanche effect), so the old
+        `key.startswith(md5(user_id)[:8])` check almost never found the
+        entries it was supposed to invalidate. A revoked/changed role's
+        stale ALLOW decision could then keep being served from cache for up
+        to `cache_ttl` seconds. Keeping a real, matchable user-hash prefix
+        fixes invalidation; sha256 (vs md5) also resolves CodeQL
+        py/weak-sensitive-data-hashing for this authorization-cache path
+        (see docs/guvenlik-borcu.md #5).
+        """
+        user_prefix = hashlib.sha256(auth_context.user_id.encode()).hexdigest()[:16]
+        rest_data = f"{_get_value(auth_context.resource_type)}:{_get_value(auth_context.action)}:{auth_context.resource_id or 'any'}"
+        rest_hash = hashlib.sha256(rest_data.encode()).hexdigest()
+        return f"{user_prefix}:{rest_hash}"
 
     def _get_cached_permission(self, cache_key: str) -> AuthorizationResult | None:
         """Get cached permission result"""
@@ -1238,13 +1258,15 @@ class RBACManager:
         }
 
     def _clear_user_cache(self, user_id: str) -> None:
-        """Clear cached permissions for a user"""
+        """Clear cached permissions for a user.
+
+        Must use the identical sha256(user_id)[:16] prefix that
+        _get_cache_key derives, followed by the ":" delimiter -- see the
+        note on _get_cache_key for why this previously never matched.
+        """
+        user_prefix = hashlib.sha256(user_id.encode()).hexdigest()[:16]
         keys_to_remove = [
-            key
-            for key in self.permission_cache.keys()
-            if key.startswith(
-                hashlib.md5(user_id.encode(), usedforsecurity=False).hexdigest()[:8]
-            )
+            key for key in self.permission_cache if key.startswith(f"{user_prefix}:")
         ]
 
         for key in keys_to_remove:
@@ -1296,7 +1318,7 @@ rbac_manager: RBACManager | None = None
 
 def get_rbac_manager() -> RBACManager:
     """Get global RBAC manager instance"""
-    global rbac_manager
+    global rbac_manager  # noqa: PLW0603 -- standard lazy-singleton pattern
 
     if rbac_manager is None:
         rbac_manager = RBACManager()

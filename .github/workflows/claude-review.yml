@@ -10,6 +10,14 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  # anthropics/claude-code-action@v1 always tries to mint a GitHub OIDC
+  # token (for Anthropic's GitHub Actions OIDC federation), even though
+  # this workflow also passes anthropic_api_key directly. Without this,
+  # every job below fails immediately: "Could not fetch an OIDC token.
+  # Did you remember to add `id-token: write`..." (evidenced on PR #62,
+  # run 33222014953 / job 99017858889, before this fix). See
+  # docs/guvenlik-borcu.md #5.
+  id-token: write
 
 jobs:
   # PR acildiginda veya guncellediginde otomatik review

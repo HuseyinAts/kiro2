@@ -191,7 +191,101 @@ dışında bırakıldı.
 
 ---
 
-## 6. Kapı olmaktan çıkarılanlar ve gerekçeleri
+## 6. CodeQL (py/weak-sensitive-data-hashing)
+
+PR #62, commit `9a29c9c`'den sonra alınan check-run: "Code scanning results /
+CodeQL -- 7 new alerts including 7 high severity security vulnerabilities"
+(PR alert #2977-#2983, hepsi `py/weak-sensitive-data-hashing`, CWE-327/328/916).
+Bu, aynı PR'ın Bandit için eklediği `usedforsecurity=False` bayrağının (bkz.
+§1) 7 `hashlib.md5(...)` çağrı noktasında CodeQL'in "yeni alert" muhasebesini
+tetiklemesinden geliyor.
+
+### Doğrulama
+
+Master'ın kendi açık CodeQL alert'leri karşılaştırıldı
+(`/security/code-scanning?query=tool:CodeQL+branch:master+rule:py/weak-sensitive-data-hashing+is:open`):
+**master'da bu kuralla açık 18 alert zaten var** (20 Tem 2026'dan beri), ve
+PR'ın 7 "yeni" alert'i dosya bazında birebir eşleşiyor:
+
+| PR alert | Master'daki eşi (20 Tem 2026) | Dosya |
+|---|---|---|
+| #2983 | #151 | `backend/services/visual_supports_service.py` |
+| #2982 | #145 | `backend/core/rbac_system.py` (`_get_cache_key`) |
+| #2981 | #144 | `backend/core/rbac_system.py` (`_clear_user_cache`) |
+| #2980 | #143 | `backend/core/rag_ab_testing.py` |
+| #2979 | #138 | `backend/core/file_upload_security.py` |
+| #2978 | #137 | `backend/core/feature_flags.py` |
+| #2977 | #136 | `backend/core/decorators/cache.py` |
+
+Yani bu 7 alert **yeni bir güvenlik açığı değil**: satırın metni
+(`usedforsecurity=False` eklenmesiyle) değiştiği için GitHub'ın alert eşleştirme
+parmak izi kayboldu ve aynı kod konumları için taze alert numaraları açıldı.
+CodeQL'in bu kuralı, Bandit'in aksine, Python'ın `usedforsecurity=False`
+parametresini tanımıyor -- md5/sha1 çağrısını parametreden bağımsız olarak
+"hassas veri + zayıf hash" deseniyle işaretliyor. 7 konumun her biri kaynak
+kodundan tek tek okunup ne için kullanıldığı doğrulandı.
+
+### Karar: 5 belgelenmiş yanlış pozitif
+
+`cache.py`, `feature_flags.py`, `file_upload_security.py`, `rag_ab_testing.py`,
+`visual_supports_service.py`: hepsi güvenlik-dışı kullanım (cache-key kısaltma,
+A/B kova ataması, dosya adı benzersizleştirme, kısa id üretimi) -- hiçbiri
+saklanan bir değerle karşılaştırma/doğrulama yapmıyor, `usedforsecurity=False`
+zaten doğru işaret. CodeQL'in bu bayrağı tanımaması bir araç sınırlaması;
+gerçek bir düzeltme gerektirmiyor.
+
+### Karar: 1 gerçek düzeltme + 1 bağımsız bug (rbac_system.py)
+
+`rbac_system.py`'deki 2 çağrı farklı: `_get_cache_key` yetkilendirme kararını
+(granted/denied) önbelleğe alan anahtarı üretiyor, `_clear_user_cache` rol
+değiştiğinde/iptal edildiğinde bu önbelleği temizliyor.
+`_get_cached_permission` önbellekten okurken context'i tekrar doğrulamıyor --
+salt hash eşleşmesine güveniyor, bu yüzden md5 yerine sha256 kullanmak
+maliyetsiz bir sağlamlaştırma (aynı gerekçe cache.py'deki JWT cache-key
+düzeltmesiyle, bkz. PR açıklaması).
+
+Kodu okurken CodeQL'in bulmadığı **ayrı, ikinci bir bug** ortaya çıktı:
+`_clear_user_cache`, `hashlib.md5(user_id...)[:8]`'in önbellek anahtarının
+(`hashlib.md5(f"{user_id}:{kaynak}:{eylem}:{id}"...)`) bir öneki olduğunu
+varsayıyordu. Bu yanlış -- hash fonksiyonlarının çığ etkisi yüzünden
+`hash("A")` ile `hash("A:B")` arasında önek ilişkisi yoktur, kontrol pratikte
+neredeyse hiç eşleşmiyordu. Yani bir kullanıcının rolü iptal edildiğinde
+(`revoke_role_from_user`), önbellekteki eski "granted=True" kararı
+temizlenmiyordu ve `cache_ttl` (300sn) boyunca sunulmaya devam edebiliyordu --
+iptalden sonra en fazla 5 dakikalık bir "hayalet yetki" penceresi.
+
+Düzeltme: `_get_cache_key` artık `sha256(user_id)[:16] + ":" + sha256(geri kalan)`
+üretiyor; `_clear_user_cache` aynı `sha256(user_id)[:16]` önekini yeniden
+hesaplayıp gerçek bir önek eşleşmesi yapıyor. Yerel doğrulama (`RBACManager`
+uçtan uca): assign_role -> check_permission (granted=True, cache 1 kayıt) ->
+revoke_role_from_user -> cache 0 kayıt (önceden bug yüzünden 1 kalıyordu) ->
+check_permission tekrar (granted=False, cached=False). `test_core_remaining_batch2.py::TestRBACManager`
+(27 test) yeşil kaldı -- mevcut testlerin hiçbiri bu önbellek geçersiz kılma
+davranışını doğrulamıyordu (yalnızca `revoke_role_from_user`'ın dönüş
+değerini kontrol ediyorlardı), bug da bu regresyon riski de testlerde
+görünmüyordu.
+
+---
+
+## 7. Claude PR Review workflow'u -- eksik `id-token: write`
+
+PR #62 checks listesinde `Claude PR Review / Automatic PR Review` kırmızıydı
+(run 33222014953, job 99017858889). `gh run view --job` ile net hata:
+"Action failed with error: Could not fetch an OIDC token. Did you remember to
+add `id-token: write` to your workflow permissions?". `anthropics/claude-code-action@v1`,
+`anthropic_api_key` doğrudan verilmiş olsa bile OIDC token almayı deniyor;
+`.github/workflows/claude-review.yml`'in `permissions:` bloğunda bu yoktu.
+`id-token: write` eklendi (en az yetki ilkesiyle, yalnızca bu blok).
+
+**Sıradaki iş (opsiyonel, kapı değil):** aynı check'te ikinci, non-fatal bir
+uyarı da var: "Unexpected input(s) 'model' ..." -- action'ın güncel `v1`
+sürümü artık `model:` girdisini tanımıyor (muhtemelen `claude_args` üzerinden
+geçirilmesi gerekiyor). Job'u kırmıyor (varsayılan modele düşüyor), bu PR'ın
+kapsamı dışında bırakıldı.
+
+---
+
+## 8. Kapı olmaktan çıkarılanlar ve gerekçeleri
 
 | Adım | Durum | Gerekçe |
 |---|---|---|
