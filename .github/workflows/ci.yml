@@ -184,6 +184,23 @@ jobs:
     name: Backend Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: quality
+    # Ust `env:` blogunda UV_SYSTEM_PYTHON=1 acik (workflow geneli). quality
+    # job'unda sorun cikarmiyor cunku o sadece CLI entry-point cagiriyor
+    # (ruff/mypy/...) - ama bu job asagida `uv venv` + `source .venv/bin/activate`
+    # ile izole bir venv kurup "python <script>.py" / "python -m X" seklinde
+    # DOGRUDAN yorumlayici cagiriyor (seed_mvp_data.py, uvicorn, unittest).
+    # UV_SYSTEM_PYTHON=1 acikken uv, aktif venv'i yok sayip sistem Python'una
+    # kuruyor (dogrulandi: "Install dependencies" adiminda "Using Python 3.11.16
+    # environment at: /opt/hostedtoolcache/..." - .venv DEGIL). Sonuc: alembic/
+    # pytest gibi entry-point'ler PATH fallback'iyla sistem konumunu bulup
+    # calisiyor (yanilti "basarili" gorunumu), ama `.venv/bin/python` PATH'te
+    # ONCE geliyor ve o .venv bombos kaliyor -> "Seed MVP users" adiminda
+    # ModuleNotFoundError: No module named 'psycopg' (29 Agu 2026, bu job
+    # `needs: quality` zincirinde ilk kez calisip buraya kadar ilerleyince
+    # ortaya cikti). Bu job ozelinde override edip uv'nin gercekten .venv'e
+    # kurmasini sagliyoruz.
+    env:
+      UV_SYSTEM_PYTHON: "0"
     strategy:
       fail-fast: false
       matrix:
