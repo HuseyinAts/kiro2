@@ -5,6 +5,12 @@ uvicorn[standard]==0.24.0
 pydantic[email]>=2.8.0  # [email] = email-validator; models/user.py EmailStr kullaniyor (alembic env.py import zinciri)
 pydantic-settings>=2.4.0
 orjson>=3.9.0
+# tests/conftest.py:50 `from dotenv import load_dotenv` -- dogrudan kullanir,
+# ONCEDEN bu dosyada hic yoktu (requirements-minimal.txt + qa lock'ta var).
+# Eksikligi CI'da conftest.py'nin import edilememesine (ModuleNotFoundError)
+# ve dolayisiyla pytest'e bagli HER quality-gate/golden-flow isinin
+# basarisiz olmasina yol aciyordu (bkz. docs/guvenlik-borcu.md).
+python-dotenv==1.2.1
 
 # Database
 asyncpg>=0.29.0
@@ -118,7 +124,7 @@ easyocr==1.7.1
 opentelemetry-api==1.21.0
 opentelemetry-sdk==1.21.0
 opentelemetry-instrumentation==0.42b0
-opentelemetry-instrumentation-fastapi==0.65b0
+opentelemetry-instrumentation-fastapi==0.42b0
 opentelemetry-exporter-jaeger==1.21.0
 opentelemetry-exporter-jaeger-thrift==1.21.0
 opentelemetry-exporter-otlp==1.21.0
