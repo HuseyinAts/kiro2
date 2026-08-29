@@ -442,3 +442,89 @@ backend/backups/
 .a1_e2e_kimlik.json
 .a1_kayit_ham.txt
 .a1_giris_ham.txt
+
+# === 29 Agu 2026: SS10.7 "555 commit edilmemis dosya" bulgusu -- hijyen gecisi ===
+# Detay: docs/guvenlik-borcu.md SS10.7/10.8. Asagidaki dosyalar/dizinler
+# ic gozlem/prob/scratch amacli, kaynak kod DEGIL. Hicbiri fiziksel olarak
+# SILINMEDI -- sadece git bir daha yanlislikla stage etmesin diye burada.
+# Zaten tracked olan backend/_pilots/, backend/_scripts/ (yuzlerce dosya)
+# ile prefiks CAKISTIGI icin glob DEGIL, acik dosya adi listesi kullanildi
+# (ayni gerekce: asagidaki "Tek kullanimlik hata-ayiklama artiklari" notu).
+
+# Kok-seviye prob/debug ciktilari (osym/openapi/auth canli-test scriptleri)
+.a1_sorular.json
+.h6_resp.json
+.oa_eksen5.json
+.oa_m18.json
+.oa_probe2.json
+.oa_s250.json
+.oa_verify.json
+.openapi.json
+.openapi_probe.json
+.openapi_tmp.json
+.probe_c2.json
+.probe_create.json
+.probe_login.json
+.r.json
+.bandit_ci_repro.sh
+oa_tmp.json
+l5_01_login_ok.png
+l5_02_exam_start.png
+l5_03_create_500.png
+l5_04_beta_practice_500.png
+
+# Kimlik-bilgisi-BENZERI dosya adlari (icerik incelenmedi, bilerek --
+# SS10.7: bunlar asla commit edilmemeli, adlarindan bile kacinilmali)
+.a1_eksen1_prob_email
+.e2e_email
+.e2e_env
+.e2e_login.json
+.e2e_token
+.fantom_tok
+.fantom_tok2
+.probe_tok
+
+# backend/ kok-seviye prob/scratch (backend/_pilots|_scripts/ ile prefiks
+# cakismasi nedeniyle acik liste; oradaki YUZLERCE tracked dosyaya dokunmuyor)
+backend/.oa_probe.json
+backend/.verify_p0_examtype_live.py
+backend/_armb_probe.py
+backend/_collect_out.txt
+backend/_sf2.txt
+backend/_skipfiles.txt
+backend/golden_dataset_report.json
+backend/pytest_out.txt
+backend/scan.txt
+backend/tail.txt
+
+# backend/scripts/quality/ ornek/sizinti-testi ciktilari (zaten ignore edilen
+# _content_*/, _keyverify*/ vb. ile ayni tur -- tek dosyalar, dizin degil)
+backend/scripts/quality/_ikmal_olc.sql
+backend/scripts/quality/_kor_ANAHTAR.txt
+backend/scripts/quality/_kor_ham.txt
+backend/scripts/quality/_kor_test.txt
+backend/scripts/quality/_ornek_cikti.txt
+backend/scripts/quality/_paylar_out.txt
+backend/scripts/quality/_sizinti_ornek.sql
+backend/scripts/quality/_sizinti_ornek.txt
+backend/scripts/quality/_sizinti_paylar.json
+backend/scripts/quality/_temiz_ornek.txt
+
+# Numarali chunk dosyalari (148 adet parti_0*.txt) -- dizin genelinde,
+# tracked dosya YOK (dogrulandi: git ls-files -- '.../\_y11_kimya' bos)
+backend/scripts/quality/_y11_kimya/
+
+# Kendi kendini "script mezarligi" olarak etiketlemis, tamami untracked (~150
+# dosya) ve gecici prob dizini (~90 dosya) -- tracked dosya YOK (dogrulandi)
+script_mezarligi/
+.tmp_probe/
+
+# Frontend debug/manuel-test ciktilari
+frontend/register_page_debug.html
+frontend/register_page_debug.png
+frontend/register_result.png
+
+
+# Manuel e2e kosum ciktilari (dashboard sonuc ekran goruntuleri, kaynak degil)
+frontend/tests/e2e/student_dashboard_result.png
+frontend/tests/e2e/teacher_dashboard_result.png
