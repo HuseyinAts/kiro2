@@ -450,6 +450,15 @@ exclude = [
 # yaratir, matematiksel okunurlugu bozar, davranisi degistirmez.
 "services/irt_equating_service.py" = ["N803"]
 
+# services/nlp/motivation_generator.py — 4x S311 (29 Agu 2026, ayni SS10.7
+# zinciri -- commit edilmemis dosya, davranissal fix yok). `random.choice`
+# burada sabit bir sablon havuzundan gunluk motivasyon mesaji seciyor --
+# kripto/guvenlik baglami YOK (core/multi_layer_cache.py'deki S311
+# ignore'uyla ayni gerekce: "TTL jitter icin random.uniform -- kripto
+# degil", yukarida). `secrets.choice`'a gecmek performans/okunurluk
+# kaybettirir, hicbir guvenlik kazanci saglamaz.
+"services/nlp/motivation_generator.py" = ["S311"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
