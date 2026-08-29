@@ -606,3 +606,133 @@ Security Summary) -- hepsi PASSED. 8 Golden Flow E2E tests PASSED
 (3m53s). PR #70, `gh pr merge 70 --merge` ile merge commit
 `026b5055cf7e3934f44548f7dea69e4efcd03d48` olarak birleştirildi (29 Ağu
 2026).
+
+
+### Faz 5 -- Dependabot triyajı: otomasyon neden hiç çalışmamış
+
+Plan'ın orijinal varsayımı ("otomasyon var, sadece bayat PR'lar rebase
+istiyor") **kısmen yanlış çıktı**. Canlı veri (`gh pr list --app
+dependabot --json mergeable,mergeStateStatus`) 20 PR'ın hepsinin artık
+gerçek bir `mergeable` durumu olduğunu gösterdi (5 CONFLICTING/DIRTY: #38,
+#45, #46, #49, #58; 15 MERGEABLE/UNSTABLE) -- ama daha derin bir kazı,
+**hiçbir Dependabot PR'ının bugüne kadar hiç otomatik merge edilmediğini**
+ortaya çıkardı, CI durumundan tamamen bağımsız olarak. İki ayrı, birbirinden
+bağımsız repo-ayarı kök nedeni bulundu (ikisi de `gh api` ile doğrulandı,
+varsayım değil):
+
+**Kök neden 1 (düzeltildi, PR #71):** `can_approve_pull_request_reviews:
+false` (`gh api repos/.../actions/permissions/workflow`) -- repo'nun
+"Allow GitHub Actions to create and approve pull requests" ayarı kapalı.
+`dependabot-auto-merge.yml`'in "Auto-approve" adımı bu yüzden HER ZAMAN
+başarısız oluyordu (kanıt: PR #41'in 2 ay önceki `dependabot` job'u, 11s'de
+exit 1), ve GitHub Actions'ın varsayılan step-bağımlılığı yüzünden bu
+başarısızlık asıl merge adımını hiç çalıştırmıyordu. master'da branch
+protection olmadığından (`gh api repos/.../branches/master/protection` ->
+404) onaylanmış review zaten merge şartı değildi -- sadece bu adımın
+başarısızlığı yanlışlıkla merge adımını engelliyordu. Düzeltme:
+"Auto-approve" adımına `continue-on-error: true`, "Enable auto-merge"
+adımının `if:`'ine `always() &&` eklendi. PR #71, tam beş-kırmızı emsali
+(Quality Gate, Backend Tests, CI Summary, Frontend Tests, Automatic PR
+Review -- hepsi bu PR'da da taze log ile doğrulandı) + Golden Flow PASSED
+sonrası `gh pr merge 71 --merge` ile merge commit
+`4231921eb0d02d527eb1403b3d45dc8f2ed04968` olarak birleştirildi.
+
+**Kök neden 2 (kod ile düzeltilemez, kullanıcı kararı gerekiyor):** PR
+#71'in fix'i canlı doğrulanırken (20 PR'a `@dependabot rebase` yorumu
+atılıp taze bir `dependabot` job'u izlendi -- PR #41) ikinci, bağımsız bir
+duvar ortaya çıktı: "Auto-approve" artık `continue-on-error` sayesinde
+yeşil görünüyor, ama "Enable auto-merge" adımı YENİ bir hatayla
+başarısız: `GraphQL: Auto merge is not allowed for this repository
+(enablePullRequestAutoMerge)`. Doğrulandı: `gh api repos/HuseyinAts/kiro2
+--jq '{allow_auto_merge}'` -> `false`. Bu, repo Settings -> General ->
+Pull Requests -> "Allow auto-merge" onay kutusu -- workflow dosyasından
+TAMAMEN bağımsız, ayrı bir repo özelliği anahtarı. `gh pr merge --auto`
+bu kapalıyken hiçbir zaman çalışamaz; workflow'un `--auto` kullanmaması
+(düz `gh pr merge` ile hemen merge etmesi) de GÜVENLİ DEĞİL, çünkü branch
+protection olmadığından "önce CI'yı bekle" garantisini sadece `--auto`
+sağlıyor. **Bu, `can_approve_pull_request_reviews` gibi, benim
+değiştiremeyeceğim bir repo/güvenlik ayarı -- kod tarafında cerrahi bir
+düzeltmesi yok.**
+
+**Düzeltme (canlı gözlemle):** İlk yazıldığında bu bölüm "Allow auto-merge"
+kapalıyken HİÇBİR PR'ın kendiliğinden merge olamayacağını söylüyordu --
+bu YANLIŞ çıktı, birkaç dakika içinde canlı veriyle çürütüldü. `gh pr
+merge --auto`, PR o an ZATEN mergeable ise (bekleyen zorunlu kontrol yok --
+master'da branch protection olmadığından "zorunlu kontrol" kavramı zaten
+yok) GraphQL kuyruklama mutasyonuna (`enablePullRequestAutoMerge`,
+`allow_auto_merge` ayarına tabi) hiç başvurmadan DOĞRUDAN merge ediyor;
+sadece PR hâlâ bekleyen kontrolleri varken çalışırsa kuyruklamaya düşüyor
+ve o zaman `allow_auto_merge:false` engeline takılıyor. Kanıt: rebase
+yorumlarından sonraki ~10 dakika içinde 4 PR gerçekten otomatik merge
+oldu -- #44 (18:19), #45 (18:20), #40 (18:21), #47 matplotlib (18:27),
+hepsi `mergedBy: app/github-actions`. Yani düzeltme kısmi değil, ÇALIŞIYOR
+-- sadece PR'ın workflow çalıştığı ANDA hâlâ kontrol bekliyor olması
+durumunda (CI'nin en yavaş olduğu ilk birkaç dakika) auto-merge kuyruğa
+düşüp `allow_auto_merge` engeline takılabiliyor. **Yine de "Allow
+auto-merge" açılması önerilir** -- bu, CI yavaş bittiğinde de garantili
+merge sağlar; ama artık "hiçbir şey merge olamıyor" değil, "bazı PR'lar
+şansa bağlı olarak kuyruğa düşebiliyor" düzeyinde ikincil bir iyileştirme.
+
+**Bu oturumda yapılan diğer triyaj işleri:** Tüm 20 PR'a `@dependabot
+rebase` yorumu atıldı (5 CONFLICTING çakışmasını çözmek + 15 UNSTABLE'ın
+~2,5 aylık bayat CI sonucunu güncel master'a karşı tazelemek + düzeltilmiş
+otomasyonu tetiklemek için). 2 major bump (workflow politikası geriği
+otomatik merge kapsamı dışında, insan incelemesi gerektiriyor) için
+önceden hazırlanmış kod-tabanı risk analizi doğrudan PR yorumu olarak
+paylaşıldı: **#43 marshmallow 3.26.2->4.3.0** (klonda `import marshmallow`
+sıfır sonuç, dolaylı/transitive bağımlılık, düşük risk) ve **#46 structlog
+24.1.0->26.1.0** (10 dosyada standart stdlib-entegrasyonu kullanımı,
+kullanılan hiçbir API'de breaking change yok, düşük risk) -- ikisi için de
+son merge kararı kullanıcıya bırakıldı, buton basılmadı. `#47 matplotlib`
+(minor, 3.8->3.11) düşük-orta risk olarak değerlendirilmişti (14 dosyada
+kullanıcı-görünür diyagram üretimi) -- otomasyona bırakıldı ama bu servis
+grubunun test kapsamı ayrıca doğrulanmadı, ayrı bir not olarak kayıtlı.
+
+
+### Faz 6 -- CodeQL false-positive dismiss'leri: iş zaten yapılmıştı, ama bozuk
+
+Faz 6'ya başlarken hazırlık notundaki (`py/weak-sensitive-data-hashing`
+kuralı için 5 alert: #136, #137, #138, #143, #151) numaraları canlı
+`gh api repos/.../code-scanning/alerts` ile doğrulanmaya çalışıldı --
+ama bu 5 dosya güncel `state=open` listesinde HİÇ görünmedi. Doğrudan
+numara sorgusu gerçeği ortaya çıkardı: **hepsi zaten `dismissed`,
+`dismissed_reason: "false positive"` idi** -- `dismissed_at` damgası bu
+OTURUMUN içinde, 14:01:22-27Z (bu segmentin kendi işinden önce, muhtemelen
+bu konuşmanın özetlenen/daha önceki bir kısmında). Yani asıl dismiss
+kararı zaten doğru verilmiş ve doğru 5 alert'e uygulanmıştı.
+
+**Ama bozuk bir yan etkisi vardı:** her 5 alert'in `dismissed_comment`
+alanı, gerekçe metni yerine kelimesi kelimesine
+`@C:\Users\husey\AppData\Local\Temp\kiro2_codeql_dismiss_comment.txt`
+string'ini içeriyordu -- yani `gh api -f dismissed_comment=@<dosya>`
+çağrısı dosya içeriğini OKUMAK yerine `@<yol>` metnini olduğu gibi
+gönderdi (bu ortamda `-f`'in dosya-okuma davranışı güvenilir değil).
+Düzeltmeye çalışırken **iki farklı, birbirinden bağımsız GitHub API
+kısıtı** ortaya çıktı (ikisi de canlı 4xx yanıtlarıyla doğrulandı, tahmin
+değil):
+
+1. `dismissed_reason` değeri `"false_positive"` (alt çizgi) DEĞİL,
+   `"false positive"` (boşluk) olmalı -- yanlış değer 422 "is not a
+   member of [...]" ile reddedildi.
+2. `dismissed_comment` **280 karakterle sınırlı** -- orijinal Türkçe
+   gerekçe metni 401 karakterdi, 422 "Only 280 characters are allowed;
+   401 were supplied" ile reddedildi.
+3. Zaten `dismissed` olan bir alert'e tekrar `state=dismissed` PATCH'i
+   400 "Alert is already dismissed" ile reddediliyor -- düzeltme, önce
+   `state=open`'a döndürüp sonra doğru gövdeyle tekrar dismiss etmeyi
+   gerektirdi (iki adımlı; her adım `gh api --input <json-dosyası>` ile
+   -- PowerShell'in Türkçe/tırnaklı metin içeren `-f` argümanlarını
+   güvenilir aktaramadığı bu oturumda defalarca gözlemlendiği için,
+   gövde bu kez doğrudan bir JSON dosyasından okundu, komut satırından
+   değil).
+
+280 karaktere sığan kısaltılmış gerekçe metniyle (`Yanlis pozitif: bu md5
+kullanimlari guvenlik amacli degil (hashlib.usedforsecurity=False ile
+isaretli) -- cache-key kisaltma, A/B kova atamasi, id benzersizlestirme.
+CodeQL bu parametreyi tanimiyor (arac sinirlamasi), Bandit taniyor.
+Detay: docs/guvenlik-borcu.md SS6.`, 268 karakter) 5 alert de
+reopen->redismiss edildi, `gh api` ile canlı tekrar okunarak doğru
+gerekçe metninin göründüğü doğrulandı. `#144`/`#145` (rbac_system.py --
+gerçek, zaten kod ile düzeltilmiş bulgular, false positive DEĞİL) hiç
+dokunulmadı, hâlâ `open` -- doğrulandı, hazırlık notunun talimatına
+uygun.
