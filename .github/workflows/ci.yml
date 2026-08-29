@@ -193,7 +193,13 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        # duz postgres:15 DEGIL: alembic baseline migration'i "CREATE EXTENSION
+        # vector" iceriyor (embedding/problem_embedding kolonlari icin,
+        # models/*.py pgvector kullaniyor). Bu job daha once `needs: quality`
+        # zincirinde hep engellendigi icin hic calismamisti; test-async-engine
+        # ScopeMismatch fix'i quality'i yesile cevirince ilk kez calisti ve
+        # burada patladi: "extension vector is not available" (29 Agu 2026).
+        image: pgvector/pgvector:pg15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
