@@ -1743,6 +1743,21 @@ def test_gf1wb_auth_refresh_token_is_persisted():
         except httpx.ConnectError:
             pytest.skip(f"backend unreachable at {BACKEND_URL}")
 
+        # 429 is NOT an environment problem -- it means this gate is
+        # throttling itself. Lumping it into the generic skip below (as
+        # this test used to) silently disabled the one regression guard for
+        # the auth.py:329 swallowed-persist bug -- see _login()'s docstring
+        # above for the same rationale, and
+        # docs/audits/2026-08-01_eksiklik_master.md P2 for how this was
+        # found (this test bypasses the shared _login/_login_taze helpers
+        # because it needs raw cookie-jar semantics, so the 429 contract has
+        # to be duplicated here rather than inherited from them).
+        if login_resp.status_code == 429:
+            pytest.fail(
+                f"GF1wB login rate-limited (HTTP 429) for {STUDENT['email']}. "
+                "Converting this to skip would silently stop verifying the "
+                "auth.py:329 refresh-token persist path."
+            )
         if login_resp.status_code != 200:
             pytest.skip(
                 f"login failed: {login_resp.status_code} {login_resp.text[:200]}"

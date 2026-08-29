@@ -77,6 +77,10 @@ def client() -> httpx.Client:
 @pytest.fixture(scope="module")
 def student_token(client: httpx.Client) -> str:
     resp = client.post("/api/v1/auth/login", json=STUDENT)
+    # 429 rate-limit'tir, ortam eksikliği değil -- skip'e çevirmek gerçek bir
+    # regresyonu gizler. Aynı sözleşme test_golden_flows.py::_login()'de.
+    if resp.status_code == 429:
+        pytest.fail(f"seed öğrenci girişi rate-limited (HTTP 429): {resp.text[:200]}")
     if resp.status_code != 200:
         pytest.skip(f"seed öğrenci girişi başarısız: {resp.status_code}")
     token = resp.json().get("access_token")
@@ -87,6 +91,10 @@ def student_token(client: httpx.Client) -> str:
 @pytest.fixture(scope="module")
 def teacher_token(client: httpx.Client) -> str:
     resp = client.post("/api/v1/auth/login", json=TEACHER)
+    # 429 rate-limit'tir, ortam eksikliği değil -- skip'e çevirmek gerçek bir
+    # regresyonu gizler. Aynı sözleşme test_golden_flows.py::_login()'de.
+    if resp.status_code == 429:
+        pytest.fail(f"seed öğretmen girişi rate-limited (HTTP 429): {resp.text[:200]}")
     if resp.status_code != 200:
         pytest.skip(f"seed öğretmen girişi başarısız: {resp.status_code}")
     token = resp.json().get("access_token")

@@ -292,3 +292,49 @@ kapsamı dışında bırakıldı.
 | Terrascan | `continue-on-error` | Tenable projeyi **arşivledi**. Taradığı üç çerçeve (docker, k8s, github) Checkov'un kapsamında; bilgi olarak duruyor, kapı Checkov. |
 | `safety check` | **Kaldırıldı** | 01.06.2024'te deprecate edildi, Safety 3.x hesap/API anahtarı istiyor. Aynı işi anahtarsız ve bakımı süren `pip-audit` yapıyor. |
 | Snyk | `if: env.SNYK_TOKEN != ''` | Token yoksa adım her koşulda hata veriyordu. Token tanımlıysa aynen çalışır. |
+
+---
+
+## 9. PR #62 sonrası backlog -- Faz 0 ve Faz 1
+
+PR #62 kapanış raporunda listelenen 7 kalemlik backlog için plan yapıldı;
+aşağıda ilk iki fazın sonucu (kalan fazlar ilerledikçe buraya eklenecek).
+
+### Faz 0 -- yerel temizlik
+
+`docker stop/rm kiro2_pgv15_repro`, `docker rmi kiro2ci311img:latest`
+(17.2GB boşaldı), `git worktree remove ../kiro2_ci_snapshot --force`
+(worktree'nin commit edilmemiş Dockerfile/bandit-baseline değişiklikleri
+master'daki `f59411683` ile aynı olduğu doğrulandıktan sonra silindi --
+kaybolan bir şey yok). `kiro2-fe-test` image'ı zaten yoktu.
+
+### Faz 1 -- test gate'lerin gerçekten test ettiğinden emin ol
+
+İki bağımsız, birbirini maskeleyen sorun bulundu:
+
+1. **`conftest.py` ScopeMismatch**: `global_db_manager_cleanup` session-scope
+   async fixture, pytest-asyncio 1.3.0'ın varsayılan function-scope event
+   loop fixture'ıyla çatışıyordu -- Quality Gate'in "Router registration
+   check" adımı collection aşamasında patlıyordu. Düzeltme: fixture'ı sync
+   `def` yapıp `db_manager.close()` çağrısını `asyncio.run()` ile sarmak
+   (global `asyncio_default_fixture_loop_scope` ayarına dokunmadan -- blast
+   radius'u tek fixture'a hapsetmek için).
+2. **429 sessizce skip'e dönüşüyordu**: `test_gf1wb_auth_refresh_token_is_persisted`
+   (auth.py:329 refresh-token persist regresyonunu yakalaması gereken tek
+   golden-flow testi) ve `test_es_answer_leak.py` / `test_osym_inspired_auth.py`
+   dosyalarının `student_token`/`teacher_token` fixture'ları, login 429
+   (rate-limit) döndürdüğünde bunu "ortam sorunu" sanıp testi skip
+   ediyordu -- yani gate kendini boğduğunda hiçbir şey doğrulamıyordu. Üç
+   dosyada da 429 artık `pytest.fail()`, sadece diğer non-200 kodlar
+   (bağlantı hatası, seed veri eksikliği vb.) skip.
+
+Doğrulama: `--collect-only` ile 10/10 test toplandı (0 hata, ScopeMismatch
+gitti). Canlı dev backend'e (`kiro2-backend`) karşı çalıştırıldığında GF1wB
+önceden var olan, benimle ilgisiz bir skip'e düştü -- satır 1771,
+"login did not set a refresh cookie (deploy may use Bearer-only flow)":
+bu container'ın login akışı cookie değil Bearer-only çalışıyor, bu da
+Faz 2'nin (auth.py:329) canlı yerel doğrulamasının bu container'a karşı
+mümkün olmayabileceği anlamına geliyor -- asıl doğrulama kanalı CI'nin
+Golden Flows job'u olacak. Diğer iki dosyanın fixture'ları (`student_token`
+iki dosyada da, `teacher_token`) canlı login ile PASSED / doğru şekilde
+non-429 skip verdi.

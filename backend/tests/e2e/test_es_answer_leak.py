@@ -86,6 +86,11 @@ def client() -> httpx.Client:
 @pytest.fixture(scope="module")
 def student_token(client: httpx.Client) -> str:
     resp = client.post("/api/v1/auth/login", json=STUDENT)
+    # 429 is rate-limiting, not a missing environment -- skip'e çevirmek
+    # gerçek bir regresyonu (kapı kendini boğuyor) sessizce gizler. Aynı
+    # sözleşme test_golden_flows.py::_login() ve GF1wB'de de uygulanıyor.
+    if resp.status_code == 429:
+        pytest.fail(f"seed öğrenci girişi rate-limited (HTTP 429): {resp.text[:200]}")
     if resp.status_code != 200:
         pytest.skip(
             f"seed öğrenci girişi başarısız: {resp.status_code} {resp.text[:200]}"
