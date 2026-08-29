@@ -1032,3 +1032,51 @@ dosya adları, gerçek backend/frontend kaynak+test çiftleri, belirsiz
 docs/infra). Bu segmentte sadece kanıtlanmış TEK zincir kapatıldı --
 kalan ~551 dosyanın hiçbiri bu PR'a dahil edilmedi, kasıtlı olarak. Bu
 triyaj bir sonraki en yüksek öncelikli iş olarak işaretli kalıyor.
+
+### 10.9 PR #75/#76: SS10.7 zincirinin devamı + adaptive_testing_service.py'de YENİ, GERÇEK bug (29 Ağu 2026)
+
+**PR #75** (services/nlp/*): `motivation_generator.py`, `osym_validator.py`,
+`yks_trend_analyzer.py` (backend/services/nlp/) ve 3 eşleşen test dosyası hiç
+commit edilmemişti (SS10.7 kategorizasyonunda "gerçek backend kaynak+test"
+grubu). Ruff RUF012 (ClassVar), S311 (`motivation_generator.py`'ye
+`irt_equating_service.py` emsaliyle aynı gerekçeli per-file-ignore --
+şablon seçimi, kripto değil), RUF021, SIM102 düzeltildi; mypy no-any-return
+düzeltildi (`yks_trend_analyzer.py`, cache'ten okunan değer için açık
+`str` tip belirtimi). Yerelde 12/12 test yeşil. CI'da 4 kırmızı, hepsi log
+seviyesinde doğrulandı ve §10.4/10.5/10.6/§10.8'deki bilinen borçlarla
+eşleşti (yeni hiçbir şey yok, `api.osym_routes` yine listede YOK). Merge:
+`d361e02ff` (2026-08-29T21:38:04Z UTC).
+
+**PR #76** (empirical_irt_calibrator): `services/empirical_irt_calibrator.py`
+(4PL IRT parametre kalibrasyon motoru), onu kullanan
+`scripts/quality/calibrate_question_bank_irt.py` (dry-run/--apply DB batch
+pipeline) ve `tests/integration/test_empirical_irt_calibration.py` hiç
+commit edilmemişti. Ruff (S324 -- `hashlib.md5(usedforsecurity=False)`,
+PTH118/120, RUF059, UP038) ve mypy (var-annotated, union-attr) düzeltildi.
+
+**Önemli yeni bulgu -- `services/adaptive_testing_service.py`'de canlı,
+önceden-tespit-edilmemiş bir bug:** `test_empirical_irt_calibration.py`'nin
+3 testinden 2'si, dosya hiç commit edilmediği için hiç koşmamıştı. Biri
+(`test_irt_bootstrap_uses_empirical_calibrator`) zararsız -- `irt_bootstrap.
+difficulty_to_irt()`'in `EmpiricalIRTCalibrator`'a entegrasyonu PLANLANMIŞ
+ama hiç YAPILMAMIŞ (TypeError: unexpected keyword argument 'question_id').
+Diğeri (`test_cold_start_cat_convergence_simulation`) ise EmpiricalIRTCalibrator
+ile ilgisiz -- doğrudan zaten TRACKED olan `adaptive_testing_service.py`'yi
+koşturuyor ve gerçek bir bug'a çarpıyor: `submit_response()`
+(~satır 236) `session.response_history`'ye düz `{"a":.., "b":..}` sözlüğü
+ekliyor, ama response_history'nin diğer girişleri iç içe `{"irt_params":
+{...}}` şeklinde saklanıyor. `_calculate_sem()` → `_calculate_fisher_
+information()` zinciri `item["a"]` okurken bu düz/iç-içe şekil
+tutarsızlığına çarpıp `KeyError: 'a'` ile patlıyor (satır 345).
+
+Bu, SS10.7'nin "hiç koşmayan test gate gerçek bug'ı yakalayamaz" deseninin
+CAT (Computer Adaptive Testing) puanlama motorunda -- yani sınav sırasında
+öğrencinin yetenek tahminini hesaplayan KRİTİK koddaki -- bir örneği.
+Fix bu PR'ların kapsamı dışında BİLEREK bırakıldı (auth.py refresh-token
+emsaliyle aynı gerekçe: önce arastır/belgele, kritik path'i ayrı, izole
+bir PR'da düzelt). İki test de `xfail(strict=True)` ile, gerekçe ve dosya/
+satır referansıyla işaretlendi -- CI yeşil kalıyor ama bulgu KAYBOLMUYOR.
+Merge: `6cd4e1e4b` (2026-08-29T22:26:16Z UTC).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 4+7+3=14 tanesi
+commit edildi (PR #74/#75/#76). ~541 dosya hâlâ triyaj bekliyor.
