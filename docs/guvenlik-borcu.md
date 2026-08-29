@@ -606,3 +606,69 @@ Security Summary) -- hepsi PASSED. 8 Golden Flow E2E tests PASSED
 (3m53s). PR #70, `gh pr merge 70 --merge` ile merge commit
 `026b5055cf7e3934f44548f7dea69e4efcd03d48` olarak birleştirildi (29 Ağu
 2026).
+
+
+### Faz 5 -- Dependabot triyajı: otomasyon neden hiç çalışmamış
+
+Plan'ın orijinal varsayımı ("otomasyon var, sadece bayat PR'lar rebase
+istiyor") **kısmen yanlış çıktı**. Canlı veri (`gh pr list --app
+dependabot --json mergeable,mergeStateStatus`) 20 PR'ın hepsinin artık
+gerçek bir `mergeable` durumu olduğunu gösterdi (5 CONFLICTING/DIRTY: #38,
+#45, #46, #49, #58; 15 MERGEABLE/UNSTABLE) -- ama daha derin bir kazı,
+**hiçbir Dependabot PR'ının bugüne kadar hiç otomatik merge edilmediğini**
+ortaya çıkardı, CI durumundan tamamen bağımsız olarak. İki ayrı, birbirinden
+bağımsız repo-ayarı kök nedeni bulundu (ikisi de `gh api` ile doğrulandı,
+varsayım değil):
+
+**Kök neden 1 (düzeltildi, PR #71):** `can_approve_pull_request_reviews:
+false` (`gh api repos/.../actions/permissions/workflow`) -- repo'nun
+"Allow GitHub Actions to create and approve pull requests" ayarı kapalı.
+`dependabot-auto-merge.yml`'in "Auto-approve" adımı bu yüzden HER ZAMAN
+başarısız oluyordu (kanıt: PR #41'in 2 ay önceki `dependabot` job'u, 11s'de
+exit 1), ve GitHub Actions'ın varsayılan step-bağımlılığı yüzünden bu
+başarısızlık asıl merge adımını hiç çalıştırmıyordu. master'da branch
+protection olmadığından (`gh api repos/.../branches/master/protection` ->
+404) onaylanmış review zaten merge şartı değildi -- sadece bu adımın
+başarısızlığı yanlışlıkla merge adımını engelliyordu. Düzeltme:
+"Auto-approve" adımına `continue-on-error: true`, "Enable auto-merge"
+adımının `if:`'ine `always() &&` eklendi. PR #71, tam beş-kırmızı emsali
+(Quality Gate, Backend Tests, CI Summary, Frontend Tests, Automatic PR
+Review -- hepsi bu PR'da da taze log ile doğrulandı) + Golden Flow PASSED
+sonrası `gh pr merge 71 --merge` ile merge commit
+`4231921eb0d02d527eb1403b3d45dc8f2ed04968` olarak birleştirildi.
+
+**Kök neden 2 (kod ile düzeltilemez, kullanıcı kararı gerekiyor):** PR
+#71'in fix'i canlı doğrulanırken (20 PR'a `@dependabot rebase` yorumu
+atılıp taze bir `dependabot` job'u izlendi -- PR #41) ikinci, bağımsız bir
+duvar ortaya çıktı: "Auto-approve" artık `continue-on-error` sayesinde
+yeşil görünüyor, ama "Enable auto-merge" adımı YENİ bir hatayla
+başarısız: `GraphQL: Auto merge is not allowed for this repository
+(enablePullRequestAutoMerge)`. Doğrulandı: `gh api repos/HuseyinAts/kiro2
+--jq '{allow_auto_merge}'` -> `false`. Bu, repo Settings -> General ->
+Pull Requests -> "Allow auto-merge" onay kutusu -- workflow dosyasından
+TAMAMEN bağımsız, ayrı bir repo özelliği anahtarı. `gh pr merge --auto`
+bu kapalıyken hiçbir zaman çalışamaz; workflow'un `--auto` kullanmaması
+(düz `gh pr merge` ile hemen merge etmesi) de GÜVENLİ DEĞİL, çünkü branch
+protection olmadığından "önce CI'yı bekle" garantisini sadece `--auto`
+sağlıyor. **Bu, `can_approve_pull_request_reviews` gibi, benim
+değiştiremeyeceğim bir repo/güvenlik ayarı -- kod tarafında cerrahi bir
+düzeltmesi yok.** Sonuç: otomasyon artık DOĞRU tetikleniyor (onay adımı
+artık akışı tıkamıyor) ama "Allow auto-merge" kullanıcı tarafından
+Settings'ten açılana kadar hiçbir patch/minor PR kendiliğinden merge
+OLAMAYACAK. **Aksiyon gerekiyor (kullanıcı): repo Settings -> General ->
+Pull Requests -> "Allow auto-merge" işaretlenmeli.**
+
+**Bu oturumda yapılan diğer triyaj işleri:** Tüm 20 PR'a `@dependabot
+rebase` yorumu atıldı (5 CONFLICTING çakışmasını çözmek + 15 UNSTABLE'ın
+~2,5 aylık bayat CI sonucunu güncel master'a karşı tazelemek + düzeltilmiş
+otomasyonu tetiklemek için). 2 major bump (workflow politikası geriği
+otomatik merge kapsamı dışında, insan incelemesi gerektiriyor) için
+önceden hazırlanmış kod-tabanı risk analizi doğrudan PR yorumu olarak
+paylaşıldı: **#43 marshmallow 3.26.2->4.3.0** (klonda `import marshmallow`
+sıfır sonuç, dolaylı/transitive bağımlılık, düşük risk) ve **#46 structlog
+24.1.0->26.1.0** (10 dosyada standart stdlib-entegrasyonu kullanımı,
+kullanılan hiçbir API'de breaking change yok, düşük risk) -- ikisi için de
+son merge kararı kullanıcıya bırakıldı, buton basılmadı. `#47 matplotlib`
+(minor, 3.8->3.11) düşük-orta risk olarak değerlendirilmişti (14 dosyada
+kullanıcı-görünür diyagram üretimi) -- otomasyona bırakıldı ama bu servis
+grubunun test kapsamı ayrıca doğrulanmadı, ayrı bir not olarak kayıtlı.
