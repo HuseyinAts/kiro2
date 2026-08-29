@@ -74,7 +74,7 @@ class RevolutionaryOptimizer:
     ) -> str:
         """Cache key oluştur"""
         key_data = f"{algorithm_name}:{args!s}:{sorted(kwargs.items())!s}"
-        return hashlib.md5(key_data.encode()).hexdigest()
+        return hashlib.md5(key_data.encode(), usedforsecurity=False).hexdigest()
 
     def _update_metrics(
         self, algorithm_name: str, execution_time: float, cache_hit: bool
@@ -536,7 +536,7 @@ class IRTMorphologyOptimizer:
         """Async morfolojik analiz"""
 
         # Text hash oluştur (cache için)
-        text_hash = hashlib.md5(text.encode()).hexdigest()[:16]
+        text_hash = hashlib.md5(text.encode(), usedforsecurity=False).hexdigest()[:16]
         word_count = len(text.split())
 
         # Cache'li hesaplama

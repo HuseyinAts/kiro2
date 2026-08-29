@@ -602,7 +602,7 @@ class VisualSupportsService:
     def _generate_id(self, seed: str) -> str:
         """Benzersiz ID oluştur"""
         return hashlib.md5(
-            f"{seed}_{datetime.now(UTC).isoformat()}".encode()
+            f"{seed}_{datetime.now(UTC).isoformat()}".encode(), usedforsecurity=False
         ).hexdigest()[:16]
 
     def _extract_key_concepts(self, words: list[str]) -> list[str]:

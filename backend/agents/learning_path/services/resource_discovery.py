@@ -310,7 +310,7 @@ class ResourceDiscoveryService:
         )
 
         # Process results
-        for strategy, result in zip(active_strategies, results):
+        for strategy, result in zip(active_strategies, results, strict=False):
             platform = strategy.get_platform_name()
 
             if isinstance(result, Exception):
@@ -498,7 +498,12 @@ class ResourceDiscoveryService:
                 try:
                     view_count = int(resource.metadata.get("view_count", 0))
                 except (ValueError, TypeError):
-                    pass
+                    # Saglayici view_count'u sayisal vermemis; populerlik
+                    # bonusu 0 kalir, skorlama devam eder.
+                    logger.debug(
+                        "view_count sayiya cevrilemedi: %r",
+                        resource.metadata.get("view_count"),
+                    )
             if view_count >= 1_000_000:
                 score += 15
             elif view_count >= 100_000:
@@ -542,7 +547,9 @@ class ResourceDiscoveryService:
             str(request.limit),
             str(sorted(request.preferred_platforms)),
         )
-        digest = hashlib.md5("\x00".join(key_parts).encode()).hexdigest()
+        digest = hashlib.md5(
+            "\x00".join(key_parts).encode(), usedforsecurity=False
+        ).hexdigest()
         return f"rd:{digest}"
 
     async def find_similar(

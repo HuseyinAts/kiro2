@@ -60,7 +60,7 @@ class ResponseCache:
     def _generate_key(self, agent: str, message: str) -> str:
         """Generate cache key from agent and message"""
         content = f"{agent}:{message}"
-        return hashlib.md5(content.encode()).hexdigest()
+        return hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
 
     def get(self, agent: str, message: str) -> str | None:
         """Get cached response if exists and not expired"""

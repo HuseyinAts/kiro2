@@ -114,7 +114,7 @@ class SearchEngineMixin:
             return []
 
         # Query hash kontrol et
-        query_hash = hashlib.md5(query.encode()).hexdigest()
+        query_hash = hashlib.md5(query.encode(), usedforsecurity=False).hexdigest()
         cached_result = self._get_cached_search(query_hash)
         if cached_result:
             return cached_result

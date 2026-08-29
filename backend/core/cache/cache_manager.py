@@ -116,7 +116,7 @@ class CacheManager:
     def _generate_key(self, prefix: str, *args, **kwargs) -> str:
         """Cache key oluştur"""
         data = str(args) + str(sorted(kwargs.items()))
-        hash_key = hashlib.md5(data.encode()).hexdigest()
+        hash_key = hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()
         return f"{prefix}:{hash_key}"
 
     async def get(self, key: str) -> Any | None:

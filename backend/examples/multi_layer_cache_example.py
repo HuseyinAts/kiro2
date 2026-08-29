@@ -61,7 +61,7 @@ async def example_student_profile_cache():
 
     # Generate cache key from profile hash
     profile_str = json.dumps(student_profile, sort_keys=True)
-    profile_hash = hashlib.md5(profile_str.encode()).hexdigest()
+    profile_hash = hashlib.md5(profile_str.encode(), usedforsecurity=False).hexdigest()
     cache_key = f"video_rec:{profile_hash}"
 
     print(f"Profile hash: {profile_hash}")

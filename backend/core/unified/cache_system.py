@@ -127,7 +127,7 @@ class TurkishKeyEncoder:
     @staticmethod
     def hash_key(key: str) -> str:
         """Create hash for complex keys"""
-        return hashlib.md5(key.encode("utf-8")).hexdigest()
+        return hashlib.md5(key.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 class UnifiedCacheManager:

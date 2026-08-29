@@ -2,6 +2,7 @@
 Öğrenci Dashboard API endpoint'leri
 SPRINT 2: Multi-layer cache integration (L1 Memory + L2 Redis)
 """
+
 import hashlib
 import json
 import os
@@ -76,7 +77,7 @@ async def dashboard_istatistikleri_getir(
         istatistikler = await dashboard_cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_stats,
-            ttl=300  # 5 minutes - frequently updated stats
+            ttl=300,  # 5 minutes - frequently updated stats
         )
 
         return istatistikler
@@ -111,12 +112,16 @@ async def sinav_gecmisi_getir(
     try:
         # SPRINT 2: Cache key from query parameters
         cache_key = hashlib.md5(
-            json.dumps({
-                "user_id": mevcut_kullanici.kullanici_id,
-                "limit": limit,
-                "offset": offset,
-                "sinav_tipi": sinav_tipi,
-            }, sort_keys=True).encode()
+            json.dumps(
+                {
+                    "user_id": mevcut_kullanici.kullanici_id,
+                    "limit": limit,
+                    "offset": offset,
+                    "sinav_tipi": sinav_tipi,
+                },
+                sort_keys=True,
+            ).encode(),
+            usedforsecurity=False,
         ).hexdigest()
 
         # Initialize cache if needed
@@ -137,7 +142,7 @@ async def sinav_gecmisi_getir(
         sinav_gecmisi = await dashboard_cache.get_or_compute(
             key=f"history:{cache_key}",
             compute_fn=fetch_history,
-            ttl=600  # 10 minutes - history data doesn't change frequently
+            ttl=600,  # 10 minutes - history data doesn't change frequently
         )
 
         return sinav_gecmisi
@@ -188,7 +193,7 @@ async def performans_trendi_getir(
         performans_verisi = await dashboard_cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_trend,
-            ttl=600  # 10 minutes - trend data updates gradually
+            ttl=600,  # 10 minutes - trend data updates gradually
         )
 
         return performans_verisi
@@ -247,7 +252,10 @@ async def hedef_olustur(
         )
         return yeni_hedef
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -278,7 +286,10 @@ async def hedef_guncelle(
         )
         return guncellenen_hedef
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -338,11 +349,15 @@ async def bildirimler_getir(
     try:
         # SPRINT 2: Cache key from query parameters
         cache_key = hashlib.md5(
-            json.dumps({
-                "user_id": mevcut_kullanici.kullanici_id,
-                "okunmamis_sadece": okunmamis_sadece,
-                "limit": limit,
-            }, sort_keys=True).encode()
+            json.dumps(
+                {
+                    "user_id": mevcut_kullanici.kullanici_id,
+                    "okunmamis_sadece": okunmamis_sadece,
+                    "limit": limit,
+                },
+                sort_keys=True,
+            ).encode(),
+            usedforsecurity=False,
         ).hexdigest()
 
         # Initialize cache if needed
@@ -362,7 +377,7 @@ async def bildirimler_getir(
         bildirimler = await dashboard_cache.get_or_compute(
             key=f"notif:{cache_key}",
             compute_fn=fetch_notifications,
-            ttl=120  # 2 minutes - notifications need frequent updates
+            ttl=120,  # 2 minutes - notifications need frequent updates
         )
 
         return bildirimler
@@ -440,7 +455,7 @@ async def ogrenci_profili_getir(
         profil = await dashboard_cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_profile,
-            ttl=1800  # 30 minutes - profile data rarely changes
+            ttl=1800,  # 30 minutes - profile data rarely changes
         )
 
         return profil
@@ -479,11 +494,16 @@ async def profil_guncelle(
         if dashboard_cache._initialized:
             cache_key = f"profile:{mevcut_kullanici.kullanici_id}"
             await dashboard_cache.delete(cache_key)
-            logger.info(f"Profile cache invalidated for user {mevcut_kullanici.kullanici_id}")
+            logger.info(
+                f"Profile cache invalidated for user {mevcut_kullanici.kullanici_id}"
+            )
 
         return guncellenen_profil
     except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
     except HTTPException:
         raise
     except Exception:
@@ -528,7 +548,7 @@ async def dashboard_ozeti(
         ozet = await dashboard_cache.get_or_compute(
             key=cache_key,
             compute_fn=fetch_summary,
-            ttl=30  # 30 seconds - short TTL so CAT results appear quickly
+            ttl=30,  # 30 seconds - short TTL so CAT results appear quickly
         )
 
         return {

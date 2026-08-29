@@ -1,0 +1,668 @@
+{
+    "failed_checks": [
+        {
+            "file": "/.github/workflows/ci.yml",
+            "findings": [
+                {
+                    "resource": "on(CI)",
+                    "check_ids": [
+                        "CKV2_GHA_1"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/.github/workflows/claude-ci.yml",
+            "findings": [
+                {
+                    "resource": "on(Claude Code CI)",
+                    "check_ids": [
+                        "CKV2_GHA_1",
+                        "CKV_GHA_7"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/.github/workflows/golden-flows.yml",
+            "findings": [
+                {
+                    "resource": "on(Golden Flows)",
+                    "check_ids": [
+                        "CKV2_GHA_1"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/.github/workflows/health-checks.yml",
+            "findings": [
+                {
+                    "resource": "on(Health Checks & PostDeploy Verification)",
+                    "check_ids": [
+                        "CKV2_GHA_1",
+                        "CKV_GHA_7"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/.github/workflows/quality-gate.yml",
+            "findings": [
+                {
+                    "resource": "on(Quality Gate (New-Endpoint Checklist))",
+                    "check_ids": [
+                        "CKV2_GHA_1"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/.github/workflows/quality-gates.yml",
+            "findings": [
+                {
+                    "resource": "on(Quality Gates Pipeline)",
+                    "check_ids": [
+                        "CKV2_GHA_1",
+                        "CKV_GHA_7"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/.github/workflows/release.yml",
+            "findings": [
+                {
+                    "resource": "on(Release)",
+                    "check_ids": [
+                        "CKV_GHA_7"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/.github/workflows/security.yml",
+            "findings": [
+                {
+                    "resource": "on(Security Scan)",
+                    "check_ids": [
+                        "CKV2_GHA_1"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/.github/workflows/test-quality-gate.yml",
+            "findings": [
+                {
+                    "resource": "on(Test Quality Gate)",
+                    "check_ids": [
+                        "CKV2_GHA_1"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/Dockerfile.dev",
+            "findings": [
+                {
+                    "resource": "/backend/Dockerfile.dev.",
+                    "check_ids": [
+                        "CKV_DOCKER_2"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/config.yaml",
+            "findings": [
+                {
+                    "resource": "826dfc62886c9b121be845fca8d4f5a7653a2740",
+                    "check_ids": [
+                        "CKV_SECRET_4"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/config/development.yaml",
+            "findings": [
+                {
+                    "resource": "3f429bf173976861dbb4db90338230b4448cfb80",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/config/production.yaml",
+            "findings": [
+                {
+                    "resource": "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8",
+                    "check_ids": [
+                        "CKV_SECRET_4"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/config/testing.yaml",
+            "findings": [
+                {
+                    "resource": "09deed43771892a2e86f9d6a2ad716b88b908dcd",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "61590b1c314aea752829602c7e0d653e51d52738",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "6731834487e9dd32ec3df63994d996da1133dbb9",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "75ddfb45216fe09680dfe70eda4f559a910c832c",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/login_response.json",
+            "findings": [
+                {
+                    "resource": "66a352730dd599586de2db972f3f98c1d207433c",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "8a861a1dc94dcef9cf833703abc30d4081f2fccf",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/openapi.json",
+            "findings": [
+                {
+                    "resource": "paths",
+                    "check_ids": [
+                        "CKV_OPENAPI_21"
+                    ]
+                },
+                {
+                    "resource": "security",
+                    "check_ids": [
+                        "CKV_OPENAPI_4",
+                        "CKV_OPENAPI_5"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/backend/scripts/security_audit/security_audit_report.json",
+            "findings": [
+                {
+                    "resource": "af261789c0f8080f769eb0b498daab8bf7025d94",
+                    "check_ids": [
+                        "CKV_SECRET_9"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/frontend/.github/workflows/e2e-tests.yml",
+            "findings": [
+                {
+                    "resource": "on(E2E Tests - Learning Path Video Loading)",
+                    "check_ids": [
+                        "CKV2_GHA_1"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/frontend/Dockerfile",
+            "findings": [
+                {
+                    "resource": "/frontend/Dockerfile.",
+                    "check_ids": [
+                        "CKV_DOCKER_3"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/k8s/deployment-week4.yaml",
+            "findings": [
+                {
+                    "resource": "29b8dca3de5ff27bcf8bd3b622adf9970f29381c",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "Deployment.kiro-prod.kiro-backend",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Deployment.kiro-prod.redis",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Pod.kiro-prod.postgres.app-postgres",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.kiro-prod.redis.app-redis",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "StatefulSet.kiro-prod.postgres",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "a7979904021cdb66cf919115ca138702b6839e10",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "d413f4d18c4c123dd52776f417b792efdec29c6a",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/k8s/deployment.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.turkiye-sinav-platform.turkiye-sinav-app",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Deployment.turkiye-sinav-platform.turkiye-sinav-nginx",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Deployment.turkiye-sinav-platform.turkiye-sinav-scheduler",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Deployment.turkiye-sinav-platform.turkiye-sinav-worker",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Pod.turkiye-sinav-platform.turkiye-sinav-app.app.kubernetes.io/name-turkiye-sinav-app.app.kubernetes.io/component-backend",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.turkiye-sinav-platform.turkiye-sinav-nginx.app.kubernetes.io/name-turkiye-sinav-nginx.app.kubernetes.io/component-nginx",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.turkiye-sinav-platform.turkiye-sinav-scheduler.app.kubernetes.io/name-turkiye-sinav-scheduler.app.kubernetes.io/component-scheduler",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.turkiye-sinav-platform.turkiye-sinav-worker.app.kubernetes.io/name-turkiye-sinav-worker.app.kubernetes.io/component-worker",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/k8s/secrets.yaml",
+            "findings": [
+                {
+                    "resource": "1b0c2694f8c83f86da468dfe2e70db13971be49a",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "876eb392f486ac3a87e04e5f69a3d8dd05b98aa0",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "9b31b52ce5824163c838c877c49a4f04cb9c11a0",
+                    "check_ids": [
+                        "CKV_SECRET_7"
+                    ]
+                },
+                {
+                    "resource": "b83b9e9782fe30fd18a77a0d075b9ce4d9435138",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "d441bf2e8746054ebdc5ee470a029fa35f0bdb6d",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/k8s/statefulset.yaml",
+            "findings": [
+                {
+                    "resource": "Pod.turkiye-sinav-platform.elasticsearch.app.kubernetes.io/name-elasticsearch.app.kubernetes.io/component-search",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.turkiye-sinav-platform.postgres.app.kubernetes.io/name-postgres.app.kubernetes.io/component-database",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.turkiye-sinav-platform.redis.app.kubernetes.io/name-redis.app.kubernetes.io/component-cache",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "StatefulSet.turkiye-sinav-platform.elasticsearch",
+                    "check_ids": [
+                        "CKV_K8S_10",
+                        "CKV_K8S_11",
+                        "CKV_K8S_12",
+                        "CKV_K8S_13",
+                        "CKV_K8S_15",
+                        "CKV_K8S_16",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "StatefulSet.turkiye-sinav-platform.postgres",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "StatefulSet.turkiye-sinav-platform.redis",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/kubernetes/base/backend-deployment.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.default.kiro2-backend",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_20",
+                        "CKV_K8S_21",
+                        "CKV_K8S_22",
+                        "CKV_K8S_28",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Service.default.kiro2-backend",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/kubernetes/base/configmap.yaml",
+            "findings": [
+                {
+                    "resource": "ConfigMap.default.kiro2-config",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/kubernetes/base/secrets.yaml",
+            "findings": [
+                {
+                    "resource": "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8",
+                    "check_ids": [
+                        "CKV_SECRET_4"
+                    ]
+                },
+                {
+                    "resource": "85548de2e74c656cb217e9ec3271fef165b1af56",
+                    "check_ids": [
+                        "CKV_SECRET_6"
+                    ]
+                },
+                {
+                    "resource": "Secret.default.kiro2-secrets",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/kubernetes/base/service-account.yaml",
+            "findings": [
+                {
+                    "resource": "Role.default.kiro2-backend-role",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                },
+                {
+                    "resource": "RoleBinding.default.kiro2-backend-rolebinding",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                },
+                {
+                    "resource": "ServiceAccount.default.kiro2-backend",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/kubernetes/deployment.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.default.turkiye-sinav-backend",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_20",
+                        "CKV_K8S_21",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.default.turkiye-sinav-backend.app-turkiye-sinav.component-backend",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Service.default.turkiye-sinav-backend-service",
+                    "check_ids": [
+                        "CKV_K8S_21"
+                    ]
+                }
+            ]
+        }
+    ]
+}

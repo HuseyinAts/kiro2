@@ -2,6 +2,7 @@
 Cache Stampede Prevention
 PERFORMANCE FIX: Prevent thundering herd problem when cache expires
 """
+
 import asyncio
 import hashlib
 import logging
@@ -102,7 +103,9 @@ def cached_with_lock(ttl: int = 3600, key_prefix: str | None = None) -> Callable
             # Generate cache key from function name and arguments
             key_base = key_prefix or func.__name__
             args_str = str(args) + str(sorted(kwargs.items()))
-            args_hash = hashlib.md5(args_str.encode()).hexdigest()
+            args_hash = hashlib.md5(
+                args_str.encode(), usedforsecurity=False
+            ).hexdigest()
             cache_key = f"{key_base}:{args_hash}"
 
             # Import cache dynamically to avoid circular imports

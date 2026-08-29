@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class WikipediaVerificationResult(BaseModel):
     """Wikipedia doğrulama sonucu"""
+
     found: bool = Field(description="Bilgi bulundu mu")
     confidence: float = Field(ge=0.0, le=1.0, description="Güven skoru")
     status: str = Field(description="true/false/partially_true/unverified")
@@ -148,7 +149,9 @@ class WikipediaClient:
         Returns:
             List[Dict]: Arama sonuçları
         """
-        cache_key = f"search_{hashlib.md5(query.encode()).hexdigest()}"
+        cache_key = (
+            f"search_{hashlib.md5(query.encode(), usedforsecurity=False).hexdigest()}"
+        )
 
         # Cache kontrol
         if self.cache_enabled and cache_key in self._cache:
@@ -166,11 +169,14 @@ class WikipediaClient:
         }
 
         try:
-            async with aiohttp.ClientSession() as session, session.get(
-                self.API_URL,
-                params=params,
-                timeout=aiohttp.ClientTimeout(total=10.0),
-            ) as resp:
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
+                    self.API_URL,
+                    params=params,
+                    timeout=aiohttp.ClientTimeout(total=10.0),
+                ) as resp,
+            ):
                 if resp.status != 200:
                     return []
 
@@ -200,7 +206,9 @@ class WikipediaClient:
         Returns:
             str: Sayfa içeriği
         """
-        cache_key = f"page_{hashlib.md5(title.encode()).hexdigest()}"
+        cache_key = (
+            f"page_{hashlib.md5(title.encode(), usedforsecurity=False).hexdigest()}"
+        )
 
         # Cache kontrol
         if self.cache_enabled and cache_key in self._cache:
@@ -219,11 +227,14 @@ class WikipediaClient:
         }
 
         try:
-            async with aiohttp.ClientSession() as session, session.get(
-                self.API_URL,
-                params=params,
-                timeout=aiohttp.ClientTimeout(total=10.0),
-            ) as resp:
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
+                    self.API_URL,
+                    params=params,
+                    timeout=aiohttp.ClientTimeout(total=10.0),
+                ) as resp,
+            ):
                 if resp.status != 200:
                     return None
 
@@ -250,9 +261,7 @@ class WikipediaClient:
             logger.error(f"Wikipedia page content error: {e}")
             return None
 
-    def _verify_claim_in_content(
-        self, claim: str, content: str
-    ) -> dict[str, Any]:
+    def _verify_claim_in_content(self, claim: str, content: str) -> dict[str, Any]:
         """
         İddiayı içerikte doğrula.
 
@@ -280,9 +289,26 @@ class WikipediaClient:
 
         # Stop words çıkar
         stop_words = {
-            "ve", "veya", "ile", "için", "bu", "şu", "o",
-            "bir", "mi", "mı", "mu", "mü", "ne", "nasıl",
-            "de", "da", "den", "dan", "dır", "dir",
+            "ve",
+            "veya",
+            "ile",
+            "için",
+            "bu",
+            "şu",
+            "o",
+            "bir",
+            "mi",
+            "mı",
+            "mu",
+            "mü",
+            "ne",
+            "nasıl",
+            "de",
+            "da",
+            "den",
+            "dan",
+            "dır",
+            "dir",
         }
         claim_words = claim_words - stop_words
 
@@ -337,8 +363,10 @@ class WikipediaClient:
                 start = max(0, index - 100)
                 end = min(len(content), index + len(claim) + 100)
                 return "..." + content[start:end] + "..."
-        except Exception:
-            pass
+        except (AttributeError, TypeError, ValueError) as exc:
+            # İddia metni içerikte aranamadı (beklenmedik tip/biçim).
+            # Aşağıdaki "ilk 500 karakter" fallback'i devreye girer.
+            logger.debug("Alinti cikarilamadi, fallback kullanilacak: %s", exc)
 
         # Fallback: İlk 500 karakter
         return content[:500]
@@ -352,7 +380,6 @@ class WikipediaClient:
         return {
             "entries": len(self._cache),
             "total_size": sum(
-                len(str(v.get("data", "")))
-                for v in self._cache.values()
+                len(str(v.get("data", ""))) for v in self._cache.values()
             ),
         }

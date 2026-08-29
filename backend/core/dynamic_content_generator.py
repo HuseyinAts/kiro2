@@ -441,49 +441,49 @@ class DynamicContentGenerator:
         base_contents = {
             ContentType.EXPLANATION: f"""
             {topic} Konusu Açıklaması
-            
+
             {topic}, matematik ve bilimde önemli bir konudur.
             Bu konuyu öğrenmek için temel kavramları anlamamız gerekir.
-            
+
             Temel Kavramlar:
             1. Tanım ve özellikler
             2. Kullanım alanları
             3. Örnek problemler
-            
+
             Detaylı açıklama:
             {topic} konusu, günlük hayatta sıkça karşılaştığımız durumları anlamamıza yardımcı olur.
             Örneğin, alışveriş yaparken, yemek pişirirken veya oyun oynarken bu bilgileri kullanırız.
             """,
             ContentType.EXAMPLE: f"""
             {topic} Örnek Problem
-            
+
             Soru: {topic} ile ilgili bir problem çözelim.
-            
+
             Problem: Bir öğrenci {topic} konusunu öğreniyor.
-            
+
             Çözüm Adımları:
             1. Problemi anlayalım
             2. Verileri belirleyelim
             3. Formülü uygulayalım
             4. Sonucu kontrol edelim
-            
+
             Cevap: Problem başarıyla çözüldü!
             """,
             ContentType.QUIZ: f"""
             {topic} Mini Quiz
-            
+
             Soru 1: {topic} nedir?
             Soru 2: {topic} nerelerde kullanılır?
             Soru 3: {topic} ile ilgili örnek verin.
             """,
             ContentType.SUMMARY: f"""
             {topic} Özet
-            
+
             Ana Noktalar:
             • {topic} temel bir konudur
             • Günlük hayatta kullanılır
             • Pratik yaparak öğrenilir
-            
+
             Önemli: Düzenli tekrar yapın!
             """,
         }
@@ -638,7 +638,7 @@ class DynamicContentGenerator:
         """Generate unique content ID"""
         timestamp = datetime.now().isoformat()
         data = f"{student_id}:{topic}:{content_type.value}:{timestamp}"
-        return hashlib.md5(data.encode()).hexdigest()[:16]
+        return hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()[:16]
 
     async def update_content_effectiveness(
         self, content_id: str, metrics: dict[str, Any]

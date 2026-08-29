@@ -48,10 +48,7 @@ class QueryCache:
     """
 
     def __init__(
-        self,
-        redis: Any = None,
-        default_ttl: int = 300,
-        key_prefix: str = "qcache:"
+        self, redis: Any = None, default_ttl: int = 300, key_prefix: str = "qcache:"
     ):
         """
         QueryCache başlatır.
@@ -83,7 +80,7 @@ class QueryCache:
             data = json.dumps(data, sort_keys=True, default=str)
         elif not isinstance(data, str):
             data = str(data)
-        return hashlib.md5(data.encode()).hexdigest()[:16]
+        return hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()[:16]
 
     async def get(self, key: str) -> Any | None:
         """
@@ -113,12 +110,7 @@ class QueryCache:
             logger.error(f"Cache get error for {key}: {e}")
             return None
 
-    async def set(
-        self,
-        key: str,
-        value: Any,
-        ttl: int | None = None
-    ) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """
         Cache'e değer yazar.
 
@@ -149,10 +141,7 @@ class QueryCache:
             return False
 
     async def get_or_set(
-        self,
-        key: str,
-        getter: Callable,
-        ttl: int | None = None
+        self, key: str, getter: Callable, ttl: int | None = None
     ) -> Any:
         """
         Cache'den al veya getter ile doldur.
@@ -172,6 +161,7 @@ class QueryCache:
 
         # Get fresh value
         import asyncio
+
         if asyncio.iscoroutinefunction(getter):
             value = await getter()
         else:
@@ -225,9 +215,7 @@ class QueryCache:
             cursor = 0
             while True:
                 cursor, keys = await self.redis.scan(
-                    cursor=cursor,
-                    match=full_pattern,
-                    count=100
+                    cursor=cursor, match=full_pattern, count=100
                 )
 
                 if keys:
@@ -271,12 +259,7 @@ class QueryCache:
             logger.error(f"Cache get_hash error for {key}: {e}")
             return None
 
-    async def set_hash(
-        self,
-        key: str,
-        data: dict,
-        ttl: int | None = None
-    ) -> bool:
+    async def set_hash(self, key: str, data: dict, ttl: int | None = None) -> bool:
         """
         Redis hash'e yazar.
 
@@ -313,9 +296,7 @@ class QueryCache:
 
 
 def cached_query(
-    key_template: str,
-    ttl: int = 300,
-    key_params: list[str] | None = None
+    key_template: str, ttl: int = 300, key_params: list[str] | None = None
 ):
     """
     Query caching decorator.
@@ -333,12 +314,14 @@ def cached_query(
         async def get_questions(subject: str, page: int = 1):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
             # Get query cache from context or skip
             try:
                 from core.cache import get_query_cache
+
                 cache = get_query_cache()
             except ImportError:
                 # No cache available, execute directly
@@ -358,12 +341,11 @@ def cached_query(
 
             # Try cache
             return await cache.get_or_set(
-                key=cache_key,
-                getter=lambda: func(*args, **kwargs),
-                ttl=ttl
+                key=cache_key, getter=lambda: func(*args, **kwargs), ttl=ttl
             )
 
         return wrapper
+
     return decorator
 
 
@@ -389,12 +371,7 @@ class QueryCacheWarmer:
         self.cache = cache
         self._queries: dict[str, tuple[Callable, int]] = {}
 
-    def add_query(
-        self,
-        key: str,
-        getter: Callable,
-        ttl: int = 600
-    ) -> None:
+    def add_query(self, key: str, getter: Callable, ttl: int = 600) -> None:
         """
         Warming listesine query ekler.
 
@@ -426,6 +403,7 @@ class QueryCacheWarmer:
 
         try:
             import asyncio
+
             if asyncio.iscoroutinefunction(getter):
                 value = await getter()
             else:
@@ -471,10 +449,8 @@ def get_query_cache() -> QueryCache:
         # Try to get Redis client
         try:
             from core.cache import cache_manager
-            _query_cache = QueryCache(
-                redis=cache_manager.redis,
-                default_ttl=300
-            )
+
+            _query_cache = QueryCache(redis=cache_manager.redis, default_ttl=300)
         except (ImportError, AttributeError):
             _query_cache = QueryCache(redis=None)
     return _query_cache

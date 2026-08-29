@@ -41,9 +41,13 @@ if _SENTRY_DSN:
             # Don't ship PII (student emails, exam answers) to Sentry.
             send_default_pii=False,
         )
-    except ImportError:
-        # sentry-sdk not installed; degraded but non-fatal.
-        pass
+    except ImportError as exc:
+        # sentry-sdk not installed; degraded but non-fatal. Sessizce yutmak
+        # yerine kaydediyoruz: "Sentry'e hata dusmuyor" diye arastirilan bir
+        # olayda ilk bakilacak yer bu satir.
+        logging.getLogger(__name__).info(
+            "sentry-sdk yok, hata raporlama devre disi: %s", exc
+        )
 
 logging.basicConfig(
     level=logging.INFO,
@@ -103,6 +107,18 @@ except ImportError as e:
             allow_methods=["*"],
             allow_headers=["*"],
         )
+
+        # Guvenlik basliklari fallback app'te de olmali: aksi halde
+        # core.application import edilemedigi her ortamda (CI'daki
+        # api-security job'i dahil) X-Frame-Options / X-Content-Type-Options
+        # / CSP sessizce kayboluyor ve OWASP ZAP taramasi FAIL veriyor.
+        try:
+            from core.security_headers import SecurityHeadersMiddleware
+
+            app.add_middleware(SecurityHeadersMiddleware)
+            logger.info("Security headers middleware added (fallback app)")
+        except ImportError as exc:
+            logger.warning(f"Security headers middleware unavailable: {exc}")
 
         @app.get("/")
         async def root():

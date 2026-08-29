@@ -135,7 +135,10 @@ class CacheKeyBuilder:
 
         # Uzun key'leri hash'le
         if self.hash_long_keys and len(key) > self.max_key_length:
-            hash_suffix = hashlib.md5(key.encode()).hexdigest()[:16]
+            # Yalnizca uzun cache key'ini kisaltmak icin; kriptografik amac yok.
+            hash_suffix = hashlib.md5(
+                key.encode(), usedforsecurity=False
+            ).hexdigest()[:16]
             key = f"{self.prefix}:v{self.version}:hash:{hash_suffix}"
 
         return key
@@ -189,9 +192,13 @@ def _get_user_id_from_request(request: Request | None) -> Union[int, str] | None
     # (Bu basit bir fallback - gercek implementasyon JWT decode gerektirir)
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        # Token'in hash'ini kullan (gercek ID yerine)
+        # Token'in hash'ini kullan (gercek ID yerine).
+        # md5[:12] = 48 bit; bu deger CACHE BOLMESI secer, yani iki farkli
+        # kullanicinin ayni bolmeye dusmesi bir kullanicinin cevabini
+        # digerine servis etmek demektir. sha256[:32] = 128 bit ile
+        # carpisma pratikte imkansiz hale gelir (Bandit B324 de kapanir).
         token = auth_header[7:]
-        return hashlib.md5(token.encode()).hexdigest()[:12]
+        return hashlib.sha256(token.encode()).hexdigest()[:32]
 
     return None
 

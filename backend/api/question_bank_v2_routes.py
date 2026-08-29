@@ -11,6 +11,7 @@ Endpoints:
 - GET /api/v2/hitl/dashboard/{expert_id} - Expert dashboard
 """
 
+import logging
 import os
 
 # Import services
@@ -62,14 +63,42 @@ except ImportError:
 
 router = APIRouter(prefix="/api/v2", tags=["Question Bank v2.0"])
 
+logger = logging.getLogger(__name__)
+
+
+def _servisi_kur(fabrika, ad: str):
+    """Servisi kurar; kurulum patlarsa None doner.
+
+    Bu modul servisleri MODUL SEVIYESINDE kuruyordu ve
+    HybridQuestionGenerator.__init__ import aninda bir OpenAI istemcisi
+    yaratiyor. OPENAI_API_KEY yoksa firlatilan OpenAIError tum modulu
+    coketiyor, routers/loader router'i hic yukleyemiyor ve /api/v2/*
+    uclarinin TAMAMI 404 donuyordu -- yalnizca uretim ucu degil.
+    Dosya zaten `X() if X else None` deseniyle None'a toleransli; burada
+    ayni tolerans "kurulum hata verdi" durumuna da genisletiliyor.
+    """
+    if fabrika is None:
+        return None
+    try:
+        return fabrika()
+    except Exception as exc:
+        logger.warning(
+            "%s kurulamadi, ilgili uclar 503 donecek: %s: %s",
+            ad,
+            type(exc).__name__,
+            exc,
+        )
+        return None
+
+
 # Initialize services (in production: use dependency injection)
-question_generator = HybridQuestionGenerator() if HybridQuestionGenerator else None
-question_validator = QuestionValidator() if QuestionValidator else None
-kg_service = KnowledgeGraphService() if KnowledgeGraphService else None
-plagiarism_service = (
-    PlagiarismDetectionService() if PlagiarismDetectionService else None
+question_generator = _servisi_kur(HybridQuestionGenerator, "HybridQuestionGenerator")
+question_validator = _servisi_kur(QuestionValidator, "QuestionValidator")
+kg_service = _servisi_kur(KnowledgeGraphService, "KnowledgeGraphService")
+plagiarism_service = _servisi_kur(
+    PlagiarismDetectionService, "PlagiarismDetectionService"
 )
-hitl_service = HITLWorkflowService() if HITLWorkflowService else None
+hitl_service = _servisi_kur(HITLWorkflowService, "HITLWorkflowService")
 
 
 def _verify_student_access(current_user: AuthenticatedUser, student_id: str) -> None:

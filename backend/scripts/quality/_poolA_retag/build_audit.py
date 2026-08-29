@@ -14,7 +14,9 @@ CHUNK = 40
 
 rows = list(csv.DictReader((HERE / "audit_master.csv").open(encoding="utf-8")))
 # deterministic shuffle by md5(id) -> mixes subjects across batches (no anchoring/leak)
-rows.sort(key=lambda r: hashlib.md5(r["id"].encode()).hexdigest())
+rows.sort(
+    key=lambda r: hashlib.md5(r["id"].encode(), usedforsecurity=False).hexdigest()
+)
 
 keymap = {
     r["id"]: {"subject": r["subject_area"], "key": r["key"], "srcset": r["srcset"]}

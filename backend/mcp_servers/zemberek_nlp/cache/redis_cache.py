@@ -168,7 +168,9 @@ class ZemberekCache:
 
         try:
             # Remove the 'cached' and 'latency_ms' fields before storing
-            cache_data = {k: v for k, v in result.items() if k not in ("cached", "latency_ms")}
+            cache_data = {
+                k: v for k, v in result.items() if k not in ("cached", "latency_ms")
+            }
             value = json.dumps(cache_data, ensure_ascii=False)
             await self._client.setex(cache_key, cache_ttl, value)
             logger.debug(
@@ -252,7 +254,9 @@ def generate_cache_key(namespace: str, tool_name: str, input_text: str) -> str:
     # Normalize input text (lowercase, strip whitespace)
     normalized = input_text.strip().lower()
     # Generate MD5 hash
-    text_hash = hashlib.md5(normalized.encode("utf-8")).hexdigest()
+    text_hash = hashlib.md5(
+        normalized.encode("utf-8"), usedforsecurity=False
+    ).hexdigest()
     return f"{namespace}:{tool_name}:{text_hash}"
 
 

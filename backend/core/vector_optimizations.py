@@ -3,6 +3,7 @@ Vector Search Optimizations
 Advanced vector search with FAISS HNSW, batching, and caching
 Target: Reduce vector search from 300-800ms to <100ms
 """
+
 import hashlib
 import logging
 import time
@@ -191,7 +192,7 @@ class OptimizedVectorStore:
 
         # Format results
         results = []
-        for score, idx in zip(scores[0], indices[0]):
+        for score, idx in zip(scores[0], indices[0], strict=False):
             if idx < 0 or idx >= len(self.documents):
                 continue
 
@@ -244,9 +245,9 @@ class OptimizedVectorStore:
 
         # Format results for each query
         all_results = []
-        for query_scores, query_indices in zip(scores, indices):
+        for query_scores, query_indices in zip(scores, indices, strict=False):
             results = []
-            for score, idx in zip(query_scores, query_indices):
+            for score, idx in zip(query_scores, query_indices, strict=False):
                 if idx < 0 or idx >= len(self.documents):
                     continue
                 results.append((idx, float(score)))
@@ -271,7 +272,9 @@ class OptimizedVectorStore:
     def _get_cache_key(self, embedding: np.ndarray, k: int) -> str:
         """Generate cache key for query"""
         # Hash embedding + k
-        embedding_hash = hashlib.md5(embedding.tobytes()).hexdigest()
+        embedding_hash = hashlib.md5(
+            embedding.tobytes(), usedforsecurity=False
+        ).hexdigest()
         return f"{embedding_hash}_{k}"
 
     async def remove_documents(self, doc_ids: list[str]):

@@ -164,7 +164,7 @@ class ContentFile:
         """Calculate file checksum"""
         if Path(self.file_path).exists():
             with open(self.file_path, "rb") as f:
-                return hashlib.md5(f.read()).hexdigest()
+                return hashlib.md5(f.read(), usedforsecurity=False).hexdigest()
         return ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -501,7 +501,8 @@ class ContentRepository:
                     "offset": offset,
                 },
                 sort_keys=True,
-            ).encode()
+            ).encode(),
+            usedforsecurity=False,
         ).hexdigest()
 
         # Check cache
@@ -955,9 +956,7 @@ class ContentManager:
             "engagement_score": content.calculate_engagement_score(),
             "rating": content.rating,
             "rating_count": content.rating_count,
-            "days_since_creation": (
-                datetime.now(UTC) - content.created_at
-            ).days,
+            "days_since_creation": (datetime.now(UTC) - content.created_at).days,
             "days_since_published": (
                 (datetime.now(UTC) - content.published_at).days
                 if content.published_at

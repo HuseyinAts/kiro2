@@ -48,8 +48,12 @@ class LearningPathCache:
     LEARNING_PATH_TTL = 3600  # 1 hour - learning paths
     RESOURCE_SEARCH_TTL = 1800  # 30 minutes - search results
     QUIZ_TTL = 7200  # 2 hours - quiz data (relatively static)
-    PROGRESS_TTL = 900  # 15 minutes (was 5) - student progress - aligned with completion
-    COMPLETION_TTL = 900  # 15 minutes (was 10) - completion status - aligned with progress
+    PROGRESS_TTL = (
+        900  # 15 minutes (was 5) - student progress - aligned with completion
+    )
+    COMPLETION_TTL = (
+        900  # 15 minutes (was 10) - completion status - aligned with progress
+    )
     PROFILE_TTL = 1800  # 30 minutes - student profiles
 
     def __init__(self, redis_url: str = "redis://localhost:6379/0"):
@@ -123,7 +127,9 @@ class LearningPathCache:
         profile_json = json.dumps(relevant_fields, sort_keys=True)
 
         # Return MD5 hash (first 16 chars for brevity)
-        return hashlib.md5(profile_json.encode()).hexdigest()[:16]
+        return hashlib.md5(profile_json.encode(), usedforsecurity=False).hexdigest()[
+            :16
+        ]
 
     def _make_search_hash(
         self, subject: str, difficulty: str | None, keywords: list[str] | None
@@ -146,7 +152,7 @@ class LearningPathCache:
         }
 
         search_json = json.dumps(search_params, sort_keys=True)
-        return hashlib.md5(search_json.encode()).hexdigest()[:16]
+        return hashlib.md5(search_json.encode(), usedforsecurity=False).hexdigest()[:16]
 
     # ============================================================================
     # Learning Path Creation Cache

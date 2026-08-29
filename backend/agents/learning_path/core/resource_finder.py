@@ -651,5 +651,7 @@ class ResourceFinder:
             learning_style.value if learning_style else "none",
             language,
         ]
-        digest = hashlib.md5("\x00".join(key_parts).encode()).hexdigest()
+        digest = hashlib.md5(
+            "\x00".join(key_parts).encode(), usedforsecurity=False
+        ).hexdigest()
         return f"rf:{digest}"

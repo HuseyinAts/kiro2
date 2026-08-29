@@ -30,6 +30,7 @@ Bu dosya silinmeyecek, ancak yeni kod icin
 core/cache/ kullanilmali. Sync-only kod icin
 bu dosya gecici olarak kullanilabilir.
 """
+
 import hashlib
 import json
 import logging
@@ -301,7 +302,7 @@ def cache_key(*args, prefix: str = "", **kwargs) -> str:
     # Create hash for long keys
     key_str = ":".join(key_parts)
     if len(key_str) > 200:
-        key_hash = hashlib.md5(key_str.encode()).hexdigest()[:16]
+        key_hash = hashlib.md5(key_str.encode(), usedforsecurity=False).hexdigest()[:16]
         key_str = key_hash
 
     # Add prefix
