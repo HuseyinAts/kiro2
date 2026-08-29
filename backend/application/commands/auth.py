@@ -273,7 +273,7 @@ class TwoFactorRequired(Exception):
         super().__init__("2FA verification required")
 
 
-class EpostaDogrulanmamis(Exception):  # noqa: N818
+class EpostaDogrulanmamis(Exception):
     """L2 kapısı: hesap var, şifre doğru, ama e-posta doğrulanmamış.
 
     `ValueError` DEĞİL, ayrı bir tür: `ValueError` uçta jenerik 401 "İşlem
@@ -363,6 +363,7 @@ class LoginCommandHandler(CommandHandler[LoginCommand, dict[str, Any]]):
         )
         expires_in = jwt_mgr.access_token_expire_minutes * 60
 
+        _jti = None
         try:
             import hashlib as _hashlib
 
@@ -398,7 +399,22 @@ class LoginCommandHandler(CommandHandler[LoginCommand, dict[str, Any]]):
                     },
                 )
         except Exception as _rt_err:
-            logger.warning(f"Failed to persist refresh token to DB: {_rt_err}")
+            # SESSIZ DUSURME YASAK (bu dosyadaki role-mapping fix'iyle ayni ilke,
+            # api/auth.py:366-369): WARNING'de kalirsa kullanici "basarili" login
+            # alir ama refresh_tokens'ta satiri olmaz -- access token suresi
+            # dolunca /refresh, gecerli bir JWT'yi aciklamasiz 401 "revoked or
+            # does not exist" ile reddeder (core/jwt_auth.py:274-278). Login'i
+            # burada BOSA CIKARMIYORUZ -- access_token bu tablodan bagimsiz
+            # calisir, bunu engellemek daha buyuk bir kullanilabilirlik
+            # regresyonu olurdu -- ama hata artik ERROR + kullanici/jti ile
+            # gorunur, tek satirlik sessiz WARNING degil (Faz 2, PR #62 sonrasi
+            # backlog).
+            logger.error(
+                "refresh_token DB'ye yazilamadi (user_id=%s, jti=%s): %s",
+                db_user.id,
+                _jti,
+                _rt_err,
+            )
 
         db_user.last_login = datetime.now(UTC)
         await db.commit()

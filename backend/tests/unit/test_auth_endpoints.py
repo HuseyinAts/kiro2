@@ -52,7 +52,9 @@ from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
 _TEST_SECRET = JWT_SECRET
 _TEST_USER_ID = "aabbccdd-1234-5678-abcd-ef0123456789"
 _TEST_EMAIL = "test@kiro2.com"
-_TEST_PASSWORD = "TestPass1!"
+_TEST_PASSWORD = (
+    "TestPass1!"  # pragma: allowlist secret -- test fixture, gercek sir degil
+)
 _TEST_PASSWORD_HASH = (
     "$2b$12$placeholderhashabcdefghijklmnopqrstuvwxyz012345"  # placeholder
 )
@@ -119,7 +121,9 @@ def _make_mock_db_user(
     user.password_hash = password_hash if password_hash is not None else real_hash
     user.is_active = is_active
     user.is_2fa_enabled = is_2fa_enabled
-    user.secret_2fa = "TOTP_SECRET" if is_2fa_enabled else None
+    user.secret_2fa = (
+        "TOTP_SECRET" if is_2fa_enabled else None
+    )  # pragma: allowlist secret
     user.phone = ""
     user.created_at = datetime(2026, 1, 1, tzinfo=UTC)
     user.last_login = None
@@ -185,7 +189,7 @@ class TestLogin:
     """Tests for POST /api/v1/auth/giris"""
 
     def test_login_wrong_password_returns_401(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = _make_mock_db_user()
@@ -207,7 +211,7 @@ class TestLogin:
         assert "detail" in resp.json()
 
     def test_login_nonexistent_email_returns_401(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None  # user not found
@@ -224,7 +228,7 @@ class TestLogin:
         assert resp.status_code == 401
 
     def test_login_successful_returns_200_with_token(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         db_user = _make_mock_db_user()
         mock_result = MagicMock()
@@ -292,6 +296,83 @@ class TestLogin:
         assert exc_info.value.email == _TEST_EMAIL
         assert exc_info.value.user_id == _TEST_USER_ID
 
+    def test_login_refresh_token_persist_failure_is_logged_visibly(self, caplog):
+        """
+        refresh_tokens INSERT'i basarisiz olursa artik SESSIZCE yutulmuyor.
+
+        Onceki davranis (Faz 2 oncesi, application/commands/auth.py):
+        `except Exception: logger.warning(...)` -- hata gorunmez, login
+        "success" doner, ama cookie'deki refresh token DB'de hic yoktur;
+        access token suresi dolunca /refresh gecerli bir JWT'yi aciklamasiz
+        401 "revoked or does not exist" ile reddeder (core/jwt_auth.py:274-278)
+        -- sessiz bir session desync.
+
+        Bu test: (1) login yine basarili doner -- access_token bu DB
+        satirindan bagimsiz kendi kendine yeterli bir JWT, bu davranis
+        BILEREK degistirilmedi; (2) ama persist hatasi artik ERROR
+        seviyesinde, exception detayi VE kullanici kimligini iceren gorunur
+        bir log satirinda -- WARNING'e dusup sessiz kalmiyor.
+        """
+        import asyncio
+        import logging as _logging
+
+        from application.commands.auth import LoginCommand, LoginCommandHandler
+        from models.user import KullaniciGiris
+
+        db_user = _make_mock_db_user()
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = db_user
+
+        class _FakeBeginNested:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *exc):
+                return False
+
+        mock_db = AsyncMock()
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_result, RuntimeError("connection reset by peer")]
+        )
+        mock_db.begin_nested = MagicMock(return_value=_FakeBeginNested())
+
+        giris = KullaniciGiris(email=_TEST_EMAIL, sifre=_TEST_PASSWORD)
+
+        with (
+            patch("application.commands.auth.get_jwt_manager") as mock_get_mgr,
+            patch("application.commands.auth.CryptContext") as mock_pwd,
+        ):
+            mock_get_mgr.return_value = _make_mock_jwt_manager()
+            mock_pwd.return_value.verify.return_value = True
+
+            with caplog.at_level(_logging.WARNING, logger="application.commands.auth"):
+                sonuc = asyncio.run(
+                    LoginCommandHandler().handle(
+                        LoginCommand(
+                            email=giris.email,
+                            password=giris.get_password(),
+                            db=mock_db,
+                        )
+                    )
+                )
+
+        # Login yine basarili -- access_token DB satirindan bagimsiz.
+        assert sonuc["success"] is True
+        assert sonuc["token"]
+        assert sonuc["refreshToken"]
+
+        # Ama hata artik GORUNUR: ERROR seviyesinde, exception detayi ve
+        # kullanici kimligiyle -- tek satirlik sessiz WARNING degil.
+        error_records = [r for r in caplog.records if r.levelno >= _logging.ERROR]
+        assert error_records, (
+            "refresh_token persist hatasi ERROR seviyesinde loglanmadi "
+            f"(yakalanan kayitlar: "
+            f"{[(r.levelname, r.getMessage()) for r in caplog.records]})"
+        )
+        combined = " ".join(r.getMessage() for r in error_records)
+        assert "connection reset by peer" in combined
+        assert _TEST_USER_ID in combined
+
     def test_login_rate_limit_exceeded_returns_429(self, app_client):
         """
         Inject enough recorded attempts to trigger the rate limiter
@@ -301,11 +382,11 @@ class TestLogin:
 
         from api.auth import RATE_LIMITS, _rate_buckets
 
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         # Manually flood the bucket for the test IP (127.0.0.1 for TestClient)
         bucket = "login"
-        max_attempts, window = RATE_LIMITS[bucket]
+        max_attempts, _window = RATE_LIMITS[bucket]
         _rate_buckets[bucket]["testclient"] = [time.time()] * max_attempts
         # Also flood 127.0.0.1 which TestClient may report
         _rate_buckets[bucket]["127.0.0.1"] = [time.time()] * max_attempts
@@ -323,7 +404,7 @@ class TestLogin:
             _rate_buckets[bucket].clear()
 
     def test_login_inactive_account_returns_401(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         db_user = _make_mock_db_user(is_active=False)
         mock_result = MagicMock()
@@ -346,7 +427,7 @@ class TestLogin:
         assert resp.status_code == 422
 
     def test_login_returns_user_info_in_response(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         db_user = _make_mock_db_user()
         mock_result = MagicMock()
@@ -380,7 +461,7 @@ class TestSecureLogin:
     """Tests for POST /api/v1/auth/login/secure"""
 
     def test_secure_login_success_sets_cookies_not_tokens_in_body(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         db_user = _make_mock_db_user()
         mock_result = MagicMock()
@@ -414,7 +495,7 @@ class TestSecureLogin:
         assert "user" in body
 
     def test_secure_login_wrong_credentials_returns_401(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None
@@ -431,7 +512,7 @@ class TestSecureLogin:
         assert resp.status_code == 401
 
     def test_secure_login_2fa_required_returns_flag(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         db_user = _make_mock_db_user(is_2fa_enabled=True)
         mock_result = MagicMock()
@@ -458,7 +539,7 @@ class TestLogout:
     """Tests for POST /api/v1/auth/logout/secure and /api/v1/auth/cikis"""
 
     def test_secure_logout_with_cookies_blacklists_tokens(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         mgr = _make_mock_jwt_manager()
 
@@ -478,7 +559,7 @@ class TestLogout:
         assert mgr.blacklist_token_async.call_count == 2
 
     def test_secure_logout_without_cookies_still_returns_200(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         mgr = _make_mock_jwt_manager()
 
@@ -491,7 +572,7 @@ class TestLogout:
         mgr.blacklist_token_async.assert_not_called()
 
     def test_cikis_blacklists_bearer_token(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager()
@@ -516,7 +597,7 @@ class TestRegister:
     """Tests for POST /api/v1/auth/kayit"""
 
     def test_register_valid_data_returns_201(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         # First execute: duplicate check (returns None → no duplicate)
         # Second execute: INSERT users
@@ -544,7 +625,7 @@ class TestRegister:
         assert "id" in body
 
     def test_register_duplicate_email_returns_400(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         # Duplicate check returns a row → email already in use
         dup_result = MagicMock()
@@ -582,7 +663,7 @@ class TestRegister:
         assert resp.status_code == 422
 
     def test_register_response_contains_success_and_id(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, mock_db = app_client
 
         dup_result = MagicMock()
         dup_result.fetchone.return_value = None
@@ -611,7 +692,7 @@ class TestProfile:
     """Tests for GET /api/v1/auth/profil and GET /api/v1/auth/me"""
 
     def test_profil_authenticated_returns_kullanici(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
@@ -634,7 +715,7 @@ class TestProfile:
         assert resp.status_code == 401
 
     def test_profil_expired_token_returns_401(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         expired = _make_expired_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
@@ -648,7 +729,7 @@ class TestProfile:
         assert resp.status_code == 401
 
     def test_profil_blacklisted_token_returns_401(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=True)  # blacklisted!
@@ -662,7 +743,7 @@ class TestProfile:
         assert resp.status_code == 401
 
     def test_me_returns_user_wrapped_format(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
@@ -727,7 +808,7 @@ class TestTokenValidation:
     """Tests for POST /api/v1/auth/validate"""
 
     def test_validate_valid_token_returns_true(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
@@ -742,7 +823,7 @@ class TestTokenValidation:
         assert resp.json() == {"valid": True}
 
     def test_validate_expired_token_returns_false(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         expired = _make_expired_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
@@ -757,7 +838,7 @@ class TestTokenValidation:
         assert resp.json() == {"valid": False}
 
     def test_validate_invalid_token_returns_false(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
 
@@ -771,7 +852,7 @@ class TestTokenValidation:
         assert resp.json() == {"valid": False}
 
     def test_validate_no_token_returns_false(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
 
@@ -782,7 +863,7 @@ class TestTokenValidation:
         assert resp.json() == {"valid": False}
 
     def test_validate_blacklisted_token_returns_false(self, app_client):
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=True)  # blacklisted
@@ -798,7 +879,7 @@ class TestTokenValidation:
 
     def test_validate_token_from_cookie_returns_true(self, app_client):
         """Validate also supports tokens sent via httpOnly cookie."""
-        client, app, mock_db = app_client
+        client, _app, _mock_db = app_client
 
         valid_token = _make_jwt()
         mgr = _make_mock_jwt_manager(is_blacklisted=False)
@@ -867,7 +948,7 @@ class TestPasswordChange:
                 "/api/v1/auth/change-password",
                 json={
                     "currentPassword": _TEST_PASSWORD,
-                    "newPassword": "NewStrongPass2@",
+                    "newPassword": "NewStrongPass2@",  # pragma: allowlist secret
                 },
             )
 
@@ -893,8 +974,8 @@ class TestPasswordChange:
             resp = client.post(
                 "/api/v1/auth/change-password",
                 json={
-                    "currentPassword": "WrongCurrentPass1!",
-                    "newPassword": "NewStrongPass2@",
+                    "currentPassword": "WrongCurrentPass1!",  # pragma: allowlist secret
+                    "newPassword": "NewStrongPass2@",  # pragma: allowlist secret
                 },
             )
 
@@ -925,7 +1006,8 @@ class TestPasswordChange:
                 "/api/v1/auth/change-password",
                 json={
                     "currentPassword": _TEST_PASSWORD,
-                    "newPassword": "weakpass",  # too short, no upper, no digit, no special
+                    # too short, no upper, no digit, no special
+                    "newPassword": "weakpass",  # pragma: allowlist secret
                 },
             )
 
@@ -945,7 +1027,7 @@ class TestPasswordChange:
                 "/api/v1/auth/change-password",
                 json={
                     "currentPassword": _TEST_PASSWORD,
-                    "newPassword": "NewStrongPass2@",
+                    "newPassword": "NewStrongPass2@",  # pragma: allowlist secret
                 },
             )
 
