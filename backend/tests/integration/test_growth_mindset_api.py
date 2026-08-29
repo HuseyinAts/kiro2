@@ -56,7 +56,7 @@ async def test_growth_mindset_api_endpoint(
 
     from api.auth import mevcut_kullanici_getir
 
-    app.dependency_overrides[mevcut_kullanici_getir] = lambda: MockKullanici()
+    app.dependency_overrides[mevcut_kullanici_getir] = MockKullanici
 
     # 3. Call the endpoint
     response = await async_client.get(
