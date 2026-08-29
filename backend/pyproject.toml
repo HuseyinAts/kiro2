@@ -397,13 +397,16 @@ exclude = [
 # tests/unit/test_auth_endpoints.py — E402 x5 + S105 x2 + N802 x1. OLCULDU
 # (29 Agu 2026, Faz 2): kontrol kolu pre-commit'in PINLEDIGI ruff (0.7.1,
 # gercek gate) -> "Found 8 errors" (asagidaki 3 kural), HICBIRI Faz 2'nin
-# yeni testinde degil. NOT: ayni dosyayi YEREL ruff (0.14.13) ile olcunce
-# 48 hata cikiyor -- fark RUF059 (kullanilmayan `app`/`mock_db` unpack,
-# 40x, `client, app, mock_db = app_client` deseni tum dosyada) 0.7.1'de
-# HENUZ YOK. UP038 girisindekiyle ayni sinif sorun (yukarida): gate'in
-# gormedigi kurali burada ignore etmenin anlami yok, o yuzden RUF059
-# BILEREK DISARIDA -- bu liste sadece pre-commit'i FIILEN bloklayan 3
-# kurali kapsiyor.
+# yeni testinde degil. NOT: bu dosyada ayrica 40x RUF059 vardi (kullanilmayan
+# `app`/`mock_db`/`window` unpack) -- 0.7.1'de bu kural TANIMSIZ (per-file-
+# ignores'a eklemek "Unknown rule selector: RUF059" ile pre-commit'in TUM
+# ruff cagrisini exit code 2 ile PATLATIYOR, denendi ve olculdu). CI'nin
+# KENDI ruff'i (PINSIZ kurulur, .github/workflows/ci.yml) ise cok daha yeni
+# ve RUF059'u TANIYOR + BLOKLUYOR (PR #68 ilk deneme, run 33263960729/job
+# 99130565219). Iki gate CAKISTIGI icin ignore mumkun degildi -- RUF059
+# bu yuzden GRANDFATHER EDILMEDI, dogrudan koddan DUZELTILDI (40 site,
+# `_app`/`_mock_db`/`_window` alt cizgi-onekli rename, ruff'in kendi
+# onerdigi duzeltme). Bu satir sadece geriye kalan 3 kurali kapsiyor.
 #   E402 x5  :42-47 yerel importlar (test bootstrap'i env degiskenlerini
 #            importlardan ONCE set etmeli, dosyanin kendi yorumu bunu
 #            aciklıyor: "Imports after env is set").
