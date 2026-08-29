@@ -338,3 +338,116 @@ mümkün olmayabileceği anlamına geliyor -- asıl doğrulama kanalı CI'nin
 Golden Flows job'u olacak. Diğer iki dosyanın fixture'ları (`student_token`
 iki dosyada da, `teacher_token`) canlı login ile PASSED / doğru şekilde
 non-429 skip verdi.
+
+### Faz 1 devamı -- CI'da açığa çıkan 3 zincirleme maskeleme bug'ı + 1 kök neden
+
+Yukarıdaki fixler CI'da `quality` job'unu yeşile çevirince, ondan `needs:
+quality` ile bağımlı **backend-test** ve **Quality Gate** job'ları PR #67
+üzerinde **ilk kez** çalıştı (daha önce hep `needs: quality` zincirinde
+engellenmiş, hiç çalışmamışlardı) ve art arda 3 tane daha önce hiç
+görülmemiş, birbirini maskeleyen altyapı sorunu ortaya çıkardı:
+
+1. **`DATABASE_URL_SYNC` bare `postgresql://`** (`ci.yml`): alembic'in
+   psycopg2→psycopg3 dönüştürme mantığı (`env.py`, zaten belgeliydi) sadece
+   `+asyncpg` içeren bir girdiyi dönüştürüyor; CI'daki DSN çıplak olduğu
+   için psycopg2'ye düşüyordu ve CI'da psycopg2 kurulu değil ->
+   `ModuleNotFoundError`. Düzeltme: `+psycopg` eklendi (commit `6a36ab630`).
+2. **`backend-test` job'unun postgres servisi pgvector'suzdu**: alembic
+   baseline migration'ı `CREATE EXTENSION vector` içeriyor; servis image'ı
+   düz `postgres:15`. Düzeltme: `pgvector/pgvector:pg15` (commit
+   `6f2c401f3`; `postgres:15`'in diğer 4 kullanımı -- e2e-test/claude-ci/
+   deploy/security.yml -- ayrı ayrı incelendi, bu PR'ın tetiklediği yol
+   dışında oldukları için dokunulmadı).
+3. **`UV_SYSTEM_PYTHON=1` (workflow-geneli) + izole `.venv` çakışması**:
+   `backend-test` job'u `uv venv` + `source .venv/bin/activate` ile izole
+   bir venv kuruyor, ama `UV_SYSTEM_PYTHON=1` açıkken `uv pip install` bu
+   venv'i yok sayıp sistem Python'una kuruyordu (kanıt: "Install
+   dependencies" adımının kendi çıktısı -- "Using Python 3.11.16
+   environment at: /opt/hostedtoolcache/...", `.venv` DEĞİL). Sonuç bir
+   split-brain: `alembic`/`pytest` gibi CLI entry-point'ler PATH
+   fallback'iyla sistem konumunu bulup çalışıyordu (yanıltıcı "başarılı"
+   görünümü), ama `.venv/bin/python` PATH'te önce geliyordu ve o venv
+   bomboştu -> "Seed MVP users" adımında `ModuleNotFoundError: No module
+   named 'psycopg'`. Düzeltme: `backend-test` job'una özel
+   `env: UV_SYSTEM_PYTHON: "0"` override (commit `47629fcf0`) -- workflow
+   genelini değil sadece bu job'u etkiler.
+4. **CodeQL (GHAS default setup) -- `login_resp` önceden atanmamış
+   değişken uyarısı**: bu PR'ın kendi `test_gf1wb_auth_refresh_token_is_persisted`
+   düzeltmesinde (`try: login_resp = ... except ConnectError: pytest.skip()`)
+   statik analiz `pytest.skip()`'in hep raise ettiğini bilmiyor, sonraki
+   `login_resp.status_code` okumasını riskli sayıyordu. Düzeltme: `login_resp
+   = None` ön-ataması (commit `a7d1d1fc2`) -- davranış değişmedi, sadece
+   analizör tatmin edildi.
+
+Yukarıdaki 4'ü de düzeltildikten sonra **Backend Tests (Python 3.11)** ilk
+kez migrations + seed + tüm pytest paketine kadar ilerledi (önceki hatalar
+sırasıyla 0s / ~1s / 1m19s'de dururken bu sefer 3m19s'e ulaştı) ve orada
+**5. bir kök neden** ortaya çıktı -- bu sefer masking değil, gerçek bir
+bağımlılık sürüm sorunu:
+
+**`transformers`/`sentence-transformers` sürümsüz (alt sınır only) pin'i
+bozuk bir `transformers` sürümü kuruyor.** `backend/requirements.txt`:
+`transformers>=4.35.0`, `sentence-transformers>=2.2.0` -- üst sınır yok,
+CI her çalıştığında PyPI'daki EN YENİ sürümü kurar. Kanıt (tam traceback,
+`tests/test_video_recommendation_service.py` collection hatası):
+
+```
+services/video_recommendation_service.py -> services/semantic_youtube_search.py
+  -> sentence_transformers -> transformers.integrations.peft
+  -> transformers.conversion_mapping -> transformers.core_model_loading
+  -> transformers/integrations/accelerate.py:65:
+       ) -> tuple[int, list[str], list[nn.Module]]:
+     NameError: name 'nn' is not defined
+```
+
+Bu, KIRO2 kodu DEĞİL -- kurulu `transformers` paketinin kendi
+`integrations/accelerate.py` dosyasında `nn` (torch.nn) import edilmeden
+bir tip imzasında kullanılmış (üçüncü parti kütüphane hatası/sürüm
+uyumsuzluğu). Bu TEK kök neden en az 5 yerde patlıyor:
+
+- Quality Gate'in router-registration testi: `api/osym_routes.py`
+  (`services.osym_pdf_pipeline` eksik -- ayrı, ilgisiz bir sorun),
+  `api/rag.py`, `api/v1/semantic_search.py`, `api/youtube_routes.py` --
+  hepsi bu zincir üzerinden `NameError: name 'nn' is not defined` veriyor
+  ve `loader.py` bunu sessizce WARNING + 404'e düşürüyor (**canlıda 3 API
+  yolu şu an muhtemelen 404 dönüyor**).
+- Backend Tests: `tests/test_video_recommendation_service.py` collection
+  hatası, `-x` bayrağıyla birleşince pytest'in TÜM 320 geçen testi
+  raporlamadan durmasına yol açıyor (`3 skipped, 2 errors`, "passed" satırı
+  bile yok) -- yani gate "0 test geçti" gibi görünüyor, oysa yerel
+  ders-zorlayici koşusu aynı commit'te 320/322 geçtiğini zaten kanıtladı.
+
+**Kapsam dışı bırakıldı (bu PR'da DÜZELTİLMEDİ):** `transformers`'a üst
+sınır/pin eklemek üretim bağımlılığı sürüm kararı -- hangi sürümün güvenli
+olduğunu araştırmak, torch/sentence-transformers ile uyumu doğrulamak,
+etkilenen 4 router'ı gerçekten test etmek gerekiyor. Faz 1'in kapsamı CI/
+test altyapısı (YAML, DSN, image, venv) idi, üretim bağımlılık sürümü
+değil -- bu, ayrı bir incelemeyi hak ediyor (Faz 5'in Dependabot
+triyajıyla aynı kategori: "major/kırıcı sürüm kararı, insan onayı ister").
+
+**Diğer, bu PR'dan bağımsız olduğu ölçülen kırmızılar:**
+
+- **Automatic PR Review**: `anthropics/claude-code-action@v1` job'u
+  `ANTHROPIC_API_KEY`/`CLAUDE_CODE_OAUTH_TOKEN` repo secret'ı YOK diye
+  "Environment variable validation failed" ile patlıyor (log kanıtı:
+  `"anthropic_api_key": ""`, `"claude_code_oauth_token": ""`). Bu bir
+  kod/CI-config sorunu değil -- repo secret'ı eklemek gerekiyor, bu yalnız
+  Hüseyin'in yapabileceği bir işlem (kimlik bilgisi girişi).
+- **Frontend Tests**: 988 önceden var olan ESLint hatası (bu PR sadece
+  backend/CI dosyalarına dokundu, frontend'e hiç dokunmadı).
+- **API Security Testing** (security.yml, OWASP ZAP): bu job bu PR'dan
+  bağımsız çalışıyor (backend-test/quality'ye bağımlı değil). Ölçüldü:
+  master'da SON 3 çalışması da (10/17/24 Ağu) 2s44dk-3s54dk sürüp
+  `failure` ile bitmiş -- yani hem çok yavaş hem de zaten kırmızı, bu PR'la
+  ilgisiz. PR #67 üzerinde de aynı şekilde uzun sürdüğü için (rapor anında
+  hâlâ `in_progress`) merge kararı buna beklemeden verildi.
+
+### Sonuç ve merge
+
+Yukarıdaki 4 masking bug + CodeQL uyarısı düzeltildikten sonra kalan tüm
+kırmızılar ölçülüp önceden-var-olan borç olduğu doğrulandı (plan'ın
+"yeşil ya da sadece önceden-var-olan borç kırmızı" barı karşılandı).
+PR #67, `master`'ın branch-protection'ı olmadığı doğrulandıktan sonra
+`gh pr merge 67 --merge` ile merge commit `b20afb920` olarak birleştirildi
+(29 Ağu 2026, established convention: PR #59-62 de aynı şekilde regular
+merge commit kullanmış, squash değil).
