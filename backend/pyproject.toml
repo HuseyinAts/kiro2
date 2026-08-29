@@ -439,6 +439,17 @@ exclude = [
 # Borc BURADA GORUNUR, `--no-verify` ile atlanmadi. Temizlik ayri gorev.
 "models/__init__.py" = ["F401", "SIM105", "RUF022"]
 
+# services/irt_equating_service.py — 4x N803 (29 Agu 2026, ayni "commit
+# edilmemis dosya" zincirinin devami: api/osym_routes.py:391 bu dosyayi
+# fonksiyon-ici/lazy import ediyordu, dosyanin kendisi commit'te yoktu --
+# bkz. docs/guvenlik-borcu.md SS10.7). `A`/`B` buyuk harfleri kasitli: IRT
+# (Item Response Theory) equating literaturunun standart notasyonu (olcek
+# faktoru/konum kaymasi), COZUM DEGIL. Cagiran kod da (api/osym_routes.py
+# run_equating) ayni buyuk-harf adlandirmayi kullaniyor ("A_slope": A,
+# "B_intercept": B) -- kucultmek cagiran/cagrilan arasinda tutarsizlik
+# yaratir, matematiksel okunurlugu bozar, davranisi degistirmez.
+"services/irt_equating_service.py" = ["N803"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
