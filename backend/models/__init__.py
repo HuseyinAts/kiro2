@@ -11,6 +11,7 @@ DEPRECATED MODELS (will be removed in v3.0.0):
 """
 
 import importlib.util
+import logging
 
 # Base import (avoid circular import)
 from .base import Base
@@ -204,6 +205,8 @@ CanonicalStudentProfile = LearningPathStudentProfile
 
 # Re-export deprecated models for backward compatibility
 # These models were moved to _deprecated/ but tests still import from models.learning_models
+logger = logging.getLogger(__name__)
+
 try:
     # ONCEDEN VAR (bu PR'in kapsami disinda): asagidaki "Student" ismi
     # yukaridaki "Student = StudentProfile" takma adiyla catisiyor, mypy
@@ -230,7 +233,12 @@ try:
         create_sample_zpd_range,
     )
 except ImportError:
-    pass
+    # kasitli: _deprecated.learning_models opsiyonel bir geriye-uyumluluk
+    # shim'i, ortamda yoksa/degistiyse sessizce atlanir (yukaridaki importun
+    # uzerinde aciklandigi gibi). Tamamen sessiz olmasin diye DEBUG'a loglanir.
+    logger.debug(
+        "models/__init__: _deprecated.learning_models import edilemedi (opsiyonel shim)"
+    )
 
 try:
     # ONCEDEN VAR (bu PR'in kapsami disinda): _deprecated.revolutionary_models
@@ -243,7 +251,12 @@ try:
         RevolutionaryModel,
     )
 except ImportError:
-    pass
+    # kasitli: _deprecated.revolutionary_models bu 3 ismi tanimlamiyorsa
+    # (yukarida aciklandigi gibi) sessizce atlanir -- geriye-uyumluluk
+    # shim'inin parcasidir. Tamamen sessiz olmasin diye DEBUG'a loglanir.
+    logger.debug(
+        "models/__init__: _deprecated.revolutionary_models import edilemedi (opsiyonel shim)"
+    )
 
 __all__ = [
     # Base
