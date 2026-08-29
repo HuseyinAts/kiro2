@@ -652,11 +652,26 @@ bu kapalıyken hiçbir zaman çalışamaz; workflow'un `--auto` kullanmaması
 protection olmadığından "önce CI'yı bekle" garantisini sadece `--auto`
 sağlıyor. **Bu, `can_approve_pull_request_reviews` gibi, benim
 değiştiremeyeceğim bir repo/güvenlik ayarı -- kod tarafında cerrahi bir
-düzeltmesi yok.** Sonuç: otomasyon artık DOĞRU tetikleniyor (onay adımı
-artık akışı tıkamıyor) ama "Allow auto-merge" kullanıcı tarafından
-Settings'ten açılana kadar hiçbir patch/minor PR kendiliğinden merge
-OLAMAYACAK. **Aksiyon gerekiyor (kullanıcı): repo Settings -> General ->
-Pull Requests -> "Allow auto-merge" işaretlenmeli.**
+düzeltmesi yok.**
+
+**Düzeltme (canlı gözlemle):** İlk yazıldığında bu bölüm "Allow auto-merge"
+kapalıyken HİÇBİR PR'ın kendiliğinden merge olamayacağını söylüyordu --
+bu YANLIŞ çıktı, birkaç dakika içinde canlı veriyle çürütüldü. `gh pr
+merge --auto`, PR o an ZATEN mergeable ise (bekleyen zorunlu kontrol yok --
+master'da branch protection olmadığından "zorunlu kontrol" kavramı zaten
+yok) GraphQL kuyruklama mutasyonuna (`enablePullRequestAutoMerge`,
+`allow_auto_merge` ayarına tabi) hiç başvurmadan DOĞRUDAN merge ediyor;
+sadece PR hâlâ bekleyen kontrolleri varken çalışırsa kuyruklamaya düşüyor
+ve o zaman `allow_auto_merge:false` engeline takılıyor. Kanıt: rebase
+yorumlarından sonraki ~10 dakika içinde 4 PR gerçekten otomatik merge
+oldu -- #44 (18:19), #45 (18:20), #40 (18:21), #47 matplotlib (18:27),
+hepsi `mergedBy: app/github-actions`. Yani düzeltme kısmi değil, ÇALIŞIYOR
+-- sadece PR'ın workflow çalıştığı ANDA hâlâ kontrol bekliyor olması
+durumunda (CI'nin en yavaş olduğu ilk birkaç dakika) auto-merge kuyruğa
+düşüp `allow_auto_merge` engeline takılabiliyor. **Yine de "Allow
+auto-merge" açılması önerilir** -- bu, CI yavaş bittiğinde de garantili
+merge sağlar; ama artık "hiçbir şey merge olamıyor" değil, "bazı PR'lar
+şansa bağlı olarak kuyruğa düşebiliyor" düzeyinde ikincil bir iyileştirme.
 
 **Bu oturumda yapılan diğer triyaj işleri:** Tüm 20 PR'a `@dependabot
 rebase` yorumu atıldı (5 CONFLICTING çakışmasını çözmek + 15 UNSTABLE'ın
