@@ -1739,6 +1739,12 @@ def test_gf1wb_auth_refresh_token_is_persisted():
     requests the same way.
     """
     with httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT) as c:
+        # login_resp on-tanimli: pytest.skip() calisma zamaninda hep raise
+        # eder ama statik analiz bunu bilmiyor -- CodeQL "may be used before
+        # it is initialized" hatasi verdi (py/possibly-undefined-variable,
+        # 29 Agu 2026, bu testin kendisiyle ayni committe tanitildi). Asagidaki
+        # None hicbir zaman fiilen okunmaz, sadece analizoru tatmin ediyor.
+        login_resp = None
         try:
             login_resp = c.post("/api/v1/auth/login", json=STUDENT)
         except httpx.ConnectError:
