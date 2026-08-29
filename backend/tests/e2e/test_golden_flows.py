@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import contextlib
 import os
+from collections.abc import Generator
 
 import httpx
 import pytest
@@ -66,7 +67,7 @@ pytestmark = [pytest.mark.golden_flow, pytest.mark.e2e]
 
 
 @pytest.fixture(scope="module")
-def client() -> httpx.Client:
+def client() -> Generator[httpx.Client, None, None]:
     """HTTP client pointed at the LIVE backend (BACKEND_URL).
 
     Golden Flows probe the REAL running server over HTTP — the deployed
@@ -138,7 +139,7 @@ def _login_taze(client: httpx.Client, creds: dict[str, str]) -> str:
         pytest.fail(f"login rate-limited (taze) for {creds['email']} (HTTP 429)")
     if resp.status_code != 200:
         pytest.skip(f"login failed for {creds['email']}: {resp.status_code}")
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, f"no access_token in login response: {resp.json()}"
     return token
 
@@ -166,7 +167,7 @@ def _login(client: httpx.Client, creds: dict[str, str]) -> str:
     if resp.status_code != 200:
         pytest.skip(f"login failed for {email}: {resp.status_code} {resp.text[:200]}")
 
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, f"no access_token in login response: {resp.json()}"
     _TOKEN_ONBELLEGI[email] = token
     return token
@@ -458,7 +459,7 @@ def _create_exam_session(
         f"{create_resp.text[:200]} — {question_count} soruluk {subject} "
         f"{exam_type} oturumu kurulamıyorsa öğrenci de sınav olamıyor demektir."
     )
-    session_id = create_resp.json().get("session_id")
+    session_id: str = create_resp.json().get("session_id")
     assert session_id, f"kurulum: create 200 ama session_id yok: {create_resp.json()}"
 
     start_resp = client.post(

@@ -109,7 +109,7 @@ def visit_JSONB(self, type_, **kw):  # noqa: N802
     return "JSON"
 
 
-SQLiteTypeCompiler.visit_JSONB = visit_JSONB
+SQLiteTypeCompiler.visit_JSONB = visit_JSONB  # type: ignore[attr-defined]
 
 try:
     from tests.fixtures.test_database import setup_test_environment
@@ -999,7 +999,9 @@ def isolated_test_state():
             isolated_test_state["counter"] = 0
             # test logic
     """
-    state = {}
+    from typing import Any
+
+    state: dict[str, Any] = {}
     yield state
     state.clear()
 

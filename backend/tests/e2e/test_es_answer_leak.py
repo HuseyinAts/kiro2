@@ -34,6 +34,7 @@ denetler. Backend/ES/DB yoksa skip — ortam eksikliği başarısızlık değild
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
 
 import httpx
 import pytest
@@ -72,7 +73,7 @@ QUERIES = ["üçgen", "fonksiyon", "hücre"]
 
 
 @pytest.fixture(scope="module")
-def client() -> httpx.Client:
+def client() -> Generator[httpx.Client, None, None]:
     c = httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT)
     try:
         c.get("/health")
@@ -95,7 +96,7 @@ def student_token(client: httpx.Client) -> str:
         pytest.skip(
             f"seed öğrenci girişi başarısız: {resp.status_code} {resp.text[:200]}"
         )
-    token = resp.json().get("access_token")
+    token: str = resp.json().get("access_token")
     assert token, f"login yanıtında access_token yok: {resp.json()}"
     return token
 
@@ -138,7 +139,8 @@ def _search(client: httpx.Client, token: str, query: str, size: int = 5) -> dict
     detay = f"{resp.status_code} {resp.text[:300]}"
     assert resp.status_code < 500, f"arama çöktü: {detay}"
     assert resp.status_code == 200, f"beklenmeyen durum: {detay}"
-    return resp.json()
+    result: dict = resp.json()
+    return result
 
 
 def test_es_search_does_not_leak_answer_key(client: httpx.Client, student_token: str):

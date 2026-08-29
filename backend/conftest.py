@@ -23,11 +23,11 @@ os.environ["DATABASE_URL"] = os.getenv(
     "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true",
 )
 os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL", "redis://localhost:6380/1")
-os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"
-os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"
+os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"  # noqa: S105  # pragma: allowlist secret
+os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"  # noqa: S105  # pragma: allowlist secret
 os.environ["ALLOWED_ORIGINS"] = '["http://localhost:3000"]'
-os.environ["ANTHROPIC_API_KEY"] = "test-key"
-os.environ["OPENAI_API_KEY"] = "test-key"
+os.environ["ANTHROPIC_API_KEY"] = "test-key"  # pragma: allowlist secret
+os.environ["OPENAI_API_KEY"] = "test-key"  # pragma: allowlist secret
 
 # Backend dizinini path'e ilk olarak ekle (pytest collection'dan önce)
 _backend_dir = str(Path(__file__).parent)
@@ -126,9 +126,35 @@ if not SYNC_DATABASE_URL:
 
 # Session-scoped engine for performance
 @pytest.fixture(scope="session")
-async def test_async_engine():
-    """Create async engine once per test session (PERFORMANCE FIX)"""
+def test_async_engine():
+    """Create async engine once per test session (PERFORMANCE FIX).
+
+    Deliberately a SYNC fixture, not ``async def`` -- same rationale as
+    ``global_db_manager_cleanup`` in tests/conftest.py. This repo pins
+    pytest-asyncio==0.21.1 (requirements.txt, requirements-test.txt,
+    requirements.qa*.txt); that version ties every async fixture to the
+    legacy ``event_loop`` fixture (always function-scoped), regardless of
+    pytest.ini's ``asyncio_default_fixture_loop_scope = session`` (that key
+    isn't honored by 0.21.x for a bare ``@pytest.fixture`` async def -- it's
+    dead config under the pinned version). A session-scoped async fixture
+    then hits ScopeMismatch ("function scoped fixture event_loop with a
+    session scoped request object") and collection errors out before any
+    test runs -- confirmed as the cause of Quality Gate's "Router
+    registration check" failure on test_router_registration.py (29 Aug
+    2026), which doesn't even touch the DB itself.
+
+    ``create_async_engine()`` is a plain sync call (verified: not a
+    coroutine function, builds an AsyncEngine with zero running event
+    loop) -- the only real async step was teardown's ``await
+    engine.dispose()``, which ``asyncio.run()`` covers without pytest-
+    asyncio's loop-scope machinery. Downstream consumers (async_db_session,
+    setup_database, override_database_manager, ...) are unaffected: they
+    still get the same live AsyncEngine and still open their own ``async
+    with test_async_engine.connect()`` on their own event loop -- only how
+    pytest calls *this* fixture changes, not the object it yields.
+    """
     from sqlalchemy.pool import NullPool, StaticPool
+
     # SQLite doesn't support pool_size/max_overflow - only use for PostgreSQL
     if "sqlite" in TEST_DATABASE_URL.lower():
         engine = create_async_engine(
@@ -144,7 +170,7 @@ async def test_async_engine():
             poolclass=NullPool,  # Prevent connection pool deadlocks in tests
         )
     yield engine
-    await engine.dispose()
+    asyncio.run(engine.dispose())
 
 
 @pytest.fixture(scope="function")
@@ -153,13 +179,13 @@ async def async_db_session(test_async_engine):
     async with test_async_engine.connect() as connection:
         transaction = await connection.begin()
         async_session_maker = async_sessionmaker(
-            bind=connection, 
-            class_=AsyncSession, 
+            bind=connection,
+            class_=AsyncSession,
             expire_on_commit=False,
-            join_transaction_mode="create_savepoint"
+            join_transaction_mode="create_savepoint",
         )
         session = async_session_maker()
-        
+
         try:
             yield session
         finally:
@@ -239,7 +265,7 @@ try:
 
 except ImportError:
     # hypothesis not installed - profiles not available
-    pass
+    print("WARNING: hypothesis not installed, property-based test profiles atlaniyor")
 
 
 # ============================================================================
@@ -636,5 +662,5 @@ def pytest_sessionfinish(session, exitstatus):
         from core.worker_pools import shutdown_pools
 
         shutdown_pools()
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"WARNING: pytest_sessionfinish: shutdown_pools() basarisiz: {exc}")

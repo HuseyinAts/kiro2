@@ -193,6 +193,21 @@ exclude = [
 
 [tool.ruff.lint.per-file-ignores]
 
+# tests/conftest.py — PLR0917 ruff surum farki (29 Agu 2026). Yerel/pre-commit
+# ruff (v0.7.1 / calisma ortami 0.14.13) PLR0917'yi "preview" sayiyor
+# (secili ama varsayilan pasif, --preview gerekiyor); CI'nin pin'siz
+# `uv pip install ruff` adimi ise HER calistiginda o anki en guncel surumu
+# kuruyor ve orada PLR0917 stabilize/varsayilan aktif (dogrulandi: `uvx
+# ruff@latest` ile 0.16.5). Sonuc: inline `# noqa: PLR0917` CI'yi gecirir
+# ama yerel/pre-commit'te RUF100 (unused-noqa, cunku o surumde kural pasif)
+# ile PATLAR -- hicbir tek noqa ikisini birden gecemez, o yuzden config
+# seviyesinde (dosyaya ozel) ignore gerekiyor. `_create_user` factory
+# fixture'inin 8 parametreli imzasi onceden var, PR #62 sonrasi backlog
+# Faz 1'in konusu degil (ayni gerekce global PLR0913 ignore'uyla, yukarida).
+# Kalici cozum CI'nin ruff kurulumunu pin'lemek olurdu (bu dosyanin/PR'in
+# kapsami disinda -- bkz. docs/guvenlik-borcu.md).
+"tests/conftest.py" = ["PLR0917"]
+
 # core/multi_layer_cache.py — 5 ONCEDEN VAR OLAN ihlal (2 Agu 2026).
 # KONTROL KOLU (gercek yol adiyla, /tmp kopyasi DEGIL):
 #   git show HEAD:backend/core/multi_layer_cache.py #     | ruff check --stdin-filename backend/core/multi_layer_cache.py -
@@ -306,6 +321,19 @@ exclude = [
 ]
 "conftest.py" = [
     "E402",    # Module level import not at top (common in conftest)
+    # 29 Agu 2026 eklendi (test_async_engine fixture'inin sync'e cevrilmesi
+    # sirasinda dosya "degisen dosya" oldugu icin ilk kez lint edildi --
+    # asagidaki ikisi ONCEDEN VAR, dokunulmayan koddaydi. KONTROL KOLU:
+    #   git show HEAD:backend/conftest.py | ruff check --stdin-filename backend/conftest.py -
+    #   -> ayni 2 ihlal (W291/W293 3 adet ayrica vardi, onlar guvenli
+    #   oldugu icin --fix ile DUZELTILDI, ignore EDILMEDI).
+    "T201",    # print(...) x3 (satir ~47,120,124) -- alembic/env.py'deki
+               # T201 girdisiyle ayni gerekce: hangi ortamin/DB'nin
+               # kullanildigini gosteren KASITLI operator ciktisi.
+    "PLR0912", # pytest_collection_modifyitems 43 dal -- path'e gore
+               # marker atayan pre-existing bir dispatch fonksiyonu;
+               # bolmek bu PR'in (test_async_engine loop-scope fix'i)
+               # kapsami degil (cerrahi mudahale kurali).
 ]
 "scripts/**/*.py" = [
     "T201",    # print statements allowed in CLI scripts
