@@ -18,13 +18,6 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
-
-async def _maybe_await(val: Any) -> Any:
-    if inspect.isawaitable(val):
-        return await val
-    return val
-
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
@@ -48,6 +41,13 @@ from core.dependencies import get_current_user as get_current_user_old
 from core.dependencies import get_db as get_db_old
 from models.database import User as DBUser
 from services._deprecated.fsrs_service import FSRSService as DeprecatedFSRSService
+
+
+async def _maybe_await(val: Any) -> Any:
+    if inspect.isawaitable(val):
+        return await val
+    return val
+
 
 logger = logging.getLogger(__name__)
 security = HTTPBearer()
@@ -494,44 +494,6 @@ async def end_study_session(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
-
-        if oturum is None or oturum.student_id != current_user.id:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Çalışma oturumu bulunamadı",
-            )
-
-        bitis = datetime.now(UTC)
-        baslangic = oturum.session_date
-        if baslangic.tzinfo is None:
-            # Savunma: kolon timestamptz ama eski satirlar naive olabilir.
-            baslangic = baslangic.replace(tzinfo=UTC)
-
-        oturum.duration_minutes = max(0, int((bitis - baslangic).total_seconds() // 60))
-        await db.commit()
-        await db.refresh(oturum)
-
-        return {
-            "success": True,
-            "message": "Çalışma oturumu sonlandırıldı",
-            "data": {
-                "session_id": oturum.id,
-                "duration_minutes": oturum.duration_minutes,
-                "cards_reviewed": oturum.cards_reviewed,
-                "correct_reviews": oturum.correct_reviews,
-                "average_response_time": oturum.average_response_time,
-                "ended_at": bitis.isoformat(),
-            },
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        await db.rollback()
         logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
