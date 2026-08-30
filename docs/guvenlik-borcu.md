@@ -1424,3 +1424,60 @@ Merge: `a7b9f3cab` (2026-08-30T05:20:25Z UTC), `gh pr merge 81 --squash`.
 4+7+3+3+1+3+2+2=25 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79/#80/
 #81) -- `profile_sync_service.py`, `test_db_profile_sync.py`. ~530 dosya
 hâlâ triyaj bekliyor.
+
+
+### 10.16 PR #82: `ai_mentor_service.py` kurtarması Windows'ta import anında çöküyordu -- emoji `print()` + eager singleton (30 Ağu 2026)
+
+SS10.7 grubundan `services/ai_mentor_service.py` (untracked backlog)
+kurtarılırken, modülün import'u bile Windows'ta çöküyordu:
+`UnicodeEncodeError: 'charmap' codec can't encode characters in position
+0-1: character maps to <undefined>`. Kök neden `ai_mentor_service.py`de
+değil, onun kullandığı (zaten tracked) `services/llm/ensemble_manager.py`
+idi -- provider init durumunu `print(f"✅ ...")` / `print(f"⚠️  ...
+failed: {e}")` gibi emoji içeren çağrılarla raporluyordu. Bu karakterler
+Windows'un UTF-8 olmayan konsol code page'lerinde (bu makinede
+cp1254/Türkçe) encode edilemiyor -- tek bir provider'ın (ör. Gemini,
+`GOOGLE_API_KEY` yokken) init hatası, kendi `except` bloğunun İÇİNDE yeni
+bir `UnicodeEncodeError` fırlatıp yakalanmadan yukarı sızıyordu. Yani asıl
+amacı "bir sağlayıcı başarısız olursa sessizce diğerine geç" olan fallback
+deseni, bu platformda soft-fail yerine hard-crash'e dönüşüyordu -- 17
+çağrı noktasının hepsi aynı sınıftan. Bu, sadece `ai_mentor_service.py`yi
+değil, `MultiLLMEnsembleManager`'ı kullanan HER servisi etkiliyordu
+(`api/osym_routes.py`, `services/osym_pdf_pipeline.py`,
+`services/sequential_reasoning_service.py`,
+`tasks/question_generation_tasks.py`).
+
+İkinci, bağımsız düzeltme: `ai_mentor_service.py`nin modül-seviyesi
+`ai_mentor_service = AIMentorService()` singleton'ı `MultiLLMEnsembleManager()`'ı
+IMPORT ANINDA kuruyordu -- hiçbir sağlayıcı anahtarı yokken bu her zaman
+`RuntimeError` fırlatırdı (encoding hatası çözülünce bu ortaya çıktı).
+Codebase'in kendi yerleşik deseni (`services/sequential_reasoning_service.py`)
+lazy `@property` ile çözüyor; aynı desen burada da uygulandı.
+
+**Yerel doğrulama:** düzeltme öncesi `from services.ai_mentor_service
+import ai_mentor_service` importta çöküyordu; düzeltme sonrası aynı
+import temiz, `generate_nudge()` gerçek uçtan uca çağrıldı (0 sağlayıcı
+anahtarı ile) -> 4 provider için `logger.warning` (encoding hatası yok),
+`RuntimeError` yakalandı, statik Türkçe fallback mesajı döndü.
+`pytest tests/unit/test_services_remaining_batch1.py` -- 71 passed.
+`ruff check`/`ruff format --check`/`bandit` temiz.
+
+Ayrıca `ensemble_manager.py`de PLR0917 (çok fazla pozisyonel parametre)
+için ayni ruff sürüm çelişkisi (bkz. §10.10, `tests/conftest.py`)
+`backend/pyproject.toml`da gerekçeli per-file-ignore ile kaydedildi --
+inline `noqa` pre-commit'in eski ruff'ında (v0.7.1) RUF100 ile otomatik
+siliniyor, CI'nin pin'siz kurulumu ise PLR0917 ile patlıyordu.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review
+(§10.5), Backend Tests Python 3.11 (§10.4), Frontend Tests (§10.6),
+Quality Gate (§10.4), CI Summary (türev). Code Quality (ruff/mypy/
+bandit/safety/semgrep) hepsi yeşil -- ruff çelişkisi düzeltmesi
+doğrulandı. 8 Golden Flow E2E testi 4m14s'de yeşil. API Security Testing
+(ZAP) 27m31s'de yeşil.
+
+Merge: `5b27cabea` (2026-08-30T05:50:42Z UTC), `gh pr merge 82 --squash`.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
+4+7+3+3+1+3+2+2+1=26 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79/
+#80/#81/#82) -- `ai_mentor_service.py` (`ensemble_manager.py` zaten
+tracked'ti, sayaca dahil değil). ~529 dosya hâlâ triyaj bekliyor.
