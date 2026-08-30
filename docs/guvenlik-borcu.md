@@ -1142,5 +1142,62 @@ zaten bilinen §10.4/§10.6 borcuna işaret ediyor, yeni bir bulgu değil.
 
 Merge: `4331dff60` (2026-08-29T23:50:31Z UTC).
 
-**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 4+7+3+3=17 tanesi
-commit edildi (PR #74/#75/#76/#77). ~538 dosya hâlâ triyaj bekliyor.
+### 10.11 PR #78: GrowthMindsetCard.tsx canlı dashboard'a bağlandı, eski
+localStorage/Bearer auth deseni temizlendi (30 Ağu 2026)
+
+**PR #78**: `components/Dashboard/GrowthMindsetCard.tsx` (SS10.7 grubundan,
+PR #77'nin bağladığı `growth-mindset` endpoint'ini hiç kullanmıyordu)
+hiçbir yerden import edilmiyordu. Bu PR onu, `App.tsx:47` üzerinden
+doğrulanan **canlı/routed** sayfa `pages/ModernStudentDashboard.tsx`'e
+bağladı (`StudentDashboard.tsx` ve `ModernDashboard.tsx` legacy,
+hiçbir yerden import edilmiyor -- tam kod taramasıyla elendi).
+
+**Eski, depodan çıkarılmış bir auth deseni bulundu ve düzeltildi:**
+orijinal dosya `localStorage.getItem('token')` + manuel `Authorization:
+Bearer` header'ı ile ham `axios.get()` kullanıyordu. `apiClient.ts`
+"No more localStorage token storage - XSS attack surface eliminated."
+yorumuyla httpOnly cookie tabanlı auth'a geçildiğini belgeliyor;
+sayfadaki diğer kartlar (`SubjectThetaCards`, ...) zaten `useQuery` +
+`apiRequest` (`credentials: 'include'`) kullanıyordu. Eski haliyle
+commit edilseydi ya çalışmayan ya da güvenlik regresyonu olan bir
+bileşen sevk edilmiş olurdu. Düzeltme: veri katmanı `SubjectThetaCards`
+ile birebir aynı desene yeniden yazıldı, görsel katman değiştirilmedi.
+
+**Ek bulgu, bu PR'dan bağımsız, önceden var olan bir test-altyapısı
+sorunu:** `snapshots.test.tsx > Dashboard Components Snapshots >
+ModernStudentDashboard` testi, `ModernStudentDashboard`'ı dinamik
+`import()` eden `beforeEach`'te vitest'in 10000ms `hookTimeout`'unu
+aşıyor. Nedensellik doğrudan test edildi: `GrowthMindsetCard` import'u
+ve kullanımı geçici olarak kaldırılıp aynı test tekrar çalıştırıldı --
+hâlâ aynı şekilde, aynı konumda, aynı hookTimeout'ta patlıyor (11517ms
+vs 10824ms, aynı hata) -- yani bu PR'dan tamamen bağımsız. Olası neden:
+dosya doğrudan `@mui/material` import ediyor (ESLint'in kendi
+`no-restricted-imports` kuralınca zaten legacy/discouraged işaretli,
+satır 8), MUI'nin emotion tabanlı CSS-in-JS'i vitest/jsdom altında
+soğuk transform'da yavaş kalabiliyor. CI'nin "Frontend Tests" job'u
+zaten "Run ESLint" adımında duruyor (§10.6) -- bu vitest adımına CI şu
+an hiç ulaşmıyor, bloklamıyor. Kök neden tam profillenmedi (orantısız
+olurdu); ileride `ModernStudentDashboard.tsx`'in `@mui/material`
+bağımlılığı Tailwind/shadcn'e taşınırsa (zaten ESLint'in kendi öneri
+sırası) muhtemelen kendiliğinden çözülür.
+
+**Ölçülen, küçük bir iyileşme:** Frontend Tests'in ESLint adımı bu PR'da
+"2101 problems (987 errors, 1114 warnings)" verdi -- §10.6'nın belgelediği
+988 hatadan 1 eksik. Fark, bu PR'ın düzelttiği (kendi diff'inin
+kaydırdığı ama önceden var olduğu `git diff` hunk analiziyle doğrulanan)
+tek bir trailing-whitespace hatasından geliyor; ESLint adımı tüm repo'yu
+tarıyor (diff-bazlı değil), yani proje-geneli sayaç 1 azaldı.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı (log seviyesinde teyit
+edildi):** Automatic PR Review (§10.5), Backend Tests Python 3.11 (§10.4,
+`tests/test_video_recommendation_service.py`, aynı `NameError: name 'nn'
+is not defined`), Frontend Tests (§10.6, yukarıda), Quality Gate/Router
+registration (§10.4, `api.rag`/`api.v1.semantic_search`/`api.youtube_routes`),
+CI Summary (türev). API Security Testing (ZAP) 42m1s'de yeşil --
+33-43+ dk aralığının üst ucunda, beklenen baseline içinde.
+
+Merge: `44fd5f396` (2026-08-30T01:18:03Z UTC).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
+4+7+3+3+1=18 tanesi commit edildi (PR #74/#75/#76/#77/#78). ~537 dosya
+hâlâ triyaj bekliyor.
