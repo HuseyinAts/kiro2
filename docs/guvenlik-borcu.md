@@ -1910,3 +1910,89 @@ commit edildi (`useSanitize.ts`, `useMathSanitizer.ts`,
 `BionicReadingText.tsx`, `neuro-inclusive.css`,
 `BionicReadingText.test.tsx` -- beşi de gerçekten untracked'ti). ~516
 dosya hâlâ triyaj bekliyor.
+
+
+### 10.24 PR #95: `send_email` SMTP kapısı ayrışma riskini test altına al (30 Ağustos 2026)
+
+SS10.7 taramasında `backend/` kök dizininde untracked, alt çizgiyle
+başlayan bir dosya bulundu: `_smtp_mutasyon.py`. Kurcalama/scratch değil
+-- `core/email_util.py` ve `core/eposta_dogrulama.py`'yi hedefleyen,
+tam işlevsel bir mutasyon testi harness'iydi (aynı desenin tracked
+emsalleri: `backend/scripts/mutation_check_password_reset.py`,
+`mutation_check_teacher_roster.py`). Çalıştırıldığında gerçek bir
+test-kapsam boşluğu ortaya çıkardı.
+
+**Bulgu:** `_smtp_kimlik()` (#466'nın dersi: `SMTP_HOST`/`SMTP_SERVER`
+ayrışmasını önlemek için eklenen TEK kaynak) hem `smtp_yapilandirilmis_
+mi()` (kapı) hem `send_email()` (tüketici) tarafından okunuyor -- ama bu
+ilişkiyi doğrulayan test yoktu. `test_eposta_kapi_sirasi.py`'deki
+`test_smtp_kontrolu_send_email_ile_ayni_degiskenleri_okur` docstring'inde
+tam bunu iddia ediyor, ama assertion'ı yalnız KAPI fonksiyonunu çağırıyor
+-- `send_email()`'in KENDİSİ hiç çağrılmıyor. #466'nın aynı ayrışma
+sınıfının test edilmemiş bir tekrarı riski.
+
+**Ölçüm (iddia ≠ ölçüm):** Harness taban çizgisini (4 hedef test yeşil)
+doğruluyor, 4 mutasyonu tek tek uyguluyor, pytest'i koşuyor, `git
+checkout` ile harfi harfine geri alıyor, geri alımı `git status` ile
+doğruluyor. Düzeltme öncesi sonuç **3/4**: M1 (SMTP ön-koşulu
+kaldırılır), M2 (#466 ayrışması yeniden üretilir) ve M3 (hata gürültüsü
+susturulur) hepsi doğru şekilde OLDÜ, ama **M4 (`send_email` kendi eski
+kontrolüne döner: `if not (smtp_server and smtp_username):`) HAYATTA
+KALDI** -- 0 test düştü. Yani `send_email` kendi bağımsız kontrolüne
+geri dönse bile hiçbir test bunu fark etmiyordu.
+
+**Düzeltme:** `test_eposta_kapi_sirasi.py`'ye yeni test
+(`test_send_email_kismi_smtp_yapilandirmasinda_gonderim_yapmaz`). Senaryo:
+`SMTP_HOST` + `SMTP_USERNAME` var, `SMTP_PASSWORD` yok (kısmi
+yapılandırma) -- `send_email(..., blocking=True)` çağrılır, dönüş
+değerinin `False` olduğu ve erken-dönüş uyarısının loglandığı doğrulanır.
+M4'ü gerçekten öldürdüğü elle de doğrulandı: mutasyon geçici
+uygulandığında test kırmızıya dönüyor, log'da gerçek bir SMTP bağlantı
+denemesi kanıtı var (`[Errno 11001] getaddrinfo failed`) -- yani sahte
+pozitif değil, `send_email` gerçekten bağlanmaya çalışıyordu. Düzeltme
+sonrası: **4/4**.
+
+**Harness'in konumu:** `_smtp_mutasyon.py` reponun kurulu adlandırma
+sözleşmesine taşındı (bkz. `backend/scripts/mutation_check_password_
+reset.py`, `mutation_check_teacher_roster.py`):
+`backend/scripts/mutation_check_smtp_email_gate.py`. Taşıma sırasında yol
+hesaplaması düzeltildi (`scripts/` alt dizinine göre `parent.parent`),
+`bandit`/`mypy` için sırasıyla `# nosec` gerekçeleri ve bir `TypedDict`
+eklendi (kardeş dosyaların aksine bu harness'in `MUTASYONLAR` yapısı
+karışık değer tipleri taşıdığından yoksa mypy'nin "changed files only"
+adımında 5 hataya yol açardı). İlginç bir yan bulgu: reponun kendi
+`reward-hacking-check` push-stage hook'u (`backend/hooks/reward_hacking/`,
+Daisy Stanton Standartları) satır sonunda gerekçesiz `# nosec` gördüğünde
+(`#\s*nosec\s*$` deseni) bunu "coverage manipülasyonu" diye işaretliyor;
+kardeş dosyalar bunu yalnız `# noqa: S603` ekinin (ki ruff artık bu repoda
+"unused directive" diyor) tesadüfen bu deseni kırması sayesinde
+atlatıyor. Gerekçe `# nosec - <sebep>` olarak aynı satıra taşınınca hem
+ruff hem `reward-hacking-check` temiz.
+
+**Yerel doğrulama:** `python backend/scripts/mutation_check_smtp_email_
+gate.py` -> 4/4 (üç kez çalıştırıldı). `ruff check`, `ruff format
+--check`, `mypy --ignore-missing-imports`, `bandit` temiz. Push-time
+`ders-zorlayici` bekçi paketi iki push denemesinde de: 320 passed, 1
+skipped, 1 xfailed (~100-110s).
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review
+(25s), Backend Tests Python 3.11 (3m13s), CI Summary (3s), Frontend
+Tests (1m21s), Quality Gate (3m31s) -- PR #89/#91/#93'teki taban
+çizgisiyle birebir aynı check seti, hepsi FAILURE (`gh pr view --json
+statusCheckRollup` ile doğrulandı). Geri kalan tüm check'ler yeşil. API
+Security Testing (ZAP) 36m46s'de yeşil -- önceki PR'ların 27-41dk
+aralığı içinde.
+
+Merge: `d807018fa` (2026-08-30), `gh pr merge 95 --squash --delete-branch`
+(iki commit'in squash'ı: ilk commit + `reward-hacking-check` gerekçe
+düzeltmesi).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 40 tanesi
+commit edildi. Backlog'ta hâlâ triyaj bekleyen: diğer 12 untracked
+`backend/scripts/*.py`, `backend/test_nlp_perf.py`/`test_root_perf.py`
+(pytest'in `testpaths`'i dışında, zararsız ama karar bekliyor),
+`backend/api/v1/predictive_analytics.py` (mock veri, ürün kararı
+gerekiyor), `backend/application/commands/.kontrol/`,
+`frontend/src/components/Dashboard/MisconceptionFlashcard.tsx` +
+`TeacherMisconceptionHeatmap.tsx`, çeşitli `frontend/src/test/e2e/*` ve
+`frontend/tests/e2e/` spec'leri, kök dizindeki deploy/doküman dosyaları.
