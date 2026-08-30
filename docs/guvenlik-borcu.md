@@ -1996,3 +1996,90 @@ gerekiyor), `backend/application/commands/.kontrol/`,
 `frontend/src/components/Dashboard/MisconceptionFlashcard.tsx` +
 `TeacherMisconceptionHeatmap.tsx`, çeşitli `frontend/src/test/e2e/*` ve
 `frontend/tests/e2e/` spec'leri, kök dizindeki deploy/doküman dosyaları.
+
+### 10.25 PR #97: `audit_sql_migration_drift.py`'yi izlemeye al -- kendi bulgularının elle doğrulanması (30 Ağustos 2026)
+
+SS10.7 taramasında `backend/scripts/` altında untracked bulunan bir diğer
+dosya: `audit_sql_migration_drift.py`. Scratch değil -- kendi docstring'i
+gerekçesini veriyor: 13 Ağu 2026 tarihli S206 olayında (`daily_plans` /
+`yks_exam_goals` / `learning_progress_daily` tabloları yalnızca
+`backend/migrations/*.sql` içinde tanımlıydı, canlı DB'de yoktu; Celery
+beat + 2 API ucu kalıcı 500 veriyordu -- `cdea871deea9` ile kapandı) bu
+hatanın kardeşlerini aramak için yazılmış, salt-okunur bir üç yönlü drift
+denetleyicisi (`backend/migrations/*.sql` <-> `alembic/versions` <-> canlı
+DB). Zaten izlenen `audit_db_dependency.py` / `audit_orm_vs_livedb.py`
+ailesiyle aynı sözleşmeyi izliyor.
+
+**Kendi kontrol kolu:** Script, bilinen-canlı `users` tablosu için
+referans sayısının 0 olmadığını doğrulayarak kendi tarayıcısının bozuk
+olmadığını kontrol ediyor -- aksi halde "tarayıcı arızalı" diyip kendini
+geçersiz kılıyor. Bu, kampanyanın "iddia ≠ ölçüm" felsefesinin statik-
+analiz araçlarına uygulanmış hali (bkz. `mutation_check_*.py` ailesindeki
+aynı disiplinin test tarafındaki karşılığı, §10.24).
+
+**Yerel çalıştırma bulguları:** Canlı dev DB'ye karşı çalıştırıldı: 132
+tablo `.sql`'de, 1 tablo alembic'te, 254 tablo canlı DB'de. Kontrol kolu
+(`users`) geçti (orm=1 dosya, sql=26 dosya). 27 tablo ".sql'de var, DB'de
+yok" olarak bulundu; bunlardan 2'si "KOD BAĞIMLI" (kod hâlâ referans
+veriyor) olarak işaretlendi: `questions`, `video_cache`.
+
+**Elle doğrulama -- ikisi de yanlış-pozitif çıktı:** Script'in kendi
+bulgularına kör kör güvenmek yerine, iki hit de kaynağına kadar izlendi
+(kampanyanın "iddia ≠ ölçüm" disiplini script'i kurtarırken script'in
+ÇIKTISINA da uygulandı):
+
+- `questions`: `backend/models/learning_path_models.py`'deki eşleşme bir
+  DOCSTRING metni ("Links to Question (from questions table)"), gerçek
+  SQL değil. `backend/core/_deprecated/automated_question_generator.py:
+  1134`'teki eşleşme gerçek bir `SELECT ... FROM questions` ama dosya
+  zaten `_deprecated/` altında.
+- `video_cache`: `api/youtube_routes.py`, `services/youtube/
+  cache_manager.py`, `services/youtube/database.py` ve `core/
+  sql_injection_prevention.py` (yorum örneği) hepsi `sqlite3.connect(...)`
+  kullanıyor -- ayrı bir SQLite dosyası, script'in denetlediği ana
+  Postgres DB'si değil. Script'in regex tabanlı kullanım taraması
+  (`RAWSQL_RE = "(?:FROM|INTO|UPDATE|JOIN)\s+{t}\b"`) motor farkını ayırt
+  edemiyor -- düz metin regex için bir Postgres tablosuna referans ile
+  bambaşka bir SQLite DB'sindeki aynı isimli tabloya referans birebir
+  aynı görünüyor. Bilinen ve kabul edilebilir bir yanlış-pozitif sınıfı.
+
+Sonuç: script doğru çalışıyor, iki bulgu da gerçek canlı-500 riski değil.
+Script'in kendisinde bir hata yok -- veritabanı-motoru körlüğü, regex
+tabanlı statik analizin doğal bir sınırı.
+
+**Yapılan tek kod değişikliği:** `sys.stdout.reconfigure(encoding="utf-8",
+errors="replace")` satırına `# type: ignore[union-attr]` eklendi -- CI'nin
+"değişen dosyalarda mypy" adımında bu YENİ dosya için gerekli (kardeş
+`audit_*.py` dosyalarının hepsinde zaten var olan aynı düzeltme).
+Davranış/mantık değişmedi.
+
+**Yerel doğrulama:** `ruff check`, `ruff format --check`, `mypy
+--ignore-missing-imports`, `bandit` (0 bulgu, tüm severity/confidence
+seviyelerinde) temiz. `python -m hooks.reward_hacking.cli` temiz. Script
+canlı dev DB'ye karşı fix öncesi/sonrası iki kez çalıştırıldı, çıktı
+değişmedi. Push-time `ders-zorlayici` bekçi paketi: 320 passed, 1 skipped,
+1 xfailed (~103s).
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review,
+Backend Tests Python 3.11, CI Summary, Frontend Tests, Quality Gate --
+önceki PR'lardaki (#89/#91/#93/#95) taban çizgisiyle birebir aynı check
+seti, hepsi FAILURE (`gh pr view --json statusCheckRollup` ile
+doğrulandı). Geri kalan tüm check'ler yeşil. API Security Testing (ZAP)
+38m43s'de yeşil -- önceki PR'ların 27-41dk aralığı içinde.
+
+Merge: `e91372249` (2026-08-30), `gh pr merge 97 --squash --delete-branch`.
+
+**Kalan kapsam:** Bu PR yalnızca dosyayı izlemeye aldı + tek mypy
+düzeltmesini yaptı; script'in bulduğu 25 "referanssız" (kod bağımlı
+işaretlenmemiş) tablonun ayrıca temizlenmesi/araştırılması bu PR'ın
+kapsamı dışında kaldı. SS10.7'deki 555 dosyadan şimdiye kadar 41 tanesi
+commit edildi. Backlog'ta hâlâ triyaj bekleyen: 12 untracked
+`backend/scripts/*.py` (`generate_qwen_kcs.py`, `golden_dataset_
+stress_tester.py`, `quality/sanitize_question_bank_ocr.py`,
+`quality/y11_sizinti_ayirt_olc.py`, `semantic_backfill.py` orta kurtarma
+adayı olarak işaretlenenler dahil), `backend/test_nlp_perf.py`/
+`test_root_perf.py`, `backend/api/v1/predictive_analytics.py`,
+`backend/application/commands/.kontrol/`,
+`frontend/src/components/Dashboard/MisconceptionFlashcard.tsx` +
+`TeacherMisconceptionHeatmap.tsx`, çeşitli `frontend/src/test/e2e/*` ve
+`frontend/tests/e2e/` spec'leri, kök dizindeki deploy/doküman dosyaları.
