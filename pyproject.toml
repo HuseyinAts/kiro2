@@ -340,6 +340,22 @@ module = [
 ]
 ignore_missing_imports = true
 
+# alembic_utils.py: `from alembic import op` icin `# type: ignore[attr-defined]`
+# gerekcesi dosyanin kendisinde (alembic'in `op`u calisma zamaninda dinamik
+# proxy). Bu satirin GEREKLI olup olmadigi mypy/alembic surum ikilisine gore
+# DEGISIYOR -- olculdu (30 Agu 2026): pre-commit'in izole mypy v1.11.2 venv'i
+# attr-defined ISTIYOR (ignore gerekli), CI'nin "Code Quality (mypy)" job'u
+# ise projenin gercek .venv'ini (requirements.txt'teki pinlenmis alembic)
+# kullaniyor ve ayni satiri unused-ignore ile REDDEDIYOR -- iki ayri, ikisi
+# de gecerli CI kapisi celisiyordu. warn_unused_ignores'i bu modul icin
+# kapatmak, ignore'un GEREKLI oldugu ortamda attr-defined'i hala bastirirken
+# GEREKSIZ oldugu ortamda hata saydirmiyor -- dosyanin geri kalani (no-any-
+# return dahil) tam denetimde kaliyor (ignore_errors=true DEGIL, kapsam
+# yalniz bu tek satir).
+[[tool.mypy.overrides]]
+module = ["core.alembic_utils", "backend.core.alembic_utils"]
+warn_unused_ignores = false
+
 # ==================== Pytest Configuration ====================
 
 [tool.pytest.ini_options]
