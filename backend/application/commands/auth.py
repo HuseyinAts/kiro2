@@ -220,6 +220,37 @@ class RegisterUserCommandHandler(CommandHandler[RegisterUserCommand, dict[str, A
                 },
             )
 
+            # CANLI BULGU (30 Ağu 2026, backend/services/profile_sync_service.py
+            # yedeğiyle çapraz doğrulandı): bu handler `student_profiles` satırı
+            # oluşturuyordu ama `learning_path_student_profiles` HİÇ oluşturmuyordu.
+            # Sonuç: her yeni öğrenci kaydı, ilk learning-path isteğinde
+            # `verify_student_access`'ten 403/404 alıyordu (profil yok) — sessiz,
+            # her kayıtta tekrar eden bir kayıp. Bekçi:
+            # tests/integration/test_db_profile_sync.py::test_student_registration_provisions_both_profiles
+            # `neuro_inclusive_mode` (NOT NULL, server_default YOK, bkz. S255)
+            # burada EXPLICIT veriliyor — raw SQL INSERT, ORM'in Python-tarafi
+            # default'undan yararlanamaz.
+            student_name = (command.ad_soyad or "").strip() or "Öğrenci"
+            await db.execute(
+                text("""
+                INSERT INTO learning_path_student_profiles
+                    (student_id, user_id, name, grade, exam_target, learning_style,
+                     knowledge_level, neuro_inclusive_mode, interests, goals,
+                     available_time, metadata_json, created_at, updated_at)
+                VALUES
+                    (:student_id, :user_id, :name, :grade, 'TYT', 'mixed',
+                     'beginner', FALSE, '[]', '[]',
+                     60, '{}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ON CONFLICT (student_id) DO NOTHING;
+            """),
+                {
+                    "student_id": profile_id,
+                    "user_id": user_id,
+                    "name": student_name,
+                    "grade": str(grade_level),
+                },
+            )
+
         await db.commit()
 
         if minor and command.veli_email:
