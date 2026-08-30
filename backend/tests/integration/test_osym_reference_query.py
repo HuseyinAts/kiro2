@@ -62,6 +62,13 @@ def baglanti():
         conn = psycopg2.connect(DSN)
     except psycopg2.OperationalError as hata:
         pytest.skip(f"PostgreSQL :5434 erisilemez ({hata.__class__.__name__})")
+        raise  # pytest.skip() hep raise eder, buraya hic ulasilmaz -- ama
+        # CodeQL (py/uninitialized-local-variable) skip()'in hicbir zaman
+        # geri donmedigini bilmiyor ve "conn" asagida baslatilmamis
+        # GORUNUYORDU. Acik `raise` (orijinal `hata`yi yeniden firlatir)
+        # akisi kapatiyor; `return` yerine bunun secilme nedeni: skip()
+        # bir sekilde geri donerse fixture'in sessizce None yield etmesi
+        # yerine orijinal baglanti hatasini gorunur kilmak.
     conn.autocommit = False
     yield conn
     conn.rollback()
