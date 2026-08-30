@@ -80,8 +80,7 @@ def satir_sonu(veri: bytes) -> bytes:
 
 
 def kosum() -> tuple[int, str]:
-    # Sabit komut listesi, kullanıcı girdisi yok.
-    sonuc = subprocess.run(  # nosec
+    sonuc = subprocess.run(  # nosec - sabit pytest komutu, dis girdi yok
         [
             sys.executable,
             "-m",
@@ -109,13 +108,12 @@ def kosum() -> tuple[int, str]:
 
 
 def geri_al(bagil: str) -> bool:
-    # Sabit git komutu; yol MUTASYONLAR listesindeki sabit değerlerden gelir,
-    # dış/kullanıcı girdisi yok.
-    subprocess.run(  # nosec
+    # yol MUTASYONLAR'daki sabit degerlerden gelir, dis girdi yok
+    subprocess.run(  # nosec - sabit git komutu, dis girdi yok
         ["git", "checkout", "HEAD", "--", f"backend/{bagil}"], cwd=KOK, check=True
     )
     return (
-        subprocess.run(  # nosec
+        subprocess.run(  # nosec - sabit git komutu, dis girdi yok
             ["git", "status", "--short", "--untracked-files=no", f"backend/{bagil}"],
             cwd=KOK,
             capture_output=True,
