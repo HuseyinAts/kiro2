@@ -1,0 +1,35 @@
+/*
+ * Nöro-Kapsayıcı (Neuro-Inclusive) Pedagojik CSS Ayarları
+ * DEHB ve Disleksi gibi bilişsel farklılıkları olan öğrenciler için okunabilirliği en üst düzeye çıkarır.
+ */
+
+ .neuro-inclusive-mode {
+    /* Satır Arası Boşluk: Disleksik okuyucular için kritik öneme sahip. Gözün satır atlamasını engeller. */
+    line-height: 1.8 !important;
+
+    /* Harf Arası Boşluk (Tracking): Harflerin birbirine yapışıp karışmasını (visual crowding) önler. */
+    letter-spacing: 0.12em !important;
+
+    /* Kelime Arası Boşluk: Kelime sınırlarının daha belirgin olmasını sağlar. */
+    word-spacing: 0.16em !important;
+
+    /* Font Ailesi: Temiz sans-serif (uygulamanın default fontu olan inter vs. korunarak) */
+    font-family: "Atkinson Hyperlegible", "OpenDyslexic", "Comic Sans MS", "Inter", sans-serif !important;
+
+    /* Punto: Bir tık daha büyük */
+    font-size: 1.1rem !important;
+
+    /* Kontrast: Tam siyah (#000000) beyaz (#FFFFFF) disleksi için bazen yorucu olabilir.
+       Yumuşak koyu gri önerilir. */
+    color: #1f2937 !important; /* Tailwind text-gray-800 */
+}
+
+/* Koyu mod için kontrast ayarı */
+.dark .neuro-inclusive-mode {
+    color: #e5e7eb !important; /* Tailwind text-gray-200 */
+}
+
+.bionic-bold {
+    font-weight: 700 !important;
+    color: inherit; /* Dark mode uyumluluğu için */
+}
