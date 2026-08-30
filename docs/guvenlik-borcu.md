@@ -1713,3 +1713,116 @@ Merge: `00ed89da9` (2026-08-30), `gh pr merge 89 --squash` (2 commit:
 commit edildi -- yalnız `test_osym_reference_query.py` (`hybrid_question_
 generation.py`, `production_quality_monitor.py`, `pyproject.toml` zaten
 tracked'ti, sayaca dahil değil). ~524 dosya hâlâ triyaj bekliyor.
+
+### 10.22 PR #91: `routers/learning/gamification.py` + eşleşen frontend bileşenleri -- gerçek ama bilerek bağlanmamış özellik (30 Ağustos 2026)
+
+SS10.7 taramasında `backend/routers/learning/` altında tek dosya
+bulundu: `gamification.py` (142 satır) -- günlük görev üretimi
+(`/quests`), seri durumu (`/status`), seri dondurucu satın alma
+(`/freeze/buy`) ve lig liderlik tablosu (`/leaderboard`). Modelleri
+(`models.gamification.DailyQuest`/`Streak`) ve servisi
+(`services.leaderboard_service.leaderboard_service`, `add_xp`/
+`get_top_users`/`get_user_rank` üçü de mevcut) zaten tracked. Eşleşen
+iki frontend bileşeni de untracked: `DailyQuestsModal.tsx` ve
+`StreakWidget.tsx` (`frontend/src/components/Gamification/`) -- prop
+şekilleri router'ın yanıt şekilleriyle alan alana örtüşüyor, ama
+fetch/API çağrısı yok (saf sunum).
+
+**İki bağımsız gamification alt sistemi:** `api/gamification_api.py`
+(953 satır, zaten tracked, `routers/loader.py`'de `"integrations"`
+kategorisiyle canlı) puan/seviye/rozet/başarım/profil/liderlik-tablosu
+kapsıyor; `core.gamification.leaderboard_manager` +
+`services.learning_event_service.GamificationDBService` +
+`models.user_achievement.UserAchievement` kullanıyor. Untracked router
+tamamen farklı bir yüzeyi kapsıyor (günlük görev, seri, seri
+dondurucu) ve farklı servisi (`services.leaderboard_service`)
+kullanıyor -- ama İKİSİ DE kendi `/leaderboard` uç noktasını tanımlıyor.
+Gerçek bir path collision riski: untracked router benzer bir prefix
+altında bağlanırsa iki `/leaderboard` çakışır.
+
+**Ölü/terk edilmiş `routers/<kategori>/` iskeleti:** `backend/routers/`
+altında 10 alt dizin var (accessibility, admin, ai, analytics, auth,
+content, exam, integrations, learning, security); 9'u TAMAMEN boş,
+hepsi aynı `6.01.2026 01:46` damgasını taşıyor (Ocak-2026 ilk
+scaffold'undan kalma, hiç doldurulmamış). `routers/loader.py`'nin
+`ROUTER_MAPPING` sözlüğü `eski_modül -> (kategori, yeni_modül_yolu)`
+şeklinde; `_load_router` HER ZAMAN `importlib.import_module(yeni_modül_
+yolu)` çağırıyor ve `yeni_modül_yolu` HER ZAMAN düz `"api.X"` veya
+`"app.api.X"` -- `kategori` stringi (ör. `"learning"`) sadece
+`router_registry.register(kategori, ...)`'a giden bir loglama/gruplama
+etiketi, dosya sistemi yoluyla hiçbir ilişkisi yok. Yani
+`routers/learning/gamification.py`'nin bulunduğu dizin yapısının
+kendisi zaten canlı router-yükleme mekanizmasından yapısal olarak
+kopuk -- bağlamak için bu kod tabanında hiç kullanılmamış yeni bir
+import-yolu konvansiyonu icat etmek gerekirdi.
+
+**Frontend tarafında tüketen yok:** `DailyQuestsModal.tsx` /
+`StreakWidget.tsx` içinde fetch/API çağrısı yok; `frontend/**/*.ts(x)`
+genelinde `daily_quest|streak/freeze|gamification/status|gamification/
+quests` için sıfır eşleşme -- hiçbir container/sayfa bu bileşenleri
+render etmiyor.
+
+**Karar: kaydet, bağlama.** Yukarıdaki üç bulgu (path collision riski
++ ölü dizin yapısı + tüketen yokluğu) birlikte, bu kampanyanın daha
+önce kurduğu "rescued but deliberately not connected" örüntüsüyle aynı
+kategori: kod gerçek ve doğru, ama bağlamak dar bir "rescue" commit'inin
+kapsamını aşan yeni mimari/routing kararları gerektirirdi (hangi
+gamification API kalacak, `/leaderboard` çakışması nasıl çözülecek,
+UI'da nereye yerleşecek -- hepsi ürün kararı, otonom olarak alınmadı).
+
+**Bu rescue sırasında bulunan + düzeltilen:** `gamification.py`
+hiç lint edilmemişti; tek bulgu `DTZ011` (`today = date.today()`,
+tz-naive) -- `datetime.now(UTC).date()`'e çevrildi, import güncellendi.
+Frontend tarafında `npx eslint` 5 hata + 2 uyarı buldu; 3'ü
+(`comma-dangle` + 2x `quotes`, `DailyQuestsModal.tsx`) gerçekten bu
+dosyaya özgü, doğrudan düzeltildi.
+
+**Düzeltilmeyen 2 bulgu (kontrol ölçümüyle pre-existing kanıtlandı):**
+her iki dosyada da `import/default` ("No default export... react") ve
+`no-restricted-imports` (`@mui/material`, B-P0-66: "yeni bileşenler
+için Tailwind + shadcn tercih edilir") kalıyor. Kontrol: zaten
+tracked + canlı `frontend/src/components/CAT/CATWidget.tsx` üzerinde
+aynı `npx eslint` komutu AYNI iki bulguyu veriyor. Yani bu rescue'nin
+getirdiği yeni bir sorun değil -- tüm React+MUI kod tabanının önceden
+var olan durumu. `npm run lint` (`--max-warnings 0`) CI'da "Frontend
+Tests" işinin bir adımı (`ci.yml:395-397`, diff-bazlı/grandfathered
+DEĞİL, tüm `frontend/`'i tarıyor) -- yani "Frontend Tests" zaten,
+bu PR'dan bağımsız olarak, codebase'in geri kalanındaki aynı MUI/
+import-default borcu yüzünden kırmızı. Bu da PR #89'dan beri kurulu
+"Frontend Tests bilinen-kırmızı" temeliyle tutarlı.
+
+**`__init__.py` eklenmedi:** `routers/<kategori>/` altındaki 10 alt
+dizinin 10'unda da `__init__.py` yok (namespace-scaffold konvansiyonu).
+Bu router hiçbir yerden `routers.learning.X` olarak import edilmiyor
+(bu PR onu bağlamıyor), yani mevcut (yokluk) konvansiyonuna uymayan
+yeni bir dosya eklemenin işlevsel bir faydası yok.
+
+**Canlı DB doğrulaması:** `localhost:5434/kiro2`'de `daily_quests` ve
+`streaks` tabloları mevcut; kolonlar router'ın kullandığı TÜM alanlarla
+birebir eşleşiyor (`daily_quests`: id, organization_id, quest_date,
+student_id, quest_type, title, description, target_value,
+current_value, xp_reward, completed, completed_at, bonus_claimed;
+`streaks`: user_id, organization_id, current_streak, largest_streak,
+freeze_count, last_activity, total_days_active).
+
+**Yerel doğrulama:** `pre-commit run` (ruff + ruff-format + bandit +
+mypy + secrets) `gamification.py` için PASSED. Push-time
+`ders-zorlayici` bekçi paketi: 320 passed, 1 skipped, 1 xfailed.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review
+(29s), Backend Tests Python 3.11 (3m15s), CI Summary (2s), Frontend
+Tests (1m6s), Quality Gate (3m16s) -- PR #89'daki 5-kırmızı taban
+çizgisiyle birebir aynı check seti, hepsi FAILURE. Geri kalan tüm
+check'ler (CodeQL x2 + default-setup, Container/SAST/IaC/Secret/OWASP/
+License/Compliance Security Scan'leri, 5x Code Quality alt-job'u,
+Checkov, Trivy, 8 Golden Flow E2E, PR Welcome Message) yeşil. API
+Security Testing (ZAP) 34m35s'de yeşil -- önceki iki PR'ın 31-33dk
+aralığından biraz daha uzun ama hâlâ aynı büyüklük mertebesinde,
+endişe verici değil.
+
+Merge: `82d192554` (2026-08-30), `gh pr merge 91 --squash` (tek commit
+`7b71b8fe7`in squash'ı).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 34 tanesi
+commit edildi (gamification.py + DailyQuestsModal.tsx + StreakWidget.tsx,
+üçü de gerçekten untracked'ti). ~521 dosya hâlâ triyaj bekliyor.
