@@ -1636,3 +1636,80 @@ dışında).
 
 **Sonuç:** `stateful-shimmying-papert.md` planının 7 kaleminin TAMAMI
 (Faz 0-6) doğrulanmış durumda tamamlanmış. Plan dosyası kapatılabilir.
+
+
+### 10.21 PR #89: `sorular` -> `v_safe_for_beta` -- var olmayan tabloyu hedefleyen ÖSYM referans sorgusu (30 Ağu 2026)
+
+`api/hybrid_question_generation.py` (Wave 2B few-shot havuzu, 2 çağrı
+yeri) ve `services/production_quality_monitor.py` (`_get_evaluator`) ham
+SQL ile `FROM sorular` sorguluyordu. `sorular` yalnızca
+`backend/migrations/013_create_sorular_table.sql` içinde tanımlıydı -- bu
+klasör (57/58 tracked dosya) alembic'e hiç entegre değil, hiçbir `alembic
+upgrade head` onu yaratmıyor. Canlı DB'de doğrulandı: hem `sorular`
+(migration 013) hem `questions` (migration 003) `to_regclass(...)` ile
+NULL dönüyor -- yani `migrations/` klasörünün TAMAMI, alembic'in gerçek
+şemasının yerini asla almamış, terk edilmiş paralel bir tasarım.
+
+**Sessiz hata mekanizması:** iki çağrı yeri de `except Exception ->
+logger.warning` ile yutuyordu (bilinçli tasarım -- referans
+yüklenemezse üretim durmasın). Sonuç 500 değil, sessiz kalite kaybı:
+Wave 2B referanssız few-shot üretim yapıyordu, ve
+`ProductionQualityMonitor._get_evaluator()` HER çağrıda patlayıp `None`
+dönüyordu (`log_question`'ın kendi geniş except'i içinde) -- yani
+`api/production_monitoring.py` (`routers/loader.py`'de "analytics"
+altında tracked, **canlı mount**) hiçbir soruyu hiç loglayamıyordu.
+Ölü kod değil: gerçek, mount edilmiş production path.
+
+**Düzeltme:** canlı şemada aynı veriyi taşıyan VE zaten kalite-kapısından
+geçirilmiş olan `v_safe_for_beta` view'ına yönlendirildi (`question_content`
++ `mv_safe_for_beta` manuel join yerine -- `v_safe_for_beta` zaten
+`mv_safe_for_beta`'nın kendi kaynağı, difficulty_level/subject_area
+sütunlarını da hazır içeriyor). Canlı DB'de 2967 uygun satır var (>100
+karakter, correct_answer dolu). Kalıcı bekçi:
+`tests/integration/test_osym_reference_query.py` -- kaynak dosyaların
+SQL'ini parse edip her tablonun canlı DB'de var olduğunu ve
+`question_content` kullanan sorguların `mv_safe_for_beta` kapısından
+geçtiğini doğruluyor (CLAUDE.md'nin "soru sorgularinda is_active + kalite-
+status filtresi ZORUNLU" kuralı).
+
+**Yan temizlik (`production_quality_monitor.py`):** pre-commit ruff/mypy
+kapısı dosyada dokunulmamış 12 önceden-var-olan bulguyla birlikte çalıştı
+(dosya daha önce hiç lint edilmemiş). Güvenli/trivial 11'i doğrudan
+düzeltildi: 3x `PTH123` (open -> Path.open), 5x `T201` (print -> logger),
+1x `C401` (generator -> set comprehension), 1x `PLW0603`
+(`get_monitor()` singleton'ı ilk denemede function-attribute pattern'iyle
+düzeltildi ama mypy `attr-defined` ile reddetti -- ikinci, kalıcı çözüm
+`functools.cache`, tipli/idiomatik). Kalan `PLR0912` (`generate_report`,
+18 > 12 dal) için `backend/pyproject.toml`'a per-file-ignore eklendi --
+fonksiyonun KENDİ docstring'i bu borcu zaten `@TODO S179 fix (B-P0-69)`
+olarak işaretliyor ve "Do NOT add new branches" diyor.
+
+**CodeQL bulgusu (yeni bekçide):** `check-runs` annotasyonu
+`test_osym_reference_query.py:65`'te `py/uninitialized-local-variable`
+işaretledi -- `baglanti` fixture'ı `except psycopg2.OperationalError ->
+pytest.skip(...)` sonrası `conn.autocommit = False`'a düşüyordu; skip()
+çalışma zamanında HER ZAMAN raise eder ama CodeQL'in akış analizi bunu
+bilmiyor. İkinci commit'le (`b07e415ca`) except bloğuna açık bir `raise`
+eklendi (orijinal hatayı yeniden fırlatır) -- CodeQL bir sonraki pushta
+"skipping" (alert kapandı), ardından "pass" olarak doğruladı.
+
+**Yerel doğrulama:** `test_osym_reference_query.py` 4/4 yeşil (önce
+kırmızı, `sorular` mevcut değilken doğrulandı). `test_api_batch2.py` +
+`test_question_management.py`: 372 passed, 31 skipped, 13 failed -- 13'ü
+de FSRS flashcard uçlarının kasıtlı 410 Gone kaldırmasıyla ilgili,
+önceden var olan, alakasız borç. Push-time `ders-zorlayici` bekçi paketi:
+320 passed, 1 skipped, 1 xfailed.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review,
+Backend Tests Python 3.11, CI Summary, Frontend Tests, Quality Gate --
+önceki PR'lerle birebir. API Security Testing (ZAP) 31m49s'de yeşil --
+bu segmentte eşzamanlı başka PR olmadığı için normal ~27-32dk aralığında
+(bkz. §10.19'daki 4-PR-eşzamanlı uzama bulgusunun tersi doğrulaması).
+
+Merge: `00ed89da9` (2026-08-30), `gh pr merge 89 --squash` (2 commit:
+`c4cf02a26` ana düzeltme, `b07e415ca` CodeQL fixup).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 30+1=31 tanesi
+commit edildi -- yalnız `test_osym_reference_query.py` (`hybrid_question_
+generation.py`, `production_quality_monitor.py`, `pyproject.toml` zaten
+tracked'ti, sayaca dahil değil). ~524 dosya hâlâ triyaj bekliyor.
