@@ -2083,3 +2083,88 @@ adayı olarak işaretlenenler dahil), `backend/test_nlp_perf.py`/
 `frontend/src/components/Dashboard/MisconceptionFlashcard.tsx` +
 `TeacherMisconceptionHeatmap.tsx`, çeşitli `frontend/src/test/e2e/*` ve
 `frontend/tests/e2e/` spec'leri, kök dizindeki deploy/doküman dosyaları.
+
+### 10.26 PR #99: `golden_dataset_stress_tester.py`'yi izlemeye al -- ayni taramada 2 dosya kurtarilmadi, 2 dosya scratch (30 Ağustos 2026)
+
+SS10.7 backlog taramasi `backend/scripts/`'daki geri kalan untracked dosyalari
+kapsayacak sekilde genisletildi. Bu turda 5 dosya elle calistirilarak
+incelendi (yalniz statik analizle yetinilmedi) ve sonuc beklenenden farkli
+cikti: yalniz 1 tanesi gercekten kurtarilabildi, 2 tanesi calisirken hata
+verdi ve urun kararina ertelendi, 2 tanesi scratch cikti.
+
+**Kurtarilan: `golden_dataset_stress_tester.py`.** `FSRSService` ve
+`IRTCalibrationService`'i (ikisi de tracked, gercekten var) 10K soru / 50K
+etkilesim olcegiyle bellek-ici sinayan bir stres testi. Cikti dosyasi
+(`backend/golden_dataset_report.json`) zaten `.gitignore`'da tanimliydi
+(satir 495) -- yani arac daha once de calistirilmis. Elle calistirinca
+(iddia != olcum) gercek bir hata bulundu: `sys.stdout.reconfigure` yoktu,
+ilk `print()` (emoji icerdigi icin) cp1254 konsolunda aninda
+`UnicodeEncodeError` ile cokuyordu -- kardes `audit_*.py`/`mutation_check_
+*.py` dosyalarinin hepsinde zaten var olan duzeltme eklendi. Sonrasinda
+script bastan sona calistirildi: IRT fazi 10.000 soru/0.86s, FSRS fazi
+50.000 etkilesim/80.14s, gecerli rapor uretti. Ayrica `open()` ->
+`Path().open()` (ruff PTH123). mypy yerelde numpy stub surum farkiyla
+(yerel `numpy==2.5.1`/`mypy==1.19.1`, repo `numpy==2.4.2`/`mypy==1.8.0`
+pinliyor) alakasiz bir hatayla duruyordu; CI'nin pinlenmis mypy'si (bu
+PR'da yesil) otoriter. Merge: `2f9570e8a` (2026-08-30), 5 bilinen kirmizi
+taban cizgisiyle birebir (`gh pr view --json statusCheckRollup` ile
+dogrulandi), API Security Testing 50m38s'de yesil.
+
+**Kurtarilmadi -- calistirinca hata verdi: `sanitize_question_bank_ocr.py`.**
+Statik olarak temizdi (ruff/mypy/bandit/reward-hacking-check hepsi
+gecti), ama `python scripts/quality/sanitize_question_bank_ocr.py`
+calistirilinca `ModuleNotFoundError: No module named
+'services.ocr_sanitizer_service'` verdi. Sebebi: bu servis reponun HICBIR
+zamaninda commit edilmemis. Zaten tracked `tests/integration/
+test_ocr_sanitizer_rag_guardrails.py` bunu kendi `pytest.skip()`
+gerekcesinde belgeliyor: "ACIK BORC: services/ocr_sanitizer_service HIC
+YAZILMADI (git log --all -> 0 commit) ... Servis yazilinca bu satir
+KALDIRILACAK." Yani bu script, hic yazilmamis bir servise karsi onceden
+yazilmis, henuz calisamayan kod -- "kurtarilacak scratch" degil, zaten
+bilinen ve baska bir dosyada belgelenmis bir acik borc. Izlemeye almadim;
+bu PR'in kapsami disinda birakildi.
+
+**Kurtarilmadi -- urun karari gerektiriyor: `generate_qwen_kcs.py`.**
+`knowledge_components`/`question_kc_mapping` tablolarina INSERT yapiyor,
+ama bu tablolari yaratan migration (`level4_kc_taxonomy_20260808`)
+`alembic/versions_archive/`'da duruyor -- CANLI `alembic/versions/`
+zincirinde DEGIL. Canli dev DB'de dogrudan sorguyla dogrulandi: ikisi de
+YOK. Ayni ozellik icin iki KARDES untracked script daha var
+(`metadata_phase1_schema_migration.py`: "Phase 1: Schema migration for
+P0-P3 metadata"; `metadata_phase4_kc_mapping.py`: "Phase 4: KC mapping +
+q_matrix from topic hierarchy") -- yani bu tek dosyalik bir kurtarma degil,
+yarim kalmis/ertelenmis coklu-fazli bir ozellik kumesi. Ustune, script'in
+kendi mantiginda gercek bir idempotency hatasi var: `kc_id =
+f"kc_{uuid.uuid4().hex[:12]}"` her calistirmada RASTGELE uretiliyor, bu
+yuzden `ON CONFLICT (kc_id) DO NOTHING` (ve `question_kc_mapping`'in
+`(question_id, kc_id)` bilesik anahtari) hicbir zaman gercek bir
+cakismayla karsilasmiyor -- `--apply` iki kez calistirilirsa yinelenen
+KC satirlari uretir. `predictive_analytics.py` ile ayni kategoriye
+kondu: Claude'un tek basina karar veremeyecegi bir urun/kapsam sorusu
+("bu ozellik devam ediyor mu, terk mi edildi, konsolide mi edilecek").
+Izlemeye almadim.
+
+**Scratch: `y11_sizinti_ayirt_olc.py`, `semantic_backfill.py`.** Ikisi
+de `CROP_KOK`/veri dosyasi icin `C:/Users/husey/kiro2/d-dataset/...`
+bicimde, repo disindaki bir dizine hardcoded mutlak Windows yolu
+kullaniyor -- tasinabilir degil, yalniz bu makinede calisir, tek seferlik
+elle-etiketlenmis veri setine karsi bir dogrulama/backfill denemesi.
+`semantic_backfill.py`'de ayrica `asyncpg.connect(...)` cagrisina
+DOGRUDAN GOMULU bir DB kimlik bilgisi var (env-var/varsayilan deseni
+yok, tek bir uygulama-ozel kullanici+parola literal string olarak
+yazili) -- diger script'lerdeki yaygin `postgres:postgres` yerel
+varsayilanindan farkli olarak gercek bir uygulama kimlik bilgisi gibi
+gorunuyor. Dosya untracked oldugu ve scratch olarak kalacagi icin
+repoya/GitHub'a hicbir sizinti yok, ama parolanin duz metin halde bir
+script dosyasinda oturmasi kendi basina bir bulgu; kimlik bilgisi
+degisikligi/rotasyonu Hüseyin'in kendi karari (bu kampanyanin standing
+kurali: kimlik bilgisi kararlari devredilmiyor).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan simdiye kadar 42 tanesi
+commit edildi (bu PR'daki 1 dosya + onceki 41). `backend/scripts/`
+altinda hala triyaj bekleyen 11 untracked dosya var (7'si onceden
+scratch onaylandi: `add_cascades.py`, `backfill_children.py`,
+`check_duplicate_tables.py`, `check_qs_cols.py`, `clean_exceptions.py`,
+`fix_imports.py`, `restore_stats.py`; bu turda 4'u daha karara baglandi:
+2 scratch, 2 urun-karari-bekliyor). Geri kalan SS10.7 kapsami degismedi
+(bkz. §10.25 "Kalan kapsam").
