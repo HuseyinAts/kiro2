@@ -1826,3 +1826,87 @@ Merge: `82d192554` (2026-08-30), `gh pr merge 91 --squash` (tek commit
 **Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 34 tanesi
 commit edildi (gamification.py + DailyQuestsModal.tsx + StreakWidget.tsx,
 üçü de gerçekten untracked'ti). ~521 dosya hâlâ triyaj bekliyor.
+
+### 10.23 PR #93: `useSanitize.ts`/`useMathSanitizer.ts`/`BionicReadingText.tsx` -- XSS açığı yok, iki ayrı kurtarılabilir bulgu (30 Ağustos 2026)
+
+"sanitize" adı taşıyan iki hook (`frontend/src/hooks/useSanitize.ts`,
+`useMathSanitizer.ts`) SS10.7 taramasında güvenlik açığı şüphesiyle
+önceliklendirildi (task #71). İnceleme sonucu: **XSS açığı yok**, ama
+araştırma iki ayrı kurtarılabilir/belgelenebilir bulgu ortaya çıkardı.
+
+**Doğrulama -- açık yok:** `frontend/src/utils/sanitize.ts` (tracked,
+DOMPurify tabanlı) zaten canlı güvenlik kontrolü. `dangerouslySetInnerHTML`
+kullanan tracked bileşenlerin HEPSİ (6/6) zaten doğru sanitize fonksiyonunu
+çağırıyor: `Common/AccessibleMathFormula.tsx:19,244,313` (`sanitizeMathML`),
+`MathSolution/MathExpressionAnimated.tsx:15,112` (`sanitizeHTML`),
+`QuestionGeometry.tsx:17,52,90`, `QuestionGraph.tsx:17,53,72`,
+`QuestionMapDiagram.tsx:17,51,88` (üçü de `sanitizeSVG`),
+`Revolutionary/BionicReadingToggle.tsx:48,329` (`sanitizeBionicText`) --
+hepsi `// SECURITY FIX #4` yorumuyla işaretli. `useSanitize.ts`'in 3
+hook'u (`useHTMLSanitizer`/`useSVGSanitizer`/`useBionicSanitizer`) bu
+aynı, zaten güvenli modülü saran KULLANILMAYAN wrapper'lar -- `git grep`
+ile doğrulandı: bu hook adlarını import eden tracked dosya yok, yani
+yeni bir güvenlik kapsamı eklemiyorlar.
+
+**Bulgu 1 -- `useMathSanitizer.ts`, zaten canlı kodun kopyası:** LaTeX
+-> MathML dönüştürücüsü, `AccessibleMathFormula.tsx`'in kendi inline
+`convertLatexToMathML` fonksiyonuyla (satır 82-94: aynı `\frac` regex'i,
+aynı `<mfrac><mi>..</mi><mi>..</mi></mfrac>` çıktı deseni, aynı "basit
+dönüşüm" yorumu) neredeyse birebir aynı. Yeni/riskli mantık değil --
+canlı koddan çıkarılmış ama hiçbir yere adapte edilmemiş bir refactor.
+
+**Bulgu 2 -- `BionicReadingText.tsx`, ayrı ve yapısal olarak XSS-güvenli:**
+Zaten tracked+canlı olan `Revolutionary/BionicReadingToggle.tsx` (backend'in
+ürettiği `bionic_metin` HTML'ini `dangerouslySetInnerHTML` +
+`sanitizeBionicText` ile render eder, `RevolutionaryDashboard.tsx` ve
+`Revolutionary/index.ts`'e bağlı) ile KARIŞTIRILMAMALI.
+`BionicReadingText.tsx` tamamen bağımsız, client-side bir uygulama: React
+elemanlarını doğrudan JSX ile kurar (`bionicWord()`, satır 18),
+`dangerouslySetInnerHTML` hiç kullanmıyor -- yapısal olarak XSS'e kapalı.
+LaTeX/MathJax (`$...$`, `$$...$$`), HTML etiketleri ve markdown linklerini
+kelime-kalınlaştırma dönüşümünden korumak için kendi tokenization mantığı
+var, Türkçe karakter desteği var (ğüşıöçĞÜŞİÖÇ). Kendi test dosyası
+mevcut ve `npx vitest --run` ile 8/8 PASSED (48ms).
+
+**Lint:** `eslint --fix` ile 3 dosyada 11 curly/comma-dangle hatası
+otomatik düzeldi. Kalan 1 hata (`BionicReadingText.tsx:1`,
+`import/default`, React'in default export'u bulunamadı) tracked
+`CATWidget.tsx`'te de aynen tekrar ediyor -- kontrol ölçümüyle
+doğrulanmış, proje genelinde önceden var olan bir durum (bkz. §10.22).
+`react-refresh/only-export-components` uyarısı (`bionicWord` export'u,
+test dosyasının algoritmayı izole test edebilmesi için gerekli) için
+gerekçeli `eslint-disable-next-line` eklendi (satır 17) -- aynı desenin
+emsali `pages/ModernExamStartPage.tsx:62`'de zaten var.
+`--report-unused-disable-directives` ile eklenen yorumun gerçekten
+kullanıldığı doğrulandı.
+
+**Bağlanmadı:** `RevolutionaryDashboard.tsx`, `GlobalCognitiveWrapper.tsx`,
+hiçbir router/sayfa değişmedi -- bilinen "kurtarıldı ama bağlanmadı"
+deseni (bkz. §10.22).
+
+**Yerel doğrulama:** Push-time `ders-zorlayici` bekçi paketi: 320 passed,
+1 skipped, 1 xfailed (117.14s).
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review
+(31s), Backend Tests Python 3.11 (3m20s), CI Summary (3s), Frontend
+Tests (1m17s), Quality Gate (3m6s) -- PR #89/#91'deki taban çizgisiyle
+birebir aynı check seti, hepsi FAILURE. Geri kalan tüm check'ler (CodeQL
+x2 + default-setup, Container/SAST/IaC/Secret/OWASP/License/Compliance
+Security Scan'leri, Security Summary, Trivy, Checkov, 5x Code Quality
+alt-job'u, 8 Golden Flow E2E, PR Welcome Message) yeşil. API Security
+Testing (ZAP) 35m56s'de yeşil -- önceki PR'ların 27-41dk aralığı
+içinde, endişe verici değil.
+
+Merge: `72d555f49` (2026-08-30), `gh pr merge 93 --squash --delete-branch`
+(tek commit `180093861`in squash'ı).
+
+**Not -- PR #62 sonrası backlog planı kapandı:** Bu segmentte ayrıca
+doğrulandı: `stateful-shimmying-papert.md` planı (§10.20'de "tamamen
+doğrulandı" olarak belgelenmişti) hâlâ kapalı durumda -- yeniden açılacak
+bir şey yok.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 39 tanesi
+commit edildi (`useSanitize.ts`, `useMathSanitizer.ts`,
+`BionicReadingText.tsx`, `neuro-inclusive.css`,
+`BionicReadingText.test.tsx` -- beşi de gerçekten untracked'ti). ~516
+dosya hâlâ triyaj bekliyor.
