@@ -1201,3 +1201,67 @@ Merge: `44fd5f396` (2026-08-30T01:18:03Z UTC).
 **Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
 4+7+3+3+1=18 tanesi commit edildi (PR #74/#75/#76/#77/#78). ~537 dosya
 hâlâ triyaj bekliyor.
+
+### 10.12 Triyaj notu (PR yok): SS10.7 grubundaki 5 orphan frontend
+bileşeni incelendi -- hiçbiri GrowthMindsetCard gibi "hazır, sadece bağla"
+değil (30 Ağu 2026)
+
+PR #78'in `GrowthMindsetCard.tsx` deneyiminden sonra, aynı "orphan mı,
+neden bağlı değil, bağlanmalı mı" sorusu şu 5 dosyaya da soruldu:
+`Gamification/StreakWidget.tsx`, `Gamification/DailyQuestsModal.tsx`,
+`Dashboard/MisconceptionFlashcard.tsx`,
+`Dashboard/TeacherMisconceptionHeatmap.tsx`, `Cognitive/BionicReadingText.tsx`.
+Sonuç: hiçbiri kanıt seviyesinde "hazır, güvenle bağlanabilir" durumda
+değil -- bu yüzden hiçbiri bu turda commit edilmedi. Kanıtlar:
+
+- **`StreakWidget.tsx` -- muhtemelen supersede edilmiş, ölü kod.**
+  `Gamification/index.ts` barrel'ı bunu export ETMİYOR (barrel'ın
+  export ettiği `StreakBadge`/`StreakDot`, "FAZ-4" yorumuyla daha yeni
+  görünüyor). `StreakBadge.tsx` aynı "seri" kavramını Tailwind
+  (className, MUI değil) ile, kademeli emoji etiketleriyle (🌱/🔥/🐉/⚡)
+  çok daha zengin bir şekilde kapsıyor -- `StreakWidget` ise MUI tabanlı
+  (zaten ESLint'in `no-restricted-imports` kuralınca yeni kod için
+  caydırılan yön) ve tek bir `freeze` satın alma prop'u (`onFreezeBuy`)
+  dışında sade. `GamificationProfile` tipinde (`Dashboard/types.ts`)
+  `streak`/`streak_active_today` VAR ama `freeze`/`freezeCount` kavramı
+  YOK -- yani `StreakWidget`'ın "seri dondurucu satın al" özelliğinin
+  backend karşılığı da görünmüyor.
+- **`DailyQuestsModal.tsx` -- doğrulanmış şekilde supersede edilmiş,
+  bağlanmamalı.** Canlı, bağlı `Dashboard/DailyQuestBanner.tsx`
+  tıklandığında modal AÇMIYOR, `navigate('/daily-quests')` ile TAM
+  SAYFAYA (`pages/DailyQuestPage.tsx`, `App.tsx`'te zaten route'lu) gidiyor.
+  Modal'ı bağlamak canlı UX ile çakışan, gereksiz bir ikinci yol
+  eklemek olurdu.
+- **`Dashboard/GamificationDashboard.tsx` (bulgu, ayrı dosya ama ilişkili):**
+  `Gamification/index.ts` barrel'ının kendi default export'u olmasına
+  rağmen, kendi test dosyası dışında hiçbir yerden import edilmiyor.
+  Yani `components/Gamification/` klasörünün tamamı ("Task 91"/"FAZ-4")
+  canlı uygulamadan kopmuş olabilir -- ama bu, klasördeki diğer 6
+  dosya (`PointsDisplay`, `LevelDisplay`, `BadgeCollection`,
+  `Leaderboard`, `XPBar`, `BadgeEarned`) tek tek kontrol edilmeden
+  iddia edilemez; bu turda yapılmadı.
+- **`TeacherMisconceptionHeatmap.tsx` -- prototip, gerçek veri yok.**
+  Dosya içinde donanımlı `const mockData: HeatmapData[]` var (elle
+  yazılmış sahte konu/öğrenci/şiddet satırları), hiçbir `useQuery`/API
+  çağrısı yok. Muhtemel canlı ev sahibi `pages/ModernTeacherDashboard.tsx`
+  (App.tsx:57/586, route'lu, canlı) ama bu bileşeni olduğu gibi
+  bağlamak gerçek öğretmenlere SAHTE sayılar göstermek olurdu --
+  önce backend'de gerçek bir "yanılgı ısı haritası" endpoint'i
+  gerekiyor (bu PR'ın kapsamı dışında, backend tasarım kararı
+  gerektiriyor).
+- **`Dashboard/MisconceptionFlashcard.tsx` -- saf sunum bileşeni,
+  ev sahibi belirsiz.** Props (`misconceptionName`, `distractor`,
+  `refutation`, `takeaway`, `onDismiss`) veri çekmiyor; muhtemelen
+  sınav-sonucu/tekrar akışına ait ama böyle bir akış bu turda
+  bulunamadı -- tahmin yürütmek yerine boş bırakıldı.
+- **`Cognitive/BionicReadingText.tsx` -- muhtemelen değerli, kendi
+  test dosyası var (`__tests__/BionicReadingText.test.tsx`) ama canlı
+  kullanımı yok.** Metin dönüştürme (erişilebilirlik) yardımcı
+  bileşeni -- muhtemel ev sahibi sınav/okuma metni render eden bir
+  yer, ama bu tur içinde taranmadı.
+
+**Sonuç:** SS10.7'deki 555 dosyanın "orphan frontend bileşeni" alt
+kümesi homojen değil -- bazıları GrowthMindsetCard gibi "hazır, bağla",
+bazıları supersede edilmiş ölü kod, bazıları backend'i eksik prototip.
+Her biri kendi kanıtıyla ele alınmalı, toplu bir kural uygulanamaz.
+Kalan kapsam sayacı bu notla değişmedi (hiçbir dosya commit edilmedi).
