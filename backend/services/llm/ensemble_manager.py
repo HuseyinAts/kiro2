@@ -143,7 +143,13 @@ class MultiLLMEnsembleManager:
     for ÖSYM question generation
     """
 
-    def __init__(
+    # PLR0917: 6 parametrenin tümü bağımsız, varsayılanlı boolean
+    # sağlayıcı-etkinleştirme bayrağı -- imzayı bir config/dataclass'a
+    # taşımak bu dar bugfix PR'ının kapsamı dışında ve 5+ mevcut çağrı
+    # noktasını (osym_routes.py, osym_pdf_pipeline.py,
+    # sequential_reasoning_service.py, question_generation_tasks.py, ...)
+    # etkileyecek kırıcı bir değişiklik olurdu.
+    def __init__(  # PLR0917: bkz. pyproject.toml per-file-ignores (versiyon celiskisi)
         self,
         enable_openai: bool = True,
         enable_claude: bool = True,
@@ -340,7 +346,11 @@ class MultiLLMEnsembleManager:
 
         return self.providers.get(best_provider_type)
 
-    async def generate_osym_question_ensemble(
+    # PLR0917: 6 parametrenin 5'i çağıranın açıkça belirtmesi gereken
+    # bağımsız girdi (konu/alt konu/zorluk/bloom seviyesi/sınav türü) +
+    # tek bir opsiyonel bayrak -- mevcut çağrı yüzeyini kırmadan
+    # azaltılamaz, bu dar bugfix PR'ının kapsamı dışında.
+    async def generate_osym_question_ensemble(  # PLR0917: bkz. pyproject.toml per-file-ignores
         self,
         topic: str,
         subtopic: str,
