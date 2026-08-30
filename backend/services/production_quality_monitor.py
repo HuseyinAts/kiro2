@@ -20,13 +20,17 @@ import json
 import statistics
 from dataclasses import asdict, dataclass
 from datetime import datetime
+from functools import cache
 from pathlib import Path
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.structured_logger import get_logger
 from database.connection import async_engine
 from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -59,22 +63,22 @@ class ProductionQualityMonitor:
         """Load existing logs from file"""
         if self.log_file.exists():
             try:
-                with open(self.log_file, encoding="utf-8") as f:
+                with self.log_file.open(encoding="utf-8") as f:
                     data = json.load(f)
                     self.logs = [QuestionLog(**log) for log in data]
             except Exception as e:
-                print(f"[WARNING] Could not load existing logs: {e}")
+                logger.warning(f"Could not load existing logs: {e}")
                 self.logs = []
 
     def _save_logs(self):
         """Save logs to file"""
         try:
-            with open(self.log_file, "w", encoding="utf-8") as f:
+            with self.log_file.open("w", encoding="utf-8") as f:
                 json.dump(
                     [asdict(log) for log in self.logs], f, indent=2, ensure_ascii=False
                 )
         except Exception as e:
-            print(f"[ERROR] Could not save logs: {e}")
+            logger.error(f"Could not save logs: {e}")
 
     async def _get_evaluator(self):
         """Lazy-load evaluator with ÖSYM references"""
@@ -83,10 +87,10 @@ class ProductionQualityMonitor:
             async with AsyncSession(async_engine) as db:
                 query = text(
                     """
-                    SELECT metin, dogru_cevap, zorluk, konu
-                    FROM sorular
-                    WHERE dogru_cevap IS NOT NULL
-                    AND metin IS NOT NULL
+                    SELECT question_text, correct_answer, difficulty_level, subject_area
+                    FROM v_safe_for_beta
+                    WHERE correct_answer IS NOT NULL
+                    AND question_text IS NOT NULL
                     LIMIT 30
                 """
                 )
@@ -162,7 +166,7 @@ class ProductionQualityMonitor:
             return evaluation
 
         except Exception as e:
-            print(f"[ERROR] Error logging question: {e}")
+            logger.error(f"Error logging question: {e}")
             return None
 
     async def _check_milestones(self):
@@ -171,17 +175,19 @@ class ProductionQualityMonitor:
 
         # Generate reports at milestones
         if total in [25, 50, 75, 100]:
-            print(f"\n[MILESTONE] {total} questions generated! Generating report...")
+            logger.info(
+                f"Milestone reached: {total} questions generated, generating report"
+            )
             report = await self.generate_report()
 
             # Save milestone report
             report_file = (
                 Path(__file__).parent.parent / f"production_report_{total}_questions.md"
             )
-            with open(report_file, "w", encoding="utf-8") as f:
+            with report_file.open("w", encoding="utf-8") as f:
                 f.write(report)
 
-            print(f"[OK] Report saved: {report_file}")
+            logger.info(f"Report saved: {report_file}")
 
     async def generate_report(self, last_n: int | None = None) -> str:
         """
@@ -204,7 +210,7 @@ class ProductionQualityMonitor:
         total = len(logs)
 
         # By subject
-        subjects = {}
+        subjects: dict[str, list[QuestionLog]] = {}
         for log in logs:
             if log.subject not in subjects:
                 subjects[log.subject] = []
@@ -277,7 +283,7 @@ class ProductionQualityMonitor:
 **Top Topics**:
 """
             # Topic breakdown
-            topics = {}
+            topics: dict[str, list[float]] = {}
             for log in subject_logs:
                 topics[log.topic] = topics.get(log.topic, [])
                 topics[log.topic].append(log.wave2b_score)
@@ -405,20 +411,23 @@ Suggested Actions:
             "average_score": statistics.mean(scores),
             "approval_rate": approvals / len(self.logs) * 100,
             "last_question": self.logs[-1].timestamp,
-            "subjects": list(set(log.subject for log in self.logs)),
+            "subjects": list({log.subject for log in self.logs}),
         }
 
 
-# Singleton instance
-_monitor_instance = None
-
-
+@cache
 def get_monitor() -> ProductionQualityMonitor:
-    """Get singleton monitor instance"""
-    global _monitor_instance
-    if _monitor_instance is None:
-        _monitor_instance = ProductionQualityMonitor()
-    return _monitor_instance
+    """Get singleton monitor instance.
+
+    `functools.cache` memoizes this zero-argument call, giving the same
+    one-instance-per-process lifetime as the old module-level `global`
+    without triggering PLW0603 (ruff discourages `global` reassignment).
+    A first attempt used a dynamic function-attribute (`get_monitor._instance`)
+    instead, but mypy correctly rejects assigning arbitrary attributes onto
+    a `Callable` (attr-defined) -- `cache` is the typed, idiomatic version
+    of the same one-shot-memoization idea.
+    """
+    return ProductionQualityMonitor()
 
 
 # Example usage
@@ -443,7 +452,7 @@ async def example_usage():
 
     # Generate report
     report = await monitor.generate_report()
-    print(report)
+    logger.info(report)
 
 
 if __name__ == "__main__":
