@@ -2168,3 +2168,80 @@ scratch onaylandi: `add_cascades.py`, `backfill_children.py`,
 `fix_imports.py`, `restore_stats.py`; bu turda 4'u daha karara baglandi:
 2 scratch, 2 urun-karari-bekliyor). Geri kalan SS10.7 kapsami degismedi
 (bkz. §10.25 "Kalan kapsam").
+
+### 10.27 PR #101: `ExamSession.test.tsx` yanlis mock hedefi -- SS10.7 taramasi backend disina cikti (30 Ağustos 2026)
+
+SS10.7 backlog taramasi bu turda `backend/scripts/` disina cikti: 2 kok
+dizini "perf" script'i, orphan bir backend servisi, bir pilot cikti dosyasi
+ve ilk kez bir **frontend** test dosyasi incelendi. Yine elle calistirarak
+(iddia != olcum); sonuc: 1 gercek rescue (frontend), 3 rescue-degil, 1 scratch.
+
+**Kurtarilan: `frontend/src/test/components/ExamSession.test.tsx`.** Test
+`vi.mock('../../services/examService', ...)` cagiriyordu, ama test ettigi
+`ExamSession` bileseni (satir 4) gercekte `'../../services/mockExamService'`'i
+import ediyor -- iki ayri servis (`mockExamService.ts`'nin kendi basligi bu
+karisikligi onceden yazili olarak uyariyor: "examService'e karistirmak
+getExamSession/submitExam ad catismasi uretir"). Elle calistirinca (`npx
+vitest run`) once **3 passed / 1 failed** cikti: `'selects option when
+clicked'` testi `findByText('Seçenek A')` ile ~230s bekleyip zaman asimina
+ugruyordu, cunku component test'in sahte verisini hic gormuyor, kendi ic
+120-soruluk fallback listesini kullaniyordu ("Seçenek A" degil "Örnek
+Seçenek A" render ediliyordu). Diger 3 test yanlislikla geciyordu (sadece
+statik chrome elemanlarini kontrol ediyorlardi). Tek satirlik duzeltme
+(`vi.mock` hedefini `mockExamService`'e cevirmek) sonrasi **4 passed / 0
+failed**, 378ms. Merge: `697f78fb9` (2026-08-30), 5 bilinen kirmizi taban
+cizgisiyle birebir (Automatic PR Review, Quality Gate, Backend Tests
+Python 3.11, Frontend Tests, CI Summary -- hepsi bu PR'dan bagimsiz,
+onceden var olan borc), API Security Testing yesil.
+
+**Kurtarilmadi -- olu import: `backend/test_root_perf.py`.** `from
+services.nlp.zemberek_wrapper import ZemberekWrapper` calistirinca
+`ModuleNotFoundError` verdi. `git log --all` bu dosya/modulun repo
+tarihinde HICBIR ZAMAN var olmadigini dogruladi. Repoda gercek Zemberek
+entegrasyonu baska isimler altinda var (`core/zemberek_service.py`,
+`services/zemberek_morfoloji_service.py`, `utils/zemberek_integration.py`,
+`api/zemberek.py`) ama `services/nlp/zemberek_wrapper.py` hicbir zaman
+bunlardan biri olmadi -- `services/nlp/` dizini gercek ama icinde
+`motivation_generator.py`, `osym_validator.py`, `yks_trend_analyzer.py`
+var, `zemberek_wrapper.py` yok. Not: dosya `pytest.ini`'nin `testpaths =
+tests` ayari sayesinde zaten CI toplama riski tasimiyor (kok dizinde,
+`tests/` altinda degil) -- tek sorun kod cop'u olmasi.
+
+**Kurtarilmadi -- calisiyor ama amacina hizmet etmiyor:
+`backend/test_nlp_perf.py`.** Import (`core.turkish_nlp_service.
+TurkishNLPService`) gercek ve calisti, ama script `localhost:6789`'daki
+bir Zemberek sunucusuna baglanmaya calisiyor (bu ortamda calismiyor);
+`TurkishNLPService` fallback moda geciyor ama her kelime analizinde
+tekrar tekrar baglanti denemesi yapip basarisiz oluyor -- 1000 cagridan
+(100 iterasyon x 10 kelime) sadece bir kismi birkaç dakikada tamamlandi,
+tam calisma suresi cok uzun. Yani script "performans olcumu" amacina bu
+ortamda hizmet edemiyor (olculen sey Zemberek performansi degil,
+baglanti-red-hatasi dongusunun performansi). `test_root_perf.py` gibi bu
+da `testpaths = tests` disinda, CI toplama riski yok.
+
+**Kurtarilmadi -- orphan/olu import: `backend/services/
+osym_language_validator.py`.** ÖSYM soru-kok dili dogrulayan, tamamlanmis
+gorunen 118 satirlik bir servis (whitelist + Zemberek lemmatization
+fallback + DLQ karantina akisi). Ama `from ai_ml.zemberek_context_analyzer
+import ZemberekContextualAnalyzer` calistirinca `ModuleNotFoundError: No
+module named 'ai_ml'` verdi. `git log --all` bu paketin de hicbir zaman
+var olmadigini dogruladi; repo genelinde baska hicbir tracked dosya bu
+servisi (`osym_language_validator`) veya `ZemberekContextualAnalyzer`'i
+import etmiyor -- yani tamamen izole, hicbir yere baglanmamis kod.
+`ZemberekContextualAnalyzer`'i gercekten yazmak bu triyaj oturumunun
+kapsaminin disinda (yeni bir ozellik insaasi, mekanik bir duzeltme degil).
+
+**Scratch: `backend/_pilots/sympy_verifier_20260808_171438_RESULT.tsv`.**
+Kod degil, tek seferlik bir "sympy verifier" pilot calismasinin cikti veri
+dosyasi (51 satir, olusturma/degistirme tarihi ayni -- hic dokunulmamis).
+`_pilots/` alt cizgili dizin adi zaten "deneysel, production degil"
+anlamina geliyor. Aksiyon gerekmiyor.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan simdiye kadar 43 tanesi
+commit edildi (bu PR'daki 1 dosya + onceki 42). `backend/scripts/`
+altindaki 11 untracked dosyadan hicbiri bu turda degismedi (hala 7
+scratch + 4 urun-karari-bekliyor, bkz. §10.26). `backend/test_nlp_perf.py`
+ve `test_root_perf.py` artik karara baglandi, backlog'tan cikti. Geri
+kalan SS10.7 kapsami (frontend Dashboard bilesenleri, e2e spec'leri, kok
+dizin deploy/dokuman dosyalari, `predictive_analytics.py`,
+`application/commands/.kontrol/`) degismedi.
