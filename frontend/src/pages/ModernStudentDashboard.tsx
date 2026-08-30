@@ -8,6 +8,7 @@ import * as React from 'react';
 import { Box, Container } from '@mui/material';
 import { useQuery } from 'react-query';
 import SubjectThetaCards from '@/components/Dashboard/SubjectThetaCards';
+import GrowthMindsetCard from '@/components/Dashboard/GrowthMindsetCard';
 import { ThemeSelector } from '@/kiro/components/ThemeSelector';
 import { StaggerContainer } from '@/components/Animations/PageTransition';
 import { apiRequest } from '@/utils/apiHelpers';
@@ -95,7 +96,7 @@ export const ModernStudentDashboard: React.FC = () => {
       </Box>
       <DashboardHeader stats={stats} loading={loading} />
       <GamificationBar gamification={gamification} />
-      
+
       <Container maxWidth="xl">
         <DailyQuestBanner dailyQuests={dailyQuests} />
         <Box sx={{ mt: 6 }}>
@@ -108,6 +109,10 @@ export const ModernStudentDashboard: React.FC = () => {
 
         <Box mt={4}>
           <SubjectThetaCards />
+        </Box>
+
+        <Box mt={4}>
+          <GrowthMindsetCard />
         </Box>
       </Container>
     </Box>
