@@ -208,6 +208,17 @@ exclude = [
 # kapsami disinda -- bkz. docs/guvenlik-borcu.md).
 "tests/conftest.py" = ["PLR0917"]
 
+# models/database.py — RUF022 (__all__ siralanmamis), ayni versiyon
+# celiskisi (yukaridaki tests/conftest.py girdisine bkz): RUF022 de
+# PLR0917 gibi yerel/pre-commit ruff'ta (v0.7.1 / 0.14.13) preview sayilan
+# bir kural, CI'nin pin'siz kurulumunda stabil/aktif (30 Agu 2026, ayni
+# gunde PLR0917 ile birlikte olculdu). Otomatik "fix" reddedildi: bu
+# `__all__` KASITLI olarak alfabetik degil, model dosyasina gore
+# gruplanmis (# User models, # Content models, ... yorumlariyla) -- isort
+# stili duz alfabetik siralama bu belgeleme yapisini yok ederdi. Liste
+# pedagogy_models.py backlog kurtarmasiyla (30 Agu 2026) 3 satir buyudu.
+"models/database.py" = ["RUF022"]
+
 # services/llm/ensemble_manager.py — PLR0917, ayni versiyon celiskisi
 # (yukaridaki tests/conftest.py girdisine bkz: yerel/pre-commit ruff
 # (v0.7.1 / 0.14.13) kurali preview sayiyor, CI'nin pin'siz kurulumu ise
