@@ -154,3 +154,34 @@ def test_smtp_kontrolu_send_email_ile_ayni_degiskenleri_okur(
         temiz_ortam.setenv(ad, "x")
 
     assert smtp_yapilandirilmis_mi() is beklenen
+
+
+def test_send_email_kismi_smtp_yapilandirmasinda_gonderim_yapmaz(temiz_ortam, caplog):
+    """#466 dersinin TUKETICI tarafi: ustteki test yalniz KAPIYI (`smtp_
+    yapilandirilmis_mi`) sinar, `send_email`'in KENDISINI hic cagirmaz.
+    Bu bosluk mutasyon testiyle (`backend/_smtp_mutasyon.py`, M4: send_email
+    kendi `if not (smtp_server and smtp_username)` kontrolune donerse) somut
+    olculdu -- 4 mutasyondan 3'u olduruluyordu, M4 HAYATTA KALIYORDU (0 test
+    dustu). Bu test o mutasyonu oldurmek icin var: host+username VAR,
+    password YOK iken `send_email` sessizce baglanmaya CALISMAMALI, erken
+    `False` donmeli.
+    """
+    import logging
+
+    from core.email_util import send_email
+
+    temiz_ortam.setenv("SMTP_HOST", "smtp.example.com")
+    temiz_ortam.setenv("SMTP_USERNAME", "kiro2@example.com")
+    # SMTP_PASSWORD kasitli olarak KURULMADI -- kismi yapilandirma senaryosu
+
+    with caplog.at_level(logging.WARNING):
+        sonuc = send_email("ogrenci@example.com", "konu", "<p>govde</p>", blocking=True)
+
+    assert sonuc is False, (
+        "SMTP KISMEN yapilandirilmisken send_email True dondu -- "
+        "kapi (smtp_yapilandirilmis_mi) ile tuketici (send_email) ayristi, "
+        "#466 deseni tekrarlandi"
+    )
+    assert any(
+        "yapılandırılmamış" in kayit.getMessage() for kayit in caplog.records
+    ), "erken-donus uyarisi loglanmadi -- send_email baglanmaya calismis olabilir"
