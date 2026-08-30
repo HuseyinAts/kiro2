@@ -7,6 +7,7 @@ or dropping non-existent entities.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import sqlalchemy as sa
@@ -23,6 +24,8 @@ from sqlalchemy.engine import Connection, Engine
 # duzeltmesi dahil) denetimden cikarmayan bir bastirma tercih edildi -- bu
 # dosya bu kampanyada yeni yazilan bir dosya, mevcut borc degil.
 from alembic import op  # type: ignore[attr-defined]
+
+logger = logging.getLogger(__name__)
 
 
 def get_inspector(bind: Engine | Connection | None = None):
@@ -94,12 +97,22 @@ def constraint_exists(
         ]
         if constraint_name in checks:
             return True
-    except Exception:  # nosec B110 -- kasitli: get_check_constraints() bazi
-        # SQLAlchemy dialect/surumlerinde desteklenmiyor (NotImplementedError
+    except Exception as e:
+        # SQLAlchemy dialect/surumlerinde bazen desteklenmiyor (NotImplementedError
         # veya baska bir istisna atabilir, tam kume dokumante degil); bunu
         # "check constraint yok" ile aynen ele almak guvenli defensif desen
         # (bkz. bu depodaki S110 icin ayni gerekce, pyproject.toml ignore).
-        pass
+        # Sessizce yutmuyoruz -- reward-hacking-check bekcisinin AST yolu
+        # (yalniz gövdenin pass/.../salt-docstring olup olmadigina bakiyor)
+        # yorum-kor oldugu icin, PR #72'de kurulan gercek desen (agents/
+        # context/context_manager.py'deki logger.warning ile ayni) tekrar
+        # kullanildi: gozlemlenebilirlik icin logla, davranisi degistirme.
+        logger.debug(
+            "constraint_exists: get_check_constraints('%s') basarisiz oldu, "
+            "check constraint yok sayiliyor: %s",
+            table_name,
+            e,
+        )
 
     return False
 
