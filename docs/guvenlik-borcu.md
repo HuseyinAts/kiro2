@@ -1265,3 +1265,71 @@ kümesi homojen değil -- bazıları GrowthMindsetCard gibi "hazır, bağla",
 bazıları supersede edilmiş ölü kod, bazıları backend'i eksik prototip.
 Her biri kendi kanıtıyla ele alınmalı, toplu bir kural uygulanamaz.
 Kalan kapsam sayacı bu notla değişmedi (hiçbir dosya commit edilmedi).
+
+
+### 10.13 PR #79: `api.v1.mistakes` router'ı hiç kaydedilmemişti -- SS10.4/
+RCA-1 deseninin ikinci kanıtlanmış örneği (30 Ağu 2026)
+
+**PR #79**: `backend/api/v1/mistakes.py` (FSRS "due mistakes" tekrar
+kuyruğu endpoint'i, SS10.7 grubundan) dosyası repoda duruyordu ama
+`routers/loader.py`'nin `ROUTER_MAPPING`'ine hiç eklenmemişti -- yani
+router hiçbir zaman uygulamaya mount edilmemişti. Bu, `test_router_
+registration.py`'nin kendi docstring'inin tarif ettiği hata sınıfının
+("Session 120 -- 5 router 2+ hafta 404 döndü çünkü loader.py'ye ekleme
+adımı atlanmıştı") ikinci kanıtlanmış örneği -- ilk örnek 10.7/10.8'de
+`api.osym_routes`'un lazy-import zinciriydi, bu farklı bir kök neden
+(basitçe kaydı unutulmuş bir router) ama aynı sonuç sınıfı (sessiz 404).
+
+**Ek olarak fark edildi ve düzeltildi:** `api/v1/mistakes.py`'nin prefix'i
+yanlıştı (`"/mistakes"`) -- diğer tüm `api/v1/*` router'ları (`semantic_
+search`, `batch`, `expert_agents_api`) kendi kendine tam `/api/v1/...`
+yolunu prefix'liyor, `loader.py` merkezi bir prefix eklemiyor. `"/api/v1/
+mistakes"` olarak düzeltildi -- router şu ana kadar hiç mount edilmediği
+için sıfır tüketicisi var, düzeltme geriye dönük hiçbir şeyi kırmadı.
+
+**Ölçülen, düzeltilmeyen bir algoritma sınırlaması işaretlendi:**
+`IsomorphicGenerator.generate_isomorphic_question()`'ın kendi docstring'i
+"LLM entegrasyonu için placeholder" / "mock simulation" olduğunu
+söylüyor -- sayıları değiştirirken doğru cevap şıklarını yeniden
+hesaplamıyor, sadece onları da rastgele kaydırıyor, yani döndürülen
+çoktan seçmeli şıklar matematiksel olarak yanlış olabilir. Çağrı
+noktasının hemen üstüne Türkçe bir uyarı yorumu eklendi; gerçek düzeltme
+(matematiği yeniden hesaplamak ya da LLM entegrasyonu) bu PR'ın kapsamı
+dışında bırakıldı.
+
+**Yan iş: ilk kez tracked+lint-taranan bir dosyanın pre-existing borcu.**
+`backend/algorithms/isomorphic_generator.py` bu PR'la ilk kez commit
+edildiği için ruff/bandit'in CI-taradığı ağaca ilk kez girdi -- 6
+pre-existing bulgu (RUF012 x2, S311/B311 x4) düzeltildi. `test_isomorphic_
+generator.py` (3 test, önceden var, değiştirilmedi) ilk kez commit
+edildi.
+
+**Yerel doğrulama:** 3/3 test yeşil, `ruff check`/`ruff format --check`/
+`bandit` temiz, pre-push zorunlu kapı (320 passed, 1 skipped, 1 xfailed,
+104.67s) baseline ile birebir eşleşti.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı (log seviyesinde teyit
+edildi):** Automatic PR Review (§10.5, eksik secret), Backend Tests
+Python 3.11 (§10.4, `tests/test_video_recommendation_service.py`, aynı
+`NameError: name 'nn' is not defined`), Frontend Tests (§10.6, "2101
+problems (987 errors, 1114 warnings)" -- PR #78 sonrası baseline ile
+birebir aynı, bu PR frontend'e dokunmadığı için beklenen), Quality Gate/
+Router registration (§10.4, `api.rag`/`api.v1.semantic_search`/`api.
+youtube_routes` -- ÖNEMLİ: `test_mapped_routers_are_importable` bu 3
+router'da başarısız oldu ama `api.v1.mistakes` listede YOK ve `test_all_
+app_api_routers_registered` (aynı dosyanın DİĞER testi, bu PR'ın asıl
+konusu) AYRI YEŞİL geçti -- "1 failed, 2 passed" -- yani bu PR'ın kendi
+düzeltmesi doğrulandı, yeni bir kırılma eklemedi), CI Summary (türev).
+API Security Testing (ZAP) 54m1s'de yeşil -- önceki PR'ların 33-43+ dk
+aralığından belirgin şekilde uzun sürdü (muhtemelen runner yoğunluğu),
+ama sonuç değişmedi.
+
+Merge: `b108242a8` (2026-08-30T02:48:51Z UTC), `gh pr merge 79 --squash`.
+Local master senkronize edildi (`94b170e11..b108242a8`, fast-forward, 4
+dosya, +218 satır).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
+4+7+3+3+1+3=21 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79). ~534
+dosya hâlâ triyaj bekliyor (`isomorphic_generator.py`, `mistakes.py`,
+`test_isomorphic_generator.py` -- `routers/loader.py` zaten tracked
+olduğu için sayaca dahil değil).
