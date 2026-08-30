@@ -216,6 +216,9 @@ ROUTER_MAPPING = {
     # Faz 6: PWA Offline Sync
     "api.offline_sync_api": ("learning", "api.offline_sync_api"),
     "api.pwa_sync_api": ("learning", "api.pwa_sync_api"),
+    # FSRS Mistakes Review (Isomorphic due-card review queue) -- SS10.7
+    # grubundan, daha once hic loader'a eklenmemisti (orphan router).
+    "api.v1.mistakes": ("learning", "api.v1.mistakes"),
     # Learning Path Daily (ZPD+DAG+IRT+FSRS Orchestrator)
     "app.api.learning_path_daily": ("learning", "app.api.learning_path_daily"),
     # Dungeon Learning Path (RPG map)
