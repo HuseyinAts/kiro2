@@ -8,6 +8,7 @@ Date: 2025-10-19 (Updated: 2026-01-16)
 """
 
 import asyncio
+import logging
 from typing import Any
 
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
@@ -16,8 +17,19 @@ from services.llm.sequential_thinking_mixin import (
     ReasoningResult,
 )
 
+logger = logging.getLogger(__name__)
+
 # Lazy imports for providers - avoid import failures when packages are missing
 # These are imported inside try/except blocks in __init__
+#
+# NOT: durum mesajlari `print()` yerine `logger` kullanir (bkz. S255+1) --
+# eski surum emoji karakterler icin (U+2705 vb.) `print()` kullaniyordu ve
+# Windows'ta UTF-8 olmayan konsol code page'lerinde (ör. cp1254) modul
+# IMPORT ANINDA `UnicodeEncodeError` ile cokuyordu -- ilk provider init
+# hatasinda soft-fail yerine hard-crash. Olculdu:
+# services/ai_mentor_service.py'nin modul-seviyesi singleton'i bu yuzden
+# hicbir saglayici anahtari olmayan bir gelistirme ortaminda import bile
+# edilemiyordu.
 
 
 class EnsembleStrategy:
@@ -163,9 +175,9 @@ class MultiLLMEnsembleManager:
                 self.providers[LLMProvider.GEMINI] = GeminiProvider(
                     MultiLLMConfig.GEMINI_CONFIG, thinking_mode=gemini_thinking_mode
                 )
-                print("✅ Gemini initialized (thinking mode)")
+                logger.info("Gemini initialized (thinking mode)")
             except Exception as e:
-                print(f"⚠️  Gemini initialization failed: {e}")
+                logger.warning("Gemini initialization failed: %s", e)
 
         # Initialize providers (lazy imports)
         if enable_openai:
@@ -175,9 +187,9 @@ class MultiLLMEnsembleManager:
                 self.providers[LLMProvider.OPENAI] = OpenAIProvider(
                     MultiLLMConfig.OPENAI_CONFIG
                 )
-                print("✅ OpenAI GPT-4 initialized")
+                logger.info("OpenAI GPT-4 initialized")
             except Exception as e:
-                print(f"⚠️  OpenAI initialization failed: {e}")
+                logger.warning("OpenAI initialization failed: %s", e)
 
         if enable_claude:
             try:
@@ -186,9 +198,9 @@ class MultiLLMEnsembleManager:
                 self.providers[LLMProvider.CLAUDE] = ClaudeProvider(
                     MultiLLMConfig.CLAUDE_CONFIG
                 )
-                print("✅ Claude Sonnet initialized")
+                logger.info("Claude Sonnet initialized")
             except Exception as e:
-                print(f"⚠️  Claude initialization failed: {e}")
+                logger.warning("Claude initialization failed: %s", e)
 
         if enable_qwen:
             try:
@@ -197,14 +209,16 @@ class MultiLLMEnsembleManager:
                 self.providers[LLMProvider.QWEN] = QwenProvider(
                     MultiLLMConfig.QWEN_CONFIG, use_local=qwen_use_local
                 )
-                print(f"✅ Qwen initialized ({'local' if qwen_use_local else 'cloud'})")
+                logger.info(
+                    "Qwen initialized (%s)", "local" if qwen_use_local else "cloud"
+                )
             except Exception as e:
-                print(f"⚠️  Qwen initialization failed: {e}")
+                logger.warning("Qwen initialization failed: %s", e)
 
         if not self.providers:
             raise RuntimeError("No LLM providers initialized successfully")
 
-        print(f"\n🤖 Ensemble Manager ready with {len(self.providers)} provider(s)")
+        logger.info("Ensemble Manager ready with %d provider(s)", len(self.providers))
 
     async def generate_with_ensemble(
         self,
@@ -224,8 +238,8 @@ class MultiLLMEnsembleManager:
         Returns:
             Best response according to strategy
         """
-        print(
-            "🚀 [Token Optimization] generate_with_ensemble intercepted! Delegating to fallback chain to prevent 4x cost inflation."
+        logger.info(
+            "[Token Optimization] generate_with_ensemble intercepted! Delegating to fallback chain to prevent 4x cost inflation."
         )
         return await self.generate_with_fallback(request)
 
@@ -259,11 +273,11 @@ class MultiLLMEnsembleManager:
             try:
                 provider = self.providers[provider_type]
                 response = await provider.generate(request)
-                print(f"✅ Success with {provider_type.value}")
+                logger.info("Success with %s", provider_type.value)
                 return response
 
             except Exception as e:
-                print(f"⚠️  {provider_type.value} failed: {e}")
+                logger.warning("%s failed: %s", provider_type.value, e)
                 last_error = e
                 continue
 
@@ -350,8 +364,8 @@ class MultiLLMEnsembleManager:
         Returns:
             Generated question with metadata
         """
-        print(
-            "🚀 [Token Optimization] generate_osym_question_ensemble intercepted! Using primary provider only."
+        logger.info(
+            "[Token Optimization] generate_osym_question_ensemble intercepted! Using primary provider only."
         )
 
         # Try finding a provider with the create_osym_question capability
@@ -364,14 +378,14 @@ class MultiLLMEnsembleManager:
                     if isinstance(result, dict) and "stem" in result:
                         return result
                 except Exception as e:
-                    print(f"⚠️  Provider {provider} failed: {e}")
+                    logger.warning("Provider %s failed: %s", provider, e)
                     continue
 
         raise RuntimeError("All providers failed to generate question")
 
     def __repr__(self) -> str:
         """Return string representation."""
-        provider_names = ", ".join([p.value for p in self.providers.keys()])
+        provider_names = ", ".join([p.value for p in self.providers])
         return f"<MultiLLMEnsembleManager providers=[{provider_names}]>"
 
     # =========================================================================
@@ -398,8 +412,8 @@ class MultiLLMEnsembleManager:
         Returns:
             Best reasoning result from ensemble
         """
-        print(
-            "🚀 [Token Optimization] sequential_thinking_ensemble intercepted! Short-circuiting on first success."
+        logger.info(
+            "[Token Optimization] sequential_thinking_ensemble intercepted! Short-circuiting on first success."
         )
         thinking_order = MultiLLMConfig.ENSEMBLE_STRATEGY.get(
             "sequential_thinking_order",
@@ -436,11 +450,11 @@ class MultiLLMEnsembleManager:
                     result["provider"] = provider_type.value
                     return result
                 if isinstance(result, ReasoningResult):
-                    res_dict = result.to_dict()
+                    res_dict: dict[str, Any] = result.to_dict()
                     res_dict["provider"] = provider_type.value
                     return res_dict
             except Exception as e:
-                print(f"⚠️  {provider_type.value} failed: {e}")
+                logger.warning("%s failed: %s", provider_type.value, e)
                 last_error = e
                 continue
 
@@ -577,11 +591,13 @@ Cozum:"""
         if capability == LLMCapability.SEQUENTIAL_THINKING and hasattr(
             provider, "think_step_by_step"
         ):
-            return await provider.think_step_by_step(problem)
+            thinking_result: dict[str, Any] = await provider.think_step_by_step(problem)
+            return thinking_result
         if capability == LLMCapability.MATH_REASONING and hasattr(
             provider, "solve_math_problem"
         ):
-            return await provider.solve_math_problem(problem)
+            math_result: dict[str, Any] = await provider.solve_math_problem(problem)
+            return math_result
         # Generic generation
         request = LLMRequest(
             prompt=problem,
@@ -620,7 +636,7 @@ Cozum:"""
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        comparison = {
+        comparison: dict[str, Any] = {
             "problem": problem,
             "providers": {},
             "best_provider": None,
