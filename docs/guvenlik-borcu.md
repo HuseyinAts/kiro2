@@ -1333,3 +1333,54 @@ dosya, +218 satır).
 dosya hâlâ triyaj bekliyor (`isomorphic_generator.py`, `mistakes.py`,
 `test_isomorphic_generator.py` -- `routers/loader.py` zaten tracked
 olduğu için sayaca dahil değil).
+
+
+### 10.14 PR #80: YKSJargonService untracked yedekten kurtarıldı --
+BİLEREK bağlanmadı (30 Ağu 2026)
+
+**PR #80**: `backend/services/yks_jargon_service.py` (`YKSJargonService`,
+SS10.7 grubundan) hiç commit edilmemişti. Servis, farklı YKS derslerinde
+aynı kelimenin farklı teknik anlamlara gelmesinden (ör. Fizik'te "iş"
+W=F.x, günlük dilde "iş" = meslek) doğan LLM halüsinasyonunu önlemeyi
+hedefliyor -- bir dersin sözlüğünü LLM sistem promptuna XML kural bloğu
+olarak enjekte eden (`get_jargon_prompt_injection`) ve üretilmiş metni
+regex tabanlı guardrail ile tarayan (`validate_text_jargon_compliance`)
+iki sınıf metoduyla. Bağımsız (zero external dependency), tamamen
+self-contained bir yardımcı sınıf.
+
+**Bilinçli olarak BAĞLANMADI:** `git grep` ile doğrulandı --
+`YKSJargonService`/`yks_jargon_service` adı kendi dosyası ve testi
+dışında hiçbir yerde geçmiyor. Bu depoda onu çağıracak bir LLM tabanlı
+soru-üretim prompt pipeline'ı **tek, açık bir çağrı noktası olarak
+bulunamadı** -- `IsomorphicGenerator`'ın kendi docstring'i de (SS10.13)
+kendisinin "LLM entegrasyonu için placeholder" olduğunu söylüyor, yani bu
+depodaki soru üretimi henüz tam bir LLM prompt akışına sahip görünmüyor.
+Ayrıca `socratic_rag_guardrail_service.py`'deki "prompt_injection" ismi
+kontrol edildi -- o güvenlik anlamında (LLM prompt injection SALDIRISI
+tespiti), bu servisin "prompt'a içerik enjekte etme" anlamıyla alakasız,
+çakışma/ikilik yok. Bu PR bilinçli olarak dar tutuldu: dosyayı untracked
+backlogtan kurtarmak (PR #75'in `services/nlp/*` emsaliyle aynı desen) --
+gerçek wiring, prompt pipeline'ının kendisini bulmayı/tasarlamayı
+gerektiren ayrı bir iş olarak işaretli bırakıldı.
+
+**İlk kez tracked+lint taranan dosyanın pre-existing borcu:** 4 bulgu
+düzeltildi -- RUF012 (`SUBJECT_GLOSSARIES` artık `ClassVar`), PLR0912
+(gerekçeli `# noqa` -- her ders bloğu bağımsız, sözlük yapısıyla aynı
+gruplamayı yansıtıyor), SIM102 x2 (nested if'ler `and` ile birleştirildi,
+davranış testlerle doğrulanarak değişmedi).
+
+**Yerel doğrulama:** 2/2 test yeşil, `ruff check`/`ruff format --check`/
+`bandit`/`mypy` temiz, pre-push zorunlu kapı (320 passed, 1 skipped, 1
+xfailed, ~107s) baseline ile birebir eşleşti.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı (log seviyesinde teyit
+edildi):** Automatic PR Review (§10.5), Backend Tests Python 3.11 (§10.4),
+Frontend Tests (§10.6), Quality Gate/Router registration (§10.4, "1
+failed, 2 passed" -- bu PR router'a hiç dokunmadığı için beklenen),
+CI Summary (türev). API Security Testing (ZAP) 40m21s'de yeşil.
+
+Merge: `4fc3168f9` (2026-08-30T03:40:57Z UTC).
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
+4+7+3+3+1+3+2=23 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79/#80).
+~532 dosya hâlâ triyaj bekliyor.
