@@ -500,6 +500,20 @@ exclude = [
 #   DEGISTIRMEDEN dokunmayi gerektirir -- bu PR'in kapsami disinda.
 "api/student_dashboard.py" = ["RET504"]
 
+# services/production_quality_monitor.py — PLR0912 (18 > 12 dal,
+# generate_report). OLCULDU (30 Agu 2026, sorular -> v_safe_for_beta
+# sorgu-tablosu duzeltmesi -- fix/osym-reference-query-sorular-missing):
+# bu fonksiyon PR'in DOKUNMADIGI kod, fix yalnizca _get_evaluator'daki
+# SQL sorgusunu (sorular -> v_safe_for_beta) degistiriyor. Fonksiyonun
+# KENDI docstring'i zaten bu borcu isaretliyor:
+#   "@TODO S179 fix (B-P0-69): cyclomatic complexity = 54 (F-grade).
+#    Plan: split into report sections... Do NOT add new branches."
+# Yani inline `# noqa` bile yanlis cozum -- dosyanin kendi talimati
+# bolme refaktoru DISINDA yeni dal eklemeyi ACIKCA yasakliyor, config
+# seviyesinde ignore bu yuzden dogru secim. Bolme refaktoru bu dar
+# bugfix PR'inin kapsami disinda (cerrahi mudahale kurali).
+"services/production_quality_monitor.py" = ["PLR0912"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true

@@ -148,11 +148,11 @@ async def generate_hybrid_question(
             try:
                 query = text(
                     """
-                    SELECT metin as question_text, zorluk as difficulty,
-                           konu as subject, dogru_cevap as correct_answer
-                    FROM sorular
-                    WHERE dogru_cevap IS NOT NULL AND metin IS NOT NULL
-                    AND LENGTH(metin) > 100
+                    SELECT question_text, difficulty_level as difficulty,
+                           subject_area as subject, correct_answer
+                    FROM v_safe_for_beta
+                    WHERE correct_answer IS NOT NULL AND question_text IS NOT NULL
+                    AND LENGTH(question_text) > 100
                     ORDER BY RANDOM()
                     LIMIT 30
                 """
@@ -339,11 +339,11 @@ async def generate_bulk_hybrid_questions(
             try:
                 query = text(
                     """
-                    SELECT metin as question_text, zorluk as difficulty,
-                           konu as subject, dogru_cevap as correct_answer
-                    FROM sorular
-                    WHERE dogru_cevap IS NOT NULL AND metin IS NOT NULL
-                    AND LENGTH(metin) > 100
+                    SELECT question_text, difficulty_level as difficulty,
+                           subject_area as subject, correct_answer
+                    FROM v_safe_for_beta
+                    WHERE correct_answer IS NOT NULL AND question_text IS NOT NULL
+                    AND LENGTH(question_text) > 100
                     ORDER BY RANDOM()
                     LIMIT 30
                 """
