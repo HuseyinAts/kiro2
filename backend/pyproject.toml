@@ -219,6 +219,22 @@ exclude = [
 # pedagogy_models.py backlog kurtarmasiyla (30 Agu 2026) 3 satir buyudu.
 "models/database.py" = ["RUF022"]
 
+# services/llm/ensemble_manager.py — PLR0917, ayni versiyon celiskisi
+# (yukaridaki tests/conftest.py girdisine bkz: yerel/pre-commit ruff
+# (v0.7.1 / 0.14.13) kurali preview sayiyor, CI'nin pin'siz kurulumu ise
+# guncel surumde stabilize/aktif goruyor -- tek bir inline noqa ikisini
+# birden gecemiyor). PR #82 (30 Agu 2026) ile CI'da yakalandi:
+#   __init__ -- 6 parametrenin tumu bagimsiz, varsayilanli boolean
+#     saglayici bayragi; imzayi degistirmek 5+ mevcut cagri noktasini
+#     (osym_routes.py, osym_pdf_pipeline.py,
+#     sequential_reasoning_service.py, question_generation_tasks.py, ...)
+#     etkileyecek kirici bir degisiklik olurdu.
+#   generate_osym_question_ensemble -- 5 parametre cagiranin acikca
+#     belirtmesi gereken bagimsiz girdi (konu/alt konu/zorluk/bloom
+#     seviyesi/sinav turu) + tek bir opsiyonel bayrak.
+# Ikisi de bu dar bugfix PR'inin kapsami disinda (imza degisikligi degil).
+"services/llm/ensemble_manager.py" = ["PLR0917"]
+
 # core/multi_layer_cache.py — 5 ONCEDEN VAR OLAN ihlal (2 Agu 2026).
 # KONTROL KOLU (gercek yol adiyla, /tmp kopyasi DEGIL):
 #   git show HEAD:backend/core/multi_layer_cache.py #     | ruff check --stdin-filename backend/core/multi_layer_cache.py -
