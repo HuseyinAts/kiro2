@@ -1481,3 +1481,158 @@ Merge: `5b27cabea` (2026-08-30T05:50:42Z UTC), `gh pr merge 82 --squash`.
 4+7+3+3+1+3+2+2+1=26 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79/
 #80/#81/#82) -- `ai_mentor_service.py` (`ensemble_manager.py` zaten
 tracked'ti, sayaca dahil değil). ~529 dosya hâlâ triyaj bekliyor.
+
+
+### 10.17 PR #85: `alembic_utils.py` backlog kurtarması -- çift mypy ortamı çelişkisi (30 Ağu 2026)
+
+SS10.7 grubundan `backend/core/alembic_utils.py` (+ `tests/integration/
+test_alembic_utils.py`, 9 test) untracked kalmıştı. İlk mypy geçişinde iki
+bulgu çıktı: `from alembic import op` (`attr-defined` -- alembic'in `op`u
+çalışma zamanında dinamik proxy, upstream sınırlaması) ve `table_exists`
+(`no-any-return` -- `Inspector.has_table()` mypy'ye `Any` yansıyor).
+İkisi de bu kampanyanın daha önce kurduğu desenle çözüldü: gerekçeli
+`# type: ignore[attr-defined]` ve açık `result: bool` yerel değişken
+anotasyonu.
+
+`reward-hacking-check` bekçisi `constraint_exists`teki
+`except Exception: pass`i (bir `# nosec B110` yorumuyla) CRITICAL
+işaretledi -- bekçinin AST yolu yorum-kör, sadece gövdenin `pass`/`...`
+olup olmadığına bakıyor. PR #72'de kurulan gerçek desen tekrar
+uygulandı: sessiz yutma yerine `logger.debug(...)` (davranış aynı,
+gözlemlenebilirlik eklendi).
+
+İkinci, bağımsız bir sorun CI'da ortaya çıktı: "Code Quality (mypy)" job'u
+AYNI `# type: ignore[attr-defined]` satırını `[unused-ignore]` ile
+REDDETTİ. Kök neden: pre-commit'in mypy hook'u izole bir venv'de
+(pinlenmiş `v1.11.2` + `additional_dependencies` listesi, `alembic` dahil
+DEĞİL) çalışıyor -- bu ortamda ignore GEREKLİ. CI'nin ayrı job'u ise
+projenin gerçek `.venv`'ini (requirements.txt'teki pinlenmiş `alembic`
+ile) kullanıyor -- bu ortamda ignore GEREKSİZ. İki ayrı, ikisi de geçerli
+CI kapısı aynı satır için çelişiyordu. Düzeltme: kök `pyproject.toml`da
+sadece bu modül için `warn_unused_ignores = false` (`ignore_errors = true`
+DEĞİL -- dosyanın geri kalanı tam denetimde kalıyor).
+
+**Yerel doğrulama:** 9/9 entegrasyon testi gerçek Postgres'e karşı yeşil
+(iki kez tekrarlandı). Pre-commit mypy hook'u ve `backend\venv`'in mypy
+1.7.1'i (CI'nin gerçek bulgusunu tekrar ürettiği doğrulanan ortam) hem
+düzeltme öncesi (kırmızı) hem sonrası (yeşil) ayrı ayrı çalıştırıldı.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review,
+Backend Tests Python 3.11, CI Summary, Frontend Tests, Quality Gate --
+hepsi §10.16 emsaliyle birebir. Code Quality (mypy dahil) hepsi yeşil.
+API Security Testing (ZAP) 43m23s'de yeşil -- bu segmentte aynı anda 4
+PR'ın ZAP taraması tetiklendiği için (bkz. §10.19) normal ~27dk yerine
+uzadı, kaynak çekişmesi dışında bir sorun değil.
+
+Merge: `afbb23aab` (2026-08-30T06:48:32Z UTC), `gh pr merge 85 --squash`.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 26+2=28 tanesi
+commit edildi -- `alembic_utils.py` + `test_alembic_utils.py` (kök
+`pyproject.toml` değişikliği zaten tracked'ti, sayaca dahil değil).
+~527 dosya hâlâ triyaj bekliyor.
+
+
+### 10.18 PR #83: `pedagogy_models.py` backlog kurtarması -- 3 tablo `Base.metadata`'ya bağlandı (30 Ağu 2026)
+
+SS10.7 grubundan `MEBCurriculumNode` (içerik zehirlenmesi filtresi --
+müfredat dışı kelime kara/beyaz listesi) ve `MisconceptionMatrix`/
+`MisconceptionRemedy` (kavram yanılgısı sözlüğü + mikro-öğrenme tedavisi)
+untracked kalmıştı; git grep ile doğrulandı, dosyanın dışında hiçbir
+servis/API/test onları çağırmıyordu.
+
+Canlı Postgres'te (30 Ağu 2026) ölçüldü: 3 tablo da GERÇEKTEN var
+(`alembic/versions_archive/d23f7afe5e9a_*.py` + baseline şema) ve ORM
+modeli kolon kolon BİREBİR eşleşiyor -- schema drift yok. Tek düzeltme:
+`MisconceptionMatrix.severity_weight` tip ipucu `Mapped[float]` idi ama
+canlı kolon `integer` -- `Mapped[int]` + `default=1` olarak düzeltildi.
+`models/database.py` (re-export katmanı) üzerinden `Base.metadata`'ya
+bağlandı (129 tablo, önceden 126) -- `core/alembic_autogen_guard.py`'nin
+belgelediği "87 tablo metadata dışında" borcundan 3'ü kapandı. Kalıcı
+bekçi: `test_pedagogy_models_sema_paritesi.py` (S255 deseninin 3 tabloya
+genellenmesi, 7 yeni test) -- DB<->ORM kolon paritesini otomatik doğrular.
+
+Yan bulgu: `database.py`'nin `__all__` listesi RUF022 tetikliyordu (aynı
+CI/pre-commit ruff sürüm çelişkisi, bkz. §10.16'daki PLR0917); liste
+kasıtlı olarak alfabetik değil, model dosyasına göre gruplanmış --
+otomatik "fix" bu belgeleme yapısını kırardı, dosyaya özel per-file-ignore
+ile korundu.
+
+Bu PR'ın dalı, §10.16/PR #82 merge edildikten sonra `backend/pyproject.toml`
+üzerinde CONFLICTING duruma düştü (ikisi de aynı per-file-ignores bölümüne
+dokunuyordu -- öngörülen risk). `git rebase` yerel olarak çözdü ama
+yayınlamak `push --force` gerektirirdi (bu oturumda yasak, canlı kullanıcı
+onayı yok); rebase geri alındı (`git reset` + kapsamlı `checkout --`,
+`reset --hard` DEĞİL) ve aynı çözüm `git merge origin/master --no-edit` ile
+tekrarlandı -- zorlama olmadan normal push edilebildi.
+
+**Yerel doğrulama:** 7 yeni + 4 mevcut (S255) parite testi yeşil, ayrıca
+mevcut 9 `alembic_autogen_guard` testi yeşil (regresyon yok). `ruff
+check`/`mypy` temiz.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** §10.17 ile birebir aynı
+desen. API Security Testing (ZAP) 43m23s'de yeşil (bkz. §10.19 -- eşzamanlı
+4 PR nedeniyle uzadı).
+
+Merge: `1f2cc70ef` (2026-08-30), `gh pr merge 83 --squash`.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 28+1=29 tanesi
+commit edildi -- yalnız `pedagogy_models.py` (`database.py`,
+`pyproject.toml` zaten tracked'ti; `test_pedagogy_models_sema_paritesi.py`
+bu PR'da yeni yazılan bekçi testiydi, SS10.7 havuzundan değil, sayaca
+dahil değil). ~526 dosya hâlâ triyaj bekliyor.
+
+
+### 10.19 PR #87: `backend/utils/__init__.py` eksikti (30 Ağu 2026)
+
+`backend/utils/` dizini 6 tracked dosyaya (cache_manager.py,
+file_watcher.py, lazy_imports.py, pdf_generator.py, video_validation.py,
+zemberek_integration.py) sahipti ama kendi `__init__.py`si takip
+dışıydı -- SS10.7 taramasından kalan, boş (0 byte) bir dosya. Python 3'ün
+implicit namespace packages özelliği çalışma zamanında bir soruna yol
+açmıyordu, ama paketi açıkça tanımlamak için eklendi. Dosya boş olduğu
+için ruff/mypy/bandit'in üzerinde kontrol edecek bir şeyi yoktu.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** §10.17/§10.18 ile
+birebir. API Security Testing (ZAP) 31m1s'de yeşil.
+
+Merge: `d4e1c1574` (2026-08-30), `gh pr merge 87 --squash`.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar 29+1=30 tanesi
+commit edildi. ~525 dosya hâlâ triyaj bekliyor.
+
+**Not (§10.17-10.19 ortak):** Bu üç PR + §10.16/PR #86 aynı segmentte,
+art arda açıldı -- sonuç, hepsinin ZAP taramasının eşzamanlı çalışması
+(API Security Testing süreleri 31dk-43dk arasına yayıldı, normal
+~27dk yerine). Bulgu niteliğinde: eşzamanlı çok-PR açma, tek başına
+zararsız olsa da CI kaynak çekişmesi üzerinden toplam bekleme süresini
+uzatıyor -- ileride büyük backlog kurtarma dalgalarında dikkate alınacak.
+
+
+### 10.20 PR #62 sonrası backlog planı (Faz 0-6) tamamen doğrulandı (30 Ağu 2026)
+
+Bu segmentte, PR #83/#85 CI beklerken, eski plan dosyasının (PR #62
+kapanışında listelenen 7 kalem) durumu tek tek yeniden doğrulandı --
+Faz 0-3 önceki bir segmentte zaten tamamlanmış olarak biliniyordu, bu kez
+Faz 4-6 doğrulandı:
+
+- **Faz 4 (temiz-oda ölçüm script'i):** `backend/scripts/
+  temiz_kopya_guvenlik_olcumu.py` zaten tracked ve mevcut -- ayrı bir iş
+  gerekmiyor.
+- **Faz 5 (Dependabot triyaj, 20 PR):** Açık PR sayısı 12'ye düşmüş,
+  plandaki iki büyük-atlama örneği (#43 marshmallow, #46 structlog) artık
+  listede yok -- otomasyon çalışır durumda (`gh pr view` ile tek tek
+  sorgulanan PR'lar `MERGEABLE` dönüyor, `gh pr list`in toplu görünümündeki
+  `UNKNOWN` sadece GitHub'ın tembel hesaplama önbelleği). Kalan 12 PR,
+  haftalık normal Dependabot akışı -- ayrı bir müdahale gerekmiyor.
+- **Faz 6 (5 CodeQL false-positive dismiss):** `docs/guvenlik-borcu.md`
+  §"Faz 6" bölümünün kendisi işin daha önce yapıldığını (ve bir
+  `dismissed_comment` bug'ının düzeltildiğini) belgeliyor.
+
+Repo'nun toplam açık CodeQL alert sayısı (`gh api .../code-scanning/alerts`)
+2601 -- ama bu, plandaki "5 spesifik `py/weak-sensitive-data-hashing`
+false-positive'i" ile karışmamalı; o 5'i zaten dismiss edilmiş, kalan 2601
+çok daha geniş, ayrı bir triyaj gerektiren bir gövde (bu planın kapsamı
+dışında).
+
+**Sonuç:** `stateful-shimmying-papert.md` planının 7 kaleminin TAMAMI
+(Faz 0-6) doğrulanmış durumda tamamlanmış. Plan dosyası kapatılabilir.
