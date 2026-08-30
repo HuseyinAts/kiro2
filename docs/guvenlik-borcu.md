@@ -1384,3 +1384,43 @@ Merge: `4fc3168f9` (2026-08-30T03:40:57Z UTC).
 **Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
 4+7+3+3+1+3+2=23 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79/#80).
 ~532 dosya hâlâ triyaj bekliyor.
+
+
+### 10.15 PR #81: Kayıt akışına learning_path_student_profiles insert'i eklendi (30 Ağu 2026)
+
+**PR #81**: Önceki bir SS10.x segmentinin "Optional Next Step"i olarak
+bırakılan bir şüphe doğrulandı: `RegisterUserCommandHandler.handle()`
+(`application/commands/auth.py`) `STUDENT` rolü için `student_profiles`
+satırı oluşturuyordu ama `learning_path_student_profiles` satırını HİÇ
+oluşturmuyordu. Sonuç: yeni kayıt olan her öğrenci için learning-path alt
+sisteminin tamamı (profil olmadan `verify_student_access` her isteği 403
+ile reddediyor) baştan kilitliydi.
+
+Kanıt zinciri: `test_db_profile_sync.py` (untracked, `db_session`
+fixture'ıyla gerçek Postgres'e karşı) yazılıp koşturuldu -- düzeltmeden
+ÖNCE 1 passed/2 failed, düzeltmeden SONRA 3/3 passed. Aynı anda untracked
+backlogtaki `services/profile_sync_service.py` (aynı işi ayrı bir
+senkronizasyon yolunda yapan bir "kurtarma adayı") da incelendi ve S255
+kaymasının (bkz. SS10.x, `neuro_inclusive_mode`) BU dosyayı da vuracağı
+görüldü -- raw-SQL `INSERT` kolonu atlıyordu, ORM'deki Python-tarafı
+`default=False` raw SQL'i korumuyor. İki dosya da (auth.py'nin asıl
+düzeltmesi + profile_sync_service.py'nin kurtarılan hâli) aynı düzeltmeyle
+işaretlendi.
+
+**Yerel doğrulama:** 3/3 test yeşil (gerçek Postgres), `ruff check`/`ruff
+format --check`/`mypy` temiz, pre-push zorunlu kapı (320 passed, 1
+skipped, 1 xfailed, 97.01s) baseline ile birebir eşleşti.
+
+**CI'da doğrulanan, PR'dan bağımsız 5 kırmızı:** Automatic PR Review
+(§10.5), Backend Tests Python 3.11 (§10.4), Frontend Tests (§10.6),
+Quality Gate/Router registration (§10.4, "1 failed, 2 passed" -- bu PR
+router'a hiç dokunmadığı için beklenen), CI Summary (türev). 8 Golden
+Flow E2E testi 4m1s'de yeşil (bu PR'ın asıl konusu olan kayıt akışını
+uçtan uca doğruluyor). API Security Testing (ZAP) 42m35s'de yeşil.
+
+Merge: `a7b9f3cab` (2026-08-30T05:20:25Z UTC), `gh pr merge 81 --squash`.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan şimdiye kadar
+4+7+3+3+1+3+2+2=25 tanesi commit edildi (PR #74/#75/#76/#77/#78/#79/#80/
+#81) -- `profile_sync_service.py`, `test_db_profile_sync.py`. ~530 dosya
+hâlâ triyaj bekliyor.
