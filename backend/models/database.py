@@ -82,6 +82,13 @@ from .gamification_db import (
     WeeklyProgress,
 )
 from .notification import Notification
+
+# Re-export Pedagogy models (İçerik Zehirlenmesi filtreleri + Kavram Yanılgısı)
+from .pedagogy_models import (
+    MEBCurriculumNode,
+    MisconceptionMatrix,
+    MisconceptionRemedy,
+)
 from .point_transaction import PointTransaction
 
 # Re-export Quality Gates models
@@ -192,4 +199,8 @@ __all__ = [
     "LearningOutcomeDB",
     "CurriculumAlignmentDB",
     "CurriculumUpdateRequestDB",
+    # Pedagogy models
+    "MEBCurriculumNode",
+    "MisconceptionMatrix",
+    "MisconceptionRemedy",
 ]
