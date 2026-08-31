@@ -2408,3 +2408,207 @@ artik listede YOK (coktan cozulmus), ama yerlerine yenileri birikmis.
 Bu, "eski planin devami" olarak sessizce ustlenilecek bir is degil --
 kendi triyaj turunu hak eden YENI, daha genis bir bulgu; bu yuzden
 burada not dusulup Hüseyin'e birakiliyor.
+
+## §10.30 -- SS10.7: 8 e2e dosyasinin gercek kosumu (380 test, 5 tarayici) + servis calisani onbellek bulgusu (31 Agustos 2026)
+
+**Kapsam ve yontem.** SS10.29'da "bu turda incelenmedi" olarak
+birakilan 8 e2e spec dosyasi (`auth/register.spec.ts`,
+`auth/security.spec.ts`, `auth/veli-onay.spec.ts`,
+`student/cat-algorithm.spec.ts`, `all-pages-coverage.spec.ts`,
+`comprehensive_audit.spec.ts`, `content-purpose-audit.spec.ts`,
+`student-happy-path.spec.ts`) bu turda GERCEKTEN calistirildi --
+statik okuma degil, `npx playwright test` ile 5 tarayici projesinde
+(chromium, firefox, webkit, Mobile Chrome, Mobile Safari) toplam 380
+test, ~24 dakika. Sonuc: 326 basarili, 54 basarisiz. Ancak 54
+basarisiz test BAGIMSIZ 54 hata DEGIL -- kok nedene gore asagidaki
+kucuk bir gruba ayriliyor.
+
+**Onceki turun "toplu harici kaynak" varsayimi kismen yanlisti.**
+SS10.29, bu 8 dosyanin hepsinin `db-connector.ts`'in "Google AI Ultra"
+izini tasidigini varsaymisti. Dosya degisim zamanlarina (mtime)
+bakildiginda bu YANLIS cikti: `security.spec.ts`, `cat-algorithm.
+spec.ts`, `all-pages-coverage.spec.ts`, `content-purpose-audit.spec.ts`
+gercekten ayni ~45 dakikalik pencerede (11 Agustos 21:22-22:07)
+yazilmis ve hepsinin basliginda gercekten "Google AI Ultra" imzasi var
+(dogrulandi). Ama `login.spec.ts`, `register.spec.ts`,
+`veli-onay.spec.ts`, `comprehensive_audit.spec.ts` TAMAMEN FARKLI,
+~2 saniyelik bir pencerede (28 Agustos 02:38:50-52) yazilmis, hicbirinde
+"Google AI Ultra" basligi YOK, gercek MUI class'lari ve gercek endpoint
+yollarina karsi yazilmis (daha ozenli). `student-happy-path.spec.ts`
+ise tek basina, 8 Agustos tarihli, ucuncu bir kumede. Yani bu 8 dosya
+TEK bir toplu uretimden gelmiyor -- en az uc ayri kaynaktan.
+
+**Bulgu 1-2 (test hatasi, kesin/deterministik): `student-happy-path.
+spec.ts` testleri 1-2.** Test 1'in ("Complete Student Journey")
+`passwordInput` locator'i -- `getByRole('textbox',{name:/sifre|
+password/i}).or(getByLabel(...)).or(...)` -- gercek sifre input'una
+VE "Sifreyi goster" goster/gizle butonuna AYNI ANDA eslesiyor (o
+butonun aria-label'i da "Sifre" kelimesini iceriyor), Playwright
+strict-mode ihlali firlatiyor ("resolved to 2 elements"). Her
+tarayicida (sunucuya erisebildigi surece) ayni sekilde, %100
+tekrarlanabilir sekilde basarisiz -- bu bir uygulama hatasi degil,
+locator'in kendisi gevsek yazilmis.
+
+Test 2'nin ("Session Resilience") kok nedeni daha da basit: hicbir
+setup yapmadan dogrudan uydurma bir sinav-oturumu ID'sine
+(`/sinav/oturum/e2e-resilience-session`) gidiyor ve bunun calismasini
+bekliyor. Bu ID hicbir yerde gercekten olusturulmuyor -- backend
+dogal olarak 404 donduruyor. Test eksik/tamamlanmamis yazilmis.
+
+**Bulgu 3 (gercek urun bulgusu, KOK NEDENI BULUNDU): Test 3
+("Protected Route Security") -- kimliksiz `/dashboard` erisimi gercek
+panel icerigi gosteriyor, `/login`'e yonlendirmiyor.** Bu turun en
+onemli bulgusu. Test cerezleri VE localStorage'i dogru sekilde
+temizliyor (`context().clearCookies()` + `localStorage.clear()`),
+sonra `/dashboard`'a gidiyor -- ekran goruntusu TAM DOLU, gercekci bir
+ogrenci paneli gosteriyor (45 sinav, %78 dogru orani, 127 saat calisma,
+TYT/AYT/YDT detaylari). 5 tarayicinin hepsinde (sunucu erisilebilir
+oldugunda) ayni sonuc.
+
+Kok neden izi: `ProtectedRoute.tsx` (`isAuthenticated` false ise
+`<Navigate to="/login">` -- mantik dogru, "SECURITY:" yorumlariyla
+ozenle yazilmis) -> `authStore.ts`'nin `initializeAuth()`'u (cerez
+gecersizse `isAuthenticated:false` set ediyor, hata durumunda da
+guvenli tarafta kaliyor -- mantik dogru) -> `authService.ts`'nin
+`validateToken()`/`getCurrentUser()`'i (network hatasinda `false`
+donuyor / exception firlatiyor -- mantik dogru). Yani uc katmanin
+HICBIRINDE mantik hatasi YOK -- okuyarak dogrulandi.
+
+Canli bir tani script'iyle (`chromium.launch()` + ayni adimlar +
+network/service-worker loglama) tekrar uretilmeye calisildiginda FARKLI
+bir belirti gozlemlendi: `page.goto('/dashboard')` bu kez
+`net::ERR_ABORTED` ile basarisiz oldu (orijinal test-suite kosumundaki
+"basariyla render edilmis panel" belirtisi degil) -- yani bu belirti
+KENDI ICINDE deterministik degil, `login.spec.ts`'nin gecen turku
+bulgusuna benzer sekilde zamanlamaya bagli. Ayni tani script'i, `/login`
+sayfasina gidildikten hemen sonra bu origin'de KAYITLI bir servis
+calisani (`scope: http://localhost:3001/, active:false`) oldugunu
+dogruladi.
+
+`public/sw.js` okundu: `/api/*` GET istekleri icin "network-first"
+stratejisi kullaniyor -- once gercek agi dene, SADECE `fetch()`
+CALISMAZSA (ag hatasi/abort, HTTP 401 DEGIL) onbellege dus
+(`networkFirst()` fonksiyonu). Basarili HERHANGI bir `/api/*` GET
+yaniti (kimlik dogrulama uc noktalari dahil, kullanici-ozel veri
+dahil), URL'i anahtar olarak, SURESIZ onbellege yaziliyor
+(`CACHE_NAME='kiro2-v1'`, zaman-bazli gecersiz kilma YOK).
+
+Sonuc: bu gelistirme makinesinde GECMISTE gercek/basarili bir oturumla
+`/dashboard` (ve onun veri cagrilari) bir kez basariyla yuklenmisse, o
+yanit onbellekte SURESIZ kaliyor; sonraki herhangi bir kimliksiz
+denemede, canli istek TAM OLARAK bu testin/taramanin agir yukunun
+sebep oldugu turden bir ag aksakligina (bkz. Bulgu 7) denk gelirse,
+uygulama sessizce o ESKI, ONBELLEKTEKI kimlik-dogrulanmis veriyi
+teste/kullaniciya GERCEKMIS gibi sunuyor.
+
+**Onemli ayrim:** bu bir "auth kontrolu bozuk" (bypass) bulgusu DEGIL
+-- ProtectedRoute/authStore/authService uclusu dogru yazilmis, okundu
+ve dogrulandi. Bu bir "servis calisani onbellegi kimlikten habersiz"
+bulgusu: `networkFirst()` `/api/v1/auth/*` ve kullanici-ozel uc
+noktalarini diger statik/genel API'lerden ayirmiyor, bu yuzden ag
+aksakligi anlarinda ESKI OTURUMUN verisini yeni/kimliksiz bir
+baglamda sizdirabiliyor. Gercek kullanicilar icin risk: ayni cihazi
+paylasan iki kullanicidan biri cikis yaptiktan sonra, agin kotu
+oldugu bir anda, digerinin (ya da eski oturumun) verisini gorebilir.
+Duzeltme onerisi (uygulanmadi, sadece teshis): `/api/v1/auth/*` ve
+kullanici-ozel GET uc noktalarini `networkFirst()`'un onbellek-yazma
+davranisindan MUAF tut, ya da cikista onbellegi acikca temizle. Bu,
+bu turun kapsamini asan, kendi PR'ini hak eden bir duzeltme -- burada
+sadece kok nedeni kanitlanmis olarak belgeleniyor.
+
+**Bulgu 4 (test hatasi, tarayicilar-arasi): `auth/register.spec.ts`.**
+"18 yasindan kucukler icin veli e-postasi" ve "yetiskin kayit basarili"
+testleri firefox VE webkit'te ozdes sekilde basarisiz (chromium
+GECIYOR). Her ikisi de dogum-tarihi doldurmaya bagli; test
+`page.fill('input[name="birth_date"]', '2011-01-01')` kullaniyor --
+native `<input type="date">` alanlarinda `.fill()`'in tarayicilar
+arasi farkli davranmasi bilinen bir Playwright sorunu. chromium'un
+tek basina gecmesi bu teshisi destekliyor: uygulama hatasi degil,
+test'in tarih-doldurma yontemi.
+
+**Bulgu 5 (GERCEK urun/UX bulgusu, dogrulandi): Mobile Chrome'da
+"Kiro" sohbet balonu giris butonunu engelliyor.** `security.spec.ts`
+(XSS testi) ve `comprehensive_audit.spec.ts` (giris adimi)
+BIRBIRINDEN BAGIMSIZ iki dosyada, ikisi de Mobile Chrome'da, "Devam
+edelim" butonuna tiklamaya calisirken timeout aliyor. Hata govdesi
+acik: `<p>Merhaba, ben Kiro! ...</p>` (kayan Kiro AI sohbet balonu)
+butonun uzerinde durup pointer olaylarini yakaliyor ("subtree
+intercepts pointer events"), Playwright 10 saniye boyunca tiklamayi
+tekrar deniyor ve basaramiyor. Iki bagimsiz dosyada ayni belirti --
+bu, mobil ekran genisliginde Kiro balonunun gercekten giris butonunun
+uzerine bindigi, gercek bir mobil-UX kusuru. Gercek bir kullanici da
+parmagiyla ayni sekilde butona basamayabilir.
+
+**Bulgu 6 (acik, kok nedeni bulunamadi): `content-purpose-audit.
+spec.ts` -- araliksiz `net::ERR_ABORTED`.** chromium'da `/oba` ve
+`/parent/dashboard`, Mobile Chrome'da `/duel` ve `/soru-cozme` -- HER
+SEFERINDE FARKLI rotalar -- `page.goto()` `net::ERR_ABORTED` ile
+basarisiz oluyor (sayfa hic yuklenmiyor). Farkli rotalara rastgele
+denk gelmesi, sabit bir sayfa hatasindan cok, testin
+`setupAuthenticatedSession()` yardimcisinin localStorage'a sahte auth
+enjekte etmesiyle SPA'nin kendi istemci-tarafi yonlendirmesi
+arasindaki bir yarisa isaret ediyor. Kok nedeni tam izole edilemedi
+bu turda -- acik birakiliyor.
+
+**Bulgu 7 (ALTYAPI, urun hatasi DEGIL): Mobile Safari'deki 31
+basarisizlik tek bir kok nedene iniyor.** 54 basarisizligin 31'i
+Mobile Safari'de toplanmis (register x3, security x2, veli-onay x4,
+content-purpose-audit x17, cat-algorithm x1, student-happy-path x3,
+all-pages-coverage x1). Ilk bakista "Mobile Safari'de her sey bozuk"
+gibi gorunuyor ama detaya inildiginde: bunlarin buyuk cogunlugu AYNI
+hata metnini tasiyor -- "Error: page.goto: Could not connect to
+server" -- yani sayfa-icerik uyusmazligi degil, PAYLASILAN Vite
+gelistirme sunucusunun o an ERISILEMEZ olmasi.
+
+Kanit: (a) hata metni neredeyse tamami icin ozdes ve aninda (baglanti
+reddi, timeout degil); (b) kume aniden basliyor (all-pages-coverage'in
+SADECE Admin Calibration testi -- "body hidden", 11.3sn, yavas --
+sunucunun zorlanmaya basladiginin ilk belirtisi) ve aniden bitiyor
+(cat-algorithm'in SAYFAYA GITMEYEN 2. testi kume ICINDE temiz gecti);
+(c) `comprehensive_audit.spec.ts` bu kumenin TAM ORTASINDA "basarili"
+gorunuyor (41.8sn, yavas) ama bu sadece kendi `.catch(()=>{})` ile
+sarilmis navigasyonunun hatayi sessizce yutmasi ve dosyanin
+sonrasinda sert bir assertion barindirmamasi sayesinde (bkz. Bulgu 8).
+Sonuc: bu 24 dakikalik, 380 testlik, 5 tarayicili TEK kosumun
+sonlarina denk gelen Vite sunucusunun surdurulebilir yuk altinda
+kararsizlasmasi -- Mobile Safari'ye OZGU bir urun kusuru degil. Bu
+dosyalar tek basina/daha kucuk gruplar halinde kosulsa buyuk
+ihtimalle bu 31'in cogu gecer.
+
+**Bulgu 8 (test kalitesi notu): `comprehensive_audit.spec.ts`
+neredeyse hicbir sey dogrulamiyor.** Kendi giris adimi `.catch(()=>
+{})` ile sarili, sonrasinda ekran goruntusu alma + `waitForTimeout`
+disinda sert bir `expect()` yok denecek kadar az. Sonuc:
+uygulama/sunucu TAMAMEN erisilemez olsa bile bu test "gecebiliyor"
+(yukarida Bulgu 7'de gorulduğu gibi tam da sunucu kesintisi sirasinda
+gecti). Kapsamli gorunen yapisina ragmen zayif bir dogrulama -- rescue
+edilirse once gercek assertion'lar eklenmeli.
+
+**Bu turda rescue yok, yeni bir "calisir durum" kategorisi onerisi.**
+8 dosyanin hicbiri commit edilmedi -- bu tur bir tarama/kosum turuydu,
+duzeltme turu degil (kurulu "her PR kendi kapsaminda" alaskanligina
+uygun). Ancak bu 8 dosya onceki "orphan ve bozuk"
+(`osym_language_validator.py`, §10.27) ya da "urun karari bekliyor"
+(`generate_qwen_kcs.py`, §10.26) kategorilerine UYMUYOR -- 326/380
+test GECTI, yani cogunlukla CALISIYORLAR, sadece belirli, tanimlanmis
+hatalari var. Bu yeni bir disposisyon: "calisiyor ama once duzeltme
+gerekiyor" -- `orphan ama kusursuz` (§10.28) kadar temiz degil,
+`orphan ve bozuk` kadar da olu degil. Rescue etmeden once Bulgu
+1/2/4'un test-taraf hatalarinin duzeltilmesi, Bulgu 6'nin ya
+kok-nedenlenmesi ya bilinen-sinirlama olarak belgelenmesi gerekiyor.
+
+**Oncelik onerisi.** Bulgu 3 (servis calisani onbellek/kimlik ayrimi
+eksikligi) bu turun en onemli bulgusu -- SS10.7 dosya-dosya taramasini
+surdurmekten once, kendi kucuk, odakli bir PR'i hak ediyor
+(`public/sw.js`'de `networkFirst()`'u auth/kullanici-ozel uc
+noktalarindan muaf tutmak). Bulgu 5 (Mobile Chrome'da Kiro balonu
+giris butonunu engelliyor) da gercek bir UX kusuru, ikinci sirada.
+
+**Kalan kapsam.** Sayac bu turda da DEGISMEDI (45) -- rescue
+uretilmedi. Kalan: kok dizin deploy/dokuman dosyalari,
+`predictive_analytics.py` (urun karari), `application/commands/
+.kontrol/` (hala hic bakilmadi), `backend/scripts/`'teki 11 dosya,
+artı bu turun kendi bulgulari (Bulgu 3 ve 5'in duzeltilmesi, Bulgu
+6'nin kok-nedenlenmesi). Dependabot (12 acik PR) / CodeQL (30 acik
+alert) sapmasi hala Hüseyin'in kendi triyaj karari bekliyor (bkz.
+§10.29) -- bu turda dokunulmadi.
