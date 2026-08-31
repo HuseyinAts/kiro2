@@ -2245,3 +2245,72 @@ ve `test_root_perf.py` artik karara baglandi, backlog'tan cikti. Geri
 kalan SS10.7 kapsami (frontend Dashboard bilesenleri, e2e spec'leri, kok
 dizin deploy/dokuman dosyalari, `predictive_analytics.py`,
 `application/commands/.kontrol/`) degismedi.
+
+### 10.28 PR #103: `MisconceptionFlashcard.tsx` + `TeacherMisconceptionHeatmap.tsx` -- ilk "orphan ama kusursuz" bulgu (31 Ağustos 2026)
+
+SS10.7 taramasi bu turda `frontend/src/components/Dashboard/` dizinine
+geldi: klasordeki TUM diger dosyalar zaten tracked, sadece 2 bilesen
+untracked kalmisti. Onceki turlardan farkli olarak bu ikisinde HICBIR
+defekt bulunmadi -- ilk kez "kurtarilamadi" degil, dogrudan "sifir
+kod-degisikligiyle kurtarildi" sonucu cikti.
+
+**Kurtarilan (2/2): `MisconceptionFlashcard.tsx` (ogrenci) +
+`TeacherMisconceptionHeatmap.tsx` (ogretmen).** Ilki kavram yanilgisini
+(distractor) gosterip cevrilince duzeltmeyi (refutation) ve ozeti
+(takeaway) sunan bir flip-card (framer-motion animasyonlu, MUI). Ikincisi
+recharts `ScatterChart` ile konu/siddet bazli kavram yanilgisi yogunluk
+haritasi (su an sabit `mockData` ile calisiyor). Elle calistirarak
+dogrulama: bu bilesenler icin hic test yoktu, iki yeni smoke test dosyasi
+yazildi (3 test MisconceptionFlashcard icin: on yuz render, cevirme +
+arka yuz, kapatma callback'i; 1 test TeacherMisconceptionHeatmap icin:
+baslik + aciklama metni -- recharts'in `ResponsiveContainer`'i jsdom'da
+gercek layout hesaplamadigi icin grafik-ici SVG dogrulamasi bilerek
+atlandi), `npx vitest run` sonucu 4/4 gecti.
+
+`npx eslint`: ilk calistirmada 8 hata + 5 uyari (2x `import/default` --
+kod tabaninin `import * as React from 'react'` kuralina uymuyordu; 4x
+`comma-dangle` -- `--fix` ile otomatik duzeldi; 2x
+`react/no-unescaped-entities` -- literal `"` -> `&quot;`), duzeltmeler
+sonrasi 0 hata. Kalan 3 uyari (`@mui/material` restricted-import x2,
+`@typescript-eslint/no-explicit-any` x1) bilerek dokunulmadi -- kod
+tabanindaki tum diger MUI tabanli Dashboard bilesenleriyle paylasilan,
+onceden var olan bir desen (B-P0-66 notu). `npx tsc --noEmit` bu 2
+bilesene referans veren hicbir hata gostermedi. Merge: `33cd929f2`
+(2026-08-31), 5 bilinen kirmizi taban cizgisiyle birebir (Automatic PR
+Review, Quality Gate, Backend Tests Python 3.11, Frontend Tests, CI
+Summary), API Security Testing 43m9s'de yesil.
+
+**Yeni bulgu turu -- "orphan ama kusursuz":** Bu kampanyada ilk kez,
+"orphan" (hicbir tracked dosya import etmiyor) olmakla "bozuk" olmak ayni
+sey degil ayrimi net bir ornekle ortaya cikti. `osym_language_validator.py`
+(§10.27) orphan VE bozuktu (olu import, `ModuleNotFoundError`).
+`generate_qwen_kcs.py` (§10.26) urun karari bekliyor (entegrasyon degil,
+ne uretecegi belirsiz). Bu ikisi ise orphan ama calisir durumda: butun
+bagimliliklari `package.json`'da mevcut, dogru render ediyorlar,
+typecheck'ten temiz geciyorlar.
+
+Bir React bilesenin "dogrulugu" (gecerli prop/mock veriyle crash'siz
+render etmesi) izole olarak karar verilebilir -- NEREYE baglanacagi
+(hangi sayfa, hangi veri kaynagi) ayri bir urun/UX karari. Bu ayrimi
+tanimak, dogru calisan kodu "henuz kullanilmiyor" diye untracked birakip
+bit-rot riskine atmak yerine, test edilmis-ama-baglanmamis kaynak olarak
+commit etmeyi (entegrasyonu UYDURMADAN) mumkun kildi.
+
+**Kapsam siniri (bilincli, acik):** Bu 2 bilesen HICBIR sayfaya
+baglanmadi. `StudentDashboard.tsx` (460 satir, tam okundu) icinde
+`Misconception` referansi veya entegrasyon notu yok. Hangi sayfaya, hangi
+veri kaynagiyla baglanacaklari bilerek Hüseyin'e acik birakildi.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan simdiye kadar 45 tanesi
+commit edildi (bu PR'daki 2 dosya + onceki 43). `frontend/src/components/
+Dashboard/` artik tamamen tracked -- bu alt kalem kapandi (`git status`
+ile dogrulandi, tek kalan `Dashboard` eslesmesi kasitli scratch
+`pr_body_rescue_misconception_dashboard.md`). `backend/scripts/`
+altindaki 11 untracked dosya degismedi (bkz. §10.26/§10.27). Geri kalan
+SS10.7 kapsami: `frontend/src/test/e2e/*` spec'leri,
+`frontend/tests/e2e/`, kok dizin deploy/dokuman dosyalari (`deploy.sh`,
+`docker-compose.prod.yml`, `.claude/KIRO2_MASTER_BRIEFING.md`,
+`DATABASE_GUIDE_CLAUDE_CODE.md`,
+`KIRO2_PROJECT_STATE_AND_ARCHITECTURE_MASTER_DOCUMENT.md`),
+`predictive_analytics.py` (urun karari), `application/commands/.kontrol/`
+(hala hic bakilmadi).
