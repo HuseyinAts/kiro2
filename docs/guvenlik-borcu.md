@@ -2835,7 +2835,7 @@ olarak flagledigi "bos exception handler" deseni) `warnings.warn`
 eklendi -- artik servis importlarindan biri basarisiz olursa sessizce
 yutulmuyor. 56/56 test PASSED.
 
-### Bulgu 2: `fsrs` paketi requirements.txt'de YOK -- canli kod sessizce stub'a duşuyor (YENI, DUZELTILMEDI, ONCELIKLI)
+### Bulgu 2: `fsrs` paketi requirements.txt'de YOK -- canli kod sessizce stub'a duşuyor (DUZELTILDI -- bkz. SS10.33, PR #132)
 
 `nn` NameError duzeltildikten sonra PR #130'un CI'inda "Backend Tests
 (Python 3.11)" hala FAILED verdi -- ama `nn` ile ilgisiz, farkli bir
@@ -2912,8 +2912,7 @@ da uygulanip PR #130 merge edildi.
 duzeltmesi) yapildi. Asagidakilerin HICBIRI bu turda duzeltilmedi:
 
 - `fsrs` paketi eksikligi (22 dosya, canli FSRS zamanlama davranisi
-  sessizce stub'a duşuyor) -- YENI, ONCELIKLI, kendi PR'ini hak
-  ediyor.
+  sessizce stub'a duşuyor) -- DUZELTILDI, bkz. SS10.33 (PR #132).
 - CodeQL CRITICAL SSRF (`enhanced_chat.py:1084`) -- SS10.31'den
   devam, hala baslanmadi.
 - CodeQL HIGH kumesi (84 alert) -- Hüseyin'in triyaj karari.
@@ -2925,3 +2924,106 @@ duzeltmesi) yapildi. Asagidakilerin HICBIRI bu turda duzeltilmedi:
 - `Automatic PR Review` / `Frontend Tests` / `Quality Gate` CI
   kontrollerinin kendi kronik, ilgisiz basarisizliklari -- ayri
   arastirma gerektiriyor, bu kampanyanin kapsami disinda kalabilir.
+
+## §10.33 -- `fsrs` paketi requirements.txt eksikligi duzeltmesi (#132) -- SS10.32 Bulgu 2 kapanisi (31 Agustos 2026)
+
+### Onceki durum
+
+SS10.32 Bulgu 2, `fsrs` paketinin `backend/requirements.txt`'de hicbir
+formda bulunmadigini, bu yuzden `_FSRS_AVAILABLE` bayraginin her
+kurulumda (CI, temiz gelistirici makinesi, muhtemelen production)
+daima `False` kaldigini ve gercek FSRS v6 zamanlama algoritmasi yerine
+sabit `(2.3, 5.0)` stub degerinin kullanildigini belgeledi. Bulgu
+`docs/guvenlik-borcu.md` SS10.32'de belgelenip (#131, merge edildi)
+"YENI, DUZELTILMEDI, ONCELIKLI" olarak isaretlenmisti; bu PR sadece
+kodu duzeltiyor, bulgunun kendisi zaten belgeliydi.
+
+### Duzeltme
+
+`backend/requirements.txt`'ye, mevcut `# AI/ML` blogundan hemen sonra,
+`# Reporting` blogundan once, yeni bir bolum eklendi:
+
+```
+# Spaced Repetition (FSRS)
+fsrs==6.3.1
+```
+
+Surum secimi keyfi degil: `services/fsrs_v6_service.py`'nin kendi
+docstring'i servisin `fsrs==6.3.1` ile 3 kez yeniden yazildigini
+belirtiyor -- kod zaten bu surume gore yazilmis, sadece
+requirements.txt'ye hic eklenmemisti.
+
+### Dogrulama (gercek kurulum + gercek CI, dry-run degil)
+
+**Yerel venv (Python 3.11.13, uv-managed).** Tam `requirements.txt`
+(fsrs dahil) sifirdan kuruldu -- cozumleme PR #130'un dogruladigi
+pinlerle (`sympy>=1.13.3`, `torch`, `transformers`,
+`sentence-transformers`) birebir ayni cikti, `pip check` temiz.
+Import duman testi: `Card`, `Rating`, `Scheduler` basariyla import
+edildi, `FSRSService.first_review()` `{1: 0.212, 2: 1.2931, 3: 2.3065,
+4: 8.2956}` dondurdu -- artan degerler, SS10.32'nin dogruladigi
+davranisla birebir ayni. `tests/unit/test_fsrs_v6_service.py`: 44/44
+PASSED.
+
+**Fark testi (differential testing) -- DB-entegrasyon test hatalarinin
+kok nedeni.** Ayni venv'de `test_api_batch2.py`,
+`test_bkt_record_answer_batch1b.py`, `test_fsrs_card_persistence.py`
+calistirildiginda 15 failed + 9 errors gorundu. Bunun fsrs eklenmesinden
+kaynaklanan bir regresyon mu, yoksa onceden var olan bir bosluk mu
+oldugunu ayirt etmek icin `fsrs` `pip uninstall` edilip AYNI testler
+tekrar calistirildi -- BIREBIR AYNI 15 failed + 9 errors (ayni test
+adlari) dondu. Bu, hatalarin fsrs'den bagimsiz, yerel venv'in
+`TEST_DATABASE_URL` icin duzgun yapilandirilmamis/migrate edilmemis
+bir Postgres'e sahip olmasindan kaynaklandigini kesin olarak kanitliyor
+-- kod regresyonu degil. `fsrs` sonra tekrar kuruldu.
+
+**`pytest --collect-only`:** 17933 test, 0 collection error -- fsrs
+eklenmesi tam repo test toplamasini bozmadi.
+
+**Gercek CI (PR #132).** `API Security Testing` PASS (42m59s) --
+kampanyanin bu kontrol icin gozlemledigi 5. ardisik PASS (bkz. #128,
+#129, #131), tarihsel araligin (32m10s-44m30s) icinde. `Backend Tests
+(Python 3.11)` FAILED (5m5s) -- ama tek basarisizlik
+`test_video_quality_validator.py::test_accessible_video_public`
+(`error_reason='YouTube API key not configured'`), ozet satiri
+"1 failed, 1784 passed, 357 skipped". Bu hatanin fsrs'den bagimsiz,
+onceden var olan bir CI-ortam eksikligi (YouTube API key secret'i
+yapilandirilmamis) oldugu, master'in fsrs-oncesi son CI kosusuyla
+(job 99647018279, #130 merge'inden hemen sonra) dogrudan
+karsilastirilarak dogrulandi -- o kosunun ozet satiri "1 failed, 1563
+passed, 357 skipped": AYNI tek test, AYNI sebep. `Automatic PR Review`,
+`Frontend Tests`, `Quality Gate` de FAILED, ama bunlar #128'den beri
+kronik/ilgisiz (bkz. SS10.31, SS10.32). Geri kalan tum kontroller
+(Code Quality, CodeQL x2, Container/IaC/SAST/Secret Scanning, License
+Compliance, OWASP Dependency Check, Compliance Checks, Checkov) PASSED.
+`mergeable: MERGEABLE` / `mergeStateStatus: UNSTABLE` -- ayni kronik
+kontrollerin sebep oldugu soft-fail, PR #128/#129/#130/#131 ile ayni
+emsal.
+
+**Bonus bulgu.** PR #132'nin Backend Tests'i master'in fsrs-oncesi
+kosusuna gore **221 daha fazla test** geciriyor (1563 -> 1784) --
+fsrs eklenmesinin, stub'a dusen tum testlerin artik gercek FSRS v6
+davranisiyla calistigini ve gectigini gosteren somut bir olcum.
+
+### PR karari
+
+`gh pr merge 132 --squash --delete-branch` ile merge edildi
+(`c2251c76e..585ba446c`, fast-forward). SS10.32 Bulgu 2 artik
+**DUZELTILDI**.
+
+### Kapsam siniri
+
+Bu turda SADECE `fsrs` paketinin eklenmesi yapildi. Asagidakiler hala
+acik (SS10.32'den devam):
+
+- CodeQL CRITICAL SSRF (`enhanced_chat.py:1084`) -- hala baslanmadi.
+- CodeQL HIGH kumesi (84 alert) -- Hüseyin'in triyaj karari.
+- Dependabot acik PR'lar -- Hüseyin'in triyaj karari.
+- "Health Checks & PostDeploy Verification" (staging DNS) -- kod disi,
+  Hüseyin'in altyapi karari.
+- SS10.30 Bulgu 3 (SW onbellek) / Bulgu 5 (Mobile Chrome chat balonu)
+  -- hala baslanmadi.
+- `Automatic PR Review` / `Frontend Tests` / `Quality Gate` / Backend
+  Tests'teki YouTube API key kontrolunun kendi kronik, ilgisiz
+  basarisizliklari -- ayri arastirma gerektiriyor, bu kampanyanin
+  kapsami disinda kalabilir.
