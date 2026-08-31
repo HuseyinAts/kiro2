@@ -2612,3 +2612,163 @@ artı bu turun kendi bulgulari (Bulgu 3 ve 5'in duzeltilmesi, Bulgu
 6'nin kok-nedenlenmesi). Dependabot (12 acik PR) / CodeQL (30 acik
 alert) sapmasi hala Hüseyin'in kendi triyaj karari bekliyor (bkz.
 §10.29) -- bu turda dokunulmadi.
+
+## §10.31 -- Dependabot canli-birlesme kesfi + opentelemetry bagimlilik cakismasi duzeltmesi (#128) + CodeQL/dependabot sayac duzeltmesi (31 Agustos 2026)
+
+**Baglam.** §10.30'un PR'i (#127, docs-only) CI'da kurulu "docs-only
+PR icin 2 bilinen-kirmizi" temel cizgisinin disina cikip 6 kirmizi
+gosterdi: Automatic PR Review, 8 Golden Flow E2E tests, Quality Gate,
+Container Security Scan, License Compliance Check, API Security
+Testing. Bu sapma "muhtemelen zararsiz" diye varsayilmadi, arastirildi.
+
+**Bulgu 1: oturum arasinda 14 dependabot PR'i otomatik birlesmis.**
+`dependabot-auto-merge.yml` calisiyor (patch/minor'i otomatik onaylayip
+birlestiriyor). Bu turun basinda master `git log`'unda #105'ten sonra
+14 yeni birlesme goruldu, bunlardan biri: `chore(deps): bump
+opentelemetry-exporter-otlp from 1.21.0 to 1.44.0 (#112)`.
+
+**Kok neden.** `opentelemetry-exporter-otlp-proto-grpc==1.44.0`,
+`opentelemetry-sdk~=1.44.0` istiyor; `opentelemetry-exporter-jaeger-
+thrift==1.21.0` ise `opentelemetry-sdk~=1.11` istiyor. Jaeger-thrift
+PyPI'de 1.21.0'dan sonra hic yayin almadi (upstream kalici olarak
+terk edilmis/donuk -- `pip index versions` ile dogrulandi). #112
+sadece otlp'yi yukseltip 6 kardes paketi 1.21.0/0.42b0'da birakinca bu
+iki kisit ayni requirements.txt'te karsilanamaz hale geldi:
+
+```
+ERROR: Cannot install -r requirements.txt (line 129),
+opentelemetry-exporter-jaeger, opentelemetry-exporter-otlp and
+opentelemetry-sdk==1.21.0 because these package versions have
+conflicting dependencies.
+ERROR: ResolutionImpossible
+```
+
+**Etki.** `pip install -r requirements.txt` TUM repo icin basarisiz
+oluyor -- master'in kendi CI'i (Health Checks, Security Scanning,
+Golden Flows) dahil, #112'den sonra acilan HER PR (PR #127 dahil) bu
+hatayi miras aliyor.
+
+**Duzeltme (PR #128, `fix/otel-otlp-revert-jaeger-conflict`).**
+`opentelemetry-exporter-otlp`, #112 oncesi degerine (1.21.0) geri
+alindi -- tek satirlik degisiklik, `backend/requirements.txt`. Jaeger
+exporter'in gercekten kullanildigi (`backend/core/
+opentelemetry_config.py`, `tracing_example.py`, `tracing_middleware.
+py`) dogrulanip "paketi sil" gibi daha riskli bir yol elenmisti.
+
+**Dogrulama (iddia degil olcum).** Temiz bir venv'de: (a) 7
+opentelemetry paketinin GERCEK (dry-run degil) kurulumu hatasiz
+tamamlandi; (b) `pip check` -> "No broken requirements found"; (c)
+PR #128'in kendi CI'inda otel-ResolutionImpossible'in kirdigi TUM
+kontroller yesile dondu: 8 Golden Flow E2E tests, Container Security
+Scan, License Compliance Check, API Security Testing, CodeQL Analysis
+(python/javascript), Checkov, Trivy; (d) merge sonrasi master'da `gh
+workflow run` ile MANUEL tetiklenen "Golden Flows" workflow'u once
+FAILURE'dan SUCCESS'e dondu -- dogrudan, canli olcum.
+
+**Onemli duzeltme: "Health Checks & PostDeploy Verification" bu
+PR'la DUZELMEDI.** Bu, onceki turun "Optional Next Step" notunun
+fazla iyimser oldugu bir nokta -- acikca duzeltiliyor. Master'da
+manuel tetiklenen bu workflow hala FAILURE: "API Health Check" adimi
+`https://staging-api.kiro2.com/health`'e curl atiyor ve exit code 6
+("Couldn't resolve host") aliyor -- yani bu hostname DNS'te hic
+cozulmuyor. Bu tamamen kod/bagimlilik disi bir deploy/altyapi sorunu
+(staging ortami yok ya da DNS yapilandirilmamis); otel duzeltmesinin
+kapsami disinda ve bu PR'in cozebilecegi bir sey degil.
+
+**Bulgu 2 (yeni, otel duzeltmesiyle ORTAYA CIKAN, oncelikli): `nn`
+tanimli degil hatasi 3 router'i kirip sessiz 404 uretiyor.** PR
+#128'in Quality Gate kontrolu (router registration check) ve Backend
+Tests, otel sorunu duzelip pip install nihayet basarili olunca,
+ARDINDA yeni ve TAMAMEN FARKLI bir hata ortaya cikardi:
+
+```
+WARNING api.v1.content_recommendation: content_recommendation_service
+  not available: name 'nn' is not defined
+WARNING api.v1.duplicate_detection: duplicate_detection_service
+  not available: name 'nn' is not defined
+FAILED tests/test_router_registration.py::test_mapped_routers_are_importable
+    api.rag / api.v1.semantic_search / api.youtube_routes
+        NameError: name 'nn' is not defined
+    loader.py bu hatayi WARNING'e cevirip geciyor; sessiz 404 uretir.
+```
+
+`tests/test_video_recommendation_service.py` da ayni `NameError: name
+'nn' is not defined` ile collection asamasinda patliyor -- ilginc
+olan, bu dosyanin KENDI ICINDE zaten `pytestmark = pytest.mark.skipif
+(True, reason="sentence_transformers/transformers package conflict at
+collection time")` satiri var; yani birisi bu sorunun FARKINDAYDI, ama
+skip marker'i collection-time hatasini engellemiyor (skip, modul
+basariyla import edildikten SONRA calisan bir mekanizma).
+
+Bu hata YENI DEGIL -- otel'in `pip install -r requirements.txt`'i en
+basta patlatmasi yuzunden hicbir CI kosumu bu asamaya kadar hic
+ulasamiyordu, yani GIZLIYDI. `test_router_registration.py`'nin bu 3
+router'i dogru sekilde yakalamasi guven verici (test gate gercekten
+calisiyor), ama kok neden (muhtemelen `sentence_transformers`/
+`transformers`/`torch` surum uyusmazligi -- skip marker'in kendi
+metni ipucu) izlenmedi; bu, kendi kucuk arastirma+duzeltme PR'ini hak
+eden ayri, gercek bir bulgu. `api.rag`, `api.v1.semantic_search`,
+`api.youtube_routes`, `api.v1.content_recommendation`, `api.v1.
+duplicate_detection` -- 5 endpoint grubu muhtemelen su an
+PRODUCTION'da sessizce 404 donuyor olabilir (loader.py'nin WARNING'e
+cevirip gecme davranisi geregi); bu dogrulanmadi ama olasiligi Bulgu 3
+(§10.30, SW onbellek) ile ayni ciddiyette.
+
+**Dependabot / CodeQL sayac duzeltmesi (§10.29'da "12 acik PR / 30
+acik alert" olarak raporlanmisti -- guncelleniyor).**
+
+Dependabot: su an 18 acik PR (14'u bu turda otomatik birlesti,
+yenileri de eklendi -- net rakam mekanik olarak degisti).
+Cogunlugu hala `mergeable: UNKNOWN` (118, 108, 41, 39, 38 disinda) --
+PR#62 doneminin eski planinin "haftalarca yeniden hesaplanmamis,
+rebase gerekiyor" teshisi hala gecerli gorunuyor. 2 major bump hala
+bekliyor (marshmallow, structlog -- PR numaralari degismis olabilir,
+bu turda dogrulanmadi).
+
+CodeQL: **2588 acik alert** -- onceki "30" rakami olcek olarak
+yanlisti (muhtemelen GitHub UI'nin varsayilan filtresi ya da cok daha
+eski/kismi bir tarama anindan kalma). Tam sayim (`gh api
+.../code-scanning/alerts?state=open`, sayfalanarak):
+
+- 2408 `security_severity_level: none` -- gercek guvenlik
+  siniflandirmasi yok, kod kalitesi/hijyen: `py/unused-import` (581),
+  `py/unused-local-variable` (459), `py/empty-except` (435), `py/
+  unused-global-variable` (237), `py/catch-base-exception` (100),
+  `js/unused-local-variable` (88), digerleri.
+- 95 medium, 84 high, **1 CRITICAL**.
+- CRITICAL: `#2976 py/full-ssrf` -- `backend/api/enhanced_chat.py:
+  1084`, "Full server-side request forgery". CANLI kod (arsiv/script
+  degil).
+- HIGH ornekleri CANLI kodda: `py/weak-sensitive-data-hashing` x5
+  (`services/visual_supports_service.py`, `core/rag_ab_testing.py`,
+  `core/file_upload_security.py`, `core/feature_flags.py`, `core/
+  decorators/cache.py`), `py/path-injection` x3 (`api/video_solution.
+  py`, `api/ai_chat_routes.py`, `api/advanced_reports.py`), `js/xss-
+  through-dom` x3 (`frontend/src/kiro/ui/ChatBubble.tsx` x2,
+  `AISohbetPage.tsx`), `py/clear-text-logging-sensitive-data` x2+.
+
+Bu rakam ve kirilim burada sadece OLCULUYOR, triyaj edilmiyor -- 2588
+alert'in nasil ele alinacagi (severity:none kod-kalitesi kumesi icin
+toplu "wont fix"/ayri bir tech-debt takibi mi, 180 severity-atanmis
+olan icin bireysel inceleme mi, CRITICAL SSRF'in acil bir duzeltme
+PR'i almasi gerektigi) Hüseyin'in kendi karari. Eski PR#62 planinin
+Faz 6'si ("5 CodeQL false-positive'i kapat") bu yeni olcekte gecersiz
+bir varsayimdi -- o plan muhtemelen cok daha kucuk/eski bir alert
+kumesine dayaniyordu; guncellenmis bilgiyle yeniden ele alinmali.
+
+**Kapsam siniri.** Bu turda SADECE otel/pip duzeltmesi (#128, merge
+edildi) + dogru olcum/raporlama yapildi. Asagidakilerin HICBIRI bu
+turda duzeltilmedi, hepsi backlog'da:
+
+- `nn` NameError (5 router/servis, canli kod, sessiz 404 riski) --
+  oncelikli, kendi PR'ini hak ediyor.
+- CodeQL CRITICAL SSRF (`enhanced_chat.py:1084`) -- oncelikli, kendi
+  PR'ini hak ediyor.
+- CodeQL HIGH kumesi (84 alert, cogu canli kodda) -- Hüseyin'in
+  triyaj karari.
+- Dependabot 18 acik PR (2 major bump dahil) -- Hüseyin'in triyaj
+  karari.
+- "Health Checks & PostDeploy Verification" (DNS/staging-altyapi) --
+  kod disi, Hüseyin'in altyapi karari.
+- SS10.30'un kendi acik kalemleri (Bulgu 3 SW onbellek, Bulgu 5
+  Mobile Chrome chat balonu) -- hala baslanmadi.
