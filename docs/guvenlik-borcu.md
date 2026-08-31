@@ -2314,3 +2314,97 @@ SS10.7 kapsami: `frontend/src/test/e2e/*` spec'leri,
 `KIRO2_PROJECT_STATE_AND_ARCHITECTURE_MASTER_DOCUMENT.md`),
 `predictive_analytics.py` (urun karari), `application/commands/.kontrol/`
 (hala hic bakilmadi).
+
+### 10.29 SS10.7 -- frontend e2e taramasi: 2 gercek bulgu (rescue yok), eski plan (Faz 5/6) sapmasi tespit edildi (31 Ağustos 2026)
+
+Bu turda SS10.7 taramasi `frontend/src/test/e2e/` (gercek,
+playwright.config.ts'nin testDir'i) ve `frontend/tests/e2e/` (ayri,
+YAPILANDIRILMAMIS bir agac) dizinlerine girdi. Elle calistirarak (npx
+playwright test, gercek chromium + dev server) iki somut bulgu cikti,
+ikisi de rescue DEGIL -- bu turda commit'e giren kod yok.
+
+**Scratch: `frontend/tests/e2e/` (tum agac).** `playwright.config.ts`'nin
+`testDir: './src/test/e2e'` ayari bu agaci HIC KAPSAMIYOR -- yapilandirmada
+yer almiyor. Icerigi: 6 bos placeholder dizini (admin/, auth/, parent/,
+shared/, student/, teacher/), 3 tek-seferlik el-yapimi debug script'i
+(`run_register.cjs`, `run_dashboards.cjs`, `run_register_debug.cjs` --
+`require('playwright')` ile dogrudan chromium acan, assert'siz, console.log
+tabanli manuel dogrulama script'leri), 2 kayitli sonuc ekran goruntusu
+(`*_dashboard_result.png`), ve 1 taslak `register.spec.ts` (kendi
+dizinindeki `run_register.cjs`'den bile FARKLI selector'lar kullaniyor --
+`input[name="ad_soyad"]` (tek alan) vs `input[name="ad"]`+`input[name="soyad"]`
+(iki alan) -- ayni oturumda bile tutarsiz, hicbir zaman calistirilmamis
+gorunuyor). Tum dosyalar 2026-08-10 tarihli, tek bir ad-hoc oturumun
+kalintisi. Aksiyon gerekmiyor.
+
+**Rescue degil -- gercek, tekrar-uretilemez (nondeterministic) bulgu:
+`frontend/src/test/e2e/auth/login.spec.ts`.** 3 testin hepsi, hem paralel
+(3 worker) hem izole (1 worker, tek tek) calistirmada basarisiz oldu, AMA
+FARKLI calistirmalarda FARKLI hint metni gozlemlendi -- bu tesadufi
+degil, kok neden izinin GERCEK bir entegrasyon sorununa isaret ettigini
+gosteriyor:
+- 1. calistirma (3 paralel worker): basarili-giris testi h1'de "İçerdesin."
+  bekliyordu, "Tekrar hoş geldin." goruldu (uygulama 'tamam' durumuna hic
+  gecmedi); gecersiz-kimlik testi "E-posta ya da şifre eşleşmedi" bekliyordu,
+  "Bu adres yarım görünüyor..." (e-posta FORMAT hint'i) goruldu.
+- 2. calistirma (ayni test, izole, 1 worker): AYNI test bu kez "Islem
+  basarisiz. Lutfen tekrar deneyin." gordu -- ne HINT.eposta ne de
+  T.girisBasarisiz ile eslesen, GirisPage.tsx'in kendi sabitlerinde (HINT/T)
+  hic yer almayan uculcu bir metin.
+
+Kok neden izi (`GirisPage.tsx` -> `KiroLoginRoute.tsx` -> `authStore.ts`
+-> `authService.ts` -> `apiHelpers.ts`): mock hedefi
+(`**/api/v1/auth/login/secure`) gercek uc noktayla BIREBIR eslesiyor
+(authService.ts:20); istemci-tarafi e-posta regex'i test'in
+'invalid@kiro2.app' degerini node'da dogrulanmis sekilde GECERLI sayiyor
+(dogrula() bloklamamali). Yani mock URL'i yanlis degil, dogrulama
+regex'i suclu degil -- ama sonuc her calistirmada degisiyor. Bu bir
+"testin metni bayatlamis" durumu degil; ya mock/uygulama arasinda bir
+race condition var ya da `apiRequest`'in hata-govdesi okuma/yonlendirme
+mantiginda (bkz. apiHelpers.ts 401 dali) zamanlamaya bagli bir dal
+atlaniyor. Kok nedeni tam izole etmek bu turun kapsamini asiyor
+(uygulama tarafinda instrumentasyon gerektirir) -- bu yuzden "duzelt"
+yerine kanitlanmis-ama-cozulmemis bulgu olarak birakiliyor.
+
+**Rescue degil -- sahte/stub yardimci: `frontend/src/test/e2e/utils/
+db-connector.ts`.** Dosyanin kendi basligi "Google AI Ultra - Database
+& State Connector Utility" -- bu kampanyanin degil, HARICI bir aracin
+uretimi. `DBStateConnector.verifyActiveUserSession()` docstring'i "gercek
+PostgreSQL ve Redis durumu" dogrulamasi vaat ediyor ama girdisi ne
+olursa olsun SABIT bir mock nesnesi donduruyor -- hicbir DB'ye
+baglanmiyor. Tek tuketicisi `student/cat-algorithm.spec.ts` (o da
+untracked) -- yani o dosyanin DB-durumu iddia eden assertion'lari
+gercekte totolojik (kendi mock'una karsi test ediyor).
+
+**Bu turda incelenmedi, backlog'ta kaldi:** `auth/register.spec.ts`,
+`auth/security.spec.ts`, `auth/veli-onay.spec.ts`, `student/
+cat-algorithm.spec.ts`, `all-pages-coverage.spec.ts`,
+`comprehensive_audit.spec.ts`, `content-purpose-audit.spec.ts`,
+`student-happy-path.spec.ts` -- hepsi ayni "harici/toplu-uretim" izini
+tasiyor (bkz. db-connector.ts basligi), bu yuzden bir sonraki turda
+tek tek degil, once toplu bir kaynak/tarih taramasiyla ele alinmasi
+daha verimli olabilir.
+
+**Kalan kapsam:** SS10.7'deki 555 dosyadan commit edilen sayi bu turda
+DEGISMEDI (45, bkz. §10.28) -- bu turun bulgulari rescue uretmedi.
+`frontend/tests/e2e/` scratch olarak kapandi (aksiyon gerekmiyor).
+Kalan: yukaridaki 8 incelenmemis e2e spec'i, kok dizin deploy/dokuman
+dosyalari, `predictive_analytics.py` (urun karari),
+`application/commands/.kontrol/` (hala hic bakilmadi),
+`backend/scripts/`'teki 11 dosya (bkz. §10.26/§10.27).
+
+**Ayri not -- eski plan (stateful-shimmying-papert.md) Faz 5/6 sapmasi:**
+Bu turda eski PR #62 backlog plani yeniden kontrol edildi (SS10.7'nin
+parcasi degil, ayri bir plan). Faz 0 (yerel temizlik), Faz 1 (test gate
+fix), Faz 2 (auth.py refresh-token persist), Faz 3 (fsrs.py lint borcu),
+Faz 4 (temiz-kopya olcum script'i) `git log --all` ile DOGRULANDI --
+hepsi merge edilmis ve belgelenmis (PR #68/#69/#70, `6cfbf44b4` "eski
+plan kapanisi"). Ancak Faz 5 (dependabot) ve Faz 6 (CodeQL
+false-positive) planin orijinal kapsamindan (o zamanki ~20 PR / 5
+alert) COK sapmis: su an 12 acik dependabot PR'i var (en eskisi
+2026-06-15'ten beri, 2.5+ ay acik), 30 acik CodeQL alert'i var. Planin
+orijinal PR numaralari (#43 marshmallow, #46 structlog, #47 matplotlib)
+artik listede YOK (coktan cozulmus), ama yerlerine yenileri birikmis.
+Bu, "eski planin devami" olarak sessizce ustlenilecek bir is degil --
+kendi triyaj turunu hak eden YENI, daha genis bir bulgu; bu yuzden
+burada not dusulup Hüseyin'e birakiliyor.
