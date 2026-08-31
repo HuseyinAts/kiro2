@@ -120,7 +120,7 @@ dependencies = [
     "opentelemetry-instrumentation-logging==0.65b0",
     "opentelemetry-exporter-jaeger==1.21.0",
     "opentelemetry-exporter-jaeger-thrift==1.21.0",
-    "opentelemetry-exporter-otlp==1.21.0",
+    "opentelemetry-exporter-otlp==1.44.0",
 
     # Error Tracking
     "sentry-sdk[fastapi]==1.40.0",
