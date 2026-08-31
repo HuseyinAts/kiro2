@@ -96,6 +96,15 @@ transformers>=4.35.0
 torch>=2.1.0
 nltk==3.8.1
 
+# Spaced Repetition (FSRS)
+# services/fsrs_v6_service.py `from fsrs import Card, Rating, Scheduler` -- bu paket
+# ONCEDEN bu dosyada hic yoktu, 22 dosyada (canli production kodu dahil) kullaniliyordu.
+# Eksikligi import'un sessizce ImportError'a dusup FSRSService'in stub degerlere
+# (first_review -> sabit 2.3/5.0) geri dusmesine yol aciyordu -- test hatasi degil,
+# spaced-repetition zamanlamasinin sessizce bozulmasi (bkz. docs/guvenlik-borcu.md SS10.32).
+# Servis docstring'i fsrs==6.3.1 ile 3 kez yeniden yazildigini belirtiyor, o surumle sabitleniyor.
+fsrs==6.3.1
+
 # Reporting
 reportlab==4.0.7
 
