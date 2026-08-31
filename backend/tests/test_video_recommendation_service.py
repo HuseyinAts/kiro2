@@ -8,12 +8,11 @@ ErrorHandler ve CircuitBreaker için comprehensive unit tests
 Requirements: 11.1, 11.2
 """
 
-import pytest
-
-pytestmark = pytest.mark.skipif(True, reason="sentence_transformers/transformers package conflict at collection time")
-
 import asyncio
+import warnings
 from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 # Service imports
 try:
@@ -41,8 +40,19 @@ try:
         StudentProfile,
         VideoRecommendationService,
     )
-except (ImportError, ModuleNotFoundError):
-    pass
+except (ImportError, ModuleNotFoundError) as e:
+    # Bilerek yutuluyor: bu blok, servis modullerinden biri bu ortamda
+    # import edilemese bile dosyanin collect edilebilmesini sagliyor
+    # (orn. opsiyonel bir alt-bagimlilik eksikse). Ama SESSIZ olmamali --
+    # aksi halde asagidaki testler NameError ile confusing sekilde patlar
+    # (bkz. SS10.32: nn NameError kok nedeni tam da boyle gizlenmisti).
+    warnings.warn(
+        f"test_video_recommendation_service.py: servis importlarindan biri "
+        f"basarisiz oldu, asagidaki testler collect/run asamasinda "
+        f"NameError ile patlayabilir: {e}",
+        ImportWarning,
+        stacklevel=2,
+    )
 
 
 # ==================== VideoRecommendationService Tests ====================
@@ -157,7 +167,7 @@ class TestVideoRecommendationService:
         mock_cache.get = AsyncMock(return_value=None)
 
         # Act
-        result = await video_service.get_recommendations(
+        await video_service.get_recommendations(
             sample_student_profile, "test-request-123"
         )
 
@@ -270,10 +280,12 @@ class TestVideoRecommendationService:
 
     def test_determine_difficulty_baslangic(self, video_service):
         """Test başlangıç difficulty determination"""
+        # NOT: donus degeri ASCII - services/youtube/models.py::DifficultyLevel.BASLANGIC
+        # enum degeriyle ("baslangic") eslesir, "başlangıç" degil.
         current_level = {"matematik": 20}
         assert (
             video_service._determine_difficulty("matematik", current_level)
-            == "başlangıç"
+            == "baslangic"
         )
 
     def test_determine_difficulty_orta(self, video_service):
@@ -670,8 +682,8 @@ class TestCircuitBreaker:
             raise Exception("Test failure")
 
         # Act & Assert
-        for i in range(3):
-            with pytest.raises(Exception):
+        for _i in range(3):
+            with pytest.raises(Exception):  # noqa: B017 - failing_func kasitli olarak generic Exception firlatiyor (circuit breaker'in HERHANGI bir hatayi sayip saymadigini test ediyoruz)
                 await circuit_breaker.call(failing_func)
 
         assert circuit_breaker.state == CircuitState.OPEN
@@ -685,8 +697,8 @@ class TestCircuitBreaker:
             raise Exception("Test failure")
 
         # Open the circuit
-        for i in range(3):
-            with pytest.raises(Exception):
+        for _i in range(3):
+            with pytest.raises(Exception):  # noqa: B017 - failing_func kasitli olarak generic Exception firlatiyor (circuit breaker'in HERHANGI bir hatayi sayip saymadigini test ediyoruz)
                 await circuit_breaker.call(failing_func)
 
         # Act & Assert
@@ -702,8 +714,8 @@ class TestCircuitBreaker:
             raise Exception("Test failure")
 
         # Open the circuit
-        for i in range(3):
-            with pytest.raises(Exception):
+        for _i in range(3):
+            with pytest.raises(Exception):  # noqa: B017 - failing_func kasitli olarak generic Exception firlatiyor (circuit breaker'in HERHANGI bir hatayi sayip saymadigini test ediyoruz)
                 await circuit_breaker.call(failing_func)
 
         # Manually transition to half-open
@@ -742,7 +754,7 @@ class TestCircuitBreaker:
         circuit_breaker._transition_to_half_open()
 
         # Act & Assert
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017 - failing_func kasitli olarak generic Exception firlatiyor
             await circuit_breaker.call(failing_func)
 
         assert circuit_breaker.state == CircuitState.OPEN
@@ -786,7 +798,7 @@ class TestCircuitBreaker:
             raise Exception("Test failure")
 
         # Act
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017 - failing_func kasitli olarak generic Exception firlatiyor
             await circuit_breaker.call(failing_func)
 
         stats = circuit_breaker.get_stats()
@@ -807,8 +819,8 @@ class TestCircuitBreaker:
             raise Exception("Test failure")
 
         # Open the circuit
-        for i in range(3):
-            with pytest.raises(Exception):
+        for _i in range(3):
+            with pytest.raises(Exception):  # noqa: B017 - failing_func kasitli olarak generic Exception firlatiyor (circuit breaker'in HERHANGI bir hatayi sayip saymadigini test ediyoruz)
                 await circuit_breaker.call(failing_func)
 
         # Act
