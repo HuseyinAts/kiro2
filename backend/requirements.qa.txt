@@ -111,7 +111,7 @@ opentelemetry-instrumentation==0.42b0
 opentelemetry-instrumentation-fastapi==0.65b0
 opentelemetry-exporter-jaeger==1.21.0
 opentelemetry-exporter-jaeger-thrift==1.21.0
-opentelemetry-exporter-otlp==1.21.0
+opentelemetry-exporter-otlp==1.44.0
 
 # Error Tracking
 sentry-sdk[fastapi]==1.40.0
