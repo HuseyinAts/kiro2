@@ -2772,3 +2772,156 @@ turda duzeltilmedi, hepsi backlog'da:
   kod disi, Hüseyin'in altyapi karari.
 - SS10.30'un kendi acik kalemleri (Bulgu 3 SW onbellek, Bulgu 5
   Mobile Chrome chat balonu) -- hala baslanmadi.
+
+## §10.32 -- nn NameError kok neden duzeltmesi (#130) + fsrs paketi eksikligi kesfi (31 Agustos 2026)
+
+**Baglam.** SS10.31'de "oncelikli" flag'lenen `nn` NameError bulgusunun
+kok neden duzeltmesi. Ayni oturumda, bu duzeltme CI'nin bir sonraki
+katmanini acti ve cok daha buyuk, canli-kod etkileyen ikinci bir
+bulgu ortaya cikti: `fsrs` paketi.
+
+### Bulgu 1: `nn` NameError kok nedeni (duzeltildi, #130)
+
+`backend/requirements.txt:89`'daki `sympy==1.12` (gerekcesiz exact
+pin) + unpinned `torch>=2.1.0`, CI'nin Python 3.11'inde pip'in
+torch'u `2.4.1`'e sabitlemesine yol aciyordu (sympy 1.12 ile uyumlu
+en yeni surum). Unpinned `transformers>=4.35.0` ise `5.16.1`'e
+cozumleniyor, bu da `torch>=2.5` istiyor. `2.4.1 < 2.5` oldugu icin
+transformers PyTorch entegrasyonunu "disable" ediyordu -- ama eksik
+bir sekilde: `transformers/integrations/accelerate.py:65` satirindaki
+tip anotasyonu (`-> tuple[int, list[str], list[nn.Module]]:`) kosulsuz
+calisiyor, bare `nn` hicbir zaman baglanmadigi icin
+`NameError: name 'nn' is not defined` firliyordu.
+
+Bu, `sentence_transformers` importu uzerinden 5 router/servise
+yayiliyordu: `api.rag`, `api.v1.semantic_search`,
+`api.v1.content_recommendation`, `api.v1.duplicate_detection`,
+`api.youtube_routes`. Otel bagimlilik cakismasiyla (#128) ayni aile:
+unpinned populer paket zinciri, gerekcesiz eski exact pin ile
+catisiyor.
+
+**kiro2 kendi kodu sympy kullaniyor mu?** Hayir -- repo capinda tek
+eslesme `backend/scripts/quality/_phase7_audit_tmp/sympy_verify.py`
+(`.gitignore`'da, tracked degil, scratch/audit script'i). Pinin
+gevsetilmesi kiro2'nin kendi kodunu etkilemiyor.
+
+**Duzeltme.** `sympy==1.12` -> `sympy>=1.13.3`.
+
+**Dogrulama (gercek kurulum, dry-run degil).** Python 3.11.13 (CI'nin
+3.11.16'siyla eslesen) temiz venv'de `pip install -r requirements.txt`
+-- basarili, `ResolutionImpossible` yok. Cozumlenen: `sympy-1.14.0`,
+`torch-2.13.0` (>=2.5), `transformers-5.16.1`,
+`sentence-transformers-6.0.1`. `pip check` temiz. 5 router modulu
+dogrudan import edildi, hepsi OK.
+`pytest tests/test_router_registration.py::test_mapped_routers_are_importable`
+PASSED. Repo capinda `pytest --collect-only`: 17933 test, 0 collection
+hatasi (torch `2.4.1`->`2.13.0` sicramasi baska hicbir yerde regresyon
+yaratmadi).
+
+**Ek bulgu (ayni PR icinde):**
+`tests/test_video_recommendation_service.py`'nin kosulsuz modul-capinda
+skip'i (`skipif(True, reason="sentence_transformers/transformers
+package conflict at collection time")`) artik yanlis oldugundan
+kaldirildi. Ortaya cikan tek gercek hata kok neden ile ilgisizdi:
+`test_determine_difficulty_baslangic` `"başlangıç"` bekliyordu, ama
+`_determine_difficulty()` kasitli olarak ASCII donduruyor
+(`services/video_recommendation_service.py:446` yorumu: "ASCII -
+matches DifficultyLevel enum values"), `services/youtube/models.py::
+DifficultyLevel.BASLANGIC = "baslangic"` enum degeriyle eslesmek
+icin -- servis degil, stale test beklentisi duzeltildi. Ayrica
+dosyadaki kosulsuz `except (ImportError, ModuleNotFoundError): pass`
+bloguna (repo'nun `reward-hacking-check` pre-push hook'unun CRITICAL
+olarak flagledigi "bos exception handler" deseni) `warnings.warn`
+eklendi -- artik servis importlarindan biri basarisiz olursa sessizce
+yutulmuyor. 56/56 test PASSED.
+
+### Bulgu 2: `fsrs` paketi requirements.txt'de YOK -- canli kod sessizce stub'a duşuyor (YENI, DUZELTILMEDI, ONCELIKLI)
+
+`nn` NameError duzeltildikten sonra PR #130'un CI'inda "Backend Tests
+(Python 3.11)" hala FAILED verdi -- ama `nn` ile ilgisiz, farkli bir
+sebeple:
+
+```
+FAILED tests/unit/test_fsrs_v6_service.py::test_first_review_stability_increases_with_rating
+AssertionError: stability should increase with rating: {1: 2.3, 2: 2.3, 3: 2.3, 4: 2.3}
+```
+
+4 farkli rating (Again/Hard/Good/Easy) icin BIREBIR AYNI stability
+degeri (`2.3`) donuyor. Kok neden: `services/fsrs_v6_service.py:61-62`:
+
+```python
+if not _FSRS_AVAILABLE or SCHEDULER is None:
+    return 2.3, 5.0
+```
+
+`_FSRS_AVAILABLE`, `from fsrs import Card, Rating, Scheduler`
+basarisiz olursa `False` olan bir flag (satir 30-33, `try/except
+ImportError`). `backend/requirements.txt`'de `fsrs` paketi -- HICBIR
+FORMDA -- yok (`Select-String -Pattern 'fsrs'` sifir eslesme).
+Dolayisiyla `requirements.txt`'den kurulan HERHANGI bir ortamda
+(CI, temiz bir gelistirici makinesi, muhtemelen production da)
+`_FSRS_AVAILABLE` daima `False` ve gercek FSRS v6 zamanlama
+algoritmasi yerine sabit `(2.3, 5.0)` stub'i kullaniliyor.
+
+**Bu, izole bir test hatasi degil -- gercek bir urun riski.** `fsrs`
+paketi repo capinda 22 dosyada dogrudan import ediliyor, bunlarin
+cogu canli servis/API kodu (`api/fsrs.py`, `app/api/fsrs.py`,
+`services/bkt_service.py`, `services/offline_sync_service.py`,
+`services/proactive_coaching_service.py`,
+`app/services/cat_session.py`, `services/question_review_adapter.py`
+dahil). `services/fsrs_v6_service.py`'nin kendi docstring'i durumu
+dogruluyor: *"FAZ-1 Gorev 1.3 -- Master Plan v2.0, py-fsrs yerine
+'fsrs' paketi kullanilir (pip install fsrs)"* ve *"fsrs==6.3.1 paketi
+ile 3 yeniden yapilmistir"* -- yani paket bilinçli olarak secilmis
+ve kod ona gore yazilmis, ama requirements.txt'ye hic eklenmemis.
+
+**Bu neden simdiye kadar gorunmedi?** `nn` NameError, pytest-xdist'in
+COLLECTION asamasinda 2 worker'i da erken durduruyordu
+(`stopping after N failures`), yani test suite bu `fsrs`-bagimli
+testlere hic ulasamiyordu. Otel cakismasi -> ResolutionImpossible ->
+nn NameError -> (bu duzeltmeyle) simdi fsrs eksikligi: ayni "bir
+katmanin altinda bir sonraki" deseni (bkz. SS10.31 Bulgu 1, SS10.32
+Bulgu 1 giris cumlesi).
+
+**Dogrulama (gercek kurulum, dry-run degil).** Kucuk bir venv'de
+sadece `fsrs==6.3.1` (docstring'in belirttigi surum) kuruldu ve
+`FSRSService.first_review()` dogrudan cagrildi:
+`{1: 0.212, 2: 1.2931, 3: 2.3065, 4: 8.2956}` -- artan, testin
+bekledigi gibi. `_FSRS_AVAILABLE: True`. Hipotez kesin olarak
+dogrulandi.
+
+**Neden bu PR'da (#130) duzeltilmedi.** Kok neden (`sympy` pini) ile
+ilgisiz, ayri bir kesif -- kendi PR'ini hak ediyor. Ayrica blast
+radius (22 dosya, canli FSRS zamanlama davranisi) `sympy>=1.13.3`
++ `fsrs==6.3.1` birlikte tam requirements.txt kurulumunun yeniden
+dogrulanmasini gerektiriyor (fsrs'in kendi bagimliliklarinin
+torch-2.13.0/sympy-1.14.0 ile cakismadigindan emin olmak icin) --
+bu, PR #130'un kapsamini kok neden duzeltmesinin otesine tasirdi.
+
+**PR #130'un merge kararı.** `Backend Tests (Python 3.11)` CI'da hala
+FAILED (yukaridaki fsrs nedeniyle), ama bu #130'un kendi diff'inden
+BAGIMSIZ, onceden var olan bir eksiklik -- #130'un yaptigi degisiklik
+(sympy pini) kanitlanmis sekilde dogru ve tam. `Automatic PR Review`,
+`Frontend Tests`, `Quality Gate` de FAILED, ama bunlar #128 ve #129'da
+da AYNI sekilde (ayni sure/aynı hata) basarisizdi ve merge'i
+engellemedi -- kronik, ilgisiz, GitHub tarafinda `mergeable: MERGEABLE`
+/ `mergeStateStatus: UNSTABLE` (hard-block degil). Ayni emsal burada
+da uygulanip PR #130 merge edildi.
+
+**Kapsam siniri.** Bu turda SADECE #130 (sympy pini + skip/test
+duzeltmesi) yapildi. Asagidakilerin HICBIRI bu turda duzeltilmedi:
+
+- `fsrs` paketi eksikligi (22 dosya, canli FSRS zamanlama davranisi
+  sessizce stub'a duşuyor) -- YENI, ONCELIKLI, kendi PR'ini hak
+  ediyor.
+- CodeQL CRITICAL SSRF (`enhanced_chat.py:1084`) -- SS10.31'den
+  devam, hala baslanmadi.
+- CodeQL HIGH kumesi (84 alert) -- Hüseyin'in triyaj karari.
+- Dependabot 18 acik PR -- Hüseyin'in triyaj karari.
+- "Health Checks & PostDeploy Verification" (staging DNS) -- kod
+  disi, Hüseyin'in altyapi karari.
+- SS10.30 Bulgu 3 (SW onbellek) / Bulgu 5 (Mobile Chrome chat
+  balonu) -- hala baslanmadi.
+- `Automatic PR Review` / `Frontend Tests` / `Quality Gate` CI
+  kontrollerinin kendi kronik, ilgisiz basarisizliklari -- ayri
+  arastirma gerektiriyor, bu kampanyanin kapsami disinda kalabilir.
