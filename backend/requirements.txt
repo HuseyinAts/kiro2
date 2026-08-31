@@ -115,7 +115,7 @@ pyttsx3==2.90
 pdfplumber==0.11.0
 pypdf==6.12.2
 pytesseract==0.3.10
-pdf2image==1.16.3
+pdf2image==1.17.0
 
 # OCR & Vision
 easyocr==1.7.1

@@ -130,7 +130,7 @@ ormsgpack==1.12.2
 packaging==26.0
 pandas==3.0.0
 passlib==1.7.4
-pdf2image==1.16.3
+pdf2image==1.17.0
 pdfminer.six==20231228
 pdfplumber==0.11.0
 pillow==12.1.0
