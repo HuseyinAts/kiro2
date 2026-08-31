@@ -9,6 +9,7 @@ Requirements: 11.1, 11.2
 """
 
 import asyncio
+import warnings
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -39,8 +40,19 @@ try:
         StudentProfile,
         VideoRecommendationService,
     )
-except (ImportError, ModuleNotFoundError):
-    pass
+except (ImportError, ModuleNotFoundError) as e:
+    # Bilerek yutuluyor: bu blok, servis modullerinden biri bu ortamda
+    # import edilemese bile dosyanin collect edilebilmesini sagliyor
+    # (orn. opsiyonel bir alt-bagimlilik eksikse). Ama SESSIZ olmamali --
+    # aksi halde asagidaki testler NameError ile confusing sekilde patlar
+    # (bkz. SS10.32: nn NameError kok nedeni tam da boyle gizlenmisti).
+    warnings.warn(
+        f"test_video_recommendation_service.py: servis importlarindan biri "
+        f"basarisiz oldu, asagidaki testler collect/run asamasinda "
+        f"NameError ile patlayabilir: {e}",
+        ImportWarning,
+        stacklevel=2,
+    )
 
 
 # ==================== VideoRecommendationService Tests ====================
