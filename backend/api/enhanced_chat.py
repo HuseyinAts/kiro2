@@ -1006,12 +1006,51 @@ async def _extract_text_from_pdf(file_bytes: bytes) -> str:
 _URL_FETCH_MAX_REDIRECTS = 5
 
 
+def _ssrf_guvenli_ipler(hostname: str) -> tuple[list[str] | None, str]:
+    """hostname'i cozumler, TUM cozumlenen IP'lerin guvenli olup olmadigini
+    denetler. (ip_listesi, hata_mesaji) doner -- basarisizsa ip_listesi None.
+
+    _ssrf_url_guvenli VE _ssrf_pinli_istek_bilgisi'nin PAYLASTIGI tek
+    dogrulama noktasi -- iki ayri kopya olsaydi biri duzeltilip digeri
+    unutulabilirdi.
+    """
+    import ipaddress
+    import socket
+
+    try:
+        infos = socket.getaddrinfo(hostname, None)
+    except (socket.gaierror, ValueError, UnicodeError):
+        return None, "URL cozumlenemedi."
+
+    ipler: list[str] = []
+    for info in infos:
+        try:
+            addr = ipaddress.ip_address(info[4][0])
+        except ValueError:
+            return None, "URL cozumlenemedi."
+        if (
+            addr.is_private
+            or addr.is_loopback
+            or addr.is_link_local
+            or addr.is_reserved
+            or addr.is_multicast
+            or addr.is_unspecified
+        ):
+            return None, "Yerel/dahili ag adreslerine erisim engellenmistir."
+        ipler.append(info[4][0])
+
+    if not ipler:
+        return None, "URL cozumlenemedi."
+    return ipler, ""
+
+
 def _ssrf_url_guvenli(url: str) -> tuple[bool, str]:
     """URL'nin SSRF acisindan guvenli olup olmadigini dogrular.
 
     (guvenli, hata_mesaji) doner. Bu bekci TEK bir hop'u dener; cagiran
     taraf ilk URL'yi VE her yonlendirme hedefini ayri ayri buradan gecirir
-    (bkz. _fetch_url_content). CodeQL py/full-ssrf (alert #114, CWE-918).
+    (bkz. _fetch_url_content). CodeQL py/full-ssrf (alert #114 -> #2976,
+    CWE-918).
 
     Kapsanan bosluklar:
       - Sema: yalniz http/https (file://, gopher://, dict:// vb. reddedilir).
@@ -1021,15 +1060,13 @@ def _ssrf_url_guvenli(url: str) -> tuple[bool, str]:
       - private / loopback / link-local (169.254.169.254 = bulut metadata) /
         reserved / multicast / unspecified araliklarinin tumu engellenir.
 
-    Bilinen kalinti (kabul edildi): getaddrinfo on-cozumlemesi ile httpx'in
-    fiili baglanti cozumlemesi ayri oldugundan teorik bir DNS-rebinding /
-    TOCTOU penceresi kalir. Sifirlamak icin cozulen IP'ye baglanip Host
-    basligini elde tutmak gerekir (TLS SNI ile karmasik); pratikte pencere
-    cok dar ve asil somurulen yol olan yonlendirme-ile-metadata bu bekciyle
-    kapatildi.
+    Not (SS10.34): burada eskiden "bilinen kalinti (kabul edildi)" olarak
+    belgelenen DNS-rebinding / TOCTOU penceresi artik ACIK DEGIL --
+    _fetch_url_content, bu fonksiyonun kullandigi PAYLASILAN dogrulamanin
+    cozumledigi IP'ye pinlenir (bkz. _ssrf_pinli_istek_bilgisi). Bu
+    fonksiyon (sadece bool doner, IP donmez) mevcut cagiranlar/testler
+    icin oldugu gibi korunuyor.
     """
-    import ipaddress
-    import socket
     from urllib.parse import urlparse
 
     parsed = urlparse(url)
@@ -1038,27 +1075,84 @@ def _ssrf_url_guvenli(url: str) -> tuple[bool, str]:
     if not parsed.hostname:
         return False, "Gecersiz URL."
 
-    try:
-        infos = socket.getaddrinfo(parsed.hostname, None)
-    except (socket.gaierror, ValueError, UnicodeError):
-        return False, "URL cozumlenemedi."
-
-    for info in infos:
-        try:
-            addr = ipaddress.ip_address(info[4][0])
-        except ValueError:
-            return False, "URL cozumlenemedi."
-        if (
-            addr.is_private
-            or addr.is_loopback
-            or addr.is_link_local
-            or addr.is_reserved
-            or addr.is_multicast
-            or addr.is_unspecified
-        ):
-            return False, "Yerel/dahili ag adreslerine erisim engellenmistir."
-
+    ipler, hata = _ssrf_guvenli_ipler(parsed.hostname)
+    if ipler is None:
+        return False, hata
     return True, ""
+
+
+def _host_netloc_bicimi(host: str) -> str:
+    """IPv6 host'u URL-authority/Host-basligi icin kose parantezle sarar
+    (RFC 3986 SS3.2.2 / RFC 7230 SS5.4); IPv4/hostname oldugu gibi doner.
+    """
+    import ipaddress
+
+    try:
+        if ipaddress.ip_address(host).version == 6:
+            return f"[{host}]"
+    except ValueError:
+        pass
+    return host
+
+
+def _ssrf_pinli_istek_bilgisi(
+    url: str,
+) -> tuple[str, str, str, str] | tuple[None, None, None, str]:
+    """URL'yi dogrular ve IP-pinlenmis istek bilgisini hazirlar.
+
+    Basarili: (pinli_url, host_basligi, sni_hostname, "").
+    Basarisiz: (None, None, None, hata_mesaji).
+
+    IP-pinleme, SS10.34'un kapattigi DNS-rebinding / TOCTOU acigi icindir:
+    _ssrf_guvenli_ipler'in COZUMLEDIGI IP dogrudan httpx'e verilir (hostname
+    degil) -- boylece httpx/httpcore bu istek icin AYRICA getaddrinfo
+    cagirmaz (host zaten IP literal ise DNS round-trip yok). TLS sertifika
+    dogrulamasi gercek hostname'e karsi calismaya devam eder:
+    extensions={"sni_hostname": ...} httpcore'un baglanti kurulumunda
+    `server_hostname = sni_hostname or origin.host` olarak kullanilir
+    (bkz. httpcore._async.connection.AsyncHTTPConnection._connect,
+    httpcore 1.0.9 kaynagi elle dogrulandi). Gercek bir HTTPS sitesine
+    (dogrulanmis IP + dogru sni_hostname) 200 alindi; yanlis sni_hostname
+    ile ayni IP'ye TLS handshake basarisiz oldu -- sertifika dogrulamasi
+    BYPASS EDILMEDI, sadece dogru hostname'e karsi calisiyor. Host basligi
+    ayni sekilde elle verilir: httpx yalniz Host ONCEDEN AYARLI DEGILSE
+    otomatik ekliyor (bkz. httpx._models.Request._prepare, has_host kontrolu).
+    """
+    from urllib.parse import urlparse, urlunparse
+
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        return None, None, None, "Sadece http ve https URL'ler desteklenir."
+    if not parsed.hostname:
+        return None, None, None, "Gecersiz URL."
+
+    ipler, hata = _ssrf_guvenli_ipler(parsed.hostname)
+    if ipler is None:
+        return None, None, None, hata
+
+    ip = ipler[0]
+    host_kismi = _host_netloc_bicimi(ip)
+    netloc = f"{host_kismi}:{parsed.port}" if parsed.port else host_kismi
+    if parsed.username:
+        auth = parsed.username
+        if parsed.password:
+            auth += f":{parsed.password}"
+        netloc = f"{auth}@{netloc}"
+
+    pinli_url = urlunparse(
+        (
+            parsed.scheme,
+            netloc,
+            parsed.path,
+            parsed.params,
+            parsed.query,
+            parsed.fragment,
+        )
+    )
+
+    hostname_kismi = _host_netloc_bicimi(parsed.hostname)
+    host_basligi = f"{hostname_kismi}:{parsed.port}" if parsed.port else hostname_kismi
+    return pinli_url, host_basligi, parsed.hostname, ""
 
 
 async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
@@ -1067,7 +1161,9 @@ async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
     follow_redirects=False + manuel, her-hop dogrulanan yonlendirme takibi:
     httpx'in dogrulanmamis 3xx takibi bir public URL'den bulut metadata /
     dahili servise SSRF yolu aciyordu (alert #114). Artik ilk URL de her
-    yonlendirme hedefi de _ssrf_url_guvenli'den gecirilir.
+    yonlendirme hedefi de _ssrf_pinli_istek_bilgisi'nden gecirilir VE
+    dogrulanan IP'ye pinlenir (SS10.34, alert #2976 -- DNS-rebinding /
+    TOCTOU kapanisi, bkz. o fonksiyonun dokumantasyonu).
     """
     from urllib.parse import urljoin
 
@@ -1077,12 +1173,19 @@ async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:
             for _hop in range(_URL_FETCH_MAX_REDIRECTS + 1):
-                guvenli, mesaj = _ssrf_url_guvenli(current)
-                if not guvenli:
-                    return mesaj
+                pinli_url, host_basligi, sni_hostname, hata = _ssrf_pinli_istek_bilgisi(
+                    current
+                )
+                if pinli_url is None:
+                    return hata
 
                 resp = await client.get(
-                    current, headers={"User-Agent": "KIRO2-Bot/1.0"}
+                    pinli_url,
+                    headers={
+                        "User-Agent": "KIRO2-Bot/1.0",
+                        "Host": host_basligi,
+                    },
+                    extensions={"sni_hostname": sni_hostname},
                 )
 
                 if resp.is_redirect:

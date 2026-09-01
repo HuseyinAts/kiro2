@@ -1,6 +1,6 @@
-"""SSRF sertlestirme testleri — api/enhanced_chat.py URL getirme yolu.
+"""SSRF sertlestirme testleri -- api/enhanced_chat.py URL getirme yolu.
 
-Kaynak: CodeQL code-scanning alert #114 (py/full-ssrf, CWE-918),
+Kaynak: CodeQL code-scanning alert #114 -> #2976 (py/full-ssrf, CWE-918),
 backend/api/enhanced_chat.py:_fetch_url_content.
 
 Bekci sozlesmesi:
@@ -10,6 +10,12 @@ Bekci sozlesmesi:
   3. Cok-A-kayitli isimde IP'lerden HERHANGI biri dahili ise reddedilir.
   4. Public bir URL 3xx ile dahili bir adrese YONLENDIRSE bile, yonlendirme
      hedefi ayrica dogrulandigi icin istek dahili adrese ULASMAZ.
+  5. (SS10.34) Fiili istek, dogrulama sirasinda cozumlenen IP'ye PINLENIR --
+     httpx/httpcore bu istek icin AYRICA getaddrinfo cagirmaz, TLS sertifika
+     dogrulamasi extensions={"sni_hostname": ...} ile gercek hostname'e
+     karsi calismaya devam eder. Bu, onceki surumde "bilinen kalinti
+     (kabul edildi)" olarak belgelenen DNS-rebinding / TOCTOU penceresini
+     kapatir.
 """
 
 import asyncio
@@ -17,7 +23,13 @@ from unittest.mock import patch
 
 import pytest
 
-from api.enhanced_chat import _fetch_url_content, _ssrf_url_guvenli
+from api.enhanced_chat import (
+    _fetch_url_content,
+    _host_netloc_bicimi,
+    _ssrf_guvenli_ipler,
+    _ssrf_pinli_istek_bilgisi,
+    _ssrf_url_guvenli,
+)
 
 
 # tests/conftest.py:335 global_db_manager_cleanup SESSION-kapsamli autouse async
@@ -117,6 +129,65 @@ def test_cok_a_kaydinda_bir_dahili_yeter():
 
 
 # --------------------------------------------------------------------------
+# 2b) Bekci birimi: _ssrf_pinli_istek_bilgisi (SS10.34 -- IP-pinleme)
+# --------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "kotu_url",
+    ["file:///etc/passwd", "gopher://127.0.0.1:6379/_INFO"],
+)
+def test_pinli_sema_disi_reddedilir(kotu_url):
+    pinli_url, host_basligi, sni, hata = _ssrf_pinli_istek_bilgisi(kotu_url)
+    assert pinli_url is None
+    assert host_basligi is None
+    assert sni is None
+    assert "http" in hata
+
+
+def test_pinli_dahili_ip_reddedilir():
+    with patch("socket.getaddrinfo", _mock_getaddrinfo("127.0.0.1")):
+        pinli_url, _, _, hata = _ssrf_pinli_istek_bilgisi("http://kotu.example/x")
+    assert pinli_url is None
+    assert "engellenmistir" in hata
+
+
+def test_pinli_public_url_ipye_pinlenir():
+    with patch("socket.getaddrinfo", _mock_getaddrinfo("93.184.216.34")):
+        pinli_url, host_basligi, sni, hata = _ssrf_pinli_istek_bilgisi(
+            "http://example.com/yol?q=1"
+        )
+    assert hata == ""
+    assert pinli_url == "http://93.184.216.34/yol?q=1"
+    assert host_basligi == "example.com"
+    assert sni == "example.com"
+
+
+def test_pinli_port_korunur():
+    with patch("socket.getaddrinfo", _mock_getaddrinfo("93.184.216.34")):
+        pinli_url, host_basligi, sni, _ = _ssrf_pinli_istek_bilgisi(
+            "https://example.com:8443/x"
+        )
+    assert pinli_url == "https://93.184.216.34:8443/x"
+    assert host_basligi == "example.com:8443"
+    assert sni == "example.com"
+
+
+def test_host_netloc_bicimi_ipv6_koseli_parantez():
+    assert _host_netloc_bicimi("2001:db8::1") == "[2001:db8::1]"
+    assert _host_netloc_bicimi("93.184.216.34") == "93.184.216.34"
+    assert _host_netloc_bicimi("example.com") == "example.com"
+
+
+def test_ssrf_guvenli_ipler_ve_url_guvenli_ayni_sonucu_verir():
+    """Paylasilan dogrulama noktasi: iki cagiran da ayni girdide anlasmali."""
+    with patch("socket.getaddrinfo", _mock_getaddrinfo("10.0.0.1")):
+        ipler, hata1 = _ssrf_guvenli_ipler("dahili.example")
+        guvenli, hata2 = _ssrf_url_guvenli("http://dahili.example/x")
+    assert ipler is None
+    assert guvenli is False
+    assert hata1 == hata2
+
+
+# --------------------------------------------------------------------------
 # 3) Uctan uca: public URL, metadata'ya YONLENDIRME denemesi
 # --------------------------------------------------------------------------
 @pytest.mark.asyncio
@@ -127,15 +198,17 @@ async def test_yonlendirme_ile_metadata_engellenir():
     atilmaz; sonuc bir hata mesajidir, metadata icerigi DEGIL.
     """
     cagrilan_url = []
+    cagrilan_headers = []
+    cagrilan_extensions = []
 
     class _SahteClient:
         def __init__(self, *a, **k):
             # SSRF sertlestirmesinin cekirdegi: yonlendirmeler KAPALI olmali ki
             # her hop elle dogrulanabilsin. _fetch_url_content'in bu sozlesmeyi
             # tuttugunu burada dogruluyoruz.
-            assert k.get("follow_redirects") is False, (
-                "SSRF: follow_redirects=False bekleniyordu"
-            )
+            assert (
+                k.get("follow_redirects") is False
+            ), "SSRF: follow_redirects=False bekleniyordu"
 
         async def __aenter__(self):
             return self
@@ -143,8 +216,10 @@ async def test_yonlendirme_ile_metadata_engellenir():
         async def __aexit__(self, *a):
             return False
 
-        async def get(self, url, headers=None):
+        async def get(self, url, headers=None, extensions=None):
             cagrilan_url.append(url)
+            cagrilan_headers.append(headers)
+            cagrilan_extensions.append(extensions)
             # Ilk (public) istek 302 ile metadata'ya yonlendirir.
             return _SahteYanit(
                 status_code=302,
@@ -163,8 +238,11 @@ async def test_yonlendirme_ile_metadata_engellenir():
     ):
         sonuc = await _fetch_url_content("http://example.com/paylas")
 
-    # Yalniz ILK (public) istek atildi; metadata URL'sine GET yok.
-    assert cagrilan_url == ["http://example.com/paylas"]
+    # Yalniz ILK (public) istek atildi -- pinlenmis IP formunda; metadata
+    # URL'sine GET yok (dogrulama basarisiz olunca client.get hic cagrilmadi).
+    assert cagrilan_url == ["http://93.184.216.34/paylas"]
+    assert cagrilan_headers[0]["Host"] == "example.com"
+    assert cagrilan_extensions[0] == {"sni_hostname": "example.com"}
     assert "engellenmistir" in sonuc
     assert "meta-data" not in sonuc
 
@@ -179,9 +257,9 @@ async def test_dogrudan_metadata_url_engellenir():
             # SSRF sertlestirmesinin cekirdegi: yonlendirmeler KAPALI olmali ki
             # her hop elle dogrulanabilsin. _fetch_url_content'in bu sozlesmeyi
             # tuttugunu burada dogruluyoruz.
-            assert k.get("follow_redirects") is False, (
-                "SSRF: follow_redirects=False bekleniyordu"
-            )
+            assert (
+                k.get("follow_redirects") is False
+            ), "SSRF: follow_redirects=False bekleniyordu"
 
         async def __aenter__(self):
             return self
@@ -189,7 +267,7 @@ async def test_dogrudan_metadata_url_engellenir():
         async def __aexit__(self, *a):
             return False
 
-        async def get(self, url, headers=None):
+        async def get(self, url, headers=None, extensions=None):
             atildi.append(url)
             return _SahteYanit(text="SECRET")
 
@@ -204,3 +282,50 @@ async def test_dogrudan_metadata_url_engellenir():
 
     assert atildi == []  # hic ag istegi yok
     assert "engellenmistir" in sonuc
+
+
+# --------------------------------------------------------------------------
+# 4) SS10.34: IP-pinleme -- DNS-rebinding / TOCTOU kapanisinin kaniti
+# --------------------------------------------------------------------------
+@pytest.mark.asyncio
+async def test_ip_pinlenir_ikinci_cozumleme_yok():
+    """DNS-rebinding kapanisi: getaddrinfo TEK sefer cagrilir (dogrulama
+    aninda), httpx'e verilen URL ZATEN o IP'nin literal'i oldugundan ayrica
+    bir cozumleme adimi (ve dolayisiyla rebinding penceresi) YOKTUR.
+    """
+    cagri_sayisi = {"n": 0}
+    cagrilan_url = []
+    cagrilan_headers = []
+    cagrilan_extensions = []
+
+    class _SahteClient:
+        def __init__(self, *a, **k):
+            assert k.get("follow_redirects") is False
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *a):
+            return False
+
+        async def get(self, url, headers=None, extensions=None):
+            cagrilan_url.append(url)
+            cagrilan_headers.append(headers)
+            cagrilan_extensions.append(extensions)
+            return _SahteYanit(text="ICERIK")
+
+    def _resolver(host, *a, **k):
+        cagri_sayisi["n"] += 1
+        return [(2, 1, 6, "", ("93.184.216.34", 0))]
+
+    with (
+        patch("httpx.AsyncClient", _SahteClient),
+        patch("socket.getaddrinfo", _resolver),
+    ):
+        sonuc = await _fetch_url_content("http://example.com/paylas")
+
+    assert cagri_sayisi["n"] == 1  # tek cozumleme -- pinlemenin kaniti
+    assert cagrilan_url == ["http://93.184.216.34/paylas"]
+    assert cagrilan_headers[0]["Host"] == "example.com"
+    assert cagrilan_extensions[0] == {"sni_hostname": "example.com"}
+    assert sonuc == "ICERIK"
