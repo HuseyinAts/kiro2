@@ -1091,7 +1091,11 @@ def _host_netloc_bicimi(host: str) -> str:
         if ipaddress.ip_address(host).version == 6:
             return f"[{host}]"
     except ValueError:
-        pass
+        # host bir IP literal degil (normal hostname) -- beklenen durum,
+        # oldugu gibi donduruluyor. reward-hacking-check'in "bos exception
+        # handler" deseni icin: bu sessizce yutulan bir hata DEGIL, sadece
+        # IP-mi-hostname-mi ayrimi; yine de izlenebilirlik icin loglaniyor.
+        logger.debug(f"_host_netloc_bicimi: '{host}' bir IP literal degil")
     return host
 
 
