@@ -3027,3 +3027,169 @@ acik (SS10.32'den devam):
   Tests'teki YouTube API key kontrolunun kendi kronik, ilgisiz
   basarisizliklari -- ayri arastirma gerektiriyor, bu kampanyanin
   kapsami disinda kalabilir.
+
+## §10.34 -- CodeQL CRITICAL `py/full-ssrf` (#2976) -- IP-pinleme ile DNS-rebinding/TOCTOU kapanisi (1 Eylul 2026)
+
+### Onceki durum
+
+SS10.31/SS10.32/SS10.33'te tekrar tekrar "oncelikli, kendi PR'ini hak
+ediyor" olarak not dusulen tek CRITICAL CodeQL alert'i: `#2976
+py/full-ssrf`, `backend/api/enhanced_chat.py:1084` (`_fetch_url_content`
+icindeki `client.get(current, ...)` cagrisi). Alert numarasi degismis
+olsa da (eski `#114`), konum ayni: `/message-with-attachment`
+endpoint'inin `url` form alanindan gelen TAMAMEN kullanici-kontrollu bir
+URL, `_fetch_url_content`'e akiyor.
+
+Kod OKUNDU (korlemesine "duzelt" denmedi): `_ssrf_url_guvenli` zaten
+sema/IP dogrulamasi yapiyordu (http/https disi ret, cozumlenen TUM
+IP'lerin private/loopback/link-local/reserved/multicast/unspecified
+kontrolu) VE fonksiyonun kendi docstring'i onceki bir SSRF turunda
+(#114) bu tam durumu ZATEN belgelemisti: *"Bilinen kalinti (kabul
+edildi): getaddrinfo on-cozumlemesi ile httpx'in fiili baglanti
+cozumlemesi ayri oldugundan teorik bir DNS-rebinding / TOCTOU
+penceresi kalir."* Yani bu CRITICAL alert'in kok nedeni onceden
+BULUNMUS ve BILEREK KABUL EDILMIS bir acikti -- benim katkim bunu
+"yeniden kesfetmek" degil, o kabul edilmis acigi GERCEKTEN kapatmak.
+
+### Acigin gercekligi (dogrulandi, varsayilmadi)
+
+DNS-rebinding senaryosu somut: saldirgan kontrolundeki bir domain,
+dusuk/sifir TTL ile DNS sunucusunda ILK sorguya (dogrulama aninda,
+`_ssrf_url_guvenli` icindeki `socket.getaddrinfo`) public bir IP,
+IKINCI sorguya (fiili baglanti aninda, httpx/httpcore'un KENDI
+`getaddrinfo` cagrisi) private/metadata bir IP dondurebilir --
+dogrulama gecer, baglanti dahili adrese gider. Bu, CodeQL'in kendi
+yardim metninin Recommendation bolumunde ADI GECEN senaryo: *"one
+should verify the IP address for all user-controlled requests...
+This requires saving the verified IP address of each domain, then
+utilizing a custom HTTP adapter to ensure that future requests to
+that domain use the verified IP address."* -- yani onceki kod tam
+olarak bu ikinci adimi (pinleme) YAPMIYORDU.
+
+### Duzeltme: IP-pinleme
+
+`backend/api/enhanced_chat.py`'de:
+
+- **`_ssrf_guvenli_ipler(hostname)`** (yeni): `_ssrf_url_guvenli` ile
+  `_ssrf_pinli_istek_bilgisi`'nin PAYLASTIGI tek dogrulama noktasi --
+  onceki mantigin aynisi, kod tekrari onlemek icin cikarildi.
+- **`_ssrf_url_guvenli(url)`**: disaridan gorunen imzasi/davranisi
+  DEGISMEDI (mevcut cagiranlar/testler icin geriye-uyumlu), ic
+  implementasyonu `_ssrf_guvenli_ipler`'e delege ediyor.
+- **`_host_netloc_bicimi(host)`** (yeni): IPv6 host'u URL-authority/
+  Host-basligi icin kose parantezle sarar (RFC 3986/7230).
+- **`_ssrf_pinli_istek_bilgisi(url)`** (yeni): dogrulanan IP'yi
+  dogrudan httpx'e verecek pinlenmis URL + Host basligi + sni_hostname
+  hazirlar.
+- **`_fetch_url_content`**: artik `client.get(current, ...)` yerine
+  `client.get(pinli_url, headers={..., "Host": host_basligi},
+  extensions={"sni_hostname": sni_hostname})` cagiriyor.
+
+Mekanizma nasil calisiyor (kaynak koddan dogrulandi, varsayilmadi):
+httpx'e URL'nin host kismi olarak DOGRUDAN IP verilince, httpx/httpcore
+bu istek icin AYRICA getaddrinfo cagirmiyor (host zaten IP literal --
+DNS round-trip yok, rebinding penceresi kapaniyor). TLS sertifika
+dogrulamasi gercek hostname'e karsi calismaya DEVAM EDIYOR:
+`extensions={"sni_hostname": ...}` httpcore'un baglanti kurulumunda
+(`httpcore._async.connection.AsyncHTTPConnection._connect`, kaynak
+elle okundu, httpcore 1.0.9) `server_hostname = sni_hostname or
+origin.host` olarak kullaniliyor. Host basligi ayni sekilde elle
+verilir: httpx yalniz Host ONCEDEN AYARLI DEGILSE otomatik ekliyor
+(`httpx._models.Request._prepare`, `has_host` kontrolu -- kaynak elle
+okundu, httpx 0.28.1).
+
+### Dogrulama (gercek kurulum + gercek ag, dry-run degil)
+
+**Mekanizma kaniti (gercek HTTPS, gercek sertifika dogrulamasi).**
+`example.com`'un cozumlenen IP'sine (`104.20.23.154` / farkli
+kosularda CDN'e gore degisebiliyor) DOGRUDAN, `Host: example.com` +
+`extensions={"sni_hostname": "example.com"}` ile baglanildi: 200 +
+gercek "Example Domain" icerigi dondu. AYNI IP'ye YANLIS
+`sni_hostname` ile baglanilinca: `ConnectError [SSL:
+SSLV3_ALERT_HANDSHAKE_FAILURE]` -- yani sertifika dogrulamasi BYPASS
+EDILMEDI, sadece dogru hostname'e karsi calisiyor. Bu iki taraf
+birlikte pinlemenin hem SSRF'i kapattigini hem TLS guvenligini
+korudugunu kanitliyor.
+
+**Gercek, mock'suz `_fetch_url_content` cagrisi.** `https://example.com/`:
+basarili, httpx'in kendi istek logu baglantinin PINLENMIS IP'ye
+gittigini gosteriyor (`GET https://172.66.147.243/ "HTTP/1.1 200 OK"`),
+donen metin gercek sayfa icerigi ("Example Domain..."). Dogrudan
+`http://169.254.169.254/latest/meta-data/` ve `http://127.0.0.1:9999/`:
+ikisi de HICBIR AG ISTEGI ATILMADAN "engellenmistir" ile reddedildi.
+
+**Test suite.** `tests/unit/test_enhanced_chat_ssrf.py` guncellendi +
+genisletildi: mevcut sema/dahili-IP testleri (dogrudan
+`_ssrf_url_guvenli` cagiran, degismedi) korundu; yonlendirme-ile-
+metadata testi pinlenmis URL formuna guncellendi (artik `Host` ve
+`extensions["sni_hostname"]` degerlerini de dogruluyor); YENI:
+`_ssrf_pinli_istek_bilgisi` icin dogrudan birim testleri (sema/dahili-
+IP/port-korunumu), `_host_netloc_bicimi` icin IPv6 testi, VE
+`test_ip_pinlenir_ikinci_cozumleme_yok` -- `getaddrinfo`'nun HOP basina
+TEK sefer cagrildigini (rebinding penceresinin kapandiginin dogrudan
+kaniti) dogruluyor. Sonuc: 22/22 PASSED. Genis regresyon: SSRF +
+`test_enhanced_chat_api.py` + `test_enhanced_chat_socratic_enforcement.py`
++ `test_enhanced_chat_student_guard.py` = 139 passed, 48 skipped
+(DB-baglantisi gerektiren, TEST_DATABASE_URL yerel venv'de yok --
+onceki fsrs turunda da gorulen, ilgisiz bir bosluk), 0 failed.
+
+**Statik analiz.** `ruff check` + `ruff format --check`: temiz (ilk
+gecişte 1 kullanilmayan `import ipaddress` bulundu, kaldirildi).
+`mypy --follow-imports=skip` (sadece degisen dosya -- tam-graph mypy
+bu repoda transformers'in kendi stub'larinda ILGISIZ bir INTERNAL
+ERROR ile cokuyor, kapsam disi): "Success: no issues found". `bandit`:
+"No issues identified."
+
+### PR karari ve kapsam siniri
+
+`gh pr merge 134 --squash --delete-branch` ile merge edildi
+(`bd278f7ba..78f8b0837`, fast-forward). Uc commit squash'landi:
+`58951bb2d` (ana IP-pinleme duzeltmesi), `0dbe4b76a`
+(reward-hacking-check'in yakaladigi bos `except ValueError: pass`
+icin tanilama logu ekleyen fixup) ve `e01c57344` (CI'nin "Code
+Quality (mypy)" kontrolunun yakaladigi gercek bir arg-type hatasini
+-- `ipler.append(info[4][0])`'un `str | int` birlesim tipini --
+`ipler.append(str(addr))`'a cevirerek duzelten fixup; yerelde CI'nin
+birebir ayni komutuyla, repo kokunden calistirilarak dogrulandi:
+exit code 0).
+
+`_ssrf_url_guvenli`'nin disaridan gorunen imzasi/mesajlari KORUNDU --
+bu SADECE `_fetch_url_content`'in fiili baglanti davranisini
+sertlestiriyor, davranissal bir kesinti (breaking change) degil. Bu
+turda SADECE alert #2976 (`enhanced_chat.py` SSRF) duzeltildi.
+
+PR CI'sinda iki yeni, bu duzeltmeden BAGIMSIZ bulgu ortaya cikti
+(merge'i engellemedi -- master'da branch protection YOK, `gh api
+.../branches/master/protection` 404 "Branch not protected" doner):
+
+- "Code Quality (ruff)" 4 hata gosterdi (satir 165 `_save_message`,
+  248/255 `ChatMessageType`/`ResponseMode` enum'lari, 1291
+  `message_with_attachment`) -- hepsi bu PR'in dokundugu SSRF
+  fonksiyonlarinin DISINDA, dogrudan dosyada okunarak onceden-var-olan
+  oldugu dogrulandi. CI'nin ruff/mypy kontrolu "degisen dosyalar"
+  bazinda calistigi icin bir dosyaya DOKUNMAK o dosyanin tum
+  onceden-var-olan borcunu goruntuye sokuyor -- bu belgenin 9.
+  bolumundeki Faz 3 (`fsrs.py` lint borcu) ile ayni desen, farkli
+  dosyada. Kendi (kucuk) PR'ini bekliyor.
+- "Quality Gate" job'i "Path drift audit" adiminda
+  `http://localhost:8000/openapi.json`'a baglanamadi (connection
+  refused, `exit code 2`): bu job'da acik bir sunucu-baslatma adimi
+  yok, ayni nedenle "Golden Flows smoke" adimi da 185 testin tumunu
+  sessizce skip etti. Altyapisal, bu SSRF fix'inden bagimsiz --
+  kok neden arastirilmadi.
+
+Asagidakiler hala acik:
+
+- CodeQL HIGH kumesi (84 alert) -- Hüseyin'in triyaj karari.
+- Dependabot acik PR'lar -- Hüseyin'in triyaj karari.
+- "Health Checks & PostDeploy Verification" (staging DNS) -- kod disi,
+  Hüseyin'in altyapi karari.
+- SS10.30 Bulgu 3 (SW onbellek) / Bulgu 5 (Mobile Chrome chat balonu)
+  -- hala baslanmadi.
+- `Automatic PR Review` / `Frontend Tests` / `Quality Gate` / Backend
+  Tests'teki YouTube API key kontrolunun kendi kronik, ilgisiz
+  basarisizliklari -- ayri arastirma gerektiriyor, bu kampanyanin
+  kapsami disinda kalabilir.
+- Yukarida tespit edilen `enhanced_chat.py` ruff borcu (4 bulgu) ve
+  Quality Gate'in "Path drift audit" sunucu-baslatma eksikligi --
+  yeni tespit edildi, kendi PR/arastirmalarini bekliyor.
