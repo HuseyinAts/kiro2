@@ -1037,7 +1037,11 @@ def _ssrf_guvenli_ipler(hostname: str) -> tuple[list[str] | None, str]:
             or addr.is_unspecified
         ):
             return None, "Yerel/dahili ag adreslerine erisim engellenmistir."
-        ipler.append(info[4][0])
+        # addr zaten ipaddress.ip_address(...) ile ayristirildi; str(addr)
+        # kanonik bicimi verir ve mypy'nin getaddrinfo donusu icin urettigi
+        # "str | int" birlesim tipini (AF_INET/AF_INET6 disi soket
+        # ailelerini de kapsayan genel typeshed imzasi) netlestirir.
+        ipler.append(str(addr))
 
     if not ipler:
         return None, "URL cozumlenemedi."
