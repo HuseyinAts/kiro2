@@ -57,10 +57,33 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Comment on major bumps
-        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+      # S179 takip (2 Eylul 2026): steps.meta.outputs.update-type her zaman
+      # 'semver-patch' | 'semver-minor' | 'semver-major' degil -- bazi
+      # Dependabot GRUP guncellemelerinde, ozellikle guvenlik-tetiklemeli
+      # gruplarda (kanit: PR #39 "python-security" grubu, bandit+safety,
+      # calisan run log'unda outputs.update-type: null gorunuyor), bu deger
+      # BOS/null donuyor. Eski kosul (yalnizca == 'semver-major') bu durumda
+      # hic calismiyordu: PR ne auto-merge deneniyor ne de "inceleme gerekli"
+      # yorumu aliyordu -- bu workflow'dan (dependabot-auto-merge.yml) hicbir
+      # iz birakmadan sessizce acik kaliyordu (PR #39, 15 Haziran 2026'dan
+      # beri bu workflow'dan tek bir yorum/aksiyon almadan boyle bekliyordu;
+      # PR'da baska botlardan -- CI review, security scan -- yorumlar var,
+      # ama dependabot-auto-merge.yml hicbir zaman devreye girmedi). Kosul
+      # artik "patch/minor DEGILSE" (major + null +
+      # beklenmeyen deger dahil) -- boylece her PR ya auto-merge deniyor ya
+      # da bir yorum aliyor, hicbiri sessizce atlanmiyor.
+      - name: Comment on major or unclassified bumps
+        if: |
+          steps.meta.outputs.update-type != 'version-update:semver-patch' &&
+          steps.meta.outputs.update-type != 'version-update:semver-minor'
         run: |
-          gh pr comment "$PR_URL" --body "Major version bump — requires human review per .github/workflows/dependabot-auto-merge.yml."
+          if [ "$UPDATE_TYPE" = "version-update:semver-major" ]; then
+            BODY="Major version bump — requires human review per .github/workflows/dependabot-auto-merge.yml."
+          else
+            BODY="Auto-merge policy could not classify this update (fetch-metadata update-type: \`${UPDATE_TYPE:-<empty>}\`) — likely a Dependabot security/group update without a single semver bump. Requires human review per .github/workflows/dependabot-auto-merge.yml."
+          fi
+          gh pr comment "$PR_URL" --body "$BODY"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
