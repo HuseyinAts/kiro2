@@ -3193,3 +3193,140 @@ Asagidakiler hala acik:
 - Yukarida tespit edilen `enhanced_chat.py` ruff borcu (4 bulgu) ve
   Quality Gate'in "Path drift audit" sunucu-baslatma eksikligi --
   yeni tespit edildi, kendi PR/arastirmalarini bekliyor.
+
+## §10.35 -- Dependabot otomasyon teshisi: 2 ayri kok neden (biri duzeltildi #151, biri Huseyin'in kararini bekliyor) (2 Eylul 2026)
+
+### Baglam
+
+"devam et" talimatiyla kampanya devam ederken, once master'in origin'den
+13 commit geride oldugu goruldu (13 Dependabot patch/minor PR'i --
+#136-150 -- basariyla auto-merge olmus). Bu, uzun zamandir acik olan
+"Dependabot triyaj" kalemine (bkz. plan) dogal bir giris noktasi oldu:
+19 acik Dependabot PR'inin neden otomasyon tarafindan islenmedigini
+teshis etmek.
+
+### Bulgu A (DUZELTILDI, #151): steps.meta.outputs.update-type bazen null
+
+`dependabot-auto-merge.yml`'in "Comment on major bumps" adimi sadece
+`== 'semver-major'` kontrolu yapiyordu. PR #39 ("python-security"
+grubu: bandit+safety) uzerinde gercek workflow run log'u incelendiginde
+`outputs.update-type: null` gorunuyor -- guvenlik-tetiklemeli grup
+guncellemelerinde `dependabot/fetch-metadata@v2` tek bir semver turu
+hesaplayamiyor. Eski kosulda bu, UC ADIMIN DA calismadigi bir bosluk
+yaratiyordu: PR ne auto-merge deneniyor ne "inceleme gerekli" yorumu
+aliyordu. PR #39, 15 Haziran'dan beri bu workflow'dan hicbir aksiyon
+almadan boyle bekliyordu.
+
+Kosul `!= 'semver-patch' && != 'semver-minor'`'e cevrildi (major + null
++ beklenmeyen deger hepsi "inceleme gerekli" yorumu aliyor artik).
+`fix/dependabot-automerge-unclassified-updates` dalinda gelistirildi,
+PR #151 olarak acildi, CI'da izlendi (asagida), `gh pr merge --squash
+--delete-branch` ile merge edildi (`165301144..dd0ff7648`,
+fast-forward).
+
+### Bulgu B (DUZELTILMEDI -- Huseyin'in repo-ayari karari): allow_auto_merge=false
+
+Ayni arastirmada, otomasyonun BAYAT patch/minor PR'lari (orn. #57
+`ts-api-utils` 2.4.0->2.5.0, gercek minor bump) neden merge etmedigini
+teshis ederken AYRI, bagimsiz bir kok neden bulundu. PR #57'nin en son
+("Auto-approve" adiminin izin-hatasindan BAGIMSIZ, 29 Agu'daki izin
+duzeltmesinden SONRAKI) run'inin ("gh run view 33268188380 --log")
+"Enable auto-merge" adiminin tam ciktisi:
+
+    GraphQL: Auto merge is not allowed for this repository (enablePullRequestAutoMerge)
+
+Dogrulama: `gh api repos/HuseyinAts/kiro2 --jq .allow_auto_merge` ->
+`false`. Bu, repo Settings -> General -> Pull Requests -> "Allow
+auto-merge" ayari -- `gh pr merge --auto`'nun GERCEKTEN kullandigi
+GraphQL `enablePullRequestAutoMerge` mutasyonu bu ayar kapaliyken HER
+ZAMAN basarisiz oluyor, ama SADECE PR o an HEMEN mergeable degilse (`gh
+pr merge --auto` PR zaten temizse ayari atlayip DOGRUDAN merge ediyor,
+mutasyonu hic cagirmiyor -- bu yuzden #136-150 gibi "sansli" PR'lar
+gectir, #57 gibi `mergeStateStatus: UNSTABLE` olanlar hep takilir).
+
+Bu bir repo-seviyesi guvenlik/sistem ayari degisikligi oldugu icin
+(standing directive: "GitHub repo-level system/security settings
+changes" -- Huseyin'in kararı) kod tarafindan DOKUNULMADI. Onerilen
+duzeltme: Settings -> General -> Pull Requests -> "Allow auto-merge"
+KUTUCUGUNU ISARETLE. Bu tek basina, `mergeStateStatus: UNSTABLE`
+durumundaki tum acik patch/minor PR'lari (asagidaki tabloda 7 tanesi)
+kurtarabilir -- ama her biri ayrica bir `synchronize` olayi (yeni
+commit / `@dependabot rebase` yorumu) ile yeniden tetiklenmeleri
+gerekecek, cunku workflow sadece `[opened, synchronize, reopened]`
+uzerinde calisiyor.
+
+### 19 acik Dependabot PR'inin tam triyaji (2 Eylul 2026, tumu `mergeable: MERGEABLE` / `mergeStateStatus: UNSTABLE`)
+
+Gercek `outputs.update-type` calisan run log'larindan okunarak (grup
+PR'lari icin) veya PR basligindan semver karsilastirmasiyla (tekil
+PR'lar icin, 2 ornek -- #146, #126 -- run log'uyla capraz dogrulandi)
+belirlendi:
+
+- **MAJOR (11) -- otomasyon zaten "insan incelemesi" yorumu birakti,
+  Huseyin'in triyaj karari**: #146 lucide-react 0.263.1->1.35.0, #140
+  mermaid 10.9.6->11.17.2, #126 actions/setup-python 4->7, #125
+  actions/download-artifact 4->8, #124 docker/metadata-action 5->6,
+  #123 actions/setup-node 4->7, #121 codecov/codecov-action 4->7,
+  #118 pre-commit 3.6.0->4.6.2, #58 frontend-dev grubu (12 guncelleme,
+  eslint/jest ailesi), #49 frontend-build grubu (vite+vite-plugin-pwa+
+  vitest, SS10.34'ten ONCE zaten teshis edilmisti), #38 python-dev
+  grubu (11 guncelleme, black/mypy/pytest ailesi).
+- **MINOR/PATCH (7) -- Bulgu B tarafindan engelleniyor, Bulgu A
+  onlari ETKILEMIYOR (hepsi net semver-patch/minor donduruyor)**: #108
+  google-genai 2.0.0->2.20.0 (minor), #57 ts-api-utils 2.4.0->2.5.0
+  (minor), #55 babel/plugin-transform-block-scoped-functions
+  7.27.1->7.29.7 (minor), #54 which-typed-array 1.1.19->1.1.22
+  (patch), #51 babel/plugin-transform-regexp-modifiers 7.28.6->7.29.7
+  (minor), #50 string.prototype.trimend 1.0.9->1.0.10 (patch), #41
+  numpy 2.4.2->2.4.6 (patch).
+- **NULL (1) -- Bulgu A'nin kanit PR'i, #151 merge sonrasi bir sonraki
+  `synchronize`'da (`@dependabot rebase` yorumu ile tetiklenebilir)
+  "inceleme gerekli" yorumu alacak**: #39 python-security grubu
+  (bandit+safety).
+
+### Yan bulgu: "Security Scanning" ve "CI" workflow'lari master'da haftalardir kirmizi
+
+PR #151'in kendi CI kosumunda "Automatic PR Review" (ANTHROPIC_API_KEY
+bos -- `Environment variable validation failed`), "Container Security
+Scan" (Docker build basarisiz), "Frontend Tests", "Backend Tests
+(Python 3.11)" ve "Quality Gate" (SS10.30'da zaten teshis edilen
+conftest.py fixture bug'i) kirmizi cikti. Bunlarin bu PR'in tek-dosyalik
+(sadece workflow YAML) degisikliginden KAYNAKLANMADIGINI dogrulamak
+icin master'in kendi son 5 kosumu kontrol edildi:
+
+    gh run list --branch master --workflow "Security Scanning" --limit 5
+    -> 5/5 failure (3-31 Agu arasi, haftalik kadans)
+    gh run list --branch master --workflow "CI" --limit 5
+    -> 5/5 failure (31 Agu - 1 Eyl arasi)
+
+Yani her ikisi de master'in KENDISINDE, PR #151'den tamamen bagimsiz,
+haftalardir suren kronik kirmizilar -- daha once "Automatic PR
+Review/Frontend Tests/Quality Gate/Backend Tests'teki kronik, ilgisiz
+basarisizliklar" olarak not dusulmus kalemin somut, tarihli kaniti. Bu
+PR, branch protection olmadigi icin (`gh api .../branches/master/
+protection` -> 404, SS10.34'te de dogrulanmisti) bu on-var-olan
+kirmizilara ragmen merge edildi. "8 Golden Flow E2E tests" (4dk30sn),
+"CodeQL Analysis (python)" (6dk7sn), "CodeQL Analysis (javascript)" ve
+tum "Code Quality" (ruff/mypy/bandit/safety/semgrep) kontrolleri --
+yani bu degisiklikle GERCEKTEN ilgili olabilecek her sey -- yesildi.
+"API Security Testing" (OWASP ZAP dinamik taramasi) merge aninda hala
+calisiyordu (~20 dk+, backend sunucusu basariyla ayaga kalkti, tarama
+suruyordu) -- runtime API davranisini test ettigi ve bu PR sifir
+uygulama kodu degistirdigi icin sonucunu beklemek merge'i geciktirmeye
+deger gorulmedi.
+
+### Acik kalanlar
+
+- Bulgu B'nin duzeltilmesi (repo ayari) -- Huseyin'in karari.
+- Yukaridaki 11 MAJOR PR -- Huseyin'in triyaj karari (otomasyon zaten
+  yorum birakti).
+- Bulgu B duzeltildikten SONRA, 7 MINOR/PATCH PR'inin her birine taze
+  bir `synchronize` olayi lazim (`@dependabot rebase` yorumu en basit
+  yol) -- bu oturumda YAPILMADI, cunku Bulgu B duzeltilmeden hicbir
+  fayda saglamaz.
+- #39 icin de ayni: #151 merge oldu, ama #39'un kendisi henuz yeniden
+  tetiklenmedi.
+- "Security Scanning" / "CI" workflow'larinin master'daki kronik
+  kirmizisi -- burada sadece not dusuldu, kok neden arastirmasi hala
+  ayri, kapsam disi birakilmis bir kalem (onceki not: "bu kampanyanin
+  kapsami disinda kalabilir").
