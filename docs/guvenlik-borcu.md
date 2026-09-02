@@ -3501,12 +3501,27 @@ ile merge edildi (`a3642eae4afbdcbdfae47bd63fa97793bbf99e34`,
   Review) -- daha once de belirtildi, hala Huseyin'in karari (reserved:
   credential/secret girisi).
 - `backend/requirements-minimal.txt`teki psycopg2->psycopg3 duzeltmesi
-  hala commit edilmemis (working tree'de duruyor), ayri bir dal/PR
-  bekliyor.
+  DUZELTILDI -- PR #155 (`fix/requirements-minimal-psycopg3`), CI'da
+  ayni 5 kronik kirmizi disinda her sey yesil, merge `bac367ba6`
+  (2026-09-02T23:04:49Z).
 - `quality-gate.yml`nin "Path drift audit" adiminin `localhost:8000`e
-  ihtiyac duyup hicbir yerde uvicorn baslatmamasi (98 satirlik dosyanin
-  tamami okunarak, ve 15 alakasiz PR'in tumunun bu adimda kronik
-  basarisiz oldugu `gh run list` ile onceki bolumde dogrulanmisti;
-  `.github/workflows/ci.yml:319-320`deki gibi bir `nohup uvicorn ...
-  &` adimiyla duzeltilebilir) -- iyi kapsamli, dusuk riskli, ayri bir
-  PR adayi; bu PR'in kapsami disinda birakildi.
+  ihtiyac duyup hicbir yerde uvicorn baslatmamasi: ILK degerlendirmede
+  ("iyi kapsamli, dusuk riskli") OLCULMEDEN yazilmisti -- SONRADAN
+  `backend/core/application.py:83`teki `await db_manager.initialize()`
+  cagrisinin try/except'SIZ oldugu (yani DB'ye baglanamazsa lifespan
+  startup'i CRASH eder, uvicorn hic saglikli olmaz) ve gercek DB'nin
+  duz `postgres` DEGIL `pgvector/pgvector:pg15` (migration'larda
+  `CREATE EXTENSION vector` var, bkz. `.github/workflows/ci.yml`nin
+  `backend-test` job'undaki `services.postgres.image`) olmasi
+  GEREKTIGI bulundu -- yani duzeltme sadece `nohup uvicorn ... &`
+  eklemek DEGIL, `ci.yml`nin `backend-test` job'undaki gibi bir
+  `services: {postgres: pgvector/pgvector:pg15, redis}` blogu + ilgili
+  env degiskenleri (`DATABASE_URL`, `JWT_SECRET_KEY`,
+  `ENVIRONMENT=test`, ...) + `alembic upgrade head` + saglik-kontrol
+  dongusu eklemek. Bu, her PR'a ekstra 2 servis konteyneri + migration
+  suresi ekleyen, ilk tahminden BELIRGIN SEKILDE daha genis kapsamli
+  bir degisiklik -- kendi basina, ayrica olculerek yapilmasi gereken
+  bir PR adayi (Huseyin'in bu ekstra CI-suresi maliyetini kabul edip
+  etmeyecegine karar vermesi de gerekebilir). Bu duzeltme dogrulugu
+  onceki notu duzeltmek icin ekleniyor -- "dusuk riskli" iddiasi
+  olcumle DOGRULANMADAN yazilmisti, simdi geri alindi.
