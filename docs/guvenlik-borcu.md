@@ -3330,3 +3330,183 @@ deger gorulmedi.
   kirmizisi -- burada sadece not dusuldu, kok neden arastirmasi hala
   ayri, kapsam disi birakilmis bir kalem (onceki not: "bu kampanyanin
   kapsami disinda kalabilir").
+
+## §10.36 -- PR #153: refresh ucundaki token rotasyonu DB'ye hic yazilmiyordu + create_token_pair arg kaymasi + CI mypy/ruff surum uyumsuzlugu (2 Eylul 2026)
+
+### Bu PR ile "9. bolum / Faz 2" (PR #68) arasindaki iliski -- kritik ayrim
+
+Bu belgenin "9. PR #62 sonrası backlog" bolumundeki "Faz 2 -- auth.py
+refresh-token persist görünürlüğü" alt-basligi, PR #68'in (merge
+`8050cc499946dabc44d0dab7edbc8bee23c5fdfa`, 29 Agu 2026) refresh-token
+DB-yazma hatasini WARNING'den ERROR'a cikarip user_id/jti eklediğini
+anlatiyor. Bu PR (#153) YAZILMAYA BASLANMADAN once, o bulgunun hala
+gecerli/tekrar-eden bir hata mi yoksa PR #68 tarafindan zaten kapatilmis
+mi oldugu SUPHEYE dustu -- iki PR de "refresh-token persist" diyor.
+Merge'den ONCE bu supheyi koda bakarak kapattim:
+
+    git diff 8050cc499946dabc44d0dab7edbc8bee23c5fdfa^1 \
+      8050cc499946dabc44d0dab7edbc8bee23c5fdfa -- \
+      backend/application/commands/auth.py backend/api/auth.py
+
+PR #68'in TUM diff'i (45 satir) SADECE `backend/application/commands/
+auth.py`'deki `LoginCommandHandler`in `except Exception as _rt_err:`
+blogundaki tek bir `logger.warning(...)` satirini `logger.error(...
+user_id=%s, jti=%s...)`'ye cikariyor -- `backend/api/auth.py`'ye VE
+`backend/core/jwt_auth.py`'ye SIFIR degisiklik. Yani PR #68, SADECE
+LOGIN akisindaki (kullanici giris yaparken verilen ilk refresh token'in
+DB'ye yazilma hatasi GORUNMEZ kaliyordu) gorunurluk sorununu cozdu --
+yazma hala try/except icinde deneniyor, sadece basarisiz olursa artik
+sessiz kalmiyor.
+
+Bu PR (#153) TAMAMEN FARKLI bir fonksiyonda, TAMAMEN FARKLI bir hata
+duzeltiyor: `core/jwt_auth.py::refresh_access_token` (REFRESH akisi,
+yani `/auth/refresh` endpoint'i cagrildiginda rotate edilen YENI
+refresh token) -- `_save_refresh_token_to_db` cagrisi `if db and
+request:` sartina bagliydi, ama `RefreshTokenCommand` modelinde
+`request` alani HIC YOKTU ve iki gercek HTTP cagiran (`api/auth.py`:
+`secure_refresh` + `refresh_token`) bu komutu hicbir zaman `request`
+ile olusturmuyordu. Sonuc: bu try/except'e HIC GIRILMIYORDU -- hata
+loglanmiyordu cunku yazma girisimi ZATEN YAPILMIYORDU (PR #68'in
+duzelttigi "sessiz WARNING" durumundan bile daha kotu: sessiz
+ATLAMA). Ayrica ayni fonksiyondaki `await`siz `db.commit()` (no-op
+coroutine) ve `create_token_pair`in `create_access_token`'i YANLIS
+SIRALI pozisyonel argumanlarla cagirmasi (permissions<->username,
+device_id<->permissions kaymasi, gercek device_id'nin hicbir zaman
+gecirilmemesi) de bu PR'in kapsaminda.
+
+Dogrulama: mevcut dalin (branch noktasi `f3d7ee9f1`) `application/
+commands/auth.py` dosyasi PR #68'in ERROR-seviyeli log satirini HALA
+icinde barindiriyor (satir ~443-446, `git grep` ile dogrulandi) --
+yani bu PR, PR #68'in duzeltmesini NE eziyor NE tekrarliyor, onun
+UZERINE, FARKLI bir fonksiyondaki, FARKLI bir hatayi kapatiyor. Iki
+PR de ayni "Faz 2" baslikli backlog kaleminin (refresh-token persist
+gap) parcasi ama farkli alt-bulgular: #68 = login-yolu gorunurlugu,
+#153 = refresh-yolu YAZMANIN KENDISI.
+
+### Duzeltmenin ozeti (commit `64d4685e6`, dal `fix/refresh-token-rotation-not-persisted`)
+
+1. `RefreshTokenCommand`e opsiyonel `request` alani eklendi, iki gercek
+   cagiran (`api/auth.py`: `secure_refresh`, `refresh_token`) kendi
+   `request`ini geçiriyor; `refresh_access_token` artik `if db:` ile
+   (savunma iki katmaninda) persist ediyor. Ayni fonksiyondaki
+   await'siz `db.commit()` da duzeltildi.
+2. `create_token_pair`, `create_access_token`'i artik keyword-arg'la
+   cagiriyor -- eskiden `permissions` `username` slotuna, `device_id`
+   `permissions` slotuna kayiyordu, gercek `device_id` hic
+   gecmiyordu.
+3. Yeni testler: `test_gf_refresh_token_rotation_chain_is_persisted`
+   (`test_golden_flows.py`, iki refresh'i zincirler, (1)'i kilitler),
+   `test_explicit_permissions_and_device_id_land_in_correct_claims`
+   (`test_jwt_auth_functions.py::TestCreateTokenPair`, (2)'yi JWT
+   decode ederek kilitler; fix'ten once yerel calistirilip
+   `AssertionError: assert [...] == 'u'` ile patladigi dogrulandi).
+
+### CI-only mypy/ruff surum uyumsuzlugu -- iki denemede duzeltildi, ikincisi yanlislikla ogretici
+
+Bu PR'in kendi CI'i (pinned yerel pre-commit'in yakalamadigi,
+CI'nin unpinned mypy/ruff'unun yakaladigi) 6 mypy + birkac ruff bulgusu
+uretti (hepsi `core/jwt_auth.py`'deki, bu PR'in DOKUNMADIGI, HEAD'de
+onceden var olan satirlarda -- E402, S105 x2, UP042, PLR0917, RUF059,
+`redundant-cast` x4, `unused-ignore` x2 -- ayrintili gerekce asagidaki
+per-file-ignore ve mypy-override yorumlarinda).
+
+**1. deneme (commit `7e0719f92`) BASARISIZ oldu**: `backend/
+pyproject.toml`'a 3 yeni `[[tool.mypy.overrides]]` blogu eklendi, push
+edildi, CI'nin "Code Quality (mypy)"i AYNI 6 hatayla YENIDEN
+basarisiz oldu. Kok neden arastirildi: `.github/workflows/ci.yml`nin
+mypy adimi (`mypy $FILES ... --no-strict-optional`, `--config-file`
+YOK) repo KOKUNDEN calisiyor, `.pre-commit-config.yaml`nin pinned
+mypy hook'u da (`args: [--config-file=pyproject.toml, ...]`) pre-commit
+HER ZAMAN repo kokunden calistigi icin AYNI kok dosyayi okuyor. Yani
+mypy, ruff'un aksine (o dosyaya EN YAKIN config'i kullanir), HER ZAMAN
+cwd/kok `pyproject.toml`yi okuyor -- `backend/pyproject.toml`nin
+`[tool.mypy]` bolumu mypy icin OLU config (bu tespit aslinda kok
+`pyproject.toml`nin `core.osym_exam_engine` override yorumunda ONCEDEN
+belgelenmisti, gozden kacmisti).
+
+**2. deneme (commit `e2e4b634b`) BASARILI**: 3 blok `backend/
+pyproject.toml`dan geri alinip KOK `pyproject.toml`ya taşındı.
+`warn_redundant_casts = false`yi per-module denerken mypy 1.19.1 "Per-
+module sections should only specify per-module flags
+(warn_redundant_casts)" diyerek REDDETTI (bu flag artik sadece
+global) -- modern `disable_error_code = ["redundant-cast"]`ye
+gecildi. Bu kez PUSH ETMEDEN ONCE, izole bir clean-room venv'de
+(`uv venv --python 3.11`, `backend/requirements.txt` + unpinned
+mypy/ruff, CI'nin BIREBIR komut satiri ve BIREBIR dosya listesiyle)
+dogrulandi -- exit code 0 gorulduKTEN SONRA push edildi. Gercek
+CI'da "Code Quality (mypy)" (2dk9sn) ve "Code Quality (ruff)" (2dk21sn)
+YESIL cikti, boylece bu ikinci denemenin bir varsayim degil OLCUM
+oldugu dogrulandi.
+
+**Beklenmeyen yan-etki**: push sirasinda (pre-push hook zincirindeki
+pinned-olmayan bir ucuncu ruff cagirisi -- tam olarak hangisi
+dogrulanamadi, muhtemelen Pylint-ailesi PLC0207) `email.split("@")[0]`
+-> `email.split("@", maxsplit=1)[0]` seklinde IKI dosyada (`core/
+jwt_auth.py:110`, `application/commands/auth.py:68`) otomatik
+degistirildi. Pinned yerel `pre-commit run ruff` TEK BASINA bunu
+reprodüklemedi (dogrudan test edildi) -- yani bu, kampanyanin daha
+once bilmedigi, pre-push zincirinde ekstra bir unpinned ruff kaynagi
+oldugunu gosteriyor. Degisiklik davranissal olarak zararsiz (`[0]`
+indexi maxsplit'ten etkilenmez) ve ilgili 8+132 test degismeden
+gecti; commit mesajinda durum oldugu gibi (kesin kural/hook adi
+belirsiz) belgelendi.
+
+### Yeni bulgu: "Backend Tests (Python 3.11)"nin kronik kirmizisinin somut kok nedeni
+
+SS10.35 zaten Backend Tests'in PR #151'de de kirmizi ciktigini not
+dusmustu ama kok nedenini belirtmemisti. Bu PR'da `-x` (fail-fast) ile
+17943 testin SADECE %11'inde asagidaki tek basarisizlikla TUM suit
+durdu:
+
+    tests/unit/test_video_quality_validator.py::TestVideoQualityValidator::test_accessible_video_public FAILED
+    AssertionError: assert False is True
+     +  where False = VideoAccessibilityResult(is_accessible=False,
+         is_embeddable=False, privacy_status='unknown',
+         error_reason='YouTube API key not configured',
+         has_captions=False).is_accessible
+
+Bu PR'in kod degisiklikleriyle (jwt_auth.py/auth.py) HICBIR ILGISI
+yok -- eksik bir YouTube API anahtari (CI secret'i) yuzunden bu tek
+test hep basarisiz oluyor. Kronikligi, bu PR'dan tamamen bagimsiz,
+saatler once master'a giden EN SON commit'te (`dd0ff764`, 2 Eylul
+2026 11:13 UTC, `gh run view 33623484092 --job 100226110898`) AYNI
+test, AYNI hatayla basarisiz olarak dogrulandi. "Automatic PR Review"
+(eksik `ANTHROPIC_API_KEY`) ve "Quality Gate" (eksik uvicorn
+baslatma) ile ayni desen: eksik CI secret/altyapi, kod hatasi degil.
+"CI Summary" adimi da sadece bu basarisizligin bir toplayicisi
+(kendi basina bagimsiz bir sinyal degil).
+
+"Container Security Scan" (onceden teshis edilmis frontend DOMPurify
+TS derleme hatasi) ve "Frontend Tests" (bu PR'in dokunmadigi
+dosyalarda 900+ onceden var olan ESLint hatasi) da bu PR'da yeniden
+kirmizi cikti -- yeni bulgu yok, onceki teshisin tekrar dogrulanmasi.
+
+### Merge
+
+Nihai `gh pr checks 153` durumu: 5 kronik/ilgisiz kirmizi (yukarida),
+"API Security Testing" (ZAP) merge aninda hala `pending` (~110sn canli
+izlendi, PR #68'in kendi kapanisinda da "ZAP cok uzun suruyor" olarak
+belgelenmis kronik bir yavaslik -- bu PR sifir runtime-API davranisi
+degistirmiyor, backend/auth KOD mantigi degisikligi), geri kalan HER
+SEY (8 Golden Flow E2E, Checkov, mypy/ruff/bandit/safety/semgrep,
+CodeQL python+javascript, Compliance, IaC, License, OWASP Dependency
+Check, SAST, Secret Scanning, Security Summary) yesil. Branch
+protection yok (SS10.35'te de dogrulanmisti), `gh pr merge 153 --merge`
+ile merge edildi (`a3642eae4afbdcbdfae47bd63fa97793bbf99e34`,
+2026-09-02T22:29:50Z), yerel+uzak dal silindi.
+
+### Acik kalanlar
+
+- `ANTHROPIC_API_KEY` reposu secret'inin eksikligi (Automatic PR
+  Review) -- daha once de belirtildi, hala Huseyin'in karari (reserved:
+  credential/secret girisi).
+- `backend/requirements-minimal.txt`teki psycopg2->psycopg3 duzeltmesi
+  hala commit edilmemis (working tree'de duruyor), ayri bir dal/PR
+  bekliyor.
+- `quality-gate.yml`nin "Path drift audit" adiminin `localhost:8000`e
+  ihtiyac duyup hicbir yerde uvicorn baslatmamasi (98 satirlik dosyanin
+  tamami okunarak, ve 15 alakasiz PR'in tumunun bu adimda kronik
+  basarisiz oldugu `gh run list` ile onceki bolumde dogrulanmisti;
+  `.github/workflows/ci.yml:319-320`deki gibi bir `nohup uvicorn ...
+  &` adimiyla duzeltilebilir) -- iyi kapsamli, dusuk riskli, ayri bir
+  PR adayi; bu PR'in kapsami disinda birakildi.
