@@ -12,6 +12,7 @@ import secrets
 import time
 from datetime import UTC, datetime, timedelta
 from enum import Enum
+from typing import cast
 
 import jwt
 from fastapi import Depends, HTTPException, Request, status
@@ -30,7 +31,7 @@ class TokenType(str, Enum):
 
     ACCESS = "access"
     REFRESH = "refresh"
-    RESET_PASSWORD = "reset_password"  # noqa: S105
+    RESET_PASSWORD = "reset_password"
     EMAIL_VERIFICATION = "email_verification"
 
 
@@ -109,7 +110,7 @@ class JWTManager:
 
         payload = {
             "sub": user_id,
-            "username": username or email.split("@")[0],
+            "username": username or email.split("@", maxsplit=1)[0],
             "email": email,
             "role": role.jwt_value,  # lowercase for JWT compat
             "exp": expire,
@@ -120,7 +121,11 @@ class JWTManager:
             "permissions": permissions,
         }
 
-        return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
+        # cast: PyJWT 2.x'te encode() calisma zamaninda daima str donduruyor;
+        # mypy'nin "Any donuyor" uyarisi kutuphanenin stub'undan geliyor,
+        # gercek davranistan degil (bkz. bir alttaki create_refresh_token'daki
+        # ayni desen).
+        return cast(str, jwt.encode(payload, self.secret_key, algorithm=self.algorithm))
 
     def create_refresh_token(
         self, user_id: str, email: str, role: UserRole, device_id: str | None = None
@@ -139,7 +144,8 @@ class JWTManager:
             "device_id": device_id,
         }
 
-        return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
+        # cast gerekcesi: yukaridaki create_access_token'daki ayni not.
+        return cast(str, jwt.encode(payload, self.secret_key, algorithm=self.algorithm))
 
     def create_token_pair(
         self,
@@ -150,8 +156,31 @@ class JWTManager:
         device_id: str | None = None,
     ) -> JWTTokens:
         """Access ve refresh token çifti oluştur"""
+        # 2 Eylul 2026: bu cagri onceden pozisyonel'di --
+        # `create_access_token(user_id, email, role, permissions, device_id)`
+        # -- ama o metodun imzasi `(user_id, email, role, username=None,
+        # permissions=None, device_id=None)`. Sonuc: `permissions`
+        # (list[str]) `username` slotuna, `device_id` (str) `permissions`
+        # slotuna kayiyordu, gercek `device_id` ise hic gecirilmiyordu
+        # (6. pozisyonel argüman eksikti, hep None kaliyordu). Somut etki:
+        # (1) `permissions` bos olmayan bir liste oldugunda JWT'nin
+        # `username` alani gercek kullanici adi yerine izin listesi
+        # oluyordu (`username or email...` bos-olmayan listede kisa
+        # devre yapiyor); (2) `device_id` None degilken JWT'nin
+        # `permissions` alani bir liste yerine ham device_id string'i
+        # oluyordu -- `verify_token`/`TokenPayload.permissions` bunu
+        # oldugu gibi geri veriyor, yani `"x:y" in token.permissions`
+        # gibi bir yetki kontrolu artik liste uyeligi yerine device_id
+        # icinde alt-dize aramaya donuyordu; (3) access token'in kendi
+        # `device_id` alani bu fonksiyondan gecen HER cagrida hep None
+        # kaliyordu. `refresh_access_token` (yukarida) bu fonksiyonu
+        # zaten keyword-arg ile cagiriyor -- hata `create_token_pair`nin
+        # KENDI govdesindeki bu satirdaydi. Keyword-arg'a gecmek
+        # `username=None` varsayilanini (dogru davranis, bu fonksiyon
+        # zaten username almiyor) korurken permissions/device_id'yi doğru
+        # slotlara yerlestiriyor.
         access_token = self.create_access_token(
-            user_id, email, role, permissions, device_id
+            user_id, email, role, permissions=permissions, device_id=device_id
         )
         refresh_token = self.create_refresh_token(user_id, email, role, device_id)
 
@@ -302,8 +331,34 @@ class JWTManager:
             device_id=payload.device_id,
         )
 
-        # Yeni refresh token'ı database'e kaydet
-        if db and request:
+        # Yeni refresh token'ı database'e kaydet.
+        #
+        # Faz 2 (PR #62 sonrasi backlog, 2 Eylul 2026): eskiden `if db and
+        # request:` idi. `_save_refresh_token_to_db` `request`i SADECE
+        # IP/user-agent/device_type icin kullaniyor ve `request=None` icin
+        # zaten guvenli (bkz. asagida `if request else ""` / `if request and
+        # request.client`) -- yani `and request` sarti persist'in KENDISINI,
+        # sadece metadata zenginligini degil, gereksiz yere engelliyordu.
+        # Gercek etki: api/auth.py'deki iki cagiran (secure_refresh,
+        # refresh_token) `RefreshTokenCommand`'a `request` gecirmiyordu
+        # (command modelinde alan bile yoktu), o yuzden BURAYA hep
+        # `request=None` geliyordu -> her /auth/refresh cagrisinda YENI
+        # refresh token DB'ye hic yazilmiyordu. Eski token dogru sekilde
+        # revoke ediliyordu (asagidaki `if db:` bloğu), ama yenisi
+        # `refresh_tokens` tablosunda hic satir almiyordu. Sonuc: cookie/
+        # yanitta gecerli bir JWT donuyordu ama o token ile YAPILAN BIR
+        # SONRAKI refresh, `if not db_token: raise ... "revoked or does not
+        # exist"` ile 401 aliyordu -- kullanici, hicbir sey yanlis yapmadan,
+        # ikinci refresh dongusunde oturumdan atiliyordu. Bu ayrica
+        # `enhanced_auth_api.py`'nin "aktif cihazlar" listesini de (S179
+        # B-P0-56, refresh_tokens satirlarindan okunuyor) sessizce eksik
+        # birakiyordu. `RefreshTokenCommand`e artik opsiyonel bir `request`
+        # alani eklendi ve iki gercek cagiran da kendi `request`'ini
+        # geciriyor (bkz. application/commands/auth.py, api/auth.py); burada
+        # da `and request` sartini kaldirmak, request'i unutan gelecekteki
+        # bir cagiranin ayni hatayi sessizce tekrarlamasini engelliyor --
+        # savunma iki katmanda.
+        if db:
             self._save_refresh_token_to_db(
                 db,
                 new_tokens.refresh_token,
@@ -315,9 +370,35 @@ class JWTManager:
         # Eski refresh token'ı Redis + in-memory blacklist'e ekle
         await self.blacklist_token_async(refresh_token)
 
-        # Database değişikliklerini commit et
+        # Database değişikliklerini commit et.
+        #
+        # Faz 2 devami: bu `db.commit()` AsyncSession icin `await`SIZDI.
+        # Coroutine hic calismiyor (Python coroutine'leri lazy) -- sadece
+        # "coroutine 'AsyncSession.commit' was never awaited" uyarisi
+        # birakip sessizce hicbir sey yapmiyordu. Bunu, gercek yanit
+        # akisinda gozle gorulur bir veri kaybi yapmadan (bkz. asagida)
+        # ama yine de yanlis/olu kod oldugu icin duzeltiyoruz -- ayrica
+        # sync `Session.commit()` (bu fonksiyon iki tip de kabul ediyor)
+        # icin `await` FIRLATIRDI, o yuzden dallandiriyoruz.
+        #
+        # Neden "gozle gorulur veri kaybi yok": her iki gercek HTTP
+        # cagiran da `core/database.py::DatabaseManager.get_session()`
+        # araciligiyla session aliyor -- o `@asynccontextmanager` istek
+        # basariyla bittiginde KENDI `await session.commit()`'ini
+        # calistiriyor (bkz. o dosya, "Do NOT add commit/close here to
+        # avoid double-commit"). Yani bu fonksiyondaki eksik `await`,
+        # ustteki katmanin dogru commit'i sayesinde su an maskeleniyordu.
+        # Ama `_save_refresh_token_to_db`'yi DOGRUDAN (o context manager
+        # disinda) cagiran herhangi bir gelecekteki/test cagirani icin bu
+        # sessiz no-op gercek veri kaybina donusurdu -- iki katmanli
+        # savunma ayni Faz 2 ilkesi (yukaridaki not).
         if db:
-            db.commit()
+            from sqlalchemy.ext.asyncio import AsyncSession as _SAAsyncSession
+
+            if isinstance(db, _SAAsyncSession):
+                await db.commit()
+            else:
+                db.commit()
 
         return new_tokens
 
@@ -610,7 +691,8 @@ class JWTManager:
             "jti": secrets.token_urlsafe(32),
         }
 
-        return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
+        # cast gerekcesi: create_access_token'daki ayni not.
+        return cast(str, jwt.encode(payload, self.secret_key, algorithm=self.algorithm))
 
     def create_email_verification_token(self, user_id: str, email: str) -> str:
         """Email doğrulama token'ı oluştur"""
@@ -625,7 +707,8 @@ class JWTManager:
             "jti": secrets.token_urlsafe(32),
         }
 
-        return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
+        # cast gerekcesi: create_access_token'daki ayni not.
+        return cast(str, jwt.encode(payload, self.secret_key, algorithm=self.algorithm))
 
     def _save_refresh_token_to_db(
         self,

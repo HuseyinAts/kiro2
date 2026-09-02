@@ -14,13 +14,15 @@ from collections import defaultdict
 from contextlib import contextmanager  # noqa: F401 -- kept for backward compat
 from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
-    # ÖNCEDEN VAR OLAN: pre-commit mypy hook'unun izole ortamında `types-redis`
-    # kurulu değil (.pre-commit-config.yaml additional_dependencies eksik).
-    # Doğru düzeltme hook'a stub eklemek; burada yalnız kapıyı geçiyoruz.
-    import redis.asyncio as aioredis  # type: ignore[import-untyped]
+    # 2 Eylul 2026: `# type: ignore[import-untyped]` kaldirildi -- mypy artik
+    # bunu "unused ignore" olarak isaretliyor. Kok neden zaten cozulmustu:
+    # redis>=5 kendi py.typed'ini tasiyor (bkz. .pre-commit-config.yaml mypy
+    # hook'unun `additional_dependencies: redis==6.4.0` notu), o yuzden bu
+    # import artik tip bilgisiyle cozumleniyor, ignore'a gerek yok.
+    import redis.asyncio as aioredis
 
 import jwt as pyjwt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -517,7 +519,12 @@ async def kullanici_kayit(
     )
 
     command_bus = get_command_bus()
-    return await command_bus.execute(command)
+    # CommandBus.execute() kasitli olarak `Any` donduruyor (core/cqrs/bus.py:33)
+    # -- heterojen handler dict'i (dict[type[Command], CommandHandler]) tek
+    # bir execute() cagrisindan hangi somut CommandHandler[C, R]'in calisacagini
+    # statik olarak bilemez. Handler'in kendisi (RegisterUserCommandHandler)
+    # dict[str, Any] donduruyor; bunu burada acikca cast ediyoruz.
+    return cast(dict[str, Any], await command_bus.execute(command))
 
 
 # English alias for registration endpoint
@@ -674,7 +681,9 @@ async def kullanici_giris(
         command = LoginCommand(
             email=giris_data.email, password=giris_data.get_password() or "", db=db
         )
-        return await get_command_bus().execute(command)
+        # cast gerekcesi: CommandBus.execute() -> Any (core/cqrs/bus.py:33,
+        # kasitli -- bkz. yukaridaki /kayit ucundaki ayni not).
+        return cast(dict[str, Any], await get_command_bus().execute(command))
     except TwoFactorRequired as e:
         return {
             "success": False,
@@ -869,7 +878,13 @@ async def secure_refresh(
         from application.commands.auth import RefreshTokenCommand
         from core.cqrs.bus import get_command_bus
 
-        command = RefreshTokenCommand(refresh_token=refresh_token, db=db)
+        # Faz 2 (PR #62 sonrasi backlog, 2 Eylul 2026): `request` artik
+        # geciriliyor -- gecmiyordu, bu yuzden rotate edilen HER yeni
+        # refresh token DB'ye hic yazilmiyordu (bkz. core/jwt_auth.py
+        # refresh_access_token'daki ayrintili not).
+        command = RefreshTokenCommand(
+            refresh_token=refresh_token, db=db, request=request
+        )
         new_tokens = await get_command_bus().execute(command)
     except (ValueError, Exception) as e:
         # Clear stale cookies on invalid/expired refresh token
@@ -1973,8 +1988,15 @@ async def refresh_token(
         from application.commands.auth import RefreshTokenCommand
         from core.cqrs.bus import get_command_bus
 
-        command = RefreshTokenCommand(refresh_token=refresh_token_str, db=db)
-        return await get_command_bus().execute(command)
+        # Faz 2 (PR #62 sonrasi backlog, 2 Eylul 2026): `request` artik
+        # geciriliyor -- ayni gap `/refresh/secure`de de vardi, bkz. o
+        # endpoint ve core/jwt_auth.py refresh_access_token'daki not.
+        command = RefreshTokenCommand(
+            refresh_token=refresh_token_str, db=db, request=request
+        )
+        # cast gerekcesi: CommandBus.execute() -> Any (core/cqrs/bus.py:33,
+        # kasitli -- bkz. yukaridaki /kayit ucundaki ayni not).
+        return cast(dict[str, Any], await get_command_bus().execute(command))
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

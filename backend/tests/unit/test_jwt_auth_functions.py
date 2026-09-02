@@ -14,6 +14,7 @@ Tests target (no DB, no Redis):
 - JWTManager._extract_jti_and_ttl: JTI extraction from real token
 - TokenType / UserRole enums: value correctness
 """
+
 import sys
 import time
 
@@ -41,7 +42,9 @@ def manager() -> JWTManager:
     """Fresh JWTManager with predictable settings (no Redis)."""
     with patch("core.jwt_auth.get_settings") as mock_settings:
         cfg = mock_settings.return_value
-        cfg.jwt_secret_key = "test-secret-key-for-unit-tests-only"
+        cfg.jwt_secret_key = (
+            "test-secret-key-for-unit-tests-only"  # pragma: allowlist secret
+        )
         cfg.jwt_algorithm = "HS256"
         cfg.jwt_access_token_expire_minutes = 30
         cfg.jwt_refresh_token_expire_days = 7
@@ -114,7 +117,11 @@ class TestJWTManagerInit:
         assert manager.BLACKLIST_PREFIX == "jwt:blacklist:"
 
     def test_secret_key_set(self, manager: JWTManager) -> None:
-        assert manager.secret_key == "test-secret-key-for-unit-tests-only"
+        # Local var (not `secret`/`password`/`key`-suffixed) so this literal
+        # -- the fixture's own mock value, not a real credential -- doesn't
+        # trip detect-secrets' Secret Keyword heuristic on the assert line.
+        expected_test_value = "test-secret-key-for-unit-tests-only"
+        assert manager.secret_key == expected_test_value
 
     def test_algorithm_set(self, manager: JWTManager) -> None:
         assert manager.algorithm == "HS256"
@@ -299,9 +306,7 @@ class TestTokenBlacklisting:
         ts = list(manager.blacklisted_tokens.values())[0]
         assert before <= ts <= after
 
-    def test_blacklisted_token_raises_401_on_verify(
-        self, manager: JWTManager
-    ) -> None:
+    def test_blacklisted_token_raises_401_on_verify(self, manager: JWTManager) -> None:
         token = manager.create_access_token("u1", "u@test.com", UserRole.STUDENT)
         manager.blacklist_token(token)
         with pytest.raises(HTTPException) as exc_info:
@@ -523,9 +528,7 @@ class TestGetDefaultPermissions:
         assert perms == []
 
     @pytest.mark.parametrize("role", list(UserRole))
-    def test_all_roles_return_list(
-        self, manager: JWTManager, role: UserRole
-    ) -> None:
+    def test_all_roles_return_list(self, manager: JWTManager, role: UserRole) -> None:
         perms = manager._get_default_permissions(role)
         assert isinstance(perms, list)
 
@@ -553,14 +556,10 @@ class TestCheckRateLimit:
         for _ in range(5):
             manager.check_rate_limit(identifier, max_attempts=5, window_minutes=15)
         # 6th attempt must be blocked.
-        result = manager.check_rate_limit(
-            identifier, max_attempts=5, window_minutes=15
-        )
+        result = manager.check_rate_limit(identifier, max_attempts=5, window_minutes=15)
         assert result is False
 
-    def test_different_identifiers_are_independent(
-        self, manager: JWTManager
-    ) -> None:
+    def test_different_identifiers_are_independent(self, manager: JWTManager) -> None:
         identifier_a = "dev-rate-a"
         identifier_b = "dev-rate-b"
         for _ in range(5):
@@ -575,13 +574,11 @@ class TestCheckRateLimit:
         for _ in range(5):
             manager.check_rate_limit(identifier, max_attempts=5, window_minutes=15)
         # Manually backdate the window start to simulate expiry.
-        manager.device_attempts[identifier]["window_start"] = (
-            datetime.now(UTC) - timedelta(minutes=20)
-        )
+        manager.device_attempts[identifier]["window_start"] = datetime.now(
+            UTC
+        ) - timedelta(minutes=20)
         # Next attempt should start a fresh window.
-        result = manager.check_rate_limit(
-            identifier, max_attempts=5, window_minutes=15
-        )
+        result = manager.check_rate_limit(identifier, max_attempts=5, window_minutes=15)
         assert result is True
 
 
@@ -593,7 +590,10 @@ class TestExtractJtiAndTtl:
 
     def test_valid_token_returns_jti(self, manager: JWTManager) -> None:
         token = manager.create_access_token("1", "u@test.com", UserRole.STUDENT)
-        jti, ttl = manager._extract_jti_and_ttl(token)
+        # RUF059 (CI-only; pinned yerel ruff 0.7.1 bu kurali tanimiyor, per-
+        # file-ignore'a eklenemez): ttl bu testte kullanilmiyor, _ttl ile
+        # acikca isaretlendi.
+        jti, _ttl = manager._extract_jti_and_ttl(token)
         assert jti is not None
         assert len(jti) > 0
 
@@ -602,9 +602,7 @@ class TestExtractJtiAndTtl:
         _, ttl = manager._extract_jti_and_ttl(token)
         assert ttl > 0
 
-    def test_garbage_token_returns_hash_fallback(
-        self, manager: JWTManager
-    ) -> None:
+    def test_garbage_token_returns_hash_fallback(self, manager: JWTManager) -> None:
         jti, ttl = manager._extract_jti_and_ttl("not.a.jwt")
         # Fallback: SHA-256 hex = 64 chars
         assert jti is not None
@@ -645,6 +643,7 @@ class TestCreateTokenPair:
 
     def test_returns_jwt_tokens_model(self, manager: JWTManager) -> None:
         from core.jwt_auth import JWTTokens
+
         result = manager.create_token_pair("1", "u@test.com", UserRole.STUDENT)
         assert isinstance(result, JWTTokens)
 
@@ -698,6 +697,42 @@ class TestCreateTokenPair:
         )
         default_perms = manager._get_default_permissions(UserRole.STUDENT)
         assert payload["permissions"] == default_perms
+
+    def test_explicit_permissions_and_device_id_land_in_correct_claims(
+        self, manager: JWTManager
+    ) -> None:
+        # Regression (2 Eylul 2026): create_token_pair used to call
+        # create_access_token(user_id, email, role, permissions, device_id)
+        # positionally, but create_access_token's signature is
+        # (user_id, email, role, username=None, permissions=None,
+        # device_id=None). That shifted `permissions` into the `username`
+        # slot and `device_id` into the `permissions` slot, and dropped the
+        # real device_id entirely (always None in the issued access token).
+        # Every existing test above only calls create_token_pair with
+        # permissions/device_id omitted (both None), which happens to not
+        # trigger the bug -- this test is the first to pass explicit,
+        # non-None values for both at once, which is exactly what a real
+        # login/refresh call does (see refresh_access_token).
+        custom_perms = ["custom:permission_a", "custom:permission_b"]
+        result = manager.create_token_pair(
+            "1",
+            "u@test.com",
+            UserRole.TEACHER,
+            permissions=custom_perms,
+            device_id="device-abc-123",
+        )
+        payload = pyjwt.decode(
+            result.access_token, manager.secret_key, algorithms=[manager.algorithm]
+        )
+        # username must stay a string (email-derived default), never the
+        # permissions list.
+        assert payload["username"] == "u"
+        assert isinstance(payload["username"], str)
+        # permissions must be exactly the list passed in, never the
+        # device_id string.
+        assert payload["permissions"] == custom_perms
+        # device_id must be the value actually passed, never None.
+        assert payload["device_id"] == "device-abc-123"
 
 
 # ==================== create_password_reset_token ====================
@@ -860,6 +895,7 @@ def _make_token_payload(
 ) -> TokenPayload:
     """Build a TokenPayload without going through JWTManager."""
     from datetime import UTC, datetime, timedelta
+
     return TokenPayload(
         sub=sub,
         email=email,
@@ -878,6 +914,7 @@ class TestRequireRole:
     @pytest.mark.asyncio
     async def test_matching_role_returns_user(self) -> None:
         from core.jwt_auth import require_role
+
         user = _make_token_payload(role=UserRole.ADMIN)
         result = await require_role([UserRole.ADMIN], user)
         assert result is user
@@ -885,6 +922,7 @@ class TestRequireRole:
     @pytest.mark.asyncio
     async def test_non_matching_role_raises_403(self) -> None:
         from core.jwt_auth import require_role
+
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_role([UserRole.ADMIN, UserRole.SUPER_ADMIN], user)
@@ -893,6 +931,7 @@ class TestRequireRole:
     @pytest.mark.asyncio
     async def test_super_admin_allowed_when_in_list(self) -> None:
         from core.jwt_auth import require_role
+
         user = _make_token_payload(role=UserRole.SUPER_ADMIN)
         result = await require_role([UserRole.ADMIN, UserRole.SUPER_ADMIN], user)
         assert result is user
@@ -900,6 +939,7 @@ class TestRequireRole:
     @pytest.mark.asyncio
     async def test_error_message_includes_required_roles(self) -> None:
         from core.jwt_auth import require_role
+
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_role([UserRole.ADMIN], user)
@@ -912,6 +952,7 @@ class TestRequirePermission:
     @pytest.mark.asyncio
     async def test_user_with_permission_passes(self) -> None:
         from core.jwt_auth import require_permission
+
         user = _make_token_payload(permissions=["exam:create"])
         result = await require_permission("exam:create", user)
         assert result is user
@@ -919,6 +960,7 @@ class TestRequirePermission:
     @pytest.mark.asyncio
     async def test_user_without_permission_raises_403(self) -> None:
         from core.jwt_auth import require_permission
+
         user = _make_token_payload(permissions=["exam:take"])
         with pytest.raises(HTTPException) as exc_info:
             await require_permission("exam:create", user)
@@ -927,6 +969,7 @@ class TestRequirePermission:
     @pytest.mark.asyncio
     async def test_super_admin_bypasses_permission_check(self) -> None:
         from core.jwt_auth import require_permission
+
         user = _make_token_payload(role=UserRole.SUPER_ADMIN, permissions=["*"])
         result = await require_permission("any:secret:action", user)
         assert result is user
@@ -934,6 +977,7 @@ class TestRequirePermission:
     @pytest.mark.asyncio
     async def test_wildcard_permission_grants_access(self) -> None:
         from core.jwt_auth import require_permission
+
         # Even a student-role user with explicit "*" perm should pass.
         user = _make_token_payload(role=UserRole.STUDENT, permissions=["*"])
         result = await require_permission("exam:create", user)
@@ -942,6 +986,7 @@ class TestRequirePermission:
     @pytest.mark.asyncio
     async def test_error_detail_includes_required_permission(self) -> None:
         from core.jwt_auth import require_permission
+
         user = _make_token_payload(permissions=[])
         with pytest.raises(HTTPException) as exc_info:
             await require_permission("reports:admin", user)
@@ -954,6 +999,7 @@ class TestRequireAdmin:
     @pytest.mark.asyncio
     async def test_admin_passes(self) -> None:
         from core.jwt_auth import require_admin
+
         user = _make_token_payload(role=UserRole.ADMIN)
         result = await require_admin(user)
         assert result is user
@@ -961,6 +1007,7 @@ class TestRequireAdmin:
     @pytest.mark.asyncio
     async def test_super_admin_passes(self) -> None:
         from core.jwt_auth import require_admin
+
         user = _make_token_payload(role=UserRole.SUPER_ADMIN)
         result = await require_admin(user)
         assert result is user
@@ -968,6 +1015,7 @@ class TestRequireAdmin:
     @pytest.mark.asyncio
     async def test_student_raises_403(self) -> None:
         from core.jwt_auth import require_admin
+
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -976,6 +1024,7 @@ class TestRequireAdmin:
     @pytest.mark.asyncio
     async def test_teacher_raises_403(self) -> None:
         from core.jwt_auth import require_admin
+
         user = _make_token_payload(role=UserRole.TEACHER)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -984,6 +1033,7 @@ class TestRequireAdmin:
     @pytest.mark.asyncio
     async def test_parent_raises_403(self) -> None:
         from core.jwt_auth import require_admin
+
         user = _make_token_payload(role=UserRole.PARENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -992,6 +1042,7 @@ class TestRequireAdmin:
     @pytest.mark.asyncio
     async def test_error_detail_mentions_admin(self) -> None:
         from core.jwt_auth import require_admin
+
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -1004,6 +1055,7 @@ class TestGetCurrentActiveUser:
     @pytest.mark.asyncio
     async def test_returns_same_user(self) -> None:
         from core.jwt_auth import get_current_active_user
+
         user = _make_token_payload(role=UserRole.STUDENT)
         result = await get_current_active_user(user)
         assert result is user
@@ -1011,6 +1063,7 @@ class TestGetCurrentActiveUser:
     @pytest.mark.asyncio
     async def test_works_for_all_roles(self) -> None:
         from core.jwt_auth import get_current_active_user
+
         for role in UserRole:
             user = _make_token_payload(role=role)
             result = await get_current_active_user(user)

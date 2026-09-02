@@ -445,6 +445,69 @@ exclude = [
 #            testin okunurlugunu ne bozar ne duzeltir, ilgisiz.
 "tests/unit/test_auth_endpoints.py" = ["E402", "S105", "N802"]
 
+# core/jwt_auth.py — E402 x1 + S105 x1 + UP042 x1 + PLR0917 x1. OLCULDU
+# (2 Eylul 2026, Faz 2 devami: refresh token rotation persist fix +
+# create_token_pair pozisyonel-argüman duzeltmesi ayni dosyada). E402
+# KONTROL KOLU: `git diff -U0 -- core/jwt_auth.py` ile HEAD'e karsi TUM
+# hunk'lar dogrulandi -- ihlalin bulundugu import satiri (asagida) hicbir
+# hunk'in icinde degil, yani PR'in dokunmadigi, HEAD'de zaten var olan bir
+# satir. S105/UP042/PLR0917 SADECE CI'nin unpinned ruff'inda cikiyor --
+# pinned yerel ruff 0.7.1 (`.pre-commit-config.yaml` rev: v0.7.1) bunlari
+# ya inaktif/preview olarak taniyor (UP042, PLR0917) ya da hic tanimiyor
+# (S105 bu dosyada sessiz kaliyor) -- ucu de PR'in dokunmadigi, HEAD'de
+# zaten var olan satirlar (ayni pinned/unpinned surum celiskisi, bkz.
+# tests/conftest.py PLR0917, models/database.py RUF022 emsalleri).
+#   E402    :38 `from models.enums_db import UserRole` -- `TokenType(str,
+#           Enum)` sinif tanimindan SONRA, dosyanin kendi yorumu ile
+#           KASITLI ("Canonical source — DO NOT redefine"): donguluk
+#           import'u onlemek icin. Tasimak import sirasini degistirir,
+#           bu PR'in kapsami degil (cerrahi mudahale kurali).
+#   S105    :60 `JWTTokens.token_type: str = "bearer"` -- gercek bir sir
+#           degil, OAuth2 token_type sabiti (RFC 6749 5.1). NOT: dosyada
+#           ONCEDEN VAR OLAN ikinci bir S105 (:34, `RESET_PASSWORD =
+#           "reset_password"`) kendi satir-ici `# noqa: S105`'ine
+#           sahipti; bu dosya-seviyesi ignore onu gereksiz kildigi icin
+#           ruff'in RUF100 (unused-noqa) kurali `pre-commit run` sirasinda
+#           o noqa'yi otomatik sildi -- davranis degismedi, S105 hala
+#           (artik dosya seviyesinde) bastiriliyor.
+#   UP042   :29 `class TokenType(str, Enum):` -- `StrEnum`e gecis Python
+#           3.11+ gerektirir ve enum uyelerinin serialize/karsilastirma
+#           davranisini degistirebilir; bu PR'in kapsami degil, ayri bir
+#           degerlendirme gerektirir.
+#   PLR0917 :96 `create_access_token(self, user_id, email, role,
+#           username=None, permissions=None, device_id=None)` -- 6
+#           pozisyonel parametre. Imzayi degistirmek TUM cagiran yerleri
+#           (bu dosyadaki create_token_pair dahil) etkiler, bu PR'in
+#           kapsami degil (cerrahi mudahale kurali).
+"core/jwt_auth.py" = ["E402", "S105", "UP042", "PLR0917"]
+
+# tests/unit/test_jwt_auth_functions.py — S105 x2 + RET504 x1 + RUF015 x1.
+# OLCULDU (2 Eylul 2026, Faz 2 devami). Bu dosya bu turde ILK KEZ commit
+# ediliyor (yeni `test_explicit_permissions_and_device_id_land_in_correct_
+# claims` icin), yani hem ruff hem `ruff-format` hook'u onu ilk kez butun
+# dosya olarak taradi/normalize etti (ikisi de diff-bazli degil, bkz. bu
+# dosyanin basindaki genel not). `ruff-format` calistirildiktan SONRA
+# (davranis degismedi -- 124/124 test hala PASSED, sadece satir sarma/bosluk
+# normalize edildi) kalan 4 ihlal ASAGIDA. Ayrica iki `detect-secrets`
+# bulgusu da vardi (fixture'in `cfg.jwt_secret_key` atamasi + test_secret_
+# key_set'in karsilastirmasi) -- ilki `# pragma: allowlist secret` ile,
+# ikincisi `expected_test_value` gibi supheli-olmayan bir degisken adina
+# tasinarak cozuldu (kod tarafinda, bu dosya boyunca zaten kullanilan
+# noqa/pragma kuralları). O ikisi ayri bir arac (detect-secrets != ruff),
+# bu satir sadece ruff'in kendi 4 bulgusunu kapsiyor.
+#   S105 x2  :46 `manager` fixture'inin `cfg.jwt_secret_key = (...)`,
+#            :657 `test_token_type_is_bearer`'daki `"bearer"` karsilastirmasi
+#            (OAuth2 token_type sabiti, RFC 6749 5.1) -- ikisi de gercek sir
+#            degil, test double/sabit karsilastirma.
+#   RET504   :52-53 `manager` fixture'inda `m = JWTManager(); return m` --
+#            JWTManager() cagrisi `patch("core.jwt_auth.get_settings")`
+#            bloğu icinde kalmali (mock aktifken __init__ calismali); tek
+#            satira indirmek `with` bloğunun disina tasimayi gerektirir,
+#            bu PR'in kapsami degil.
+#   RUF015   :306 `list(manager.blacklisted_tokens.values())[0]` --
+#            dokunulmayan bir testte, kozmetik.
+"tests/unit/test_jwt_auth_functions.py" = ["S105", "RET504", "RUF015"]
+
 # models/__init__.py — 23 ONCEDEN VAR OLAN ihlal (29 Agu 2026, PR #62 sonrasi
 # backlog disi bir bulgu: api.osym_routes CI'da sessizce 404 veriyordu cunku
 # services/osym_pdf_pipeline.py + models/osym_trends.py + turkish_readability_

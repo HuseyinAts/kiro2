@@ -68,7 +68,7 @@ async def benzersiz_kullanici_adi(
     deneme gerektirir ve ölçülen kusur bu değil. Aynı pencere `email`
     ön-kontrolünde de zaten var.
     """
-    yerel = email.split("@")[0]
+    yerel = email.split("@", maxsplit=1)[0]
     taban = yerel[:KULLANICI_ADI_MAX]
     if not await alinmis_mi(taban):
         return taban
@@ -499,6 +499,17 @@ class RefreshTokenCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
     refresh_token: str
     db: Any
+    # Faz 2 (PR #62 sonrasi backlog, 2 Eylul 2026): opsiyonel FastAPI Request.
+    # `core/jwt_auth.py::refresh_access_token` bunu SADECE IP/user-agent
+    # yakalamak icin kullaniyordu (`_save_refresh_token_to_db` zaten
+    # `request=None` icin guvenli) -- ama persist adiminin KENDISI
+    # `if db and request:` ile bu alana bagliydi, ve iki gercek cagiran
+    # (api/auth.py: secure_refresh + refresh_token) bunu hic gecirmiyordu.
+    # Sonuc: her rotate edilen refresh token DB'ye hic yazilmiyordu (bkz.
+    # jwt_auth.py'deki ayrintili not). Burada request'i opsiyonel tutuyoruz
+    # ki mevcut/gelecek test cagirilari (db var, request yok) hala calissin
+    # -- asil duzeltme jwt_auth.py'de `if db:` olarak genisletildi.
+    request: Any = None
 
 
 class RefreshTokenCommandHandler(CommandHandler[RefreshTokenCommand, dict[str, Any]]):
@@ -510,6 +521,7 @@ class RefreshTokenCommandHandler(CommandHandler[RefreshTokenCommand, dict[str, A
             new_tokens = await jwt_mgr.refresh_access_token(
                 command.refresh_token,
                 db=command.db,  # Pass async session if refresh_access_token supports it, else we need sync
+                request=command.request,
             )
             return {
                 "success": True,
