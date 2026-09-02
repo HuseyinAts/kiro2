@@ -356,6 +356,49 @@ ignore_missing_imports = true
 module = ["core.alembic_utils", "backend.core.alembic_utils"]
 warn_unused_ignores = false
 
+# core.jwt_auth: OLCULDU (2 Eylul 2026, Faz 2 devami: refresh token
+# rotation persist fix + create_token_pair pozisyonel-argüman duzeltmesi
+# ayni PR). CI'nin "Code Quality (mypy)" job'u BU dosyayi (kok
+# pyproject.toml — pre-commit'in `--config-file=pyproject.toml`'u da
+# AYNI dosyayi okuyor, backend/pyproject.toml'daki mypy bolumu DEGIL,
+# bkz. yukaridaki `core.osym_exam_engine` notundaki "ruff dosyaya EN
+# YAKIN config'i, mypy ise cwd'deki (kok) config'i kullaniyor" tespiti)
+# global `warn_redundant_casts = true` ile okuyor. `jwt.encode()`'un
+# donus tipi PyJWT/mypy surum ikilisine gore DEGISIYOR: bazi
+# kombinasyonlarda `Any`, bazilarinda dogrudan `str` cozumleniyor. Bu
+# fonksiyonlar `-> str` imzali oldugu icin `warn_return_any` ihlalini
+# onlemek amaciyla eklenen `cast(str, jwt.encode(...))` cagrilari
+# (create_access_token, create_refresh_token,
+# create_password_reset_token, create_email_verification_token) `Any`
+# cozumleyen ortamda GEREKLI, `str` cozumleyen ortamda [redundant-cast]
+# ile REDDEDILIYOR — core.alembic_utils'teki ile ayni celiski deseni,
+# kod tarafinda cozumu yok. NOT: `warn_redundant_casts` per-module olarak
+# DENENDI, mypy 1.19.1 "Per-module sections should only specify
+# per-module flags (warn_redundant_casts)" diyerek REDDETTI (bu flag
+# artik sadece global) -- bu yuzden modern, kod-bazli mekanizma
+# `disable_error_code` kullanildi (yerelde ayni mypy surumuyle
+# dogrulandi).
+[[tool.mypy.overrides]]
+module = ["core.jwt_auth", "backend.core.jwt_auth"]
+disable_error_code = ["redundant-cast"]
+
+# api.auth:47 (`from models import (...)  # type: ignore[attr-defined]`)
+# ve tests.unit.test_jwt_auth_functions:527
+# (`_get_default_permissions(...)  # type: ignore[arg-type]`) — ikisi de
+# ONCEDEN VAR OLAN, dosyalarin kendi yorumunda gerekcelendirilmis satir-ici
+# ignore'lar, bu PR'in dokunmadigi satirlarda. CI'nin mypy'si bazi
+# isimleri/tipleri pinned yerel mypy'den (v1.11.2) FARKLI cozdugu icin bu
+# ignore'lari [unused-ignore] ile isaretliyor — ayni pinned/unpinned surum
+# celiskisi (core.alembic_utils emsali).
+[[tool.mypy.overrides]]
+module = [
+    "api.auth",
+    "backend.api.auth",
+    "tests.unit.test_jwt_auth_functions",
+    "backend.tests.unit.test_jwt_auth_functions",
+]
+warn_unused_ignores = false
+
 # ==================== Pytest Configuration ====================
 
 [tool.pytest.ini_options]

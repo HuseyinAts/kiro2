@@ -68,7 +68,7 @@ async def benzersiz_kullanici_adi(
     deneme gerektirir ve ölçülen kusur bu değil. Aynı pencere `email`
     ön-kontrolünde de zaten var.
     """
-    yerel = email.split("@")[0]
+    yerel = email.split("@", maxsplit=1)[0]
     taban = yerel[:KULLANICI_ADI_MAX]
     if not await alinmis_mi(taban):
         return taban

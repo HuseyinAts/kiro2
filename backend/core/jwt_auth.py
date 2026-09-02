@@ -110,7 +110,7 @@ class JWTManager:
 
         payload = {
             "sub": user_id,
-            "username": username or email.split("@")[0],
+            "username": username or email.split("@", maxsplit=1)[0],
             "email": email,
             "role": role.jwt_value,  # lowercase for JWT compat
             "exp": expire,
