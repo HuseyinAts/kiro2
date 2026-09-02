@@ -624,6 +624,75 @@ def test_gf1z_refresh_token_json_returns_usable_access(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF refresh-chain: a token ISSUED BY /auth/refresh must itself be usable
+# for a second refresh (not just the login-issued one that GF1z covers)
+# ---------------------------------------------------------------------------
+
+
+def test_gf_refresh_token_rotation_chain_is_persisted(client: httpx.Client):
+    """
+    A refresh-issued refresh token must itself be persisted and reusable.
+
+    Faz 2 (PR #62 sonrasi backlog, 2 Eylul 2026) bulgusu: ``GF1z`` sadece
+    LOGIN'in verdigi refresh token'i test ediyor -- o token
+    ``LoginCommandHandler``'in kendi raw-SQL INSERT'iyle zaten DB'ye
+    yaziliyordu, o yuzden ilk refresh hep calisiyordu. Ama
+    ``core/jwt_auth.py::refresh_access_token``'in KENDI urettigi YENI
+    refresh token'i DB'ye yazan ``_save_refresh_token_to_db`` cagrisi
+    ``if db and request:`` sartina bagliydi, ve iki gercek cagiran
+    (``api/auth.py``: ``secure_refresh`` + ``refresh_token``) ``request``i
+    hic gecirmiyordu -- yani rotate edilen HER token gecerli bir JWT olarak
+    donuyordu ama DB'de hicbir zaman satiri olmuyordu. Sonuc: bu token ile
+    yapilan bir SONRAKI refresh, gecerli/suresi dolmamis bir JWT'ye ragmen
+    401 "Refresh token has been revoked or does not exist" aliyordu --
+    yani her kullanici oturumu, access token suresi (varsayilan 30dk) x 2
+    kadar sonra, hicbir sey yanlis yapmadan sessizce kopuyordu.
+
+    Bu test iki refresh'i ZINCIRLER: login -> refresh #1 -> refresh #1'in
+    verdigi YENI refreshToken ile refresh #2. Duzeltmeden once refresh #2
+    401 donerdi; artik 200 donmeli.
+    """
+    login = client.post("/api/v1/auth/login", json=STUDENT)
+    # 429 is rate-limiting, not a missing environment -- skip'e çevirmek
+    # gerçek bir regresyonu sessizce gizler. Aynı sözleşme GF1wB ve diğer
+    # e2e dosyalarında da uygulanıyor (test_golden_flows.py::_login()).
+    if login.status_code == 429:
+        pytest.fail(
+            f"GF refresh-chain: login rate-limited (HTTP 429): {login.text[:200]}"
+        )
+    if login.status_code != 200:
+        pytest.skip(f"login failed for {STUDENT['email']}: {login.status_code}")
+    lj = login.json()
+    rt1 = lj.get("refreshToken") or lj.get("refresh_token")
+    assert rt1, f"GF refresh-chain: login missing refreshToken, keys={list(lj.keys())}"
+
+    ref1 = client.post("/api/v1/auth/refresh", json={"refreshToken": rt1})
+    assert (
+        ref1.status_code == 200
+    ), f"GF refresh-chain: 1st refresh HTTP {ref1.status_code}: {ref1.text[:400]}"
+    rj1 = ref1.json()
+    rt2 = rj1.get("refreshToken") or rj1.get("refresh_token")
+    assert rt2, f"GF refresh-chain: 1st refresh missing new refreshToken: {rj1!r}"
+    assert rt2 != rt1, "GF refresh-chain: refresh did not rotate the token"
+
+    # Asıl regresyon testi: rt2 (rt1 DEĞİL, refresh'in verdiği token) ikinci
+    # bir refresh için kullanılabilir olmalı.
+    ref2 = client.post("/api/v1/auth/refresh", json={"refreshToken": rt2})
+    assert ref2.status_code == 200, (
+        "GF refresh-chain: 2nd refresh (rotated token) HTTP "
+        f"{ref2.status_code}: {ref2.text[:400]} -- rotated refresh tokens "
+        "are not being persisted (core/jwt_auth.py refresh_access_token)"
+    )
+    rj2 = ref2.json()
+    new_access = rj2.get("access_token") or rj2.get("token")
+    assert new_access, f"GF refresh-chain: 2nd refresh missing access: {rj2!r}"
+    me = client.get("/api/v1/auth/me", headers=_auth_headers(str(new_access)))
+    assert (
+        me.status_code == 200
+    ), f"GF refresh-chain: /me after 2nd refresh: {me.text[:300]}"
+
+
+# ---------------------------------------------------------------------------
 # GF1w: save-answer must actually update BKT state (not just return 200)
 # ---------------------------------------------------------------------------
 
