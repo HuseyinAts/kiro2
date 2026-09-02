@@ -14,7 +14,26 @@ python-multipart>=0.0.6
 # Database
 sqlalchemy[asyncio]>=2.0.0
 asyncpg>=0.29.0
-psycopg2-binary>=2.9.9
+# 2 Eylul 2026: psycopg2-binary (psycopg v2) -> psycopg[binary] (psycopg v3).
+# database/connection.py:51 async engine URL'ini KASITLI olarak
+# "postgresql+asyncpg://" -> "postgresql+psycopg://" seklinde yeniden
+# yaziyor (bkz. alembic/env.py:41 ayni not) -- yani SQLAlchemy'nin async
+# motoru calisma zamaninda `psycopg` (v3) modulunu ariyor, `psycopg2`
+# DEGIL. requirements.txt (tam) zaten `psycopg[binary]>=3.1.0` kullaniyor
+# (satir 17); bu dosya (minimal/Docker image) yanlislikla eski v2 paketini
+# listeliyordu -- iki dosya SESSIZCE birbirinden sapmisti. Somut etki:
+# Dockerfile.minimal'dan sifirdan kurulan HER image'da `api/auth.py`
+# (ve api/ai_chat_routes.py, api/ogretmen.py, api/student_dashboard.py,
+# api/production_monitoring.py) import zincirinde
+# "ModuleNotFoundError: No module named 'psycopg'" ile SESSIZCE
+# yuklenemiyordu (routers.loader bunu WARNING'e dusurup devam ediyor) --
+# yani /api/v1/auth/login dahil TUM login/refresh yuzeyi hic
+# kayitli olmuyordu, 404 donuyordu. `docker compose build backend` ile
+# tekrar uretildi (bkz. fix/refresh-token-rotation-not-persisted dalindaki
+# olcum). psycopg2, calisan uygulama kodunda (backend/_pilots/ disinda,
+# o script'ler container icinde calismiyor) kullanilmiyor -- guvenli
+# degisiklik.
+psycopg[binary]>=3.1.0
 alembic>=1.13.0
 
 # Auth & Security
