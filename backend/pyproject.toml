@@ -125,6 +125,49 @@ check_untyped_defs = true
 warn_return_any = true
 strict_equality = true
 
+# CI/yerel mypy surum farki (2 Eylul 2026, Faz 2 devami). CI'nin mypy'si
+# (pinned degil, her calistirmada taze kuruluyor) `jwt.encode()`'un donus
+# tipini dogrudan `str` olarak cozumluyor, bu yuzden `warn_return_any` icin
+# eklenen `cast(str, jwt.encode(...))` cagrilari (core/jwt_auth.py:
+# create_access_token, create_refresh_token, create_password_reset_token,
+# create_email_verification_token) CI'da [redundant-cast] olarak
+# isaretleniyor. cast'i kaldirmak bu sefer PINNED yerel mypy'yi
+# (warn_return_any=true, yukaridaki SECURITY FIX #8 bloğu) bozuyor -- iki
+# surum zit yonde israr ettigi icin kod tarafinda cozumu yok (ayni pattern:
+# hooks/reward_hacking/analyzers/ast_analyzer.py'deki ruff UP038 notu).
+# Module path hem kisa hem `backend.`-onekli haliyle listeleniyor cunku
+# CI'nin mypy invocation'inin hangi formu cozdugu
+# (explicit_package_bases + namespace_packages nedeniyle) dogrulanmamis --
+# ikisini de eklemek zararsiz (var olmayan bir modul adi mypy'de sessizce
+# yok sayilir). Mevcut "SECURITY FIX #8" bloğu KASITLI degistirilmedi --
+# oradaki disable_error_code eklemek strict ayarlari paylasan diger 7
+# modulu de gevsetirdi (cerrahi mudahale kurali).
+[[tool.mypy.overrides]]
+module = ["core.jwt_auth", "backend.core.jwt_auth"]
+disable_error_code = ["redundant-cast"]
+
+# api/auth.py:47 — `from models import (...)  # type: ignore[attr-defined]`
+# ONCEDEN VAR OLAN bir ignore (dosyanin kendi yorumunda belirtildigi gibi,
+# bu PR'in dokunmadigi bir satir). CI'nin unpinned mypy'si `models.Kullanici`
+# vb. isimleri statik olarak cozebiliyor (pinned yerel mypy cozemiyor), bu
+# yuzden ayni satiri [unused-ignore] olarak isaretliyor -- yine
+# pinned/unpinned surum celiskisi.
+[[tool.mypy.overrides]]
+module = ["api.auth", "backend.api.auth"]
+disable_error_code = ["unused-ignore"]
+
+# tests/unit/test_jwt_auth_functions.py:527 —
+# `_get_default_permissions(...)  # type: ignore[arg-type]` (ONCEDEN VAR
+# OLAN, bu PR'in dokunmadigi bir satir). Ayni pinned/unpinned mypy
+# celiskisi: CI'nin mypy'si bu ignore'u da [unused-ignore] olarak
+# isaretliyor.
+[[tool.mypy.overrides]]
+module = [
+    "tests.unit.test_jwt_auth_functions",
+    "backend.tests.unit.test_jwt_auth_functions",
+]
+disable_error_code = ["unused-ignore"]
+
 # Pytest configuration REMOVED - Using pytest.ini as single source
 # All pytest configuration moved to pytest.ini to avoid conflicts
 
@@ -445,18 +488,41 @@ exclude = [
 #            testin okunurlugunu ne bozar ne duzeltir, ilgisiz.
 "tests/unit/test_auth_endpoints.py" = ["E402", "S105", "N802"]
 
-# core/jwt_auth.py — E402 x1. OLCULDU (2 Eylul 2026, Faz 2 devami: refresh
-# token rotation persist fix + create_token_pair pozisyonel-argüman
-# duzeltmesi ayni dosyada). KONTROL KOLU: `git diff -U0 -- core/jwt_auth.py`
-# ile HEAD'e karsi TUM hunk'lar dogrulandi -- ihlalin bulundugu import
-# satiri (asagida) hicbir hunk'in icinde degil, yani PR'in dokunmadigi,
-# HEAD'de zaten var olan bir satir.
-#   E402  :38 `from models.enums_db import UserRole` -- `TokenType(str,
-#         Enum)` sinif tanimindan SONRA, dosyanin kendi yorumu ile
-#         KASITLI ("Canonical source — DO NOT redefine"): donguluk
-#         import'u onlemek icin. Tasimak import sirasini degistirir,
-#         bu PR'in kapsami degil (cerrahi mudahale kurali).
-"core/jwt_auth.py" = ["E402"]
+# core/jwt_auth.py — E402 x1 + S105 x1 + UP042 x1 + PLR0917 x1. OLCULDU
+# (2 Eylul 2026, Faz 2 devami: refresh token rotation persist fix +
+# create_token_pair pozisyonel-argüman duzeltmesi ayni dosyada). E402
+# KONTROL KOLU: `git diff -U0 -- core/jwt_auth.py` ile HEAD'e karsi TUM
+# hunk'lar dogrulandi -- ihlalin bulundugu import satiri (asagida) hicbir
+# hunk'in icinde degil, yani PR'in dokunmadigi, HEAD'de zaten var olan bir
+# satir. S105/UP042/PLR0917 SADECE CI'nin unpinned ruff'inda cikiyor --
+# pinned yerel ruff 0.7.1 (`.pre-commit-config.yaml` rev: v0.7.1) bunlari
+# ya inaktif/preview olarak taniyor (UP042, PLR0917) ya da hic tanimiyor
+# (S105 bu dosyada sessiz kaliyor) -- ucu de PR'in dokunmadigi, HEAD'de
+# zaten var olan satirlar (ayni pinned/unpinned surum celiskisi, bkz.
+# tests/conftest.py PLR0917, models/database.py RUF022 emsalleri).
+#   E402    :38 `from models.enums_db import UserRole` -- `TokenType(str,
+#           Enum)` sinif tanimindan SONRA, dosyanin kendi yorumu ile
+#           KASITLI ("Canonical source — DO NOT redefine"): donguluk
+#           import'u onlemek icin. Tasimak import sirasini degistirir,
+#           bu PR'in kapsami degil (cerrahi mudahale kurali).
+#   S105    :60 `JWTTokens.token_type: str = "bearer"` -- gercek bir sir
+#           degil, OAuth2 token_type sabiti (RFC 6749 5.1). NOT: dosyada
+#           ONCEDEN VAR OLAN ikinci bir S105 (:34, `RESET_PASSWORD =
+#           "reset_password"`) kendi satir-ici `# noqa: S105`'ine
+#           sahipti; bu dosya-seviyesi ignore onu gereksiz kildigi icin
+#           ruff'in RUF100 (unused-noqa) kurali `pre-commit run` sirasinda
+#           o noqa'yi otomatik sildi -- davranis degismedi, S105 hala
+#           (artik dosya seviyesinde) bastiriliyor.
+#   UP042   :29 `class TokenType(str, Enum):` -- `StrEnum`e gecis Python
+#           3.11+ gerektirir ve enum uyelerinin serialize/karsilastirma
+#           davranisini degistirebilir; bu PR'in kapsami degil, ayri bir
+#           degerlendirme gerektirir.
+#   PLR0917 :96 `create_access_token(self, user_id, email, role,
+#           username=None, permissions=None, device_id=None)` -- 6
+#           pozisyonel parametre. Imzayi degistirmek TUM cagiran yerleri
+#           (bu dosyadaki create_token_pair dahil) etkiler, bu PR'in
+#           kapsami degil (cerrahi mudahale kurali).
+"core/jwt_auth.py" = ["E402", "S105", "UP042", "PLR0917"]
 
 # tests/unit/test_jwt_auth_functions.py — S105 x2 + RET504 x1 + RUF015 x1.
 # OLCULDU (2 Eylul 2026, Faz 2 devami). Bu dosya bu turde ILK KEZ commit

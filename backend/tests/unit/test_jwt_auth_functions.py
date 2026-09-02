@@ -590,7 +590,10 @@ class TestExtractJtiAndTtl:
 
     def test_valid_token_returns_jti(self, manager: JWTManager) -> None:
         token = manager.create_access_token("1", "u@test.com", UserRole.STUDENT)
-        jti, ttl = manager._extract_jti_and_ttl(token)
+        # RUF059 (CI-only; pinned yerel ruff 0.7.1 bu kurali tanimiyor, per-
+        # file-ignore'a eklenemez): ttl bu testte kullanilmiyor, _ttl ile
+        # acikca isaretlendi.
+        jti, _ttl = manager._extract_jti_and_ttl(token)
         assert jti is not None
         assert len(jti) > 0
 
