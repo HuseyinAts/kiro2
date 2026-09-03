@@ -3525,3 +3525,148 @@ ile merge edildi (`a3642eae4afbdcbdfae47bd63fa97793bbf99e34`,
   etmeyecegine karar vermesi de gerekebilir). Bu duzeltme dogrulugu
   onceki notu duzeltmek icin ekleniyor -- "dusuk riskli" iddiasi
   olcumle DOGRULANMADAN yazilmisti, simdi geri alindi.
+
+
+## §10.37 -- Faz 5: Dependabot major-bump PR triyaji + Faz 0 yeniden dogrulama (2026-09-03)
+
+### Faz 0 (yerel temizlik) -- yeniden dogrulandi, aksiyon gerekmiyor
+
+`docker ps -a` / `docker images` / `git worktree list` ile kontrol edildi:
+plandaki orijinal hedefler (`kiro2_pgv15_repro` container'i,
+`kiro2ci311img:latest` image'i, `kiro2_ci_snapshot` worktree'si) UCU DE
+zaten yok -- baska bir oturumda/zamanda temizlenmis. Bulunan ama
+DOKUNULMAYAN seyler: calisan kiro2 dev stack'i (kiro2-backend,
+kiro2-celery-worker/beat, kiro2-frontend, kiro2-redis, kiro2-ollama,
+turkiye_sinav_elasticsearch -- hepsi healthy, calisiyor durumda,
+dokunulmadi); iliskisiz "nexus" projesine ait 2 durmus container
+(memgraph_nexus, qdrant_nexus, "Exited 5 hafta once") + 1 hic
+baslatilmamis (turkiye_sinav_postgres_dev, "Created") -- bu proje
+benim temizlik kapsamimda degil; ve beklenmedik yeni bir git worktree
+`.claude/worktrees/upbeat-haslett` (dal `claude/upbeat-haslett`,
+commit `2407ea8e6`) -- muhtemelen ayri/hala aktif olabilecek baska bir
+yerel Claude Code oturumuna ait, benim tarafimdan olusturulmadi,
+silinmesi guvenli degil.
+
+### Faz 5: Dependabot major-bump PR triyaji
+
+Acik Dependabot PR'lari arasindan "major/riskli" kategoriye girenler
+asagida incelendi. Yontem: iddia degil olcum -- her paket icin kod
+tabanindaki GERCEK kullanim yuzeyi `git grep` ile cikarildi
+(`Get-ChildItem -Recurse` DEGIL -- bu ikincisi `backend`teki buyuk/
+gitignore'lu agaclar [`.venv` gibi] yuzunden PowerShell oturumunu 5+
+dakika tikadi, `force_terminate` ile kurtarilip taze bir oturumda
+`git grep`e gecildi; ders: dosya arama HER ZAMAN `git grep`/
+`git ls-files` ile yapilmali, `Get-ChildItem -Recurse` ile degil --
+git-tracked olmayan devasa agaclara [.venv, node_modules] koru yok),
+sonra resmi migration guide'lari (lucide.dev, mermaid-js GitHub
+discussions) okundu.
+
+**#146 lucide-react 0.263.1 -> 1.35.0 (gercek semver major, runtime UI
+kutuphanesi).** Kullanim yuzeyi: 37 import satirinda (22 benzersiz
+import kombinasyonu), toplam 40 benzersiz ikon adi (Activity,
+AlertTriangle, CheckCircle, Home, RefreshCw, TrendingUp, Clock,
+Target, BarChart3, BookOpen, Brain, Sparkles, Lightbulb, AlertCircle,
+CheckCircle2, ChevronDown, ChevronUp, Lock, Unlock, Loader2, Play,
+Pause, Volume2, VolumeX, Maximize, Settings, SkipBack, SkipForward,
+Star, Search, Filter, Grid, List, Users, Zap, Cpu, Upload, X,
+FileText, ZapOff). Resmi migration guide (lucide.dev/guide/version-1)
+okundu, 4 breaking change var: (1) paket adi degisikligi
+`lucide-vue-next`->`@lucide/vue` -- bizi etkilemiyor, biz
+`lucide-react` kullaniyoruz, adi degismedi; (2) UMD build'i
+kaldirildi, sadece ESM+CJS -- frontend zaten Vite 7 ile
+(`frontend/package.json:92`, `"vite": "^7.1.6"`) ESM kullaniyor,
+etkilenmiyor, ustune `lucide-react` paketi %32.3 kuculuyor
+(11.4MB->~1MB gzip); (3) TUM marka/logo ikonlari (GitHub, Facebook,
+Figma, Slack, ...) kaldirildi -- yukaridaki 40 ikondan HICBIRI marka
+ikonu degil, hepsi jenerik UI ikonu; (4) `aria-hidden="true"` artik
+varsayilan -- erisilebilirlik davranis degisikligi, fonksiyonel risk
+dusuk. Resmi guide, listelenen 40 ikondan hicbirinin yeniden
+adlandirilmadigini/kaldirilmadigini dogruluyor. SONUC: dusuk risk.
+
+**#140 mermaid 10.9.6 -> 11.17.2 (gercek semver major, runtime
+kutuphane).** Kullanim yuzeyi olculdugunde beklenenden COK daha dar
+cikti: kod tabaninda "mermaid" icin 104 ham eslesme var ama GERCEK API
+kullanimi TEK bir komponentte --
+`frontend/src/components/SequentialThinking/MermaidThoughtTree.tsx`
+-- ve zaten `await import('mermaid')` + `mermaidModule.default`
+(v11'in gerektirdigi `.default` erisimiyle ZATEN uyumlu ESM deseni)
+kullaniyor; `mermaid.initialize({...})` ve `mermaid.render(id, code)`
+cagriliyor, bu API v8'den beri stabil. Diyagram string'i backend'de
+uretiliyor (`backend/services/reasoning/visualization_service.py:98`),
+format `"graph TD\n    A[...]"` -- en eski/en basit mermaid
+sozdizimi, `subgraph` HIC kullanilmiyor (`git grep -n "subgraph"` ile
+dogrulandi; kod tabanindaki TEK "subgraph" eslesmesi
+`backend/ai_engine/adaptive_learning_paths.py`daki alakasiz bir
+NetworkX `.subgraph()` cagrisi). v11.0.0'in resmi breaking change'leri
+(GitHub discussion mermaid-js/mermaid#4710): UMD->IIFE build formati +
+CommonJS `require()` kaldirilmasi -- ikisi de sadece
+`<script src=CDN>` / `require()` kullanimini etkiliyor, bizim
+`import()` desenimizi ETKILEMIYOR. v11.1+'da acik/cozulmemis bir
+GitHub issue var (mermaid-js/mermaid#6251, "Status: Triage") ama
+SADECE subgraph'li TD flowchart'larini etkiliyor -- kullanmadigimiz
+icin risk disi. SONUC: dusuk risk.
+
+**#126/#125/#124/#123/#121 (GitHub Actions tag major bump'lari) ve
+#118 (pre-commit 3.6.0->4.6.2).** Hepsi tek paket, tek dosya
+(`.github/workflows/*.yml` ya da pre-commit config) degisikligi,
+runtime app koduna SIFIR temas. Derinlemesine changelog taramasi
+orantisiz gorulup yapilmadi -- bu, plan'in kendi "hafif inceleme"
+kapsamiyla tutarli bir karar, kacinilmis bir olcum degil.
+
+**#58 (frontend-dev group, 12 guncelleme) ve #38 (python-dev group,
+11 guncelleme) -- ONCEKI degerlendirme DUZELTILIYOR.** Bu oturumdan
+once devralinan ozet bu ikisini "sadece tooling, runtime kod degil,
+dusuk risk" olarak siniflandirmisti -- bu iddia OLCULMEDEN yazilmisti.
+`gh pr view --json body` ile PR govdelerindeki gercek bagimlilik
+tablosu okundu:
+- #58: `eslint` 8.57.1->10.9.1 (IKI majör atlama -- ESLint 9
+  flat-config'i zorunlu kildi, `.eslintrc.*` formati kaldirilmis
+  olabilir), `jest-axe` 8.0.0->11.0.0 (UC majör atlama),
+  `eslint-plugin-react-hooks` 7.0.1->7.1.1, `prettier` 3.6.2->3.9.6.
+- #38: `pytest` 7.4.3->9.1.1 (IKI majör), `mypy` 1.8.0->2.3.1 (majör,
+  yeni strict-mode varsayilanlari olabilir), `black` 24.1.1->26.5.1
+  (IKI majör), `pytest-asyncio` 0.21.1->1.4.0 (majör, 0.x->1.x),
+  `pytest-cov` 4.1.0->7.1.0 (UC majör), `pytest-benchmark`
+  4.0.0->5.3.0.
+
+DUZELTILMIS SONUC: runtime app koduna dogrudan temas hala YOK (bu
+kismi dogru), ama CI'in KENDI derleme/test/lint mekanizmasini kirma
+riski onceki tahminden BELIRGIN SEKILDE yuksek -- ESLint flat-config
+gecisi ve mypy 2.0/pytest 9.x gibi majör arac atlamalari genelde
+mevcut config'lerle uyumsuzluk/yeni-varsayilan-hata aciga cikarir.
+Onceki "dusuk riskli" iddiasi burada geri aliniyor; bu 2 PR'in ayri
+ayri, CI'da gozlemlenerek (otomatik degil, gozden gecirilerek) merge
+edilmesi oneriliyor. #49 (frontend-build, 3 guncelleme) ve #39
+(python-security grubu, 2 guncelleme) govdeleri bu oturumda
+cikarilamadi (tablo formati regex'e uymadi), ayrica bakilmasi
+gerekiyor -- olcumsuz birakildi, "dusuk risk" DIYE varsayilmadi.
+
+### CI/mergeable durumu (2026-09-03, `gh pr view` ile olculdu)
+
+Orneklem: 146, 140, 126, 118, 58, 38. Hepsi `mergeable: MERGEABLE`
+(rebase gerekmiyor -- bu, daha once belirtilen "hepsi UNKNOWN, rebase
+gerekiyor" tespitinden BU ANDA farkli; aradan gecen commit'ler/
+dependabot'un kendi rebase'leri ile durum degismis olabilir). Hepsi
+`mergeStateStatus: UNSTABLE`, checks'lerinde bu kampanyanin zaten
+belgeledigi turden birkac kronik kirmizi var (PR'a ozel yeni bir
+kirilma degil) -- TEK istisna #126 (actions/setup-python 4->7), 7-8
+FAILURE ile digerlerinden belirgin sekilde daha kirmizi; sebebi bu
+oturumda arastirilmadi, kapsam disi birakildi.
+
+### Karar
+
+Plan'in kendi kapsamiyla tutarli: ben bu incelemeyi yapip bulgulari
+raporluyorum, merge butonuna basmiyorum -- son karar Huseyin'de.
+- Dusuk risk, hizli onaya/otomasyona birakilabilir: #146, #140, #126,
+  #125, #124, #123, #121, #118 (8 PR).
+- Runtime temas yok ama CI-kirma riski onceki tahminden yuksek, tek
+  tek gozden gecirilerek merge edilmeli: #58, #38 (2 PR).
+- Bu oturumda govdesi cikarilamadi, ayrica bakilmali: #49, #39 (2 PR).
+- Kapsam disi (major degil, zaten bilinen minor/patch backlog'unun
+  parcasi, Bulgu B / `allow_auto_merge` ayarina takili): #108, #57,
+  #55, #54, #51, #50, #41.
+
+Daha once bayraklanan 3 rezerve karar (ANTHROPIC_API_KEY secret'i,
+`allow_auto_merge` ayari, Dependabot merge kararlari) hala Huseyin'i
+bekliyor -- bu bolum onlari degistirmiyor, sadece Dependabot kismina
+somut bulgu ekliyor.
