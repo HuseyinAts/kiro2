@@ -3859,3 +3859,227 @@ psycopg2->psycopg3 gecis borcu; (3) frontend'deki 990 ESLint hatasi (aynen
 backend ruff'ta yapildigi gibi diff-based'e gecirilebilir); (4) yukarida
 bahsedilen 4 rezerve karar (secret, allow_auto_merge, Dependabot,
 branch protection) hala Huseyin'i bekliyor.
+
+## §10.39 -- PR #160: sanitize.ts TS2503 + frontend ESLint diff-scoping -- maskelenen bir sonraki katman ortaya cikti: kanon-lint (2026-09-03)
+
+### Baslangic noktasi: SS10.38'in "Takip" listesindeki 2 madde
+
+SS10.38'in kapanisinda PR #158/#159 sonrasi "Takip" listesine 4 kalem
+yazilmisti; bunlardan (3) numarali kalem -- "frontend'deki 990 ESLint
+hatasi (aynen backend ruff'ta yapildigi gibi diff-based'e gecirilebilir)"
+-- ve SS10.38'in kendi "PR #158'deki diger kirmizi/yavas kontroller"
+bolumunde ayrica belgelenen "Container Security Scan (fail): TS2503
+... namespace 'DOMPurify'" bulgusu, bu oturumun devaminda ele alindi.
+Ikisi de PR #158/#159'un 3 dosyasindan bagimsiz, onceden var olan
+sorunlardi -- burada cozuluyor.
+
+### Bulgu 1: `sanitize.ts` TS2503 -- dompurify 3.x kendi tipini namespace degil, duz ad olarak export ediyor
+
+`frontend/src/utils/sanitize.ts`, `import DOMPurify from 'dompurify'`
+sonrasi 3 yerde `DOMPurify.Config` tip anotasyonu kullaniyordu. Bu,
+`@types/dompurify` 2.x doneminde gecerliydi (o paket `Config`'i bir
+`namespace DOMPurify { ... }` icinde export ediyordu). Ama dompurify
+3.0'dan itibaren paket kendi `.d.ts` dosyalarini tasiyor
+(`package.json`'daki `"types"` alani `dist/purify.cjs.d.ts`'e,
+`exports["."].types` ise `dist/purify.es.d.mts`'e isaret ediyor) ve o
+dosyalar dogrudan okunarak dogrulandi: `Config` bir `export type { Config,
+DOMPurify, ... }` satiriyla DUZ bir named type olarak export ediliyor --
+`namespace DOMPurify {}` diye bir blok YOK (ilginc bicimde `DOMPurify`
+adinda bir `interface` VAR ama bu bir namespace degil). Sonuc: TS2503
+"Cannot find namespace 'DOMPurify'".
+
+Bu hata iki farkli CI yolunda iki farkli sekilde ortaya cikiyordu: (a)
+Container Security Scan'in docker build'i frontend imajini `npm run
+build` ile insa ederken dogrudan carpiyordu; (b) `ci.yml`nin kendi
+Frontend Tests job'i icinde ise HICBIR ZAMAN bu noktaya ulasmiyordu,
+cunku o job'da TS2503'ten daha once calisan whole-tree `eslint .
+--max-warnings 0` adimi zaten 2109 problemle patliyordu (bkz. Bulgu 2) --
+yani ayni kok neden, bir job'da dogrudan gorunur, digerinde bir baska
+onceki-adim-basarisizligi tarafindan maskelenmisti. Bu, SS10.38'in kendi
+"kronik kirmizi aslinda 'her seferinde ayni adimda olen' demekmis"
+bulgusuyla ayni sekil -- asagida (kanon-lint) bir katman daha cikiyor.
+
+Duzeltme: `import DOMPurify, { type Config } from 'dompurify'` + 3
+anotasyonun `DOMPurify.Config` -> `Config` guncellenmesi (tsconfig'in
+`isolatedModules: true` ayari nedeniyle `type` inline modifier'i
+gerekli). Yerelde dogrudan arac cagrisiyla dogrulandi (npm wrapper
+degil -- bu Windows makinesinde `npm run` pipe'lari yanlis pozitif exit
+code veriyor, bkz. asagidaki not): `npx tsc --noEmit` exit 0, `npx vite
+build` exit 0 ("built in 2m 7s").
+
+Not (Windows-yerel arac tuhafligi): `npm run type-check` ve `npm run
+build`, bu makinede `2>&1 | Out-File` ile PowerShell'den cagrildiginda
+exit code 1 donduruyor ama YAKALANMIS CIKTI SIFIR SATIR -- gercek bir
+derleme/build hatasi degil, npm'in Windows'taki wrapper katmaninin bu
+kabukta cikti aktarimini bozmasi. `npx tsc`/`npx vite` dogrudan
+cagrildiginda dogru sonucu (0, basarili) veriyor. GitHub Actions
+Linux'ta (`ubuntu-latest`) calistigi icin bu tuhaflik gercek CI'i
+etkilemiyor -- sadece yerel dogrulama yontemi degistirildi, kod tarafinda
+aksiyon gerekmedi.
+
+### Bulgu 2: whole-tree ESLint -> diff-based (backend ruff deseninin frontend'e tasinmasi)
+
+`frontend/package.json`daki `"lint"` script'i `eslint . --ext ts,tsx
+--report-unused-disable-directives --max-warnings 0` -- yani TUM agac,
+UYARILAR DAHIL sifir tolerans. Olcum: 2109 problem (990 hata + 1119
+uyari) -- tek bir PR'in biriktirdigi bir sey degil, `.github/workflows/
+ci.yml`deki "Run ESLint" adimi bu script'i cagirdigi icin HER PR bu
+degismez borcu miras aliyordu.
+
+`quality-gate.yml`deki backend ruff icin PR #158'de zaten kurulmus
+kanitlanmis desenin (`git diff origin/${BASE_REF}...HEAD --name-only
+--diff-filter=AM -- '*.py' | sed -n 's|^backend/||p'`, degisen dosya
+yoksa `exit 0`) birebir ayni sekli frontend'e tasindi: checkout adimina
+`fetch-depth: 0` eklendi (diff'in `origin/master` referansina
+ulasabilmesi icin), "Run ESLint" adimi "Run ESLint (changed files)"
+olarak degistirildi, sadece `*.ts`/`*.tsx` degisen dosyalari
+`--max-warnings 0` ile tarayacak sekilde.
+
+### Kendi kendini kilitleyen risk: yeni adim, PR'in KENDI dosyasindaki onceden-var-olan uyariyi da tarar
+
+Yeni diff-scoped adim, tanimi geregi bu PR'in DEGISTIRDIGI dosyalari
+tarar -- ve bu PR `sanitize.ts`'i degistiriyor. O dosyada tek bir
+onceden-var-olan uyari vardi: `12:8 warning Using exported name
+'DOMPurify' as identifier for default import import/no-named-as-default`
+-- dompurify'nin tip dosyasi hem varsayilan export hem de `DOMPurify`
+adinda named-type export ettigi icin (Bulgu 1) cikan bir kutuphane-sekli
+uyusmazligi, Config duzeltmesinden tamamen bagimsiz (Config duzeltmesi
+oncesinde de vardi). `--max-warnings 0` altinda TEK bu uyari yeni adimi
+kirardi -- yerelde dogrudan dogrulandi: `npx eslint --report-unused-
+disable-directives --max-warnings 0 src/utils/sanitize.ts` once exit 1.
+
+Bu, PR yazilirken (commit'ten ONCE) yakalanip duzeltildi -- iddia ≠ olcum
+disiplini geregi, "muhtemelen calisir" denilip push edilmedi. Duzeltme
+secenekleri tartildi: (a) `DOMPurify` yerel adini yeniden adlandirmak --
+ama dosyada 19 `DOMPurify.*` kullanim yeri var VE kutuphanenin kendi
+README'sindeki standart kullanim seklinden sapiyor; (b) gerekceli,
+hedefli bir `eslint-disable-next-line import/no-named-as-default` --
+secilen bu oldu, ayni kampanyanin `backend/api/fsrs.py`deki F403 shim'i
+icin uyguladigi "gerekceli noqa" hassasiyetiyle tutarli (korlemesine
+bastirma degil, anlasilmis-ve-belgelenmis bir durum). Duzeltme sonrasi
+ayni komut exit 0; `git diff origin/master --name-only --diff-filter=AM
+-- '*.ts' '*.tsx'` bu PR'de gercekten SADECE `sanitize.ts`'in degistigini
+dogruladi (repo kokunde onlarca izlenmeyen eski scratch dosyasi var,
+hicbiri `.ts`/`.tsx` uzantili degil, hicbiri bu taramaya girmedi).
+
+### Sonuc: PR #160 CI calismasi -- iki hedef kontrol duzeldi, whole-tree ESLint'in maskeledigi bir sonraki katman ortaya cikti
+
+Run `33807504884`/`33807504995`/`33807505054`/`33807505071` (dort ayri
+workflow, ayni PR icin tetiklendi):
+
+- **Quality Gate (pass, 5m37s):** SS10.38'deki 12/12 yesil durumu
+  korundu.
+- **Container Security Scan (pass, 7m8s):** Bulgu 1'in dogrudan kaniti --
+  daha once TS2503 nedeniyle patlayan docker build artik basariyla
+  tamamlaniyor.
+- **Yeni "ESLint (changed files)" adimi (Frontend Tests job'i icinde,
+  pass):** CI log'u dogrudan okunarak dogrulandi -- adim basariyla
+  tamamlandi VE job bir sonraki adima (`kanon-lint`) gecti; whole-tree
+  ESLint kaldirilmasaydi/bozuk olsaydi job burada donerdi.
+- 15+ diger kod-kalitesi/guvenlik kontrolu (mypy, ruff, bandit, safety,
+  semgrep, CodeQL python/javascript, Compliance, IaC, OWASP, SAST, Secret
+  Scanning, Security Summary, Checkov, License Compliance, Trivy) yesil.
+
+### Yeni bulgu: `kanon-lint` (frontend/src/kiro tasarim kanonu) -- 45 ihlal, 18 uyari, whole-tree ESLint tarafindan aylardir maskelenmis
+
+Frontend Tests job'i yine de kirmizi kaldi (54s) -- ama ARTIK TS2503 ya
+da whole-tree ESLint yuzunden degil. CI log'u adim adim okunarak
+(`##[group]` basliklariyla) job'in gercek adim sirasi dogrulandi:
+checkout -> setup-node -> `npm ci` -> **"Run ESLint (changed files)"
+(yeni adim, PASS)** -> **"Kanon lint (frontend/src/kiro)" (FAIL)** ->
+TypeScript Type Check (hic ulasilmadi).
+
+`.github/workflows/ci.yml:420-423`deki yorum satiri bunu zaten "KIRO
+tasarim kanonu (emoji / alarm-kirmizisi / indigo / 'eksik' / motion guard
+/ stok-ikon importu). Repo kokunden kosar; ihlalde exit 1. design/
+CLAUDE_CODE_TALIMATI §4" olarak tanimliyor -- yani bilincli, onceden var
+olan bir tasarim-uyumlulugu kapisi (`node design/scripts/kanon-lint.mjs
+frontend/src/kiro`), bu PR'in eklemedigi/degistirmedigi bir adim. CI
+log'u: 45 ihlal + 18 uyari, TAMAMEN `frontend/src/kiro` altindaki
+dosyalarda (`ThemeSelector.tsx`, `tokens.css`, `Skeleton.tsx`,
+`AISohbetPage.tsx`, `OgrenmeYoluPage.tsx` ve daha fazlasi) -- bu PR'in
+dokundugu iki dosyadan (`sanitize.ts` bir `utils/` dosyasi, `ci.yml` bir
+workflow dosyasi) HICBIRI `frontend/src/kiro` altinda degil.
+
+Iddia ≠ olcum: bu bagimsizlik yerelde de dogrudan dogrulandi -- ayni
+komut (`node design/scripts/kanon-lint.mjs frontend/src/kiro`, repo
+kokunden) bu PR dalinda calistirildi, CI log'uyla BIREBIR ayni sonucu
+verdi ("45 ihlal, 18 uyari"). `frontend/src/kiro` agaci bu PR'de hic
+degismedigi icin bu sayi master'da da birebir aynidir -- matematiksel
+olarak farkli olamaz.
+
+Neden simdiye kadar hic gorunmemisti: whole-tree ESLint adimi (Bulgu 2),
+`ci.yml`de kanon-lint'ten ONCE calisiyordu ve HER ZAMAN 2109 problemle
+patliyordu -- yani job, kanon-lint'e hic ulasmadan her seferinde ayni
+erken adimda oluyordu. Diff-based'e gecince (bu PR'in kendi duzeltmesi)
+o erken-olum ortadan kalkti ve bir sonraki katman (kanon-lint) ilk kez
+gorunur oldu -- SS10.38'deki Quality Gate/path-drift bulgusuyla AYNI
+sekil, farkli bir CI dosyasinda.
+
+Bu PR'in kapsami disinda birakildi: 45 ihlal/18 uyari, `frontend/src/kiro`
+agacinda coklu dosyaya yayilmis, tasarim-sistemi duzeyinde bir temizlik
+gerektiriyor (emoji/inline-SVG yasagi, risk rengi amber-degil-kirmizi,
+motion-guard eksikligi gibi kategoriler) -- bu, DOMPurify tip hatasi
+duzeltmesiyle ayni PR'a sigdirilamayacak, kendi basina bir kapsam.
+psycopg2->psycopg3 gecis borcunun SS10.38'de nasil ayri birakildigiyla
+ayni gerekce: korlemesine, tasarim-inceleme olmadan toplu duzeltme
+riskli.
+
+### PR #160'daki diger kirmizi/bekleyen kontroller -- SS10.38'de zaten belgelenmisti, kendi log'lariyla yeniden dogrulandi
+
+- **Automatic PR Review (fail, 30s):** SS10.35/10.37/10.38'de zaten
+  belgelenen eksik `ANTHROPIC_API_KEY`/`CLAUDE_CODE_OAUTH_TOKEN` secret'i
+  -- degismedi.
+- **8 Golden Flow E2E tests (fail, 3m55s):** log'da yine `huggingface-hub`/
+  `transformers` bagimlilik cozumlemesi gorulüyor -- SS10.38'deki ayni HF
+  model-yukleme sorunuyla tutarli.
+- **Backend Tests, Python 3.11 (fail, 5m34s):** yine TEK basarisiz test --
+  `tests/unit/test_video_quality_validator.py::test_accessible_video_public
+  - AssertionError: assert False is True` -- SS10.38'de belgelenen AYNI
+  flaky/aga-bagimli test, satir satir ayni.
+- **CI Summary (fail, 4s):** log'u dogrudan okundu -- sadece Code
+  Quality/Backend Tests/Frontend Tests sonuclarini `if` ile birlestiren
+  bir agregator (`echo "| Backend Tests | failure |"` ...), bagimsiz bir
+  bulgu degil.
+- **Build Docker Images / E2E Tests (Playwright) (skipping):** Frontend/
+  Backend Tests'e `needs:` bagimliligi nedeniyle kademeli atlama, ayri
+  bir sorun degil.
+- **API Security Testing / OWASP ZAP (merge aninda hala calisiyordu):**
+  Bu PR'in 2 dosyasi (`sanitize.ts`, `ci.yml`) backend/API yuzeyine
+  HICBIR sekilde dokunmuyor -- ZAP bu oturumda ayni backend'e karsi iki
+  kez zaten basariyla calisti (SS10.37 PR'i: 44dk11sn; SS10.38 PR #158:
+  46dk6sn, ikisinde de HIGH/CRITICAL yok). Bu PR'in konusu frontend TS
+  tipleri + CI YAML lint kapsami oldugu icin backend API yuzeyinde yeni
+  bir zafiyet yaratmasinin makul bir mekanizmasi yok -- SS10.38'in PR
+  #159 (salt dokuman degisikligi) icin uyguladigi ayni gerekceli-atlama
+  karari burada da uygulandi: ~45-46 dakikalik tekrar bekleme yerine,
+  zaten olculmus iki gecmis sonuc + sifir API-yuzeyi degisikligi kanit
+  olarak kullanildi.
+
+### Karar / Sonuc
+
+PR #160 (`fix/frontend-dompurify-config-type-and-eslint-scope`) merge
+edildi -- merge commit `ab8d1edcd9f7dc0c6ce4cb7257ade2c44a38b0d2`,
+2026-09-03T21:31:22Z, `--merge --delete-branch` (repo konvansiyonuyla
+tutarli, `git log -1 --format="%P"` ile iki-ebeveynli oldugu dogrulandi:
+`099bf11e3` + `ff3498980`), dal GitHub'dan silindi (`gh api .../branches/
+...` -> 404 ile dogrulandi). Karar gerekcesi: bu PR'in hedefledigi iki
+kontrol (Container Security Scan, whole-tree ESLint'in bloke etmesi)
+somut kanitla duzeldi; kalan kirmizilarin HER BIRI -- yeni kesfedilen
+kanon-lint dahil -- kendi log'uyla tek tek incelenip bu PR'in 2
+dosyasindan bagimsiz oldugu kanitlandi. Rezerve karar kategorisine
+(kredensiyel, repo-seviyesi sistem/guvenlik ayari, Dependabot,
+major-surum incelemesi) GIRMIYOR -- siradan bir CI-duzeltme PR'inin
+dogrulanip merge edilmesi.
+
+Takip (SS10.38'in listesine ekleniyor):
+(1) Postgres service + migration (ORM schema-drift'in gercek kapsamasi);
+(2) 44 dosyalik psycopg2->psycopg3 gecis borcu;
+(3) **YENI: `kanon-lint` -- `frontend/src/kiro` agacinda 45 ihlal/18
+    uyari (emoji yasagi, alarm-kirmizisi/amber, motion-guard, stok-ikon),
+    `design/CLAUDE_CODE_TALIMATI` §4'e karsi -- artik whole-tree ESLint
+    tarafindan maskelenmiyor, gercek bir sonraki temizlik hedefi**;
+(4) SS10.35/10.37/10.38'den tasinan 4 rezerve karar (ANTHROPIC_API_KEY/
+    CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_merge` ayari,
+    Dependabot merge/triyaj kararlari, branch protection kurulumu) hala
+    Huseyin'i bekliyor.
