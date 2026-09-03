@@ -64,7 +64,7 @@ Environment
 -----------
 DATABASE_URL  must be set to a postgresql:// URL with read access to the
               kiro2 database. Falls back to
-              postgresql://postgres:postgres@localhost:5434/kiro2
+              postgresql://postgres:postgres@localhost:5434/kiro2  # pragma: allowlist secret
 
 Exit codes
 ----------
@@ -84,8 +84,20 @@ import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-# psycopg2 is already a project dep (used elsewhere in scripts/).
-import psycopg2
+# 2026-09-03: `requirements.txt` pins `psycopg[binary]>=3.1.0` (psycopg3) --
+# psycopg2 is NOT installed by a plain `pip install -r requirements.txt`
+# despite the (stale) comment this replaced, and despite dozens of other
+# backend/scripts/**, backend/_pilots/** etc. files also assuming psycopg2
+# is present (see docs/guvenlik-borcu.md SS10.38 -- that's a separate,
+# much larger migration, out of scope here). Import failure is handled the
+# same way as "DB unreachable" below: fatal by default (a developer running
+# this locally almost certainly has psycopg2 installed some other way, and
+# a real ImportError is worth seeing), skippable with --skip-if-unreachable
+# (CI has neither the driver nor a DB to use it with).
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
 
 HERE = Path(__file__).resolve().parent
 BACKEND = HERE.parent
@@ -220,13 +232,15 @@ def load_orm_metadata():
             continue
         try:
             importlib.import_module(f"models.{name}")
-        except Exception:
+        except Exception:  # noqa: S112 # nosec B112 -- deliberate, see comment below
             # Some modules have heavy import-time side effects (LLM init,
             # JVM bridges, optional deps). The audit doesn't need them to
             # parse — Base.metadata is populated as a side effect of class
             # body execution, which happens at module import. Modules that
             # fail to import contribute zero tables but don't break the
-            # other 200+.
+            # other 200+. Not logged: this branch is expected to trigger for
+            # a known, large subset of optional-dependency modules on every
+            # run, and would drown the real findings below in noise.
             continue
 
     return Base.metadata
@@ -264,7 +278,8 @@ def fetch_db_columns(conn) -> dict[str, dict[str, dict]]:
 # ---------------------------------------------------------------------------
 
 
-def compare_table(
+# PLR0912: one branch per detection pattern -- see "What it flags" above.
+def compare_table(  # noqa: PLR0912
     table_name: str,
     orm_table,
     db_columns: dict[str, dict],
@@ -479,7 +494,7 @@ def compare_table(
 def get_db_url() -> str:
     url = os.environ.get(
         "DATABASE_URL",
-        "postgresql://postgres:postgres@localhost:5434/kiro2",
+        "postgresql://postgres:postgres@localhost:5434/kiro2",  # pragma: allowlist secret
     )
     # psycopg2 doesn't understand SQLAlchemy driver suffixes like +asyncpg.
     return url.replace("postgresql+asyncpg://", "postgresql://").replace(
@@ -490,12 +505,15 @@ def get_db_url() -> str:
 def parse_db_url(url: str) -> dict:
     # Minimal parser — psycopg2.connect() takes a DSN string directly, but
     # we want to fall through to host/port/etc. for nicer error messages.
-    if url.startswith("postgresql://") or url.startswith("postgres://"):
+    if url.startswith(("postgresql://", "postgres://")):
         return {"dsn": url}
     return {"dsn": url}
 
 
-def main() -> int:
+# PLR0912/PLR0911: sequential fatal-error checkpoints (ORM load, driver
+# import, DB connect, ...), each its own early return -- not accidental
+# complexity.
+def main() -> int:  # noqa: PLR0912, PLR0911
     parser = argparse.ArgumentParser(
         description="Audit ORM column types vs live PostgreSQL schema.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -505,6 +523,18 @@ def main() -> int:
         "--fail",
         action="store_true",
         help="Exit with code 1 if any HIGH-severity finding is reported (CI gate).",
+    )
+    parser.add_argument(
+        "--skip-if-unreachable",
+        action="store_true",
+        help=(
+            "Exit 0 (with a [SKIPPED] note) instead of 2 when the DB can't be "
+            "reached, instead of treating that as fatal. Intended for CI, which "
+            "does not provision a Postgres service for this workflow (see "
+            "docs/guvenlik-borcu.md SS10.38) -- local/manual runs should leave "
+            "this off, since there a connection failure usually means a "
+            "forgotten local DB, which is worth failing loudly on."
+        ),
     )
     parser.add_argument(
         "--json",
@@ -534,9 +564,30 @@ def main() -> int:
         return 2
 
     # Step 2: connect to live DB.
+    if psycopg2 is None:
+        msg = "psycopg2 is not installed (requirements.txt pins psycopg3 -- see module docstring)"
+        if args.skip_if_unreachable:
+            print(
+                f"[SKIPPED] {msg}. Schema-drift coverage is not active here "
+                "(see docs/guvenlik-borcu.md SS10.38). Not treated as a failure.",
+                file=sys.stderr,
+            )
+            return 0
+        print(f"[FATAL] {msg}.", file=sys.stderr)
+        return 2
+
     try:
         conn = psycopg2.connect(get_db_url())
     except Exception as exc:
+        if args.skip_if_unreachable:
+            print(
+                f"[SKIPPED] Could not connect to DB ({get_db_url()}): {exc}\n"
+                "  No Postgres service is provisioned in this environment -- "
+                "schema-drift coverage is not active here (see "
+                "docs/guvenlik-borcu.md SS10.38). Not treated as a failure.",
+                file=sys.stderr,
+            )
+            return 0
         print(
             f"[FATAL] Could not connect to DB ({get_db_url()}): {exc}", file=sys.stderr
         )
@@ -559,7 +610,7 @@ def main() -> int:
         )
 
     # Step 4: tally + print.
-    by_severity = {"HIGH": [], "MEDIUM": [], "LOW": []}
+    by_severity: dict[str, list[Finding]] = {"HIGH": [], "MEDIUM": [], "LOW": []}
     for f in all_findings:
         by_severity[f.severity].append(f)
 
@@ -596,7 +647,7 @@ def main() -> int:
         print()
 
     if args.json:
-        with open(args.json, "w", encoding="utf-8") as fh:
+        with Path(args.json).open("w", encoding="utf-8") as fh:
             json.dump(
                 {
                     "summary": {
