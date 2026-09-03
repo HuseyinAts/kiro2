@@ -380,6 +380,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # ESLint (changed files) adim needs origin/<base> to diff against
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -392,9 +395,27 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Run ESLint
+      # 2026-09-03: whole-tree `npm run lint` (eslint . --max-warnings 0)
+      # never distinguishes PR-introduced problems from legacy debt --
+      # measured directly: 2109 pre-existing problems (990 errors, 1119
+      # warnings) across frontend/, none introduced by any single PR (see
+      # docs/guvenlik-borcu.md SS10.38). Same pattern already applied to
+      # backend ruff in quality-gate.yml -- scope to files the PR actually
+      # changed so new code is held to the standard without gating on the
+      # existing backlog.
+      - name: Run ESLint (changed files)
         working-directory: frontend
-        run: npm run lint
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+        run: |
+          CHANGED=$(git diff "origin/${BASE_REF}...HEAD" --name-only --diff-filter=AM -- '*.ts' '*.tsx' | sed -n 's|^frontend/||p')
+          if [ -z "$CHANGED" ]; then
+            echo "No changed frontend .ts/.tsx files vs origin/${BASE_REF}. Skipping ESLint."
+            exit 0
+          fi
+          echo "Linting changed files:"
+          echo "$CHANGED"
+          echo "$CHANGED" | xargs npx eslint --report-unused-disable-directives --max-warnings 0
 
       # KIRO tasarım kanonu (emoji / alarm-kırmızısı / indigo / "eksik" / motion guard /
       # stok-ikon importu). Repo kökünden koşar; ihlalde exit 1. design/CLAUDE_CODE_TALIMAT §4.

@@ -9,12 +9,19 @@
  * @see https://github.com/cure53/DOMPurify
  */
 
-import DOMPurify from 'dompurify';
+// dompurify's own bundled types export both a default export and a named
+// `DOMPurify` interface type; binding the default import to the same local
+// name (the package's own documented usage, see the @see link above) trips
+// import/no-named-as-default. Renaming would touch every call site below
+// (19 usages) for no functional gain, so this is a targeted, understood
+// suppression rather than a real code issue.
+// eslint-disable-next-line import/no-named-as-default
+import DOMPurify, { type Config } from 'dompurify';
 
 /**
  * Default DOMPurify configuration for general HTML
  */
-const DEFAULT_HTML_CONFIG: DOMPurify.Config = {
+const DEFAULT_HTML_CONFIG: Config = {
   ALLOWED_TAGS: [
     'b', 'i', 'em', 'strong', 'u', 'span', 'div', 'p', 'br', 'hr',
     'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'thead', 'tbody',
@@ -29,7 +36,7 @@ const DEFAULT_HTML_CONFIG: DOMPurify.Config = {
 /**
  * DOMPurify configuration for SVG content
  */
-const SVG_CONFIG: DOMPurify.Config = {
+const SVG_CONFIG: Config = {
   USE_PROFILES: { svg: true, svgFilters: true },
   ALLOWED_TAGS: [
     'svg', 'g', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline',
@@ -56,7 +63,7 @@ const SVG_CONFIG: DOMPurify.Config = {
 /**
  * DOMPurify configuration for MathML content
  */
-const MATHML_CONFIG: DOMPurify.Config = {
+const MATHML_CONFIG: Config = {
   USE_PROFILES: { mathMl: true },
   ALLOWED_TAGS: [
     'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'mspace', 'mrow', 'mfrac',
