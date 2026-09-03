@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -113,7 +114,18 @@ def _get_openapi_paths_local() -> set[str] | None:
     baglantisi, bkz. core/application.py app_lifespan) sadece ASGI
     sunucu FIILEN calisirken tetiklenir; `create_app()` + `.openapi()`
     cagirmak bunu tetiklemiyor. Yerel dogrulama (2026-09-03, venv):
-    993 path, sifir ek servis/ortam degiskeni, ~5sn.
+    993 path, ~5sn, GERCEK bir DB'ye baglanmadan.
+
+    DATABASE_URL yine de SET olmali (deger degil, salt varlik): api.auth
+    gibi router'lari import etmek database/connection.py'yi de import
+    ediyor, o modul import ANINDA (core/config.py Settings.__init__,
+    satir ~85) DATABASE_URL yoksa ValueError firlatiyor -- bu, gercek
+    CI'da (yerel venv'imde degil, orada zaten set'ti) yakalanan ikinci
+    kok neden (bkz. SS10.38). create_async_engine(...) de import
+    ANINDA cagriliyor ama LAZY -- URL'i parse edip driver seciyor,
+    gercekten baglanmiyor (asyncpg driver, lifespan'da acilana kadar).
+    O yuzden burada set edilen deger hic kullanilmayacak, sadece
+    Settings.__init__'in "var mi" kontrolunu gecmesi yeterli.
 
     Onceki davranis (--fail modunda CI'da HER ZAMAN) localhost:8000'e
     baglanmaya calisiyordu ama hicbir adim uvicorn'u hic baslatmiyordu
@@ -123,6 +135,10 @@ def _get_openapi_paths_local() -> set[str] | None:
     """
     if str(BACKEND_DIR) not in sys.path:
         sys.path.insert(0, str(BACKEND_DIR))
+    # Placeholder only, never actually connected (see docstring above);
+    # real DATABASE_URL (if any) is left untouched by setdefault.
+    _dummy_db_url = "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
+    os.environ.setdefault("DATABASE_URL", _dummy_db_url)
     try:
         from core.application import create_app
 
