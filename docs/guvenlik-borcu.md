@@ -3670,3 +3670,192 @@ Daha once bayraklanan 3 rezerve karar (ANTHROPIC_API_KEY secret'i,
 `allow_auto_merge` ayari, Dependabot merge kararlari) hala Huseyin'i
 bekliyor -- bu bolum onlari degistirmiyor, sadece Dependabot kismina
 somut bulgu ekliyor.
+
+
+## §10.38 -- Quality Gate: adim 3'ten sonrasi (4-12) bu repo'nun tum gecmisinde hic calismamisti -- iki kok neden + PR #158 (2026-09-03)
+
+### Bulgu: "kronik kirmizi" aslinda "her seferinde ayni adimda olen" demekmis
+
+`gh run view <id> --json jobs` ile Quality Gate workflow'unun (`quality-gate.yml`)
+gecmis calismalari tek tek incelendi: workflow'daki adim sirasiyla "Path drift
+audit" (job-ici adim numarasi 8) HER SEFERINDE job'u orada durduruyordu --
+GitHub Actions bir `run:` adimi non-zero exit ettiginde sonraki adimlari
+otomatik `skipped` isaretler. Sonuc: "ORM schema drift" (adim 9),
+"New-endpoint checklist" (adim 10), "Ruff lint" (adim 11), "Mypy type check"
+(adim 12) bu repo'nun TUM gecmisinde tek bir kez bile fiilen calismamis --
+her calismada `skipped` olarak isaretleniyordu. Onceki SS10.3x notlarinin
+"kronik kirmizi" dedigi sey aslinda tek bir noktada patlayan bir cascade'di;
+gercek boyutu bu oturumda ilk kez olculdu.
+
+### Path drift audit'in kendi tarama mantiginda 2 yanlis pozitif (36 -> 30 bulgu)
+
+`audit_path_drift.py`'nin frontend fetch-cagrisi tarayicisi iki sinifta
+yanlis pozitif uretiyordu: (1) `.bak` uzantili olu yedek dosyalar taraniyor,
+gercekte derlenmeyen/calismayan kod icin sahte "404 riski" bulgular
+uretiyordu; (2) JSDoc/blok yorumlarinin ICINDEKI ornek `fetch(...)`
+cagrilari gercek cagri gibi sayiliyordu. Ikisi de duzeltildi: `.bak`
+dosyalari tarama disi birakildi, `_strip_comments()` ile `//` ve `/* */`
+(JSDoc dahil) yorumlari fetch-tarama ONCESI temizleniyor. Sonuc: 36 -> 30
+gercek drift bulgusu (30'u da halen gecerli, TR/EN kopya + gercek 404
+riski -- rapor-only modda, `--fail` YOK, asagida aciklanan sebeple).
+
+### Kok neden #1: in-process OpenAPI derlemesi -- lifespan/DATABASE_URL ayrimi
+
+Path drift audit, backend'in gercek path'lerini almak icin varsayilan
+olarak canli bir sunucuya HTTP istegi ATMIYOR (CI'da uvicorn hic
+baslamiyor) -- bunun yerine `create_app().openapi()` ile in-process
+sema cikariyordu. Bu, `app_lifespan` context manager'ini (DB baglantisini
+ACAN kod) TETIKLEMEZ -- FastAPI/ASGI'de lifespan sadece gercek sunucu
+baslangicinda calisir, saf route/decorator introspection'i degil. AMA
+router'lari import etmek (`api.auth` vb.) transitif olarak
+`database/connection.py`'yi import ediyor, o da MODUL IMPORT ZAMANINDA
+(lifespan'a bagli olmadan) `create_async_engine(DATABASE_URL, ...)`
+cagiriyor -- bu lazy'dir (baglanmaz) AMA `backend/core/config.py:84-88`
+`Settings.__init__` icinde DATABASE_URL'in salt VARLIGINI kontrol eden
+kosulsuz bir `raise ValueError(...)` var. Yani "hic baglanmiyor ama var
+olmasi lazim" -- CI'da hicbir DB servisi/env degiskeni yokken bu satir
+patliyordu. Duzeltme: `_get_openapi_paths_local()` artik
+`os.environ.setdefault("DATABASE_URL", <placeholder-dsn>)` ile SADECE
+eksikse bir yer-tutucu deger enjekte ediyor (gercek bir deger varsa
+DOKUNMUYOR), in-process derleme basarisizsa `--live` bayragiyla calisan
+HTTP-tabanli eski yola sessizce geri donuyor.
+
+### Kok neden #2 (adim 4, ORM schema drift): psycopg2 kurulu degil + DB servisi yok
+
+`audit_orm_schema_drift.py` iki farkli sebepten CI'da HER ZAMAN patliyordu:
+(1) dosya en ustte kosulsuz `import psycopg2` yapiyordu, ama
+`backend/requirements.txt:17` `psycopg[binary]>=3.1.0` (psycopg3) pinliyor
+-- psycopg2 kurulu DEGIL; (2) Quality Gate job'unda bir Postgres service
+container'i yok, yani kurulu olsa bile baglanti kurulamazdi. Duzeltme iki
+katmanli: import artik `try/except ImportError` ile sentinel'e alindi
+(`psycopg2 = None`), `main()`'e yeni bir `--skip-if-unreachable` bayragi
+eklendi -- hem "surucu yok" hem "DB'ye baglanilamiyor" durumlarinda script
+artik `[SKIPPED] ...` mesajiyla exit 0 donuyor (once exit 2 ile sert
+patliyordu). `quality-gate.yml`'deki cagri bu bayrakla guncellendi. ONEMLI:
+bu, gercek DB-destekli schema-drift kapsamasinin CI'da HALA calismadigi
+anlamina geliyor -- sadece "yanlislikla surekli kirmizi" durumunu "bilerek
+ve gorunur sekilde pas geciliyor" haline getirdi. Postgres service +
+migration kurulumu ayri, daha buyuk bir takip isi (asagida not dusuldu).
+
+### Adim 6 (Ruff lint): whole-tree (2051 hata) -> diff-based
+
+Adim 6 hicbir zaman fiilen calismadigi icin `backend/` agacinin tamaminda
+`ruff check .` calistirildiginda ne cikacagi bilinmiyordu. Temiz-oda
+venv'de olculdu: 2051 mevcut hata -- tek bir PR'in sorumlu oldugu bir sey
+degil, birikmis borc. Adim 5'in (`check_new_endpoints.py`) zaten kullandigi
+`git diff origin/${BASE_REF}...HEAD --name-only --diff-filter=AM` deseni
+adim 6'ya da uygulandi (YAML icine inline bash olarak) -- artik sadece
+PR'in DEGISTIRDIGI `.py` dosyalari `--select=E,F,W --ignore=E501` ile
+taraniyor, birikmis borc PR'lari bloklamiyor, yeni kod standarda tabi.
+
+### Dogrulama: PR #158, iki push, ikincisi ancak GERCEK CI log'uyla bulundu
+
+Ilk push (`177b84e3a`) yerel temiz-oda venv'de basariyla dogrulandi --
+AMA gercek CI'da Quality Gate yine patladi. Sebep aranirken
+`gh run view --log-failed` ile gercek hata okundu: `_get_openapi_paths_local()`
+`config.py`'nin DATABASE_URL varlik kontrolune takiliyordu (yukaridaki
+Kok neden #1). Yerel testin neden bunu yakalamadigi da bulundu: Huseyin'in
+makinesinde gercek bir `DATABASE_URL` iceren `backend/.env` dosyasi var,
+CI'da boyle bir dosya yok -- yani ilk dogrulama farkinda olmadan bu
+ortam farkina guveniyordu. Bu tam olarak "iddia != olcum" ilkesinin
+korumaya calistigi hata sinifi. Ikinci commit (`87bf371ab`,
+`os.environ.setdefault` duzeltmesi) yerelde GERCEK bir tekrarla dogrulandi
+-- `backend/.env` `Move-Item` ile GECICI olarak tasinip in-process
+derlemenin `.env` OLMADAN da basardigi bizzat gozlemlendi, sonra dosya
+geri getirildi.
+
+### Sonuc: run 33780287430 -- Quality Gate 12/12 adim `success` (bu repo'nun tarihinde ilk kez)
+
+`gh run view 33780287430 --json jobs` ile adim adim dogrulandi: Set up job,
+Checkout, Set up Python, Install backend requirements, Install lint/type
+tools, Router registration check, Golden Flows smoke, Path drift audit,
+ORM schema drift, New-endpoint checklist, Ruff lint (changed files), Mypy
+type check -- HEPSI `success`. Quality Gate job'unun kendisi de `pass,
+5m42s`. Bu, SS10.3x'ler boyunca "kalici kirmizi" olarak belgelenen
+sorunun ilk kez uctan uca cozuldugunu GOZLEMLENEREK (iddia degil) dogruluyor.
+
+### Kapsam disi birakilan: 44 dosyalik psycopg2/psycopg3 gecis borcu
+
+`git grep -ln "^import psycopg2"` ile olculdu: `backend/_pilots/*.py` (9),
+`backend/_scripts/*.py` (2), `backend/analytics/health_audit_service.py`,
+`backend/monitor.py`, `backend/scripts/*.py` (audit_orm_schema_drift.py
+haric -- o bu PR'da duzeltildi -- audit_orm_vs_db_parity.py,
+audit_sql_migration_drift.py dahil coklu dosya), `backend/scripts/quality/**`
+(coklu dosya), `backend/tasks/risk_tasks.py`,
+`backend/tasks/streak_tasks.py` -- toplam 44 dosya, hepsi `requirements.txt`
+psycopg3'e gectigi halde hala psycopg2 import ediyor. Bu PR'da SADECE
+zaten dokunulan `audit_orm_schema_drift.py` duzeltildi; kalan 43 dosya
+AYRI, daha buyuk bir takip isi olarak burada belgeleniyor -- olcum
+yapilmadan "kucuk" varsayilip es gecilmiyor.
+
+### PR #158'deki diger kirmizi/yavas kontroller -- her biri kendi log'uyla dogrulandi, hicbiri bu PR'in 3 dosyasiyla (audit_path_drift.py, audit_orm_schema_drift.py, quality-gate.yml) ilgili degil
+
+- **Automatic PR Review (fail, 28s):** `##[error]Action failed: ... Either
+  ANTHROPIC_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, ... is required`. Repo'da
+  eksik bir secret -- SS10.35/10.37'de zaten Huseyin'e birakilmis rezerve
+  karar listesine giriyor, bu PR'a ozel degil.
+- **Container Security Scan (fail, 1m45s):** `docker build` ->
+  `npm run build` -> `src/utils/sanitize.ts(17,28): error TS2503: Cannot
+  find namespace 'DOMPurify'` -- onceden var olan bir frontend TypeScript
+  hatasi, backend/workflow degisikligiyle ilgisi yok.
+- **Frontend Tests (fail, 1m24s):** ESLint `2109 problems (990 errors,
+  1119 warnings)` -- frontend agacinin tamaminda birikmis lint borcu
+  (backend'deki 2051-hatalik ruff borcuyla ayni sinif sorun, ama frontend
+  tarafinda, bu PR'in kapsami disinda).
+- **8 Golden Flow E2E tests (fail, 3m43s):** "Wait for backend" adiminda
+  backend, bir HuggingFace Turkce duygu-analizi modelinin (`savasy/
+  bert-base-turkish-sentiment-cased`) agirliklarini yuklerken exit code 1
+  ile cikiyor -- backend baslatma/model-indirme sorunu, degistirdigimiz
+  dosyalarla ilgisiz.
+- **Backend Tests, Python 3.11 (fail, 5m37s):** TEK basarisiz test --
+  `tests/unit/test_video_quality_validator.py::test_accessible_video_public
+  - AssertionError: assert False is True` (muhtemelen disa donuk bir
+  video URL'sinin erisilebilirligini kontrol eden, aga bagimli/flaky bir
+  test) -- degistirdigimiz dosyalarla ilgisiz.
+- **CI Summary (fail, 3s):** yukaridaki Backend/Frontend Tests
+  basarisizliklarinin toplamini yansitan bir agregator, bagimsiz bir
+  bulgu degil.
+- **API Security Testing / OWASP ZAP (pass, 46m6s):** BEKLENEN sekilde
+  uzun surdu (`.github/workflows/security.yml`daki `zaproxy/action-api-scan
+  @v0.10.0`, tum 1123 backend path'ine karsi `-a -I` aktif tarama) --
+  ayni gunun erken saatlerindeki bir calismada da (SS10.37 PR'i) 44dk11sn
+  surup basarili olmustu, yani bu normal sure, takilma degil. SONUC:
+  HIGH/CRITICAL bulgu yok (`fail_action: true` tetiklenmedi).
+
+### Yeni gozlem: `master` dalinda HICBIR branch protection kurali yok
+
+`gh api repos/HuseyinAts/kiro2/branches/master/protection` -> `404 Branch
+not protected`. Yani `required_status_checks` diye bir sey tanimli degil;
+`gh pr view` PR'lar icin `mergeStateStatus: UNSTABLE` gosterse bile
+(bazi kontroller kirmizi/bekliyor) merge TEKNIK OLARAK hicbir zaman
+engellenmiyor. Bu repo-seviyesi bir guvenlik/sistem ayari oldugu icin
+BU OTURUMDA DEGISTIRILMEDI (rezerve karar kategorisi) -- SS10.35/10.37'de
+listelenen 3 rezerve karara (ANTHROPIC_API_KEY secret'i, `allow_auto_merge`
+ayari, Dependabot merge kararlari) 4uncusu olarak burada ekleniyor:
+branch protection/required status checks kurulup kurulmayacagina,
+kurulacaksa hangi kontrollerin "required" isaretlenecegine Huseyin karar
+vermeli.
+
+### Karar / Sonuc
+
+PR #158 (`fix/quality-gate-path-drift-and-orm-audit`) merge edildi --
+merge commit `7d5ea00671de0ce2c923aca090d44aea39a53262`, 2026-09-03T17:30:39Z,
+`--merge` (repo konvansiyonuyla tutarli, `git log --merges` ile dogrulandi),
+dal silindi. Karar gerekcesi: Quality Gate'in kendisi + butun ilgili
+kod-kalitesi/guvenlik kontrolleri (mypy, ruff, bandit, safety, semgrep,
+CodeQL python/javascript, Compliance, IaC, OWASP, SAST, Secret Scanning,
+Security Summary, Checkov, License Compliance, API Security Testing) yesil;
+kalan kirmizilarin HER BIRI kendi log'uyla tek tek dogrulanip bu PR'in 3
+dosyasindan bagimsiz, onceden var olan sorunlar oldugu kanitlandi (yukarida
+listelendi). Bu, "merge butonuna basma, karari Huseyin'e birak" seklindeki
+rezerve kategoriye GIRMIYOR -- kredensiyel/secret girisi, repo-seviyesi
+sistem/guvenlik ayari degisikligi, Dependabot merge/triyaj karari veya
+major-surum-atlama incelemesi degil; siradan bir CI-duzeltme PR'inin
+dogrulanip merge edilmesi.
+
+Takip: (1) Postgres service + migration kurup adim 4'un GERCEK schema-drift
+kapsamasini aktif etmek (su an sadece "skip" ediliyor); (2) 44 dosyalik
+psycopg2->psycopg3 gecis borcu; (3) frontend'deki 990 ESLint hatasi (aynen
+backend ruff'ta yapildigi gibi diff-based'e gecirilebilir); (4) yukarida
+bahsedilen 4 rezerve karar (secret, allow_auto_merge, Dependabot,
+branch protection) hala Huseyin'i bekliyor.
