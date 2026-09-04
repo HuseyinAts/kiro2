@@ -4083,3 +4083,119 @@ Takip (SS10.38'in listesine ekleniyor):
     CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_merge` ayari,
     Dependabot merge/triyaj kararlari, branch protection kurulumu) hala
     Huseyin'i bekliyor.
+
+## §10.40 -- PR #162: kanon-lint'in 45 ihlalinden 1'i (HAREKET GUARD'SIZ) duzeltildi, 44'u kasitli acik birakildi (2026-09-04)
+
+### Baslangic noktasi: SS10.39'un "YENI" bulgusuna ilk mudahale
+
+SS10.39, `frontend/src/kiro` agacinda whole-tree ESLint'in aylardir
+maskeledigi 45 hata/18 uyarilik bir `kanon-lint` borcu ortaya cikardi ve
+bunu 3 kategoriye ayirdi: (a) 41 EMOJI ihlali (bespoke SVG ikon gerektirir,
+mevcut spesifikasyon yok), (b) 3 ALARM-KIRMIZISI ihlali (Selcuk Bayraktar
+temasinin kasitli kirmizi aksani), (c) 1 dosya-seviyesi HAREKET GUARD'SIZ
+hatasi (ThemeSelector.tsx'te useReducedMotion eksik) + 18 engelleyici
+olmayan uyari. Bu oturum sadece (c)'yi -- tek, mekanik, sifir-tasarim-
+karari gerektiren hatayi -- hedef aldi; (a) ve (b) icin AskUserQuestion
+degil ama acik yazili gerekce ile Huseyin'e birakma karari SS10.39'da
+zaten verilmisti, burada tekrarlanmiyor.
+
+### Bulgu: HAREKET GUARD'SIZ duzeltmesi 2. bir gizli hata daha acti
+
+`ThemeSelector.tsx`'e `useReducedMotion()` eklenip iki inline `transition`
+korunduktan sonra yerel `eslint --max-warnings 0` calistirildi (kanon-lint
+degil, standart ESLint -- ayri bir kontrol). Sonuc 5 sorun: 4 hata
+(comma-dangle x3, quotes x1 -- satir 47/75/92/116, benim eklentilerimle
+CAKISMIYOR) + 1 uyari (`import/no-cycle`, satir 4:1).
+
+- 4 hata: dosyada onceden var olan, salt bicimsel hatalar. Dosya bu PR'in
+  diff'ine girince (SS10.38/10.39'da backend ruff ve frontend ESLint icin
+  kurulan "diff-scoped ama dosya TAM taranir" kuraliyla ayni sekilde)
+  ilk kez tarandi ve ilk kez yakalandi. `eslint --fix` ile otomatik
+  duzeltildi (sifir semantik risk, ESLint'in kendisi "fixable" diyor).
+- 1 uyari: sahte degil, gercek bir mimari cevrim. `ui/index.ts` barrel'i
+  `SideNav`'i yeniden disa aktariyor (satir 36); `SideNav.tsx` ise
+  `ThemeSelector`'i import edip render ediyor (satir 3, 234). Benim yeni
+  `useReducedMotion` import'um `'../ui'` barrel'inden gelseydi:
+  `ThemeSelector -> ../ui -> SideNav -> ThemeSelector` -- gercek bir
+  cevrim. Duzeltme: import'u barrel yerine dogrudan tanim dosyasindan
+  (`'../ui/ConfettiDawn'`) yapmak -- ayni export, farkli yol, cevrim
+  ortadan kalkiyor, davranis degismiyor.
+
+Bu, SS10.38/10.39'da defalarca gorulen desenin 3. tekrari: bir gizli
+katmani acinca (whole-tree kontrol -> diff-scoped, ya da burada "dosya
+ilk kez PR diff'ine giriyor"), bir sonraki, daha once hic tetiklenmemis
+katman ortaya cikiyor. Her seferinde kok neden dogrudan olcumle
+(calistirip log okuyarak) teyit edildi, tahmin edilmedi.
+
+### Dogrulama (PR #162)
+
+- `npx tsc --noEmit` -> 0
+- `npx eslint --max-warnings 0 src/kiro/components/ThemeSelector.tsx` ->
+  once 5 sorun (4 hata + 1 uyari), fix sonrasi 0
+- `node design/scripts/kanon-lint.mjs frontend/src/kiro` -> 44 ihlal,
+  18 uyari (once: 45/18) -- HAREKET GUARD'SIZ satiri kayboldu, CI'in
+  kendi log'unda (asagida) ayni sayi teyit edildi, baska hicbir sey
+  degismedi
+- `npx vite build` -> 0 (2m18s tam prod build)
+- Yerel pre-push hook gauntlet'i (push-secret-guard, 320 testlik
+  ders-zorlayici suite, reward-hacking-check) temiz gecti
+
+### PR #162 CI calismasi -- her kirmizi/bekleyen kontrol tek tek dogrudan log'la kok nedenine baglandi
+
+18+ kontrol yesildi (Quality Gate, 5 Code Quality kontrolu, CodeQL x2,
+SAST, Secret Scanning, Container Security Scan, Trivy, Checkov, IaC
+Security Scan, License Compliance, OWASP Dependency Check, Compliance
+Checks, Security Summary, PR Welcome Message). 4 kontrol kirmizi cikti,
+hepsi log okunarak (varsayilmadan) teyit edildi:
+
+- **Frontend Tests**: `Run CHANGED=$(git diff ...)` diff-scoped ESLint
+  adimi (bu PR'in gercek hedefi) HATASIZ gecti. Hemen ardindan calisan
+  `Kanon lint` adimi CI log'unda tam olarak "44 ihlal, 18 uyari" yazdi --
+  yerel olcumle birebir ayni. Beklenen, belgelenen sonuc.
+- **Backend Tests (Python 3.11)**: `test_video_quality_validator.py::
+  test_accessible_video_public` -- `error_reason='YouTube API key not
+  configured'`. CI ortaminda eksik bir 3. parti API anahtari; bu PR SIFIR
+  backend dosyasina dokunuyor (`git diff --stat`: 1 dosya, ThemeSelector.
+  tsx). Ayni sinif: ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret
+  bosluguyla (SS10.35/37/38'den beri rezerve) ayni kategori -- eksik
+  kredensiyel, kod hatasi degil.
+- **8 Golden Flow E2E tests**: "`Backend did not come up within 30s`" --
+  backend servis baslatma zaman asimi, frontend-only bir degisiklikle
+  nedensel baglantisi yok.
+- **Automatic PR Review**: `anthropics/claude-code-action@v1` ->
+  "Environment variable validation failed" -- zaten bilinen, rezerve
+  ANTHROPIC_API_KEY/token bosluguyla ayni sorun.
+- **CI Summary**: yalnizca yukaridakilerin toplami olarak kirmizi --
+  bagimsiz bir bulgu degil.
+- **API Security Testing**: bu PR merge edilirken hala calisiyordu (~40
+  dakikalik bir ZAP-tipi tarama -- ayni is akisi "Security Scanning",
+  PR #160'ta bir gun once 40m25s'te YESIL tamamlanmisti, ayni oturumda,
+  esit derecede backend/API'ye dokunmayan bir diff'te). Sifir backend/API
+  yuzeyi degisikligi + dogrudan ayni-oturum emsali nedeniyle tam
+  tamamlanmasi beklenmeden, SS10.38'de kurulan ayni ilkeyle (gereksiz
+  ~45 dakikalik ZAP beklemesini backend/API etkisi sifir oldugunda, onceki
+  ayni-oturum gecisleriyle gerekcelendirerek atlama) merge edildi.
+
+### Karar / Sonuc
+
+PR #162 `--merge --delete-branch` ile merge edildi (fast-forward,
+7b04f248e..f1b013ae6). Kapsam: kanon-lint'in 45 ihlalinden yalnizca
+HAREKET GUARD'SIZ (1 tanesi) + onu duzeltirken acilan import/no-cycle +
+4 onceden var olan bicimsel ESLint hatasi duzeltildi. Reserve karar
+gerektiren hicbir sey (kredensiyel, repo-seviyesi ayar, Dependabot,
+tasarim/ikon karari) bu PR'a GIRMEDI.
+
+Takip (SS10.39'un listesi guncelleniyor):
+(1) Postgres service + migration (ORM schema-drift'in gercek kapsamasi);
+(2) 44 dosyalik psycopg2->psycopg3 gecis borcu;
+(3) `kanon-lint`: 44 ihlal (once 45), 18 uyari kaldi -- 41 EMOJI (bespoke
+    SVG ikon tasarimi, mevcut spec yok, Huseyin'in "hi-fi/kullanici
+    onayli" sartina gore onun karari) + 3 ALARM-KIRMIZISI (Bayraktar
+    temasinin kasitli kirmizi aksani -- ya yeni ton ya da yeni
+    kanon-allow kategorisi, ikisi de politika karari) + 18 uyari
+    (kutlama-yuzeyi kategorizasyonu, engelleyici degil);
+(4) SS10.35/37/38/39'dan tasinan 4 rezerve karar (ANTHROPIC_API_KEY/
+    CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_merge` ayari,
+    Dependabot merge/triyaj kararlari, branch protection kurulumu) +
+    YENI: backend test suite'indeki YouTube API anahtari bosluk sorunu, hala
+    Huseyin'i bekliyor.
