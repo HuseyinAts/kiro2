@@ -24,6 +24,26 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
+    # Postgres service for Step 4 below (ORM schema drift). Same image/
+    # port/health-check as ci.yml's backend-test job: pgvector/pgvector:pg15,
+    # NOT plain postgres:15 -- the baseline migration does
+    # `CREATE EXTENSION vector` for embedding columns (models/*.py). Scoped
+    # to this job only; Steps 1/2/3/5/6 below don't use it and are
+    # unaffected. See docs/guvenlik-borcu.md SS10.41.
+    services:
+      postgres:
+        image: pgvector/pgvector:pg15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
+          POSTGRES_DB: kiro2_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5434:5432
     steps:
       - name: Checkout (full history for diff)
         uses: actions/checkout@v4
@@ -73,15 +93,52 @@ jobs:
       - name: Path drift audit
         run: python backend/scripts/audit_path_drift.py
 
+      # ---- Step 3.5: migrate the Step-4 Postgres service ------------------
+      # Only this step and Step 4 set DATABASE_URL*/talk to the service
+      # above -- deliberately step-scoped, not job-level env, so Steps
+      # 1/2/3/5/6 (which already run today with no DB configured at all)
+      # stay exactly as they were. See docs/guvenlik-borcu.md SS10.41.
+      - name: Run database migrations (schema-drift baseline)
+        env:
+          DATABASE_URL_SYNC: postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test  # pragma: allowlist secret
+        run: |
+          cd backend
+          alembic upgrade head
+
       # ---- Step 4: ORM schema drift --------------------------------------
-      # Exits 1 if any HIGH-severity finding is reported -- but this job
-      # has no Postgres service, so --skip-if-unreachable turns the
-      # otherwise-unconditional connection failure into a no-op [SKIPPED]
-      # instead of a permanent exit-2 hard fail. Real DB-backed coverage
-      # here is a separate, larger follow-up (docs/guvenlik-borcu.md
-      # SS10.38) -- provision a postgres service + migrations.
+      # 2026-09-04 (docs/guvenlik-borcu.md SS10.41): now backed by a real
+      # Postgres service + migration (Step 3.5 above), and the script was
+      # ported from psycopg2 to psycopg (v3) -- requirements.txt pins
+      # psycopg[binary], not psycopg2, so a plain
+      # `pip install -r requirements.txt` (this job's "Install backend
+      # requirements" step) never provided psycopg2, meaning this step
+      # always hit the driver-missing skip path regardless of whether a DB
+      # was reachable. First real measurement against a freshly-migrated
+      # DB: HIGH=8, MEDIUM=516, LOW=44 (see SS10.41 for the HIGH detail --
+      # all 8 are pre-existing `sessions`/`study_sessions` schema drift,
+      # not introduced by this change).
+      #
+      # Deliberately NOT run with --fail yet, same rationale as Step 3's
+      # report-only precedent above: this is the first time the comparison
+      # has ever actually executed against a real DB, the baseline is
+      # unmeasured until now, and gating on it immediately would block
+      # unrelated PRs over debt they didn't introduce. --json persists the
+      # full findings as a build artifact so the baseline isn't lost to
+      # log scrollback; --skip-if-unreachable stays as a defensive
+      # fallback for the service failing to come up, not for a missing
+      # driver anymore.
       - name: ORM schema drift
-        run: python backend/scripts/audit_orm_schema_drift.py --fail --skip-if-unreachable
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5434/kiro2_test  # pragma: allowlist secret
+        run: python backend/scripts/audit_orm_schema_drift.py --skip-if-unreachable --severity LOW --json backend/schema_drift_findings.json
+
+      - name: Upload schema drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-drift-findings
+          path: backend/schema_drift_findings.json
+          if-no-files-found: ignore
 
       # ---- Step 5: New-endpoint checklist --------------------------------
       # Custom checklist for PR-added @router.{get,post,...} decorators.

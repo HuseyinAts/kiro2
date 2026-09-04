@@ -84,20 +84,25 @@ import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-# 2026-09-03: `requirements.txt` pins `psycopg[binary]>=3.1.0` (psycopg3) --
-# psycopg2 is NOT installed by a plain `pip install -r requirements.txt`
-# despite the (stale) comment this replaced, and despite dozens of other
-# backend/scripts/**, backend/_pilots/** etc. files also assuming psycopg2
-# is present (see docs/guvenlik-borcu.md SS10.38 -- that's a separate,
-# much larger migration, out of scope here). Import failure is handled the
-# same way as "DB unreachable" below: fatal by default (a developer running
-# this locally almost certainly has psycopg2 installed some other way, and
-# a real ImportError is worth seeing), skippable with --skip-if-unreachable
-# (CI has neither the driver nor a DB to use it with).
+# 2026-09-04 (docs/guvenlik-borcu.md SS10.41): ported psycopg2 -> psycopg
+# (v3). `requirements.txt` pins `psycopg[binary]>=3.1.0`, not psycopg2, so
+# a plain `pip install -r requirements.txt` never provides psycopg2 --
+# this was the actual reason quality-gate.yml's "ORM schema drift" step
+# always hit the driver-missing skip path, independently of whether a
+# Postgres service was reachable. alembic/env.py made the identical
+# psycopg2 -> psycopg conversion for the sync migration driver
+# (`+asyncpg` -> `+psycopg`); this keeps the two consistent. The
+# separate, much larger psycopg2 assumption across dozens of other
+# backend/scripts/**, backend/_pilots/** etc. files (docs/guvenlik-borcu.md
+# SS10.38) is unchanged and still out of scope here. Import failure is
+# handled the same way as "DB unreachable" below: fatal by default (a real
+# ImportError here means psycopg itself is broken -- worth seeing),
+# skippable with --skip-if-unreachable (for any environment, CI included,
+# that genuinely has no Postgres to audit).
 try:
-    import psycopg2
+    import psycopg
 except ImportError:
-    psycopg2 = None
+    psycopg = None
 
 HERE = Path(__file__).resolve().parent
 BACKEND = HERE.parent
@@ -496,14 +501,18 @@ def get_db_url() -> str:
         "DATABASE_URL",
         "postgresql://postgres:postgres@localhost:5434/kiro2",  # pragma: allowlist secret
     )
-    # psycopg2 doesn't understand SQLAlchemy driver suffixes like +asyncpg.
-    return url.replace("postgresql+asyncpg://", "postgresql://").replace(
-        "postgresql+psycopg2://", "postgresql://"
+    # psycopg (like psycopg2 before it) doesn't understand SQLAlchemy driver
+    # suffixes like +asyncpg / +psycopg -- connect() wants a bare
+    # postgresql:// or postgres:// DSN.
+    return (
+        url.replace("postgresql+asyncpg://", "postgresql://")
+        .replace("postgresql+psycopg2://", "postgresql://")
+        .replace("postgresql+psycopg://", "postgresql://")
     )
 
 
 def parse_db_url(url: str) -> dict:
-    # Minimal parser — psycopg2.connect() takes a DSN string directly, but
+    # Minimal parser — psycopg.connect() takes a DSN string directly, but
     # we want to fall through to host/port/etc. for nicer error messages.
     if url.startswith(("postgresql://", "postgres://")):
         return {"dsn": url}
@@ -564,12 +573,12 @@ def main() -> int:  # noqa: PLR0912, PLR0911
         return 2
 
     # Step 2: connect to live DB.
-    if psycopg2 is None:
-        msg = "psycopg2 is not installed (requirements.txt pins psycopg3 -- see module docstring)"
+    if psycopg is None:
+        msg = "psycopg is not installed (requirements.txt pins psycopg[binary]>=3.1.0 -- see module docstring)"
         if args.skip_if_unreachable:
             print(
                 f"[SKIPPED] {msg}. Schema-drift coverage is not active here "
-                "(see docs/guvenlik-borcu.md SS10.38). Not treated as a failure.",
+                "(see docs/guvenlik-borcu.md SS10.41). Not treated as a failure.",
                 file=sys.stderr,
             )
             return 0
@@ -577,14 +586,16 @@ def main() -> int:  # noqa: PLR0912, PLR0911
         return 2
 
     try:
-        conn = psycopg2.connect(get_db_url())
+        conn = psycopg.connect(get_db_url())
     except Exception as exc:
         if args.skip_if_unreachable:
             print(
                 f"[SKIPPED] Could not connect to DB ({get_db_url()}): {exc}\n"
-                "  No Postgres service is provisioned in this environment -- "
-                "schema-drift coverage is not active here (see "
-                "docs/guvenlik-borcu.md SS10.38). Not treated as a failure.",
+                "  No reachable Postgres in this environment -- schema-drift "
+                "coverage is not active here (see docs/guvenlik-borcu.md "
+                "SS10.41 -- quality-gate.yml provisions a real service; a "
+                "manual/local run without one will land here). Not treated "
+                "as a failure.",
                 file=sys.stderr,
             )
             return 0
