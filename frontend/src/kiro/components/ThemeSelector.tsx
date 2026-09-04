@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAyar, KulturelTema } from '../lib/ayarStore';
 import { font, shadow, radius, color } from '../tokens';
+// Barrel'dan degil dogrudan tanim dosyasindan ice aktariliyor: '../ui' barrel'i
+// SideNav'i yeniden disa aktariyor, SideNav de bu bileseni (ThemeSelector) render
+// ediyor - barrel uzerinden alinirsa import/no-cycle gercek bir cevrim yakalar
+// (ThemeSelector -> ../ui -> SideNav -> ThemeSelector). Ayni export, sadece daha
+// spesifik yol; davranis degismiyor.
+import { useReducedMotion } from '../ui/ConfettiDawn';
 
 const TEMALAR: { id: KulturelTema; ad: string; desc: string; icon: string; bg: string; fg: string }[] = [
   { id: 'varsayilan', ad: 'Varsayılan', desc: 'Klasik KIRO2 Teması', icon: '🌌', bg: '#150E20', fg: '#F1E9F2' },
@@ -43,11 +49,12 @@ const TEMALAR: { id: KulturelTema; ad: string; desc: string; icon: string; bg: s
   { id: 'hezarfen', ad: 'Hezarfen Ahmed Çelebi', desc: 'Kanat & Uçuş', icon: '🦅', bg: '#101B24', fg: '#94A3B8' },
   { id: 'yusufhashacib', ad: 'Yusuf Has Hacib', desc: 'Kutadgu Bilig', icon: '📖', bg: '#0C1C1D', fg: '#2DD4A7' },
   { id: 'asikpasazade', ad: 'Aşıkpaşazade', desc: 'Tarihsel Kayıt', icon: '✒️', bg: '#171510', fg: '#EAB308' },
-  { id: 'yanyaliesad', ad: 'Yanyalı Esad Efendi', desc: 'Felsefe Çevirileri', icon: '🏛️', bg: '#1B1C22', fg: '#A3A3A3' }
+  { id: 'yanyaliesad', ad: 'Yanyalı Esad Efendi', desc: 'Felsefe Çevirileri', icon: '🏛️', bg: '#1B1C22', fg: '#A3A3A3' },
 ];
 
 export function ThemeSelector() {
   const [acik, setAcik] = useState(false);
+  const reduced = useReducedMotion();
   const kulturelTema = useAyar((s) => s.kulturelTema);
   const setKulturelTema = useAyar((s) => s.setKulturelTema);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -70,10 +77,10 @@ export function ThemeSelector() {
         onClick={() => setAcik((v) => !v)}
         style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          background: 'var(--k-surface-subtle, rgba(255,255,255,0.05))', border: `1px solid var(--k-border, rgba(255,255,255,0.1))`,
+          background: 'var(--k-surface-subtle, rgba(255,255,255,0.05))', border: '1px solid var(--k-border, rgba(255,255,255,0.1))',
           padding: '6px 12px', borderRadius: radius.pill,
           color: 'var(--k-text, #fff)', fontFamily: font.sans, fontWeight: 600, fontSize: '13px',
-          cursor: 'pointer', transition: 'background 0.2s',
+          cursor: 'pointer', transition: reduced ? 'none' : 'background 0.2s',
         }}
       >
         <span>{aktif.icon}</span>
@@ -87,7 +94,7 @@ export function ThemeSelector() {
             width: '280px', maxHeight: '420px', overflowY: 'auto',
             background: 'var(--k-surface, #150E20)', border: '1px solid var(--k-border)',
             borderRadius: radius.card, padding: '8px', boxShadow: shadow.cardFloat,
-            zIndex: 100, display: 'flex', flexDirection: 'column', gap: '4px'
+            zIndex: 100, display: 'flex', flexDirection: 'column', gap: '4px',
           }}
         >
           <div style={{ padding: '8px', fontSize: '11px', fontWeight: 800, color: 'var(--k-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -103,7 +110,7 @@ export function ThemeSelector() {
                   display: 'flex', alignItems: 'center', gap: '12px',
                   background: isSelected ? color.paper.card : 'transparent',
                   border: 'none', padding: '10px 12px', borderRadius: radius.button,
-                  textAlign: 'left', cursor: 'pointer', transition: 'background 0.15s',
+                  textAlign: 'left', cursor: 'pointer', transition: reduced ? 'none' : 'background 0.15s',
                   color: isSelected ? 'var(--k-text)' : 'var(--k-text-2)',
                 }}
               >
@@ -111,7 +118,7 @@ export function ThemeSelector() {
                   width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
                   background: t.bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   border: `2px solid ${isSelected ? t.fg : 'transparent'}`,
-                  fontSize: '16px'
+                  fontSize: '16px',
                 }}>
                   {t.icon}
                 </div>
