@@ -4199,3 +4199,138 @@ Takip (SS10.39'un listesi guncelleniyor):
     Dependabot merge/triyaj kararlari, branch protection kurulumu) +
     YENI: backend test suite'indeki YouTube API anahtari bosluk sorunu, hala
     Huseyin'i bekliyor.
+
+## §10.41 -- PR #164: ORM schema-drift denetimi Postgres + psycopg3 ile GERCEK aktif edildi (2026-09-04)
+
+### Baslangic noktasi: SS10.40'in Takip listesindeki (1) numarali madde
+
+SS10.40 (PR #162/#163) Takip listesine su maddeyi ekledi: "Postgres
+service + migration kurup adim 4'un GERCEK schema-drift kapsamasini
+aktif etmek (su an sadece 'skip' ediliyor)". Bu, Huseyin'den yeni bir
+"devam et" sonrasi otonom olarak secilen ilk kalemdi.
+
+### Bulgu: Postgres service tek basina yetmezdi -- psycopg2/psycopg3 surucu boslugu
+
+Ilk plan sadece `quality-gate.yml`'e bir Postgres service eklemekti.
+`backend/scripts/audit_orm_schema_drift.py` okununca ikinci, bagimsiz
+bir engel ortaya cikti: script `import psycopg2` kullaniyor, ama
+`requirements.txt` psycopg2 DEGIL `psycopg[binary]>=3.1.0` (psycopg3)
+sabitliyor -- yani CI'nin kendi "Install backend requirements" adimi
+(`pip install -r requirements.txt`) psycopg2'yi hicbir zaman kurmuyor.
+Bir Postgres service eklense bile script `psycopg2 is None` dalindan
+hep skip'e dusecekti; "aktif etme" gercekte hicbir sey degistirmeyecekti.
+Bu, kod okunmadan varsayimla ilerlenseydi fark edilmeyecek bir
+bosluktu -- SS10.38'de zaten belgelenen 44 dosyalik psycopg2->psycopg3
+gecis borcunun somut bir ornegi.
+
+Karar: scripti psycopg3'e portlamak (44 dosyalik borcu 1 azaltir, CI
+zaten psycopg3'u kuruyor, yeni bagimlilik gerekmez) hem daha temiz hem
+de daha dusuk riskli cikti, cunku scriptin gercek psycopg2 kullanim
+yuzeyi kucuktu (1 import + 1 `connect()` + standart DB-API-2.0 cursor).
+`alembic/env.py` zaten ayni donusumu (`+asyncpg` -> `+psycopg`) sync
+surucu icin yapiyordu -- bu port o kararla tutarli hale getirdi.
+
+### Degisiklikler (PR #164)
+
+- `backend/scripts/audit_orm_schema_drift.py`: `psycopg2` -> `psycopg`
+  (v3) portu. `get_db_url()` artik `+psycopg` suffix'ini de temizliyor.
+- `.github/workflows/quality-gate.yml`: `quality-gate` job'ina Postgres
+  service eklendi (`pgvector/pgvector:pg15`, port 5434, health-check --
+  `ci.yml`'nin `backend-test` job'undaki kanitlanmis desenin birebir
+  ayni). Yeni bir adim, `alembic upgrade head`, sadece Step 4 ile
+  birlikte adim-seviyesinde `DATABASE_URL*` kullaniyor (job-seviyesinde
+  degil) -- Step 1/2/3/5/6 hicbir DB kullanmiyor ve etkilenmedi (CI'da
+  dogrulandi, asagida). Step 4: `--fail` KASITLI OLARAK eklenmedi --
+  Step 3'un (Path drift audit) report-only emsaliyle ayni gerekce:
+  olculmemis bir taban uzerine gate koymak butun gelecek PR'lari
+  engelleyen bir kapiya cevirirdi. `--json` ciktisi artik
+  `actions/upload-artifact` ile saklaniyor.
+
+### Dogrulama (yerel clean-room + PR #164 CI, birebir ayni sonuc)
+
+- Yerel: tek-kullanimlik `docker run --rm pgvector/pgvector:pg15`
+  (port 5555) + `alembic upgrade head` -> temiz, 3 migration, exit 0;
+  `audit_orm_schema_drift.py --skip-if-unreachable --severity LOW
+  --json ...` (psycopg3 uzerinden) -> exit 0, ORM=238 DB=247
+  HIGH=8 MEDIUM=516 LOW=44. Container ve gecici dosyalar temizlendi.
+- PR #164 CI (`Quality Gate` job, gercek log okunarak, port 5434):
+  ayni 3 migration (`0001_baseline`, `0002_is_active_default`,
+  `0003_restore_user_item_fsrs`), ayni sayilar birebir: ORM tables
+  loaded: 238, Live DB tables: 247, Findings: HIGH=8 MEDIUM=516 LOW=44.
+  Yerel ve CI olcumu tam ortusuyor -- tesadufi degil, deterministik.
+- 8 HIGH bulgusunun hepsi `orm-declares-missing-db-col`:
+  `sessions.token` (1) + `study_sessions` tablosunun 7 kolonu
+  (room_id, user_id, topic, notes, pomodoros_completed, breaks_taken,
+  created_at). Bu, bu PR'dan ONCEKI, gercek bir schema drift --
+  ya bir migration'in unutuldugu ya da ORM modelinin DB'den once
+  guncellendigi bir durum. Bu PR bunu duzeltmeye CALISMADI, sadece
+  artik olculebilir/gorunur kildi.
+
+### PR #164 CI calismasi -- her kirmizi/bekleyen kontrol tek tek dogrudan log'la kok nedenine baglandi
+
+24 kontrol yesildi (Quality Gate dahil -- hedeflenen kontrol; 8 Golden
+Flow E2E, CodeQL x3, SAST, Secret Scanning, Container Security,
+Trivy, Checkov, IaC, License Compliance, OWASP, Compliance, Security
+Summary, PR Welcome Message, Code Quality x5). 3 kontrol kirmizi
+cikti, hepsi log okunarak (varsayilmadan) teyit edildi, ucu de bu
+PR'dan bagimsiz, onceden var olan borc:
+
+- **Frontend Tests**: `Kanon lint` adimi CI log'unda "44 ihlal, 18
+  uyari" yazdi -- SS10.40'ta belgelenen sayiyla birebir ayni (bu PR
+  SIFIR frontend dosyasina dokunuyor).
+- **Backend Tests (Python 3.11)**: `test_video_quality_validator.py::
+  test_accessible_video_public` -- `AssertionError: assert False is
+  True`, ayni kok neden SS10.40'ta teshis edilen "YouTube API key not
+  configured" bosluguyla ayni test. Bu PR SIFIR backend uygulama/test
+  dosyasina dokunuyor (sadece bir CLI script + CI YAML).
+- **Automatic PR Review**: `anthropics/claude-code-action@v1` ->
+  "Environment variable validation failed" -- SS10.35/37/38/39/40'tan
+  beri rezerve ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN bosluguyla
+  ayni, bagimsiz olarak tekrar dogrulanan sistemik sorun.
+- **CI Summary**: yalnizca Backend Tests + Frontend Tests'in toplami
+  olarak kirmizi -- bagimsiz bir bulgu degil (job log'u dogrudan
+  okunarak teyit edildi).
+- **API Security Testing**: merge edilirken hala calisiyordu (~40
+  dakikalik ZAP-tipi tarama). Bu PR'in diff'i sifir backend/API route
+  yuzeyi degistiriyor (1 CLI script + 1 CI workflow dosyasi) --
+  SS10.38/10.40'ta kurulan ayni ilkeyle tam tamamlanmasi beklenmeden
+  merge edildi.
+
+Bu oturumda ayrica bir ortam kirliligi hatasi yapilip DUZELTILDI (kod
+hatasi degil): yerel dogrulama sirasinda ayni PowerShell oturumunda
+birakilan `DATABASE_URL_SYNC`/`DATABASE_URL` (port 5555, artik
+kapatilmis tek-kullanimlik container'a isaret ediyordu) `git push`'un
+pre-push `ders-zorlayici` testine sizip DB baglantisi zaman asimina
+(BEKCI KIRMIZI) yol acti. Kok neden dogrudan olculdu (ortam degiskeni
+karsilastirmasiyla), degiskenler temizlendi, push tekrar denendi ve
+320 testin hepsi temiz gecti (103s). Koda hicbir "duzeltme" yapilmadi
+cunku bozuk olan kod degildi.
+
+### Karar / Sonuc
+
+PR #164 `--merge --delete-branch` ile merge edildi (fast-forward,
+2a0aa0222..547cb9e7f). Kapsam: quality-gate.yml'in ORM schema-drift
+adimi artik gercek bir Postgres'e (psycopg3 uzerinden) baglaniyor ve
+gercek karsilastirma calistiriyor; rapor artik `actions/upload-artifact`
+ile saklaniyor. Reserve karar gerektiren hicbir sey (kredensiyel,
+repo-seviyesi ayar, Dependabot, tasarim/ikon karari) bu PR'a GIRMEDI.
+
+Takip (SS10.40'in listesi guncelleniyor):
+(1) [TAMAMLANDI - bu PR] Postgres service + migration + psycopg3 portu;
+(2) 44 dosyalik psycopg2->psycopg3 gecis borcu artik 43 (bu PR
+    audit_orm_schema_drift.py'yi tasidi);
+(3) YENI: 8 HIGH schema-drift bulgusu (`sessions.token` +
+    `study_sessions`'in 7 kolonu) -- gercek, olculmus, duzeltilmemis;
+    hangi tarafin (migration mi ORM mi) dogru oldugunu belirlemek
+    veri/urun bilgisi gerektirir, sonraki bir PR'a birakildi;
+(4) `--fail` ne zaman eklenecek: HIGH=8 taban bilindigine gore, 8'i
+    (veya kalanini) cozdukten sonra `--fail` eklenip Step 4 gercek bir
+    CI gate'ine donusturulebilir -- politika degil, sirali bir sonraki
+    adim;
+(5) `kanon-lint`: 44 ihlal, 18 uyari (SS10.40'tan degismedi -- bu PR
+    frontend'e dokunmadi);
+(6) SS10.35/37/38/39/40'tan tasinan rezerve kararlar
+    (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i,
+    `allow_auto_merge` ayari, Dependabot merge/triyaj kararlari,
+    branch protection kurulumu, YouTube API anahtari boslugu), hala
+    Huseyin'i bekliyor.
