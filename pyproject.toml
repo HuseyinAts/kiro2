@@ -152,7 +152,7 @@ dev = [
     "types-requests",
 
     # Pre-commit
-    "pre-commit==3.8.0",
+    "pre-commit==4.6.2",
 
     # Development tools
     "ipython==8.26.0",
