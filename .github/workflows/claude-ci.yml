@@ -82,7 +82,8 @@ jobs:
       - name: Run linting
         run: |
           cd backend
-          pip install ruff mypy
+          # .pre-commit-config.yaml ile ayni pin -- docs/guvenlik-borcu.md SS10.42
+          pip install ruff==0.7.1 mypy==1.11.2
           ruff check . --select=E,F,W --ignore=E501
           mypy --ignore-missing-imports main.py
 

@@ -34,7 +34,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install ruff mypy radon
+        # .pre-commit-config.yaml ile ayni pin (ruff/mypy) -- docs/guvenlik-borcu.md SS10.42
+        pip install ruff==0.7.1 mypy==1.11.2 radon
 
     - name: Run linting
       id: lint

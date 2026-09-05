@@ -63,7 +63,12 @@ jobs:
           pip install -r requirements.txt || pip install pytest pytest-asyncio httpx fastapi pydantic sqlalchemy
 
       - name: Install lint/type tools
-        run: pip install ruff mypy
+        # .pre-commit-config.yaml ile ayni pin (ruff v0.7.1, mypy v1.11.2) --
+        # docs/guvenlik-borcu.md SS10.42: pin'siz kurulum, CI'nin PyPI'daki
+        # en yeni surumu cekmesine yol aciyordu (PR #166'da olculdu: 0.7.1
+        # yerine 0.16.6), bu da yerelde gecen kodun CI'da yeni kural/isort
+        # farkiyla kirmizi cikmasina neden oluyordu.
+        run: pip install ruff==0.7.1 mypy==1.11.2
 
       # ---- Step 1: Router registration check -----------------------------
       # Catches Session 112 class bug (router file exists, not in
