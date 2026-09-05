@@ -1,10 +1,10 @@
 # Testing dependencies
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-cov==7.1.0
 pytest-timeout==2.4.0
 pytest-xdist==3.8.0
-pytest-rerunfailures==14.0
+pytest-rerunfailures==16.6
 
 # Testcontainers for real integration testing
 testcontainers[postgres]==4.0.1
@@ -26,11 +26,11 @@ locust==2.41.5
 schemathesis==3.36.3
 
 # Sprint 8: Code Quality Tools
-black==24.1.1
-flake8==7.0.0
+black==26.5.1
+flake8==7.3.0
 flake8-docstrings==1.7.0
-flake8-import-order==0.18.2
-flake8-bugbear==24.1.17
+flake8-import-order==0.19.2
+flake8-bugbear==25.11.29
 isort==5.13.2
-mypy==1.8.0
+mypy==2.3.1
 pre-commit==3.6.0
