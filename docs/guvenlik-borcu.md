@@ -4749,3 +4749,90 @@ Takip (SS10.43'un listesi guncelleniyor):
     (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_
     merge` ayari, Dependabot merge/triyaj kararlari, branch protection
     kurulumu, YouTube API anahtari boslugu), hala Huseyin'i bekliyor.
+
+
+## §10.45 -- CodeQL alert dismissal: SSRF #2976 (SS10.34 ile zaten kapali) + 5 weak-hashing false-positive (2026-09-05)
+
+### Baslangic noktasi
+
+SS10.34'un Karar/Sonuc bolumunde "CodeQL HIGH kumesi (84 alert) --
+Huseyin'in triyaj karari" diye not dusulmustu -- bu genis kumeye
+dokunulmadi. Bu turda repo'daki acik CodeQL uyarilarini sayarken
+(`gh api .../code-scanning/alerts?state=open`) toplam acik alert
+sayisinin SS10.34'un varsaydigi "84" degil, cok daha buyuk oldugu
+goruldu (Link header'i son sayfayi per_page=1 ile page=2582 gosteriyor,
+yani ~2582 acik alert). SS10.34'un rakami acikca eskimis -- ya yeni
+tarama calistirmalari ya da farkli branch/PR taramalari sayiyi
+buyutmus. Bu devasa kumeye TOPTAN dokunulmadi (hala Huseyin'in triyaj
+karari) -- yalnizca kod okunarak somut kanitla dogrulanan, dar
+kapsamli 6 alert ele alindi.
+
+### Dogrulanan 2 kategori
+
+1. **#2976 `py/full-ssrf`, `backend/api/enhanced_chat.py:1084-1086`**:
+   bu, SS10.34'un (PR #134, commit 58951bb2d) TAM OLARAK duzelttigi
+   alert -- kodun kendi yorumu bunu acikca "SS10.34, alert #2976" diye
+   adlandiriyor. `_fetch_url_content` artik `_ssrf_pinli_istek_bilgisi`
+   ile dogrulanan IP'ye PINLENMIS istek atiyor (DNS-rebinding/TOCTOU
+   kapali, SS10.34'te gercek ag testleriyle kanitlandi). CodeQL'in
+   statik taint-tracker'i bu ozel sanitizer fonksiyonunu (IP-pinleme)
+   taniyamadigi icin ayni akisi isaretlemeye devam ediyor -- bu, alttaki
+   kod hala savunmasiz oldugu icin degil, ANALIZ ARACININ OZEL
+   MITIGASYONU MODELLEYEMEDIGI icin bir false-positive.
+2. **5x `py/weak-sensitive-data-hashing`** (`decorators/cache.py:140`
+   #2977, `feature_flags.py:249` #2978, `file_upload_security.py:382`
+   #2979, `rag_ab_testing.py:153` #2980, `visual_supports_service.py:605`
+   #2983): bes cagri da dogrudan kod okunarak dogrulandi -- hepsi
+   `hashlib.md5(..., usedforsecurity=False)` kullaniyor VE hicbiri
+   parola/token/sertifika gibi hassas veri hash'lemiyor (A/B test
+   bucket atamasi icin consistent-hashing, cache-key kisaltma,
+   benzersiz ID/dosya-adi uretimi). `cache.py`'deki yorum bunu zaten
+   acikca soyluyor: "Yalnizca uzun cache key'ini kisaltmak icin;
+   kriptografik amac yok."
+
+### Aksiyon
+
+`gh api repos/HuseyinAts/kiro2/code-scanning/alerts/{number} -X PATCH
+-f state=dismissed -f dismissed_reason="false positive" -f
+dismissed_comment=...` ile 6 alert de GERCEKTEN (API cagrisi dogrulandi,
+varsayilmadi) dismissed durumuna getirildi -- her birinin
+`dismissed_comment`'i bu bolume ve (SSRF icin) SS10.34/PR #134'e
+referans veriyor.
+
+Bu, standing kuraldaki "GitHub repo-level system/security settings
+degisikligi" rezervi DEGIL: tek tek dogrulanan, spesifik CodeQL
+bulgularinin (guvenlik ayari degil, kod inceleme bulgusu) kapatilmasi --
+Huseyin'le bu oturumda ayrica dogrulandi ("Sen kapat" karari), genel
+"CodeQL HIGH kumesi" rezervi (SS10.34) hala GECERLI ve DEGISMEDI.
+
+### Karar / Sonuc
+
+6 alert dismissed:
+- #2976 py/full-ssrf (enhanced_chat.py:1084)
+- #2977 py/weak-sensitive-data-hashing (decorators/cache.py:140)
+- #2978 py/weak-sensitive-data-hashing (feature_flags.py:249)
+- #2979 py/weak-sensitive-data-hashing (file_upload_security.py:382)
+- #2980 py/weak-sensitive-data-hashing (rag_ab_testing.py:153)
+- #2983 py/weak-sensitive-data-hashing (visual_supports_service.py:605)
+
+Geri kalan ~2570+ acik CodeQL uyarisi (buyuk cogunlugu
+`py/empty-except`/`py/unused-import`, agirlikli olarak test dosyalari
+ve `alembic/versions_archive/` altindaki arsivlenmis migration'lar,
+ayrica `ai_ml/*.py` scriptlerinde) TOPTAN ele alinmadi -- bu olcek
+Huseyin'in kendi triyaj karari (SS10.34'teki rezerv gecerliligini
+koruyor).
+
+Takip:
+(1) Kalan CodeQL kumesi (~2570+ alert) -- Huseyin'in triyaj karari,
+    oncelik sirasi (guvenlik-etiketli kurallar > test-dosyasi/arsiv
+    borcu > lint-tarzi bulgular) onerilir ama karar verilmedi;
+(2) YouTube API key: Huseyin bu oturumda anahtari paylasti, GitHub
+    secret alanina KENDISI eklemesi gerekiyor (standing kural: API
+    key/secret girisi bana yasak) -- Repo Settings -> Secrets and
+    variables -> Actions -> New repository secret -> isim
+    YOUTUBE_API_KEY (backend/agents/learning_path/config.py +
+    core/config.py'nin okudugu tam isim);
+(3) SS10.44'ten devrolan rezerve kararlar (SessionRepository/
+    Session.token hashing, kanon-lint 44 ihlali, Dependabot
+    merge/triyaj, allow_auto_merge/branch protection) hala Huseyin'i
+    bekliyor.
