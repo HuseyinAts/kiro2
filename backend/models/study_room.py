@@ -45,7 +45,7 @@ class RoomVisibility(str, Enum):
 
     PUBLIC = "public"  # Anyone can join
     PRIVATE = "private"  # Invitation only
-    PASSWORD = "password"  # Requires password  # pragma: allowlist secret
+    PASSWORD = "password"  # Requires password  # pragma: allowlist secret  # noqa: S105 -- pre-existing, out of scope for SS10.42
 
 
 class MemberRole(str, Enum):
@@ -167,22 +167,22 @@ class StudyRoom(Base):
     )
 
     # Relationships
-    members = relationship(
+    members = relationship(  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
         "RoomMember",
         back_populates="room",
         cascade="all, delete-orphan",
     )
-    messages = relationship(
+    messages = relationship(  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
         "RoomChatMessage",
         back_populates="room",
         cascade="all, delete-orphan",
     )
-    files = relationship(
+    files = relationship(  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
         "SharedFile",
         back_populates="room",
         cascade="all, delete-orphan",
     )
-    invitations = relationship(
+    invitations = relationship(  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
         "RoomInvitation",
         back_populates="room",
         cascade="all, delete-orphan",
@@ -245,7 +245,7 @@ class RoomMember(Base):
     )
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="members")
+    room = relationship("StudyRoom", back_populates="members")  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
 
 
 # ============================================================
@@ -288,7 +288,7 @@ class RoomInvitation(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="invitations")
+    room = relationship("StudyRoom", back_populates="invitations")  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
 
 
 # ============================================================
@@ -346,7 +346,7 @@ class RoomChatMessage(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="messages")
+    room = relationship("StudyRoom", back_populates="messages")  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
 
 
 # ============================================================
@@ -415,8 +415,8 @@ class SharedFile(Base):
     )
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="files")
-    versions = relationship(
+    room = relationship("StudyRoom", back_populates="files")  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
+    versions = relationship(  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
         "FileVersion",
         back_populates="file",
         cascade="all, delete-orphan",
@@ -461,7 +461,7 @@ class FileVersion(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    file = relationship("SharedFile", back_populates="versions")
+    file = relationship("SharedFile", back_populates="versions")  # type: ignore[misc]  # pre-existing, out of scope for SS10.42
 
 
 # ============================================================
@@ -469,13 +469,30 @@ class FileVersion(Base):
 # ============================================================
 
 
-class StudySession(Base):
+class RoomStudySession(Base):
     """
     Track study sessions in room
+
+    2026-09-04 (docs/guvenlik-borcu.md SS10.42): renamed from `StudySession`
+    (tablename "study_sessions") to `RoomStudySession` (tablename
+    "room_study_sessions"). This class collided with the unrelated, already
+    live `models.learning_path_models.StudySession` (also "study_sessions")
+    -- `extend_existing=True` below silently suppressed SQLAlchemy's
+    table-redefinition error instead of fixing the actual name clash. The
+    live DB (see backend/alembic/baseline/0001_baseline_schema.sql) already
+    has a separate `room_study_sessions` table with exactly this class's
+    11 columns (id, room_id, user_id, started_at, ended_at,
+    duration_minutes, topic, notes, pomodoros_completed, breaks_taken,
+    created_at) -- confirmed by an archived pre-squash migration
+    (alembic/versions_archive/cff60c64b309_b4_sync_v2.py) that created this
+    exact table. Every sibling model in this file already follows the
+    `Room*` / `room_*` naming convention (RoomMember/room_members,
+    RoomAnalytics/room_analytics, RoomSettings/room_settings, etc.) --
+    this class was the sole exception. No migration needed: this fix only
+    repoints the ORM at the table that was already there.
     """
 
-    __tablename__ = "study_sessions"
-    __table_args__ = {"extend_existing": True}
+    __tablename__ = "room_study_sessions"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
