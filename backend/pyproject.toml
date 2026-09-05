@@ -577,6 +577,33 @@ exclude = [
 # bugfix PR'inin kapsami disinda (cerrahi mudahale kurali).
 "services/production_quality_monitor.py" = ["PLR0912"]
 
+# models/study_room.py -- UP042 (7 enum siniflari: RoomStatus,
+# RoomVisibility, MemberRole, MemberStatus, MessageType, FileType,
+# FileVersionStatus -- hepsi `class X(str, Enum):`, StrEnum onerisi).
+# OLCULDU (5 Eyl 2026, SS10.42 -- fix/schema-drift-room-study-session-token):
+# bu 7 sinif bu PR'in DOKUNMADIGI kod (PR sadece ayni dosyadaki
+# StudySession/RoomStudySession sinifini yeniden adlandirdi). Inline
+# `# noqa: UP042` calismiyor -- .pre-commit-config.yaml'daki pinned
+# ruff (v0.7.1) UP042 kuralini TANIMIYOR, RUF100 "kullanilmayan noqa"
+# diye SILIYOR; ama CI'nin "Code Quality (ruff)" adimi pinsiz
+# `pip install ruff` ile HER SEFERINDE en yeni surumu cekiyor (bu
+# olcumde 0.16.6) ve UP042'yi biliyor. Config-seviyesi ignore, versiyon
+# farkindan bagimsiz calisiyor. `(str, Enum)` -> `StrEnum` donusumu
+# `str()` temsilini degistirebilir (StrEnum on 3.11+, __str__ farkli) --
+# 7 enum'un API/serialization yuzeyi genis, bu dar bugfix'in kapsami
+# disinda; gercek StrEnum gecisi ayri, kendi PR'ini hak ediyor.
+"models/study_room.py" = ["UP042"]
+
+# tests/integration/test_alembic_autogen_guard.py -- I001 (import sirasi).
+# OLCULDU (5 Eyl 2026, SS10.42): pinned yerel ruff (v0.7.1) ve CI'nin
+# pinsiz "en yeni" ruff'i (0.16.6) bu dosyanin import blogu icin FARKLI
+# kanonik sira istiyor (sqlalchemy-once-first vs alembic-then-sqlalchemy)
+# -- isort'un iki surum arasinda degisen bir davranisi, dosyanin
+# icerigiyle alakasiz. Hangi sirayi secersem seceyim, diger surum onu
+# "duzeltip" tekrar bozuyor -- sonsuz git-gel. Config-seviyesi ignore
+# versiyon anlasmazligini tamamen atlar.
+"tests/integration/test_alembic_autogen_guard.py" = ["I001"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
