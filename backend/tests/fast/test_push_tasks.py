@@ -19,7 +19,7 @@ from tasks.push_tasks import (
     build_streak_reminder_notifications,
 )
 
-# --- Sahte DB bağlantısı (psycopg2 context-manager protokolü) ---
+# --- Sahte DB bağlantısı (psycopg2/psycopg ortak context-manager protokolü) ---
 
 
 class _FakeCursor:
@@ -120,11 +120,12 @@ def test_streak_reminders_registered_in_beat_and_include():
 # metni DSN'i gömdüğü için `kiro2_app` parolası worker log'una 14 kez düştü.
 
 
-def test_sqlalchemy_driver_suffix_stripped_before_psycopg2(monkeypatch):
-    """DATABASE_URL SQLAlchemy formatındaysa psycopg2'ye ham libpq DSN gitmeli.
+def test_sqlalchemy_driver_suffix_stripped_before_psycopg(monkeypatch):
+    """DATABASE_URL SQLAlchemy formatındaysa psycopg'a (v3) ham libpq DSN gitmeli.
 
-    Container'da DATABASE_URL = postgresql+asyncpg://... psycopg2 '+asyncpg'
-    ekini anlamaz, dizeyi key=value sanır ve `invalid dsn` atar.
+    Container'da DATABASE_URL = postgresql+asyncpg://... psycopg2 DE psycopg
+    (v3) DE '+asyncpg' ekini anlamaz, dizeyi key=value sanır ve `invalid dsn`
+    atar.
     """
     monkeypatch.setenv(
         "DATABASE_URL",
@@ -139,10 +140,38 @@ def test_sqlalchemy_driver_suffix_stripped_before_psycopg2(monkeypatch):
     _send_streak_reminders_impl(connect=_spy)
 
     assert "+asyncpg" not in gorulen["url"], (
-        "psycopg2'ye SQLAlchemy DSN'i verildi: "
-        + gorulen["url"].replace("gizli", "***")
+        "psycopg'a SQLAlchemy DSN'i verildi: " + gorulen["url"].replace("gizli", "***")
     )
     assert gorulen["url"].startswith("postgresql://")
+
+
+def test_default_connect_uses_psycopg_v3_not_psycopg2(monkeypatch):
+    """connect=None verildiginde psycopg (v3) kullanilmali, psycopg2 DEGIL.
+
+    docs/guvenlik-borcu.md SS10.44: Celery worker/beat imajlari (Dockerfile.
+    minimal) psycopg2'yi ARTIK kurmuyor (3 Eylul 2026, requirements-minimal.
+    txt psycopg[binary] v3'e gecti) -- bu satir hala psycopg2 import etseydi
+    gorev her aksam ModuleNotFoundError ile sessizce patlardi. psycopg2'yi
+    sys.modules'ten kaldirip import edilemez hale getirerek bu regresyonu
+    yakalariz: fonksiyon psycopg2'ye HIC dokunmamali.
+    """
+    import builtins
+
+    real_import = builtins.__import__
+
+    def _no_psycopg2(name, *args, **kwargs):
+        if name == "psycopg2":
+            raise ModuleNotFoundError("No module named 'psycopg2' (simulated)")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _no_psycopg2)
+
+    # Gercek psycopg (v3) baglanti denemesi yapar (DB yok, baglanti
+    # reddedilir) -- onemli olan psycopg2 import HATASI ALMAMAK.
+    sonuc = _send_streak_reminders_impl(db_url="postgresql://x:x@127.0.0.1:1/x")
+
+    assert sonuc["status"] == "error"
+    assert "psycopg2" not in sonuc["error"]
 
 
 def test_notification_carries_organization_id():
@@ -170,7 +199,7 @@ def test_insert_includes_organization_id():
 
 
 def test_connection_error_does_not_leak_password(caplog):
-    """psycopg2 hata metni DSN'i gömer; parola ne log'a ne sonuca sızmalı.
+    """libpq surucusunun hata metni DSN'i gömer; parola ne log'a ne sonuca sızmalı.
 
     Dönen sözlük Celery sonuç backend'ine de yazıldığı için iki ayrı sızıntı
     yüzeyi var — ikisi de assert ediliyor.
