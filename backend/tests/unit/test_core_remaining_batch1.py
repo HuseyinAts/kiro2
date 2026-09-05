@@ -92,7 +92,7 @@ for _mod in _STUBS:
 
 # Provide concrete sentinel values that downstream code may dereference
 _lc = sys.modules["langchain"]
-_lc.llm_cache = None
+_lc.llm_cache = None  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
 
 # Make elasticsearch exceptions importable as real exception classes
 import types as _types  # noqa: E402 -- must run after the sys.modules stubbing above
@@ -110,9 +110,9 @@ if isinstance(_es_exc, MagicMock):
     class _RequestError(Exception):
         pass
 
-    _es_exc_mod.ConnectionError = _ConnectionError
-    _es_exc_mod.NotFoundError = _NotFoundError
-    _es_exc_mod.RequestError = _RequestError
+    _es_exc_mod.ConnectionError = _ConnectionError  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
+    _es_exc_mod.NotFoundError = _NotFoundError  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
+    _es_exc_mod.RequestError = _RequestError  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
     sys.modules["elasticsearch.exceptions"] = _es_exc_mod
 
 # Patch heavy KIRO2 internal imports that execute at module level.
@@ -459,7 +459,7 @@ class _FakeDocument:
         self.metadata = metadata or {}
 
 
-_lc_docs.Document = _FakeDocument
+_lc_docs.Document = _FakeDocument  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
 
 try:
     from core.langchain_rag_system import (

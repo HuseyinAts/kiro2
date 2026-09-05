@@ -54,7 +54,7 @@ def _farklar(opts: dict) -> list:
     try:
         with motor.connect() as baglanti:
             baglam = MigrationContext.configure(baglanti, opts=opts)
-            return compare_metadata(baglam, Base.metadata)
+            return compare_metadata(baglam, Base.metadata)  # type: ignore[no-any-return]  # pre-existing, out of scope for SS10.42
     finally:
         motor.dispose()
 
