@@ -4334,3 +4334,224 @@ Takip (SS10.40'in listesi guncelleniyor):
     `allow_auto_merge` ayari, Dependabot merge/triyaj kararlari,
     branch protection kurulumu, YouTube API anahtari boslugu), hala
     Huseyin'i bekliyor.
+
+## §10.42 -- PR #166: iki gercek schema-drift HIGH bulgusunun kok nedenden duzeltilmesi + 3 ayri local/CI arac uyumsuzlugu kesfi (2026-09-05)
+
+### Baslangic noktasi: SS10.41 Takip listesindeki (3) numarali madde
+
+SS10.41 (PR #164), `audit_orm_schema_drift.py`'yi gercek bir Postgres'e
+karsi calistirip 8 HIGH bulgusu olctu: `sessions.token` (1) +
+`study_sessions` tablosunun 7 kolonu (room_id, user_id, topic, notes,
+pomodoros_completed, breaks_taken, created_at). O oturum bunu duzeltmedi,
+sadece olculebilir kildi ve "hangi tarafin (migration mi ORM mi) dogru
+oldugunu belirlemek veri/urun bilgisi gerektirir" diyerek Takip (3)
+olarak birakti. Bu PR ikisini de kok nedenden inceleyip duzeltti --
+hicbiri "eksik kolonu DB'ye ekle" degil, ikisi de ORM'in DB'deki
+YANLIS/eski bir yere baktigi cikti.
+
+### Bulgu 1: `study_sessions` tablo-adi carpismasi
+
+`models/study_room.py`'deki `StudySession` sinifi,
+`models/learning_path_models.py`'deki tamamen alakasiz, zaten canli
+`StudySession` ile AYNI tabloya (`study_sessions`) carpisiyordu.
+`__table_args__ = {"extend_existing": True}` bu carpismayi SQLAlchemy
+hata vermeden gizliyordu.
+
+Kanit: `backend/alembic/baseline/0001_baseline_schema.sql`'de
+`room_study_sessions` diye AYRI bir tablo zaten var, ve bu sinifin 11
+kolonuyla birebir eslesiyor. Arsivlenmis bir on-squash migration
+(`cff60c64b309_b4_sync_v2.py`) bu tabloyu tam bu kolonlarla olusturmus.
+Bu dosyadaki her kardes model zaten `Room*`/`room_*` adlandirmasini
+kullaniyor (RoomMember, RoomAnalytics, RoomSettings...) -- `StudySession`
+tek istisnaydi.
+
+Duzeltme: `StudySession` -> `RoomStudySession`, tablename
+`"study_sessions"` -> `"room_study_sessions"`. Migration GEREKMEDI -- ORM
+sadece zaten var olan dogru tabloya yeniden yonlendirildi. Tek gercek
+kullanim yeri (`core/context_manager.py:492`) bir Redis-rehidrasyon
+yolunda, DB'ye hic dokunmuyor.
+
+### Bulgu 2: `sessions.token` -> gercekte `hashed_token`
+
+Canli DB'de kolon `token` DEGIL `hashed_token`. Arsivlenmis bir migration
+(`040b91d243a0_secure_plaintext_sessions.py`) bunu acikca aciklyor:
+"Rename 'token' to 'hashed_token' to enforce hashing at application
+layer" -- gecmiste yapilmis bilincli bir guvenlik duzeltmesi. ORM modeli
+sonradan bu degisikligi yansitmadan geriye dustu.
+
+Duzeltme: Python attribute adi `token` korundu
+(`repositories/session_repository.py` zaten `Session.token` okuyup
+yaziyor), `mapped_column("hashed_token", ...)` ile gercek kolona acikca
+eslendi. Yeni migration YOK.
+
+Onemli not (duzeltilmedi, sadece isaretlendi): ne bu sinif ne de
+`session_repository.py`, kaydetmeden once degeri gercekten HASH'lemiyor
+-- kolon adi ima ettigi guvenligi su an saglamiyor. Ancak
+`SessionRepository` hicbir yerde instantiate edilmiyor (grep ile
+dogrulandi) -- canli hicbir yolda calismiyor. Hashing davranisi eklemek
+gercek bir guvenlik karari; bu PR'in kapsamina girmedi, Huseyin'e
+isaretlendi.
+
+### Ek bulgu: alembic'in kendi autogenerate karsilastirmasi da AYNI seyi bagimsiz olarak dogruladi
+
+Push sirasinda pre-push "ders-zorlayici" kapisi kirmiziya dondu:
+`test_onceki_kural_index_tarafini_acik_birakiyordu` basarisiz oldu. Bu
+test `docs/guvenlik-borcu.md`'nin (SS10.x'ten once, alembic-autogen-guard
+dosyasinin kendi 1 Agustos 2026 olcumu) bir parcasi -- alembic'in ESKI
+(yalniz-tablo) `include_object` kuralinin index'leri kapsamadigini
+EMPIRIK olarak kanitliyordu (o zaman: remove_index=65).
+
+Tahmin degil, olculdu: ayni canli :5434 DB'ye karsi bir worktree ile
+(`git worktree add`, HEAD~1 = bu PR'in ana duzeltmesinden once) o kuralla
+remove_index=1, TEK kalem `table=sessions index=ix_sessions_hashed_token`.
+Yani alembic'in kendi bagimsiz karsilastirma motoru da Bulgu 2'yi (ORM
+`token` bekliyordu, DB'de `hashed_token` var) ayni anda, ayri bir yoldan
+olcmus. Bu PR'in duzeltmesi ORM'un urettigi index adini DB'ninkiyle
+(`ix_sessions_hashed_token`) birebir esitledigi icin, bu son kalan ornek
+de kapandi -> remove_index=0.
+
+Testin kendi docstring'i bu senaryoyu zaten ongormustu ("Kirmiziya
+donerse duzeltmenin degeri kalmamis demektir ... o zaman bu dosya
+sadelestirilmeli"). Testi silmek yerine gecmisi belgeleyip artik neyi
+dogruladigini guncelledim: `test_onceki_kural_index_acigi_artik_kapali`
+olarak yeniden adlandirildi, assert `remove_index > 0` -> `== 0`.
+Dosyadaki diger 8 test degismedi (hepsi hala PASSED).
+
+### PR #166 CI calismasi -- 3 ayri, onceden belgelenmemis local/CI arac uyumsuzlugu bulundu, kok nedenden duzeltildi
+
+Ana duzeltme (761cb66b5) yerel commit'i ilk denemede gecemedi: pre-commit
+mypy hook'u `study_room.py`/`context_manager.py`'de 21 onceden-var-olan
+bulgu yuzeye cikardi (dosyanin TUMUNU lint ediyor, sadece diff'i degil).
+Hepsi `# type: ignore[code]  # pre-existing, out of scope for SS10.42`
+ile isaretlendi (dogru sozdizimi ikinci bir `#` gerektiriyor -- tek `#`
+ile `-- aciklama` mypy tarafindan "Invalid type: ignore comment [syntax]"
+diye REDDEDILIYOR, bu segment'te deneme-yanilmayla kesfedildi).
+
+Push sonrasi PR #166'nin CI'si UC AYRI, birbirinden BAGIMSIZ yerel/CI
+arac uyumsuzlugu daha ortaya cikardi -- ucu de bu PR'in fonksiyonel
+degisikligiyle (RoomStudySession + sessions.hashed_token) alakasiz,
+onceden var olan borc, ucu de config-seviyesinde kok nedenden duzeltildi:
+
+1. **CI mypy kapsam farki** (9ea8ea125): `.pre-commit-config.yaml`'daki
+   mypy hook'u `exclude: ^backend/(tests/|.*test.*\.py|...)` ile test
+   dosyalarini disliyor, ama CI'nin `quality-gate.yml`'deki "MyPy Type
+   Checking (changed files only)" adimi degisen TUM backend `.py`
+   dosyalarini (testler DAHIL) tariyor. Bu, iki test dosyasinda 6
+   onceden-var-olan bulguyu (5x sys.modules stub'lama attr-defined,
+   1x alembic `compare_metadata()`'nin `Any` donusu icin no-any-return)
+   yerel commit hic gormeden CI'da ilk kez yuzeye cikardi. Ayni
+   `# type: ignore[code]  # pre-existing, out of scope for SS10.42`
+   deseniyle isaretlendi.
+
+2. **CI ruff versiyon-pin suruklenmesi** (46524f373): `.pre-commit-
+   config.yaml` ruff'i `rev: v0.7.1` ile PIN'liyor, ama
+   `quality-gate.yml`'deki "Code Quality (ruff)" adimi `pip install ruff
+   mypy` -- PIN YOK, CI her calistiginda PyPI'daki EN YENI surumu
+   cekiyor (bu olcumde 0.16.6). Bu iki surum bu PR'in dokundugu
+   dosyalarda GERCEKTEN FARKLI karar veriyor:
+   - `models/study_room.py`: 7 onceden-var-olan enum sinifi (hepsi
+     `class X(str, Enum):`) icin UP042 ("StrEnum kullan") kurali v0.7.1'de
+     YOK, 0.16.6'da VAR. Inline `# noqa: UP042` calismadi -- v0.7.1 bu
+     kodu TANIMADIGI icin RUF100 "kullanilmayan noqa" diye kendiliginden
+     SILDI (git diff ile dogrulandi).
+   - `tests/integration/test_alembic_autogen_guard.py`: import blogunun
+     kanonik sirasi (isort davranisi) konusunda v0.7.1 ve 0.16.6
+     birbirinden FARKLI karar veriyor -- hangi sirayi secersem seceyim,
+     diger surum "duzeltip" tekrar bozuyor, sonsuz git-gel.
+   Inline noqa calismadigi icin (1. durumda RUF100 tarafindan siliniyor,
+   2. durumda zaten "dogru" bir sira yok) `backend/pyproject.toml`'a
+   `[tool.ruff.lint.per-file-ignores]` ile config-seviyesi 2 giris
+   eklendi -- versiyon farkindan tamamen bagimsiz calisiyor, hem v0.7.1
+   hem 0.16.6 tarafindan kabul ediliyor (ikisiyle de ayri ayri
+   dogrulandi: `pip install --upgrade ruff` ile 0.16.6'ya gecip
+   `ruff check` calistirildi, sonra `pre-commit run ruff` ile pinli
+   v0.7.1'e donulup tekrar dogrulandi).
+
+   NOT: asil kok neden (CI'nin `pip install ruff` pin'siz olmasi) BU
+   PR'IN KAPSAMINDA DUZELTILMEDI -- workflow YAML'inda versiyon
+   pin'lemek ayri, kendi basina bir CI-tutarliligi duzeltmesi hak
+   ediyor. Asagida YENI Takip maddesi olarak eklendi.
+
+Push #4'ten (46524f373) sonra CI'nin tum sonucu: 24 kontrol yesil (8
+Golden Flow E2E, Checkov, Code Quality x5 -- artik hepsi yesil --, CodeQL
+x3, Compliance, Container Security, IaC, License Compliance, OWASP,
+Quality Gate, SAST, Secret Scanning, Security Summary, Trivy, API
+Security Testing). 4 kontrol kirmizi/turev cikti, hepsi dogrudan log
+okunarak (varsayilmadan) teyit edildi, dordu de bu PR'dan bagimsiz,
+onceden var olan/belgelenmis borc:
+
+- **Frontend Tests**: CI log'unda "kanon-lint: 44 ihlal, 18 uyari" --
+  SS10.40/10.41'de belgelenen sayiyla birebir ayni (bu PR SIFIR frontend
+  dosyasina dokunuyor).
+- **Backend Tests (Python 3.11)**: `test_video_quality_validator.py::
+  test_accessible_video_public` -- `AssertionError: assert False is
+  True`, `error_reason='YouTube API key not configured'` -- SS10.40'ta
+  teshis edilen, SS10.41'de tekrar dogrulanan ayni kronik CI-ortam
+  eksikligiyle ayni test. `git diff` ile dogrulandi: bu PR bu dosyaya da
+  test ettigi servise de SIFIR dokunuyor.
+- **Automatic PR Review**: `anthropics/claude-code-action@v1` ->
+  "Environment variable validation failed: Either ANTHROPIC_API_KEY,
+  CLAUDE_CODE_OAUTH_TOKEN, ... is required" -- SS10.35'ten beri rezerve
+  ayni sistemik bosluk, bu oturumda TAZE log ile tekrar dogrulandi.
+- **CI Summary**: yalnizca Backend Tests + Frontend Tests'in toplami
+  olarak kirmizi -- bagimsiz bir bulgu degil.
+
+API Security Testing (OWASP ZAP API taramasi, `security.yml`) merge
+oncesi TAMAMEN beklendi (37m24s surdu) -- SS10.41'de "40 dakikayi
+tamamlanmadan merge edildi" notu dusulmustu; bu kez tam sonuca kadar
+canli izlendi ve PASS ile bitti.
+
+### Dogrulama (yerel clean-room, tek-kullanimlik container + canli :5434 DB)
+
+- `alembic upgrade head` -> temiz, ayni 3 migration
+- `audit_orm_schema_drift.py --severity LOW` -> **HIGH=8 -> HIGH=0**
+  (MEDIUM 516->519: `room_study_sessions`'in 3 timestamp-tz kolonu artik
+  karsilastirmaya dahil oldugu icin, onceki 516 MEDIUM ile ayni
+  bilgilendirici desen; LOW 44->42)
+- `pytest tests/unit/test_core_remaining_batch1.py -k "StudyRoom or
+  RoomStudySession"` -> 12 passed
+- `pytest tests/unit/test_study_rooms_s197.py
+  tests/property/test_context_isolation.py` -> 57 passed
+- `pytest tests/integration/test_alembic_autogen_guard.py -v` (canli
+  :5434 DB'ye karsi) -> 9 passed
+- `python -m py_compile` + `ruff check` + `mypy` (degisen 5 dosya,
+  hook'un kendi konfigurasyonuyla) -> temiz
+- Yerel pre-push gauntlet'i (push-secret-guard, 320 testlik
+  ders-zorlayici suite, reward-hacking-check) her 4 push'ta da temiz
+  gecti
+- Container, worktree ve gecici diagnostik dosyalar (`diag_index_
+  drift.py`, iki worktree kopyasi) temizlendi
+
+### Karar / Sonuc
+
+PR #166 `--merge --delete-branch` ile merge edildi (fast-forward,
+f2321e2cd..20d9c8c14, 4 commit: 761cb66b5, 02c87484b, 9ea8ea125,
+46524f373). Kapsam: iki gercek HIGH schema-drift bulgusu kok nedenden
+duzeltildi (migration gerekmedi, ikisi de ORM'in DB'deki dogru yere
+yeniden yonlendirilmesiydi); alembic-autogen-guard'in tarihsel testi
+guncellendi; 3 ayri local/CI arac uyumsuzlugu (mypy kapsam farki, ruff
+versiyon-pin suruklenmesi x2) kesfedilip config-seviyesinde kalici
+cozuldu. Reserve karar gerektiren hicbir sey (kredensiyel, repo-seviyesi
+ayar, Dependabot, tasarim/ikon karari) bu PR'a GIRMEDI.
+
+Takip (SS10.41'in listesi guncelleniyor):
+(1) [TAMAMLANDI - bu PR] SS10.41 Takip (3): 8 HIGH schema-drift bulgusu
+    (`sessions.token` + `study_sessions`'in 7 kolonu) kok nedenden
+    duzeltildi, HIGH=8 -> HIGH=0;
+(2) 44 dosyalik psycopg2->psycopg3 gecis borcu -- bu PR'da degismedi,
+    hala 43;
+(3) YENI: `.github/workflows/quality-gate.yml`'deki "Code Quality
+    (ruff)"/"Code Quality (mypy)" adimlarinin `pip install ruff mypy`'si
+    PIN'siz -- `.pre-commit-config.yaml`'daki `v0.7.1` ile eslesecek
+    sekilde pinlenmeli, aksi halde her PyPI ruff/mypy surum atlamasinda
+    ayni tur version-drift surprizleri (UP042, isort kanonik sira
+    degisikligi gibi) tekrarlanabilir;
+(4) `SessionRepository`/`Session.token`'a gercek hashing davranisi
+    eklemek -- gercek bir guvenlik karari, Huseyin'e isaretlendi (dormant
+    kod, canli hicbir yolda instantiate edilmiyor);
+(5) `kanon-lint`: 44 ihlal, 18 uyari (SS10.40'tan degismedi -- bu PR
+    frontend'e dokunmadi);
+(6) SS10.35/37/38/39/40/41'den tasinan rezerve kararlar
+    (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_
+    merge` ayari, Dependabot merge/triyaj kararlari, branch protection
+    kurulumu, YouTube API anahtari boslugu), hala Huseyin'i bekliyor.
