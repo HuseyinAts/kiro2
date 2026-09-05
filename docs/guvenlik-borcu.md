@@ -4641,3 +4641,111 @@ Takip (SS10.42'nin listesi guncelleniyor):
     (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_
     merge` ayari, Dependabot merge/triyaj kararlari, branch protection
     kurulumu, YouTube API anahtari boslugu), hala Huseyin'i bekliyor.
+
+
+## §10.44 -- PR #170: push_tasks.py'nin kirik psycopg2 baglantisi psycopg (v3) ile degistirildi (2026-09-05)
+
+### Baslangic noktasi
+
+SS10.43 Takip (2): 44 dosyalik psycopg2->psycopg3 gecis borcunu yeniden
+olcerken -- iddia edilen "43-44 dosya" rakamina kor kor guvenmek yerine
+`git grep -lE "^\s*(import psycopg2|from psycopg2)" -- '*.py'` ile
+yeniden saydim. Repo genelinde 86 dosya, `backend/` altinda 46 dosya
+cikti (eski "43" rakamina yakin ama tam eslesmiyor). Sayimin kendisinden
+daha onemlisi: en "canli" gorunen adaylari tek tek okumak
+`backend/tasks/push_tasks.py`'nin **gercekten kirik** oldugunu ortaya
+cikardi.
+
+### Kapsam genisletme
+
+`docker-compose.yml` satir 199-248: `celery-worker` ve `celery-beat`
+servisleri ikisi de `backend/Dockerfile.minimal`'dan build ediliyor.
+`backend/requirements-minimal.txt`, 3 Eylul 2026'da (commit 8cb24ad8e)
+psycopg2-binary'i kaldirip psycopg[binary] (v3) ile degistirdi. O
+commit'in yorumu "psycopg2, calisan uygulama kodunda kullanilmiyor"
+diyordu -- bu iddia olcum degildi, dogru da degildi:
+`backend/tasks/push_tasks.py` hala `import psycopg2` yapiyordu.
+
+`backend/core/celery_app.py` incelemesi bu gorevin gercekten canli
+oldugunu dogruladi: `push_tasks` hem `include` listesinde (satir 37)
+hem `beat_schedule`'da (satir 218-221, her aksam 20:00) kayitli. Sonuc:
+Celery worker/beat imajlarinda psycopg2 artik kurulu olmadigindan,
+`_send_streak_reminders_impl`'in `connect=None` yolu her calistiginda
+`ModuleNotFoundError` ile sessizce patliyordu (retry'lar tukenene kadar
+loglanip birakiliyordu) -- 6 Agustos 2026'daki DSN sizintisi olayiyla
+ayni sinifta, farkli kok nedenli yeni bir kesinti.
+
+Karsilastirma icin `backend/tasks/risk_tasks.py` ve `streak_tasks.py`
+da okundu: ikisi de psycopg2 import ediyor ama `git grep` + `celery_
+app.py` incelemesi ikisinin de `include`/`beat_schedule`'da OLMADIGINI,
+hicbir yerden cagrilmadigini dogruladi -- yani onlar gercekten olu kod,
+bu PR'in kapsaminda degil. `backend/analytics/health_audit_service.py`
+de psycopg2 kullaniyor ama `if __name__ == "__main__":` ile calisan
+manuel bir ops araci -- canli servise bagli degil.
+
+### Duzeltme
+
+`backend/tasks/push_tasks.py`: `connect is None` dalinda
+`import psycopg2` yerine `import psycopg` (v3); docstring/yorumlar
+(DSN temizleme notu, hata mesaji sizinti notu) surucu-tarafsiz hale
+getirildi (SQLAlchemy '+driver' eki sorunu psycopg2'ye ozgu degil,
+psycopg v3'te de ayni sekilde reddediliyor).
+
+`backend/tests/fast/test_push_tasks.py`: yeni
+`test_default_connect_uses_psycopg_v3_not_psycopg2` testi eklendi --
+`connect=None` otomatik-cozumleme yolunu ilk kez egzersiz ediyor
+(psycopg2'yi import-engelleyerek), tam da bu regresyonun yakalanmadan
+gecmesine izin veren test boslugunu kapatiyor. Var olan testlerdeki
+psycopg2-spesifik isimlendirme/yorumlar da psycopg (v3)'e guncellendi.
+
+### Dogrulama
+
+- Yerelde `pytest tests/fast/test_push_tasks.py -v`: 10 passed (yeni
+  test dahil).
+- `ruff check backend/tasks/push_tasks.py
+  backend/tests/fast/test_push_tasks.py`: All checks passed.
+- `mypy backend/tasks/push_tasks.py`: degisen dosyalarda sifir hata
+  (proje genelinde onceden var olan, alakasiz hatalar mevcut -- CI'nin
+  kendi mypy kontrolu zaten diff-based).
+- Yerel pre-push gauntlet'i (320 test + ders-zorlayici, push-secret-
+  guard, reward-hacking-check) temiz gecti.
+- PR #170'in kendi CI'sinda canli dogrulama: Code Quality
+  (ruff/mypy/bandit/safety/semgrep), Quality Gate (7m58s), CodeQL
+  Analysis (python, 7m34s), Container Security Scan, 8 Golden Flow E2E
+  tests, API Security Testing (ZAP, 40m46s) dahil tum guvenlik/kalite
+  kontrolleri PASS.
+- Kirmizi kalan 4 kontrol dogrudan log cekilerek kok nedeni onceden
+  belgelenmis borclara baglandi, bu PR'in kendi diff'iyle ilgisiz
+  oldugu dogrulandi: Automatic PR Review (ANTHROPIC_API_KEY/CLAUDE_
+  CODE_OAUTH_TOKEN bos), Backend Tests (`YouTube API key not
+  configured`, 1784 passed / 358 skipped / 1 failed), Frontend Tests
+  (`Kanon lint (frontend/src/kiro)` -- SS10.40'tan beri bilinen 44
+  ihlal), CI Summary (bu ucunun rollup'u).
+
+### Karar / Sonuc
+
+PR #170 `--merge --delete-branch` ile merge edildi (fast-forward,
+5bb3b964c..f1509b512, tek commit 333e0500c). Sadece 2 dosya degisti
+(`push_tasks.py`, `test_push_tasks.py`). Reserve karar gerektiren
+hicbir sey bu PR'a girmedi.
+
+Takip (SS10.43'un listesi guncelleniyor):
+(1) [TAMAMLANDI - bu PR] SS10.43 Takip (2)'nin en kritik parcasi:
+    `push_tasks.py`'nin canli, her aksam calisan psycopg2 baglantisi
+    psycopg (v3)'e tasindi;
+(2) Geri kalan psycopg2 kullanimlari dusuk oncelikli, kasitli olarak
+    toplu tasima YAPILMADI: `risk_tasks.py`/`streak_tasks.py` (dogrulanmis
+    olu kod -- ya gercekten baglanip calistirilmali ya da silinmeli,
+    ayri bir temizlik karari), `health_audit_service.py` (manuel ops
+    araci, dusuk oncelik), geri kalan ~80 tek-seferlik `scripts/`/
+    `_pilots/`/`_scripts/`/`.archive/` dosyasi (dusuk deger, toplu
+    tasima onerilmiyor);
+(3) `SessionRepository`/`Session.token`'a gercek hashing davranisi
+    eklemek -- gercek bir guvenlik karari, Huseyin'e isaretlendi
+    (dormant kod, canli hicbir yolda instantiate edilmiyor);
+(4) `kanon-lint`: 44 ihlal, 18 uyari (SS10.40'tan degismedi -- bu PR
+    frontend'e dokunmadi);
+(5) SS10.35/37/38/39/40/41/42/43'ten tasinan rezerve kararlar
+    (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_
+    merge` ayari, Dependabot merge/triyaj kararlari, branch protection
+    kurulumu, YouTube API anahtari boslugu), hala Huseyin'i bekliyor.
