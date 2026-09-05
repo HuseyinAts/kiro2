@@ -24,7 +24,7 @@
     "katex": "^0.16.38",
     "lodash": "^4.17.21",
     "lucide-react": "^0.263.1",
-    "mermaid": "^10.9.0",
+    "mermaid": "^11.17.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
