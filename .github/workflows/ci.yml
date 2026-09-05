@@ -86,7 +86,13 @@ jobs:
           uv venv
           source .venv/bin/activate
           cd backend && uv pip install -r requirements.txt
-          uv pip install ruff black mypy bandit safety types-redis types-passlib
+          # ruff/mypy/bandit: .pre-commit-config.yaml ile ayni pin --
+          # docs/guvenlik-borcu.md SS10.42 (versiyon suruklenmesi kok nedeni).
+          # black/safety/types-redis/types-passlib pin'siz kaldi: black artik
+          # pre-commit'te kullanilmiyor (ruff yerine gecti), safety'nin
+          # pre-commit karsiligi yok, types-redis pre-commit'te bilerek
+          # disarida birakilmisti (redis 6.4.0 py.typed=True sagliyor).
+          uv pip install ruff==0.7.1 black mypy==1.11.2 bandit==1.9.4 safety types-redis types-passlib
 
       - name: Run Ruff Linter (changed files only)
         if: matrix.check == 'ruff'
