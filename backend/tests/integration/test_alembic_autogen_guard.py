@@ -54,7 +54,7 @@ def _farklar(opts: dict) -> list:
     try:
         with motor.connect() as baglanti:
             baglam = MigrationContext.configure(baglanti, opts=opts)
-            return compare_metadata(baglam, Base.metadata)
+            return compare_metadata(baglam, Base.metadata)  # type: ignore[no-any-return]  # pre-existing, out of scope for SS10.42
     finally:
         motor.dispose()
 
@@ -101,19 +101,39 @@ def test_alet_dogrulamasi_filtresiz_kol_tehlikeyi_goruyor(filtresiz: list) -> No
     )
 
 
-def test_onceki_kural_index_tarafini_acik_birakiyordu(onceki_kuralla: list) -> None:
-    """FIX'IN DEGERI: eski `type_ == "table"` kurali index'leri kapsamiyordu.
+def test_onceki_kural_index_acigi_artik_kapali(onceki_kuralla: list) -> None:
+    """TARIHSEL KAYIT: eski `type_ == "table"` kurali index'leri kapsamiyordu.
 
-    Bu test, duzeltmenin +0 kazancli olmadigini EMPIRIK gosterir. Kirmiziya
-    donerse duzeltmenin degeri kalmamis demektir (index drift'i kapanmis) —
-    o zaman bu dosya sadelestirilmeli.
+    1 Agu 2026 olcumu: onceki kuralla remove_table=0, remove_index=65 --
+    `yonetilmeyeni_disla` fix'inin +0 kazancli olmadiginin kaniti buydu
+    (asagidaki assert o zaman `> 0` idi).
+
+    5 Eyl 2026 (SS10.42, docs/guvenlik-borcu.md): son kalan tek ornek de
+    kapandi. `models/system_models.py`'deki `Session.token` ORM kolonu
+    "token" adini beklerken canli DB'deki gercek kolon "hashed_token" idi
+    (bkz. alembic/versions_archive/040b91d243a0_secure_plaintext_sessions.py).
+    Bu yuzden DB'nin `ix_sessions_hashed_token` index'i metadata'da hicbir
+    karsilik bulamiyor ve onceki kuralla "remove_index" olarak cikiyordu --
+    tam da bu testin orijinal iddiasinin kanitiydi. SS10.42, `token`'i
+    `mapped_column("hashed_token", ...)` ile gercek kolona esledi; artik
+    ORM'un urettigi index adi da DB'ninkiyle birebir ortusuyor, yani bu
+    ornek de yonetilmeyeni_disla'ya ihtiyac duymadan kendiliginden kapaniyor.
+
+    Bu fonksiyon SILINMEDI (dosyanin ust kismindaki "1 Agu 2026 CANLI
+    OLCUMU" notu ve `onceki_kuralla` fixture'i hala gecmisi belgeliyor);
+    artik "acik kaldi" degil "artik kapali" durumunu dogruluyor. Assert
+    bir gun tekrar kirilirsa (yeni bir kolon/index adi uyumsuzlugu), dogru
+    yaklasim bu testi gevsetmek degil, SS10.42'dekiyle ayni yontemle
+    (onceki/sonraki index listesini karsilastirip) kok nedeni bulup asil
+    ORM/DB uyumsuzlugunu duzeltmektir.
     """
     assert (
         _say(onceki_kuralla, "remove_table") == 0
     ), "Onceki kural tablolari korumuyordu -> tarihsel varsayim yanlis"
-    assert _say(onceki_kuralla, "remove_index") > 0, (
-        "Onceki kuralla index DROP'u gorulmedi -> duzeltmenin olculebilir "
-        "kazanci yok; #451 dersi geregi fix gerekcesiz kalir"
+    assert _say(onceki_kuralla, "remove_index") == 0, (
+        "Onceki kuralla yeniden bir index DROP'u goruldu -> SS10.42'de "
+        "kapatilan sessions.hashed_token gibi yeni bir ORM/DB kolon-adi "
+        "uyumsuzlugu olusmus olabilir; kok nedeni bul ve duzelt"
     )
 
 

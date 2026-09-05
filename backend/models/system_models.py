@@ -264,8 +264,22 @@ class Session(Base):
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
+    # 2026-09-04 (docs/guvenlik-borcu.md SS10.42): the live DB column is
+    # named `hashed_token`, not `token` (see
+    # backend/alembic/baseline/0001_baseline_schema.sql) -- confirmed by a
+    # fresh-migration clean-room audit. Kept the Python attribute name
+    # `token` (repositories/session_repository.py already reads/writes
+    # `Session.token`) and mapped it explicitly onto the real column
+    # instead of adding a redundant column via migration. NOTE: nothing in
+    # this class or session_repository.py actually hashes the value before
+    # storing it -- the column name implies hashing that the current (and
+    # currently unused/uninstantiated -- see SS10.42) SessionRepository
+    # code does not perform. Flagged for Huseyin, not fixed here: adding
+    # hashing behavior would be a real security-relevant change to code
+    # that isn't wired into any live path yet, out of scope for a
+    # schema-drift fix.
     token: Mapped[str] = mapped_column(
-        String(64), unique=True, nullable=False, index=True
+        "hashed_token", String(64), unique=True, nullable=False, index=True
     )
 
     # Device & location info

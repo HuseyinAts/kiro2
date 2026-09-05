@@ -92,10 +92,10 @@ for _mod in _STUBS:
 
 # Provide concrete sentinel values that downstream code may dereference
 _lc = sys.modules["langchain"]
-_lc.llm_cache = None
+_lc.llm_cache = None  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
 
 # Make elasticsearch exceptions importable as real exception classes
-import types as _types
+import types as _types  # noqa: E402 -- must run after the sys.modules stubbing above
 
 _es_exc = sys.modules.get("elasticsearch.exceptions")
 if isinstance(_es_exc, MagicMock):
@@ -110,9 +110,9 @@ if isinstance(_es_exc, MagicMock):
     class _RequestError(Exception):
         pass
 
-    _es_exc_mod.ConnectionError = _ConnectionError
-    _es_exc_mod.NotFoundError = _NotFoundError
-    _es_exc_mod.RequestError = _RequestError
+    _es_exc_mod.ConnectionError = _ConnectionError  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
+    _es_exc_mod.NotFoundError = _NotFoundError  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
+    _es_exc_mod.RequestError = _RequestError  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
     sys.modules["elasticsearch.exceptions"] = _es_exc_mod
 
 # Patch heavy KIRO2 internal imports that execute at module level.
@@ -459,7 +459,7 @@ class _FakeDocument:
         self.metadata = metadata or {}
 
 
-_lc_docs.Document = _FakeDocument
+_lc_docs.Document = _FakeDocument  # type: ignore[attr-defined]  # pre-existing, out of scope for SS10.42
 
 try:
     from core.langchain_rag_system import (
@@ -492,9 +492,9 @@ class TestDocumentProcessor:
     def test_load_document_unsupported_extension_falls_back(self):
         dp = DocumentProcessor()
         # TextLoader is mocked; calling load() on mock returns []
-        result = dp.load_document("/tmp/fake.xyz")
+        result = dp.load_document("/tmp/fake.xyz")  # noqa: S108 -- test fixture path, not real usage
         # Either empty list on error or a MagicMock list — no exception raised
-        assert isinstance(result, (list, MagicMock))
+        assert isinstance(result, list | MagicMock)
 
     def test_create_documents_from_texts(self):
         dp = DocumentProcessor()
@@ -705,7 +705,7 @@ class TestCustomHuggingFaceEndpoint:
     def _make(self):
         return CustomHuggingFaceEndpoint(
             endpoint_url="https://test.endpoint.com",
-            api_token="fake-token",
+            api_token="fake-token",  # noqa: S106 -- pragma: allowlist secret -- test fixture, not real usage
             temperature=0.5,
             max_tokens=128,
         )
@@ -770,7 +770,7 @@ class TestCustomHuggingFaceEndpoint:
 
     def test_call_delegates_to_generate(self):
         ep = self._make()
-        with patch.object(ep, "generate", return_value="called") as mock_gen:
+        with patch.object(ep, "generate", return_value="called"):
             result = ep("prompt text")
         assert result == "called"
 
@@ -882,7 +882,7 @@ class TestLangChainLLMService:
         # embeddings may be mocked; FAISS.from_documents is mocked — should not raise
         result = svc.create_vector_store(["doc1", "doc2"], "test_store")
         # With mocked dependencies, returns either a MagicMock or None
-        assert result is None or isinstance(result, (MagicMock,))
+        assert result is None or isinstance(result, MagicMock)
 
     def test_create_rag_chain_missing_store(self):
         svc = self._make()
@@ -1358,10 +1358,10 @@ from models.study_room import (  # noqa: E402
     RoomMember,
     RoomSettings,
     RoomStatus,
+    RoomStudySession,
     RoomVisibility,
     SharedFile,
     StudyRoom,
-    StudySession,
 )
 
 
@@ -1374,7 +1374,7 @@ class TestStudyRoomEnums:
     def test_room_visibility_values(self):
         assert RoomVisibility.PUBLIC == "public"
         assert RoomVisibility.PRIVATE == "private"
-        assert RoomVisibility.PASSWORD == "password"
+        assert RoomVisibility.PASSWORD == "password"  # noqa: S105 -- pragma: allowlist secret -- enum value, not a real credential
 
     def test_member_role_values(self):
         assert MemberRole.OWNER == "owner"
@@ -1496,12 +1496,12 @@ class TestFileVersionModel:
         assert "change_description" in col_names
 
 
-class TestStudySessionModel:
+class TestRoomStudySessionModel:
     def test_tablename(self):
-        assert StudySession.__tablename__ == "study_sessions"
+        assert RoomStudySession.__tablename__ == "room_study_sessions"
 
     def test_has_session_columns(self):
-        col_names = [c.name for c in StudySession.__table__.columns]
+        col_names = [c.name for c in RoomStudySession.__table__.columns]
         assert "started_at" in col_names
         assert "duration_minutes" in col_names
         assert "pomodoros_completed" in col_names
