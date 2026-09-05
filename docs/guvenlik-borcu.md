@@ -4555,3 +4555,89 @@ Takip (SS10.41'in listesi guncelleniyor):
     (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_
     merge` ayari, Dependabot merge/triyaj kararlari, branch protection
     kurulumu, YouTube API anahtari boslugu), hala Huseyin'i bekliyor.
+
+
+## §10.43 -- PR #168: CI'nin ruff/mypy versiyon-pin suruklenmesi kok nedenden kapatildi (2026-09-05)
+
+### Baslangic noktasi
+
+SS10.42 Takip (3): `.github/workflows/quality-gate.yml`'nin "Code Quality
+(ruff)"/"Code Quality (mypy)" adimlarinin `pip install ruff mypy`'si
+PIN'siz -- `.pre-commit-config.yaml`'daki `v0.7.1`/`v1.11.2` ile
+eslesmiyordu. PR #166'da bu fark somut olarak olculmustu: yerelde
+v0.7.1 calisirken CI'da 0.16.6 calismis, bu da yerelde temiz gecen kodun
+CI'da yeni bir kural (UP042) ve farkli bir isort kanonik sirasiyla
+(I001) kirmizi cikmasina yol acmisti.
+
+### Kapsam genisletme
+
+Sadece `quality-gate.yml` degil, ayni pin'siz-kurulum deseni 3 workflow
+dosyasinda daha bulundu (`Select-String -Path .github\workflows\*.yml
+-Pattern "pip install.*ruff|pip install.*mypy"` ile taranarak):
+
+- `ci.yml`: `uv pip install ruff black mypy bandit safety types-redis
+  types-passlib` -- bu workflow `pull_request` ile otomatik calisiyor
+  (`ci.yml`'nin "Code Quality (ruff/mypy/bandit)" matrix job'u), yani
+  ayni version-drift riski her PR'da gercek.
+- `claude-ci.yml`: `pip install ruff mypy` -- `workflow_dispatch` ile
+  manuel tetikleniyor.
+- `quality-gates.yml`: `pip install ruff mypy radon` -- bu da
+  `workflow_dispatch` ile manuel tetikleniyor, ayrica kendi "Run
+  linting" adimi zaten `continue-on-error: true`.
+
+### Duzeltme
+
+4 dosyada da ruff/mypy `.pre-commit-config.yaml` ile ayni pin'e
+sabitlendi (`ruff==0.7.1`, `mypy==1.11.2`). `ci.yml`'de ayni satirda
+kurulan `bandit` da pre-commit'teki `bandit==1.9.4` ile pinlendi (ayni
+kok neden sinifi, kanit zaten elimizdeydi). `black`/`safety`/
+`types-redis`/`types-passlib` bilerek pin'siz birakildi: black
+pre-commit'te artik kullanilmiyor (ruff yerine gecti), safety'nin
+pre-commit karsiligi yok, types-redis pre-commit'te bilerek disarida
+birakilmisti (redis 6.4.0 py.typed=True sagliyor, stub bayat).
+
+### Dogrulama
+
+- 4 dosya da `python -c "import yaml; yaml.safe_load(...)"` ile gecerli
+  YAML olarak ayristi
+- Eklenen 17 satirin tamami programatik olarak (git diff + Python
+  ord() kontrolu, PowerShell konsolu degil -- SS10.x'te defalarca
+  belgelenen konsol-kodlama guvensizligi yuzunden) ASCII-only
+  dogrulandi
+- Yerel pre-push gauntlet'i (320 test + ders-zorlayici, push-secret-
+  guard) temiz gecti
+- PR #168'in kendi CI'sinda canli dogrulama: bu PR tam olarak
+  `ci.yml`'nin "Code Quality (ruff)"/"(mypy)"/"(bandit)" ve
+  `quality-gate.yml`'nin "Quality Gate" job'unu tetikledi -- hepsi
+  PASS (Quality Gate 8m53s, ruff/mypy/bandit/safety/semgrep ayri ayri
+  PASS). API Security Testing (ZAP, ~43dk) dahil geri kalan tum
+  guvenlik/kalite kontrolleri de PASS.
+- Kirmizi kalan 4 kontrol dogrudan log cekilerek kok nedeni onceden
+  belgelenmis borclara baglandi, bu PR'in kendi diff'iyle ilgisiz
+  oldugu dogrulandi: Automatic PR Review (ANTHROPIC_API_KEY/CLAUDE_
+  CODE_OAUTH_TOKEN bos), Backend Tests (`YouTube API key not
+  configured`), Frontend Tests (`Kanon lint (frontend/src/kiro)`
+  -- SS10.40'tan beri bilinen 44 ihlal), CI Summary (bu ucunun
+  rollup'u).
+
+### Karar / Sonuc
+
+PR #168 `--merge --delete-branch` ile merge edildi (fast-forward,
+8b712b7a2..558bf5322, tek commit 5bef168d8). Kod degisikligi YOK,
+sadece 4 CI workflow dosyasi. Reserve karar gerektiren hicbir sey bu
+PR'a girmedi.
+
+Takip (SS10.42'nin listesi guncelleniyor):
+(1) [TAMAMLANDI - bu PR] SS10.42 Takip (3): CI'nin ruff/mypy (ve
+    ci.yml'de bandit) versiyon-pin suruklenmesi 4 workflow dosyasinda
+    da kok nedenden kapatildi;
+(2) 44 dosyalik psycopg2->psycopg3 gecis borcu -- degismedi, hala 43;
+(3) `SessionRepository`/`Session.token`'a gercek hashing davranisi
+    eklemek -- gercek bir guvenlik karari, Huseyin'e isaretlendi
+    (dormant kod, canli hicbir yolda instantiate edilmiyor);
+(4) `kanon-lint`: 44 ihlal, 18 uyari (SS10.40'tan degismedi -- bu PR
+    frontend'e dokunmadi);
+(5) SS10.35/37/38/39/40/41/42'den tasinan rezerve kararlar
+    (ANTHROPIC_API_KEY/CLAUDE_CODE_OAUTH_TOKEN secret'i, `allow_auto_
+    merge` ayari, Dependabot merge/triyaj kararlari, branch protection
+    kurulumu, YouTube API anahtari boslugu), hala Huseyin'i bekliyor.
