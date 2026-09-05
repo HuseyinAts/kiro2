@@ -18,10 +18,12 @@ from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
-# SQLAlchemy URL'i (postgresql+asyncpg://) psycopg2'ye verilemez: psycopg2 '+asyncpg'
-# ekini tanimaz, dizeyi key=value baglanti stringi sanip `invalid dsn` atar — ve
-# hata metnine DSN'in TAMAMINI gomer. 6 Agu 2026'da olculdu: gorev 4 gun boyunca
-# her koşuda patti ve kiro2_app parolasi worker log'una 14 kez dustu.
+# SQLAlchemy URL'i (postgresql+asyncpg://) ham libpq surucusune verilemez:
+# psycopg2 DE psycopg (v3) DE '+asyncpg'/'+psycopg' ekini tanimaz, dizeyi
+# key=value baglanti stringi sanip `invalid dsn` atar — ve hata metnine
+# DSN'in TAMAMINI gomer. 6 Agu 2026'da olculdu (o zamanki surucu psycopg2
+# idi): gorev 4 gun boyunca her koşuda patti ve kiro2_app parolasi worker
+# log'una 14 kez dustu. Bu regex surucudan bagimsiz, ikisinde de gerekli.
 _SQLALCHEMY_DRIVER_RE = re.compile(r"^(postgres(?:ql)?)\+[a-z0-9_]+://", re.IGNORECASE)
 
 # Hata metinlerinde gecen baglanti dizelerindeki parola alanini maskele.
@@ -30,7 +32,7 @@ _DSN_CREDENTIALS_RE = re.compile(r"([a-z0-9+]+://[^:/@\s]+):[^@\s]+@", re.IGNORE
 
 
 def _libpq_dsn(url: str) -> str:
-    """SQLAlchemy URL'ini psycopg2'nin anladigi libpq DSN'ine cevir."""
+    """SQLAlchemy URL'ini psycopg'nin (v3) anladigi libpq DSN'ine cevir."""
     return _SQLALCHEMY_DRIVER_RE.sub(r"\1://", url)
 
 
@@ -92,16 +94,26 @@ def _send_streak_reminders_impl(connect=None, db_url=None):
     tablosuna bildirim INSERT eder.
 
     Args:
-        connect: psycopg2.connect benzeri callable (test icin enjekte edilebilir).
+        connect: psycopg.connect (v3) benzeri callable (test icin enjekte
+            edilebilir).
         db_url:  DB baglanti stringi (None ise DATABASE_URL env).
     """
     import os
     from datetime import date
 
     if connect is None:
-        import psycopg2
+        # 3 Eylul 2026 (docs/guvenlik-borcu.md SS10.44): psycopg2 -> psycopg
+        # (v3). Celery worker/beat imajlari Dockerfile.minimal'dan kuruluyor
+        # ve requirements-minimal.txt o tarihte psycopg2-binary'i kaldirip
+        # psycopg[binary] (v3) ile degistirdi (bkz. commit 8cb24ad8e) --
+        # psycopg2 o imajda ARTIK KURULU DEGIL. Bu satir hala psycopg2
+        # import ediyor olsaydi, gorev her aksam 20:00'de
+        # ModuleNotFoundError ile patlardi (sessizce, retry'lar tukenene
+        # kadar loglanip birakilirdi) -- tam da 6 Agu 2026 olayinin ayni
+        # sinifindan, farkli kok nedenli bir kesinti.
+        import psycopg
 
-        connect = psycopg2.connect
+        connect = psycopg.connect
     if db_url is None:
         db_url = os.environ.get("DATABASE_URL", _DEFAULT_DB_URL)
     db_url = _libpq_dsn(db_url)
@@ -151,8 +163,9 @@ def _send_streak_reminders_impl(connect=None, db_url=None):
         return {"sent": len(notifications), "status": "sent"}
 
     except Exception as e:
-        # psycopg2 hata metnine DSN'i gomer. Donus degeri Celery sonuc
-        # backend'ine de yazildigi icin IKI sizinti yuzeyi var - ikisi de maskeli.
+        # libpq surucusunun (psycopg2/psycopg fark etmez) hata metni DSN'i
+        # gomer. Donus degeri Celery sonuc backend'ine de yazildigi icin IKI
+        # sizinti yuzeyi var - ikisi de maskeli.
         guvenli = _redact_dsn(str(e))
         logger.error("Push reminder hatasi: %s", guvenli)
         return {"sent": 0, "status": "error", "error": guvenli}
