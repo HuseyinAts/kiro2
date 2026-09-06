@@ -5337,3 +5337,32 @@ Backend Tests bu PR ile yesillenmeli. Frontend Tests (kanon-lint 44
 ihlal) ve dolayisiyla CI Summary, Huseyin'in karari gelene kadar
 kirmizi kalmaya devam edecek -- master CI'inin tam yesillenmesi o
 karara bagli.
+
+### Ek bulgu -- diff-based mypy, dosyaya dokunani legacy borcun sahibi yapiyor
+
+Bu PR'in ilk kosumunda `Code Quality (mypy)` dustu ve `backend-test` +
+`frontend-test` (`needs: quality`) SKIP oldu; `CI Summary` de 3 saniyede
+kirmizi verdi. Yani "test duzeltmesi" PR'i, testleri hic calistiramadan
+kapandi.
+
+Sebep, `ci.yml`'in bilincli tasarimi: mypy yalnizca DEGISEN dosyalarda
+kosuyor ("legacy debt grandfathered"). Dosyaya dokunuldugu anda o
+dosyanin TAMAMI kontrole giriyor -- ve `test_video_quality_validator.py`
+icinde onceden duran iki tip borcu ortaya cikti:
+
+    :196 error: Need type annotation for "mock_response"  [var-annotated]
+    :437 error: Need type annotation for "metadata"       [var-annotated]
+
+Ikisi de bu PR'in EKLEDIGI satirlar degil; ikisi de bos literal
+(`{"items": []}` ve `{}`) oldugu icin mypy tip cikaramiyor. `dict[str,
+Any]` anotasyonu eklendi (+ `from typing import Any`).
+
+Pratik ders: bu repoda bir dosyaya dokunmak, o dosyanin butun diff-based
+lint/tip borcunu ustlenmek demek. Kucuk bir test duzeltmesinin bile
+"once dosyanin mevcut mypy/ruff borcunu temizle" adimi var.
+
+Yerel dogrulama notu: CI Python 3.11 + `.venv` kullaniyor; bu makinedeki
+python 3.13 ve `.venv`'de mypy kurulu degil, o yuzden ham `mypy` cagrisi
+numpy stub'inda patliyor (ortam farki, kod hatasi degil). Dosyanin kendi
+borcu `--follow-imports=skip --python-version 3.11` ile izole olculdu:
+EXITCODE=0, temiz.

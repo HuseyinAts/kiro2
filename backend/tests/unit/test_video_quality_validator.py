@@ -3,6 +3,7 @@ Video Quality Validator Unit Tests
 Video erişilebilirliği ve kalitesini doğrulayan servisi test eder
 """
 
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -193,7 +194,7 @@ class TestVideoQualityValidator:
     @pytest.mark.asyncio
     async def test_inaccessible_video_not_found(self, validator_service):
         """Bulunamayan video testi"""
-        mock_response = {"items": []}
+        mock_response: dict[str, Any] = {"items": []}
 
         with patch.object(
             validator_service, "_make_api_request", return_value=mock_response
@@ -434,7 +435,7 @@ class TestVideoQualityValidator:
     @pytest.mark.asyncio
     async def test_quality_score_empty_metadata(self, validator_service):
         """Boş metadata ile skorlama"""
-        metadata = {}
+        metadata: dict[str, Any] = {}
 
         score = await validator_service.calculate_quality_score(metadata)
 
