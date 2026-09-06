@@ -107,10 +107,14 @@ async def store_and_dump(request):
     if request.param == "memory":
         store = PasswordResetCodeStore(redis_client=None)
 
-        async def dump() -> list[str]:
+        # NOT: iki dalin dokucusu ayri isimlerde. Ikisi de `dump` olsaydi
+        # mypy `no-redef` veriyordu (CI'da olculdu) -- ayni isim, ayni
+        # kapsamda iki kez tanimlanmis sayiliyor, dallar birbirini disliyor
+        # olsa bile. Isimlendirme ayrica hangi dalin okundugunu da belli ediyor.
+        async def dump_bellek() -> list[str]:
             return [value for value, _expires in store._memory.values()]
 
-        yield store, dump
+        yield store, dump_bellek
         return
 
     client = await _redis_client()
@@ -119,13 +123,13 @@ async def store_and_dump(request):
 
     store = PasswordResetCodeStore(redis_client=client)
 
-    async def dump() -> list[str]:
+    async def dump_redis() -> list[str]:
         keys = await client.keys("password_reset*")
         values = [await client.get(k) for k in keys]
         return list(keys) + [v for v in values if v is not None]
 
     try:
-        yield store, dump
+        yield store, dump_redis
     finally:
         await _redis_kapat(client)
 

@@ -5570,3 +5570,40 @@ degil -- hepsi httpx istemcisi (`_http_client`, `_health_client`,
 olarak cagrilmiyor. httpx'te `aclose()` standart ve surum sorunu yok.
 
 Sonuc: bu tuzak yalnizca test dosyasindaydi, uretim kodu etkilenmiyor.
+
+### Diff-based mypy dersi ikinci kez tekrarlandi (ayni tuzak, ayni PR)
+
+SS10.52'nin dersi ("bu repoda bir dosyaya dokunmak, o dosyanin butun
+diff-based lint/tip borcunu ustlenmek demektir") bu PR'da bizzat
+tekrar yasandi: redis duzeltmesi push edilince `Code Quality (mypy)`
+dustu, `backend-test` + `frontend-test` yine `needs: quality`
+zincirinde SKIP oldu.
+
+Hata yine EKLENEN satirlarda degildi, dosyanin mevcut borcuydu:
+
+    test_password_reset_codes.py:122: error:
+      Name "dump" already defined on line 110  [no-redef]
+
+`store_and_dump` fixture'inin iki dali (memory / redis) ic fonksiyonu
+ayni isimle (`dump`) tanimliyordu. Dallar birbirini disliyor olsa da
+mypy ayni kapsamda iki tanim goruyor. Isimler `dump_bellek` /
+`dump_redis` olarak ayrildi -- davranis aynidir, ustelik hangi dalin
+okundugu artik isimden belli.
+
+Bu turda ders uygulandi: push ONCESI mypy yerelde CI bayraklariyla
+kosuldu (`--follow-imports=skip --python-version 3.11`) -> EXITCODE 0.
+
+### Yan not -- yerel ruff CI'dan 9 minor surum yeni (dokunulmadi)
+
+`ruff format --check` yerelde 4 fark gosterdi ama hicbiri bu PR'in
+dokundugu satirlarda degil (271/293/305/352 -- `assert (...)` parantez
+stili). Sebep olculdu:
+
+    yerel ruff                    : 0.16.6
+    .pre-commit-config.yaml pini  : v0.7.1
+
+`assert` mesajlarinin parantezlenmesi ruff'in sonraki surumlerinde
+degisti. CI'nin 0.7.1'i mevcut formati DOGRU buluyor (bu PR'da
+`Code Quality (ruff)` PASS). Yerel 0.16.6 ile reformat etmek CI'i ters
+yonden kirabilirdi, bu yuzden BILEREK dokunulmadi. SS10.43'teki
+"CI ruff/mypy surum-pin suruklenmesi" temasinin devami.
