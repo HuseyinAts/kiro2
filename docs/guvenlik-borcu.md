@@ -5245,3 +5245,169 @@ hatanin kaynagi DEGIL, o yuzden degistirilmedi:
 
 Ikisinin de butcesi olculen 27-30s ihtiyacin iki kati ve hicbiri sert
 dusmuyor; kanit olmadan genisletmek "iddia" olurdu.
+
+
+## §10.52 -- master'in CI'i 10/10 kirmizi: doc-only PR'larin gizledigi borc + video validator testinin api_key guard'i (2026-09-06)
+
+### Nasil ortaya cikti
+
+SS10.51'in PR'i (#179) kampanyada `.github/workflows/` altina dokunan
+ILK PR oldu. Onceki uc PR (#176/#177/#178) yalnizca `docs/` degistirdigi
+icin `ci.yml` hic tetiklenmemisti. Workflow dosyasina dokununca `ci.yml`
+kostu ve daha once hic gorunmemis uc kirmizi ortaya cikti: Backend Tests
+(Python 3.11), Frontend Tests, CI Summary.
+
+Ilk refleks "benim PR'im mi kirdi" olurdu; olculdu:
+
+    gh run list --workflow ci.yml --branch master --limit 10
+    -> 10/10 kosum "failure" (en eskisi 2026-09-02)
+
+    master'daki en son ci.yml kosumunun dusen is'leri:
+    Frontend Tests | Backend Tests (Python 3.11) | CI Summary
+
+Yani ucu de PR #179'un DEGIL, en az 4 gundur master'da duran ve
+doc-only PR'lar `ci.yml`'i tetiklemedigi icin kimsenin gormedigi bir
+borc. Kampanyanin "yesil ya da yalnizca onceden-var-olan borc kirmizi"
+kuralina gore #179 merge edildi.
+
+### Sebep 1 -- Backend Tests: tek bir test, deterministik olarak dusuyor
+
+master'in son 5 ci.yml kosumunda dusen testler tek tek cekildi:
+
+    4 kosumun 4'unde de ayni tek test:
+    tests/unit/test_video_quality_validator.py::
+      TestVideoQualityValidator::test_accessible_video_public
+    (5. kosum henuz bitmemisti -- "gecti" degil, in-progress)
+
+Flaky degil, deterministik. Kok neden `services/video_quality_validator.py`:
+
+    async def validate_video_accessibility(self, video_id):
+        if not self.api_key:            # <-- guard, mock'tan ONCE
+            return VideoAccessibilityResult(is_accessible=False, ...)
+        ...
+        video_data = await self._make_api_request("videos", params)
+
+`api_key` = `os.getenv("YOUTUBE_API_KEY", "")`. Test ise yalnizca
+`_make_api_request`'i patch'liyor, `api_key`'i DEGIL. Yerelde
+`tests/conftest.py:54` `load_dotenv(test_env_path)` cagirdigi icin
+anahtar `.env`'den doluyor ve test geciyor; CI'da bu is'e secret
+gecirilmedigi icin BOS kaliyor ve guard erken donuyor.
+
+Olcum (servis izole edilip mock'a sayac takilarak):
+
+    api_key DOLU -> mock 1 kez cagrildi, is_accessible=True   (test gecer)
+    api_key BOS  -> mock 0 kez cagrildi, is_accessible=False,
+                    error='YouTube API key not configured'    (CI hatasi birebir)
+
+Bunun asil onemi tek bir kirmizidan buyuk: **api_key bosken mock'lanan
+katman hic calismadigi icin, bu dosyadaki testler CI'da mock'ladiklari
+mantigi DOGRULAMIYORDU**. Pozitif testler duser, negatif testler
+(`is_accessible=False` bekleyenler) ise dogru cevabi YANLIS sebeple
+alip yesil kalir. Faz 1'in ("test gate'leri gercekten test etsin")
+ayni deseni, farkli dosyada.
+
+### Duzeltme
+
+`tests/unit/test_video_quality_validator.py` fixture'i, servisin
+`api_key`'ini sabit bir test yer tutucusuyla dolduruyor -- boylece
+guard gecilir ve testler ortamdan (`.env` / CI secret) bagimsiz olarak
+hep ayni mantigi dogrular. Gercek bir anahtar degildir ve depoya gercek
+anahtar girilmemistir. "API key yok" senaryosunu test eden
+`test_accessible_video_no_api_key` zaten kendi icinde `api_key = ""`
+yaparak fixture'i eziyor, dolayisiyla o senaryo korunuyor.
+
+Yerel dogrulama: fixture degeri ile mock 1 kez cagriliyor
+(`is_accessible=True`), eski bos durumda 0 kez; tam dosya 41/41 PASS,
+regresyon yok.
+
+### Sebep 2 -- Frontend Tests: kanon-lint (BU PR'DA DOKUNULMADI)
+
+    kanon-lint: 44 ihlal, 18 uyari (frontend/src/kiro)
+    adim: node design/scripts/kanon-lint.mjs frontend/src/kiro
+
+Bu, zaten bilinen ve Huseyin'in karar alanina birakilmis olan
+kanon-lint borcu (44 ihlal). Tasarim kanonu ihlalleri urun/tasarim
+karari gerektiriyor, tek tek incelenmeden toplu "duzeltme" yapmak
+dogru olmaz -- bu yuzden bu PR'in kapsami disinda birakildi.
+`CI Summary` de bu ikisinin turevi oldugundan ayrica ele alinmadi.
+
+### Kalan
+
+Backend Tests bu PR ile yesillenmeli. Frontend Tests (kanon-lint 44
+ihlal) ve dolayisiyla CI Summary, Huseyin'in karari gelene kadar
+kirmizi kalmaya devam edecek -- master CI'inin tam yesillenmesi o
+karara bagli.
+
+### Ek bulgu -- diff-based mypy, dosyaya dokunani legacy borcun sahibi yapiyor
+
+Bu PR'in ilk kosumunda `Code Quality (mypy)` dustu ve `backend-test` +
+`frontend-test` (`needs: quality`) SKIP oldu; `CI Summary` de 3 saniyede
+kirmizi verdi. Yani "test duzeltmesi" PR'i, testleri hic calistiramadan
+kapandi.
+
+Sebep, `ci.yml`'in bilincli tasarimi: mypy yalnizca DEGISEN dosyalarda
+kosuyor ("legacy debt grandfathered"). Dosyaya dokunuldugu anda o
+dosyanin TAMAMI kontrole giriyor -- ve `test_video_quality_validator.py`
+icinde onceden duran iki tip borcu ortaya cikti:
+
+    :196 error: Need type annotation for "mock_response"  [var-annotated]
+    :437 error: Need type annotation for "metadata"       [var-annotated]
+
+Ikisi de bu PR'in EKLEDIGI satirlar degil; ikisi de bos literal
+(`{"items": []}` ve `{}`) oldugu icin mypy tip cikaramiyor. `dict[str,
+Any]` anotasyonu eklendi (+ `from typing import Any`).
+
+Pratik ders: bu repoda bir dosyaya dokunmak, o dosyanin butun diff-based
+lint/tip borcunu ustlenmek demek. Kucuk bir test duzeltmesinin bile
+"once dosyanin mevcut mypy/ruff borcunu temizle" adimi var.
+
+Yerel dogrulama notu: CI Python 3.11 + `.venv` kullaniyor; bu makinedeki
+python 3.13 ve `.venv`'de mypy kurulu degil, o yuzden ham `mypy` cagrisi
+numpy stub'inda patliyor (ortam farki, kod hatasi degil). Dosyanin kendi
+borcu `--follow-imports=skip --python-version 3.11` ile izole olculdu:
+EXITCODE=0, temiz.
+
+### Ikinci kat: Backend Tests'i asil dusuren sey coverage esigi
+
+Duzeltme sonrasi CI kosumu (PR #180) sunu gosterdi: `Code Quality (mypy)`
+PASS, `backend-test` artik SKIP degil GERCEKTEN kosuyor, ve
+`test_video_quality_validator.py`'nin 41 testinin TAMAMI CI'da PASSED.
+Yani SS10.52 duzeltmesi hedefini tutturdu.
+
+Ama job yine de kirmizi -- cunku dusen sey test DEGIL:
+
+    1866 passed, 358 skipped, 103 warnings, 1 error
+    TOTAL  148366  107895  34898  194  22.42%
+    FAIL Required test coverage of 60% not reached. Total coverage: 22.42%
+
+Yani `Run Tests with Coverage` adimi coverage kapisindan dusuyor.
+master'da da ayni (son 3 kosum olculdu):
+
+    run=34024632528 -> 60% esik / 22.27% gercek
+    run=34008279600 -> 60% esik / 22.27% gercek
+    run=33964141786 -> 60% esik / 22.27% gercek
+
+Bu, SS10.52 duzeltmesinin ETKISINI de olculebilir kiliyor: coverage
+22.27% -> 22.42% (+0.15 puan). Artis tam olarak beklenen sebepten --
+daha once `api_key` guard'inda erken donen testler artik servisin gercek
+kod yollarini calistiriyor. Yani "testler yanlis sebeple yesildi"
+teshisi, kapsama sayisinda da dogrulandi.
+
+**Karar siniri:** 148K satirlik kod tabaninda %22 -> %60 farkini kapatmak
+tek bir PR'in isi degil; ya esik gercekci bir seviyeye cekilecek (ve
+kademeli yukseltilecek) ya da uzun soluklu bir test yazma plani gerekecek.
+Bu bir urun/muhendislik onceligi karari -- Huseyin'e birakiliyor.
+
+### Yan bulgu: redis teardown hatasi (ayri, kucuk borc)
+
+Ayni kosumdaki tek "error" testin kendisinden degil teardown'dan geliyor:
+
+    ERROR at teardown of test_issued_code_is_six_digits[redis]
+    tests/unit/test_password_reset_codes.py:76: in store
+        await client.aclose()
+    E   AttributeError: 'Redis' object has no attribute 'aclose'
+
+`aclose()` yeni redis-py surumlerinde var; ortamdaki surumde yok (eski
+API `close()`). Test PASS ediyor, yalnizca teardown patliyor. Kucuk ve
+izole bir uyumsuzluk -- bu PR'in kapsami disinda birakildi, kendi
+turunu hak ediyor.
