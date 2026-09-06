@@ -6044,3 +6044,42 @@ surum suruklenmesinin bir belirtisiydi.
 Dogrulama: ruff "All checks passed", golden-flows.yml YAML parse OK ve
 kurulum satirlari artik `pip install -r requirements.txt` +
 `pip install httpx pytest`, depoda kalan `event_loop` override sayisi 0.
+
+### (B)'nin zinciri: pytest pini de gerceklikten kopmustu
+
+Pin 1.3.0'a cekilince CI kurulum asamasinda patladi:
+
+    ERROR: Cannot install -r requirements.txt (line 33) and pytest==7.4.3
+    because these package versions have conflicting dependencies.
+    ERROR: ResolutionImpossible
+
+`pytest-asyncio 1.3.0` `pytest>=8.2` istiyor, requirements ise
+`pytest==7.4.3` pinliyordu. Yani pytest pini de uygulanmiyordu -- ayni
+`golden-flows.yml` satiri (`pip install ... pytest ...`) onu da pinsiz
+kurup eziyordu.
+
+Olculdu -- bu makinede kurulu ve **tum suite'in gectigi** surumler:
+
+    pytest          8.4.2   (pin 7.4.3 diyordu)
+    pytest-asyncio  1.3.0   (pin 0.21.1 diyordu)
+    pytest-cov      7.0.0   (pin 4.1.0 diyordu)
+    pytest-xdist    3.8.0   (pin dogru)
+    pytest-timeout  2.4.0   (pin dogru)
+
+Uc pin gerceklikten kopmus, ikisi dogruymus. Kopuk olanlar gercege
+cekildi (pytest 8.4.2, pytest-cov 7.0.0); `pytest-mock` ve
+`pytest-rerunfailures` bu makinede KURULU OLMADIGI icin dokunulmadi --
+olculemeyen sey degistirilmiyor.
+
+`golden-flows.yml`'deki kurulum artik hicbir surumu ezmiyor:
+
+    pip install -r requirements.txt
+    pip install httpx
+
+Dogrulama: `pip install --dry-run -r requirements.txt` artik
+ResolutionImpossible vermiyor, cozum basarili.
+
+**Ders:** bu depoda "pin" ile "gercekte kurulu" arasindaki kopukluk tek
+bir pakete ozgu degildi; bir workflow satiri uc pini birden sessizce
+eziyordu. SS10.43 (ruff/mypy), SS10.54 (redis) ve SS10.56 (pytest-asyncio)
+hep ayni kokten besleniyormus.

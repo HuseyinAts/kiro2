@@ -83,7 +83,7 @@ jobs:
           # requirements.txt'teki pini SESSIZCE eziyordu -- workflow'lar
           # farkli surumlerle kosuyordu. Pin tek kaynaktan gelsin diye
           # buradan cikarildi (requirements.txt zaten kuruluyor).
-          pip install httpx pytest
+          pip install httpx
 
       - name: AST lint — Pattern A/B dependency traps (HIGH only)
         working-directory: backend
