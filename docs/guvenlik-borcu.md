@@ -6464,3 +6464,95 @@ Not: `emergency_stop_guard.py:174` `signal.SIGKILL` mypy hatasi YALNIZ
 Windows'ta cikiyor (CI Linux'ta SIGKILL var); bilincli olarak
 dokunulmadi -- yerel bir aletin urettigi gurultuyu urun kodunda
 "duzeltmek" yanlis olurdu.
+
+
+## §10.61 -- Test redis'i hicbir seyin dinlemedigi porta bakiyordu: 6380 -> 6379 (2026-09-07)
+
+### Bulgu
+
+`backend/conftest.py:25` test kosumunda REDIS_URL'i modul duzeyinde
+set ediyordu:
+
+    os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL",
+                                        "redis://localhost:6380/1")
+
+6380'de **hicbir ortamda** bir sey dinlemiyor:
+
+  * Bu makine: `Get-NetTCPConnection -State Listen` -> yalniz `127.0.0.1:6379`
+    (redis calisiyor; keyspace db0=99, db1=8, db15=3 anahtar).
+  * CI: `ci.yml` redis servisini `6379:6379` ile aciyor ve kendi olusturdugu
+    `.env` de `REDIS_URL=redis://localhost:6379/0` diyor.
+
+Yani varsayilan, iki ortamda da BOS bir porta isaret ediyordu; "redis yok"
+sessiz varsayilan haline gelmisti.
+
+### 6379 tahmin degil, deponun kendi konvansiyonu
+
+    .github/workflows/.archive/backend-tests.yml:87
+        TEST_REDIS_URL=redis://localhost:6379/1
+    backend/scripts/mutation_check_password_reset.py:92
+        TEST_REDIS_URL=redis://localhost:6379/15
+
+Arsivlenmis workflow bu degiskeni VERIYORDU. Yeni `ci.yml`e tasinmamis --
+yani 6380 varsayilani, workflow gocu sirasinda sessizce yururluge girmis
+bir REGRESYON. Kimse fark etmemis cunku belirtisi "redis hatasi" gibi
+gorunmuyor.
+
+### Olculen bedel
+
+DOGRUDAN: CI run 34062766793'te 6 test `redis.exceptions.ConnectionError:
+Error 111 connecting to localhost:6380. Connection refused.` ile dusuyor
+(`tests/property/test_mfa.py`).
+
+DOLAYLI (daha buyuk, ve zaten kayitli): `.claude/lessons/ders_kaydi.yaml:915`
+(S230) su dersi yazmis -- hiz siniri deposu `settings.redis_url`e IMPORT
+ANINDA baglaniyor; redis yoksa `@limiter.limit` tasiyan HER uc testi, istek
+isleniciye ULASMADAN ham `ConnectionError` yuzunden 500 aliyor ve bu "urun
+bozuk" diye okunuyor. O ders "bu makinede" diye yaziliyordu; olcum gosterdi
+ki ayni sey CI'da da gecerliydi.
+
+### Duzeltme (iki parca, ikisi de gerekli)
+
+1. `backend/conftest.py`: varsayilan port 6379. Bu, yerel kosumu da
+   duzeltir -- CI'a ozel bir yama degil.
+2. `ci.yml` backend-test job'una `TEST_REDIS_URL: redis://localhost:6379/1`
+   (arsivlenen workflow'daki satirin geri getirilmesi). conftest REDIS_URL'i
+   `.env` okunmadan ONCE set ettigi icin, pytest'e redis'i gostermenin tek
+   yolu gercek bir ortam degiskeni; ayrica varsayilan yeniden kayarsa bu
+   satir CI'i korur.
+
+db indeksi (1) BILEREK degistirilmedi: ayirici olan port; ayrica `flushdb`
+cagiran test yardimcilari yalniz SECILI db'yi temizler ve gelistirme verisi
+db0'da duruyor.
+
+### Deponun kendi bekcisi hatami yakaladi
+
+Ilk denemede `TEST_REDIS_URL`i job'a AYRI bir `env:` blogu olarak ekledim.
+`python -c "yaml.safe_load(...)"` bunu "YAML OK" diye onayladi -- cunku
+safe_load mukerrer anahtari sessizce kabul edip sonuncuyu aliyor. Ama
+`backend/tests/unit/test_workflow_yaml.py` mukerrer anahtari REDDEDIYOR:
+
+    Failed: ci.yml AYRISTIRILAMIYOR -- GitHub bu dosyayi okuyamaz, is
+    calistirmadan 'failure' uretir: tekrarli anahtar: 'env'
+
+Job'da zaten bir `env:` blogu vardi (`UV_SYSTEM_PYTHON`). Degisken oraya
+tasindi. **Ders:** `safe_load` gecmesi "GitHub bu dosyayi okur" demek
+DEGIL; bu bekci tam da o farki olcuyor ve bu turda isini yapti.
+
+### Regresyon kontrolu
+
+Redis artik gercekten erisilebilir oldugu icin, "redis yok" dalinda gecen
+testlerin davranisi degisebilirdi. Olculdu:
+
+    pytest tests/property/test_mfa.py                       -> 17 passed
+    pytest test_password_reset_codes + test_elk_properties  -> 65 passed
+    ayni ucu, 8 xdist worker ile paralel                    -> 78 passed
+    tests/unit + tests/fast + tests/property (paralel)      -> 22 failed
+
+Son satirdaki 22'nin tamami TEK BASINA kosuldugunda geciyor; yani bunlar
+bu turda dokunulan seyle degil, zaten bilinen modul-arasi test kirlenmesi
+ile ilgili (ayni sinif: `test_app_routes_registered`, `test_auth_functions`,
+`test_admin_api`). Paralel kosumda 8 worker artik db1'i PAYLASIYOR --
+gelecekte anahtar cakismasi gorulurse dogru cozum worker basina ayri db
+indeksi (`PYTEST_XDIST_WORKER` -> db 1..8); bu turda GEREKCE OLMADAN
+yapilmadi, cunku olcum cakisma gostermedi.

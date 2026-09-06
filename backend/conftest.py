@@ -22,7 +22,35 @@ os.environ["DATABASE_URL"] = os.getenv(
     "TEST_DATABASE_URL",
     "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true",
 )
-os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL", "redis://localhost:6380/1")
+# Varsayilan port 6380 -> 6379 (7 Eyl 2026).
+#
+# OLCUM: 6380'de HICBIR ORTAMDA bir sey dinlemiyor.
+#   * Bu makine: `Get-NetTCPConnection -State Listen` -> yalniz 127.0.0.1:6379
+#   * CI: `ci.yml` redis servisini `6379:6379` ile aciyor ve olusturdugu
+#     `.env` de `REDIS_URL=redis://localhost:6379/0` diyor.
+# Yani varsayilan, iki ortamda da BOS bir porta isaret ediyordu; "redis yok"
+# sessiz varsayilan haline gelmisti.
+#
+# Bunun bedeli olculdu: CI run 34062766793'te 6 test dogrudan
+# `redis.exceptions.ConnectionError: Error 111 connecting to localhost:6380`
+# ile dusuyor. Dolayli bedeli daha buyuk ve zaten kayitli:
+# `.claude/lessons/ders_kaydi.yaml:915` (S230) -- hiz siniri deposu
+# `settings.redis_url`e IMPORT ANINDA baglandigi icin, redis yoksa
+# `@limiter.limit` tasiyan HER uc testi istek isleniciye ULASMADAN ham
+# ConnectionError yuzunden 500 aliyor ve bu "urun bozuk" diye okunuyor.
+#
+# 6379 bir tahmin degil, bu deponun KENDI konvansiyonu:
+#   `.github/workflows/.archive/backend-tests.yml:87`
+#       TEST_REDIS_URL=redis://localhost:6379/1
+#   `backend/scripts/mutation_check_password_reset.py:92`
+#       TEST_REDIS_URL=redis://localhost:6379/15
+# Arsivlenen workflow bu degiskeni VERIYORDU; yeni `ci.yml`e tasinmamis --
+# yani 6380 varsayilani o gun sessizce yururluge girmis.
+#
+# db indeksi (1) BILEREK degistirilmedi: ayirici olan port, veritabani
+# degil; ayrica `flushdb` cagiran test yardimcilari yalniz SECILI db'yi
+# temizler ve gelistirme verisi db0'da duruyor.
+os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL", "redis://localhost:6379/1")
 os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"  # noqa: S105  # pragma: allowlist secret
 os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"  # noqa: S105  # pragma: allowlist secret
 os.environ["ALLOWED_ORIGINS"] = '["http://localhost:3000"]'

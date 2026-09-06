@@ -210,8 +210,18 @@ jobs:
     # `needs: quality` zincirinde ilk kez calisip buraya kadar ilerleyince
     # ortaya cikti). Bu job ozelinde override edip uv'nin gercekten .venv'e
     # kurmasini sagliyoruz.
+    #
+    # TEST_REDIS_URL: `backend/conftest.py` REDIS_URL'i modul duzeyinde,
+    # .env okunmadan ONCE set ediyor; pytest'e redis'i gostermenin tek yolu
+    # GERCEK bir ortam degiskeni. Bu satir arsivlenmis workflow'da VARDI
+    # (.github/workflows/.archive/backend-tests.yml:87) ama yeni ci.yml'e
+    # tasinmamis -- o gunden beri testler asagidaki redis servisine DEGIL,
+    # hicbir seyin dinlemedigi 6380'e gidiyordu (docs/guvenlik-borcu.md
+    # SS10.61). conftest varsayilani da 6379'a cekildi; bu satir niyeti ACIK
+    # yapiyor ve varsayilan yeniden kayarsa CI'i korur.
     env:
       UV_SYSTEM_PYTHON: "0"
+      TEST_REDIS_URL: redis://localhost:6379/1
     strategy:
       fail-fast: false
       matrix:
