@@ -5366,3 +5366,48 @@ python 3.13 ve `.venv`'de mypy kurulu degil, o yuzden ham `mypy` cagrisi
 numpy stub'inda patliyor (ortam farki, kod hatasi degil). Dosyanin kendi
 borcu `--follow-imports=skip --python-version 3.11` ile izole olculdu:
 EXITCODE=0, temiz.
+
+### Ikinci kat: Backend Tests'i asil dusuren sey coverage esigi
+
+Duzeltme sonrasi CI kosumu (PR #180) sunu gosterdi: `Code Quality (mypy)`
+PASS, `backend-test` artik SKIP degil GERCEKTEN kosuyor, ve
+`test_video_quality_validator.py`'nin 41 testinin TAMAMI CI'da PASSED.
+Yani SS10.52 duzeltmesi hedefini tutturdu.
+
+Ama job yine de kirmizi -- cunku dusen sey test DEGIL:
+
+    1866 passed, 358 skipped, 103 warnings, 1 error
+    TOTAL  148366  107895  34898  194  22.42%
+    FAIL Required test coverage of 60% not reached. Total coverage: 22.42%
+
+Yani `Run Tests with Coverage` adimi coverage kapisindan dusuyor.
+master'da da ayni (son 3 kosum olculdu):
+
+    run=34024632528 -> 60% esik / 22.27% gercek
+    run=34008279600 -> 60% esik / 22.27% gercek
+    run=33964141786 -> 60% esik / 22.27% gercek
+
+Bu, SS10.52 duzeltmesinin ETKISINI de olculebilir kiliyor: coverage
+22.27% -> 22.42% (+0.15 puan). Artis tam olarak beklenen sebepten --
+daha once `api_key` guard'inda erken donen testler artik servisin gercek
+kod yollarini calistiriyor. Yani "testler yanlis sebeple yesildi"
+teshisi, kapsama sayisinda da dogrulandi.
+
+**Karar siniri:** 148K satirlik kod tabaninda %22 -> %60 farkini kapatmak
+tek bir PR'in isi degil; ya esik gercekci bir seviyeye cekilecek (ve
+kademeli yukseltilecek) ya da uzun soluklu bir test yazma plani gerekecek.
+Bu bir urun/muhendislik onceligi karari -- Huseyin'e birakiliyor.
+
+### Yan bulgu: redis teardown hatasi (ayri, kucuk borc)
+
+Ayni kosumdaki tek "error" testin kendisinden degil teardown'dan geliyor:
+
+    ERROR at teardown of test_issued_code_is_six_digits[redis]
+    tests/unit/test_password_reset_codes.py:76: in store
+        await client.aclose()
+    E   AttributeError: 'Redis' object has no attribute 'aclose'
+
+`aclose()` yeni redis-py surumlerinde var; ortamdaki surumde yok (eski
+API `close()`). Test PASS ediyor, yalnizca teardown patliyor. Kucuk ve
+izole bir uyumsuzluk -- bu PR'in kapsami disinda birakildi, kendi
+turunu hak ediyor.
