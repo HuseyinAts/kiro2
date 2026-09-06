@@ -5903,3 +5903,48 @@ duruyor -- ayni tuzagi tasiyor, bu PR'in kapsami disinda birakildi;
 (b) `requirements*.txt`'teki `pytest-asyncio==0.21.1` pini gercekle
 uyusmuyor (kurulu 1.3.0) -- pin ya gercege cekilmeli ya da kurulum
 zinciri pini uygulamali. Ikisi de kendi turunu hak ediyor.
+
+### Override kaldirilinca ne oldu + son katman: `str(url)` sifreyi maskeliyordu
+
+`event_loop` override'i kaldirildiktan sonraki CI kosumu teshisi
+dogruladi:
+
+    "Event loop is closed" : YOK (duzeldi)
+    ScopeMismatch          : YOK (korkulan regresyon olmadi)
+    failed                 : 0
+    passed                 : 3510 -> 3959  (+449 test daha kosuyor)
+
+Geriye tek bir `error` kaldi:
+
+    ERROR tests/unit/test_org_members.py::test_add_member_success_claims_user
+    E   asyncpg.exceptions.InvalidPasswordError:
+        password authentication failed for user "postgres"
+
+Ilk bakista "CI'da DB sifresi yanlis" gibi duruyor -- yani altyapi sorunu.
+Degilmis; test kendi DSN'ini uretiyordu:
+
+    url = make_url(raw).set(host="localhost", port=5434, database="kiro2")
+    return str(url).replace("postgresql://", "postgresql+asyncpg://")
+
+SQLAlchemy'de `URL.__str__()` = `render_as_string(hide_password=True)`,
+yani **sifreyi `***` ile maskeler**. Maskelenen dize DSN olarak
+kullanilinca literal `***` sifresiyle baglanmaya calisiliyor. Olculdu:
+
+    str(url)                              -> postgresql://postgres:***@localhost:5434/kiro2
+    url.render_as_string(hide_password=False) -> postgresql://postgres:<gercek-sifre>@localhost:5434/kiro2
+
+Yani hata mesaji ("password authentication failed") birebir dogruydu ama
+sucu yanlis yere -- CI ortamina -- attiriyordu.
+
+Ayni desen repo genelinde arandi (`str(url)` / `make_url`): baska hicbir
+yerde yok, kalan eslesmeler log mesaji ve cache anahtari.
+
+**Duzeltme:** `url.render_as_string(hide_password=False)`. Ayrica
+SQLAlchemy stub'lari bu cagri icin `Any` dondurdugu ve fonksiyon `-> str`
+oldugu icin mypy `no-any-return` veriyordu; acik `dsn: str` annotation'i
+eklendi (CI'i beklemeden yerelde yakalandi).
+
+Dogrulama: mypy EXITCODE 0, ruff "All checks passed", izole DSN uretimi
+sifreyi dogru tasiyor ve maske sizmiyor.
+
+Bu hata da `-x` arkasinda gizliydi -- suite ona hic ulasamiyordu.
