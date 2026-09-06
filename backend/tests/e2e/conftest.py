@@ -10,13 +10,10 @@ setup'ta duser (185 hata). Bu fixture yalniz tests/e2e/ altinda gecerli — zoru
 (ders-zorlayici) test setini ETKILEMEZ.
 """
 
-import asyncio
 
-import pytest
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+# GUNCELLEME (6 Eyl 2026, SS10.56): bu override pytest-asyncio 0.21.1
+# icin yazilmisti (o surum asyncio_default_fixture_loop_scope'u yok
+# sayiyordu). Depo artik 1.3.0'a tasindi; 1.x'te kullanicinin event_loop
+# override etmesi KALDIRILDI ve teardown'daki loop.close() plugin'in hala
+# kullandigi loop'u kapatip sonraki async testleri
+# 'RuntimeError: Event loop is closed' ile dusuruyordu.

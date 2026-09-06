@@ -5984,3 +5984,63 @@ mypy EXITCODE 0.
 **Not:** bu dosya raw SQL INSERT kullandigi icin semaya karsi kirilgan --
 ORM ile yazilsaydi kolon eklendiginde kendiliginden uyumlu kalirdi. Bu
 bir tasarim borcu olarak duruyor; bu turda kapsam disi birakildi.
+
+
+## §10.57 -- Karar (B): test altyapisi pytest-asyncio 1.3.0'a tasindi (2026-09-06)
+
+### Karar
+
+SS10.56'nin sonunda iki secenek Huseyin'e sunuldu: (A) pini gercekten
+0.21.1'e sabitlemek, (B) altyapiyi 1.3.0'a tasimak. **(B) secildi.**
+
+### Neden gerekliydi -- pin hicbir zaman uygulanmiyordu
+
+Depoda `pytest-asyncio==0.21.1` bes dosyada pinliydi, ama gercekte kurulu
+olan 1.3.0'di. Sebep bulundu:
+
+    .github/workflows/golden-flows.yml:82
+    pip install httpx pytest pytest-asyncio        <-- PINSIZ
+
+Bu satir `requirements.txt` kurulduktan SONRA calisip pytest-asyncio'yu
+en son surume yukseltiyordu. Yani workflow'lar birbirinden farkli
+surumlerle kosuyordu ve hicbir yerde "hangi surum" sorusunun tek bir
+cevabi yoktu. `setup_database`'e `loop_scope` eklendiginde Golden Flow'un
+collection'da patlamasi (`gf-results.xml YOK`) bunun dogrudan kanitidir:
+o is'te 1.x parametresini tanimayan bir surum kuruluydu.
+
+### Yapilanlar
+
+1. **Pin gercege cekildi** -- bes dosyada `0.21.1 -> 1.3.0`:
+   `requirements.txt`, `requirements-test.txt`, `requirements.qa.txt`,
+   `requirements.qa.lock.txt`, `requirements.qa.lock.linux.txt`
+2. **Pini ezen satir kaldirildi** -- `golden-flows.yml` artik
+   `pip install httpx pytest` yapiyor; pytest-asyncio yalnizca
+   `requirements.txt`'ten geliyor (tek kaynak).
+3. **Bayat `event_loop` override'lari kaldirildi** -- once
+   `tests/integration/conftest.py`, simdi `tests/e2e/conftest.py`.
+   Depoda artik hicbir `def event_loop` override'i YOK (dogrulandi).
+4. **Session kapsamli async fixture'a acik `loop_scope`** --
+   `tests/conftest.py::setup_database` (1.x'in dogru yolu; legacy
+   `event_loop` fixture'ina bagimlilik biter).
+
+### Yol ustunde: `conftest_postgres.py`'ye dokunma karari geri alindi
+
+Tarama `tests/conftest_postgres.py`'de de iki session-scoped async fixture
+buldu ve onlara da `loop_scope` eklendi. Sonra olculdu: dosyaya repoda
+**sifir referans** var ve pytest yalnizca `conftest.py` ADLI dosyalari
+otomatik yukler -- yani bu dosya hic calismiyor. Dokunmak gereksizdi ve
+dosyanin dort pre-existing ruff borcunu (W293/PLR0917/RUF013/S107) bu PR'a
+tasiyordu. Degisiklik `git checkout` ile geri alindi. (Olu dosya olarak
+durmasi ayri bir temizlik konusu, kapsam disi.)
+
+### mypy notu
+
+`loop_scope` icin once `# type: ignore[call-overload]` eklenmisti (CI
+0.21.x stub'lariyla `call-overload` veriyordu). Pin 1.3.0'a cekilince
+stub'lar parametreyi tanidigi icin ignore GEREKSIZ hale geldi ve yerel
+mypy "unused ignore" vermeye basladi -- kaldirildi. Ignore'un kendisi de
+surum suruklenmesinin bir belirtisiydi.
+
+Dogrulama: ruff "All checks passed", golden-flows.yml YAML parse OK ve
+kurulum satirlari artik `pip install -r requirements.txt` +
+`pip install httpx pytest`, depoda kalan `event_loop` override sayisi 0.
