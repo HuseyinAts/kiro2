@@ -215,14 +215,22 @@ jobs:
 
       - name: Wait for backend
         run: |
-          for i in {1..30}; do
+          # OLCUM (6 Eyl 2026): son 60 kosumun 19'u FAIL, 19/19'unun sebebi
+          # tam olarak bu adim. Basarili kosumlarda backend 27-30s'de
+          # kalkiyor (n=12, ort 28.4s, 12/12'si >=25s, ikisi tam 30s) --
+          # yani eski 30s butcesi 0-3 saniyelik payla geciyordu. Backend
+          # acilista HuggingFace BERT modelleri yukluyor, HF Hub gecikmesi
+          # oynadikca pay eksiye dusuyor. Butce 120s'e cikarildi: dongu
+          # saglikli kosumda yine ~28s'de exit 0 ile cikiyor, yani yesil
+          # kosuma HIC ek maliyet yok; sadece yavas acilisa tahammul var.
+          for i in {1..120}; do
             if curl -sf http://127.0.0.1:8000/health > /dev/null; then
               echo "Backend is up after ${i}s"
               exit 0
             fi
             sleep 1
           done
-          echo "::error::Backend did not come up within 30s"
+          echo "::error::Backend did not come up within 120s"
           tail -100 backend/backend.log || true
           exit 1
 
