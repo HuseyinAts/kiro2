@@ -4836,3 +4836,101 @@ Takip:
     Session.token hashing, kanon-lint 44 ihlali, Dependabot
     merge/triyaj, allow_auto_merge/branch protection) hala Huseyin'i
     bekliyor.
+
+
+## §10.46 -- Dependabot 19 PR: sessiz auto-merge iptali + rebase (2026-09-05)
+
+### Baslangic noktasi
+
+Eski PR #62 backlog plani (stateful-shimmying-papert.md) yeniden kod
+okunarak denetlendi. Faz 0 (docker/worktree temizligi) ve Faz 4 (temiz
+kopya olcum script'i) daha once (ozetlenmemis bir oturumda) TAMAMLANMIS
+bulundu -- kanit: `kiro2_pgv15_repro` konteyneri, `kiro2ci311img` image'i,
+`kiro2_ci_snapshot` worktree'si artik yok; `backend/scripts/
+temiz_kopya_guvenlik_olcumu.py` yazilmis, docstring'i "Faz 4" diye
+adlandiriyor, ampirik dogrulama notu tasiyor (29 Agu 2026). Faz 6 (5
+CodeQL dismiss) SS10.45'te farkli/daha genis kapsamla zaten yapildi.
+Sadece Faz 5 (Dependabot 20 PR triyaji) acikti -- bu SS onun sonucu.
+
+### Bulgular
+
+1. `dependabot-auto-merge.yml` CALISIYOR ve calisti -- son 100 run
+   icinde dependabot/* dallarinda calisan run'larin buyuk cogunlugu
+   success. 2 major bump (marshmallow #43, structlog #46) ve buyuk
+   surum atlamalari (pydantic-core #113, matplotlib #47) 29-31 Agustos
+   2026'da zaten incelenip merge edilmis -- eski plan bunlari hala acik
+   varsayiyordu, bu varsayim eskimis.
+2. Ama acik 19 PR'in HEPSINDE `autoMergeRequest` NULL bulundu --
+   run log'lari gecmiste `gh pr merge --auto --squash`'in basariyla
+   calistigini gosteriyor, ama su an hicbirinde auto-merge aktif degildi.
+   En olasi sebep: bu kampanya boyunca master'a yapilan cok sayida buyuk
+   degisiklik sirasinda bu dallar gecici olarak CONFLICTING durumuna
+   dustu -- GitHub bu durumda auto-merge'i sessizce iptal ediyor.
+3. 19 PR'in eski CI sonuclari (Backend Tests, Frontend Tests, Container
+   Security Scan, Quality Gate, CI Summary, Automatic PR Review dahil)
+   FAIL gosteriyordu -- rebase edilmeden bunun bump'in kendisinden mi
+   yoksa o an henuz duzeltilmemis bilinen sorunlardan (YouTube key
+   eksikligi, psycopg2->psycopg3, ruff/mypy pin surukleme) mi
+   kaynaklandigi ayirt edilemiyordu.
+
+### Karar siniri ve aksiyon
+
+Standing kuralda "Dependabot PR merge/triyaj karari" Huseyin'in rezervi
+-- bu yuzden auto-merge'i ben yeniden acmadim, hicbir PR'i merge
+etmedim. Durum `AskUserQuestion` ile sunuldu; Huseyin "rebase iste,
+rapor et" secti -- bu bir merge/triyaj karari degil, PR'lari
+guncel/olculebilir hale getirme yetkisi. Buna gore 19 PR'in hepsine
+`gh pr comment <n> --body "@dependabot rebase"` calistirildi (19/19
+basarili).
+
+### Sonuc (canli gozlemlendi)
+
+- Dependabot ~1-2 dakika icinde 19 PR'in HEPSINE taze commit pushladi
+  (bazilarinda hedef surum de guncellendi: lucide-react 1.35.0->1.39.0,
+  google-genai 2.20.0->2.22.0).
+- `dependabot-auto-merge.yml` senkronize (synchronize) event'i ile 19
+  PR'in hepsi icin yeniden tetiklendi.
+- 7'si hizla tamamlandi: docker/metadata-action, mermaid,
+  codecov-action, actions/setup-node, lucide-react,
+  actions/download-artifact, actions/setup-python -- HEPSI DOGRU
+  sekilde "major version bump" olarak siniflandirildi (GitHub
+  Actions'in kendi v4->v7 tarzi surumlemesi VE lucide-react/mermaid'in
+  0.x->1.x / 10.x->11.x atlamasi nedeniyle) ve otomasyon PR'a "Major
+  version bump -- requires human review" yorumu birakti, auto-merge'i
+  BILEREK acmadi. Bu, otomasyonun DOGRU calistigi anlamina gelir, hata
+  degil.
+- Kalan 12'si (gercek patch/minor tekil bagimliliklar: ts-api-utils,
+  2x babel-plugin, which-typed-array, string.prototype.trimend, numpy,
+  google-genai, pre-commit + 4 grup guncellemesi: frontend-dev/
+  frontend-build/python-security/python-dev) bu SS yazilirken hala
+  GitHub Actions runner kuyrugunda "queued" durumunda bekliyordu --
+  neden: 19 PR'i ayni anda rebase etmek, PR basina ~25+ check'i
+  (Backend/Frontend Tests, 8 Golden Flow, API Security Testing [~40dk
+  ZAP], CodeQL x2, Container/IaC/SAST/Secret Scanning, Checkov/bandit/
+  mypy/ruff/safety/semgrep vb.) es zamanli tetikledi -- yaklasik 400+
+  es zamanli is, repo'nun runner concurrency limitini asiyor.
+
+Not: 4 grup guncellemesi (frontend-dev/frontend-build/python-security/
+python-dev) fetch-metadata'dan `update-type=null` donduruyor (S179
+takip notu, 2 Eylul 2026'da zaten duzeltilmisti) -- workflow'un kosulu
+bu durumda otomasyonu degil, "could not classify... requires human
+review" yorumunu tetikliyor. Yani bu 4'u -- tek tek dogru patch/minor
+bump'lar olsalar bile -- otomatik merge ADAYI DEGIL, Huseyin'in
+incelemesini bekleyecek.
+
+### Takip
+
+(1) Kalan 12 PR'in nihai sonucu (auto-merge mi acildi, "could not
+    classify" yorumu mu aldi) bu oturumda izlenmedi -- kuyruk uzundu;
+    sonraki oturumda `gh pr list --search 'author:app/dependabot'` ile
+    kontrol edilebilir;
+(2) 7 major-bump + 4 grup-guncelleme (~11 PR) + kalan patch/minor'lardan
+    hala kirmizi cikanlar Huseyin'in inceleme/merge karari bekliyor;
+(3) Eski plan dosyasi (stateful-shimmying-papert.md, PR #62 sonrasi
+    backlog) artik TAMAMEN ele alinmis sayilabilir: Faz 0-4 bu turda
+    kod okunarak zaten-tamamlanmis dogrulandi, Faz 5 bu SS ile ele
+    alindi (rebase tetiklendi, sonuc takibi Huseyin'e birakildi), Faz 6
+    SS10.45'te farkli/daha genis kapsamla zaten yapildi;
+(4) SS10.45'ten devrolan rezerve kararlar (kalan ~2570+ CodeQL alert,
+    SessionRepository/Session.token hashing, kanon-lint 44 ihlali,
+    allow_auto_merge/branch protection) hala Huseyin'i bekliyor.
