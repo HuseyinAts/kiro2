@@ -6556,3 +6556,61 @@ ile ilgili (ayni sinif: `test_app_routes_registered`, `test_auth_functions`,
 gelecekte anahtar cakismasi gorulurse dogru cozum worker basina ayri db
 indeksi (`PYTEST_XDIST_WORKER` -> db 1..8); bu turda GEREKCE OLMADAN
 yapilmadi, cunku olcum cakisma gostermedi.
+
+
+## §10.62 -- 6 ModuleNotFoundError: uc ayri sinif, uc ayri dogru davranis (2026-09-07)
+
+CI'daki `ModuleNotFoundError` ailesi (6 kalem) tek bir sey degil; uc ayri
+duruma ayrildi ve her birine FARKLI davranildi. Hepsini ayni sekilde
+"skip" yapmak kolay olurdu ama bilgi kaybi olurdu.
+
+### 1) Silinen bir modulun IZI -> SKIP + acik karar notu (4 kalem)
+
+`tests/test_import_d_dataset.py::TestSemanticSearchRequest` (4 test)
+`api.question_crud_api.SemanticSearchRequest` modelini ice aktariyor.
+OLCUM: `git ls-files backend/api/question_crud_api.py` -> BOS; ayrica
+`SemanticSearchRequest` baska hicbir yerde tanimli degil (`git grep` ->
+yalniz bu test dosyasi).
+
+Bu, ayni silmenin UCUNCU izi. Ilk ikisi SS10.59'da kayitli:
+  * silinen `/api/v1/questions/download` ucunu frontend HALA cagiriyor
+    (`frontend/src/services/offlineStorageService.ts:112`);
+  * o uca yazilmis 11 sozlesme testi.
+Karar Huseyin'in: modul geri getirilecek mi, yoksa ona bagli akislar mi
+kaldirilacak? Karar verilene kadar sinif SKIP -- silinmedi, cunku modul
+geri gelirse olctugu sey hala gecerli. Skip gerekcesi bulguyu adiyla
+anlatiyor, boylece kapi yesillenirken bulgu kaybolmuyor.
+
+### 2) Hic var olmamis bir modul -> SILME (1 kalem)
+
+`tests/slow/test_comprehensive_api_coverage.py::
+test_content_management_api_comprehensive` `api.content_management`
+modulunu ice aktariyordu. OLCUM: modul depoda HIC yok (`git ls-files` bos),
+hicbir router ona referans vermiyor ve frontend'de karsiligi yok.
+
+Burada skip YANLIS olurdu: skip "bir gun geri gelebilir" der. Geri gelecek
+bir sey yok -- test var olmayan bir urun parcasini olcuyordu. Silindi;
+yerine neden silindigini ve (1) ile farkini anlatan bir not birakildi.
+
+### 3) Bildirilmemis opsiyonel bagimlilik -> IMPORTORSKIP (1 kalem)
+
+`tests/fast/test_osym_pdf_pipeline.py::test_real_pdf_pipeline` `fitz`
+(PyMuPDF) kullaniyor. OLCUM: PyMuPDF bu deponun HICBIR requirements
+dosyasinda yok (requirements.txt / requirements-test.txt /
+requirements.qa.txt -> 0 eslesme). Bu makinede kurulu (test gercekten
+kosuyor), CI'da degil (test dusuyordu).
+
+Yani eksik bir ORTAM on kosulu urun kusuru gibi raporlaniyordu.
+`pytest.importorskip("fitz")`: PyMuPDF kurulu oldugu her yerde test
+GERCEKTEN kosar, kurulu olmadigi yerde kapiyi kirmizi tutmaz. PyMuPDF'in
+bagimlilik listesine eklenmesi ayri bir urun karari -- test onu kendi
+basina veremez.
+
+### Yan borc
+
+Bu uc dosyaya dokunmak yine diff-bazli ruff kapisini acti (SS10.43,
+SS10.52, SS10.58, SS10.60'tan sonra besinci kayit): B007 (kullanilmayan
+dongu degiskeni -> `_name`), E402 (sys.path ayarindan SONRA gelmesi
+GEREKEN import -> gerekceli noqa), S105 (test JWT sabiti -> gerekceli
+noqa + allowlist pragma), PLR0912 (dal sayisi -> gerekceli noqa).
+Hicbiri davranis degistirmiyor.
