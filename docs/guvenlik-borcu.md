@@ -5411,3 +5411,88 @@ Ayni kosumdaki tek "error" testin kendisinden degil teardown'dan geliyor:
 API `close()`). Test PASS ediyor, yalnizca teardown patliyor. Kucuk ve
 izole bir uyumsuzluk -- bu PR'in kapsami disinda birakildi, kendi
 turunu hak ediyor.
+
+
+## §10.53 -- Coverage esigi gercekci tabana cekildi: 60 -> 20 (2026-09-06)
+
+### Karar
+
+SS10.52'de olculen tablo Huseyin'e sunuldu ve karari alindi: "esik
+gercekci seviyeye cekilsin, ileride kademeli yukseltecegiz". Bu bolum
+uygulamayi ve gerekcesini kaydediyor.
+
+### Neden esik dusuruluyor (kapiyi gevsetmek DEGIL)
+
+Olculen durum:
+
+    esik      : 60%
+    gercek    : 22.27% (master, son 3 kosum) / 22.42% (SS10.52 sonrasi)
+    sonuc     : Backend Tests master'da 10/10 kosumda kirmizi
+
+Buradaki asil sorun sayinin dusuklugu degil, kapinin ISLEVSIZ olmasi:
+**surekli kirmizi bir kapi hicbir regresyonu yakalayamaz**, cunku zaten
+hep kirmizi. Kimse "bu kosumda kapsama dustu mu" sorusunu soramaz.
+60'lik esik, gercekle arasinda ~38 puan fark oldugu icin bir kalite
+kapisi degil, sabit bir gurultu kaynagiydi.
+
+20 bir HEDEF degil, olculen tabanin hemen altindaki bir TABAN:
+bugunku durum yesil gecer, ama gercek bir dusus (>2 puan kapsama kaybi,
+148K satirda ~3000 satir) kirmizi verir. Yani kapi ilk kez ISLEV
+kazaniyor.
+
+### Degisiklik (iki yer, bilerek ayni)
+
+1. `.github/workflows/ci.yml` -- `--cov-fail-under=60` -> `20`
+   (pratikte CI'i belirleyen deger budur, komut satiri baskin)
+2. `backend/.coveragerc` -- `fail_under = 60.0` -> `20.0`
+   (yerelde `pytest --cov` calistiran ayni kapiyi gorsun diye)
+
+Ikisine de olcumu ve "bu bir taban, hedef degil" notunu iceren yorum
+eklendi.
+
+### Kademeli yukseltme plani (oneri, karar Huseyin'in)
+
+Ratchet deseni: kapsama her anlamli artista esik de bir ust basamaga
+cekilir, boylece kazanilan yer geri verilmez.
+
+    bugun      20  (taban -- olculen 22.4'un altinda)
+    1. adim    25  (yeni/dokunulan kodda test yazildikca)
+    2. adim    35
+    3. adim    50
+    hedef      60  (orijinal niyet)
+
+Pratik kural onerisi: bir modulun testleri yazildikca esik +5 puan
+yukseltilir ve bir daha DUSURULMEZ.
+
+### Ayri bulgu -- `--cov=.` ile `.coveragerc source` celisiyor (KARAR SIZDE)
+
+`backend/.coveragerc` dar bir kapsam tanimliyor:
+
+    source = api,services,core,algorithms,analytics,agents
+
+Ama CI `cd backend && pytest --cov=. ...` calistiriyor; `--cov=.`
+komut satirindan geldigi icin bu `source` ayarini EZIYOR ve backend'in
+tamami (148.366 satir) sayiya giriyor -- hic test edilmesi beklenmeyen
+yardimci/scratch kod dahil. `.coveragerc`'nin omit listesi bir kismini
+eliyor ama kapsam yine de cok daha genis.
+
+Yani %22.42, "is mantiginin %22'si test edilmis" demek DEGIL; daha
+dusuk gorunen bir sayi. `.coveragerc`'nin dar `source` listesi
+kullanilsaydi oran buyuk olasilikla belirgin sekilde yuksek cikardi.
+
+Bu bir OLCUM POLITIKASI karari (neyi kapsama sayiyoruz?), bu yuzden
+degistirilmedi ve Huseyin'e birakildi. Karar verilirse esik de o yeni
+tabana gore yeniden ayarlanmali -- iki degisiklik birlikte yapilmali.
+
+### Yol ustunde yakalanan kendi hatam
+
+Ilk denemede yorumlari `pytest ... \` satir-devami zincirinin ORTASINA
+koydum. Bash'te bu komutu bozar (yorum satiri argumanin yerine gecer).
+`bash -n` ile sozdizimi kontrolu yapinca gorunur oldu; yorumlar komutun
+ustune tasindi ve tekrar dogrulandi:
+
+    ci.yml YAML parse            : OK (6 is)
+    bash -n (adimin govdesi)     : exit 0
+    zincir ici yorum taramasi    : YOK
+    --cov-fail-under=20          : var, eski 60 kalmamis
+    .coveragerc fail_under       : 20.0
