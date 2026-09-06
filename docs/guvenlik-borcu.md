@@ -4934,3 +4934,63 @@ incelemesini bekleyecek.
 (4) SS10.45'ten devrolan rezerve kararlar (kalan ~2570+ CodeQL alert,
     SessionRepository/Session.token hashing, kanon-lint 44 ihlali,
     allow_auto_merge/branch protection) hala Huseyin'i bekliyor.
+
+
+## §10.47 -- SS10.46 duzeltmesi: gercek kok neden `allow_auto_merge=false` (2026-09-05)
+
+SS10.46'daki hipotez ("dallar gecici CONFLICTING durumuna dustu, GitHub
+auto-merge'i sessizce iptal etti") YANLIS/EKSIK cikti -- rebase sonrasi
+CI tamamlaninca sert kanit bulundu, hipotez asagidaki gibi duzeltiliyor.
+
+### Gercek kok neden (kanit: workflow run log'u + repo API'si)
+
+19 PR'in 4'u (ts-api-utils #57, babel-plugin-transform-regexp-modifiers
+#51, string.prototype.trimend #50, numpy #41) rebase sonrasi gercekten
+otomatik merge oldu -- otomasyon kismen calisiyor. Ama 3 tanesinde
+(#55 babel-plugin-transform-block-scoped-functions, #54
+which-typed-array, #108 google-genai) `dependabot` check'i FAIL
+verdi. `gh run view --log-failed` ile gercek hata bulundu:
+
+    Run gh pr merge --auto --squash "$PR_URL"
+    GraphQL: Auto merge is not allowed for this repository
+    (enablePullRequestAutoMerge)
+    ##[error]Process completed with exit code 1.
+
+Dogrulama: `gh api repos/HuseyinAts/kiro2 --jq '{allow_auto_merge}'`
+-> `{"allow_auto_merge":false}`. Yani repo'nun "Allow auto-merge"
+ayari (Settings -> General -> Pull Requests) KAPALI.
+
+### Bunun anlami
+
+`dependabot-auto-merge.yml` dogru yazilmis ve dogru calisiyor --
+patch/minor siniflandirmasi dogru, major/grup ayrimi dogru (SS10.46'da
+zaten dogrulandi). Ama `gh pr merge --auto` cagrisi bu repo ayari
+kapali oldugu icin SUREKLI HATA veriyor -- bu bir kod hatasi degil, tek bir
+repo-level ayar eksikligi. SS10.46'daki 19 PR'in autoMergeRequest=null
+olmasinin GERCEK nedeni muhtemelen hep buydu (rebase/degisiklik
+gecmisinde CONFLICTING durumu degil) -- gecmis "success" run'lari
+(lucide-react, mermaid, setup-python, vb.) hep MAJOR bump'lardi, yani
+hic `gh pr merge --auto`'ya ulasmadilar (sadece yorum atip basariyla
+bitiyorlar) -- bu yuzden gecmiste sorunu maskeleyen bir "success"
+gorunumu vardi.
+
+### Karar siniri
+
+`allow_auto_merge` GitHub repo-level ayari -- standing kuralda
+Huseyin'in rezervi ("GitHub repo-level system/security settings
+degisikligi"). Ben bunu degistirmedim/degistiremem.
+
+### Takip
+
+(1) TEK AKSIYON: Huseyin `Settings -> General -> Pull Requests ->
+    Allow auto-merge` kutucugunu isaretlerse, `dependabot-auto-merge.yml`
+    zaten dogru yazilmis oldugu icin BASKA HICBIR DEGISIKLIK GEREKMEDEN
+    tum gelecekteki patch/minor Dependabot PR'lari gercekten otomatik
+    merge olmaya baslar (major/grup guncellemeleri yine yorum alip
+    insan incelemesine dusmeye devam eder, bu dogru davranis);
+(2) Bu ayar acilana kadar, kalan 15 acik PR'dan (7 major + 4 grup +
+    3 "dependabot check fail" -- #55, #54, #108) hicbiri kendiliginden
+    merge olmayacak -- Huseyin'in inceleme/merge karari bekliyor;
+(3) SS10.46'nin Takip listesindeki diger rezerve kararlar (kalan
+    CodeQL, SessionRepository/Session.token hashing, kanon-lint 44
+    ihlali) hala gecerli, degismedi.
