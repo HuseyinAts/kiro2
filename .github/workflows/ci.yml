@@ -315,6 +315,20 @@ jobs:
           # yesil gecer ama GERCEK bir dusus (>2 puan kapsama kaybi)
           # yakalanir. Bu bir hedef DEGIL, bir taban -- kademeli olarak
           # yukseltilecek (bkz. docs/guvenlik-borcu.md SS10.53).
+          #
+          # `-x` KALDIRILDI (6 Eyl 2026). OLCUM: bu bayrakla kosum ILK
+          # basarisizlikta duruyordu, yani her CI turu geriye kalan
+          # basarisizliklardan YALNIZ BIRINI gosteriyordu. Ayni PR'da art
+          # arda alinan olcumler bunu sayiyla gosterdi -- her duzeltme
+          # durma noktasini bir sonrakine tasidi:
+          #   1866 -> 3429 -> 3511 -> 3959 -> 5551 -> 5877 -> 6009 passed
+          # Yani ~4100 test hicbir zaman KOSMAMISTI ve "yesil" gorunen
+          # turlar aslinda kesilmis turlardi. Ayrica ayni kok nedenin
+          # birden cok ornegi birbirinin arkasinda saklandigi icin
+          # deterministik bir sorun "flaky" gibi okunuyordu.
+          # Bedeli olculdu: bayraksiz kosum ~4 dk (235s) -- tam suite zaten
+          # sonuna kadar gidiyor, kazanc yok; bilgi kaybi ise buyuk.
+          # Detay: docs/guvenlik-borcu.md SS10.55.
           pytest tests/ \
             --tb=short \
             --cov=. \
@@ -323,8 +337,7 @@ jobs:
             --cov-report=html:htmlcov \
             --cov-fail-under=20 \
             --junit-xml=pytest-report.xml \
-            -v \
-            -x
+            -v
 
       - name: P0 Golden Flow smoke (httpx, live backend)
         run: |

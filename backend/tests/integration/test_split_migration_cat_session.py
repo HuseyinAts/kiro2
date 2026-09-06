@@ -150,6 +150,24 @@ async def _ornek_soru(db: AsyncSession) -> tuple[str, str]:
     return satir[0], satir[1]
 
 
+async def _redis_kapat(istemci) -> None:
+    """Redis istemcisini surumden BAGIMSIZ kapat.
+
+    OLCUM (CI run 34053253515, bu dosya): `await istemci.aclose()`
+    `AttributeError: 'Redis' object has no attribute 'aclose'` ile dustu.
+    Sebep saf surum farki: `aclose()` redis-py 5.0.1'de eklendi; yerelde
+    kurulu surum 6.4.0 (aclose VAR, o yuzden yerelde hic gorulmedi) ama CI
+    `requirements.txt`teki `redis[hiredis]==4.6.0` ile kuruluyor (aclose YOK).
+    Ayni bulgunun ilk ornegi ve gerekcesi: docs/guvenlik-borcu.md SS10.54
+    (`tests/unit/test_password_reset_codes.py`). Bu dosya o taramada
+    ATLANMISTI cunku oradaki port 6379, buradaki 6380 idi ve arama porta
+    gore yapilmisti -- bu tur genel `aclose` taramasiyla iki kalan cagri
+    yeri de kapatildi.
+    """
+    kapat = getattr(istemci, "aclose", None) or istemci.close
+    await kapat()
+
+
 async def _canli_redis():
     """Yanit VEREN ilk Redis'i dondur; hicbiri yoksa None.
 
@@ -176,7 +194,7 @@ async def _canli_redis():
             await istemci.ping()
             return istemci
         except Exception:
-            await istemci.aclose()
+            await _redis_kapat(istemci)
     return None
 
 
@@ -247,7 +265,7 @@ async def cat_client(live_db: AsyncSession) -> AsyncGenerator[AsyncClient, None]
         yield client
     # Kuresel durum sizmasin: limiter modul duzeyinde tekil bir nesne.
     limiter.enabled = _limiter_onceki
-    await redis_client.aclose()
+    await _redis_kapat(redis_client)
 
 
 # ---------------------------------------------------------------------------

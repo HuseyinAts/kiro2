@@ -6083,3 +6083,135 @@ ResolutionImpossible vermiyor, cozum basarili.
 bir pakete ozgu degildi; bir workflow satiri uc pini birden sessizce
 eziyordu. SS10.43 (ruff/mypy), SS10.54 (redis) ve SS10.56 (pytest-asyncio)
 hep ayni kokten besleniyormus.
+
+
+## §10.58 -- `-x` kaldirildi, arkasindan 15 bayat test + olu bir rota cikti (2026-09-06)
+
+### Neden bu bolum var
+
+SS10.55'te `-x` bayraginin tum suiti kestigi OLCULDU ama bayrak yerinde
+birakilmisti (politika karari olarak). Sonraki alti CI turu bunun bedelini
+sayiyla gosterdi: her tur GERIYE KALAN basarisizliklardan YALNIZ BIRINI
+gosterdi ve her duzeltme durma noktasini bir sonrakine tasidi:
+
+    1866 -> 3429 -> 3511 -> 3959 -> 5551 -> 5877 -> 6009 passed
+
+Yani her bir bulgu icin tam bir CI turu (~4 dk + kuyruk) harcandi ve teshis
+her seferinde tek bir ornekten yapilmak zorunda kalindi. Bu turda once
+bayrak kaldirildi, sonra kalan borc YERELDE tek seferde sayildi.
+
+### Karar: `-x` kaldirildi (ci.yml)
+
+Olcum: bayraksiz kosum zaten sonuna kadar gidiyor ve 235s suruyor -- yani
+"erken cikip zaman kazanma" iddiasi bu suitte GECERSIZ. Kazanc yok, bilgi
+kaybi buyuk. Ayrica ayni kok nedenin birden cok ornegi birbirinin arkasinda
+saklandigi icin deterministik bir sorun tekrar tekrar "flaky" gibi
+okunuyordu. Bayrak kaldirildi; gerekce ci.yml icine de yazildi.
+
+### Yerel toplu olcum (bayrak yerine)
+
+    python -m pytest tests/unit tests/fast -q --tb=no -rf
+    -> 26 failed, 11275 passed, 670 skipped, 20 errors in 389s
+
+Bu listenin bir kismi YEREL ortama ozgu (yerelde TEST_DATABASE_URL yok,
+bellek-ici SQLite'a dusuluyor; CI'de gercek Postgres var). Bu yuzden her
+basarisizlik "CI'de de kirilir" diye VARSAYILMADI, ortamdan bagimsiz olup
+olmadigi tek tek ayristirildi. Ortamdan bagimsiz (saf mock/rota) olanlar
+asagidaki iki aile cikti.
+
+### Bulgu 1 -- 410 Gone yapilan flashcard uclarina yazilmis 13 bayat test
+
+`app/api/fsrs.py`teki uc uc (`POST /flashcards`, `GET /flashcards/due`,
+`POST /flashcards/{id}/review`) 2 Agu 2026'da BILEREK 410 Gone'a cevrilmisti
+(gerekce ve olcum ayni dosyadaki "KALDIRILAN FLASHCARD UYUMLULUK KATMANI"
+blogunda: deprecated senkron servis AsyncSession ile calisamiyor ve
+frontend'de bu uclara 0 cagri var). Ama `tests/unit/test_api_batch2.py`
+icindeki 13 test hala eski davranisi bekliyordu:
+
+    TestFSRSFlashcardEndpoints    4 test (sinifin tamami)
+    TestFSRSReviewEndpoint        4 test (sinifin tamami)
+    TestFSRSAPIEdgeCases          3 test
+    TestFSRSComprehensive         2 test
+
+Hepsi `app.api.fsrs.fsrs_service`i mock'luyordu; o mock HICBIR ZAMAN
+cagrilmiyordu -- yani testler bir kusuru degil, artik var olmayan bir
+davranisi olcuyordu. `-x` yuzunden bunlarin YALNIZCA BIRI (edge-case
+sinifindaki `test_create_flashcard_with_image`) CI'de gorunuyordu.
+
+Bir de sessiz bir yanlis-yesil vardi: `TestAllAPIsErrorHandling::
+test_fsrs_database_connection_error` "DB baglanti hatasi" iddiasiyla
+`pytest.raises(HTTPException)` diyor ve GECIYORDU -- ama yakaladigi sey
+mock'lanan DB hatasi degil, ucun kendi 410'uydu. Yesildi, YANLIS SEBEPTEN.
+
+**Duzeltme:** 13 bayat test + bu yaniltici test kaldirildi; yerlerine
+GERCEK sozlesmeyi olcen uc civi kondu (`TestFSRSKaldirilanFlashcardUclari`):
+her uc icin 410 durum kodu VE mesajin kanonik uclari isaret etmesi. Kaldirma
+niyet disi geri alinirsa bu uc test kirilir. Silinen yerlere neyin nereye
+gittigini soyleyen isaret yorumlari birakildi.
+
+Olcum sonrasi: `pytest tests/unit/test_api_batch2.py` -> 364 passed,
+31 skipped (once 13 failed).
+
+### Bulgu 2 -- `api/clustering_api.py`te ayni yolda IKI rota; ikincisi olu
+
+`@router.get("/health")` bu dosyada IKI KEZ tanimliydi (satir 34
+`health_check`, satir 170 `clustering_health`). FastAPI ayni yol icin ILK
+kayitli rotayi servis eder -- yani ikincisi hic calismiyordu. Kanit uc
+bagimsiz yerden:
+
+  * Canli sozlesmeyi olcen iki test ILK rotanin sekline gore yazilmis:
+    `tests/e2e/test_golden_flows.py:5597` ("concept_clustering") ve
+    `tests/fast/test_chroma_semantic_health.py:52` ("chromadb_available").
+  * `tests/fast/test_push_clustering_health.py` ise IKINCI (olu) rotanin
+    sekline ("clustering" / "ok") gore yazilmisti -- bu yuzden yapisal
+    olarak HICBIR ZAMAN gecemezdi; kendi hayalini olcuyordu.
+  * `backend/openapi.json` ayni yol anahtarini ikinci rotayla EZDIGI icin
+    uretilen sema (ve ondan turetilen `frontend/src/types/api.generated.ts`)
+    sunucunun ASLA dondurmedigi bir govdeyi belgeliyordu.
+
+Ikinci bir kusur: calisan `health_check` DB ping'ini FONKSIYON ICINDE
+`from core.database import get_db_session_context` diye yeniden import
+ediyordu. Bu, `@patch("api.clustering_api.get_db_session_context")` yamasini
+ETKISIZ birakiyordu -- yani "DB ayakta/DB cokmus" senaryolarini olcmek icin
+yazilmis testler sessizce gercek DB'ye gidiyordu.
+
+**Duzeltme:** olu ikinci rota kaldirildi (yerine neden kaldirildigini
+anlatan yorum blogu birakildi); `health_check` modul duzeyindeki adlari
+kullaniyor, boylece yama gercekten devreye giriyor; iki test canli
+sozlesmeye gore yeniden yazildi ve olctugu seye gore adlandirildi
+(`test_clustering_health_db_up_database_true` /
+`..._db_down_database_false`). `status` alani uzerinden iddia YAPILMIYOR --
+o alan DB'ye degil sklearn'in varligina bagli; oradan iddia etmek testi
+"olcmedigi bir seyi olcuyor" haline getirirdi.
+
+Frontend etkisi olculdu: `grep -rn "clustering/health" frontend/src` ->
+yalniz `api.generated.ts` (uretilmis tip dosyasi), tek bir cagri yok. Yani
+islevsel kayip yok. `backend/openapi.json` anlik goruntusu bu degisiklikten
+sonra bayat kalir; onu senkronlayan bir CI kapisi YOK (kontrol edildi), bir
+sonraki uretimde kendiliginden duzelir.
+
+### Bulgu 3 -- redis `aclose` surum farkinin ikinci ornegi
+
+SS10.54'te duzeltilen `AttributeError: 'Redis' object has no attribute
+'aclose'` bu turda `tests/integration/test_split_migration_cat_session.py`te
+TEKRAR cikti. Sebep: SS10.54 taramasi PORTA gore yapilmisti (6379) ama bu
+dosya 6380 kullaniyor. Bu turda tarama `aclose` kelimesine gore YAPILDI ve
+depodaki TUM cagri yerleri tek seferde bulundu:
+
+    tests/conftest.py:190                       -> mock (etkilenmez)
+    tests/utils/test_helpers.py:279             -> kendi tanimi (etkilenmez)
+    tests/unit/test_password_reset_codes.py     -> SS10.54'te duzeltildi
+    tests/integration/test_split_migration...py -> 2 cagri (bu turda)
+
+**Ders:** bir surum farkini "duzelttim" demek, o farkin TUM ornekleri
+tarandiginda gecerli. Ilk taramanin ekseni (port) yanlisti; dogru eksen
+hatanin kendisiydi (`aclose`).
+
+### Sinir
+
+Yerel olcumdeki geri kalan basarisizliklar (`test_soru_bankasi_*`,
+`test_fsrs_card_persistence`, `test_billing_dpa`) gercek Postgres istiyor ve
+yerelde bellek-ici SQLite'a dusuyor; CI'de gecerler. `test_app_routes_
+registered` (iki dosyada) yalniz PARALEL kosumda dusuyor, tek basina
+geciyor -- yani test kirlenmesi/sira bagimliligi, ayri bir olcum konusu;
+bu turda dokunulmadi, `-x` kalkinca CI'de gorunur olacak.
