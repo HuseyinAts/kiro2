@@ -4994,3 +4994,27 @@ degisikligi"). Ben bunu degistirmedim/degistiremem.
 (3) SS10.46'nin Takip listesindeki diger rezerve kararlar (kalan
     CodeQL, SessionRepository/Session.token hashing, kanon-lint 44
     ihlali) hala gecerli, degismedi.
+
+
+### Dogrulama (2026-09-06, ayni gun)
+
+Huseyin repo ayarini kendisi degistirdi (Settings -> General -> Pull
+Requests -> Allow auto-merge). `gh api repos/HuseyinAts/kiro2 --jq
+'{allow_auto_merge}'` ile dogrulandi: `{"allow_auto_merge":true}`.
+
+Bu 3 PR'a (#55, #54, #108) yeniden `@dependabot rebase` istendi.
+2'si (#55, #108) otomasyon uzerinden dogrudan basarili oldu. #54
+(which-typed-array) `gh pr merge --auto` cagrisinda bir kez daha
+hata verdi -- ama bu sefer FARKLI ve gecici bir hata: "Pull request
+is in unstable status (enablePullRequestAutoMerge)" (GitHub'in push
+sonrasi merge-durumu hesaplamasinin henuz bitmemis olmasi, bilinen bir
+API yarisi). Ayni komut (`gh pr merge 54 --auto --squash`) birkac
+dakika sonra elle tekrar calistirildi, bu kez basarili oldu.
+
+Sonuc: 3 PR de (#55, #54, #108) gercekten MERGED durumuna gecti.
+Geriye kalan 12 acik PR (8 major-bump + 4 grup guncellemesi) DOGRU
+sekilde otomatik-merge disi birakildi -- bunlarin hepsi Huseyin'in
+inceleme/merge karari bekliyor, otomasyon tarafinda baska bir sorun
+yok. `allow_auto_merge` ayari artik acik oldugu icin, bundan sonraki
+her yeni patch/minor tekil-bagimlilik Dependabot PR'i, baska hicbir
+mudahale gerekmeden kendiliginden merge olacak.
