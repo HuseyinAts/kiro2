@@ -4,11 +4,14 @@ Bu testler tüm API endpointlerini çalıştırarak coverage'ı maksimum arttır
 Target: API modüllerinin %50+ coverage'ı için comprehensive endpoint testing
 """
 
+import logging
 from unittest.mock import patch
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+logger = logging.getLogger(__name__)
 
 # Import centralized JWT helper from conftest (DRY)
 try:
@@ -173,8 +176,12 @@ class TestComprehensiveAPIEndpoints:
 
                         # Response status test edildi
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_sinav_api_comprehensive(self):  # noqa: PLR0912
         """Sınav API'sini kapsamlı test et"""
@@ -245,8 +252,12 @@ class TestComprehensiveAPIEndpoints:
                                 response = client.delete(test_path)
 
                             assert response.status_code in [200, 401, 422, 404, 500]
-                    except Exception:
-                        pass
+                    except Exception as hata:
+                        # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                        # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                        # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                        # yutma, testin ne olcup ne olcmedigini gizler.
+                        logger.warning("rota denemesi basarisiz: %s", hata)
 
     # KALDIRILDI: test_content_management_api_comprehensive
     #
@@ -309,8 +320,12 @@ class TestComprehensiveAPIEndpoints:
                             response = client.get(path)
 
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_zpd_maarif_api_comprehensive(self):
         """ZPD Maarif API'sini kapsamlı test et"""
@@ -372,8 +387,12 @@ class TestComprehensiveAPIEndpoints:
                             response = client.get(test_path)
 
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_irt_morfoloji_api_comprehensive(self):
         """IRT Morfoloji API'sini kapsamlı test et"""
@@ -443,8 +462,12 @@ class TestComprehensiveAPIEndpoints:
                             response = client.get(test_path)
 
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
 
 class TestComprehensiveAPIMiddleware:
@@ -502,8 +525,12 @@ class TestComprehensiveAPIMiddleware:
                         headers = response.headers
                         assert isinstance(headers, dict) or hasattr(headers, "items")
 
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_comprehensive_error_handling(self):
         """Kapsamlı hata işleme test et"""
@@ -542,8 +569,12 @@ class TestComprehensiveAPIMiddleware:
                         # Error handling middleware çalıştı
                         assert response.status_code in [200, 400, 500]
 
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
 
 if __name__ == "__main__":
