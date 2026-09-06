@@ -5698,3 +5698,71 @@ PR'in dokunmadigi yerler). Yerel ruff 0.16.6, `.pre-commit-config.yaml`
 pini v0.7.1; RUF059 daha yeni bir kural ve CI'nin ruff job'i PASS
 veriyor. SS10.43'teki surum-pin suruklenmesi temasinin devami --
 bilerek dokunulmadi.
+
+
+## §10.56 -- Morfoloji testi: mock hic devreye girmiyordu (Zemberek fallback) (2026-09-06)
+
+### Belirti
+
+SS10.55'ten sonra kalan tek fail:
+
+    tests/integration/test_irt_morfoloji_service.py::
+      TestIRTMorfolojiService::test_analyze_turkish_morphology_complexity
+    E   AssertionError: assert 'öğrencilerimiz' == 'öğrenci'
+
+Yerelde ayni test GECIYORDU (tek basina da, dosyanin tamami da: 27 passed).
+Yani ortam farki -- SS10.52'nin ayni ailesi.
+
+### Kok neden
+
+Donen deger mock'un ne `word`u ("öğrencilerimizden") ne `root`u
+("öğrenci") -- ucuncu bir sey: "öğrencilerimiz". Bu, mock'un HIC devreye
+girmedigini, gercek `turkish_nlp_service`'in kostugunu gosterir.
+`core/turkish_nlp_service.py` Zemberek server'ina (localhost:6789)
+baglanamayinca "fallback modda calisilacak" deyip basit bir govde
+cikariyor: "öğrencilerimizden" -> "öğrencilerimiz" (yalniz `-den` soyulmus).
+CI'da Zemberek yok, bu makinede vardi -- fark tam olarak buydu.
+
+Durumu agirlastiran ikinci etken, servisin cagri sekli
+(`algorithms/irt_morfoloji_service.py`):
+
+    analyses = await asyncio.gather(
+        *[turkish_nlp_service.analyze_morphology(w) for w in unique_words],
+        return_exceptions=True
+    )
+
+`return_exceptions=True` mock kaynakli bir hatayi da SESSIZCE yutar; test
+patlamak yerine gercek sonuca duser. Yani bu test, mock'ladigi mantigi
+dogrulamadigini hic belli etmeden yesil/kirmizi olabiliyordu.
+
+Arastirma sirasinda bir hipotez CURUTULDU: `pytest.ini`'de
+`pythonpath = . app` oldugu icin "modul iki kez yuklenmis olabilir mi"
+diye bakildi -- `turkish_nlp_service.py` TEK kopya cikti. (Buna karsilik
+`irt_morfoloji_service.py` gercekten iki kopya: `algorithms/` ve
+`services/`; test `algorithms/` olanini kullaniyor, `services/` kopyasi
+`turkish_nlp_service`'i hic cagirmiyor -- bu bulgu ayri, ilgisiz.)
+
+### Duzeltme -- uc yonlu saglamlastirma
+
+1. **Patch hedefi servisin okudugu isim alanina cevrildi**:
+   `core.turkish_nlp_service.turkish_nlp_service.analyze_morphology` yerine
+   `algorithms.irt_morfoloji_service.turkish_nlp_service` (nesnenin
+   tamami). Servis `from core... import turkish_nlp_service` ile kendi
+   global'ine bagladigi icin, oraya yazmak nesne-kimligi/import-sirasi
+   farklarindan bagimsizdir.
+2. **`AsyncMock` acikca kullanildi**: patch'in "async mi" otomatik algisina
+   guvenilmiyor. Sync bir mock `await` edilemez, `return_exceptions=True`
+   onu yutar ve test yine gercek servise duserdi.
+3. **`assert mock_analyze.called`** eklendi: mock devreye girmezse test
+   artik SESSIZCE gercek servisi olcmek yerine ACIK bir mesajla duser --
+   SS10.52'nin dersinin genellenmis hali.
+
+### Yol ustunde: dokunulan dosyanin lint borcu (SS10.52 dersi, 3. kez)
+
+Dosyaya dokunuldugu icin diff-based ruff artik onu denetleyecekti; CI'i
+bekleyip ogrenmek yerine onden olculdu ve 5 adet E712 (`== True` /
+`== False`) cikti -- hicbiri bu PR'in ekledigi satirlarda degil.
+`is True` / `is False`'a cevrildi (bool donen fonksiyonda davranis ayni,
+ustelik gevsek `1 == True` eslesmesini de kapatir).
+
+Dogrulama: mypy EXITCODE 0, ruff "All checks passed", 27 test PASS.

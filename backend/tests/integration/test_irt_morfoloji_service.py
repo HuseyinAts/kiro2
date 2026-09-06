@@ -3,7 +3,7 @@ IRT + Türkçe Morfoloji Servisi Test Dosyası
 ÖSYM ve ETS standartlarını aşan soru analizi testleri
 """
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -97,13 +97,13 @@ class TestIRTMorfolojiService:
         self, service, sample_question_text, sample_student_responses
     ):
         """Temel IRT + Morfoloji analizi testi"""
-        with patch.object(
-            service, "_analyze_turkish_morphology_complexity"
-        ) as mock_morphology, patch.object(
-            service, "_calculate_base_irt_parameters"
-        ) as mock_irt, patch.object(
-            service, "_adjust_irt_with_morphology"
-        ) as mock_adjust:
+        with (
+            patch.object(
+                service, "_analyze_turkish_morphology_complexity"
+            ) as mock_morphology,
+            patch.object(service, "_calculate_base_irt_parameters") as mock_irt,
+            patch.object(service, "_adjust_irt_with_morphology") as mock_adjust,
+        ):
             # Mock returns
             mock_morphology.return_value = MorphologyComplexity(
                 word="çocuklar",
@@ -145,10 +145,29 @@ class TestIRTMorfolojiService:
     @pytest.mark.asyncio
     async def test_analyze_turkish_morphology_complexity(self, service):
         """Türkçe morfolojik karmaşıklık analizi testi"""
-        with patch(
-            "core.turkish_nlp_service.turkish_nlp_service.analyze_morphology"
-        ) as mock_analyze:
-            mock_analyze.return_value = MorphologicalAnalysis(
+        # OLCUM (6 Eyl 2026): bu test CI'da "assert 'öğrencilerimiz' == 'öğrenci'"
+        # ile dusuyordu, yerelde ise geciyordu. Donen deger ne mock'un `word`u
+        # ne `root`u -- yani mock HIC DEVREYE GIRMEMIS, gercek servis kosmustu.
+        # `turkish_nlp_service` Zemberek server'ina (localhost:6789) baglanamayinca
+        # fallback moda gecip "öğrencilerimizden" -> "öğrencilerimiz" donduruyor;
+        # CI'da Zemberek yok, bu makinede vardi. Ustelik servis
+        # `asyncio.gather(..., return_exceptions=True)` kullandigi icin mock
+        # kaynakli bir hata da SESSIZCE yutulup gercek sonuca dusulebiliyordu.
+        #
+        # Uc yonlu saglamlastirma:
+        # 1) Patch hedefi, servisin GERCEKTEN okudugu isim alani
+        #    (`algorithms.irt_morfoloji_service.turkish_nlp_service`). Servis
+        #    `from core.turkish_nlp_service import turkish_nlp_service` ile kendi
+        #    global'ine baglaniyor; oraya yazmak nesne-kimligi/import-sirasi
+        #    farklarindan bagimsizdir.
+        # 2) `new_callable=AsyncMock`: patch'in "async mi" otomatik algisina
+        #    guvenilmiyor. Sync bir mock `await` edilemez, `return_exceptions=True`
+        #    onu yutar ve test yine gercek servise duserdi.
+        # 3) `assert mock.called`: mock devreye girmezse test SESSIZCE gercek
+        #    servisi olcmek yerine ACIK mesajla duser (SS10.52'nin dersi).
+        nlp_mock = MagicMock()
+        nlp_mock.analyze_morphology = AsyncMock(
+            return_value=MorphologicalAnalysis(
                 word="öğrencilerimizden",
                 root="öğrenci",
                 suffixes=["ler", "imiz", "den"],
@@ -158,10 +177,19 @@ class TestIRTMorfolojiService:
                 compound_parts=[],
                 complexity_score=0.8,
             )
+        )
+
+        with patch("algorithms.irt_morfoloji_service.turkish_nlp_service", nlp_mock):
+            mock_analyze = nlp_mock.analyze_morphology
 
             text = "Öğrencilerimizden bazıları çok başarılı."
             result = await service._analyze_turkish_morphology_complexity(text)
 
+            assert mock_analyze.called, (
+                "analyze_morphology mock'u hic cagrilmadi -- servis gercek "
+                "turkish_nlp_service'i kullandi, yani bu test mock'ladigi "
+                "mantigi DOGRULAMIYOR (Zemberek fallback'ine dusmus olabilir)"
+            )
             assert isinstance(result, MorphologyComplexity)
             assert result.word.lower() == "öğrencilerimizden"
             assert result.root == "öğrenci"
@@ -221,12 +249,12 @@ class TestIRTMorfolojiService:
     def test_check_vowel_harmony(self, service):
         """Ünlü uyumu kontrolü testi"""
         # Ön ünlü uyumu
-        assert service._check_vowel_harmony("e", "i") == True
-        assert service._check_vowel_harmony("e", "a") == False
+        assert service._check_vowel_harmony("e", "i") is True
+        assert service._check_vowel_harmony("e", "a") is False
 
         # Arka ünlü uyumu
-        assert service._check_vowel_harmony("a", "ı") == True
-        assert service._check_vowel_harmony("a", "e") == False
+        assert service._check_vowel_harmony("a", "ı") is True
+        assert service._check_vowel_harmony("a", "e") is False
 
     def test_calculate_semantic_ambiguity(self, service):
         """Anlam belirsizliği hesaplama testi"""
@@ -669,7 +697,7 @@ class TestIRTMorfolojiIntegration:
             assert len(analysis.recommendations) > 0
             assert analysis.analysis_confidence > 0.5
             assert "turkish_optimization" in analysis.metadata
-            assert analysis.metadata["turkish_optimization"] == True
+            assert analysis.metadata["turkish_optimization"] is True
 
     @pytest.mark.performance
     def test_performance_benchmarks(self):
