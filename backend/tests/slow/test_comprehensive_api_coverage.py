@@ -108,9 +108,11 @@ class TestComprehensiveAPIEndpoints:
 
                                 # Response test edildi, coverage arttı
                                 assert response.status_code in [200, 401, 422, 404, 500]
-                        except Exception:
-                            # Exception olsa da endpoint çağrıldı
-                            pass
+                        except Exception as hata:
+                            # Sessiz `pass` DEGIL: tolerans korunuyor ama
+                            # sebep GORUNUR oluyor -- "endpoint cagrildi"
+                            # yorumu, cagrinin BASARISIZ oldugunu gizliyordu.
+                            logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_enhanced_chat_api_comprehensive(self):
         """Enhanced Chat API'sini kapsamlı test et"""
