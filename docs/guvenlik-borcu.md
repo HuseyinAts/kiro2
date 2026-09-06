@@ -5855,3 +5855,51 @@ dosyalari icin de duruyor. Iki secenek: (a) pytest.ini'de varsayilani
 `function` yapmak (izolasyon kazanilir, kosum bir miktar yavaslar),
 (b) dosya bazinda izole etmeye devam etmek. Blast radius genis oldugu
 icin degistirilmedi.
+
+### GERCEK kok neden: bayat `event_loop` override'i (surum surukledi)
+
+`loop_scope="function"` marker'i ise YARAMADI -- ayni hata devam etti.
+Sebep `asyncio_mode = auto`: bu modda pytest-asyncio testleri kendisi
+sariyor ve ini varsayilanini uyguluyor, marker'daki loop_scope dikkate
+alinmiyor.
+
+Aramaya devam edilince suclu bulundu -- `tests/integration/conftest.py`:
+
+    @pytest.fixture(scope="session")
+    def event_loop():
+        loop = asyncio.new_event_loop()
+        yield loop
+        loop.close()          # <-- plugin'in kullandigi loop'u kapatiyor
+
+Fixture'in uzerindeki yorum gerekcesini acikca yaziyor ve **pytest-asyncio
+0.21.1**'e atifta bulunuyor: o surum `asyncio_default_fixture_loop_scope`
+ayarini yok saydigi icin session-kapsamli bir `event_loop` override'i
+gerekiyormus. O gun dogru bir duzeltmeymis.
+
+Ama surum SURUKLEDI:
+
+    requirements.txt / requirements-test.txt : pytest-asyncio==0.21.1
+    gercekte kurulu (bu makine VE CI)        : 1.3.0
+
+CI traceback'i de 1.x API'sini gosteriyor
+(`plugin.py:530: asyncio.ensure_future(coro, loop=_loop)`). pytest-asyncio
+1.x'te kullanicinin `event_loop` fixture'ini override etmesi KALDIRILDI;
+plugin kendi loop'unu yonetiyor ve ini ayarini artik dogru uyguluyor.
+Dolayisiyla override yalnizca gereksiz degil, ZARARLI: teardown'daki
+`loop.close()` plugin'in hala kullandigi loop'u kapatiyor, sirasi sonra
+gelen her async test "Event loop is closed" aliyor. Sira-bagimli oldugu
+icin de "flaky" gibi gorunuyordu.
+
+Bu, SS10.43 (ruff/mypy pin suruklenmesi) ve SS10.54 (redis 4.6.0 vs
+aclose) ile ayni ailenin ucuncu uyesi: **kod, artik kurulu olmayan bir
+surumun varsayimlariyla yazilmis.**
+
+**Duzeltme:** override kaldirildi (gerekce yorumu, neden artik gecersiz
+oldugunu anlatacak sekilde guncellendi); kullanilmayan `asyncio` importu
+ruff --fix ile temizlendi. Morfoloji dosyasi override'siz yerelde 27 PASS.
+
+**Takip (karar sizde):** (a) `tests/e2e/conftest.py`'de AYNI override
+duruyor -- ayni tuzagi tasiyor, bu PR'in kapsami disinda birakildi;
+(b) `requirements*.txt`'teki `pytest-asyncio==0.21.1` pini gercekle
+uyusmuyor (kurulu 1.3.0) -- pin ya gercege cekilmeli ya da kurulum
+zinciri pini uygulamali. Ikisi de kendi turunu hak ediyor.
