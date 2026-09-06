@@ -92,7 +92,12 @@ jobs:
           # pre-commit'te kullanilmiyor (ruff yerine gecti), safety'nin
           # pre-commit karsiligi yok, types-redis pre-commit'te bilerek
           # disarida birakilmisti (redis 6.4.0 py.typed=True sagliyor).
-          uv pip install ruff==0.7.1 black mypy==1.11.2 bandit==1.9.4 safety types-redis types-passlib
+          # types-PyYAML (7 Eyl 2026): `app/guardrails/manager.py` PyYAML
+          # kullaniyor; PyYAML CI'da KURULU ama stub'lari degildi ve mypy
+          # `[import-untyped]` veriyordu. Yerelde gorunmuyordu cunku orada
+          # PyYAML'in kendisi yok -> `--ignore-missing-imports` susturuyordu.
+          # Yani bu, yerel/CI kurulum farkinin urettigi bir kapi hatasiydi.
+          uv pip install ruff==0.7.1 black mypy==1.11.2 bandit==1.9.4 safety types-redis types-passlib types-PyYAML
 
       - name: Run Ruff Linter (changed files only)
         if: matrix.check == 'ruff'
