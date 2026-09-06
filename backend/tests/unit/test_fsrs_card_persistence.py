@@ -94,7 +94,10 @@ async def db_session():
         await session.commit()
 
     yield session_maker
-    engine.dispose()
+    # `AsyncEngine.dispose()` COROUTINE dondurur; `await` olmadan cagri
+    # hicbir sey yapmiyordu -- havuz kapanmiyor, baglantilar siziyordu.
+    # mypy bunu `[unused-coroutine]` ile isaretledi (CI mypy kapisi).
+    await engine.dispose()
 
 
 @pytest.fixture

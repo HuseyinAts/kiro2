@@ -85,8 +85,12 @@ def async_pg_dsn(host: str = "127.0.0.1", port: int = 5434) -> str:
     (b) veritabani adini yerele civiliyordu; CI'da ad `kiro2_test` oldugu
     icin 29 test `InvalidCatalogNameError` ile dusuyordu.
     """
-    return (
+    # Acik `str` annotation: `render_as_string` SQLAlchemy stub'larinda Any
+    # donuyor, mypy aksi halde `no-any-return` veriyor (ayni not:
+    # tests/unit/test_org_members.py).
+    dsn: str = (
         sync_pg_url(host=host, port=port)
         .set(drivername="postgresql+asyncpg")
         .render_as_string(hide_password=False)
     )
+    return dsn

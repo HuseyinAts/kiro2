@@ -135,7 +135,9 @@ async def db_session():
         await session.commit()
 
     yield session_maker
-    engine.dispose()
+    # `AsyncEngine.dispose()` coroutine dondurur; `await` olmadan havuz
+    # kapanmiyordu (bkz. test_fsrs_card_persistence.py'deki ayni not).
+    await engine.dispose()
 
 
 @pytest.fixture

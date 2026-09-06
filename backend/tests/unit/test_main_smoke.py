@@ -94,8 +94,12 @@ class TestMainApplicationSmoke:
 
         es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
         try:
-            with httpx.Client(timeout=2.0) as client:
-                client.get(f"{es_url}/_cluster/health", timeout=2.0)
+            # Ad `client` DEGIL: asagida ayni kapsamda `client = TestClient(app)`
+            # var ve mypy ilk baglamadan `httpx.Client` cikarip ikinciyi
+            # `[assignment]` hatasi olarak isaretliyordu. Iki ayri istemci,
+            # iki ayri ad.
+            with httpx.Client(timeout=2.0) as es_client:
+                es_client.get(f"{es_url}/_cluster/health", timeout=2.0)
         except Exception:
             pytest.skip("Elasticsearch not available")
 
