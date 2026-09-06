@@ -5074,3 +5074,60 @@ yonettigi ozellikler:
 (1) Dependabot alerts + Dependabot security updates;
 (2) Secret scanning + Push protection + (istege bagli) validity
     checks ve non-provider patterns.
+
+
+## §10.49 -- Eski plan (stateful-shimmying-papert.md) kapanisi: 6 fazin hepsi kanitla dogrulandi (2026-09-06)
+
+### Amac
+
+Bu bolum, PR #62 sonrasi acilan backlog plan dosyasinin (6 faz:
+yerel temizlik, test gate fix, auth.py refresh-token persist, fsrs.py
+lint borcu, temiz-kopya olcum script'i, dependabot triyaji, CodeQL
+false-positive dismissal) artik tamamen kapali oldugunu, her fazi
+`git log`/bu belgenin kendi onceki bolumleriyle CAPRAZ DOGRULAYARAK
+kayda geciriyor. Amac yeni bir bulgu degil, dagitik halde duran
+kanitlarin tek yerde toplanmasi.
+
+### Faz bazinda durum (kanit referanslari)
+
+1. **Faz 0 (yerel docker/worktree temizligi)**: SS10.29'da `git log
+   --all` ile DOGRULANDI -- tamamlanmis.
+2. **Faz 1 (test gate'lerin gercekten test etmesi --
+   `global_db_manager_cleanup` ScopeMismatch + 3 dosyada
+   `_login_taze` kullanimi)**: PR #68 ile merge edildi, SS10.29'da
+   dogrulandi.
+3. **Faz 2 (`auth.py:329` refresh-token persist gorunurlugu)**: PR
+   #68 ile merge edildi (bu bolumun 9. kisim / "Faz 2" basligi).
+   NOT -- bu, SS10.7 doneminde ayri bir PR'da bulunan ikinci, farkli
+   bir refresh-token persist bug'i (login-akisindaki ilk token,
+   `_save_refresh_token_to_db` guard'i) ile KARISTIRILMAMALI; o
+   ikincisi kendi basina commit `64d4685e6` ile ayrica duzeltildi ve
+   bu belgede zaten "iki PR de ayni baslik" seklinde acikca ayirt
+   edildi.
+4. **Faz 3 (`fsrs.py` olu kod + import sirasi lint borcu)**: PR #68
+   ile merge edildi, SS10.29'da dogrulandi.
+5. **Faz 4 (temiz-kopya guvenlik olcum script'i)**: PR #69/#70
+   surecinde `backend/scripts/temiz_kopya_guvenlik_olcumu.py` olarak
+   yazildi, 29 Agustos 2026'da ampirik dogrulandi (SS10.29).
+6. **Faz 5 (dependabot triyaji)**: planin orijinal kapsamindan
+   (~20 PR) sapip 19+ PR'a ulasan otomasyon kirilmasi, BU KAMPANYADA
+   SS10.46/SS10.47 + "Dogrulama (2026-09-06)" alt-bolumunde kok
+   nedenden (`allow_auto_merge=false`) cozuldu ve dogrulandi -- 3 PR
+   (#55/#54/#108) gercekten merge edildi, kalan 12 PR (8 major-bump +
+   4 group-update) workflow'un kendi tasarimi geregi bilerek insan
+   incelemesine birakildi (Huseyin'in rezervi).
+7. **Faz 6 (5 CodeQL false-positive dismissal)**: orijinal 5 alert
+   kapsaminda SS10.45'te (SSRF #2976 + 5 weak-hashing) dismiss edildi
+   -- ancak SS10.29'da not dusuldugu gibi, mevcut acik CodeQL alert
+   sayisi (30+) planin orijinal kapsamini cok asti; bu KENDI BASINA
+   YENI bir triyaj konusu, eski planin "devami" degil. Karar siniri:
+   Huseyin'in rezervi, ayrica ele alinacak.
+
+### Sonuc
+
+Plan dosyasindaki (`stateful-shimmying-papert.md`) 6 fazin hepsi
+icin ya dogrudan tamamlanma kaniti (Faz 0-5) ya da bilincli/karar-
+sinirli erteleme kaydi (Faz 6) mevcut. Plan bu haliyle KAPALI kabul
+ediliyor; bundan sonraki calisma bu belgenin kendi numarali
+bolumleri (S10.x) uzerinden devam edecek, ayri bir plan dosyasi
+olarak takip edilmeyecek.
