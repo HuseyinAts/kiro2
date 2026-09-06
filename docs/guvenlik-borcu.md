@@ -5018,3 +5018,59 @@ inceleme/merge karari bekliyor, otomasyon tarafinda baska bir sorun
 yok. `allow_auto_merge` ayari artik acik oldugu icin, bundan sonraki
 her yeni patch/minor tekil-bagimlilik Dependabot PR'i, baska hicbir
 mudahale gerekmeden kendiliginden merge olacak.
+
+
+## §10.48 -- GitHub native guvenlik ozellikleri kapali (2026-09-06)
+
+### Baslangic noktasi
+
+Dependabot otomasyonu saglikli hale geldikten sonra (SS10.46/47),
+komsu bir alan olan GitHub'in kendi native guvenlik ozelliklerinin
+durumu kontrol edildi -- bu, Dependabot version-update PR'lari
+(otomasyon dosyasi `dependabot.yml` + `dependabot-auto-merge.yml`) ile
+KARISTIRILMAMASI gereken, tamamen ayri bir GitHub ozellik ailesi
+(bilinen CVE'lere karsi tarama + push-time sir engelleme).
+
+### Bulgular (kanit: `gh api`)
+
+    gh api repos/HuseyinAts/kiro2/vulnerability-alerts -> HTTP 404
+    gh api repos/HuseyinAts/kiro2 --jq '.security_and_analysis'
+    -> {
+         "dependabot_security_updates": {"status": "disabled"},
+         "secret_scanning": {"status": "disabled"},
+         "secret_scanning_non_provider_patterns": {"status": "disabled"},
+         "secret_scanning_push_protection": {"status": "disabled"},
+         "secret_scanning_validity_checks": {"status": "disabled"}
+       }
+
+Repo public (`gh api repos/HuseyinAts/kiro2 --jq .private` -> false),
+yani bu ozelliklerin hepsi ucretsiz -- plan kisitlamasi degil, sadece
+kapali.
+
+### Onemli ayrim
+
+CI'da her PR'da yesil gorunen "Secret Scanning" check'i GitHub'in bu
+native ozelligi DEGIL -- reponun kendi workflow adimi (detect-secrets/
+KIRO2 Secret Detector, `.pre-commit-config.yaml` + push-secret-guard
+hook'u). Bu ikisi birbirinin yerine gecmiyor: custom hook'lar sadece
+BU REPO'YA push edilen degisiklikleri, bilinen desenlerle kontrol
+ediyor; GitHub'in native `secret_scanning_push_protection`'i ise
+GitHub'in surekli guncellenen ortak-saglayici desen veritabanina
+(AWS, GCP, Stripe, vb. anahtar formatlari dahil) karsi, push ANINDA
+reddediyor -- bu oturumda paylasilan YouTube API key gibi bir sirrin
+yanlislikla commit edilmesi durumunda GERCEK bir son savunma hatti.
+
+### Karar siniri
+
+Tum bu ayarlar (`dependabot_security_updates`, `secret_scanning` ve
+alt-anahtarlari) GitHub repo-level guvenlik ayarlari -- standing
+kuralda Huseyin'in rezervi. Degistirilmedi.
+
+### Takip
+
+Huseyin acarsa (Settings -> Security -> Code security), ek
+yapilandirma gerekmiyor -- hepsi tek tikla acilan, GitHub'in kendi
+yonettigi ozellikler:
+(1) Dependabot alerts + Dependabot security updates;
+(2) Secret scanning + Push protection + (istege bagli) validity
+    checks ve non-provider patterns.
