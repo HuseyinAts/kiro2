@@ -15,7 +15,15 @@ logger = logging.getLogger(__name__)
 
 # Import centralized JWT helper from conftest (DRY)
 try:
-    from tests.conftest import (
+    # Asagidaki `ignore[attr-defined]` gerekcesi -- ADLAR GERCEKTEN VAR:
+    # `backend/tests/conftest.py:450-454` (TEST_JWT_SECRET,
+    # TEST_JWT_ALGORITHM, _generate_test_jwt). Calisma aninda import
+    # BASARILI (olculdu: `python -c "from tests.conftest import ..."` ->
+    # "RUNTIME IMPORT OK"). mypy `tests.conftest` modulunu cozerken depodaki
+    # cok sayida `conftest.py` yuzunden baska bir modulle esliyor ve
+    # `[attr-defined]` veriyor. Kural burada susturuluyor cunku hata
+    # ARACIN cozumleme kusuru; kodda karsiligi yok.
+    from tests.conftest import (  # type: ignore[attr-defined]
         TEST_JWT_ALGORITHM,
         TEST_JWT_SECRET,
         _generate_test_jwt,
