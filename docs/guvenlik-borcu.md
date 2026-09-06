@@ -5496,3 +5496,77 @@ ustune tasindi ve tekrar dogrulandi:
     zincir ici yorum taramasi    : YOK
     --cov-fail-under=20          : var, eski 60 kalmamis
     .coveragerc fail_under       : 20.0
+
+
+## §10.54 -- Backend Tests'in SON engeli: redis-py surum farki (aclose) (2026-09-06)
+
+### Nasil ortaya cikti
+
+SS10.53 esigi 20'ye cektikten sonra CI kosuldu ve tablo degisti:
+
+    coverage FAIL satiri : YOK      <- esik kapisi artik GECIYOR
+    TOTAL                : 22.42%
+    dusen test           : 0
+    ozet                 : 1866 passed, 358 skipped, 1 error
+    sonuc                : exit code 2 -> Backend Tests hala KIRMIZI
+
+Yani esik duzeltmesi calisti ama is'i dusuren baska (ve tek) bir sey
+kaldi: SS10.52'de "ayri ve kucuk bir borc, kendi turunu hak ediyor"
+diye not dusulen redis teardown hatasi. O tur simdi geldi -- cunku artik
+Backend Tests'i yesile dondurmenin onundeki TEK engel oydu.
+
+### Kok neden (saf surum farki, olculdu)
+
+    ERROR at teardown of test_issued_code_is_six_digits[redis]
+    tests/unit/test_password_reset_codes.py: await client.aclose()
+    E   AttributeError: 'Redis' object has no attribute 'aclose'
+
+`aclose()` redis-py 5.0.1'de eklendi. Iki ortam olculdu:
+
+    bu makine  : redis-py 6.4.0   -> aclose VAR   -> yerelde hic gorulmedi
+    CI         : requirements.txt -> redis[hiredis]==4.6.0 -> aclose YOK
+
+Test PASS ediyordu; patlayan yalnizca teardown'di. Ama pytest teardown
+hatasini "1 error" sayip exit code 2 donduruyor -- yani tek basina koca
+bir CI is'ini kirmiziya cekmeye yetiyordu.
+
+Ayrica dikkat: `requirements-test.txt` `redis==5.0.1` diyor ama
+`requirements.txt` `4.6.0`. Yani depoda zaten iki farkli redis pini var.
+
+### Duzeltme
+
+Uretim bagimliligini yukseltmek YERINE test iki surumle de calisir
+hale getirildi -- burada olculen kusur surum secimi degil, testin tek
+bir surume sabitlenmis olmasi:
+
+    async def _redis_kapat(client) -> None:
+        kapat = getattr(client, "aclose", None) or client.close
+        await kapat()
+
+Dosyadaki uc ham `client.aclose()` cagrisi (satir 58/76/110) bu
+yardimciya baglandi.
+
+Dogrulama (sahte istemcilerle iki surum de taklit edildi):
+
+    yeni surum (aclose var)  -> cagrilan: aclose
+    eski surum (CI, 4.6.0)   -> cagrilan: close
+    gercek kosum             : 39 passed
+    ruff                     : temiz
+    kalan ham aclose cagrisi : YOK
+
+### Negatif bulgu -- uretim kodunda ayni tuzak YOK (arandi, bulunamadi)
+
+"Ayni hata uretimde de var mi?" sorusu varsayimla gecilmedi; repodaki
+tum `aclose(` kullanimlari tarandi. Dokuz yer cikti ve HICBIRI redis
+degil -- hepsi httpx istemcisi (`_http_client`, `_health_client`,
+`_client`):
+
+    core/litellm/client.py, core/improved_base_agent.py, core/llm_pool.py,
+    core/llm_service.py, core/oauth2_service.py, core/service_registry.py,
+    mcp_servers/zemberek_nlp/server.py
+
+`core/exam_session_store.py`'deki iki eslesme ise zaten YORUM satiri ve
+"SHARED pool client -- aclose() CAGIRMA" diyor, yani orada bilincli
+olarak cagrilmiyor. httpx'te `aclose()` standart ve surum sorunu yok.
+
+Sonuc: bu tuzak yalnizca test dosyasindaydi, uretim kodu etkilenmiyor.
