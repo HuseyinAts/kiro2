@@ -5766,3 +5766,45 @@ bekleyip ogrenmek yerine onden olculdu ve 5 adet E712 (`== True` /
 ustelik gevsek `1 == True` eslesmesini de kapatir).
 
 Dogrulama: mypy EXITCODE 0, ruff "All checks passed", 27 test PASS.
+
+### Ayni dosyada UC patch varmis -- `-x` hepsini tek tek gosteriyordu
+
+SS10.56'nin ilk duzeltmesi hedefi tutturdu (`..._complexity` testi CI'da
+gecti, yeni `assert mock.called` da tetiklenmedi) ama Backend Tests yine
+kirmiziydi -- bu kez BASKA bir testle. Sonra rerun edildi ve YINE baska
+bir test dustu:
+
+    kosum 1: test_analyze_turkish_morphology_complexity  (assert ... == 'ogrenci')
+    kosum 2: test_analyze_question_irt_morphology_basic  (RuntimeError: Event loop is closed)
+    kosum 3 (rerun): test_error_handling                 (assert 0.3 == 0.5)
+
+Her kosumda farkli bir test dusunce "bu dosya flaky" gorunuyordu. Olculdu
+ve tersi cikti: dosyada AYNI eski-yontem patch'inden UC tane vardi ve
+hicbiri CI'da devreye girmiyordu. `-x` (ilk hatada dur) her kosumda
+yalnizca sirasi gelen ilkini gosteriyordu -- yani tek bir kok neden, uc
+ayri kilikta.
+
+    satir 148 -> test_analyze_turkish_morphology_complexity
+    satir 532 -> test_error_handling
+    satir 673 -> test_full_analysis_workflow
+
+`test_error_handling`'in belirtisi ozellikle ogretici: mock
+`side_effect=Exception("NLP Error")` vermesi gerekirken hic calismiyor,
+servis kendi "kelime bulunamadi" dalina dusup
+`overall_complexity=0.3 / word='unknown'` donduruyor; test `0.5 / 'error'`
+bekledigi icin kirmizi. Yani "hata yolu" testi, hata yolunu hic test
+etmiyordu.
+
+`test_analyze_question_irt_morphology_basic`'teki "Event loop is closed"
+de ayni ailenin uyesi: mock tutmayinca gercek `turkish_nlp_service`
+devreye giriyor, HTTP oturumu aciyor ve session-scoped event loop
+kapaninca patliyor.
+
+Ucu de ayni sekilde duzeltildi (servisin okudugu isim alani + acik
+AsyncMock + `assert mock.called`). Dogrulama: dosyada
+`"core.turkish_nlp_service.turkish_nlp_service` ile baslayan patch KALMADI,
+mypy EXITCODE 0, ruff "All checks passed", 27 test PASS.
+
+Bu, SS10.55'teki `-x` tespitinin ikinci kanitidir: `-x` yalnizca testleri
+degil, AYNI kok nedenin tekrarlarini da birbirinin arkasina gizliyor ve
+tek bir sorunu "flaky" gibi gostererek yanlis teshise itiyor.

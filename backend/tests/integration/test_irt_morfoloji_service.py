@@ -528,14 +528,24 @@ class TestIRTMorfolojiService:
     async def test_error_handling(self, service):
         """Hata yönetimi testi"""
         # Gecersiz soru metni
-        with patch(
-            "core.turkish_nlp_service.turkish_nlp_service.analyze_morphology",
-            side_effect=Exception("NLP Error"),
-        ):
+        # SS10.56 ile ayni duzeltme: patch hedefi servisin OKUDUGU isim
+        # alanina baglandi ve AsyncMock acikca kullanildi. Eski hali
+        # (`core.turkish_nlp_service...`) CI'da devreye girmiyordu; mock
+        # calismayinca servis "NLP Error" yerine kendi "kelime bulunamadi"
+        # dalina dusuyor ve overall_complexity=0.3 / word='unknown'
+        # donduruyordu -- test 0.5 / 'error' bekledigi icin kirmiziydi.
+        nlp_mock = MagicMock()
+        nlp_mock.analyze_morphology = AsyncMock(side_effect=Exception("NLP Error"))
+
+        with patch("algorithms.irt_morfoloji_service.turkish_nlp_service", nlp_mock):
             result = await service._analyze_turkish_morphology_complexity(
                 "invalid text"
             )
 
+            assert nlp_mock.analyze_morphology.called, (
+                "analyze_morphology mock'u hic cagrilmadi -- servis gercek "
+                "turkish_nlp_service'i kullandi, hata yolu DOGRULANMIYOR"
+            )
             # Hata durumunda fallback degerler dondurulmeli
             assert result.overall_complexity == 0.5
             assert result.word == "error"
@@ -669,10 +679,12 @@ class TestIRTMorfolojiIntegration:
             for i in range(20)
         ]
 
-        with patch(
-            "core.turkish_nlp_service.turkish_nlp_service.analyze_morphology"
-        ) as mock_analyze:
-            mock_analyze.return_value = MorphologicalAnalysis(
+        # SS10.56 ile ayni duzeltme (dosyadaki ucuncu ve son eski-yontem
+        # patch'i): servisin OKUDUGU isim alani + acik AsyncMock. Boylece bu
+        # dosyada "mock CI'da devreye girmiyor" ailesinden patch kalmadi.
+        nlp_mock = MagicMock()
+        nlp_mock.analyze_morphology = AsyncMock(
+            return_value=MorphologicalAnalysis(
                 word="öğrencilerimizden",
                 root="öğrenci",
                 suffixes=["ler", "imiz", "den"],
@@ -682,7 +694,9 @@ class TestIRTMorfolojiIntegration:
                 compound_parts=[],
                 complexity_score=0.7,
             )
+        )
 
+        with patch("algorithms.irt_morfoloji_service.turkish_nlp_service", nlp_mock):
             analysis = await service.analyze_question_irt_morphology(
                 question_id="integration_test_1",
                 question_text=question_text,
