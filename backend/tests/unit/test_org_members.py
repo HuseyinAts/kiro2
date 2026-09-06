@@ -39,7 +39,14 @@ def _pg_async_url() -> str:
     )
     if "postgresql" not in raw:
         pytest.skip("gerçek postgres yok")
-    url = make_url(raw).set(host="localhost", port=5434, database="kiro2")
+    # OLCUM (6 Eyl 2026, ikinci katman): burada `database="kiro2"` de vardi ve
+    # sifre duzeltildikten sonra CI'da
+    # `asyncpg.InvalidCatalogNameError: database "kiro2" does not exist`
+    # aliyorduk -- cunku CI'in DATABASE_URL'i `kiro2_test` veritabanini
+    # gosteriyor, test ise onu "kiro2" ile EZIYORDU. host/port ezmesi
+    # korunuyor (yerelde de CI'da da postgres 5434'te), ama veritabani adi
+    # artik ortamdan geliyor: tek bir DSN kaynagi, iki ortamda da dogru.
+    url = make_url(raw).set(host="localhost", port=5434)
     # OLCUM (6 Eyl 2026): burada `str(url)` vardi ve CI'da
     # `asyncpg.InvalidPasswordError: password authentication failed for user
     # "postgres"` uretiyordu. Sebep SQLAlchemy'nin varsayilani:
