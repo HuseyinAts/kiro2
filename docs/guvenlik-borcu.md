@@ -6345,3 +6345,122 @@ ki bu tipik olarak TIP BEKLENEN yerde bir `MagicMock` bulundugunu gosterir
 MagicMock())` yapiyor). Onceki FastAPI surumlerinde bagimlilik agaci
 `include_router` aninda kuruldugu icin bu sinif hic gorunmuyordu. Hangi
 rotanin sorumlu oldugu OLCULMEDI -- tahminle degil, olcumle kapatilacak.
+
+
+## §10.60 -- 92 "RecursionError" tek bir satirdan geliyormus: bir kurucu metodun kuresel yan etkisi (2026-09-07)
+
+### Once teshis araci: junit artefakti
+
+Bu turun ilk kazanci bir duzeltme degil, OLCUM ARACI oldu. `gh run view
+--log` cikti ~7 MB'da kesiliyor ve pytest'in "short test summary" bolumu
+kayboluyordu; her teshis, kesik bir log'u kazimakla geciyordu. Oysa CI zaten
+`--junit-xml=pytest-report.xml` uretip `test-results-py3.11` adiyla
+yukluyor:
+
+    gh run download <run-id> -n test-results-py3.11
+
+Bu tek dosya 17.959 vakanin hepsini, hata mesajlariyla birlikte veriyor.
+Sebeplere gore gruplandiginda tablo aninda okunur hale geldi:
+
+    92  RecursionError (57 dogrudan + 35 setup hatasi)
+    36  AssertionError
+     6  ModuleNotFoundError
+     6  redis ConnectionError (:6380)
+     ...
+    TOPLAM: 160 basarisiz / 17.959 vaka
+
+**Ders:** kesik log kazimak yerine junit artefaktini indir. Onceki iki tur
+bu yuzden bosa gitti.
+
+### Elenen hipotezler (hepsi OLCULDU, hicbiri tutmadi)
+
+RecursionError yigini FastAPI 0.141'in istek-aninda kurdugu bagimlilik
+agacini ve pydantic sema uretimini gosteriyordu. "Bir rota annotation'i
+mock'a cozunuyor" en makul aciklamaydi. Yerelde tek tek denendi:
+
+1. **chromadb mock'u**: `backend/conftest.py:7` `sys.modules.setdefault(
+   "chromadb", MagicMock())` diyor; chromadb bu makinede KURULU (setdefault
+   no-op), CI'da DEGIL -- yani mock yalniz CI'da devreye giriyor. Zorla
+   mock'lanip `main` import edildi, istek atildi -> 401/200, cokme YOK.
+2. **`core.performance_monitor` mock'u**: `tests/fast/test_api_monitoring.py:55`
+   bu adrese kalici bir MagicMock koyuyor ve teardown'da GERI ALMIYOR.
+   Istekten sonra zehirlendi -> davranis degismedi.
+3. **Derin bagimlilik agaci**: 1214 rotanin HEPSI icin `get_dependant`
+   `recursionlimit=250` altinda kuruldu -> hicbiri patlamadi.
+4. **"Yigin zaten dolu"**: router ic ice derinligi 2; bir istek icin gereken
+   tepe derinlik ~150; pytest taban derinligi 35-42. Yani 1000 limitine
+   yaklasan bir sey yok.
+5. **String annotation'lar**: ilk taramam `inspect.signature` ile bakip
+   string annotation'lari "mock degil" saymisti -- bu GERCEK bir yontem
+   hatasiydi. Tarama `typing.get_type_hints(..., include_extras=True)` ile
+   yeniden yapildi (FastAPI'nin kendi cozdugu bicim): 1214 rotada **0 mock
+   annotation, 0 mock default, 0 cozulemeyen annotation**.
+
+Bes hipotez de dustu. Geriye kalan tek fark ORTAMDI -- ve orada da yanlis
+yerde arandigi ortaya cikti.
+
+### Kok neden: `sys.setrecursionlimit` bir KURUCU METOTTA
+
+`app/guardrails/guards/recursion_depth_guard.py` kurucu metodunda kosulsuz
+olarak sunu yapiyordu:
+
+    sys.setrecursionlimit(self.recursion_limit + 100)  # Add buffer
+
+`sys.setrecursionlimit` SURECIN TAMAMINI etkiler. Muhafizin kendi testi
+(`tests/guardrails/test_guards.py:217`) onu `{"recursion_limit": 10}` ile
+kuruyor:
+
+    >>> RecursionDepthGuard({'recursion_limit': 10})
+    once: 1000   sonra: 110
+
+Yani o test dosyasi kostuktan sonra, ayni xdist worker'indaki HER test
+110 kare ile calisiyor. Biraz derin bir yigin isteyen her sey duser:
+FastAPI istegi (~150), SQLAlchemy motoru, pydantic sema uretimi. Yiginlar
+hep BASKA yerleri gosterdigi ve sira bagimli oldugu icin bulgu aylarca
+"flaky" okundu.
+
+Yerel tekrar -- 6 saniye, deterministik:
+
+    pytest tests/guardrails/test_guards.py tests/unit/test_admin_api.py -n 0
+    ONCE : 20 passed, 46 errors   (hepsi RecursionError)
+    SONRA: 66 passed
+
+Bu ayni zamanda "test_faz1_katmanA_org_id CI'da hala kirmizi" bilmecesini
+de cozdu: SS10.59'daki DSN duzeltmesi CALISMISTI -- o testler artik
+`InvalidCatalogNameError` ile degil, bu kuresel limit yuzunden
+`RecursionError: ... in comparison` ile dusuyordu. Yani duzeltmenin uzerine
+ALAKASIZ ikinci bir kusur binmisti.
+
+### Duzeltme
+
+Limit artik yalnizca YUKARI cekiliyor, asla dusurulmuyor:
+
+    istenen = self.recursion_limit + 100
+    if istenen > sys.getrecursionlimit():
+        sys.setrecursionlimit(istenen)
+
+Muhafizin AMACI derin ozyinelemede yigin tasmasini onlemek, yani
+gerektiginde baslik acmak; limiti dusurmek o amaca hizmet etmiyordu,
+yalnizca yan etki uretiyordu. Muhafizin kendi esigi (`self.recursion_limit`)
+degismedi -- yani olcum kaldirilmadan yan etki kaldirildi.
+
+Bekci: `backend/tests/fast/test_recursion_guard_kuresel_yan_etki.py` uc
+sey civiliyor: kucuk limit kuresel limiti DUSURMEZ, buyuk limit
+YUKSELTIR, ve muhafiz kendi esigini korur (ucuncusu olmasa "yan etkiyi
+kaldirdim" diye muhafizi islevsizlestirmek mumkun olurdu).
+
+### Yan borc: diff-bazli mypy kapisi
+
+Muhafiz dosyasina dokunmak, CI'in diff-bazli mypy/ruff kapisini
+`app/guardrails/` paketinin TAMAMINA acti (ayni tuzagin dorduncu kaydi:
+SS10.43, SS10.52, SS10.58). Kapatilan gercek borc:
+`callable` FONKSIYONUNUN tip olarak kullanilmasi (3 yer, `Callable[...,
+Any]` ile degistirildi), `hasattr`in mypy'da tip daraltmamasi (2 yer,
+`getattr`), bir progress callback'inin donus tipinin `None` yazilmis olmasi
+(oysa kod `await` ediyor), `dict` deger tipi cikarimi (2 yer) ve 4 RET504 +
+2 PTH123. Hicbiri davranis degistirmiyor; hepsi annotation/bicim.
+
+Not: `emergency_stop_guard.py:174` `signal.SIGKILL` mypy hatasi YALNIZ
+Windows'ta cikiyor (CI Linux'ta SIGKILL var); bilincli olarak
+dokunulmadi -- yerel bir aletin urettigi gurultuyu urun kodunda
+"duzeltmek" yanlis olurdu.
