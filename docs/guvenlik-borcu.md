@@ -5245,3 +5245,95 @@ hatanin kaynagi DEGIL, o yuzden degistirilmedi:
 
 Ikisinin de butcesi olculen 27-30s ihtiyacin iki kati ve hicbiri sert
 dusmuyor; kanit olmadan genisletmek "iddia" olurdu.
+
+
+## §10.52 -- master'in CI'i 10/10 kirmizi: doc-only PR'larin gizledigi borc + video validator testinin api_key guard'i (2026-09-06)
+
+### Nasil ortaya cikti
+
+SS10.51'in PR'i (#179) kampanyada `.github/workflows/` altina dokunan
+ILK PR oldu. Onceki uc PR (#176/#177/#178) yalnizca `docs/` degistirdigi
+icin `ci.yml` hic tetiklenmemisti. Workflow dosyasina dokununca `ci.yml`
+kostu ve daha once hic gorunmemis uc kirmizi ortaya cikti: Backend Tests
+(Python 3.11), Frontend Tests, CI Summary.
+
+Ilk refleks "benim PR'im mi kirdi" olurdu; olculdu:
+
+    gh run list --workflow ci.yml --branch master --limit 10
+    -> 10/10 kosum "failure" (en eskisi 2026-09-02)
+
+    master'daki en son ci.yml kosumunun dusen is'leri:
+    Frontend Tests | Backend Tests (Python 3.11) | CI Summary
+
+Yani ucu de PR #179'un DEGIL, en az 4 gundur master'da duran ve
+doc-only PR'lar `ci.yml`'i tetiklemedigi icin kimsenin gormedigi bir
+borc. Kampanyanin "yesil ya da yalnizca onceden-var-olan borc kirmizi"
+kuralina gore #179 merge edildi.
+
+### Sebep 1 -- Backend Tests: tek bir test, deterministik olarak dusuyor
+
+master'in son 5 ci.yml kosumunda dusen testler tek tek cekildi:
+
+    4 kosumun 4'unde de ayni tek test:
+    tests/unit/test_video_quality_validator.py::
+      TestVideoQualityValidator::test_accessible_video_public
+    (5. kosum henuz bitmemisti -- "gecti" degil, in-progress)
+
+Flaky degil, deterministik. Kok neden `services/video_quality_validator.py`:
+
+    async def validate_video_accessibility(self, video_id):
+        if not self.api_key:            # <-- guard, mock'tan ONCE
+            return VideoAccessibilityResult(is_accessible=False, ...)
+        ...
+        video_data = await self._make_api_request("videos", params)
+
+`api_key` = `os.getenv("YOUTUBE_API_KEY", "")`. Test ise yalnizca
+`_make_api_request`'i patch'liyor, `api_key`'i DEGIL. Yerelde
+`tests/conftest.py:54` `load_dotenv(test_env_path)` cagirdigi icin
+anahtar `.env`'den doluyor ve test geciyor; CI'da bu is'e secret
+gecirilmedigi icin BOS kaliyor ve guard erken donuyor.
+
+Olcum (servis izole edilip mock'a sayac takilarak):
+
+    api_key DOLU -> mock 1 kez cagrildi, is_accessible=True   (test gecer)
+    api_key BOS  -> mock 0 kez cagrildi, is_accessible=False,
+                    error='YouTube API key not configured'    (CI hatasi birebir)
+
+Bunun asil onemi tek bir kirmizidan buyuk: **api_key bosken mock'lanan
+katman hic calismadigi icin, bu dosyadaki testler CI'da mock'ladiklari
+mantigi DOGRULAMIYORDU**. Pozitif testler duser, negatif testler
+(`is_accessible=False` bekleyenler) ise dogru cevabi YANLIS sebeple
+alip yesil kalir. Faz 1'in ("test gate'leri gercekten test etsin")
+ayni deseni, farkli dosyada.
+
+### Duzeltme
+
+`tests/unit/test_video_quality_validator.py` fixture'i, servisin
+`api_key`'ini sabit bir test yer tutucusuyla dolduruyor -- boylece
+guard gecilir ve testler ortamdan (`.env` / CI secret) bagimsiz olarak
+hep ayni mantigi dogrular. Gercek bir anahtar degildir ve depoya gercek
+anahtar girilmemistir. "API key yok" senaryosunu test eden
+`test_accessible_video_no_api_key` zaten kendi icinde `api_key = ""`
+yaparak fixture'i eziyor, dolayisiyla o senaryo korunuyor.
+
+Yerel dogrulama: fixture degeri ile mock 1 kez cagriliyor
+(`is_accessible=True`), eski bos durumda 0 kez; tam dosya 41/41 PASS,
+regresyon yok.
+
+### Sebep 2 -- Frontend Tests: kanon-lint (BU PR'DA DOKUNULMADI)
+
+    kanon-lint: 44 ihlal, 18 uyari (frontend/src/kiro)
+    adim: node design/scripts/kanon-lint.mjs frontend/src/kiro
+
+Bu, zaten bilinen ve Huseyin'in karar alanina birakilmis olan
+kanon-lint borcu (44 ihlal). Tasarim kanonu ihlalleri urun/tasarim
+karari gerektiriyor, tek tek incelenmeden toplu "duzeltme" yapmak
+dogru olmaz -- bu yuzden bu PR'in kapsami disinda birakildi.
+`CI Summary` de bu ikisinin turevi oldugundan ayrica ele alinmadi.
+
+### Kalan
+
+Backend Tests bu PR ile yesillenmeli. Frontend Tests (kanon-lint 44
+ihlal) ve dolayisiyla CI Summary, Huseyin'in karari gelene kadar
+kirmizi kalmaya devam edecek -- master CI'inin tam yesillenmesi o
+karara bagli.

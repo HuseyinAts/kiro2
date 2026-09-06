@@ -19,7 +19,22 @@ class TestVideoQualityValidator:
     @pytest.fixture
     def validator_service(self):
         """Test için validator instance'ı oluştur"""
-        return VideoQualityValidator()
+        service = VideoQualityValidator()
+        # OLCUM (6 Eyl 2026): validate_video_accessibility, mock'lanan
+        # _make_api_request'e ULASMADAN once `if not self.api_key` guard'ini
+        # calistiriyor. api_key os.getenv("YOUTUBE_API_KEY", "") ile geliyor:
+        # yerelde conftest load_dotenv ile .env'den doluyor, CI'da ise bu is'e
+        # secret gecirilmedigi icin BOS. Olculdu -- api_key dolu iken mock 1
+        # kez cagriliyor, bos iken 0 kez: yani CI'da guard erken donuyor ve
+        # bu dosyanin mock'ladigi mantik HIC calismiyordu. Sonuc olarak
+        # test_accessible_video_public master'da 4/4 kosumda ayni sekilde
+        # dusuyor, kalan testler de mock'ladiklari mantigi dogrulamiyordu.
+        # Sabit test degeri guard'i gecirir ve testleri ortamdan bagimsiz
+        # kilar. Bu GERCEK bir anahtar degil, yalnizca guard yer tutucusu;
+        # "api key yok" senaryosunu test eden test_accessible_video_no_api_key
+        # zaten kendi icinde api_key'i "" yaparak bunu eziyor.
+        service.api_key = "test-youtube-api-key"  # pragma: allowlist secret
+        return service
 
     # ==================== Erişilebilir Video Testleri ====================
 
