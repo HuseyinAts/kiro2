@@ -57,6 +57,23 @@ def _make_question(
     q.average_response_time = average_response_time
     q.morphology_complexity = morphology_complexity
     q.readability_score = readability_score
+    # SPLIT SONRASI (S210): performans ve IRT alanlari `question_statistics`
+    # cocuk tablosuna tasindi; servis onlari `soru.statistics.*` uzerinden
+    # okuyup YAZIYOR (services/soru_bankasi_service.py:1919-1936 ve
+    # 1975-1996). Duz `q.times_asked` MagicMock'ta oldugu gibi kalir --
+    # servisin dokundugu yer `q.statistics` cocugudur.
+    # Bu cocuk ACIKCA kurulmazsa MagicMock kendi otomatik cocugunu uretir ve
+    # `times_asked < 10` gibi karsilastirmalar TypeError atar; servisin genis
+    # `except` dali bunu yutup False dondurdugu icin bazi testler HICBIR SEY
+    # OLCMEDEN geciyordu (vakum yesil), digerleri de duz alanlara bakip
+    # dusuyordu.
+    q.statistics = MagicMock()
+    q.statistics.times_asked = times_asked
+    q.statistics.times_correct = times_correct
+    q.statistics.average_response_time = average_response_time
+    q.statistics.irt_difficulty = irt_difficulty
+    q.statistics.irt_discrimination = irt_discrimination
+    q.statistics.irt_guessing = irt_guessing
     return q
 
 
@@ -689,8 +706,8 @@ class TestSoruPerformansGuncelle:
         )
 
         assert success is True
-        assert question.times_asked == 6
-        assert question.times_correct == 4
+        assert question.statistics.times_asked == 6
+        assert question.statistics.times_correct == 4
 
     @pytest.mark.asyncio
     async def test_wrong_answer_does_not_increment_times_correct(
@@ -708,7 +725,7 @@ class TestSoruPerformansGuncelle:
             "q-wrong", dogru_cevap=False, cevap_suresi=20.0
         )
 
-        assert question.times_correct == 1  # unchanged
+        assert question.statistics.times_correct == 1  # unchanged
 
     @pytest.mark.asyncio
     async def test_sets_initial_response_time_when_zero(self, patches, mock_session):
@@ -724,7 +741,7 @@ class TestSoruPerformansGuncelle:
             "q-time", dogru_cevap=True, cevap_suresi=45.0
         )
 
-        assert question.average_response_time == 45.0
+        assert question.statistics.average_response_time == 45.0
 
     @pytest.mark.asyncio
     async def test_returns_false_for_missing_question(self, patches, mock_session):
@@ -776,7 +793,7 @@ class TestIrtParametreleriYenidenHesapla:
 
         assert result is True
         # 50% success rate → logit(0.5) = 0
-        assert question.irt_difficulty == pytest.approx(0.0, abs=0.01)
+        assert question.statistics.irt_difficulty == pytest.approx(0.0, abs=0.01)
 
     @pytest.mark.asyncio
     async def test_difficulty_clamped_to_valid_range(self, patches, mock_session):
@@ -793,7 +810,7 @@ class TestIrtParametreleriYenidenHesapla:
         svc = SoruBankasiServisi()
         await svc.irt_parametrelerini_yeniden_hesapla("q-hard")
 
-        assert -3.0 <= question.irt_difficulty <= 3.0
+        assert -3.0 <= question.statistics.irt_difficulty <= 3.0
 
     @pytest.mark.asyncio
     async def test_returns_false_on_db_exception(self, patches, mock_session):
