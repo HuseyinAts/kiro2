@@ -4,6 +4,7 @@ Task 7 - Requirements: 6.1, 6.2, 6.3, 6.5, 6.7, 6.10
 """
 
 import asyncio
+import logging
 import time
 
 import pytest
@@ -31,12 +32,19 @@ async def cache():
 
     yield cache
 
-    # Cleanup
+    # Cleanup -- teardown hatasi TESTI dusurmemeli (Redis yoksa clear_all/
+    # close patlayabilir), ama sessizce de yutulmamali. Once bos
+    # `except Exception: pass` vardi; reward-hacking hook'u bunu hakli
+    # olarak "Empty exception handler" diye isaretledi (6 Eyl 2026): sessiz
+    # yutma, gercek bir temizlik hatasini da gorunmez yapar. Artik yutuluyor
+    # ama GORUNUR: sebep uyari olarak log'a dusuyor.
     try:
         await cache.clear_all()
         await cache.close()
-    except Exception:
-        pass
+    except Exception as e:  # teardown: yakalanir ama loglanir, test dusmez
+        logging.getLogger(__name__).warning(
+            "cache teardown temizligi basarisiz (test sonucu etkilenmez): %s", e
+        )
 
 
 @pytest.mark.asyncio
