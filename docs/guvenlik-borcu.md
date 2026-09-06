@@ -5708,19 +5708,19 @@ SS10.55'ten sonra kalan tek fail:
 
     tests/integration/test_irt_morfoloji_service.py::
       TestIRTMorfolojiService::test_analyze_turkish_morphology_complexity
-    E   AssertionError: assert 'öğrencilerimiz' == 'öğrenci'
+    E   AssertionError: assert 'ogrencilerimiz' == 'ogrenci'
 
 Yerelde ayni test GECIYORDU (tek basina da, dosyanin tamami da: 27 passed).
 Yani ortam farki -- SS10.52'nin ayni ailesi.
 
 ### Kok neden
 
-Donen deger mock'un ne `word`u ("öğrencilerimizden") ne `root`u
-("öğrenci") -- ucuncu bir sey: "öğrencilerimiz". Bu, mock'un HIC devreye
+Donen deger mock'un ne `word`u ("ogrencilerimizden") ne `root`u
+("ogrenci") -- ucuncu bir sey: "ogrencilerimiz". Bu, mock'un HIC devreye
 girmedigini, gercek `turkish_nlp_service`'in kostugunu gosterir.
 `core/turkish_nlp_service.py` Zemberek server'ina (localhost:6789)
 baglanamayinca "fallback modda calisilacak" deyip basit bir govde
-cikariyor: "öğrencilerimizden" -> "öğrencilerimiz" (yalniz `-den` soyulmus).
+cikariyor: "ogrencilerimizden" -> "ogrencilerimiz" (yalniz `-den` soyulmus).
 CI'da Zemberek yok, bu makinede vardi -- fark tam olarak buydu.
 
 Durumu agirlastiran ikinci etken, servisin cagri sekli

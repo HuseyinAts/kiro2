@@ -73,7 +73,7 @@ class TestIRTMorfolojiService:
         assert hasattr(service, "ets_standards")
         assert hasattr(service, "turkish_irt_adjustments")
 
-        # Karmaşıklık ağırlıkları kontrolü
+        # Karmasiklik agirliklari kontrolu
         expected_weights = {
             "suffix_count",
             "derivational_depth",
@@ -83,7 +83,7 @@ class TestIRTMorfolojiService:
         }
         assert set(service.complexity_weights.keys()) == expected_weights
 
-        # Türkçe ayarlamalar kontrolü
+        # Turkce ayarlamalar kontrolu
         expected_adjustments = {
             "morphology_factor",
             "cultural_context",
@@ -145,11 +145,11 @@ class TestIRTMorfolojiService:
     @pytest.mark.asyncio
     async def test_analyze_turkish_morphology_complexity(self, service):
         """Türkçe morfolojik karmaşıklık analizi testi"""
-        # OLCUM (6 Eyl 2026): bu test CI'da "assert 'öğrencilerimiz' == 'öğrenci'"
+        # OLCUM (6 Eyl 2026): bu test CI'da "assert 'ogrencilerimiz' == 'ogrenci'"
         # ile dusuyordu, yerelde ise geciyordu. Donen deger ne mock'un `word`u
         # ne `root`u -- yani mock HIC DEVREYE GIRMEMIS, gercek servis kosmustu.
         # `turkish_nlp_service` Zemberek server'ina (localhost:6789) baglanamayinca
-        # fallback moda gecip "öğrencilerimizden" -> "öğrencilerimiz" donduruyor;
+        # fallback moda gecip "ogrencilerimizden" -> "ogrencilerimiz" donduruyor;
         # CI'da Zemberek yok, bu makinede vardi. Ustelik servis
         # `asyncio.gather(..., return_exceptions=True)` kullandigi icin mock
         # kaynakli bir hata da SESSIZCE yutulup gercek sonuca dusulebiliyordu.
@@ -205,19 +205,19 @@ class TestIRTMorfolojiService:
 
     def test_calculate_derivational_depth(self, service):
         """Türetim derinliği hesaplama testi"""
-        # Türetim ekleri içeren liste
+        # Turetim ekleri iceren liste
         suffixes_with_derivation = ["lı", "lık", "ça"]
         depth = service._calculate_derivational_depth(suffixes_with_derivation)
         assert depth == 3
 
-        # Türetim eki olmayan liste
+        # Turetim eki olmayan liste
         suffixes_without_derivation = ["lar", "ın", "da"]
         depth = service._calculate_derivational_depth(suffixes_without_derivation)
         assert depth == 0
 
     def test_calculate_compound_complexity(self, service):
         """Birleşik kelime karmaşıklığı testi"""
-        # Uzun kelime (birleşik olabilir)
+        # Uzun kelime (birlesik olabilir)
         long_word = "çekoslovakyalılaştıramadıklarımızdanmısınız"
         complexity = service._calculate_compound_complexity(long_word)
         assert complexity == 0.8
@@ -227,20 +227,20 @@ class TestIRTMorfolojiService:
         complexity = service._calculate_compound_complexity(medium_word)
         assert complexity == 0.5
 
-        # Kısa kelime
+        # Kisa kelime
         short_word = "ev"
         complexity = service._calculate_compound_complexity(short_word)
         assert complexity == 0.0
 
     def test_count_phonetic_changes(self, service):
         """Ses değişimi sayma testi"""
-        # Ünlü uyumu olan
+        # Unlu uyumu olan
         root = "ev"
         suffixes = ["de"]
         changes = service._count_phonetic_changes(root, suffixes)
         assert changes >= 0
 
-        # Ünlü uyumu olmayan
+        # Unlu uyumu olmayan
         root = "kitap"
         suffixes = ["de"]  # "ta" olmalıydı
         changes = service._count_phonetic_changes(root, suffixes)
@@ -248,21 +248,21 @@ class TestIRTMorfolojiService:
 
     def test_check_vowel_harmony(self, service):
         """Ünlü uyumu kontrolü testi"""
-        # Ön ünlü uyumu
+        # On unlu uyumu
         assert service._check_vowel_harmony("e", "i") is True
         assert service._check_vowel_harmony("e", "a") is False
 
-        # Arka ünlü uyumu
+        # Arka unlu uyumu
         assert service._check_vowel_harmony("a", "ı") is True
         assert service._check_vowel_harmony("a", "e") is False
 
     def test_calculate_semantic_ambiguity(self, service):
         """Anlam belirsizliği hesaplama testi"""
-        # Kök oranı yüksek (az ek)
+        # Kok orani yuksek (az ek)
         ambiguity = service._calculate_semantic_ambiguity("kitap", "kitap")
         assert ambiguity == 0.2
 
-        # Kök oranı düşük (çok ek)
+        # Kok orani dusuk (cok ek)
         ambiguity = service._calculate_semantic_ambiguity("kitaplarımızdan", "kitap")
         assert ambiguity == 0.6  # Gerçek hesaplama sonucu
 
@@ -271,7 +271,7 @@ class TestIRTMorfolojiService:
         self, service, sample_question_text, sample_student_responses
     ):
         """Temel IRT parametreleri hesaplama testi"""
-        # Öğrenci yanıtları ile
+        # Ogrenci yanitlari ile
         params = await service._calculate_base_irt_parameters(
             sample_question_text, "A", sample_student_responses, None
         )
@@ -313,11 +313,11 @@ class TestIRTMorfolojiService:
         )
 
         assert isinstance(adjusted_params, IRTParameters)
-        # Morfolojik karmaşıklık zorluk artırmalı
+        # Morfolojik karmasiklik zorluk artirmali
         assert adjusted_params.difficulty > base_params.difficulty
-        # Ayırt edicilik artmalı
+        # Ayirt edicilik artmali
         assert adjusted_params.discrimination > base_params.discrimination
-        # Şans faktörü azalmalı
+        # Sans faktoru azalmali
         assert adjusted_params.guessing < base_params.guessing
 
     def test_calculate_turkish_difficulty_factor(self, service):
@@ -377,21 +377,21 @@ class TestIRTMorfolojiService:
         }
         assert set(comparison.keys()) == expected_keys
 
-        # Tüm değerler 0-1 aralığında olmalı (overall_improvement hariç)
+        # Tum degerler 0-1 araliginda olmali (overall_improvement haric)
         for key, value in comparison.items():
             if key != "overall_improvement":
                 assert 0.0 <= value <= 1.0
 
     def test_calculate_standard_match(self, service):
         """Standart eşleşme skoru testi"""
-        # ÖSYM standartları ile tam eşleşme
+        # OSYM standartlari ile tam eslesme
         difficulty = 0.0  # medium range içinde
         match_score = service._calculate_standard_match(
             difficulty, service.osym_standards
         )
         assert match_score == 1.0
 
-        # Aralık dışında
+        # Aralik disinda
         difficulty = 5.0  # çok yüksek
         match_score = service._calculate_standard_match(
             difficulty, service.osym_standards
@@ -401,7 +401,7 @@ class TestIRTMorfolojiService:
     @pytest.mark.asyncio
     async def test_generate_recommendations(self, service):
         """Öneri oluşturma testi"""
-        # Çok kolay soru
+        # Cok kolay soru
         irt_params = IRTParameters(
             difficulty=-2.0, discrimination=0.8, guessing=0.20, upper_asymptote=1.0
         )
@@ -442,7 +442,7 @@ class TestIRTMorfolojiService:
             overall_complexity=0.5,
         )
 
-        # Çok veri ile
+        # Cok veri ile
         confidence = service._calculate_analysis_confidence(morphology, 100)
         assert 0.3 <= confidence <= 1.0
 
@@ -458,12 +458,12 @@ class TestIRTMorfolojiService:
             difficulty=0.0, discrimination=1.0, guessing=0.20, upper_asymptote=1.0
         )
 
-        # Morfoloji ayarlaması ile
+        # Morfoloji ayarlamasi ile
         prob_with_morphology = await service.calculate_irt_probability(
             student_ability, irt_params, morphology_adjustment=True
         )
 
-        # Morfoloji ayarlaması olmadan
+        # Morfoloji ayarlamasi olmadan
         prob_without_morphology = await service.calculate_irt_probability(
             student_ability, irt_params, morphology_adjustment=False
         )
@@ -471,7 +471,7 @@ class TestIRTMorfolojiService:
         assert 0.0 <= prob_with_morphology <= 1.0
         assert 0.0 <= prob_without_morphology <= 1.0
 
-        # Extreme değerler testi
+        # Extreme degerler testi
         extreme_ability = 10.0
         prob_extreme = await service.calculate_irt_probability(
             extreme_ability, irt_params, morphology_adjustment=False
@@ -483,14 +483,14 @@ class TestIRTMorfolojiService:
         """Zorluk önerisi testi"""
         current_difficulty = 0.0
 
-        # Yüksek performans - zorluk artırılmalı
+        # Yuksek performans - zorluk artirilmali
         new_difficulty, recommendation = await service.get_difficulty_recommendation(
             current_difficulty, 0.9, 0.5
         )
         assert new_difficulty > current_difficulty
         assert "artır" in recommendation.lower()
 
-        # Düşük performans - zorluk azaltılmalı
+        # Dusuk performans - zorluk azaltilmali
         new_difficulty, recommendation = await service.get_difficulty_recommendation(
             current_difficulty, 0.2, 0.5
         )
@@ -527,7 +527,7 @@ class TestIRTMorfolojiService:
     @pytest.mark.asyncio
     async def test_error_handling(self, service):
         """Hata yönetimi testi"""
-        # Geçersiz soru metni
+        # Gecersiz soru metni
         with patch(
             "core.turkish_nlp_service.turkish_nlp_service.analyze_morphology",
             side_effect=Exception("NLP Error"),
@@ -536,7 +536,7 @@ class TestIRTMorfolojiService:
                 "invalid text"
             )
 
-            # Hata durumunda fallback değerler döndürülmeli
+            # Hata durumunda fallback degerler dondurulmeli
             assert result.overall_complexity == 0.5
             assert result.word == "error"
 
@@ -562,18 +562,18 @@ class TestIRTParameters:
 
     def test_irt_parameters_validation(self):
         """IRT parametreleri doğrulama testi"""
-        # Normal değerler
+        # Normal degerler
         params = IRTParameters(
             difficulty=0.0, discrimination=1.0, guessing=0.25, upper_asymptote=1.0
         )
 
-        # Zorluk -3 ile +3 arasında olmalı
+        # Zorluk -3 ile +3 arasinda olmali
         assert -3.0 <= params.difficulty <= 3.0
 
-        # Ayırt edicilik pozitif olmalı
+        # Ayirt edicilik pozitif olmali
         assert params.discrimination > 0
 
-        # Şans faktörü 0-0.5 arasında olmalı
+        # Sans faktoru 0-0.5 arasinda olmali
         assert 0.0 <= params.guessing <= 0.5
 
 
@@ -652,7 +652,7 @@ class TestIRTMorfolojiIntegration:
         """Tam analiz iş akışı testi"""
         service = IRTMorfolojiService()
 
-        # Gerçekçi Türkçe soru
+        # Gercekci Turkce soru
         question_text = """
         Aşağıdaki cümlede kaç tane isim vardır?
         "Öğrencilerimizden bazıları kütüphanede çalışıyorlar."
@@ -690,7 +690,7 @@ class TestIRTMorfolojiIntegration:
                 student_responses=student_responses,
             )
 
-            # Entegrasyon doğrulamaları
+            # Entegrasyon dogrulamalari
             assert analysis.question_id == "integration_test_1"
             assert analysis.morphology_complexity.overall_complexity > 0
             assert analysis.irt_parameters.difficulty != 0
@@ -706,7 +706,7 @@ class TestIRTMorfolojiIntegration:
 
         import time
 
-        # Çok sayıda kelime karmaşıklığı hesaplama
+        # Cok sayida kelime karmasikligi hesaplama
         start_time = time.time()
 
         for i in range(100):
@@ -725,12 +725,12 @@ class TestIRTMorfolojiIntegration:
         end_time = time.time()
         processing_time = end_time - start_time
 
-        # 100 kelime 1 saniyede işlenmeli
+        # 100 kelime 1 saniyede islenmeli
         assert processing_time < 1.0
 
         print(f"100 kelime karmaşıklığı {processing_time:.3f} saniyede hesaplandı")
 
 
 if __name__ == "__main__":
-    # Test çalıştırma
+    # Test calistirma
     pytest.main([__file__, "-v", "--tb=short"])
