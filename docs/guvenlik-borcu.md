@@ -5607,3 +5607,94 @@ degisti. CI'nin 0.7.1'i mevcut formati DOGRU buluyor (bu PR'da
 `Code Quality (ruff)` PASS). Yerel 0.16.6 ile reformat etmek CI'i ters
 yonden kirabilirdi, bu yuzden BILEREK dokunulmadi. SS10.43'teki
 "CI ruff/mypy surum-pin suruklenmesi" temasinin devami.
+
+
+## §10.55 -- `-x` bayragi 1563 testi gizliyormus: rate-limiter'da iki bayat assert (2026-09-06)
+
+### Nasil ortaya cikti
+
+SS10.54'ten sonra CI tablosu:
+
+    once  : 1866 passed, 358 skipped, 1 error  -> exit 2
+    sonra : 3429 passed, 648 skipped, 1 failed
+    coverage: "Required test coverage of 20% reached. Total coverage: 24.63%"
+
+Iki sey birden gorunur oldu:
+
+1. **Coverage kapisi ISLIYOR** (24.63% > 20 esik) -- SS10.53 dogrulandi.
+   Ayrica oran 22.42 -> 24.63'e cikti, cunku artik daha fazla test kosuyor.
+2. **1866 -> 3429 passed**: yani ~1563 test daha once HIC KOSMUYORDU.
+   Sebep `ci.yml`'deki pytest `-x` bayragi (ilk hatada dur): redis teardown
+   error'i suite'i erkenden kesiyor, arkasindaki her sey sessizce
+   kosulmamis sayiliyordu. Kirmizi tek satir gorunurken, arkasinda ne
+   oldugu bilinmiyordu.
+
+Bu, kampanyanin ana temasinin ("kapi gercekten test ediyor mu?") en
+buyuk ornegi: kapi kirmiziydi ama testlerin YARISINDAN FAZLASI hic
+calismamisti.
+
+### Gorunur olan borc: rate-limiter'da bayat beklenti
+
+    tests/unit/test_advanced_rate_limiter.py:149
+    assert rate_limiter.endpoint_limits["/api/v1/auth/login"]["limit"] == 5
+    E   assert 300 == 5
+
+Ilk bakista bu bir GUVENLIK bulgusu gibi duruyor (login limiti 5 olmasi
+gerekirken 300 mu?). Varsayilmadi, olculdu -- ve tam tersi cikti.
+
+`core/advanced_rate_limiter.py` uzerindeki S229 notu gerekceyi zaten
+yaziyor: `b3be80686` (7 Agu, govdesi bos toplu commit) degerleri
+300 -> 5 yapmis; gerekce/test/yorum yokmus ve `api/auth.py`'deki
+OLCUME dayali karari (workload-simulator: 10 eszamanli ayni-WiFi
+ogrenci = 10/10 HTTP 429) sessizce geri aliyormus. 18 Agu rebuild'i
+kusuru canliya tasimis, Golden Flow'da 15 test 429 ile dusmus. Sonra
+belgelenmis politikaya donulmus:
+
+    _LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300)
+
+Ustelik bu karari koruyan bir civi testi var --
+`tests/fast/test_rate_limit_tutarliligi.py`:
+
+    assert limit >= 30, "login limiti ... paylasimli NAT arkasindaki bir sinif icin ..."
+
+Yani depoda birbiriyle CELISEN iki test vardi: biri `== 5`, digeri
+`>= 30`. Ikisi ayni anda gecemez. Celiski fark edilmemisti cunku bayat
+olan test `-x` yuzunden hic kosmuyordu.
+
+Sonuc: **uretim dogru, test bayatti.** 300 bir gevseme degil, olcume
+dayali ve belgeli bir karar.
+
+### Duzeltme
+
+Iki yerde sabit `5` beklentisi politikaya baglandi (sabiti tekrarlamak
+yerine `_LOGIN_RPM` import edilerek) -- boylece politika degisirse test
+kendiliginden dogru kalir, sessizce bayatlamaz:
+
+    tests/unit/test_advanced_rate_limiter.py:149  (test_endpoint_specific_limits)
+    tests/unit/test_advanced_rate_limiter.py:249  (test_check_rate_limit_endpoint_specific)
+
+Ikinci yer, ILKI duzeltilene kadar gorunmuyordu -- `-x` tek bir bayat
+assert'in arkasindaki borcu da gizliyordu. Katman katman soyuldu.
+
+Dogrulama: mypy EXITCODE 0, hedef test + civi testi BIRLIKTE 25 passed.
+
+### Takip onerisi -- `-x` bayragi (karar sizde)
+
+`ci.yml`'de `pytest ... -x` var. Hizli geri bildirim icin mantikli ama
+bedeli olculdu: tek bir hata, arkasindaki ~1563 testi raporsuz
+birakiyor ve "kac borc var" sorusunu cevapsiz kiliyor. Secenekler:
+
+- `-x`'i kaldir (tam tablo her kosumda gorunur, kosum biraz uzar), ya da
+- `--maxfail=N` ile gevset (orn. 10), ya da
+- oldugu gibi birak (hizli ama kor)
+
+Kaldirmak SS10.55'i bir daha yasamamak icin en garantili yol; karar
+oncelik meselesi oldugu icin Huseyin'e birakiliyor.
+
+### Yan not -- ruff RUF059 yine surum farki (dokunulmadi)
+
+Yerel `ruff check` bu dosyada 2 RUF059 gosterdi (satir 264/361, bu
+PR'in dokunmadigi yerler). Yerel ruff 0.16.6, `.pre-commit-config.yaml`
+pini v0.7.1; RUF059 daha yeni bir kural ve CI'nin ruff job'i PASS
+veriyor. SS10.43'teki surum-pin suruklenmesi temasinin devami --
+bilerek dokunulmadi.
