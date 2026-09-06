@@ -592,7 +592,16 @@ TEST_DATABASE_URL = os.getenv(
 # ============================================================================
 
 
-@pytest_asyncio.fixture(scope="session")
+# OLCUM (6 Eyl 2026, SS10.56): `-x` kalkip suite derinlere inince bu
+# fixture'i kullanan testler `ScopeMismatch: function scoped fixture
+# event_loop with a session scoped request object` ile dusmeye basladi.
+# Sebep bu depoda tekrar eden surum suruklenmesi: backend/conftest.py'nin
+# docstring'i altyapinin `pytest-asyncio==0.21.1` varsayimiyla kuruldugunu
+# yaziyor (0.21.x `asyncio_default_fixture_loop_scope` anahtarini yok
+# sayar), ama GERCEKTE kurulu olan 1.3.0. 1.x'te dogru yol, session
+# kapsamli async fixture'a loop_scope'u ACIKCA vermek -- boylece legacy
+# `event_loop` fixture'ina hic bagimli olmaz.
+@pytest_asyncio.fixture(scope="session", loop_scope="session")
 async def setup_database(test_async_engine: AsyncEngine):
     """Create all tables safely, handling DuplicateTable/DuplicateObject errors.
 
