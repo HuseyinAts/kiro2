@@ -110,7 +110,16 @@ async def seeded():
             )
         pid = str(uuid.uuid4())
         await s.execute(
-            text("INSERT INTO plans (id,code,name,seat_limit) VALUES (:i,:c,:c,2)"),
+            # OLCUM (6 Eyl 2026, ucuncu katman): `is_active` verilmiyordu ve
+            # CI'da `NotNullViolationError: null value in column "is_active"
+            # of relation "plans"` aliniyordu -- o kolon NOT NULL ve DB
+            # tarafinda default'u yok. Test zaten KULLANILABILIR bir plan
+            # kurmak istiyor, dolayisiyla acikca true veriliyor (davranis
+            # degismiyor, ortulu varsayim gorunur hale geliyor).
+            text(
+                "INSERT INTO plans (id,code,name,seat_limit,is_active) "
+                "VALUES (:i,:c,:c,2,true)"
+            ),
             {"i": pid, "c": plan_code},
         )
         await s.execute(
