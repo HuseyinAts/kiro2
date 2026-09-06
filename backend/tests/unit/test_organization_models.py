@@ -4,30 +4,17 @@ TDD: bu test önce RED (tablolar DB'de yok), migration sonrası GREEN.
 Model yapısı (unit) + DB varlığı (integration) doğrular.
 """
 
-import os
-
-import pytest
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import make_url
+from sqlalchemy import text
 
 from models.organization import Organization, OrgMembership
+from tests.pg_sync import sync_pg_engine
 
 
 def _engine():
-    # override=True: conftest TESTING modunda DATABASE_URL'i sqlite'a set eder;
-    # bu DB-doğrulama testleri gerçek postgres (5434/kiro2) hedefler.
-    load_dotenv(
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=True
-    )
-    raw = os.environ.get("DATABASE_URL", "").replace(
-        "postgresql+asyncpg://", "postgresql://"
-    )
-    if not raw.startswith("postgresql"):
-        pytest.skip("gerçek postgres DATABASE_URL yok")
-    return create_engine(
-        make_url(raw).set(host="localhost", port=5434, database="kiro2")
-    )
+    # Ortak tanim ve olcum gerekcesi: tests/pg_sync.py (override=True ile .env
+    # yeniden okunuyor cunku conftest TESTING modunda DATABASE_URL'i sqlite'a
+    # set ediyor; bu DB-dogrulama testleri gercek postgres hedefler).
+    return sync_pg_engine(host="localhost")
 
 
 def test_model_structure():

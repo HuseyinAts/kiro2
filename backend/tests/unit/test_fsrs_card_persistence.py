@@ -29,6 +29,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from services.bkt_service import BKTService
+from tests.pg_sync import async_pg_dsn
 
 # ---------------------------------------------------------------------------
 # Constants (shared with batch1b)
@@ -36,7 +37,8 @@ from services.bkt_service import BKTService
 
 TEST_TOPIC_ID = "00000000-0000-0000-0000-000000000001"
 REAL_USER_ID = "41411c25-5c85-4470-a6ac-ac31c60ce732"
-DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"
+# DSN artik SABIT DEGIL: gerekce ve olcum tests/pg_sync.py::async_pg_dsn
+# docstring'inde (parola git'te + veritabani adi CI'da `kiro2_test`).
 
 _blackboard_mock_instance = AsyncMock(
     publish_learning_event=AsyncMock(return_value="msg_id_mock")
@@ -51,15 +53,18 @@ _blackboard_mock_instance = AsyncMock(
 @pytest.fixture
 async def db_session():
     """Function-scoped async engine — identical to batch1b fixture."""
-    engine = create_async_engine(DB_URL, echo=False, pool_size=5, max_overflow=10)
+    engine = create_async_engine(
+        async_pg_dsn(host="localhost"), echo=False, pool_size=5, max_overflow=10
+    )
     session_maker = async_sessionmaker(
         bind=engine, class_=AsyncSession, expire_on_commit=False
     )
 
     async with session_maker() as session:
         for table in ["bkt_states", "student_abilities", "zpd_history", "fsrs_cards"]:
+            # S608: tablo adi sabit listeden; bind edilemez (bkz. batch1b).
             await session.execute(
-                text(f"DELETE FROM {table} WHERE student_id = :sid"),
+                text(f"DELETE FROM {table} WHERE student_id = :sid"),  # noqa: S608
                 {"sid": REAL_USER_ID},
             )
         await session.execute(
@@ -271,21 +276,23 @@ async def test_fsrs_card_db_matches_review_card_core_fields(db_session):
     assert row is not None
 
     # stability and difficulty should match the real FSRS output (within floating point)
-    assert abs(row.stability - fsrs_result["stability"]) < 1e-6, (
-        f"DB stability {row.stability} != FSRS result {fsrs_result['stability']}"
-    )
-    assert abs(row.difficulty - fsrs_result["difficulty"]) < 1e-6, (
-        f"DB difficulty {row.difficulty} != FSRS result {fsrs_result['difficulty']}"
-    )
+    assert (
+        abs(row.stability - fsrs_result["stability"]) < 1e-6
+    ), f"DB stability {row.stability} != FSRS result {fsrs_result['stability']}"
+    assert (
+        abs(row.difficulty - fsrs_result["difficulty"]) < 1e-6
+    ), f"DB difficulty {row.difficulty} != FSRS result {fsrs_result['difficulty']}"
 
     # state string should match exactly
-    assert row.state == fsrs_result["state"], (
-        f"DB state '{row.state}' != FSRS state '{fsrs_result['state']}'"
-    )
+    assert (
+        row.state == fsrs_result["state"]
+    ), f"DB state '{row.state}' != FSRS state '{fsrs_result['state']}'"
 
     # due_date ordering: DB due_date should be today or in the future (FSRS sets it)
     now_start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
-    assert row.due_date >= now_start, f"due_date {row.due_date} should be on or after today's start {now_start}"
+    assert (
+        row.due_date >= now_start
+    ), f"due_date {row.due_date} should be on or after today's start {now_start}"
 
 
 # ---------------------------------------------------------------------------
@@ -320,9 +327,9 @@ async def test_fsrs_card_defaults_preserved_for_unwritten_fields(
 
     # elapsed_days and scheduled_days are NEVER set by record_answer UPDATE
     # They should remain at whatever the seed set (7 and 14 respectively)
-    assert row.elapsed_days == 7, (
-        f"elapsed_days was NOT written by record_answer and should stay at seed value 7, got {row.elapsed_days}"
-    )
-    assert row.scheduled_days == 14, (
-        f"scheduled_days was NOT written by record_answer and should stay at seed value 14, got {row.scheduled_days}"
-    )
+    assert (
+        row.elapsed_days == 7
+    ), f"elapsed_days was NOT written by record_answer and should stay at seed value 7, got {row.elapsed_days}"
+    assert (
+        row.scheduled_days == 14
+    ), f"scheduled_days was NOT written by record_answer and should stay at seed value 14, got {row.scheduled_days}"

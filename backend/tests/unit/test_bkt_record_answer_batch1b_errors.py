@@ -27,6 +27,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.bkt_service import BKTService
+from tests.pg_sync import async_pg_dsn
 
 # ---------------------------------------------------------------------------
 # Constants (shared with batch1b)
@@ -34,7 +35,8 @@ from services.bkt_service import BKTService
 
 TEST_TOPIC_ID = "00000000-0000-0000-0000-000000000001"
 REAL_USER_ID = "41411c25-5c85-4470-a6ac-ac31c60ce732"
-DB_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5434/kiro2"
+# DSN artik SABIT DEGIL: gerekce ve olcum tests/pg_sync.py::async_pg_dsn
+# docstring'inde (parola git'te + veritabani adi CI'da `kiro2_test`).
 
 _FSRS_MOCK_RETURN = {
     "stability": 1.0,
@@ -60,30 +62,44 @@ async def db_session():
     """Function-scoped async engine — identical to batch1b."""
     from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-    engine = create_async_engine(DB_URL, echo=False, pool_size=5, max_overflow=10)
+    engine = create_async_engine(
+        async_pg_dsn(), echo=False, pool_size=5, max_overflow=10
+    )
     session_maker = async_sessionmaker(
         bind=engine, class_=AsyncSession, expire_on_commit=False
     )
 
     async with session_maker() as session:
         for table in ["bkt_states", "student_abilities", "zpd_history", "fsrs_cards"]:
+            # S608: tablo adi sabit listeden; bind edilemez (bkz. batch1b).
             await session.execute(
-                text(f"DELETE FROM {table} WHERE student_id = :sid"),
+                text(f"DELETE FROM {table} WHERE student_id = :sid"),  # noqa: S608
                 {"sid": REAL_USER_ID},
             )
         # Ensure org_legacy_default exists in organizations table
         await session.execute(
             text("""
-                INSERT INTO organizations (id, name, created_at, updated_at)
-                VALUES ('org_legacy_default', 'Legacy Default Org', now(), now())
+                INSERT INTO organizations (id, name, org_type, status,
+                                           kvkk_role, license_seats,
+                                           created_at, updated_at)
+                VALUES ('org_legacy_default', 'Legacy Default Org',
+                        'ozel_okul', 'trial', 'controller', 0,
+                        now(), now())
                 ON CONFLICT (id) DO NOTHING
             """)
         )
         # Ensure REAL_USER_ID seed user exists (FK for BKTState.student_id)
         await session.execute(
             text("""
-                INSERT INTO users (id, email, username, first_name, last_name, password_hash, role, organization_id, is_active, created_at, updated_at)
-                VALUES (:id, :email, :username, 'Test', 'User', 'hashed_pwd', 'STUDENT', 'org_legacy_default', true, now(), now())
+                INSERT INTO users (id, email, username, first_name, last_name,
+                                   password_hash, role, organization_id,
+                                   is_active, is_verified, is_2fa_enabled,
+                                   is_premium, is_parent, total_xp, level,
+                                   elo_rating, created_at, updated_at)
+                VALUES (:id, :email, :username, 'Test', 'User', 'hashed_pwd',
+                        'STUDENT', 'org_legacy_default',
+                        true, true, false, false, false, 0, 1, 1200,
+                        now(), now())
                 ON CONFLICT (id) DO NOTHING
             """),
             {
@@ -155,7 +171,7 @@ async def bkt_state_seed(db_session):
 
 
 @pytest.mark.asyncio
-async def test_record_answer_bkt_read_fails_uses_default_p_L(
+async def test_record_answer_bkt_read_fails_uses_default_p_L(  # noqa: N802
     db_session, bkt_state_seed
 ):
     """BKTState SELECT raises OperationalError → p_learn defaults to params.p_T=0.10."""
@@ -194,13 +210,13 @@ async def test_record_answer_bkt_read_fails_uses_default_p_L(
             )
 
     # Fallback: p_L defaults to params["p_T"]=0.10, then update(0.10, correct=True)
-    assert result["new_p_L"] > 0.10, (
-        f"new_p_L should exceed default 0.10, got {result['new_p_L']}"
-    )
+    assert (
+        result["new_p_L"] > 0.10
+    ), f"new_p_L should exceed default 0.10, got {result['new_p_L']}"
     assert result["errors"]["bkt"] is not None, "errors['bkt'] should be populated"
-    assert isinstance(result["errors"]["bkt"], str), (
-        f"errors['bkt'] should be str, got {type(result['errors']['bkt'])}"
-    )
+    assert isinstance(
+        result["errors"]["bkt"], str
+    ), f"errors['bkt'] should be str, got {type(result['errors']['bkt'])}"
     # Bridge method still applies (no answered_questions)
     assert result["irt_method"] == "bridge"
     # ZPD computed normally — FRUSTRATION (p_L=0.10 < LOWER=0.40) or ZPD_ACTIVE
@@ -245,12 +261,12 @@ async def test_record_answer_irt_fails_uses_zero_theta(db_session):
             )
 
     # Fallback defaults are set before the try block
-    assert result["theta_after"] == 0.0, (
-        f"theta_after should be 0.0 fallback, got {result['theta_after']}"
-    )
-    assert result["theta_se"] == 1.0, (
-        f"theta_se should be 1.0 fallback, got {result['theta_se']}"
-    )
+    assert (
+        result["theta_after"] == 0.0
+    ), f"theta_after should be 0.0 fallback, got {result['theta_after']}"
+    assert (
+        result["theta_se"] == 1.0
+    ), f"theta_se should be 1.0 fallback, got {result['theta_se']}"
     assert result["errors"]["irt"] is not None, "errors['irt'] should be populated"
     assert "IRT explosion" in result["errors"]["irt"]
     # IRT method still determined by answered_questions presence
@@ -301,17 +317,17 @@ async def test_record_answer_student_ability_upsert_fails_continues(db_session):
             )
 
     # StudentAbility upsert fail → errors["irt"] (line 335: if errors["irt"] is None)
-    assert result["errors"]["irt"] is not None, (
-        "errors['irt'] should be populated on StudentAbility fail"
-    )
+    assert (
+        result["errors"]["irt"] is not None
+    ), "errors['irt'] should be populated on StudentAbility fail"
     # NO separate errors["student_ability"] key
-    assert "student_ability" not in result["errors"], (
-        "errors has no 'student_ability' key"
-    )
+    assert (
+        "student_ability" not in result["errors"]
+    ), "errors has no 'student_ability' key"
     # Bridge theta still computed
-    assert result["theta_after"] != 0.0 or result["theta_se"] != 1.0, (
-        "theta should still be computed via bridge"
-    )
+    assert (
+        result["theta_after"] != 0.0 or result["theta_se"] != 1.0
+    ), "theta should still be computed via bridge"
     assert result["irt_method"] == "bridge"
     assert result["new_p_L"] > 0.0
     await db_session().close()
@@ -349,9 +365,9 @@ async def test_record_answer_fsrs_fails_sets_next_review_to_none(db_session):
             )
 
     # fsrs_next_review defaults to None before the try block (line 340)
-    assert result["fsrs_next_review"] is None, (
-        f"fsrs_next_review should be None on FSRS fail, got {result['fsrs_next_review']}"
-    )
+    assert (
+        result["fsrs_next_review"] is None
+    ), f"fsrs_next_review should be None on FSRS fail, got {result['fsrs_next_review']}"
     assert result["errors"]["fsrs"] is not None, "errors['fsrs'] should be populated"
     assert "FSRS explosion" in result["errors"]["fsrs"]
     # Other computations still happened
@@ -413,15 +429,17 @@ async def test_record_answer_bkt_read_fail_writes_no_bkt_state_row(
             {"sid": REAL_USER_ID, "tid": TEST_TOPIC_ID},
         )
         db_row = row.one_or_none()
-        assert db_row is not None, (
-            "Original BKTState row should remain after read failure"
-        )
-        assert float(db_row.p_learn) == 0.3, (
-            f"p_learn should be original 0.3, not updated: got {db_row.p_learn}"
-        )
-        assert db_row.attempt_count == 2, (
-            f"attempt_count should be original 2, got {db_row.attempt_count}"
-        )
+        assert (
+            db_row is not None
+        ), "Original BKTState row should remain after read failure"
+        # FLOAT(5) = tek duyarlik; tam esitlik yapisal olarak yanlis
+        # (0.3 -> 0.30000001192092896). Bkz. batch1b'deki ayni not.
+        assert float(db_row.p_learn) == pytest.approx(
+            0.3, rel=1e-6
+        ), f"p_learn should be original 0.3, not updated: got {db_row.p_learn}"
+        assert (
+            db_row.attempt_count == 2
+        ), f"attempt_count should be original 2, got {db_row.attempt_count}"
 
 
 # ---------------------------------------------------------------------------
@@ -497,9 +515,9 @@ async def test_record_answer_all_4_fail_collects_all_errors(db_session, bkt_stat
         "recommended_difficulty",
         "errors",
     }
-    assert set(result.keys()) == EXPECTED_KEYS, (
-        f"Missing/extra keys: {set(result.keys()) ^ EXPECTED_KEYS}"
-    )
+    assert (
+        set(result.keys()) == EXPECTED_KEYS
+    ), f"Missing/extra keys: {set(result.keys()) ^ EXPECTED_KEYS}"
 
     # errors dict has correct 4 keys
     assert set(result["errors"].keys()) == {"bkt", "irt", "fsrs", "zpd"}
