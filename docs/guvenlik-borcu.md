@@ -5948,3 +5948,39 @@ Dogrulama: mypy EXITCODE 0, ruff "All checks passed", izole DSN uretimi
 sifreyi dogru tasiyor ve maske sizmiyor.
 
 Bu hata da `-x` arkasinda gizliydi -- suite ona hic ulasamiyordu.
+
+### Son zincir: `test_org_members` DSN + sema uyumsuzluklari (dort katman)
+
+DSN sifre duzeltmesinden sonra ayni test uc katman daha acti. Her katman
+bir oncekini duzeltmeden GORUNMUYORDU (`-x`):
+
+    1. InvalidPasswordError      -> str(url) sifreyi maskeliyor
+    2. InvalidCatalogNameError   -> .set(database="kiro2") ortamin
+                                    kiro2_test'ini eziyor
+    3. NotNullViolation: plans.is_active
+    4. NotNullViolation: users.is_2fa_enabled
+
+3. katmanda desen anlasildi: test raw SQL INSERT kullaniyor ve semanin
+NOT NULL kolonlarini eksik veriyor. Tek tek kovalamak yerine sema
+sorgulandi (`information_schema.columns`, "is_nullable='NO' AND
+column_default IS NULL"):
+
+    plans                 : id, code, name, is_active
+    organizations         : id, name, org_type, status, kvkk_role, license_seats
+    organization_licenses : id, organization_id, plan_id
+    users                 : id, email, username, password_hash,
+                            is_2fa_enabled, is_premium, first_name, last_name,
+                            role, total_xp, level, is_active, is_verified,
+                            elo_rating, is_parent   (15 kolon)
+
+Test `users` icin yalnizca 9 kolon veriyordu; eksik 7'si tek hamlede
+tamamlandi (notr degerlerle -- testin olctugu sey org uyeligi/koltuk
+sayimi, bu alanlar degil). Boylece "her CI kosumunda bir sonraki NOT NULL"
+zinciri kirildi.
+
+Dogrulama: yerelde GERCEK postgres ile 19 PASS, ruff "All checks passed",
+mypy EXITCODE 0.
+
+**Not:** bu dosya raw SQL INSERT kullandigi icin semaya karsi kirilgan --
+ORM ile yazilsaydi kolon eklendiginde kendiliginden uyumlu kalirdi. Bu
+bir tasarim borcu olarak duruyor; bu turda kapsam disi birakildi.

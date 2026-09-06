@@ -133,9 +133,21 @@ async def seeded():
         for uid, email, oid, role in people.values():
             await s.execute(
                 text(
+                    # OLCUM (6 Eyl 2026, dorduncu katman): NOT NULL kolonlar
+                    # katman katman patliyordu (once plans.is_active, sonra
+                    # users.is_2fa_enabled). Tek tek kovalamak yerine sema
+                    # sorgulandi -- information_schema'da bu tablolar icin
+                    # "NOT NULL ve default'u YOK" olan TUM kolonlar cikarildi.
+                    # users icin 15 kolon zorunlu; test yalnizca 9'unu
+                    # veriyordu. Eksik 7'si (is_2fa_enabled, is_premium,
+                    # total_xp, level, is_verified, elo_rating, is_parent)
+                    # burada bir kerede tamamlandi. Degerler notr: testin
+                    # olctugu sey org uyeligi/koltuk sayimi, bu alanlar degil.
                     "INSERT INTO users (id,organization_id,email,username,password_hash,"
-                    "first_name,last_name,role,is_active) VALUES "
-                    "(:i,:o,:e,:u,'x','T','U','STUDENT',true)"
+                    "first_name,last_name,role,is_active,is_2fa_enabled,is_premium,"
+                    "total_xp,level,is_verified,elo_rating,is_parent) VALUES "
+                    "(:i,:o,:e,:u,'x','T','U','STUDENT',true,false,false,"
+                    "0,1,true,1000,false)"
                 ),
                 {"i": uid, "o": oid, "e": email, "u": uid},
             )
