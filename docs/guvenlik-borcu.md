@@ -5131,3 +5131,62 @@ sinirli erteleme kaydi (Faz 6) mevcut. Plan bu haliyle KAPALI kabul
 ediliyor; bundan sonraki calisma bu belgenin kendi numarali
 bolumleri (S10.x) uzerinden devam edecek, ayri bir plan dosyasi
 olarak takip edilmeyecek.
+
+
+## §10.50 -- health-checks.yml: 100/100 son calisma FAIL, cift kirik (DNS + Slack webhook) (2026-09-06)
+
+### Baslangic noktasi
+
+Eski plan kapanisindan (SS10.49) sonra master'daki en son workflow
+calismalarina bakildi -- "Health Checks & PostDeploy Verification"
+(`schedule` tetikleyicili) FAIL olarak goruldu. Tesadufi bir tek
+calisma degil mi diye `gh run list --limit 100` ile gecmis kontrol
+edildi.
+
+### Bulgular (kanit: `gh run list` + `gh run view --log` + DNS testi)
+
+    gh run list --workflow "Health Checks & PostDeploy Verification" --limit 100
+    -> 100/100 calisma "failure" (en eskisi 2026-08-25, ~12 gun)
+
+Cron her 5 dakikada bir calisacak sekilde ayarli
+(`.github/workflows/health-checks.yml:34`, `cron: '*/5 * * * *'`) ama
+GitHub'in kendi zamanlayicisi bunu HONORLAMIYOR -- gercek araliklar
+15 dakika ile 8+ saat arasinda degisiyor (dusuk-trafikli/public repo
+scheduled workflow throttling, bilinen bir GitHub Actions davranisi,
+bu repoya ozgu bir hata degil).
+Iki BAGIMSIZ, cakisan kok neden var:
+
+1. **DNS cozulmuyor**: `curl -s -o /dev/null -w "%{http_code}"
+   https://api.kiro2.com/health` exit code 6 (couldn't resolve host)
+   ile dusuyor. Windows makinesinde `Resolve-DnsName api.kiro2.com`
+   VE `Resolve-DnsName kiro2.com` (kok alan adi) ikisi de BOS donuyor
+   -- yani sadece API subdomain'i degil, `kiro2.com`'un kendisi de
+   su an DNS'te cozulmuyor. Production/staging altyapisi henuz bu
+   alan adlarinda ayakta degil.
+2. **Slack webhook yapilandirilmamis**: ayni calismanin log'unda
+   `SLACK_WEBHOOK_URL:` (env dump) BOS, ve `slackapi/slack-github-
+   action@v1` adimi `Error: Need to provide at least one botToken or
+   webhookUrl` ile kendisi de dusuyor. Yani health check gercekten
+   FAIL olsa bile (yukaridaki #1 zaten oyle), bunu Huseyin'e
+   bildirecek kanal calismiyor -- iki kat kor nokta.
+
+### Karar siniri
+
+Bu, saf bir kod/guvenlik bug'i degil -- **`api.kiro2.com` /
+`kiro2.com` production/staging'in ne zaman canliya alinacagi bir
+altyapi/urun kararidir**, benim tahmin edebilecegim bir sey degil.
+`SLACK_WEBHOOK_URL` da standing kuralda sir/credential girisi --
+Huseyin'in rezervi. Bu yuzden workflow dosyasina DOKUNULMADI.
+
+### Takip -- iki secenek Huseyin'e birakiliyor
+
+(A) Production/staging henuz canli degilse: bu workflow'u gecici
+    olarak devre disi birak (`on.schedule` blogunu kaldir/comment)
+    ya da DNS canlanana kadar bekleyen bir gate ekle -- aksi halde
+    her calisma bosuna CI dakikasi harcayip Actions sekmesini kalici
+    kirmizi tutuyor, gercek bir sinyali gizleyebilir.
+(B) Izlemeye devam etmek istiyorsa: `SLACK_WEBHOOK_URL` secret'ini
+    ekle (Settings -> Secrets and variables -> Actions) ki DNS
+    canlandiginda/dustugunde gercekten haberi olsun.
+Hangisi tercih edilirse, workflow degisikligini (A ise) ya da secret
+eklenmesini takiben dogrulamayi (B ise) ben yapabilirim.
