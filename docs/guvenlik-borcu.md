@@ -5808,3 +5808,50 @@ mypy EXITCODE 0, ruff "All checks passed", 27 test PASS.
 Bu, SS10.55'teki `-x` tespitinin ikinci kanitidir: `-x` yalnizca testleri
 degil, AYNI kok nedenin tekrarlarini da birbirinin arkasina gizliyor ve
 tek bir sorunu "flaky" gibi gostererek yanlis teshise itiyor.
+
+### Son engel: paylasilan session event loop'u ("Event loop is closed")
+
+Uc patch duzeltildikten sonra bile Backend Tests kirmizi kaldi ve dusen
+test yine `test_analyze_question_irt_morphology_basic` oldu. Bu test
+duzeltilen uc patch'ten HICBIRINI kullanmiyor (kendi
+`patch.object(service, ...)` cagrilarini kuruyor), yani ayri bir sorundu.
+
+Traceback belirleyiciydi -- hata testin KENDI kodunda degil, pytest_asyncio
+testi baslatirken oluyor:
+
+    pytest_asyncio/plugin.py:530: asyncio.ensure_future(coro, loop=_loop)
+    asyncio/base_events.py:520:  raise RuntimeError('Event loop is closed')
+
+`backend/pytest.ini`:
+
+    asyncio_default_fixture_loop_scope=session
+    asyncio_default_test_loop_scope=session
+
+Yani butun async testler TEK bir session loop'unu paylasiyor. O loop bir
+yerde kapandiginda, sirasi sonra gelen her async test bu hatayi aliyor.
+Belirti sira-bagimli oldugu icin "flaky" gibi gorunuyordu:
+
+    kosum 2: bu test dustu
+    kosum 3: bu test GECTI (baskasi dustu)
+    kosum 4: bu test yine dustu
+
+Bu, "flaky" etiketinin nasil yanlis teshise goturdugunun ikinci ornegi
+(birincisi SS10.56'daki uc-patch vakasi): rastgele gorunen sey, aslinda
+paylasilan bir kaynagin durumuydu.
+
+**Duzeltme.** Dosyadaki 10 async testin hepsine
+`@pytest.mark.asyncio(loop_scope="function")` verildi -- her test kendi
+loop'unda kosuyor, session loop'unun durumundan etkilenmiyor. Tek testi
+degil hepsini izole etmek SS10.56'nin dersinin uygulanmasi: ayni kok neden
+ayni dosyada birden fazla kilikta ortaya cikiyor ve `-x` bunlari
+birbirinin arkasina gizliyor. Bu dosyanin fixture'lari sync (`def`)
+oldugu icin ScopeMismatch riski yok.
+
+Dogrulama: 10/10 marker guncellendi, ruff "All checks passed", 27 test PASS.
+
+**Takip (karar sizde):** `asyncio_default_test_loop_scope=session` tum
+depo icin gecerli. Bu dosya izole edildi ama ayni tuzak diger async test
+dosyalari icin de duruyor. Iki secenek: (a) pytest.ini'de varsayilani
+`function` yapmak (izolasyon kazanilir, kosum bir miktar yavaslar),
+(b) dosya bazinda izole etmeye devam etmek. Blast radius genis oldugu
+icin degistirilmedi.

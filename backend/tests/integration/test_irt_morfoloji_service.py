@@ -92,7 +92,7 @@ class TestIRTMorfolojiService:
         }
         assert set(service.turkish_irt_adjustments.keys()) == expected_adjustments
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_analyze_question_irt_morphology_basic(
         self, service, sample_question_text, sample_student_responses
     ):
@@ -142,7 +142,7 @@ class TestIRTMorfolojiService:
             assert result.analysis_confidence > 0.0
             assert len(result.recommendations) > 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_analyze_turkish_morphology_complexity(self, service):
         """Türkçe morfolojik karmaşıklık analizi testi"""
         # OLCUM (6 Eyl 2026): bu test CI'da "assert 'ogrencilerimiz' == 'ogrenci'"
@@ -266,7 +266,7 @@ class TestIRTMorfolojiService:
         ambiguity = service._calculate_semantic_ambiguity("kitaplarımızdan", "kitap")
         assert ambiguity == 0.6  # Gerçek hesaplama sonucu
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_calculate_base_irt_parameters(
         self, service, sample_question_text, sample_student_responses
     ):
@@ -289,7 +289,7 @@ class TestIRTMorfolojiService:
 
         assert params.difficulty == 1.5
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_adjust_irt_with_morphology(self, service):
         """IRT parametrelerini morfoloji ile ayarlama testi"""
         base_params = IRTParameters(
@@ -343,7 +343,7 @@ class TestIRTMorfolojiService:
         assert isinstance(factor, float)
         assert 0.5 <= factor <= 2.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_compare_with_osym_ets_standards(self, service):
         """ÖSYM/ETS standartları karşılaştırma testi"""
         irt_params = IRTParameters(
@@ -398,7 +398,7 @@ class TestIRTMorfolojiService:
         )
         assert 0.0 <= match_score < 1.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_generate_recommendations(self, service):
         """Öneri oluşturma testi"""
         # Cok kolay soru
@@ -450,7 +450,7 @@ class TestIRTMorfolojiService:
         confidence = service._calculate_analysis_confidence(morphology, 5)
         assert 0.3 <= confidence <= 1.0
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_calculate_irt_probability(self, service):
         """IRT olasılık hesaplama testi"""
         student_ability = 0.5
@@ -478,7 +478,7 @@ class TestIRTMorfolojiService:
         )
         assert prob_extreme > 0.99  # Çok yüksek olasılık
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_get_difficulty_recommendation(self, service):
         """Zorluk önerisi testi"""
         current_difficulty = 0.0
@@ -524,7 +524,7 @@ class TestIRTMorfolojiService:
         assert isinstance(stats["features"], list)
         assert len(stats["features"]) > 0
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_error_handling(self, service):
         """Hata yönetimi testi"""
         # Gecersiz soru metni
@@ -657,7 +657,7 @@ class TestQuestionAnalysis:
 class TestIRTMorfolojiIntegration:
     """IRT Morfoloji Entegrasyon Testleri"""
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio(loop_scope="function")
     async def test_full_analysis_workflow(self):
         """Tam analiz iş akışı testi"""
         service = IRTMorfolojiService()
