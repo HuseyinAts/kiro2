@@ -5190,3 +5190,58 @@ Huseyin'in rezervi. Bu yuzden workflow dosyasina DOKUNULMADI.
     canlandiginda/dustugunde gercekten haberi olsun.
 Hangisi tercih edilirse, workflow degisikligini (A ise) ya da secret
 eklenmesini takiben dogrulamayi (B ise) ben yapabilirim.
+
+
+## §10.51 -- Golden Flows kapisi %32 flaky: 30s backend bekleme butcesi olculdu ve genisletildi (2026-09-06)
+
+### Baslangic noktasi
+
+SS10.50 merge edildikten sonra master'daki "Golden Flows" kosumu FAIL
+verdi. Ayni hata (`Backend did not come up within 30s`) birkac saat
+once PR #178'de de gorulmus, `gh run rerun --failed` ile gecmisti --
+yani "tek seferlik flake" varsayimi ARTIK GECERSIZDI, olculmesi
+gerekiyordu.
+
+### Olcum (kanit)
+
+Son 60 "Golden Flows" kosumu (2026-09-03'ten beri):
+
+    failure = 19 | success = 41   -> %31.7 basarisizlik
+
+19 basarisiz kosumun log'u tek tek cekildi:
+
+    '30s' sebepli = 19 | baska sebep = 0
+
+Yani basarisizliklarin TAMAMI tek bir adimdan geliyor. Karsi taraf da
+olculdu -- basarili kosumlarda backend'in kalkma suresi (n=12):
+
+    27, 27, 27, 28, 28, 28, 28, 29, 29, 30, 30, 30
+    min=27s  max=30s  ort=28.4s  >=25s olan: 12/12
+
+Butce 30s idi (`for i in {1..30}` + `sleep 1`). Yani kapi 0-3
+saniyelik payla geciyordu; backend acilista HuggingFace BERT
+modellerini yukluyor (`dbmdz/bert-base-turkish-cased`,
+`savasy/bert-base-turkish-sentiment-cased`), HF Hub gecikmesi bir
+miktar oynayinca pay eksiye dusuyor ve kapi kapaniyordu. Backend'de
+bir kusur DEGIL, bekleme butcesi cok darda ayarlanmis.
+
+### Duzeltme
+
+`.github/workflows/golden-flows.yml` "Wait for backend" adimi:
+`{1..30}` -> `{1..120}`, hata mesaji da 120s olarak guncellendi.
+Dongu saglikli kosumda yine ilk basarili `curl`'de `exit 0` ile
+cikiyor (~28s), dolayisiyla YESIL kosuma hic ek maliyet yok --
+yalnizca yavas acilisa tahammul artiyor.
+
+### Bilerek dokunulmayanlar (olculdu, kirik degil)
+
+Ayni bekleme deseni iki workflow'da daha var ama ikisi de bu
+hatanin kaynagi DEGIL, o yuzden degistirilmedi:
+
+- `.github/workflows/ci.yml:531` -- `sleep 2` x 30 = 60s butce,
+  timeout'ta `break` (is dusmuyor)
+- `.github/workflows/security.yml:341` -- `sleep 2` x 30 = 60s butce,
+  timeout'ta `break` (arkasindan "Verify API is accessible" adimi var)
+
+Ikisinin de butcesi olculen 27-30s ihtiyacin iki kati ve hicbiri sert
+dusmuyor; kanit olmadan genisletmek "iddia" olurdu.
