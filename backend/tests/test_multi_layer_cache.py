@@ -116,15 +116,21 @@ async def test_l1_cache_miss(cache):
 @pytest.mark.asyncio
 async def test_cache_ttl_expiration(cache):
     """Test cache TTL expiration (Req 6.3)"""
-    # Set with short TTL
-    await cache.set("expire_key", "expire_value", ttl=1)
+    # OLCUM (6 Eyl 2026): TTL 1s + sleep 1.5s idi ve CI'da ILK assert
+    # dusuyordu (`assert None == 'expire_value'`) -- yani deger, set'ten
+    # hemen sonraki get'te ZATEN expire olmustu. Sebep zamanlama: CI 8
+    # worker'la paralel kosuyor, `set` ile `get` arasinda 1 saniyeden fazla
+    # gecebiliyor. Testin OLCTUGU sey "TTL dolunca deger siliniyor mu",
+    # "1 saniye ne kadar surer" degil; bu yuzden pencere buyutuldu
+    # (3s TTL / 4s bekleme). Marj 0.5s -> 1s, ilk okuma icin 3s pencere.
+    await cache.set("expire_key", "expire_value", ttl=3)
 
     # Should exist immediately
     value = await cache.get("expire_key")
     assert value == "expire_value"
 
     # Wait for expiration
-    await asyncio.sleep(1.5)
+    await asyncio.sleep(4)
 
     # Should be expired
     value = await cache.get("expire_key")
@@ -194,7 +200,10 @@ async def test_cache_invalidate_pattern(cache):
     assert await cache.get("user:2:profile") is None
 
     # Product key should still exist
-    value = await cache.get("product:1")
+    # Sonuc BILEREK kullanilmiyor (asagidaki nota bak); ruff F841 vermesin
+    # diye degiskene atanmiyor. Cagrinin kendisi anlamli: L1/L2 yolunu
+    # tetikliyor.
+    await cache.get("product:1")
     # Note: Might be None if only in L1 and was invalidated
 
 
@@ -304,7 +313,8 @@ async def test_cache_clear_all(cache):
 async def test_cache_without_redis():
     """Test cache works without Redis (L1 only)"""
     cache = MultiLayerCache(
-        redis_url="redis://invalid:9999/0", l1_max_size=10  # Invalid URL
+        redis_url="redis://invalid:9999/0",
+        l1_max_size=10,  # Invalid URL
     )
 
     # Initialize should fail gracefully
