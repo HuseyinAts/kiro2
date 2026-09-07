@@ -7010,3 +7010,74 @@ B017'ler yine lint degil OLCUM duzeltmesiydi:
 `pytest.raises(Exception)` -> `ValidationError` / `NotFoundError`
 (`core/rbac_system.py:717` ve `:858`). Genis assert altinda, cagri bir
 `TypeError` firlatsa da test yesil kalirdi.
+
+## §10.67 -- `dict.clear()` bir takma adi kopardi: 4 auth testi (2026-09-07)
+
+`tests/unit/test_auth_functions.py`in 4 kalemi:
+
+    TestCheckLoginRateLimit::test_exceeding_limit_raises_429  -> DID NOT RAISE
+    TestRecordFailedLogin::test_records_attempt_for_ip        -> assert 0 >= 1
+    TestRecordFailedLogin::test_multiple_failures_accumulate  -> assert 0 == 0+3
+    TestRecordFailedLogin::test_trusted_proxy_records_forwarded_ip -> assert 0 >= 1
+
+Dosya TEK BASINA kosunca 60/60 gecer. Yani yine sira/kirlenme.
+
+### Kok neden
+
+`api/auth.py:233` ithal aninda bir TAKMA AD bagliyor:
+
+```
+_rate_buckets = defaultdict(lambda: defaultdict(list))   # dis + ic
+_login_attempts = _rate_buckets["login"]                 # IC sozluge takma ad
+```
+
+`tests/unit/test_rate_limiter.py`in autouse fixture'i ise DIS sozlugu
+temizliyordu:
+
+```
+_rate_buckets.clear()
+```
+
+Bu, "login" ANAHTARINI siler. Bir sonraki erisim (`_record_attempt` icindeki
+`_rate_buckets[bucket][client_ip]`) defaultdict oldugu icin YENI bir ic sozluk
+yaratir. Sonucu:
+
+* `_record_attempt` -> YENI ic sozluge yazar,
+* `_login_attempts` -> ESKI, artik oksuz kalmis ic sozlugu gosterir.
+
+Bu yuzden `_record_failed_login` cagrildiktan sonra `_login_attempts[ip]`
+bos liste doner (`assert 0 >= 1`), ve on-doldurulan kova okunmadigi icin 429
+hic firlatilmaz.
+
+### Olcum
+
+```
+pytest tests/unit/test_rate_limiter.py tests/unit/test_auth_functions.py \
+       -n 0 -p no:randomly
+-> 4 failed, 72 passed   (2,84 saniye, CI'daki AYNI 4 test adi)
+```
+
+### Duzeltme
+
+Ic kovalarin ICERIGINI temizle, kova sozlugunu degil:
+
+```
+for _kova in _rate_buckets.values():
+    _kova.clear()
+```
+
+Takma ad korunur. Deponun baska iki yerinde ZATEN dogru bicim kullaniliyordu
+(`tests/unit/test_auth_endpoints.py:404`, `tests/unit/test_auth_utilities.py:307`
+-> `_rate_buckets[bucket].clear()`); `test_rate_limiter.py` aykiriydi.
+
+Dogrulama: `test_rate_limiter + test_auth_functions + test_auth_endpoints +
+test_auth_utilities` -> **171 passed**.
+
+### Not: uretim tarafindaki kirilganlik duruyor
+
+`_login_attempts = _rate_buckets["login"]` bicimindeki geriye-uyumluluk takma
+adi, ic sozluk her degistiginde sessizce KOPAR. Bugun yalnizca testler bunu
+tetikliyor, ama bicim kirilgan. Uretim tarafinda alias yerine bir erisimci
+(`def _login_attempts(): return _rate_buckets["login"]`) kullanmak dogru
+olurdu; bu bir API degisikligi oldugu ve bu PR'in kapsami CI kirmizisi oldugu
+icin ayri birakildi.
