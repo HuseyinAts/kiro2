@@ -139,7 +139,7 @@ requests>=2.31.0
 
 # Security (Additional)
 bcrypt>=4.0.0,<4.1.0  # passlib uyumluluğu için (4.1.0+ 72-byte limit enforce ediyor)
-cachetools==7.0.0
-cachetools==7.0.0
+cachetools==7.1.8
+cachetools==7.1.8
 email-validator==2.3.0
 pytest-timeout==2.4.0
