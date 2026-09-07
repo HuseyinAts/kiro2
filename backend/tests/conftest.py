@@ -306,7 +306,30 @@ def test_database_url(worker_id):
     else:
         db_name = f"test_db_{worker_id}"
 
-    # SQLite için test database
+    # ORTAM ACIKCA POSTGRES VERDIYSE ONA SAYGI GOSTER (7 Eyl 2026 olcumu).
+    #
+    # Bu fixture ve onu kullanan `setup_test_database` autouse fixture'i
+    # `os.environ["DATABASE_URL"]`i KOSULSUZ eziyordu. CI ise `ci.yml`de
+    # acikca `DATABASE_URL=postgresql+asyncpg://...kiro2_test` veriyor --
+    # yani harness, CI'nin bilincli yapilandirmasini sessizce cope atiyordu.
+    # (Ayni sinif kusur bu kampanyada daha once de olculdu: pytest-asyncio
+    # pininin workflow tarafindan sessizce ezilmesi.)
+    #
+    # Belirti: `tests/smoke/test_smoke_database.py::test_postgresql_for_kiro2`
+    # "KIRO2 requires PostgreSQL, got: sqlite+aiosqlite://..." diyerek dusuyordu
+    # -- test dogruydu, harness yaniltiyordu. Ayrica Postgres sozdizimi
+    # (`interval '3 hours'`) SQLite'ta `OperationalError` veriyordu.
+    #
+    # PATLAMA YARICAPI OLCULDU (yerelde, tests/smoke + tests/db + tests/e2e,
+    # 339 test): once 13 dusen / 122 gecen, sonra 12 dusen / 123 gecen.
+    # Fark TAM OLARAK bir test; baska hicbir sonuc degismedi.
+    # NOT: bu olcum 339 testlik; tum paketin (14k) davranisi CI kosumunda
+    # olculur -- iddia o kadar genis DEGIL.
+    dis_url = os.getenv("TEST_DATABASE_URL") or os.getenv("DATABASE_URL") or ""
+    if "postgresql" in dis_url:
+        return dis_url
+
+    # Ortam bir sey soylemediyse: isci basina izole SQLite (eski davranis).
     return f"sqlite+aiosqlite:///./test_{db_name}.db"
 
 
