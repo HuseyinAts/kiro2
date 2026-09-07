@@ -42,12 +42,21 @@ import asyncio
 import hashlib
 import os
 import sys
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
 # 12+ konu × 50 ≈ 600 aday. Sınır kör okuma kapasitesi (yukarıda gerekçeli).
 KONU_BASI_TAVAN = 50
+
+# AYT KONULARI (R2, 7 Eyl 2026). S239'da ICERIK OKUNARAK olculdu -- yargi
+# `primary_topic_id`'de, metin regex'inde DEGIL (o katman 0 verip yaniltti).
+# `exam_type='TYT'` etiketli dilimde bu kodlardan 179 soru cikti (26 metin +
+# 96 konu kodu + 57 TRG/DIZ) ve canlidan geri silindi. Secici bunlari artik
+# HIC secmez; silinenler geri gelmesin diye `--haric-dosya` da var.
+AYT_KONU_KODLARI: frozenset[str] = frozenset(
+    {"MAT.TRV", "MAT.INT", "MAT.LMT", "MAT.LOG", "MAT.TRG", "MAT.DIZ"}
+)
 
 DILIMLER: dict[str, str] = {
     "mat_tyt": """
@@ -58,6 +67,44 @@ DILIMLER: dict[str, str] = {
           AND question_image_url ~ '_q[0-9]+\\.png$'
           AND correct_answer IN ('A','B','C','D','E')
           AND option_e IS NOT NULL AND btrim(option_e) <> ''
+    """,
+    # TURKCE/TYT (7 Eyl 2026). Ayni kalite suzgeci + KONU KAPSAMI SUZGECI:
+    # olculdu, `subject_area='TURKCE'` etiketli temiz dilimde 28 soru MAT.PRB /
+    # KIM / GEN / COG konularina bagli (etiket hatasi). Konu kodu canlida da
+    # var oldugu icin yukleyici bunlari SESSIZCE matematik konusu altina
+    # yazardi; dilim TUR / TUR.* / TYT-TR-* ile sinirlandi.
+    "tur_tyt": """
+        SELECT qb.id::text AS id, qb.primary_topic_id::text AS konu, qb.soru_hash AS h
+        FROM question_bank qb
+        JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+        WHERE qb.exam_type = 'TYT' AND qb.subject_area = 'TURKCE'
+          AND qb.quality_review_status = 'auto_judged_high' AND qb.is_active
+          AND qb.question_image_url ~ '_q[0-9]+\\.png$'
+          AND qb.correct_answer IN ('A','B','C','D','E')
+          AND qb.option_e IS NOT NULL AND btrim(qb.option_e) <> ''
+          AND (th.code = 'TUR' OR th.code LIKE 'TUR.%' OR th.code LIKE 'TYT-TR-%')
+    """,
+    # SOS/TYT (7 Eyl 2026). DIKKAT: bu dilim tek bir `subject_area` DEGIL, TYT
+    # denemesinin "SOS" BOLUMU. Blueprint bolumu uc dersi birden kapsiyor
+    # (TARIH 3474 + SOSYAL 958 + COGRAFYA 854 aktif) ve `generate-mock` de
+    # bransi konu tablosunun subject_area'sindan {sosyal,tarih,cografya,...}
+    # kumesiyle esliyor. Ders basina ayri dilim acmak bolumu yapay boler.
+    # Konu kapsami suzgeci TUR'daki ile ayni gerekce: olculdu, temiz dilimde 10
+    # soru FIZ/KIM/TUR/GEN konularina bagli (etiket hatasi) -- kapsam disi.
+    "sos_tyt": """
+        SELECT qb.id::text AS id, qb.primary_topic_id::text AS konu, qb.soru_hash AS h
+        FROM question_bank qb
+        JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+        WHERE qb.exam_type = 'TYT'
+          AND qb.subject_area IN ('TARIH', 'SOSYAL', 'COGRAFYA')
+          AND qb.quality_review_status = 'auto_judged_high' AND qb.is_active
+          AND qb.question_image_url ~ '_q[0-9]+\\.png$'
+          AND qb.correct_answer IN ('A','B','C','D','E')
+          AND qb.option_e IS NOT NULL AND btrim(qb.option_e) <> ''
+          AND (th.code IN ('TAR', 'COG', 'SOS')
+               OR th.code LIKE 'TAR0%' OR th.code LIKE 'TYT-TAR-%'
+               OR th.code LIKE 'COG0%' OR th.code LIKE 'TYT-COG-%'
+               OR th.code LIKE 'SOC0%')
     """,
 }
 # KIMYA BURAYA EKLENMEZ — bkz. modül docstring'i.
@@ -111,6 +158,43 @@ def set_ici_mukerrer(satirlar: Iterable[tuple[str, str | None]]) -> set[str]:
     return fazla
 
 
+def kirmizi_liste_oku(dosyalar: Iterable[Path]) -> set[str]:
+    """Daha once REDDEDILMIS id'lerin birlesimi (sizdiran, AYT, silinen).
+
+    Capraz-DB elemesi yalniz CANLIDA olani eler; kor okumada sizdirdigi icin
+    hic yazilmayan ya da AYT diye geri silinen id canlida YOKTUR ve secici
+    onu ikinci turda yeniden secerdi. Kirmizi liste o kapiyi kapatir.
+    """
+    idler: set[str] = set()
+    for dosya in dosyalar:
+        idler.update(
+            s.strip() for s in dosya.read_text(encoding="utf-8").split() if s.strip()
+        )
+    return idler
+
+
+def ayt_konu_idleri(
+    konu_kodu: Mapping[str, str], kodlar: frozenset[str] = AYT_KONU_KODLARI
+) -> set[str]:
+    """Konu haritasi (id -> code) icinden AYT kodlu konu id'leri."""
+    return {tid for tid, kod in konu_kodu.items() if kod in kodlar}
+
+
+def kapsam_suz(
+    ham: Iterable[tuple[str, str, str | None]],
+    kaynak_kodu: Mapping[str, str],
+    canli_kodlar: set[str],
+) -> list[tuple[str, str, str | None]]:
+    """Konusu canlida KODLA var olan adaylari birak (yukleyiciyle ayni olcut).
+
+    Id ile olcmek UUID drift'inde yanlis-negatif verir: temp `TUR` ile canli
+    `TUR` ayni kod, farkli id. Yukleyici kodla esledigi icin secici de kodla
+    olcmeli; aksi halde alet, yukleyicinin kabul edecegi soruyu "kapsam disi"
+    diye atar (TURKCE'de 673 soru, 7 Eyl 2026).
+    """
+    return [(i, k, h) for i, k, h in ham if kaynak_kodu.get(k) in canli_kodlar]
+
+
 def dsn_coz(veritabani: str) -> str:
     """DSN'i ortamdan çözer. Parola KODA YAZILMAZ."""
     ozel = os.environ.get(f"KIRO2_DSN_{veritabani.upper()}")
@@ -127,8 +211,18 @@ def dsn_coz(veritabani: str) -> str:
 async def _topla(kaynak: Any, hedef: Any, dilim: str) -> dict[str, Any]:
     """Kaynak + hedef okumaları. Ayrı fonksiyon: `_main` saf akış kalsın."""
     ham = [(r["id"], r["konu"], r["h"]) for r in await kaynak.fetch(DILIMLER[dilim])]
-    canli_konu = {
-        r["id"] for r in await hedef.fetch("SELECT id::text AS id FROM topic_hierarchy")
+    # KAPSAM KODLA OLCULUR, ID ILE DEGIL (7 Eyl 2026, TURKCE olcumu).
+    # Yukleyici konuyu KODLA esler (`y11_goc._canli_topic_id`); level-1 kokler
+    # (MAT, TUR) canli ile temp'te AYNI KODU tasir ama FARKLI id'ye sahiptir
+    # (UUID drift, y11_konu_seed.py docstring'i). Secici id ile olcunce TUR
+    # kokundeki 673 soru "kapsam disi" cikti; oysa yukleyici hepsini kabul
+    # ederdi. Olcum aleti yukleyiciyle AYNI dili konusmali.
+    kaynak_kodu = {
+        r["id"]: r["code"]
+        for r in await kaynak.fetch("SELECT id::text AS id, code FROM topic_hierarchy")
+    }
+    canli_kodlar = {
+        r["code"] for r in await hedef.fetch("SELECT code FROM topic_hierarchy")
     }
     canli_hash = {
         r["h"]
@@ -136,7 +230,12 @@ async def _topla(kaynak: Any, hedef: Any, dilim: str) -> dict[str, Any]:
             "SELECT soru_hash AS h FROM question_bank WHERE soru_hash IS NOT NULL"
         )
     }
-    return {"ham": ham, "canli_konu": canli_konu, "canli_hash": canli_hash}
+    return {
+        "ham": ham,
+        "kaynak_kodu": kaynak_kodu,
+        "canli_kodlar": canli_kodlar,
+        "canli_hash": canli_hash,
+    }
 
 
 async def _main(argv: Sequence[str] | None = None) -> int:
@@ -146,6 +245,14 @@ async def _main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--dilim", required=True, choices=sorted(DILIMLER))
     ap.add_argument("--cikti", required=True, type=Path)
     ap.add_argument("--tavan", type=int, default=KONU_BASI_TAVAN)
+    ap.add_argument(
+        "--haric-dosya",
+        action="append",
+        type=Path,
+        default=[],
+        help="Daha once reddedilmis id listesi (tekrarlanabilir). R2+ icin ZORUNLU "
+        "sayilmali: canlida olmayan ama reddedilmis id aksi halde geri gelir.",
+    )
     a = ap.parse_args(argv)
 
     kaynak = await asyncpg.connect(dsn_coz("kiro2_temp"))
@@ -157,10 +264,16 @@ async def _main(argv: Sequence[str] | None = None) -> int:
         await hedef.close()
 
     ham = veri["ham"]
-    kapsanan = [(i, k, h) for i, k, h in ham if k in veri["canli_konu"]]
+    kaynak_kodu: dict[str, str] = veri["kaynak_kodu"]
+    kapsanan = kapsam_suz(ham, kaynak_kodu, veri["canli_kodlar"])
+    ayt_idler = ayt_konu_idleri(kaynak_kodu)
+    ayt_elenen = sum(1 for _, k, _ in kapsanan if k in ayt_idler)
+    kapsanan = [(i, k, h) for i, k, h in kapsanan if k not in ayt_idler]
     capraz = {i for i, _, h in kapsanan if h and h in veri["canli_hash"]}
     set_ici = set_ici_mukerrer([(i, h) for i, _, h in kapsanan])
-    haric = haric_kumesi(set_ici, capraz)
+    kirmizi = kirmizi_liste_oku(a.haric_dosya)
+    kirmizi_elenen = {i for i, _, _ in kapsanan if i in kirmizi}
+    haric = haric_kumesi(set_ici, capraz) | kirmizi_elenen
     kalan = [(i, k) for i, k, _ in kapsanan if i not in haric]
     secilen = konu_dengeli_sec(kalan, tavan=a.tavan)
 
@@ -174,9 +287,11 @@ async def _main(argv: Sequence[str] | None = None) -> int:
 
     # SESSİZ ELEME YOK — her düşen sayı yazdırılır.
     print(f"ham aday                  : {len(ham)}")
-    print(f"konu kapsami disi elenen  : {len(ham) - len(kapsanan)}")
+    print(f"konu kapsami disi elenen  : {len(ham) - len(kapsanan) - ayt_elenen}")
+    print(f"AYT konusu elenen         : {ayt_elenen}")
     print(f"set-ici mukerrer elenen   : {len(set_ici)}")
     print(f"capraz-DB elenen          : {len(capraz)}")
+    print(f"kirmizi liste elenen      : {len(kirmizi_elenen)}  (liste: {len(kirmizi)})")
     print(f"haric BIRLESIM            : {len(haric)}")
     print(f"tavan oncesi kalan        : {len(kalan)}")
     print(

@@ -78,6 +78,16 @@ jobs:
         working-directory: backend
         run: |
           python -m pip install --upgrade pip
+          # DISK (7 Eyl 2026): requirements.txt `torch>=2.1.0` diyor; PyPI'nin
+          # Linux varsayilani CUDA yapisi ve yaninda nvidia-* + triton geliyor.
+          # OLCULDU: torch yigini 3.677 MB wheel / ~6,2 GB kurulu, bunun 2.987
+          # MB'i yalniz CUDA kutuphaneleri. Runner'da GPU YOK -- bu paketler
+          # hicbir zaman kullanilmiyor, sadece diski doldurup kurulumu
+          # [Errno 28] No space left on device ile dusuruyordu (master'in kendi
+          # kosumu da dustu). CPU yapisi ONCE kuruluyor; boylece asagidaki
+          # requirements.txt kisiti zaten karsilanmis oluyor ve nvidia-* hic
+          # cekilmiyor. Uretim kurulumlari DEGISMIYOR (yalniz CI adimi).
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements.txt
           # NOT (6 Eyl 2026): `pytest-asyncio` burada PINSIZ kuruluyordu ve
           # requirements.txt'teki pini SESSIZCE eziyordu -- workflow'lar

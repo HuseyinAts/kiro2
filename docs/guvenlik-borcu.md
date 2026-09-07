@@ -7722,3 +7722,96 @@ commit'lenirse gecebiliyordu -- olcum aleti dogru olcumu cezalandiriyordu
   kondu.
 * Dosya commit EDILMEDI ve silinmedi; untracked kaliyor (silmek geri
   alinamaz). Kutuk zaten dogru: fantom.
+
+## §10.74 -- MAT/TYT gocu R2: 622 crop kor okundu, 509 yazildi, kapi 3560 -> 4006 (2026-09-07)
+
+SS10.73'un onkosulu "goc bekliyor"du; Huseyin "gocu surdur" dedi. S239 planinin ikinci turu
+ayni yontemle kosuldu. Tam kayit: `docs/audits/2026-09-07_mat_crop_kor_okuma_r2.md`.
+
+Ozet:
+
+    aday 622 (13 konu) -> sizdiran 34 (%5,47) + AYT 84 (66 icerik + 18 kararsiz-at) -> 509
+    PROVA sapma [] yetim 0 -> 10/10 ornek cozuldu -> KALICI 4431 (3922+509)
+    FAZ E terfi: kapi 3560 -> 4006 (+446, simulasyonla birebir); ES 4006
+    idempotens: capraz-DB elenen 900 = 391 + 509
+
+Secici iki ek aldi (`y11_aday_uret.py`): AYT konu suzgeci (S239'un 6 kodu; 939 aday dustu) ve
+`--haric-dosya` kirmizi liste (R1'de reddedilen 195 id canlida olmadigi icin geri gelirdi).
+Ucu de bekcili (`test_y11_aday_uret.py` 7 -> 10).
+
+Iki olcum notu: (1) sizinti orani R1'in iki kati ve MODU farkli (ders-kitabi bilgi notu / cozum
+blogu) -- oran dilimden dilime degisiyor, genellenemez. (2) Host'tan ES senkronu kosmuyor
+(istemci 9.2.1 / sunucu 8.11.0 -> HEAD 400); konteynerden kosuldu.
+
+Kod karari DEGISMEDI: TUR/SOS canlida hala 0, `generate-mock` hala 409. Bu tur MAT'i buyuttu;
+TYT denemesi icin TUR/SOS dilimleri ayri is (konu seed + yeni dilim).
+
+## §10.76 -- TURKCE/TYT gocu T1: 1001 crop kor okundu, 919 yazildi, kapi 4006 -> 4579, TYT denemesi artik yalniz SOS'a takiliyor (2026-09-07)
+
+SS10.74 "TUR/SOS ayri is" demisti; Huseyin dilimi TURKCE ile surdurmeyi onayladi (TYT denemesini
+acan o). Tam kayit: `docs/audits/2026-09-07_tur_crop_kor_okuma.md`.
+
+Ozet:
+
+    onkosul: y11_konu_seed.py ders-agnostik yapildi, canli TUR altina 7 kod (45 -> 52)
+    secici: DILIMLER["tur_tyt"]; kapsam suzgeci ID -> KOD (UUID drift: 673 TUR-kok sorusu
+            yanlis eleniyordu; MAT kontrol kolunda kapsam disi 871 -> 386, gerisi degismedi)
+    aday 1001 (temp huni 18388 -> 14776 -> 3392 -> 1029 -> 1001; havuz TUKENDI)
+    sizdiran 78 (%7,79, en yuksek; mod: konu anlatimi 35 + cozum/cevap 30) + AYT 3 + supheli anahtar 1 -> 919
+    PROVA sapma [] yetim 0 -> 10 ornek cozuldu (9/10; 1 kitap anahtari hatali, atildi)
+    KALICI 5350 (4431+919) -> FAZ E terfi kapi 4006 -> 4579 (+573, simulasyonla birebir); ES 4579
+    generate-mock yuklemi (PR #181): TUR 919/40 TAMAM, SOS 0/20 EKSIK, MAT 900, FEN 3531
+
+Uc olcum notu: (1) sizinti orani KITABA bagli -- `Sure Paragraf Gunlukleri` 9/11, `Edebiyat Sokagi
+Paragraf` 5/357; dilim ortalamasi yaniltir, kitap-duzeyi kirmizi liste adayi. (2) temp'in
+`exam_type='TYT'` etiketi Turkce'de de guvenilmez: saf AYT Edebiyat kitabindan 4 aday geldi, 3'u
+icerikte AYT. (3) Kaynak cevap anahtari da hata tasiyor (`756f59e5`, cati sorusu) -- ilk somut ornek.
+
+Kod karari: `exams.py` DEGISMEDI. TYT denemesi hala 409 ama tek neden artik SOS (0/20); SOS dilimi
+ayni boru hattiyla denemeyi acar. master'daki `exams.py` hala PR #181 oncesi (brans-koru fallback);
+PR #181 merge edilmeden 409 davranisi canliya cikmaz.
+
+## §10.77 -- SOS/TYT gocu S1: 576 crop kor okundu, 446 yazildi, kapi 4579 -> 4959, TYT DENEMESI ARTIK KURULUYOR (2026-09-07)
+
+SS10.76 "tek eksik SOS" demisti; Huseyin dilimi SOS ile surdurmeyi onayladi. Tam kayit:
+`docs/audits/2026-09-07_sos_crop_kor_okuma.md`.
+
+Ozet:
+
+    onkosul: y11_konu_seed.py'ye --kok modu (kaynakta SOS/SOC0* EBEVEYNSIZ, canlida yoktu;
+             canli da karisik -- TYT-KIM-01 zaten kok). 17 kod, topic_hierarchy 52 -> 69.
+    secici : DILIMLER["sos_tyt"] -- TEK DERS DEGIL, TYT'nin SOS BOLUMU (3 ders birden)
+    aday 576 (huni 6816 -> 5286 -> 2452 -> 1052 -> 1042 -> tavan 576; havuz TUKENMEDI, 257 kaldi)
+    sizdiran 55 (%9,55, en yuksek) + AYT 69 + kararsiz-at 10 + metin bozuk 1 -> 446
+    PROVA sapma [] yetim 0 -> 10 ornek cozuldu (10/10 anahtar uyumlu)
+    KALICI 5796 (5350+446); kume dosyasi ile canli parti BIREBIR dogrulandi
+    FAZ E terfi: kapi 4579 -> 4959 (+380, simulasyonla birebir); ES 4959
+    generate-mock: TUR 40 + SOS 20 + MAT 40 + FEN 20 = 120/120 -> DENEME KURULUYOR
+
+Dort olcum notu:
+
+(1) **TYT denemesi artik kuruluyor ve bu iddia degil olcum.** SQL havuz sayimi yetmezdi; asil
+belirsizlik assembler'in kotayi doldurup dolduramadigiydi. `exams.py`'nin kullandigi
+`YksBellCurveAssembler.assemble_test` canli havuzlara karsi kosuldu, dort brans da tam dondu.
+UYARI: bu PR #181'deki `exams.py`; master hala brans-koru fallback'li, yani 409 -> 120 gecisi
+kullaniciya PR #181 merge edilince yansir.
+
+(2) **Sizinti kitap duzeyinde toplaniyor.** `Bilgi Sarmal Tyt Sosyal Bilimler Video Ders
+Kitabi` 17 adayin 17'sini sizdirdi (%100 -- kitap bastan sona konu anlatimi), `Aromat Tyt
+Sosyal Bilimler` 15/32. Buna karsilik `Esen Tyt Tarih` 0/47. TUR turunda da ayni desen vardi.
+Kitap-duzeyi kirmizi liste artik iki turda ust uste kaniti olan bir eksik.
+
+(3) **MAT'in KARARSIZ olcutu SOS'ta calismiyor.** TYT ve AYT sosyal mufredati ayni konu
+basliklarini paylasiyor, yalniz derinlik degisiyor -- "konu adi" ile ayirmak imkansiz. Karar
+iki olculebilir sinyale baglandi: OSYM'nin kendi AYT damgasi (28 kirpim IKINCI ve BAGIMSIZ bir
+gecisle tarandi; bulunan 3 damga, kor okumanin bagimsizca bildirdigi 3 damgayla birebir ayni
+cikti) ve kaynak kitabin saf AYT olmasi. 10 at / 25 tut.
+
+(4) **Kor okumanin goremedigi bir kusur katmani olculdu.** Orneklem cozumunde `fbb347a9`'un
+govdesi kendisiyle celisik cikti; GORSEL SAGLAM, bozulma cikarilan metinde. Kor okuma gorseli
+okur, servis edilen ise `question_text` -- bu sinifi ilkesel olarak goremez. 447 sorunun
+tamaminda sezgisel tarama denendi (kisa govde, dengesiz parantez, mukerrer sik, tekrar eden
+obek, ham LaTeX): 24 isaret, tamami yanlis pozitif. Yani sezgisel tarama bu katmani olcemiyor;
+kusuru yakalayan tek adim elle cozum oldu. Oran iddia edilmiyor (10'da 1). Ayrica ayni turda
+`source_book` metadata'sinin crop klasoruyle %2,8 uyusmadigi olculdu; kitap sinyaline dayanan
+karar klasore cevrilip yeniden kosuldu -- sonuc DEGISMEDI (446), ama olculmeden guvenilemezdi.
