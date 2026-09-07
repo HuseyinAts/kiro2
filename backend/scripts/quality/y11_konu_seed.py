@@ -94,6 +94,41 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0, $9, $10, $11, TRUE)
 """
 
 
+def ebeveyn_belirle(kok: bool, ebeveyn_kod: str, bulunan_id: object) -> object:
+    """Yazilacak `parent_id`: kok modunda NULL, degilse canli ebeveyn ZORUNLU.
+
+    NEDEN KOK MODU (SOS olcumu, 7 Eyl 2026): kaynakta `SOS`/`SOC0*` kodlari
+    EBEVEYNSIZ (kok) duruyor ve canlida hic yok. Canlinin kendisi de karisik:
+    `TYT-KIM-01`, `KIM.ASI` gibi satirlar kok olarak duruyor. Yani kok yazmak
+    uydurma bir hiyerarsi degil, mevcut sekli izlemek. Uydurma ebeveyn takmak
+    (ornegin SOS'u TAR'in altina) konu agacini YANLIS yapardi.
+    """
+    if kok:
+        return None
+    if not bulunan_id:
+        raise SystemExit(f"HATA: canli '{ebeveyn_kod}' YOK -- ebeveyn zinciri kirik.")
+    return bulunan_id
+
+
+def yanlis_ebeveyn_sorgusu(ebeveyn: object, desenler: list[str]) -> tuple[str, list]:
+    """Ebeveyn invaryanti sorgusu; kok modunda "parent_id NULL olmali" olur.
+
+    Kok modunda eski sorgu (`parent_id IS DISTINCT FROM NULL`) her satiri
+    yanlis sayardi -- yani kontrol sessizce ters doner ve seed hic yazamazdi.
+    """
+    if ebeveyn is None:
+        return (
+            "SELECT count(*) FROM topic_hierarchy "
+            "WHERE code LIKE ANY($1::text[]) AND parent_id IS NOT NULL",
+            [desenler],
+        )
+    return (
+        "SELECT count(*) FROM topic_hierarchy "
+        "WHERE code LIKE ANY($2::text[]) AND parent_id IS DISTINCT FROM $1",
+        [ebeveyn, desenler],
+    )
+
+
 async def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Canli topic_hierarchy konu seed")
     ap.add_argument(
@@ -121,6 +156,12 @@ async def main(argv: list[str] | None = None) -> int:
         default=None,
         help="canliya bu level ile yaz (verilmezse kaynaktan kopyalanir)",
     )
+    ap.add_argument(
+        "--kok",
+        action="store_true",
+        help="KOK olarak yaz (parent_id NULL); --ebeveyn aranmaz. Kaynakta "
+        "ebeveyni olmayan kodlar icin (ornek: SOS, SOC0*).",
+    )
     a = ap.parse_args(argv)
     ebeveyn_kod: str = a.ebeveyn
     desenler: list[str] = a.kod_deseni or [f"{ebeveyn_kod}.%"]
@@ -137,16 +178,20 @@ async def main(argv: list[str] | None = None) -> int:
                 "HATA: 0 aday -- yanlis-sifir, kapsam sorgusunu kontrol et."
             )
 
-        ebeveyn = await hedef.fetchval(
-            "SELECT id FROM topic_hierarchy WHERE code = $1", ebeveyn_kod
-        )
-        if not ebeveyn:
-            raise SystemExit(
-                f"HATA: canli '{ebeveyn_kod}' YOK -- ebeveyn zinciri kirik."
+        bulunan = (
+            None
+            if a.kok
+            else await hedef.fetchval(
+                "SELECT id FROM topic_hierarchy WHERE code = $1", ebeveyn_kod
             )
-        print(
-            f"ders {a.ders} | desen {desenler} | canli ebeveyn {ebeveyn_kod} = {ebeveyn}"
         )
+        ebeveyn = ebeveyn_belirle(a.kok, ebeveyn_kod, bulunan)
+        nere = (
+            "KOK (parent_id NULL)"
+            if a.kok
+            else f"canli ebeveyn {ebeveyn_kod} = {ebeveyn}"
+        )
+        print(f"ders {a.ders} | desen {desenler} | {nere}")
 
         mevcut = {
             r["code"] for r in await hedef.fetch("SELECT code FROM topic_hierarchy")
@@ -201,12 +246,8 @@ async def main(argv: list[str] | None = None) -> int:
                 "LEFT JOIN topic_hierarchy p ON p.id = c.parent_id "
                 "WHERE c.parent_id IS NOT NULL AND p.id IS NULL"
             )
-            yanlis_ebeveyn = await hedef.fetchval(
-                "SELECT count(*) FROM topic_hierarchy "
-                "WHERE code LIKE ANY($2::text[]) AND parent_id IS DISTINCT FROM $1",
-                ebeveyn,
-                desenler,
-            )
+            sorgu, parametreler = yanlis_ebeveyn_sorgusu(ebeveyn, desenler)
+            yanlis_ebeveyn = await hedef.fetchval(sorgu, *parametreler)
             print("\nDOGRULAMA (transaction icinde)")
             print(f"  topic_hierarchy toplam : {toplam}")
             print(f"  desene uyan satir      : {desen_satir}")

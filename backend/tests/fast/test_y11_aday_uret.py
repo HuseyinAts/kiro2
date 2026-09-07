@@ -34,6 +34,7 @@ def test_dilim_sql_parametre_olarak_gelir() -> None:
     assert set(DILIMLER) == {
         "mat_tyt",
         "tur_tyt",
+        "sos_tyt",
     }, "beklenmeyen dilim -- sessiz genisletme"
     assert all(isinstance(v, str) for v in DILIMLER.values()), "deger str olmali"
     kimya = (
@@ -68,6 +69,23 @@ def test_tur_dilimi_konu_kapsamiyla_sinirli() -> None:
     sql = DILIMLER["tur_tyt"]
     assert "th.code = 'TUR'" in sql and "TYT-TR-%" in sql, "konu kapsami suzgeci YOK"
     assert "subject_area = 'TURKCE'" in sql
+    for parca in ("_q[0-9]+", "auto_judged_high", "option_e IS NOT NULL"):
+        assert parca in sql, f"kalite suzgeci eksik: {parca}"
+
+
+def test_sos_dilimi_uc_dersi_birden_kapsar() -> None:
+    """SOS dilimi TEK ders degil, TYT'nin SOS BOLUMU (7 Eyl 2026 olcumu).
+
+    `generate-mock` SOS bransini {sosyal,tarih,cografya,felsefe,din} kumesiyle
+    esliyor; ders basina ayri dilim acmak bolumu yapay bolerdi. Konu kapsami:
+    temiz dilimde 10 soru FIZ/KIM/TUR/GEN konularina bagli (etiket hatasi),
+    suzgec olmasa yukleyici onlari yanlis brans altina yazardi.
+    """
+    sql = DILIMLER["sos_tyt"]
+    for ders in ("'TARIH'", "'SOSYAL'", "'COGRAFYA'"):
+        assert ders in sql, f"SOS bolumunden ders dusmus: {ders}"
+    for kod in ("'TAR', 'COG', 'SOS'", "TYT-TAR-%", "TYT-COG-%", "SOC0%"):
+        assert kod in sql, f"konu kapsami eksik: {kod}"
     for parca in ("_q[0-9]+", "auto_judged_high", "option_e IS NOT NULL"):
         assert parca in sql, f"kalite suzgeci eksik: {parca}"
 
