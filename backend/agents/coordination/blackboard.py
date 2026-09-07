@@ -25,6 +25,18 @@ logger = logging.getLogger(__name__)
 MESSAGE_TTL = 3600  # 1 hour
 SHARED_CONTEXT_TTL = 600  # 10 minutes
 
+# Redis liste basina tutulacak en fazla kayit.
+#
+# NEDEN EKLENDI (7 Eyl 2026 olcumu): `_post_message_redis` ve
+# `_share_context_redis` `self.max_messages`e basvuruyordu ama bu oznitelik
+# HICBIR YERDE TANIMLI DEGILDI -- yani Redis erisilebilir oldugunda mesaj
+# gondermek ve context paylasmak `AttributeError` ile COKUYORDU. Bellek
+# yedegi (`_post_message_fallback`) bu alani hic kullanmadigi icin kusur
+# gorunmuyordu: Redis'siz ortamda her sey yesil geciyordu.
+# `tests/property/test_domain_experts_properties.py` bunu Redis varken
+# yakaladi (blackboard.py:259 ve :402).
+MAX_MESSAGES_PER_LIST = 1000
+
 
 @dataclass
 class BlackboardMessage:
@@ -138,6 +150,7 @@ class DomainBlackboard:
         redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/2"),
         message_ttl: int = MESSAGE_TTL,
         context_ttl: int = SHARED_CONTEXT_TTL,
+        max_messages: int = MAX_MESSAGES_PER_LIST,
     ):
         """
         DomainBlackboard olustur
@@ -146,13 +159,19 @@ class DomainBlackboard:
             redis_url: Redis baglanti URL'i
             message_ttl: Mesaj suresi (saniye)
             context_ttl: Paylasilan context suresi (saniye)
+            max_messages: Redis liste basina tutulan en fazla kayit
         """
         self.redis_url = redis_url
         self.message_ttl = message_ttl
         self.context_ttl = context_ttl
+        self.max_messages = max_messages
 
-        # Redis connection
-        self._redis = None
+        # Redis connection.
+        # `Any` bilerek: istemci `redis.asyncio.Redis`, ama modul opsiyonel
+        # (yoksa bellek yedegine dusuluyor). Anotasyonsuz `= None` mypy'ye
+        # tipin `None` oldugunu soyluyordu ve butun `self._redis.lpush(...)`
+        # cagrilari `"None" has no attribute` hatasi veriyordu (13 hata).
+        self._redis: Any = None
         self._use_fallback = False
 
         # In-memory fallback
@@ -269,7 +288,7 @@ class DomainBlackboard:
         # Cleanup expired messages and enforce size limit
         self._message_queue[target] = [
             m for m in self._message_queue[target] if not m.is_expired()
-        ][:self.max_messages]
+        ][: self.max_messages]
 
     async def get_messages(
         self,
@@ -335,7 +354,7 @@ class DomainBlackboard:
         self, agent_id: str, include_broadcast: bool
     ) -> list[BlackboardMessage]:
         """In-memory queue'dan mesajlari al"""
-        messages = []
+        messages: list[BlackboardMessage] = []
 
         # Agent-specific
         if agent_id in self._message_queue:
@@ -492,7 +511,10 @@ _blackboard_instance: DomainBlackboard | None = None
 
 async def get_domain_blackboard() -> DomainBlackboard:
     """Global DomainBlackboard instance'ini al"""
-    global _blackboard_instance
+    # Modul duzeyinde tekil erisimci; repo'da kurulu desen (bkz.
+    # `core/advanced_rate_limiter.get_rate_limiter`). Alternatifi bir sinif
+    # ya da context degiskeni olurdu -- bu kusurun kapsami disi.
+    global _blackboard_instance  # noqa: PLW0603
     if _blackboard_instance is None:
         _blackboard_instance = DomainBlackboard()
         await _blackboard_instance.connect()

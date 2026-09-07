@@ -314,6 +314,15 @@ jobs:
           cat > backend/.env << EOF
           DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
           DATABASE_URL_SYNC=postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test
+          # TEST_DATABASE_URL AYRICA gerekiyor (7 Eyl 2026 olcumu): `backend/
+          # conftest.py` modul duzeyinde `DATABASE_URL`i SQLite'a eziyor, yani
+          # test harness'i bu satiri gormeden once degeri degistirmis oluyor.
+          # `tests/conftest.py`in `test_database_url` fixture'i once
+          # TEST_DATABASE_URL'e bakiyor -- bu degisken EZILMIYOR, dolayisiyla
+          # CI'nin Postgres niyeti testlere gercekten ulasiyor. Bu olmadan
+          # `test_postgresql_for_kiro2` "got: sqlite+aiosqlite://" ile dusuyordu.
+          TEST_DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
+          SYNC_TEST_DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test
           REDIS_URL=redis://localhost:6379/0
           JWT_SECRET_KEY=test-secret-key-for-ci
           JWT_ALGORITHM=HS256
