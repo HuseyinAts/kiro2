@@ -2,6 +2,7 @@
 Comprehensive tests for agents.base_agent module
 Target: 75%+ coverage for base agent functionality
 """
+
 import asyncio
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -23,7 +24,7 @@ class ConcreteTestAgent(BaseAgent):
     """Concrete implementation of BaseAgent for testing"""
 
     async def process_request(
-        self, request_type: str, parameters: dict, context: dict = None
+        self, request_type: str, parameters: dict, context: dict | None = None
     ):
         """Mock implementation for testing"""
         return {
@@ -137,13 +138,34 @@ class TestBaseAgentInitialization:
         assert base_agent.metrics.uptime_percentage == 100.0
 
     def test_agent_data_structures_initialization(self, base_agent):
-        """Test that data structures are properly initialized"""
-        assert isinstance(base_agent.message_queue, list)
+        """Test that data structures are properly initialized.
+
+        `message_queue` SINIRLI bir deque olmali, list DEGIL (7 Eyl 2026 olcumu).
+        Uretim kodu `agents/base_agent.py:111`de `deque(maxlen=1000)` kuruyor --
+        sinir bilincli bir guvenlik ozelligi: mesajlar tuketilmezse kuyruk
+        sinirsiz buyumez. Testin eski hali `isinstance(..., list)` diyordu, yani
+        deque'e gecilmeden ONCEKI sozlesmeyi olcuyordu ve dusuyordu.
+        Assertion gercek sozlesmeye cevrildi; `maxlen` kontrolu de eklendi ki
+        birisi sinirsiz bir yapiya geri donerse test yakalasin.
+        """
+        from collections import deque
+
+        assert isinstance(base_agent.message_queue, deque)
+        assert (
+            base_agent.message_queue.maxlen is not None
+        ), "message_queue SINIRSIZ -- tuketilmeyen mesajlar bellegi doldurabilir"
         assert isinstance(base_agent.blackboard_subscriptions, list)
         assert isinstance(base_agent.coordination_handlers, dict)
         assert isinstance(base_agent.error_handlers, dict)
         assert isinstance(base_agent.config, dict)
-        assert isinstance(base_agent.cache, dict)
+        # `cache` de ayni sekilde SINIRLI: uretim kodu LRUCache(maxsize=1000)
+        # kuruyor, duz dict degil. Onemli olan tip degil DAVRANIS: sozluk gibi
+        # kullanilabilmesi ve SINIRLI olmasi. Ikisi de civileniyor.
+        assert hasattr(base_agent.cache, "__getitem__")
+        assert hasattr(base_agent.cache, "__setitem__")
+        assert (
+            getattr(base_agent.cache, "maxsize", None) is not None
+        ), "cache SINIRSIZ -- bellek zamanla dolabilir"
 
 
 class TestBaseAgentProcessRequest:
@@ -677,8 +699,9 @@ class TestBaseAgentIntegration:
         mock_blackboard = MagicMock()
         mock_blackboard.register_agent.return_value = True
 
-        with patch.object(agent1, "_setup_default_subscriptions"), patch.object(
-            agent2, "_setup_default_subscriptions"
+        with (
+            patch.object(agent1, "_setup_default_subscriptions"),
+            patch.object(agent2, "_setup_default_subscriptions"),
         ):
             # Register agents
             assert agent1.register_to_blackboard(mock_blackboard) is True

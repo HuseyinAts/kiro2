@@ -53,7 +53,18 @@ class TestGoalServiceCreation:
         await service.create_goal(uuid4(), data)
 
         mock_db.add.assert_called_once()
-        mock_db.commit.assert_called_once()
+        # SOZLESME: `create_goal` COMMIT ETMEZ -- flush eder ve commit'i disaridaki
+        # oturum sarmalayicisina birakir. Bu bilincli bir karar ve kodda gerekcesi
+        # yazili (GF26): `get_async_session()` bizi `db_manager.get_session()` icine
+        # sariyor ve basarili donuste commit ediyor; iceride ikinci bir commit,
+        # birakilmis baglantida MissingGreenlet olarak patlamisti.
+        #
+        # Testin eski hali `commit.assert_called_once()` diyordu -- yani duzeltilmis
+        # DAVRANISI degil, duzeltilmeden ONCEKI sozlesmeyi olcuyordu ve bu yuzden
+        # dusuyordu (7 Eyl 2026'da olculdu). Assertion, gercek sozlesmeye cevrildi:
+        # commit'in CAGRILMAMASI artik gerileme korumasi.
+        mock_db.flush.assert_awaited_once()
+        mock_db.commit.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_create_goal_with_smart_criteria(self):
@@ -262,7 +273,7 @@ class TestGoalServiceRiskAssessment:
         risk = service.detect_risk(mock_goal)
 
         assert isinstance(risk, GoalRiskResponse)
-        assert hasattr(risk, 'is_at_risk')
+        assert hasattr(risk, "is_at_risk")
 
     def test_detect_risk_behind_schedule(self):
         """Test risk detection for behind schedule goal"""
@@ -284,7 +295,7 @@ class TestGoalServiceRiskAssessment:
         risk = service.detect_risk(mock_goal)
 
         assert isinstance(risk, GoalRiskResponse)
-        assert hasattr(risk, 'is_at_risk')
+        assert hasattr(risk, "is_at_risk")
 
     def test_calculate_velocity(self):
         """Test velocity calculation"""
@@ -356,11 +367,7 @@ class TestGoalServiceCRUD:
 
         service = GoalService(mock_db)
 
-        goals = await service.get_goals(
-            user_id=uuid4(),
-            status=None,
-            limit=20
-        )
+        goals = await service.get_goals(user_id=uuid4(), status=None, limit=20)
 
         assert isinstance(goals, list)
         mock_db.execute.assert_called_once()
@@ -448,10 +455,7 @@ class TestGoalServiceStatus:
 
         service = GoalService(mock_db)
 
-        goals = await service.get_goals(
-            user_id=uuid4(),
-            status=GoalStatus.AT_RISK
-        )
+        goals = await service.get_goals(user_id=uuid4(), status=GoalStatus.AT_RISK)
 
         assert isinstance(goals, list)
 
@@ -469,7 +473,11 @@ class TestGoalServiceStatistics:
 
         # Mock goals
         goals = []
-        for status in [GoalStatusModel.ACTIVE, GoalStatusModel.COMPLETED, GoalStatusModel.CANCELLED]:
+        for status in [
+            GoalStatusModel.ACTIVE,
+            GoalStatusModel.COMPLETED,
+            GoalStatusModel.CANCELLED,
+        ]:
             goal = MagicMock()
             goal.status = status
             goal.progress = 50
