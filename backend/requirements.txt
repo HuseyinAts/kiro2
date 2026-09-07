@@ -17,7 +17,7 @@ asyncpg>=0.29.0
 psycopg[binary]>=3.1.0
 sqlalchemy[asyncio]>=2.0.36
 alembic==1.13.1
-sqlparse>=0.5.0
+sqlparse>=0.6.0
 
 # Caching
 redis[hiredis]==4.6.0
