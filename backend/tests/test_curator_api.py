@@ -82,6 +82,37 @@ def _make_question_row(
         pipeline_metadata=pipeline_metadata,
         reviewed_by=None,
         is_active=True,
+        # --- bolunmus sema yavrulari (#485), SS10.68/SS10.69 ------------
+        # `api/curator.py::_row_to_queue_item` (satir 186-240) alanlari
+        # PARENT'tan DEGIL yavru tablolardan okuyor: `row.content.*`,
+        # `row.metadata_info.*`, `row.statistics.*`.
+        # Bu yardimci yalnizca duz oznitelikleri kuruyordu; SimpleNamespace
+        # -- MagicMock'un aksine -- olmayan oznitelikte AttributeError
+        # firlattigi icin uc patliyordu:
+        #     AttributeError: 'types.SimpleNamespace' object has no
+        #     attribute 'statistics'
+        # Duz oznitelikler KALDI: dosyadaki diger yardimcilar hala okuyor.
+        content=SimpleNamespace(
+            question_text=text,
+            option_a="Seçenek A",
+            option_b="Seçenek B",
+            option_c="Seçenek C",
+            option_d="Seçenek D",
+            option_e=None,
+            correct_answer=correct,
+            question_image_url=image_url,
+        ),
+        metadata_info=SimpleNamespace(
+            subject_area=subject,
+            pipeline_metadata=pipeline_metadata,
+            misconception_tags=misconception_tags,
+            solution_steps=solution_steps,
+            similar_question_ids=similar_question_ids,
+        ),
+        statistics=SimpleNamespace(
+            difficulty_level=difficulty,
+            quality_review_status=qstatus,
+        ),
     )
 
 
