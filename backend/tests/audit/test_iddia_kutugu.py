@@ -196,10 +196,20 @@ def _kayip_ankrajlar(kayitlar, depo: Path) -> list[tuple[str, str]]:
     ankrajın yokluğu kusur değil, kapanışın KANITIDIR. Muafiyet güvenli çünkü
     `uygulandi` kayıtlar commit + zorlayici_test taşımak zorunda
     (test_uygulandi_commit_ve_test_ister). Diğer tüm durumlarda kontrol sürer.
+
+    `durum == "fantom"` ve `kanit` DOLU ise MUAF (7 Eyl 2026, SS10.75): bu
+    filtrenin amaci "dosya yoksa iddia fantomdur" demek; iddia ZATEN fantom
+    ilan edilmis ve kanitini yazmissa filtre isini bitirmistir. Aksi halde
+    kaniti "ankraj git'e hic commitlenmemis, olu dosya" olan bir fantom (U06)
+    ancak o olu dosya commit'lenirse yesil olur -- yani olcum aleti, dogru
+    olcumu cezalandirip yanlis davranisi (olu kodu depoya sokmayi) odullendirir.
+    X07 vakasiyla ayni sinif. Kanitsiz fantom muaf DEGIL (kontrol kolu).
     """
     kayip: list[tuple[str, str]] = []
     for k in kayitlar:
         if k.get("durum") == "uygulandi":
+            continue
+        if k.get("durum") == "fantom" and (k.get("kanit") or "").strip():
             continue
         for parca in str(k["ankraj"]).replace("+", " ").split():
             yol = parca.split(":")[0].strip("(),")
@@ -258,3 +268,35 @@ def test_uygulandi_ankraj_silinmis_olabilir(tmp_path):
         "muafiyet fazla geniş: ölçülmemiş iddianın kayıp ankrajı da atlandı — "
         "bu ucuz fantom filtresini tamamen öldürür."
     )
+
+
+def test_fantom_ankraj_muafiyeti_kanit_ister(tmp_path):
+    """'fantom' iddianin ankraji YOK olabilir -- kaniti tam da bu olabilir.
+
+    VAKA (7 Eyl 2026, SS10.75): U06 `backend/services/osym_language_validator.py`
+    ankrajini tasiyor; 22 Agu'da iki bagimsiz yargi "fantom" dedi ve kanit
+    olarak "dosya git'e HIC commitlenmemis, importu olu modul, cagirani yok"
+    yazdi. Dosya yerelde untracked oldugu icin test yerelde yesil, CI'da
+    KIRMIZIYDI -- ve tek yesillestirme yolu o olu dosyayi depoya commit'lemekti.
+    Yani bekci, dogru olcumu cezalandirip yanlis davranisi odullendiriyordu.
+
+    Muafiyet dar: fantom VE kanit dolu. Kanitsiz fantom zaten
+    test_kanitsiz_durum_yasak ile yasak; burada kontrol kolu olarak olculuyor.
+    """
+    yok = "backend/services/hic_var_olmayan_servis.py"
+    kayitlar = [
+        {"id": "FANTOM-KANITLI", "ankraj": yok, "durum": "fantom", "kanit": "olu"},
+        {"id": "FANTOM-KANITSIZ", "ankraj": yok, "durum": "fantom", "kanit": "  "},
+        {"id": "BEKLEMEDE", "ankraj": yok, "durum": "beklemede", "kanit": "x"},
+    ]
+
+    idler = {i for i, _ in _kayip_ankrajlar(kayitlar, tmp_path)}
+
+    # (1) MUAFIYET: kanitli fantomun kayip ankraji kusur degil
+    assert "FANTOM-KANITLI" not in idler, (
+        "kanitli fantomun kayip ankraji kusur sayildi -- bekci olu dosyanin "
+        "commit'lenmesini odullendirir (U06)."
+    )
+    # (2) KONTROL KOLU: kanitsiz fantom ve beklemede hala olculuyor
+    assert "FANTOM-KANITSIZ" in idler, "muafiyet kanitsiz fantoma da sizdi"
+    assert "BEKLEMEDE" in idler, "muafiyet beklemede kayitlara sizdi"

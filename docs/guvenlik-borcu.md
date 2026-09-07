@@ -7690,3 +7690,35 @@ gecti->kirildi, bir test gecti->atlandi.
 
 Yani 19 -> 20 artisinin kaynagi SS10.73 degil, yavas runner. `/api/v1/exams`
 testlerinin 9'u da CI'da yesil.
+
+## §10.75 -- U06: olu dosya commit'lenmedi, bekcinin kor noktasi kapatildi (2026-09-07)
+
+`backend/services/osym_language_validator.py` yerelde untracked duruyordu ve
+`test_iddia_kutugu::test_ankraj_dosyalari_var` CI'da bu yuzden kirmiziydi
+(PR #181'in 19 kaleminden biri). Huseyin "commit edilecekse et" dedi; ONCE
+dosya ve kutuk okundu:
+
+* Kutuk (`iddialar.yaml` U06) 22 Agu'da IKI BAGIMSIZ YARGI ile `fantom`
+  demis ve kanit yazmis: dosya git'e hic commit'lenmemis, `ai_ml` importu
+  hic var olmayan bir modul, `backend.models` import koku yanlis,
+  `analyze_contextual` diye bir metod yok, cagirani yok. SS10.27 de ayni
+  olcumu yapmisti.
+* Yani dosyayi commit'lemek, olu ve import edilemeyen kodu depoya sokup
+  bekciyi yesillestirmek olurdu -- tam olarak `reward-hacking-check`'in
+  yakalamaya calistigi sinif.
+
+Asil kusur bekcideydi: `_kayip_ankrajlar` yalniz `uygulandi`'yi muaf
+tutuyordu. Kaniti "dosya yok/olu" olan bir `fantom` ancak o olu dosya
+commit'lenirse gecebiliyordu -- olcum aleti dogru olcumu cezalandiriyordu
+(X07 / a978ae86a ile ayni sinif, bekcinin kendi docstring'i bunu anlatiyor).
+
+### Yapilan
+
+* `_kayip_ankrajlar`: `durum == fantom` VE `kanit` dolu ise muaf. Dar:
+  kanitsiz fantom zaten `test_kanitsiz_durum_yasak` ile yasak.
+* Kontrol kollu yeni test `test_fantom_ankraj_muafiyeti_kanit_ister`
+  (kanitli fantom muaf; kanitsiz fantom ve beklemede hala olculuyor).
+* CI kosulu yerelde SIMULE edildi: dosya kenara alinip 12/12 gecti, geri
+  kondu.
+* Dosya commit EDILMEDI ve silinmedi; untracked kaliyor (silmek geri
+  alinamaz). Kutuk zaten dogru: fantom.
