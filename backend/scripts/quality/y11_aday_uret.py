@@ -42,12 +42,21 @@ import asyncio
 import hashlib
 import os
 import sys
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
 # 12+ konu × 50 ≈ 600 aday. Sınır kör okuma kapasitesi (yukarıda gerekçeli).
 KONU_BASI_TAVAN = 50
+
+# AYT KONULARI (R2, 7 Eyl 2026). S239'da ICERIK OKUNARAK olculdu -- yargi
+# `primary_topic_id`'de, metin regex'inde DEGIL (o katman 0 verip yaniltti).
+# `exam_type='TYT'` etiketli dilimde bu kodlardan 179 soru cikti (26 metin +
+# 96 konu kodu + 57 TRG/DIZ) ve canlidan geri silindi. Secici bunlari artik
+# HIC secmez; silinenler geri gelmesin diye `--haric-dosya` da var.
+AYT_KONU_KODLARI: frozenset[str] = frozenset(
+    {"MAT.TRV", "MAT.INT", "MAT.LMT", "MAT.LOG", "MAT.TRG", "MAT.DIZ"}
+)
 
 DILIMLER: dict[str, str] = {
     "mat_tyt": """
@@ -111,6 +120,28 @@ def set_ici_mukerrer(satirlar: Iterable[tuple[str, str | None]]) -> set[str]:
     return fazla
 
 
+def kirmizi_liste_oku(dosyalar: Iterable[Path]) -> set[str]:
+    """Daha once REDDEDILMIS id'lerin birlesimi (sizdiran, AYT, silinen).
+
+    Capraz-DB elemesi yalniz CANLIDA olani eler; kor okumada sizdirdigi icin
+    hic yazilmayan ya da AYT diye geri silinen id canlida YOKTUR ve secici
+    onu ikinci turda yeniden secerdi. Kirmizi liste o kapiyi kapatir.
+    """
+    idler: set[str] = set()
+    for dosya in dosyalar:
+        idler.update(
+            s.strip() for s in dosya.read_text(encoding="utf-8").split() if s.strip()
+        )
+    return idler
+
+
+def ayt_konu_idleri(
+    konu_kodu: Mapping[str, str], kodlar: frozenset[str] = AYT_KONU_KODLARI
+) -> set[str]:
+    """Canli `topic_hierarchy` (id -> code) icinden AYT kodlu konu id'leri."""
+    return {tid for tid, kod in konu_kodu.items() if kod in kodlar}
+
+
 def dsn_coz(veritabani: str) -> str:
     """DSN'i ortamdan çözer. Parola KODA YAZILMAZ."""
     ozel = os.environ.get(f"KIRO2_DSN_{veritabani.upper()}")
@@ -127,8 +158,10 @@ def dsn_coz(veritabani: str) -> str:
 async def _topla(kaynak: Any, hedef: Any, dilim: str) -> dict[str, Any]:
     """Kaynak + hedef okumaları. Ayrı fonksiyon: `_main` saf akış kalsın."""
     ham = [(r["id"], r["konu"], r["h"]) for r in await kaynak.fetch(DILIMLER[dilim])]
-    canli_konu = {
-        r["id"] for r in await hedef.fetch("SELECT id::text AS id FROM topic_hierarchy")
+    # id -> code: hem kapsam suzgeci (id kumesi) hem AYT elemesi (kod) icin.
+    konu_kodu = {
+        r["id"]: r["code"]
+        for r in await hedef.fetch("SELECT id::text AS id, code FROM topic_hierarchy")
     }
     canli_hash = {
         r["h"]
@@ -136,7 +169,12 @@ async def _topla(kaynak: Any, hedef: Any, dilim: str) -> dict[str, Any]:
             "SELECT soru_hash AS h FROM question_bank WHERE soru_hash IS NOT NULL"
         )
     }
-    return {"ham": ham, "canli_konu": canli_konu, "canli_hash": canli_hash}
+    return {
+        "ham": ham,
+        "canli_konu": set(konu_kodu),
+        "konu_kodu": konu_kodu,
+        "canli_hash": canli_hash,
+    }
 
 
 async def _main(argv: Sequence[str] | None = None) -> int:
@@ -146,6 +184,14 @@ async def _main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--dilim", required=True, choices=sorted(DILIMLER))
     ap.add_argument("--cikti", required=True, type=Path)
     ap.add_argument("--tavan", type=int, default=KONU_BASI_TAVAN)
+    ap.add_argument(
+        "--haric-dosya",
+        action="append",
+        type=Path,
+        default=[],
+        help="Daha once reddedilmis id listesi (tekrarlanabilir). R2+ icin ZORUNLU "
+        "sayilmali: canlida olmayan ama reddedilmis id aksi halde geri gelir.",
+    )
     a = ap.parse_args(argv)
 
     kaynak = await asyncpg.connect(dsn_coz("kiro2_temp"))
@@ -158,9 +204,14 @@ async def _main(argv: Sequence[str] | None = None) -> int:
 
     ham = veri["ham"]
     kapsanan = [(i, k, h) for i, k, h in ham if k in veri["canli_konu"]]
+    ayt_idler = ayt_konu_idleri(veri["konu_kodu"])
+    ayt_elenen = sum(1 for _, k, _ in kapsanan if k in ayt_idler)
+    kapsanan = [(i, k, h) for i, k, h in kapsanan if k not in ayt_idler]
     capraz = {i for i, _, h in kapsanan if h and h in veri["canli_hash"]}
     set_ici = set_ici_mukerrer([(i, h) for i, _, h in kapsanan])
-    haric = haric_kumesi(set_ici, capraz)
+    kirmizi = kirmizi_liste_oku(a.haric_dosya)
+    kirmizi_elenen = {i for i, _, _ in kapsanan if i in kirmizi}
+    haric = haric_kumesi(set_ici, capraz) | kirmizi_elenen
     kalan = [(i, k) for i, k, _ in kapsanan if i not in haric]
     secilen = konu_dengeli_sec(kalan, tavan=a.tavan)
 
@@ -174,9 +225,11 @@ async def _main(argv: Sequence[str] | None = None) -> int:
 
     # SESSİZ ELEME YOK — her düşen sayı yazdırılır.
     print(f"ham aday                  : {len(ham)}")
-    print(f"konu kapsami disi elenen  : {len(ham) - len(kapsanan)}")
+    print(f"konu kapsami disi elenen  : {len(ham) - len(kapsanan) - ayt_elenen}")
+    print(f"AYT konusu elenen         : {ayt_elenen}")
     print(f"set-ici mukerrer elenen   : {len(set_ici)}")
     print(f"capraz-DB elenen          : {len(capraz)}")
+    print(f"kirmizi liste elenen      : {len(kirmizi_elenen)}  (liste: {len(kirmizi)})")
     print(f"haric BIRLESIM            : {len(haric)}")
     print(f"tavan oncesi kalan        : {len(kalan)}")
     print(
