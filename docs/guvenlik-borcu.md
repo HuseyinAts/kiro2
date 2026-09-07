@@ -6740,3 +6740,19 @@ Iki tanesi lint temizligi degil GERCEK duzeltme:
 * `_wire_app` icinde govdesi yalnizca `pass` olan olu bir try/except blogu
   ve `TestDiaryApiCoverage.setup` icinde override kurulumunu yutan
   `except Exception: pass` kaldirildi. Override kurulamazsa GORULSUN.
+
+### reward-hacking-check push'u blokladi: 25 bos istisna yakalayicisi
+
+Push adiminda `reward-hacking-check` iki dosyada 25 CRITICAL verdi: hepsi
+`except Exception:` + `pass`, yani sessizce yutulan istisna. Bunlar
+opsiyonel bagimlilik baglama bloklarinin etrafindaydi -- baglama
+kurulamadiginda test yine "yesil" goruluyordu. Hook'un engelledigi sey tam
+olarak budur.
+
+Kolay gecis yolu `contextlib.suppress(Exception)` olurdu: ruff'in SIM105
+onerisi de odur ve hook'un AST dedektoru bir `ExceptHandler` gormedigi icin
+sessiz kalirdi. KULLANILMADI -- ayni sessizligin baska yazimidir, kapiyi
+davranisi duzeltmeden yesile cevirir. Bunun yerine 25 yakalayicinin hepsi
+`except Exception as hata:` + `logger.debug(...)` haline getirildi
+(iki dosyaya modul logger'i eklendi): test dusmuyor ama baglama kurulamadigi
+GORULEBILIYOR. Sonuc: `crit 0` (uyarilar duruyor, onlar bloklamiyor).

@@ -22,6 +22,7 @@ Targets (by missed lines):
  15.  api/video_solution.py         (145 missed)
 """
 
+import logging
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
@@ -29,6 +30,11 @@ from uuid import uuid4
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+# Bkz. tests/fast/test_api_coverage_batch13.py: opsiyonel bagimlilik baglama
+# bloklarindaki `except Exception: pass` sessizligi kaldirildi, istisna artik
+# loglaniyor -- testi dusurmuyor ama GORULEBILIR oluyor (SS10.63).
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -126,16 +132,18 @@ def _wire_app(app: FastAPI, role: str = "admin", db=None):
             mod = importlib.import_module(module)
             fn = getattr(mod, attr)
             app.dependency_overrides[fn] = lambda u=user: u
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
     try:
         from core.dependencies import get_current_admin_user, get_current_user
 
         app.dependency_overrides[get_current_user] = lambda u=user: u
         app.dependency_overrides[get_current_admin_user] = lambda u=user: u
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     for get_db_fn_path in [
         ("core.database", "get_db"),
@@ -148,15 +156,17 @@ def _wire_app(app: FastAPI, role: str = "admin", db=None):
             mod = importlib.import_module(get_db_fn_path[0])
             fn = getattr(mod, get_db_fn_path[1])
             app.dependency_overrides[fn] = lambda d=db: d
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
     try:
         from core.dependencies import get_redis_client
 
         app.dependency_overrides[get_redis_client] = lambda: AsyncMock()
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     # Not: burada eskiden govdesi yalnizca `pass` olan bir try/except blogu
     # duruyordu ("# Wire diary auth" yorumuyla). Hicbir sey yapmiyordu; silindi.
@@ -186,8 +196,10 @@ class TestLearningPathV2Extra:
             self.app.dependency_overrides[get_current_user_optional] = (
                 lambda: _mock_user()
             )
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
@@ -477,8 +489,10 @@ class TestAuthCoverage:
             from core.dependencies import get_current_user
 
             self.app.dependency_overrides[get_current_user] = lambda: user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
         r = self.client.get(
             "/api/v1/auth/me",
             headers={"Authorization": "Bearer test-token"},
@@ -715,8 +729,10 @@ class TestManipulativesProgressCoverage:
 
             self.app.dependency_overrides[get_current_user] = lambda: user
             self.app.dependency_overrides[get_db] = lambda: self._make_sync_db()
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.user = user
         self.client = TestClient(self.app, raise_server_exceptions=False)
@@ -756,8 +772,10 @@ class TestManipulativesProgressCoverage:
             from core.database import get_db
 
             self.app.dependency_overrides[get_db] = lambda: db
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         r = self.client.get("/api/v1/manipulatives/progress/progress/dashboard")
         assert r.status_code != 405
@@ -780,8 +798,10 @@ class TestManipulativesProgressCoverage:
             from core.database import get_db
 
             self.app.dependency_overrides[get_db] = lambda: db
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         r = self.client.get("/api/v1/manipulatives/progress/progress/dashboard")
         assert r.status_code != 405
@@ -811,8 +831,10 @@ class TestManipulativesProgressCoverage:
             from core.database import get_db
 
             self.app.dependency_overrides[get_db] = lambda: db
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         r = self.client.get("/api/v1/manipulatives/progress/badges")
         assert r.status_code != 405
@@ -847,8 +869,10 @@ class TestTwoFactorAuthCoverage:
             from core.jwt_auth import get_current_user as jwt_get_current_user
 
             self.app.dependency_overrides[jwt_get_current_user] = lambda: self.user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
@@ -862,8 +886,10 @@ class TestTwoFactorAuthCoverage:
             from core.jwt_auth import get_current_user as jwt_get_current_user
 
             self.app.dependency_overrides[jwt_get_current_user] = lambda: user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         r = self.client.post("/api/v1/auth/2fa/setup")
         assert r.status_code != 405
@@ -878,8 +904,10 @@ class TestTwoFactorAuthCoverage:
             from core.jwt_auth import get_current_user as jwt_get_current_user
 
             self.app.dependency_overrides[jwt_get_current_user] = lambda: user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         with (
             patch.object(
@@ -909,8 +937,10 @@ class TestTwoFactorAuthCoverage:
             from core.jwt_auth import get_current_user as jwt_get_current_user
 
             self.app.dependency_overrides[jwt_get_current_user] = lambda: user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         with patch.object(self.mod.two_factor_auth, "verify_token", return_value=True):
             r = self.client.post(
@@ -929,8 +959,10 @@ class TestTwoFactorAuthCoverage:
             from core.jwt_auth import get_current_user as jwt_get_current_user
 
             self.app.dependency_overrides[jwt_get_current_user] = lambda: user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         with patch.object(self.mod.two_factor_auth, "verify_token", return_value=False):
             r = self.client.post(
@@ -950,8 +982,10 @@ class TestTwoFactorAuthCoverage:
             from core.jwt_auth import get_current_user as jwt_get_current_user
 
             self.app.dependency_overrides[jwt_get_current_user] = lambda: user
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         r = self.client.delete("/api/v1/auth/2fa/disable")
         assert r.status_code != 405
@@ -1323,8 +1357,10 @@ class TestSoruBankasiCoverage:
             from core.database import get_db_session
 
             self.app.dependency_overrides[get_db_session] = lambda: self.mock_db
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
@@ -2117,8 +2153,10 @@ class TestDiaryApiCoverage:
             self.app.dependency_overrides[get_diary_service] = (
                 lambda: self.mock_diary_service
             )
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 

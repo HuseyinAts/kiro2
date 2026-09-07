@@ -13,6 +13,7 @@ Strategy: patch all external calls (DB, facades, services, LLM) at module
 level so handlers execute deeply without real I/O.
 """
 
+import logging
 from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
@@ -20,6 +21,13 @@ from uuid import uuid4
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+# Bu dosyadaki bagimlilik baglama bloklari ortamda eksik olabilen opsiyonel
+# modulleri deniyor. Eskiden hepsi `except Exception: pass` ile susuyordu:
+# bir baglama sessizce kurulamadiginda test yine "yesil" goruluyordu, ki bu
+# tam olarak reward-hacking-check'in engelledigi sey. Artik istisna
+# loglaniyor -- testi dusurmuyor ama GORULEBILIR oluyor (SS10.63).
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -90,36 +98,36 @@ def _setup_overrides(app: FastAPI, role: str = "admin") -> MagicMock:
 
         app.dependency_overrides[get_current_user] = lambda: user
         app.dependency_overrides[get_current_admin_user] = lambda: user
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.database import get_db
 
         app.dependency_overrides[get_db] = lambda: mock_db
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.dependencies import get_db as get_db_deps
 
         app.dependency_overrides[get_db_deps] = lambda: mock_db
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.database import get_db_session
 
         app.dependency_overrides[get_db_session] = lambda: mock_db
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.dependencies import get_redis_client
 
         app.dependency_overrides[get_redis_client] = lambda: AsyncMock()
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     return mock_db
 
@@ -149,8 +157,10 @@ class TestLearningPathV2Coverage:
             self.app.dependency_overrides[get_current_user_optional] = (
                 lambda: _mock_user()
             )
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
     # --- /create-profile ---
@@ -827,8 +837,10 @@ class TestDiaryApiCoverage:
             user = _mock_user()
             self.app.dependency_overrides[mod.get_current_user] = lambda: user
             self.app.dependency_overrides[get_db] = lambda: self.mock_db
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
