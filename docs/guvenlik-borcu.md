@@ -6931,3 +6931,82 @@ ikisini isaret ediyor. Yerel dogrulama: `4 xfailed`.
 
 Kayit, API yuzeyini 4 uc buyutur ve `check_new_endpoints.py` kapisini
 tetikler; bu yuzden urun karari olarak birakildi.
+
+## §10.66 -- celery mutasyonunun iki nushasi daha (2026-09-07)
+
+SS10.63'te `tests/unit/test_core_partial_batch1.py` icin duzeltilen kok neden
+kapanmadi: CI kosusu 34072269135'te
+`tests/test_social_tasks.py::TestCeleryAppSchedule`in 2 testi HALA MagicMock
+uzerinde assert ediyordu. Ayni desen iki dosyada daha bulundu.
+
+### Nusha 2 -- `tests/unit/test_core_remaining_batch2.py:92`
+
+Birebir ayni kod: `if _cmod not in sys.modules` kosuluyla gercek celery
+paketini sahte bir `ModuleType` ile degistirip `Celery`yi lambda yapiyordu.
+celery bu depoda KURULU (`requirements.txt:27  celery[redis]==5.3.4`), ama
+hicbir conftest onu iceri almadigi icin kosul her zaman doguydu.
+`importlib.util.find_spec` ile "gercekten kurulu degil"e cevrildi.
+
+### Nusha 3 -- `tests/unit/test_api_coverage_final.py:64`
+
+Bu dosya daha dikkatli yazilmis: stub'lanan modulleri kaydediyor ve hem
+modul duzeyinde hem de modul-kapsamli bir fixture ile geri yukluyor. Ama geri
+yukleme yalnizca **sys.modules KAYDINI** eski haline getiriyor;
+`_celery.Celery = lambda ...` satirinin GERCEK MODULE yazdigi ozniteligi geri
+almiyor. `_stub()` var olan modulu aynen dondurdugu icin, celery zaten iceri
+alinmissa mutasyon gercek pakete gidiyordu.
+
+`_stub()` artik yarattigi adlari `_BIZIM_STUBLARIMIZ` kumesine yaziyor;
+celery mutasyonu yalnizca bu dosyanin yarattigi stub icin uygulaniyor.
+
+### DENENDI VE GERI ALINDI -- iki genisletme
+
+Ayni "yalnizca kurulu olmayani stub'la" kuralini daha genis uygulamak
+denendi ve ikisi de OLCUMLE geri alindi:
+
+1. **`_STUB_MODULES` / `_STUBS` listelerinin tamami** (redis, elasticsearch,
+   langchain, websockets, cryptography...). Yerel olcum, ayni 6 dosya
+   birlikte:
+
+       once : 624 passed / 9 error
+       sonra: 469 passed / 91 failed / 89 error
+
+   Agir bagimliliklari gercek haliyle iceri almak cok daha buyuk bir kirilma
+   uretiyor. Geri alindi; her iki dosyaya da gerekce not olarak yazildi.
+
+2. **`test_api_coverage_final.py`in slowapi mutasyonlari.** Koruma
+   eklenince gercek `slowapi.Limiter` calismaya basliyor; `redis` hala
+   MagicMock oldugu icin `limits` kutuphanesi surumu "0.0.0" okuyup
+   `ConfigurationError` firlatiyor ve `core/ddos_protection.py:67`deki
+   `Limiter(...)` patliyor -> `api/enhanced_chat.py` iceri alinamiyor ->
+   `TestEnhancedChatCoverage`in 9 testi setup'ta duser. Yani bir kirlenmeyi
+   kaldirmak baska bir kirlenmeyi aciga cikariyor. Bu PR'in konusu CI'da
+   OLCULEN kirmizidir; o celery'den geliyordu. slowapi blogu bilerek eski
+   halinde birakildi ve gerekcesi dosyaya yazildi.
+
+Bu, kampanyanin tekrar eden dersinin bir ornegi: **kok nedeni duzeltmek ile
+etrafindaki her benzeri degistirmek ayni sey degildir.** Ikincisi olculmeden
+yapilirsa yeni kirmizi uretir.
+
+### Dogrulama
+
+    pytest batch1 + batch2 + final + test_social_tasks -n 0 -p no:randomly
+    -> 544 passed, 1 skipped     (once: TestCeleryAppSchedule 2 kirmizi)
+
+Ayni 6 dosyalik genis kosumda HEAD ile karsilastirma (bu ordering'de zaten
+kirmizi olan, bu PR'la ilgisiz bir yigin var):
+
+    HEAD          : 93 failed / 467 passed / 89 error
+    bu degisiklik : 91 failed / 469 passed / 89 error
+
+### Yan borc (yedinci kayit)
+
+Bu uc dosyaya dokunmak diff-bazli lint kapisini yine acti; 37 kalem
+temizlendi: E402 x15, S105 x4, DTZ011 x2, N818 x1, E701 x1, SIM102 x1,
+UP038 x1, F841 x5 (kullanilmayan atamalar `_` ile isaretlendi),
+`var-annotated` x4, `attr-defined` x1, B017 x2.
+
+B017'ler yine lint degil OLCUM duzeltmesiydi:
+`pytest.raises(Exception)` -> `ValidationError` / `NotFoundError`
+(`core/rbac_system.py:717` ve `:858`). Genis assert altinda, cagri bir
+`TypeError` firlatsa da test yesil kalirdi.

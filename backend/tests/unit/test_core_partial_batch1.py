@@ -73,6 +73,15 @@ def _stub(ad: str) -> Any:
     return sys.modules[ad]
 
 
+# NOT (SS10.66, OLCULDU VE GERI ALINDI): buradaki kosulu de celery'deki gibi
+# "gercekten kurulu degil" (find_spec) yapmak DENENDI ve GERI ALINDI. Yerel
+# olcum: batch1 + batch2 + final + batch13 birlikte kosuldugunda
+#   once : 624 passed / 9 error
+#   sonra: 469 passed / 91 failed / 89 error
+# Yani bu listedeki agir bagimliliklari (elasticsearch/langchain/websockets/
+# cryptography) gercek haliyle iceri almak cok daha buyuk bir kirilma
+# uretiyor. Kalan borc, bu blokla ilgili DEGIL; asagidaki celery/berturk
+# mutasyonlariyla ilgiliydi ve onlar duzeltildi.
 for _mod in _STUB_MODULES:
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
