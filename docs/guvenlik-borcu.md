@@ -7637,3 +7637,29 @@ veriye bagli bir cirik ortamdan ortama farkli olcup CI'i yaniltiyor.
 Dogrulama: `pytest tests/api/test_exams_v1_api.py -n 0` -> **9 passed**
 (5 mevcut + 4 yeni), `ruff check` + `ruff format --check` temiz,
 `mypy api/v1/exams.py` degisen dosyada hatasiz.
+
+### CI dogrulamasi ve "19 -> 20" acikligi
+
+Commit `45a006b44`, PR #181. Sonuclar:
+
+    Code Quality (ruff / mypy / bandit / semgrep / safety)   pass
+    Frontend Tests: "Run ESLint (changed files)"             pass
+    Frontend Tests: "Kanon lint (frontend/src/kiro)"         fail (onceden var)
+    Backend Tests                                            20 failed
+
+Onceki kosuda (5e6f9c84c) 19 failed vardi. Sayi arttigi icin "SS10.73 bir
+sey kirdi mi?" sorusu TAHMINLE degil, iki kosunun FAILED kumeleri
+karsilastirilarak yanitlandi. Fark tek bir test:
+
+    tests/integration/test_error_handling_system.py::
+      TestErrorHandlingPerformance::test_error_context_performance
+      -> assert 15.119... < 10.0
+
+Bu bir duvar-saati esigi ve dokunmadigim bir dosyada. Ayni kosuda test
+suresi 334s -> 489s'e cikmis (runner ~1.46x yavas). Sayilar da bunu
+dogruluyor: toplanan test +4 (benim 4 yeni testim), gecen +2, kirilan +1,
+atlanan +1 -- yani 4 yeni testin DORDU de CI'da GECTI, bir eski perf testi
+gecti->kirildi, bir test gecti->atlandi.
+
+Yani 19 -> 20 artisinin kaynagi SS10.73 degil, yavas runner. `/api/v1/exams`
+testlerinin 9'u da CI'da yesil.
