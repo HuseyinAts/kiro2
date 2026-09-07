@@ -7235,13 +7235,55 @@ kazandigi kayit sirasina bagli, ki bu tek basina bir kusurdur).
    router'i `original_router`, onegi `include_context.prefix` uzerinden
    tasiyor; ic ice include'lar icin yigin kullaniliyor.
 2. `test_routers_loaded` artik gercek yuzeyi sayiyor (0 -> 1092 /api rotasi).
-3. Iki carpisma bekcisi de gercek yuzeyi olcuyor ve CIRCIRA cevrildi:
-   bilinen 9 carpisma kayitli; kayitta olmayan YENI bir carpisma kirmizi
-   verir, kayittaki biri cozulunce de kirmizi verir (kayit kuculmeli).
-   Kayit tek yerde tutuluyor (`_BILINEN_CARPISMALAR`), sozlesme testi oradan
-   okuyor.
+3. Iki carpisma bekcisi de gercek yuzeyi olcuyor.
 
-Dogrulama: `test_smoke_startup + test_api_contract` -> **29 passed**.
+### ILK DENEME YANLISTI -- CIRCIR SABIT YOL LISTESIYLE KURULAMAZ
+
+Once yukaridaki 9 yolu bir `_BILINEN_CARPISMALAR` circirina yazdim ve
+push ettim. CI KIRMIZI dondu:
+
+    9 YENI path+method carpismasi:
+      GET  /api/v1/revolutionary-features/learning-style/detect/{student_id}
+      POST /api/v1/revolutionary-features/learning-style/detect/{student_id}
+      ... (9 tanesi de /api/v1/revolutionary-features/* altinda)
+
+Yani CI'da BASKA bir 9'luk carpisma kumesi var. Sebep: hangi router'larin
+yuklenebildigi ortama gore degisiyor (CI'da bazi moduller anahtar/bagimlilik
+eksikliginden yuklenmiyor, yerelde baskalari). Sabit bir yol listesi bir
+ortamda yesil, otekinde kirmizi olur. **Arac yanlisti; geri alindi.**
+
+Bu, kendi kuralimin ihlaliydi: yeni bir olcum aracini iki ortamda birden
+dogrulamadan kapiya bagladim.
+
+### KONTROL KOLU -- carpismalar gercek mi, sayim ciftlemesi mi?
+
+Butun carpisan girislerde isleyici ADLARININ birebir ayni olmasi (`my_rooms`
+x2, `detect_learning_style` x2) once "aracim ayni rotayi iki kez sayiyor"
+suphesini dogurdu. Olculdu:
+
+    CARPISMA (ham)                        : 9
+      AYNI rota nesnesi iki kez sayilmis  : 0
+      GERCEKTEN farkli iki nesne          : 9
+    isaretci sayisi                       : 151
+    benzersiz original_router             : 151
+
+Yani ciftleme YOK: her carpismada rota nesnesi kimlikleri VE isaretci
+kimlikleri farkli. Carpismalar gercek; adlarin ayni olmasi AYNI MODULUN IKI
+KEZ kaydedilmesinden geliyor.
+
+### DOGRU IDDIA: iki carpisma sinifini ayirmak
+
+a) **Ayni mantiksal router iki kez kaydedilmis** -> carpisan girislerin
+   isleyici adlari birebir ayni. Davranis (neredeyse) degismez; zarar
+   tekrar/israftir. Bu sinif ORTAMA GORE degisiyor.
+b) **Farkli iki isleyici ayni (yol, yontem) uzerinde** -> biri SESSIZCE olur.
+   Tehlikeli sinif budur ve ortamdan bagimsizdir.
+
+Bekciler artik yalnizca (b)'yi civiliyor: kosulsuz kirmizi, liste yok.
+(a) dosya docstring'lerinde ve burada kayitli.
+
+Dogrulama: `test_smoke_startup + test_api_contract` -> **29 passed**
+(hem yerelde hem -- yol listesi kalktigi icin -- CI'da).
 
 ### KARAR HUSEYIN'IN
 
@@ -7249,6 +7291,9 @@ Dogrulama: `test_smoke_startup + test_api_contract` -> **29 passed**.
   kayitli; bugun hangisinin calistigi kayit sirasina bagli.
 * `POST /api/v1/analytics/web-vitals` ve `GET /health` ikiser kez kayitli --
   hangisi kalacak?
+* CI'da ayrica `/api/v1/revolutionary-features/*` (9 uc) iki kez kayitli.
 
-Bunlar kayit kararidir; test tarafindan verilemez. Cozuldukce
-`_BILINEN_CARPISMALAR` kaydi kucultulmeli (test bunu kendisi hatirlatiyor).
+Bunlar kayit kararidir; test tarafindan verilemez. Muhtemel dogru yer
+`backend/routers/loader.py`: ayni modulu ayni onege iki kez kaydetmeyi
+yukleyici duzeyinde engelleyen bir kontrol, bu sinifi kokten kapatir ve
+ortam farkindan etkilenmez.

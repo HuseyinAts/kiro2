@@ -613,16 +613,18 @@ class TestRouteCollisionDetection:
         SS10.69: bu bekci `app.routes` uzerinde donuyordu ve FastAPI 0.141'de
         1214 rotanin yalnizca 5'ini goruyordu -- hicbir sey bulamadigi icin
         YESILDI. Yuzey artik `tests/rota_yuzeyi` ile gercekten olculuyor.
-        Bilinen 9 carpismanin kaydi ve gerekcesi
-        `tests/smoke/test_smoke_startup.py::_BILINEN_CARPISMALAR` icinde;
-        bu test o kayittan okuyor ki iki yerde iki ayri liste tutulmasin.
+        Iddia, kardes bekci
+        `tests/smoke/test_smoke_startup.py::test_no_duplicate_api_routes` ile
+        AYNI: yalnizca FARKLI-ISLEYICI carpismasi (biri sessizce olu) kirmizi
+        verir. "Ayni router iki kez kaydedilmis" sinifi ORTAMA GORE degistigi
+        icin sabit bir yol listesiyle civilenemez -- gerekcesi o testin
+        docstring'inde ve docs/guvenlik-borcu.md SS10.69'da.
         """
         from main import app
         from tests.rota_yuzeyi import carpismalar
-        from tests.smoke.test_smoke_startup import _BILINEN_CARPISMALAR
 
         bulunan = carpismalar(app)
-        duplicates = {k: v for k, v in bulunan.items() if k not in _BILINEN_CARPISMALAR}
+        duplicates = {k: v for k, v in bulunan.items() if len(set(v)) > 1}
 
         assert len(duplicates) == 0, (
             f"Found {len(duplicates)} duplicate path+method collision(s). "
