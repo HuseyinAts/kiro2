@@ -7520,8 +7520,33 @@ sayilari (`question_bank` x `topic_hierarchy`):
     -----------------------------
     toplam aktif soru     3922   (3525'i, ~%90'i KIMYA)
 
-TURKCE, SOSYAL ve BIYOLOJI'de sifir soru var. Yani 120 sorunun en az 100'u
-kendi bransindan GELEMIYORDU.
+CANLI bankada TURKCE, SOSYAL ve BIYOLOJI icin sifir aktif soru var. Yani
+120 sorunun en az 100'u kendi bransindan GELEMIYORDU.
+
+#### DUZELTME (ayni gun, Huseyin itiraz etti): "Turkce ve sosyal sorulari VARDI"
+
+Ilk yazdigim cumle "TURKCE ve SOSYAL'de sifir soru var" idi. Huseyin
+"vardi ama" dedi; yeniden olctum ve HAKLI cikti. Benim olcumum CANLI
+`kiro2` semasinda dogruydu, ama iddiayi PROJE hakkinda kurmustum -- bu
+fazla genis bir cumleydi. Gercek dagilim:
+
+    kiro2 (canli)          TUR 0        SOS 0        BIY 0
+    kiro2_temp (hazirlik)  TUR 18.388   SOS 1.494    BIY 7.065   (TYT)
+                           FIZ 24.183   TAR 3.939    COG 1.383
+    question_*_cop_yedek_20260820        TUR 1.543   SOS 337
+                           EDEBIYAT 1.709  TARIH 702  BIYOLOJI 584
+
+Yani sorular VAR; canli bankaya HENUZ gocmediler.
+`docs/superpowers/plans/2026-08-20-mat-tyt-goc-revize.md` bunu belgeliyor:
+S238'de 36.967 satir canlidan cikarilip `*_cop_yedek_20260820`'ye alindi,
+goc KIMYA ile basladi (3.616 satir), sirada MAT/TYT var. Goc kasten yavas:
+crop'larda %2,54 sizinti olculdu (9/354, kor okuma), OCR reddedildi
+(kullanici karari), o yuzden dilim 5.420 yerine 600'e indirildi.
+
+Dogru cumle su: **"canli bankada yok, goc sirasi TUR/SOS'a gelmedi"** --
+"boyle sorular yok" degil. Kayda geciyorum, cunku bu kampanyanin kurali
+benim iddialarim icin de gecerli: iddia != olcum, ve olcumun KAPSAMI
+iddianin kapsamiyla ayni olmali.
 
 ### Adim 2 -- Peki bos brans ne ile dolduruluyordu? BRANS-KORU FALLBACK
 
@@ -7551,7 +7576,8 @@ diye kodluyor; hicbiri bu listeye ESIT degil. Olcum:
     topic_hierarchy.subject_area ile  MAT -> 391 soru
 
 Yani MAT'in bos gorunmesi veri eksigi DEGIL, eslestirme kusuruydu. TUR ve
-SOS ise gercekten bos (veri eksigi, kodla kapanmaz).
+SOS ise canli bankada bos -- ama sorular yok degil, GOC EDILMEDILER
+(bkz. yukaridaki DUZELTME).
 
 ### Adim 4 -- Soru bankasi KUSURSUZ olsa bile 40 soru yanlis bransta
 
@@ -7598,8 +7624,9 @@ ama o karar bugun onunde bile degil, cunku onkosul saglanmiyor.
 
 ### ONKOSUL (baglamak icin saglanmasi gerekenler)
 
-1. TURKCE ve SOSYAL'de aktif soru olmali (bugun 0 / 0). Veri isi, kodla
-   kapanmaz.
+1. CANLI bankada TURKCE ve SOSYAL aktif sorusu olmali (bugun 0 / 0).
+   Sorular `kiro2_temp`'te hazir (TYT: TUR 18.388, SOS 1.494); eksik olan
+   sey goc. Bu S239 planinin isi, kodla kapanmaz.
 2. Bir rota (`App.tsx`, `ProtectedRoute`) ve auth'tan gelen gercek
    `studentId`.
 3. Iki sinav deneyiminin (`/exam/*` ile `components/Exam/*` +
