@@ -29,9 +29,20 @@ canli `MAT`'a yeniden yazilmis. Bu script ayni deseni izler:
 korpusunun sayimidir ve canli icin YANLIS olur. Denormalize onbellek; goc
 ilerledikce yeniden sayilir. (Kural: ucucu sayiyi otorite gibi yazma.)
 
+DERS-AGNOSTIK (7 Eyl 2026, TURKCE gocu)
+---------------------------------------
+Varsayilanlar MAT davranisini BIREBIR korur. TURKCE icin olculen yapi farkli:
+temp'te `TUR.*` level-2 kodlarinin `parent_id`'si NULL ve `TYT-TR-01/02/03`
+kodlari ebeveynsiz + level'lari tutarsiz (1, 1, 3). Bu yuzden iki ek parametre:
+`--kod-deseni` birden cok LIKE deseni alir, `--yaz-level` verilirse level
+kaynaktan kopyalanmaz, sabitlenir (TUR altinda hepsi 2). `--kaynak-level`
+verilmezse level suzgeci uygulanmaz (MAT varsayilani 2'dir).
+
 Kullanim:
-    python backend/scripts/quality/y11_konu_seed.py            # PROVA (geri alir)
-    python backend/scripts/quality/y11_konu_seed.py --kalici   # KALICI
+    python backend/scripts/quality/y11_konu_seed.py            # PROVA (geri alir), MAT
+    python backend/scripts/quality/y11_konu_seed.py --kalici   # KALICI, MAT
+    python backend/scripts/quality/y11_konu_seed.py --ders TURKCE --ebeveyn TUR \\
+        --kod-deseni "TUR.%" --kod-deseni "TYT-TR-%" --yaz-level 2 [--kalici]
 """
 
 from __future__ import annotations
@@ -49,12 +60,13 @@ if _yeniden_ayarla and (sys.stdout.encoding or "").lower().startswith("cp"):
 KOK = "postgresql://postgres@localhost:5434"
 EBEVEYN_KOD = "MAT"
 
-# Temiz MAT/TYT havuzunun kullandigi level-2 MAT.* kodlari.
-# Liste burada SABIT degil -- kaynaktan cekilir; bu yalniz KAPSAM suzgecidir.
+# Temiz havuzun kullandigi konu kodlari. Liste burada SABIT degil -- kaynaktan
+# cekilir; bu yalniz KAPSAM suzgecidir. $1 = ders (subject_area), $2 = LIKE
+# desenleri, $3 = kaynak level suzgeci (NULL = suzme).
 KAPSAM_SQL = """
 WITH temiz AS (
     SELECT primary_topic_id FROM question_bank
-    WHERE exam_type = 'TYT' AND subject_area = 'MATEMATIK'
+    WHERE exam_type = 'TYT' AND subject_area = $1
       AND quality_review_status = 'auto_judged_high' AND is_active
       AND question_image_url ~ '_q[0-9]+\\.png$'
       AND correct_answer IN ('A','B','C','D','E')
@@ -65,7 +77,8 @@ SELECT th.id, th.code, th.name_tr, th.name_en, th.level,
        th.difficulty_level, th.subject_area, count(*) AS temiz_soru
 FROM temiz t
 JOIN topic_hierarchy th ON th.id = t.primary_topic_id
-WHERE th.code LIKE 'MAT.%' AND th.level = 2
+WHERE th.code LIKE ANY($2::text[])
+  AND ($3::int IS NULL OR th.level = $3::int)
 GROUP BY th.id, th.code, th.name_tr, th.name_en, th.level, th.osym_relevance,
          th.osym_frequency, th.average_difficulty, th.difficulty_level,
          th.subject_area
@@ -82,31 +95,58 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0, $9, $10, $11, TRUE)
 
 
 async def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Canli topic_hierarchy MATEMATIK seed")
+    ap = argparse.ArgumentParser(description="Canli topic_hierarchy konu seed")
     ap.add_argument(
         "--kalici",
         action="store_true",
         help="KALICI YAZ. Verilmezse transaction GERI ALINIR (prova).",
     )
+    ap.add_argument("--ders", default="MATEMATIK", help="kaynak subject_area")
+    ap.add_argument("--ebeveyn", default=EBEVEYN_KOD, help="canli ebeveyn kodu")
+    ap.add_argument(
+        "--kod-deseni",
+        action="append",
+        default=None,
+        help="konu kodu LIKE deseni (tekrarlanabilir). Varsayilan: '<ebeveyn>.%%'",
+    )
+    ap.add_argument(
+        "--kaynak-level",
+        type=int,
+        default=None,
+        help="kaynakta bu level'daki kodlari al (MAT varsayilani 2; verilmezse suzme)",
+    )
+    ap.add_argument(
+        "--yaz-level",
+        type=int,
+        default=None,
+        help="canliya bu level ile yaz (verilmezse kaynaktan kopyalanir)",
+    )
     a = ap.parse_args(argv)
+    ebeveyn_kod: str = a.ebeveyn
+    desenler: list[str] = a.kod_deseni or [f"{ebeveyn_kod}.%"]
+    kaynak_level = a.kaynak_level
+    if kaynak_level is None and a.ders == "MATEMATIK" and a.kod_deseni is None:
+        kaynak_level = 2  # MAT varsayilani birebir korunur
 
     kaynak = await asyncpg.connect(f"{KOK}/kiro2_temp")
     hedef = await asyncpg.connect(f"{KOK}/kiro2")
     try:
-        adaylar = await kaynak.fetch(KAPSAM_SQL)
+        adaylar = await kaynak.fetch(KAPSAM_SQL, a.ders, desenler, kaynak_level)
         if not adaylar:
             raise SystemExit(
                 "HATA: 0 aday -- yanlis-sifir, kapsam sorgusunu kontrol et."
             )
 
         ebeveyn = await hedef.fetchval(
-            "SELECT id FROM topic_hierarchy WHERE code = $1", EBEVEYN_KOD
+            "SELECT id FROM topic_hierarchy WHERE code = $1", ebeveyn_kod
         )
         if not ebeveyn:
             raise SystemExit(
-                f"HATA: canli '{EBEVEYN_KOD}' YOK -- ebeveyn zinciri kirik."
+                f"HATA: canli '{ebeveyn_kod}' YOK -- ebeveyn zinciri kirik."
             )
-        print(f"canli ebeveyn {EBEVEYN_KOD} = {ebeveyn}")
+        print(
+            f"ders {a.ders} | desen {desenler} | canli ebeveyn {ebeveyn_kod} = {ebeveyn}"
+        )
 
         mevcut = {
             r["code"] for r in await hedef.fetch("SELECT code FROM topic_hierarchy")
@@ -138,7 +178,7 @@ async def main(argv: list[str] | None = None) -> int:
                 await hedef.execute(
                     EKLE,
                     r["id"],
-                    r["level"],
+                    a.yaz_level if a.yaz_level is not None else r["level"],
                     ebeveyn,
                     r["code"],
                     r["name_tr"],
@@ -152,8 +192,9 @@ async def main(argv: list[str] | None = None) -> int:
 
             # --- transaction ICINDE dogrula ---
             toplam = await hedef.fetchval("SELECT count(*) FROM topic_hierarchy")
-            mat = await hedef.fetchval(
-                "SELECT count(*) FROM topic_hierarchy WHERE code LIKE 'MAT.%'"
+            desen_satir = await hedef.fetchval(
+                "SELECT count(*) FROM topic_hierarchy WHERE code LIKE ANY($1::text[])",
+                desenler,
             )
             yetim = await hedef.fetchval(
                 "SELECT count(*) FROM topic_hierarchy c "
@@ -161,15 +202,16 @@ async def main(argv: list[str] | None = None) -> int:
                 "WHERE c.parent_id IS NOT NULL AND p.id IS NULL"
             )
             yanlis_ebeveyn = await hedef.fetchval(
-                "SELECT count(*) FROM topic_hierarchy WHERE code LIKE 'MAT.%' "
-                "AND parent_id IS DISTINCT FROM $1",
+                "SELECT count(*) FROM topic_hierarchy "
+                "WHERE code LIKE ANY($2::text[]) AND parent_id IS DISTINCT FROM $1",
                 ebeveyn,
+                desenler,
             )
             print("\nDOGRULAMA (transaction icinde)")
             print(f"  topic_hierarchy toplam : {toplam}")
-            print(f"  MAT.* satir            : {mat}")
+            print(f"  desene uyan satir      : {desen_satir}")
             print(f"  FK yetimi              : {yetim}   (0 olmali)")
-            print(f"  yanlis ebeveynli MAT.* : {yanlis_ebeveyn}   (0 olmali)")
+            print(f"  yanlis ebeveynli satir : {yanlis_ebeveyn}   (0 olmali)")
             if yetim or yanlis_ebeveyn:
                 raise SystemExit("HATA: invaryant ihlali -- transaction geri alinacak.")
 
