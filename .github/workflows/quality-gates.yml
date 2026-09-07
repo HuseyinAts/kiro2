@@ -123,6 +123,12 @@ jobs:
     - name: Install dependencies
       run: |
         cd backend
+        # DISK: requirements.txt `torch>=2.1.0` diyor; PyPI'nin Linux
+        # varsayilani CUDA yapisi (yaninda nvidia-* + triton). Olculdu:
+        # 3.677 MB wheel yigininin 2.987 MB'i yalniz CUDA. Runner'da GPU
+        # YOK; kurulum [Errno 28] No space left on device ile dusuyordu.
+        # CPU yapisi ONCE kurulunca kisit karsilanir, nvidia-* cekilmez.
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
         pip install -r requirements.txt || pip install pytest pytest-cov pytest-asyncio
         pip install pytest-cov
         pip install pyyaml pillow tqdm numpy

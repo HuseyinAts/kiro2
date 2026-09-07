@@ -85,6 +85,14 @@ jobs:
           rm -rf .venv  # eski cache'ten restore edilmiş bozuk venv'i temizle
           uv venv
           source .venv/bin/activate
+          # DISK: requirements.txt `torch>=2.1.0` diyor; PyPI'nin Linux
+          # varsayilani CUDA yapisi ve yaninda nvidia-* + triton geliyor
+          # (olculdu: 3.677 MB wheel yigininin 2.987 MB'i yalniz CUDA).
+          # Runner'da GPU YOK; bu paketler kurulumu [Errno 28] No space left
+          # on device ile dusuruyordu. CPU yapisi ONCE kurulunca asagidaki
+          # kisit karsilanmis olur ve nvidia-* hic cekilmez. Uretim
+          # kurulumlari DEGISMIYOR (yalniz CI adimi).
+          uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           cd backend && uv pip install -r requirements.txt
           # ruff/mypy/bandit: .pre-commit-config.yaml ile ayni pin --
           # docs/guvenlik-borcu.md SS10.42 (versiyon suruklenmesi kok nedeni).
@@ -274,6 +282,14 @@ jobs:
           rm -rf .venv  # eski cache'ten restore edilmiş bozuk venv'i temizle
           uv venv
           source .venv/bin/activate
+          # DISK: requirements.txt `torch>=2.1.0` diyor; PyPI'nin Linux
+          # varsayilani CUDA yapisi ve yaninda nvidia-* + triton geliyor
+          # (olculdu: 3.677 MB wheel yigininin 2.987 MB'i yalniz CUDA).
+          # Runner'da GPU YOK; bu paketler kurulumu [Errno 28] No space left
+          # on device ile dusuruyordu. CPU yapisi ONCE kurulunca asagidaki
+          # kisit karsilanmis olur ve nvidia-* hic cekilmez. Uretim
+          # kurulumlari DEGISMIYOR (yalniz CI adimi).
+          uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           cd backend && uv pip install -r requirements.txt
           uv pip install pytest pytest-cov pytest-asyncio pytest-xdist httpx
           uv pip install pyyaml pillow tqdm numpy
