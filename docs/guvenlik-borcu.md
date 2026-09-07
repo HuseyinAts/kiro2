@@ -7500,3 +7500,140 @@ Bilesen artik durust: veri yoksa sinav baslatmiyor, hatayi gosteriyor, sahte
 soru uretmiyor. Baglamak icin gereken tek sey bir rota ve gercek `studentId`.
 Ama bu, kullaniciya IKINCI bir sinav deneyimi acmak demek -- urun karari,
 test tarafindan verilemez. Bilerek baglanmadi.
+
+## §10.73 -- Rota baglanmadi: karar olculdu, arka uc de uyduruyordu (2026-09-07)
+
+SS10.72 bilesenin sahte soru uretmesini kapatti ve "baglamak urun karari"
+diyerek birakti. Bu sefer karar tahminle degil OLCUMLE verildi. Sorulan tek
+soru suydu: "rota baglansaydi ogrenci ne gorurdu?"
+
+### Adim 1 -- Baglansaydi ogrenci ne gorurdu (canli DB olcumu)
+
+`POST /api/v1/exams/generate-mock` 120 soruluk TYT denemesi kuruyor;
+kota TUR 40 / SOS 20 / MAT 40 / FEN 20. Canli veritabanindaki AKTIF soru
+sayilari (`question_bank` x `topic_hierarchy`):
+
+    TUR                      0
+    SOS                      0
+    MAT                      0   (kod listesiyle; gercegi 391 -- Adim 3)
+    FEN                    546
+    -----------------------------
+    toplam aktif soru     3922   (3525'i, ~%90'i KIMYA)
+
+TURKCE, SOSYAL ve BIYOLOJI'de sifir soru var. Yani 120 sorunun en az 100'u
+kendi bransindan GELEMIYORDU.
+
+### Adim 2 -- Peki bos brans ne ile dolduruluyordu? BRANS-KORU FALLBACK
+
+`api/v1/exams.py` bir bransin sorusu yetmezse eksigi TUM aktif bankadan,
+brans GOZETMEKSIZIN tamamliyordu:
+
+```
+# Fallback if topic questions count is smaller than blueprint requirement
+if len(selected_questions) < count:
+    remaining = count - len(selected_questions)
+    fallback_query = await db.execute(... QuestionBankItem.is_active ...)
+```
+
+Adim 1'deki dagilimla birlestirilince sonuc net: ogrenci "TYT Deneme Sinavi"
+acar, 1-40 arasi "Turkce" bolumunde KIMYA sorulari gorurdu. Bu, bir onceki
+commit'te (SS10.72) frontend'den silinen 120 sahte sorunun tipatip aynisi --
+sadece bir kat asagida, arka ucta. Eksik veriyi kabul etmek yerine
+inandirici bir sey uydurmak.
+
+### Adim 3 -- MAT'ta 391 soru VAR ama kod bulamiyordu (eslestirme kusuru)
+
+`SUBJECT_MAPPING["MAT"] = ["MAT", "GEO", "TYT-MAT-01"]` -- tam esitlik
+ariyor. Oysa konu tablosu alt konulari `MAT.OLS`, `MAT.KMB`, `MAT.GEO`...
+diye kodluyor; hicbiri bu listeye ESIT degil. Olcum:
+
+    kod listesiyle                    MAT -> 0 soru
+    topic_hierarchy.subject_area ile  MAT -> 391 soru
+
+Yani MAT'in bos gorunmesi veri eksigi DEGIL, eslestirme kusuruydu. TUR ve
+SOS ise gercekten bos (veri eksigi, kodla kapanmaz).
+
+### Adim 4 -- Soru bankasi KUSURSUZ olsa bile 40 soru yanlis bransta
+
+Uretim ve puanlama iki AYRI sira listesi kullaniyordu:
+
+    uretim   (TYT_BLUEPRINT dict sirasi):  TUR, MAT, SOS, FEN
+    puanlama (_BRANCH_RANGES, elle):       TUR(1-40) SOS(41-60)
+                                           MAT(61-100) FEN(101-120)
+
+Ust uste konunca: 41-60 arasi sorular MAT olarak URETILIP SOS olarak,
+81-100 arasi SOS olarak uretilip MAT olarak PUANLANIYORDU. 120 sorunun
+40'i, veri kusursuz olsaydi bile yanlis bransin netine yaziliyordu.
+Dogru olan ikincisi (gercek TYT sirasi TUR-SOS-MAT-FEN).
+
+Bu, kampanyanin tekrar eden desenlerinden: ayni gercegi iki yerde tutmak.
+Duzeltme "birini digerine benzetmek" degil, TEK KAYNAGA indirmek oldu --
+`TYT_BOLUMLERI` artik hem uretim dongusunu hem `_BRANCH_RANGES`'i besliyor,
+yani ikisi TANIM GEREGI ayni.
+
+### Adim 5 -- Arka uc soru metnini de, sikleri de uyduruyordu
+
+`GET /api/v1/exams/{session_id}` uc yerde uydurma yapiyordu:
+
+    metin yok    -> f"Ornek soru {sira}"
+    soru yok     -> f"dummy-{sira}"
+    secenek yok  -> [{"letter": "A", "text": "Secenek A"}, ...]
+
+ve HTTP 200 donuyordu. SS10.72 frontend'i durust yapmisti; arka uc bu haliyle
+o durustlugu bosa cikariyordu -- frontend "hata yok" gorup uydurma soruyu
+ekrana basardi. (Bugunku veriyle bu yol henuz tetiklenmiyor: 3922 aktif
+sorunun 3922'sinde metin, sik ve cevap anahtari dolu. Yani latent kusur.)
+
+### KARAR
+
+**Rota BAGLANMADI.** Gerekce artik "urun karari" degil, olcum:
+
+Bugun baglansaydi ogrenci, "Turkce" basligi altinda kimya sorulari olan ve
+40 sorusu yanlis bransta puanlanan bir "TYT denemesi" cozerdi. Bunu acmak,
+SS10.72'de sildigim 120 sahte soruyu bir kat asagidan geri getirmek olurdu.
+Baglamamak icin urun gerekcesine ihtiyac yok; kod ve veri hazir degil.
+
+Urun karari (ogrenciye IKINCI bir sinav deneyimi acilsin mi) hala Huseyin'in;
+ama o karar bugun onunde bile degil, cunku onkosul saglanmiyor.
+
+### ONKOSUL (baglamak icin saglanmasi gerekenler)
+
+1. TURKCE ve SOSYAL'de aktif soru olmali (bugun 0 / 0). Veri isi, kodla
+   kapanmaz.
+2. Bir rota (`App.tsx`, `ProtectedRoute`) ve auth'tan gelen gercek
+   `studentId`.
+3. Iki sinav deneyiminin (`/exam/*` ile `components/Exam/*` +
+   `examService.ts`) yan yana durmasinin urun karari.
+
+1. madde saglandiginda `POST /generate-mock` artik 409 yerine 201 donmeye
+   baslar; yani "hazir mi?" sorusu bir OLCUME baglandi, kanaate degil.
+
+### Yapilan
+
+* `TYT_BOLUMLERI` tek kaynak; `TYT_BLUEPRINT` ve `_BRANCH_RANGES` ondan
+  turer (Adim 4).
+* `SUBJECT_AREA_MAPPING` eklendi; brans havuzu kod listesi ILE
+  `topic_hierarchy.subject_area`'nin birlesiminden kurulur (Adim 3).
+* Brans-koru fallback SILINDI. Bir brans dolmuyorsa deneme kurulmaz:
+  `409` + hangi bransin kac/kac eksik oldugu (Adim 2).
+* `_options_from_content` ve `get_exam_session` artik uydurmuyor; eksik
+  icerikli soru `409` ile reddediliyor (Adim 5).
+
+Davranisi civileyen dort yeni test (`tests/api/test_exams_v1_api.py`):
+
+    test_bolum_sirasi_puanlama_sirasiyla_ayni      (saf birim, DB'siz)
+    test_secenek_uydurmaz                          (saf birim, DB'siz)
+    test_generate_mock_eksik_brans_409
+    test_get_exam_session_icerigi_eksik_soru_409
+
+Ayrica `test_generate_mock_exam_endpoint` guclendirildi: eskiden BOS havuzla
+201 "success" bekliyordu (yani sifir soruluk bir denemeyi basarili sayiyordu).
+Artik dolu havuzla kosuyor ve `add_all`'a giden 120 ExamQuestion'in her
+birinde "uretildigi brans == puanlanacagi brans" dogrulaniyor.
+
+Ilk iki test bilerek DB'ye dokunmuyor: SS10.69'da ogrenildigi gibi, canli
+veriye bagli bir cirik ortamdan ortama farkli olcup CI'i yaniltiyor.
+
+Dogrulama: `pytest tests/api/test_exams_v1_api.py -n 0` -> **9 passed**
+(5 mevcut + 4 yeni), `ruff check` + `ruff format --check` temiz,
+`mypy api/v1/exams.py` degisen dosyada hatasiz.
