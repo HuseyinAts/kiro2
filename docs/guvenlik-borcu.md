@@ -7167,3 +7167,88 @@ buyumesine izin verme" desenidir; testi susturmak degildir.
 Uc stub uc: uygulanacak mi, kaldirilacak mi? Ikisi de yapilinca
 `_BILINEN_STUB_UCLARI` kaydi kucultulmeli (test bunu kendisi hatirlatiyor:
 kayittaki bir uc stub olmaktan cikinca KIRMIZI veriyor).
+
+## §10.69 -- Rota butunlugu bekcileri KORDU; arkalarinda 9 gercek carpisma vardi (2026-09-07)
+
+CI'daki tek kalem `tests/smoke/test_smoke_startup.py::test_routers_loaded` ->
+`AssertionError: Expected 10+ API routes, got 0`. Altindan cikan sey bir
+tek testten cok daha buyuk.
+
+### Olcum: `app.routes` bu surumde rota yuzeyi DEGIL
+
+FastAPI 0.141'de `include_router()` her router icin `app.routes`a
+`fastapi.routing._IncludedRouter` adinda bir ISARETCI koyuyor; bu nesnenin
+`.path` ozniteligi YOK ve alt rotalar `app.routes` icine duzlestirilmiyor.
+`main.app` uzerinde olculdu (7 Eyl 2026):
+
+    app.routes toplam        : 156
+      .path tasiyan          :   5   -> /openapi.json /docs /docs/oauth2-redirect
+      /api ile baslayan      :   0      /redoc /
+      path'siz               : 151   -> hepsi _IncludedRouter
+    app.openapi() paths      : 1123  (1092'si /api ile basliyor)
+    gercek rota (isaretciler acilinca) : 1214
+
+`app.openapi()` cagirmak `app.routes`u DUZLESTIRMIYOR: sonradan bakildiginda
+yine 5 yol goruluyor.
+
+### Sonucu: uc bekci birden kor
+
+`app.routes` uzerinde donen HER rota-butunlugu bekcisi 1214 rotanin 5'ini
+goruyor, hicbir sey bulamiyor ve YESIL kaliyor:
+
+    tests/smoke/test_smoke_startup.py::test_routers_loaded        -> KIRMIZI (got 0)
+    tests/smoke/test_smoke_startup.py::test_no_duplicate_api_routes -> sahte YESIL
+    tests/test_api_contract.py::test_no_duplicate_path_method_in_runtime_routes
+                                                                  -> sahte YESIL
+
+Birincisi kirmizi verdigi icin fark edildi; digerleri sessizce hicbir sey
+olcmuyordu. Bu, `L-s231-hacim-vekil-olcum-icerik-degil` dersinin rota
+yuzeyindeki karsiligidir: bekci kosuyor ama olcmuyor.
+
+### Gercek yuzey olculunce: 9 CARPISMA
+
+Starlette'te son kayit kazanir; onceki isleyici sessizce golgelenir.
+
+    GET    /api/v1/study-rooms/my-rooms        -> my_rooms x2
+    GET    /api/v1/study-rooms/joined          -> joined_rooms x2
+    POST   /api/v1/study-rooms/create          -> create_room x2
+    GET    /api/v1/study-rooms/{room_id}       -> room_detail x2
+    DELETE /api/v1/study-rooms/{room_id}       -> delete_room x2
+    POST   /api/v1/study-rooms/{room_id}/join  -> join_room x2
+    POST   /api/v1/study-rooms/{room_id}/leave -> leave_room x2
+    POST   /api/v1/analytics/web-vitals        -> receive_web_vitals x2
+    GET    /health                             -> health_check x2
+
+study-rooms'un 7 carpismasinin kaynagi router yukleyicinin kendi kutugunde
+acikca duruyor:
+
+    Registered misc/study_rooms      at /api/v1/study-rooms
+    Registered misc/study_rooms_stub at /api/v1/study-rooms
+
+Yani bir **STUB router gercek router'i golgeliyor** (ya da tersi -- hangisinin
+kazandigi kayit sirasina bagli, ki bu tek basina bir kusurdur).
+
+### Yapilan
+
+1. `backend/tests/rota_yuzeyi.py` (YENI) -- isaretcileri acan tek tanim:
+   `gercek_rotalar(app)` ve `carpismalar(app)`. `_IncludedRouter` alt
+   router'i `original_router`, onegi `include_context.prefix` uzerinden
+   tasiyor; ic ice include'lar icin yigin kullaniliyor.
+2. `test_routers_loaded` artik gercek yuzeyi sayiyor (0 -> 1092 /api rotasi).
+3. Iki carpisma bekcisi de gercek yuzeyi olcuyor ve CIRCIRA cevrildi:
+   bilinen 9 carpisma kayitli; kayitta olmayan YENI bir carpisma kirmizi
+   verir, kayittaki biri cozulunce de kirmizi verir (kayit kuculmeli).
+   Kayit tek yerde tutuluyor (`_BILINEN_CARPISMALAR`), sozlesme testi oradan
+   okuyor.
+
+Dogrulama: `test_smoke_startup + test_api_contract` -> **29 passed**.
+
+### KARAR HUSEYIN'IN
+
+* `misc/study_rooms` mi `misc/study_rooms_stub` mi kalacak? Ikisi ayni onege
+  kayitli; bugun hangisinin calistigi kayit sirasina bagli.
+* `POST /api/v1/analytics/web-vitals` ve `GET /health` ikiser kez kayitli --
+  hangisi kalacak?
+
+Bunlar kayit kararidir; test tarafindan verilemez. Cozuldukce
+`_BILINEN_CARPISMALAR` kaydi kucultulmeli (test bunu kendisi hatirlatiyor).

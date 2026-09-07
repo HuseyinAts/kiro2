@@ -609,23 +609,20 @@ class TestRouteCollisionDetection:
         """
         GR-01: Runtime route surface must not have duplicate path+method pairs.
         Starlette's last-registered-wins means shadow endpoints are silent bugs.
+
+        SS10.69: bu bekci `app.routes` uzerinde donuyordu ve FastAPI 0.141'de
+        1214 rotanin yalnizca 5'ini goruyordu -- hicbir sey bulamadigi icin
+        YESILDI. Yuzey artik `tests/rota_yuzeyi` ile gercekten olculuyor.
+        Bilinen 9 carpismanin kaydi ve gerekcesi
+        `tests/smoke/test_smoke_startup.py::_BILINEN_CARPISMALAR` icinde;
+        bu test o kayittan okuyor ki iki yerde iki ayri liste tutulmasin.
         """
         from main import app
+        from tests.rota_yuzeyi import carpismalar
+        from tests.smoke.test_smoke_startup import _BILINEN_CARPISMALAR
 
-        # Build collision map: (path, method) -> [list of route names]
-        route_map: dict[tuple[str, str], list[str]] = {}
-        for route in app.routes:
-            if hasattr(route, "path") and hasattr(route, "methods"):
-                path = route.path
-                for method in route.methods:
-                    if method in ("HEAD", "OPTIONS"):
-                        continue
-                    key = (path, method)
-                    route_name = getattr(route, "name", f"{path}:{method}")
-                    route_map.setdefault(key, []).append(route_name)
-
-        # Find duplicates
-        duplicates = {k: v for k, v in route_map.items() if len(v) > 1}
+        bulunan = carpismalar(app)
+        duplicates = {k: v for k, v in bulunan.items() if k not in _BILINEN_CARPISMALAR}
 
         assert len(duplicates) == 0, (
             f"Found {len(duplicates)} duplicate path+method collision(s). "
