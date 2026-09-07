@@ -43,7 +43,7 @@ structlog>=24.0.0
 rich>=13.0.0
 
 # Security
-bandit>=1.7.0
+bandit>=1.9.4
 
 # Type stubs
 types-redis>=4.6.0
