@@ -7081,3 +7081,89 @@ tetikliyor, ama bicim kirilgan. Uretim tarafinda alias yerine bir erisimci
 (`def _login_attempts(): return _rate_buckets["login"]`) kullanmak dogru
 olurdu; bu bir API degisikligi oldugu ve bu PR'in kapsami CI kirmizisi oldugu
 icin ayri birakildi.
+
+## §10.68 -- Bayat mock, eksik on kosul, ve bir kapinin durust kapatilmasi (2026-09-07)
+
+CI kosusu 34074482440'ta kalan 30 kalemin 8'i. Ucu de yerelde TEK BASINA
+tekrar uretildi -- yani hicbiri kirlenme degil.
+
+### 1) Bolunmus sema, bayat mock (3 kalem)
+
+`tests/unit/test_soru_bankasi_api.py::TestSoruEkle` -> `assert 500 == 201`,
+`KeyError: 'success'`, `KeyError: 'data'`.
+
+`api/soru_bankasi.py:799-819` bolunmus semadan (#485) okuyor ve kod icindeki
+yorum bunu birebir anlatiyor:
+
+```
+"question_text": yeni_soru.content.question_text,
+"exam_type":     yeni_soru.metadata_info.exam_type,
+"difficulty":    yeni_soru.statistics.difficulty_level.name
+```
+
+Testin `_make_question_mock()` yardimcisi ise yalnizca DUZ oznitelikleri
+kuruyordu (`q.question_text`, `q.irt_difficulty`...). `q.content` MagicMock'un
+otomatik urettigi bir cocuk oldugu icin `q.content.question_text` de MagicMock
+donuyor, JSON'a serilestirilemiyor, uc `except Exception` ile HTTP 500 veriyor.
+
+Yardimciya yavru nesneler (`content` / `metadata_info` / `statistics`)
+eklendi; degerler duz oznitelikleriyle AYNI tutuldu. Duz oznitelikler
+KALDIRILMADI -- dosyadaki diger uclar hala onlari okuyor.
+Olcum: 84 passed/3 failed -> **87 passed**.
+
+### 2) Sema kurmadan uygulamayi cagirmak (4 kalem)
+
+`tests/test_api_contract.py` -> `no such table: users` / `student_profiles`.
+
+`tests/conftest.py`in autouse `override_database_manager` fixture'i
+`db_manager`i `test_async_engine`e yonlendiriyor, ama o motorda TABLO YARATAN
+sey ayri bir fixture. Bu dosya kendi `client` fixture'ini yazarken o bagi
+dusurmustu; uygulama bos bir sqlite'a konusuyordu.
+
+**Kolay cozum denendi ve REDDEDILDI:** `client(setup_database)` yapmak.
+Olculdu -- `setup_database` TUM `Base.metadata`yi kuruyor ve sqlite'ta
+patliyor:
+
+    (in table 'campus_info', column 'sports_facilities'):
+    SQLiteTypeCompiler can't render element of type ARRAY
+
+ve `except: pytest.skip(...)` oldugu icin **dosyadaki 20 testin hepsini
+atlatiyordu**: 18 passed -> 2 passed / 20 skipped. Kirmiziyi yesile degil
+GORUNMEZE cevirirdi.
+
+Bunun yerine yalnizca sozlesme testlerinin dokundugu tablolar kuruluyor.
+Liste olcumle genisletildi (her eksik tabloyu uc `no such table: X` diye
+bildirdi): `users`, `student_profiles`, `learning_path_student_profiles`.
+
+Yan kazanc: `setup_database` bagimliligi olmadigi icin daha once sessizce
+atlanmis testler de artik GERCEKTEN kosuyor.
+Olcum: 18 passed/5 failed -> **23 passed**.
+
+### 3) Stub uc kapisi: xfail degil CIRCIR (1 kalem)
+
+`TestRouteCollisionDetection::test_no_stub_response_in_production_endpoints`
+uretimde stub uc olmasini yasakliyor ve HAKLI. Bugun 3 tane var, hepsi
+gercek:
+
+    GET  /api/v1/monitoring/token-projection   (api/monitoring.py:437 --
+         govde sabit sifirlar, mesaj "Token projection stub - not yet implemented")
+    GET  /api/v1/push/health
+    POST /api/v1/push/subscribe
+
+Bunlari yesile cevirmenin durust yolu UYGULAMAK ya da UCU KALDIRMAK; ikisi de
+urun karari.
+
+**`xfail` yanlis olurdu**: o zaman DORDUNCU bir stub uc sessizce eklenebilirdi
+-- yani kapi tamamen kapanirdi. Bunun yerine kapi bir CIRCIRA cevrildi:
+
+* kayitta olmayan YENI bir stub -> KIRMIZI (kapi hala koruyor),
+* kayittaki bir uc artik stub degilse -> KIRMIZI (kayit kuculmeli).
+
+Kayit yalnizca kucultulebilir, buyutulemez. Bu, "bilinen borcu kaydet ama
+buyumesine izin verme" desenidir; testi susturmak degildir.
+
+### KARAR HUSEYIN'IN
+
+Uc stub uc: uygulanacak mi, kaldirilacak mi? Ikisi de yapilinca
+`_BILINEN_STUB_UCLARI` kaydi kucultulmeli (test bunu kendisi hatirlatiyor:
+kayittaki bir uc stub olmaktan cikinca KIRMIZI veriyor).
