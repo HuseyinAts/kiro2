@@ -5411,3 +5411,26 @@ Ayni kosumdaki tek "error" testin kendisinden degil teardown'dan geliyor:
 API `close()`). Test PASS ediyor, yalnizca teardown patliyor. Kucuk ve
 izole bir uyumsuzluk -- bu PR'in kapsami disinda birakildi, kendi
 turunu hak ediyor.
+
+## §10.74 -- MAT/TYT gocu R2: 622 crop kor okundu, 509 yazildi, kapi 3560 -> 4006 (2026-09-07)
+
+SS10.73'un onkosulu "goc bekliyor"du; Huseyin "gocu surdur" dedi. S239 planinin ikinci turu
+ayni yontemle kosuldu. Tam kayit: `docs/audits/2026-09-07_mat_crop_kor_okuma_r2.md`.
+
+Ozet:
+
+    aday 622 (13 konu) -> sizdiran 34 (%5,47) + AYT 84 (66 icerik + 18 kararsiz-at) -> 509
+    PROVA sapma [] yetim 0 -> 10/10 ornek cozuldu -> KALICI 4431 (3922+509)
+    FAZ E terfi: kapi 3560 -> 4006 (+446, simulasyonla birebir); ES 4006
+    idempotens: capraz-DB elenen 900 = 391 + 509
+
+Secici iki ek aldi (`y11_aday_uret.py`): AYT konu suzgeci (S239'un 6 kodu; 939 aday dustu) ve
+`--haric-dosya` kirmizi liste (R1'de reddedilen 195 id canlida olmadigi icin geri gelirdi).
+Ucu de bekcili (`test_y11_aday_uret.py` 7 -> 10).
+
+Iki olcum notu: (1) sizinti orani R1'in iki kati ve MODU farkli (ders-kitabi bilgi notu / cozum
+blogu) -- oran dilimden dilime degisiyor, genellenemez. (2) Host'tan ES senkronu kosmuyor
+(istemci 9.2.1 / sunucu 8.11.0 -> HEAD 400); konteynerden kosuldu.
+
+Kod karari DEGISMEDI: TUR/SOS canlida hala 0, `generate-mock` hala 409. Bu tur MAT'i buyuttu;
+TYT denemesi icin TUR/SOS dilimleri ayri is (konu seed + yeni dilim).

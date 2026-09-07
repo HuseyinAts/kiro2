@@ -12,9 +12,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "quality"))
 
 from y11_aday_uret import (
+    AYT_KONU_KODLARI,
     DILIMLER,
     KONU_BASI_TAVAN,
+    ayt_konu_idleri,
     haric_kumesi,
+    kirmizi_liste_oku,
     konu_dengeli_sec,
 )
 
@@ -100,3 +103,34 @@ def test_konu_dengeli_sec_girdi_sirasindan_bagimsiz() -> None:
 def test_konu_basi_tavan_makul() -> None:
     """600 hedefi konu x 50'den geliyor; sabit belgelenmis olmali."""
     assert KONU_BASI_TAVAN == 50
+
+
+def test_ayt_konu_kodlari_s239_olcumuyle_ayni() -> None:
+    """S239 ICERIK OKUYARAK 6 AYT konusu buldu; liste sessizce daralmamali.
+
+    Her biri canlidan geri silinmis 179 sorunun kaynagi. Biri dusurulurse
+    o konu R2'de yeniden secilir ve AYT sorusu TYT testine girer.
+    """
+    olculen = {"MAT.TRV", "MAT.INT", "MAT.LMT", "MAT.LOG", "MAT.TRG", "MAT.DIZ"}
+    assert set(AYT_KONU_KODLARI) == olculen
+
+
+def test_ayt_konu_idleri_kod_uzerinden_eler_metin_degil() -> None:
+    """Yargi `primary_topic_id`'de; metin regex'i S239'da 0 verip yaniltmisti."""
+    harita = {"t1": "MAT.TRV", "t2": "MAT.SAY", "t3": "MAT.DIZ", "t4": "KIM.ASI"}
+    assert ayt_konu_idleri(harita) == {"t1", "t3"}
+    assert ayt_konu_idleri({}) == set(), "bos harita bos kume"
+
+
+def test_kirmizi_liste_birlesim_ve_bosluk_toleransi(tmp_path: Path) -> None:
+    """Reddedilmis id'ler canlida YOK; capraz-DB elemesi onlari goremez.
+
+    Iki dosya ortusebilir (ayni id hem sizdiran hem AYT olabilir) -- birlesim.
+    Bos satir / bosluk id sayilmaz.
+    """
+    a = tmp_path / "a.txt"
+    b = tmp_path / "b.txt"
+    a.write_text("x1\nx2\n\n", encoding="utf-8")
+    b.write_text("x2\n  x3  \n", encoding="utf-8")
+    assert kirmizi_liste_oku([a, b]) == {"x1", "x2", "x3"}
+    assert kirmizi_liste_oku([]) == set()
