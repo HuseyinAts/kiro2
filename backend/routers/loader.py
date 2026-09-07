@@ -51,6 +51,16 @@ ROUTER_MAPPING = {
     "api.sinav": ("exam", "api.sinav"),
     "api.exam_performance": ("exam", "api.exam_performance"),
     "api.exam_answer_tracking": ("exam", "api.exam_answer_tracking"),
+    # SS10.71: `api/v1/exams.py` VARDI ama bu tabloda YOKTU -- yani 4 uc
+    # (generate-mock, {session_id}, {session_id}/answer, {session_id}/submit)
+    # hicbir zaman uygulamaya baglanmamisti ve hepsi 404 donuyordu. Karsi
+    # taraf da bekliyordu: frontend/src/services/mockExamService.ts basligi
+    # birebir `backend/api/v1/exams.py`yi isaret ediyor.
+    # Kayittan ONCE `GET /{session_id}` uzerindeki kimlik dogrulamasiz okuma
+    # (IDOR) kapatildi -- bkz. api/v1/exams.py:305 ve docs SS10.71.
+    # Onek router'in kendisinde tanimli ("/api/v1/exams"); yukleyici ek onek
+    # eklemiyor (_register_to_app: `include_router(router)`).
+    "api.v1.exams": ("exam", "api.v1.exams"),
     # Learning & Education
     "api.learning_style": ("learning", "api.learning_style"),
     "api.learning_path_v2": ("learning", "api.learning_path_v2"),

@@ -304,10 +304,19 @@ async def generate_mock_exam(
 
 @router.get("/{session_id}")
 async def get_exam_session(
-    session_id: str, bionic_reading: bool = False, db: AsyncSession = Depends(get_db)
+    session_id: str,
+    bionic_reading: bool = False,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Retrieves the exam session with ordered questions and current student answers.
+
+    GUVENLIK (SS10.71): bu uc, kardes uclarin (`/answer`, `/submit`) aksine
+    `get_current_user` ALMIYORDU ve sahiplik kontrolu YAPMIYORDU. Router hicbir
+    zaman kaydedilmedigi icin canliya cikmamisti; kayittan ONCE kapatildi.
+    Aksi halde kimlik dogrulamasi olmadan herkes herhangi bir ogrencinin sinav
+    oturumunu -- SORULARI ve VERDIGI CEVAPLARI dahil -- okuyabilirdi (IDOR).
     """
     result = await db.execute(
         select(ExamSession)
@@ -324,6 +333,13 @@ async def get_exam_session(
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Exam session not found"
+        )
+    # KOD GERCEGI (ownership): yalniz oturum sahibi okuyabilir.
+    # Kardes uclarla AYNI desen ve AYNI mesaj (api/v1/exams.py:/answer, /submit).
+    if str(session.student_id) != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu sinav oturumu size ait degil",
         )
 
     answers_map = {

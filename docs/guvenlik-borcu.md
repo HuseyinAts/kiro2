@@ -7297,3 +7297,83 @@ Bunlar kayit kararidir; test tarafindan verilemez. Muhtemel dogru yer
 `backend/routers/loader.py`: ayni modulu ayni onege iki kez kaydetmeyi
 yukleyici duzeyinde engelleyen bir kontrol, bu sinifi kokten kapatir ve
 ortam farkindan etkilenmez.
+
+## §10.71 -- `/api/v1/exams` kaydedildi; IDOR kayittan ONCE kapatildi (2026-09-07)
+
+SS10.65'te bulunan durum: `backend/api/v1/exams.py` VARDI ama
+`backend/routers/loader.py` kayit tablosunda YOKTU -- 4 uc hicbir zaman
+uygulamaya baglanmamisti ve hepsi 404 donuyordu. Testler o sirada
+`xfail(strict=True)` ile civilenmisti; gerekcesi birebir suydu:
+*"Kayit yapilirsa bu testler XPASS verip kirar; o an guncellensin. ONCE satir
+305'teki kimlik dogrulamasiz GET /{session_id} (IDOR) duzeltilmeli."*
+
+Huseyin kaydi onayladi. Sira, kendi yazdigim on kosula uymak.
+
+### 1) ONCE guvenlik: IDOR kapatildi
+
+`@router.get("/{session_id}")` kardes uclarin aksine `get_current_user`
+ALMIYOR ve sahiplik kontrolu yapmiyordu:
+
+```
+async def get_exam_session(
+    session_id: str, bionic_reading: bool = False, db: AsyncSession = Depends(get_db)
+):
+```
+
+Bu haliyle kaydedilseydi, kimlik dogrulamasi olmadan herkes herhangi bir
+ogrencinin sinav oturumunu -- SORULARI ve VERDIGI CEVAPLARI dahil --
+okuyabilirdi. Kardes uclarin (`/answer`:372, `/submit`:428) deseni AYNEN
+uygulandi:
+
+```
+current_user: AuthenticatedUser = Depends(get_current_user),
+...
+if str(session.student_id) != str(current_user.id):
+    raise HTTPException(403, "Bu sinav oturumu size ait degil")
+```
+
+Kapiyi civileyen YENI test eklendi:
+`test_get_exam_session_baskasinin_oturumu_403`. Sahiplik kontrolu bir gun
+kaldirilirsa bu test 200 gorup KIRILIR.
+
+### 2) SONRA kayit
+
+`routers/loader.py` tablosuna `"api.v1.exams": ("exam", "api.v1.exams")`
+eklendi. Onek router'in kendisinde tanimli (`APIRouter(prefix="/api/v1/exams")`)
+ve yukleyici ek onek eklemiyor (`_register_to_app` -> `include_router(router)`),
+dolayisiyla cift onek riski yok.
+
+### 3) Olcum -- iddia degil
+
+Kayit sonrasi `tests/rota_yuzeyi` ile gercek yuzey okundu:
+
+    TOPLAM gercek rota : 1214 -> 1218   (tam +4, ne eksik ne fazla)
+    exams uclari       : 4
+        POST /api/v1/exams/generate-mock
+        GET  /api/v1/exams/{session_id}
+        POST /api/v1/exams/{session_id}/answer
+        POST /api/v1/exams/{session_id}/submit
+    openapi()'de       : dordu de gorunuyor
+    FARKLI-ISLEYICI carpismasi : 0   (yeni golgeleme YOK)
+
+Kapilar:
+
+    pytest tests/api/test_exams_v1_api.py            -> 5 passed (4 + yeni IDOR civisi)
+    pytest tests/smoke/test_smoke_startup.py \
+           tests/test_api_contract.py                -> 29 passed
+    .github/scripts/check_new_endpoints.py           -> "No new @router.* decorators" (gecti)
+    ruff 0.7.1 check + format / mypy / reward-hacking -> temiz
+
+`xfail(strict=True)` kaldirildi: kalsaydi XPASS verip kapiyi kiracakti --
+zaten tasarim geregi oyleydi.
+
+### ACIK KALAN: frontend yarisi hala bagli degil
+
+Arka uc artik canli, ama `frontend/src/features/exams/ExamSession.tsx`
+(ve `services/mockExamService.ts`) hala hicbir rotaya bagli degil -- yalnizca
+kendi testinden ithal ediliyor. Olculdu: `ExamSession`i ithal eden tek
+uretim dosyasi yok; `components/Exam/*` BASKA bir servisi
+(`services/examService.ts`) kullaniyor.
+
+Yani bu kayit 404'u ve IDOR'u kapatti, ozelligi kullaniciya ACMADI.
+Frontend rotasinin baglanmasi ayri bir karar.
