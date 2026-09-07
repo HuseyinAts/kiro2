@@ -6852,3 +6852,82 @@ yoksa gerekcesiyle atliyor.
    CI'da gorunmuyordu cunku orada fixture zaten kontrol kolunda duruyordu.
    Muhtemel kaynak: onbellek serilestirilmis JSON'u geri cozmeden donduruyor.
    Bu bir OKUMA YOLU kusuru ve ayri bir PR'in konusu.
+
+## §10.65 -- `/api/v1/exams`: router var, kayit yok, ustelik IDOR tasiyor (2026-09-07)
+
+SS10.64 sonrasi kalan 39 kalemin 4'u tek bir dosyada: `tests/api/
+test_exams_v1_api.py`. Dordu de `404` aliyordu (`assert 404 == 201`,
+`assert 404 == 200` x3).
+
+### Olcum
+
+Once yerelde birebir tekrar uretildi -- CI'ya ozgu bir izolasyon kusuru
+olmadigini kanitlamak icin:
+
+```
+pytest tests/api/test_exams_v1_api.py -n 0 -p no:randomly
+-> 4 failed, hepsi 404
+```
+
+Sonra uc aranan yerde arandi:
+
+```
+backend/api/v1/exams.py:20   router = APIRouter(prefix="/api/v1/exams")
+backend/api/v1/exams.py:192  @router.post("/generate-mock")
+backend/api/v1/exams.py:305  @router.get("/{session_id}")
+backend/api/v1/exams.py:367  @router.post("/{session_id}/answer")
+backend/api/v1/exams.py:423  @router.post("/{session_id}/submit")
+```
+
+Router VAR. Ama `git grep "api.v1.exams"` yalnizca dosyanin kendisini ve
+middleware/dokuman referanslarini buluyor: `backend/routers/loader.py` kayit
+tablosunda YOK. Yani 4 uc hicbir zaman uygulamaya baglanmamis.
+
+Karsi taraf da ayni durumda: `frontend/src/services/mockExamService.ts`
+`/api/v1/exams`i cagiriyor ve basligi `backend/api/v1/exams.py`yi isaret
+ediyor; onu kullanan `frontend/src/features/exams/ExamSession.tsx` ise
+yalnizca KENDI testinden ithal ediliyor, hicbir rotaya bagli degil.
+
+Sonuc: bu CANLI bir kirik DEGIL -- iki ucu da bagli olmayan BITMEMIS bir
+ozellik. (SS10.59'daki `question_crud_api.py` bulgusundan farki budur: orada
+frontend gercekten canli bir yolu cagiriyordu.)
+
+### Kayit yapilmadan once cozulmesi gereken guvenlik kusuru
+
+`@router.get("/{session_id}")` (satir 305) `get_current_user` ALMIYOR ve
+sahiplik kontrolu yapmiyor:
+
+```
+async def get_exam_session(
+    session_id: str, bionic_reading: bool = False, db: AsyncSession = Depends(get_db)
+):
+```
+
+Kardes uclar (`/answer`:372, `/submit`:428) `current_user` aliyor. Bu uc,
+bugunku haliyle kaydedilirse HERHANGI biri HERHANGI bir ogrencinin sinav
+oturumunu -- sorulari ve verdigi cevaplariyla birlikte -- kimlik dogrulamasiz
+okuyabilir. Klasik IDOR.
+
+### Yapilan: silme degil, xfail(strict)
+
+Testler dogru bir iddiada bulunuyor (ozellik calismali). Secenekler ve
+gerekceler:
+
+* **silmek**: bilgiyi yok eder, bitmemis ozellik izsiz kalir. HAYIR.
+* **skip**: sessizce unutulur, kimse geri donmez. HAYIR.
+* **xfail(strict=True)**: bugun yesil; router kaydedildigi an XPASS verip
+  KIRAR, yani "ozellik acildi, testi guncelle" sinyali otomatik gelir. EVET
+  -- deponun `test_icerik_gecerliligi.py`de kurdugu desenin aynisi.
+
+Dosya basligina tam olcum ve IDOR uyarisi yazildi; xfail gerekcesi de her
+ikisini isaret ediyor. Yerel dogrulama: `4 xfailed`.
+
+### KARAR HUSEYIN'IN
+
+1. `api/v1/exams.py` router'i kaydedilecek mi? (ozellik acilacak mi)
+2. Acilacaksa, ONCE satir 305'teki kimlik dogrulamasiz `GET /{session_id}`
+   duzeltilmeli: `current_user` + sahiplik kontrolu (kardes uclarin deseni).
+3. Frontend tarafinda `ExamSession.tsx` bir rotaya baglanacak mi?
+
+Kayit, API yuzeyini 4 uc buyutur ve `check_new_endpoints.py` kapisini
+tetikler; bu yuzden urun karari olarak birakildi.
