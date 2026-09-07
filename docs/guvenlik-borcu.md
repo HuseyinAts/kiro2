@@ -5434,3 +5434,28 @@ blogu) -- oran dilimden dilime degisiyor, genellenemez. (2) Host'tan ES senkronu
 
 Kod karari DEGISMEDI: TUR/SOS canlida hala 0, `generate-mock` hala 409. Bu tur MAT'i buyuttu;
 TYT denemesi icin TUR/SOS dilimleri ayri is (konu seed + yeni dilim).
+
+## §10.76 -- TURKCE/TYT gocu T1: 1001 crop kor okundu, 919 yazildi, kapi 4006 -> 4579, TYT denemesi artik yalniz SOS'a takiliyor (2026-09-07)
+
+SS10.74 "TUR/SOS ayri is" demisti; Huseyin dilimi TURKCE ile surdurmeyi onayladi (TYT denemesini
+acan o). Tam kayit: `docs/audits/2026-09-07_tur_crop_kor_okuma.md`.
+
+Ozet:
+
+    onkosul: y11_konu_seed.py ders-agnostik yapildi, canli TUR altina 7 kod (45 -> 52)
+    secici: DILIMLER["tur_tyt"]; kapsam suzgeci ID -> KOD (UUID drift: 673 TUR-kok sorusu
+            yanlis eleniyordu; MAT kontrol kolunda kapsam disi 871 -> 386, gerisi degismedi)
+    aday 1001 (temp huni 18388 -> 14776 -> 3392 -> 1029 -> 1001; havuz TUKENDI)
+    sizdiran 78 (%7,79, en yuksek; mod: konu anlatimi 35 + cozum/cevap 30) + AYT 3 + supheli anahtar 1 -> 919
+    PROVA sapma [] yetim 0 -> 10 ornek cozuldu (9/10; 1 kitap anahtari hatali, atildi)
+    KALICI 5350 (4431+919) -> FAZ E terfi kapi 4006 -> 4579 (+573, simulasyonla birebir); ES 4579
+    generate-mock yuklemi (PR #181): TUR 919/40 TAMAM, SOS 0/20 EKSIK, MAT 900, FEN 3531
+
+Uc olcum notu: (1) sizinti orani KITABA bagli -- `Sure Paragraf Gunlukleri` 9/11, `Edebiyat Sokagi
+Paragraf` 5/357; dilim ortalamasi yaniltir, kitap-duzeyi kirmizi liste adayi. (2) temp'in
+`exam_type='TYT'` etiketi Turkce'de de guvenilmez: saf AYT Edebiyat kitabindan 4 aday geldi, 3'u
+icerikte AYT. (3) Kaynak cevap anahtari da hata tasiyor (`756f59e5`, cati sorusu) -- ilk somut ornek.
+
+Kod karari: `exams.py` DEGISMEDI. TYT denemesi hala 409 ama tek neden artik SOS (0/20); SOS dilimi
+ayni boru hattiyla denemeyi acar. master'daki `exams.py` hala PR #181 oncesi (brans-koru fallback);
+PR #181 merge edilmeden 409 davranisi canliya cikmaz.

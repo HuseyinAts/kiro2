@@ -17,6 +17,7 @@ from y11_aday_uret import (
     KONU_BASI_TAVAN,
     ayt_konu_idleri,
     haric_kumesi,
+    kapsam_suz,
     kirmizi_liste_oku,
     konu_dengeli_sec,
 )
@@ -30,7 +31,10 @@ def test_dilim_sql_parametre_olarak_gelir() -> None:
     ve `y11_goc_kumesi_uret.py`'de duruyor. Gerileme korumasi o dosyanin
     VARLIGINI olcer.
     """
-    assert set(DILIMLER) == {"mat_tyt"}, "beklenmeyen dilim -- sessiz genisletme"
+    assert set(DILIMLER) == {
+        "mat_tyt",
+        "tur_tyt",
+    }, "beklenmeyen dilim -- sessiz genisletme"
     assert all(isinstance(v, str) for v in DILIMLER.values()), "deger str olmali"
     kimya = (
         Path(__file__).resolve().parents[2]
@@ -51,6 +55,21 @@ def test_mat_dilimi_page_croplarini_disliyor() -> None:
     assert "_q[0-9]+" in sql, "soru-bazli crop suzgeci YOK -- _PAGE sizar"
     assert "auto_judged_high" in sql, "kalite suzgeci YOK"
     assert "option_e IS NOT NULL" in sql, "bos sik suzgeci YOK"
+
+
+def test_tur_dilimi_konu_kapsamiyla_sinirli() -> None:
+    """TURKCE dilimi konu koduyla SINIRLI olmali (7 Eyl 2026 olcumu).
+
+    `subject_area='TURKCE'` etiketli temiz dilimde 28 soru MAT.PRB / KIM /
+    GEN / COG konularina bagliydi. O kodlar canlida da var; suzgec olmasa
+    yukleyici Turkce etiketli soruyu matematik konusu altina SESSIZCE yazardi.
+    Kalite suzgeci MAT ile ayni olmali (tek kaynak: _q crop, high, sik E).
+    """
+    sql = DILIMLER["tur_tyt"]
+    assert "th.code = 'TUR'" in sql and "TYT-TR-%" in sql, "konu kapsami suzgeci YOK"
+    assert "subject_area = 'TURKCE'" in sql
+    for parca in ("_q[0-9]+", "auto_judged_high", "option_e IS NOT NULL"):
+        assert parca in sql, f"kalite suzgeci eksik: {parca}"
 
 
 def test_haric_kumesi_birlesim_kullanir_cikarma_degil() -> None:
@@ -134,3 +153,22 @@ def test_kirmizi_liste_birlesim_ve_bosluk_toleransi(tmp_path: Path) -> None:
     b.write_text("x2\n  x3  \n", encoding="utf-8")
     assert kirmizi_liste_oku([a, b]) == {"x1", "x2", "x3"}
     assert kirmizi_liste_oku([]) == set()
+
+
+def test_kapsam_kodla_olculur_uuid_drift_yanlis_negatif_vermez() -> None:
+    """Kapsam KODLA olculur, id ile DEGIL (7 Eyl 2026, TURKCE olcumu).
+
+    temp `TUR` ile canli `TUR` ayni kod, FARKLI id (UUID drift). Yukleyici
+    kodla esler; secici id ile olcunce TUR kokundeki 673 soruyu "kapsam disi"
+    diye atmisti. Kontrol kolu: canlida OLMAYAN kod hala eleniyor.
+    """
+    kaynak_kodu = {"temp-tur": "TUR", "temp-x": "TYT-TR-09", "temp-mat": "MAT.SAY"}
+    canli_kodlar = {"TUR", "MAT.SAY"}  # canli TUR'un id'si FARKLI, kod ayni
+    ham = [
+        ("q1", "temp-tur", "h1"),
+        ("q2", "temp-x", "h2"),
+        ("q3", "temp-mat", None),
+        ("q4", "temp-yok", "h4"),  # kaynakta bile olmayan konu id
+    ]
+    kalan = {i for i, _, _ in kapsam_suz(ham, kaynak_kodu, canli_kodlar)}
+    assert kalan == {"q1", "q3"}, kalan

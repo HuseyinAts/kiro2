@@ -68,6 +68,22 @@ DILIMLER: dict[str, str] = {
           AND correct_answer IN ('A','B','C','D','E')
           AND option_e IS NOT NULL AND btrim(option_e) <> ''
     """,
+    # TURKCE/TYT (7 Eyl 2026). Ayni kalite suzgeci + KONU KAPSAMI SUZGECI:
+    # olculdu, `subject_area='TURKCE'` etiketli temiz dilimde 28 soru MAT.PRB /
+    # KIM / GEN / COG konularina bagli (etiket hatasi). Konu kodu canlida da
+    # var oldugu icin yukleyici bunlari SESSIZCE matematik konusu altina
+    # yazardi; dilim TUR / TUR.* / TYT-TR-* ile sinirlandi.
+    "tur_tyt": """
+        SELECT qb.id::text AS id, qb.primary_topic_id::text AS konu, qb.soru_hash AS h
+        FROM question_bank qb
+        JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+        WHERE qb.exam_type = 'TYT' AND qb.subject_area = 'TURKCE'
+          AND qb.quality_review_status = 'auto_judged_high' AND qb.is_active
+          AND qb.question_image_url ~ '_q[0-9]+\\.png$'
+          AND qb.correct_answer IN ('A','B','C','D','E')
+          AND qb.option_e IS NOT NULL AND btrim(qb.option_e) <> ''
+          AND (th.code = 'TUR' OR th.code LIKE 'TUR.%' OR th.code LIKE 'TYT-TR-%')
+    """,
 }
 # KIMYA BURAYA EKLENMEZ — bkz. modül docstring'i.
 
@@ -138,8 +154,23 @@ def kirmizi_liste_oku(dosyalar: Iterable[Path]) -> set[str]:
 def ayt_konu_idleri(
     konu_kodu: Mapping[str, str], kodlar: frozenset[str] = AYT_KONU_KODLARI
 ) -> set[str]:
-    """Canli `topic_hierarchy` (id -> code) icinden AYT kodlu konu id'leri."""
+    """Konu haritasi (id -> code) icinden AYT kodlu konu id'leri."""
     return {tid for tid, kod in konu_kodu.items() if kod in kodlar}
+
+
+def kapsam_suz(
+    ham: Iterable[tuple[str, str, str | None]],
+    kaynak_kodu: Mapping[str, str],
+    canli_kodlar: set[str],
+) -> list[tuple[str, str, str | None]]:
+    """Konusu canlida KODLA var olan adaylari birak (yukleyiciyle ayni olcut).
+
+    Id ile olcmek UUID drift'inde yanlis-negatif verir: temp `TUR` ile canli
+    `TUR` ayni kod, farkli id. Yukleyici kodla esledigi icin secici de kodla
+    olcmeli; aksi halde alet, yukleyicinin kabul edecegi soruyu "kapsam disi"
+    diye atar (TURKCE'de 673 soru, 7 Eyl 2026).
+    """
+    return [(i, k, h) for i, k, h in ham if kaynak_kodu.get(k) in canli_kodlar]
 
 
 def dsn_coz(veritabani: str) -> str:
@@ -158,10 +189,18 @@ def dsn_coz(veritabani: str) -> str:
 async def _topla(kaynak: Any, hedef: Any, dilim: str) -> dict[str, Any]:
     """Kaynak + hedef okumaları. Ayrı fonksiyon: `_main` saf akış kalsın."""
     ham = [(r["id"], r["konu"], r["h"]) for r in await kaynak.fetch(DILIMLER[dilim])]
-    # id -> code: hem kapsam suzgeci (id kumesi) hem AYT elemesi (kod) icin.
-    konu_kodu = {
+    # KAPSAM KODLA OLCULUR, ID ILE DEGIL (7 Eyl 2026, TURKCE olcumu).
+    # Yukleyici konuyu KODLA esler (`y11_goc._canli_topic_id`); level-1 kokler
+    # (MAT, TUR) canli ile temp'te AYNI KODU tasir ama FARKLI id'ye sahiptir
+    # (UUID drift, y11_konu_seed.py docstring'i). Secici id ile olcunce TUR
+    # kokundeki 673 soru "kapsam disi" cikti; oysa yukleyici hepsini kabul
+    # ederdi. Olcum aleti yukleyiciyle AYNI dili konusmali.
+    kaynak_kodu = {
         r["id"]: r["code"]
-        for r in await hedef.fetch("SELECT id::text AS id, code FROM topic_hierarchy")
+        for r in await kaynak.fetch("SELECT id::text AS id, code FROM topic_hierarchy")
+    }
+    canli_kodlar = {
+        r["code"] for r in await hedef.fetch("SELECT code FROM topic_hierarchy")
     }
     canli_hash = {
         r["h"]
@@ -171,8 +210,8 @@ async def _topla(kaynak: Any, hedef: Any, dilim: str) -> dict[str, Any]:
     }
     return {
         "ham": ham,
-        "canli_konu": set(konu_kodu),
-        "konu_kodu": konu_kodu,
+        "kaynak_kodu": kaynak_kodu,
+        "canli_kodlar": canli_kodlar,
         "canli_hash": canli_hash,
     }
 
@@ -203,8 +242,9 @@ async def _main(argv: Sequence[str] | None = None) -> int:
         await hedef.close()
 
     ham = veri["ham"]
-    kapsanan = [(i, k, h) for i, k, h in ham if k in veri["canli_konu"]]
-    ayt_idler = ayt_konu_idleri(veri["konu_kodu"])
+    kaynak_kodu: dict[str, str] = veri["kaynak_kodu"]
+    kapsanan = kapsam_suz(ham, kaynak_kodu, veri["canli_kodlar"])
+    ayt_idler = ayt_konu_idleri(kaynak_kodu)
     ayt_elenen = sum(1 for _, k, _ in kapsanan if k in ayt_idler)
     kapsanan = [(i, k, h) for i, k, h in kapsanan if k not in ayt_idler]
     capraz = {i for i, _, h in kapsanan if h and h in veri["canli_hash"]}
