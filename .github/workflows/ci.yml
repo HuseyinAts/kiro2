@@ -314,15 +314,19 @@ jobs:
           cat > backend/.env << EOF
           DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
           DATABASE_URL_SYNC=postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test
-          # TEST_DATABASE_URL AYRICA gerekiyor (7 Eyl 2026 olcumu): `backend/
-          # conftest.py` modul duzeyinde `DATABASE_URL`i SQLite'a eziyor, yani
-          # test harness'i bu satiri gormeden once degeri degistirmis oluyor.
-          # `tests/conftest.py`in `test_database_url` fixture'i once
-          # TEST_DATABASE_URL'e bakiyor -- bu degisken EZILMIYOR, dolayisiyla
-          # CI'nin Postgres niyeti testlere gercekten ulasiyor. Bu olmadan
-          # `test_postgresql_for_kiro2` "got: sqlite+aiosqlite://" ile dusuyordu.
-          TEST_DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
-          SYNC_TEST_DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5434/kiro2_test
+          # NOT (7 Eyl 2026): burada TEST_DATABASE_URL / SYNC_TEST_DATABASE_URL
+          # EKLENMEYE CALISILDI ve GERI ALINDI -- olculdu, net ZARARLIYDI:
+          #   * hedefini tutturmadi: `test_postgresql_for_kiro2` hala
+          #     `sqlite+aiosqlite:///:memory:` goruyordu, cunku deger
+          #     `backend/conftest.py`in MODUL DUZEYINDEKI ezmesinden geliyor,
+          #     `tests/conftest.py` fixture'indan degil.
+          #   * yeni kirmizi uretti: SYNC_TEST_DATABASE_URL `postgresql+psycopg`
+          #     verince `test_get_db_engine` psycopg2 aramaya basladi
+          #     (`ModuleNotFoundError: No module named 'psycopg2'`; depo psycopg
+          #     v3 kullaniyor).
+          # Dogru duzeltme daha genis: `backend/conftest.py`in modul duzeyindeki
+          # SQLite ezmesini kaldirmak ve tum paketi Postgres'e tasimak. Kendi
+          # PR'ini hak ediyor; buraya rider olarak binmemeli.
           REDIS_URL=redis://localhost:6379/0
           JWT_SECRET_KEY=test-secret-key-for-ci
           JWT_ALGORITHM=HS256
