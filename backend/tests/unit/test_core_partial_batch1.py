@@ -18,7 +18,9 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 # ---------------------------------------------------------------------------
 # Heavy dependency stubs — must happen BEFORE any project imports
 # ---------------------------------------------------------------------------
+import importlib.util
 import types
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 # Stub out modules that are not installed in the test environment
@@ -36,17 +38,70 @@ _STUB_MODULES = [
     "zemberek",
 ]
 
+# KIRLENME KORUMASI (SS10.63)
+# Bu dosya ithal edildiginde sys.modules'e stub yerlestiriyor. Stub koymak
+# guvenli; ama GERCEK modul zaten iceri alinmissa onun uzerine yazmak ya da
+# ozniteliklerini degistirmek SURECI KALICI OLARAK KIRLETIR: mutasyon geri
+# alinmaz, ayni xdist worker'inda sonradan calisan her test sahte nesne gorur.
+# Olculen zarar (CI kosusu 34066938279, 74 basarisizligin 11'i):
+#   tests/slow/test_phase1_berturk_comprehensive.py      -> 9 basarisizlik
+#   tests/test_social_tasks.py::TestCeleryAppSchedule    -> 2 basarisizlik
+# Yerel birebir tekrar uretim (29 saniye):
+#   pytest tests/unit/test_berturk_motivation_idor.py \
+#          tests/unit/test_core_partial_batch1.py \
+#          tests/slow/test_phase1_berturk_comprehensive.py \
+#          tests/test_social_tasks.py::TestCeleryAppSchedule -n 0 -p no:randomly
+#   -> ayni 11 test, birebir ayni isimlerle basarisiz.
+# Cozum: hangi modulleri BU dosyanin yerlestirdigini kaydet ve SADECE onlari
+# ozellestir. Gercek module dokunma.
+_BIZIM_STUBLAR: set[str] = set()
+
+
+def _bizim_stub_mu(ad: str) -> bool:
+    """Modulu sys.modules'e bu dosya mi koydu? Degilse dokunulmaz."""
+    return ad in _BIZIM_STUBLAR
+
+
+def _stub(ad: str) -> Any:
+    """Stub modulu Any olarak dondur.
+
+    mypy stub modullerine oznitelik atamasini `attr-defined` diye reddediyor
+    (gercek modulde o ad yok). Bunlar bilerek yerlestirilen sahte modullerdir;
+    donus tipini Any yapmak, 19 ayri `type: ignore` yorumu serpistirmekten
+    hem daha okunur hem de daha durustur.
+    """
+    return sys.modules[ad]
+
+
 for _mod in _STUB_MODULES:
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
+        _BIZIM_STUBLAR.add(_mod)
 
-# Explicitly setup celery stubs as ModuleType to support nested imports
+# Explicitly setup celery stubs as ModuleType to support nested imports.
+# DOGRU KOSUL "sys.modules'te yok" DEGIL, "gercekten kurulu degil":
+# celery bu depoda kurulu (yerelde 5.6.2, CI'da requirements uzerinden), ama
+# conftest hicbir yerde iceri almadigi icin eski kosul her zaman doguydu ve
+# GERCEK celery paketi sahte bir ModuleType ile degistiriliyordu. Sonucu
+# olculdu: sonradan iceri alinan core/celery_app.py app'ini sahte Celery ile
+# kuruyor, test_social_tasks.py::TestCeleryAppSchedule MagicMock uzerinde
+# assert ediyor ve 2 test dusuyordu (SS10.63).
 for _cmod in ["celery", "celery.schedules", "celery.exceptions"]:
-    if _cmod not in sys.modules:
-        sys.modules[_cmod] = types.ModuleType(_cmod)
+    if _cmod in sys.modules:
+        continue
+    try:
+        _kurulu = importlib.util.find_spec(_cmod) is not None
+    except (ImportError, ValueError):
+        _kurulu = False
+    if _kurulu:
+        continue
+    sys.modules[_cmod] = types.ModuleType(_cmod)
+    _BIZIM_STUBLAR.add(_cmod)
 
-sys.modules["celery"].Celery = lambda *args, **kwargs: MagicMock()
-sys.modules["celery.schedules"].crontab = MagicMock
+if _bizim_stub_mu("celery"):
+    _stub("celery").Celery = lambda *args, **kwargs: MagicMock()
+if _bizim_stub_mu("celery.schedules"):
+    _stub("celery.schedules").crontab = MagicMock
 
 # Stub core internal deps that pull heavy libraries
 for _mod in [
@@ -65,26 +120,34 @@ for _mod in [
 ]:
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
+        _BIZIM_STUBLAR.add(_mod)
 
-# Provide concrete helpers used at import time
-_metrics_mod = sys.modules["core.application_metrics"]
-_metrics_mod.MetricType = MagicMock()
-_metrics_mod.get_metrics_collector = MagicMock(return_value=MagicMock())
+# Provide concrete helpers used at import time.
+# Her blok _bizim_stub_mu() ile korunuyor: bu dosya modulu yerlestirmediyse
+# (yani gercek modul zaten iceri alinmissa) ozniteliklerine dokunulmuyor.
+if _bizim_stub_mu("core.application_metrics"):
+    _metrics_mod = _stub("core.application_metrics")
+    _metrics_mod.MetricType = MagicMock()
+    _metrics_mod.get_metrics_collector = MagicMock(return_value=MagicMock())
 
-_logging_mod = sys.modules["core.structured_logging"]
-_logging_mod.LogCategory = MagicMock()
-_logging_mod.get_logger = MagicMock(return_value=MagicMock())
+if _bizim_stub_mu("core.structured_logging"):
+    _logging_mod = _stub("core.structured_logging")
+    _logging_mod.LogCategory = MagicMock()
+    _logging_mod.get_logger = MagicMock(return_value=MagicMock())
 
-_mq_mod = sys.modules["core.message_queue_system"]
-_mq_mod.get_message_queue = MagicMock(return_value=MagicMock())
+if _bizim_stub_mu("core.message_queue_system"):
+    _mq_mod = _stub("core.message_queue_system")
+    _mq_mod.get_message_queue = MagicMock(return_value=MagicMock())
 
-_auth_sys = sys.modules["core.unified.auth_system"]
-_auth_sys.get_auth_system = MagicMock(return_value=MagicMock())
+if _bizim_stub_mu("core.unified.auth_system"):
+    _auth_sys = _stub("core.unified.auth_system")
+    _auth_sys.get_auth_system = MagicMock(return_value=MagicMock())
 
-_ucfg = sys.modules["core.unified_config"]
-_ucfg.get_unified_config = MagicMock(return_value=MagicMock())
+if _bizim_stub_mu("core.unified_config"):
+    _ucfg = _stub("core.unified_config")
+    _ucfg.get_unified_config = MagicMock(return_value=MagicMock())
 
-_ebus = sys.modules["core.unified_event_bus"]
+_ebus = _stub("core.unified_event_bus")
 # Only overwrite Event/EventType when the module is a stub (MagicMock),
 # not when the real module has already been imported by another test file.
 if isinstance(_ebus, MagicMock):
@@ -94,32 +157,47 @@ if not hasattr(_ebus, "get_event_bus") or isinstance(_ebus.get_event_bus, MagicM
     _ebus.get_event_bus = MagicMock(return_value=MagicMock())
 
 
-_ess = sys.modules["core.exam_session_store"]
-_ess.persist_session = AsyncMock()
-_ess.delete_session = AsyncMock()
-_ess.load_session = AsyncMock(return_value=None)
-_ess.get_student_sessions = AsyncMock(return_value=[])
+if _bizim_stub_mu("core.exam_session_store"):
+    _ess = _stub("core.exam_session_store")
+    _ess.persist_session = AsyncMock()
+    _ess.delete_session = AsyncMock()
+    _ess.load_session = AsyncMock(return_value=None)
+    _ess.get_student_sessions = AsyncMock(return_value=[])
 
-_tm = sys.modules["core.transaction_manager"]
-_tm.managed_transaction = MagicMock()
+if _bizim_stub_mu("core.transaction_manager"):
+    _tm = _stub("core.transaction_manager")
+    _tm.managed_transaction = MagicMock()
 
-_edb = sys.modules["core.enhanced_database"]
-_edb.enhanced_db_manager = MagicMock()
+if _bizim_stub_mu("core.enhanced_database"):
+    _edb = _stub("core.enhanced_database")
+    _edb.enhanced_db_manager = MagicMock()
 
-_llm = sys.modules["core.llm_service"]
-_llm.llm_service = MagicMock()
+if _bizim_stub_mu("core.llm_service"):
+    _llm = _stub("core.llm_service")
+    _llm.llm_service = MagicMock()
 
-_nlp = sys.modules["core.turkish_nlp_service"]
-_nlp.turkish_nlp_service = MagicMock()
+if _bizim_stub_mu("core.turkish_nlp_service"):
+    _nlp = _stub("core.turkish_nlp_service")
+    _nlp.turkish_nlp_service = MagicMock()
 
-_bes = sys.modules["core.berturk_service"]
-_bes.BERTurkService = MagicMock()
+# Bu satir kampanyanin en pahali tek mutasyonuydu: gercek
+# core/berturk_service.py iceri alinmissa BERTurkService sinifini kalici olarak
+# MagicMock ile degistiriyordu -> test_phase1_berturk_comprehensive.py'deki 9
+# test "service.model_name == 'dbmdz/...'" yerine MagicMock goruyordu.
+if _bizim_stub_mu("core.berturk_service"):
+    _bes = _stub("core.berturk_service")
+    _bes.BERTurkService = MagicMock()
 
-from datetime import UTC, datetime, timedelta
+# E402 noqa gerekcesi: bu dosyanin TASARIMI "once stub, sonra proje ithali".
+# Asagidaki ithaller yukaridaki sys.modules stub blogundan ONCE calisirsa
+# core/* modulleri kurulu olmayan agir bagimliliklari (elasticsearch,
+# langchain, zemberek...) iceri almaya calisir ve dosya toplanamaz.
+# Bu yuzden E402 burada gercek bir kusur degil; sirali olma zorunlulugudur.
+from datetime import UTC, datetime, timedelta  # noqa: E402
 
-import pytest
+import pytest  # noqa: E402
 
-from core.enhanced_authentication import (
+from core.enhanced_authentication import (  # noqa: E402
     AuthenticationConfig,
     AuthenticationContext,
     AuthenticationType,
@@ -132,8 +210,8 @@ from core.enhanced_authentication import (
     TokenType,
     UserSession,
 )
-from core.exceptions import ValidationError
-from core.kvkk_compliance import (
+from core.exceptions import AuthorizationError, ValidationError  # noqa: E402
+from core.kvkk_compliance import (  # noqa: E402
     PII_FIELDS,
     ConsentStatus,
     ConsentType,
@@ -149,7 +227,7 @@ from core.kvkk_compliance import (
 # ---------------------------------------------------------------------------
 # Imports under test
 # ---------------------------------------------------------------------------
-from core.osym_exam_engine import (
+from core.osym_exam_engine import (  # noqa: E402
     AYTFieldType,
     ExamPerformanceMetrics,
     ExamSessionData,
@@ -157,7 +235,7 @@ from core.osym_exam_engine import (
     OSYMExamEngine,
     YDTLanguage,
 )
-from core.query_builder import (
+from core.query_builder import (  # noqa: E402
     ComparisonOperator,
     PaginationParams,
     QueryFilter,
@@ -165,7 +243,7 @@ from core.query_builder import (
     QuerySort,
     SortOrder,
 )
-from core.realtime_notification_system import (
+from core.realtime_notification_system import (  # noqa: E402
     ConnectionStatus,
     NotificationMessage,
     NotificationPriority,
@@ -173,12 +251,12 @@ from core.realtime_notification_system import (
     WebSocketConnection,
     WebSocketManager,
 )
-from core.turkish_nlp_chat_system import (
+from core.turkish_nlp_chat_system import (  # noqa: E402
     ConversationContext,
     EducationalResponse,
     TurkishNLPChatSystem,
 )
-from models.database import ExamType
+from models.database import ExamType  # noqa: E402
 
 # ===========================================================================
 # ========================== OSYM EXAM ENGINE ================================
@@ -470,8 +548,10 @@ class TestExamSessionOperations:
 
 
 class TestAuthenticationConfig:
+    # Bu sinifta ve asagisinda gecen 'S106' bastirmalarinin gerekcesi: degerler
+    # testin kendi urettigi sabitlerdir, gercek bir sir degildir.
     def test_defaults(self):
-        cfg = AuthenticationConfig(jwt_secret_key="test_secret")
+        cfg = AuthenticationConfig(jwt_secret_key="test_secret")  # noqa: S106
         assert cfg.jwt_algorithm == "HS256"
         assert cfg.access_token_expire_minutes == 15
         assert cfg.refresh_token_expire_days == 7
@@ -480,14 +560,14 @@ class TestAuthenticationConfig:
         assert cfg.enable_2fa is False
 
     def test_oauth_providers_default(self):
-        cfg = AuthenticationConfig(jwt_secret_key="s")
+        cfg = AuthenticationConfig(jwt_secret_key="s")  # noqa: S106
         assert "google" in cfg.oauth2_providers
         assert "microsoft" in cfg.oauth2_providers
 
 
 class TestEnhancedPasswordManager:
     def setup_method(self):
-        cfg = AuthenticationConfig(jwt_secret_key="test_secret_key_32chars!!")
+        cfg = AuthenticationConfig(jwt_secret_key="test_secret_key_32chars!!")  # noqa: S106
         self.pm = EnhancedPasswordManager(cfg)
 
     def test_validate_strong_password(self):
@@ -543,7 +623,9 @@ class TestEnhancedPasswordManager:
 
 class TestEnhancedTokenManager:
     def setup_method(self):
-        cfg = AuthenticationConfig(jwt_secret_key="supersecretkey_at_least_32chars!!")
+        cfg = AuthenticationConfig(
+            jwt_secret_key="supersecretkey_at_least_32chars!!"  # noqa: S106  # pragma: allowlist secret
+        )
         self.tm = EnhancedTokenManager(cfg)
         self.payload = TokenPayload(
             user_id="user_1",
@@ -665,14 +747,19 @@ class TestAuthenticationContext:
         assert ctx.has_role("teacher") is True
         assert ctx.has_role("student") is False
 
+    # Asagidaki iki test eskiden `pytest.raises(Exception)` kullaniyordu; bu
+    # bir lint kusuru degil OLCUM kusuruydu: core/enhanced_authentication.py:359
+    # yorumunun anlattigi gercek hata (yanlis kwarg ile cagrilinca yetki reddi
+    # yerine TypeError firlamasi) genis assert altinda YESIL goruluyordu.
+    # AuthorizationError'a daraltmak testi guclendiriyor.
     def test_require_permission_raises(self):
         ctx = AuthenticationContext(user_id="u1", role="student", permissions=[])
-        with pytest.raises(Exception):
+        with pytest.raises(AuthorizationError):
             ctx.require_permission("admin:write")
 
     def test_require_role_raises(self):
         ctx = AuthenticationContext(user_id="u1", role="student", permissions=[])
-        with pytest.raises(Exception):
+        with pytest.raises(AuthorizationError):
             ctx.require_role("admin", "teacher")
 
     def test_add_security_warning(self):

@@ -6614,3 +6614,129 @@ dongu degiskeni -> `_name`), E402 (sys.path ayarindan SONRA gelmesi
 GEREKEN import -> gerekceli noqa), S105 (test JWT sabiti -> gerekceli
 noqa + allowlist pragma), PLR0912 (dal sayisi -> gerekceli noqa).
 Hicbiri davranis degistirmiyor.
+
+## §10.63 -- 26 basarisizligin tek kok nedeni: geri alinmayan kuresel mutasyon (2026-09-07)
+
+SS10.61'de kaydedilen hipotez -- "15 adet `assert 401 == 200` xdist
+worker'lari arasi redis paylasimindan geliyor" -- YANLIS CIKTI. Worker basina
+ayri redis db (4c981f1b4) uygulandi, CI kosusu 34068207500 alindi ve 15 kalem
+BIREBIR yerinde durdu. Hipotezi olcum yalanladi; asagisi yeniden olcumun
+sonucudur.
+
+### Ortak imza
+
+Uc ayri test dosyasi, ic gorunusu farkli ama ayni sinif hata yapiyordu:
+**surec genelinde gecerli bir nesneyi kalici olarak degistirip geri
+almamak.** SS10.61'deki `sys.setrecursionlimit` bulgusunun kardesi.
+
+| Kirleten dosya | Mutasyon | Kurban | Adet |
+|---|---|---|---|
+| `tests/unit/test_core_partial_batch1.py:49` | `sys.modules["celery"]` yerine sahte `ModuleType` | `tests/test_social_tasks.py::TestCeleryAppSchedule` | 2 |
+| `tests/unit/test_core_partial_batch1.py:116` | `core.berturk_service.BERTurkService = MagicMock()` | `tests/slow/test_phase1_berturk_comprehensive.py` | 9 |
+| `tests/fast/test_api_coverage_batch13.py:800` | `api.diary_api.get_current_user = lambda: user` | `tests/unit/test_api_coverage_final.py::TestDiaryAPIEndpoints` | 15 |
+| `tests/fast/test_api_coverage_batch14.py:2106` | ayni mutasyon, ikinci nusha | (ayni) | -- |
+
+Toplam **26 / 76**.
+
+### 1) celery: yanlis kosul, dogru kosul
+
+Kod `if _cmod not in sys.modules` diyordu. celery bu depoda KURULU (yerelde
+5.6.2, CI'da `requirements.txt` uzerinden) ama hicbir conftest onu iceri
+almadigi icin kosul her zaman doguydu: gercek paket sahte bir `ModuleType`
+ile degistiriliyor, sonra `sys.modules["celery"].Celery` bir lambda'ya
+baglaniyordu. Ayni worker'da daha sonra iceri alinan `core/celery_app.py`
+app'ini bu sahte siniftan uretiyor, `TestCeleryAppSchedule` de
+`celery_app.conf.beat_schedule` uzerinde assert ederken MagicMock goruyordu.
+
+Dogru kosul "sys.modules'te yok" degil **"gercekten kurulu degil"**:
+`importlib.util.find_spec(...)`. Kurulu ise stub'lanmiyor.
+
+### 2) BERTurkService: gercek modulun sinifini ezmek
+
+`_bes.BERTurkService = MagicMock()` KOSULSUZDU. Gercek
+`core/berturk_service.py` baska bir test tarafindan zaten iceri alinmissa,
+o modulun sinifi kalici olarak MagicMock ile degistiriliyordu.
+`test_phase1_berturk_comprehensive.py` `service.model_name ==
+"dbmdz/bert-base-turkish-cased"` beklerken `<MagicMock name='mock().model_name'>`
+goruyordu.
+
+Ayni kosulsuzluk dosyadaki 10 stub blogunun hepsinde vardi (yalnizca
+`core.unified_event_bus` blogu korunmustu -- yazan kisi sorunu gormus ama
+tek yerde cozmus). Duzeltme: dosyanin KENDI yerlestirdigi modulleri bir
+kumede tut (`_BIZIM_STUBLAR`) ve yalnizca onlari ozellestir.
+
+### 3) diary 401: FastAPI bagimlilik nesnesi kimlikle eslesir
+
+`api/diary_api.py:86` sunu yapar:
+
+```
+get_current_user = AuthenticationDependency(required=True)
+```
+
+Rotalar `Depends(get_current_user)` ile BU ORNEGE baglanir ve baglanti
+modul ithal edilirken bir kez kurulur. `test_api_coverage_batch13.py`
+kurulum adiminda `mod.get_current_user = lambda: user` yaziyordu. Sonrasi:
+
+* rotalar hala ORIJINAL ornege bagli,
+* sonraki testin `from api.diary_api import get_current_user` ifadesi artik
+  LAMBDA'yi aliyor,
+* dolayisiyla `app.dependency_overrides[lambda]` rotayla eslesmiyor,
+* gercek kimlik dogrulama calisiyor -> **401**.
+
+Dogru arac zaten mevcuttu: `app.dependency_overrides[mod.get_current_user]`.
+Yalnizca o app'e ozeldir, surec genelini kirletmez.
+
+### Olcum (iddia degil)
+
+Her aile yerelde CI'dan BAGIMSIZ olarak, saniyeler icinde birebir ayni test
+isimleriyle tekrar uretildi:
+
+```
+# 11 kalem, 29 saniye
+pytest tests/unit/test_berturk_motivation_idor.py \
+       tests/unit/test_core_partial_batch1.py \
+       tests/slow/test_phase1_berturk_comprehensive.py \
+       tests/test_social_tasks.py::TestCeleryAppSchedule -n 0 -p no:randomly
+# once: 11 failed / 197 passed     sonra: 213 passed
+
+# 15 kalem, 23 saniye
+pytest tests/fast/test_api_coverage_batch13.py \
+       "tests/unit/test_api_coverage_final.py::TestDiaryAPIEndpoints" \
+       -n 0 -p no:randomly
+# once: 15 failed / 89 passed      sonra: 96 passed (batch14 dahil 167 passed)
+```
+
+### Yan bulgular
+
+* `tests/integration/test_phase1_progressive.py:13` dosyanin TAMAMINI
+  "Test pollution: ... prior tests mock BERTurk/security modules in
+  sys.modules" gerekcesiyle atliyordu. Yani kirlenme daha once fark edilmis
+  ve kok neden yerine 19 testin ustu ortulmustu. Duzeltmeden sonra olcum
+  yapildi: 19 testin 13'u geciyor, 6'si hala duruyor (gerekcenin "security"
+  yarisi ve `sys.path.insert` golgelemesi ayri kok nedenler). Bu yuzden skip
+  KALDIRILMADI -- yarim dogru bir gerekceyle acmak yeni kirmizi uretirdi.
+* `pyproject.toml:194` `fix = true`: her `ruff check` cagrisi dosyayi
+  DEGISTIRIYOR. Bu oturumda `# noqa gerekcesi: ...` diye BASLAYAN bir yorum
+  ruff tarafindan gecersiz bir noqa direktifi sayilip RUF100 ile silindi.
+  Kural: aciklama yorumu asla `# noqa` ile baslamamali.
+* `tests/unit/test_services_remaining_batch1.py:70` benzer goruntu veriyor
+  ama guvenli: orada `_core_deps` bu dosyanin kendi urettigi bir MagicMock.
+
+### Yan borc (altinci kayit)
+
+Bu uc dosyaya dokunmak yine diff-bazli lint kapisini acti (SS10.43, SS10.52,
+SS10.58, SS10.60, SS10.62'den sonra altincisi). Temizlenen 33 kalem:
+E402 (stub-once-import-sonra tasarimi -> gerekceli noqa x10), S106/S105
+(test sabitleri -> gerekceli noqa x11), DTZ011 x4, S108 x2, N817 x1,
+SIM105 x2, F841 x1, `attr-defined` x19 (`_stub()` yardimcisi Any donduruyor;
+19 ayri `type: ignore` yerine tek bir dogru cozum), `no-any-return` x1.
+
+Iki tanesi lint temizligi degil GERCEK duzeltme:
+
+* `pytest.raises(Exception)` -> `pytest.raises(AuthorizationError)`.
+  `core/enhanced_authentication.py:359` yorumunun anlattigi gercek kusur
+  (yanlis kwarg ile cagrilinca yetki reddi yerine TypeError firlamasi) genis
+  assert altinda YESIL goruluyordu. Test artik onu yakalar.
+* `_wire_app` icinde govdesi yalnizca `pass` olan olu bir try/except blogu
+  ve `TestDiaryApiCoverage.setup` icinde override kurulumunu yutan
+  `except Exception: pass` kaldirildi. Override kurulamazsa GORULSUN.

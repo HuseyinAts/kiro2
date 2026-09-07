@@ -158,12 +158,8 @@ def _wire_app(app: FastAPI, role: str = "admin", db=None):
     except Exception:
         pass
 
-    try:
-        pass
-        # Wire diary auth
-    except Exception:
-        pass
-
+    # Not: burada eskiden govdesi yalnizca `pass` olan bir try/except blogu
+    # duruyordu ("# Wire diary auth" yorumuyla). Hicbir sey yapmiyordu; silindi.
     return db
 
 
@@ -396,7 +392,7 @@ class TestAuthCoverage:
         db_user.id = str(uuid4())
         db_user.email = "inactive@kiro2.com"
         db_user.is_active = False
-        db_user.password_hash = "hashed"
+        db_user.password_hash = "hashed"  # noqa: S105  # pragma: allowlist secret
         db_user.role = MagicMock()
         db_user.role.value = "STUDENT"
         db_user.is_2fa_enabled = False
@@ -419,7 +415,7 @@ class TestAuthCoverage:
         db_user.id = str(uuid4())
         db_user.email = "real@kiro2.com"
         db_user.is_active = True
-        db_user.password_hash = "$2b$12$invalid_hash"
+        db_user.password_hash = "$2b$12$invalid_hash"  # noqa: S105
         db_user.role = MagicMock()
         db_user.role.value = "STUDENT"
         db_user.is_2fa_enabled = False
@@ -446,7 +442,7 @@ class TestAuthCoverage:
         db_user.id = str(uuid4())
         db_user.email = "student@kiro2.com"
         db_user.is_active = True
-        db_user.password_hash = "hashed_pass"
+        db_user.password_hash = "hashed_pass"  # noqa: S105  # pragma: allowlist secret
         db_user.role = MagicMock()
         db_user.role.value = "STUDENT"
         db_user.is_2fa_enabled = False
@@ -860,7 +856,7 @@ class TestTwoFactorAuthCoverage:
         """Setup 2FA when already enabled."""
         user = _mock_user("student")
         user.is_2fa_enabled = True
-        user.secret_2fa = "EXISTING_SECRET"
+        user.secret_2fa = "EXISTING_SECRET"  # noqa: S105  # pragma: allowlist secret
 
         try:
             from core.jwt_auth import get_current_user as jwt_get_current_user
@@ -907,7 +903,7 @@ class TestTwoFactorAuthCoverage:
         """Verify a TOTP token."""
         user = _mock_user("student")
         user.is_2fa_enabled = True
-        user.secret_2fa = "TESTSECRET"
+        user.secret_2fa = "TESTSECRET"  # noqa: S105  # pragma: allowlist secret
 
         try:
             from core.jwt_auth import get_current_user as jwt_get_current_user
@@ -927,7 +923,7 @@ class TestTwoFactorAuthCoverage:
         """Verify TOTP with wrong token."""
         user = _mock_user("student")
         user.is_2fa_enabled = True
-        user.secret_2fa = "TESTSECRET"
+        user.secret_2fa = "TESTSECRET"  # noqa: S105  # pragma: allowlist secret
 
         try:
             from core.jwt_auth import get_current_user as jwt_get_current_user
@@ -948,7 +944,7 @@ class TestTwoFactorAuthCoverage:
         pytest.skip("subagent hallucination")
         user = _mock_user("student")
         user.is_2fa_enabled = True
-        user.secret_2fa = "SECRET"
+        user.secret_2fa = "SECRET"  # noqa: S105  # pragma: allowlist secret
 
         try:
             from core.jwt_auth import get_current_user as jwt_get_current_user
@@ -1076,7 +1072,7 @@ class TestAdvancedReportsCoverage:
             patch.object(
                 self.mod.pdf_generator,
                 "rapor_olustur",
-                return_value="/tmp/test_report.pdf",
+                return_value="/tmp/test_report.pdf",  # noqa: S108
             ),
         ):
             r = self.client.get("/api/v1/reports/exam/EXAM_123/pdf")
@@ -1355,8 +1351,8 @@ class TestSoruBankasiCoverage:
 
     def test_sorular_listele_empty_cache(self):
         """List questions — cache miss, service returns list."""
-        sorular = [self._mock_soru(1), self._mock_soru(2)]
-
+        # Not: burada kullanilmayan bir `sorular = [...]` atamasi vardi; test
+        # donus degerini asagida kendi sozluguyle kuruyor. Silindi (F841).
         with (
             patch.object(
                 self.mod.question_cache,
@@ -1539,7 +1535,7 @@ class TestEnhancedUserManagementCoverage:
             json={
                 "email": "newu@kiro2.com",
                 "username": "newuser",
-                "password": "ValidPass1!",
+                "password": "ValidPass1!",  # pragma: allowlist secret
                 "first_name": "New",
                 "last_name": "User",
                 "role": "student",
@@ -1624,7 +1620,7 @@ class TestAdminCoverage:
                 "/api/v1/admin/users",
                 json={
                     "email": "new@kiro2.com",
-                    "password": "Admin1Pass!",
+                    "password": "Admin1Pass!",  # pragma: allowlist secret
                     "first_name": "New",
                     "last_name": "User",
                     "role": "STUDENT",
@@ -2099,13 +2095,18 @@ class TestDiaryApiCoverage:
         self.mock_db = _wire_app(self.app)
         self.user = _mock_user("student")
 
-        # Override the authentication dependency
-        try:
-            # diary uses: get_current_user = AuthenticationDependency(required=True)
-            # We patch at module level
-            self.mod.get_current_user = lambda: self.user
-        except Exception:
-            pass
+        # Override the authentication dependency.
+        # Bkz. tests/fast/test_api_coverage_batch13.py: burada da eskiden
+        # `self.mod.get_current_user = lambda: self.user` vardi -- modul
+        # duzeyinde kalici yeniden baglama, geri alinmiyor ve ayni xdist
+        # worker'indaki sonraki testlerde diary rotalarini 401'e dusuruyor
+        # (SS10.63). dependency_overrides app'e ozel oldugu icin sizmaz.
+        # diary uses: get_current_user = AuthenticationDependency(required=True)
+        # try/except YOK: bu iki islem (oznitelik okuma + sozluk atamasi)
+        # basarisiz olamaz. Eskiden buradaki `except Exception: pass`
+        # bastirmasi, override kurulamadiginda testleri sessizce 401 goren
+        # anlamsiz bir duruma dusuruyordu. Kirilirsa GORULSUN.
+        self.app.dependency_overrides[self.mod.get_current_user] = lambda: self.user
 
         # Mock diary service
         self.mock_diary_service = AsyncMock()
