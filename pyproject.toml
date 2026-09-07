@@ -33,7 +33,7 @@ dependencies = [
     "alembic==1.13.1",
 
     # Redis
-    "redis[hiredis]==5.0.1",
+    "redis[hiredis]==8.1.0",
     "aioredis==2.0.1",
 
     # Celery

@@ -13,7 +13,7 @@ alembic==1.13.1
 sqlparse>=0.6.0
 
 # Caching
-redis[hiredis]==4.6.0
+redis[hiredis]==8.1.0
 
 # Task Queue
 celery[redis]==5.3.4
