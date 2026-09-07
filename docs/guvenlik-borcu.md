@@ -7377,3 +7377,126 @@ uretim dosyasi yok; `components/Exam/*` BASKA bir servisi
 
 Yani bu kayit 404'u ve IDOR'u kapatti, ozelligi kullaniciya ACMADI.
 Frontend rotasinin baglanmasi ayri bir karar.
+
+## §10.72 -- Frontend yarisi: baglamadan ONCE olcunce sahte sinav cikti (2026-09-07)
+
+SS10.71'de arka uc kaydedildi ve "frontend yarisi hala bagli degil, o ayri bir
+karar" diye birakilmisti. Baglamadan once bilesenin GERCEKTEN calisip
+calismadigi olculdu. Cikan sey baglamayi degil, once DUZELTMEYI gerektiriyordu.
+
+### Once evren: iki paralel sinav yigini var, biri yayinda
+
+    YAYINDA
+      rota    : /exam/start, /exam/:sinavId, /exam/:sinavId/results (App.tsx)
+      sayfa   : ModernExamStartPage, ExamPage, ExamResultsPage
+      bilesen : components/Exam/* (OSYMExamInterface, ModernOSYM...)
+      servis  : services/examService.ts   -> /api/v1/osym-exam/*
+      arka uc : api/sinav.py              (kayitli)
+
+    YAYINDA DEGIL
+      rota    : YOK
+      bilesen : features/exams/ExamSession.tsx, ExamResultDashboard.tsx
+      servis  : services/mockExamService.ts -> /api/v1/exams/*
+      arka uc : api/v1/exams.py            (SS10.71'de kaydedildi)
+
+Bunlar kazara ikiz DEGIL: `mockExamService.ts`in kendi basligi
+"bu servis examService.ts'in konustugu /api/v1/osym-exam/* API'sinden AYRI bir
+uc kumesidir" diyor. Biri adaptif oturum, digeri 120 soruluk TYT DENEMESI
+(YksBellCurveAssembler ile TUR 40 / MAT 40 / SOS 20 / FEN 20, net + brans
+kirilimi + XP/coin). Yani baglamak "kopyayi acmak" degil, YENI BIR OZELLIK
+acmak olurdu.
+
+Sozlesme uyumu da dogrulandi: `mockExamService.ts`in TypeScript arayuzleri
+(`GenerateMockExamResponse`, `ExamQuestionData`, `ExamSubmitResult`,
+`SaveExamAnswerResponse`) `api/v1/exams.py`nin dondurdugu govdelerle alan alan
+ORTUSUYOR. Iki yarim birlikte yazilmis.
+
+### Ama bilesen bugunku haliyle baglanamazdi -- uc kusur
+
+**1) 120 SORULUK UYDURMA SINAV (en agiri).**
+
+`MOCK_FALLBACK_QUESTIONS` adinda, metni
+"Bu ornek bir TUR sorusudur (Soru 1). Asagidakilerden hangisi dogrudur?" olan
+120 uydurma soru vardi ve bunlar bilesenin BASLANGIC DURUMUYDU:
+
+```
+const [questions, setQuestions] = useState<Question[]>(MOCK_FALLBACK_QUESTIONS);
+...
+} catch (err) {
+  console.warn('Failed to load live backend session, falling back to local questions state.', err);
+}
+```
+
+Arka uc duserse ogrenci HICBIR UYARI GORMEDEN 120 sahte soruluk bir deneme
+sinavi cozuyordu: cevaplari hicbir yere yazilmiyor, neti anlamsiz.
+
+Bu sahte havuz deponun kendi testinde de iz birakmis --
+`ExamSession.test.tsx` yorumu, mock yanlis modulu hedefledigi icin bilesenin
+gercek servisi cagirdigini ve "component'in kendi 120 soruluk fallback'i
+'Ornek Secenek A' dondurdugu" icin testin bunu FARK EDEMEDIGINI anlatiyor.
+Yani sahte veri, gercek bir kusuru ortmustu.
+
+**2) `studentId = "student-123"` SABIT VARSAYILANI.**
+
+Bilesen bir rotaya baglandiginda prop verilmezse HER ogrenci "student-123"
+adina sinav uretirdi.
+
+**3) SESSIZ GONDERIM HATASI.**
+
+```
+} catch (e) {
+  console.warn('Failed submit exam to backend, calculating client-side fallback result', e);
+}
+setIsCompleted(true);
+```
+
+Gonderim duserse hata yutuluyor, `isCompleted = true` yapiliyor ve ogrenci
+`results === null` ile sonuc ekranina dusuyordu: sinav gonderilmedigi halde
+"bitti" goruyordu. Ustelik yorumun anlattigi "client-side fallback result"
+hesabi KODDA YOKTU -- var olmayan bir davranisi anlatan bir yorum.
+
+### Yapilan
+
+* Uydurma havuz SILINDI. Baslangic durumu `[]`; acik `yukleniyor` /
+  `yuklemeHatasi` durumlari eklendi. Veri yoksa **sinav baslamaz**.
+* `studentId` varsayilani kaldirildi; prop artik ZORUNLU.
+* Gonderim hatasi gorunur: `role="alert"` ile gosteriliyor ve sonuc ekranina
+  GECILMIYOR.
+* Sik secimi `<div onClick>` yerine gercek `<button type="button">`
+  (jsx-a11y hakliydi: klavyeyle secilemiyordu).
+
+Davranisi civileyen IKI YENI test:
+
+    arka uc duserse SAHTE sinav gostermez, hata gosterir
+    gonderim duserse sessizce "bitti" demez, hatayi gosterir
+
+Ilki, uydurma havuzun imzasini (`/Ornek Secenek/`) aramayarak geri gelmesini
+engelliyor. Dogrulama: **6 passed** (4 mevcut + 2 yeni), `tsc --noEmit` temiz,
+eslint (CI'nin kendi bayraklariyla) temiz.
+
+### Yan bulgu: CI'nin ESLint adimi test dosyasina dokunan HER PR'i kiriyordu
+
+`.eslintignore` test dosyalarini bilerek disarida birakiyor ("Test files
+(excluded from main tsconfig)"). Ama `ci.yml`in "Run ESLint (changed files)"
+adimi degisen dosyalari eslint'e ACIKCA isim vererek geciyor. ESLint 8, acikca
+verilen ama yok sayilan bir dosya icin
+
+    File ignored because of a matching ignore pattern
+
+UYARISI uretiyor; `--max-warnings 0` bunu hataya cevirip adimi dusuruyor.
+Olculdu:
+
+    npx eslint --max-warnings 0 <bilesen> <test>
+    -> "0 errors, 1 warning" + "ESLint found too many warnings" + exit 1
+
+Yani bir frontend TESTINE dokunan her PR, gercek bir lint sorunu olmadan
+kirmizi oluyordu. ESLint 8'de bu uyariyi susturan bayrak yok
+(`--no-warn-ignored` ESLint 9/flat config). Adimda liste suzuluyor; desenlerin
+KAYNAGI `.eslintignore` ve bu yorum orayi isaret ediyor.
+
+### HALA KARAR: rota baglanacak mi?
+
+Bilesen artik durust: veri yoksa sinav baslatmiyor, hatayi gosteriyor, sahte
+soru uretmiyor. Baglamak icin gereken tek sey bir rota ve gercek `studentId`.
+Ama bu, kullaniciya IKINCI bir sinav deneyimi acmak demek -- urun karari,
+test tarafindan verilemez. Bilerek baglanmadi.

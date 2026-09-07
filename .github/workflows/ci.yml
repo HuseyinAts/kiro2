@@ -451,8 +451,24 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
         run: |
           CHANGED=$(git diff "origin/${BASE_REF}...HEAD" --name-only --diff-filter=AM -- '*.ts' '*.tsx' | sed -n 's|^frontend/||p')
+          # SS10.72: eslint'in KENDI yok saydigi dosyalari ELEMEK zorundayiz.
+          # `.eslintignore` test dosyalarini bilerek disarida birakiyor
+          # ("Test files (excluded from main tsconfig)"), ama bu adim degisen
+          # dosyalari eslint'e ACIKCA isim vererek geciyor. ESLint 8, acikca
+          # verilen ama yok sayilan bir dosya icin
+          #   "File ignored because of a matching ignore pattern"
+          # UYARISI uretiyor ve `--max-warnings 0` bunu HATAYA cevirip adimi
+          # dusuruyor. Yani bir frontend TESTINE dokunan her PR, gercek bir
+          # lint sorunu olmadan kirmizi oluyordu. Olculdu:
+          #   npx eslint --max-warnings 0 <bilesen> <test> -> exit 1,
+          #   "0 errors, 1 warning" (yalnizca 'File ignored')
+          # ESLint 8'de bu uyariyi susturan bir bayrak yok (--no-warn-ignored
+          # ESLint 9/flat config). Bu yuzden liste burada suzuluyor;
+          # DESENLERIN KAYNAGI `.eslintignore` -- orasi degisirse burasi da
+          # guncellenmeli.
+          CHANGED=$(echo "$CHANGED" | grep -Ev '(^src/test/|/__tests__/|\.test\.tsx?$)' || true)
           if [ -z "$CHANGED" ]; then
-            echo "No changed frontend .ts/.tsx files vs origin/${BASE_REF}. Skipping ESLint."
+            echo "No lintable changed frontend .ts/.tsx files vs origin/${BASE_REF}. Skipping ESLint."
             exit 0
           fi
           echo "Linting changed files:"
