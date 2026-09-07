@@ -84,6 +84,28 @@ DILIMLER: dict[str, str] = {
           AND qb.option_e IS NOT NULL AND btrim(qb.option_e) <> ''
           AND (th.code = 'TUR' OR th.code LIKE 'TUR.%' OR th.code LIKE 'TYT-TR-%')
     """,
+    # SOS/TYT (7 Eyl 2026). DIKKAT: bu dilim tek bir `subject_area` DEGIL, TYT
+    # denemesinin "SOS" BOLUMU. Blueprint bolumu uc dersi birden kapsiyor
+    # (TARIH 3474 + SOSYAL 958 + COGRAFYA 854 aktif) ve `generate-mock` de
+    # bransi konu tablosunun subject_area'sindan {sosyal,tarih,cografya,...}
+    # kumesiyle esliyor. Ders basina ayri dilim acmak bolumu yapay boler.
+    # Konu kapsami suzgeci TUR'daki ile ayni gerekce: olculdu, temiz dilimde 10
+    # soru FIZ/KIM/TUR/GEN konularina bagli (etiket hatasi) -- kapsam disi.
+    "sos_tyt": """
+        SELECT qb.id::text AS id, qb.primary_topic_id::text AS konu, qb.soru_hash AS h
+        FROM question_bank qb
+        JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+        WHERE qb.exam_type = 'TYT'
+          AND qb.subject_area IN ('TARIH', 'SOSYAL', 'COGRAFYA')
+          AND qb.quality_review_status = 'auto_judged_high' AND qb.is_active
+          AND qb.question_image_url ~ '_q[0-9]+\\.png$'
+          AND qb.correct_answer IN ('A','B','C','D','E')
+          AND qb.option_e IS NOT NULL AND btrim(qb.option_e) <> ''
+          AND (th.code IN ('TAR', 'COG', 'SOS')
+               OR th.code LIKE 'TAR0%' OR th.code LIKE 'TYT-TAR-%'
+               OR th.code LIKE 'COG0%' OR th.code LIKE 'TYT-COG-%'
+               OR th.code LIKE 'SOC0%')
+    """,
 }
 # KIMYA BURAYA EKLENMEZ — bkz. modül docstring'i.
 
