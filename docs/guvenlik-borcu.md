@@ -5459,3 +5459,48 @@ icerikte AYT. (3) Kaynak cevap anahtari da hata tasiyor (`756f59e5`, cati sorusu
 Kod karari: `exams.py` DEGISMEDI. TYT denemesi hala 409 ama tek neden artik SOS (0/20); SOS dilimi
 ayni boru hattiyla denemeyi acar. master'daki `exams.py` hala PR #181 oncesi (brans-koru fallback);
 PR #181 merge edilmeden 409 davranisi canliya cikmaz.
+
+## §10.77 -- SOS/TYT gocu S1: 576 crop kor okundu, 446 yazildi, kapi 4579 -> 4959, TYT DENEMESI ARTIK KURULUYOR (2026-09-07)
+
+SS10.76 "tek eksik SOS" demisti; Huseyin dilimi SOS ile surdurmeyi onayladi. Tam kayit:
+`docs/audits/2026-09-07_sos_crop_kor_okuma.md`.
+
+Ozet:
+
+    onkosul: y11_konu_seed.py'ye --kok modu (kaynakta SOS/SOC0* EBEVEYNSIZ, canlida yoktu;
+             canli da karisik -- TYT-KIM-01 zaten kok). 17 kod, topic_hierarchy 52 -> 69.
+    secici : DILIMLER["sos_tyt"] -- TEK DERS DEGIL, TYT'nin SOS BOLUMU (3 ders birden)
+    aday 576 (huni 6816 -> 5286 -> 2452 -> 1052 -> 1042 -> tavan 576; havuz TUKENMEDI, 257 kaldi)
+    sizdiran 55 (%9,55, en yuksek) + AYT 69 + kararsiz-at 10 + metin bozuk 1 -> 446
+    PROVA sapma [] yetim 0 -> 10 ornek cozuldu (10/10 anahtar uyumlu)
+    KALICI 5796 (5350+446); kume dosyasi ile canli parti BIREBIR dogrulandi
+    FAZ E terfi: kapi 4579 -> 4959 (+380, simulasyonla birebir); ES 4959
+    generate-mock: TUR 40 + SOS 20 + MAT 40 + FEN 20 = 120/120 -> DENEME KURULUYOR
+
+Dort olcum notu:
+
+(1) **TYT denemesi artik kuruluyor ve bu iddia degil olcum.** SQL havuz sayimi yetmezdi; asil
+belirsizlik assembler'in kotayi doldurup dolduramadigiydi. `exams.py`'nin kullandigi
+`YksBellCurveAssembler.assemble_test` canli havuzlara karsi kosuldu, dort brans da tam dondu.
+UYARI: bu PR #181'deki `exams.py`; master hala brans-koru fallback'li, yani 409 -> 120 gecisi
+kullaniciya PR #181 merge edilince yansir.
+
+(2) **Sizinti kitap duzeyinde toplaniyor.** `Bilgi Sarmal Tyt Sosyal Bilimler Video Ders
+Kitabi` 17 adayin 17'sini sizdirdi (%100 -- kitap bastan sona konu anlatimi), `Aromat Tyt
+Sosyal Bilimler` 15/32. Buna karsilik `Esen Tyt Tarih` 0/47. TUR turunda da ayni desen vardi.
+Kitap-duzeyi kirmizi liste artik iki turda ust uste kaniti olan bir eksik.
+
+(3) **MAT'in KARARSIZ olcutu SOS'ta calismiyor.** TYT ve AYT sosyal mufredati ayni konu
+basliklarini paylasiyor, yalniz derinlik degisiyor -- "konu adi" ile ayirmak imkansiz. Karar
+iki olculebilir sinyale baglandi: OSYM'nin kendi AYT damgasi (28 kirpim IKINCI ve BAGIMSIZ bir
+gecisle tarandi; bulunan 3 damga, kor okumanin bagimsizca bildirdigi 3 damgayla birebir ayni
+cikti) ve kaynak kitabin saf AYT olmasi. 10 at / 25 tut.
+
+(4) **Kor okumanin goremedigi bir kusur katmani olculdu.** Orneklem cozumunde `fbb347a9`'un
+govdesi kendisiyle celisik cikti; GORSEL SAGLAM, bozulma cikarilan metinde. Kor okuma gorseli
+okur, servis edilen ise `question_text` -- bu sinifi ilkesel olarak goremez. 447 sorunun
+tamaminda sezgisel tarama denendi (kisa govde, dengesiz parantez, mukerrer sik, tekrar eden
+obek, ham LaTeX): 24 isaret, tamami yanlis pozitif. Yani sezgisel tarama bu katmani olcemiyor;
+kusuru yakalayan tek adim elle cozum oldu. Oran iddia edilmiyor (10'da 1). Ayrica ayni turda
+`source_book` metadata'sinin crop klasoruyle %2,8 uyusmadigi olculdu; kitap sinyaline dayanan
+karar klasore cevrilip yeniden kosuldu -- sonuc DEGISMEDI (446), ama olculmeden guvenilemezdi.
