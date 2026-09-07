@@ -30,6 +30,7 @@ from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from services.bkt_service import BKTService
+from tests.pg_sync import async_pg_dsn
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -38,7 +39,8 @@ from services.bkt_service import BKTService
 TEST_TOPIC_ID = "00000000-0000-0000-0000-000000000001"
 # Real user in DB — satisfies FK constraints on REAL_USER_ID
 REAL_USER_ID = "41411c25-5c85-4470-a6ac-ac31c60ce732"
-DB_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5434/kiro2"
+# DSN artik SABIT DEGIL: gerekce ve olcum tests/pg_sync.py::async_pg_dsn
+# docstring'inde (parola git'te + veritabani adi CI'da `kiro2_test`).
 
 # FSRS mock return
 _FSRS_MOCK_RETURN = {
@@ -71,7 +73,7 @@ async def db_session():
     Yields an AsyncSession; on exit the engine is disposed.
     """
     engine = create_async_engine(
-        DB_URL,
+        async_pg_dsn(),
         echo=False,
         pool_size=5,
         max_overflow=10,
@@ -85,26 +87,49 @@ async def db_session():
     # Clean up any leftover test data for this user before each test
     async with session_maker() as session:
         for table in ["bkt_states", "student_abilities", "zpd_history", "fsrs_cards"]:
+            # S608: tablo adi KULLANICI GIRDISI DEGIL -- hemen ustteki sabit
+            # liste. Tablo adi SQL'de bind parametresi olamaz.
             await session.execute(
-                text(f"DELETE FROM {table} WHERE student_id = :sid"),
+                text(f"DELETE FROM {table} WHERE student_id = :sid"),  # noqa: S608
                 {"sid": REAL_USER_ID},
             )
         await session.commit()
 
     async with session_maker() as session:
         # Ensure org_legacy_default exists in organizations table
+        #
+        # OLCUM (6 Eyl 2026): bu INSERT 4 kolon yaziyordu ve
+        # `NotNullViolationError: null value in column "org_type"` ile
+        # dusuyordu. Sema Faz-1 B2B retrofit'inden sonra dort kolon daha
+        # ZORUNLU kildi. Kolonlar tek tek CI turu harcamak yerine semaya
+        # sorularak topluca bulundu:
+        #   SELECT column_name FROM information_schema.columns
+        #    WHERE table_name='organizations'
+        #      AND is_nullable='NO' AND column_default IS NULL
+        #   -> id, name, org_type, status, kvkk_role, license_seats
         await session.execute(
             text("""
-                INSERT INTO organizations (id, name, created_at, updated_at)
-                VALUES ('org_legacy_default', 'Legacy Default Org', now(), now())
+                INSERT INTO organizations (id, name, org_type, status,
+                                           kvkk_role, license_seats,
+                                           created_at, updated_at)
+                VALUES ('org_legacy_default', 'Legacy Default Org',
+                        'ozel_okul', 'trial', 'controller', 0,
+                        now(), now())
                 ON CONFLICT (id) DO NOTHING
             """)
         )
         # Ensure REAL_USER_ID seed user exists (FK for BKTState.student_id)
         await session.execute(
             text("""
-                INSERT INTO users (id, email, username, first_name, last_name, password_hash, role, organization_id, is_active, created_at, updated_at)
-                VALUES (:id, :email, :username, 'Test', 'User', 'hashed_pwd', 'STUDENT', 'org_legacy_default', true, now(), now())
+                INSERT INTO users (id, email, username, first_name, last_name,
+                                   password_hash, role, organization_id,
+                                   is_active, is_verified, is_2fa_enabled,
+                                   is_premium, is_parent, total_xp, level,
+                                   elo_rating, created_at, updated_at)
+                VALUES (:id, :email, :username, 'Test', 'User', 'hashed_pwd',
+                        'STUDENT', 'org_legacy_default',
+                        true, true, false, false, false, 0, 1, 1200,
+                        now(), now())
                 ON CONFLICT (id) DO NOTHING
             """),
             {
@@ -142,7 +167,9 @@ async def db_session():
 
     yield session_maker
 
-    engine.dispose()
+    # `AsyncEngine.dispose()` coroutine dondurur; `await` olmadan havuz
+    # kapanmiyordu (bkz. test_fsrs_card_persistence.py'deki ayni not).
+    await engine.dispose()
 
 
 @pytest.fixture
@@ -208,9 +235,9 @@ async def test_record_answer_first_answer_inserts_bkt_state(db_session):
             responses=None,
         )
 
-        assert result["new_p_L"] > 0.0, (
-            f"new_p_L should be positive, got {result['new_p_L']}"
-        )
+        assert (
+            result["new_p_L"] > 0.0
+        ), f"new_p_L should be positive, got {result['new_p_L']}"
         assert "errors" in result
         assert result["errors"]["bkt"] is None
 
@@ -226,9 +253,9 @@ async def test_record_answer_first_answer_inserts_bkt_state(db_session):
         )
         db_row = row.one_or_none()
         assert db_row is not None, "BKTState row should have been INSERTed"
-        assert db_row.attempt_count == 1, (
-            f"attempt_count should be 1, got {db_row.attempt_count}"
-        )
+        assert (
+            db_row.attempt_count == 1
+        ), f"attempt_count should be 1, got {db_row.attempt_count}"
         assert 0.0 <= db_row.p_learn <= 0.999, f"p_learn out of range: {db_row.p_learn}"
 
         await session.rollback()
@@ -262,7 +289,10 @@ async def test_record_answer_existing_state_updates_bkt_state(
         init_p_learn = init_row.p_learn
         init_attempts = init_row.attempt_count
 
-        result = await BKTService.record_answer(
+        # Donen deger bu testte KULLANILMIYOR (F841): olculen sey DB'ye
+        # yazilan satir, servisin dondurdugu sozluk degil. Adi `_` yapmak
+        # niyeti acik hale getiriyor.
+        _ = await BKTService.record_answer(
             student_id=REAL_USER_ID,
             topic_id=TEST_TOPIC_ID,
             subject_slug="matematik",
@@ -283,12 +313,12 @@ async def test_record_answer_existing_state_updates_bkt_state(
         )
         upd_row = updated.one()
 
-        assert upd_row.attempt_count == init_attempts + 1, (
-            f"attempt_count should be {init_attempts + 1}, got {upd_row.attempt_count}"
-        )
-        assert upd_row.p_learn > init_p_learn, (
-            f"p_learn should increase on correct: {upd_row.p_learn} <= {init_p_learn}"
-        )
+        assert (
+            upd_row.attempt_count == init_attempts + 1
+        ), f"attempt_count should be {init_attempts + 1}, got {upd_row.attempt_count}"
+        assert (
+            upd_row.p_learn > init_p_learn
+        ), f"p_learn should increase on correct: {upd_row.p_learn} <= {init_p_learn}"
 
         await session.rollback()
 
@@ -320,15 +350,15 @@ async def test_record_answer_with_answered_questions_uses_eap(db_session):
             responses=responses,
         )
 
-        assert result["irt_method"] == "eap", (
-            f"irt_method should be 'eap', got {result['irt_method']}"
-        )
-        assert isinstance(result["theta_after"], float), (
-            f"theta_after should be float, got {type(result['theta_after'])}"
-        )
-        assert result["theta_se"] > 0.0, (
-            f"theta_se should be positive, got {result['theta_se']}"
-        )
+        assert (
+            result["irt_method"] == "eap"
+        ), f"irt_method should be 'eap', got {result['irt_method']}"
+        assert isinstance(
+            result["theta_after"], float
+        ), f"theta_after should be float, got {type(result['theta_after'])}"
+        assert (
+            result["theta_se"] > 0.0
+        ), f"theta_se should be positive, got {result['theta_se']}"
 
         await session.rollback()
 
@@ -353,9 +383,9 @@ async def test_record_answer_without_answered_questions_uses_bridge(db_session):
             responses=None,
         )
 
-        assert result["irt_method"] == "bridge", (
-            f"irt_method should be 'bridge', got {result['irt_method']}"
-        )
+        assert (
+            result["irt_method"] == "bridge"
+        ), f"irt_method should be 'bridge', got {result['irt_method']}"
 
         # S179 fix (B-P0-33): DM-05 replaced the linear bridge formula
         # (theta = (clamped - 0.5) * 8.0) with logit (math.log(clamped /
@@ -374,9 +404,9 @@ async def test_record_answer_without_answered_questions_uses_bridge(db_session):
 
         # SE: max(0.3, 1.0 - p_L) — formula unchanged in DM-05
         expected_se = max(0.3, 1.0 - new_p_L)
-        assert abs(result["theta_se"] - expected_se) < 0.01, (
-            f"theta_se={result['theta_se']} != expected {expected_se}"
-        )
+        assert (
+            abs(result["theta_se"] - expected_se) < 0.01
+        ), f"theta_se={result['theta_se']} != expected {expected_se}"
 
         await session.rollback()
 
@@ -459,14 +489,18 @@ async def test_record_answer_bkt_state_persisted_to_db(db_session):
         )
         ss_r = same_row.one_or_none()
         assert ss_r is not None, "BKTState should exist after flush"
-        assert float(ss_r.p_learn) == result["new_p_L"], (
-            f"p_learn mismatch after flush: db={ss_r.p_learn} result={result['new_p_L']}"
-        )
+        # `bkt_states.p_learn` semada FLOAT(5) -- yani TEK duyarlikli. Python
+        # float'i (cift duyarlikli) ile TAM esitlik aramak yapisal olarak
+        # yanlis: DB'den 0.4 yerine 0.4000000059604645 doner. Olculen sey
+        # "yazilan deger geri okundu mu", "bit bit ayni mi" degil.
+        assert float(ss_r.p_learn) == pytest.approx(
+            result["new_p_L"], rel=1e-6
+        ), f"p_learn mismatch after flush: db={ss_r.p_learn} result={result['new_p_L']}"
 
         await session.commit()
 
     # Fresh session requery — proves persistence survived the transaction
-    fresh_engine = create_async_engine(DB_URL, echo=False)
+    fresh_engine = create_async_engine(async_pg_dsn(), echo=False)
     fresh_maker = async_sessionmaker(
         fresh_engine, class_=AsyncSession, expire_on_commit=False
     )
@@ -479,9 +513,10 @@ async def test_record_answer_bkt_state_persisted_to_db(db_session):
         )
         fr = fresh_row.one_or_none()
         assert fr is not None, "BKTState row missing after fresh-session requery"
-        assert float(fr.p_learn) == result["new_p_L"], (
-            f"p_learn mismatch after commit+requery: db={fr.p_learn} result={result['new_p_L']}"
-        )
+        # FLOAT(5) tek duyarlik -- yukaridaki ayni not.
+        assert (
+            float(fr.p_learn) == pytest.approx(result["new_p_L"], rel=1e-6)
+        ), f"p_learn mismatch after commit+requery: db={fr.p_learn} result={result['new_p_L']}"
     await fresh_engine.dispose()
 
 
@@ -519,14 +554,14 @@ async def test_record_answer_student_ability_upserted_to_db(db_session):
         )
         ss_r = sa_row.one_or_none()
         assert ss_r is not None, "StudentAbility row should exist after flush"
-        assert abs(float(ss_r.theta) - result["theta_after"]) < 0.001, (
-            f"theta mismatch after flush: db={ss_r.theta} result={result['theta_after']}"
-        )
+        assert (
+            abs(float(ss_r.theta) - result["theta_after"]) < 0.001
+        ), f"theta mismatch after flush: db={ss_r.theta} result={result['theta_after']}"
 
         await session.commit()
 
     # Fresh session requery
-    fresh_engine = create_async_engine(DB_URL, echo=False)
+    fresh_engine = create_async_engine(async_pg_dsn(), echo=False)
     fresh_maker = async_sessionmaker(
         fresh_engine, class_=AsyncSession, expire_on_commit=False
     )
@@ -539,9 +574,9 @@ async def test_record_answer_student_ability_upserted_to_db(db_session):
         )
         fr = fresh_row.one_or_none()
         assert fr is not None, "StudentAbility row missing after fresh-session requery"
-        assert abs(float(fr.theta) - result["theta_after"]) < 0.001, (
-            f"theta mismatch after commit+requery: db={fr.theta} result={result['theta_after']}"
-        )
+        assert (
+            abs(float(fr.theta) - result["theta_after"]) < 0.001
+        ), f"theta mismatch after commit+requery: db={fr.theta} result={result['theta_after']}"
     await fresh_engine.dispose()
 
 

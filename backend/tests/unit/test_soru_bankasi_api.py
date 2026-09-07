@@ -11,6 +11,7 @@ sys.path.insert(0, "C:/Users/husey/kiro2/backend")
 
 from datetime import UTC, datetime
 from types import SimpleNamespace
+from typing import ClassVar
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -48,7 +49,25 @@ def _make_question_mock(
     times_asked: int = 10,
     times_correct: int = 7,
 ) -> MagicMock:
-    """Build a mock Question ORM object (question_bank model columns)."""
+    """Build a mock Question ORM object (question_bank model columns).
+
+    SS10.68 -- BOLUNMUS SEMA (#485). `question_bank` artik soru metnini,
+    secenekleri, sinav/konu meta verisini ve istatistikleri TASIMIYOR; bunlar
+    `question_content` / `question_metadata` / `question_statistics` yavru
+    tablolarinda. `api/soru_bankasi.py:799-819` bu yuzden acikca
+    `yeni_soru.content.*`, `.metadata_info.*`, `.statistics.*` okuyor
+    (kod icindeki yorum bunu birebir anlatiyor).
+
+    Bu yardimci yalnizca DUZ oznitelikleri kuruyordu. `q.content` MagicMock'un
+    otomatik urettigi bir cocuk oldugu icin `q.content.question_text` de bir
+    MagicMock donuyor; JSON'a serilestirilemiyor, uc `except Exception` ile
+    HTTP 500 veriyor. Olculen zarar: 3 test
+    (`assert 500 == 201`, `KeyError: 'success'`, `KeyError: 'data'`).
+    Yerelde tek basina da dusuyor -- yani kirlenme degil, BAYAT TEST.
+
+    Duz oznitelikler KALDI: dosyadaki diger uclar (rastgele/istatistik gibi)
+    hala onlari okuyor; kaldirmak alakasiz testleri kirardi.
+    """
     q = MagicMock()
     q.id = qid
     q.question_text = "Test sorusu metni"
@@ -73,9 +92,42 @@ def _make_question_mock(
     q.times_asked = times_asked
     q.times_correct = times_correct
     q.average_response_time = 45.0
-    q.created_at = datetime(2026, 1, 1, 12, 0, 0)
-    q.updated_at = datetime(2026, 1, 2, 12, 0, 0)
+    q.created_at = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
+    q.updated_at = datetime(2026, 1, 2, 12, 0, 0, tzinfo=UTC)
     q.is_active = True
+
+    # --- bolunmus sema yavrulari (#485) --------------------------------
+    # Degerler duz oznitelikleriyle AYNI tutuldu ki iki yolu okuyan testler
+    # ayni seyi gorsun.
+    q.content = MagicMock()
+    q.content.question_text = "Test sorusu metni"
+    q.content.question_image_url = None
+    q.content.option_a = "A seçeneği"
+    q.content.option_b = "B seçeneği"
+    q.content.option_c = "C seçeneği"
+    q.content.option_d = "D seçeneği"
+    q.content.option_e = "E seçeneği"
+    q.content.correct_answer = "C"
+    q.content.explanation = "Açıklama"
+
+    q.metadata_info = MagicMock()
+    q.metadata_info.exam_type = exam_type_val
+    q.metadata_info.subject_area = subject_val
+    q.metadata_info.primary_topic_id = "Cebir"
+    q.metadata_info.morphology_complexity = 0.35
+    q.metadata_info.readability_score = 0.72
+
+    q.statistics = MagicMock()
+    # Uc `.difficulty_level.name` okuyor (`.value` degil) -- olculdu.
+    q.statistics.difficulty_level = MagicMock()
+    q.statistics.difficulty_level.name = difficulty_val
+    q.statistics.difficulty_level.value = difficulty_val
+    q.statistics.irt_difficulty = 0.5
+    q.statistics.irt_discrimination = 1.2
+    q.statistics.irt_guessing = 0.25
+    q.statistics.times_asked = times_asked
+    q.statistics.times_correct = times_correct
+    q.statistics.average_response_time = 45.0
     return q
 
 
@@ -628,7 +680,7 @@ class TestSoruPerformansGuncelle:
 
 
 class TestSoruEkle:
-    _VALID_PAYLOAD = {
+    _VALID_PAYLOAD: ClassVar[dict] = {
         "soru_metni": "2+2 kaçtır?",
         "secenekler": ["1", "2", "3", "4"],
         "dogru_cevap": "D",
@@ -705,14 +757,10 @@ class TestSoruGuncelle:
 
     def test_soru_guncelle_admin_role_should_return_200(self, admin_client):
         """Admin should be able to update questions (UserRole enum vs guard)."""
-        mock_soru = SimpleNamespace(
-            id="qid-001", updated_at=datetime.now(UTC)
-        )
+        mock_soru = SimpleNamespace(id="qid-001", updated_at=datetime.now(UTC))
         mc = _make_cache_mock()
         with (
-            patch(
-                _SERVISI + ".soru_guncelle", new=AsyncMock(return_value=mock_soru)
-            ),
+            patch(_SERVISI + ".soru_guncelle", new=AsyncMock(return_value=mock_soru)),
             patch(_CACHE_OBJ, mc),
         ):
             response = admin_client.put(
@@ -761,7 +809,7 @@ class TestSoruSil:
 
 
 class TestTopluSoruEkle:
-    _PAYLOAD = {
+    _PAYLOAD: ClassVar[dict] = {
         "sorular": [
             {
                 "soru_metni": "Soru 1",

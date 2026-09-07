@@ -1,4 +1,6 @@
 """Progress monitor guard - detects stalls and tracks progress."""
+
+import inspect
 import logging
 import time
 from collections.abc import Callable
@@ -36,7 +38,11 @@ class ProgressMonitorGuard(BaseGuard):
 
         # Progress history for ETA calculation
         self._progress_history: list[tuple[float, float]] = []  # (timestamp, progress)
-        self._progress_callbacks: list[Callable[[float, float | None], None]] = []
+        # Donus tipi `None` DEGIL `Any`: `_fire_callbacks` async callback'leri
+        # de kabul ediyor (`inspect.isawaitable(result)` -> `await result`).
+        # `None` yazildiginda mypy o dali `Never`e daraltip `await`i hata
+        # sayiyordu -- yani annotation kodun GERCEK sozlesmesini anlatmiyordu.
+        self._progress_callbacks: list[Callable[[float, float | None], Any]] = []
 
     async def check(self, context: dict[str, Any]) -> GuardResult:
         """Check progress and detect stalls.
@@ -101,7 +107,7 @@ class ProgressMonitorGuard(BaseGuard):
                 status=GuardStatus.WARNING,
                 message=f"Progress stall detected: {self.iterations_without_progress} iterations without progress",
                 details=details,
-                should_stop=False  # Warning only, don't stop
+                should_stop=False,  # Warning only, don't stop
             )
             self._log_check(result)
             return result
@@ -110,22 +116,21 @@ class ProgressMonitorGuard(BaseGuard):
         if progress >= 100:
             elapsed = current_time - self.start_time
             details["total_time_seconds"] = round(elapsed, 2)
-            result = self._create_result(
+            return self._create_result(
                 status=GuardStatus.OK,
                 message=f"Progress complete (100%) in {elapsed:.2f}s",
                 details=details,
-                should_stop=False
+                should_stop=False,
             )
-            return result
 
         # Normal operation
-        result = self._create_result(
+        return self._create_result(
             status=GuardStatus.OK,
-            message=f"Progress: {progress:.1f}%" + (f" (ETA: {eta:.1f}s)" if eta else ""),
+            message=f"Progress: {progress:.1f}%"
+            + (f" (ETA: {eta:.1f}s)" if eta else ""),
             details=details,
-            should_stop=False
+            should_stop=False,
         )
-        return result
 
     def reset(self) -> None:
         """Reset progress monitor for new execution."""
@@ -136,7 +141,9 @@ class ProgressMonitorGuard(BaseGuard):
         self.last_callback_time = 0.0
         self._progress_history = []
         self._check_count = 0
-        logger.debug(f"Progress monitor reset (stall threshold: {self.stall_threshold})")
+        logger.debug(
+            f"Progress monitor reset (stall threshold: {self.stall_threshold})"
+        )
 
     def _calculate_eta(self, current_progress: float) -> float | None:
         """Calculate estimated time to completion.
@@ -147,7 +154,11 @@ class ProgressMonitorGuard(BaseGuard):
         Returns:
             Estimated seconds to completion, or None
         """
-        if len(self._progress_history) < 2 or current_progress <= 0 or current_progress >= 100:
+        if (
+            len(self._progress_history) < 2
+            or current_progress <= 0
+            or current_progress >= 100
+        ):
             return None
 
         # Use recent progress rate
@@ -168,8 +179,7 @@ class ProgressMonitorGuard(BaseGuard):
         return None
 
     def register_progress_callback(
-        self,
-        callback: Callable[[float, float | None], None]
+        self, callback: Callable[[float, float | None], Any]
     ) -> None:
         """Register a callback for progress updates.
 
@@ -188,7 +198,11 @@ class ProgressMonitorGuard(BaseGuard):
         for callback in self._progress_callbacks:
             try:
                 result = callback(progress, eta)
-                if hasattr(result, "__await__"):
+                # `inspect.isawaitable` mypy'da tip DARALTIR; `hasattr` ile
+                # yapilan ayni kontrol daraltmadigi icin mypy `await result`i
+                # `"None" has no attribute "__await__"` diye isaretliyordu.
+                # Davranis ayni: senkron callback'ler await EDILMEZ.
+                if inspect.isawaitable(result):
                     await result
             except Exception as e:
                 logger.error(f"Progress callback error: {e}")

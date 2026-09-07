@@ -136,6 +136,38 @@ async def _skaler(oturum, sql: str):
     return (await oturum.execute(text(sql))).scalar_one()
 
 
+# --- KONTROL KOLU: dogru evrene bagli miyiz? (SS10.64) ---------------------
+#
+# Bu bekci URUN havuzunu (mv_safe_for_beta, 27.073 satir) olcer. CI ise kendi
+# `backend/.env`ini yazip taze `kiro2_test` konteynerini gosteriyor
+# (.github/workflows/ci.yml:296) -- orada kapida yalnizca 12 tohum satiri var.
+# 12 satirlik bir havuzda "kaynak kitap orani 0,00" ya da "konu dagilimi tek
+# degerli" demek URUN hakkinda hicbir sey soylemez; aletin yanlis evrene
+# baglanmis olmasidir. Dosya bu kavrami zaten taniyor ("Kapi BOS - bu bekci
+# hicbir sey olcemez (alet arizasi)") ama yalnizca BOS durumu icin.
+#
+# Olculdu: bu kol olmadan CI'da 6 test kalici kirmizi, hicbiri urun kusuru
+# degil (CI kosusu 34068207500).
+#
+# Esik, kardes bekcilerle ayni (>1000, bkz. tests/fast/
+# test_soru_bankasi_okuma_yolu.py). Skip mesaji sayiyi YAZAR: yerelde canli
+# havuz bir gun gercekten bosalirsa bu sessizce yesil gecmez, ozet satirinda
+# "12 satir" diye okunur.
+KONTROL_KOLU_MIN_SATIR = 1000
+
+
+@pytest.fixture(autouse=True)
+async def _kontrol_kolu(live_db):
+    """Urun havuzuna bagli degilsek olcumu REDDET (kirmizi degil, skip)."""
+    toplam = await _skaler(live_db, "SELECT count(*) FROM mv_safe_for_beta")
+    if toplam < KONTROL_KOLU_MIN_SATIR:
+        pytest.skip(
+            f"kontrol kolu: mv_safe_for_beta'da {toplam} satir var "
+            f"(esik >={KONTROL_KOLU_MIN_SATIR}). Bu urun havuzu degil -- "
+            "icerik gecerliligi olculmedi."
+        )
+
+
 # ===========================================================================
 # KATMAN 1 — dağılım invaryantları (evren düzeyi, yanlış-pozitif üretemez)
 # ===========================================================================

@@ -3,26 +3,49 @@ KAPSAMLI API COVERAGE TESTLERİ
 Bu testler tüm API endpointlerini çalıştırarak coverage'ı maksimum arttırır
 Target: API modüllerinin %50+ coverage'ı için comprehensive endpoint testing
 """
+
+import logging
 from unittest.mock import patch
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+logger = logging.getLogger(__name__)
+
 # Import centralized JWT helper from conftest (DRY)
 try:
-    from tests.conftest import (
+    # Asagidaki `ignore[attr-defined]` gerekcesi -- ADLAR GERCEKTEN VAR:
+    # `backend/tests/conftest.py:450-454` (TEST_JWT_SECRET,
+    # TEST_JWT_ALGORITHM, _generate_test_jwt). Calisma aninda import
+    # BASARILI (olculdu: `python -c "from tests.conftest import ..."` ->
+    # "RUNTIME IMPORT OK"). mypy `tests.conftest` modulunu cozerken depodaki
+    # cok sayida `conftest.py` yuzunden baska bir modulle esliyor ve
+    # `[attr-defined]` veriyor. Kural burada susturuluyor cunku hata
+    # ARACIN cozumleme kusuru; kodda karsiligi yok.
+    from tests.conftest import (  # type: ignore[attr-defined]
         TEST_JWT_ALGORITHM,
         TEST_JWT_SECRET,
         _generate_test_jwt,
     )
 except ImportError:
     import jwt as _jwt
-    TEST_JWT_SECRET = "test-secret-key-for-testing"
+
+    # S105: bu bir SIR degil, test JWT'si imzalamak icin sabit bir dize.
+    # Uretimde kullanilmiyor; `except ImportError` dalinda, yani ortak test
+    # yardimcisi bulunamadiginda devreye giren yedek yol.
+    TEST_JWT_SECRET = "test-secret-key-for-testing"  # noqa: S105  # pragma: allowlist secret
     TEST_JWT_ALGORITHM = "HS256"
+
     def _generate_test_jwt(user_id="1", email="test@test.com", role="student"):
         import time
-        payload = {"sub": user_id, "email": email, "role": role, "exp": int(time.time()) + 3600}
+
+        payload = {
+            "sub": user_id,
+            "email": email,
+            "role": role,
+            "exp": int(time.time()) + 3600,
+        }
         return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
 
@@ -93,9 +116,11 @@ class TestComprehensiveAPIEndpoints:
 
                                 # Response test edildi, coverage arttı
                                 assert response.status_code in [200, 401, 422, 404, 500]
-                        except Exception:
-                            # Exception olsa da endpoint çağrıldı
-                            pass
+                        except Exception as hata:
+                            # Sessiz `pass` DEGIL: tolerans korunuyor ama
+                            # sebep GORUNUR oluyor -- "endpoint cagrildi"
+                            # yorumu, cagrinin BASARISIZ oldugunu gizliyordu.
+                            logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_enhanced_chat_api_comprehensive(self):
         """Enhanced Chat API'sini kapsamlı test et"""
@@ -161,10 +186,14 @@ class TestComprehensiveAPIEndpoints:
 
                         # Response status test edildi
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
-    def test_sinav_api_comprehensive(self):
+    def test_sinav_api_comprehensive(self):  # noqa: PLR0912
         """Sınav API'sini kapsamlı test et"""
         from api.sinav import router
 
@@ -233,97 +262,22 @@ class TestComprehensiveAPIEndpoints:
                                 response = client.delete(test_path)
 
                             assert response.status_code in [200, 401, 422, 404, 500]
-                    except Exception:
-                        pass
+                    except Exception as hata:
+                        # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                        # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                        # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                        # yutma, testin ne olcup ne olcmedigini gizler.
+                        logger.warning("rota denemesi basarisiz: %s", hata)
 
-    def test_content_management_api_comprehensive(self):
-        """Content Management API'sini kapsamlı test et"""
-        from api.content_management import router
-
-        app = FastAPI()
-        app.include_router(router)
-        client = TestClient(app)
-
-        # Content test data
-        content_data = {
-            "title": "Matematik Fonksiyon Dersi",
-            "description": "TYT matematik fonksiyon konusu detaylı anlatım",
-            "content_type": "video",
-            "subject": "matematik",
-            "difficulty_level": 0.6,
-            "duration_minutes": 30,
-            "tags": ["matematik", "fonksiyon", "TYT"],
-            "language": "turkish",
-            "author_id": 1,
-            "is_public": True,
-        }
-
-        # Test content routes
-        for route in router.routes:
-            if hasattr(route, "path") and hasattr(route, "methods"):
-                path = route.path
-                methods = route.methods
-
-                for method in methods:
-                    try:
-                        with patch(
-                            "api.content_management.get_current_user"
-                        ) as mock_auth:
-                            mock_auth.return_value = {"id": 1, "role": "teacher"}
-
-                            if method == "POST":
-                                if "upload" in path.lower():
-                                    # File upload test
-                                    files = {
-                                        "file": (
-                                            "test.pdf",
-                                            b"fake pdf content",
-                                            "application/pdf",
-                                        )
-                                    }
-                                    response = client.post(
-                                        path,
-                                        files=files,
-                                        data={"title": "Test Content"},
-                                    )
-                                elif "search" in path.lower():
-                                    response = client.post(
-                                        path,
-                                        json={
-                                            "query": "matematik",
-                                            "filters": {
-                                                "subject": "matematik",
-                                                "difficulty": "orta",
-                                            },
-                                        },
-                                    )
-                                else:
-                                    response = client.post(path, json=content_data)
-                            elif method == "GET":
-                                test_path = (
-                                    path.replace("{content_id}", "1")
-                                    if "{content_id}" in path
-                                    else path
-                                )
-                                response = client.get(test_path)
-                            elif method == "PUT":
-                                test_path = (
-                                    path.replace("{content_id}", "1")
-                                    if "{content_id}" in path
-                                    else path
-                                )
-                                response = client.put(test_path, json=content_data)
-                            elif method == "DELETE":
-                                test_path = (
-                                    path.replace("{content_id}", "1")
-                                    if "{content_id}" in path
-                                    else path
-                                )
-                                response = client.delete(test_path)
-
-                            assert response.status_code in [200, 401, 422, 404, 500]
-                    except Exception:
-                        pass
+    # KALDIRILDI: test_content_management_api_comprehensive
+    #
+    # `api/content_management.py` bu depoda HIC yok: `git ls-files` bos
+    # donuyor, hicbir router ona referans vermiyor ve frontend'de
+    # karsiligi yok (olculdu). Test, var olmayan bir urun parcasini
+    # olcuyordu ve her kosumda `ModuleNotFoundError` uretiyordu.
+    # Geri gelmesi beklenen bir sey olmadigi icin skip degil SILME
+    # dogru olan. Silinen bir ucun IZI olan testler icin farkli
+    # davranildi (bkz. docs/guvenlik-borcu.md SS10.59/SS10.62).
 
     def test_advanced_reports_api_comprehensive(self):
         """Advanced Reports API'sini kapsamlı test et"""
@@ -376,8 +330,12 @@ class TestComprehensiveAPIEndpoints:
                             response = client.get(path)
 
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_zpd_maarif_api_comprehensive(self):
         """ZPD Maarif API'sini kapsamlı test et"""
@@ -439,8 +397,12 @@ class TestComprehensiveAPIEndpoints:
                             response = client.get(test_path)
 
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_irt_morfoloji_api_comprehensive(self):
         """IRT Morfoloji API'sini kapsamlı test et"""
@@ -510,8 +472,12 @@ class TestComprehensiveAPIEndpoints:
                             response = client.get(test_path)
 
                         assert response.status_code in [200, 401, 422, 404, 500]
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
 
 class TestComprehensiveAPIMiddleware:
@@ -527,11 +493,14 @@ class TestComprehensiveAPIMiddleware:
 
         # Authentication test data
         auth_data = {
-            "login": {"username": "test_öğrenci", "password": "şifre123"},
+            "login": {
+                "username": "test_öğrenci",
+                "password": "şifre123",  # pragma: allowlist secret
+            },
             "register": {
                 "username": "yeni_öğrenci",
                 "email": "yeni@örnek.com",
-                "password": "güvenli_şifre",
+                "password": "güvenli_şifre",  # pragma: allowlist secret
                 "first_name": "Ayşe",
                 "last_name": "Demir",
                 "role": "student",
@@ -566,8 +535,12 @@ class TestComprehensiveAPIMiddleware:
                         headers = response.headers
                         assert isinstance(headers, dict) or hasattr(headers, "items")
 
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
     def test_comprehensive_error_handling(self):
         """Kapsamlı hata işleme test et"""
@@ -606,8 +579,12 @@ class TestComprehensiveAPIMiddleware:
                         # Error handling middleware çalıştı
                         assert response.status_code in [200, 400, 500]
 
-                except Exception:
-                    pass
+                except Exception as hata:
+                    # Sessiz `pass` DEGIL: bu dongu onlarca rotayi deniyor ve
+                    # bazilari bu baglamda kurulamiyor (bagimlilik, auth, sema).
+                    # Tolerans korunuyor ama sebep GORUNUR oluyor -- sessiz
+                    # yutma, testin ne olcup ne olcmedigini gizler.
+                    logger.warning("rota denemesi basarisiz: %s", hata)
 
 
 if __name__ == "__main__":

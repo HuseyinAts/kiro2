@@ -1,7 +1,9 @@
 """Recursion depth guard - prevents stack overflow."""
+
 import logging
 import sys
 import traceback
+from collections.abc import Callable
 from typing import Any
 
 from ..models import GuardResult, GuardStatus
@@ -33,11 +35,44 @@ class RecursionDepthGuard(BaseGuard):
         self.max_depth_reached: int = 0
         self._call_stack: list[str] = []
 
-        # Set Python's recursion limit
-        try:
-            sys.setrecursionlimit(self.recursion_limit + 100)  # Add buffer
-        except (ValueError, RecursionError) as e:
-            logger.warning(f"Could not set recursion limit: {e}")
+        # Python'un ozyineleme limitini YALNIZCA YUKARI cek -- asla dusurme.
+        #
+        # OLCUM (7 Eyl 2026, CI run 34058968872): burada kosulsuz
+        # `sys.setrecursionlimit(self.recursion_limit + 100)` vardi.
+        # `sys.setrecursionlimit` SURECIN TAMAMINI etkiler; bir kurucu
+        # metodun kuresel yorumlayici durumunu degistirmesi, o nesneyi
+        # yaratan HERKESI etkiler.
+        #
+        # Somut sonuc: `tests/guardrails/test_guards.py:217` bu muhafizi
+        # `{"recursion_limit": 10}` ile kuruyor -> surecin limiti 110'a
+        # DUSUYOR ve oyle kaliyor. xdist worker'inda o dosyadan SONRA kosan
+        # her test, biraz derin bir yigin isteyen her yerde
+        # `RecursionError` ile dusuyordu -- FastAPI istegi, SQLAlchemy
+        # motoru, pydantic sema uretimi... Hepsi ALAKASIZ testlerdi.
+        # Olculen etki: CI'da 160 basarisizligin 92'si (57 + 35 setup
+        # hatasi) bu tek satirdan geliyordu. Yerelde 6 saniyede
+        # tekrarlandi:
+        #   pytest tests/guardrails/test_guards.py tests/unit/test_admin_api.py
+        #   -> 20 passed, 46 errors (hepsi RecursionError)
+        # Sira bagimli oldugu icin aylarca "flaky" gorunmustu.
+        #
+        # Muhafizin AMACI derin ozyinelemede yigin tasmasini onlemek, yani
+        # gerektiginde BASLIK ACMAK. Limiti dusurmek o amaca hizmet etmiyor;
+        # yalnizca yan etki uretiyor. Bu yuzden kosul eklendi.
+        istenen = self.recursion_limit + 100  # tampon
+        mevcut = sys.getrecursionlimit()
+        if istenen > mevcut:
+            try:
+                sys.setrecursionlimit(istenen)
+            except (ValueError, RecursionError) as e:
+                logger.warning(f"Could not raise recursion limit: {e}")
+        else:
+            logger.debug(
+                "Recursion limit birakildi: istenen=%s, mevcut=%s "
+                "(kuresel limit DUSURULMEZ)",
+                istenen,
+                mevcut,
+            )
 
     async def check(self, context: dict[str, Any]) -> GuardResult:
         """Check if recursion depth exceeded.
@@ -68,11 +103,17 @@ class RecursionDepthGuard(BaseGuard):
         # Track maximum depth
         self.max_depth_reached = max(self.max_depth_reached, self.current_depth)
 
-        details = {
+        # Acik `Any` deger tipi: asagida `details["stack_trace"]` bir
+        # `list[str]` ile dolduruluyor; annotation olmadan mypy sozlugu
+        # `dict[str, float | int]` cikarip o atamayi `[assignment]` ile
+        # isaretliyordu.
+        details: dict[str, Any] = {
             "current_depth": self.current_depth,
             "max_depth_reached": self.max_depth_reached,
             "recursion_limit": self.recursion_limit,
-            "percentage": round(self.current_depth / self.recursion_limit * 100, 1) if self.recursion_limit > 0 else 0,
+            "percentage": round(self.current_depth / self.recursion_limit * 100, 1)
+            if self.recursion_limit > 0
+            else 0,
         }
 
         # Check if exceeded
@@ -81,7 +122,9 @@ class RecursionDepthGuard(BaseGuard):
             stack_trace = self._get_call_stack_trace()
             details["stack_trace"] = stack_trace[-10:]  # Last 10 calls
 
-            message = f"Recursion depth exceeded: {self.current_depth}/{self.recursion_limit}"
+            message = (
+                f"Recursion depth exceeded: {self.current_depth}/{self.recursion_limit}"
+            )
             if self.suggest_iteration:
                 message += " - Consider converting to iteration"
 
@@ -89,7 +132,7 @@ class RecursionDepthGuard(BaseGuard):
                 status=GuardStatus.STOP,
                 message=message,
                 details=details,
-                should_stop=True
+                should_stop=True,
             )
             logger.warning(f"Recursion limit exceeded at depth {self.current_depth}")
             self._log_check(result)
@@ -109,19 +152,18 @@ class RecursionDepthGuard(BaseGuard):
                 status=GuardStatus.WARNING,
                 message=message,
                 details=details,
-                should_stop=False
+                should_stop=False,
             )
             self._log_check(result)
             return result
 
         # Normal operation
-        result = self._create_result(
+        return self._create_result(
             status=GuardStatus.OK,
             message=f"Recursion depth: {self.current_depth}/{self.recursion_limit}",
             details=details,
-            should_stop=False
+            should_stop=False,
         )
-        return result
 
     def reset(self) -> None:
         """Reset depth counter for new execution."""
@@ -167,7 +209,9 @@ class RecursionDepthGuard(BaseGuard):
         # Fallback to Python's traceback
         try:
             stack = traceback.extract_stack()
-            return [f"{frame.filename}:{frame.lineno} {frame.name}" for frame in stack[-20:]]
+            return [
+                f"{frame.filename}:{frame.lineno} {frame.name}" for frame in stack[-20:]
+            ]
         except Exception:
             return []
 
@@ -177,7 +221,7 @@ class RecursionDepthGuard(BaseGuard):
         return max(0, self.recursion_limit - self.current_depth)
 
     @staticmethod
-    def convert_to_iteration(func: callable) -> callable:
+    def convert_to_iteration(func: Callable[..., Any]) -> Callable[..., Any]:
         """Decorator suggestion for converting tail recursion to iteration.
 
         This is a helper to guide developers on converting recursive functions.

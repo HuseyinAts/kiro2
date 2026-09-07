@@ -1,3 +1,45 @@
+"""`/api/v1/exams` ucu: ROUTER KAYITLI DEGIL (SS10.65).
+
+OLCULEN DURUM (7 Eyl 2026)
+--------------------------
+Bu dosyadaki 4 test de 404 aliyor -- CI'da ve YERELDE birebir ayni
+(`pytest tests/api/test_exams_v1_api.py -n 0` -> 4 failed, 404).
+Sebep bir mock/izolasyon kusuru degil: uc GERCEKTEN yok.
+
+    backend/api/v1/exams.py:20   router = APIRouter(prefix="/api/v1/exams")
+    backend/api/v1/exams.py:192  @router.post("/generate-mock")
+    backend/api/v1/exams.py:305  @router.get("/{session_id}")
+    backend/api/v1/exams.py:367  @router.post("/{session_id}/answer")
+    backend/api/v1/exams.py:423  @router.post("/{session_id}/submit")
+
+Router VAR ama hicbir yerden kaydedilmiyor: `git grep "api.v1.exams"`
+yalnizca dosyanin kendisini ve middleware/dokuman referanslarini buluyor;
+`backend/routers/loader.py` kayit tablosunda YOK.
+
+Karsi taraf da yayinda degil: `frontend/src/features/exams/ExamSession.tsx`
+`mockExamService`i cagiriyor ama o bilesen yalnizca kendi testinden ithal
+ediliyor, hicbir rotaya bagli degil. Yani bu CANLI bir kirik degil,
+BITMEMIS bir ozellik -- iki ucu da bagli degil.
+
+NEDEN SILINMIYOR, NEDEN xfail
+-----------------------------
+Testler dogru bir iddiada bulunuyor (ozellik calismali). Silmek bilgiyi yok
+eder; `skip` sessizce unutulur. `xfail(strict=True)` ise: bugun yesil, ama
+router kaydedildigi an XPASS verip KIRAR -- yani "ozellik acildi, testi
+guncelle" sinyali otomatik gelir. Bu, deponun `test_icerik_gecerliligi.py`de
+kurdugu desenin aynisi.
+
+KAYIT ONCESI COZULMESI GEREKEN GUVENLIK KUSURU (Huseyin'in karari)
+------------------------------------------------------------------
+`@router.get("/{session_id}")` (satir 305) `get_current_user` ALMIYOR ve
+sahiplik kontrolu YAPMIYOR: kardes uclarin (`/answer`, `/submit`) aksine.
+Router bugunku haliyle kaydedilirse, herhangi biri herhangi bir ogrencinin
+sinav oturumunu -- sorulari ve verdigi cevaplariyla -- kimlik dogrulamasiz
+okuyabilir (IDOR). Kayit bu duzeltmeden ONCE yapilmamali.
+
+Detay: docs/guvenlik-borcu.md SS10.65
+"""
+
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -6,6 +48,17 @@ from httpx import ASGITransport, AsyncClient
 from core.dependencies import get_current_user, get_db
 from main import app
 from models.enums_db import ExamType
+
+pytestmark = pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "api/v1/exams.py router'i hicbir yerden kaydedilmiyor -> 4 uc de 404. "
+        "Bitmemis ozellik (frontend ExamSession.tsx de rotaya bagli degil). "
+        "Kayit yapilirsa bu testler XPASS verip kirar; o an guncellensin. "
+        "ONCE satir 305'teki kimlik dogrulamasiz GET /{session_id} (IDOR) "
+        "duzeltilmeli -- SS10.65."
+    ),
+)
 
 
 @pytest.fixture

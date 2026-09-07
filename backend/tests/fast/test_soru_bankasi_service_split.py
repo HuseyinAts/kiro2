@@ -425,10 +425,18 @@ async def canli_pg(monkeypatch):
         await engine.dispose()
         pytest.skip(f"canli PostgreSQL'e baglanilamadi: {type(exc).__name__}")
 
-    assert aktif and aktif > 1000, (
-        f"kontrol kolu DUSTU: baglanilan DB'de yalnizca {aktif} aktif soru var. "
-        "Alet yanlis evreni olcuyor — bulgu degil, alet arizasi."
-    )
+    # KONTROL KOLU: yanlis evren -> SKIP, FAIL degil (SS10.64).
+    # Bkz. tests/fast/test_soru_bankasi_okuma_yolu.py: ayni kol, ayni gerekce.
+    # CI kendi `backend/.env`ini yazip `kiro2_test`i gosteriyor (12 tohum
+    # sorusu), dolayisiyla bu kol CI'da her zaman dusuyordu; olcumu reddetmek
+    # kirmizi degil skip olmali. Sayi ve esik mesajda duruyor.
+    if not aktif or aktif <= 1000:
+        await engine.dispose()
+        pytest.skip(
+            f"kontrol kolu: baglanilan DB'de {aktif} aktif soru var (esik >1000). "
+            "Bu, urun havuzu degil -- olcum yapilmadi (alet arizasi olurdu)."
+        )
+
     monkeypatch.setattr(sbs, "db_manager", _RealDbManager(maker))
     yield aktif
     await engine.dispose()

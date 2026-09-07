@@ -3,7 +3,6 @@ Integration tests configuration
 Use existing Docker PostgreSQL container for faster testing
 """
 
-import asyncio
 import os
 from pathlib import Path
 
@@ -12,7 +11,6 @@ import pytest_asyncio
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import sessionmaker
-
 
 # 29 Agu 2026 (SS10.9 zinciri, growth_mindset_engine entegrasyon testi):
 # tests/e2e/conftest.py'deki AYNI gerekce -- pytest-asyncio 0.21.1 (pinli),
@@ -26,11 +24,26 @@ from sqlalchemy.orm import sessionmaker
 # cozulmustu; tests/integration/ altinda hic yoktu -- async_client kullanan
 # diger dosyalar (ornegin test_exam_api_comprehensive.py) baska nedenlerle
 # zaten skip oldugu icin bu bosluk simdiye kadar fark edilmemisti.
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+# GUNCELLEME (6 Eyl 2026, SS10.56): Yukaridaki gerekce pytest-asyncio
+# **0.21.1** icin yazilmisti ve o surumde dogruydu. Ama surum surukledi:
+# requirements.txt/requirements-test.txt hala `pytest-asyncio==0.21.1`
+# diyor, GERCEKTE kurulu olan (hem bu makinede hem CI'da) **1.3.0**.
+# Kanit: CI traceback'i 1.x API'sini gosteriyor --
+# `pytest_asyncio/plugin.py:530: asyncio.ensure_future(coro, loop=_loop)`.
+#
+# pytest-asyncio 1.x'te `event_loop` fixture'ini kullanici override etmesi
+# KALDIRILDI; plugin kendi loop'unu (`_loop`) yonetiyor ve pytest.ini'deki
+# `asyncio_default_fixture_loop_scope = session` ayarini ARTIK dogru
+# uyguluyor (0.21.1 yok sayiyordu -- override'in varlik sebebi buydu).
+#
+# Override birakildiginda teardown'daki `loop.close()` plugin'in hala
+# kullandigi loop'u kapatiyor ve sirasi sonra gelen async testler
+# "RuntimeError: Event loop is closed" ile dusuyordu. Belirti sira-bagimli
+# oldugu icin "flaky" gorunuyordu (kosum 2 ve 4'te dustu, 3'te gecti).
+# Override kaldirildi; ScopeMismatch korkusu 1.3.0'da gecerli degil.
+#
+# NOT: `tests/e2e/conftest.py`'de AYNI override duruyor. Bu PR'in kapsami
+# disinda birakildi (e2e ayri kosuyor); ayni tuzagi tasiyor.
 
 
 # Set test environment variables before any imports that load config

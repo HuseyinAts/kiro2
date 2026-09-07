@@ -5,28 +5,17 @@
 TDD: NOT NULL testi migration öncesi RED, sonrası GREEN.
 """
 
-import os
-
 import pytest
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import make_url
+from sqlalchemy import text
+
+from tests.pg_sync import sync_pg_engine
 
 IDENTITY_TABLES = ["users", "student_profiles", "teacher_profiles", "parent_profiles"]
 
 
 def _engine():
-    load_dotenv(
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=True
-    )
-    raw = os.environ.get("DATABASE_URL", "").replace(
-        "postgresql+asyncpg://", "postgresql://"
-    )
-    if not raw.startswith("postgresql"):
-        pytest.skip("gerçek postgres DATABASE_URL yok")
-    return create_engine(
-        make_url(raw).set(host="127.0.0.1", port=5434, database="kiro2")
-    )
+    # Ortak tanim ve olcum gerekcesi: tests/pg_sync.py
+    return sync_pg_engine()
 
 
 def test_org_id_not_null_enforced():

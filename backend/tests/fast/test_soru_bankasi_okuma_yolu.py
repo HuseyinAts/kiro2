@@ -142,11 +142,29 @@ async def canli_okuma(monkeypatch):
         await engine.dispose()
         pytest.skip(f"canli PostgreSQL'e baglanilamadi: {type(exc).__name__}")
 
-    assert aktif and aktif > 1000, (
-        f"kontrol kolu DUSTU: baglanilan DB'de yalnizca {aktif} aktif soru var. "
-        "Alet yanlis evreni olcuyor — bulgu degil, alet arizasi."
-    )
-    assert ornek_id, "kontrol kolu: ornek soru id'si alinamadi"
+    # KONTROL KOLU: yanlis evren -> SKIP, FAIL degil (SS10.64).
+    #
+    # Bu kolun amaci "olcumu reddetmek"tir; docstring'i de zaten oyle diyor
+    # ("bulgu degil, alet arizasi"). Ama `assert` kullanildigi icin reddetme
+    # KIRMIZI olarak raporlaniyordu. Komsu iki dal (DSN yok / baglanilamadi)
+    # zaten `pytest.skip` kullaniyor; bu dal onlarla tutarsizdi.
+    #
+    # Olculdu: CI `backend/.env`i kendisi yaziyor (.github/workflows/ci.yml:296)
+    # ve `kiro2_test` veritabanini gosteriyor -- taze bir konteyner, 12 tohum
+    # sorusu. Yani CI'da bu kol HER ZAMAN dusuyordu: 3 test kalici olarak
+    # kirmizi, hicbiri urun kusuru degil.
+    #
+    # Skip mesaji sayiyi ve esigi YAZIYOR: "sessizce yesil" olmuyor, kosum
+    # ozetinde neden olculmedigi okunabiliyor.
+    if not aktif or aktif <= 1000:
+        await engine.dispose()
+        pytest.skip(
+            f"kontrol kolu: baglanilan DB'de {aktif} aktif soru var (esik >1000). "
+            "Bu, urun havuzu degil -- olcum yapilmadi (alet arizasi olurdu)."
+        )
+    if not ornek_id:
+        await engine.dispose()
+        pytest.skip("kontrol kolu: ornek soru id'si alinamadi -- olcum yapilmadi")
 
     monkeypatch.setattr(sbs, "db_manager", _RealDbManager(maker))
     yield ornek_id
