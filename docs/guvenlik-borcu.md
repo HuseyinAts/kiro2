@@ -6756,3 +6756,99 @@ davranisi duzeltmeden yesile cevirir. Bunun yerine 25 yakalayicinin hepsi
 `except Exception as hata:` + `logger.debug(...)` haline getirildi
 (iki dosyaya modul logger'i eklendi): test dusmuyor ama baglama kurulamadigi
 GORULEBILIYOR. Sonuc: `crit 0` (uyarilar duruyor, onlar bloklamiyor).
+
+## §10.64 -- 13 basarisizlik: bekci dogru, EVREN yanlis (2026-09-07)
+
+76 kalemin 13'u tek bir olguya dayaniyordu: **CI'daki veritabani, bu
+bekcilerin olctugu evren degil.** `.github/workflows/ci.yml:296` `backend/.env`i
+kendisi yaziyor ve taze `kiro2_test` konteynerini gosteriyor; orada 12 tohum
+sorusu var. Bekciler ise 27.073 satirlik URUN havuzunu olcmek uzere yazilmis.
+
+| Dosya | Kalem | Belirti |
+|---|---|---|
+| `tests/integration/test_icerik_gecerliligi.py` | 6 | "Kapidaki 12 sorunun yalniz 0'inde kaynak kitap var" |
+| `tests/fast/test_soru_bankasi_okuma_yolu.py` | 3 | setup: "kontrol kolu DUSTU: yalnizca 12 aktif soru" |
+| `tests/fast/test_soru_bankasi_service_split.py` | 2 | ayni |
+| `tests/integration/test_cat_warmup_bos_havuz.py` | 2 | ayri kok neden, asagida |
+
+### 1) Kontrol kolu vardi ama YANLIS ARACLA yaziliydi (5 kalem)
+
+Iki `canli_*` fixture'i su kolu tasiyor:
+
+```
+assert aktif and aktif > 1000, (
+    f"kontrol kolu DUSTU: baglanilan DB'de yalnizca {aktif} aktif soru var. "
+    "Alet yanlis evreni olcuyor -- bulgu degil, alet arizasi."
+)
+```
+
+Mesaj dogru teshisi koyuyor ("bulgu degil, alet arizasi") ama `assert`
+kullandigi icin teshis KIRMIZI olarak raporlaniyor. Ayni fixture'in komsu iki
+dali (DSN yok / baglanti yok) zaten `pytest.skip` kullaniyor -- yani bu dal
+kendi dosyasinin desenine de aykiriydi. `pytest.skip`e cevrildi; sayi ve esik
+mesajda birakildi, boylece "sessizce yesil" olmuyor.
+
+### 2) Kontrol kolu hic yoktu (6 kalem)
+
+`test_icerik_gecerliligi.py` `mv_safe_for_beta` uzerinde icerik gecerliligi
+olcer. Dosya "Kapi BOS - bu bekci hicbir sey olcemez (alet arizasi)" kavramini
+zaten taniyor, ama yalnizca BOS durumu icin. 12 satirlik bir kapi bos degildir;
+sadece baska bir evrendir. Modul duzeyinde autouse bir kontrol kolu eklendi:
+`count(*) FROM mv_safe_for_beta < 1000` ise olcum reddedilir (skip, sayi
+mesajda).
+
+### 3) Kontrol kolu vardi ama ZAYIFTI -- ve altindan gercek bir urun degisikligi cikti (2 kalem)
+
+`test_cat_warmup_bos_havuz.py` "core havuz > 0" diye bir kol tasiyordu; CI'daki
+12 satir bunu gecirdigi icin warm-up olcumleri urun DB'sinde yapilmis gibi
+degerlendiriliyordu. Kol evren duzeyine cikarildi.
+
+Ama yerelde olcum yapilinca asil bulgu ciktI -- **19 Agu'da belgelenen kusur
+COZULMUS**:
+
+    olcum                 19 Agu 2026        7 Eyl 2026
+    -------------------   ----------------   ---------------------------
+    aktif soru            36.967             3.922
+    mv_safe_for_beta      27.073             3.560
+    is_calib_pool TRUE    0                  22
+    irt_difficulty        tek deger 0.0      2.301 farkli (-1,05..0,887)
+    source_book dolu      0 / 27.073         3.922 / 3.922
+
+    ders        calib_pool  toplam   warm_up   core
+    MATEMATIK           17     391        13    100
+    KIMYA                5    3531        30    100
+    TURKCE               0       0         0      0
+    FIZIK                0       0         0      0
+    BIYOLOJI             0       0         0      0
+
+Yani Y4 Adim 3 bootstrap prior'lari yazilmis ve soru bankasi kaynakli
+icerikle degistirilmis. Testin kendi talimati bu ani ongoruyordu: *"Y4 Adim 3
+prior'lari yazdiginda bu test DUSECEK ve o an guncellenmesi gerekecek --
+kasitli: sessiz duzelme de istemiyoruz."* Guncellendi.
+
+Eski test OLGUYU civiliyordu (`assert aday == []`). Yeni test ILISKIYI
+civiliyor: `calib_pool > 0` ise warm-up dolu OLMALI, `calib_pool == 0` ama core
+dolu ise warm-up bos OLMALI. Boylece havuz degistikce test kendini gunceller.
+
+Ayrica eski testin GIZLI kusuru gorunur oldu: TURKCE ve FIZIK'te hic soru yok
+(core=0), yani `assert aday == []` orada YANLIS NEDENLE yesildi -- vakum-bekci.
+Artik o dersler acik gerekceyle atlaniyor.
+
+`start_session` uyari testi de MATEMATIK'e sabitlenmisti; MATEMATIK warm-up'i
+artik dolu oldugu icin uyarinin uretilmemesi DOGRU davranis. Test, kusurun
+bugun gorundugu dersi (core dolu + warm-up bos) kendisi ariyor; boyle bir ders
+yoksa gerekcesiyle atliyor.
+
+### Hala acik olan iki urun bulgusu (KARAR HUSEYIN'IN)
+
+1. **TURKCE / FIZIK / BIYOLOJI'de HIC soru yok** (core=0). Soru bankasi
+   3.922 aktif soruya inmis ve pratikte yalnizca MATEMATIK (391) ile
+   KIMYA (3.531) dolu. Bu bir icerik kapsami karari; test tarafindan
+   verilemez.
+2. **`soru_getir()` model degil `str` donduruyor.** Yerelde canli DB'ye karsi:
+   `tests/fast/test_soru_bankasi_okuma_yolu.py::test_soru_getir_gercek_soruyu_donduruyor`
+   -> `AttributeError: 'str' object has no attribute 'id'`. HEAD'de de aynen
+   dusuyor (bu oturumun degisikligiyle ilgisi yok, `git stash` ile dogrulandi).
+   CI'da gorunmuyordu cunku orada fixture zaten kontrol kolunda duruyordu.
+   Muhtemel kaynak: onbellek serilestirilmis JSON'u geri cozmeden donduruyor.
+   Bu bir OKUMA YOLU kusuru ve ayri bir PR'in konusu.
