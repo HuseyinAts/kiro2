@@ -345,6 +345,11 @@ class QuestionMetadata(Base):
         CheckConstraint(
             "grade_level >= 9 AND grade_level <= 12", name="check_grade_level"
         ),
+        # AI soru secimi ve filtreleme icin kompozit indeks.
+        # Migration f1954b057565 bunu DB'de yaratiyor; ORM'de de tanimli
+        # olmasi ZORUNLU -- aksi halde autogenerate onu "fazlalik" gorup
+        # dusurmeyi onerir (bkz. tests/integration/test_alembic_autogen_guard.py).
+        Index("idx_qmeta_exam_subject", "exam_type", "subject_area"),
     )
 
 
@@ -430,6 +435,9 @@ class QuestionStatistics(Base):
             postgresql_with={"m": 16, "ef_construction": 64},
             postgresql_ops={"embedding": "vector_cosine_ops"},
         ),
+        # IRT zorluk analizleri icin indeks -- migration f1954b057565 ile
+        # ayni cift (yukaridaki idx_qmeta_exam_subject notuna bkz.).
+        Index("idx_qstats_irt_diff", "irt_difficulty"),
     )
 
 
