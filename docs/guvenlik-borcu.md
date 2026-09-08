@@ -8074,3 +8074,87 @@ Ve dorduncu ders, gonulsuz olani: bazi nicelikler paylasimli bir CI'da
 olculemez. O zaman dogru hamle esigi dusurmeye devam etmek degil, neyin
 olculebilir oldugunu (kayit kaybi) kapiya koyup geri kalanini olcum olarak
 raporlamak ve NEDEN kapi olmadigini yazmaktir.
+
+### Sonuc -- CI dogrulamasi (8 Eylul 2026)
+
+Dort kalemin dordu de yesil; PR #181'in kirmizisi 12 -> 8.
+
+    test_error_context_performance     GECTI  (is 101939700349)
+    test_with_vs_without_censoring     GECTI  (is 101939700349)
+    test_batch_processing_efficiency   GECTI  (is 101939700349)
+    test_concurrent_log_throughput     GECTI  (is 102019549676)
+
+Kalan 8 kirmizi bu turun konusu degildi: FSRS formulu (2), DB kosum takimi
+borcu (3), altyapi (3). DB kosum takimi grubunun uyeleri turdan ture
+degisiyor -- yani kismen zamanlama/ortam bagimli; kendi turunda ayrica
+olculmeli.
+
+---
+
+## SS10.79 -- Yerel depo bozulmasi: bir ref dosyasi sifirlandi (8 Eylul 2026)
+
+### Belirti
+
+SS10.78'in son commit'i (`2d4361a82`) atildiktan hemen sonra oturumun
+makineyle baglantisi koptu. Baglanti donunce her git komutu ayni seyi
+soyluyordu:
+
+    fatal: your current branch appears to be broken
+
+`git status` tum agaci "A" (yeni eklendi) gosteriyordu -- HEAD cozulemedigi
+icin git her seyi bos agaca karsi karsilastiriyordu. Ilk bakista "commit
+kayboldu" gibi duruyor; oyle degildi.
+
+### Teshis -- once olcum, sonra mudahale
+
+    .git/HEAD                 : saglam, refs/heads/fix/... gosteriyor
+    ref dosyasi               : 41 bayt, TAMAMI NUL  <- bozuk olan tek sey
+    .git/logs/HEAD (reflog)   : saglam, son commit 2d4361a822...
+    commit nesnesi            : saglam (cat-file -p ile agac/ebeveyn/mesaj okundu)
+    108 ref tarandi           : 1'i bozuk, 107'si saglam
+    git fsck                  : ayrica 1 packfile CRC uyusmazligi
+
+Yani commit gerceklesmisti; kaybolan tek sey, dala isaret eden 41 baytlik
+dosyanin ICERIGIydi. Dosya boyutu (41) diske yazilmis, veri yazilmamis --
+temiz olmayan bir kapanma/cokme sonrasi klasik NTFS belirtisi.
+
+Onemli ayrim: bu bir mount yanilsamasi DEGILDI. Once Linux kabindeki
+baglama uzerinden goruldu, sonra makinenin KENDI native git'iyle de birebir
+dogrulandi; iki tarafta da ayni 41 NUL bayt.
+
+### Onarim
+
+`git update-ref` ise yaramadi -- bozuk ref'i kilitlemek icin once cozmesi
+gerekiyor, cozemiyor:
+
+    fatal: cannot lock ref ...: reference broken
+
+Cozum, ref dosyasini git'in yazacagi bicimde yeniden olusturmak oldu:
+40 hex + `\n`, gecici dosyaya yazilip `os.replace` ile atomik takas
+(`backend/_ci_art/ref_yaz.py`). Script once dosyanin gercekten NUL oldugunu
+dogruluyor, degilse DOKUNMUYOR.
+
+Sonrasi: `rev-parse` calisti, `git log` bes commit'i de gosterdi, `git
+status` temiz cikti, `git push` gecti (`5c55e2b8d..2d4361a82`), yerel ve
+uzak ayni SHA'da.
+
+### Packfile CRC uyusmazligi -- olculdu, kayip yok
+
+    error: index CRC mismatch for object 5bffe78b5... at offset 70339
+
+Bu nesne bir **blob** ve HEAD'den de, `--all` ile hicbir ref'ten de
+erisilemiyor -- `git rev-list --objects` iki aramada da bos dondu.
+`git fsck --connectivity-only` hicbir hata vermiyor, yalnizca dangling
+nesneler listeliyor. Yani izlenen hicbir icerik kaybolmadi; bozuk blob eski
+bir paketin icinde oksuz duruyor.
+
+### HUSEYIN'IN KARARI (bilerek yapilmadi)
+
+1. **Diskin saglik kontrolu.** Ayni olayda iki ayri yerde veri kaybi oldu
+   (bir ref dosyasi + bir pack nesnesi). Bu, tek seferlik bir git hatasindan
+   cok, depolama/kapanma kaynakli bir yazma kaybina benziyor. `chkdsk` ve
+   SMART kontrolu onerilir -- ama bunlar sistem duzeyinde islemler, karar
+   sizin.
+2. **`git gc` / repack.** Bozuk blob oksuz oldugu icin bir repack onu
+   duserdi. Calistirmadim: `gc` dangling nesneleri de siler ve bu depoda
+   kurtarilabilir is olabilecek 30+ dangling commit var.
