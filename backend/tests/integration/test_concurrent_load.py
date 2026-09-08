@@ -115,7 +115,7 @@ def mock_cache():
     """Create mock cache with fast access."""
     cache = MagicMock()
     cache.is_connected = True
-    cache_store = {}
+    cache_store: dict[str, Any] = {}
 
     async def get_cached(tool, key):
         # Simulate <1ms cache lookup

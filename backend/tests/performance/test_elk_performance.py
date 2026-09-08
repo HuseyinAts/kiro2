@@ -509,7 +509,7 @@ class TestStress:
         duration_seconds = 5
         logs_per_batch = 1000
         total_logs = 0
-        batch_times = []
+        batch_times: list[float] = []
 
         start_time = time.perf_counter()
         end_time = start_time + duration_seconds
