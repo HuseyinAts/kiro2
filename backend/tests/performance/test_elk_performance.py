@@ -20,6 +20,8 @@ Requirements Tested:
 
 import asyncio
 import gc
+import io
+import logging
 import statistics
 import sys
 import time
@@ -49,6 +51,39 @@ MIN_ACCEPTABLE_THROUGHPUT = 5000  # Minimum for CI environments
 # =====================================================================
 # Fixtures
 # =====================================================================
+
+
+class _SessizAlici(io.TextIOBase):
+    """Saf Python log alicisi: yazma sistem cagrisi YOK.
+
+    Es zamanlilik olcumlerinde alicinin cinsi sonucu belirliyor (bkz.
+    test_concurrent_log_throughput). Gercek bir dosya tanimlayicisina yazmak
+    her kayitta GIL'i birakip yeniden almaya zorluyor; bu da olcumu
+    CPython/isletim sistemi ozelligine cevirip depo kodunu gorunmez yapiyor.
+    """
+
+    def write(self, s: str) -> int:
+        return len(s)
+
+    def flush(self) -> None:
+        pass
+
+
+@pytest.fixture
+def sessiz_log_alicisi():
+    """Kok logger'in handler'larini olcum suresince saf Python aliciya cevirir."""
+    kok = logging.getLogger()
+    eski = list(kok.handlers)
+    yeni = logging.StreamHandler(_SessizAlici())
+    for h in eski:
+        kok.removeHandler(h)
+    kok.addHandler(yeni)
+    try:
+        yield
+    finally:
+        kok.removeHandler(yeni)
+        for h in eski:
+            kok.addHandler(h)
 
 
 @pytest.fixture
@@ -148,22 +183,38 @@ class TestLogThroughput:
             )
 
     @pytest.mark.performance
-    def test_concurrent_log_throughput(self, performance_logger):
+    def test_concurrent_log_throughput(self, performance_logger, sessiz_log_alicisi):
         """
         Test: Concurrent logging throughput.
 
-        Olcut MUTLAK degil, AYNI kosuda olculen tek is parcacigi hizina
-        goredir. Gerekce: mutlak esik (MIN_ACCEPTABLE_THROUGHPUT / 2 =
-        2.500 log/sn) runner kapasitesini olcuyordu, kodu degil. 7 Eyl 2026
-        olcumu -- yerel (Windows, seri kosum): 36.449 log/sn; CI (paylasimli
-        runner, pytest-xdist ile birden fazla isci ayni cekirdekleri
-        paylasiyor): 927 log/sn, yani 39 kat fark. Ayni kosuda yerel seri
-        hiz 29.583 log/sn idi; yani es zamanli (36.449) seriden HIZLI --
-        kodda kilit cekismesi yok, sadece runner ac.
+        Iki asamada duzeltildi ve ILK TESHIS YANLISTI -- kayit icin:
 
-        Korunan degismez: 4 is parcacigi ile loglama, tek is parcacigina
-        gore cokmemeli. Iki olcum de ayni makinede, ayni yuk altinda
-        alindigi icin runner hizi orandan sadelesir.
+        (1) Eski olcut mutlak degeri kontrol ediyordu
+        (MIN_ACCEPTABLE_THROUGHPUT / 2 = 2.500 log/sn). CI'da 927 log/sn
+        olculunce "runner ac" diye yorumlandi ve olcut ayni kosuda olculen
+        seri hiza gore orana cevrildi.
+
+        (2) O oran CI'da GERCEGI gosterdi ve teshisi curuttu:
+              seri referans : 13.825 log/sn
+              4 is parcacigi:    922 log/sn   -> 0,07x
+        Runner ac degildi (seri hiz yerelin 2-4'te biri, makul); 4 is
+        parcacigi ile loglama gercekten 15 kat cokuyordu.
+
+        (3) Kok neden izole edildi (2 cekirdekli Linux kabinde, ayni
+        islemci zinciri; docs/guvenlik-borcu.md SS10.78):
+              structlog JSON -> /dev/null (gercek fd) : 0,29x
+              structlog JSON -> saf Python alici      : 0,99x
+              saf stdlib logging -> /dev/null         : 0,19x
+              QueueHandler + QueueListener            : 0,38x
+        Yani cokme, kayit basina yapilan YAZMA SISTEM CAGRISININ GIL'i
+        birakip yeniden almasindan geliyor (klasik CPython konvoyu) --
+        bu deponun kodundan degil. Saf stdlib bizden DAHA kotu.
+
+        Sonuc: alici artik testin kontrolunde (sessiz_log_alicisi
+        fixture'i). Boylece olcum, deponun gercekten sahip oldugu seyi --
+        islemci zincirinin ve logger'in Python duzeyindeki es zamanlilik
+        davranisini -- olcuyor. Ortamin alicisi (pytest'in yakaladigi boru,
+        tty, dosya) olcumden cikarildi.
         """
         count_per_thread = 2500
         thread_count = 4
@@ -204,15 +255,11 @@ class TestLogThroughput:
         print(f"{'=' * 60}")
 
         # Beklenen deger ~1.0: loglama tamamen serilesse bile 4 is parcacigi
-        # 4 kat isi 4 kat surede bitirir, yani oran 1.0 civari kalir. 1'in
-        # altina dusen kisim kilit konvoyu/baglam degisimi maliyetidir.
-        # Yerel olcumler: 0.73x (bu testin kendi seri referansiyla) ve
-        # 1.23x (ayri kosuda seri teste gore) -- yani bos makinede bile
-        # ~1.7 kat sacilma var. 0.15 tabani bunun ~5 kati altinda, ama
-        # 6 kattan buyuk bir konvoy cezasini hala yakalar. CI'da gercek
-        # oran bu kosudan sonra loglara basilacak; taban o olcumle
-        # daraltilabilir (simdilik yanlis kirmizi riskini almiyoruz).
-        assert oran >= 0.15, (
+        # 4 kat isi 4 kat surede bitirir. Saf Python aliciyla 2 cekirdekli
+        # Linux'ta 0,99x olculdu. 0,5 tabani genis pay birakirken, islemci
+        # zincirine girecek gercek bir kilit cekismesini (2 kattan buyuk
+        # ceza) yakalar.
+        assert oran >= 0.5, (
             f"Es zamanli loglama seri hizin {oran:.2f} katina dustu "
             f"({throughput:,.0f} vs {seri_throughput:,.0f} log/sn) -- "
             "kilit cekismesi olabilir"

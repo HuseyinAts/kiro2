@@ -7831,9 +7831,12 @@ olculecek; iddia edilmeyecek. Kaynak: is `101891468125`, sha `54359d1a9`.
 
     test                              CI              yerel           karar
     test_error_context_performance    10,92 s /100    ~1 ms /100      GERCEK KUSUR
-    test_concurrent_log_throughput    927 log/sn      36.449 log/sn   ESIK GECERSIZ
+    test_concurrent_log_throughput    0,07x (2. tur)  0,99x (Linux)   OLCUT GECERSIZ *
     test_with_vs_without_censoring    %29.369         %11.286         OLCUT GECERSIZ
     test_batch_processing_efficiency  0,8x            (olculemez)     TEST KUSURU
+
+    * bu kalemin ILK teshisi ("esik gecersiz, runner ac") YANLISTI ve
+      duzeltilmis olcut tarafindan curutuldu -- ayrintisi asagida.
 
 ### 1) GERCEK KUSUR: ErrorContext._get_call_stack yigin derinligiyle buyuyordu
 
@@ -7870,18 +7873,54 @@ log/sn). Ayni kod, ayni gun:
     yerel  (Windows, seri kosum)          : 36.449 log/sn
     CI     (paylasimli runner + xdist)    :    927 log/sn   -> 39 kat fark
 
-Kodda kilit patolojisi OLMADIGI da olculdu: ayni yerel kosuda tek is
+Ilk yorum: kodda kilit patolojisi yok, cunku ayni yerel kosuda tek is
 parcacigi 29.583 log/sn yapiyordu, yani 4 is parcacigi (36.449) seriden
-HIZLI. Sorun cekisme degil, ac runner.
+HIZLI. (Bu yorumun YANLIS oldugu asagida, bir sonraki CI kosumunda cikti.)
 
 Yeni olcut: AYNI kosuda tek is parcacigi referansi olculuyor, oran ona gore
-degerlendiriliyor. Beklenen deger ~1,0 (loglama tamamen serilesse bile 4 kat
-is 4 kat surede biter); 1'in altina dusen kisim kilit konvoyu maliyetidir.
-Yerel olcumler 0,73x (testin kendi referansiyla) ve 1,23x (ayri kosuda seri
-teste gore) -- bos makinede bile ~1,7 kat sacilma. Taban 0,15 secildi;
-6 kattan buyuk bir konvoy cezasini yakalar. Test artik CI'da her iki sayiyi
-da BASIYOR, yani bir sonraki kosumdan sonra taban gercek CI oraniyla
-daraltilabilir.
+degerlendiriliyor. Test her iki sayiyi da BASIYOR, yani bir sonraki kosum
+gercek CI oranini verecek.
+
+#### DUZELTME (ayni gun, bir sonraki CI kosumu): yukaridaki teshis YANLISTI
+
+Yeni olcut CI'ya cikar cikmaz kendi teshisimi curuttu (`is 101939700349`):
+
+    seri referans  : 13.825 log/sn
+    4 is parcacigi :    922 log/sn   -> 0,07x
+
+Runner AC DEGILDI. Tek is parcacigiyla 13.825 log/sn yapan bir makine, 4 is
+parcacigiyla 922'ye dusuyordu -- yani 15 kat cokme. "Mutlak esik runner'i
+olcuyor" demek dogruydu, ama "kodda cekisme yok" demek YANLISTI; onu
+soyleyebilmemin tek dayanagi Windows'taki 0,73x/1,23x olcumuydu ve o platform
+bu davranisi hic gostermiyor. Yeni olcutun ilk isi bu hatayi yakalamak oldu.
+
+Kok neden 2 cekirdekli bir Linux kabinde, ayni islemci zinciriyle izole
+edildi (CI runner'i da 2 cekirdek / Python 3.11):
+
+    structlog JSON -> /dev/null (gercek fd)  : 0,29x
+    structlog JSON -> saf Python alici       : 0,99x
+    structlog Console -> /dev/null           : 0,36x
+    saf stdlib logging -> /dev/null          : 0,19x
+    QueueHandler + QueueListener -> /dev/null: 0,38x
+
+Cokme, kayit basina yapilan YAZMA SISTEM CAGRISININ GIL'i birakip yeniden
+almasindan geliyor (klasik CPython konvoyu). Uc sey bunu kanitliyor:
+(a) alici saf Python nesnesi olunca oran 0,99x'e cikiyor -- islemci zinciri
+masum; (b) saf stdlib logging BIZDEN KOTU (0,19x); (c) I/O'yu arka plana
+tasiyan QueueHandler bile kurtarmiyor (0,38x), cunku yazan is parcacigi
+ayni cekirdekler icin yarisiyor.
+
+Testin son hali alicisini KENDISI kuruyor (`sessiz_log_alicisi` fixture'i:
+kok logger handler'lari olcum suresince saf Python aliciya cevriliyor,
+sonra geri koyuluyor). Boylece olculen sey deponun sahip oldugu sey oluyor:
+islemci zincirinin ve logger'in Python duzeyindeki es zamanlilik davranisi.
+Taban 0,5 (olculen 0,99'un yarisi).
+
+URUN NOTU (iddia degil, olcum): yuksek frekansli loglama, is parcacigi
+sayisi arttikca alicinin sistem cagrisina baglidir; 10.000 log/sn hedefi
+(REQ-6.1) TEK is parcacigi icin gecerlidir. QueueHandler'in bu tabloda
+yardim ETMEDIGI de olculdu -- yani "kuyruga alalim" refleksi bu sorunu
+cozmez.
 
 ### 3) OLCUT GECERSIZ: sansur "yuzdesi" makine hizindan sadelesmiyordu
 
@@ -7964,3 +8003,10 @@ Hicbiri deselect/xfail/skip ile susturulmadi. Depoda `reward-hacking-check`
 kancasi zaten var; ama asil neden, dort kalemin ucunun ARKASINDA gercekten
 raporlanabilir bir bulgu olmasiydi -- biri uretim kusuru, ikisi olcut
 kusuru, biri test kusuru.
+
+Bir de ders: (2) numarali kalemde ILK teshisim yanlisti ve bunu yakalayan
+sey, esigi degil OLCUTU duzeltmis olmamdi. Esigi 2.500'den 800'e cekseydim
+test yesile donerdi ve 15 katlik cokme hic gorunmezdi. Yeni olcut yesile
+donmedi -- seri referansi da basarak "runner ac" iddiasini kendi verisiyle
+curuttu. Olcutu duzeltmenin esik kovalamaktan farki tam olarak budur:
+duzgun bir olcut, onu yazanin teshisini de test eder.
