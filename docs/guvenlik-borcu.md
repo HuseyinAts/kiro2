@@ -7831,12 +7831,14 @@ olculecek; iddia edilmeyecek. Kaynak: is `101891468125`, sha `54359d1a9`.
 
     test                              CI              yerel           karar
     test_error_context_performance    10,92 s /100    ~1 ms /100      GERCEK KUSUR
-    test_concurrent_log_throughput    0,07x (2. tur)  0,99x (Linux)   OLCUT GECERSIZ *
+    test_concurrent_log_throughput    0,07x / 0,13x   0,30x - 1,23x   OLCULEMEZ *
     test_with_vs_without_censoring    %29.369         %11.286         OLCUT GECERSIZ
     test_batch_processing_efficiency  0,8x            (olculemez)     TEST KUSURU
 
-    * bu kalemin ILK teshisi ("esik gecersiz, runner ac") YANLISTI ve
-      duzeltilmis olcut tarafindan curutuldu -- ayrintisi asagida.
+    * bu kalemde UC ayri teshisim yanlis cikti; her birini yakalayan sey
+      esigi degil olcutu duzeltmis olmamdi. Sonucta nicelik paylasimli
+      CI'da olculemez ilan edildi; kapiya olculebilir olan (kayit kaybi)
+      konuldu. Ayrintisi asagida.
 
 ### 1) GERCEK KUSUR: ErrorContext._get_call_stack yigin derinligiyle buyuyordu
 
@@ -7894,8 +7896,8 @@ olcuyor" demek dogruydu, ama "kodda cekisme yok" demek YANLISTI; onu
 soyleyebilmemin tek dayanagi Windows'taki 0,73x/1,23x olcumuydu ve o platform
 bu davranisi hic gostermiyor. Yeni olcutun ilk isi bu hatayi yakalamak oldu.
 
-Kok neden 2 cekirdekli bir Linux kabinde, ayni islemci zinciriyle izole
-edildi (CI runner'i da 2 cekirdek / Python 3.11):
+Kok neden 2 cekirdekli bir Linux kabinde, ayni islemci zinciriyle arandi
+(CI runner'i da 2 cekirdek / Python 3.11). Ilk tur:
 
     structlog JSON -> /dev/null (gercek fd)  : 0,29x
     structlog JSON -> saf Python alici       : 0,99x
@@ -7903,12 +7905,23 @@ edildi (CI runner'i da 2 cekirdek / Python 3.11):
     saf stdlib logging -> /dev/null          : 0,19x
     QueueHandler + QueueListener -> /dev/null: 0,38x
 
-Cokme, kayit basina yapilan YAZMA SISTEM CAGRISININ GIL'i birakip yeniden
-almasindan geliyor (klasik CPython konvoyu). Uc sey bunu kanitliyor:
-(a) alici saf Python nesnesi olunca oran 0,99x'e cikiyor -- islemci zinciri
-masum; (b) saf stdlib logging BIZDEN KOTU (0,19x); (c) I/O'yu arka plana
-tasiyan QueueHandler bile kurtarmiyor (0,38x), cunku yazan is parcacigi
-ayni cekirdekler icin yarisiyor.
+Buradan "kayit basina yazma sistem cagrisi GIL'i birakip aliyor" hipotezi
+cikarildi (saf Python alici 0,99x veriyordu). **Bu hipotez de yanlis
+cikti.** Ikinci, daha kontrollu tur -- ayni betikte, ayni sirada, bir de
+komsu yuk altinda:
+
+    alici              rakip surec yok    4 rakip surec
+    gercek fd          0,30x              1,04x
+    saf Python alici   0,31x              0,79x
+    CPU/kayit (seri -> es zamanli): 22 us -> 77 us  (3,4x)
+    CPU/kayit orani, 4 rakip surecle    : 1,7x
+
+Alicinin cinsi neredeyse hic fark etmiyor (0,30 ve 0,31). Ilk turdaki
+0,99x olcum sirasindan gelen bir yan etkiydi. Gercek sebep, 2 cekirdekte
+4 Python is parcaciginin GIL icin yarismasi ve fazladan maliyetin GERCEK
+CPU olarak yanmasi. Ve kritik nokta: ayni kod, ayni makinede, sadece komsu
+surec yuku degisince 0,30x ile 1,04x arasinda geziniyor -- CPU/kayit orani
+da bagisik degil (3,4x -> 1,7x).
 
 Testin son hali alicisini KENDISI kuruyor (`sessiz_log_alicisi` fixture'i:
 kok logger handler'lari olcum suresince saf Python aliciya cevriliyor,
@@ -7925,21 +7938,41 @@ suzgecine takiliyor, hicbir handler'a ulasmiyordu. O halde uretilen "1,01x"
 sayisi HICBIR SEYI olcmuyordu ve sayac olmasa dogru kabul edilecekti.
 Fixture artik seviyeyi de INFO'ya zorluyor (sonra geri aliyor).
 
-Duzeltilmis olcumler ve taban:
+#### Karar: bu nicelik paylasimli CI'da OLCULEMEZ
 
-    2 cekirdekli Linux, pytest'siz, saf Python alici : 0,99x
-    Windows, pytest altinda, saf Python alici        : 0,58x
-    CI, ortamin kendi alicisi (gercek fd)            : 0,07x  <- patolojik
+Ayni kod icin toplanan tum olcumler:
 
-Taban 0,25: normal band (0,58-0,99) ile patolojik band (~0,07) arasinda,
-iki yana da 2 kattan fazla pay birakiyor. "0,5" ilk secimdi ve 0,58'lik
-Windows olcumune fazla yakindi -- yanlis kirmizi uretirdi.
+    Windows, pytest'siz, ayri testler         : 1,23x
+    Windows, pytest altinda, kontrollu alici  : 0,58x / 0,61x
+    Linux 2 cekirdek, pytest'siz              : 0,30x - 1,04x (komsu yuke gore)
+    CI, ortamin alicisi                       : 0,07x
+    CI, kontrollu alici                       : 0,13x
 
-URUN NOTU (iddia degil, olcum): yuksek frekansli loglama, is parcacigi
-sayisi arttikca alicinin sistem cagrisina baglidir; 10.000 log/sn hedefi
-(REQ-6.1) TEK is parcacigi icin gecerlidir. QueueHandler'in bu tabloda
-yardim ETMEDIGI de olculdu -- yani "kuyruga alalim" refleksi bu sorunu
-cozmez.
+Band 0,07x - 1,23x. Bir kapinin altina koyulacak her sayi ya yanlis kirmizi
+uretir ya da hicbir sey yakalamaz. Esigi her turda biraz daha indirmek
+(0,5 -> 0,25 -> 0,13) tam olarak "esik kovalamak" olurdu.
+
+Testin son hali bu yuzden ikiye ayrildi:
+
+- **KAPI (olculebilir):** 4 is parcacigindan gecen 12.500 kaydin BIRI BILE
+  kaybolmamali. Ortamdan bagimsiz ve deponun gercekten sahip oldugu bir
+  degismez: islemci zinciri + handler es zamanlilik guvenligi. Alici bunu
+  sayarak dogruluyor.
+- **RAPOR (kapi degil):** seri hiz, es zamanli hiz ve oran log'a basiliyor.
+  Uzerinde yalnizca bir felaket esigi var (0,05 -- gozlenen bandin 2,6 kat
+  altinda): kayit basina fsync ya da islemci zincirinde tutulan kuresel bir
+  kilit gibi 20 kat sinifinda bir cokmeyi yakalar.
+
+Alici yine de saf Python: gereksiz I/O gurultusunu olcumden cikariyor ve
+sayaci mumkun kiliyor.
+
+URUN NOTU (iddia degil, olcum): REQ-6.1'in 10.000 log/sn hedefi TEK is
+parcacigi icindir. 2 cekirdekte 4 is parcacigi ile ayni is, kayit basina
+3,4 kata kadar daha fazla CPU yakiyor -- ve bu, alici ne olursa olsun
+boyle. QueueHandler + QueueListener'in yardim ETMEDIGI de olculdu (0,38x),
+yani "kuyruga alalim" refleksi bu tabloyu duzeltmiyor. Bogazi buyutmek
+gerekiyorsa dogru yon is parcaciklarini cogaltmak degil, kayit sayisini
+azaltmak (ornekleme/seviye) ya da isi surece dagitmak.
 
 ### 3) OLCUT GECERSIZ: sansur "yuzdesi" makine hizindan sadelesmiyordu
 
@@ -8023,9 +8056,21 @@ kancasi zaten var; ama asil neden, dort kalemin ucunun ARKASINDA gercekten
 raporlanabilir bir bulgu olmasiydi -- biri uretim kusuru, ikisi olcut
 kusuru, biri test kusuru.
 
-Bir de ders: (2) numarali kalemde ILK teshisim yanlisti ve bunu yakalayan
-sey, esigi degil OLCUTU duzeltmis olmamdi. Esigi 2.500'den 800'e cekseydim
-test yesile donerdi ve 15 katlik cokme hic gorunmezdi. Yeni olcut yesile
-donmedi -- seri referansi da basarak "runner ac" iddiasini kendi verisiyle
-curuttu. Olcutu duzeltmenin esik kovalamaktan farki tam olarak budur:
-duzgun bir olcut, onu yazanin teshisini de test eder.
+Bir de ders: (2) numarali kalemde UC KEZ yanildim ve her seferinde beni
+yakalayan sey, esigi degil OLCUTU duzeltmis olmamdi.
+
+  1. "Runner ac, kodda cekisme yok" -> seri referansi basan olcut curuttu
+     (13.825 vs 922 log/sn).
+  2. "Sebep yazma sistem cagrisi" -> kontrollu deney curuttu (alici cinsi
+     fark etmiyor: 0,30x ve 0,31x).
+  3. "Kontrollu aliciyla 1,01x, sorun cozuldu" -> alicinin sayaci curuttu
+     (`Alici 0 kayit gordu, beklenen 12500`).
+
+Esigi 2.500'den 800'e cekseydim test daha ilk turda yesile donerdi ve bu
+uc bulgunun ucu de hic gorunmezdi. Olcutu duzeltmenin esik kovalamaktan
+farki budur: duzgun bir olcut, onu yazanin teshisini de test eder.
+
+Ve dorduncu ders, gonulsuz olani: bazi nicelikler paylasimli bir CI'da
+olculemez. O zaman dogru hamle esigi dusurmeye devam etmek degil, neyin
+olculebilir oldugunu (kayit kaybi) kapiya koyup geri kalanini olcum olarak
+raporlamak ve NEDEN kapi olmadigini yazmaktir.

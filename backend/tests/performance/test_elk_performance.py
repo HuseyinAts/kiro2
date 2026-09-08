@@ -216,28 +216,35 @@ class TestLogThroughput:
         Runner ac degildi (seri hiz yerelin 2-4'te biri, makul); 4 is
         parcacigi ile loglama gercekten 15 kat cokuyordu.
 
-        (3) Kok neden izole edildi (2 cekirdekli Linux kabinde, ayni
-        islemci zinciri; docs/guvenlik-borcu.md SS10.78):
-              structlog JSON -> /dev/null (gercek fd) : 0,29x
-              structlog JSON -> saf Python alici      : 0,99x
-              saf stdlib logging -> /dev/null         : 0,19x
-              QueueHandler + QueueListener            : 0,38x
-        Yani cokme, kayit basina yapilan YAZMA SISTEM CAGRISININ GIL'i
-        birakip yeniden almasindan geliyor (klasik CPython konvoyu) --
-        bu deponun kodundan degil. Saf stdlib bizden DAHA kotu.
-
-        Sonuc: alici artik testin kontrolunde (sessiz_log_alicisi
-        fixture'i). Boylece olcum, deponun gercekten sahip oldugu seyi --
-        islemci zincirinin ve logger'in Python duzeyindeki es zamanlilik
-        davranisini -- olcuyor. Ortamin alicisi (pytest'in yakaladigi boru,
-        tty, dosya) olcumden cikarildi.
-
-        (4) Alicinin sayaci bir kusur daha yakaladi: ilk halinde kok
+        (3) Alicinin sayaci ucuncu bir kusur yakaladi: ilk halinde kok
         logger'in seviyesi pytest tarafindan yukseltildigi icin alici SIFIR
-        kayit goruyordu ve "1,01x" diye bir sayi uretilmisti -- yani hicbir
-        sey olcmeyen bir yol. Fixture artik seviyeyi de zorluyor ve test,
-        orani degerlendirmeden ONCE 12.500 kaydin gercekten aliciya
-        dustugunu dogruluyor. Duzeltilmis yerel olcum: 0,58x.
+        kayit goruyordu ve "1,01x" diye bir sayi uretilmisti -- hicbir sey
+        olcmeyen bir yol. Fixture artik seviyeyi de zorluyor ve test, orani
+        degerlendirmeden ONCE 12.500 kaydin aliciya dustugunu dogruluyor.
+
+        (4) Kok neden arandi ve ILK HIPOTEZ DE YANLIS CIKTI. Once "kayit
+        basina yazma sistem cagrisi GIL'i birakip aliyor" sanildi; kontrollu
+        deney (2 cekirdekli Linux, ayni islemci zinciri) bunu curuttu:
+
+              alici             rakip surec yok   4 rakip surec
+              gercek fd         0,30x             1,04x
+              saf Python alici  0,31x             0,79x
+              CPU/kayit (seri -> es zamanli): 22 us -> 77 us  (3,4x)
+
+        Alicinin cinsi neredeyse hic fark etmiyor; cokme, 2 cekirdekte 4
+        Python is parcaciginin GIL icin yarismasindan geliyor ve fazladan
+        maliyet GERCEK CPU olarak yaniyor. Daha da onemlisi: ayni kod, ayni
+        makinede, sadece komsu surec yuku degisince 0,30x ile 1,04x
+        arasinda geziniyor. CPU/kayit orani da bagisik degil (rakip surecle
+        3,4x -> 1,7x).
+
+        SONUC: bu nicelik paylasimli bir CI'da OLCULEMEZ. Tum ortamlarda
+        gozlenen band 0,13x - 1,23x -- ayni kod icin. Bu yuzden oran artik
+        KAPI DEGIL: raporlaniyor (log'a basiliyor) ve yalnizca felaket
+        esigiyle (0,05) korunuyor. Kapi olarak duran sey, olculebilir olan:
+        4 is parcacigindan gecen 12.500 kaydin BIRI BILE kaybolmamali.
+        Esigi 0,25'ten 0,13'e cekmek "esik kovalamak" olurdu; olculemeyen
+        bir seyi olcuyormus gibi yapmaktansa ne oldugunu yazmak dogru.
         """
         count_per_thread = 2500
         thread_count = 4
@@ -277,24 +284,26 @@ class TestLogThroughput:
         print(f"Ratio:          {oran:.2f}x (concurrent / serial)")
         print(f"{'=' * 60}")
 
-        # Once olcumun gercekten kontrollu aliciya dustugunu kanitla:
-        # aksi halde oran "hicbir sey yapmayan bir yol"u olcuyor olabilirdi.
+        # ASIL KAPI: 4 is parcacigindan gecen kayitlarin hicbiri
+        # kaybolmamali. Bu, ortamdan bagimsiz ve deponun gercekten sahip
+        # oldugu bir degismez (islemci zinciri + handler es zamanlilik
+        # guvenligi). Ayrica olcumun gercekten bu aliciya dustugunu de
+        # kanitlar -- aksi halde oran bos bir yolu olcuyor olabilirdi.
         beklenen_kayit = count_per_thread + total_count
         assert sessiz_log_alicisi.kayit_sayisi == beklenen_kayit, (
             f"Alici {sessiz_log_alicisi.kayit_sayisi} kayit gordu, "
-            f"beklenen {beklenen_kayit} -- olcum bu alicidan gecmemis"
+            f"beklenen {beklenen_kayit} -- kayit kaybi ya da olcum bu "
+            "alicidan gecmemis"
         )
 
-        # Taban 0,25 neden: kontrollu aliciyla olculen band 0,58x (Windows,
-        # pytest altinda) - 0,99x (2 cekirdekli Linux, pytest'siz). Yani
-        # CPython'un kendi kilit/GIL maliyeti bile platforma gore ~1,7 kat
-        # oynuyor. Patolojik band ise cok asagida: gercek fd'ye yazan yolda
-        # 0,07x (CI) olculdu. 0,25, iki bandin ortasinda ve her iki yana da
-        # 2 kattan fazla pay birakiyor.
-        assert oran >= 0.25, (
+        # FELAKET ESIGI (performans kapisi DEGIL -- gerekcesi docstring'de).
+        # Tum ortamlarda gozlenen band 0,13x - 1,23x; 0,05 bunun 2,6 kat
+        # altinda. Kayit basina fsync ya da islemci zincirinde tutulan
+        # kuresel bir kilit gibi 20 kat sinifinda bir cokmeyi yakalar.
+        assert oran >= 0.05, (
             f"Es zamanli loglama seri hizin {oran:.2f} katina dustu "
             f"({throughput:,.0f} vs {seri_throughput:,.0f} log/sn) -- "
-            "kilit cekismesi olabilir"
+            "bu, ortam gurultusuyle aciklanamayacak bir cokme"
         )
 
     @pytest.mark.performance
