@@ -120,6 +120,12 @@ async def canli_okuma(monkeypatch):
 
     engine = create_async_engine(dsn, poolclass=NullPool)
     maker = async_sessionmaker(engine, expire_on_commit=False)
+    # CodeQL py/uninitialized-local-variable: `pytest.skip()` NoReturn
+    # oldugu icin except dalindan sonra kullanim olmuyor, ama analiz
+    # bunu kanitlayamiyor. Try oncesi baglamak iddiayi zayiflatmaz --
+    # asagidaki kontrol kolu None'i zaten reddediyor.
+    aktif = None
+    ornek_id = None
     try:
         async with maker() as session:
             aktif = (
