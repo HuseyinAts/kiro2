@@ -7815,3 +7815,152 @@ obek, ham LaTeX): 24 isaret, tamami yanlis pozitif. Yani sezgisel tarama bu katm
 kusuru yakalayan tek adim elle cozum oldu. Oran iddia edilmiyor (10'da 1). Ayrica ayni turda
 `source_book` metadata'sinin crop klasoruyle %2,8 uyusmadigi olculdu; kitap sinyaline dayanan
 karar klasore cevrilip yeniden kosuldu -- sonuc DEGISMEDI (446), ama olculmeden guvenilemezdi.
+
+---
+
+## §10.78 -- PR #181'in 4 "zamanlama bagimli" testi: 1 gercek uretim kusuru, 3 gecersiz olcut (2026-09-07)
+
+### Baslangic noktasi
+
+PR #181'in 12 kirmizisindan 4'u "olcum/zamanlama bagimli" diye gruplanmisti.
+Soru netti: bunlar gercek gerileme mi, yoksa paylasimli runner'da anlamini
+yitiren esikler mi? Kural: her biri LOG'dan okunacak, sonra YERELDE ayni is
+olculecek; iddia edilmeyecek. Kaynak: is `101891468125`, sha `54359d1a9`.
+
+### Ozet tablo (hepsi olculdu)
+
+    test                              CI              yerel           karar
+    test_error_context_performance    10,92 s /100    ~1 ms /100      GERCEK KUSUR
+    test_concurrent_log_throughput    927 log/sn      36.449 log/sn   ESIK GECERSIZ
+    test_with_vs_without_censoring    %29.369         %11.286         OLCUT GECERSIZ
+    test_batch_processing_efficiency  0,8x            (olculemez)     TEST KUSURU
+
+### 1) GERCEK KUSUR: ErrorContext._get_call_stack yigin derinligiyle buyuyordu
+
+`create_from_current_context()` her cagrida `inspect.stack()` cagirip
+`[3:8]` diliminden 5 kare aliyordu. `inspect.stack()` TUM yigini gezer ve
+her kare icin `getframeinfo -> findsource -> linecache.checkcache(dosya)`
+yolunu isletir, yani kare basina bir `os.stat`. Kullanilan kare sayisi hep
+5, odenen bedel ise yigin derinligi kadar. pytest-xdist altinda yigin derin
+oldugu icin CI'da cagri basina ~109 ms cikti.
+
+Olcum (`backend/_ci_art/yigin_aday_olc.py`, cikti BIREBIR ozdes -- 5 kare,
+ayni fonksiyon/satir/kod):
+
+    yigin derinligi   mevcut        kare yuruyusu
+    +0                0,1737 ms     0,0042 ms
+    +10               0,4364 ms     0,0051 ms
+    +30               0,9366 ms     0,0060 ms
+    +60               1,6344 ms     0,0071 ms
+    +120              7,9926 ms     0,0092 ms   (~870x)
+
+Duzeltme: `sys._getframe(3)` ile 3 kare atlanip 5 kare `f_back` ile
+yuruyor, kod satiri `linecache.getline` ile aliniyor (checkcache yok, yani
+`os.stat` firtinasi da yok). Bu bir TEST duzeltmesi degil: hata yolunda
+uretimde de odenen bir bedeldi -- FastAPI'nin derin middleware yigininda her
+hata baglami milisaniyelerce suruyordu ve hata firtinasinda katlaniyordu.
+Esik 10,0 s -> 1,0 s'ye CEKILDI (gevsetilmedi): duzeltilmis halin ~200 kati,
+hatali halin CI degerinin ~10'da biri.
+
+### 2) ESIK GECERSIZ: es zamanli log throughput'u runner'i olcuyordu
+
+Eski olcut mutlakti: `throughput >= MIN_ACCEPTABLE_THROUGHPUT / 2` (2.500
+log/sn). Ayni kod, ayni gun:
+
+    yerel  (Windows, seri kosum)          : 36.449 log/sn
+    CI     (paylasimli runner + xdist)    :    927 log/sn   -> 39 kat fark
+
+Kodda kilit patolojisi OLMADIGI da olculdu: ayni yerel kosuda tek is
+parcacigi 29.583 log/sn yapiyordu, yani 4 is parcacigi (36.449) seriden
+HIZLI. Sorun cekisme degil, ac runner.
+
+Yeni olcut: AYNI kosuda tek is parcacigi referansi olculuyor, oran ona gore
+degerlendiriliyor. Beklenen deger ~1,0 (loglama tamamen serilesse bile 4 kat
+is 4 kat surede biter); 1'in altina dusen kisim kilit konvoyu maliyetidir.
+Yerel olcumler 0,73x (testin kendi referansiyla) ve 1,23x (ayri kosuda seri
+teste gore) -- bos makinede bile ~1,7 kat sacilma. Taban 0,15 secildi;
+6 kattan buyuk bir konvoy cezasini yakalar. Test artik CI'da her iki sayiyi
+da BASIYOR, yani bir sonraki kosumdan sonra taban gercek CI oraniyla
+daraltilabilir.
+
+### 3) OLCUT GECERSIZ: sansur "yuzdesi" makine hizindan sadelesmiyordu
+
+Eski olcut sansur suresini `sample_log_data.copy()` suresine boluyordu.
+Pay saf Python (~9 us), payda C duzeyinde (~0,08 us). Boyle bir oran
+ortami SADELESTIRMEZ, BUYUTUR: yavas runner'da yorumlayici-bagimli pay
+5 kat artarken C-bagimli payda 1,5 kat artiyor.
+
+    yerel : 0,0009 s / 0,1029 s -> %11.286
+    CI    : 0,0014 s / 0,4240 s -> %29.369   (esik 20.000 -> dustu)
+
+Ayni kod, iki kat farkli "yuzde". Testin kendi yorumu da bunu zaten itiraf
+ediyordu ("dict.copy() bazi platformlarda cok optimize"), ama cozum olarak
+esik buyutulmustu -- yani olcut degil, esik kovalanmis.
+
+Yeni olcut: ayni sekle sahip, SAF PYTHON bir kalibrasyon isine (anahtarlari
+gez + `lower()`) gore oran. Iki taraf da yorumlayici-bagimli oldugu icin
+runner hizi gercekten sadelesiyor. Yerel: 1,10 us / 9,11 us = 8,3x.
+Esik 50x (~6 kat pay); cagri basina regex derlemesi sinifinda bir gerilemeyi
+yakalar.
+
+### 4) TEST KUSURU: "toplu vs sirali" aslinda "onbellek vurusu vs onbelleksiz" olcuyordu
+
+`text = " ".join(TURKISH_WORDS * 5)` -- 105 kelimenin sadece 21'i FARKLI.
+`BaseToolHandler.execute` girdi bazinda onbellekliyor, dolayisiyla "sirali"
+olcumun 105 cagrisindan 84'u onbellek vurusuydu (~0,1 ms), toplu yol ise
+TEK anahtarla tamamen onbelleksiz calisiyordu. Yani test toplulastirmayi
+degil, onbellegi olcuyordu -- elma ile armut. CI: sirali 0,25 s / toplu
+0,30 s -> "0,8x hizlanma".
+
+Bu kalem YERELDE OLCULEMEDI ve bu bilerek boyle kaydediliyor: olcum
+`asyncio.sleep` tabanli, Windows'un zamanlayici cozunurlugu (~15,6 ms) her
+kucuk uykuyu yukari yuvarliyor, yani yerel sayilar CI ile karsilastirilamaz.
+Karar koddan cikarildi: onbellek yolu ve `_lemmatize_batch_jpype`'in grup
+mantigi okundu.
+
+Duzeltme: 105 BENZERSIZ sozde-kelime; iki yol da onbelleksiz. Teorik sinir
+~2,1x (105 kelime / 50'lik grup); yerel sonuc 3,1x, esik 1,3x.
+
+### Ertelenen, olculmus borclar (bu PR'a alinmadi -- gerekce: kapsam)
+
+1. **`censor_sensitive_data` cagri basina set kuruyor.** Modul duzeyinde
+   `frozenset` + acik dongu ile ayni cikti, olculen kazanc %63,6
+   (8,09 us -> 2,94 us; `backend/_ci_art/sansur_olc.py`). HER log satirinda
+   odenen bir bedel. Kendi kucuk PR'ini hak ediyor; `structured_logger.py`
+   ayrica 4 kalem lint borcu tasiyor (2 RUF013, PLR0917, RUF022) ve
+   diff-bazli kapi dokunani sahibi yapiyor.
+2. **`_lemmatize_batch_jpype` granulerligi.** Kelimeleri 50'lik gruplara
+   bolup gruplari paralel, grup ICINDE sirali isliyor. Sonuc: 50 kelimeye
+   kadar `batch=True` hicbir sey yapmiyor, ustunde paralellik ceil(n/50).
+   Kopru `asyncio.to_thread` kullandigi icin kelime duzeyinde (semaphore ile
+   sinirlandirilmis) es zamanlilik GERCEK bir kazanc olurdu.
+3. **UP042 (`str, Enum` -> `StrEnum`).** `SpanKind`/`SpanStatus` icin
+   otomatik duzeltme uygulanmadi: `str()` ciktisi degisir
+   ("SpanKind.SERVER" -> "server") ve bu deger span disa aktarim yolunda.
+   NOT: kural yalnizca GUNCEL ruff'ta var; hem pre-commit hem CI 0.7.1'e
+   pinli (SS10.43), yani `# noqa: UP042` orada RUF100 (kullanilmayan noqa)
+   olarak SILINIYOR. Karar kod yorumu olarak birakildi.
+
+4. **UP038 tuzagi tersinden yasandi.** `isinstance(v, (str, int, ...))`
+   satirini pinli 0.7.1 `X | Y`'ye cevirmek istiyor, guncel ruff kurali hic
+   uygulamiyor (upstream'de kaldirildi: `X | Y` isinstance'ta daha yavas).
+   Cozum ne noqa ne ignore oldu: demet modul duzeyinde sabite tasindi
+   (`_BASIT_TIPLER`) -- satir ici demet kalmadigi icin kural iki surumde de
+   tetiklenmiyor ve cagri basina demet kurulmasi da ortadan kalkti.
+
+### Yontem notu -- "esik kovalamak" ile "olcutu duzeltmek" arasindaki fark
+
+Uc testin de esigi degisti, ama hicbiri gevsetilmedi:
+
+- (1)'de esik SIKILASTI (10,0 -> 1,0 s) cunku altindaki kusur duzeltildi.
+- (2) ve (3)'te esik degil OLCUT degisti: mutlak/ortamdan-sadelesmeyen bir
+  sayi yerine, ayni kosuda olculen bir referansa gore oran kondu. Yeni
+  olcutler eskilerinden DAHA cok sey yakaliyor (kilit konvoyu, cagri basina
+  regex derlemesi), cunku eskiler pratikte yalnizca runner hizini olcuyordu.
+- (4)'te esik yonu bile ters cevrildi (0,909x -> 1,3x): karsilastirma
+  duzeltilince test artik iddia ettigi seyi olcuyor.
+
+Hicbiri deselect/xfail/skip ile susturulmadi. Depoda `reward-hacking-check`
+kancasi zaten var; ama asil neden, dort kalemin ucunun ARKASINDA gercekten
+raporlanabilir bir bulgu olmasiydi -- biri uretim kusuru, ikisi olcut
+kusuru, biri test kusuru.

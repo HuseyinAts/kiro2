@@ -151,6 +151,19 @@ class TestLogThroughput:
     def test_concurrent_log_throughput(self, performance_logger):
         """
         Test: Concurrent logging throughput.
+
+        Olcut MUTLAK degil, AYNI kosuda olculen tek is parcacigi hizina
+        goredir. Gerekce: mutlak esik (MIN_ACCEPTABLE_THROUGHPUT / 2 =
+        2.500 log/sn) runner kapasitesini olcuyordu, kodu degil. 7 Eyl 2026
+        olcumu -- yerel (Windows, seri kosum): 36.449 log/sn; CI (paylasimli
+        runner, pytest-xdist ile birden fazla isci ayni cekirdekleri
+        paylasiyor): 927 log/sn, yani 39 kat fark. Ayni kosuda yerel seri
+        hiz 29.583 log/sn idi; yani es zamanli (36.449) seriden HIZLI --
+        kodda kilit cekismesi yok, sadece runner ac.
+
+        Korunan degismez: 4 is parcacigi ile loglama, tek is parcacigina
+        gore cokmemeli. Iki olcum de ayni makinede, ayni yuk altinda
+        alindigi icin runner hizi orandan sadelesir.
         """
         count_per_thread = 2500
         thread_count = 4
@@ -162,6 +175,12 @@ class TestLogThroughput:
             for i in range(count_per_thread):
                 logger.info("concurrent_test", batch_id=batch_id, index=i)
 
+        # Referans: ayni isin tek is parcacigi ile hizi (kalibrasyon).
+        seri_start = time.perf_counter()
+        log_batch(0)
+        seri_elapsed = time.perf_counter() - seri_start
+        seri_throughput = count_per_thread / seri_elapsed
+
         start_time = time.perf_counter()
 
         with ThreadPoolExecutor(max_workers=thread_count) as executor:
@@ -171,6 +190,7 @@ class TestLogThroughput:
 
         elapsed = time.perf_counter() - start_time
         throughput = total_count / elapsed
+        oran = throughput / seri_throughput
 
         print(f"\n{'=' * 60}")
         print("CONCURRENT THROUGHPUT TEST")
@@ -179,11 +199,24 @@ class TestLogThroughput:
         print(f"Total logs:     {total_count:,}")
         print(f"Elapsed time:   {elapsed:.3f} seconds")
         print(f"Throughput:     {throughput:,.0f} logs/second")
+        print(f"Serial ref:     {seri_throughput:,.0f} logs/second")
+        print(f"Ratio:          {oran:.2f}x (concurrent / serial)")
         print(f"{'=' * 60}")
 
-        assert (
-            throughput >= MIN_ACCEPTABLE_THROUGHPUT / 2
-        ), f"Concurrent throughput too low: {throughput:,.0f}"
+        # Beklenen deger ~1.0: loglama tamamen serilesse bile 4 is parcacigi
+        # 4 kat isi 4 kat surede bitirir, yani oran 1.0 civari kalir. 1'in
+        # altina dusen kisim kilit konvoyu/baglam degisimi maliyetidir.
+        # Yerel olcumler: 0.73x (bu testin kendi seri referansiyla) ve
+        # 1.23x (ayri kosuda seri teste gore) -- yani bos makinede bile
+        # ~1.7 kat sacilma var. 0.15 tabani bunun ~5 kati altinda, ama
+        # 6 kattan buyuk bir konvoy cezasini hala yakalar. CI'da gercek
+        # oran bu kosudan sonra loglara basilacak; taban o olcumle
+        # daraltilabilir (simdilik yanlis kirmizi riskini almiyoruz).
+        assert oran >= 0.15, (
+            f"Es zamanli loglama seri hizin {oran:.2f} katina dustu "
+            f"({throughput:,.0f} vs {seri_throughput:,.0f} log/sn) -- "
+            "kilit cekismesi olabilir"
+        )
 
     @pytest.mark.performance
     def test_bulk_log_processing(self, bulk_log_data):
@@ -553,37 +586,72 @@ class TestBenchmarkComparison:
     def test_with_vs_without_censoring(self, sample_log_data):
         """
         Test: Censoring overhead comparison.
+
+        Taban cizgisi neden dict.copy() DEGIL: eski olcut sansur suresini
+        `sample_log_data.copy()` suresine boluyordu. dict.copy() C
+        duzeyinde (~0,08 us), sansur ise saf Python (~9 us) -- oran bu
+        yuzden ~10.000% civarinda "normal" ve makine hizindan SADELESMIYOR,
+        tersine buyutuyor: yavas bir runner'da yorumlayici-bagimli pay 5
+        kat artarken C-bagimli payda 1,5 kat artiyor.
+
+        Olcum (7 Eyl 2026): yerel 0,0009 s / 0,1029 s -> %11.286;
+        CI (is 101891468125) 0,0014 s / 0,4240 s -> %29.369. Ayni kod, iki
+        kat farkli "yuzde". Eski 20.000 esigi bu yuzden dustu; kodda bir
+        gerileme yoktu.
+
+        Yerine gecen olcut: ayni sekle sahip, saf Python bir kalibrasyon
+        isine (anahtarlari gez + lower()) gore oran. Iki taraf da
+        yorumlayici-bagimli oldugu icin runner hizi gercekten sadelesiyor.
+        Yerel olcum (bu testin kendi icinde): 1,10 us / 9,11 us = 8,3x.
+        Esik 50x, yani ~6 kat pay; cagri basina regex derlemesi gibi
+        gercek bir gerilemeyi yakalar.
         """
         iterations = 10000
 
-        # Without censoring
+        def kalibrasyon(event_dict):
+            """Sansurle ayni sekilde, ama eslesmesiz saf Python is."""
+            sayac = 0
+            for key in list(event_dict.keys()):
+                if key.lower():
+                    sayac += 1
+            return sayac
+
+        # Isinma: ilk cagrilar import/JIT etkilerini tasimasin.
+        for _i in range(200):
+            kalibrasyon(sample_log_data.copy())
+            censor_sensitive_data(None, None, sample_log_data.copy())
+
         start = time.perf_counter()
         for _i in range(iterations):
-            _ = sample_log_data.copy()
-        without_censor_time = time.perf_counter() - start
+            kalibrasyon(sample_log_data.copy())
+        kalibrasyon_time = time.perf_counter() - start
 
-        # With censoring
         start = time.perf_counter()
         for _i in range(iterations):
             censor_sensitive_data(None, None, sample_log_data.copy())
         with_censor_time = time.perf_counter() - start
 
-        overhead_pct = ((with_censor_time / without_censor_time) - 1) * 100
+        oran = with_censor_time / kalibrasyon_time
 
         print(f"\n{'=' * 60}")
         print("CENSORING OVERHEAD TEST")
         print(f"{'=' * 60}")
-        print(f"Without censoring: {without_censor_time:.4f} seconds")
-        print(f"With censoring:    {with_censor_time:.4f} seconds")
-        print(f"Overhead:          {overhead_pct:.1f}%")
+        print(
+            f"Calibration:       {kalibrasyon_time:.4f} s "
+            f"({kalibrasyon_time / iterations * 1e6:.2f} us/kayit)"
+        )
+        print(
+            f"With censoring:    {with_censor_time:.4f} s "
+            f"({with_censor_time / iterations * 1e6:.2f} us/kayit)"
+        )
+        print(f"Ratio:             {oran:.2f}x (censor / calibration)")
         print(f"{'=' * 60}")
 
-        # Censoring overhead should be reasonable
-        # Note: On some platforms dict.copy() is highly optimized, making
-        # the relative overhead of censoring appear very high in percentage terms
-        assert (
-            overhead_pct < 20000
-        ), f"Censoring overhead {overhead_pct:.1f}% is too high"
+        assert oran < 50, (
+            f"Sansur maliyeti kalibrasyon isinin {oran:.1f} katina cikti "
+            f"({with_censor_time / iterations * 1e6:.1f} us/kayit); "
+            "yerel referans 8,3x"
+        )
 
     @pytest.mark.performance
     def test_different_log_levels(self):

@@ -6,7 +6,9 @@ Advanced error context management, distributed tracing, and debugging support
 import asyncio
 import functools
 import inspect
+import linecache
 import logging
+import sys
 import threading
 import traceback
 import uuid
@@ -16,12 +18,20 @@ from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from types import FrameType
 from typing import Any, Optional
 
 from .exceptions import EnhancedServiceError
 from .unified_config import get_unified_config
 
 logger = logging.getLogger(__name__)
+
+# Yerel degisken suzgeci icin guvenli/serilestirilebilir tipler. Modul
+# duzeyinde sabit: (a) isinstance cagrisi basina demet kurulmuyor,
+# (b) satir ici demet olmadigi icin UP038 (pinlenmis ruff 0.7.1 `X | Y`
+# ister, guncel ruff kurali hic uygulamaz) iki surumde de tetiklenmiyor --
+# `X | Y` bicimi ise her cagrida bir UnionType uretecegi icin daha yavas.
+_BASIT_TIPLER = (str, int, float, bool, list, dict)
 
 # ==================== CONTEXT VARIABLES ====================
 
@@ -41,6 +51,11 @@ error_context_var: ContextVar[Optional["ErrorContext"]] = ContextVar(
 # ==================== TRACE MODELS ====================
 
 
+# UP042 (str+Enum yerine StrEnum) bilerek uygulanmadi: StrEnum'da
+# str(SpanKind.SERVER) "server" doner, str+Enum karisiminda "SpanKind.SERVER".
+# Bu deger span'lerin disa aktarim/serilestirme yolunda kullaniliyor, yani
+# otomatik duzeltme GORUNUR bir davranis degisikligi olurdu. Ayri, olculmus
+# bir degisiklik olarak ele alinmali (bkz. docs/guvenlik-borcu.md).
 class SpanKind(str, Enum):
     """Types of spans in distributed tracing"""
 
@@ -51,6 +66,7 @@ class SpanKind(str, Enum):
     CONSUMER = "consumer"
 
 
+# UP042: yukaridaki SpanKind ile ayni gerekce.
 class SpanStatus(str, Enum):
     """Span status types"""
 
@@ -240,8 +256,7 @@ class ErrorContext:
                 local_vars = {
                     k: v
                     for k, v in caller_frame.f_locals.items()
-                    if not k.startswith("_")
-                    and isinstance(v, (str, int, float, bool, list, dict))
+                    if not k.startswith("_") and isinstance(v, _BASIT_TIPLER)
                 }
             except (AttributeError, TypeError) as e:
                 logger.debug(f"Failed to extract local vars: {e}")
@@ -295,23 +310,50 @@ class ErrorContext:
             span_id=span_id,
         )
 
+    # inspect.stack()[3:8] ile ayni 5 kareyi uretir, ama TUM yigini
+    # gezmeden. Eski uygulama inspect.stack() cagirip sonucu dilimliyordu;
+    # inspect.stack() her kare icin getframeinfo -> findsource ->
+    # linecache.checkcache(dosya) yolunu isletir, yani kare basina bir
+    # os.stat. Maliyet yigin derinligiyle buyuyordu, kullanilan kare sayisi
+    # ise hep 5'ti.
+    #
+    # Olcum (7 Eyl 2026, yerel; _ci_art/yigin_aday_olc.py, cikti ozdes):
+    #   derinlik +0   : 0.1737 ms -> 0.0042 ms
+    #   derinlik +30  : 0.9366 ms -> 0.0060 ms
+    #   derinlik +120 : 7.9926 ms -> 0.0092 ms   (~870x)
+    # CI'da (paylasimli runner, pytest-xdist yigini) cagri basina ~109 ms
+    # olculmustu; test_error_context_performance bu yuzden dusuyordu.
+    _YIGIN_ATLA = 3  # _get_call_stack + create_from_current_context + 1
+    _YIGIN_KARE = 5  # eski dilimin (3:8) uzunlugu
+
     @staticmethod
     def _get_call_stack() -> list[dict[str, Any]]:
-        """Get call stack information"""
-        stack = []
+        """Get call stack information (5 frames, without walking the whole stack)"""
+        stack: list[dict[str, Any]] = []
+
+        kare: FrameType | None
+        try:
+            kare = sys._getframe(ErrorContext._YIGIN_ATLA)
+        except ValueError:
+            # Yigin 3 kareden sigsa eski dilim de bos donerdi.
+            return stack
 
         try:
-            for frame_info in inspect.stack()[3:8]:  # Skip first few frames
+            for _ in range(ErrorContext._YIGIN_KARE):
+                if kare is None:
+                    break
+                satir = linecache.getline(
+                    kare.f_code.co_filename, kare.f_lineno, kare.f_globals
+                ).strip()
                 stack.append(
                     {
-                        "function": frame_info.function,
-                        "filename": frame_info.filename,
-                        "lineno": frame_info.lineno,
-                        "code": frame_info.code_context[0].strip()
-                        if frame_info.code_context
-                        else None,
+                        "function": kare.f_code.co_name,
+                        "filename": kare.f_code.co_filename,
+                        "lineno": kare.f_lineno,
+                        "code": satir or None,
                     }
                 )
+                kare = kare.f_back
         except (AttributeError, IndexError, TypeError) as e:
             logger.debug(f"Failed to extract stack trace: {e}")
 
@@ -417,6 +459,9 @@ class TracingManager:
         self.span_processors: list[Callable] = []
         self.config = get_unified_config()
         self.lock = threading.Lock()
+        # RUF006: create_task'in donusune referans tutulmazsa gorev cop
+        # toplayiciya yem olabilir ve span isleme SESSIZCE dusebilir.
+        self._bekleyen_span_gorevleri: set[asyncio.Task] = set()
 
     def add_span_processor(self, processor: Callable):
         """Add span processor for custom handling"""
@@ -483,12 +528,14 @@ class TracingManager:
             try:
                 if asyncio.iscoroutinefunction(processor):
                     # Schedule async processor
-                    asyncio.create_task(processor(span))
+                    gorev = asyncio.create_task(processor(span))
+                    self._bekleyen_span_gorevleri.add(gorev)
+                    gorev.add_done_callback(self._bekleyen_span_gorevleri.discard)
                 else:
                     processor(span)
             except Exception as e:
                 # Don't let processor failures affect the main flow
-                print(f"Span processor failed: {e}")
+                logger.warning("Span processor failed: %s", e)
 
     def cleanup_trace(self, trace_id: str):
         """Clean up completed trace"""
@@ -684,7 +731,7 @@ _global_tracer: TracingManager | None = None
 
 def get_tracer() -> TracingManager:
     """Get global tracing manager instance"""
-    global _global_tracer
+    global _global_tracer  # noqa: PLW0603 -- surec genelinde tek tracer (singleton)
     if _global_tracer is None:
         _global_tracer = TracingManager()
     return _global_tracer
@@ -692,7 +739,7 @@ def get_tracer() -> TracingManager:
 
 def setup_tracing(processors: list[Callable] | None = None) -> TracingManager:
     """Setup global tracing"""
-    global _global_tracer
+    global _global_tracer  # noqa: PLW0603 -- get_tracer ile ayni singleton
     _global_tracer = TracingManager()
 
     if processors:
@@ -811,7 +858,7 @@ def error_context_decorator(
 
             @functools.wraps(func)
             async def async_wrapper(*args, **kwargs):
-                context_kwargs = {"operation_name": name}
+                context_kwargs: dict[str, Any] = {"operation_name": name}
 
                 if capture_args:
                     context_kwargs["function_args"] = {
@@ -833,7 +880,7 @@ def error_context_decorator(
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            context_kwargs = {"operation_name": name}
+            context_kwargs: dict[str, Any] = {"operation_name": name}
 
             if capture_args:
                 context_kwargs["function_args"] = {
