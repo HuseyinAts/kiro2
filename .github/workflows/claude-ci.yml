@@ -201,75 +201,15 @@ jobs:
             backend/bandit-report.json
             backend/safety-report.json
 
-  # Claude Code Review
-  claude-review:
-    runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get changed files
-        id: changed-files
-        run: |
-          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | tr '\n' ' ')" >> $GITHUB_OUTPUT
-
-      - name: Claude Code Analysis
-        uses: anthropics/claude-code-action@v2
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          task: |
-            Bu PR'ı incele ve şunları kontrol et:
-
-            1. KIRO2 Coding Standards
-               - Type hints zorunlu
-               - Async I/O kullanımı
-               - Pydantic validation
-
-            2. Boris Cherny Verification
-               - Gerçek test assertions (assert True yasak)
-               - Exit code kuralları
-               - Reward hacking pattern yok
-
-            3. OWASP Security
-               - SQL injection riski
-               - XSS koruması
-               - Input validation
-
-            4. IRT/FSRS/ZPD Parametreleri (varsa)
-               - difficulty: [-4.0, 4.0]
-               - discrimination: [0.2, 4.0]
-               - guessing: [0.0, 0.35]
-
-            5. Türkçe Karakter Desteği
-               - UTF-8 encoding
-               - I/ı dönüşümü
-
-            Değişen dosyalar: ${{ steps.changed-files.outputs.files }}
-          headless: true
-          timeout: 600000
-          max_turns: 30
-          output_format: json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Post review comment
-        if: success()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const review = fs.readFileSync('.claude/ci/artifacts/review.json', 'utf8');
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `## 🤖 Claude Code Review\n\n${JSON.parse(review).summary}\n\n---\n*Automated review by Claude Code*`
-            });
+  # KALDIRILDI (8 Eyl 2026): buradaki `claude-review` isi calisamaz
+  # durumdaydi ve claude-review.yml'deki `auto-review` isinin kopyasiydi.
+  #   * `claude-code-action@v2` diye bir ref YOK (tag 404, branch []),
+  #   * girdilerin besi upstream action.yml'de tanimli degil
+  #     (task/headless/timeout/max_turns/output_format),
+  #   * "Post review comment" adimi hic uretilmeyen bir review.json okuyor.
+  # Patlamamis olmasinin tek sebebi `needs: [backend-tests, frontend-tests]`
+  # zincirinin her PR'da kirmizi olmasiydi; testler yesile donunce aniden
+  # kirmizi verecekti. Inceleme claude-review.yml'de surdurulyor.
 
   # Quality Gate
   quality-gate:

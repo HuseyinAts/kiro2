@@ -33,10 +33,21 @@ jobs:
           fetch-depth: 0
 
       - name: Run Claude Review
-        uses: anthropics/claude-code-action@v1
+        # SURUM SABITLENDI (8 Eyl 2026). `@v1` kayan bir major takma addi;
+        # upstream bugun 20:39 UTC'de v1.0.218'i yayinladi ve 22:53'teki
+        # kosumumuz "Claude Code native binary not found at
+        # /home/runner/.local/bin/claude" ile dustu. Kayan ref, altimizdan
+        # degisen bir bagimliliktir; surum sabitlenerek o sinif kapatildi.
+        # v1.0.217 = 6 Eyl 2026, kirilmadan onceki son surum.
+        #
+        # `model:` KALDIRILDI: action.yml girdi listesinde boyle bir girdi
+        # yok (birincil kaynaktan okundu), runner da
+        # "Unexpected input(s) 'model'" uyarisi veriyordu. Model artik
+        # `claude_args` uzerinden geciliyor.
+        uses: anthropics/claude-code-action@v1.0.217
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-sonnet-4-20250514
+          claude_args: "--model claude-sonnet-4-20250514"
           prompt: |
             Bu PR'i KIRO2 standartlarina gore incele.
 
@@ -119,10 +130,21 @@ jobs:
           fi
 
       - name: Run Claude Action
-        uses: anthropics/claude-code-action@v1
+        # SURUM SABITLENDI (8 Eyl 2026). `@v1` kayan bir major takma addi;
+        # upstream bugun 20:39 UTC'de v1.0.218'i yayinladi ve 22:53'teki
+        # kosumumuz "Claude Code native binary not found at
+        # /home/runner/.local/bin/claude" ile dustu. Kayan ref, altimizdan
+        # degisen bir bagimliliktir; surum sabitlenerek o sinif kapatildi.
+        # v1.0.217 = 6 Eyl 2026, kirilmadan onceki son surum.
+        #
+        # `model:` KALDIRILDI: action.yml girdi listesinde boyle bir girdi
+        # yok (birincil kaynaktan okundu), runner da
+        # "Unexpected input(s) 'model'" uyarisi veriyordu. Model artik
+        # `claude_args` uzerinden geciliyor.
+        uses: anthropics/claude-code-action@v1.0.217
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-sonnet-4-20250514
+          claude_args: "--model claude-sonnet-4-20250514"
           prompt: |
             Kullanici istegi: ${{ github.event.comment.body }}
             Komut tipi: ${{ steps.parse.outputs.command }}
