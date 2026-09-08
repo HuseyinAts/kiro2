@@ -8158,3 +8158,58 @@ bir paketin icinde oksuz duruyor.
 2. **`git gc` / repack.** Bozuk blob oksuz oldugu icin bir repack onu
    duserdi. Calistirmadim: `gc` dangling nesneleri de siler ve bu depoda
    kurtarilabilir is olabilecek 30+ dangling commit var.
+
+### gc kapanisi -- `git gc` degil, `repack -a -d` + `prune` (8 Eylul 2026)
+
+Yukaridaki "Huseyin'in karari" maddesi cozuldu. Neden duz `git gc`
+CALISTIRILMADI, iki sebep:
+
+1. **gc bozuk nesneyi okumak zorunda kalirdi.** `git gc`, `repack -A -d`
+   isletir: erisilemez nesneleri silmeden once LOOSE'a acar. CRC'si bozuk
+   olan nesne tam da o adimda okunacakti; gc yarida patlayabilir ya da
+   bozuk bir loose nesne yazabilirdi. `repack -a -d` (kucuk a) erisilemezi
+   hic okumadan disarida birakir.
+2. **gc reflog'lari da budar.** Bu sabah depoyu kurtaran sey tam olarak
+   `.git/logs/HEAD` reflog'uydu (SS10.79). `gc`'nin varsayilan reflog
+   suresi (90/30 gun) o guvenlik agini inceltirdi. Reflog'lara
+   DOKUNULMADI.
+
+Once olcum: 274 dangling commit vardi. Siniflandirildi --
+
+    stash artigi  (WIP on / index on / On <dal>:)  : 234
+    gercek commit (rebase/amend ile oksuz kalmis)  :  40
+
+40'inin her biri `refs/kurtarma/<kisa-sha>` altina baglandi, canli 4 stash
+de `refs/kurtarma/stash-N` olarak etiketlendi -- yani repack onlari
+erisilebilir sayip KORUDU. Sadece 234 stash artigi dusuruldu.
+
+Repack oncesi `.git`'in tam kopyasi alindi
+(`C:\Users\husey\kiro2_git_yedek_20260908`, robocopy, boyut orani 1.000,
+yedekten dal SHA'si okunarak dogrulandi) -- disk ayni gun veri kaybettigi
+icin.
+
+Sonuc:
+
+    .git boyutu     : 6.893 MB -> 6.227 MB   (-666 MB)
+    loose nesne     : 7.289 -> 0
+    paket sayisi    : 1
+    garbage         : 6 -> 0
+    fsck hata satiri: 1 -> 0
+    dangling nesne  : 434 -> 0
+    HEAD / origin   : e7da84954 (degismedi)
+    yerel dal 43, koruma ref 44, stash 4  -- hepsi yerinde
+
+CRC'si bozuk nesnenin ne oldugu da olculdu: 78 baytlik bir blob, icerigi
+daha onceki bir gecmis-temizligi sirasinda zaten sansurlenmis bir kabuk
+hata satiri. Veri saglamdi; bozuk olan yalnizca paket indeksindeki CRC
+kaydiydi -- paket yeniden yazilinca sorun kalmadi, sonra prune ile nesne
+tamamen dustu.
+
+KALAN IKI KALEM (ikisi de sizin):
+
+- `C:\Users\husey\kiro2_git_yedek_20260908` (6,9 GB) duruyor. Depo
+  saglikli oldugundan emin olunca silebilirsiniz.
+- `refs/kurtarma/*` (44 ref) kurtarilan isi gorunur tutuyor.
+  `git log --oneline refs/kurtarma/<sha>` ile bakip
+  `git update-ref -d refs/kurtarma/<ad>` ile teker teker temizleyebilir,
+  ya da hepsini birakabilirsiniz -- maliyeti yok.
