@@ -4,6 +4,8 @@ Sprint 7: Test Coverage
 
 Tests for Redis-based distributed rate limiting system.
 """
+
+import os
 import time
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -90,9 +92,7 @@ class TestAdvancedRateLimiter:
     def test_get_rate_limit_key(self, rate_limiter):
         """Test Redis key generation"""
         key = rate_limiter._get_rate_limit_key(
-            identifier="user-123",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         assert key == "ratelimit:free:/api/v1/test:user-123"
@@ -101,7 +101,7 @@ class TestAdvancedRateLimiter:
         key2 = rate_limiter._get_rate_limit_key(
             identifier="192.168.1.1",
             endpoint="/api/v1/auth/login",
-            tier=UserTier.PREMIUM
+            tier=UserTier.PREMIUM,
         )
 
         assert key2 == "ratelimit:premium:/api/v1/auth/login:192.168.1.1"
@@ -113,7 +113,9 @@ class TestAdvancedRateLimiter:
         assert rate_limiter._categorize_endpoint("/api/v1/auth/register") == "auth"
 
         # Export endpoints
-        assert rate_limiter._categorize_endpoint("/api/v1/kvkk/privacy/export") == "export"
+        assert (
+            rate_limiter._categorize_endpoint("/api/v1/kvkk/privacy/export") == "export"
+        )
         assert rate_limiter._categorize_endpoint("/api/v1/data/delete") == "export"
 
         # AI endpoints
@@ -144,19 +146,46 @@ class TestAdvancedRateLimiter:
         assert rate_limiter._get_tier_limit(UserTier.FREE, "nonexistent") == 60
 
     def test_endpoint_specific_limits(self, rate_limiter):
-        """Test endpoint-specific limit configuration"""
+        """Test endpoint-specific limit configuration.
+
+        Login limiti burada SABIT SAYI olarak yazilmaz. Eski hali `== 5` idi
+        ve bu deger belgelenmis bir politika degil, 18 Agu 2026'da OLCULEN bir
+        kusurdu: paylasimli NAT arkasindaki bir sinifta 10 esszamanli
+        ogrencinin 10'u da HTTP 429 aliyor, Golden Flow'da 15 test dusuyordu.
+        Uretim kodu o zaman env tabanli `_LOGIN_RPM`e (varsayilan 300)
+        donduruldu; bu test guncellenmedi ve geride kaldi.
+
+        Sabit sayiya donmek yerine uretimle AYNI sozlesme okunuyor, boylece
+        operator env ile degeri degistirdiginde test yalan soylemez. Bu iddia
+        yalnizca BAGLANTIYI olcer (uc gercekten `_LOGIN_RPM`den besleniyor
+        mu); degerin kendisinin politikayla tutarli ve paylasimli-IP icin
+        yeterli oldugunu olcen civiler ayri dosyada:
+        tests/fast/test_rate_limit_tutarliligi.py
+        """
+        beklenen_login = int(
+            os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300
+        )
+
         assert "/api/v1/auth/login" in rate_limiter.endpoint_limits
-        assert rate_limiter.endpoint_limits["/api/v1/auth/login"]["limit"] == 5
+        assert (
+            rate_limiter.endpoint_limits["/api/v1/auth/login"]["limit"]
+            == beklenen_login
+        )
         assert rate_limiter.endpoint_limits["/api/v1/auth/login"]["window"] == 60
 
         assert "/api/v1/kvkk/privacy/export" in rate_limiter.endpoint_limits
         assert rate_limiter.endpoint_limits["/api/v1/kvkk/privacy/export"]["limit"] == 2
-        assert rate_limiter.endpoint_limits["/api/v1/kvkk/privacy/export"]["window"] == 3600
+        assert (
+            rate_limiter.endpoint_limits["/api/v1/kvkk/privacy/export"]["window"]
+            == 3600
+        )
 
     @pytest.mark.asyncio
     async def test_connect(self):
         """Test Redis connection"""
-        with patch("core.advanced_rate_limiter.redis.from_url", new_callable=AsyncMock) as mock_from_url:
+        with patch(
+            "core.advanced_rate_limiter.redis.from_url", new_callable=AsyncMock
+        ) as mock_from_url:
             mock_redis = AsyncMock()
             mock_from_url.return_value = mock_redis
 
@@ -164,9 +193,7 @@ class TestAdvancedRateLimiter:
             await limiter.connect()
 
             mock_from_url.assert_called_once_with(
-                "redis://localhost:6379/0",
-                encoding="utf-8",
-                decode_responses=True
+                "redis://localhost:6379/0", encoding="utf-8", decode_responses=True
             )
             assert limiter.redis_client == mock_redis
 
@@ -181,13 +208,13 @@ class TestAdvancedRateLimiter:
         """Test rate limit check when under limit"""
         # Setup mock pipeline
         pipeline_mock = AsyncMock()
-        pipeline_mock.execute = AsyncMock(return_value=[None, 5, None, None])  # 5 current requests
+        pipeline_mock.execute = AsyncMock(
+            return_value=[None, 5, None, None]
+        )  # 5 current requests
         mock_redis.pipeline.return_value = pipeline_mock
 
         allowed, info = await rate_limiter.check_rate_limit(
-            identifier="user-123",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         assert allowed is True
@@ -209,9 +236,7 @@ class TestAdvancedRateLimiter:
         mock_redis.zrange = AsyncMock(return_value=[("req", now - 50)])
 
         allowed, info = await rate_limiter.check_rate_limit(
-            identifier="user-123",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         assert allowed is False
@@ -226,14 +251,24 @@ class TestAdvancedRateLimiter:
         pipeline_mock.execute = AsyncMock(return_value=[None, 2, None, None])
         mock_redis.pipeline.return_value = pipeline_mock
 
+        # Uc-ozel limit, tier limitini (FREE=60) EZMELI. Beklenen deger sabit
+        # 5 degil: 5 olculmus bir kusurdu, uretim env tabanli _LOGIN_RPM'e
+        # (varsayilan 300) donduruldu. Gerekce: test_endpoint_specific_limits
+        # docstring'i + tests/fast/test_rate_limit_tutarliligi.py
+        beklenen_login = int(
+            os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300
+        )
+        assert beklenen_login != 60, (
+            "Bu test uc-ozel limitin tier limitini ezdigini olcuyor; ikisi "
+            "esitse iddia bos kalir."
+        )
+
         allowed, info = await rate_limiter.check_rate_limit(
-            identifier="user-123",
-            endpoint="/api/v1/auth/login",  # Has specific limit of 5
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/auth/login", tier=UserTier.FREE
         )
 
         assert allowed is True
-        assert info["limit"] == 5  # Endpoint-specific, not tier-based (60)
+        assert info["limit"] == beklenen_login
         assert info["window"] == 60
 
     @pytest.mark.asyncio
@@ -245,18 +280,14 @@ class TestAdvancedRateLimiter:
 
         # FREE tier would be blocked (60 limit)
         allowed_free, info_free = await rate_limiter.check_rate_limit(
-            identifier="user-free",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-free", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         assert allowed_free is False  # 100 > 60
 
         # PREMIUM tier should be allowed (300 limit)
         allowed_premium, info_premium = await rate_limiter.check_rate_limit(
-            identifier="user-premium",
-            endpoint="/api/v1/test",
-            tier=UserTier.PREMIUM
+            identifier="user-premium", endpoint="/api/v1/test", tier=UserTier.PREMIUM
         )
 
         assert allowed_premium is True  # 100 < 300
@@ -266,9 +297,7 @@ class TestAdvancedRateLimiter:
     async def test_reset_rate_limit(self, rate_limiter, mock_redis):
         """Test rate limit reset"""
         await rate_limiter.reset_rate_limit(
-            identifier="user-123",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         expected_key = "ratelimit:free:/api/v1/test:user-123"
@@ -280,9 +309,7 @@ class TestAdvancedRateLimiter:
         mock_redis.zcard = AsyncMock(return_value=45)
 
         info = await rate_limiter.get_rate_limit_info(
-            identifier="user-123",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         assert info["limit"] == 60
@@ -323,9 +350,7 @@ class TestAdvancedRateLimiter:
         mock_redis.pipeline.return_value = pipeline_instance
 
         await rate_limiter.check_rate_limit(
-            identifier="user-123",
-            endpoint="/api/v1/test",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/test", tier=UserTier.FREE
         )
 
         # Verify Redis commands were called on the pipeline
@@ -342,15 +367,12 @@ class TestAdvancedRateLimiter:
         mock_redis.pipeline.return_value = pipeline_mock
 
         allowed, info = await rate_limiter.check_rate_limit(
-            identifier="user-123",
-            endpoint="/api/v1/ai/chat",
-            tier=UserTier.FREE
+            identifier="user-123", endpoint="/api/v1/ai/chat", tier=UserTier.FREE
         )
 
         # Endpoint-specific limit for /api/v1/ai/chat is 20
         assert info["limit"] == 20
         assert info["remaining"] == 0  # 20 - 19 - 1 = 0
-
 
     @pytest.mark.asyncio
     async def test_export_endpoint_hourly_limit(self, rate_limiter, mock_redis):
@@ -362,7 +384,7 @@ class TestAdvancedRateLimiter:
         allowed, info = await rate_limiter.check_rate_limit(
             identifier="user-123",
             endpoint="/api/v1/kvkk/privacy/export",
-            tier=UserTier.FREE
+            tier=UserTier.FREE,
         )
 
         assert allowed is True
