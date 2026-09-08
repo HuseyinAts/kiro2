@@ -351,14 +351,31 @@ jobs:
         run: |
           source .venv/bin/activate
           cd backend
-          # OLCUM (6 Eyl 2026): esik 60 idi, GERCEK kapsama 22.27-22.42
-          # araliginda. Yani kapi her kosumda kapaliydi ve Backend Tests
-          # master'da 10/10 kirmizi kaliyordu -- surekli kirmizi bir kapi
-          # hicbir regresyonu yakalayamaz, cunku zaten hep kirmizi.
-          # Esik olculen tabanin hemen altina (20) cekildi: bugunku durum
-          # yesil gecer ama GERCEK bir dusus (>2 puan kapsama kaybi)
-          # yakalanir. Bu bir hedef DEGIL, bir taban -- kademeli olarak
-          # yukseltilecek (bkz. docs/guvenlik-borcu.md SS10.53).
+          # OLCUM (8 Eyl 2026, SS10.80): esik once 60 idi (her kosumda
+          # kapali), sonra 20'ye cekildi. 20 rakami "gercek kapsama
+          # 22.27-22.42" olcumune dayaniyordu -- ama O OLCUM DE KESIK bir
+          # kosumdan geliyordu: `-x` suite'i ~%23'unde durduruyordu, yani
+          # kapsama da suite'in yalnizca ucte birinden hesaplaniyordu.
+          #
+          # `-x` kalkip suite sonuna kadar kosunca gercek deger olculdu.
+          # Uc tam kosum, uc farkli commit, uc farkli runner yuku:
+          #   450af87fd master  14772 passed  43.04%   (448s)
+          #   c34cb604d PR#181  14773 passed  43.02%   (369s)
+          #   0db5bf781 PR#181  14773 passed  43.03%   (456s)
+          # Kosumlar arasi oynama: 0.02 PUAN. Ucu de BOZUK ortamda alindi
+          # (Elasticsearch erisilemez, canli PostgreSQL yok) -- o servisler
+          # ayaga kalkarsa daha cok test kosar ve kapsama ARTAR, yani
+          # 43.02 karamsar uc.
+          #
+          # Esik 41.0: olculen tabandan ~2 puan asagida, gurultunun ~100
+          # kati. Niyet #181'de yazilanla ayni ("gercek bir dusus >2 puan
+          # yakalanmali"), sadece artik dogru tabandan olculuyor. 20'de
+          # kalsaydi kapi 23 puanlik bir cokusten once agzini acmazdi.
+          #
+          # Hala bir TABAN, hedef degil. Yakalayamadigi sey: yavas erozyon
+          # (PR basina 0.5 puan dort PR boyunca sessiz gecer). Onun cozumu
+          # esik degil, master'in son degerine karsi olcen bir cirtlak
+          # (ratchet); ayri is olarak duruyor.
           #
           # `-x` KALDIRILDI (6 Eyl 2026). OLCUM: bu bayrakla kosum ILK
           # basarisizlikta duruyordu, yani her CI turu geriye kalan
@@ -379,7 +396,7 @@ jobs:
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml \
             --cov-report=html:htmlcov \
-            --cov-fail-under=20 \
+            --cov-fail-under=41 \
             --junit-xml=pytest-report.xml \
             -v
 
