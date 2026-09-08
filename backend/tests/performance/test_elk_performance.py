@@ -62,11 +62,21 @@ class _SessizAlici(io.TextIOBase):
     CPython/isletim sistemi ozelligine cevirip depo kodunu gorunmez yapiyor.
     """
 
+    def __init__(self) -> None:
+        super().__init__()
+        # Sayaclar olcumun gercekten bu aliciya dustugunu KANITLAR; alici
+        # devrede olmasaydi test hizli ama anlamsiz olurdu.
+        # logging.Handler.handle() emit'i kendi kilidiyle sardigi icin
+        # sayaclar 4 is parcaciginda da kesin.
+        self.kayit_sayisi = 0
+        self.bosaltma_sayisi = 0
+
     def write(self, s: str) -> int:
+        self.kayit_sayisi += 1
         return len(s)
 
     def flush(self) -> None:
-        pass
+        self.bosaltma_sayisi += 1
 
 
 @pytest.fixture
@@ -74,13 +84,19 @@ def sessiz_log_alicisi():
     """Kok logger'in handler'larini olcum suresince saf Python aliciya cevirir."""
     kok = logging.getLogger()
     eski = list(kok.handlers)
-    yeni = logging.StreamHandler(_SessizAlici())
+    eski_seviye = kok.level
+    alici = _SessizAlici()
+    yeni = logging.StreamHandler(alici)
     for h in eski:
         kok.removeHandler(h)
     kok.addHandler(yeni)
+    # pytest'in logging eklentisi kok seviyesini yukseltebiliyor; olcumun
+    # gercekten kayit uretmesi gerektigi icin INFO'ya zorlaniyor (sonra geri).
+    kok.setLevel(logging.INFO)
     try:
-        yield
+        yield alici
     finally:
+        kok.setLevel(eski_seviye)
         kok.removeHandler(yeni)
         for h in eski:
             kok.addHandler(h)
@@ -215,6 +231,13 @@ class TestLogThroughput:
         islemci zincirinin ve logger'in Python duzeyindeki es zamanlilik
         davranisini -- olcuyor. Ortamin alicisi (pytest'in yakaladigi boru,
         tty, dosya) olcumden cikarildi.
+
+        (4) Alicinin sayaci bir kusur daha yakaladi: ilk halinde kok
+        logger'in seviyesi pytest tarafindan yukseltildigi icin alici SIFIR
+        kayit goruyordu ve "1,01x" diye bir sayi uretilmisti -- yani hicbir
+        sey olcmeyen bir yol. Fixture artik seviyeyi de zorluyor ve test,
+        orani degerlendirmeden ONCE 12.500 kaydin gercekten aliciya
+        dustugunu dogruluyor. Duzeltilmis yerel olcum: 0,58x.
         """
         count_per_thread = 2500
         thread_count = 4
@@ -254,12 +277,21 @@ class TestLogThroughput:
         print(f"Ratio:          {oran:.2f}x (concurrent / serial)")
         print(f"{'=' * 60}")
 
-        # Beklenen deger ~1.0: loglama tamamen serilesse bile 4 is parcacigi
-        # 4 kat isi 4 kat surede bitirir. Saf Python aliciyla 2 cekirdekli
-        # Linux'ta 0,99x olculdu. 0,5 tabani genis pay birakirken, islemci
-        # zincirine girecek gercek bir kilit cekismesini (2 kattan buyuk
-        # ceza) yakalar.
-        assert oran >= 0.5, (
+        # Once olcumun gercekten kontrollu aliciya dustugunu kanitla:
+        # aksi halde oran "hicbir sey yapmayan bir yol"u olcuyor olabilirdi.
+        beklenen_kayit = count_per_thread + total_count
+        assert sessiz_log_alicisi.kayit_sayisi == beklenen_kayit, (
+            f"Alici {sessiz_log_alicisi.kayit_sayisi} kayit gordu, "
+            f"beklenen {beklenen_kayit} -- olcum bu alicidan gecmemis"
+        )
+
+        # Taban 0,25 neden: kontrollu aliciyla olculen band 0,58x (Windows,
+        # pytest altinda) - 0,99x (2 cekirdekli Linux, pytest'siz). Yani
+        # CPython'un kendi kilit/GIL maliyeti bile platforma gore ~1,7 kat
+        # oynuyor. Patolojik band ise cok asagida: gercek fd'ye yazan yolda
+        # 0,07x (CI) olculdu. 0,25, iki bandin ortasinda ve her iki yana da
+        # 2 kattan fazla pay birakiyor.
+        assert oran >= 0.25, (
             f"Es zamanli loglama seri hizin {oran:.2f} katina dustu "
             f"({throughput:,.0f} vs {seri_throughput:,.0f} log/sn) -- "
             "kilit cekismesi olabilir"
@@ -649,9 +681,10 @@ class TestBenchmarkComparison:
         Yerine gecen olcut: ayni sekle sahip, saf Python bir kalibrasyon
         isine (anahtarlari gez + lower()) gore oran. Iki taraf da
         yorumlayici-bagimli oldugu icin runner hizi gercekten sadelesiyor.
-        Yerel olcum (bu testin kendi icinde): 1,10 us / 9,11 us = 8,3x.
-        Esik 50x, yani ~6 kat pay; cagri basina regex derlemesi gibi
-        gercek bir gerilemeyi yakalar.
+        Yerel olcum (bu testin kendi icinde, uc kosum): 8,3x / 9,4x / 18,5x
+        -- makinenin yuku orani da bir miktar oynatiyor. Esik 50x, en kotu
+        gozlemin ~2,7 kati; cagri basina regex derlemesi gibi gercek bir
+        gerilemeyi (100x+) yakalar.
         """
         iterations = 10000
 
@@ -697,7 +730,7 @@ class TestBenchmarkComparison:
         assert oran < 50, (
             f"Sansur maliyeti kalibrasyon isinin {oran:.1f} katina cikti "
             f"({with_censor_time / iterations * 1e6:.1f} us/kayit); "
-            "yerel referans 8,3x"
+            "yerel referans bandi 8-19x"
         )
 
     @pytest.mark.performance

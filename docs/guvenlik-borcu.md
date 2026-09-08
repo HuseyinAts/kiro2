@@ -7914,7 +7914,26 @@ Testin son hali alicisini KENDISI kuruyor (`sessiz_log_alicisi` fixture'i:
 kok logger handler'lari olcum suresince saf Python aliciya cevriliyor,
 sonra geri koyuluyor). Boylece olculen sey deponun sahip oldugu sey oluyor:
 islemci zincirinin ve logger'in Python duzeyindeki es zamanlilik davranisi.
-Taban 0,5 (olculen 0,99'un yarisi).
+
+#### Alicinin sayaci UCUNCU bir kusur yakaladi
+
+Alici, gordugu kayit sayisini sayiyor ve test orani degerlendirmeden ONCE
+12.500 kaydin gercekten oradan gectigini dogruluyor. Bu kontrol ilk denemede
+PATLADI: `Alici 0 kayit gordu, beklenen 12500`. Sebep, pytest'in logging
+eklentisinin kok logger seviyesini yukseltmesiydi -- kayitlar seviye
+suzgecine takiliyor, hicbir handler'a ulasmiyordu. O halde uretilen "1,01x"
+sayisi HICBIR SEYI olcmuyordu ve sayac olmasa dogru kabul edilecekti.
+Fixture artik seviyeyi de INFO'ya zorluyor (sonra geri aliyor).
+
+Duzeltilmis olcumler ve taban:
+
+    2 cekirdekli Linux, pytest'siz, saf Python alici : 0,99x
+    Windows, pytest altinda, saf Python alici        : 0,58x
+    CI, ortamin kendi alicisi (gercek fd)            : 0,07x  <- patolojik
+
+Taban 0,25: normal band (0,58-0,99) ile patolojik band (~0,07) arasinda,
+iki yana da 2 kattan fazla pay birakiyor. "0,5" ilk secimdi ve 0,58'lik
+Windows olcumune fazla yakindi -- yanlis kirmizi uretirdi.
 
 URUN NOTU (iddia degil, olcum): yuksek frekansli loglama, is parcacigi
 sayisi arttikca alicinin sistem cagrisina baglidir; 10.000 log/sn hedefi
