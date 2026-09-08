@@ -33,10 +33,10 @@ dependencies = [
     "alembic==1.13.1",
 
     # Redis
-    "redis[hiredis]==6.4.0",
+    "redis[hiredis]==5.0.1",
 
     # Celery
-    "celery[redis]==5.3.4",
+    "celery[redis]==5.4.0",
     "flower==2.0.1",
     "kombu==5.3.4",
 
