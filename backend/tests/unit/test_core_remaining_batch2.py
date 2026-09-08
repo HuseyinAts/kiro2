@@ -18,15 +18,35 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 # Save sys.modules state to prevent mock pollution in other unit test files
 _RESTORE_MODULES = [
-    "redis", "redis.asyncio", "elasticsearch", "langchain", "langchain_core",
-    "websockets", "websockets.exceptions", "websockets.server", "cryptography",
-    "cryptography.fernet", "zemberek", "structlog", "structlog.stdlib",
-    "structlog.processors", "structlog.dev", "structlog.types", "celery",
-    "celery.schedules", "celery.exceptions", "core.application_metrics",
-    "core.message_queue_system", "core.unified_event_bus",
-    "core.background_job_processor", "core.enhanced_database",
-    "core.transaction_manager", "core.structured_logging", "core.unified_config",
-    "core.realtime_notification_system", "core.exceptions"
+    "redis",
+    "redis.asyncio",
+    "elasticsearch",
+    "langchain",
+    "langchain_core",
+    "websockets",
+    "websockets.exceptions",
+    "websockets.server",
+    "cryptography",
+    "cryptography.fernet",
+    "zemberek",
+    "structlog",
+    "structlog.stdlib",
+    "structlog.processors",
+    "structlog.dev",
+    "structlog.types",
+    "celery",
+    "celery.schedules",
+    "celery.exceptions",
+    "core.application_metrics",
+    "core.message_queue_system",
+    "core.unified_event_bus",
+    "core.background_job_processor",
+    "core.enhanced_database",
+    "core.transaction_manager",
+    "core.structured_logging",
+    "core.unified_config",
+    "core.realtime_notification_system",
+    "core.exceptions",
 ]
 _original_modules = {}
 for _mod in _RESTORE_MODULES:
@@ -79,18 +99,45 @@ _STUBS = [
     "structlog.types",
 ]
 
+# NOT (SS10.66): bu bloktaki kosulu "gercekten kurulu degil" yapmak DENENDI
+# ve GERI ALINDI -- bkz. tests/unit/test_core_partial_batch1.py'deki ayni not
+# (yerel olcum: 624 passed/9 error -> 469 passed/91 failed/89 error).
 for _mod in _STUBS:
     sys.modules.setdefault(_mod, MagicMock())
 
-# Explicitly setup celery stubs as ModuleType to support nested imports
-import types as _types
+# Explicitly setup celery stubs as ModuleType to support nested imports.
+#
+# SS10.66 -- SS10.63'te test_core_partial_batch1.py'de duzeltilen KOK NEDENIN
+# ikinci nushasi. Kosul "sys.modules'te yok" idi; celery bu depoda KURULU
+# (requirements.txt:27 celery[redis]==5.3.4) ama hicbir conftest onu iceri
+# almadigi icin kosul her zaman doguydu ve GERCEK celery paketi sahte bir
+# ModuleType ile degistiriliyordu. Ayni xdist worker'inda sonra iceri alinan
+# core/celery_app.py app'ini sahte Celery'den uretiyor ve
+# tests/test_social_tasks.py::TestCeleryAppSchedule MagicMock uzerinde assert
+# ediyordu (CI kosusu 34072269135'te hala 2 kirmizi).
+#
+# Dogru kosul "kurulu degil": importlib.util.find_spec.
+import importlib.util as _importlib_util  # noqa: E402
+import types as _types  # noqa: E402
+
+_BIZIM_CELERY_STUBLARIMIZ: set[str] = set()
 
 for _cmod in ["celery", "celery.schedules", "celery.exceptions"]:
-    if _cmod not in sys.modules:
-        sys.modules[_cmod] = _types.ModuleType(_cmod)
+    if _cmod in sys.modules:
+        continue
+    try:
+        _celery_kurulu = _importlib_util.find_spec(_cmod) is not None
+    except (ImportError, ValueError):
+        _celery_kurulu = False
+    if _celery_kurulu:
+        continue
+    sys.modules[_cmod] = _types.ModuleType(_cmod)
+    _BIZIM_CELERY_STUBLARIMIZ.add(_cmod)
 
-sys.modules["celery"].Celery = lambda *args, **kwargs: MagicMock()
-sys.modules["celery.schedules"].crontab = MagicMock
+if "celery" in _BIZIM_CELERY_STUBLARIMIZ:
+    sys.modules["celery"].Celery = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
+if "celery.schedules" in _BIZIM_CELERY_STUBLARIMIZ:
+    sys.modules["celery.schedules"].crontab = MagicMock  # type: ignore[attr-defined]
 
 # Core internal deps strategy:
 #   - Modules our code under test calls with fake attribute names (API_REQUEST, EXAM_STARTED, etc.)
@@ -133,8 +180,8 @@ for _mod in _TRY_REAL:
 # error_monitoring has no heavy deps — use the real module so combined test runs work.
 # core.exceptions has no heavy deps — use the real module so combined test runs work.
 # This also ensures all names (AuthorizationError etc.) are available for other test files.
-import importlib as _importlib
-import types as _types
+import importlib as _importlib  # noqa: E402
+import types as _types  # noqa: E402
 
 if "core.exceptions" not in sys.modules:
     try:
@@ -167,11 +214,16 @@ if "core.exceptions" not in sys.modules:
 # ---------------------------------------------------------------------------
 # Now import the modules under test
 # ---------------------------------------------------------------------------
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta  # noqa: E402
 
-import pytest
+import pytest  # noqa: E402
 
-from core.middleware.cache_headers import (
+# SS10.66: B017 (pytest.raises(Exception)) daraltmasi icin gerekli. Yukaridaki
+# blok `core.exceptions`i ya gercek haliyle iceri aliyor ya da ayni adlari
+# tasiyan bir stub koyuyor; her iki durumda da bu ithal calisir ve
+# core/rbac_system.py'nin firlattigi TIPIN AYNISINI verir.
+from core.exceptions import NotFoundError, ValidationError  # noqa: E402
+from core.middleware.cache_headers import (  # noqa: E402
     CacheConfig,
     CachePolicy,
     build_cache_control_header,
@@ -180,14 +232,14 @@ from core.middleware.cache_headers import (
     get_cache_config_for_path,
     should_skip_cache,
 )
-from core.middleware.timing import (
+from core.middleware.timing import (  # noqa: E402
     CORSPreflightCache,
     EndpointStats,
     JWTTokenCache,
     TimingStatsManager,
     get_timing_stats_manager,
 )
-from core.rbac_system import (
+from core.rbac_system import (  # noqa: E402
     Action,
     AuthorizationContext,
     AuthorizationResult,
@@ -209,7 +261,7 @@ from core.rbac_system import (
     initialize_rbac_system,
     revoke_role,
 )
-from core.structured_logger import (
+from core.structured_logger import (  # noqa: E402
     StructuredLogger,
     add_app_context,
     censor_sensitive_data,
@@ -222,13 +274,13 @@ from core.structured_logger import (
     log_error_with_context,
     log_exam_event,
 )
-from core.turkish_exam_event_handlers import (
+from core.turkish_exam_event_handlers import (  # noqa: E402
     ExamEventAction,
     ExamSession,
     TurkishExamEventHandlers,
     TurkishExamType,
 )
-from core.unified_api_gateway import (
+from core.unified_api_gateway import (  # noqa: E402
     APIGateway,
     APIRequest,
     APIResponse,
@@ -553,7 +605,11 @@ class TestRoleManager:
             role_type=RoleType.CUSTOM,
             permissions=["does:not:exist"],
         )
-        with pytest.raises(Exception):
+        # SS10.66: `Exception` yerine GERCEK tip. Genis assert altinda,
+        # create_role bir TypeError/AttributeError firlatsa da test YESIL
+        # kalirdi -- yani dogrulama yaptigi seyi dogrulamiyordu.
+        # core/rbac_system.py:717 ValidationError firlatiyor.
+        with pytest.raises(ValidationError):
             self.rm.create_role(role)
 
     def test_update_role(self):
@@ -614,7 +670,8 @@ class TestRBACManager:
 
     @pytest.mark.asyncio
     async def test_assign_nonexistent_role_raises(self):
-        with pytest.raises(Exception):
+        # SS10.66: bkz. yukarisi. core/rbac_system.py:858 NotFoundError.
+        with pytest.raises(NotFoundError):
             await self.rbac.assign_role_to_user("user2", "ghost_role", "admin")
 
     @pytest.mark.asyncio
@@ -1787,7 +1844,7 @@ class TestJWTTokenCache:
         self.cache = JWTTokenCache(default_ttl=300)
 
     def test_set_and_get(self):
-        token = "test.jwt.token"
+        token = "test.jwt.token"  # noqa: S105
         user_data = {"user_id": 42, "role": "student"}
         self.cache.set(token, user_data)
         result = self.cache.get(token)
@@ -1797,7 +1854,7 @@ class TestJWTTokenCache:
         assert self.cache.get("nonexistent.token") is None
 
     def test_expired_entry_returns_none(self):
-        token = "expired.jwt.token"
+        token = "expired.jwt.token"  # noqa: S105
         user_data = {"user_id": 1}
         self.cache.set(token, user_data, ttl=1)
         # Manually expire
@@ -1807,13 +1864,13 @@ class TestJWTTokenCache:
         assert self.cache.get(token) is None
 
     def test_invalidate(self):
-        token = "valid.token"
+        token = "valid.token"  # noqa: S105
         self.cache.set(token, {"user_id": 5})
         self.cache.invalidate(token)
         assert self.cache.get(token) is None
 
     def test_custom_ttl(self):
-        token = "custom.ttl.token"
+        token = "custom.ttl.token"  # noqa: S105
         self.cache.set(token, {"user_id": 10}, ttl=600)
         assert self.cache.get(token) is not None
 
@@ -1999,7 +2056,7 @@ class TestEtagsMatch:
 
 class TestAddAppContext:
     def test_app_key_added(self):
-        event_dict = {}
+        event_dict: dict[str, object] = {}
         result = add_app_context(None, "info", event_dict)
         assert result.get("app") == "kiro2-backend"
 
@@ -2009,7 +2066,7 @@ class TestAddAppContext:
         assert result["app"] == "custom-app"
 
     def test_environment_key_added(self):
-        event_dict = {}
+        event_dict: dict[str, object] = {}
         result = add_app_context(None, "info", event_dict)
         assert "environment" in result
 

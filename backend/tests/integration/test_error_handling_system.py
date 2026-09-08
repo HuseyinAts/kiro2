@@ -656,7 +656,7 @@ class TestErrorHandlingIntegration:
 
         # Simulate multiple high-severity errors
         context = Mock()
-        for i in range(15):  # More than threshold
+        for _i in range(15):  # More than threshold
             tracker.record_error(
                 "DatabaseError", endpoint, ErrorSeverity.CRITICAL, context
             )
@@ -679,22 +679,37 @@ class TestErrorHandlingPerformance:
     """Performance tests for error handling system"""
 
     def test_error_context_performance(self):
-        """Test error context creation performance"""
+        """Test error context creation performance.
+
+        Esik neden 1.0 s: ErrorContext._get_call_stack eskiden inspect.stack()
+        cagirip [3:8] diliminden 5 kare aliyordu; inspect.stack() TUM yigini
+        gezer ve kare basina linecache.checkcache -> os.stat isletir, yani
+        maliyet yigin derinligiyle buyurdu. pytest-xdist altinda yigin derin
+        oldugu icin CI'da cagri basina ~109 ms olculdu (100 cagri = 10.92 s,
+        eski 10.0 s esigini asti; is 101891468125, 7 Eyl 2026).
+
+        Kare yuruyusune gecildikten sonra maliyet derinlikten bagimsiz:
+        yerel olcum 0.0042-0.0092 ms/cagri (derinlik +0 ... +120), yani 100
+        cagri ~1 ms. 1.0 s esigi duzeltilmis halin ~200 kati, hatali halin
+        CI'daki degerinin ~10'da biri -- iki durumu genis payla ayirir.
+        """
         import time
 
         start_time = time.time()
 
         # Create many error contexts
         contexts = []
-        for i in range(100):
+        for _i in range(100):
             ctx = ErrorContextData.create_from_current_context()
             contexts.append(ctx)
 
         end_time = time.time()
         duration = end_time - start_time
 
-        # Should be reasonably fast (relaxed for dev machine variance)
-        assert duration < 10.0
+        assert duration < 1.0, (
+            f"100 hata baglami {duration:.3f} s surdu; "
+            "_get_call_stack yeniden yigin derinligine bagli olabilir"
+        )
         assert len(contexts) == 100
 
     @pytest.mark.asyncio

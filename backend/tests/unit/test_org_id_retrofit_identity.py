@@ -5,29 +5,17 @@ nullable org_id FK + org_legacy_default backfill. NOT NULL flip AYRI tur.
 TDD: RED (kolon yok) → migration → GREEN (kolon var + 0 NULL).
 """
 
-import os
+from sqlalchemy import text
 
-import pytest
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import make_url
+from tests.pg_sync import sync_pg_engine
 
 IDENTITY_TABLES = ["users", "student_profiles", "teacher_profiles", "parent_profiles"]
 LEGACY_ORG = "org_legacy_default"
 
 
 def _engine():
-    load_dotenv(
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=True
-    )
-    raw = os.environ.get("DATABASE_URL", "").replace(
-        "postgresql+asyncpg://", "postgresql://"
-    )
-    if not raw.startswith("postgresql"):
-        pytest.skip("gerçek postgres DATABASE_URL yok")
-    return create_engine(
-        make_url(raw).set(host="127.0.0.1", port=5434, database="kiro2")
-    )
+    # Ortak tanim ve olcum gerekcesi: tests/pg_sync.py
+    return sync_pg_engine()
 
 
 def test_org_id_column_exists():
@@ -75,7 +63,10 @@ def test_all_identity_rows_backfilled():
     eng = _engine()
     with eng.connect() as c:
         for t in IDENTITY_TABLES:
+            # S608: tablo adi KULLANICI GIRDISI DEGIL -- yukaridaki sabit
+            # IDENTITY_TABLES listesinden geliyor. Tablo adi SQL'de bind
+            # parametresi olamaz, bu yuzden f-string zorunlu.
             nulls = c.execute(
-                text(f"SELECT count(*) FROM {t} WHERE organization_id IS NULL")
+                text(f"SELECT count(*) FROM {t} WHERE organization_id IS NULL")  # noqa: S608
             ).scalar()
             assert nulls == 0, f"{t}: {nulls} satır org_id NULL (backfill eksik)"

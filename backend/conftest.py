@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -22,7 +23,60 @@ os.environ["DATABASE_URL"] = os.getenv(
     "TEST_DATABASE_URL",
     "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true",
 )
-os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL", "redis://localhost:6380/1")
+# Varsayilan port 6380 -> 6379 (7 Eyl 2026).
+#
+# OLCUM: 6380'de HICBIR ORTAMDA bir sey dinlemiyor.
+#   * Bu makine: `Get-NetTCPConnection -State Listen` -> yalniz 127.0.0.1:6379
+#   * CI: `ci.yml` redis servisini `6379:6379` ile aciyor ve olusturdugu
+#     `.env` de `REDIS_URL=redis://localhost:6379/0` diyor.
+# Yani varsayilan, iki ortamda da BOS bir porta isaret ediyordu; "redis yok"
+# sessiz varsayilan haline gelmisti.
+#
+# Bunun bedeli olculdu: CI run 34062766793'te 6 test dogrudan
+# `redis.exceptions.ConnectionError: Error 111 connecting to localhost:6380`
+# ile dusuyor. Dolayli bedeli daha buyuk ve zaten kayitli:
+# `.claude/lessons/ders_kaydi.yaml:915` (S230) -- hiz siniri deposu
+# `settings.redis_url`e IMPORT ANINDA baglandigi icin, redis yoksa
+# `@limiter.limit` tasiyan HER uc testi istek isleniciye ULASMADAN ham
+# ConnectionError yuzunden 500 aliyor ve bu "urun bozuk" diye okunuyor.
+#
+# 6379 bir tahmin degil, bu deponun KENDI konvansiyonu:
+#   `.github/workflows/.archive/backend-tests.yml:87`
+#       TEST_REDIS_URL=redis://localhost:6379/1
+#   `backend/scripts/mutation_check_password_reset.py:92`
+#       TEST_REDIS_URL=redis://localhost:6379/15
+# Arsivlenen workflow bu degiskeni VERIYORDU; yeni `ci.yml`e tasinmamis --
+# yani 6380 varsayilani o gun sessizce yururluge girmis.
+#
+# db indeksi (1) BILEREK degistirilmedi: ayirici olan port, veritabani
+# degil; ayrica `flushdb` cagiran test yardimcilari yalniz SECILI db'yi
+# temizler ve gelistirme verisi db0'da duruyor.
+#
+# WORKER BASINA AYRI DB (7 Eyl 2026):
+# Port duzeltilince redis GERCEKTEN erisilebilir oldu ve 8 xdist worker'i
+# ayni db'yi PAYLASMAYA basladi. Bu, yeni bir kirlenme kanali acar:
+# `tests/integration/test_framework.py:332,388` `flushdb()` cagiriyor --
+# bir worker'in temizligi, digerinin oturum/jeton anahtarlarini siler.
+# OLCUM (CI run 34066938279): port duzeltmesiyle 12 basarisizlik kapandi
+# ama `test_api_coverage_final.py::TestDiaryAPIEndpoints` sinifinin 15
+# testi TOPTAN `assert 401 == 200` ile dustu -- hepsi ayni sinif, yani
+# ayni worker; auth aniden reddedildi. Yerelde ayni sinif tek surecte
+# hem dolu hem BOS db ile 15/15 GECIYOR, yani "eksik redis durumu" degil.
+# Kalan makul aciklama worker'lar arasi paylasim.
+#
+# `PYTEST_XDIST_WORKER` conftest import aninda GORUNUYOR (olculdu:
+# CONFTEST_GORDU='gw0'), yani db indeksini burada secebiliyoruz.
+# db0 gelistirme verisi icin ayrildi; worker'lar 1..15 arasinda doner.
+_redis_url = os.getenv("TEST_REDIS_URL", "redis://localhost:6379/1")
+_xdist_worker = os.environ.get("PYTEST_XDIST_WORKER", "")
+if _xdist_worker.startswith("gw"):
+    try:
+        _worker_no = int(_xdist_worker[2:])
+    except ValueError:
+        _worker_no = 0
+    _worker_db = 1 + (_worker_no % 15)
+    _redis_url = re.sub(r"/\d+$", f"/{_worker_db}", _redis_url)
+os.environ["REDIS_URL"] = _redis_url
 os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"  # noqa: S105  # pragma: allowlist secret
 os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"  # noqa: S105  # pragma: allowlist secret
 os.environ["ALLOWED_ORIGINS"] = '["http://localhost:3000"]'

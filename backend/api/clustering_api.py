@@ -36,14 +36,17 @@ async def health_check() -> dict[str, Any]:
     """Clustering servisinin temel calisma durumunu raporla."""
     # Lightweight DB liveness ping — sibling /health endpoints all report a
     # `database` flag (GF150 health-probe convention).
+    # NEDEN MODUL DUZEYI AD (yerel import DEGIL): fonksiyon icindeki
+    # `from core.database import get_db_session_context` her cagrida ADI
+    # YENIDEN BAGLIYORDU, bu yuzden `@patch("api.clustering_api.
+    # get_db_session_context")` HICBIR ETKI ETMIYORDU -- DB ping'i tasarlanan
+    # testler sessizce gercek DB'ye gidiyor, yani bir sey OLCMUYORDU
+    # (tests/fast/test_push_clustering_health.py). Modul duzeyindeki ad
+    # kullanildiginda yama devreye giriyor ve test deterministik oluyor.
     db_ok = False
     try:
-        from sqlalchemy import text as _text
-
-        from core.database import get_db_session_context
-
         async with get_db_session_context() as _db:
-            await _db.execute(_text("SELECT 1"))
+            await _db.execute(text("SELECT 1"))
         db_ok = True
     except Exception as _dbe:
         logger.debug("clustering health DB ping failed: %s", _dbe)
@@ -167,24 +170,24 @@ class VisualizationResponse(BaseModel):
     document_ids: list[str] | None = None
 
 
-@router.get("/health", tags=["health"])
-async def clustering_health() -> dict[str, str | bool]:
-    """Liveness: ``SELECT 1`` — kimlik doğrulama yok (REQ-6 yönlü smoke)."""
-    try:
-        async with get_db_session_context() as db:
-            await db.execute(text("SELECT 1"))
-        return {
-            "status": "ok",
-            "service": "clustering",
-            "database": True,
-        }
-    except Exception as e:
-        logger.warning("Clustering health DB ping failed: %s", e)
-        return {
-            "status": "degraded",
-            "service": "clustering",
-            "database": False,
-        }
+# KALDIRILAN IKINCI /health ROTASI (6 Eyl 2026)
+#
+# Burada `clustering_health()` adiyla IKINCI bir `@router.get("/health")`
+# duruyordu. OLCUM: FastAPI ayni yol icin ILK kayitli rotayi servis eder,
+# yani bu ikinci rota CALISMIYORDU -- olu koddu. Kaniti uc yerden:
+#   * Canli sozlesmeyi olcen iki test ILK rotanin sekline gore yazilmis:
+#     tests/e2e/test_golden_flows.py:5597 ("concept_clustering") ve
+#     tests/fast/test_chroma_semantic_health.py:52 ("chromadb_available").
+#   * `tests/fast/test_push_clustering_health.py` ise BU olu rotanin
+#     sekline ("clustering" / "ok") gore yazilmisti ve bu yuzden HICBIR
+#     ZAMAN gecemezdi -- yani bir kusuru degil, kendi hayalini olcuyordu.
+#   * `backend/openapi.json` ayni yol anahtarini ikinci rotayla EZDIGI icin
+#     uretilen sema (ve ondan turetilen frontend/src/types/api.generated.ts)
+#     sunucunun ASLA dondurmedigi bir govdeyi belgeliyordu. Frontend'de bu
+#     uca yapilan tek bir cagri yok (grep "clustering/health" frontend/src
+#     -> yalniz api.generated.ts).
+# DB ping'i ve `database` bayragi zaten yukaridaki ILK rotaya tasinmisti
+# (GF150 konvansiyonu), yani islevsel kayip yoktur.
 
 
 @router.post("/concepts", response_model=ClusterResponse)

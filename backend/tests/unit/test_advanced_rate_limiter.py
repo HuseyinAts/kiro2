@@ -5,13 +5,13 @@ Sprint 7: Test Coverage
 Tests for Redis-based distributed rate limiting system.
 """
 
-import os
 import time
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
 from core.advanced_rate_limiter import (
+    _LOGIN_RPM,
     AdvancedRateLimiter,
     RateLimitExceeded,
     UserTier,
@@ -146,31 +146,21 @@ class TestAdvancedRateLimiter:
         assert rate_limiter._get_tier_limit(UserTier.FREE, "nonexistent") == 60
 
     def test_endpoint_specific_limits(self, rate_limiter):
-        """Test endpoint-specific limit configuration.
-
-        Login limiti burada SABIT SAYI olarak yazilmaz. Eski hali `== 5` idi
-        ve bu deger belgelenmis bir politika degil, 18 Agu 2026'da OLCULEN bir
-        kusurdu: paylasimli NAT arkasindaki bir sinifta 10 esszamanli
-        ogrencinin 10'u da HTTP 429 aliyor, Golden Flow'da 15 test dusuyordu.
-        Uretim kodu o zaman env tabanli `_LOGIN_RPM`e (varsayilan 300)
-        donduruldu; bu test guncellenmedi ve geride kaldi.
-
-        Sabit sayiya donmek yerine uretimle AYNI sozlesme okunuyor, boylece
-        operator env ile degeri degistirdiginde test yalan soylemez. Bu iddia
-        yalnizca BAGLANTIYI olcer (uc gercekten `_LOGIN_RPM`den besleniyor
-        mu); degerin kendisinin politikayla tutarli ve paylasimli-IP icin
-        yeterli oldugunu olcen civiler ayri dosyada:
-        tests/fast/test_rate_limit_tutarliligi.py
-        """
-        beklenen_login = int(
-            os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300
-        )
-
+        """Test endpoint-specific limit configuration"""
         assert "/api/v1/auth/login" in rate_limiter.endpoint_limits
-        assert (
-            rate_limiter.endpoint_limits["/api/v1/auth/login"]["limit"]
-            == beklenen_login
-        )
+        # OLCUM (6 Eyl 2026): burada sabit `== 5` yaziyordu ve BAYATTI. Uretim
+        # politikasi `_LOGIN_RPM` (env: LOGIN_RATE_LIMIT_PER_MINUTE, varsayilan
+        # 300) ve bu deger OLCUME dayali, gerekceli bir karar --
+        # core/advanced_rate_limiter.py'deki S229 notu: 300 -> 5 degisikligi
+        # gerekcesiz yapilmis, paylasimli NAT arkasindaki ogrencileri 429'a
+        # dusurmus (Golden Flow'da 15 test), sonra politikaya geri donulmustu.
+        # Ustelik `tests/fast/test_rate_limit_tutarliligi.py` civisi
+        # `limit >= 30` sart kosuyor -- yani eski `== 5` beklentisi o civiyle
+        # ayni anda GECEMEZDI. Bu celiski fark edilmemisti cunku pytest'in `-x`
+        # bayragi suite'i daha erken durduruyordu (bkz. SS10.54).
+        # Sabiti tekrarlamak yerine politikaya BAGLANIYORUZ: politika degisirse
+        # test kendiliginden dogru kalir, sessizce bayatlamaz.
+        assert rate_limiter.endpoint_limits["/api/v1/auth/login"]["limit"] == _LOGIN_RPM
         assert rate_limiter.endpoint_limits["/api/v1/auth/login"]["window"] == 60
 
         assert "/api/v1/kvkk/privacy/export" in rate_limiter.endpoint_limits
@@ -251,24 +241,24 @@ class TestAdvancedRateLimiter:
         pipeline_mock.execute = AsyncMock(return_value=[None, 2, None, None])
         mock_redis.pipeline.return_value = pipeline_mock
 
-        # Uc-ozel limit, tier limitini (FREE=60) EZMELI. Beklenen deger sabit
-        # 5 degil: 5 olculmus bir kusurdu, uretim env tabanli _LOGIN_RPM'e
-        # (varsayilan 300) donduruldu. Gerekce: test_endpoint_specific_limits
-        # docstring'i + tests/fast/test_rate_limit_tutarliligi.py
-        beklenen_login = int(
-            os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300
-        )
-        assert beklenen_login != 60, (
-            "Bu test uc-ozel limitin tier limitini ezdigini olcuyor; ikisi "
-            "esitse iddia bos kalir."
-        )
+        # Bu test uc-ozel limitin TIER limitini (FREE=60) ezdigini olcuyor.
+        # Ikisi esitlenirse iddia sessizce bosalir, o yuzden on kosul:
+        assert (
+            _LOGIN_RPM != 60
+        ), "Uc-ozel limit ile tier limiti esit; bu testin iddiasi bos kalir."
 
         allowed, info = await rate_limiter.check_rate_limit(
-            identifier="user-123", endpoint="/api/v1/auth/login", tier=UserTier.FREE
+            identifier="user-123",
+            endpoint="/api/v1/auth/login",  # endpoint'e ozel limit: _LOGIN_RPM
+            tier=UserTier.FREE,
         )
 
         assert allowed is True
-        assert info["limit"] == beklenen_login
+        # Ayni bayatlik (bkz. yukaridaki test): sabit 5 yerine politikaya bagli.
+        # Bu ikinci yer ilkini duzeltene kadar GORUNMUYORDU -- pytest `-x` ile
+        # ilk hatada duruyordu, yani tek bir bayat assert arkasindaki borcu da
+        # gizliyordu.
+        assert info["limit"] == _LOGIN_RPM  # Endpoint-specific, not tier-based (60)
         assert info["window"] == 60
 
     @pytest.mark.asyncio

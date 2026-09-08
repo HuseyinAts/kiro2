@@ -30,10 +30,27 @@ from mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
 
 # Test data
 TURKISH_WORDS = [
-    "kitap", "okumak", "yazmak", "güzel", "büyük", "küçük",
-    "İstanbul", "Ankara", "Türkiye", "öğrenci", "öğretmen",
-    "üniversite", "matematik", "fizik", "kimya", "biyoloji",
-    "tarih", "coğrafya", "edebiyat", "felsefe", "psikoloji",
+    "kitap",
+    "okumak",
+    "yazmak",
+    "güzel",
+    "büyük",
+    "küçük",
+    "İstanbul",
+    "Ankara",
+    "Türkiye",
+    "öğrenci",
+    "öğretmen",
+    "üniversite",
+    "matematik",
+    "fizik",
+    "kimya",
+    "biyoloji",
+    "tarih",
+    "coğrafya",
+    "edebiyat",
+    "felsefe",
+    "psikoloji",
 ]
 
 TURKISH_SENTENCES = [
@@ -98,7 +115,7 @@ def mock_cache():
     """Create mock cache with fast access."""
     cache = MagicMock()
     cache.is_connected = True
-    cache_store = {}
+    cache_store: dict[str, Any] = {}
 
     async def get_cached(tool, key):
         # Simulate <1ms cache lookup
@@ -194,9 +211,7 @@ class TestLatencyRequirements:
     """Test P95 latency requirements."""
 
     @pytest.mark.asyncio
-    async def test_p95_latency_under_100ms(
-        self, mock_config, mock_bridge, mock_cache
-    ):
+    async def test_p95_latency_under_100ms(self, mock_config, mock_bridge, mock_cache):
         """P95 latency should be under 100ms."""
         handler = MorphologyHandler(
             http_client=None,
@@ -235,9 +250,7 @@ class TestLatencyRequirements:
         assert p95 < 100, f"P95 latency {p95:.2f}ms exceeds 100ms"
 
     @pytest.mark.asyncio
-    async def test_cached_latency_under_10ms(
-        self, mock_config, mock_bridge
-    ):
+    async def test_cached_latency_under_10ms(self, mock_config, mock_bridge):
         """Cached operations should complete in under 10ms."""
         # Pre-populated cache
         cache_store = {}
@@ -284,9 +297,7 @@ class TestThreadSafety:
     """Test thread safety under concurrent access."""
 
     @pytest.mark.asyncio
-    async def test_no_race_conditions(
-        self, mock_config, mock_bridge, mock_cache
-    ):
+    async def test_no_race_conditions(self, mock_config, mock_bridge, mock_cache):
         """Should not have race conditions with concurrent access."""
         handler = MorphologyHandler(
             http_client=None,
@@ -396,7 +407,9 @@ class TestGracefulDegradation:
 
         async def mock_post(url, json, timeout):
             response = MagicMock()
-            response.json.return_value = {"analyses": [{"lemma": "test", "pos": "Noun"}]}
+            response.json.return_value = {
+                "analyses": [{"lemma": "test", "pos": "Noun"}]
+            }
             response.raise_for_status = MagicMock()
             return response
 
@@ -425,9 +438,7 @@ class TestThroughput:
     """Test throughput under sustained load."""
 
     @pytest.mark.asyncio
-    async def test_sustained_throughput(
-        self, mock_config, mock_bridge, mock_cache
-    ):
+    async def test_sustained_throughput(self, mock_config, mock_bridge, mock_cache):
         """Should maintain throughput under sustained load."""
         handler = TokenizationHandler(
             http_client=None,
@@ -442,7 +453,7 @@ class TestThroughput:
 
         start = time.perf_counter()
 
-        for batch in range(total_requests // batch_size):
+        for _batch in range(total_requests // batch_size):
             tasks = [
                 handler.execute(text=TURKISH_SENTENCES[i % len(TURKISH_SENTENCES)])
                 for i in range(batch_size)
@@ -462,7 +473,25 @@ class TestThroughput:
     async def test_batch_processing_efficiency(
         self, mock_config, mock_bridge, mock_cache
     ):
-        """Batch processing should be more efficient than sequential."""
+        """Batch processing should be more efficient than sequential.
+
+        Kelimeler BENZERSIZ olmak zorunda. Eski surum `TURKISH_WORDS * 5`
+        kullaniyordu: 105 kelimenin sadece 21'i farkli. BaseToolHandler.execute
+        girdi bazinda onbellekliyor (_get_cache_input -> cache.get_cached),
+        dolayisiyla "sirali" olcumun 105 cagrisindan 84'u onbellek vurusuydu
+        (~0,1 ms), toplu yol ise TEK bir anahtarla tamamen onbelleksiz
+        calisiyordu. Yani test toplulastirmayi degil, onbellek vurusunu
+        olcuyordu -- elma ile armut. CI 7 Eyl 2026 (is 101891468125):
+        sirali 0,25 s / toplu 0,30 s, "0,8x hizlanma" ile dustu; kodda bir
+        gerileme yoktu.
+
+        Benzersiz kelimelerle iki yol da onbelleksiz. Teorik sinir:
+        _lemmatize_batch_jpype kelimeleri 50'lik gruplara bolup gruplari
+        paralel, grup ICINDE sirali isliyor -> 105 kelime = 3 grup, en uzun
+        grup 50 kelime, yani ~2,1x. NOT (ertelenmis urun borcu): bu tasarim
+        50 kelimeye kadar toplu modu tamamen sirali birakiyor;
+        bkz. docs/guvenlik-borcu.md.
+        """
         handler = LemmatizationHandler(
             http_client=None,
             cache=mock_cache,
@@ -471,7 +500,9 @@ class TestThroughput:
         )
         handler._use_jpype = True
 
-        text = " ".join(TURKISH_WORDS * 5)  # 100 words
+        # 105 BENZERSIZ sozde-kelime (kopru mock'lu, bicim onemli degil).
+        kelimeler = [f"{kelime}{tur}" for tur in range(5) for kelime in TURKISH_WORDS]
+        text = " ".join(kelimeler)
 
         # Sequential processing
         seq_start = time.perf_counter()
@@ -484,9 +515,14 @@ class TestThroughput:
         await handler.execute(text=text, batch=True)
         batch_time = time.perf_counter() - batch_start
 
-        print(f"\nSequential: {seq_time:.2f}s")
-        print(f"Batch: {batch_time:.2f}s")
-        print(f"Speedup: {seq_time/batch_time:.1f}x")
+        hizlanma = seq_time / batch_time
 
-        # Batch should be faster (any measurable speedup; dev machine has high variance)
-        assert batch_time < seq_time * 1.1, f"Batch not faster: {seq_time/batch_time:.1f}x speedup"
+        print(f"\nWords: {len(kelimeler)} unique")
+        print(f"Sequential: {seq_time:.2f}s")
+        print(f"Batch: {batch_time:.2f}s")
+        print(f"Speedup: {hizlanma:.1f}x")
+
+        # Teorik sinir ~2,1x; 1,3 tabani zamanlayici cozunurlugu ve runner
+        # gurultusune pay birakir. Olcum uyku tabanli oldugu icin CPU
+        # cekismesi iki tarafi da ayni sekilde etkiler, oran saglamdir.
+        assert hizlanma > 1.3, f"Batch not faster: {hizlanma:.1f}x speedup"

@@ -40,9 +40,9 @@ class TestMainApplicationStartup:
     def mock_all_dependencies(self, mock_db_manager, mock_settings, mock_setup_routers):
         """Mock all core.application dependencies"""
         return {
-            'db_manager': mock_db_manager,
-            'settings': mock_settings,
-            'setup_routers': mock_setup_routers,
+            "db_manager": mock_db_manager,
+            "settings": mock_settings,
+            "setup_routers": mock_setup_routers,
         }
 
     @pytest.fixture
@@ -59,37 +59,49 @@ class TestMainApplicationStartup:
 
     def test_sys_path_modification(self, mock_all_dependencies):
         """Test that backend path is added to sys.path"""
-        with patch('core.application.db_manager', mock_all_dependencies['db_manager']):
-            with patch('core.application.settings', mock_all_dependencies['settings']):
-                with patch('core.application.setup_routers', mock_all_dependencies['setup_routers']):
-                    import sys
-                    from pathlib import Path
+        with (
+            patch("core.application.db_manager", mock_all_dependencies["db_manager"]),
+            patch("core.application.settings", mock_all_dependencies["settings"]),
+            patch(
+                "core.application.setup_routers", mock_all_dependencies["setup_routers"]
+            ),
+        ):
+            import sys
+            from pathlib import Path
 
-                    import main
+            import main
 
-                    backend_path = Path(main.__file__).parent
-                    assert str(backend_path) in sys.path
+            backend_path = Path(main.__file__).parent
+            assert str(backend_path) in sys.path
 
     def test_environment_encoding_setup(self, mock_all_dependencies):
         """Test UTF-8 encoding environment variables"""
-        with patch('core.application.db_manager', mock_all_dependencies['db_manager']):
-            with patch('core.application.settings', mock_all_dependencies['settings']):
-                with patch('core.application.setup_routers', mock_all_dependencies['setup_routers']):
-                    # Check encoding settings - these may or may not be set depending on environment
-                    # Just verify the test doesn't crash
-                    encoding = os.getenv("PYTHONIOENCODING")
-                    assert encoding is None or encoding == "utf-8"
+        with (
+            patch("core.application.db_manager", mock_all_dependencies["db_manager"]),
+            patch("core.application.settings", mock_all_dependencies["settings"]),
+            patch(
+                "core.application.setup_routers", mock_all_dependencies["setup_routers"]
+            ),
+        ):
+            # Check encoding settings - these may or may not be set depending on environment
+            # Just verify the test doesn't crash
+            encoding = os.getenv("PYTHONIOENCODING")
+            assert encoding is None or encoding == "utf-8"
 
     def test_app_instance_creation(self, mock_all_dependencies):
         """Test that FastAPI app instance is created successfully"""
-        with patch('core.application.db_manager', mock_all_dependencies['db_manager']):
-            with patch('core.application.settings', mock_all_dependencies['settings']):
-                with patch('core.application.setup_routers', mock_all_dependencies['setup_routers']):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_all_dependencies["db_manager"]),
+            patch("core.application.settings", mock_all_dependencies["settings"]),
+            patch(
+                "core.application.setup_routers", mock_all_dependencies["setup_routers"]
+            ),
+        ):
+            from main import app
 
-                    assert app is not None
-                    assert hasattr(app, 'title')
-                    assert hasattr(app, 'version')
+            assert app is not None
+            assert hasattr(app, "title")
+            assert hasattr(app, "version")
 
 
 class TestFastAPIApplicationConfig:
@@ -120,14 +132,16 @@ class TestFastAPIApplicationConfig:
 
     def test_app_metadata(self, mock_db_manager, mock_settings, mock_setup_routers):
         """Test application metadata configuration"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    assert app.title is not None
-                    assert app.version is not None
-                    assert app.description is not None
+            assert app.title is not None
+            assert app.version is not None
+            assert app.description is not None
 
 
 class TestMiddlewareSetup:
@@ -156,15 +170,19 @@ class TestMiddlewareSetup:
         """Mock router setup"""
         return Mock()
 
-    def test_security_middleware_registered(self, mock_db_manager, mock_settings, mock_setup_routers):
+    def test_security_middleware_registered(
+        self, mock_db_manager, mock_settings, mock_setup_routers
+    ):
         """Test comprehensive security middleware is registered"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    # Check middleware stack
-                    assert app.user_middleware is not None
+            # Check middleware stack
+            assert app.user_middleware is not None
 
 
 class TestRouterRegistration:
@@ -193,48 +211,70 @@ class TestRouterRegistration:
         """Mock router setup"""
         return Mock()
 
-    def test_health_endpoint_responds(self, mock_db_manager, mock_settings, mock_setup_routers):
+    def test_health_endpoint_responds(
+        self, mock_db_manager, mock_settings, mock_setup_routers
+    ):
         """Test that /health endpoint responds"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    client = TestClient(app)
-                    response = client.get("/health")
+            client = TestClient(app)
+            response = client.get("/health")
 
-                    # Should respond (might be 200, 404, 503, or redirect)
-                    assert response.status_code in [200, 404, 503, 307, 308]
+            # Should respond (might be 200, 404, 503, or redirect)
+            assert response.status_code in [200, 404, 503, 307, 308]
 
-    def test_docs_endpoint_exists(self, mock_db_manager, mock_settings, mock_setup_routers):
+    def test_docs_endpoint_exists(
+        self, mock_db_manager, mock_settings, mock_setup_routers
+    ):
         """Test that OpenAPI docs endpoint exists"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    client = TestClient(app)
-                    response = client.get("/docs")
+            client = TestClient(app)
+            response = client.get("/docs")
 
-                    # Docs should be accessible (200 or redirect)
-                    assert response.status_code in [200, 307, 308]
+            # Docs should be accessible (200 or redirect)
+            assert response.status_code in [200, 307, 308]
 
-    def test_app_routes_registered(self, mock_db_manager, mock_settings, mock_setup_routers):
+    def test_app_routes_registered(
+        self, mock_db_manager, mock_settings, mock_setup_routers
+    ):
         """Test that routes are registered"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    # Get all routes
-                    routes = [route.path for route in app.routes]
+            # `app.routes` YALNIZ rota nesnesi icermez: FastAPI 0.141
+            # (requirements.txt'te pinli) `include_router` cagrilarinda
+            # listeye `fastapi.routing._IncludedRouter` isaretci
+            # nesneleri de koyuyor ve bunlarin `path` alani YOK.
+            # Kosullu suzgec olmadan bu test `AttributeError:
+            # '_IncludedRouter' object has no attribute 'path'` ile
+            # duser -- ama YALNIZ `main` daha once (baska bir test
+            # modulu tarafindan) GERCEK router'larla import edilmisse;
+            # tek basina kosarken `setup_routers` mock'lu oldugu icin
+            # hic `include_router` cagrilmaz ve sorun gorunmez. Bu
+            # yuzden yalniz tam suitte, sira bagimli gibi cikiyordu.
+            routes = [r.path for r in app.routes if hasattr(r, "path")]
 
-                    # Should have some routes registered
-                    assert len(routes) > 0
+            # Should have some routes registered
+            assert len(routes) > 0
 
-                    # Common routes should exist
-                    assert any('docs' in path for path in routes)
-                    assert any('openapi' in path for path in routes)
+            # Common routes should exist
+            assert any("docs" in path for path in routes)
+            assert any("openapi" in path for path in routes)
 
 
 class TestExceptionHandlers:
@@ -263,15 +303,19 @@ class TestExceptionHandlers:
         """Mock router setup"""
         return Mock()
 
-    def test_exception_handlers_configured(self, mock_db_manager, mock_settings, mock_setup_routers):
+    def test_exception_handlers_configured(
+        self, mock_db_manager, mock_settings, mock_setup_routers
+    ):
         """Test that exception handlers are set up"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    # Exception handlers should be attempted to set up
-                    assert app is not None
+            # Exception handlers should be attempted to set up
+            assert app is not None
 
 
 class TestSecurityConfiguration:
@@ -300,15 +344,19 @@ class TestSecurityConfiguration:
         """Mock router setup"""
         return Mock()
 
-    def test_app_has_security_configured(self, mock_db_manager, mock_settings, mock_setup_routers):
+    def test_app_has_security_configured(
+        self, mock_db_manager, mock_settings, mock_setup_routers
+    ):
         """Test app has security configuration"""
-        with patch('core.application.db_manager', mock_db_manager):
-            with patch('core.application.settings', mock_settings):
-                with patch('core.application.setup_routers', mock_setup_routers):
-                    from main import app
+        with (
+            patch("core.application.db_manager", mock_db_manager),
+            patch("core.application.settings", mock_settings),
+            patch("core.application.setup_routers", mock_setup_routers),
+        ):
+            from main import app
 
-                    # App should have middleware configured
-                    assert app.user_middleware is not None
+            # App should have middleware configured
+            assert app.user_middleware is not None
 
 
 class TestInputValidation:

@@ -116,7 +116,53 @@ def _temiz_depolar(app_ve_oturum):
     import api.auth as auth_modulu
 
     auth_modulu._depolar = auth_modulu._SifreSifirlamaDepolari()
-    yield
+
+    # HIZ SINIRLAYICI da AYNI KUSURU TASIYOR (7 Eyl 2026 olcumu).
+    # `core.advanced_rate_limiter._rate_limiter` surec-omurlu bir tekil ve
+    # `redis_client`i kendisini yaratan olay donguSUNE bagli. Yukaridaki depo
+    # icin cozulen sorun burada cozulmemisti; sonuc iki ayri belirti:
+    #   * CI: `core.rate_limit_middleware ... "error": "Event loop is closed"`
+    #   * yerel (Redis erisilebilir): pencere testler ARASINDA tasiniyor ve
+    #     6. istek 429 aliyor -- "kilit tuttu mu" testi kilidi degil,
+    #     onceki testlerin tukettigi kotayi olcuyordu ("kilit tutmadi").
+    # Uc test bu yuzden dusuyordu; sinirlayici davranisi ZAYIFLATILMADI --
+    # yalnizca her testin TEMIZ bir pencereyle baslamasi saglaniyor.
+    # Tekili sifirlamak olay-dongusu kusurunu cozer ama YETMEZ: kayan pencere
+    # Redis'te `ratelimit:<tier>:<endpoint>:<identifier>` anahtarlarinda duruyor
+    # ve testler arasinda TASINIYOR. O yuzden anahtarlar da temizleniyor.
+    import core.advanced_rate_limiter as sinirlayici_modulu
+
+    eski = sinirlayici_modulu._rate_limiter
+    sinirlayici_modulu._rate_limiter = None
+    _ratelimit_anahtarlarini_temizle()
+    try:
+        yield
+    finally:
+        sinirlayici_modulu._rate_limiter = eski
+
+
+def _ratelimit_anahtarlarini_temizle() -> None:
+    """Redis'teki `ratelimit:*` anahtarlarini sil (yoksa sessizce gec).
+
+    Redis erisilemezse sinirlayici zaten devre disi kalir ve temizlige gerek
+    yoktur; bu yuzden her hata YUTULUR -- testin kendisi Redis'e bagimli
+    olmamali. Silinen sey yalnizca TEST kosumunun kendi pencereleri.
+    """
+    import os
+
+    try:
+        import redis as _redis_senkron
+    except ImportError:
+        return
+    url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    try:
+        istemci = _redis_senkron.from_url(url, socket_connect_timeout=1)
+        anahtarlar = list(istemci.scan_iter(match="ratelimit:*", count=500))
+        if anahtarlar:
+            istemci.delete(*anahtarlar)
+        istemci.close()
+    except Exception:
+        return
 
 
 @pytest.fixture

@@ -9,8 +9,15 @@ import { ExamResultDashboard } from '../../features/exams/ExamResultDashboard';
 // mockExamService.ts başlık yorumu). Bu mock önceden yanlış modülü hedefliyordu,
 // bu yüzden component gerçek mockExamService'i çağırıyor ve test 2 "Seçenek A"yı
 // hiç bulamıyordu (component'in kendi 120 soruluk fallback'i "Örnek Seçenek A" döndürüyor).
-vi.mock('../../services/mockExamService', () => ({
-  default: {
+// SS10.72: bilesen artik ADLANDIRILMIS ithal kullaniyor
+// (`import { mockExamService } from ...`), bu yuzden mock HEM default HEM
+// adlandirilmis disa aktarimi vermek ZORUNDA. Yalnizca `default` verilirse
+// bilesen `undefined` bir servis gorur ve testler cakilir (olculdu).
+//
+// `vi.hoisted` sart: `vi.mock` dosyanin en ustune tasiniyor, dolayisiyla
+// siradan bir `const`a erisemez ("Cannot access 'sahteServis' before
+// initialization" -- bu da olculdu).
+const sahteServis = vi.hoisted(() => ({
     generateMockExam: vi.fn().mockResolvedValue({ exam_session_id: 'test-session-123', total_questions: 120 }),
     getExamSession: vi.fn().mockResolvedValue({
       id: 'test-session-123',
@@ -51,14 +58,20 @@ vi.mock('../../services/mockExamService', () => ({
         FEN: { correct: 0, wrong: 0, empty: 20, net: 0.0 },
       },
     }),
-  },
+}));
+
+vi.mock('../../services/mockExamService', () => ({
+  default: sahteServis,
+  mockExamService: sahteServis,
 }));
 
 describe('ExamSession Component', () => {
   it('renders exam session sidebar and main question controls', async () => {
     render(<ExamSession studentId="test-student" />);
 
-    expect(screen.getByText(/KIRO2 MOCK/i)).toBeInTheDocument();
+    // SS10.72: sorular artik SUNUCUDAN gelir; bilesenin uydurma 120 soruluk
+    // baslangic durumu yok. Bu yuzden once yuklemenin bitmesi beklenir.
+    expect(await screen.findByText(/KIRO2 MOCK/i)).toBeInTheDocument();
     expect(screen.getAllByText(/TÜRKÇE/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Sınavı Bitir/i)).toBeInTheDocument();
   });
@@ -77,11 +90,40 @@ describe('ExamSession Component', () => {
   it('finishes exam and renders ExamResultDashboard', async () => {
     render(<ExamSession studentId="test-student" />);
 
-    const finishBtn = screen.getByText(/Sınavı Bitir/i);
+    const finishBtn = await screen.findByText(/Sınavı Bitir/i);
     fireEvent.click(finishBtn);
 
     const resultHeader = await screen.findByText(/Sınav Sonucu/i);
     expect(resultHeader).toBeInTheDocument();
+  });
+
+  // --- SS10.72 CIVILERI: sahte sinav uretilmemeli -------------------------
+  //
+  // Bilesende 120 uydurma soruluk bir "fallback" havuzu vardi ve arka uc
+  // duserse ogrenci hicbir uyari gormeden SAHTE bir deneme sinavi coziyordu.
+  // Asagidaki iki test o davranisin geri gelmesini engelliyor.
+
+  it('arka uc duserse SAHTE sinav gostermez, hata gosterir', async () => {
+    vi.mocked(sahteServis.generateMockExam).mockRejectedValueOnce(new Error('ag hatasi'));
+
+    render(<ExamSession studentId="test-student" />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/yuklenemedi/i);
+    // Uydurma havuzun imzasi: "Örnek Seçenek A" / "Bu örnek bir ... sorusudur"
+    expect(screen.queryByText(/Örnek Seçenek/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sınavı Bitir/i)).not.toBeInTheDocument();
+  });
+
+  it('gonderim duserse sessizce "bitti" demez, hatayi gosterir', async () => {
+    vi.mocked(sahteServis.submitExam).mockRejectedValueOnce(new Error('gonderim hatasi'));
+
+    render(<ExamSession studentId="test-student" />);
+
+    fireEvent.click(await screen.findByText(/Sınavı Bitir/i));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/gonderilemedi/i);
+    // Sonuc ekranina GECMEMELI -- eskiden bos `results` ile geciyordu.
+    expect(screen.queryByText(/Sınav Sonucu/i)).not.toBeInTheDocument();
   });
 });
 

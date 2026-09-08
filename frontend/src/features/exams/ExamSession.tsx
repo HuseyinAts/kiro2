@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import styles from './ExamSession.module.css';
+// SS10.72: `import React from 'react'` (import/default) ve
+// `import mockExamService from ...` (import/no-named-as-default) eslint
+// kurallarini ihlal ediyordu. Adlandirilmis ithal ikisini de cozuyor;
+// `React.FC` yerine props tipi dogrudan yaziliyor.
+import { useState, useEffect } from 'react';
 import { BookmarkBorder, Bookmark, ChevronLeft, ChevronRight } from '@mui/icons-material';
-import mockExamService, { ExamQuestionData, ExamSubmitResult } from '../../services/mockExamService';
+import { mockExamService, ExamQuestionData, ExamSubmitResult } from '../../services/mockExamService';
+import styles from './ExamSession.module.css';
 import { ExamResultDashboard } from './ExamResultDashboard';
 
 interface Question {
@@ -12,26 +16,28 @@ interface Question {
   branch: string;
 }
 
-const MOCK_FALLBACK_QUESTIONS: Question[] = Array.from({ length: 120 }, (_, i) => {
-  let branch = "TUR";
-  if (i >= 40 && i < 60) branch = "SOS";
-  else if (i >= 60 && i < 100) branch = "MAT";
-  else if (i >= 100) branch = "FEN";
-
-  return {
-    id: `q-${i + 1}`,
-    order: i + 1,
-    text: `Bu örnek bir ${branch} sorusudur (Soru ${i + 1}). Aşağıdakilerden hangisi doğrudur?`,
-    options: [
-      { letter: 'A', text: 'Örnek Seçenek A' },
-      { letter: 'B', text: 'Örnek Seçenek B' },
-      { letter: 'C', text: 'Örnek Seçenek C' },
-      { letter: 'D', text: 'Örnek Seçenek D' },
-      { letter: 'E', text: 'Örnek Seçenek E' },
-    ],
-    branch,
-  };
-});
+/**
+ * SS10.72 -- 120 SORULUK UYDURMA "FALLBACK" HAVUZU KALDIRILDI.
+ *
+ * Burada `MOCK_FALLBACK_QUESTIONS` adinda, metni
+ * "Bu örnek bir TUR sorusudur (Soru 1). Aşağıdakilerden hangisi doğrudur?"
+ * olan 120 uydurma soru vardi ve bunlar bilesenin BASLANGIC DURUMUYDU:
+ *
+ *     const [questions, setQuestions] = useState<Question[]>(MOCK_FALLBACK_QUESTIONS);
+ *
+ * Arka uc cagrisi duserse `catch` yalnizca `console.warn(... falling back to
+ * local questions state)` diyordu. Yani ogrenci, hicbir uyari gormeden
+ * 120 SAHTE SORULUK BIR DENEME SINAVI cozuyordu -- cevaplari hicbir yere
+ * yazilmiyor, neti anlamsiz.
+ *
+ * Bu, deponun kendi test dosyasinda da iz birakmis: ExamSession.test.tsx
+ * yorumu "component'in kendi 120 soruluk fallback'i 'Örnek Seçenek A'
+ * dondurdugu icin test yanlis modulu mock'ladigini fark edemiyordu" diyor --
+ * yani sahte havuz gercek bir kusuru ORTMUSTU.
+ *
+ * Dogru davranis: veri yoksa sinav BASLAMAZ. Asagida yukleme/hata durumlari
+ * acikca gosteriliyor.
+ */
 
 const BRANCHES = [
   { id: 'TUR', name: 'TÜRKÇE', range: [1, 40] },
@@ -42,12 +48,21 @@ const BRANCHES = [
 
 interface ExamSessionProps {
   sessionId?: string;
-  studentId?: string;
+  /**
+   * SS10.72: eskiden `studentId = "student-123"` diye SABIT bir varsayilani
+   * vardi. Bilesen bir rotaya baglandiginda prop verilmezse HER ogrenci
+   * "student-123" adina sinav uretirdi. Varsayilan kaldirildi: cagiran taraf
+   * gercek ogrenci kimligini vermek ZORUNDA.
+   */
+  studentId: string;
 }
 
-export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSessionId, studentId = "student-123" }) => {
+export const ExamSession = ({ sessionId: initialSessionId, studentId }: ExamSessionProps) => {
   const [sessionId, setSessionId] = useState<string | undefined>(initialSessionId);
-  const [questions, setQuestions] = useState<Question[]>(MOCK_FALLBACK_QUESTIONS);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [yukleniyor, setYukleniyor] = useState(true);
+  const [yuklemeHatasi, setYuklemeHatasi] = useState<string | null>(null);
+  const [gonderimHatasi, setGonderimHatasi] = useState<string | null>(null);
   const [activeBranch, setActiveBranch] = useState('TUR');
   const [currentQuestionOrder, setCurrentQuestionOrder] = useState(1);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -66,7 +81,7 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
         if (!activeId) {
           const res = await mockExamService.generateMockExam(studentId);
           activeId = res.exam_session_id;
-          if (isMounted) setSessionId(activeId);
+          if (isMounted) {setSessionId(activeId);}
         }
         if (activeId) {
           const sessionData = await mockExamService.getExamSession(activeId);
@@ -76,7 +91,7 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
               order: q.order,
               text: q.text,
               options: q.options,
-              branch: q.branch
+              branch: q.branch,
             }));
             setQuestions(mappedQuestions);
 
@@ -90,16 +105,30 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
           }
         }
       } catch (err) {
-        console.warn('Failed to load live backend session, falling back to local questions state.', err);
+        // SS10.72: eskiden burasi yalnizca console.warn edip 120 uydurma
+        // soruyla devam ediyordu. Artik hata GORUNUR: sinav baslamaz.
+        console.error('Deneme sinavi oturumu yuklenemedi.', err);
+        if (isMounted) {
+          setYuklemeHatasi(
+            'Deneme sinavi yuklenemedi. Lutfen baglantinizi kontrol edip tekrar deneyin.',
+          );
+        }
+      } finally {
+        if (isMounted) {setYukleniyor(false);}
       }
     };
     initExam();
     return () => { isMounted = false; };
+    // SS10.72: `sessionId` BILEREK bagimlilik listesinde degil. Bu efekt
+    // oturum kimligi yoksa YENI oturum uretip `setSessionId` cagiriyor;
+    // `sessionId`i listeye eklemek efekti yeniden tetikler ve her turda bir
+    // sinav daha uretir. Giris noktasi `initialSessionId` prop'udur.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSessionId, studentId]);
 
   // Timer effect
   useEffect(() => {
-    if (isCompleted) return;
+    if (isCompleted) {return;}
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
@@ -130,7 +159,7 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
   };
 
   const handleFinishExam = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting) {return;}
     setIsSubmitting(true);
     const timeSpent = (165 * 60) - timeLeft;
 
@@ -138,32 +167,62 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
       try {
         const res = await mockExamService.submitExam(sessionId, timeSpent);
         setResults(res);
+        setGonderimHatasi(null);
+        setIsCompleted(true);
       } catch (e) {
-        console.warn('Failed submit exam to backend, calculating client-side fallback result', e);
+        // SS10.72: eskiden burasi console.warn edip YINE DE isCompleted=true
+        // yapiyordu; ogrenci `results === null` ile sonuc ekranina dusuyor,
+        // sinavi gonderilmemis oldugu halde "bitti" saniyordu.
+        // "client-side fallback result" diye bir hesap ZATEN YOKTU -- yorum
+        // var olmayan bir davranisi anlatiyordu.
+        console.error('Deneme sinavi gonderilemedi.', e);
+        setGonderimHatasi(
+          'Sinav gonderilemedi. Cevaplariniz kaydedildi; lutfen tekrar deneyin.',
+        );
       }
+    } else {
+      // Oturum kimligi yoksa gonderilecek bir sey de yok.
+      setGonderimHatasi('Aktif bir sinav oturumu yok; gonderim yapilamadi.');
     }
-    setIsCompleted(true);
     setIsSubmitting(false);
   };
 
-  const currentQuestion = questions.find((q) => q.order === currentQuestionOrder) || MOCK_FALLBACK_QUESTIONS[0];
+  const currentQuestion = questions.find((q) => q.order === currentQuestionOrder);
 
   // Auto-switch branch tab based on current question
   useEffect(() => {
-    if (currentQuestionOrder >= 1 && currentQuestionOrder <= 40) setActiveBranch('TUR');
-    else if (currentQuestionOrder >= 41 && currentQuestionOrder <= 60) setActiveBranch('SOS');
-    else if (currentQuestionOrder >= 61 && currentQuestionOrder <= 100) setActiveBranch('MAT');
-    else if (currentQuestionOrder >= 101 && currentQuestionOrder <= 120) setActiveBranch('FEN');
+    if (currentQuestionOrder >= 1 && currentQuestionOrder <= 40) {setActiveBranch('TUR');}
+    else if (currentQuestionOrder >= 41 && currentQuestionOrder <= 60) {setActiveBranch('SOS');}
+    else if (currentQuestionOrder >= 61 && currentQuestionOrder <= 100) {setActiveBranch('MAT');}
+    else if (currentQuestionOrder >= 101 && currentQuestionOrder <= 120) {setActiveBranch('FEN');}
   }, [currentQuestionOrder]);
 
   const activeBranchObj = BRANCHES.find((b) => b.id === activeBranch) || BRANCHES[0];
   const activeBranchQuestions = Array.from(
     { length: activeBranchObj.range[1] - activeBranchObj.range[0] + 1 },
-    (_, i) => i + activeBranchObj.range[0]
+    (_, i) => i + activeBranchObj.range[0],
   );
 
   if (isCompleted) {
     return <ExamResultDashboard results={results} onRestart={() => window.location.reload()} />;
+  }
+
+  // SS10.72: veri yoksa sinav BASLAMAZ. Eskiden bu dallarin yerine 120
+  // uydurma soru gosteriliyordu.
+  if (yukleniyor) {
+    return (
+      <div className={styles.container} role="status">
+        Deneme sinavi hazirlaniyor...
+      </div>
+    );
+  }
+
+  if (yuklemeHatasi || !currentQuestion) {
+    return (
+      <div className={styles.container} role="alert">
+        {yuklemeHatasi ?? 'Deneme sinavi sorulari yuklenemedi.'}
+      </div>
+    );
   }
 
   return (
@@ -225,6 +284,14 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
           </button>
         </header>
 
+        {/* SS10.72: gonderim hatasi artik SESSIZ degil. Eskiden hata yutulup
+            sonuc ekranina bos `results` ile geciliyordu. */}
+        {gonderimHatasi && (
+          <div role="alert" className={styles.header}>
+            {gonderimHatasi}
+          </div>
+        )}
+
         <div className={styles.content}>
           <div className={styles.questionCard}>
             <div className={styles.questionText}>
@@ -235,14 +302,20 @@ export const ExamSession: React.FC<ExamSessionProps> = ({ sessionId: initialSess
               {currentQuestion.options.map((opt) => {
                 const isSelected = answers[currentQuestionOrder] === opt.letter;
                 return (
-                  <div
+                  // SS10.72: <div onClick> yerine gercek <button>.
+                  // Sik secmek klavyeyle de yapilabilmeli; jsx-a11y
+                  // (click-events-have-key-events / no-static-element-interactions)
+                  // bunu hakli olarak isaretliyordu.
+                  <button
                     key={opt.letter}
+                    type="button"
+                    aria-pressed={isSelected}
                     className={`${styles.option} ${isSelected ? styles.optionSelected : ''}`}
                     onClick={() => handleSelectOption(opt.letter)}
                   >
                     <div className={styles.optionLetter}>{opt.letter}</div>
                     <div className={styles.optionText}>{opt.text}</div>
-                  </div>
+                  </button>
                 );
               })}
             </div>

@@ -4,12 +4,18 @@
 BaseRepository org-scoped model olarak muamele için hazır (ORM wiring ayrı tur).
 """
 
-import os
+# ruff: noqa: N999
+# N999 (gecersiz modul adi: `katmanA` camelCase): dosya adi degistirilmedi.
+# Neden: bu ad iki yerde daha geciyor (`.bandit-baseline.json` girdisi ve
+# depo icindeki Faz-1 notlari); yeniden adlandirma testin OLCTUGU seyi
+# degistirmez ama bu referanslari bayatlatir. Kural burada bilincli olarak
+# susturuluyor -- modul hicbir yerden ADIYLA import EDILMIYOR (olculdu:
+# `git grep test_faz1_katmanA` -> yalniz baseline dosyasi), yani N999'un
+# korudugu sey (import edilebilirlik) burada risk altinda degil.
 
-import pytest
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import make_url
+from sqlalchemy import text
+
+from tests.pg_sync import sync_pg_engine
 
 KATMAN_A = [
     "fsrs_cards",
@@ -25,17 +31,11 @@ KATMAN_A = [
 
 
 def _engine():
-    load_dotenv(
-        os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=True
-    )
-    raw = os.environ.get("DATABASE_URL", "").replace(
-        "postgresql+asyncpg://", "postgresql://"
-    )
-    if not raw.startswith("postgresql"):
-        pytest.skip("gerçek postgres yok")
-    return create_engine(
-        make_url(raw).set(host="127.0.0.1", port=5434, database="kiro2")
-    )
+    # Ortak tanim: tests/pg_sync.py -- oradaki dosya basi yorumunda hem
+    # `database="kiro2"` sabitinin (CI'da ad `kiro2_test`) hem de varsayilan
+    # psycopg2 surucusunun (CI'da yalniz psycopg v3 kurulu) neden CI'da
+    # dustugu olcumleriyle yazili.
+    return sync_pg_engine()
 
 
 def test_org_id_column_notnull():
@@ -56,8 +56,11 @@ def test_no_null_org_id():
     eng = _engine()
     with eng.connect() as c:
         for t in KATMAN_A:
+            # S608: tablo adi KULLANICI GIRDISI DEGIL -- yukaridaki sabit
+            # KATMAN_A listesinden geliyor. Tablo adi SQL'de bind parametresi
+            # olamaz, bu yuzden f-string zorunlu.
             n = c.execute(
-                text(f"SELECT count(*) FROM {t} WHERE organization_id IS NULL")
+                text(f"SELECT count(*) FROM {t} WHERE organization_id IS NULL")  # noqa: S608
             ).scalar()
             assert n == 0, f"{t}: {n} NULL org_id"
 

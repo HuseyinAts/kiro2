@@ -2,6 +2,7 @@
 Smoke Tests for main.py - FastAPI Application
 Testing basic app initialization and endpoint availability
 """
+
 import os
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -36,37 +37,52 @@ class TestMainApplicationSmoke:
         return Mock()
 
     @pytest.fixture
-    def mock_all_startup_services(self, mock_db_manager, mock_settings, mock_routers_setup):
+    def mock_all_startup_services(
+        self, mock_db_manager, mock_settings, mock_routers_setup
+    ):
         """Mock all services that initialize during startup"""
-        mocks = {
-            'db_manager': mock_db_manager,
-            'settings': mock_settings,
-            'setup_routers': mock_routers_setup,
+        return {
+            "db_manager": mock_db_manager,
+            "settings": mock_settings,
+            "setup_routers": mock_routers_setup,
         }
-        return mocks
 
     def test_app_instance_creation(self, mock_all_startup_services):
         """Test that FastAPI app instance is created successfully"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    assert app is not None
-                    # Check that we have a FastAPI instance
-                    assert hasattr(app, 'title')
-                    assert hasattr(app, 'version')
+            assert app is not None
+            # Check that we have a FastAPI instance
+            assert hasattr(app, "title")
+            assert hasattr(app, "version")
 
     def test_app_has_cors_middleware(self, mock_all_startup_services):
         """Test that CORS middleware is configured"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # Check that middleware is present
-                    # Note: middleware might be 0 in fallback mode
-                    assert app.user_middleware is not None
+            # Check that middleware is present
+            # Note: middleware might be 0 in fallback mode
+            assert app.user_middleware is not None
 
     def test_health_endpoint_responds(self, mock_all_startup_services):
         """Test that /health endpoint responds"""
@@ -78,107 +94,172 @@ class TestMainApplicationSmoke:
 
         es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
         try:
-            with httpx.Client(timeout=2.0) as client:
-                client.get(f"{es_url}/_cluster/health", timeout=2.0)
+            # Ad `client` DEGIL: asagida ayni kapsamda `client = TestClient(app)`
+            # var ve mypy ilk baglamadan `httpx.Client` cikarip ikinciyi
+            # `[assignment]` hatasi olarak isaretliyordu. Iki ayri istemci,
+            # iki ayri ad.
+            with httpx.Client(timeout=2.0) as es_client:
+                es_client.get(f"{es_url}/_cluster/health", timeout=2.0)
         except Exception:
             pytest.skip("Elasticsearch not available")
 
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    client = TestClient(app)
-                    response = client.get("/health")
+            client = TestClient(app)
+            response = client.get("/health")
 
-                    # Should respond (might be 200, 404, or redirect)
-                    assert response.status_code in [200, 404, 307, 308]
+            # Should respond (might be 200, 404, or redirect)
+            assert response.status_code in [200, 404, 307, 308]
 
     def test_docs_endpoint_exists(self, mock_all_startup_services):
         """Test that OpenAPI docs endpoint exists"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    client = TestClient(app)
-                    response = client.get("/docs")
+            client = TestClient(app)
+            response = client.get("/docs")
 
-                    # Docs should be accessible (200 or redirect)
-                    assert response.status_code in [200, 307, 308]
+            # Docs should be accessible (200 or redirect)
+            assert response.status_code in [200, 307, 308]
 
     def test_openapi_schema_generation(self, mock_all_startup_services):
         """Test that OpenAPI schema is generated"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # OpenAPI schema should be generated
-                    schema = app.openapi()
-                    assert schema is not None
-                    assert 'info' in schema
-                    assert 'paths' in schema
+            # OpenAPI schema should be generated
+            schema = app.openapi()
+            assert schema is not None
+            assert "info" in schema
+            assert "paths" in schema
 
     def test_app_routes_registered(self, mock_all_startup_services):
         """Test that routes are registered"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # Get all routes
-                    routes = [route.path for route in app.routes]
+            # `app.routes` YALNIZ rota nesnesi icermez: FastAPI 0.141
+            # (requirements.txt'te pinli) `include_router`
+            # cagrilarinda listeye `fastapi.routing._IncludedRouter`
+            # isaretci nesneleri de koyuyor ve bunlarin `path` alani
+            # YOK. Ayrinti ve neden yalniz tam suitte gorundugu:
+            # tests/unit/test_main_application.py, ayni test.
+            routes = [r.path for r in app.routes if hasattr(r, "path")]
 
-                    # Should have some routes registered
-                    assert len(routes) > 0
+            # Should have some routes registered
+            assert len(routes) > 0
 
-                    # Common routes should exist
-                    assert any('docs' in path for path in routes)
-                    assert any('openapi' in path for path in routes)
+            # Common routes should exist
+            assert any("docs" in path for path in routes)
+            assert any("openapi" in path for path in routes)
 
     def test_app_has_lifespan_context(self, mock_all_startup_services):
         """Test that lifespan context manager is configured"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # App should have lifespan configured
-                    assert hasattr(app.router, 'lifespan_context')
-                    assert app.router.lifespan_context is not None
+            # App should have lifespan configured
+            assert hasattr(app.router, "lifespan_context")
+            assert app.router.lifespan_context is not None
 
     def test_app_metadata_attributes(self, mock_all_startup_services):
         """Test app metadata is correctly set"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # Check that app has basic metadata
-                    assert app.title is not None
-                    assert app.version is not None
-                    assert app.description is not None
+            # Check that app has basic metadata
+            assert app.title is not None
+            assert app.version is not None
+            assert app.description is not None
 
     def test_exception_handlers_configured(self, mock_all_startup_services):
         """Test that exception handlers are set up"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # Exception handlers should be attempted to set up
-                    # (might fail if imports are mocked, but attempt should be made)
-                    assert app is not None
+            # Exception handlers should be attempted to set up
+            # (might fail if imports are mocked, but attempt should be made)
+            assert app is not None
 
     def test_middleware_stack_order(self, mock_all_startup_services):
         """Test that middleware is configured"""
-        with patch('core.application.db_manager', mock_all_startup_services['db_manager']):
-            with patch('core.application.settings', mock_all_startup_services['settings']):
-                with patch('core.application.setup_routers', mock_all_startup_services['setup_routers']):
-                    from main import app
+        with (
+            patch(
+                "core.application.db_manager", mock_all_startup_services["db_manager"]
+            ),
+            patch("core.application.settings", mock_all_startup_services["settings"]),
+            patch(
+                "core.application.setup_routers",
+                mock_all_startup_services["setup_routers"],
+            ),
+        ):
+            from main import app
 
-                    # App should have middleware attribute
-                    assert hasattr(app, 'user_middleware')
-                    # Middleware may be empty in fallback/test mode
-                    assert app.user_middleware is not None
+            # App should have middleware attribute
+            assert hasattr(app, "user_middleware")
+            # Middleware may be empty in fallback/test mode
+            assert app.user_middleware is not None

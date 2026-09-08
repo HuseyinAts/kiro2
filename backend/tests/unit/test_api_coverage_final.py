@@ -41,28 +41,67 @@ for k in _STUBBED_KEYS:
     if k in sys.modules:
         _ORIG_SYS_MODULES[k] = sys.modules[k]
 
+# SS10.66: `_stub()` var olan modulu AYNEN dondururken, cagiran taraf onun
+# ozniteliklerini KOSULSUZ degistiriyordu. Gercek paket zaten iceri alinmissa
+# (celery ve slowapi bu depoda KURULU) bu, sureci kalici olarak kirletir:
+# asagidaki geri yukleme dongusu yalnizca sys.modules KAYDINI eski haline
+# getirir, GERCEK MODULE yazilan ozniteligi geri almaz.
+# Olculen zarar: core/celery_app.py app'ini sahte Celery'den uretiyor ve
+# tests/test_social_tasks.py::TestCeleryAppSchedule MagicMock uzerinde assert
+# ediyordu (CI kosusu 34072269135'te 2 kirmizi).
+# Cozum: hangi modulleri BU dosyanin yarattigini kaydet, yalnizca onlari
+# ozellestir. Bkz. SS10.63 (ayni kok neden, ilk nusha).
+_BIZIM_STUBLARIMIZ: set[str] = set()
+
+
 def _stub(name: str) -> types.ModuleType:
     """Return existing module or create a lightweight stub."""
     if name in sys.modules:
         return sys.modules[name]
     mod = types.ModuleType(name)
     sys.modules[name] = mod
+    _BIZIM_STUBLARIMIZ.add(name)
     return mod
 
 
+def _bizim_mi(name: str) -> bool:
+    """Modulu bu dosya mi yaratti? Degilse ozniteligine dokunulmaz."""
+    return name in _BIZIM_STUBLARIMIZ
+
+
 # slowapi stubs (used by learning_path_v2)
+#
+# NOT (SS10.66, OLCULDU VE GERI ALINDI): asagidaki uc mutasyonu da
+# `_bizim_mi(...)` ile korumak DENENDI. Sonuc: gercek `slowapi.Limiter`
+# calismaya basliyor ve `redis` MagicMock oldugu icin `limits` kutuphanesi
+# surumu "0.0.0" gorup ConfigurationError firlatiyor ->
+# tests/fast/test_api_coverage_batch13.py::TestEnhancedChatCoverage'in
+# 9 testi setup'ta dusuyor. Yani slowapi mutasyonunun kaldirilmasi BASKA bir
+# kirlenmeyi (redis stub'i) aciga cikariyor; ikisini birden cozmek bu PR'in
+# konusu degil. CI'da olculen kirmizi celery'den geliyordu ve asagida o
+# duzeltildi. Bu blok BILEREK eski halinde birakildi.
 _slowapi = _stub("slowapi")
 _slowapi.Limiter = MagicMock  # type: ignore[attr-defined]
 _slowapi._rate_limit_exceeded_handler = MagicMock  # type: ignore[attr-defined]
 _slowapi_util = _stub("slowapi.util")
 _slowapi_util.get_remote_address = lambda req: "127.0.0.1"  # type: ignore[attr-defined]
 _slowapi_errors = _stub("slowapi.errors")
-class MockRateLimitExceeded(Exception): pass
+
+
+class MockRateLimitExceeded(Exception):  # noqa: N818
+    """slowapi.errors.RateLimitExceeded'in sahtesi.
+
+    N818 (adin 'Error' ile bitmesi) bastirildi: bu sinif taklit ettigi
+    yukari-akis adiyla ESLESMEK zorunda, aksi halde stub'in amaci kalmaz.
+    """
+
+
 _slowapi_errors.RateLimitExceeded = MockRateLimitExceeded  # type: ignore[attr-defined]
 
 # celery stubs
 _celery = _stub("celery")
-_celery.Celery = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
+if _bizim_mi("celery"):
+    _celery.Celery = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
 _stub("celery.schedules")
 
 # redis stubs (for services that import redis directly)
@@ -72,15 +111,18 @@ _stub("redis.asyncio")
 # pgvector stubs
 _stub("pgvector")
 _pgvector_sqlalchemy = _stub("pgvector.sqlalchemy")
-from sqlalchemy.types import UserDefinedType
+from sqlalchemy.types import UserDefinedType  # noqa: E402
 
 
 class _MockVector(UserDefinedType):
     def __init__(self, dim=None):
         self.dim = dim
+
     def get_col_spec(self, **kw):
         return "VECTOR"
-_pgvector_sqlalchemy.Vector = _MockVector
+
+
+_pgvector_sqlalchemy.Vector = _MockVector  # type: ignore[attr-defined]
 
 # zemberek stubs
 _stub("zemberek")
@@ -122,12 +164,13 @@ def setup_stubs_fixture():
         else:
             sys.modules.pop(k, None)
 
+
 # ---------------------------------------------------------------------------
 # Now import FastAPI / httpx infrastructure
 # ---------------------------------------------------------------------------
 
-from fastapi import FastAPI
-from httpx import ASGITransport, AsyncClient
+from fastapi import FastAPI  # noqa: E402
+from httpx import ASGITransport, AsyncClient  # noqa: E402
 
 # ===========================================================================
 # Helpers
@@ -283,7 +326,7 @@ class TestAdvancedReportsHelpers:
         from api.advanced_reports import _get_onerilen_ogrenme_yontemi
 
         vark = {"visual": 0.9, "auditory": 0.2, "reading": 0.3, "kinesthetic": 0.1}
-        felder = {}
+        felder: dict[str, object] = {}
         result = _get_onerilen_ogrenme_yontemi("test_konu", vark, felder)
         assert result == "görsel_materyaller"
 
@@ -291,7 +334,7 @@ class TestAdvancedReportsHelpers:
         from api.advanced_reports import _get_onerilen_ogrenme_yontemi
 
         vark = {"visual": 0.5, "auditory": 0.5, "reading": 0.5, "kinesthetic": 0.5}
-        felder = {}
+        felder: dict[str, object] = {}
         result = _get_onerilen_ogrenme_yontemi("test_konu", vark, felder)
         assert result == "karma_yontem"
 
@@ -452,7 +495,9 @@ class TestAdvancedReportsAPI:
         app = FastAPI()
         app.dependency_overrides[get_current_user] = lambda: _make_authenticated_user()
         app.include_router(router)
-        with patch("api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)):
+        with patch(
+            "api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)
+        ):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client:
@@ -467,7 +512,9 @@ class TestAdvancedReportsAPI:
         app = FastAPI()
         app.dependency_overrides[get_current_user] = lambda: _make_authenticated_user()
         app.include_router(router)
-        with patch("api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)):
+        with patch(
+            "api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)
+        ):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client:
@@ -482,7 +529,9 @@ class TestAdvancedReportsAPI:
         app = FastAPI()
         app.dependency_overrides[get_current_user] = lambda: _make_authenticated_user()
         app.include_router(router)
-        with patch("api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)):
+        with patch(
+            "api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)
+        ):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client:
@@ -691,7 +740,7 @@ class TestTeacherServiceRegistration:
         service = TeacherService(mock_db)
 
         user_id = uuid.uuid4()
-        teacher = await service.register_teacher(
+        _teacher = await service.register_teacher(
             user_id=user_id,
             full_name="Ali Veli",
             title="Dr.",
@@ -778,7 +827,7 @@ class TestTeacherServiceRegistration:
         mock_db.execute = AsyncMock(return_value=mock_result)
 
         service = TeacherService(mock_db)
-        result = await service.update_teacher_profile(mock_teacher.id, bio="New bio")
+        _result = await service.update_teacher_profile(mock_teacher.id, bio="New bio")
         assert mock_teacher.bio == "New bio"
         mock_db.commit.assert_awaited()
 
@@ -800,7 +849,7 @@ class TestTeacherServiceRegistration:
 
         service = TeacherService(mock_db)
         admin_id = uuid.uuid4()
-        result = await service.verify_teacher(
+        _result = await service.verify_teacher(
             mock_teacher.id, verified_by=admin_id, approved=True
         )
         assert mock_teacher.status == TeacherStatus.VERIFIED
@@ -822,7 +871,7 @@ class TestTeacherServiceRegistration:
         mock_db.execute = AsyncMock(return_value=mock_result)
 
         service = TeacherService(mock_db)
-        result = await service.verify_teacher(
+        _result = await service.verify_teacher(
             mock_teacher.id,
             verified_by=uuid.uuid4(),
             approved=False,
@@ -870,7 +919,7 @@ class TestTeacherServiceRegistration:
         service = TeacherService(mock_db)
 
         teacher_id = uuid.uuid4()
-        expertise = await service.add_expertise(
+        _expertise = await service.add_expertise(
             teacher_id=teacher_id,
             subject=SubjectExpertise.MATHEMATICS,
             grade_levels=["11", "12"],
@@ -935,9 +984,11 @@ class TestDiaryHelpers:
     def unpoison_diary_schemas(self):
         import sys
         from unittest.mock import MagicMock, Mock
-        if "api.schemas.diary" in sys.modules:
-            if isinstance(sys.modules["api.schemas.diary"], (Mock, MagicMock)):
-                del sys.modules["api.schemas.diary"]
+
+        if "api.schemas.diary" in sys.modules and isinstance(
+            sys.modules["api.schemas.diary"], Mock | MagicMock
+        ):
+            del sys.modules["api.schemas.diary"]
 
     def _make_goal_mock(self):
         from models.diary import GoalStatus
@@ -957,8 +1008,8 @@ class TestDiaryHelpers:
         goal.risk_factors = []
         goal.velocity = 1.5
         goal.predicted_completion = None
-        goal.start_date = date.today()
-        goal.target_date = date.today()
+        goal.start_date = date.today()  # noqa: DTZ011
+        goal.target_date = date.today()  # noqa: DTZ011
         goal.completed_at = None
         goal.category = "akademik"
         goal.priority = 3

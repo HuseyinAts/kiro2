@@ -39,8 +39,28 @@ def _pg_async_url() -> str:
     )
     if "postgresql" not in raw:
         pytest.skip("gerçek postgres yok")
-    url = make_url(raw).set(host="localhost", port=5434, database="kiro2")
-    return str(url).replace("postgresql://", "postgresql+asyncpg://")
+    # OLCUM (6 Eyl 2026, ikinci katman): burada `database="kiro2"` de vardi ve
+    # sifre duzeltildikten sonra CI'da
+    # `asyncpg.InvalidCatalogNameError: database "kiro2" does not exist`
+    # aliyorduk -- cunku CI'in DATABASE_URL'i `kiro2_test` veritabanini
+    # gosteriyor, test ise onu "kiro2" ile EZIYORDU. host/port ezmesi
+    # korunuyor (yerelde de CI'da da postgres 5434'te), ama veritabani adi
+    # artik ortamdan geliyor: tek bir DSN kaynagi, iki ortamda da dogru.
+    url = make_url(raw).set(host="localhost", port=5434)
+    # OLCUM (6 Eyl 2026): burada `str(url)` vardi ve CI'da
+    # `asyncpg.InvalidPasswordError: password authentication failed for user
+    # "postgres"` uretiyordu. Sebep SQLAlchemy'nin varsayilani:
+    # `URL.__str__()` = `render_as_string(hide_password=True)`, yani sifreyi
+    # `***` ile MASKELER ve o maske DSN'e literal sifre olarak gider.
+    # Olculdu:
+    #   str(url)                             -> postgresql://postgres:***@...
+    #   render_as_string(hide_password=False)-> postgresql://postgres:<gercek>@...
+    # Bu hata simdiye kadar gorunmuyordu cunku pytest `-x` ile suite daha
+    # erken duruyordu (bkz. SS10.55).
+    # NOT: `render_as_string` SQLAlchemy stub'larinda Any donuyor; mypy
+    # `no-any-return` vermesin diye acik str annotation.
+    dsn: str = url.render_as_string(hide_password=False)
+    return dsn.replace("postgresql://", "postgresql+asyncpg://")
 
 
 @pytest_asyncio.fixture
@@ -90,7 +110,16 @@ async def seeded():
             )
         pid = str(uuid.uuid4())
         await s.execute(
-            text("INSERT INTO plans (id,code,name,seat_limit) VALUES (:i,:c,:c,2)"),
+            # OLCUM (6 Eyl 2026, ucuncu katman): `is_active` verilmiyordu ve
+            # CI'da `NotNullViolationError: null value in column "is_active"
+            # of relation "plans"` aliniyordu -- o kolon NOT NULL ve DB
+            # tarafinda default'u yok. Test zaten KULLANILABILIR bir plan
+            # kurmak istiyor, dolayisiyla acikca true veriliyor (davranis
+            # degismiyor, ortulu varsayim gorunur hale geliyor).
+            text(
+                "INSERT INTO plans (id,code,name,seat_limit,is_active) "
+                "VALUES (:i,:c,:c,2,true)"
+            ),
             {"i": pid, "c": plan_code},
         )
         await s.execute(
@@ -104,9 +133,21 @@ async def seeded():
         for uid, email, oid, role in people.values():
             await s.execute(
                 text(
+                    # OLCUM (6 Eyl 2026, dorduncu katman): NOT NULL kolonlar
+                    # katman katman patliyordu (once plans.is_active, sonra
+                    # users.is_2fa_enabled). Tek tek kovalamak yerine sema
+                    # sorgulandi -- information_schema'da bu tablolar icin
+                    # "NOT NULL ve default'u YOK" olan TUM kolonlar cikarildi.
+                    # users icin 15 kolon zorunlu; test yalnizca 9'unu
+                    # veriyordu. Eksik 7'si (is_2fa_enabled, is_premium,
+                    # total_xp, level, is_verified, elo_rating, is_parent)
+                    # burada bir kerede tamamlandi. Degerler notr: testin
+                    # olctugu sey org uyeligi/koltuk sayimi, bu alanlar degil.
                     "INSERT INTO users (id,organization_id,email,username,password_hash,"
-                    "first_name,last_name,role,is_active) VALUES "
-                    "(:i,:o,:e,:u,'x','T','U','STUDENT',true)"
+                    "first_name,last_name,role,is_active,is_2fa_enabled,is_premium,"
+                    "total_xp,level,is_verified,elo_rating,is_parent) VALUES "
+                    "(:i,:o,:e,:u,'x','T','U','STUDENT',true,false,false,"
+                    "0,1,true,1000,false)"
                 ),
                 {"i": uid, "o": oid, "e": email, "u": uid},
             )

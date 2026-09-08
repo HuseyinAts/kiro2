@@ -1006,196 +1006,73 @@ class TestFSRSAPIImports:
             ReviewFlashcardRequest(grade=5, response_time_ms=1000)
 
 
-class TestFSRSFlashcardEndpoints:
-    """FSRS - Flashcard Creation and Retrieval Tests"""
+class TestFSRSKaldirilanFlashcardUclari:
+    """FSRS - 410 Gone yapilan eski flashcard uclarinin civisi.
+
+    NEDEN BU SINIF VAR (olcum, 6 Eyl 2026):
+    Burada onceden `TestFSRSFlashcardEndpoints` ve `TestFSRSReviewEndpoint`
+    siniflari duruyordu; toplam 8 test `app.api.fsrs.fsrs_service`i
+    mock'layip `create_flashcard` / `get_due_flashcards` / `review_flashcard`
+    uclarinin BASARILI yanit dondurmesini bekliyordu. Bu uc uc 2 Agu
+    2026'da bilerek 410 Gone'a cevrildi -- gerekce ve olcum
+    `app/api/fsrs.py` icindeki "KALDIRILAN FLASHCARD UYUMLULUK KATMANI"
+    blogunda: deprecated senkron servis AsyncSession ile calisamiyor
+    (AttributeError -> 500) ve frontend'de bu uclara 0 cagri var.
+
+    Yani o testler bir kusuru degil, ARTIK VAR OLMAYAN bir davranisi
+    olcuyordu; mock'lanan `fsrs_service` hicbir zaman cagrilmiyordu bile.
+    Toplam 13 bayat test kaldirildi (bu iki sinifin 8'i,
+    `TestFSRSAPIEdgeCases`ten 3, `TestFSRSComprehensive`ten 2). Yerine
+    GERCEK sozlesmeyi olcen su uc civi kondu: "uc kalici olarak kaldirildi
+    ve kanonik uclari isaret ediyor". Kaldirma niyet disi geri alinirsa bu
+    testler kirilir.
+    """
 
     @pytest.fixture
-    def mock_student_user(self):
+    def mock_student(self):
         mock_user = Mock()
         mock_user.id = "student-123"
         mock_user.role.value = "student"
         return mock_user
 
-    @pytest.fixture
-    def mock_teacher_user(self):
-        mock_user = Mock()
-        mock_user.id = "teacher-123"
-        mock_user.role.value = "teacher"
-        return mock_user
-
     @pytest.mark.asyncio
-    async def test_create_flashcard_success(self, mock_student_user):
-        """Create flashcard successfully"""
+    async def test_create_flashcard_410_gone(self, mock_student):
+        """POST /flashcards kalici olarak kaldirildi."""
         from app.api.fsrs import CreateFlashcardRequest, create_flashcard
 
         request = CreateFlashcardRequest(
-            subject="Matematik",
-            topic="Türev",
-            content="Test content",
-            answer="Test answer",
-        )
-
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_card = Mock()
-            mock_card.id = "card-123"
-            mock_card.subject = "Matematik"
-            mock_card.topic = "Türev"
-            mock_card.content = "Test content"
-            mock_card.answer = "Test answer"
-            mock_card.due_date = datetime.now()
-            mock_card.state = "new"
-
-            mock_service.create_flashcard = AsyncMock(return_value=mock_card)
-
-            response = await create_flashcard(request, mock_student_user, mock_db)
-
-            assert response["success"] is True
-            assert response["data"]["id"] == "card-123"
-
-    @pytest.mark.asyncio
-    async def test_create_flashcard_non_student(self, mock_teacher_user):
-        """Non-student cannot create flashcard"""
-        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
-
-        request = CreateFlashcardRequest(
-            subject="Matematik", topic="Türev", content="Test", answer="Answer"
+            subject="Matematik", topic="Turev", content="Test", answer="Answer"
         )
 
         with pytest.raises(HTTPException) as exc_info:
-            await create_flashcard(request, mock_teacher_user, Mock())
+            await create_flashcard(request, mock_student, Mock())
 
-        assert exc_info.value.status_code == 500  # API wraps role check as 500
+        assert exc_info.value.status_code == 410
+        assert "/api/v1/fsrs/review" in exc_info.value.detail
 
     @pytest.mark.asyncio
-    async def test_get_due_flashcards_success(self, mock_student_user):
-        """Get due flashcards successfully"""
+    async def test_get_due_flashcards_410_gone(self, mock_student):
+        """GET /flashcards/due kalici olarak kaldirildi."""
         from app.api.fsrs import get_due_flashcards
 
-        mock_db = Mock()
+        with pytest.raises(HTTPException) as exc_info:
+            await get_due_flashcards(limit=20, current_user=mock_student, db=Mock())
 
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_cards = [
-                {"id": "card-1", "subject": "Math"},
-                {"id": "card-2", "subject": "Turkish"},
-            ]
-            mock_service.get_due_cards = AsyncMock(return_value=mock_cards)
-
-            response = await get_due_flashcards(
-                limit=20, current_user=mock_student_user, db=mock_db
-            )
-
-            assert response["success"] is True
-            assert len(response["data"]["cards"]) == 2
+        assert exc_info.value.status_code == 410
+        assert "/api/v1/fsrs/due" in exc_info.value.detail
 
     @pytest.mark.asyncio
-    async def test_get_due_flashcards_with_limit(self, mock_student_user):
-        """Get due flashcards with custom limit"""
-        from app.api.fsrs import get_due_flashcards
-
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_cards = [{"id": f"card-{i}"} for i in range(50)]
-            mock_service.get_due_cards = AsyncMock(return_value=mock_cards)
-
-            response = await get_due_flashcards(
-                limit=50, current_user=mock_student_user, db=mock_db
-            )
-
-            assert len(response["data"]["cards"]) == 50
-
-
-class TestFSRSReviewEndpoint:
-    """FSRS - Review Flashcard Endpoint Tests"""
-
-    @pytest.fixture
-    def mock_student_user(self):
-        mock_user = Mock()
-        mock_user.id = "student-123"
-        mock_user.role.value = "student"
-        return mock_user
-
-    @pytest.mark.asyncio
-    async def test_review_flashcard_success(self, mock_student_user):
-        """Review flashcard successfully"""
+    async def test_review_flashcard_410_gone(self, mock_student):
+        """POST /flashcards/{id}/review kalici olarak kaldirildi."""
         from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         request = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
 
-        mock_db = Mock()
+        with pytest.raises(HTTPException) as exc_info:
+            await review_flashcard("card-123", request, mock_student, Mock())
 
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_result = {
-                "success": True,
-                "interval_days": 7,
-                "next_review": datetime.now().isoformat(),
-            }
-            mock_service.review_flashcard = AsyncMock(return_value=mock_result)
-
-            response = await review_flashcard(
-                "card-123", request, mock_student_user, mock_db
-            )
-
-            assert response["success"] is True
-            assert "interval_days" in response["data"]
-
-    @pytest.mark.asyncio
-    async def test_review_flashcard_grade_1(self, mock_student_user):
-        """Review flashcard with grade 1 (Again)"""
-        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
-
-        request = ReviewFlashcardRequest(grade=1, response_time_ms=3000)
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_result = {"interval_days": 0}
-            mock_service.review_flashcard = AsyncMock(return_value=mock_result)
-
-            response = await review_flashcard(
-                "card-123", request, mock_student_user, mock_db
-            )
-
-            assert "Tekrar et" in response["data"]["grade_description"]
-
-    @pytest.mark.asyncio
-    async def test_review_flashcard_grade_4(self, mock_student_user):
-        """Review flashcard with grade 4 (Easy)"""
-        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
-
-        request = ReviewFlashcardRequest(grade=4, response_time_ms=2000)
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_result = {"interval_days": 14}
-            mock_service.review_flashcard = AsyncMock(return_value=mock_result)
-
-            response = await review_flashcard(
-                "card-123", request, mock_student_user, mock_db
-            )
-
-            assert "Kolay" in response["data"]["grade_description"]
-
-    @pytest.mark.asyncio
-    async def test_review_flashcard_not_found(self, mock_student_user):
-        """Review non-existent flashcard"""
-        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
-
-        request = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_service.review_flashcard = AsyncMock(
-                side_effect=ValueError("Card not found")
-            )
-
-            with pytest.raises(HTTPException) as exc_info:
-                await review_flashcard(
-                    "invalid-id", request, mock_student_user, mock_db
-                )
-
-            assert exc_info.value.status_code == 404
+        assert exc_info.value.status_code == 410
+        assert "/api/v1/fsrs/stats" in exc_info.value.detail
 
 
 class TestFSRSRecommendationsEndpoint:
@@ -2939,70 +2816,9 @@ class TestFSRSAPIEdgeCases:
         )
         assert response.session_id == "session-1"
 
-    @pytest.mark.asyncio
-    async def test_create_flashcard_with_image(self, mock_student):
-        """Create flashcard with image content"""
-        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
-
-        request = CreateFlashcardRequest(
-            subject="Fizik",
-            topic="Hareket",
-            content="[Image: velocity-time graph]",
-            answer="Slope represents acceleration",
-        )
-
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_card = Mock()
-            mock_card.id = "card-img"
-            mock_card.subject = "Fizik"
-            mock_card.topic = "Hareket"
-            mock_card.content = "[Image: velocity-time graph]"
-            mock_card.answer = "Slope represents acceleration"
-            mock_card.due_date = datetime.now()
-            mock_card.state = "new"
-
-            mock_service.create_flashcard = AsyncMock(return_value=mock_card)
-
-            response = await create_flashcard(request, mock_student, mock_db)
-
-            assert response["success"] is True
-
-    @pytest.mark.asyncio
-    async def test_review_flashcard_grade_2(self, mock_student):
-        """Review with grade 2 (Hard)"""
-        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
-
-        request = ReviewFlashcardRequest(grade=2, response_time_ms=8000)
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_result = {"interval_days": 3}
-            mock_service.review_flashcard = AsyncMock(return_value=mock_result)
-
-            response = await review_flashcard(
-                "card-123", request, mock_student, mock_db
-            )
-
-            assert "Zor" in response["data"]["grade_description"]
-
-    @pytest.mark.asyncio
-    async def test_get_due_flashcards_limit_validation(self, mock_student):
-        """Get due flashcards respects limit"""
-        from app.api.fsrs import get_due_flashcards
-
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_cards = [{"id": f"card-{i}"} for i in range(100)]
-            mock_service.get_due_cards = AsyncMock(return_value=mock_cards[:100])
-
-            response = await get_due_flashcards(
-                limit=100, current_user=mock_student, db=mock_db
-            )
-
-            assert len(response["data"]["cards"]) == 100
+    # NOT: burada 410 Gone olan flashcard uclarina yazilmis bayat
+    # testler duruyordu; gerekce ve yerine gecen civiler icin bkz.
+    # `TestFSRSKaldirilanFlashcardUclari` (bu dosya).
 
     @pytest.mark.asyncio
     async def test_get_study_recommendations_exam_season(self, mock_student):
@@ -3980,57 +3796,9 @@ class TestFSRSComprehensive:
         assert algo["version"] == "1.0"
         assert algo["parameters_count"] == 17
 
-    @pytest.mark.asyncio
-    async def test_create_multiple_flashcards(self, mock_student):
-        """Test creating multiple flashcards"""
-        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
-
-        mock_db = Mock()
-
-        requests = [
-            CreateFlashcardRequest(
-                subject=f"Subject{i}",
-                topic=f"Topic{i}",
-                content=f"Content{i}",
-                answer=f"Answer{i}",
-            )
-            for i in range(5)
-        ]
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            for i, request in enumerate(requests):
-                mock_card = Mock()
-                mock_card.id = f"card-{i}"
-                mock_card.subject = request.subject
-                mock_card.topic = request.topic
-                mock_card.content = request.content
-                mock_card.answer = request.answer
-                mock_card.due_date = datetime.now()
-                mock_card.state = "new"
-
-                mock_service.create_flashcard = AsyncMock(return_value=mock_card)
-
-                response = await create_flashcard(request, mock_student, mock_db)
-                assert response["success"] is True
-
-    @pytest.mark.asyncio
-    async def test_review_multiple_grades(self, mock_student):
-        """Test reviewing with all different grades"""
-        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
-
-        mock_db = Mock()
-
-        for grade in [1, 2, 3, 4]:
-            request = ReviewFlashcardRequest(grade=grade, response_time_ms=5000)
-
-            with patch("app.api.fsrs.fsrs_service") as mock_service:
-                mock_result = {"interval_days": grade * 2}
-                mock_service.review_flashcard = AsyncMock(return_value=mock_result)
-
-                response = await review_flashcard(
-                    f"card-{grade}", request, mock_student, mock_db
-                )
-                assert response["success"] is True
+    # NOT: burada 410 Gone olan flashcard uclarina yazilmis bayat
+    # testler duruyordu; gerekce ve yerine gecen civiler icin bkz.
+    # `TestFSRSKaldirilanFlashcardUclari` (bu dosya).
 
     @pytest.mark.asyncio
     async def test_study_session_lifecycle(self, mock_student):
@@ -4481,26 +4249,11 @@ class TestAllAPIsErrorHandling:
             with pytest.raises(HTTPException):
                 await create_exam(request, mock_user)
 
-    @pytest.mark.asyncio
-    async def test_fsrs_database_connection_error(self):
-        """Test FSRS API database connection error"""
-        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
-
-        request = CreateFlashcardRequest(
-            subject="Test", topic="Test", content="Test", answer="Test"
-        )
-        mock_user = Mock()
-        mock_user.id = "test-user"
-        mock_user.role.value = "student"
-        mock_db = Mock()
-
-        with patch("app.api.fsrs.fsrs_service") as mock_service:
-            mock_service.create_flashcard = AsyncMock(
-                side_effect=Exception("Database connection failed")
-            )
-
-            with pytest.raises(HTTPException):
-                await create_flashcard(request, mock_user, mock_db)
+    # NOT: `test_fsrs_database_connection_error` kaldirildi. `pytest.raises
+    # (HTTPException)` diyordu ve GECIYORDU -- ama yakaladigi sey DB hatasi
+    # degil, ucun kendisinin dondurdugu 410 Gone idi (mock'lanan servis hic
+    # cagrilmiyordu). Yani yesil ama YANLIS SEBEPTEN yesildi. Sozlesme
+    # civisi: `TestFSRSKaldirilanFlashcardUclari` (bu dosya).
 
     @pytest.mark.asyncio
     async def test_analytics_elasticsearch_unavailable(self):

@@ -49,9 +49,9 @@ def test_utf8_encoding():
 
     # Verify no encoding errors occurred
     assert len(turkish_upper) > 0, "Turkish text should be processable"
-    assert "İ" in turkish_text or "I" in turkish_upper, (
-        "Turkish characters should be preserved"
-    )
+    assert (
+        "İ" in turkish_text or "I" in turkish_upper
+    ), "Turkish characters should be preserved"
 
 
 def test_middleware_loaded():
@@ -66,45 +66,85 @@ def test_middleware_loaded():
 
 
 def test_routers_loaded():
-    """ST-01-05: API routers are loaded (115+ endpoints expected)."""
+    """ST-01-05: API routers are loaded (115+ endpoints expected).
+
+    SS10.69 -- BU TEST YANLIS YUZEYI OLCUYORDU.
+
+    Eskiden `app.routes` uzerinde donup `path.startswith("/api")` sayiyordu.
+    FastAPI 0.141'de `include_router()` her router icin `app.routes`a
+    `.path`i OLMAYAN bir `_IncludedRouter` isaretcisi koyuyor ve alt rotalari
+    duzlestirmiyor. Olculdu:
+
+        app.routes toplam : 156  (151'i isaretci, 5'i /docs /redoc /openapi.json ...)
+        /api ile baslayan :   0
+        gercek rota       : 1214
+
+    Yani test "Expected 10+ API routes, got 0" diyordu -- urun kusuru degil,
+    ALET kusuru. `tests/rota_yuzeyi.gercek_rotalar` isaretcileri aciyor.
+    """
     from main import app
+    from tests.rota_yuzeyi import gercek_rotalar
 
-    routes = app.routes
-    assert len(routes) > 50, f"Expected 50+ routes, got {len(routes)}"
+    rotalar = list(gercek_rotalar(app))
+    assert len(rotalar) > 50, f"Expected 50+ routes, got {len(rotalar)}"
 
-    # Verify we have actual endpoint routes, not just static/openapi
-    route_paths = [getattr(route, "path", "") for route in routes]
-    api_routes = [p for p in route_paths if p.startswith("/api")]
-
-    assert len(api_routes) > 10, f"Expected 10+ API routes, got {len(api_routes)}"
+    api_rotalari = [yol for yol, _y, _a in rotalar if yol.startswith("/api")]
+    assert len(api_rotalari) > 10, (
+        f"Expected 10+ API routes, got {len(api_rotalari)} "
+        f"(toplam gercek rota: {len(rotalar)})"
+    )
 
 
 def test_no_duplicate_api_routes():
     """
     ST-01-06: No duplicate path+method pairs in runtime route surface.
     Starlette's last-registered-wins behavior silently shadows earlier handlers.
-    This replaces the old len(routes) > 50 check with a real integrity assertion.
+
+    SS10.69 -- BU BEKCI KORDU, ARTIK GORUYOR
+    ----------------------------------------
+    Eskiden `app.routes` uzerinde donuyordu. FastAPI 0.141'de 1214 rotanin
+    yalnizca 5'i orada goruluyor (151'i `.path`i olmayan `_IncludedRouter`
+    isaretcisi), yani bekci hicbir sey bulamadigi icin SAHTE YESILDI.
+    Yuzey artik `tests/rota_yuzeyi` ile aciliyor.
+
+    IKI CARPISMA SINIFI -- VE NEDEN AYRI ELE ALINIYOR
+    -------------------------------------------------
+    a) AYNI mantiksal router IKI KEZ kaydedilmis -> carpisan girislerin
+       isleyici ADLARI birebir ayni. Zarar tekrar/israftir.
+    b) FARKLI iki isleyici ayni (yol, yontem) uzerinde -> biri SESSIZCE olur.
+       Tehlikeli sinif budur.
+
+    Bu test (b)'yi civiliyor: kosulsuz kirmizi.
+
+    (a) ORTAMA GORE DEGISIYOR -- olculdu, iki ortamda iki AYRI liste:
+        yerel : /api/v1/study-rooms/* (7), POST /api/v1/analytics/web-vitals,
+                GET /health
+        CI    : /api/v1/revolutionary-features/* (9)
+    Fark, hangi router'larin yuklenebildiginden geliyor. Bu yuzden SABIT bir
+    yol listesiyle circir kurmak YANLIS ARACTIR: bir ortamda yesil, otekinde
+    kirmizi olur -- ilk denemede tam olarak bu oldu ve geri alindi.
+
+    KONTROL KOLU (aracin kendi dogrulamasi): carpisan girisler gercekten ayri
+    nesneler mi, yoksa sayim ciftlemesi mi? Olculdu -- 9/9 carpismada hem rota
+    nesnesi kimlikleri hem isaretci kimlikleri farkli, ve 151 isaretcinin
+    151'inin `original_router`i benzersiz. Ciftleme YOK; carpismalar gercek.
+
+    KARAR HUSEYIN'IN: ayni router'i iki kez kaydeden yukleyici girisleri
+    (ornegin `misc/study_rooms` + `misc/study_rooms_stub` ayni onege)
+    temizlenecek mi? Detay: docs/guvenlik-borcu.md SS10.69.
     """
     from main import app
+    from tests.rota_yuzeyi import carpismalar
 
-    # Build collision map
-    route_map: dict[tuple[str, str], list[str]] = {}
-    for route in app.routes:
-        if hasattr(route, "path") and hasattr(route, "methods"):
-            path = route.path
-            for method in route.methods:
-                if method in ("HEAD", "OPTIONS"):
-                    continue
-                key = (path, method)
-                route_name = getattr(route, "name", f"{path}:{method}")
-                route_map.setdefault(key, []).append(route_name)
+    bulunan = carpismalar(app)
 
-    duplicates = {k: v for k, v in route_map.items() if len(v) > 1}
-
-    assert len(duplicates) == 0, (
-        f"Found {len(duplicates)} duplicate path+method collision(s):\n"
+    # (b) sinifi: carpisan isleyicilerin ADLARI farkli -> biri sessizce olu.
+    tehlikeli = {k: v for k, v in bulunan.items() if len(set(v)) > 1}
+    assert not tehlikeli, (
+        f"{len(tehlikeli)} adet FARKLI-ISLEYICI carpismasi -- biri sessizce olu:\n"
         + "\n".join(
-            f"  {path} {method} -> registered by: {names}"
-            for (path, method), names in duplicates.items()
+            f"  {yontem} {yol} -> {adlar}"
+            for (yol, yontem), adlar in sorted(tehlikeli.items())
         )
+        + "\n\nStarlette'te son kayit kazanir; onceki isleyici HIC calismaz."
     )

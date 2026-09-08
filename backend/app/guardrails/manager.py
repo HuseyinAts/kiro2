@@ -1,4 +1,5 @@
 """Guardrail Manager - orchestrates all loop protection guards."""
+
 import asyncio
 import json
 import logging
@@ -76,38 +77,65 @@ class GuardrailManager:
         """Register all enabled guards."""
         enabled = self.config.enabled_guards
 
-        guard_mapping = {
-            "MaxTurns": (MaxTurnsGuard, {
-                "max_turns": self.config.max_turns,
-                "warning_threshold": self.config.warning_threshold,
-            }),
-            "Timeout": (TimeoutGuard, {
-                "timeout_seconds": self.config.timeout_seconds,
-                "warning_threshold": self.config.warning_threshold,
-            }),
-            "CircuitBreaker": (CircuitBreakerGuard, {
-                "failure_threshold": self.config.failure_threshold,
-                "timeout": self.config.circuit_timeout,
-                "half_open_max_calls": self.config.half_open_max_calls,
-            }),
-            "RecursionDepth": (RecursionDepthGuard, {
-                "recursion_limit": self.config.recursion_limit,
-            }),
-            "ProgressMonitor": (ProgressMonitorGuard, {
-                "stall_threshold": self.config.stall_threshold_iterations,
-                "progress_callback_interval": self.config.progress_update_interval,
-            }),
-            "ResourceLimit": (ResourceLimitGuard, {
-                "memory_limit_mb": self.config.memory_limit_mb,
-                "cpu_limit_percent": self.config.cpu_limit_percent,
-                "disk_min_free_mb": self.config.disk_min_free_mb,
-            }),
-            "DeadlockDetection": (DeadlockDetectionGuard, {
-                "deadlock_timeout": self.config.deadlock_timeout,
-            }),
-            "EmergencyStop": (EmergencyStopGuard, {
-                "graceful_timeout": self.config.graceful_shutdown_timeout,
-            }),
+        # Acik tip: sozluk degerleri heterojen oldugu icin mypy config
+        # sozluklerini `object` cikariyordu ve asagidaki `guard_class(
+        # guard_config)` cagrisini `[arg-type]` ile isaretliyordu.
+        guard_mapping: dict[str, tuple[type[BaseGuard], dict[str, Any]]] = {
+            "MaxTurns": (
+                MaxTurnsGuard,
+                {
+                    "max_turns": self.config.max_turns,
+                    "warning_threshold": self.config.warning_threshold,
+                },
+            ),
+            "Timeout": (
+                TimeoutGuard,
+                {
+                    "timeout_seconds": self.config.timeout_seconds,
+                    "warning_threshold": self.config.warning_threshold,
+                },
+            ),
+            "CircuitBreaker": (
+                CircuitBreakerGuard,
+                {
+                    "failure_threshold": self.config.failure_threshold,
+                    "timeout": self.config.circuit_timeout,
+                    "half_open_max_calls": self.config.half_open_max_calls,
+                },
+            ),
+            "RecursionDepth": (
+                RecursionDepthGuard,
+                {
+                    "recursion_limit": self.config.recursion_limit,
+                },
+            ),
+            "ProgressMonitor": (
+                ProgressMonitorGuard,
+                {
+                    "stall_threshold": self.config.stall_threshold_iterations,
+                    "progress_callback_interval": self.config.progress_update_interval,
+                },
+            ),
+            "ResourceLimit": (
+                ResourceLimitGuard,
+                {
+                    "memory_limit_mb": self.config.memory_limit_mb,
+                    "cpu_limit_percent": self.config.cpu_limit_percent,
+                    "disk_min_free_mb": self.config.disk_min_free_mb,
+                },
+            ),
+            "DeadlockDetection": (
+                DeadlockDetectionGuard,
+                {
+                    "deadlock_timeout": self.config.deadlock_timeout,
+                },
+            ),
+            "EmergencyStop": (
+                EmergencyStopGuard,
+                {
+                    "graceful_timeout": self.config.graceful_shutdown_timeout,
+                },
+            ),
         }
 
         for guard_name, (guard_class, guard_config) in guard_mapping.items():
@@ -119,7 +147,9 @@ class GuardrailManager:
                 except Exception as e:
                     logger.error(f"Failed to register guard {guard_name}: {e}")
 
-    async def check_all_guards(self, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def check_all_guards(
+        self, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Check all guards in parallel.
 
         Args:
@@ -168,9 +198,7 @@ class GuardrailManager:
         return aggregated
 
     async def _check_guard_safe(
-        self,
-        guard: BaseGuard,
-        context: dict[str, Any]
+        self, guard: BaseGuard, context: dict[str, Any]
     ) -> GuardResult:
         """Safely check a guard, catching any exceptions.
 
@@ -190,7 +218,7 @@ class GuardrailManager:
                 status=GuardStatus.WARNING,
                 message=f"Guard check error: {e!s}",
                 details={"error": str(e)},
-                should_stop=False
+                should_stop=False,
             )
 
     def start_execution(self, agent_type: str | None = None) -> None:
@@ -246,10 +274,7 @@ class GuardrailManager:
 
         return "All guardrails OK"
 
-    def generate_report(
-        self,
-        completed_normally: bool = False
-    ) -> TerminationReport:
+    def generate_report(self, completed_normally: bool = False) -> TerminationReport:
         """Generate a termination report.
 
         Args:
@@ -270,16 +295,27 @@ class GuardrailManager:
                 result = guard._create_result(
                     status=GuardStatus.OK,
                     message="Final state",
-                    details={"check_count": guard.check_count}
+                    details={"check_count": guard.check_count},
                 )
                 final_results.append(result)
 
                 # Determine termination cause
-                if hasattr(guard, "_stop_triggered") and guard._stop_triggered:
+                # `hasattr` mypy'da tip daraltmiyor; alanlar muhafiza OZGU
+                # oldugu icin `BaseGuard` uzerinde tanimli degil. Davranis
+                # ayni, erisim `getattr` ile yapiliyor.
+                if getattr(guard, "_stop_triggered", False):
                     terminated_by = guard.name
-                elif hasattr(guard, "current_turn") and guard.current_turn > guard.max_turns:
+                elif getattr(
+                    guard, "current_turn", None
+                ) is not None and guard.current_turn > getattr(  # type: ignore[attr-defined]
+                    guard, "max_turns", float("inf")
+                ):
                     terminated_by = "MaxTurns"
-                elif hasattr(guard, "elapsed_time") and guard.elapsed_time >= guard.timeout_seconds:
+                elif getattr(
+                    guard, "elapsed_time", None
+                ) is not None and guard.elapsed_time >= getattr(  # type: ignore[attr-defined]
+                    guard, "timeout_seconds", float("inf")
+                ):
                     terminated_by = "Timeout"
 
         # Get resource usage if available
@@ -368,7 +404,8 @@ class GuardrailManager:
             GuardrailManager instance
         """
         import yaml
-        with open(path) as f:
+
+        with Path(path).open() as f:
             config_dict = yaml.safe_load(f)
         return cls(config_dict)
 
@@ -382,7 +419,7 @@ class GuardrailManager:
         Returns:
             GuardrailManager instance
         """
-        with open(path) as f:
+        with Path(path).open() as f:
             config_dict = json.load(f)
         return cls(config_dict)
 
@@ -397,8 +434,7 @@ class GuardrailManager:
 
 # Decorator for protecting async functions with guardrails
 def with_guardrails(
-    config: GuardConfig | dict[str, Any] | None = None,
-    on_stop: Callable | None = None
+    config: GuardConfig | dict[str, Any] | None = None, on_stop: Callable | None = None
 ):
     """Decorator to protect async functions with guardrails.
 
@@ -415,6 +451,7 @@ def with_guardrails(
     Returns:
         Decorated function
     """
+
     def decorator(func):
         async def wrapper(*args, **kwargs):
             manager = GuardrailManager(config)
@@ -440,4 +477,5 @@ def with_guardrails(
                 logger.info(f"Guardrail report: {report.to_log_dict()}")
 
         return wrapper
+
     return decorator

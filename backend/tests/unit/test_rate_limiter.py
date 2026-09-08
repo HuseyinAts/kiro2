@@ -31,12 +31,42 @@ def _make_request(ip: str = "1.2.3.4", forwarded_for: str | None = None) -> Magi
     return req
 
 
+def _kovalari_bosalt() -> None:
+    """Kova ICERIKLERINI temizle, kova SOZLUGUNU degil (SS10.67).
+
+    `_rate_buckets` bir `defaultdict(lambda: defaultdict(list))`. Dis sozlukte
+    `.clear()` cagirmak "login" ANAHTARINI siler; bir sonraki erisim YENI bir
+    ic sozluk yaratir. Oysa api/auth.py:233
+
+        _login_attempts = _rate_buckets["login"]
+
+    diyerek ic sozluge ITHAL ANINDA takma ad baglamis durumda. Dis clear'dan
+    sonra:
+      * `_record_attempt` YENI ic sozluge yaziyor,
+      * `_login_attempts` ESKI, artik oksuz kalmis sozlugu gosteriyor.
+    Olculen zarar (CI kosusu 34072269135, yerelde 2,8 saniyede birebir tekrar
+    uretildi -- `pytest tests/unit/test_rate_limiter.py
+    tests/unit/test_auth_functions.py -n 0 -p no:randomly` -> ayni 4 kalem):
+      test_auth_functions.py::TestCheckLoginRateLimit::test_exceeding_limit_raises_429
+      test_auth_functions.py::TestRecordFailedLogin::test_records_attempt_for_ip
+      test_auth_functions.py::TestRecordFailedLogin::test_multiple_failures_accumulate
+      test_auth_functions.py::TestRecordFailedLogin::test_trusted_proxy_records_forwarded_ip
+
+    Ic sozlukleri temizlemek takma adi KORUR. Deponun baska iki yerinde zaten
+    dogru bicim kullaniliyor (tests/unit/test_auth_endpoints.py:404 ve
+    tests/unit/test_auth_utilities.py:307: `_rate_buckets[bucket].clear()`);
+    bu dosya aykiriydi.
+    """
+    for _kova in _rate_buckets.values():
+        _kova.clear()
+
+
 @pytest.fixture(autouse=True)
 def _clear_rate_buckets():
     """Reset rate limiter state between tests."""
-    _rate_buckets.clear()
+    _kovalari_bosalt()
     yield
-    _rate_buckets.clear()
+    _kovalari_bosalt()
 
 
 class TestGetClientIp:

@@ -1,4 +1,5 @@
 """Tests for d-dataset import classification logic and morphology metrics."""
+
 import json
 import sys
 from pathlib import Path
@@ -40,27 +41,40 @@ class TestNormalizeTr:
 
 
 class TestClassifyBook:
-    @pytest.mark.parametrize("book,expected_subject,expected_exam", [
-        ("345 2025 Ayt Matematik Soru Bankas\u0131", "MATEMATIK", "AYT"),
-        ("Bilgi Sarmal\u0131-2025-Tyt-Matematik Soru Bankas\u0131", "MATEMATIK", "TYT"),
-        ("Orijinal-2024-Geometri Soru Bankas\u0131", "GEOMETRI", "TYT"),
-        ("345 2025 Ayt Fizik Soru Bankas\u0131", "FIZIK", "AYT"),
-        ("Apotemi Tyt Ayt Kimya 2019-2020", "KIMYA", "TYT"),
-        ("Edebiyat Denizi Ayt Edebiyat Soru Bankasi", "EDEBIYAT", "AYT"),
-        ("Esen Tyt T\u00fcrk\u00e7e Soru Bankas\u0131", "TURKCE", "TYT"),
-        ("Mikro Orijinal Tyt Paragraf Soru Bankas\u0131 2024", "TURKCE", "TYT"),
-        ("Orijinal-2025-Ayt-Matematik T\u00fcrev", "MATEMATIK", "AYT"),
-        ("Orijinal-2025-Analitik Geometri", "GEOMETRI", "AYT"),
-        ("345 2025 Tyt Biyoloji Soru Bankas\u0131", "BIYOLOJI", "TYT"),
-        ("Esen Aps Tyt Ayt Tarih Soru Bankas\u0131", "TARIH", "TYT"),
-        ("AC\u0130L-2025-TYT-Matemati\u011fin \u0130lac\u0131", "MATEMATIK", "TYT"),
-        ("Fizipedia Ayt Fizik Soru Bankas\u0131 2025", "FIZIK", "AYT"),
-        ("Edebiyat Soka\u011f\u0131 Dil Bilgisi Soru Bankas\u0131 2024", "TURKCE", "TYT"),
-        ("Esen Tyt Cografya Soru Bankas\u0131", "COGRAFYA", "TYT"),
-    ])
+    @pytest.mark.parametrize(
+        "book,expected_subject,expected_exam",
+        [
+            ("345 2025 Ayt Matematik Soru Bankas\u0131", "MATEMATIK", "AYT"),
+            (
+                "Bilgi Sarmal\u0131-2025-Tyt-Matematik Soru Bankas\u0131",
+                "MATEMATIK",
+                "TYT",
+            ),
+            ("Orijinal-2024-Geometri Soru Bankas\u0131", "GEOMETRI", "TYT"),
+            ("345 2025 Ayt Fizik Soru Bankas\u0131", "FIZIK", "AYT"),
+            ("Apotemi Tyt Ayt Kimya 2019-2020", "KIMYA", "TYT"),
+            ("Edebiyat Denizi Ayt Edebiyat Soru Bankasi", "EDEBIYAT", "AYT"),
+            ("Esen Tyt T\u00fcrk\u00e7e Soru Bankas\u0131", "TURKCE", "TYT"),
+            ("Mikro Orijinal Tyt Paragraf Soru Bankas\u0131 2024", "TURKCE", "TYT"),
+            ("Orijinal-2025-Ayt-Matematik T\u00fcrev", "MATEMATIK", "AYT"),
+            ("Orijinal-2025-Analitik Geometri", "GEOMETRI", "AYT"),
+            ("345 2025 Tyt Biyoloji Soru Bankas\u0131", "BIYOLOJI", "TYT"),
+            ("Esen Aps Tyt Ayt Tarih Soru Bankas\u0131", "TARIH", "TYT"),
+            ("AC\u0130L-2025-TYT-Matemati\u011fin \u0130lac\u0131", "MATEMATIK", "TYT"),
+            ("Fizipedia Ayt Fizik Soru Bankas\u0131 2025", "FIZIK", "AYT"),
+            (
+                "Edebiyat Soka\u011f\u0131 Dil Bilgisi Soru Bankas\u0131 2024",
+                "TURKCE",
+                "TYT",
+            ),
+            ("Esen Tyt Cografya Soru Bankas\u0131", "COGRAFYA", "TYT"),
+        ],
+    )
     def test_known_books(self, book, expected_subject, expected_exam):
         subject, exam = classify_book(book)
-        assert subject == expected_subject, f"{book}: expected {expected_subject}, got {subject}"
+        assert (
+            subject == expected_subject
+        ), f"{book}: expected {expected_subject}, got {subject}"
         assert exam == expected_exam, f"{book}: expected {expected_exam}, got {exam}"
 
     def test_unknown_book_gets_genel(self):
@@ -91,6 +105,7 @@ class TestGenerateQuestionId:
 
     def test_uuid_format(self):
         import uuid
+
         qid = generate_question_id("Test", 1, 1)
         parsed = uuid.UUID(qid)  # Should not raise
         assert str(parsed) == qid
@@ -103,7 +118,8 @@ class TestGenerateTopicId:
         assert id1 == id2
 
     def test_all_subjects_have_topics(self):
-        for subject, (code, name) in DEFAULT_TOPICS.items():
+        # `name` govdede KULLANILMIYOR (B007); niyeti acik olsun diye `_`.
+        for subject, (code, _name) in DEFAULT_TOPICS.items():
             tid = generate_topic_id(code)
             assert tid, f"No topic ID for {subject}"
 
@@ -294,7 +310,10 @@ class TestBuildRowDefaults:
 # Bloom Taxonomy Classifier Tests
 # =============================================================================
 
-from scripts.update_bloom_taxonomy import classify_bloom
+# E402: bu import bilincli olarak dosyanin ortasinda -- ustteki bolum
+# `sys.path`i ayarladiktan sonra `scripts/` paketi ice aktarilabiliyor.
+# Yukari tasimak import hatasi uretir; kural burada susturuluyor.
+from scripts.update_bloom_taxonomy import classify_bloom  # noqa: E402
 
 
 class TestClassifyBloom:
@@ -304,9 +323,7 @@ class TestClassifyBloom:
         assert cat == "apply"
 
     def test_evaluate_which_is_wrong(self):
-        level, cat = classify_bloom(
-            "Aşağıdakilerden hangisi yanlıştır?", "TURKCE"
-        )
+        level, cat = classify_bloom("Aşağıdakilerden hangisi yanlıştır?", "TURKCE")
         assert level == 5
         assert cat == "evaluate"
 
@@ -345,6 +362,19 @@ class TestClassifyBloom:
             assert cat in valid, f"{text}: got invalid category '{cat}'"
 
 
+@pytest.mark.skip(
+    reason=(
+        "MODUL YOK: `api/question_crud_api.py` depoda mevcut degil "
+        "(git ls-files -> bos) ve `SemanticSearchRequest` baska hicbir yerde "
+        "tanimli degil (git grep -> yalniz bu dosya). Bu bir TEST kusuru "
+        "degil; ayni silmenin ucuncu izi. Ilk ikisi: silinen ucun frontend "
+        "tarafindan HALA cagrilmasi ve o uca yazilmis 11 sozlesme testi -- "
+        "ikisi de docs/guvenlik-borcu.md SS10.59'da kayitli ve karar "
+        "Huseyin'in: modul geri getirilecek mi, yoksa ona bagli akislar mi "
+        "kaldirilacak? Karar verilene kadar bu sinif atlaniyor; silinmiyor, "
+        "cunku modul geri gelirse olcecegi sey hala gecerli."
+    )
+)
 class TestSemanticSearchRequest:
     """Validate SemanticSearchRequest Pydantic model."""
 

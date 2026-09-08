@@ -20,6 +20,8 @@ Requirements Tested:
 
 import asyncio
 import gc
+import io
+import logging
 import statistics
 import sys
 import time
@@ -49,6 +51,55 @@ MIN_ACCEPTABLE_THROUGHPUT = 5000  # Minimum for CI environments
 # =====================================================================
 # Fixtures
 # =====================================================================
+
+
+class _SessizAlici(io.TextIOBase):
+    """Saf Python log alicisi: yazma sistem cagrisi YOK.
+
+    Es zamanlilik olcumlerinde alicinin cinsi sonucu belirliyor (bkz.
+    test_concurrent_log_throughput). Gercek bir dosya tanimlayicisina yazmak
+    her kayitta GIL'i birakip yeniden almaya zorluyor; bu da olcumu
+    CPython/isletim sistemi ozelligine cevirip depo kodunu gorunmez yapiyor.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        # Sayaclar olcumun gercekten bu aliciya dustugunu KANITLAR; alici
+        # devrede olmasaydi test hizli ama anlamsiz olurdu.
+        # logging.Handler.handle() emit'i kendi kilidiyle sardigi icin
+        # sayaclar 4 is parcaciginda da kesin.
+        self.kayit_sayisi = 0
+        self.bosaltma_sayisi = 0
+
+    def write(self, s: str) -> int:
+        self.kayit_sayisi += 1
+        return len(s)
+
+    def flush(self) -> None:
+        self.bosaltma_sayisi += 1
+
+
+@pytest.fixture
+def sessiz_log_alicisi():
+    """Kok logger'in handler'larini olcum suresince saf Python aliciya cevirir."""
+    kok = logging.getLogger()
+    eski = list(kok.handlers)
+    eski_seviye = kok.level
+    alici = _SessizAlici()
+    yeni = logging.StreamHandler(alici)
+    for h in eski:
+        kok.removeHandler(h)
+    kok.addHandler(yeni)
+    # pytest'in logging eklentisi kok seviyesini yukseltebiliyor; olcumun
+    # gercekten kayit uretmesi gerektigi icin INFO'ya zorlaniyor (sonra geri).
+    kok.setLevel(logging.INFO)
+    try:
+        yield alici
+    finally:
+        kok.setLevel(eski_seviye)
+        kok.removeHandler(yeni)
+        for h in eski:
+            kok.addHandler(h)
 
 
 @pytest.fixture
@@ -148,9 +199,52 @@ class TestLogThroughput:
             )
 
     @pytest.mark.performance
-    def test_concurrent_log_throughput(self, performance_logger):
+    def test_concurrent_log_throughput(self, performance_logger, sessiz_log_alicisi):
         """
         Test: Concurrent logging throughput.
+
+        Iki asamada duzeltildi ve ILK TESHIS YANLISTI -- kayit icin:
+
+        (1) Eski olcut mutlak degeri kontrol ediyordu
+        (MIN_ACCEPTABLE_THROUGHPUT / 2 = 2.500 log/sn). CI'da 927 log/sn
+        olculunce "runner ac" diye yorumlandi ve olcut ayni kosuda olculen
+        seri hiza gore orana cevrildi.
+
+        (2) O oran CI'da GERCEGI gosterdi ve teshisi curuttu:
+              seri referans : 13.825 log/sn
+              4 is parcacigi:    922 log/sn   -> 0,07x
+        Runner ac degildi (seri hiz yerelin 2-4'te biri, makul); 4 is
+        parcacigi ile loglama gercekten 15 kat cokuyordu.
+
+        (3) Alicinin sayaci ucuncu bir kusur yakaladi: ilk halinde kok
+        logger'in seviyesi pytest tarafindan yukseltildigi icin alici SIFIR
+        kayit goruyordu ve "1,01x" diye bir sayi uretilmisti -- hicbir sey
+        olcmeyen bir yol. Fixture artik seviyeyi de zorluyor ve test, orani
+        degerlendirmeden ONCE 12.500 kaydin aliciya dustugunu dogruluyor.
+
+        (4) Kok neden arandi ve ILK HIPOTEZ DE YANLIS CIKTI. Once "kayit
+        basina yazma sistem cagrisi GIL'i birakip aliyor" sanildi; kontrollu
+        deney (2 cekirdekli Linux, ayni islemci zinciri) bunu curuttu:
+
+              alici             rakip surec yok   4 rakip surec
+              gercek fd         0,30x             1,04x
+              saf Python alici  0,31x             0,79x
+              CPU/kayit (seri -> es zamanli): 22 us -> 77 us  (3,4x)
+
+        Alicinin cinsi neredeyse hic fark etmiyor; cokme, 2 cekirdekte 4
+        Python is parcaciginin GIL icin yarismasindan geliyor ve fazladan
+        maliyet GERCEK CPU olarak yaniyor. Daha da onemlisi: ayni kod, ayni
+        makinede, sadece komsu surec yuku degisince 0,30x ile 1,04x
+        arasinda geziniyor. CPU/kayit orani da bagisik degil (rakip surecle
+        3,4x -> 1,7x).
+
+        SONUC: bu nicelik paylasimli bir CI'da OLCULEMEZ. Tum ortamlarda
+        gozlenen band 0,13x - 1,23x -- ayni kod icin. Bu yuzden oran artik
+        KAPI DEGIL: raporlaniyor (log'a basiliyor) ve yalnizca felaket
+        esigiyle (0,05) korunuyor. Kapi olarak duran sey, olculebilir olan:
+        4 is parcacigindan gecen 12.500 kaydin BIRI BILE kaybolmamali.
+        Esigi 0,25'ten 0,13'e cekmek "esik kovalamak" olurdu; olculemeyen
+        bir seyi olcuyormus gibi yapmaktansa ne oldugunu yazmak dogru.
         """
         count_per_thread = 2500
         thread_count = 4
@@ -162,6 +256,12 @@ class TestLogThroughput:
             for i in range(count_per_thread):
                 logger.info("concurrent_test", batch_id=batch_id, index=i)
 
+        # Referans: ayni isin tek is parcacigi ile hizi (kalibrasyon).
+        seri_start = time.perf_counter()
+        log_batch(0)
+        seri_elapsed = time.perf_counter() - seri_start
+        seri_throughput = count_per_thread / seri_elapsed
+
         start_time = time.perf_counter()
 
         with ThreadPoolExecutor(max_workers=thread_count) as executor:
@@ -171,6 +271,7 @@ class TestLogThroughput:
 
         elapsed = time.perf_counter() - start_time
         throughput = total_count / elapsed
+        oran = throughput / seri_throughput
 
         print(f"\n{'=' * 60}")
         print("CONCURRENT THROUGHPUT TEST")
@@ -179,11 +280,31 @@ class TestLogThroughput:
         print(f"Total logs:     {total_count:,}")
         print(f"Elapsed time:   {elapsed:.3f} seconds")
         print(f"Throughput:     {throughput:,.0f} logs/second")
+        print(f"Serial ref:     {seri_throughput:,.0f} logs/second")
+        print(f"Ratio:          {oran:.2f}x (concurrent / serial)")
         print(f"{'=' * 60}")
 
-        assert (
-            throughput >= MIN_ACCEPTABLE_THROUGHPUT / 2
-        ), f"Concurrent throughput too low: {throughput:,.0f}"
+        # ASIL KAPI: 4 is parcacigindan gecen kayitlarin hicbiri
+        # kaybolmamali. Bu, ortamdan bagimsiz ve deponun gercekten sahip
+        # oldugu bir degismez (islemci zinciri + handler es zamanlilik
+        # guvenligi). Ayrica olcumun gercekten bu aliciya dustugunu de
+        # kanitlar -- aksi halde oran bos bir yolu olcuyor olabilirdi.
+        beklenen_kayit = count_per_thread + total_count
+        assert sessiz_log_alicisi.kayit_sayisi == beklenen_kayit, (
+            f"Alici {sessiz_log_alicisi.kayit_sayisi} kayit gordu, "
+            f"beklenen {beklenen_kayit} -- kayit kaybi ya da olcum bu "
+            "alicidan gecmemis"
+        )
+
+        # FELAKET ESIGI (performans kapisi DEGIL -- gerekcesi docstring'de).
+        # Tum ortamlarda gozlenen band 0,13x - 1,23x; 0,05 bunun 2,6 kat
+        # altinda. Kayit basina fsync ya da islemci zincirinde tutulan
+        # kuresel bir kilit gibi 20 kat sinifinda bir cokmeyi yakalar.
+        assert oran >= 0.05, (
+            f"Es zamanli loglama seri hizin {oran:.2f} katina dustu "
+            f"({throughput:,.0f} vs {seri_throughput:,.0f} log/sn) -- "
+            "bu, ortam gurultusuyle aciklanamayacak bir cokme"
+        )
 
     @pytest.mark.performance
     def test_bulk_log_processing(self, bulk_log_data):
@@ -476,7 +597,7 @@ class TestStress:
         duration_seconds = 5
         logs_per_batch = 1000
         total_logs = 0
-        batch_times = []
+        batch_times: list[float] = []
 
         start_time = time.perf_counter()
         end_time = start_time + duration_seconds
@@ -553,37 +674,73 @@ class TestBenchmarkComparison:
     def test_with_vs_without_censoring(self, sample_log_data):
         """
         Test: Censoring overhead comparison.
+
+        Taban cizgisi neden dict.copy() DEGIL: eski olcut sansur suresini
+        `sample_log_data.copy()` suresine boluyordu. dict.copy() C
+        duzeyinde (~0,08 us), sansur ise saf Python (~9 us) -- oran bu
+        yuzden ~10.000% civarinda "normal" ve makine hizindan SADELESMIYOR,
+        tersine buyutuyor: yavas bir runner'da yorumlayici-bagimli pay 5
+        kat artarken C-bagimli payda 1,5 kat artiyor.
+
+        Olcum (7 Eyl 2026): yerel 0,0009 s / 0,1029 s -> %11.286;
+        CI (is 101891468125) 0,0014 s / 0,4240 s -> %29.369. Ayni kod, iki
+        kat farkli "yuzde". Eski 20.000 esigi bu yuzden dustu; kodda bir
+        gerileme yoktu.
+
+        Yerine gecen olcut: ayni sekle sahip, saf Python bir kalibrasyon
+        isine (anahtarlari gez + lower()) gore oran. Iki taraf da
+        yorumlayici-bagimli oldugu icin runner hizi gercekten sadelesiyor.
+        Yerel olcum (bu testin kendi icinde, uc kosum): 8,3x / 9,4x / 18,5x
+        -- makinenin yuku orani da bir miktar oynatiyor. Esik 50x, en kotu
+        gozlemin ~2,7 kati; cagri basina regex derlemesi gibi gercek bir
+        gerilemeyi (100x+) yakalar.
         """
         iterations = 10000
 
-        # Without censoring
+        def kalibrasyon(event_dict):
+            """Sansurle ayni sekilde, ama eslesmesiz saf Python is."""
+            sayac = 0
+            for key in list(event_dict.keys()):
+                if key.lower():
+                    sayac += 1
+            return sayac
+
+        # Isinma: ilk cagrilar import/JIT etkilerini tasimasin.
+        for _i in range(200):
+            kalibrasyon(sample_log_data.copy())
+            censor_sensitive_data(None, None, sample_log_data.copy())
+
         start = time.perf_counter()
         for _i in range(iterations):
-            _ = sample_log_data.copy()
-        without_censor_time = time.perf_counter() - start
+            kalibrasyon(sample_log_data.copy())
+        kalibrasyon_time = time.perf_counter() - start
 
-        # With censoring
         start = time.perf_counter()
         for _i in range(iterations):
             censor_sensitive_data(None, None, sample_log_data.copy())
         with_censor_time = time.perf_counter() - start
 
-        overhead_pct = ((with_censor_time / without_censor_time) - 1) * 100
+        oran = with_censor_time / kalibrasyon_time
 
         print(f"\n{'=' * 60}")
         print("CENSORING OVERHEAD TEST")
         print(f"{'=' * 60}")
-        print(f"Without censoring: {without_censor_time:.4f} seconds")
-        print(f"With censoring:    {with_censor_time:.4f} seconds")
-        print(f"Overhead:          {overhead_pct:.1f}%")
+        print(
+            f"Calibration:       {kalibrasyon_time:.4f} s "
+            f"({kalibrasyon_time / iterations * 1e6:.2f} us/kayit)"
+        )
+        print(
+            f"With censoring:    {with_censor_time:.4f} s "
+            f"({with_censor_time / iterations * 1e6:.2f} us/kayit)"
+        )
+        print(f"Ratio:             {oran:.2f}x (censor / calibration)")
         print(f"{'=' * 60}")
 
-        # Censoring overhead should be reasonable
-        # Note: On some platforms dict.copy() is highly optimized, making
-        # the relative overhead of censoring appear very high in percentage terms
-        assert (
-            overhead_pct < 20000
-        ), f"Censoring overhead {overhead_pct:.1f}% is too high"
+        assert oran < 50, (
+            f"Sansur maliyeti kalibrasyon isinin {oran:.1f} katina cikti "
+            f"({with_censor_time / iterations * 1e6:.1f} us/kayit); "
+            "yerel referans bandi 8-19x"
+        )
 
     @pytest.mark.performance
     def test_different_log_levels(self):

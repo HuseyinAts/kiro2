@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from sqlalchemy import and_, select, true
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -19,19 +19,46 @@ from services.leaderboard_service import leaderboard_service
 
 router = APIRouter(prefix="/api/v1/exams", tags=["exams"])
 
-TYT_BLUEPRINT = {
-    "TUR": 40,
-    "MAT": 40,  # Covers Math + Geo
-    "SOS": 20,  # Covers History, Geography, Philosophy, Religion
-    "FEN": 20,  # Covers Physics, Chemistry, Biology
-}
+# TYT bolum SIRASI ve kotalari TEK kaynakta. Hem uretim dongusu hem puanlama
+# bundan turer; ayri iki liste olarak durduklari surece birbirinden kayarlar.
+#
+# OLCUM (SS10.73): eski `TYT_BLUEPRINT` dict SIRASI TUR,MAT,SOS,FEN idi;
+# puanlamadaki `_BRANCH_RANGES` ise TUR(1-40), SOS(41-60), MAT(61-100),
+# FEN(101-120). Yani 41-60 arasi sorular MAT olarak URETILIP SOS olarak,
+# 81-100 arasi sorular SOS olarak uretilip MAT olarak puanlaniyordu:
+# 120 sorunun 40'i, soru bankasi kusursuz olsa BILE yanlis bransta.
+# Dogru olan ikincisiydi (gercek TYT sirasi TUR-SOS-MAT-FEN), sira ona
+# gore sabitlendi ve tek kaynaga indirildi.
+TYT_BOLUMLERI: tuple[tuple[str, int], ...] = (
+    ("TUR", 40),
+    ("SOS", 20),  # Tarih, Cografya, Felsefe, Din
+    ("MAT", 40),  # Matematik + Geometri
+    ("FEN", 20),  # Fizik, Kimya, Biyoloji
+)
 
-# Mapping blueprint keys to actual topic codes in DB (based on Level 1 codes)
+# Geriye donuk isim; artik tek kaynaktan turer (kota tablosu, sira DEGIL).
+TYT_BLUEPRINT = dict(TYT_BOLUMLERI)
+
+# Blueprint anahtari -> DB'deki konu kodlari (level-1 kodlar).
 SUBJECT_MAPPING = {
     "TUR": ["TUR", "TYT-TR-01", "TYT-TR-02"],
     "MAT": ["MAT", "GEO", "TYT-MAT-01"],
     "SOS": ["TAR", "COG", "SOC01", "TYT-COG-01", "SOS"],
     "FEN": ["FIZ", "KIM", "BIY", "FEN", "TYT-FIZ-01", "TYT-KIM-01", "TYT-BIY-01"],
+}
+
+# Kod listesi TEK BASINA yetmiyor: `topic_hierarchy` alt konulari "MAT.OLS",
+# "KIM.DEN" gibi kodluyor ve bunlar yukaridaki listelerin HICBIRINE esit degil.
+# OLCUM (SS10.73, canli DB): kod listesiyle MAT icin 0 soru bulunuyordu, oysa
+# `subject_area='MATEMATIK'` ile 391 soru var. Konu tablosunun kendi
+# `subject_area` sutunu ikinci anahtar olarak eklendi; ikisinin BIRLESIMI
+# kullanilir. Sutun serbest metin: DB'de BUYUK HARF ("MATEMATIK"), enum ise
+# kucuk harf tutuyor -- karsilastirma kucuk harfe indirgenerek yapilir.
+SUBJECT_AREA_MAPPING = {
+    "TUR": ["turkce"],
+    "MAT": ["matematik", "geometri"],
+    "SOS": ["sosyal", "tarih", "cografya", "felsefe", "din"],
+    "FEN": ["fen", "fizik", "kimya", "biyoloji"],
 }
 
 
@@ -60,8 +87,23 @@ _ZORLUK_BY_DIFFICULTY = {
     "very_hard": "cok_zor",
 }
 
-# TYT sira araliklari -> brans. Uc ayri yerde tekrarlaniyordu.
-_BRANCH_RANGES = ((40, "TUR"), (60, "SOS"), (100, "MAT"))
+
+def _kumulatif_bolum_sinirlari() -> tuple[tuple[int, str], ...]:
+    """`TYT_BOLUMLERI` -> ((ust_sira, brans), ...) kumulatif sinirlar.
+
+    Elle yazilmis ikinci bir liste yerine tek kaynaktan turetilir; boylece
+    uretim sirasi ile puanlama sirasi TANIM GEREGI ayni olur (SS10.73).
+    """
+    sinirlar: list[tuple[int, str]] = []
+    toplam = 0
+    for brans, adet in TYT_BOLUMLERI:
+        toplam += adet
+        sinirlar.append((toplam, brans))
+    return tuple(sinirlar)
+
+
+# TYT sira araliklari -> brans. Uc ayri yerde tekrarlaniyordu; artik turetilir.
+_BRANCH_RANGES = _kumulatif_bolum_sinirlari()
 
 # Brans kodu -> SubjectArea. Enum uyeleri Turkce (SubjectArea["MAT"] KeyError verir);
 # onceki `except KeyError: SubjectArea.MAT` fallback'i de var olmayan uyeye bakiyordu.
@@ -86,7 +128,7 @@ def _branch_for_order(question_order: int) -> str:
     for upper, branch in _BRANCH_RANGES:
         if question_order <= upper:
             return branch
-    return "FEN"
+    return TYT_BOLUMLERI[-1][0]
 
 
 def _score_answers(
@@ -175,18 +217,58 @@ def _build_fsrs_cards(session: ExamSession, answers_map: dict) -> list:
 def _options_from_content(content: object) -> list[dict[str, str]]:
     """QuestionContent'in option_a..option_e alanlarindan secenek listesi kur.
 
-    Icerik yoksa veya secenekler bossa ornek seceneklere duser (UI bos kalmasin).
+    KOD GERCEGI (SS10.73): burasi eskiden secenek bulunamayinca
+    [{"letter": "A", "text": "Secenek A"}, ...] UYDURUYORDU ("UI bos
+    kalmasin" gerekcesiyle). Ogrenciye cevaplanabilir gorunen ama gercek
+    olmayan bir soru gosterirdi -- bir onceki commit'te (SS10.72) frontend'den
+    silinen 120 sahte sorunun aynisi, sadece bir kat asagida. Artik
+    uydurmuyor: secenek yoksa liste BOS doner ve cagiran taraf bunu
+    "soru sunulamaz" olarak isler.
     """
     options = []
     for letter in ("A", "B", "C", "D", "E"):
         text = getattr(content, f"option_{letter.lower()}", None) if content else None
         if text:
             options.append({"letter": letter, "text": text})
-    if options:
-        return options
-    return [
-        {"letter": ltr, "text": f"Seçenek {ltr}"} for ltr in ("A", "B", "C", "D", "E")
-    ]
+    return options
+
+
+async def _brans_konu_idleri(db: AsyncSession, branch: str) -> list[str]:
+    """Bransa ait konu id'leri.
+
+    Iki anahtarin BIRLESIMI: elle yazilmis kod listesi (`SUBJECT_MAPPING`) ve
+    konu tablosunun kendi `subject_area` sutunu. Yalniz kod listesi
+    kullanildiginda "MAT.OLS" gibi alt konu kodlari kacip MAT icin 0 soru
+    bulunuyordu (SS10.73 olcumu).
+    """
+    kodlar = SUBJECT_MAPPING.get(branch, [])
+    dersler = SUBJECT_AREA_MAPPING.get(branch, [])
+    kosullar = []
+    if kodlar:
+        kosullar.append(TopicHierarchy.code.in_(kodlar))
+    if dersler:
+        kosullar.append(func.lower(TopicHierarchy.subject_area).in_(dersler))
+    if not kosullar:
+        return []
+    sonuc = await db.execute(select(TopicHierarchy.id).where(or_(*kosullar)))
+    return [row[0] for row in sonuc.all()]
+
+
+async def _brans_soru_havuzu(
+    db: AsyncSession, topic_ids: list[str]
+) -> list[dict[str, object]]:
+    """Verilen konulardaki aktif sorulardan assembler havuzu kur."""
+    sonuc = await db.execute(
+        select(QuestionBankItem.id, QuestionStatistics.difficulty_level)
+        .outerjoin(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+        .where(
+            and_(
+                QuestionBankItem.is_active.is_(True),
+                QuestionBankItem.primary_topic_id.in_(topic_ids),
+            )
+        )
+    )
+    return [{"id": row[0], "zorluk": _zorluk(row[1])} for row in sonuc.all()]
 
 
 @router.post("/generate-mock", status_code=status.HTTP_201_CREATED)
@@ -215,69 +297,28 @@ async def generate_mock_exam(
 
     exam_questions_to_add = []
     current_order = 1
+    eksik_branslar: list[str] = []
 
-    for branch, count in TYT_BLUEPRINT.items():
-        topic_codes = SUBJECT_MAPPING.get(branch, [])
+    for branch, count in TYT_BOLUMLERI:
+        topic_ids = await _brans_konu_idleri(db, branch)
 
-        topics_query = await db.execute(
-            select(TopicHierarchy.id).where(TopicHierarchy.code.in_(topic_codes))
-        )
-        topic_ids = [row[0] for row in topics_query.all()]
-
-        selected_questions = []
+        selected_questions: list[str] = []
         if topic_ids:
-            questions_query = await db.execute(
-                select(QuestionBankItem.id, QuestionStatistics.difficulty_level)
-                .outerjoin(
-                    QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id
-                )
-                .where(
-                    and_(
-                        QuestionBankItem.is_active.is_(True),
-                        QuestionBankItem.primary_topic_id.in_(topic_ids),
-                    )
-                )
-            )
-
-            # Create the pool for the assembler
-            pool = [
-                {"id": row[0], "zorluk": _zorluk(row[1])}
-                for row in questions_query.all()
-            ]
-
-            # Assemble the test for this branch using Bell Curve
+            pool = await _brans_soru_havuzu(db, topic_ids)
             assembled = YksBellCurveAssembler.assemble_test(pool, count)
             selected_questions = [q["id"] for q in assembled]
 
-        # Fallback if topic questions count is smaller than blueprint requirement
+        # KOD GERCEGI (SS10.73): buradaki eski "fallback" BRANS KORUYDU --
+        # bir bransin sorusu yetmezse TUM aktif bankadan, brans gozetmeksizin
+        # doldururdu. Canli olcum: TUR ve SOS'ta 0 aktif soru var ve bankanin
+        # ~%90'i kimya (3922 aktif sorunun 3525'i). Yani ogrenciye "Turkce"
+        # basligi altinda kimya sorulari gosterilecekti. Bu, SS10.72'de
+        # frontend'den silinen 120 sahte soruyla AYNI kusurdur: eksik veriyi
+        # kabul etmek yerine inandirici bir sey uydurmak. Artik eksik brans
+        # doldurulmuyor; sinav hic kurulmuyor ve nedeni soyleniyor.
         if len(selected_questions) < count:
-            remaining = count - len(selected_questions)
-            fallback_query = await db.execute(
-                select(QuestionBankItem.id, QuestionStatistics.difficulty_level)
-                .outerjoin(
-                    QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id
-                )
-                .where(
-                    and_(
-                        QuestionBankItem.is_active.is_(True),
-                        # true(): ciplak Python True SQL ifadesi degil (mypy arg-type)
-                        QuestionBankItem.id.not_in(selected_questions)
-                        if selected_questions
-                        else true(),
-                    )
-                )
-            )
-            fallback_pool = [
-                {"id": row[0], "zorluk": _zorluk(row[1])}
-                for row in fallback_query.all()
-            ]
-
-            # Get the remaining questions needed, preserving as much curve as possible
-            fallback_assembled = YksBellCurveAssembler.assemble_test(
-                fallback_pool, remaining
-            )
-            fallback_ids = [q["id"] for q in fallback_assembled]
-            selected_questions.extend(fallback_ids)
+            eksik_branslar.append(f"{branch} ({len(selected_questions)}/{count})")
+            continue
 
         for qid in selected_questions:
             exam_questions_to_add.append(
@@ -288,6 +329,17 @@ async def generate_mock_exam(
                 )
             )
             current_order += 1
+
+    if eksik_branslar:
+        # Oturum satiri flush edildi ama commit EDILMEDI; geri alinir.
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "TYT denemesi kurulamadi: su branslarda yeterli aktif soru yok"
+                " -- " + ", ".join(eksik_branslar)
+            ),
+        )
 
     db.add_all(exam_questions_to_add)
     session.total_questions = len(exam_questions_to_add)
@@ -304,10 +356,19 @@ async def generate_mock_exam(
 
 @router.get("/{session_id}")
 async def get_exam_session(
-    session_id: str, bionic_reading: bool = False, db: AsyncSession = Depends(get_db)
+    session_id: str,
+    bionic_reading: bool = False,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Retrieves the exam session with ordered questions and current student answers.
+
+    GUVENLIK (SS10.71): bu uc, kardes uclarin (`/answer`, `/submit`) aksine
+    `get_current_user` ALMIYORDU ve sahiplik kontrolu YAPMIYORDU. Router hicbir
+    zaman kaydedilmedigi icin canliya cikmamisti; kayittan ONCE kapatildi.
+    Aksi halde kimlik dogrulamasi olmadan herkes herhangi bir ogrencinin sinav
+    oturumunu -- SORULARI ve VERDIGI CEVAPLARI dahil -- okuyabilirdi (IDOR).
     """
     result = await db.execute(
         select(ExamSession)
@@ -325,32 +386,59 @@ async def get_exam_session(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Exam session not found"
         )
+    # KOD GERCEGI (ownership): yalniz oturum sahibi okuyabilir.
+    # Kardes uclarla AYNI desen ve AYNI mesaj (api/v1/exams.py:/answer, /submit).
+    if str(session.student_id) != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu sinav oturumu size ait degil",
+        )
 
     answers_map = {
         ans.question_id: ans.selected_answer for ans in session.student_answers
     }
 
     questions_data = []
+    eksik_sorular: list[int] = []
     sorted_eq = sorted(session.exam_questions, key=lambda eq: eq.question_order)
     for eq in sorted_eq:
         q = eq.question
         # Soru metni/secenekleri question_bank'ta DEGIL, question_content'te.
         content = q.content if q else None
-        text = (
-            getattr(content, "question_text", None) or f"Örnek soru {eq.question_order}"
-        )
+        text = getattr(content, "question_text", None)
+        options = _options_from_content(content)
+
+        # KOD GERCEGI (SS10.73): burasi eskiden metin yoksa "Ornek soru N",
+        # soru kaydi yoksa "dummy-N" id, secenek yoksa "Secenek A..E"
+        # UYDURUP HTTP 200 donuyordu. Ogrenci uydurma bir soruyu cevaplar,
+        # puanlama da onu bos/yanlis sayardi. Artik uydurulmuyor: eksik soru
+        # varsa oturum sunulmaz ve hangi siralarin eksik oldugu soylenir.
+        if q is None or not text or not options:
+            eksik_sorular.append(eq.question_order)
+            continue
+
         if bionic_reading:
             text = BionicReadingConverter.convert_text(text)
 
         questions_data.append(
             {
-                "id": q.id if q else f"dummy-{eq.question_order}",
+                "id": q.id,
                 "order": eq.question_order,
                 "text": text,
-                "options": _options_from_content(content),
+                "options": options,
                 "branch": _branch_for_order(eq.question_order),
-                "selected_answer": answers_map.get(q.id if q else ""),
+                "selected_answer": answers_map.get(q.id),
             }
+        )
+
+    if eksik_sorular:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "Sinav oturumu icerigi eksik soru iceriyor (sira: "
+                + ", ".join(str(s) for s in eksik_sorular)
+                + "); uydurma icerikle sunulmaz."
+            ),
         )
 
     return {

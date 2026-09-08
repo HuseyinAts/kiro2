@@ -71,7 +71,9 @@ def test_migration_files_exist(migration_files: list[Path]) -> None:
 
     # Verify files have .py extension
     for migration_file in migration_files:
-        assert migration_file.suffix == ".py", f"{migration_file.name} must be a .py file"
+        assert (
+            migration_file.suffix == ".py"
+        ), f"{migration_file.name} must be a .py file"
 
 
 def test_migration_has_upgrade_function(migration_files: list[Path]) -> None:
@@ -86,7 +88,9 @@ def test_migration_has_upgrade_function(migration_files: list[Path]) -> None:
             pytest.fail(f"Migration file {migration_file.name} has syntax error: {e}")
 
         # Find all function definitions
-        functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+        functions = [
+            node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
+        ]
 
         assert (
             "upgrade" in functions
@@ -105,7 +109,9 @@ def test_migration_has_downgrade_function(migration_files: list[Path]) -> None:
             pytest.fail(f"Migration file {migration_file.name} has syntax error: {e}")
 
         # Find all function definitions
-        functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+        functions = [
+            node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
+        ]
 
         assert (
             "downgrade" in functions
@@ -124,7 +130,7 @@ def test_migration_revision_chain(migration_files: list[Path]) -> None:
         for line in content.split("\n"):
             if line.strip().startswith("revision:"):
                 # Extract revision ID
-                # Format: revision: str = "abc123def456"
+                # Format: revision: str = "abc123def456"  # pragma: allowlist secret
                 parts = line.split("=")
                 if len(parts) >= 2:
                     revision_id = parts[1].strip().strip('"').strip("'")
@@ -158,9 +164,7 @@ def test_env_py_has_async_support(alembic_dir: Path) -> None:
         or "aiosqlite" in content
     )
 
-    assert (
-        has_async_support
-    ), "alembic/env.py must have async migration support (async functions or async driver handling)"
+    assert has_async_support, "alembic/env.py must have async migration support (async functions or async driver handling)"
 
 
 def test_migration_imports_valid(
@@ -187,24 +191,48 @@ def test_migration_imports_valid(
             # Other parsing errors
             errors.append(f"{migration_file.name}: Unexpected error - {e}")
 
-    assert (
-        len(errors) == 0
-    ), "Migration files have import/syntax errors:\n" + "\n".join(errors)
+    assert len(errors) == 0, "Migration files have import/syntax errors:\n" + "\n".join(
+        errors
+    )
 
 
-def test_cascade_migration_exists(alembic_versions_dir: Path) -> None:
-    """Test that the cascade delete migration (4aec28c6c9e0) exists."""
-    cascade_migration = alembic_versions_dir / "4aec28c6c9e0_add_cascade_deletes_to_foreign_keys.py"
+def test_cascade_silme_migration_zincirinde_tanimli(alembic_versions_dir: Path) -> None:
+    """Cascade silme davranisi MIGRATION'da tanimli olmali (elle uygulanmis DEGIL).
 
-    assert (
-        cascade_migration.exists()
-    ), "Cascade delete migration (4aec28c6c9e0_add_cascade_deletes_to_foreign_keys.py) must exist"
+    ONCEKI HALI FANTOM ANKRAJDI (7 Eyl 2026'da olculdu). Test
+    `4aec28c6c9e0_add_cascade_deletes_to_foreign_keys.py` dosyasinin varligini
+    sart kosuyordu; oysa `git log --all --diff-filter=AD` ile dogrulandi: bu
+    dosya ve `4aec28c6c9e0` revizyonu git gecmisinde HIC VAR OLMADI. Yani test
+    hicbir zaman gecemezdi -- yalnizca `tests/db/` toplanmadigi icin
+    gorunmuyordu.
 
-    # Verify it has the correct revision ID
-    content = cascade_migration.read_text(encoding="utf-8")
-    assert (
-        '4aec28c6c9e0' in content
-    ), "Cascade migration must have revision ID 4aec28c6c9e0"
+    Iddianin OZU dogru: cascade silme gercekten var (canli `kiro2`: ON DELETE
+    CASCADE tasiyan 244 yabanci anahtar). Yanlis olan, onu tek bir dosya adina
+    baglamakti. Bu yuzden ankraj gercek invaryanta cevrildi: cascade davranisi
+    migration zincirinde ifade edilmis olmali.
+
+    NEDEN BU INVARYANT ONEMLI -- OLCULEN SURUKLENME: canli `kiro2`'de 244
+    CASCADE FK var, ayni migration zinciriyle sifirdan kurulan `kiro2_test`'te
+    yalnizca 58. Aradaki fark, cascade'lerin bir kisminin migration DISINDA
+    uygulandigini gosteriyor (repo'da untracked bir `scripts/add_cascades.py`
+    duruyor). Bu test, en azindan zincirin cascade'i ifade ettigini civiler;
+    tam parite ayri bir borc kalemi (bkz. docs/guvenlik-borcu.md).
+    """
+    import re
+
+    cascade_tanimlayanlar = []
+    for migration_file in sorted(alembic_versions_dir.glob("*.py")):
+        icerik = migration_file.read_text(encoding="utf-8")
+        if re.search(r"ondelete\s*=\s*[\"']CASCADE[\"']", icerik) or re.search(
+            r"ON DELETE CASCADE", icerik, re.IGNORECASE
+        ):
+            cascade_tanimlayanlar.append(migration_file.name)
+
+    assert cascade_tanimlayanlar, (
+        "Hicbir migration ON DELETE CASCADE tanimlamiyor -- cascade silme "
+        "davranisi yalnizca elle/script ile uygulanmis olur ve sifirdan kurulan "
+        "veritabani canlidan farkli davranir."
+    )
 
 
 def test_alembic_heads_single_head_revision(backend_root: Path) -> None:
@@ -220,4 +248,3 @@ def test_alembic_heads_single_head_revision(backend_root: Path) -> None:
     assert (
         len(heads) == 1
     ), f"Alembic migration history must have exactly 1 head revision, but found {len(heads)}: {heads}"
-

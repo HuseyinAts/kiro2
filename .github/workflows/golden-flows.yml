@@ -89,7 +89,11 @@ jobs:
           # cekilmiyor. Uretim kurulumlari DEGISMIYOR (yalniz CI adimi).
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements.txt
-          pip install httpx pytest pytest-asyncio
+          # NOT (6 Eyl 2026): `pytest-asyncio` burada PINSIZ kuruluyordu ve
+          # requirements.txt'teki pini SESSIZCE eziyordu -- workflow'lar
+          # farkli surumlerle kosuyordu. Pin tek kaynaktan gelsin diye
+          # buradan cikarildi (requirements.txt zaten kuruluyor).
+          pip install httpx
 
       - name: AST lint — Pattern A/B dependency traps (HIGH only)
         working-directory: backend

@@ -13,6 +13,7 @@ Strategy: patch all external calls (DB, facades, services, LLM) at module
 level so handlers execute deeply without real I/O.
 """
 
+import logging
 from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
@@ -20,6 +21,13 @@ from uuid import uuid4
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+# Bu dosyadaki bagimlilik baglama bloklari ortamda eksik olabilen opsiyonel
+# modulleri deniyor. Eskiden hepsi `except Exception: pass` ile susuyordu:
+# bir baglama sessizce kurulamadiginda test yine "yesil" goruluyordu, ki bu
+# tam olarak reward-hacking-check'in engelledigi sey. Artik istisna
+# loglaniyor -- testi dusurmuyor ama GORULEBILIR oluyor (SS10.63).
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -39,7 +47,7 @@ def _mock_user(role: str = "admin", user_id: str = "test-user-123"):
     u.telefon = None
     u.aktif = True
     u.kullanici_id = user_id
-    from unittest.mock import MagicMock as MM
+    from unittest.mock import MagicMock as MM  # noqa: N817
 
     rol = MM()
     rol.value = "ogrenci" if role == "student" else role
@@ -49,7 +57,10 @@ def _mock_user(role: str = "admin", user_id: str = "test-user-123"):
     return u
 
 
-def _mock_db():
+def _mock_db() -> AsyncMock:
+    # Donus tipi acikca yazildi: yoksa mypy `_setup_overrides` icindeki
+    # `return mock_db` icin "Returning Any from function declared to return
+    # MagicMock" [no-any-return] veriyor. AsyncMock, MagicMock'in alt sinifi.
     db = AsyncMock()
     mock_result = MagicMock()
     mock_result.scalars.return_value.all.return_value = []
@@ -87,36 +98,36 @@ def _setup_overrides(app: FastAPI, role: str = "admin") -> MagicMock:
 
         app.dependency_overrides[get_current_user] = lambda: user
         app.dependency_overrides[get_current_admin_user] = lambda: user
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.database import get_db
 
         app.dependency_overrides[get_db] = lambda: mock_db
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.dependencies import get_db as get_db_deps
 
         app.dependency_overrides[get_db_deps] = lambda: mock_db
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.database import get_db_session
 
         app.dependency_overrides[get_db_session] = lambda: mock_db
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     try:
         from core.dependencies import get_redis_client
 
         app.dependency_overrides[get_redis_client] = lambda: AsyncMock()
-    except Exception:
-        pass
+    except Exception as hata:
+        logger.debug("istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata)
 
     return mock_db
 
@@ -146,8 +157,10 @@ class TestLearningPathV2Coverage:
             self.app.dependency_overrides[get_current_user_optional] = (
                 lambda: _mock_user()
             )
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
     # --- /create-profile ---
@@ -760,7 +773,10 @@ class TestAuthCoverage:
 
         r = self.client.post(
             "/api/v1/auth/password-reset/confirm",
-            json={"token": "bad-token", "new_password": "NewPass1!"},
+            json={
+                "token": "bad-token",  # pragma: allowlist secret
+                "new_password": "NewPass1!",  # pragma: allowlist secret
+            },
         )
         assert r.status_code != 405
 
@@ -768,7 +784,10 @@ class TestAuthCoverage:
         """Change password endpoint."""
         r = self.client.post(
             "/api/v1/auth/change-password",
-            json={"old_password": "OldPass1!", "new_password": "NewPass1!"},
+            json={
+                "old_password": "OldPass1!",  # pragma: allowlist secret
+                "new_password": "NewPass1!",  # pragma: allowlist secret
+            },
             headers={"Authorization": "Bearer test.token"},
         )
         assert r.status_code != 405
@@ -791,16 +810,37 @@ class TestDiaryApiCoverage:
         self.app.include_router(mod.router)
         self.mock_db = _setup_overrides(self.app)
 
-        # Override diary's local auth dependency
+        # Override diary's local auth dependency.
+        #
+        # KIRLENME KOK NEDENI (SS10.63): burada eskiden
+        #     mod.get_current_user = lambda: user
+        # vardi. Bu, api/diary_api.py'nin MODUL DUZEYINDEKI adini kalici olarak
+        # yeniden bagliyordu ve hicbir yerde geri alinmiyordu. Yan etkisi:
+        #   * Router'in rotalari hala ORIJINAL AuthenticationDependency ornegine
+        #     Depends() ile bagli kaliyor.
+        #   * Sonraki testlerin `from api.diary_api import get_current_user`
+        #     ifadesi artik LAMBDA'yi aliyor, dolayisiyla
+        #     app.dependency_overrides[lambda] rotayla ESLESMIYOR.
+        #   * Gercek kimlik dogrulama calisiyor -> 401.
+        # Olculen zarar: ayni worker'da sonra calisan
+        # tests/unit/test_api_coverage_final.py::TestDiaryAPIEndpoints icindeki
+        # 15 test "assert 401 == 200" ile dusuyordu (CI kosusu 34068207500).
+        # Yerel birebir tekrar uretim (23 saniye):
+        #   pytest tests/fast/test_api_coverage_batch13.py \
+        #          "tests/unit/test_api_coverage_final.py::TestDiaryAPIEndpoints" \
+        #          -n 0 -p no:randomly   -> 15 failed
+        # Dogru arac dependency_overrides: yalnizca BU app'e ozel, surec geneline
+        # sizmiyor ve rotanin gercek bagimlilik nesnesiyle eslesiyor.
         try:
             from core.database import get_db
 
             user = _mock_user()
-            # Override the module-level get_current_user in diary_api
-            mod.get_current_user = lambda: user
+            self.app.dependency_overrides[mod.get_current_user] = lambda: user
             self.app.dependency_overrides[get_db] = lambda: self.mock_db
-        except Exception:
-            pass
+        except Exception as hata:
+            logger.debug(
+                "istege bagli baglama atlandi (%s): %s", type(hata).__name__, hata
+            )
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
@@ -809,7 +849,7 @@ class TestDiaryApiCoverage:
         entry = MagicMock()
         entry.id = uuid4()
         entry.user_id = uuid4()
-        entry.date = date.today()
+        entry.date = date.today()  # noqa: DTZ011
         entry.success_count = 5
         entry.failure_count = 1
         entry.total_tasks = 6
@@ -818,7 +858,7 @@ class TestDiaryApiCoverage:
         entry.learnings = ["Türev formülü"]
         entry.challenges = ["Zaman yönetimi"]
         entry.markdown_content = "# Bugün\n\nBugün çok çalıştım."
-        entry.file_path = "/tmp/diary.md"
+        entry.file_path = "/tmp/diary.md"  # noqa: S108
         entry.created_at = datetime.now(UTC)
         entry.updated_at = datetime.now(UTC)
         entry.success_rate = 83.3
@@ -926,7 +966,7 @@ class TestDiaryApiCoverage:
         goal.user_id = uuid4()
         goal.title = "Matematiği geç"
         goal.description = "YKS için"
-        goal.target_date = date.today()
+        goal.target_date = date.today()  # noqa: DTZ011
         goal.status = MagicMock()
         goal.status.value = "active"
         goal.current_value = 0.0
@@ -977,7 +1017,7 @@ class TestDiaryApiCoverage:
         ref.created_at = datetime.now(UTC)
         ref.updated_at = datetime.now(UTC)
         ref.tags = []
-        ref.entry_date = date.today()
+        ref.entry_date = date.today()  # noqa: DTZ011
         ref_svc.create_reflection = AsyncMock(return_value=ref)
         with patch("api.diary_api.ReflectionService", return_value=ref_svc):
             r = self.client.post(
@@ -985,7 +1025,7 @@ class TestDiaryApiCoverage:
                 json={
                     "content": "Bugün çok şey öğrendim",
                     "mood_score": 8,
-                    "entry_date": str(date.today()),
+                    "entry_date": str(date.today()),  # noqa: DTZ011
                 },
             )
         # 200, 401 (auth), 422 (validation) all fine — just not 405

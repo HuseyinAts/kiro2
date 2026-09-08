@@ -46,6 +46,26 @@ def _email() -> str:
     return f"pwreset-{uuid.uuid4().hex[:12]}@kiro2.test"
 
 
+async def _redis_kapat(client) -> None:
+    """redis-py surum farkini yutan kapatma.
+
+    OLCUM (6 Eyl 2026): CI'da bu dosya teardown'da patliyordu --
+    `AttributeError: 'Redis' object has no attribute 'aclose'`. Sebep saf
+    surum farki: `aclose()` redis-py 5.0.1'de eklendi; bu makinede kurulu
+    surum 6.4.0 (aclose VAR, o yuzden yerelde hic gorulmedi) ama CI
+    `requirements.txt`teki `redis[hiredis]==4.6.0` ile kuruluyor (aclose YOK).
+    Test PASS ediyordu, yalnizca teardown patliyor, ama pytest bunu "1 error"
+    sayip exit code 2 donduruyor -- yani tek basina Backend Tests is'ini
+    kirmiziya cekiyordu.
+
+    Uretim bagimliligini yukseltmek yerine testi iki surumle de calisir
+    kilmak tercih edildi: burada olculen kusur surum secimi degil, testin
+    tek bir surume sabitlenmis olmasi.
+    """
+    kapat = getattr(client, "aclose", None) or client.close
+    await kapat()
+
+
 async def _redis_client():
     try:
         import redis.asyncio as aioredis
@@ -55,7 +75,7 @@ async def _redis_client():
     try:
         await client.ping()
     except Exception:
-        await client.aclose()
+        await _redis_kapat(client)
         return None
     return client
 
@@ -73,7 +93,7 @@ async def store(request):
     try:
         yield PasswordResetCodeStore(redis_client=client)
     finally:
-        await client.aclose()
+        await _redis_kapat(client)
 
 
 @pytest.fixture(params=["memory", "redis"])
@@ -87,10 +107,14 @@ async def store_and_dump(request):
     if request.param == "memory":
         store = PasswordResetCodeStore(redis_client=None)
 
-        async def dump() -> list[str]:
+        # NOT: iki dalin dokucusu ayri isimlerde. Ikisi de `dump` olsaydi
+        # mypy `no-redef` veriyordu (CI'da olculdu) -- ayni isim, ayni
+        # kapsamda iki kez tanimlanmis sayiliyor, dallar birbirini disliyor
+        # olsa bile. Isimlendirme ayrica hangi dalin okundugunu da belli ediyor.
+        async def dump_bellek() -> list[str]:
             return [value for value, _expires in store._memory.values()]
 
-        yield store, dump
+        yield store, dump_bellek
         return
 
     client = await _redis_client()
@@ -99,15 +123,15 @@ async def store_and_dump(request):
 
     store = PasswordResetCodeStore(redis_client=client)
 
-    async def dump() -> list[str]:
+    async def dump_redis() -> list[str]:
         keys = await client.keys("password_reset*")
         values = [await client.get(k) for k in keys]
         return list(keys) + [v for v in values if v is not None]
 
     try:
-        yield store, dump
+        yield store, dump_redis
     finally:
-        await client.aclose()
+        await _redis_kapat(client)
 
 
 async def test_issued_code_is_six_digits(store: PasswordResetCodeStore):

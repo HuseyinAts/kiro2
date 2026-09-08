@@ -1,7 +1,9 @@
 """Timeout guard - enforces maximum execution time."""
+
 import asyncio
 import logging
 import time
+from collections.abc import Callable
 from typing import Any
 
 from ..models import GuardResult, GuardStatus
@@ -31,7 +33,9 @@ class TimeoutGuard(BaseGuard):
         self.graceful_shutdown: bool = config.get("graceful_shutdown", True)
         self.start_time: float | None = None
         self._warning_issued: bool = False
-        self._cleanup_callbacks: list[callable] = []
+        # `callable` bir FONKSIYON, tip DEGIL (mypy: valid-type). Dogru tip
+        # `collections.abc.Callable`.
+        self._cleanup_callbacks: list[Callable[..., Any]] = []
 
     async def check(self, context: dict[str, Any]) -> GuardResult:
         """Check if execution timeout exceeded.
@@ -55,7 +59,9 @@ class TimeoutGuard(BaseGuard):
             "elapsed_seconds": round(elapsed, 2),
             "timeout_seconds": self.timeout_seconds,
             "remaining_seconds": round(remaining, 2),
-            "percentage": round(elapsed / self.timeout_seconds * 100, 1) if self.timeout_seconds > 0 else 0,
+            "percentage": round(elapsed / self.timeout_seconds * 100, 1)
+            if self.timeout_seconds > 0
+            else 0,
         }
 
         # Check if exceeded
@@ -64,9 +70,11 @@ class TimeoutGuard(BaseGuard):
                 status=GuardStatus.STOP,
                 message=f"Timeout exceeded: {elapsed:.2f}s/{self.timeout_seconds}s",
                 details=details,
-                should_stop=True
+                should_stop=True,
             )
-            logger.warning(f"Timeout exceeded: {elapsed:.2f}s >= {self.timeout_seconds}s")
+            logger.warning(
+                f"Timeout exceeded: {elapsed:.2f}s >= {self.timeout_seconds}s"
+            )
 
             # Trigger graceful shutdown if enabled
             if self.graceful_shutdown:
@@ -83,19 +91,18 @@ class TimeoutGuard(BaseGuard):
                 status=GuardStatus.WARNING,
                 message=f"Approaching timeout: {elapsed:.2f}s/{self.timeout_seconds}s ({remaining:.1f}s remaining)",
                 details=details,
-                should_stop=False
+                should_stop=False,
             )
             self._log_check(result)
             return result
 
         # Normal operation
-        result = self._create_result(
+        return self._create_result(
             status=GuardStatus.OK,
             message=f"Time elapsed: {elapsed:.2f}s/{self.timeout_seconds}s",
             details=details,
-            should_stop=False
+            should_stop=False,
         )
-        return result
 
     def reset(self) -> None:
         """Reset timer for new execution."""
@@ -104,7 +111,7 @@ class TimeoutGuard(BaseGuard):
         self._check_count = 0
         logger.debug(f"Timeout guard reset (limit: {self.timeout_seconds}s)")
 
-    def register_cleanup_callback(self, callback: callable) -> None:
+    def register_cleanup_callback(self, callback: Callable[..., Any]) -> None:
         """Register a callback to run during graceful shutdown.
 
         Args:

@@ -40,7 +40,14 @@ try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
 except (AttributeError, OSError):
-    pass
+    # BILINCLI yutma: akis zaten UTF-8 ya da `reconfigure` desteklenmiyor
+    # (eski Python / yonlendirilmis akis). Bu blok YALNIZCA konsol
+    # kodlamasini duzeltir; kapinin kararini etkilemez, bir kontrolu
+    # atlatmaz. Loglamak da mumkun degil -- log hedefi tam da
+    # yapilandirilmaya calisilan akisin kendisi.
+    _KONSOL_UTF8 = False
+else:
+    _KONSOL_UTF8 = True
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 BASE_REF = os.environ.get("BASE_REF", "master")
@@ -224,6 +231,42 @@ def added_lines(filepath: str) -> set[int]:
 # ---------------------------------------------------------------------------
 # Endpoint extraction
 # ---------------------------------------------------------------------------
+def _yorum_ve_string_araliklari(text: str) -> list[tuple[int, int]]:
+    """Yorum ve string literal'lerin (docstring dahil) karakter araliklari.
+
+    NEDEN VAR (olcum: PR #181, 6 Eyl 2026): bu kapi kaynak METNI uzerinde
+    regex kosturuyordu, dolayisiyla KODDA OLMAYAN decorator metinlerini de
+    yeni uc saniyordu. Iki gercek ornek ayni PR'da cikti:
+      * kaldirilan bir rotayi ACIKLAYAN `#` yorumu icindeki
+        `@router.get("/health")` -> HARD C1 ile PR bloklandi;
+      * kapinin kendi bekci testindeki ORNEK KOD (string literal) -> ayni
+        yanlis pozitif.
+    Yani belgeleme yapmak ve kapiyi test etmek cezalandiriliyordu. Cozum
+    `tokenize`: yorum ve string token'larinin araliklarini cikar, eslesme
+    o araliklarin icindeyse SAYMA.
+
+    Tokenize edilemeyen (sozdizimi bozuk) dosyada BOS liste doner -- yani
+    eski davranisa duseriz; kapi sessizce gevsemez.
+    """
+    import io
+    import tokenize
+
+    satir_ofset = [0]
+    for satir in text.splitlines(keepends=True):
+        satir_ofset.append(satir_ofset[-1] + len(satir))
+
+    araliklar: list[tuple[int, int]] = []
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(text).readline):
+            if tok.type in (tokenize.COMMENT, tokenize.STRING):
+                bas = satir_ofset[tok.start[0] - 1] + tok.start[1]
+                son = satir_ofset[tok.end[0] - 1] + tok.end[1]
+                araliklar.append((bas, son))
+    except (tokenize.TokenError, IndentationError, SyntaxError, IndexError):
+        return []
+    return araliklar
+
+
 def extract_endpoints(filepath: str, added: set[int]) -> list[Endpoint]:
     full = REPO_ROOT / filepath
     if not full.is_file():
@@ -234,12 +277,17 @@ def extract_endpoints(filepath: str, added: set[int]) -> list[Endpoint]:
         return []
 
     lines = text.splitlines()
+    yoksay = _yorum_ve_string_araliklari(text)
     endpoints: list[Endpoint] = []
     for m in DECORATOR_RE.finditer(text):
         # Line number of the @ — find by counting newlines up to match start
         line_no = text[: m.start()].count("\n") + 1
         if line_no not in added:
             continue  # decorator was not added in this PR
+        # YORUM VE STRING ICINDEKI METIN ROTA DEGILDIR
+        # (gerekce ve olcum: `_yorum_ve_string_araliklari` docstring'i).
+        if any(bas <= m.start() < son for bas, son in yoksay):
+            continue
         # Capture ~30 lines following the decorator as the function body
         body = "\n".join(lines[line_no - 1 : line_no + 30])
         endpoints.append(
