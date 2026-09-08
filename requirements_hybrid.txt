@@ -10,7 +10,7 @@ aiohttp>=3.9.0
 asyncio
 
 # Cache (optional - Redis için)
-redis>=5.0.0
+redis==6.4.0
 
 # Environment
 python-dotenv>=1.0.0

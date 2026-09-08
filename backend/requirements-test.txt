@@ -12,7 +12,7 @@ testcontainers[redis]==4.0.1
 
 # Database drivers
 psycopg2-binary==2.9.9
-redis==5.0.1
+redis==6.4.0
 
 # Additional testing tools
 faker==37.5.3
