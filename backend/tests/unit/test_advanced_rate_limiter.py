@@ -241,6 +241,12 @@ class TestAdvancedRateLimiter:
         pipeline_mock.execute = AsyncMock(return_value=[None, 2, None, None])
         mock_redis.pipeline.return_value = pipeline_mock
 
+        # Bu test uc-ozel limitin TIER limitini (FREE=60) ezdigini olcuyor.
+        # Ikisi esitlenirse iddia sessizce bosalir, o yuzden on kosul:
+        assert (
+            _LOGIN_RPM != 60
+        ), "Uc-ozel limit ile tier limiti esit; bu testin iddiasi bos kalir."
+
         allowed, info = await rate_limiter.check_rate_limit(
             identifier="user-123",
             endpoint="/api/v1/auth/login",  # endpoint'e ozel limit: _LOGIN_RPM
