@@ -101,19 +101,24 @@ ignore_errors = false
 
 # Fail under threshold - CI/CD will fail if coverage drops below this
 #
-# OLCUM (6 Eyl 2026): bu deger 60.0 idi ama GERCEK kapsama 22.27-22.42
-# araliginda olculdu (bkz. docs/guvenlik-borcu.md SS10.52/SS10.53).
-# Sonuc: kapi her kosumda kapaliydi, Backend Tests master'da 10/10
-# kirmizi kaldi. Surekli kirmizi bir kapi hicbir regresyonu yakalayamaz.
+# OLCUM (8 Eyl 2026, SS10.80): bu deger once 60.0 idi (her kosumda
+# kapali), sonra 20.0'a cekildi. 20.0'in dayandigi "22.27-22.42" olcumu
+# KESIK bir kosumdan geliyordu -- `-x` suite'i ~%23'unde durduruyor,
+# kapsama da o ucte birden hesaplaniyordu.
 #
-# 20.0 bir HEDEF DEGIL, olculen tabanin hemen altindaki bir TABAN:
-# bugunku durum yesil gecer, ama gercek bir dusus (>2 puan kapsama
-# kaybi) kirmizi verir. Kademeli olarak yukseltilecek.
+# `-x` kalkinca uc tam kosumda olculen gercek deger:
+#   43.04% / 43.02% / 43.03%   (uc farkli commit, oynama 0.02 puan)
+# Ucu de BOZUK ortamda (ES yok, canli PG yok) alindi; servisler ayaga
+# kalkarsa kapsama ARTAR, yani 43.02 karamsar uc.
+#
+# 41.0 hala bir TABAN, hedef degil: olculen degerden ~2 puan asagida,
+# gurultunun ~100 kati. Yavas erozyonu yakalamaz -- onun cozumu master'in
+# son degerine karsi olcen bir ratchet, ayri is.
 #
 # NOT: CI komut satirindan `--cov-fail-under` gecirdigi icin pratikte
 # ci.yml'deki deger baskindir; ikisi BILEREK ayni tutuluyor ki yerelde
 # `pytest --cov` calistiran da ayni kapiyi gorsun.
-fail_under = 20.0
+fail_under = 41.0
 
 [html]
 directory = htmlcov
