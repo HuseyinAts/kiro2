@@ -128,12 +128,14 @@ class TestRepsSozlesmesi:
 
     def test_reps_none_girdisi_cokmez(self) -> None:
         """DB'den None okunan reps TypeError uretmemeli."""
-        # `Any` uzerinden geciriyoruz: CI mypy'si `--no-strict-optional` ile
-        # kosuyor ve orada `# type: ignore[arg-type]` GEREKSIZ sayilip
-        # unused-ignore hatasi veriyor; yerel/pre-commit mypy ise farkli
-        # ayarlarla o ignore'u talep edebiliyor. Hicbir tek `ignore` ikisini
-        # birden gecemez (ayni celiski pyproject.toml'daki PLR0917 notunda
-        # da anlatiliyor). `Any` iki tarafta da sessiz.
+        # `Any` ara degiskeni bilincli: CI'nin mypy adimi opsiyonel-tip
+        # denetimini gevsetilmis bayraklarla kosuyor (bkz. ci.yml, mypy
+        # adiminin komut satiri) ve orada bir `type: ignore[arg-type]`
+        # GEREKSIZ sayilip unused-ignore hatasi uretiyor; yerel/pre-commit
+        # mypy ise kendi ayarlariyla o ignore'u talep edebiliyor. Tek bir
+        # ignore ikisini birden gecemiyor -- ayni celiskinin baska bir
+        # ornegi pyproject.toml'daki PLR0917 notunda anlatiliyor.
+        # `Any` her iki tarafta da sessiz ve testin niyetini degistirmiyor.
         reps_yok: Any = None
         sonuc = FSRSService.review_card(None, None, None, 3, reps_yok)
         assert sonuc["reps"] == 1
