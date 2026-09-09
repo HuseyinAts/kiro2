@@ -124,10 +124,14 @@ def test_gorev_baslat_loop_yokken_false_doner() -> None:
 
     assert bb._gorev_baslat(_bos()) is False
 
-    async def _icerde() -> bool:
-        return bb._gorev_baslat(_bos())
+    # NOT: iddia coroutine ICINDE. Disariya `bool` dondurup burada test
+    # etmek CI mypy'sinde (1.11.2) `no-any-return` veriyordu -- orada
+    # `algorithms.*` untyped goruldugu icin donus Any'ye dusuyor. Yerel
+    # pre-commit mypy'si bunu gormuyor (bkz. yerel/CI surum farki tuzagi).
+    async def _icerde() -> None:
+        assert bb._gorev_baslat(_bos()) is True
 
-    assert asyncio.run(_icerde()) is True
+    asyncio.run(_icerde())
 
 
 @pytest.mark.parametrize("ad", ["agent_a", "agent_b"])
