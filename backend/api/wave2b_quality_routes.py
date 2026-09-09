@@ -74,7 +74,9 @@ class EvaluationResponse(BaseModel):
 
 
 class BatchEvaluationRequest(BaseModel):
-    questions: list[dict[str, Any]] = Field(..., min_items=1, max_items=50)
+    # min_length/max_length: pydantic v2'de listeler icin de bu adlar; min_items/
+    # max_items v1 kalintisi (pre-commit mypy pydantic 2.5 stub'unda yok).
+    questions: list[dict[str, Any]] = Field(..., min_length=1, max_length=50)
     evaluation_stage: str = Field(
         "standard", description="quick, standard, thorough, complete"
     )
@@ -106,7 +108,7 @@ class BERTScoreResponse(BaseModel):
 # Helper Functions
 async def get_evaluator() -> ComprehensiveQualityEvaluator:
     """Get or initialize the global evaluator"""
-    global _evaluator
+    global _evaluator  # noqa: PLW0603 -- modul tekili (lazy init), onceden var; bu PR'in konusu degil
 
     if _evaluator is None:
         osym_ref = await load_osym_reference_questions()
@@ -116,26 +118,36 @@ async def get_evaluator() -> ComprehensiveQualityEvaluator:
     return _evaluator
 
 
+# BOLUNMUS question_bank semasi (9 Eyl 2026 olcumu): question_text ve
+# correct_answer question_content'te, subject_area question_metadata'da,
+# difficulty_level question_statistics'te, is_active question_bank'ta.
+# Eski tek-tablo sorgu canli Postgres'te UndefinedColumn'du; `except` yuttugu
+# icin uc sessizce bos referansla calisiyordu (rapor 7.7 / madde 15).
+# Modul seviyesinde: tests/db bekcisi ayni metni gercek semaya karsi kosturur.
+OSYM_REFERANS_SQL = """
+    SELECT
+        c.question_text,
+        s.difficulty_level,
+        m.subject_area,
+        c.correct_answer
+    FROM question_bank b
+    JOIN question_content c ON c.id = b.id
+    JOIN question_metadata m ON m.id = b.id
+    LEFT JOIN question_statistics s ON s.id = b.id
+    WHERE b.is_active = true
+    AND c.correct_answer IS NOT NULL
+    AND c.question_text IS NOT NULL
+    AND LENGTH(c.question_text) > 50
+    ORDER BY RANDOM()
+    LIMIT :limit
+"""
+
+
 async def load_osym_reference_questions(limit: int = 30) -> list[dict]:
     """Load OSYM reference questions from database"""
     async for db in get_db_session():
         try:
-            query = text(
-                """
-                SELECT
-                    question_text,
-                    difficulty_level,
-                    subject_area,
-                    correct_answer
-                FROM question_bank
-                WHERE is_active = true
-                AND correct_answer IS NOT NULL
-                AND question_text IS NOT NULL
-                AND LENGTH(question_text) > 50
-                ORDER BY RANDOM()
-                LIMIT :limit
-            """
-            )
+            query = text(OSYM_REFERANS_SQL)
 
             result = await db.execute(query, {"limit": limit})
             rows = result.fetchall()
@@ -155,8 +167,12 @@ async def load_osym_reference_questions(limit: int = 30) -> list[dict]:
             return questions
 
         except Exception as e:
+            # Sessiz bozulma: bu `except` eski tek-tablo sorgunun UndefinedColumn
+            # hatasini da yutuyordu; uc bos referansla calisiyordu. Bekci:
+            # tests/db/test_ham_sql_bolunmus_sema_uyumu.py sorguyu dogrudan kosar.
             logger.error(f"Failed to load OSYM reference: {e}")
             return []
+    return []  # get_db_session hic oturum vermezse (RET503: acik donus)
 
 
 # API Endpoints
@@ -216,7 +232,12 @@ async def evaluate_batch(
         evaluator = await get_evaluator()
 
         results = []
-        stats = {"approved": 0, "review": 0, "rejected": 0, "scores": []}
+        stats: dict[str, Any] = {
+            "approved": 0,
+            "review": 0,
+            "rejected": 0,
+            "scores": [],
+        }
 
         for question in request.questions:
             try:
