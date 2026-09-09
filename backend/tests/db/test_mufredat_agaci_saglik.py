@@ -202,3 +202,80 @@ async def test_ayni_ebeveyn_altinda_ayni_adli_aktif_konu_tek(baglanti) -> None:
     if kopya:
         dokum = "\n".join(f"  {r.ebeveyn} / {r.ad}: {r.kodlar}" for r in kopya)
         pytest.fail(f"Ayni ebeveyn altinda ayni adli birden fazla aktif konu:\n{dokum}")
+
+
+# 0005'in ders -> kok kodu eslemesi (migration'daki CTE ile ayni; ikisi de
+# olculmus canli veriden). Bir konu subject_area tasiyorsa, agacta yukari
+# cikildiginda ulasilan kok BU kod olmali -- MAT.GEO'nun GEOMETRI etiketiyle
+# GEO altina tasinmasi (0007) bu sozlesmeyi korur; MATEMATIK etiketiyle GEO
+# altina konsaydi (ya da tersi) burasi duserdi.
+_DERS_KOKU = {
+    "FIZIK": "FIZ",
+    "KIMYA": "KIM",
+    "BIYOLOJI": "BIO",
+    "MATEMATIK": "MAT",
+    "GEOMETRI": "GEO",
+    "TURKCE": "TUR",
+    "EDEBIYAT": "EDB",
+    "TARIH": "TAR",
+    "COGRAFYA": "COG",
+    "SOSYAL": "SOS",
+    "FEN": "FEN",
+    "GENEL": "GEN",
+    "PARAGRAF": "PAR",
+}
+
+
+async def test_konunun_dersi_ile_koku_uyusur(baglanti) -> None:
+    """subject_area tasiyan aktif konu, o dersin kokunun alt agacinda olmali."""
+    sonuc = await baglanti.execute(
+        text(
+            """
+            WITH RECURSIVE yukari AS (
+                SELECT id, code, parent_id, upper(subject_area) AS ders, id AS baslangic
+                  FROM topic_hierarchy WHERE is_active AND subject_area IS NOT NULL
+                UNION ALL
+                SELECT p.id, p.code, p.parent_id, y.ders, y.baslangic
+                  FROM topic_hierarchy p JOIN yukari y ON p.id = y.parent_id
+            )
+            SELECT b.code AS konu, y.ders, y.code AS kok
+              FROM yukari y JOIN topic_hierarchy b ON b.id = y.baslangic
+             WHERE y.parent_id IS NULL
+             ORDER BY 1
+            """
+        )
+    )
+    yanlis = [
+        (r.konu, r.ders, r.kok)
+        for r in sonuc.fetchall()
+        if _DERS_KOKU.get(r.ders) not in (None, r.kok)
+    ]
+    assert not yanlis, f"dersi ile koku uyusmayan konular (konu, ders, kok): {yanlis}"
+
+
+async def test_geometri_kokundeki_sorular_geometri_etiketli(baglanti) -> None:
+    """GEO alt agacindaki aktif sorularin question_metadata.subject_area'si GEOMETRI.
+
+    0007 bekcisi: konu tasinip sorular etiketlenmezse (ya da tersi) duser.
+    Taze DB'de GEO altinda soru yoktur -> bos kume, gecer (yapisal sozlesme).
+    """
+    sonuc = await baglanti.execute(
+        text(
+            """
+            WITH RECURSIVE geo AS (
+                SELECT id FROM topic_hierarchy
+                 WHERE code = 'GEO' AND parent_id IS NULL AND subject_area IS NULL
+                UNION ALL
+                SELECT c.id FROM topic_hierarchy c JOIN geo g ON c.parent_id = g.id
+            )
+            SELECT upper(m.subject_area) AS alan, count(*) AS adet
+              FROM question_bank b
+              JOIN question_metadata m ON m.id = b.id
+             WHERE b.is_active AND b.primary_topic_id IN (SELECT id FROM geo)
+             GROUP BY 1
+            """
+        )
+    )
+    dagilim = {r.alan: r.adet for r in sonuc.fetchall()}
+    yabanci = {k: v for k, v in dagilim.items() if k != "GEOMETRI"}
+    assert not yabanci, f"GEO alt agacinda GEOMETRI olmayan soru: {yabanci}"
