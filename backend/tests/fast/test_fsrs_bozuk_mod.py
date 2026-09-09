@@ -18,6 +18,7 @@ Bu testler o dalin bir daha sessizce yanlis veri uretmemesini sabitler.
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import pytest
 
@@ -127,7 +128,14 @@ class TestRepsSozlesmesi:
 
     def test_reps_none_girdisi_cokmez(self) -> None:
         """DB'den None okunan reps TypeError uretmemeli."""
-        sonuc = FSRSService.review_card(None, None, None, 3, None)  # type: ignore[arg-type]
+        # `Any` uzerinden geciriyoruz: CI mypy'si `--no-strict-optional` ile
+        # kosuyor ve orada `# type: ignore[arg-type]` GEREKSIZ sayilip
+        # unused-ignore hatasi veriyor; yerel/pre-commit mypy ise farkli
+        # ayarlarla o ignore'u talep edebiliyor. Hicbir tek `ignore` ikisini
+        # birden gecemez (ayni celiski pyproject.toml'daki PLR0917 notunda
+        # da anlatiliyor). `Any` iki tarafta da sessiz.
+        reps_yok: Any = None
+        sonuc = FSRSService.review_card(None, None, None, 3, reps_yok)
         assert sonuc["reps"] == 1
 
 
