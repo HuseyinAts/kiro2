@@ -663,6 +663,27 @@ test_coverage_final_50.py                                  AttributeError (morfo
 Yedi kirmizinin ucu bu denetimin bagimsiz olarak buldugu bulgularla ayni
 seyi soyluyor. CI artik dogru sinyal veriyor.
 
+### 7.7 `osym_inspired_generator.py` -- bolunmus tablodan onceki ham SQL (canli 500)
+
+Golden Flows secimi genisletilince (#224) bulundu; 7.1 ile ayni sinif
+("kod eski semayi varsayiyor"), farkli yuzey. `services/osym_inspired_generator.py`
+bes ham asyncpg sorgusunda `question_bank`'tan S210 split'iyle
+`question_content`/`question_metadata`'ya tasinan kolonlari okuyordu
+(`question_text`, `subject_area`, `exam_type`, `osym_format_compliant`,
+`correct_answer`, `osym_year`). CI postgres log'u:
+`column "question_text" does not exist`. `/api/v1/osym-inspired/{examples,
+style-guide,statistics}` uclerinin ucu de 500'du.
+
+Neden hicbir bekci gormedi: `scan_split_accesses.py` ORM attribute
+erisimini sayar, `audit_dual_table_trap.py` eski `questions` modeli
+import'unu arar -- ham SQL string'i ikisinin de gorus alani disinda.
+
+Duzeltme PR #226: bes sorgu JOIN'li yeniden yazildi; iki bekci
+(AST tabanli DB'siz + gercek Postgres'e karsi) mutasyonla civili
+(eski kod 6/7 FAILED, yeni 7/7). Genel bir "ham SQL bolunmus kolon"
+tarayicisi hala yok -- diger servislerde ayni tuzak olabilir; ayri is
+(madde 15).
+
 ---
 
 ## 8. Yapilacaklar
@@ -676,10 +697,15 @@ karar/onay vermen gereken.
    `versions/0004_billing_subscriptions.py`, tanim
    `20260423_billing_subscriptions_mvp.py`'den birebir, `IF NOT EXISTS`
    korumali. Gidis-donus dogrulandi, parite testi yesile dondu.
-2. **Golden Flows kapisini genislet** -- `golden-flows.yml:278` dosya-kapsamli
-   secimi `tests/e2e -m golden_flow`'a cikar. Backend Tests zaten yakaliyor,
-   ama Golden Flows kapisi da bu sinifi gormeli. Once yerelde patlama
-   yaricapini olcecegim; olcmeden genisletmeyecegim. (1 numaradan sonra.)
+2. **Golden Flows kapisini genislet** -- YAPILDI, PR #224. Patlama yaricapi
+   olculdu: dar secim 186, genis 202 (fark 16 test / 7 dosya). Genis secim
+   iki seyi hemen buldu: (a) `DATABASE_URL_SYNC` verilmeyince bes gercek-DB
+   bekcisi CI'da sessizce skip oluyordu (duzeltildi); (b) ilk genis kosum
+   `hata=1 atlanan=7` -> kapi kirmizi. `hata=1`: `/osym-inspired/examples`
+   500 (bolum 7.7, PR #226). Atlananlarin 3'u `test_es_answer_leak.py`
+   (CI'da Elasticsearch servisi yok) -> `needs_elasticsearch` marker'i ile
+   secim disi, ES gelince tek satirla geri gelir. Kapi kurali
+   (`toplam >= 170 / hata == 0 / atlanan <= 5`) gevsetilmedi.
 3. **`osym_exam_engine.py:187` bayat yorumu** -- YAPILDI. "~44.000 soru"
    yaziyordu, gercek 5.796 (sekiz kat sapma). Yorum olculmus dagilimla
    degistirildi ve "GEOMETRI 14 / FIZIK 7 / BIYOLOJI 6 isteniyor ama havuzda
@@ -700,7 +726,21 @@ karar/onay vermen gereken.
    **IPTAL -- yanlis is.** Bolum 7.4'teki duzeltmeye bakin: o tablolari
    yaratmak uuid7 sistemine Integer anahtarli golge sema eklerdi. Karar
    maddesi 13'e tasindi.
-8. **Cift taksonomiyi tekillestir** (Paragraf x3, Dil Bilgisi x2, Geometri x2).
+8. **Cift taksonomiyi tekillestir** -- YAPILDI (0006, PR #225; #222'ye
+   bagli). Paragraf ve Dil Bilgisi: noktali kod kanonik (`name_en` dolu,
+   `seed_dungeon_topics.py` bilincli kuruyor), 185 soru `TUR.PAR`/`TUR.DIL`'e
+   tasindi, `TYT-TR-02/03` ve bos `PAR` koku pasife alindi (silinmedi).
+   Her tasima `topic_birlestirme_gunlugu`na yazilir, downgrade birebir geri
+   alir. Geometri KOPYA DEGIL: `GEO` koku GEOMETRI dersinin bos yuvasi,
+   `MAT.GEO` (63 soru) matematik alt konusu; sinav motoru ikisini ayri
+   anahtar bekliyor. MAT.GEO'nun GEOMETRI diye yeniden etiketlenmesi icerik
+   karari -> madde 14.
+8b. **Agac bekcileri CI'da neden kirmiziydi** -- migrasyon degil SIRA: CI'da
+   alembic once kosuyor, `seed_mvp_data.py` sonra `MVP.MAT.GOLDEN`'i kok
+   seviyesinde yaratiyor, unit test fixture'lari `TEST.BATCH*`i aktif
+   birakiyor. Kaynakta duzeltildi (PR #222 ikinci commit): seed once `MAT`
+   koku sonra alt konu; fixture satirlari `is_active=false` (17/17 test
+   pasif satirla da gecer). Taze DB'de CI sirasi birebir olculdu: 5/5 bekci.
 
 ### Senin kararin
 
@@ -716,6 +756,25 @@ karar/onay vermen gereken.
     Birincisinin ORM katmani emekliye ayrilsin mi? Uretimde ondan yalnizca
     `is_minor` kullaniliyor, yani risk dusuk -- ama KVKK kayit tutma
     yukumlulugu tasidigi icin karari sana birakiyorum.
+14. **`MAT.GEO`'nun 63 sorusu GEOMETRI dersine mi ait?** Hepsi
+    `subject_area=MATEMATIK`. TYT blueprint GEOMETRI 14 istiyor, havuzda
+    sifir; yeniden etiketlenirse GEOMETRI 63 olur ama MATEMATIK 63 azalir.
+    Icerik karari (bolum 4.2, PR #225 dokunmadi).
+15. ~~Genel "ham SQL bolunmus kolon" tarayicisi yazilsin mi?~~ **OLCULDU**
+    (AST, `backend/` altinda `FROM question_bank` gecen string sabitleri,
+    tests/arsiv haric): 325 sabit, 137'si bolunmus kolon okuyup ilgili
+    yavru tabloya JOIN etmiyor. 137'nin 132'si `scripts/` altinda (tek
+    seferlik/arsiv nitelikli araclar, cogu split oncesi; kosulursa kirilir
+    ama uretim yolu degil). **Uretim yolunda 2 gercek kusur daha:**
+    `api/wave2b_quality_routes.py:124` (`question_text`, `subject_area`,
+    `correct_answer` dogrudan `question_bank`'tan) ve
+    `services/photo_ask_service.py:157` (ayni + `embedding`, o da
+    `question_statistics`'te). Ikisi de 7.7 ile ayni sinif; ayri PR
+    (madde 16, ben). `api/photo_ask_api.py:140` yanlis pozitif (docstring).
+16. **`wave2b_quality_routes` + `photo_ask_service` dual-table duzeltmesi**
+    -- ben, #226'nin ardindan ayni kalipla (JOIN + AST bekcisi + gercek-DB
+    bekcisi). Genel tarayici `scripts/` kalabaligini da sayacagi icin
+    onunla birlestirilmedi.
 
 ---
 
@@ -728,7 +787,9 @@ tam, sema modern (pgvector, JSON, enum).
 **Kirik olan:** `billing_subscriptions` uretimde 500 veriyor (Backend Tests
 bunu kirmizi gosteriyor, Golden Flows kapisi gormuyor); migration zinciri
 baseline squash sirasinda uc tablo grubunu kaybetmis; mufredat agacinin en
-dolu konusu agaca bagli degil;
+dolu konusu agaca bagli degil; uc uretim yolu (`osym_inspired_generator`,
+`wave2b_quality_routes`, `photo_ask_service`) bolunmus tablodan onceki ham
+SQL ile 500 veriyor (7.7, madde 15-16) ve hicbir bekci bu sinifi gormuyordu;
 IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil; semantik arama
 altyapisi bos.
 
