@@ -184,11 +184,25 @@ class OSYMExamEngine:
 
         # ÖSYM sınav konfigürasyonları
         # subject_distribution keys MUST match question_bank.subject_area (UPPERCASE)
-        # DB aktif soru dağılımı (Mart 2026):
-        #   TYT: MATEMATIK 11593, TURKCE 10885, GEOMETRI 8709, FIZIK 4139,
-        #        KIMYA 3520, BIYOLOJI 1520, TARIH 1593, SOSYAL 1188, COGRAFYA 396
-        #   AYT: MATEMATIK 6845, EDEBIYAT 3707, KIMYA 2525, FIZIK 2399,
-        #        BIYOLOJI 998, GEOMETRI 785, TARIH 783
+        # DB aktif soru dagilimi -- OLCULDU 9 Eyl 2026, canli DB:
+        #   TOPLAM 5.796 aktif soru (TYT 5.430 / AYT 366)
+        #   KIMYA 3531 | TURKCE 919 | MATEMATIK 900 | TARIH 291
+        #   COGRAFYA 123 | SOSYAL 32
+        #   FIZIK 0 | BIYOLOJI 0 | GEOMETRI 0 | EDEBIYAT 0
+        #   FELSEFE 0 | DIN 0 | INGILIZCE 0
+        #
+        # BAYAT YORUM UYARISI: burada eskiden "Mart 2026" tarihli, toplami
+        # ~44.000 soru olan bir dagilim yaziliyordu (TYT MATEMATIK 11593,
+        # GEOMETRI 8709, FIZIK 4139 ...). O rakamlar 20 Agu 2026'da
+        # temizlenen halusinasyon soru havuzuna aitti; bugunku gercekten
+        # yaklasik 8 KAT buyuktuler ve okuyani yaniltiyorlardi.
+        # Bkz. docs/veritabani-denetimi-20260909.md bolum 2 ve 3.4.
+        #
+        # ONEMLI SONUC: asagidaki TYT dagilimi GEOMETRI 14, FIZIK 7,
+        # BIYOLOJI 6 istiyor; bu uc ders havuzda SIFIR. Yani sadik bir TYT
+        # denemesi su anda uretilemez. Bu bir kod kusuru degil, icerik
+        # eksigi -- ama motorun bu durumda ne yaptigi (sessizce ikame mi,
+        # yoksa yuksek sesle hata mi) ayrica dogrulanmali.
         self.exam_configs = {
             ExamType.TYT: OSYMExamConfig(
                 exam_type=ExamType.TYT,

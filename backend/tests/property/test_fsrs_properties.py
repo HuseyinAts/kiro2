@@ -482,7 +482,7 @@ class TestStabilityIncreaseOnSuccess:
 
 
 class TestHardGradeBehavior:
-    """Property: HARD grade uses stability multiplier < 1.0 (per FSRS spec)."""
+    """Property: HARD basarili hatirlamadir -- stability dusmez, GOOD'u asmaz."""
 
     @settings(max_examples=100)
     @given(
@@ -512,9 +512,47 @@ class TestHardGradeBehavior:
         exam_anxiety: float,
         consistency: float,
     ) -> None:
-        """HARD grade can decrease stability (multiplier 0.7186 < 1.0)."""
+        """HARD basarili bir hatirlamadir: stability'i DUSURMEZ, az buyutur.
+
+        DUZELTME (9 Eyl 2026). Bu test eskiden soyle iddia ediyordu:
+
+            expected = initial_stability * fsrs.turkish_params[1]   # 0.7186
+            assert abs(schedule.stability - expected) / expected < 0.01
+
+        Yani "HARD stability'i %28 KUCULTUR". Iki yonden yanlisti:
+
+        1) `turkish_params[1]` bir CARPAN degil. Kodda yalnizca
+           `state == "new"` dalinda, HARD ile ilk karsilasilan kartin
+           MUTLAK baslangic stability'si olarak kullaniliyor. Dortlu
+           [0.4072, 0.7186, 2.4063, 5.8145] FSRS'in kanonik w0-w3
+           baslangic agirliklari.
+
+        2) FSRS semantiginde basarili hatirlama (Hard/Good/Easy)
+           stability'i ASLA dusurmez; yalnizca Again (lapse) dusurur.
+           HARD'in cezasi buyumeyi yavaslatmaktir. Kodda bu bilincli:
+               growth *= 0.5   # "Hard penalizes growth but doesn't shrink"
+               new_card.stability = max(new_stability, card.stability * 1.05)
+           ve ustundeki yorum "Stability Asla Basarili Hatirlamada
+           Kuculemez" diyor.
+
+        OLCUM (4.000 rastgele ornek):
+            HARD stability'i kuculttu : 0
+            HARD > GOOD               : 0
+            HARD == GOOD              : 313  (ikisi de 1.05 tabanina carpti)
+
+        Asagidaki iki iddia testin ASIL anlatmak istedigi seydir ve
+        eskisinden daha guclu: hem yonu hem de GOOD'a gore konumu
+        sabitliyorlar.
+        """
         fsrs = TurkishOptimizedFSRS()
-        card = create_test_card(
+        context = create_test_context(
+            group_study, family_pressure, exam_anxiety, consistency
+        )
+        current_date = datetime(2025, 3, 15, 10, 0, 0)
+
+        # Ayni girdiden iki bagimsiz kart -- calculate_next_review girdiyi
+        # degistirmese de iki cagriyi izole tutmak dogru olan.
+        kart_hard = create_test_card(
             difficulty,
             stability,
             retrievability,
@@ -523,31 +561,38 @@ class TestHardGradeBehavior:
             state,
             subject,
         )
-        context = create_test_context(
-            group_study, family_pressure, exam_anxiety, consistency
+        kart_good = create_test_card(
+            difficulty,
+            stability,
+            retrievability,
+            review_count,
+            lapse_count,
+            state,
+            subject,
         )
-        current_date = datetime(2025, 3, 15, 10, 0, 0)
+        initial_stability = kart_hard.stability
 
-        initial_stability = card.stability
-        schedule = fsrs.calculate_next_review(
-            card=card,
+        hard = fsrs.calculate_next_review(
+            card=kart_hard,
             grade=FSRSGrade.HARD,
             current_date=current_date,
             student_context=context,
         )
+        good = fsrs.calculate_next_review(
+            card=kart_good,
+            grade=FSRSGrade.GOOD,
+            current_date=current_date,
+            student_context=context,
+        )
 
-        # HARD multiplier is turkish_params[1] = 0.7186 < 1.0
-        # So new_stability = old_stability * 0.7186
-        expected_stability_approx = initial_stability * fsrs.turkish_params[1]
+        assert hard.stability >= initial_stability - 1e-9, (
+            "HARD basarili bir hatirlamadir; stability'i DUSURMEMELI. "
+            f"{initial_stability} -> {hard.stability}"
+        )
 
-        # Allow 1% tolerance for floating point
-        assert (
-            abs(schedule.stability - expected_stability_approx)
-            / expected_stability_approx
-            < 0.01
-        ), (
-            f"HARD grade stability calculation incorrect: "
-            f"expected ~{expected_stability_approx}, got {schedule.stability}"
+        assert hard.stability <= good.stability + 1e-9, (
+            "HARD, GOOD'dan daha cok buyutmemeli -- 'zorlandim' demek "
+            f"odul olmamali. HARD={hard.stability} GOOD={good.stability}"
         )
 
 
@@ -612,18 +657,18 @@ class TestDeterministicOutput:
             card=card, grade=grade, current_date=current_date, student_context=context
         )
 
-        assert schedule1.interval_days == schedule2.interval_days, (
-            "Non-deterministic interval calculation"
-        )
-        assert abs(schedule1.stability - schedule2.stability) < 1e-9, (
-            "Non-deterministic stability calculation"
-        )
-        assert abs(schedule1.difficulty - schedule2.difficulty) < 1e-9, (
-            "Non-deterministic difficulty calculation"
-        )
-        assert abs(schedule1.retrievability - schedule2.retrievability) < 1e-9, (
-            "Non-deterministic retrievability calculation"
-        )
+        assert (
+            schedule1.interval_days == schedule2.interval_days
+        ), "Non-deterministic interval calculation"
+        assert (
+            abs(schedule1.stability - schedule2.stability) < 1e-9
+        ), "Non-deterministic stability calculation"
+        assert (
+            abs(schedule1.difficulty - schedule2.difficulty) < 1e-9
+        ), "Non-deterministic difficulty calculation"
+        assert (
+            abs(schedule1.retrievability - schedule2.retrievability) < 1e-9
+        ), "Non-deterministic retrievability calculation"
 
 
 # ============================================================================
@@ -751,9 +796,9 @@ class TestCulturalMultiplierBounds:
         # Extract cultural multiplier from cultural_factors
         if "cultural_multiplier" in schedule.cultural_factors:
             multiplier = schedule.cultural_factors["cultural_multiplier"]
-            assert 0.1 <= multiplier <= 3.0, (
-                f"Cultural multiplier {multiplier} outside bounds [0.1, 3.0]"
-            )
+            assert (
+                0.1 <= multiplier <= 3.0
+            ), f"Cultural multiplier {multiplier} outside bounds [0.1, 3.0]"
 
 
 # ============================================================================
@@ -771,7 +816,26 @@ class TestLapseCountIncreaseOnAgain:
         retrievability=valid_retrievability,
         review_count=valid_review_count,
         lapse_count=valid_lapse_count,
-        state=valid_states,
+        # "new" BILINCLI OLARAK DISARIDA (9 Eyl 2026).
+        # Kodda `state == "new"` dali difficulty'yi GUNCELLEMIYOR, ATIYOR:
+        #     if grade == FSRSGrade.AGAIN:  new_card.difficulty = 8.0
+        # Yani ilk karsilasmada difficulty nota gore INITIALIZE ediliyor ve
+        # girdi difficulty'si anlamsiz (yeni kartin gecmisi yoktur). Bu
+        # testin invaryanti "AGAIN cezalandirir, difficulty ARTAR" -- bir
+        # GUNCELLEME iddiasi. Ilklendirme dalina uygulanamaz.
+        #
+        # OLCUM (6.000 rastgele ornek, algorithms/turkish_optimized_fsrs.py):
+        #     learning   : 1523 artti,  0 azaldi
+        #     review     : 1501 artti,  0 azaldi
+        #     relearning : 1504 artti,  0 azaldi
+        #     new        : 1131 artti, 341 AZALDI   <- hepsi 8.0'a atama
+        # new disindaki 4.528 ornegin 4.528'inde invaryant tutuyor.
+        #
+        # Kardes test (TestHardGradeBehavior) zaten ayni dislamayi yapiyor:
+        #     state=st.sampled_from(["learning", "review", "relearning"])
+        # Bu test onu atlamis; sinif adi da ("LapseCountIncreaseOnAgain")
+        # guncelleme yolunu kastediyor.
+        state=st.sampled_from(["learning", "review", "relearning"]),
         subject=subjects,
         group_study=valid_student_preference,
         family_pressure=valid_pressure_level,
@@ -884,6 +948,6 @@ class TestScheduledDateFuture:
             card=card, grade=grade, current_date=current_date, student_context=context
         )
 
-        assert schedule.scheduled_date > current_date, (
-            f"Scheduled date {schedule.scheduled_date} not after current {current_date}"
-        )
+        assert (
+            schedule.scheduled_date > current_date
+        ), f"Scheduled date {schedule.scheduled_date} not after current {current_date}"

@@ -86,7 +86,13 @@ async def db_session():
                 "osym_frequency": 0,
                 "total_questions": 0,
                 "average_difficulty": 0.0,
-                "is_active": True,
+                # is_active=False (9 Eyl 2026): bu satir yalnizca FK icin var.
+                # CI Backend Tests paylasilan kiro2_test DB'sine yazar ve silinmez;
+                # aktif birakilinca tests/db/test_mufredat_agaci_saglik.py bekcisi
+                # "uretim agacinda aktif test artigi" diye duser (#222 CI olcumu).
+                # Olculdu: 17/17 test satir pasifken de gecer (yerel DB'de 0005
+                # bu satiri zaten pasife almisti).
+                "is_active": False,
                 "created_at": datetime.now(UTC),
                 "updated_at": datetime.now(UTC),
             },

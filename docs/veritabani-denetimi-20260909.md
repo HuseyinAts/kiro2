@@ -15,18 +15,23 @@ Olcum betikleri: `backend/_ci_art/db_envanter.py`, `db_yedek_analiz.py`,
 Bes bulgu, onem sirasina gore:
 
 1. **`billing_subscriptions` tablosu YOK, ama onu sorgulayan endpoint CANLI.**
-   Kesin 500. Bunu yakalamak icin ozel olarak yazilmis test hic kosmuyor.
+   Kesin 500. Bunu yakalayan test Backend Tests'te kosuyor ve su an kirmizi
+   (bolum 7.2); gormeyen yer yalnizca `golden-flows.yml`.
 2. **Aktif alembic zinciri 4 dosya.** `billing_subscriptions`, `kvkk_data_*` ve
    `video_cache` tablolarini yaratan migration'larin tamami `versions_archive/`
    altinda. Temiz bir kurulumda bu tablolar ASLA olusmaz.
 3. **Yedekteki 36.967 soru kurtarilamaz -- halusinasyon.** Eksik derslerin
    (FIZIK, BIYOLOJI, GEOMETRI, EDEBIYAT) oradan geri getirilmesi mumkun degil.
    20 Agustos temizligi DOGRU bir karardi.
-4. **IRT calismyior.** 5.796 sorunun 5.776'si kalibre degil, `irt_n_responses`
+4. **IRT calismiyor.** 5.796 sorunun 5.776'si kalibre degil, `irt_n_responses`
    TUM satirlarda 0. Yani mevcut `irt_difficulty` degerleri ogrenci verisinden
    gelmiyor -- uretilmis sayilar.
 5. **Semantik arama olu.** `vector(1536)` kolonu ve pgvector 0.8.2 kurulu,
    ama 5.796 satirin 5.796'sinda `embedding IS NULL`.
+6. **FSRS araliklamiyor** (bolum 5.5, cozum turunda bulundu). 107 kartin
+   106'sinda `stability=2.3`, `scheduled_days=0`; `reps=40` olan kart bile
+   hep "bugun tekrar et" durumunda. Aralikli tekrarin cekirdek vaadi
+   calismiyordu.
 
 ---
 
@@ -200,24 +205,85 @@ level 3 :  1 konu (parent_id NULL -- YANLIS)
 level 4 :  1 konu (parent_id NULL -- YANLIS)
 ```
 
-### 4.1 Agac yetimi: 7 konu
+### 4.1 Agac yetimi: 14 konu, 3.266 soru
 
-`level > 1` oldugu halde `parent_id IS NULL` olan konular -- agacta asili
-duruyorlar, hicbir derse bagli degiller:
+**Duzeltme (ayni gun, onarim sirasinda).** Bu bolumu once "7 konu" diye
+yazdim. Eksik olcumdu: yalnizca `level > 1` olanlara bakmisim. Dogru olcut
+"`subject_area` DOLU ama `parent_id` NULL" -- yani bir derse ait oldugunu
+soyleyip hicbir derse bagli olmayan her konu. Gercek sayi **14**:
 
 ```
-KIM.ASI  Asitler ve Bazlar     level 2
-KIM.DEN  Kimyasal Denge        level 2   <- 1.262 soru bagli!
-KIM.ORG  Organik Kimya         level 2
-KIM.TER  Termokimya            level 2
-TYT-KIM-02 Periyodik           level 2
-TYT-KIM-03 Kim Baglar          level 3
-TYT-KIM-04 Reaksiyonlar        level 4
+KIM.DEN     Kimyasal Denge                level 2   soru 1262
+KIM.ASI     Asitler ve Bazlar             level 2   soru  478
+KIM.ORG     Organik Kimya                 level 2   soru  366
+TYT-KIM-02  Periyodik                     level 2   soru  350
+TYT-KIM-04  Reaksiyonlar                  level 4   soru  282
+TYT-KIM-01  Atom Yapisi                   level 1   soru  277
+TYT-KIM-03  Kim Baglar                    level 3   soru  104
+TYT-KIM-09  Cozeltiler ve Karisimlar      level 1   soru   50
+KIM.TER     Termokimya                    level 2   soru   37
+TYT-KIM-11  Cevre Kimyasi                 level 1   soru   37
+TYT-KIM-10  Maddenin Halleri ve Gazlar    level 1   soru   17
+SOC02       Turk Tarihi Temel             level 1   soru    2
+SOC03       Dunya Cografyasina Giris      level 1   soru    2
+TYT-KIM-12  Mol ve Kimyasal Hesaplamalar  level 1   soru    2
 ```
 
-En cok soru barindiran konu (`KIM.DEN`, 1.262 soru) agaca bagli degil. Konu
-agacindan asagi inen her ozellik (konu bazli ilerleme, eksik analizi, calisma
-plani) bu 7 konuyu goremez.
+Toplam **3.266 / 5.796 soru (%56)** agac disinda asili.
+
+### 4.1.1 Bu bir arayuz kusuru, veri hijyeni degil
+
+`services/question_bank_service.py:226-231` "kok konu"yu `parent_id IS NULL`
+diye tanimliyor:
+
+```python
+query = select(TopicHierarchy).where(TopicHierarchy.is_active.is_(True))
+if parent_id:  query = query.where(TopicHierarchy.parent_id == parent_id)
+else:          query = query.where(TopicHierarchy.parent_id.is_(None))
+```
+
+Olculdu -- `get_topic_hierarchy(parent_id=None)` **28 kayit** donuyordu:
+13 gercek ders + 14 konu + 1 test artigi. Ogrenci ana konu listesinde
+"Kimyasal Denge"yi "Matematik"in yaninda bir DERS olarak goruyordu.
+
+Ve alt konu sayilari:
+
+```
+MAT 20    KIM 0   <- en cok icerige sahip ders (3.531 soru)
+TUR  7    SOS 0
+TAR  7    FIZ 0
+COG  7    BIO 0
+```
+
+Kimya'ya tiklayan ogrenci **bos liste** goruyordu.
+
+**Durum: DUZELTILDI** -- `alembic/versions/0005_mufredat_agaci_onarim.py`.
+Onarimdan sonra: kok liste 28 -> 13, KIM alt konu 0 -> 12, SOS 0 -> 2,
+agac disi soru 3.266 -> 0. Bekci: `tests/db/test_mufredat_agaci_saglik.py`.
+
+### 4.1.2 Ikinci olcum hatasi: "14" da yereldi
+
+Yukaridaki 14 sayisi **yerel veritabaninin** sayisidir. Migration'i once o
+14 kodu tek tek sayarak yazdim; CI'da yeni bekci kirmizi verdi ve orada
+listede olmayan kayitlar oldugunu gosterdi:
+
+```
+MVP.MAT.GOLDEN  "MVP Matematik (Golden seed)"   12 soru   <- yetim
+TEST.BATCH1B    "Test Konu Batch1B"                       <- ikinci fixture
+```
+
+Ders: bir migration "olculdugu ortami onarmak" icin degil, invaryanti HER
+ortamda saglamak icindir. Liste tabanli yaklasim tanimi geregi eksik.
+Migration kural tabanli hale getirildi:
+
+- yetim baglama: `subject_area IS NOT NULL AND parent_id IS NULL` olan her
+  satir, `subject_area -> kok` eslemesine gore baglanir; eslesme yoksa
+  satira dokunulmaz.
+- test artigi: `code LIKE 'TEST.%' OR name_tr ILIKE 'Test Konu%'` -- bu
+  desen bekcideki desenle birebir ayni tutuldu.
+
+Bu hatayi bulan sey, kendi yazdigim bekciydi. Bekci olmasaydi migration
+"yesil" gorunup CI ortamini yarim onarmis olacakti.
 
 Not: `parent_id` isaret ettigi halde hedefi bulunmayan kirik referans YOK, ve
 cocuk-ebeveyn seviye tutarsizligi da YOK. Sorun sadece "parent hic atanmamis".
@@ -243,7 +309,12 @@ uc ayri konuya dagilmis (TYT-TR-03'te 134, TUR.PAR'da 7, PAR'da 0).
 TEST.BATCH2A  "Test Konu Batch2A"  level 1  subject_area NULL
 ```
 
-Bir test fixture'i uretim mufredat agacinda duruyor.
+Bir test fixture'i uretim mufredat agacinda duruyor -- ve kok konu listesinde
+ogrenciye gorunuyor.
+
+**Durum: DUZELTILDI** (0005) -- `is_active = false`. Silinmedi: kalici silme
+veri silme islemidir, ayri onay ister. `is_active` uc uretim servisinde
+zaten suzuldugu icin pasife almak listeden cikarmaya yetiyor.
 
 ### 4.4 `total_questions` sayaci tamamen yanlis
 
@@ -258,6 +329,10 @@ MAT.TRV  sayac 129 gercek     0   <- ters yonde yanlis
 
 Yani sayac hic guncellenmemis (56 konu) ya da bayat kalmis (`MAT.TRV`).
 Bu alani okuyan her ekran yanlis sayi gosterir.
+
+**Durum: DUZELTILDI** (0005) -- sayac gercek sayimla dolduruldu ve
+`tests/db/test_mufredat_agaci_saglik.py::test_total_questions_sayaci_gercekle_uyusur`
+sapmayi bundan sonra CI'da yakaliyor.
 
 ### 4.5 Bos konular
 
@@ -325,6 +400,58 @@ bos satir         : 5.796
 
 Altyapi tam, veri sifir. Embedding'e dayanan her ozellik (benzer soru
 onerisi, semantik arama, kopya tespiti) su an calismiyor.
+
+### 5.5 FSRS: aralikli tekrar ARALIKLAMIYOR
+
+Bu bulgu ilk raporda yoktu -- cozum turunda `fsrs_cards` tablosunu
+inceleyince cikti. 107 satir:
+
+```
+stability=2.3 ve difficulty=5.0 olan satir : 106
+scheduled_days = 0 olan satir              : 106
+state = 'review' olan satir                : 107
+reps araligi                               : 1 .. 40
+farkli stability degeri                    : 2
+```
+
+`reps=40` olan bir kart hala `stability=2.3` ve `scheduled_days=0`. FSRS'te
+imkansiz: 40 basarili tekrardan sonra aralik aylara cikmali.
+
+**Ogrenci acisindan:** konuyu ilk seferde bilen ile 40 kez tekrar eden ayni
+karti ayni siklikta goruyor.
+
+Uc kok neden olculdu:
+
+1. **Sessiz bozuk mod.** `services/fsrs_v6_service.py`'nin "fsrs paketi yok"
+   dali tam bu imzayi uretiyor: aralik tablosu (`days`) hesaplanip
+   KULLANILMADAN atiliyor, `due_date` her cagrida bugune sabitleniyor,
+   `stability`/`difficulty` girdiden degismeden geri donuyor. Uyari yalnizca
+   import aninda bir kez veriliyordu -- 106 bozuk satir hicbir calisma-zamani
+   sinyali uretmeden yazildi. (`requirements.txt:106` paketi zaten
+   `fsrs==6.3.1` olarak pinliyor; kok neden ileriye donuk kapali, dalin
+   kendisi degildi.)
+2. **`reps` sozlesme ihlali.** `card.step` kart Review durumuna gecince
+   `None` olur ve bu deger dogrudan `"reps"` diye donuyordu. Geri besleyen
+   cagirici ucuncu tekrarda `TypeError: '<' not supported between instances
+   of 'int' and 'NoneType'` aliyor (dogrudan calistirilarak uretildi).
+   Mevcut uretim cagiricilari degeri geri beslemedigi icin canli cokme
+   degil -- tesadufi bir `or` korumasina bagli.
+3. **`scheduled_days` / `elapsed_days` hic yazilmiyordu.**
+   `services/bkt_service.py` FSRS blogu sekiz alan yaziyor, bu ikisine
+   dokunmuyordu.
+
+**Durum: DUZELTILDI** -- PR #221. Bekci:
+`tests/fast/test_fsrs_bozuk_mod.py` (11 test; mutasyon kontrolu: eski kodda
+11/11 dusuyor).
+
+**Not -- test mi kod mu yanlis:** `tests/property/test_fsrs_properties.py`
+icindeki `TestHardGradeBehavior` master'da kirmizi. 4.000 rastgele ornekte
+olctum: HARD notu stability'i **hic kucultmuyor** (0 vaka) ve **hic GOOD'u
+asmiyor** (0 vaka). Kod FSRS semantigine uygun -- basarili hatirlama
+stability'i dusurmez. Testin varsayimi yanlis: `turkish_params[1] = 0.7186`
+kodda YENI kart icin mutlak baslangic stability'si, carpan degil (dortlu
+`[0.4072, 0.7186, 2.4063, 5.8145]` FSRS'in kanonik w0-w3 agirliklari).
+Ayri PR olacak.
 
 ---
 
@@ -458,10 +585,45 @@ kvkk_consents               VAR
 video_cache                 YOK   repositories/video_cache_repository.py
 ```
 
-`core/kvkk_compliance.py` uretimde `application/commands/auth.py` tarafindan
-import ediliyor -- yani olu kod degil. KVKK (Kisisel Verilerin Korunmasi
-Kanunu) kayit tutma yukumlulugu tasiyan tablolarin uclu eksigi, teknik
-sorunun otesinde bir uyum sorunu.
+**DUZELTME (ayni gun, cozum turunda).** Bu bolumu once "KVKK tablolarinin
+uclu eksigi teknik sorunun otesinde bir uyum sorunu" diye yazdim ve bolum
+8'de "add_kvkk_tables.py'yi aktif zincire tasi" diye is yazdim. **Ikisi de
+yanlisti.** Olctum:
+
+```
+core/kvkk_compliance.py:276   Base = declarative_base()      <- KENDI ozel Base'i
+models/kvkk_models.py:22      from .base import Base         <- uygulamanin Base'i
+```
+
+Iki ayri sinif ayni tabloyu iddia ediyor:
+
+| | `core/kvkk_compliance.py` | `models/kvkk_models.py` |
+|---|---|---|
+| `KVKKConsent.__tablename__` | `kvkk_consents` | `kvkk_consents` |
+| `id` | `Column(Integer)` | `Mapped[str]`, uuid7 |
+| `user_id` | `Column(Integer)` | `Mapped[str]` |
+| `organization_id` | yok | var |
+| Base | kendi `declarative_base()` | uygulamanin Base'i |
+
+Canli `kvkk_consents` tablosu: `id` VARCHAR, `user_id` VARCHAR,
+`organization_id` VAR, `purpose`/`status` native ENUM. Yani **DB
+`models/kvkk_models.py` ile uyusuyor**, `core/kvkk_compliance.py` ile
+uyusmuyor.
+
+Uc sonuc:
+
+1. `core/kvkk_compliance.py` kendi ozel `declarative_base()`ini kullandigi
+   icin alembic'in `target_metadata`'sinda **hic gorunmuyor**. Tablolarinin
+   olusmamasinin sebebi bu -- bir kayip degil, hic kayitli olmamis olmalari.
+2. Uretimde bu modulden **yalnizca `is_minor` fonksiyonu** import ediliyor
+   (`application/commands/auth.py:15`). ORM siniflari uretim yolunda
+   kullanilmiyor -- yani canli bir 500 YOK.
+3. Eksik uc tabloyu `add_kvkk_tables.py`'den yaratmak **zarar verirdi**:
+   uuid7 tabanli bir sistemde Integer anahtarli golge sema olustururdu.
+
+Dogru is, tablo yaratmak degil `core/kvkk_compliance.py`'nin bayat ORM
+katmanini emekliye ayirmak (ya da kanonik olani secmek). Bu bir tasarim
+karari; asagida "senin kararin" bolumune tasindi.
 
 `video_cache_repository.py` uretimde hicbir yerden import edilmiyor (0 sonuc,
 testler haric) -- bu gercekten olu kod.
@@ -501,6 +663,27 @@ test_coverage_final_50.py                                  AttributeError (morfo
 Yedi kirmizinin ucu bu denetimin bagimsiz olarak buldugu bulgularla ayni
 seyi soyluyor. CI artik dogru sinyal veriyor.
 
+### 7.7 `osym_inspired_generator.py` -- bolunmus tablodan onceki ham SQL (canli 500)
+
+Golden Flows secimi genisletilince (#224) bulundu; 7.1 ile ayni sinif
+("kod eski semayi varsayiyor"), farkli yuzey. `services/osym_inspired_generator.py`
+bes ham asyncpg sorgusunda `question_bank`'tan S210 split'iyle
+`question_content`/`question_metadata`'ya tasinan kolonlari okuyordu
+(`question_text`, `subject_area`, `exam_type`, `osym_format_compliant`,
+`correct_answer`, `osym_year`). CI postgres log'u:
+`column "question_text" does not exist`. `/api/v1/osym-inspired/{examples,
+style-guide,statistics}` uclerinin ucu de 500'du.
+
+Neden hicbir bekci gormedi: `scan_split_accesses.py` ORM attribute
+erisimini sayar, `audit_dual_table_trap.py` eski `questions` modeli
+import'unu arar -- ham SQL string'i ikisinin de gorus alani disinda.
+
+Duzeltme PR #226: bes sorgu JOIN'li yeniden yazildi; iki bekci
+(AST tabanli DB'siz + gercek Postgres'e karsi) mutasyonla civili
+(eski kod 6/7 FAILED, yeni 7/7). Genel bir "ham SQL bolunmus kolon"
+tarayicisi hala yok -- diger servislerde ayni tuzak olabilir; ayri is
+(madde 15).
+
 ---
 
 ## 8. Yapilacaklar
@@ -510,26 +693,54 @@ karar/onay vermen gereken.
 
 ### Simdi (ben)
 
-1. **`billing_subscriptions` migration'i** -- aktif zincire (`versions/`)
-   `0005` olarak, `20260423_billing_subscriptions_mvp.py`'deki tanimla
-   birebir, `IF NOT EXISTS` korumali.
-2. **Golden Flows kapisini genislet** -- `golden-flows.yml:278` dosya-kapsamli
-   secimi `tests/e2e -m golden_flow`'a cikar. Backend Tests zaten yakaliyor,
-   ama Golden Flows kapisi da bu sinifi gormeli. Once yerelde patlama
-   yaricapini olcecegim; olcmeden genisletmeyecegim. (1 numaradan sonra.)
-3. **`osym_exam_engine.py:187` bayat yorumu** -- "~44.000 soru" diyor, gercek
-   5.796. Sekiz kat sapma.
-4. **`TEST.BATCH2A` konusunu uretim agacindan cikar.**
+1. **`billing_subscriptions` migration'i** -- YAPILDI, PR #220.
+   `versions/0004_billing_subscriptions.py`, tanim
+   `20260423_billing_subscriptions_mvp.py`'den birebir, `IF NOT EXISTS`
+   korumali. Gidis-donus dogrulandi, parite testi yesile dondu.
+2. **Golden Flows kapisini genislet** -- YAPILDI, PR #224. Patlama yaricapi
+   olculdu: dar secim 186, genis 202 (fark 16 test / 7 dosya). Genis secim
+   iki seyi hemen buldu: (a) `DATABASE_URL_SYNC` verilmeyince bes gercek-DB
+   bekcisi CI'da sessizce skip oluyordu (duzeltildi); (b) ilk genis kosum
+   `hata=1 atlanan=7` -> kapi kirmizi. `hata=1`: `/osym-inspired/examples`
+   500 (bolum 7.7, PR #226). Atlananlarin 3'u `test_es_answer_leak.py`
+   (CI'da Elasticsearch servisi yok) -> `needs_elasticsearch` marker'i ile
+   secim disi, ES gelince tek satirla geri gelir. Kapi kurali
+   (`toplam >= 170 / hata == 0 / atlanan <= 5`) gevsetilmedi.
+3. **`osym_exam_engine.py:187` bayat yorumu** -- YAPILDI. "~44.000 soru"
+   yaziyordu, gercek 5.796 (sekiz kat sapma). Yorum olculmus dagilimla
+   degistirildi ve "GEOMETRI 14 / FIZIK 7 / BIYOLOJI 6 isteniyor ama havuzda
+   sifir" sonucu ayrica not dusuldu.
+4. **`TEST.BATCH2A` konusunu uretim agacindan cikar** -- YAPILDI (0005,
+   PR #222). `is_active = false`; silinmedi.
 
 ### Sonraki (ben, ayri PR)
 
-5. **7 agac yetimi konuya `parent_id` ata** (KIM.* -> KIM, TYT-KIM-* -> KIM)
-   ve level degerlerini duzelt. Veri degisikligi -- migration olarak, geri
-   alinabilir sekilde.
-6. **`total_questions` sayacini ya dogru tut ya kaldir.** 57 konuda yanlis
-   olan bir sayac, olmayan sayactan kotudur.
-7. **KVKK uclu tablosu** -- `add_kvkk_tables.py`'yi aktif zincire tasi.
-8. **Cift taksonomiyi tekillestir** (Paragraf x3, Dil Bilgisi x2, Geometri x2).
+5. **Agac yetimlerine `parent_id` ata** -- YAPILDI (0005, PR #222).
+   14 konu (7 degil, bkz. bolum 4.1 duzeltmesi), 3.266 soru.
+6. **`total_questions` sayaci** -- YAPILDI (0005, PR #222). Gercek sayimla
+   dolduruldu; sapmayi bundan sonra CI bekcisi yakaliyor.
+6b. **FSRS bozuk mod** -- YAPILDI (PR #221, bkz. bolum 5.5).
+6c. **`TestHardGradeBehavior` testinin yanlis varsayimi** -- ayri PR
+   bekliyor (bolum 5.5 sonundaki not).
+7. ~~**KVKK uclu tablosu** -- `add_kvkk_tables.py`'yi aktif zincire tasi.~~
+   **IPTAL -- yanlis is.** Bolum 7.4'teki duzeltmeye bakin: o tablolari
+   yaratmak uuid7 sistemine Integer anahtarli golge sema eklerdi. Karar
+   maddesi 13'e tasindi.
+8. **Cift taksonomiyi tekillestir** -- YAPILDI (0006, PR #225; #222'ye
+   bagli). Paragraf ve Dil Bilgisi: noktali kod kanonik (`name_en` dolu,
+   `seed_dungeon_topics.py` bilincli kuruyor), 185 soru `TUR.PAR`/`TUR.DIL`'e
+   tasindi, `TYT-TR-02/03` ve bos `PAR` koku pasife alindi (silinmedi).
+   Her tasima `topic_birlestirme_gunlugu`na yazilir, downgrade birebir geri
+   alir. Geometri KOPYA DEGIL: `GEO` koku GEOMETRI dersinin bos yuvasi,
+   `MAT.GEO` (63 soru) matematik alt konusu; sinav motoru ikisini ayri
+   anahtar bekliyor. MAT.GEO'nun GEOMETRI diye yeniden etiketlenmesi icerik
+   karari -> madde 14.
+8b. **Agac bekcileri CI'da neden kirmiziydi** -- migrasyon degil SIRA: CI'da
+   alembic once kosuyor, `seed_mvp_data.py` sonra `MVP.MAT.GOLDEN`'i kok
+   seviyesinde yaratiyor, unit test fixture'lari `TEST.BATCH*`i aktif
+   birakiyor. Kaynakta duzeltildi (PR #222 ikinci commit): seed once `MAT`
+   koku sonra alt konu; fixture satirlari `is_active=false` (17/17 test
+   pasif satirla da gecer). Taze DB'de CI sirasi birebir olculdu: 5/5 bekci.
 
 ### Senin kararin
 
@@ -539,6 +750,31 @@ karar/onay vermen gereken.
     gelmiyor. Bu urunun onundeki tek gercek engel; muhendislik tarafi degil.
 11. **`is_anchor` capa soru seti** -- IRT'yi anlamli kilmak icin gerekli.
 12. **Cevap anahtari dengesizligi** (A %15,7 / C %24,0) duzeltilsin mi?
+13. **KVKK ORM ikizligi.** `core/kvkk_compliance.py` ve
+    `models/kvkk_models.py` ayni `kvkk_consents` tablosunu iddia ediyor,
+    semalari uyusmuyor, canli tablo ikincisiyle uyusuyor (bolum 7.4).
+    Birincisinin ORM katmani emekliye ayrilsin mi? Uretimde ondan yalnizca
+    `is_minor` kullaniliyor, yani risk dusuk -- ama KVKK kayit tutma
+    yukumlulugu tasidigi icin karari sana birakiyorum.
+14. **`MAT.GEO`'nun 63 sorusu GEOMETRI dersine mi ait?** Hepsi
+    `subject_area=MATEMATIK`. TYT blueprint GEOMETRI 14 istiyor, havuzda
+    sifir; yeniden etiketlenirse GEOMETRI 63 olur ama MATEMATIK 63 azalir.
+    Icerik karari (bolum 4.2, PR #225 dokunmadi).
+15. ~~Genel "ham SQL bolunmus kolon" tarayicisi yazilsin mi?~~ **OLCULDU**
+    (AST, `backend/` altinda `FROM question_bank` gecen string sabitleri,
+    tests/arsiv haric): 325 sabit, 137'si bolunmus kolon okuyup ilgili
+    yavru tabloya JOIN etmiyor. 137'nin 132'si `scripts/` altinda (tek
+    seferlik/arsiv nitelikli araclar, cogu split oncesi; kosulursa kirilir
+    ama uretim yolu degil). **Uretim yolunda 2 gercek kusur daha:**
+    `api/wave2b_quality_routes.py:124` (`question_text`, `subject_area`,
+    `correct_answer` dogrudan `question_bank`'tan) ve
+    `services/photo_ask_service.py:157` (ayni + `embedding`, o da
+    `question_statistics`'te). Ikisi de 7.7 ile ayni sinif; ayri PR
+    (madde 16, ben). `api/photo_ask_api.py:140` yanlis pozitif (docstring).
+16. **`wave2b_quality_routes` + `photo_ask_service` dual-table duzeltmesi**
+    -- ben, #226'nin ardindan ayni kalipla (JOIN + AST bekcisi + gercek-DB
+    bekcisi). Genel tarayici `scripts/` kalabaligini da sayacagi icin
+    onunla birlestirilmedi.
 
 ---
 
@@ -548,9 +784,12 @@ karar/onay vermen gereken.
 tekrari), IRT parametreleri sinirlar icinde, PK disiplini uretim tablolarinda
 tam, sema modern (pgvector, JSON, enum).
 
-**Kirik olan:** `billing_subscriptions` uretimde 500 veriyor ve onu yakalamasi
-gereken test hic kosmuyor; migration zinciri baseline squash sirasinda uc
-tablo grubunu kaybetmis; mufredat agacinin en dolu konusu agaca bagli degil;
+**Kirik olan:** `billing_subscriptions` uretimde 500 veriyor (Backend Tests
+bunu kirmizi gosteriyor, Golden Flows kapisi gormuyor); migration zinciri
+baseline squash sirasinda uc tablo grubunu kaybetmis; mufredat agacinin en
+dolu konusu agaca bagli degil; uc uretim yolu (`osym_inspired_generator`,
+`wave2b_quality_routes`, `photo_ask_service`) bolunmus tablodan onceki ham
+SQL ile 500 veriyor (7.7, madde 15-16) ve hicbir bekci bu sinifi gormuyordu;
 IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil; semantik arama
 altyapisi bos.
 

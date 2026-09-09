@@ -633,6 +633,46 @@ exclude = [
 # dosyada dogurdugu 14 kalemi tek yerde gerekcelendiriyor.
 "services/bkt_service.py" = ["N803", "E402", "PLR0912", "PLR0917"]
 
+# services/osym_inspired_generator.py -- T201 / PLR0912 / PLR0917 (9 Eyl 2026).
+# Ayni "dokunan sahiplenir" kurali: dual-table duzeltmesi (5 ham SQL sorgusu
+# question_bank'tan artik orada olmayan kolonlari okuyordu -> /examples 500)
+# 35 onceden-var-olan bulgu getirdi. RUF013 x2 ve RET504 dogrudan
+# duzeltildi; kalan uc kalem:
+#
+#   T201 (30 adet) -- `print` ile teshis cikti: [RERANKER], [FALLBACK],
+#     [VISUAL-TABLE] ... Bu bir uretici servis; ciktilar operatorun izledigi
+#     ilerleme satirlari. logger'a gecis dogru is ama 30 satirlik davranis
+#     degisikligi; 500'u kapatan PR'a karistirilmadi.
+#
+#   PLR0912 (25 dal) / PLR0917 (16 konumsal arg) -- `generate_with_few_shot`:
+#     Wave 1-3 iyilestirmeleri (reranking, CoT, gorsel, kalite kapisi) tek
+#     fonksiyona bayrak parametreleriyle eklenmis. Bolmek ayri refaktor.
+#
+# Borcu affetmiyor; gerekceli tek yer.
+"services/osym_inspired_generator.py" = ["T201", "PLR0912", "PLR0917"]
+
+# tests/property/test_fsrs_properties.py -- PLR0917 / DTZ001 (9 Eyl 2026).
+# CI diff tabanli ama TAM DOSYA lint'liyor (ci.yml:120), dolayisiyla bu
+# dosyadaki iki property testini duzeltmek 25 onceden-var-olan bulguyu
+# devraliyor. Ikisi de hypothesis property-test deseninin dogal sonucu:
+#
+#   PLR0917 (12 adet) -- @given ile 11-12 strateji parametresi geciliyor
+#     (difficulty, stability, retrievability, review_count, lapse_count,
+#     state, subject, group_study, family_pressure, exam_anxiety,
+#     consistency). Bunlar hypothesis'in test fonksiyonuna enjekte ettigi
+#     degerler; sayilarini azaltmak testin kapsadigi girdi uzayini
+#     daraltir. Ayni gerekce global PLR0913 ignore'uyla ve
+#     tests/conftest.py girdisiyle ayni.
+#
+#   DTZ001 (13 adet) -- `datetime(2025, 3, 15, 10, 0, 0)` sabit test
+#     tarihi. Property testlerinin deterministik olmasi icin sabit ve
+#     naive olmasi KASITLI; tzinfo eklemek zamanlama hesaplarinin
+#     beklenen degerlerini kaydirir ve testin konusuyla ilgisi yok.
+#
+# Borc affedilmiyor, "dokunan sahiplenir" kuralinin bu dosyada dogurdugu
+# kalemler tek yerde gerekcelendiriliyor.
+"tests/property/test_fsrs_properties.py" = ["PLR0917", "DTZ001"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true

@@ -14,10 +14,11 @@ Usage:
 import os
 import sys
 import uuid
+from pathlib import Path
 from typing import Any
 
 # Add backend to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import psycopg  # psycopg3 (requirements.txt: psycopg[binary]); psycopg2 CI'da yok
 from passlib.context import CryptContext
@@ -32,7 +33,7 @@ MVP_DEFAULT_PASSWORD = os.getenv("MVP_PASSWORD", "Kiro2Beta2026@x")
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     sys.exit(
-        "ERROR: DATABASE_URL env var required. Example: DATABASE_URL=postgresql+asyncpg://postgres:pass@localhost:5434/kiro2"
+        "ERROR: DATABASE_URL env var required. Example: DATABASE_URL=postgresql+asyncpg://postgres:pass@localhost:5434/kiro2"  # pragma: allowlist secret
     )
 # Convert async URL to sync: remove +asyncpg
 SYNC_URL = DATABASE_URL.replace("+asyncpg", "").replace("postgresql://", "")
@@ -44,7 +45,9 @@ try:
     db_host, db_port = hostport.split(":", 1)
 except ValueError:
     print(f"ERROR: Cannot parse DATABASE_URL: {DATABASE_URL}")
-    print("Expected format: postgresql+asyncpg://user:pass@host:port/dbname")
+    print(
+        "Expected format: postgresql+asyncpg://user:pass@host:port/dbname"  # pragma: allowlist secret
+    )
     sys.exit(1)
 
 # MVP Test Users
@@ -119,15 +122,37 @@ ON CONFLICT (email) DO NOTHING
 
 # GF6w / admin soru ekleme: soru_bankasi_service MATEMATIK topic_hierarchy satırı ister (taze CI DB).
 MVP_MAT_TOPIC_ID = str(uuid.uuid5(uuid.NAMESPACE_DNS, "kiro2.mvp.topic.MVP.MAT.GOLDEN"))
-ENSURE_TOPIC_SQL = """
+MVP_MAT_ROOT_ID = str(uuid.uuid5(uuid.NAMESPACE_DNS, "kiro2.mvp.topic.MAT"))
+
+# Agac sozlesmesi (9 Eyl 2026, #222): `subject_area` tasiyan konu bir DERS
+# kokune (parent_id NULL, subject_area NULL) bagli olmali; kok seviyesinde
+# subject_area'li satir "asili konu"dur ve tests/db/test_mufredat_agaci_saglik.py
+# bunu reddeder. Bu seed CI'da alembic'ten SONRA kostugu icin 0005 onarimi
+# onu goremez -- satiri bastan dogru sekilde kur: once MAT koku (yoksa),
+# sonra MVP.MAT.GOLDEN onun altinda (level 2). Uretim DB'de MAT koku zaten
+# var (code UNIQUE, ON CONFLICT DO NOTHING); orada kok satir eklenmez, alt
+# konu mevcut kokun altina baglanir.
+ENSURE_ROOT_SQL = """
 INSERT INTO topic_hierarchy (
     id, level, parent_id, code, name_tr, name_en,
     subject_area, osym_relevance, osym_frequency, total_questions,
     average_difficulty, is_active, created_at, updated_at
 ) VALUES (
-    %s, 1, NULL, 'MVP.MAT.GOLDEN', 'MVP Matematik (Golden seed)',
-    'MVP Math Golden', 'MATEMATIK', 0, 0, 0, 0, true, NOW(), NOW()
+    %s, 1, NULL, 'MAT', 'Matematik', NULL,
+    NULL, 0.5, 1, 0, 0.5, true, NOW(), NOW()
 )
+ON CONFLICT (code) DO NOTHING
+"""
+ENSURE_TOPIC_SQL = """
+INSERT INTO topic_hierarchy (
+    id, level, parent_id, code, name_tr, name_en,
+    subject_area, osym_relevance, osym_frequency, total_questions,
+    average_difficulty, is_active, created_at, updated_at
+)
+SELECT %s, k.level + 1, k.id, 'MVP.MAT.GOLDEN', 'MVP Matematik (Golden seed)',
+       'MVP Math Golden', 'MATEMATIK', 0, 0, 0, 0, true, NOW(), NOW()
+  FROM topic_hierarchy k
+ WHERE k.code = 'MAT'
 ON CONFLICT (code) DO NOTHING
 """
 
@@ -515,9 +540,14 @@ def main():
         created += 1
 
     # Topic row for admin question create (K4 / GF6w) on empty topic_hierarchy DBs
+    cur.execute(ENSURE_ROOT_SQL, (MVP_MAT_ROOT_ID,))
+    if cur.rowcount:
+        print(f"  CREATE: topic_hierarchy MAT koku ({MVP_MAT_ROOT_ID})")
     cur.execute(ENSURE_TOPIC_SQL, (MVP_MAT_TOPIC_ID,))
     if cur.rowcount:
-        print(f"  CREATE: topic_hierarchy MVP.MAT.GOLDEN ({MVP_MAT_TOPIC_ID})")
+        print(
+            f"  CREATE: topic_hierarchy MVP.MAT.GOLDEN ({MVP_MAT_TOPIC_ID}) MAT altinda"
+        )
 
     q_created = seed_golden_questions(cur)
     if q_created:
