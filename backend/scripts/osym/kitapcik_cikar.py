@@ -59,10 +59,31 @@ TYT_ALT_DERS = {
     "FEN": [(1, 7, "FIZIK"), (8, 14, "KIMYA"), (15, 20, "BIYOLOJI")],
 }
 TYT_BEKLENEN = {"TÜR": 40, "SOS": 25, "MAT": 40, "FEN": 20}
+# AYT 2025: TDE-SB1 (Edebiyat 1-24, Tarih-1 25-34, Cografya-1 35-40), SB2 (Tarih-2 1-11,
+# Cografya-2 12-22, Felsefe grubu 23-34, Din 35-40, Din muafi ek Felsefe 41-46), MAT 40, FEN 40.
+AYT_ALT_DERS = {
+    "TDE-SB1": [(1, 24, "EDEBIYAT"), (25, 34, "TARIH"), (35, 40, "COGRAFYA")],
+    "SB2": [
+        (1, 11, "TARIH"),
+        (12, 22, "COGRAFYA"),
+        (23, 34, "FELSEFE"),
+        (35, 40, "DIN"),
+        (41, 46, "FELSEFE"),
+    ],
+    "FEN": [(1, 14, "FIZIK"), (15, 27, "KIMYA"), (28, 40, "BIYOLOJI")],
+}
+AYT_BEKLENEN = {"TDE-SB1": 40, "SB2": 46, "MAT": 40, "FEN": 40}
+BEKLENEN = {"TYT": TYT_BEKLENEN, "AYT": AYT_BEKLENEN}
+ALT_DERS = {"TYT": TYT_ALT_DERS, "AYT": AYT_ALT_DERS}
+# Cevap anahtari sayfasinda baslik sutununu tanitan ILK kelime -> test kodu.
+ANAHTAR_BASLIK = {
+    "TYT": {"TÜRKÇE": "TÜR", "SOSYAL": "SOS", "TEMEL": "MAT", "FEN": "FEN"},
+    "AYT": {"TÜRK": "TDE-SB1", "SOSYAL": "SB2", "MATEMATİK": "MAT", "FEN": "FEN"},
+}
 # Baslik kodu takma adlari: 2025 TYT matematik basligi "2025-TYT/TEM" (anahtar tablosu "MATEMATİK").
 TEST_TAKMA_AD = {"TEM": "MAT"}
 
-_BASLIK = re.compile(r"^\d{4}-(TYT|AYT|YDT)/([A-ZÇĞİÖŞÜ0-9]+)\b")
+_BASLIK = re.compile(r"^\d{4}-(TYT|AYT|YDT)/([A-ZÇĞİÖŞÜ0-9-]+)\b")
 _SORU_NO = re.compile(
     r"^(\d{1,2})\.(?:\s+(.*))?$"
 )  # "2." tek basina da soru baslangici
@@ -205,7 +226,7 @@ def _gorsel_var(sayfa: Any, x0: float, x1: float, top: float, bottom: float) -> 
     return False
 
 
-def _anahtar_tablosu(sayfa: Any) -> dict[tuple[str, int], str]:
+def _anahtar_tablosu(sayfa: Any, sinav: str) -> dict[tuple[str, int], str]:
     """Cevap anahtari sayfasi: baslik satirindaki test adlari x-konumuyla sutun olur.
 
     'n. X' ciftleri en yakin baslik sutununa atanir (satirlar kisalinca konum
@@ -216,36 +237,11 @@ def _anahtar_tablosu(sayfa: Any) -> dict[tuple[str, int], str]:
         for w in sayfa.extract_words(x_tolerance=1.5, y_tolerance=3)
     ]
     satirlar = _satirlar(kelimeler)
-    baslik_adi = {
-        "TÜRKÇE": "TÜR",
-        "SOSYAL": "SOS",
-        "MATEMATİK": "MAT",
-        "FEN": "FEN",
-        "EDEBİYATI": "EDB",
-        "FİZİK": "FİZ",
-        "KİMYA": "KİM",
-        "BİYOLOJİ": "BİY",
-    }
+    baslik_adi = ANAHTAR_BASLIK.get(sinav, ANAHTAR_BASLIK["TYT"])
     sutunlar: list[tuple[float, str]] = []
     for s in satirlar:
         adlar = [k for k in s if k.metin in baslik_adi]
-        if len(adlar) >= 2 and all(
-            k.metin == "TESTİ"
-            or k.metin in baslik_adi
-            or k.metin
-            in (
-                "TEMEL",
-                "BİLİMLER",
-                "BİLİMLERİ",
-                "SOSYAL",
-                "TÜRK",
-                "DİLİ",
-                "VE",
-                "BİLİMLER-1",
-                "BİLİMLER-2",
-            )
-            for k in s
-        ):
+        if len(adlar) >= 2 and any(k.metin == "TESTİ" for k in s):
             sutunlar = [(k.x0, baslik_adi[k.metin]) for k in adlar]
             break
     if not sutunlar:
@@ -277,6 +273,14 @@ def _sik_parcala(metin: str) -> list[tuple[str, str]]:
     return parcalar
 
 
+def _sik_baslangici(son_sik: str | None, ilk_harf: str) -> bool:
+    """Satir yeni sik(lar) mi baslatiyor? Siklar A'dan baslar ve artan gider;
+    govdedeki '( 1H, 6C)' gibi bir 'C)' ilk sik olamaz (AYT 2025 FEN-25 vakasi)."""
+    if son_sik is None:
+        return ilk_harf == "A"
+    return ilk_harf > son_sik
+
+
 def cikar(pdf_yolu: Path) -> dict[str, Any]:  # noqa: PLR0912 -- tek gecisli durum makinesi; bolmek okunurlugu dusurur
     sorular: list[Soru] = []
     anahtar: dict[tuple[str, int], str] = {}
@@ -300,7 +304,7 @@ def cikar(pdf_yolu: Path) -> dict[str, Any]:  # noqa: PLR0912 -- tek gecisli dur
             if "CEVAP ANAHTARI" in duz.upper() or (
                 "TESTİ" in duz and re.search(r"\b1\. [A-E] +1\. [A-E]", duz)
             ):
-                anahtar.update(_anahtar_tablosu(sayfa))
+                anahtar.update(_anahtar_tablosu(sayfa, meta.get("sinav", "TYT")))
                 continue
             orta = sayfa.width / 2
             talimat_alt = -1.0
@@ -374,9 +378,8 @@ def cikar(pdf_yolu: Path) -> dict[str, Any]:  # noqa: PLR0912 -- tek gecisli dur
                     if any(k.boyut and k.boyut < 8.5 for k in s):
                         aktif.kucuk_yazi += 1
                     parcalar = _sik_parcala(satir_metni)
-                    if parcalar and (
-                        aktif.son_sik is None or parcalar[0][0] > aktif.son_sik
-                    ):
+                    # Siklar A'dan baslar; govdedeki "( 1H, 6C)" gibi bir "C)" sik degildir.
+                    if parcalar and _sik_baslangici(aktif.son_sik, parcalar[0][0]):
                         on = satir_metni[: _SIK.search(satir_metni).start()].strip()
                         if on:
                             if aktif.son_sik:
@@ -480,8 +483,8 @@ def kirp(
 
 
 def ders_alani(sinav: str, test: str, no: int) -> str:
-    if sinav == "TYT" and test in TYT_ALT_DERS:
-        for a, b, ders in TYT_ALT_DERS[test]:
+    if test in ALT_DERS.get(sinav, {}):
+        for a, b, ders in ALT_DERS[sinav][test]:
             if a <= no <= b:
                 return ders
     return TEST_KODU_DERS.get(test, test)
@@ -551,7 +554,7 @@ def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     print(json.dumps({"meta": sonuc["meta"], "ozet": oz}, ensure_ascii=False, indent=2))
 
-    beklenen = dict(TYT_BEKLENEN) if sonuc["meta"].get("sinav") == "TYT" else {}
+    beklenen = dict(BEKLENEN.get(sonuc["meta"].get("sinav", ""), {}))
     if args.beklenen:
         beklenen = {
             k: int(v) for k, v in (c.split(":") for c in args.beklenen.split(","))

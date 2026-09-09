@@ -835,8 +835,14 @@ karar/onay vermen gereken.
     is_public=false, review_status=pending; 125 satir, id=uuid5(soru_hash),
     idempotent). Kitapcigin telif notu: "her hakki saklidir ... yazili izin
     olmadan kullanilmasi yasaktir" -- sayfalarda da diyagonal filigran var.
-    Aktiflestirme hukuki onay bekler (kullanici karari). AYT kitapcigi da
-    indirildi, henuz okunmadi (AYT test kodlari/blueprint ayri olcum).
+    Aktiflestirme hukuki onay bekler (kullanici karari). **AYT 2025** de
+    okundu (50 sayfa): **166/166 soru** (TDE-SB1 40 = Edebiyat 24 + Tarih-1
+    10 + Cografya-1 6; SB2 46 = Tarih-2 11 + Cografya-2 11 + Felsefe 12 +
+    Din 6 + ek Felsefe 6; MAT 40; FEN 40 = Fizik 14 + Kimya 13 + Biyoloji
+    13), 166/166 anahtar, hepsi 5 sikli (bir kimya tablo sorusunda govdedeki
+    "( 1H, 6C)" ilk sik sanilmisti; kural: siklar A'dan baslar). 100 PNG
+    kirpi. 166 satir pasif ithal edildi. Toplam pasif OSYM: **291 soru**;
+    bos derslere ilk resmi icerik: FIZIK 21, BIYOLOJI 19, EDEBIYAT 24.
     Yan etki: FIZ/BIO koklerine ilk sorular pasif olarak girdi; agac bekcisi
     `test_icerigi_olan_dersin_alt_konusu_vardir` artik yalnizca AKTIF
     sorulari sayiyor (pasif soru urunde degil).

@@ -98,6 +98,39 @@ def test_tyt_alt_ders(test: str, no: int, ders: str) -> None:
     assert kc.ders_alani("TYT", test, no) == ders
 
 
+@pytest.mark.parametrize(
+    ("test", "no", "ders"),
+    [
+        ("TDE-SB1", 24, "EDEBIYAT"),
+        ("TDE-SB1", 25, "TARIH"),
+        ("TDE-SB1", 40, "COGRAFYA"),
+        ("SB2", 11, "TARIH"),
+        ("SB2", 22, "COGRAFYA"),
+        ("SB2", 34, "FELSEFE"),
+        ("SB2", 40, "DIN"),
+        ("SB2", 46, "FELSEFE"),
+        ("FEN", 14, "FIZIK"),
+        ("FEN", 27, "KIMYA"),
+        ("FEN", 28, "BIYOLOJI"),
+        ("MAT", 40, "MATEMATIK"),
+    ],
+)
+def test_ayt_alt_ders(test: str, no: int, ders: str) -> None:
+    assert kc.ders_alani("AYT", test, no) == ders
+    assert kc.AYT_BEKLENEN == {"TDE-SB1": 40, "SB2": 46, "MAT": 40, "FEN": 40}
+    assert kc._BASLIK.match("2025-AYT/TDE-SB1 TÜRK DİLİ").group(2) == "TDE-SB1"
+
+
+def test_govdedeki_c_parantezi_sik_sayilmaz() -> None:
+    """'( 1H, 6C)' govde parcasi ilk sik olamaz: siklar A'dan baslar, artan gider (AYT FEN-25)."""
+    assert kc._sik_baslangici(None, "C") is False
+    assert kc._sik_baslangici(None, "A") is True
+    assert kc._sik_baslangici("B", "C") is True
+    assert (
+        kc._sik_baslangici("C", "B") is False
+    )  # sik icindeki 'B)' metni yeni sik degil
+
+
 def test_soru_hash_pilot_formulu_ile_birebir() -> None:
     from scripts.pipeline.pilot_500p import _hash_question
 
@@ -128,3 +161,18 @@ def test_gercek_tyt_2025_uctan_uca_sayim() -> None:
     assert oz["test_basina"] == kc.TYT_BEKLENEN, oz
     assert oz["anahtari_olan"] == oz["toplam_soru"] == 125
     assert oz["bes_sikli"] == 125
+
+
+_AYT = _PDF.with_name("ayt_2025.pdf")
+
+
+@pytest.mark.skipif(
+    not _AYT.exists(), reason="gercek kitapcik yerel (telif, gitignore)"
+)
+def test_gercek_ayt_2025_uctan_uca_sayim() -> None:
+    """166 soru (40/46/40/40), 166 anahtar, hepsi 5 sikli -- yerel olcum."""
+    sonuc = kc.cikar(_AYT)
+    oz = kc.ozet(sonuc)
+    assert oz["test_basina"] == kc.AYT_BEKLENEN, oz
+    assert oz["anahtari_olan"] == oz["toplam_soru"] == 166
+    assert oz["bes_sikli"] == 166
