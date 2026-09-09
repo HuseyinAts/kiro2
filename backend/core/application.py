@@ -8,7 +8,8 @@ import logging
 import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any
+from pathlib import Path
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,13 +37,12 @@ try:
     SLOWAPI_AVAILABLE = True
 except ImportError:
     SLOWAPI_AVAILABLE = False
-    Limiter = None
 
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: PLR0912 -- baslangic sirasi tek yerde okunur olsun
     """
     Application lifespan management.
 
@@ -172,16 +172,10 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         logger.warning(f"⚠️ ANALYZE failed (non-fatal, planner may be suboptimal): {e}")
 
-    # Start IRT Daemon
-    try:
-        from core.irt_daemon import irt_daemon
-
-        # DISABLED FOR LOAD TESTING: This daemon spawns heavy NLP threads
-        # that hold the GIL and starve the asyncio event loop for HTTP requests.
-        # await irt_daemon.start()
-        logger.info("✅ IRT Daemon disabled for load testing stability")
-    except Exception as e:
-        logger.warning(f"⚠️ IRT Daemon startup failed (non-fatal): {e}")
+    # IRT daemon emekli (9 Eyl 2026, rapor madde 19): core/irt_daemon.py yuk
+    # testi icin kapatilmisti, bolunmus semadan once yazilmisti (calistirilsa
+    # CompileError) ve kalibrasyon bayragini yanit orneklemi olmadan true
+    # yapiyordu (0008). Gercek kalibrasyon: services/irt_calibration_service.py.
 
     logger.info("✅ KIRO2 Backend Started Successfully!")
     logger.info("=" * 60)
@@ -190,15 +184,6 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     logger.info("🛑 KIRO2 Backend Shutting Down...")
-
-    # Stop IRT Daemon
-    try:
-        from core.irt_daemon import irt_daemon
-
-        await irt_daemon.stop()
-        logger.info("✅ IRT Daemon stopped")
-    except Exception as e:
-        logger.error(f"Error stopping IRT Daemon: {e}")
 
     await shutdown_agents()
     logger.info("✅ AI agents shut down")
@@ -332,7 +317,11 @@ def setup_rate_limiting(app: FastAPI) -> None:
     app.state.limiter = limiter
 
     # Add exception handler for rate limit exceeded
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    # slowapi'nin isleyici imzasi Starlette'in genel Exception imzasindan dar;
+    # cast, mypy surumleri arasinda (1.11 CI / pre-commit) ayni sonucu verir.
+    app.add_exception_handler(
+        RateLimitExceeded, cast(Any, _rate_limit_exceeded_handler)
+    )
 
     logger.info("✅ Rate limiting configured (slowapi)")
 
@@ -450,7 +439,7 @@ def create_app() -> FastAPI:
 
     # Mount crop images as static files
     crop_dir = os.environ.get("CROP_IMAGE_DIR", "d-dataset/output/crops")
-    if os.path.isdir(crop_dir):
+    if Path(crop_dir).is_dir():
         app.mount("/static/crops", StaticFiles(directory=crop_dir), name="crops")
 
     # Custom OpenAPI schema with security schemes
@@ -478,7 +467,7 @@ def create_app() -> FastAPI:
         app.openapi_schema = openapi_schema
         return app.openapi_schema
 
-    app.openapi = custom_openapi
+    app.openapi = custom_openapi  # type: ignore[method-assign]  # FastAPI'nin belgeledigi kalip
 
     # Add root endpoint
     @app.get("/", tags=["Health & Monitoring"])
