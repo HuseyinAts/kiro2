@@ -28,6 +28,10 @@ Bes bulgu, onem sirasina gore:
    gelmiyor -- uretilmis sayilar.
 5. **Semantik arama olu.** `vector(1536)` kolonu ve pgvector 0.8.2 kurulu,
    ama 5.796 satirin 5.796'sinda `embedding IS NULL`.
+6. **FSRS araliklamiyor** (bolum 5.5, cozum turunda bulundu). 107 kartin
+   106'sinda `stability=2.3`, `scheduled_days=0`; `reps=40` olan kart bile
+   hep "bugun tekrar et" durumunda. Aralikli tekrarin cekirdek vaadi
+   calismiyordu.
 
 ---
 
@@ -373,6 +377,58 @@ bos satir         : 5.796
 Altyapi tam, veri sifir. Embedding'e dayanan her ozellik (benzer soru
 onerisi, semantik arama, kopya tespiti) su an calismiyor.
 
+### 5.5 FSRS: aralikli tekrar ARALIKLAMIYOR
+
+Bu bulgu ilk raporda yoktu -- cozum turunda `fsrs_cards` tablosunu
+inceleyince cikti. 107 satir:
+
+```
+stability=2.3 ve difficulty=5.0 olan satir : 106
+scheduled_days = 0 olan satir              : 106
+state = 'review' olan satir                : 107
+reps araligi                               : 1 .. 40
+farkli stability degeri                    : 2
+```
+
+`reps=40` olan bir kart hala `stability=2.3` ve `scheduled_days=0`. FSRS'te
+imkansiz: 40 basarili tekrardan sonra aralik aylara cikmali.
+
+**Ogrenci acisindan:** konuyu ilk seferde bilen ile 40 kez tekrar eden ayni
+karti ayni siklikta goruyor.
+
+Uc kok neden olculdu:
+
+1. **Sessiz bozuk mod.** `services/fsrs_v6_service.py`'nin "fsrs paketi yok"
+   dali tam bu imzayi uretiyor: aralik tablosu (`days`) hesaplanip
+   KULLANILMADAN atiliyor, `due_date` her cagrida bugune sabitleniyor,
+   `stability`/`difficulty` girdiden degismeden geri donuyor. Uyari yalnizca
+   import aninda bir kez veriliyordu -- 106 bozuk satir hicbir calisma-zamani
+   sinyali uretmeden yazildi. (`requirements.txt:106` paketi zaten
+   `fsrs==6.3.1` olarak pinliyor; kok neden ileriye donuk kapali, dalin
+   kendisi degildi.)
+2. **`reps` sozlesme ihlali.** `card.step` kart Review durumuna gecince
+   `None` olur ve bu deger dogrudan `"reps"` diye donuyordu. Geri besleyen
+   cagirici ucuncu tekrarda `TypeError: '<' not supported between instances
+   of 'int' and 'NoneType'` aliyor (dogrudan calistirilarak uretildi).
+   Mevcut uretim cagiricilari degeri geri beslemedigi icin canli cokme
+   degil -- tesadufi bir `or` korumasina bagli.
+3. **`scheduled_days` / `elapsed_days` hic yazilmiyordu.**
+   `services/bkt_service.py` FSRS blogu sekiz alan yaziyor, bu ikisine
+   dokunmuyordu.
+
+**Durum: DUZELTILDI** -- PR #221. Bekci:
+`tests/fast/test_fsrs_bozuk_mod.py` (11 test; mutasyon kontrolu: eski kodda
+11/11 dusuyor).
+
+**Not -- test mi kod mu yanlis:** `tests/property/test_fsrs_properties.py`
+icindeki `TestHardGradeBehavior` master'da kirmizi. 4.000 rastgele ornekte
+olctum: HARD notu stability'i **hic kucultmuyor** (0 vaka) ve **hic GOOD'u
+asmiyor** (0 vaka). Kod FSRS semantigine uygun -- basarili hatirlama
+stability'i dusurmez. Testin varsayimi yanlis: `turkish_params[1] = 0.7186`
+kodda YENI kart icin mutlak baslangic stability'si, carpan degil (dortlu
+`[0.4072, 0.7186, 2.4063, 5.8145]` FSRS'in kanonik w0-w3 agirliklari).
+Ayri PR olacak.
+
 ---
 
 ## 6. Sema butunlugu ve indeksler
@@ -505,10 +561,45 @@ kvkk_consents               VAR
 video_cache                 YOK   repositories/video_cache_repository.py
 ```
 
-`core/kvkk_compliance.py` uretimde `application/commands/auth.py` tarafindan
-import ediliyor -- yani olu kod degil. KVKK (Kisisel Verilerin Korunmasi
-Kanunu) kayit tutma yukumlulugu tasiyan tablolarin uclu eksigi, teknik
-sorunun otesinde bir uyum sorunu.
+**DUZELTME (ayni gun, cozum turunda).** Bu bolumu once "KVKK tablolarinin
+uclu eksigi teknik sorunun otesinde bir uyum sorunu" diye yazdim ve bolum
+8'de "add_kvkk_tables.py'yi aktif zincire tasi" diye is yazdim. **Ikisi de
+yanlisti.** Olctum:
+
+```
+core/kvkk_compliance.py:276   Base = declarative_base()      <- KENDI ozel Base'i
+models/kvkk_models.py:22      from .base import Base         <- uygulamanin Base'i
+```
+
+Iki ayri sinif ayni tabloyu iddia ediyor:
+
+| | `core/kvkk_compliance.py` | `models/kvkk_models.py` |
+|---|---|---|
+| `KVKKConsent.__tablename__` | `kvkk_consents` | `kvkk_consents` |
+| `id` | `Column(Integer)` | `Mapped[str]`, uuid7 |
+| `user_id` | `Column(Integer)` | `Mapped[str]` |
+| `organization_id` | yok | var |
+| Base | kendi `declarative_base()` | uygulamanin Base'i |
+
+Canli `kvkk_consents` tablosu: `id` VARCHAR, `user_id` VARCHAR,
+`organization_id` VAR, `purpose`/`status` native ENUM. Yani **DB
+`models/kvkk_models.py` ile uyusuyor**, `core/kvkk_compliance.py` ile
+uyusmuyor.
+
+Uc sonuc:
+
+1. `core/kvkk_compliance.py` kendi ozel `declarative_base()`ini kullandigi
+   icin alembic'in `target_metadata`'sinda **hic gorunmuyor**. Tablolarinin
+   olusmamasinin sebebi bu -- bir kayip degil, hic kayitli olmamis olmalari.
+2. Uretimde bu modulden **yalnizca `is_minor` fonksiyonu** import ediliyor
+   (`application/commands/auth.py:15`). ORM siniflari uretim yolunda
+   kullanilmiyor -- yani canli bir 500 YOK.
+3. Eksik uc tabloyu `add_kvkk_tables.py`'den yaratmak **zarar verirdi**:
+   uuid7 tabanli bir sistemde Integer anahtarli golge sema olustururdu.
+
+Dogru is, tablo yaratmak degil `core/kvkk_compliance.py`'nin bayat ORM
+katmanini emekliye ayirmak (ya da kanonik olani secmek). Bu bir tasarim
+karari; asagida "senin kararin" bolumune tasindi.
 
 `video_cache_repository.py` uretimde hicbir yerden import edilmiyor (0 sonuc,
 testler haric) -- bu gercekten olu kod.
@@ -565,18 +656,26 @@ karar/onay vermen gereken.
    secimi `tests/e2e -m golden_flow`'a cikar. Backend Tests zaten yakaliyor,
    ama Golden Flows kapisi da bu sinifi gormeli. Once yerelde patlama
    yaricapini olcecegim; olcmeden genisletmeyecegim. (1 numaradan sonra.)
-3. **`osym_exam_engine.py:187` bayat yorumu** -- "~44.000 soru" diyor, gercek
-   5.796. Sekiz kat sapma.
-4. **`TEST.BATCH2A` konusunu uretim agacindan cikar.**
+3. **`osym_exam_engine.py:187` bayat yorumu** -- YAPILDI. "~44.000 soru"
+   yaziyordu, gercek 5.796 (sekiz kat sapma). Yorum olculmus dagilimla
+   degistirildi ve "GEOMETRI 14 / FIZIK 7 / BIYOLOJI 6 isteniyor ama havuzda
+   sifir" sonucu ayrica not dusuldu.
+4. **`TEST.BATCH2A` konusunu uretim agacindan cikar** -- YAPILDI (0005,
+   PR #222). `is_active = false`; silinmedi.
 
 ### Sonraki (ben, ayri PR)
 
-5. **7 agac yetimi konuya `parent_id` ata** (KIM.* -> KIM, TYT-KIM-* -> KIM)
-   ve level degerlerini duzelt. Veri degisikligi -- migration olarak, geri
-   alinabilir sekilde.
-6. **`total_questions` sayacini ya dogru tut ya kaldir.** 57 konuda yanlis
-   olan bir sayac, olmayan sayactan kotudur.
-7. **KVKK uclu tablosu** -- `add_kvkk_tables.py`'yi aktif zincire tasi.
+5. **Agac yetimlerine `parent_id` ata** -- YAPILDI (0005, PR #222).
+   14 konu (7 degil, bkz. bolum 4.1 duzeltmesi), 3.266 soru.
+6. **`total_questions` sayaci** -- YAPILDI (0005, PR #222). Gercek sayimla
+   dolduruldu; sapmayi bundan sonra CI bekcisi yakaliyor.
+6b. **FSRS bozuk mod** -- YAPILDI (PR #221, bkz. bolum 5.5).
+6c. **`TestHardGradeBehavior` testinin yanlis varsayimi** -- ayri PR
+   bekliyor (bolum 5.5 sonundaki not).
+7. ~~**KVKK uclu tablosu** -- `add_kvkk_tables.py`'yi aktif zincire tasi.~~
+   **IPTAL -- yanlis is.** Bolum 7.4'teki duzeltmeye bakin: o tablolari
+   yaratmak uuid7 sistemine Integer anahtarli golge sema eklerdi. Karar
+   maddesi 13'e tasindi.
 8. **Cift taksonomiyi tekillestir** (Paragraf x3, Dil Bilgisi x2, Geometri x2).
 
 ### Senin kararin
@@ -587,6 +686,12 @@ karar/onay vermen gereken.
     gelmiyor. Bu urunun onundeki tek gercek engel; muhendislik tarafi degil.
 11. **`is_anchor` capa soru seti** -- IRT'yi anlamli kilmak icin gerekli.
 12. **Cevap anahtari dengesizligi** (A %15,7 / C %24,0) duzeltilsin mi?
+13. **KVKK ORM ikizligi.** `core/kvkk_compliance.py` ve
+    `models/kvkk_models.py` ayni `kvkk_consents` tablosunu iddia ediyor,
+    semalari uyusmuyor, canli tablo ikincisiyle uyusuyor (bolum 7.4).
+    Birincisinin ORM katmani emekliye ayrilsin mi? Uretimde ondan yalnizca
+    `is_minor` kullaniliyor, yani risk dusuk -- ama KVKK kayit tutma
+    yukumlulugu tasidigi icin karari sana birakiyorum.
 
 ---
 
