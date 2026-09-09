@@ -261,6 +261,30 @@ Kimya'ya tiklayan ogrenci **bos liste** goruyordu.
 Onarimdan sonra: kok liste 28 -> 13, KIM alt konu 0 -> 12, SOS 0 -> 2,
 agac disi soru 3.266 -> 0. Bekci: `tests/db/test_mufredat_agaci_saglik.py`.
 
+### 4.1.2 Ikinci olcum hatasi: "14" da yereldi
+
+Yukaridaki 14 sayisi **yerel veritabaninin** sayisidir. Migration'i once o
+14 kodu tek tek sayarak yazdim; CI'da yeni bekci kirmizi verdi ve orada
+listede olmayan kayitlar oldugunu gosterdi:
+
+```
+MVP.MAT.GOLDEN  "MVP Matematik (Golden seed)"   12 soru   <- yetim
+TEST.BATCH1B    "Test Konu Batch1B"                       <- ikinci fixture
+```
+
+Ders: bir migration "olculdugu ortami onarmak" icin degil, invaryanti HER
+ortamda saglamak icindir. Liste tabanli yaklasim tanimi geregi eksik.
+Migration kural tabanli hale getirildi:
+
+- yetim baglama: `subject_area IS NOT NULL AND parent_id IS NULL` olan her
+  satir, `subject_area -> kok` eslemesine gore baglanir; eslesme yoksa
+  satira dokunulmaz.
+- test artigi: `code LIKE 'TEST.%' OR name_tr ILIKE 'Test Konu%'` -- bu
+  desen bekcideki desenle birebir ayni tutuldu.
+
+Bu hatayi bulan sey, kendi yazdigim bekciydi. Bekci olmasaydi migration
+"yesil" gorunup CI ortamini yarim onarmis olacakti.
+
 Not: `parent_id` isaret ettigi halde hedefi bulunmayan kirik referans YOK, ve
 cocuk-ebeveyn seviye tutarsizligi da YOK. Sorun sadece "parent hic atanmamis".
 
