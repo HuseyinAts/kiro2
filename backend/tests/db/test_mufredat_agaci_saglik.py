@@ -171,3 +171,34 @@ async def test_total_questions_sayaci_gercekle_uyusur(baglanti) -> None:
             f"  {r.code:<14} sayac={r.sayac} gercek={r.gercek}" for r in sapma[:20]
         )
         pytest.fail(f"{len(sapma)} konuda total_questions sapmasi:\n{dokum}")
+
+
+async def test_ayni_ebeveyn_altinda_ayni_adli_aktif_konu_tek(baglanti) -> None:
+    """Cift taksonomi bekcisi (9 Eyl 2026, migration 0006).
+
+    Olculdu: TUR altinda "Paragraf" iki kez (TUR.PAR 7 soru, TYT-TR-03 134
+    soru) ve "Dil Bilgisi" iki kez (TUR.DIL 9, TYT-TR-02 51). Ogrenci ayni
+    konuyu iki kez goruyor, ilerleme ikiye bolunuyordu. Kural: ayni ebeveyn
+    altinda ayni adli aktif konu en fazla BIR tane.
+
+    Farkli ebeveyn altindaki ayni ad (GEO koku vs MAT.GEO) bilincli olarak
+    kapsam DISI -- o ikisi kopya degil (bkz. 0006 docstring).
+    """
+    sonuc = await baglanti.execute(
+        text(
+            """
+            SELECT p.code AS ebeveyn, lower(c.name_tr) AS ad,
+                   array_agg(c.code ORDER BY c.code) AS kodlar
+              FROM topic_hierarchy c
+              JOIN topic_hierarchy p ON p.id = c.parent_id
+             WHERE c.is_active IS TRUE
+             GROUP BY p.code, lower(c.name_tr)
+            HAVING count(*) > 1
+             ORDER BY 1, 2
+            """
+        )
+    )
+    kopya = sonuc.fetchall()
+    if kopya:
+        dokum = "\n".join(f"  {r.ebeveyn} / {r.ad}: {r.kodlar}" for r in kopya)
+        pytest.fail(f"Ayni ebeveyn altinda ayni adli birden fazla aktif konu:\n{dokum}")
