@@ -663,6 +663,17 @@ test_coverage_final_50.py                                  AttributeError (morfo
 Yedi kirmizinin ucu bu denetimin bagimsiz olarak buldugu bulgularla ayni
 seyi soyluyor. CI artik dogru sinyal veriyor.
 
+**Gun sonu (9 Eyl 2026, 6 PR sonra):** listedeki 7'den 4'u kapandi
+(parity 7.1 -> #220; FSRS HARD ve property -> #221/#223;
+`test_fsrs_card_persistence` -> #229, asagida). Kalan 4 sabit altyapi
+kirmizisi: ES yok (`ConnectError`), sqlite smoke, morfoloji `AttributeError`,
+semantic health -- hicbiri bu denetimin PR'larinin konusu degil, hepsi ayri
+is. `test_fsrs_card_persistence`'in "CI-only" kirmiziligi icin onceki
+hipotez (`_global_process_pool`) YANLISTI: olcum (job 102477252081) dusen
+satirin tohum kart degil sifirdan yaratilmis kart oldugunu gosterdi; kok
+neden uc unit test dosyasinin ayni kullanici/konu satirini paylasip xdist
+altinda birbirinin ortasinda silmesi (madde 17).
+
 ### 7.7 `osym_inspired_generator.py` -- bolunmus tablodan onceki ham SQL (canli 500)
 
 Golden Flows secimi genisletilince (#224) bulundu; 7.1 ile ayni sinif
@@ -772,9 +783,21 @@ karar/onay vermen gereken.
     `question_statistics`'te). Ikisi de 7.7 ile ayni sinif; ayri PR
     (madde 16, ben). `api/photo_ask_api.py:140` yanlis pozitif (docstring).
 16. **`wave2b_quality_routes` + `photo_ask_service` dual-table duzeltmesi**
-    -- ben, #226'nin ardindan ayni kalipla (JOIN + AST bekcisi + gercek-DB
-    bekcisi). Genel tarayici `scripts/` kalabaligini da sayacagi icin
-    onunla birlestirilmedi.
+    -- YAPILDI, PR #227. Duzeltme: `photo_ask_service` 500 veriyordu;
+    `wave2b_quality_routes` ise 500 DEGIL -- `except Exception` hatayi
+    yutuyor, uc sessizce bos referans listesiyle calisiyordu (sessiz
+    bozulma). Ikisi de b/c/m/s JOIN ile yazildi; AST bekcisi
+    `tests/fast/test_ham_sql_bolunmus_kolon.py` (osym_inspired'in ozel
+    bekcisi de buraya katildi, uc uretim modulu tek listede) + gercek-PG
+    bekcisi; CI'da PG'ye karsi gecti.
+17. **`test_fsrs_card_persistence` CI'da rastgele kirmizi** -- YAPILDI,
+    PR #229 (bkz. 7.6 gun sonu notu). Uc unit test dosyasi ayni
+    `REAL_USER_ID`/`TEST_TOPIC_ID`'yi paylasip fixture'da o kullanicinin
+    satirlarini siliyordu; `-n auto --dist=loadscope` altinda yaris.
+    Yerelde `-n 3` ile 5 kosumun 3'unde yeniden uretildi; dosyaya ozel
+    kimliklerle 8/8 yesil. Ayrica `test_fsrs_card_persistence` kullanici
+    satirini hic kurmuyordu (batch1b'nin alfabetik olarak once kosmasina
+    gizli bagimlilik) -- kendi org/user satirini kuruyor.
 
 ---
 
@@ -784,14 +807,24 @@ karar/onay vermen gereken.
 tekrari), IRT parametreleri sinirlar icinde, PK disiplini uretim tablolarinda
 tam, sema modern (pgvector, JSON, enum).
 
-**Kirik olan:** `billing_subscriptions` uretimde 500 veriyor (Backend Tests
-bunu kirmizi gosteriyor, Golden Flows kapisi gormuyor); migration zinciri
-baseline squash sirasinda uc tablo grubunu kaybetmis; mufredat agacinin en
-dolu konusu agaca bagli degil; uc uretim yolu (`osym_inspired_generator`,
-`wave2b_quality_routes`, `photo_ask_service`) bolunmus tablodan onceki ham
-SQL ile 500 veriyor (7.7, madde 15-16) ve hicbir bekci bu sinifi gormuyordu;
-IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil; semantik arama
-altyapisi bos.
+**Kirik OLAN (denetim sabahi):** `billing_subscriptions` uretimde 500
+veriyordu (Backend Tests kirmizi gosteriyor, Golden Flows kapisi
+gormuyordu); migration zinciri baseline squash sirasinda uc tablo grubunu
+kaybetmisti; mufredat agacinin en dolu konusu agaca bagli degildi, Paragraf
+ve Dil Bilgisi ikiser kez vardi; uc uretim yolu (`osym_inspired_generator`,
+`photo_ask_service` 500; `wave2b_quality_routes` sessiz bos referans)
+bolunmus tablodan onceki ham SQL kullaniyordu ve hicbir bekci bu sinifi
+gormuyordu; FSRS bozuk modda uydurma psikometri yaziyordu; bir test dosyasi
+CI'da rastgele kirmiziydi.
+
+**Gun sonunda kapananlar (#220-#228 birlesti, #225 #228 olarak yeniden
+acildi; #229 CI'da):** yukaridakiler master'da duzeltildi ve her biri
+mutasyonla civili bekciyle korunuyor; Golden Flows kapisi 199 testi
+gercekten kosuyor (`hata=0 atlanan=4`).
+
+**Hala kirik:** IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil;
+semantik arama altyapisi bos (0 embedding); CI'da ES servisi yok; dort
+altyapi testi (7.6 gun sonu) sabit kirmizi.
 
 **Cozulemeyen:** icerik. 5.796 soru, dort ders tamamen eksik, yedekteki
 36.967 soru halusinasyon. Bu bir veritabani sorunu degil, bir icerik sorunu.

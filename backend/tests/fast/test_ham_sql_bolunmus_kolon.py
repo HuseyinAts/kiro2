@@ -63,6 +63,9 @@ _SAHIP = {
 _MODULLER = [
     ("services/photo_ask_service.py", 1),
     ("api/wave2b_quality_routes.py", 1),
+    # #226'nin ozel bekcisi (test_osym_inspired_ham_sql.py) buraya katildi;
+    # DB'li kardesi tests/db/test_osym_inspired_sql_sema_uyumu.py duruyor.
+    ("services/osym_inspired_generator.py", 5),
 ]
 
 
