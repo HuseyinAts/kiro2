@@ -33,8 +33,16 @@ from tests.pg_sync import async_pg_dsn
 # Constants (shared with batch1b)
 # ---------------------------------------------------------------------------
 
-TEST_TOPIC_ID = "00000000-0000-0000-0000-000000000001"
-REAL_USER_ID = "41411c25-5c85-4470-a6ac-ac31c60ce732"
+# Kimlikler DOSYAYA OZEL (9 Eyl 2026): test_bkt_record_answer_batch1b*.py ve
+# test_fsrs_card_persistence.py ayni REAL_USER_ID / TEST_TOPIC_ID'yi
+# paylasiyordu ve her dosyanin db_session fixture'i o kullanicinin
+# fsrs_cards/bkt_states satirlarini SILIYORDU. xdist (--dist=loadscope) uc
+# dosyayi ayri worker'lara dagitinca silme baska dosyanin testinin ortasina
+# dusuyordu -- CI'da rastgele 'stability 1.0 != 2.3065', 'scheduled_days
+# tohum degerinde kalmis' (job 102477252081; ayni test yerelde ve baska
+# kosumlarda yesil). Ayri kimlik = ayri satirlar = yaris yok.
+TEST_TOPIC_ID = "00000000-0000-0000-0000-000000000003"
+REAL_USER_ID = "41411c25-5c85-4470-a6ac-ac31c60ce733"
 # DSN artik SABIT DEGIL: gerekce ve olcum tests/pg_sync.py::async_pg_dsn
 # docstring'inde (parola git'te + veritabani adi CI'da `kiro2_test`).
 
@@ -116,7 +124,7 @@ async def db_session():
                 VALUES
                     (:id, :level, :code, :name_tr, :osym_relevance, :osym_frequency,
                      :total_questions, :average_difficulty, :is_active, :created_at, :updated_at)
-                ON CONFLICT (id) DO NOTHING
+                ON CONFLICT DO NOTHING
             """),
             {
                 "id": TEST_TOPIC_ID,
