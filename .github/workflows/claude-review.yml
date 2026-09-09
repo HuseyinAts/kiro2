@@ -47,7 +47,26 @@ jobs:
         uses: anthropics/claude-code-action@v1.0.217
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-4-20250514"
+          # `--strict-mcp-config` (9 Eyl 2026): inceleme isi `is_error: true`
+          # ile dusuyordu. Imza: num_turns=1, duration~700ms,
+          # total_cost_usd=0, modelUsage={} -- model cagrisi HIC
+          # faturalanmiyor, ilk turda kesiliyor.
+          #
+          # Anahtar DEGIL (olculdu): secret 9 Eyl 00:44:58'de yenilendi,
+          # oncesi ve sonrasi kosumlarin imzasi birebir ayni.
+          #
+          # Sebep suphesi: action PR head'ini guvensiz sayip master'daki
+          # `.mcp.json`i geri yukluyor ve `enableAllProjectMcpServers: true`
+          # yaziyor. Oradaki uc sunucu da repo ici `python ...` stdio
+          # sunucusu (kiro2-orchestrator, zemberek-mcp,
+          # claude-md-improvement); bu iste Python kurulumu ve
+          # bagimliliklari YOK.
+          #
+          # `--strict-mcp-config` proje MCP yapilandirmasini yok sayar;
+          # `--mcp-config` verilmedigi icin hic sunucu baslatilmaz.
+          # Inceleme zaten MCP'siz calisiyor (sadece diff okuyup yorum
+          # yaziyor), yani islevsel kayip yok.
+          claude_args: "--model claude-sonnet-4-20250514 --strict-mcp-config"
           prompt: |
             Bu PR'i KIRO2 standartlarina gore incele.
 
