@@ -11,7 +11,7 @@ Bu dosya master plan'in gerektirdigi sade fsrs wrapper.
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -86,25 +86,53 @@ class FSRSService:
 
         Returns:
             {
-                "stability": float,
-                "difficulty": float,
+                "degraded": bool,          # True ise fsrs paketi yok
+                "stability": float | None, # degraded'da None -- uydurma deger yok
+                "difficulty": float | None,# degraded'da None
                 "due_date": datetime,
+                "scheduled_days": int | None,
                 "state": str,
-                "reps": int,
+                "reps": int,               # her zaman int, asla None
                 "lapses": int,
             }
+
+        NOT (sozlesme): `degraded=True` iken `stability` ve `difficulty` None
+        doner. Cagiran bu alanlari DB'ye YAZMAMALIDIR -- yoksa psikometrik
+        olmayan sabitler gercek olcum gibi saklanir.
         """
         if not _FSRS_AVAILABLE or SCHEDULER is None:
-            # Fallback: kaba hesaplama
+            # BOZUK MOD -- fsrs paketi yok. Gercek stability/difficulty
+            # hesaplanamaz. Burada UYDURMA psikometrik deger URETMIYORUZ:
+            # cagirana "degraded" bayragi ile bildiriyoruz, o da bu alanlari
+            # DB'ye yazmiyor (bkz. services/bkt_service.py).
+            #
+            # Neden bu kadar sert: 20-21 Agu 2026'da bu dal sessizce calisti ve
+            # fsrs_cards tablosuna 107 satirin 106'sini stability=2.3,
+            # difficulty=5.0, scheduled_days=0, state='review' olarak yazdi --
+            # yani tekrar araligi hic buyumedi, reps=40 olan kart bile hep
+            # "bugun tekrar et" durumunda kaldi. Aralik tablosu (days) o zaman
+            # hesaplaniyor ama KULLANILMIYORDU; due_date her seferinde bugune
+            # sabitleniyordu. Asagida hem aralik kullaniliyor hem de her cagri
+            # loglaniyor.
             days = {1: 1, 2: 3, 3: 7, 4: 14}.get(rating_int, 7)
+            logger.error(
+                "FSRS BOZUK MOD: fsrs paketi yok, aralik kaba tabloyla "
+                "hesaplandi (rating=%s -> %s gun). Psikometrik alanlar "
+                "yazilmayacak. Duzeltme: pip install fsrs==6.3.1",
+                rating_int,
+                days,
+            )
             return {
-                "stability": stability or 2.3,
-                "difficulty": difficulty or 5.0,
+                "degraded": True,
+                "stability": None,
+                "difficulty": None,
                 "due_date": datetime.now(UTC).replace(
                     hour=0, minute=0, second=0, microsecond=0
-                ),
+                )
+                + timedelta(days=days),
+                "scheduled_days": days,
                 "state": "review",
-                "reps": reps + 1,
+                "reps": (reps or 0) + 1,
                 "lapses": 0,
             }
 
@@ -120,16 +148,33 @@ class FSRSService:
             card.due = due_date
         # step: learning adımı (0=yeni kart, 1=ilk adım tamamlandı, sonrası Review'a geçer)
         # reps DB kolonunu step proxy olarak kullan — 2+ reps = Review state'e geçmiş kart
-        card.step = min(reps, 1)
+        # `reps or 0`: cagiran DB'den None okuyabilir; min(None, 1) TypeError verir.
+        card.step = min(reps or 0, 1)
 
+        tekrar_ani = datetime.now(UTC)
         card, _ = SCHEDULER.review_card(card, rating)
 
+        # card.step kart Review durumuna gectiginde None olur. Bunu "reps" diye
+        # dondurmek tekrar sayacini kaybediyor ve degeri geri besleyen her
+        # cagiriciyi bir sonraki turda TypeError ile dusuruyordu. reps artik
+        # gercek bir sayac: girdi + 1.
+        yeni_reps = (reps or 0) + 1
+
+        # scheduled_days: tekrar aninden yeni bitis tarihine kadar olan aralik.
+        # Anchor olarak eski due_date DEGIL tekrar ani kullanilir -- gecikmis
+        # bir kartta eski due gecmiste kalir ve arayi sisirirdi.
+        planlanan_gun = None
+        if card.due is not None:
+            planlanan_gun = max(0, (card.due - tekrar_ani).days)
+
         return {
+            "degraded": False,
             "stability": card.stability,
             "difficulty": card.difficulty,
             "due_date": card.due,
+            "scheduled_days": planlanan_gun,
             "state": card.state.name.lower(),
-            "reps": card.step,  # step = learning adım sayacı (reps proxy)
+            "reps": yeni_reps,
             "lapses": 0,  # fsrs kütüphanesi lapses takip etmiyor
         }
 
@@ -149,7 +194,7 @@ class FSRSService:
             return 0.0
         w20 = 0.1542
         factor = 0.9 ** (-1.0 / w20) - 1
-        return (1 + factor * days_elapsed / stability) ** (-w20)
+        return float((1 + factor * days_elapsed / stability) ** (-w20))
 
     @staticmethod
     def next_interval(stability: float) -> float:
@@ -164,4 +209,4 @@ class FSRSService:
         """
         w20 = 0.1542
         factor = 0.9 ** (-1.0 / w20) - 1
-        return max(1, stability / factor * (0.9 ** (-1.0 / w20) - 1))
+        return float(max(1, stability / factor * (0.9 ** (-1.0 / w20) - 1)))
