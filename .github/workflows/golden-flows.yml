@@ -9,7 +9,8 @@
 # user features MUST add a new Golden Flow test before shipping.
 #
 # See:
-#   - backend/tests/e2e/test_golden_flows.py
+#   - backend/tests/e2e/  (her `-m golden_flow` isaretli test; 9 Eyl 2026'dan
+#     once yalnizca test_golden_flows.py kosuyordu)
 #   - .claude/rules/case-convention.md (Endpoint Gate)
 #   - .claude/rules/path-naming.md    (TR/EN drift)
 
@@ -269,13 +270,38 @@ jobs:
       - name: Run Golden Flow tests
         continue-on-error: true
         working-directory: backend
+        env:
+          # (9 Eyl 2026) Gercek-DB bekcileri (tests/e2e/pg_dsn.py) DSN'i
+          # KVKK_VERIFY_DSN -> DATABASE_URL_SYNC -> DATABASE_URL sirasiyla arar.
+          # Is-seviyesi DATABASE_URL burada YETMIYOR: backend/conftest.py:21
+          # modul yuklenirken onu sqlite'a eziyor. Sonuc: test_db_schema_parity
+          # ve dort kardesi CI'da da SKIP oluyordu (yerelde olculdu: 5/5 skip).
+          # Sync-surucu DSN'i acikca verilince bes bekci gercekten kosuyor.
+          DATABASE_URL_SYNC: postgresql://postgres:postgres@127.0.0.1:5434/kiro2  # pragma: allowlist secret
         run: |
           # `-x` KALDIRILDI (A.2): kapi artik `hata == 0` sartini KENDI olcuyor
           # (scripts/gf_esik_kapisi.py), dolayisiyla ilk hatada durmaya gerek yok.
           # `-x` ile rapor tek hatada kesiliyordu ve gercek tablo gorulmuyordu —
           # 1 Agu 2026 canli kosumu 12 ayri kirik akis oldugunu gosterdi (94 sn).
           # Adim `continue-on-error`: karar tek yerde, asagidaki kapida verilir.
-          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short \
+          #
+          # SECIM GENISLETILDI (9 Eyl 2026): dosya-kapsamli
+          # `tests/e2e/test_golden_flows.py` yerine `tests/e2e -m golden_flow`.
+          # Eski secim, golden_flow isaretli ama BASKA dosyadaki 16 testi
+          # (7 dosya) hic kosturmuyordu -- test_db_schema_parity.py kendi
+          # docstring'inde bunu "kapsam siniri" diye not etmisti. Patlama
+          # yaricapi olculdu: dar=186, genis=202, fark=16. Kapi kurali
+          # (toplam >= 170, hata == 0, atlanan <= 5) DEGISMEDI; genisleyen
+          # secim ayni kuraldan gecmek zorunda.
+          #
+          # `not needs_elasticsearch`: bu is'te ES servisi YOK (services:
+          # postgres + redis). tests/e2e/test_es_answer_leak.py'nin 3 testi
+          # ilk genis kosumda 3/3 skip oldu (olculdu: atlanan=7, kural <= 5)
+          # -- hicbir sey olcmeden skip butcesini tuketiyordu. Marker ile
+          # secim disi; ES servisi eklenince `not needs_elasticsearch`
+          # silinir, testler degismeden geri gelir. `-rs`: kalan skip'lerin
+          # sebebi log'da gorunsun, gomulmesin.
+          pytest tests/e2e -m "golden_flow and not needs_elasticsearch" -v -rs --tb=short \
             --junitxml=gf-results.xml
 
       - name: Enforce Golden Flow gate

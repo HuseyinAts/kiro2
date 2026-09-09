@@ -15,9 +15,11 @@ kullanıcı yolundan sorgulanan tablolar. env.py:65 zaten "108 tablo henüz DB'd
 oluşturulmamış (gelecek özellikler için model var)" diyor — onları istemek gürültü
 üretir, sinyal değil.
 
-NOT (kapsam sınırı): golden-flows.yml şu an bu dosyayı çağırmıyor (satır 220
-`tests/e2e/test_golden_flows.py` ile dosya-kapsamlı). Workflow'un geçersiz YAML'ı
-düzeltilirken (`-m golden_flow` tüm tests/e2e üzerinde) bu dosya da kapıya girecek.
+NOT (kapsam siniri -- KAPANDI, 9 Eyl 2026): golden-flows.yml uzun sure bu
+dosyayi cagirmiyordu (`tests/e2e/test_golden_flows.py` ile dosya-kapsamli).
+Secim `tests/e2e -m golden_flow` olarak genisletildi VE test adimina
+DATABASE_URL_SYNC verildi -- ikincisi olmadan bu dosya CI'da da SKIP oluyordu
+(conftest.py DATABASE_URL'i sqlite'a eziyor, bkz. tests/e2e/pg_dsn.py).
 """
 
 import pytest
