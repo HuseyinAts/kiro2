@@ -518,6 +518,12 @@ class QuestionBankService:
         validate_irt_discrimination(new_discrimination, strict=True)
         validate_irt_guessing(new_guessing, strict=True)
         validate_irt_upper_asymptote(new_upper_asymptote, strict=True)
+        # Orneklemsiz kalibrasyon yok (9 Eyl 2026, rapor madde 3): canli DB'de
+        # 20 soru is_calibrated=true iken calibration_sample_size=0 ve
+        # irt_n_responses=0'di (metin ozelliklerinden tahmin yazan eski
+        # irt_daemon). Bayrak "olculdu" demektir; 0 ogrenciyle olculmus olamaz.
+        if sample_size < 1:
+            raise IRTValidationError("sample_size", sample_size, 1, float("inf"))
 
         question = await self.get_question(question_id)
         if not question:
