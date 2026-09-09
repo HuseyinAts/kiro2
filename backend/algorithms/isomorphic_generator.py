@@ -23,6 +23,15 @@ class IsomorphicGenerator:
         "Deniz",
         "Efe",
     ]
+    # Metinde aranan isimler (degistirilecek olanlar); NAMES yeni isim havuzu.
+    BILINEN_ISIMLER: ClassVar[tuple[str, ...]] = (
+        "Ahmet",
+        "Mehmet",
+        "Ali",
+        "Veli",
+        "Ayşe",
+        "Fatma",
+    )
     OBJECTS: ClassVar[list[str]] = [
         "elma",
         "armut",
@@ -58,12 +67,22 @@ class IsomorphicGenerator:
         # 1. Replace Names (Simple Heuristic: Capitalized words that might be names)
         # For a robust implementation, NLP NER (Named Entity Recognition) is needed.
         # Here we just replace a few known names if they exist.
-        for name in ["Ahmet", "Mehmet", "Ali", "Veli", "Ayşe", "Fatma"]:
-            if name in text:
-                # random: kripto degil, sadece soru varyasyonu (S311/B311 muaf)
-                candidates = [n for n in cls.NAMES if n != name]
-                new_name = random.choice(candidates)  # noqa: S311 # nosec B311
-                text = text.replace(name, new_name)
+        # TEK GECIS (9 Eyl 2026): eski dongu her ismi sirayla degistiriyordu ve
+        # yerine konan isim listede daha sonra geliyorsa o da degistiriliyordu --
+        # "Mehmet" -> "Ali" -> "Mehmet" geri donebiliyordu (CI'da ~%1 rastgele
+        # kirmizi, test_number_replacement). Simdi metindeki isimler once
+        # toplanir, yeni isim havuzu ORIJINAL isimlerin hicbirini icermez ve
+        # degisim tek regex gecisiyle yapilir; eklenen isim bir daha okunmaz.
+        bulunan = [n for n in cls.BILINEN_ISIMLER if n in text]
+        if bulunan:
+            havuz = [n for n in cls.NAMES if n not in bulunan] or list(cls.NAMES)
+            # random: kripto degil, sadece soru varyasyonu (S311/B311 muaf)
+            eslesme = {n: random.choice(havuz) for n in bulunan}  # noqa: S311 # nosec B311
+            text = re.sub(
+                "|".join(re.escape(n) for n in bulunan),
+                lambda m: eslesme[m.group()],
+                text,
+            )
 
         # 2. Replace Numbers (Very simplistic numeric isomorphic generation)
         # Find integers and apply a random offset
@@ -76,6 +95,8 @@ class IsomorphicGenerator:
                 if random.choice([True, False])  # noqa: S311 # nosec B311
                 else max(1, val - offset)
             )
+            if new_val == val:  # val=1 ve eksi dali: max(1, ...) sayiyi degistirmezdi
+                new_val = val + offset
             return str(new_val)
 
         # We only do this if it looks like a math/logic problem to avoid breaking years (e.g. 1923)
