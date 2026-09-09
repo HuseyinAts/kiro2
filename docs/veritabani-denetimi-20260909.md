@@ -200,24 +200,61 @@ level 3 :  1 konu (parent_id NULL -- YANLIS)
 level 4 :  1 konu (parent_id NULL -- YANLIS)
 ```
 
-### 4.1 Agac yetimi: 7 konu
+### 4.1 Agac yetimi: 14 konu, 3.266 soru
 
-`level > 1` oldugu halde `parent_id IS NULL` olan konular -- agacta asili
-duruyorlar, hicbir derse bagli degiller:
+**Duzeltme (ayni gun, onarim sirasinda).** Bu bolumu once "7 konu" diye
+yazdim. Eksik olcumdu: yalnizca `level > 1` olanlara bakmisim. Dogru olcut
+"`subject_area` DOLU ama `parent_id` NULL" -- yani bir derse ait oldugunu
+soyleyip hicbir derse bagli olmayan her konu. Gercek sayi **14**:
 
 ```
-KIM.ASI  Asitler ve Bazlar     level 2
-KIM.DEN  Kimyasal Denge        level 2   <- 1.262 soru bagli!
-KIM.ORG  Organik Kimya         level 2
-KIM.TER  Termokimya            level 2
-TYT-KIM-02 Periyodik           level 2
-TYT-KIM-03 Kim Baglar          level 3
-TYT-KIM-04 Reaksiyonlar        level 4
+KIM.DEN     Kimyasal Denge                level 2   soru 1262
+KIM.ASI     Asitler ve Bazlar             level 2   soru  478
+KIM.ORG     Organik Kimya                 level 2   soru  366
+TYT-KIM-02  Periyodik                     level 2   soru  350
+TYT-KIM-04  Reaksiyonlar                  level 4   soru  282
+TYT-KIM-01  Atom Yapisi                   level 1   soru  277
+TYT-KIM-03  Kim Baglar                    level 3   soru  104
+TYT-KIM-09  Cozeltiler ve Karisimlar      level 1   soru   50
+KIM.TER     Termokimya                    level 2   soru   37
+TYT-KIM-11  Cevre Kimyasi                 level 1   soru   37
+TYT-KIM-10  Maddenin Halleri ve Gazlar    level 1   soru   17
+SOC02       Turk Tarihi Temel             level 1   soru    2
+SOC03       Dunya Cografyasina Giris      level 1   soru    2
+TYT-KIM-12  Mol ve Kimyasal Hesaplamalar  level 1   soru    2
 ```
 
-En cok soru barindiran konu (`KIM.DEN`, 1.262 soru) agaca bagli degil. Konu
-agacindan asagi inen her ozellik (konu bazli ilerleme, eksik analizi, calisma
-plani) bu 7 konuyu goremez.
+Toplam **3.266 / 5.796 soru (%56)** agac disinda asili.
+
+### 4.1.1 Bu bir arayuz kusuru, veri hijyeni degil
+
+`services/question_bank_service.py:226-231` "kok konu"yu `parent_id IS NULL`
+diye tanimliyor:
+
+```python
+query = select(TopicHierarchy).where(TopicHierarchy.is_active.is_(True))
+if parent_id:  query = query.where(TopicHierarchy.parent_id == parent_id)
+else:          query = query.where(TopicHierarchy.parent_id.is_(None))
+```
+
+Olculdu -- `get_topic_hierarchy(parent_id=None)` **28 kayit** donuyordu:
+13 gercek ders + 14 konu + 1 test artigi. Ogrenci ana konu listesinde
+"Kimyasal Denge"yi "Matematik"in yaninda bir DERS olarak goruyordu.
+
+Ve alt konu sayilari:
+
+```
+MAT 20    KIM 0   <- en cok icerige sahip ders (3.531 soru)
+TUR  7    SOS 0
+TAR  7    FIZ 0
+COG  7    BIO 0
+```
+
+Kimya'ya tiklayan ogrenci **bos liste** goruyordu.
+
+**Durum: DUZELTILDI** -- `alembic/versions/0005_mufredat_agaci_onarim.py`.
+Onarimdan sonra: kok liste 28 -> 13, KIM alt konu 0 -> 12, SOS 0 -> 2,
+agac disi soru 3.266 -> 0. Bekci: `tests/db/test_mufredat_agaci_saglik.py`.
 
 Not: `parent_id` isaret ettigi halde hedefi bulunmayan kirik referans YOK, ve
 cocuk-ebeveyn seviye tutarsizligi da YOK. Sorun sadece "parent hic atanmamis".
@@ -243,7 +280,12 @@ uc ayri konuya dagilmis (TYT-TR-03'te 134, TUR.PAR'da 7, PAR'da 0).
 TEST.BATCH2A  "Test Konu Batch2A"  level 1  subject_area NULL
 ```
 
-Bir test fixture'i uretim mufredat agacinda duruyor.
+Bir test fixture'i uretim mufredat agacinda duruyor -- ve kok konu listesinde
+ogrenciye gorunuyor.
+
+**Durum: DUZELTILDI** (0005) -- `is_active = false`. Silinmedi: kalici silme
+veri silme islemidir, ayri onay ister. `is_active` uc uretim servisinde
+zaten suzuldugu icin pasife almak listeden cikarmaya yetiyor.
 
 ### 4.4 `total_questions` sayaci tamamen yanlis
 
@@ -258,6 +300,10 @@ MAT.TRV  sayac 129 gercek     0   <- ters yonde yanlis
 
 Yani sayac hic guncellenmemis (56 konu) ya da bayat kalmis (`MAT.TRV`).
 Bu alani okuyan her ekran yanlis sayi gosterir.
+
+**Durum: DUZELTILDI** (0005) -- sayac gercek sayimla dolduruldu ve
+`tests/db/test_mufredat_agaci_saglik.py::test_total_questions_sayaci_gercekle_uyusur`
+sapmayi bundan sonra CI'da yakaliyor.
 
 ### 4.5 Bos konular
 
