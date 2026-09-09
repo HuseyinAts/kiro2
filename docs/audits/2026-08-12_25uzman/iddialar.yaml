@@ -387,7 +387,7 @@ iddialar:
       SEVERITY İTİRAZI: Bu bir MODERNİZASYON, kusur değil. new_event_loop bozuk
       davranış üretiyor mu (ölçülmüş)? Hayır ise severity P1 DEĞİL, P3.
     severity_olculen: P3
-    durum: abartili
+    durum: uygulandi
     kanit: |
       TUR 3 (wf_797a2327-67f), iki çürütücü MUTABIK.
 
@@ -423,8 +423,15 @@ iddialar:
       uygulanamaz. En fazla kozmetik sadeleştirme (new_event_loop+run_until
       _complete+close -> asyncio.run(), 4 satır->1 satır), davranış değişmez,
       defekt düzeltmesi değil.
-    commit: null
-    zorlayici_test: null
+
+      9 EYL 2026 KAPANIS (X07 sinifi -- fix'in kendisi SILME): core/irt_daemon.py
+      EMEKLI (PR #241). Modul hic baslamiyordu (start() yorum satiri),
+      bolunmus semaya gore kirikti (calistirilsa CompileError), is_calibrated
+      bayragini yanit orneklemi olmadan true yapiyordu (0008) ve cagirani
+      yoktu. sync_calibrate_wrapper ve NLP_POOL artik yok; iddianin konusu
+      kodla birlikte kalkti. severity_olculen P3 oldugu gibi kalir.
+    commit: "a89b3b85d (refactor(irt): core/irt_daemon.py emekli, PR #241)"
+    zorlayici_test: "backend/tests/fast/test_kalibrasyon_bayragi_tek_kapi.py::test_bayragi_yalnizca_orneklem_bekcili_kapi_yazar (daemon'daki bayrak yazimi geri gelirse duser; AST, git ls-files)"
 
   - id: U09
     uzman: "Martin Thompson — WebSocket"
