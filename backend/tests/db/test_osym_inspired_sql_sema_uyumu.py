@@ -35,7 +35,9 @@ pytestmark = [pytest.mark.db_invariant, pytest.mark.asyncio]
 
 
 def _asyncpg_dsn() -> str:
-    dsn = resolve_pg_dsn()
+    # Acik tip: CI mypy repo kokunden kosuyor, `tests.e2e.pg_dsn` orada
+    # cozulmeyince donus Any oluyor ve no-any-return dusuyordu.
+    dsn: str | None = resolve_pg_dsn()
     if not dsn:
         pytest.skip(SKIP_REASON)
     return dsn.replace("postgresql+asyncpg://", "postgresql://", 1)
@@ -43,17 +45,16 @@ def _asyncpg_dsn() -> str:
 
 @pytest.fixture
 def uretici():
-    """Generator; DB baglantisi test DSN'ine yonlendirilmis."""
+    """Generator; DB baglantisi test DSN'ine yonlendirilmis (alt sinif, monkeypatch degil)."""
     from services.osym_inspired_generator import OSYMInspiredGenerator
 
     dsn = _asyncpg_dsn()
-    g = OSYMInspiredGenerator()
 
-    async def _baglan():
-        return await asyncpg.connect(dsn)
+    class _TestUretici(OSYMInspiredGenerator):
+        async def get_db_connection(self):
+            return await asyncpg.connect(dsn)
 
-    g.get_db_connection = _baglan  # type: ignore[method-assign]
-    return g
+    return _TestUretici()
 
 
 async def test_ornek_sorgusu_bolunmus_semada_calisir(uretici) -> None:

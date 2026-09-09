@@ -549,7 +549,8 @@ Soruyu oluşturduktan sonra kontrol et:
                 max_tokens=2000,
                 messages=[{"role": "user", "content": prompt}],
             )
-            result_text = response.content[0].text
+            # content[0] TextBlock olmayabilir (SDK birlesik tip: Thinking/ToolUse...)
+            result_text = getattr(response.content[0], "text", "")
 
         elif provider == "openai" and self.openai_client:
             response = await self.openai_client.chat.completions.create(
