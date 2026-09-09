@@ -71,7 +71,10 @@ class IRTAnalysisService:
             # Repository pattern yerine direct session kullanımı
             # TODO: Replace with proper repository when available
             from sqlalchemy import select
-            result = await session.execute(select(Soru).where(Soru.id == soru_id, Soru.is_active == True))
+
+            result = await session.execute(
+                select(Soru).where(Soru.id == soru_id, Soru.is_active.is_(True))
+            )
             soru = result.scalar_one_or_none()
             if not soru:
                 raise ValueError(f"Soru bulunamadı: {soru_id}")
@@ -92,7 +95,11 @@ class IRTAnalysisService:
                     guessing=soru.irt_guessing or 0.2,
                     morfoloji_etkisi=soru.morphology_complexity or 0.5,
                     kalibrasyon_guveni=0.3,
-                    onerilen_zorluk=(soru.difficulty_level.value if hasattr(soru.difficulty_level, "value") else soru.difficulty_level),
+                    onerilen_zorluk=(
+                        soru.difficulty_level.value
+                        if hasattr(soru.difficulty_level, "value")
+                        else soru.difficulty_level
+                    ),
                 )
 
             # IRT parametrelerini hesapla
@@ -201,7 +208,9 @@ class IRTAnalysisService:
             from sqlalchemy import select, update
 
             # Mevcut soru verilerini al
-            result = await session.execute(select(Soru).where(Soru.id == soru_id, Soru.is_active == True))
+            result = await session.execute(
+                select(Soru).where(Soru.id == soru_id, Soru.is_active.is_(True))
+            )
             soru = result.scalar_one_or_none()
             if not soru:
                 raise ValueError(f"Soru bulunamadı: {soru_id}")
@@ -233,12 +242,15 @@ class IRTAnalysisService:
             # TODO: Replace with proper repository when available
             await session.execute(
                 update(Soru)
-                .where(Soru.id == soru_id, Soru.is_active == True)
+                .where(Soru.id == soru_id, Soru.is_active.is_(True))
                 .values(
                     irt_discrimination=new_a,
                     irt_difficulty=new_b,
                     irt_guessing=new_c,
-                    is_calibrated=True
+                    # is_calibrated BURADA yazilmaz (9 Eyl 2026, 0008): bu yol hedef
+                    # zorluk + morfolojiden parametre uretir, yanit orneklemi yok.
+                    # Bayrak yalnizca question_bank_service.calibrate_question_irt
+                    # (sample_size >= 1 bekcili) tarafindan true yapilir.
                 )
             )
             await session.commit()
@@ -285,7 +297,11 @@ class IRTAnalysisService:
             from sqlalchemy import select
 
             # Konuya ait tüm soruları getir
-            result = await session.execute(select(Soru).where(Soru.subject_area == konu, Soru.is_active == True).limit(1000))
+            result = await session.execute(
+                select(Soru)
+                .where(Soru.subject_area == konu, Soru.is_active.is_(True))
+                .limit(1000)
+            )
             tum_sorular = result.scalars().all()
 
             if len(tum_sorular) < soru_sayisi:
@@ -316,7 +332,7 @@ class IRTAnalysisService:
             soru_bilgi_degerleri.sort(key=lambda x: x["bilgi_degeri"], reverse=True)
 
             # Çeşitlilik için farklı zorluk seviyelerinden seç
-            secilen_sorular = []
+            secilen_sorular: list[dict[str, Any]] = []
             zorluk_dagilimi = {"kolay": 0, "orta": 0, "zor": 0, "uzman": 0}
             max_per_level = max(1, soru_sayisi // 4)
 
@@ -325,14 +341,24 @@ class IRTAnalysisService:
                     break
 
                 soru = soru_info["soru"]
-                zorluk = (soru.difficulty_level.value if hasattr(soru.difficulty_level, "value") else soru.difficulty_level)
+                zorluk = (
+                    soru.difficulty_level.value
+                    if hasattr(soru.difficulty_level, "value")
+                    else soru.difficulty_level
+                )
 
                 if zorluk_dagilimi[zorluk] < max_per_level:
                     secilen_sorular.append(
                         {
                             "soru_id": soru.id,
                             "soru_metni": soru.question_text,
-                            "secenekler": {"A": soru.option_a, "B": soru.option_b, "C": soru.option_c, "D": soru.option_d, "E": soru.option_e},
+                            "secenekler": {
+                                "A": soru.option_a,
+                                "B": soru.option_b,
+                                "C": soru.option_c,
+                                "D": soru.option_d,
+                                "E": soru.option_e,
+                            },
                             "zorluk_seviyesi": zorluk,
                             "bilgi_degeri": soru_info["bilgi_degeri"],
                             "irt_parameters": {
@@ -358,8 +384,18 @@ class IRTAnalysisService:
                             {
                                 "soru_id": soru.id,
                                 "soru_metni": soru.question_text,
-                                "secenekler": {"A": soru.option_a, "B": soru.option_b, "C": soru.option_c, "D": soru.option_d, "E": soru.option_e},
-                                "zorluk_seviyesi": (soru.difficulty_level.value if hasattr(soru.difficulty_level, "value") else soru.difficulty_level),
+                                "secenekler": {
+                                    "A": soru.option_a,
+                                    "B": soru.option_b,
+                                    "C": soru.option_c,
+                                    "D": soru.option_d,
+                                    "E": soru.option_e,
+                                },
+                                "zorluk_seviyesi": (
+                                    soru.difficulty_level.value
+                                    if hasattr(soru.difficulty_level, "value")
+                                    else soru.difficulty_level
+                                ),
                                 "bilgi_degeri": soru_info["bilgi_degeri"],
                                 "irt_parameters": {
                                     "a": soru.irt_discrimination,
@@ -508,15 +544,15 @@ class IRTAnalysisService:
 
     async def _estimate_theta_mle(self, sinav_cevaplari: list[dict[str, Any]]) -> float:
         """Maximum Likelihood ile theta tahmin et, taban puan ve tükenmişlik algılayıcı (burnout detector) dahil"""
-        
+
         # Taban Puan (Floor Score) ve Tükenmişlik Algılayıcı (Burnout Detector)
         taban_puan = -3.0
-        
+
         # Öğrencinin hep yanlış yapma durumunu kontrol et
         dogru_sayisi = sum(1 for c in sinav_cevaplari if c["dogru_mu"])
         if dogru_sayisi == 0:
             return taban_puan
-            
+
         # Tükenmişlik Algılayıcı (son 5 sorunun 5'i de yanlışsa yorgunluk/tükenmişlik olabilir)
         ardisik_yanlis_sayisi = 0
         for cevap in reversed(sinav_cevaplari):
@@ -524,13 +560,13 @@ class IRTAnalysisService:
                 ardisik_yanlis_sayisi += 1
             else:
                 break
-                
+
         is_burnout = ardisik_yanlis_sayisi >= 5
 
         # Newton-Raphson iterasyonu
         theta = 0.0  # Başlangıç değeri
 
-        for iteration in range(self.max_iterations):
+        for _iteration in range(self.max_iterations):
             likelihood_derivative = 0.0
             information = 0.0
 
@@ -539,10 +575,14 @@ class IRTAnalysisService:
                 b = cevap["b_param"]
                 c = cevap["c_param"]
                 u = 1 if cevap["dogru_mu"] else 0
-                
+
                 # Tükenmişlik durumunda son ardışık yanlışların etkisini azalt
                 weight = 1.0
-                if is_burnout and not cevap["dogru_mu"] and i >= len(sinav_cevaplari) - ardisik_yanlis_sayisi:
+                if (
+                    is_burnout
+                    and not cevap["dogru_mu"]
+                    and i >= len(sinav_cevaplari) - ardisik_yanlis_sayisi
+                ):
                     weight = 0.3  # %70 daha az etki
 
                 # Probability hesapla
@@ -563,7 +603,9 @@ class IRTAnalysisService:
                     break
 
                 theta = theta_new
-                theta = max(taban_puan, min(4.0, theta))  # Taban puan ve tavan puanla sınırla
+                theta = max(
+                    taban_puan, min(4.0, theta)
+                )  # Taban puan ve tavan puanla sınırla
             else:
                 break
 
