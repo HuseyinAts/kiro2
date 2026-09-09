@@ -348,6 +348,43 @@ def setup_test_database(test_database_url, worker_id):
 
 
 @pytest.fixture(scope="session", autouse=True)
+def bkt_surec_havuzu_kapali():
+    """Test oturumunda bkt_service surec havuzu KAPALI (9 Eyl 2026, madde 17).
+
+    OLCUM (CI job 102485364626, Linux/fork): test_fsrs_card_persistence.py
+    tohum karti guncellenmis ama degerler `_FSRS_MOCK_RETURN` (stability 1.0,
+    difficulty 0.5, state 'new', reps 1) -- yani batch1b'nin
+    `patch(FSRSService.review_card)` mock'u, patch bittikten SONRA, baska bir
+    dosyanin testinde geri geliyordu. Mekanizma:
+
+      services/bkt_service.py:18 `ProcessPoolExecutor(max_workers=4)` modul
+      yuklenirken kurulur; Linux'ta cocuk surecler ilk `submit`te FORK ile
+      dogar ve o an aktif olan unittest.mock patch'ini de miras alir.
+      batch1b'nin EAP yolu (answered_questions) havuza is verir -> cocuk,
+      `FSRSService.review_card` MagicMock'uyla dogar ve patch parent'ta
+      geri alinsa da cocukta kalir. Ayni xdist worker'inda sonra kosan her
+      test havuz yoluna girince mock sonucu alir. Windows'ta (spawn) cocuk
+      modulleri yeniden import ettigi icin YERELDE HIC GORUNMEZ -- "CI-only,
+      rastgele" gorunumunun sebebi bu.
+
+    Cozum: test oturumunda havuz None -> bkt_service her iki yolda da
+    (`_global_process_pool is None` dali) islemi surec icinde yapar; patch
+    davranisi test sinirlarina hapsolur. Havuz yolunun kendisi
+    tests/unit/test_bkt_havuz_zehirlenmesi.py'de TAZE bir havuzla ayrica
+    olculur; uretim kodu degismedi.
+    """
+    try:
+        from services import bkt_service
+    except Exception:  # modul yoksa yapacak bir sey yok
+        yield
+        return
+    eski = bkt_service._global_process_pool
+    bkt_service._global_process_pool = None
+    yield
+    bkt_service._global_process_pool = eski
+
+
+@pytest.fixture(scope="session", autouse=True)
 def global_db_manager_cleanup():
     """Ensure db_manager is closed to prevent hanging aiosqlite threads in pytest-asyncio teardown.
 

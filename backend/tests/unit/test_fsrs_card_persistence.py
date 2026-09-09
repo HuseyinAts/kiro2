@@ -161,7 +161,9 @@ async def fsrs_card_seed(db_session):
 
     async with db_session() as session:
         card = FSRSCard(
-            id="00000000-0000-0000-0000-000000000099",
+            # Kart id'si de dosyaya ozel: eski 0099 baska kullanicinin (732)
+            # artigi olarak DB'de kalinca fsrs_cards_pkey catisiyordu (olculdu).
+            id="00000000-0000-0000-0000-000000000734",
             student_id=REAL_USER_ID,
             front_text="Seed front",
             back_text="Seed back",
