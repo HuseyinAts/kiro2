@@ -206,8 +206,10 @@ class MultiAgentBlackboard:
                 loop = asyncio.get_running_loop()
                 self._cleanup_task = loop.create_task(self._periodic_cleanup())
             except RuntimeError:
-                # Event loop yok, cleanup task'ı daha sonra başlatılacak
-                pass
+                # Calisan event loop yok; temizleme gorevi ilk write()
+                # cagrisinda (lazy) yeniden denenecek. Sessiz gecmiyoruz:
+                # bos yakalayici, sorunu goze gorunmez yapar (SS10.63).
+                logger.debug("Calisan event loop yok; TTL temizleme gorevi ertelendi")
 
     async def _periodic_cleanup(self):
         """Periyodik temizleme görevi"""
