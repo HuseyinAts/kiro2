@@ -41,3 +41,36 @@ class TestIsomorphicGenerator:
         # 1923 should not be touched since no math keywords are present
         assert "1923" in iso["content"]
         assert iso["is_isomorphic"] is True
+
+
+class TestIsimGeriDonusu:
+    """9 Eyl 2026: CI'da test_number_replacement ~%1 rastgele kirmiziydi.
+
+    Kok neden: isimler sirayla degistiriliyordu; "Mehmet" -> "Ali" sonra
+    dongu "Ali"ye gelince "Ali" -> "Mehmet" olabiliyordu (orijinal isim geri
+    donuyordu). Tek gecis + orijinal isimleri iceremeyen havuzla bu olasilik
+    sifir. 400 tohumla olculur (eski kod 400 tohumda birden fazla kez duser).
+    """
+
+    def test_orijinal_isim_hicbir_tohumda_geri_donmez(self):
+        import random
+
+        for tohum in range(400):
+            random.seed(tohum)
+            iso = IsomorphicGenerator.generate_isomorphic_question(
+                {"content": "Mehmet ile Ali 5 tane elma aldı.", "options": []}
+            )
+            assert "Mehmet" not in iso["content"], (tohum, iso["content"])
+            assert "Ali" not in iso["content"], (tohum, iso["content"])
+            assert "5 tane" not in iso["content"], (tohum, iso["content"])
+
+    def test_bir_sayisi_da_degisir(self):
+        """max(1, 1 - offset) = 1: eksi dalinda sayi degismiyordu."""
+        import random
+
+        for tohum in range(50):
+            random.seed(tohum)
+            iso = IsomorphicGenerator.generate_isomorphic_question(
+                {"content": "Ali 1 tane kalem aldı.", "options": []}
+            )
+            assert " 1 tane" not in iso["content"], (tohum, iso["content"])
