@@ -45,7 +45,13 @@ from sqlalchemy.pool import NullPool
 
 from tests.e2e.pg_dsn import SKIP_REASON, resolve_pg_dsn
 
-pytestmark = [pytest.mark.golden_flow, pytest.mark.e2e]
+# needs_elasticsearch (9 Eyl 2026): golden-flows.yml'de ES servisi yok; bu
+# dosya orada 3/3 skip oluyordu (arama 404/bos sonuc -> pytest.skip) ve
+# kapinin `atlanan <= 5` butcesinin yarisinden fazlasini olcmeden tuketiyordu.
+# Kapi `-m "golden_flow and not needs_elasticsearch"` ile secer; ES servisi
+# eklendiginde selector'dan `not needs_elasticsearch` kaldirilir, testler
+# degismeden yeniden silahlanir. Yerelde ES varsa `-m golden_flow` hepsini kosar.
+pytestmark = [pytest.mark.golden_flow, pytest.mark.e2e, pytest.mark.needs_elasticsearch]
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 TIMEOUT = 30.0
