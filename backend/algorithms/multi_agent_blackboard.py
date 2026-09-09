@@ -17,10 +17,11 @@ import logging
 import uuid
 import weakref
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 # Configure logging
@@ -102,7 +103,7 @@ class AgentSubscription:
         self,
         agent_name: str,
         event_types: list[EventType],
-        key_patterns: list[str] = None,
+        key_patterns: list[str] | None = None,
         callback: Callable | None = None,
         priority_filter: Priority | None = None,
     ):
@@ -150,11 +151,52 @@ class MultiAgentBlackboard:
         }
 
         # Test compatibility attributes
-        self.subscribers = defaultdict(list)  # For test compatibility
+        # subscribe_simple() buraya event_type STRING'leri koyuyor.
+        self.subscribers: defaultdict[str, list[str]] = defaultdict(list)
 
         # Cleanup task
-        self._cleanup_task = None
+        self._cleanup_task: asyncio.Task | None = None
         self._start_cleanup_task()
+
+        # Yayin gorevleri: create_task'in dondurdugu Task'a referans
+        # tutulmazsa gorev ortada cop toplanabilir (ruff RUF006). Ayni
+        # desen backend/core/error_context.py'de de kullaniliyor.
+        self._yayin_gorevleri: set[asyncio.Task] = set()
+
+    def _olayi_yayinla_gerekirse(self, event: "BlackboardEvent") -> None:
+        """Calisan bir loop varsa olayi yayinlar; yoksa sessizce atlar.
+
+        `asyncio.create_task` CALISAN bir loop ister. `register_agent` ve
+        `subscribe` senkron API'ler ve loop disindan da cagriliyorlar; orada
+        create_task RuntimeError firlatiyor, fonksiyonun disindaki
+        `except Exception` bunu yutuyor ve fonksiyon False donuyordu --
+        kayit/abonelik ASLINDA tamamlanmis olmasina ragmen. Yani donus degeri
+        yalan soyluyordu.
+
+        Bu, ayni dosyadaki `_start_cleanup_task`in zaten kullandigi desen.
+        """
+        if not self._gorev_baslat(self._broadcast_event(event)):
+            logger.debug(
+                "Calisan event loop yok; %s olayi yayinlanmadi", event.event_type
+            )
+
+    def _gorev_baslat(self, coro: Coroutine[Any, Any, Any]) -> bool:
+        """Calisan bir loop varsa arka plan gorevini baslatir.
+
+        Loop yoksa coroutine kapatilir ("never awaited" uyarisini onlemek
+        icin) ve False donulur -- cagiran o bilgiyle ne yapacagina karar
+        verir. Gorev referansi kumede tutulur; aksi halde gorev ortada cop
+        toplanabilir (ruff RUF006).
+        """
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            coro.close()
+            return False
+        gorev = asyncio.create_task(coro)
+        self._yayin_gorevleri.add(gorev)
+        gorev.add_done_callback(self._yayin_gorevleri.discard)
+        return True
 
     def _start_cleanup_task(self):
         """TTL temizleme görevini başlat (lazy initialization)"""
@@ -222,7 +264,7 @@ class MultiAgentBlackboard:
                 source_agent="blackboard_system",
             )
 
-            asyncio.create_task(self._broadcast_event(event))
+            self._olayi_yayinla_gerekirse(event)
 
             logger.info(f"Agent registered: {agent_name}")
             return True
@@ -245,7 +287,7 @@ class MultiAgentBlackboard:
         self,
         agent_name: str,
         event_types: list[EventType],
-        key_patterns: list[str] = None,
+        key_patterns: list[str] | None = None,
         callback: Callable | None = None,
         priority_filter: Priority | None = None,
     ) -> bool:
@@ -291,7 +333,7 @@ class MultiAgentBlackboard:
                 source_agent="blackboard_system",
             )
 
-            asyncio.create_task(self._broadcast_event(event))
+            self._olayi_yayinla_gerekirse(event)
 
             logger.info(f"Agent subscribed: {agent_name} to {event_types}")
             return True
@@ -306,7 +348,7 @@ class MultiAgentBlackboard:
         value: Any,
         source_agent: str,
         ttl_seconds: int | None = None,
-        metadata: dict[str, Any] = None,
+        metadata: dict[str, Any] | None = None,
         priority: Priority = Priority.MEDIUM,
     ) -> bool:
         """
@@ -404,7 +446,11 @@ class MultiAgentBlackboard:
 
             # TTL kontrolü
             if data.ttl and datetime.now() > data.ttl:
-                asyncio.create_task(self.delete(key, "ttl_expired"))
+                # Ayni loop kusuru burada da vardi: `read()` senkron ve
+                # loop disindan cagrilabiliyor; o zaman create_task
+                # RuntimeError firlatip disaridaki except'e dusuyor ve
+                # read() sessizce None donuyordu -- veri VARKEN.
+                self._gorev_baslat(self.delete(key, "ttl_expired"))
                 return None
 
             # Access count güncelle
@@ -481,7 +527,7 @@ class MultiAgentBlackboard:
         try:
             notification_tasks = []
 
-            for agent_name, subscriptions in self.subscriptions.items():
+            for _agent_name, subscriptions in self.subscriptions.items():
                 for subscription in subscriptions:
                     if self._should_notify(subscription, event):
                         task = self._send_notification(subscription, event)
@@ -521,11 +567,9 @@ class MultiAgentBlackboard:
             if not key_match:
                 return False
 
-        # Kendi olaylarını filtrele (opsiyonel)
-        if event.source_agent == subscription.agent_name:
-            return False
-
-        return True
+        # Kendi olaylarini filtrele: kaynak agent kendi yazdigi olayin
+        # bildirimini almaz.
+        return event.source_agent != subscription.agent_name
 
     async def _send_notification(
         self, subscription: AgentSubscription, event: BlackboardEvent
@@ -570,7 +614,7 @@ class MultiAgentBlackboard:
             return
 
         try:
-            message = {
+            message: dict[str, Any] = {
                 "type": "blackboard_event",
                 "event": asdict(event),
                 "timestamp": event.timestamp.isoformat(),
@@ -808,10 +852,12 @@ class MultiAgentBlackboard:
     def save_checkpoint(self, filepath: str) -> bool:
         """Blackboard durumunu dosyaya kaydet (Checkpoint)"""
         try:
-            import os
             from dataclasses import asdict
 
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            # `os.makedirs(os.path.dirname(...))` idi; dosya adi dizinsiz
+            # verildiginde dirname "" doner ve makedirs patlardi.
+            # Path(...).parent bu durumda "." verir.
+            Path(filepath).parent.mkdir(parents=True, exist_ok=True)
 
             data_to_save = {}
             for k, v in self.blackboard.items():
@@ -820,7 +866,7 @@ class MultiAgentBlackboard:
                     data_dict["subscribers"] = list(data_dict["subscribers"])
                 data_to_save[k] = data_dict
 
-            with open(filepath, "w", encoding="utf-8") as f:
+            with Path(filepath).open("w", encoding="utf-8") as f:
                 json.dump(data_to_save, f, default=str)
 
             logger.info(f"Blackboard checkpoint saved to {filepath}")
@@ -832,13 +878,12 @@ class MultiAgentBlackboard:
     def load_checkpoint(self, filepath: str) -> bool:
         """Blackboard durumunu dosyadan yükle (Resume)"""
         try:
-            import os
             from datetime import datetime
 
-            if not os.path.exists(filepath):
+            if not Path(filepath).exists():
                 return False
 
-            with open(filepath, encoding="utf-8") as f:
+            with Path(filepath).open(encoding="utf-8") as f:
                 data = json.load(f)
 
             for k, v_dict in data.items():
@@ -882,7 +927,8 @@ _global_blackboard: MultiAgentBlackboard | None = None
 
 def get_blackboard() -> MultiAgentBlackboard:
     """Global blackboard instance'ını al"""
-    global _global_blackboard
+    # Bilincli modul duzeyi singleton; surec basina tek blackboard.
+    global _global_blackboard  # noqa: PLW0603
     if _global_blackboard is None:
         _global_blackboard = MultiAgentBlackboard()
     return _global_blackboard
@@ -890,7 +936,8 @@ def get_blackboard() -> MultiAgentBlackboard:
 
 def reset_blackboard():
     """Global blackboard'ı sıfırla (test amaçlı)"""
-    global _global_blackboard
+    # Yukaridaki singleton'in test tarafindaki karsiligi.
+    global _global_blackboard  # noqa: PLW0603
     if _global_blackboard:
         _global_blackboard.cleanup()
     _global_blackboard = None
