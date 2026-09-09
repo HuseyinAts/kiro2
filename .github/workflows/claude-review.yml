@@ -48,6 +48,20 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: "--model claude-sonnet-4-20250514"
+          # GECICI TESHIS (9 Eyl 2026). Is `is_error: true` ile dusuyor ama
+          # gercek mesaj gizli: "Running Claude Code via SDK (full output
+          # hidden for security)". DEBUG modda yeniden kosuldu, orada da
+          # gizli. Mesaji gormenin tek yolu bu bayrak.
+          #
+          # Hata imzasi: num_turns=1, total_cost_usd=0, modelUsage={} --
+          # yani model cagrisi hic faturalanmiyor, ilk turda kesiliyor.
+          # Anahtar degil: secret 9 Eyl 00:44'te yenilendi, hata AYNEN
+          # tekrarladi.
+          #
+          # GERI ALINACAK: mesaj okununca bu satir kaldirilacak. Depo
+          # PUBLIC oldugu icin kalici birakmak inceleme ciktisini herkese
+          # acik loglara yazar.
+          show_full_output: true
           prompt: |
             Bu PR'i KIRO2 standartlarina gore incele.
 
