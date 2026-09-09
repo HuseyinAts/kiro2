@@ -279,3 +279,40 @@ async def test_geometri_kokundeki_sorular_geometri_etiketli(baglanti) -> None:
     dagilim = {r.alan: r.adet for r in sonuc.fetchall()}
     yabanci = {k: v for k, v in dagilim.items() if k != "GEOMETRI"}
     assert not yabanci, f"GEO alt agacinda GEOMETRI olmayan soru: {yabanci}"
+
+
+async def test_sorunun_dersi_ile_konusunun_koku_uyusur(baglanti) -> None:
+    """Aktif sorunun question_metadata.subject_area'si, konusunun kokuyle uyusmali.
+
+    0009 bekcisi: 21 soru dogrudan yanlis derse ait bir koke bagliydi (FIZ
+    kokunde KIMYA, SOS kokunde TARIH/COGRAFYA, FEN kokunde KIMYA); elle
+    okundu, icerik etiketle uyusuyordu, konu yanlisti. Sozlesme genel:
+    hangi kok altinda olursa olsun, sorunun dersi kokun dersi olmali.
+    Taze DB'de soru yoktur -> bos kume, gecer.
+    """
+    sonuc = await baglanti.execute(
+        text(
+            """
+            WITH RECURSIVE yukari AS (
+                SELECT t.id, t.code, t.parent_id, t.id AS baslangic
+                  FROM topic_hierarchy t
+                UNION ALL
+                SELECT p.id, p.code, p.parent_id, y.baslangic
+                  FROM topic_hierarchy p JOIN yukari y ON p.id = y.parent_id
+            )
+            SELECT y.code AS kok, upper(m.subject_area) AS ders, count(*) AS adet
+              FROM question_bank b
+              JOIN question_metadata m ON m.id = b.id
+              JOIN yukari y ON y.baslangic = b.primary_topic_id AND y.parent_id IS NULL
+             WHERE b.is_active AND m.subject_area IS NOT NULL
+             GROUP BY 1, 2
+             ORDER BY 1, 2
+            """
+        )
+    )
+    yanlis = [
+        (r.kok, r.ders, r.adet)
+        for r in sonuc.fetchall()
+        if _DERS_KOKU.get(r.ders) not in (None, r.kok)
+    ]
+    assert not yanlis, f"dersi kokuyle uyusmayan sorular (kok, ders, adet): {yanlis}"
