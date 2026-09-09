@@ -1,83 +1,95 @@
-"""bkt_service surec havuzu: test oturumunda kapali, uretim yolu taze havuzla calisir.
+"""bkt_service yurutucu sozlesmesi: surec havuzu YOK, saf hesap thread'de, mock'lar dogrudan.
 
-Kok neden (9 Eyl 2026, rapor madde 17; CI job 102485364626):
-services/bkt_service.py modul yuklenirken `ProcessPoolExecutor(max_workers=4)`
-kurar. Linux'ta cocuk surecler ilk `submit`te FORK ile dogar ve o anda aktif
-olan `unittest.mock.patch`i (ornegin batch1b'nin `FSRSService.review_card`
-mock'u) kalici olarak miras alir; patch parent'ta geri alinsa da cocukta
-kalir. Ayni xdist worker'inda sonra kosan test havuz yoluna girince mock
-sonucunu alir -> test_fsrs_card_persistence'ta "stability 1.0 != 2.3065",
-"scheduled_days tohum degerinde" (mock sozlugunun degerleri birebir).
-Windows'ta (spawn) gorunmez; o yuzden yerelde 8/8, CI'da rastgele kirmizi.
+Tarihce (9 Eyl 2026, rapor madde 17-18): modul yuklenirken kurulan
+`ProcessPoolExecutor(max_workers=4)` Linux'ta fork ile dogup o an aktif
+`unittest.mock.patch`i cocuga kalici miras birakiyordu -> CI'da rastgele
+kirmizi. Olcum havuzun hesabin kendisi kadar pickle+IPC maliyeti ekledigini
+gosterdi (review_card: surec-ici 1.65 / thread 1.47 / surec havuzu 2.70 ms;
+ilk cagri p95 578 ms). Havuz kaldirildi; `_loop_disinda` thread havuzunu
+(`run_in_executor(None, ...)`) kullaniyor.
 
-Uc test:
-1. tests/conftest.py oturum fixture'i havuzu None yapiyor mu (bekci).
-2. Havuz yolu, TAZE (patch'siz) bir havuzla surec ici sonucun aynisini
-   veriyor mu -- uretim yolunun kendisi olculuyor, test disi birakilmiyor.
-3. Mekanizmanin kaniti (yalnizca fork destekleyen platformda): patch
-   aktifken fork edilen cocuk, patch bittikten sonra da mock'u dondurur.
-   Bu test kodumuzu degil teshisi civiliyor; kirilirsa teshis bayatlamis
-   demektir (ornegin havuz spawn'a gecirilirse bu test SKIP/degisir).
+Uc bekci:
+1. Modulde surec havuzu geri gelmesin (import + sembol).
+2. Gercek fonksiyon event loop thread'inde DEGIL, baska thread'de kosar
+   (loop bloklanmiyor) ve sonucu surec ici sonucla ayni.
+3. MagicMock / AsyncMock dogrudan cagrilir (AsyncMock coroutine dondurur;
+   thread'e gonderilse await edilemezdi) -- mock'lu test dosyalari bu
+   sozlesmeye dayaniyor.
+Mutasyon: eski ProcessPoolExecutor satiri geri konunca 1 FAILED; mock dali
+silinince 3 FAILED.
 """
 
 from __future__ import annotations
 
+import ast
 import asyncio
-import concurrent.futures
-import multiprocessing
-import os
+import inspect
+import threading
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock
 
-import pytest
-
-import services.bkt_service  # ruff PLR0402 / mypy attr-defined uzlasisi: tam ad
+import services.bkt_service  # tam ad: ruff PLR0402 / mypy attr-defined uzlasisi
 from services.fsrs_v6_service import FSRSService
 
 
-def test_oturumda_havuz_kapali() -> None:
-    """tests/conftest.py::bkt_surec_havuzu_kapali aktif mi."""
+def test_modulde_surec_havuzu_yok() -> None:
+    """AST ile: docstring'deki tarihce metni degil, gercek cagri/import aranir."""
+    agac = ast.parse(inspect.getsource(services.bkt_service))
+    cagrilar = [
+        ast.unparse(n.func)
+        for n in ast.walk(agac)
+        if isinstance(n, ast.Call)
+        and ast.unparse(n.func).endswith("ProcessPoolExecutor")
+    ]
+    assert not cagrilar, f"surec havuzu geri gelmis (madde 17/18): {cagrilar}"
+    moduller = {
+        alias.name
+        for n in ast.walk(agac)
+        if isinstance(n, ast.Import | ast.ImportFrom)
+        for alias in n.names
+    } | {n.module or "" for n in ast.walk(agac) if isinstance(n, ast.ImportFrom)}
+    assert "concurrent.futures" not in moduller
+    assert not hasattr(services.bkt_service, "_global_process_pool")
+
+
+def test_gercek_fonksiyon_loop_disinda_thread_de_kosar() -> None:
+    gorulen: dict[str, Any] = {}
+
+    def hesap(x: int) -> int:
+        gorulen["thread"] = threading.current_thread().name
+        return x * 2
+
+    async def _kos() -> int:
+        gorulen["loop_thread"] = threading.current_thread().name
+        sonuc: int = await services.bkt_service._loop_disinda(hesap, 21)
+        return sonuc
+
+    assert asyncio.run(_kos()) == 42
     assert (
-        services.bkt_service._global_process_pool is None
-    ), "havuz acik: fork ile dogan cocuklar aktif mock patch'lerini miras alir"
+        gorulen["thread"] != gorulen["loop_thread"]
+    ), "hesap loop thread'inde kostu (bloklama)"
 
-
-def test_havuz_yolu_taze_havuzla_surec_ici_sonucla_ayni() -> None:
-    """Uretim yolu (run_in_executor + FSRSService.review_card) taze havuzda dogru."""
     beklenen = FSRSService.review_card(None, None, None, 3, 0)
-
-    async def _havuzda() -> dict:
-        with concurrent.futures.ProcessPoolExecutor(max_workers=1) as havuz:
-            return await asyncio.get_running_loop().run_in_executor(
-                havuz, FSRSService.review_card, None, None, None, 3, 0
-            )
-
-    sonuc = asyncio.run(_havuzda())
+    sonuc = asyncio.run(
+        services.bkt_service._loop_disinda(
+            FSRSService.review_card, None, None, None, 3, 0
+        )
+    )
     for anahtar in ("stability", "difficulty", "state", "reps", "degraded"):
         assert sonuc.get(anahtar) == beklenen.get(anahtar), anahtar
 
 
-def _cocukta_review_card() -> dict[str, Any]:
-    sonuc: dict[str, Any] = FSRSService.review_card(None, None, None, 3, 0)
-    return sonuc
+def test_mocklar_dogrudan_cagrilir() -> None:
+    sync_mock = MagicMock(return_value={"stability": -1.0})
+    async_mock = AsyncMock(return_value=(0.5, 0.3))
 
+    async def _kos() -> tuple[Any, Any]:
+        a = await services.bkt_service._loop_disinda(sync_mock, 1, 2)
+        b = await services.bkt_service._loop_disinda(async_mock, [], [])
+        return a, b
 
-@pytest.mark.skipif(
-    "fork" not in multiprocessing.get_all_start_methods(),
-    reason="fork yok (Windows/macOS spawn): mekanizma bu platformda olusmaz",
-)
-def test_fork_havuzu_aktif_patchi_kalici_miras_alir_mekanizma() -> None:
-    """Teshisin kaniti: patch aktifken fork edilen cocuk, patch bittikten sonra da mock'u dondurur."""
-    zehir = {"stability": -1.0, "difficulty": -1.0, "state": "zehir", "reps": 99}
-    ctx = multiprocessing.get_context("fork")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=1, mp_context=ctx) as havuz:
-        with patch.object(FSRSService, "review_card", return_value=zehir):
-            # Patch aktifken ilk submit -> cocuk BU anda fork edilir.
-            havuz.submit(os.getpid).result()
-        # Patch bitti: parent'ta gercek fonksiyon geri geldi...
-        assert FSRSService.review_card(None, None, None, 3, 0)["state"] != "zehir"
-        # ...ama cocuk hala mock'u tasiyor.
-        cocuk = havuz.submit(_cocukta_review_card).result()
-    assert (
-        cocuk["state"] == "zehir"
-    ), "fork cocugu patch'i miras almadi -- teshis bayat, conftest notunu guncelle"
+    a, b = asyncio.run(_kos())
+    assert a == {"stability": -1.0}
+    assert b == (0.5, 0.3)
+    sync_mock.assert_called_once_with(1, 2)
+    async_mock.assert_awaited_once_with([], [])

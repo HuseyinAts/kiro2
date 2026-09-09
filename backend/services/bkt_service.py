@@ -9,17 +9,42 @@ Bu servis sadece saf hesaplama yapar (DB islemi yok).
 from __future__ import annotations
 
 import asyncio
-import concurrent.futures
 import logging
+from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
-_global_process_pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
+
+
+async def _loop_disinda(fn: Callable[..., Any], *args: Any) -> Any:
+    """Saf hesabi (FSRS review_card, IRT eap_theta) event loop'u bloklamadan kos.
+
+    9 Eyl 2026'ya kadar burada modul yuklenirken kurulan
+    `ProcessPoolExecutor(max_workers=4)` vardi. Olculdu (rapor madde 18):
+      review_card  surec-ici 1.65 ms | thread 1.47 ms | surec havuzu 2.70 ms
+      eap_theta/40 surec-ici 3.31 ms | thread 2.69 ms | surec havuzu 3.24 ms
+      surec havuzu ilk cagri p95 578 ms (cocuk baslatma)
+    Yani havuz hesabin kendisi kadar pickle+IPC maliyeti ekliyordu; uretimde
+    4 uvicorn worker x 4 cocuk = 16 fork edilmis surec, asyncio+thread'li
+    parent'tan (3.12+ DeprecationWarning). Ustune fork, o an aktif
+    unittest.mock patch'ini cocuga kalici miras birakiyordu (CI'da rastgele
+    kirmizi, madde 17). Thread havuzu: fork yok, pickle yok, patch'ler
+    thread'ler arasi tutarli, loop yine bloklanmaz.
+
+    Mock'lar (MagicMock/AsyncMock) dogrudan cagrilir: AsyncMock coroutine
+    dondurur, thread'e gonderilemez.
+    """
+    if hasattr(fn, "__mock_self__") or isinstance(fn, AsyncMock | MagicMock):
+        sonuc = fn(*args)
+        if asyncio.iscoroutine(sonuc):
+            sonuc = await sonuc
+        return sonuc
+    return await asyncio.get_running_loop().run_in_executor(None, fn, *args)
+
 
 # Algoritma pipeline hata sayaclari (observability)
 _ALGO_ERRORS: dict[str, int] = {"bkt_read": 0, "bkt_write": 0, "irt": 0, "fsrs": 0}
@@ -328,25 +353,9 @@ class BKTService:
             from services.irt_service_3pl import IRTService3PL
 
             if answered_questions and responses:
-                if (
-                    hasattr(IRTService3PL.eap_theta, "__mock_self__")
-                    or isinstance(IRTService3PL.eap_theta, AsyncMock | MagicMock)
-                    or _global_process_pool is None
-                ):
-                    res = IRTService3PL.eap_theta(answered_questions, responses)
-                    if asyncio.iscoroutine(res):
-                        res = await res
-                    theta_after, theta_se = res
-                else:
-                    (
-                        theta_after,
-                        theta_se,
-                    ) = await asyncio.get_running_loop().run_in_executor(
-                        _global_process_pool,
-                        IRTService3PL.eap_theta,
-                        answered_questions,
-                        responses,
-                    )
+                theta_after, theta_se = await _loop_disinda(
+                    IRTService3PL.eap_theta, answered_questions, responses
+                )
             else:
                 # DM-05: BKT→IRT bridge: logit dönüşümü (lineer yerine)
                 # p_L [0,1] → theta [-4,4] via ln(p/(1-p)), clamped
@@ -481,30 +490,14 @@ class BKTService:
             prev_due = fsrs_card.due_date if fsrs_card else None
             prev_reps = fsrs_card.reps if fsrs_card else 0
 
-            if (
-                hasattr(FSRSService.review_card, "__mock_self__")
-                or isinstance(FSRSService.review_card, AsyncMock | MagicMock)
-                or _global_process_pool is None
-            ):
-                fsrs_result = FSRSService.review_card(
-                    prev_stability,
-                    prev_difficulty,
-                    prev_due,
-                    rating,
-                    prev_reps,
-                )
-                if asyncio.iscoroutine(fsrs_result):
-                    fsrs_result = await fsrs_result
-            else:
-                fsrs_result = await asyncio.get_running_loop().run_in_executor(
-                    _global_process_pool,
-                    FSRSService.review_card,
-                    prev_stability,
-                    prev_difficulty,
-                    prev_due,
-                    rating,
-                    prev_reps,
-                )
+            fsrs_result = await _loop_disinda(
+                FSRSService.review_card,
+                prev_stability,
+                prev_difficulty,
+                prev_due,
+                rating,
+                prev_reps,
+            )
             fsrs_next_review = fsrs_result.get("due_date")
 
             # State'i DB'ye yaz.
