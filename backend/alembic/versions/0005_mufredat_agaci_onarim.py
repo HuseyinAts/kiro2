@@ -46,9 +46,13 @@ Agac disinda asili konulara bagli toplam soru: 3.266 / 5.796 (%56).
 
 DEGISIKLIK
 ----------
-1) 11 KIMYA konusu -> parent KIM, level 2
-2) 2 SOSYAL konusu (SOC02, SOC03) -> parent SOS, level 2
-3) TEST.BATCH2A -> is_active = false
+1) subject_area DOLU + parent_id NULL olan HER konu, subject_area'sinin
+   isaret ettigi ders kokune baglanir (level = kok.level + 1). Yerel
+   olcumde bu 11 KIMYA + 2 SOSYAL konusu demekti; CI'da ayrica
+   MVP.MAT.GOLDEN (MATEMATIK) cikti.
+2) (1 ile ayni kural)
+3) Test artiklari (code LIKE 'TEST.%' veya adi 'Test Konu...') ->
+   is_active = false
    DIKKAT: SILINMIYOR. `is_active` uc uretim servisi tarafindan zaten
    suzuluyor (question_bank_service, learning_event_service,
    soru_bankasi_service), dolayisiyla pasife almak kayittan cikarmaya
@@ -57,13 +61,31 @@ DEGISIKLIK
    Olculdu: 57 konuda sayac yanlisti (56'sinda 0, MAT.TRV'de 129 iken
    gercek 0). Bu alani okuyan her ekran yanlis sayi gosteriyordu.
 
-Kodla degil KODLARLA calisiyor (`WHERE code IN (...)`): UUID'ler ortama
-gore degisebilir, kod sabittir. Satir yoksa islem no-op.
+UUID ile degil KOD ile calisiyor: kimlikler ortama gore degisir, kodlar
+sabittir. Eslesme bulunmayan satira dokunulmaz (uydurma ebeveyn atanmaz).
 
-GERI ALINABILIR
----------------
-downgrade() olculmus onceki durumu birebir geri yaziyor (asagidaki
-_ONCEKI_DURUM tablosu 9 Eyl 2026 canli olcumunden alinmistir).
+KURAL TABANLI, LISTE TABANLI DEGIL
+-----------------------------------
+Ilk yazimda yukaridaki 14 kodu tek tek saymistim -- yerel DB'de olculen
+kume buydu. CI'nin veritabaninda bu listede OLMAYAN baska bir yetim cikti:
+
+    MVP.MAT.GOLDEN  "MVP Matematik (Golden seed)"  12 soru
+
+ve ikinci bir test artigi (TEST.BATCH1B). Yani liste tabanli bir migration
+yalnizca olculdugu ortami onarir. upgrade() artik invaryanti KURAL olarak
+uyguluyor; her ortamda ayni sonucu veriyor.
+
+GERI ALINABILIRLIK SINIRI (durust olmak gerekirse)
+---------------------------------------------------
+downgrade(), 9 Eyl 2026 yerel olcumunde tespit edilen 14 satiri birebir
+eski haline (parent_id NULL + olculmus level) dondurur. Kuralin BASKA bir
+ortamda buldugu satirlari (ornegin MVP.MAT.GOLDEN) geri alamaz, cunku
+migration hangi satirlara dokundugunu kaydetmiyor.
+
+Bu bilincli bir tercih: bu satirlari geri almak, onlari yeniden BOZUK
+duruma (agacta asili, ana listede ders gibi gorunur) dondurmek demek.
+downgrade'in amaci fidelity degil, kacis kapisi. Olcmedigim seyi geri
+aldigimi iddia etmemek icin siniri buraya yaziyorum.
 """
 
 from collections.abc import Sequence
@@ -79,25 +101,10 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-# kod -> (hedef ebeveyn kodu, yeni level)
-_YETIMLER: dict[str, tuple[str, int]] = {
-    "KIM.ASI": ("KIM", 2),
-    "KIM.DEN": ("KIM", 2),
-    "KIM.ORG": ("KIM", 2),
-    "KIM.TER": ("KIM", 2),
-    "TYT-KIM-01": ("KIM", 2),
-    "TYT-KIM-02": ("KIM", 2),
-    "TYT-KIM-03": ("KIM", 2),
-    "TYT-KIM-04": ("KIM", 2),
-    "TYT-KIM-09": ("KIM", 2),
-    "TYT-KIM-10": ("KIM", 2),
-    "TYT-KIM-11": ("KIM", 2),
-    "TYT-KIM-12": ("KIM", 2),
-    "SOC02": ("SOS", 2),
-    "SOC03": ("SOS", 2),
-}
-
-# 9 Eyl 2026 olcumu -- downgrade bunlari birebir geri yazar.
+# 9 Eyl 2026 YEREL olcumunde yetim bulunan satirlarin ONCEKI level'lari.
+# upgrade() bu listeyi KULLANMIYOR -- o kural tabanli calisiyor. Liste
+# yalnizca downgrade icin, ve yalnizca olculmus satirlar icin gecerli
+# (bkz. yukaridaki "GERI ALINABILIRLIK SINIRI").
 _ONCEKI_LEVEL: dict[str, int] = {
     "KIM.ASI": 2,
     "KIM.DEN": 2,
@@ -119,37 +126,59 @@ _ONCEKI_LEVEL: dict[str, int] = {
 def upgrade() -> None:
     baglanti = op.get_bind()
 
-    # 1-2) Yetim konulari dogru derse bagla
-    for kod, (ebeveyn_kodu, yeni_level) in _YETIMLER.items():
-        baglanti.execute(
-            sa.text(
-                """
-                UPDATE topic_hierarchy
-                   SET parent_id = (
-                           SELECT id FROM topic_hierarchy
-                            WHERE code = :ebeveyn AND parent_id IS NULL
-                            LIMIT 1
-                       ),
-                       level = :seviye,
-                       updated_at = now()
-                 WHERE code = :kod
-                   AND parent_id IS NULL
-                   AND EXISTS (
-                           SELECT 1 FROM topic_hierarchy
-                            WHERE code = :ebeveyn AND parent_id IS NULL
-                       )
-                """
+    # 1-2) Yetim konulari dogru derse bagla -- KURAL ile, liste ile DEGIL.
+    #
+    # Ilk yazimda 14 kodu tek tek saymistim; yerel DB'de olculen kume buydu.
+    # CI'nin veritabaninda bu listede OLMAYAN baska yetimler cikti
+    # (MVP.MAT.GOLDEN, 12 soru). Yani liste tabanli bir migration yalnizca
+    # olculen ortami onariyor. Asagidaki kural her ortamda ayni invaryanti
+    # uyguluyor: "subject_area DOLU olan her konunun bir ebeveyni olmali".
+    #
+    # Kural yalnizca subject_area -> kok eslesmesi BULUNAN satirlara
+    # dokunuyor; eslesme yoksa satir oldugu gibi birakiliyor (uydurma
+    # ebeveyn atanmiyor).
+    baglanti.execute(
+        sa.text(
+            """
+            WITH esleme(alan, kok_kodu) AS (
+                VALUES ('FIZIK','FIZ'), ('KIMYA','KIM'), ('BIYOLOJI','BIO'),
+                       ('MATEMATIK','MAT'), ('GEOMETRI','GEO'),
+                       ('TURKCE','TUR'), ('EDEBIYAT','EDB'),
+                       ('TARIH','TAR'), ('COGRAFYA','COG'),
+                       ('SOSYAL','SOS'), ('FEN','FEN'),
+                       ('GENEL','GEN'), ('PARAGRAF','PAR')
             ),
-            {"kod": kod, "ebeveyn": ebeveyn_kodu, "seviye": yeni_level},
+            kok AS (
+                SELECT t.id, t.code, t.level
+                  FROM topic_hierarchy t
+                 WHERE t.parent_id IS NULL
+                   AND t.subject_area IS NULL
+            )
+            UPDATE topic_hierarchy y
+               SET parent_id = k.id,
+                   level = k.level + 1,
+                   updated_at = now()
+              FROM esleme e
+              JOIN kok k ON k.code = e.kok_kodu
+             WHERE y.subject_area IS NOT NULL
+               AND y.parent_id IS NULL
+               AND upper(y.subject_area) = e.alan
+               AND y.id <> k.id
+            """
         )
+    )
 
-    # 3) Test artigini pasife al (SILME degil)
+    # 3) Test artigini pasife al (SILME degil) -- yine kural ile.
+    # Gozlenen adlandirma: TEST.BATCH2A / TEST.BATCH1B, adlari "Test Konu ...".
+    # Desen, tests/db/test_mufredat_agaci_saglik.py'deki bekci ile AYNI
+    # tutuluyor ki ikisi birbirinden ayrisamasin.
     baglanti.execute(
         sa.text(
             """
             UPDATE topic_hierarchy
                SET is_active = false, updated_at = now()
-             WHERE code = 'TEST.BATCH2A'
+             WHERE is_active IS TRUE
+               AND (code LIKE 'TEST.%' OR name_tr ILIKE 'Test Konu%')
             """
         )
     )

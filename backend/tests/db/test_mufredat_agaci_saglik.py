@@ -128,10 +128,14 @@ async def test_test_artigi_uretim_agacinda_aktif_degil(baglanti) -> None:
     sonuc = await baglanti.execute(
         text(
             """
+            -- Desen, 0005_mufredat_agaci_onarim.py'deki pasiflestirme
+            -- kuraliyla BIREBIR ayni tutuluyor; ikisi ayrisirsa migration
+            -- temizledigini saniyor ama bekci baska bir sey ariyor olurdu.
+            -- Gozlenen adlandirma: TEST.BATCH2A (yerel), TEST.BATCH1B (CI),
+            -- adlari "Test Konu Batch...".
             SELECT code, name_tr FROM topic_hierarchy
              WHERE is_active IS TRUE
-               AND (code ILIKE '%TEST%' OR name_tr ILIKE '%test %'
-                    OR name_tr ILIKE 'test%')
+               AND (code LIKE 'TEST.%' OR name_tr ILIKE 'Test Konu%')
             """
         )
     )
