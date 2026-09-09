@@ -26,6 +26,8 @@ DB yoksa skip (tests/e2e/pg_dsn.py sozlesmesi).
 
 from __future__ import annotations
 
+import re
+
 import asyncpg
 import pytest
 
@@ -40,7 +42,10 @@ def _asyncpg_dsn() -> str:
     dsn: str | None = resolve_pg_dsn()
     if not dsn:
         pytest.skip(SKIP_REASON)
-    return dsn.replace("postgresql+asyncpg://", "postgresql://", 1)
+    # asyncpg surucu eki kabul etmez. CI'da DATABASE_URL_SYNC
+    # `postgresql+psycopg://` (olculdu: job 102472156026, "invalid DSN: scheme");
+    # yalnizca `+asyncpg`i soymak yetmiyordu -- her `+surucu` eki soyulur.
+    return re.sub(r"^postgresql\+\w+://", "postgresql://", dsn)
 
 
 @pytest.fixture
