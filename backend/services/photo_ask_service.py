@@ -32,6 +32,55 @@ UPLOAD_DIR = Path(os.getenv("PHOTO_ASK_UPLOAD_DIR", "uploads/photo_ask"))
 HIGH_SIMILARITY = 0.75  # Strong match — show directly
 MIN_SIMILARITY = 0.40  # Minimum to consider as a potential match
 
+# Sabit filtreler (alias'lar benzer_soru_sql ile ayni): embedding
+# question_statistics'te, is_active question_bank'ta, kalite kapisi b.id ile.
+TEMEL_FILTRELER: tuple[str, ...] = (
+    "s.embedding IS NOT NULL",
+    "b.is_active = true",
+    safe_for_beta_sql("b.id"),
+)
+KONU_FILTRESI = "m.subject_area = :subject_area"
+
+
+def benzer_soru_sql(where_clause: str) -> str:
+    """pgvector benzerlik sorgusu -- BOLUNMUS question_bank semasi.
+
+    9 Eyl 2026 olcumu (information_schema): kolonlarin sahibi tablolar
+      question_bank       b : id, is_active
+      question_content    c : question_text, question_image_url, option_a..e,
+                              correct_answer, explanation
+      question_metadata   m : exam_type, subject_area, source_book
+      question_statistics s : difficulty_level, embedding (HNSW indeksi burada)
+    Eski tek-tablo sorgu (`FROM question_bank q` + q.question_text ...) canli
+    Postgres'te UndefinedColumn -> /photo-ask 500 (rapor 7.7 / madde 15).
+
+    `where_clause` yalnizca bu modulun kendi sabit filtrelerinden ve
+    core.quality_gate.safe_for_beta_sql'den kurulur; veri degerleri (:emb,
+    :min_sim, :top_k, :subject_area) bagli parametredir. Modul seviyesinde
+    olmasi tests/db bekcisinin ayni metni gercek semaya karsi kosturmasi icin.
+    (Sablon + replace: f-string/concat degil -- ruff S608 surumler arasi
+    tutarsiz isaretliyor; 0.16 acilis satirini, 0.7.1 hicbirini.)
+    """
+    return _BENZER_SORU_SABLON.replace("__WHERE__", where_clause)
+
+
+_BENZER_SORU_SABLON = """
+        SELECT b.id, c.question_text, c.question_image_url,
+               m.exam_type, m.subject_area, m.source_book,
+               s.difficulty_level, c.correct_answer,
+               c.option_a, c.option_b, c.option_c, c.option_d, c.option_e,
+               c.explanation,
+               1 - (s.embedding <=> CAST(:emb AS vector)) as similarity
+        FROM question_bank b
+        JOIN question_content c ON c.id = b.id
+        JOIN question_metadata m ON m.id = b.id
+        JOIN question_statistics s ON s.id = b.id
+        WHERE __WHERE__
+          AND 1 - (s.embedding <=> CAST(:emb AS vector)) >= :min_sim
+        ORDER BY s.embedding <=> CAST(:emb AS vector)
+        LIMIT :top_k
+    """
+
 
 async def save_upload(file_content: bytes, filename: str) -> Path:
     """Save uploaded image to disk. Returns the saved file path."""
@@ -141,32 +190,16 @@ async def find_similar_questions(
     # reddedilmiş soruyu öğrenciye servis ediyordu. Burada dönen dict
     # correct_answer + explanation içerdiği için sızıntı doğrudan çözüm veriyor.
     # is_active YANINA gelir, yerine değil (bayat matview'a karşı canlı güvence).
-    filters = [
-        "q.embedding IS NOT NULL",
-        "q.is_active = true",
-        safe_for_beta_sql("q.id"),
-    ]
+    filters = list(TEMEL_FILTRELER)
     params: dict[str, Any] = {"emb": vec_str, "min_sim": min_similarity, "top_k": top_k}
 
     if subject_area:
-        filters.append("q.subject_area = :subject_area")
+        filters.append(KONU_FILTRESI)
         params["subject_area"] = subject_area.upper()
 
     where_clause = " AND ".join(filters)
 
-    sql = sa_text(f"""
-        SELECT q.id, q.question_text, q.question_image_url,
-               q.exam_type, q.subject_area, q.source_book,
-               q.difficulty_level, q.correct_answer,
-               q.option_a, q.option_b, q.option_c, q.option_d, q.option_e,
-               q.explanation,
-               1 - (q.embedding <=> CAST(:emb AS vector)) as similarity
-        FROM question_bank q
-        WHERE {where_clause}
-          AND 1 - (q.embedding <=> CAST(:emb AS vector)) >= :min_sim
-        ORDER BY q.embedding <=> CAST(:emb AS vector)
-        LIMIT :top_k
-    """)
+    sql = sa_text(benzer_soru_sql(where_clause))
 
     result_rows = await db.execute(sql, params)
     rows = result_rows.fetchall()
