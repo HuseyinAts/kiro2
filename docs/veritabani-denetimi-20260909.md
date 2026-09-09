@@ -798,6 +798,25 @@ karar/onay vermen gereken.
     kimliklerle 8/8 yesil. Ayrica `test_fsrs_card_persistence` kullanici
     satirini hic kurmuyordu (batch1b'nin alfabetik olarak once kosmasina
     gizli bagimlilik) -- kendi org/user satirini kuruyor.
+    **Bu katman gerekliydi ama yetmedi** -- #229'un ilk CI kosumu ayni
+    testleri yine dusurdu. Ikinci katman: dusen satirin degerleri
+    (`stability 1.0 / difficulty 0.5 / state new / reps 1`) batch1b'nin
+    `_FSRS_MOCK_RETURN` sozlugu birebir. `services/bkt_service.py:18`
+    `ProcessPoolExecutor` modul yuklenirken kurulur; Linux'ta cocuk surecler
+    ilk `submit`te **fork** ile dogar ve o an aktif `unittest.mock.patch`i
+    kalici miras alir (batch1b'nin EAP yolu havuza is verir). Ayni worker'da
+    sonra kosan test havuz yoluna girip cocuktan mock sonucunu alir.
+    Windows'ta spawn oldugu icin yerelde hic gorunmez. Duzeltme test
+    tarafinda: `tests/conftest.py` oturum boyu havuzu `None` yapar (surec ici
+    yol); `tests/unit/test_bkt_havuz_zehirlenmesi.py` havuz yolunu TAZE
+    havuzla olcer ve mekanizmayi fork platformunda kanitlar (CI'da 3/3
+    PASSED). Uretim kodu degismedi -> madde 18.
+18. **Surec havuzu `fork` ile dogsun mu?** (sen) `bkt_service` havuzu
+    asyncio + thread'li bir surecten `fork` ile dogar; Python 3.12+ bunun
+    icin DeprecationWarning veriyor (thread'li surecte fork guvensiz).
+    `mp_context=multiprocessing.get_context("spawn")` daha guvenli, ama her
+    cocuk modulleri bastan import eder (4 cocuk x baslangic maliyeti). #229
+    uretim davranisina dokunmadi; karar senin.
 
 ---
 
@@ -817,8 +836,8 @@ bolunmus tablodan onceki ham SQL kullaniyordu ve hicbir bekci bu sinifi
 gormuyordu; FSRS bozuk modda uydurma psikometri yaziyordu; bir test dosyasi
 CI'da rastgele kirmiziydi.
 
-**Gun sonunda kapananlar (#220-#228 birlesti, #225 #228 olarak yeniden
-acildi; #229 CI'da):** yukaridakiler master'da duzeltildi ve her biri
+**Gun sonunda kapananlar (#220-#230 birlesti; #225 #228 olarak yeniden
+acildi):** yukaridakiler master'da duzeltildi ve her biri
 mutasyonla civili bekciyle korunuyor; Golden Flows kapisi 199 testi
 gercekten kosuyor (`hata=0 atlanan=4`).
 
