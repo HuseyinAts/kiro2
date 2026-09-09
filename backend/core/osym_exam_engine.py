@@ -13,6 +13,7 @@ import asyncio
 import copy
 import random
 import uuid
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -22,6 +23,11 @@ from cachetools import TTLCache
 from sqlalchemy import and_, func, or_, select, update
 from sqlalchemy.orm import selectinload
 
+from core.cevap_anahtari_dengesi import (
+    sik_normalize,
+    tavan_hesapla,
+    yeniden_dengele,
+)
 from core.database import get_db_session_context
 from core.osym_puanlama import osym_net
 from core.quality_gate import safe_for_beta_gate
@@ -167,6 +173,13 @@ class OSYMExamEngine:
     # 0 DEGIL 1 dondurur (olculdu: count=3/5/10/40 icin hepsinde 1). Naif bir
     # oran degisimi kotayi kismen ACIK birakirdi.
     ANCHOR_QUOTA_RATIO: float = 0.0
+
+    # Cevap anahtari dengesi (rapor madde 4a, core/cevap_anahtari_dengesi.py):
+    # secim SONRASI sinav boyu her sik icin tavan (%25). Kucuk pratiklerde
+    # (konu tekrari 5-10 soru) tavan anlamsiz ve ek sorgu gurultu; esik 20.
+    # Aday anahtari sorgusu ders basina en fazla DENGE_ADAY_UST rastgele id.
+    DENGE_ASGARI_SORU: int = 20
+    DENGE_ADAY_UST: int = 200
 
     def __init__(self):
         self.active_sessions: dict[str, ExamSessionData] = {}
@@ -1684,6 +1697,10 @@ class OSYMExamEngine:
         if exam_config.difficulty:
             difficulty_levels = self.DIFFICULTY_MAP.get(exam_config.difficulty)
 
+        # Madde 4a: dengeleme icin ders -> kullanilan id havuzu, soru -> ders.
+        kullanilan_havuz: dict[str, list[str]] = {}
+        soru_dersi: dict[str, str] = {}
+
         async with get_db_session_context() as db_session:
             for subject, count in exam_config.subject_distribution.items():
                 # Base quality filters
@@ -1845,6 +1862,7 @@ class OSYMExamEngine:
                     sampled_ids.extend(random.sample(normal_pool, normal_target))  # nosec B311
                 else:
                     sampled_ids.extend(normal_pool)
+                kullanilan_havuz[subject] = list(anchor_pool) + list(normal_pool)
 
                 if sampled_ids:
                     result = await db_session.execute(
@@ -1913,6 +1931,9 @@ class OSYMExamEngine:
                         )
                     else:
                         fb_sampled_ids.extend(fb_normal_pool)
+                    kullanilan_havuz[subject] = list(fb_anchor_pool) + list(
+                        fb_normal_pool
+                    )
 
                     if fb_sampled_ids:
                         fb_q = await db_session.execute(
@@ -1928,7 +1949,13 @@ class OSYMExamEngine:
                         f"Yetersiz soru: {subject} için {count} istendi, {len(questions)} bulundu "
                         f"(exam_type={exam_config.exam_type.value})"
                     )
+                for q in questions:
+                    soru_dersi[q.id] = subject
                 selected_questions.extend(questions)
+
+            selected_questions = await self._anahtar_dengele(
+                db_session, selected_questions, soru_dersi, kullanilan_havuz
+            )
 
         if len(selected_questions) < exam_config.total_questions:
             logger.warning(
@@ -1937,6 +1964,76 @@ class OSYMExamEngine:
             )
 
         return selected_questions
+
+    async def _anahtar_dengele(
+        self,
+        db_session: Any,
+        sorular: list[Question],
+        soru_dersi: dict[str, str],
+        havuzlar: dict[str, list[str]],
+    ) -> list[Question]:
+        """Madde 4a: sinav boyu cevap anahtari tavani (core/cevap_anahtari_dengesi).
+
+        Sira, uzunluk ve ders dagilimi korunur; yalnizca tavani asan sikkin
+        sorulari ayni dersin havuzundan takas edilir. Anahtarlar
+        question_content'ten okunur (QuestionBankItem'da correct_answer yok).
+        Aday sorgusu yalnizca bir sik tavani asiyorsa ve yalnizca o sikkin
+        bulundugu dersler icin kurulur; kucuk sinavlarda hic sorgu yok.
+        """
+        if len(sorular) < self.DENGE_ASGARI_SORU:
+            return sorular
+        ids = [q.id for q in sorular]
+        anahtar_q = await db_session.execute(
+            select(QuestionContent.id, QuestionContent.correct_answer).where(
+                QuestionContent.id.in_(ids)
+            )
+        )
+        sik = {row[0]: sik_normalize(row[1]) for row in anahtar_q.all()}
+        secim = [(q.id, sik.get(q.id), soru_dersi.get(q.id, "")) for q in sorular]
+        tavan = tavan_hesapla(len(secim))
+        sayac: Counter[str] = Counter(s for _, s, _ in secim if s is not None)
+        asan = {k for k, n in sayac.items() if n > tavan}
+        if not asan:
+            return sorular
+
+        secili = set(ids)
+        aday_havuz: dict[str, list[tuple[str, str | None]]] = {}
+        for ders in {d for _, s, d in secim if s in asan}:
+            kalan = [i for i in havuzlar.get(ders, []) if i not in secili]
+            if not kalan:
+                continue
+            ornek = random.sample(kalan, min(len(kalan), self.DENGE_ADAY_UST))  # nosec B311
+            aday_q = await db_session.execute(
+                select(QuestionContent.id, QuestionContent.correct_answer).where(
+                    QuestionContent.id.in_(ornek)
+                )
+            )
+            aday_havuz[ders] = [(r[0], sik_normalize(r[1])) for r in aday_q.all()]
+
+        yeni = yeniden_dengele(secim, aday_havuz, tavan, random)
+        degisen = {e[0]: y[0] for e, y in zip(secim, yeni, strict=True) if e[0] != y[0]}
+        if not degisen:
+            logger.info(
+                "Cevap anahtari tavani asildi ama takas adayi yok "
+                f"(tavan={tavan}, dagilim={dict(sayac)})"
+            )
+            return sorular
+        yeni_q = await db_session.execute(
+            select(Question).where(
+                Question.id.in_(list(degisen.values())),
+                Question.is_active.is_(True),
+            )
+        )
+        yeni_obj = {q.id: q for q in yeni_q.scalars().all()}
+        sonuc: list[Question] = []
+        for q in sorular:
+            hedef = degisen.get(q.id)
+            sonuc.append(yeni_obj.get(hedef, q) if hedef is not None else q)
+        logger.info(
+            f"Cevap anahtari dengelendi: {len(degisen)} takas, tavan={tavan}, "
+            f"once={dict(sayac)}, sonra={dict(Counter(s for _, s, _ in yeni if s))}"
+        )
+        return sonuc
 
     async def _analyze_performance(
         self, session_data: ExamSessionData
