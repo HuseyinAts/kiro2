@@ -233,6 +233,7 @@ class BKTService:
         try:
             from sqlalchemy import select
             from sqlalchemy.dialects.postgresql import insert as pg_insert
+
             from models.gamification import BKTState
 
             # Adim 1: Eger satir yoksa bos (default) bir satir ekle, varsa hicbir sey yapma
@@ -327,7 +328,11 @@ class BKTService:
             from services.irt_service_3pl import IRTService3PL
 
             if answered_questions and responses:
-                if hasattr(IRTService3PL.eap_theta, "__mock_self__") or isinstance(IRTService3PL.eap_theta, (AsyncMock, MagicMock)) or _global_process_pool is None:
+                if (
+                    hasattr(IRTService3PL.eap_theta, "__mock_self__")
+                    or isinstance(IRTService3PL.eap_theta, AsyncMock | MagicMock)
+                    or _global_process_pool is None
+                ):
                     res = IRTService3PL.eap_theta(answered_questions, responses)
                     if asyncio.iscoroutine(res):
                         res = await res
@@ -390,7 +395,10 @@ class BKTService:
             if subj_id is not None:
                 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
-                stmt = (
+                # Ayri isim: `stmt` yukarida (satir ~257) Select olarak
+                # baglanmis; ayni ada Insert atamak mypy'da
+                # "Incompatible types in assignment" uretiyor.
+                yetenek_stmt = (
                     pg_insert(StudentAbility)
                     .values(
                         student_id=student_id,
@@ -407,7 +415,7 @@ class BKTService:
                         },
                     )
                 )
-                await db.execute(stmt)
+                await db.execute(yetenek_stmt)
         except Exception as e:
             _ALGO_ERRORS["irt"] += 1
             if errors["irt"] is None:
@@ -421,6 +429,7 @@ class BKTService:
         try:
             from sqlalchemy import select as sa_select
             from sqlalchemy.dialects.postgresql import insert as pg_insert
+
             from models.fsrs_models import FSRSCard
             from services.fsrs_v6_service import FSRSService
 
@@ -445,7 +454,9 @@ class BKTService:
                     back_text=f"BKT p_L: {new_p_L:.3f}",
                     subject_area=_SUBJECT_AREA_MAP.get(
                         subject_slug.lower(), subject_slug.lower()
-                    ).upper() if subject_slug else "MATEMATIK",
+                    ).upper()
+                    if subject_slug
+                    else "MATEMATIK",
                     stability=0.0,
                     difficulty=0.0,
                     reps=0,
@@ -457,12 +468,24 @@ class BKTService:
                 db.add(fsrs_card)
 
             # Mevcut state'i al veya default
-            prev_stability = fsrs_card.stability if (fsrs_card and fsrs_card.stability and fsrs_card.stability > 0) else None
-            prev_difficulty = fsrs_card.difficulty if (fsrs_card and fsrs_card.difficulty and fsrs_card.difficulty > 0) else None
+            prev_stability = (
+                fsrs_card.stability
+                if (fsrs_card and fsrs_card.stability and fsrs_card.stability > 0)
+                else None
+            )
+            prev_difficulty = (
+                fsrs_card.difficulty
+                if (fsrs_card and fsrs_card.difficulty and fsrs_card.difficulty > 0)
+                else None
+            )
             prev_due = fsrs_card.due_date if fsrs_card else None
             prev_reps = fsrs_card.reps if fsrs_card else 0
 
-            if hasattr(FSRSService.review_card, "__mock_self__") or isinstance(FSRSService.review_card, (AsyncMock, MagicMock)) or _global_process_pool is None:
+            if (
+                hasattr(FSRSService.review_card, "__mock_self__")
+                or isinstance(FSRSService.review_card, AsyncMock | MagicMock)
+                or _global_process_pool is None
+            ):
                 fsrs_result = FSRSService.review_card(
                     prev_stability,
                     prev_difficulty,
@@ -484,14 +507,42 @@ class BKTService:
                 )
             fsrs_next_review = fsrs_result.get("due_date")
 
-            # State'i DB'ye yaz
-            fsrs_card.stability = fsrs_result.get("stability", fsrs_card.stability)
-            fsrs_card.difficulty = fsrs_result.get("difficulty", fsrs_card.difficulty)
+            # State'i DB'ye yaz.
+            #
+            # BOZUK MOD SOZLESMESI: fsrs paketi yoksa FSRSService stability ve
+            # difficulty'yi None dondurur (degraded=True). Bu alanlari o durumda
+            # YAZMIYORUZ -- 20-21 Agu 2026'da tam tersi yapildi ve 107 kartin
+            # 106'si stability=2.3 / difficulty=5.0 sabitiyle, sanki olculmus
+            # gibi kaydedildi. Kartin geri kalani (tekrar sayaci, tarih) yine
+            # guncellenir; sadece uydurma psikometri saklanmaz.
+            bozuk_mod = bool(fsrs_result.get("degraded"))
+            if not bozuk_mod:
+                fsrs_card.stability = fsrs_result.get("stability", fsrs_card.stability)
+                fsrs_card.difficulty = fsrs_result.get(
+                    "difficulty", fsrs_card.difficulty
+                )
+                fsrs_card.state = fsrs_result.get("state", fsrs_card.state)
+            else:
+                _ALGO_ERRORS["fsrs"] += 1
+                errors["fsrs"] = "fsrs paketi yok -- psikometrik alanlar yazilmadi"
+
             fsrs_card.reps = fsrs_result.get("reps") or (fsrs_card.reps + 1)
             fsrs_card.lapses = fsrs_result.get("lapses", fsrs_card.lapses)
-            fsrs_card.state = fsrs_result.get("state", fsrs_card.state)
             fsrs_card.due_date = fsrs_next_review or fsrs_card.due_date
-            fsrs_card.last_review = datetime.now(UTC)
+
+            # scheduled_days / elapsed_days bu yolda HIC yazilmiyordu: canli
+            # tabloda 107 satirin 106'sinda scheduled_days=0 duruyor. Tekrar
+            # araligi bu kolondan okundugu icin "aralik hic buyumemis" gorunumu
+            # kismen buradan geliyordu.
+            simdi = datetime.now(UTC)
+            planlanan = fsrs_result.get("scheduled_days")
+            if planlanan is not None:
+                fsrs_card.scheduled_days = int(planlanan)
+            onceki_tekrar = fsrs_card.last_review
+            if onceki_tekrar is not None:
+                fsrs_card.elapsed_days = max(0, (simdi - onceki_tekrar).days)
+
+            fsrs_card.last_review = simdi
             fsrs_card.back_text = f"BKT p_L: {new_p_L:.3f}"
         except Exception as e:
             _ALGO_ERRORS["fsrs"] += 1

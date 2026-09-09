@@ -57,36 +57,43 @@ def test_review_card_new_card_returns_valid_fields():
         reps=0,
     )
 
-    # All 6 keys present
+    # Sozlesme 9 Eyl 2026'da iki alan buyudu:
+    #   degraded       -- fsrs paketi yoksa True; cagiran psikometrik alanlari
+    #                     yazmamali (bkz. tests/fast/test_fsrs_bozuk_mod.py)
+    #   scheduled_days -- planlanan tekrar araligi; canli fsrs_cards
+    #                     tablosunda 107 satirin 106'sinda 0 kalmisti
     assert isinstance(result, dict)
     assert set(result.keys()) == {
+        "degraded",
         "stability",
         "difficulty",
         "due_date",
+        "scheduled_days",
         "state",
         "reps",
         "lapses",
     }
+    assert result["degraded"] is False
 
     # Positive values
     assert isinstance(result["stability"], float)
-    assert result["stability"] > 0.0, (
-        f"stability should be positive for new card, got {result['stability']}"
-    )
+    assert (
+        result["stability"] > 0.0
+    ), f"stability should be positive for new card, got {result['stability']}"
 
     assert isinstance(result["difficulty"], float)
-    assert 0.0 < result["difficulty"] < 10.0, (
-        f"difficulty should be in (0, 10), got {result['difficulty']}"
-    )
+    assert (
+        0.0 < result["difficulty"] < 10.0
+    ), f"difficulty should be in (0, 10), got {result['difficulty']}"
 
     # due_date is datetime
     assert isinstance(result["due_date"], datetime)
 
     # state is valid enum string
     assert isinstance(result["state"], str)
-    assert _is_valid_state(result["state"]), (
-        f"state should be in {{new,learning,review}}, got {result['state']}"
-    )
+    assert _is_valid_state(
+        result["state"]
+    ), f"state should be in {{new,learning,review}}, got {result['state']}"
 
     # reps >= 1 (new card progressed to at least step 0 → reps=0 in, step=0 out → reps=0)
     # Note: reps in return is card.step (learning step counter), not equal to input reps
@@ -152,9 +159,11 @@ def test_review_card_rating_int_1234_mapping(rating_int, label):
 
     assert isinstance(result, dict)
     assert set(result.keys()) == {
+        "degraded",
         "stability",
         "difficulty",
         "due_date",
+        "scheduled_days",
         "state",
         "reps",
         "lapses",
@@ -164,6 +173,10 @@ def test_review_card_rating_int_1234_mapping(rating_int, label):
     assert isinstance(result["due_date"], datetime)
     assert _is_valid_state(result["state"])
     assert result["lapses"] == 0
+    # reps her zaman int -- fsrs `card.step` Review durumunda None olur ve
+    # eskiden bu deger dogrudan "reps" diye donuyordu.
+    assert isinstance(result["reps"], int)
+    assert result["reps"] == 1
 
 
 # ---------------------------------------------------------------------------
@@ -184,9 +197,9 @@ def test_retrievability_zero_stability_returns_zero(stability, days):
     """stability <= 0 always returns exactly 0.0 regardless of days_elapsed."""
 
     result = FSRSService.retrievability(stability, days)
-    assert result == 0.0, (
-        f"retrievability(S={stability}, days={days}) should be 0.0, got {result}"
-    )
+    assert (
+        result == 0.0
+    ), f"retrievability(S={stability}, days={days}) should be 0.0, got {result}"
 
 
 # ---------------------------------------------------------------------------
@@ -213,9 +226,9 @@ def test_retrievability_in_01_range(stability, days):
     # Boundary: exactly 0.0 only when stability <= 0 (covered by test 4)
     # For positive stability, result is always > 0 and < 1
     # days=0 → R=1.0 exactly (not strictly < 1.0)
-    assert 0.0 <= result <= 1.0, (
-        f"retrievability(S={stability}, days={days})={result} should be in [0,1]"
-    )
+    assert (
+        0.0 <= result <= 1.0
+    ), f"retrievability(S={stability}, days={days})={result} should be in [0,1]"
 
 
 # ---------------------------------------------------------------------------
@@ -232,9 +245,9 @@ def test_next_interval_minimum_1(stability):
 
     result = FSRSService.next_interval(stability)
 
-    assert isinstance(result, (int, float)), (
-        f"next_interval should return numeric, got {type(result)}"
-    )
+    assert isinstance(
+        result, int | float
+    ), f"next_interval should return numeric, got {type(result)}"
     assert result >= 1.0, f"next_interval(S={stability})={result} should be >= 1.0"
 
 
@@ -270,12 +283,12 @@ def test_first_review_rating_1234_all_succeed(rating_int, label):
 
     stability, difficulty = FSRSService.first_review(rating_int)
 
-    assert isinstance(stability, float), (
-        f"stability should be float, got {type(stability)}"
-    )
-    assert isinstance(difficulty, float), (
-        f"difficulty should be float, got {type(difficulty)}"
-    )
+    assert isinstance(
+        stability, float
+    ), f"stability should be float, got {type(stability)}"
+    assert isinstance(
+        difficulty, float
+    ), f"difficulty should be float, got {type(difficulty)}"
     assert stability > 0.0, f"stability should be positive, got {stability}"
     assert difficulty > 0.0, f"difficulty should be positive, got {difficulty}"
 
@@ -290,9 +303,9 @@ def test_first_review_stability_increases_with_rating():
 
     results = {r: FSRSService.first_review(r)[0] for r in [1, 2, 3, 4]}
 
-    assert results[1] < results[2] < results[3] < results[4], (
-        f"stability should increase with rating: {results}"
-    )
+    assert (
+        results[1] < results[2] < results[3] < results[4]
+    ), f"stability should increase with rating: {results}"
 
 
 # ---------------------------------------------------------------------------
@@ -305,9 +318,9 @@ def test_first_review_difficulty_decreases_with_rating():
 
     results = {r: FSRSService.first_review(r)[1] for r in [1, 2, 3, 4]}
 
-    assert results[1] > results[2] > results[3] > results[4], (
-        f"difficulty should decrease with rating: {results}"
-    )
+    assert (
+        results[1] > results[2] > results[3] > results[4]
+    ), f"difficulty should decrease with rating: {results}"
 
 
 # ---------------------------------------------------------------------------
@@ -325,13 +338,13 @@ def test_first_review_positive_ranges(rating_int):
     stability, difficulty = FSRSService.first_review(rating_int)
 
     # Stability: 0 < S <= ~10 for any rating
-    assert 0.0 < stability <= 15.0, (
-        f"stability should be in (0, 15] for rating={rating_int}, got {stability}"
-    )
+    assert (
+        0.0 < stability <= 15.0
+    ), f"stability should be in (0, 15] for rating={rating_int}, got {stability}"
     # Difficulty: 1 <= D <= 8 for any rating
-    assert 0.5 <= difficulty <= 8.5, (
-        f"difficulty should be in [0.5, 8.5] for rating={rating_int}, got {difficulty}"
-    )
+    assert (
+        0.5 <= difficulty <= 8.5
+    ), f"difficulty should be in [0.5, 8.5] for rating={rating_int}, got {difficulty}"
 
 
 # ---------------------------------------------------------------------------
@@ -347,9 +360,9 @@ def test_retrievability_fresh_card_approaches_1(stability):
     """retrievability is exactly 1.0 when days_elapsed=0 regardless of stability."""
 
     result = FSRSService.retrievability(stability, days_elapsed=0.0)
-    assert result == 1.0, (
-        f"retrievability(S={stability}, days=0) should be exactly 1.0, got {result}"
-    )
+    assert (
+        result == 1.0
+    ), f"retrievability(S={stability}, days=0) should be exactly 1.0, got {result}"
 
 
 # ---------------------------------------------------------------------------
@@ -366,13 +379,13 @@ def test_retrievability_stale_card_approaches_0():
     r_100 = FSRSService.retrievability(stability=1.0, days_elapsed=100.0)
     r_1000 = FSRSService.retrievability(stability=1.0, days_elapsed=1000.0)
 
-    assert r_1000 < r_100 < r_10, (
-        f"retrievability should decrease with days: r10={r_10:.4f}, r100={r_100:.4f}, r1000={r_1000:.4f}"
-    )
+    assert (
+        r_1000 < r_100 < r_10
+    ), f"retrievability should decrease with days: r10={r_10:.4f}, r100={r_100:.4f}, r1000={r_1000:.4f}"
     # At S=1, D=1000: R≈0.346 — clearly approaching 0
-    assert r_1000 < 0.5, (
-        f"retrievability(S=1, D=1000)={r_1000} should be well below 0.5"
-    )
+    assert (
+        r_1000 < 0.5
+    ), f"retrievability(S=1, D=1000)={r_1000} should be well below 0.5"
 
 
 # ---------------------------------------------------------------------------
@@ -384,7 +397,7 @@ def test_review_card_rating4_easy_increases_interval():
     """Rating 4 (Easy) produces a later due_date than rating 3 (Good) on same card."""
 
     now = datetime.now(UTC)
-    card_state = dict(stability=5.0, difficulty=4.0)
+    card_state = {"stability": 5.0, "difficulty": 4.0}
 
     good = FSRSService.review_card(
         stability=card_state["stability"],
@@ -401,13 +414,13 @@ def test_review_card_rating4_easy_increases_interval():
         reps=2,
     )
 
-    assert easy["due_date"] > good["due_date"], (
-        f"Easy due_date ({easy['due_date']}) should be later than Good ({good['due_date']})"
-    )
+    assert (
+        easy["due_date"] > good["due_date"]
+    ), f"Easy due_date ({easy['due_date']}) should be later than Good ({good['due_date']})"
     # Stability should also be higher for Easy
-    assert easy["stability"] > good["stability"], (
-        f"Easy stability ({easy['stability']}) should exceed Good ({good['stability']})"
-    )
+    assert (
+        easy["stability"] > good["stability"]
+    ), f"Easy stability ({easy['stability']}) should exceed Good ({good['stability']})"
 
 
 # ---------------------------------------------------------------------------
@@ -420,6 +433,6 @@ def test_next_interval_scales_with_stability():
 
     intervals = {S: FSRSService.next_interval(S) for S in [0.5, 1.0, 5.0, 10.0, 50.0]}
 
-    assert intervals[1.0] < intervals[5.0] < intervals[10.0] < intervals[50.0], (
-        f"next_interval should increase with stability: {intervals}"
-    )
+    assert (
+        intervals[1.0] < intervals[5.0] < intervals[10.0] < intervals[50.0]
+    ), f"next_interval should increase with stability: {intervals}"
