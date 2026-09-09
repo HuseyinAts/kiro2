@@ -633,6 +633,28 @@ exclude = [
 # dosyada dogurdugu 14 kalemi tek yerde gerekcelendiriyor.
 "services/bkt_service.py" = ["N803", "E402", "PLR0912", "PLR0917"]
 
+# tests/property/test_fsrs_properties.py -- PLR0917 / DTZ001 (9 Eyl 2026).
+# CI diff tabanli ama TAM DOSYA lint'liyor (ci.yml:120), dolayisiyla bu
+# dosyadaki iki property testini duzeltmek 25 onceden-var-olan bulguyu
+# devraliyor. Ikisi de hypothesis property-test deseninin dogal sonucu:
+#
+#   PLR0917 (12 adet) -- @given ile 11-12 strateji parametresi geciliyor
+#     (difficulty, stability, retrievability, review_count, lapse_count,
+#     state, subject, group_study, family_pressure, exam_anxiety,
+#     consistency). Bunlar hypothesis'in test fonksiyonuna enjekte ettigi
+#     degerler; sayilarini azaltmak testin kapsadigi girdi uzayini
+#     daraltir. Ayni gerekce global PLR0913 ignore'uyla ve
+#     tests/conftest.py girdisiyle ayni.
+#
+#   DTZ001 (13 adet) -- `datetime(2025, 3, 15, 10, 0, 0)` sabit test
+#     tarihi. Property testlerinin deterministik olmasi icin sabit ve
+#     naive olmasi KASITLI; tzinfo eklemek zamanlama hesaplarinin
+#     beklenen degerlerini kaydirir ve testin konusuyla ilgisi yok.
+#
+# Borc affedilmiyor, "dokunan sahiplenir" kuralinin bu dosyada dogurdugu
+# kalemler tek yerde gerekcelendiriliyor.
+"tests/property/test_fsrs_properties.py" = ["PLR0917", "DTZ001"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
