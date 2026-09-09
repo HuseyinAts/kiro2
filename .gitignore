@@ -528,3 +528,6 @@ frontend/register_result.png
 # Manuel e2e kosum ciktilari (dashboard sonuc ekran goruntuleri, kaynak degil)
 frontend/tests/e2e/student_dashboard_result.png
 frontend/tests/e2e/teacher_dashboard_result.png
+
+# OSYM kitapciklari ve cikarim JSON'u: telif (her hakki saklidir); yerelde kalir
+backend/data/osym/
