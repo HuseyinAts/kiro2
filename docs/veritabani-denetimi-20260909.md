@@ -15,14 +15,15 @@ Olcum betikleri: `backend/_ci_art/db_envanter.py`, `db_yedek_analiz.py`,
 Bes bulgu, onem sirasina gore:
 
 1. **`billing_subscriptions` tablosu YOK, ama onu sorgulayan endpoint CANLI.**
-   Kesin 500. Bunu yakalamak icin ozel olarak yazilmis test hic kosmuyor.
+   Kesin 500. Bunu yakalayan test Backend Tests'te kosuyor ve su an kirmizi
+   (bolum 7.2); gormeyen yer yalnizca `golden-flows.yml`.
 2. **Aktif alembic zinciri 4 dosya.** `billing_subscriptions`, `kvkk_data_*` ve
    `video_cache` tablolarini yaratan migration'larin tamami `versions_archive/`
    altinda. Temiz bir kurulumda bu tablolar ASLA olusmaz.
 3. **Yedekteki 36.967 soru kurtarilamaz -- halusinasyon.** Eksik derslerin
    (FIZIK, BIYOLOJI, GEOMETRI, EDEBIYAT) oradan geri getirilmesi mumkun degil.
    20 Agustos temizligi DOGRU bir karardi.
-4. **IRT calismyior.** 5.796 sorunun 5.776'si kalibre degil, `irt_n_responses`
+4. **IRT calismiyor.** 5.796 sorunun 5.776'si kalibre degil, `irt_n_responses`
    TUM satirlarda 0. Yani mevcut `irt_difficulty` degerleri ogrenci verisinden
    gelmiyor -- uretilmis sayilar.
 5. **Semantik arama olu.** `vector(1536)` kolonu ve pgvector 0.8.2 kurulu,
@@ -556,9 +557,10 @@ karar/onay vermen gereken.
 
 ### Simdi (ben)
 
-1. **`billing_subscriptions` migration'i** -- aktif zincire (`versions/`)
-   `0005` olarak, `20260423_billing_subscriptions_mvp.py`'deki tanimla
-   birebir, `IF NOT EXISTS` korumali.
+1. **`billing_subscriptions` migration'i** -- YAPILDI, PR #220.
+   `versions/0004_billing_subscriptions.py`, tanim
+   `20260423_billing_subscriptions_mvp.py`'den birebir, `IF NOT EXISTS`
+   korumali. Gidis-donus dogrulandi, parite testi yesile dondu.
 2. **Golden Flows kapisini genislet** -- `golden-flows.yml:278` dosya-kapsamli
    secimi `tests/e2e -m golden_flow`'a cikar. Backend Tests zaten yakaliyor,
    ama Golden Flows kapisi da bu sinifi gormeli. Once yerelde patlama
@@ -594,9 +596,10 @@ karar/onay vermen gereken.
 tekrari), IRT parametreleri sinirlar icinde, PK disiplini uretim tablolarinda
 tam, sema modern (pgvector, JSON, enum).
 
-**Kirik olan:** `billing_subscriptions` uretimde 500 veriyor ve onu yakalamasi
-gereken test hic kosmuyor; migration zinciri baseline squash sirasinda uc
-tablo grubunu kaybetmis; mufredat agacinin en dolu konusu agaca bagli degil;
+**Kirik olan:** `billing_subscriptions` uretimde 500 veriyor (Backend Tests
+bunu kirmizi gosteriyor, Golden Flows kapisi gormuyor); migration zinciri
+baseline squash sirasinda uc tablo grubunu kaybetmis; mufredat agacinin en
+dolu konusu agaca bagli degil;
 IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil; semantik arama
 altyapisi bos.
 
