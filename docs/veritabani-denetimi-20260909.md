@@ -808,7 +808,9 @@ karar/onay vermen gereken.
     kadar kalir; `temp_import` 8 KB, bos. Arac PR #237:
     `scripts/quality/cop_yedek_arsivle.py dump | verify | drop --onay SIL`.
     Canli kosum: dump 6,87 MB, gecici DB'ye gercek restore 4 x 36.967
-    satir esit, manifest dogrulandi. **DROP calistirilmadi -- "sil" bekler.**
+    satir esit, manifest dogrulandi. **Gece: kullanici "sil" dedi, DROP
+    calistirildi** (manifest kapilari gecti); DB 141 MB -> 107 MB. Geri
+    yukleme yolu manifest'te.
     Migration degil arac: tablolar ORM'siz CTAS kopyalari, alembic head'in
     ortama gore farkli is yapmasi yanlis yer.
 10. **Icerik stratejisi.** FIZIK/BIYOLOJI/GEOMETRI/EDEBIYAT sifir ve yedekten
@@ -817,7 +819,27 @@ karar/onay vermen gereken.
     (Apotemi, 345, Bilgi Sarmal, Aktif Ogrenme, Esen, Edebiyat Sokagi;
     `source_book` %100 dolu), `osym_year` dolu 1, `is_ai_generated` 0.
     KIMYA %61. Karar: once OSYM gecmis yil sorulari (PDF'ler senden, hukuki
-    kontrol senin), sonra uretim. Ithal hatti PDF gelince (madde 2 sirasi).
+    kontrol senin), sonra uretim.
+    **Gece (ithal hatti, PR #244):** 2025 TYT resmi kitapcigi (43 sayfa, iki
+    sutun, metin katmani var) `scripts/osym/kitapcik_cikar.py` ile okundu:
+    **125/125 soru** (TUR 40 / SOS 25 / MAT 40 / FEN 20; SOS'un 21-25'i Din
+    muafi icin ek Felsefe), 125/125 anahtar (son sayfadaki tablo x-konumuyla
+    eslestirildi), hepsi 5 sikli. Eski deneme (17 Agu, tek akis) 73 soru / 0
+    anahtar vermisti. Bayraklar: 42 gorsel (sekil/grafik), 11 sik_bos (formul
+    grafik), 41 alti cizili (`$\\underline{\\text{...}}$` ile korundu; mevcut
+    56 "alti cizili" sorusunda bu bilgi kayipti), 4 roma rakami etiketi
+    (kelimeye baglandi), 5 alt/ust simge (8pt), 5 sutun asan soru (dikey
+    birlestirilmis kirpi). 78 soru icin soru bolgesi PNG kirpildi
+    (`/static/crops/OSYM_2025_TYT/`, mevcut crops sozlesmesi). Ithal
+    `scripts/osym/kitapcik_ithal.py` ile **pasif** yapildi (is_active=false,
+    is_public=false, review_status=pending; 125 satir, id=uuid5(soru_hash),
+    idempotent). Kitapcigin telif notu: "her hakki saklidir ... yazili izin
+    olmadan kullanilmasi yasaktir" -- sayfalarda da diyagonal filigran var.
+    Aktiflestirme hukuki onay bekler (kullanici karari). AYT kitapcigi da
+    indirildi, henuz okunmadi (AYT test kodlari/blueprint ayri olcum).
+    Yan etki: FIZ/BIO koklerine ilk sorular pasif olarak girdi; agac bekcisi
+    `test_icerigi_olan_dersin_alt_konusu_vardir` artik yalnizca AKTIF
+    sorulari sayiyor (pasif soru urunde degil).
 11. **`is_anchor` capa soru seti** -- IRT'yi anlamli kilmak icin gerekli.
     **Aksam:** capa secilemez (510 yanit, en cok sorulan soru 10 kez); ama
     20 sahte `is_calibrated=true` bayragi sifirlandi ve bayrak tek kapiya
@@ -913,10 +935,11 @@ karar/onay vermen gereken.
       supheli, 3'u kesin kusurlu ve pasife alindi (cd403a4d: cozum 2 carpma
       / siklar 3..7; ef3e1c75: sayim 90, anahtar "26"; c1ab0540: OCR bozuk
       metin). Yayinevi anahtarli 20/20 (madde 4b) vs cozucu anahtarli 26/31:
-      `bayes_1ofN` anahtar zayif kanit. Kalan 2 supheli icerik karari:
-      1dd54e6a (Tevhid-i Tedrisat amaclari; anahtar C, okuma A) ve dab0707f
-      (paragrafa cumle yerlestirme; anahtar B, okuma C). Uretim hatti kurali
-      onerisi: anahtar tek-cozucu uyusmasiyla yazilmasin.
+      `bayes_1ofN` anahtar zayif kanit. Kalan 2 supheli (kullanici karari
+      devretti, 0010 / PR #243): 1dd54e6a (Tevhid-i Tedrisat; anahtar C,
+      dogru A) PASIF; dab0707f (paragrafa cumle yerlestirme; anahtar B
+      savunulabilir) KALDI. Uretim hatti kurali onerisi: anahtar tek-cozucu
+      uyusmasiyla yazilmasin.
     - `core/irt_daemon.py` **SILINDI (PR #241):** hic baslamiyordu, bolunmus
       semaya gore kirikti, bayragi orneklemsiz yaziyordu, cagirani yoktu;
       gercek kalibrasyon `services/irt_calibration_service.py`de. Yeniden

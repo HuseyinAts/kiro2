@@ -84,6 +84,10 @@ async def test_icerigi_olan_dersin_alt_konusu_vardir(baglanti) -> None:
     """Soru barindiran bir ders koku, en az bir alt konuya sahip olmali.
 
     Kusurun en somut hali: Kimya 3.531 soruya sahipti ve alt konu sayisi 0'di.
+
+    Yalnizca AKTIF sorular sayilir (9 Eyl 2026): OSYM 2025 TYT ithali FIZ/BIO
+    koklerine pasif (is_active=false, hukuki onay bekleyen) soru koydu; pasif
+    soru urunde degildir, alt konu zorunlulugu aktiflestirmeyle dogar.
     """
     sonuc = await baglanti.execute(
         text(
@@ -93,7 +97,8 @@ async def test_icerigi_olan_dersin_alt_konusu_vardir(baglanti) -> None:
                      WHERE c.parent_id = k.id AND c.is_active IS TRUE) AS alt_konu,
                    (SELECT count(*) FROM question_bank b
                       JOIN question_metadata m ON m.id = b.id
-                     WHERE m.subject_area = upper(k.name_tr)) AS soru
+                     WHERE m.subject_area = upper(k.name_tr)
+                       AND b.is_active IS TRUE) AS soru
               FROM topic_hierarchy k
              WHERE k.parent_id IS NULL
                AND k.subject_area IS NULL
