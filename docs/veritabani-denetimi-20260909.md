@@ -902,13 +902,34 @@ karar/onay vermen gereken.
     - `source_book = "Esen Apt Ayt Fizik 2025"` etiketli 61 soru icerik
       olarak KIMYA (3 ornek elle okundu: bag entalpisi, denge sabiti,
       hibritlesme) -- `subject_area` dogru, kaynak adi yanlis; 52'si
-      `exam_type=TYT` ama konular AYT (denge, hibritlesme). Etiket karari
-      icerik tarafinin.
-    - 1.140 aktif sorunun anahtari cozucu oylamasiyla yazilmis, 267'si
-      tek-cozucu uyusmasina dayaniyor (bolum 3.3 yan bulgu).
-    - `core/irt_daemon.py` bolunmus semadan once yazilmis (`q.option_a`,
-      `q.subject_area` dogrudan `QuestionBankItem`'dan okuyor); devre disi
-      ve calistirilirsa kirilir. Silinsin mi, yeniden yazilsin mi -- karar.
+      `exam_type=TYT` ama konular AYT. **YAPILDI (0009, PR #240):** 52 soru
+      AYT'ye cevrildi (gunluklu). Kaynak adi bilinmedigi icin dokunulmadi.
+    - 21 kok uyusmazligi (madde 14 yan bulgusu) **YAPILDI (0009, PR #240):**
+      21'i de okundu, icerik `subject_area` ile uyusuyor, konu yanlisti;
+      dersin kokune tasindi. Yeni bekci tum kokler icin
+      (`test_sorunun_dersi_ile_konusunun_koku_uyusur`).
+    - Cozucu-oylamali anahtarlar **OLCULDU (0009, PR #240):** kapidan gecen
+      31 `bayes_*` anahtarli sorunun hepsi elle cozuldu -- 26 dogru, 5
+      supheli, 3'u kesin kusurlu ve pasife alindi (cd403a4d: cozum 2 carpma
+      / siklar 3..7; ef3e1c75: sayim 90, anahtar "26"; c1ab0540: OCR bozuk
+      metin). Yayinevi anahtarli 20/20 (madde 4b) vs cozucu anahtarli 26/31:
+      `bayes_1ofN` anahtar zayif kanit. Kalan 2 supheli icerik karari:
+      1dd54e6a (Tevhid-i Tedrisat amaclari; anahtar C, okuma A) ve dab0707f
+      (paragrafa cumle yerlestirme; anahtar B, okuma C). Uretim hatti kurali
+      onerisi: anahtar tek-cozucu uyusmasiyla yazilmasin.
+    - `core/irt_daemon.py` **SILINDI (PR #241):** hic baslamiyordu, bolunmus
+      semaya gore kirikti, bayragi orneklemsiz yaziyordu, cagirani yoktu;
+      gercek kalibrasyon `services/irt_calibration_service.py`de. Yeniden
+      yazma yok -- verisi olmayan kalibrasyona altyapi kurmak sirada degil.
+    - KIM.DEN ("Kimyasal Denge") altinda 1.173 `exam_type=TYT` soru; konu
+      KIMYA'nin %36'si icin cop kovasi (TYT kitaplarindan gelen sorular da
+      burada). TYT sinavi KIMYA'yi bu havuzdan cekiyor. Konu atamasi ayri,
+      buyuk is; dokunulmadi.
+    - `tests/test_smoke_api_critical.py::test_smoke_fsrs_review_queue` tek
+      basina kosunca master'da da duser (`app/services/fsrs_service.py` raw
+      SQL'de `::text`, test sqlite'ta): CI'da yalnizca test sirasi sayesinde
+      geciyor (#235 ilk kosumunda dustu, yeniden kosumda gecti). Miras,
+      sira-bagimli test; ayri is.
 
 ---
 
@@ -933,13 +954,19 @@ acildi):** yukaridakiler master'da duzeltildi ve her biri
 mutasyonla civili bekciyle korunuyor; Golden Flows kapisi 199 testi
 gercekten kosuyor (`hata=0 atlanan=4`).
 
-**Aksam turu (#232-#234 birlesti; #235-#237 acik, CI'da):** yedi karar
+**Aksam turu (#232-#238 birlesti):** yedi karar
 maddesi olculerek kapatildi -- surec havuzu kaldirildi (#232), KVKK golge
 ORM emekli (#233), MAT.GEO -> GEOMETRI 57 soru (#234), 20 sahte kalibrasyon
 bayragi sifirlandi ve bayrak tek kapiya baglandi (#235), cevap anahtari
 %25 tavani + OCR hipotezinin 20/20 ile cokusu (#236), yedek tablolar icin
 dump -> gercek restore ile dogrulanmis arsiv araci, DROP "sil" bekliyor
 (#237). Her PR mutasyonla civili bekci tasiyor.
+
+**Gece turu (#239-#241):** izomorf uretecte isim geri donusu (CI flake'i,
+uretimde de kusur) duzeltildi; 0009 ile 21 soru dogru koke, 52 soru AYT,
+3 kesin yanlis anahtar pasif (hepsi gunluklu); `irt_daemon` emekli.
+Madde 19'daki bulgularin karari yukarida, kalan ikisi (2 supheli anahtar,
+"sil") kullanicida.
 
 **Hala kirik:** IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil
 (artik en azindan "kalibre" DEMIYOR); semantik arama altyapisi bos (0
