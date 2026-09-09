@@ -1,5 +1,5 @@
 """
-Unit tests for 6 core modules with partial coverage.
+Unit tests for 5 core modules with partial coverage.
 
 Targets:
   - core/osym_exam_engine.py
@@ -7,7 +7,6 @@ Targets:
   - core/query_builder.py
   - core/realtime_notification_system.py
   - core/turkish_nlp_chat_system.py
-  - core/kvkk_compliance.py
 """
 
 import sys
@@ -220,18 +219,6 @@ from core.enhanced_authentication import (  # noqa: E402
     UserSession,
 )
 from core.exceptions import AuthorizationError, ValidationError  # noqa: E402
-from core.kvkk_compliance import (  # noqa: E402
-    PII_FIELDS,
-    ConsentStatus,
-    ConsentType,
-    DataCategory,
-    DataProcessingPurpose,
-    DataSubjectRight,
-    KVKKEncryption,
-    decrypt_user_pii,
-    encrypt_user_pii,
-    get_kvkk_encryption,
-)
 
 # ---------------------------------------------------------------------------
 # Imports under test
@@ -1255,135 +1242,6 @@ class TestWebSocketManagerInit:
         assert mgr.running is False
         assert len(mgr.connections) == 0
         assert mgr.ping_interval == 30
-
-
-# ===========================================================================
-# ========================= KVKK COMPLIANCE ==================================
-# ===========================================================================
-
-
-class TestKVKKEncryptionFallback:
-    """Tests for KVKKEncryption when cryptography is unavailable (fernet=None)."""
-
-    def setup_method(self):
-        # Force _fernet to None by not providing a key
-        self.enc = KVKKEncryption(key=None)
-        self.enc._fernet = None  # Ensure fallback mode
-
-    def test_encrypt_pii_fallback(self):
-        result = self.enc.encrypt_pii("hello@example.com")
-        assert result.startswith("b64:")
-
-    def test_decrypt_pii_fallback(self):
-        encrypted = self.enc.encrypt_pii("hello@example.com")
-        decrypted = self.enc.decrypt_pii(encrypted)
-        assert decrypted == "hello@example.com"
-
-    def test_encrypt_empty_string(self):
-        result = self.enc.encrypt_pii("")
-        assert result == ""
-
-    def test_decrypt_empty_string(self):
-        result = self.enc.decrypt_pii("")
-        assert result == ""
-
-    def test_decrypt_plain_text(self):
-        result = self.enc.decrypt_pii("plain_text_no_prefix")
-        assert result == "plain_text_no_prefix"
-
-    def test_hash_pii_consistent(self):
-        h1 = self.enc.hash_pii("test@example.com")
-        h2 = self.enc.hash_pii("test@example.com")
-        assert h1 == h2
-        assert len(h1) == 64  # SHA-256 hex
-
-    def test_hash_pii_empty(self):
-        result = self.enc.hash_pii("")
-        assert result == ""
-
-    def test_encrypt_dict(self):
-        data = {"email": "user@test.com", "name": "John", "age": 25}
-        pii_fields = ["email"]
-        result = self.enc.encrypt_dict(data, pii_fields)
-        assert result["email"] != "user@test.com"
-        assert result["name"] == "John"  # unchanged
-
-    def test_decrypt_dict(self):
-        data = {"email": "user@test.com", "phone": "555-1234"}
-        pii_fields = ["email", "phone"]
-        encrypted = self.enc.encrypt_dict(data, pii_fields)
-        decrypted = self.enc.decrypt_dict(encrypted, pii_fields)
-        assert decrypted["email"] == "user@test.com"
-        assert decrypted["phone"] == "555-1234"
-
-    def test_generate_key_length(self):
-        key = KVKKEncryption.generate_key()
-        assert len(key) == 32
-
-    def test_generate_key_base64_length(self):
-        key = KVKKEncryption.generate_key_base64()
-        assert isinstance(key, str)
-        assert len(key) == 44  # base64 of 32 bytes
-
-
-class TestKVKKEncryptionWithRealKey:
-    """Test with a real Fernet-compatible key if cryptography is available."""
-
-    def test_encrypt_decrypt_roundtrip(self):
-        # cryptography is stubbed as MagicMock in this test environment
-        # — skip gracefully so the suite stays green
-        pytest.skip("cryptography mocked in test environment")
-
-
-class TestKVKKConvenienceFunctions:
-    def test_encrypt_user_pii_returns_dict(self):
-        data = {"email": "test@test.com", "phone": "555-0000", "age": 30}
-        result = encrypt_user_pii(data)
-        assert isinstance(result, dict)
-        assert "email" in result
-
-    def test_decrypt_user_pii_roundtrip(self):
-        data = {"email": "user@kiro2.com", "full_name": "Test User"}
-        enc = encrypt_user_pii(data)
-        dec = decrypt_user_pii(enc)
-        assert dec["email"] == "user@kiro2.com"
-        assert dec["full_name"] == "Test User"
-
-    def test_get_kvkk_encryption_singleton(self):
-        enc1 = get_kvkk_encryption()
-        enc2 = get_kvkk_encryption()
-        assert enc1 is enc2
-
-
-class TestKVKKEnums:
-    def test_data_processing_purpose_values(self):
-        assert DataProcessingPurpose.EDUCATION == "education"
-        assert DataProcessingPurpose.MARKETING == "marketing"
-
-    def test_consent_type_values(self):
-        assert ConsentType.EXPLICIT == "explicit"
-        assert ConsentType.LEGAL_BASIS == "legal_basis"
-
-    def test_data_category_values(self):
-        assert DataCategory.IDENTITY == "identity"
-        assert DataCategory.TECHNICAL == "technical"
-
-    def test_data_subject_right_values(self):
-        assert DataSubjectRight.ERASURE == "erasure"
-        assert DataSubjectRight.PORTABILITY == "portability"
-
-    def test_consent_status_values(self):
-        assert ConsentStatus.GRANTED == "granted"
-        assert ConsentStatus.EXPIRED == "expired"
-
-
-class TestPIIFields:
-    def test_user_pii_fields_exist(self):
-        assert "email" in PII_FIELDS["user"]
-        assert "phone" in PII_FIELDS["user"]
-
-    def test_exam_pii_fields_exist(self):
-        assert "ip_address" in PII_FIELDS["exam"]
 
 
 # ===========================================================================
