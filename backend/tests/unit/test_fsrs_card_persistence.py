@@ -204,7 +204,16 @@ async def test_fsrs_card_insert_persists_core_fields(db_session):
 
 @pytest.mark.asyncio
 async def test_fsrs_card_update_updates_mutable_fields_only(db_session, fsrs_card_seed):
-    """UPDATE path modifies only mutable fields; elapsed_days/scheduled_days stay intact."""
+    """UPDATE yolu FSRS zamanlama alanlarini da yazar.
+
+    9 Eyl 2026 -- DAVRANIS DEGISTI. Bu test onceden "elapsed_days ve
+    scheduled_days record_answer tarafindan HIC yazilmaz" diyordu; yani bir
+    kusuru beklenen davranis olarak sabitliyordu. Canli olcum o kusurun
+    sonucunu gosterdi: fsrs_cards tablosundaki 107 satirin 106'sinda
+    scheduled_days=0 -- tekrar araligi hicbir zaman kaydedilmemis.
+    services/bkt_service.py artik iki alani da yaziyor; test de yeni,
+    dogru davranisi sabitliyor.
+    """
 
     with patch(
         "services.blackboard_service.BlackboardService.get",
@@ -236,14 +245,26 @@ async def test_fsrs_card_update_updates_mutable_fields_only(db_session, fsrs_car
     # reps might change (FSRS may update card.step)
     assert row.reps >= 0
 
-    # Unwritten fields: MUST remain exactly as seeded
-    assert row.elapsed_days == 7, (
-        f"elapsed_days should be preserved at 7, got {row.elapsed_days} — "
-        "record_answer UPDATE does NOT write this field"
+    # Zamanlama alanlari ARTIK yaziliyor -- tohum degerinde kalmamali.
+    assert row.elapsed_days != 7, (
+        "elapsed_days tohum degerinde (7) kalmis; record_answer bu alani "
+        "yazmali. Bu tam olarak 9 Eyl 2026'da duzeltilen kusur."
     )
-    assert row.scheduled_days == 14, (
-        f"scheduled_days should be preserved at 14, got {row.scheduled_days} — "
-        "record_answer UPDATE does NOT write this field"
+    assert row.elapsed_days == 0, (
+        "Tohumun last_review'i az once ayarlandi, dolayisiyla iki tekrar "
+        f"arasindaki gercek gecen sure 0 gun olmali. Donen: {row.elapsed_days}"
+    )
+    assert row.scheduled_days != 14, (
+        "scheduled_days tohum degerinde (14) kalmis; record_answer bu alani "
+        "FSRS'in hesapladigi araliktan yazmali."
+    )
+    assert row.scheduled_days >= 0
+
+    # Ic tutarlilik: kaydedilen aralik, kaydedilen bitis tarihiyle uyusmali.
+    gercek_aralik = (row.due_date - datetime.now(UTC)).days
+    assert abs(row.scheduled_days - gercek_aralik) <= 1, (
+        f"scheduled_days={row.scheduled_days} ile due_date'ten hesaplanan "
+        f"aralik={gercek_aralik} uyusmuyor"
     )
 
 
@@ -305,15 +326,25 @@ async def test_fsrs_card_db_matches_review_card_core_fields(db_session):
 
 
 # ---------------------------------------------------------------------------
-# Test 4 — UPDATE: elapsed_days/scheduled_days default values preserved
+# Test 4 — UPDATE: zamanlama alanlari yaziliyor mu (regresyon bekcisi)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
-async def test_fsrs_card_defaults_preserved_for_unwritten_fields(
-    db_session, fsrs_card_seed
-):
-    """Fields not written by record_answer UPDATE stay at their pre-existing values."""
+async def test_fsrs_zamanlama_alanlari_yaziliyor(db_session, fsrs_card_seed):
+    """record_answer, elapsed_days ve scheduled_days'i YAZMALI.
+
+    Bu test eskiden `test_fsrs_card_defaults_preserved_for_unwritten_fields`
+    adiyla TAM TERSINI iddia ediyordu: "bu alanlar record_answer tarafindan
+    ASLA yazilmaz, tohum degerinde kalir". Yani bir kusuru sozlesme haline
+    getirmisti.
+
+    Kusurun canli sonucu (9 Eyl 2026, fsrs_cards, 107 satir):
+        scheduled_days = 0 olan satir : 106
+    Tekrar araligi hicbir kartta kaydedilmemis; aralikli tekrar sistemi
+    araligi saklamiyordu. services/bkt_service.py duzeltildi ve bu test
+    artik duzeltmenin geri gitmemesini bekliyor.
+    """
 
     with patch(
         "services.blackboard_service.BlackboardService.get",
@@ -334,11 +365,15 @@ async def test_fsrs_card_defaults_preserved_for_unwritten_fields(
 
             row = await _query_fsrs_card(session, REAL_USER_ID, TEST_TOPIC_ID)
 
-    # elapsed_days and scheduled_days are NEVER set by record_answer UPDATE
-    # They should remain at whatever the seed set (7 and 14 respectively)
-    assert (
-        row.elapsed_days == 7
-    ), f"elapsed_days was NOT written by record_answer and should stay at seed value 7, got {row.elapsed_days}"
-    assert (
-        row.scheduled_days == 14
-    ), f"scheduled_days was NOT written by record_answer and should stay at seed value 14, got {row.scheduled_days}"
+    # Tohum degerleri: elapsed_days=7, scheduled_days=14.
+    # Ikisi de record_answer tarafindan UZERINE YAZILMALI.
+    assert row.elapsed_days != 7, (
+        "REGRESYON: elapsed_days tohum degerinde kalmis. record_answer bu "
+        "alani yazmiyor -- 9 Eyl 2026'da duzeltilen kusur geri gelmis."
+    )
+    assert row.scheduled_days != 14, (
+        "REGRESYON: scheduled_days tohum degerinde kalmis. Canli tabloda bu "
+        "kusur 107 kartin 106'sinda scheduled_days=0 olarak gorunuyordu."
+    )
+    assert row.scheduled_days >= 0
+    assert row.elapsed_days >= 0

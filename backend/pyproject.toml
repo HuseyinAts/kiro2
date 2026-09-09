@@ -604,6 +604,57 @@ exclude = [
 # versiyon anlasmazligini tamamen atlar.
 "tests/integration/test_alembic_autogen_guard.py" = ["I001"]
 
+# services/bkt_service.py -- N803 / E402 / PLR0912 / PLR0917 (9 Eyl 2026).
+# CI'nin ruff adimi diff tabanli ve TAM DOSYA lint'liyor
+# (.github/workflows/ci.yml:120 `ruff check $FILES`), yani bu dosyaya
+# dokunan her PR onun tum gecmis borcunu devraliyor. FSRS bozuk-mod
+# duzeltmesi bu dosyada 20 satirlik bir degisiklik yapiyor ve bununla
+# birlikte 14 onceden-var-olan bulgu geliyor. Tek tek gerekce:
+#
+#   N803 (9 adet) -- p_L, p_T, p_G, p_S: Bayesian Knowledge Tracing'in
+#     kanonik parametre adlari (P(L)=ogrenilmis olma, P(T)=gecis,
+#     P(G)=tahmin, P(S)=surcme). Literaturdeki gosterimle birebir ayni
+#     olmalari kasitli; kucuk harfe cevirmek (p_l, p_t) formullerle
+#     karsilastirmayi zorlastirir ve okunurlugu DUSURUR.
+#
+#   E402 (satir 20) -- modul seviyesinde gec import. Dosyanin ust kisminda
+#     once ortam/log kurulumu yapiliyor; import'u yukari almak o sirayi
+#     bozar. Davranis degisikligi riski, bu PR'in konusu olan kusurla
+#     tamamen alakasiz.
+#
+#   PLR0912 (26 dal) / PLR0917 (8 konumsal arg) -- `update` fonksiyonu:
+#     IRT + BKT + FSRS + ZPD dort algoritmayi tek islemde koordine ediyor
+#     ve her biri kendi try/except'ine sarili. Bolmek gercek bir refaktor;
+#     psikometrik davranisi degistirme riski tasir ve bu PR'in kapsami
+#     "sessizce yanlis veri yazan dali durdurmak". Ayri bir is olarak
+#     docs/veritabani-denetimi-20260909.md'ye not dusuldu.
+#
+# Bu girdi borcu AFFETMIYOR, yalnizca "dokunan sahiplenir" kuralinin bu
+# dosyada dogurdugu 14 kalemi tek yerde gerekcelendiriyor.
+"services/bkt_service.py" = ["N803", "E402", "PLR0912", "PLR0917"]
+
+# tests/property/test_fsrs_properties.py -- PLR0917 / DTZ001 (9 Eyl 2026).
+# CI diff tabanli ama TAM DOSYA lint'liyor (ci.yml:120), dolayisiyla bu
+# dosyadaki iki property testini duzeltmek 25 onceden-var-olan bulguyu
+# devraliyor. Ikisi de hypothesis property-test deseninin dogal sonucu:
+#
+#   PLR0917 (12 adet) -- @given ile 11-12 strateji parametresi geciliyor
+#     (difficulty, stability, retrievability, review_count, lapse_count,
+#     state, subject, group_study, family_pressure, exam_anxiety,
+#     consistency). Bunlar hypothesis'in test fonksiyonuna enjekte ettigi
+#     degerler; sayilarini azaltmak testin kapsadigi girdi uzayini
+#     daraltir. Ayni gerekce global PLR0913 ignore'uyla ve
+#     tests/conftest.py girdisiyle ayni.
+#
+#   DTZ001 (13 adet) -- `datetime(2025, 3, 15, 10, 0, 0)` sabit test
+#     tarihi. Property testlerinin deterministik olmasi icin sabit ve
+#     naive olmasi KASITLI; tzinfo eklemek zamanlama hesaplarinin
+#     beklenen degerlerini kaydirir ve testin konusuyla ilgisi yok.
+#
+# Borc affedilmiyor, "dokunan sahiplenir" kuralinin bu dosyada dogurdugu
+# kalemler tek yerde gerekcelendiriliyor.
+"tests/property/test_fsrs_properties.py" = ["PLR0917", "DTZ001"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
