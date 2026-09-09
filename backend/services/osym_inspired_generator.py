@@ -543,22 +543,25 @@ Soruyu oluşturduktan sonra kontrol et:
 """
 
         # Generate with selected provider
+        # Iki SDK'nin yanit tipleri farkli (anthropic Message / openai
+        # ChatCompletion); ayni ada atamak mypy'da [assignment] hatasi.
+        result_text: str
         if provider == "claude" and self.anthropic_client:
-            response = self.anthropic_client.messages.create(
+            claude_yanit = self.anthropic_client.messages.create(
                 model="claude-sonnet-4-5-20250929",
                 max_tokens=2000,
                 messages=[{"role": "user", "content": prompt}],
             )
             # content[0] TextBlock olmayabilir (SDK birlesik tip: Thinking/ToolUse...)
-            result_text = getattr(response.content[0], "text", "")
+            result_text = getattr(claude_yanit.content[0], "text", "")
 
         elif provider == "openai" and self.openai_client:
-            response = await self.openai_client.chat.completions.create(
+            openai_yanit = await self.openai_client.chat.completions.create(
                 model="gpt-4-turbo-preview",
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=2000,
             )
-            result_text = response.choices[0].message.content
+            result_text = openai_yanit.choices[0].message.content or ""
 
         else:
             raise Exception(f"Provider {provider} not configured")
