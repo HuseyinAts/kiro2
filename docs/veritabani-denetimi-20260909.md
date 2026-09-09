@@ -176,6 +176,34 @@ cevap anahtari kabaca dengelidir; bu sapma soru toplama surecinin bir
 yanliligini gosteriyor. Ogrenci acisindan somut etki: "emin degilsen C isaretle"
 stratejisi bu bankada gercekten calisir -- yani banka olcmesi gerekeni olcmuyor.
 
+**Aksam olcumu (madde 12, PR #236).** Sapma sinava tasiniyor mu? TYT
+blueprint'i mevcut havuzdan 3.000 kez rastgele cekildi
+(`backend/_ci_art/anahtar_mc.py`): en baskin sikkin payi p50 %25,2, p90
+%28,0, p99 %32,7; denemelerin %54'unde bir sik %25'i, %3,4'unde %30'u
+asiyor. Kaynaga gore egiklik ayni degil: 345 2025 TYT `C` 90 / `B` 34,
+Aktif Ogrenme "0'dan Baslayanlara" `A` 52 / diger siklar 113-121.
+
+**OCR anahtar hatasi hipotezi ("C cok cunku anahtar yanlis okundu")
+DUSTU.** Supheli iki kesitten 20 soru elle cozuldu: Aktif Ogrenme
+`D` anahtarli 10/10, 345 2025 TYT `C` anahtarli 10/10 dogru. 0/20 hata --
+hata orani %14 ve ustu olsaydi 0/20 gorme olasiligi %5'in altinda. Egiklik
+kaynagin kendi anahtar dagilimi; veri duzeltmesi yapilmadi.
+
+Care secim aninda: sik SIRASI degistirilmez (bicim/gorsel sabit), sinav
+olusturulurken sinav boyu her sik icin tavan `ceil(n * 0,25)`; asan sikkin
+sorulari ayni dersin havuzundan takas edilir, aday yoksa tavan gevser (soru
+sayisi ve ders kotasi hic degismez). Ayni 3.000 cekimle: p99 %25,2, >%30
+sifir, ortalama 1,1 takas/deneme. `core/cevap_anahtari_dengesi.py` +
+`osym_exam_engine._anahtar_dengele`; 20 sorunun altinda devreye girmez.
+
+Yan bulgu: 1.140 aktif sorunun aciklamasi "Dogru cevap: X (Guven: %..,
+Kaynak: ...)" kalibinda (TURKCE 641, KIMYA 269, MATEMATIK 84, TARIH 54,
+GEOMETRI 47, SOSYAL 28, COGRAFYA 17); 467'si kaynak olarak `bayes_*`
+cozucu oylamasini gosteriyor ve bunlarin 267'si `bayes_1ofN` -- yani
+anahtar, N cozucuden yalnizca BIRININ orijinal anahtarla uyusmasina
+dayaniyor. Insan anahtari degil, zayif kanit. Bu kesit icin ayri dogruluk
+orneklemesi yapilmadi; icerik karari (madde 10 ile birlikte).
+
 ### 3.4 Ders kapsami -- URUNUN ASIL DARBOGAZI
 
 ```
@@ -377,6 +405,23 @@ band da uretilmis olduklarini destekliyor.
 Somut sonuc: **adaptif soru secimi (CAT) su an gercek bir yetenek olcumu
 yapmiyor.** Sistem calisir, sayi uretir, ama sayinin psikometrik gecerliligi
 yok. Bunu urun iddiasi olarak kullanmak "iddia > olcum" olur.
+
+**Aksam (madde 11, PR #235).** `is_calibrated=true` olan 20 satirin hepsinde
+`calibration_sample_size=0`, `irt_n_responses=0`, `irt_calibrated=false`,
+`times_asked<=1`: yanlis pozitif. Kaynak, bayragi yanit orneklemi OLMADAN
+true yapan iki uyuyan yol: `core/irt_daemon.py::_update_questions_db`
+(daemon baslatilmasi `core/application.py:181`de yorum satirinda) ve
+`services/irt_analysis_service.py::calibrate_soru_difficulty` (uretimde
+cagiran yok). `irt_method='bootstrap_difficulty_prior'` 5.796 satirin
+hepsinde oldugu icin hangisinin yazdigi ayirt edilemiyor. Yapilan: 0008
+migration bayraklari gunluk tablosuyla (`is_calibrated_sifirlama_gunlugu`)
+geri alinabilir sekilde sifirlar (yerel gidis-donus 20 -> 0 -> 20 -> 0);
+iki uyuyan yoldan bayrak yazimi kaldirildi;
+`question_bank_service.calibrate_question_irt` artik `sample_size < 1`
+kabul etmiyor. Iki bekci: gercek PG'de `is_calibrated => orneklem > 0`;
+AST ile uretim kodunda `is_calibrated=True` yalnizca o tek fonksiyonda.
+Capa seti (madde 11'in asil sorusu) hala bos: 510 yanit, en cok sorulan
+soru 10 kez -- capa secmek icin once yanit gerekir.
 
 ### 5.3 Kullanim istatistigi
 
@@ -755,22 +800,54 @@ karar/onay vermen gereken.
 
 ### Senin kararin
 
-9. **9 yedek tabloyu DROP edeyim mi?** 34,9 MB. Veri silmiyorum; "sil" dersen
-   migration'i yazarim.
+9. **9 yedek tabloyu DROP edeyim mi?** 34,9 MB. Veri silmiyorum.
+    **Aksam karari (onaylandi):** dort `*_cop_yedek_20260820`
+    (36.967 x 4, ~34,7 MB; FK 0, view 0, ORM yok, okuyan yok) arsivlenip
+    dusurulecek; bes `terfi_yedek_*` + `student_answers_is_correct_yedek`
+    (toplam ~760 KB, 7 Eyl terfi kosumlarinin geri alma noktalari) 7 Ekim'e
+    kadar kalir; `temp_import` 8 KB, bos. Arac PR #237:
+    `scripts/quality/cop_yedek_arsivle.py dump | verify | drop --onay SIL`.
+    Canli kosum: dump 6,87 MB, gecici DB'ye gercek restore 4 x 36.967
+    satir esit, manifest dogrulandi. **DROP calistirilmadi -- "sil" bekler.**
+    Migration degil arac: tablolar ORM'siz CTAS kopyalari, alembic head'in
+    ortama gore farkli is yapmasi yanlis yer.
 10. **Icerik stratejisi.** FIZIK/BIYOLOJI/GEOMETRI/EDEBIYAT sifir ve yedekten
     gelmiyor. Bu urunun onundeki tek gercek engel; muhendislik tarafi degil.
+    **Aksam olcumu:** 5.796 sorunun tamami ticari kaynak kitaplardan
+    (Apotemi, 345, Bilgi Sarmal, Aktif Ogrenme, Esen, Edebiyat Sokagi;
+    `source_book` %100 dolu), `osym_year` dolu 1, `is_ai_generated` 0.
+    KIMYA %61. Karar: once OSYM gecmis yil sorulari (PDF'ler senden, hukuki
+    kontrol senin), sonra uretim. Ithal hatti PDF gelince (madde 2 sirasi).
 11. **`is_anchor` capa soru seti** -- IRT'yi anlamli kilmak icin gerekli.
-12. **Cevap anahtari dengesizligi** (A %15,7 / C %24,0) duzeltilsin mi?
-13. **KVKK ORM ikizligi.** `core/kvkk_compliance.py` ve
-    `models/kvkk_models.py` ayni `kvkk_consents` tablosunu iddia ediyor,
-    semalari uyusmuyor, canli tablo ikincisiyle uyusuyor (bolum 7.4).
-    Birincisinin ORM katmani emekliye ayrilsin mi? Uretimde ondan yalnizca
-    `is_minor` kullaniliyor, yani risk dusuk -- ama KVKK kayit tutma
-    yukumlulugu tasidigi icin karari sana birakiyorum.
-14. **`MAT.GEO`'nun 63 sorusu GEOMETRI dersine mi ait?** Hepsi
-    `subject_area=MATEMATIK`. TYT blueprint GEOMETRI 14 istiyor, havuzda
-    sifir; yeniden etiketlenirse GEOMETRI 63 olur ama MATEMATIK 63 azalir.
-    Icerik karari (bolum 4.2, PR #225 dokunmadi).
+    **Aksam:** capa secilemez (510 yanit, en cok sorulan soru 10 kez); ama
+    20 sahte `is_calibrated=true` bayragi sifirlandi ve bayrak tek kapiya
+    baglandi (0008, PR #235; bolum 5.2 aksam notu). Capa seti yanit
+    biriktikten sonra secilir.
+12. **Cevap anahtari dengesizligi** (A %15,7 / C %24,0) -- YAPILDI, PR #236
+    (bolum 3.3 aksam notu). OCR anahtar hatasi hipotezi 20/20 elle cozumle
+    dustu; veri degismedi, secim aninda sinav boyu %25 tavani + ayni dersten
+    takas. Uretim icin not: uretilen sorularda anahtar dagilimi uretim
+    aninda dengeli tutulmali (madde 10 hattina).
+13. **KVKK ORM ikizligi.** -- YAPILDI, PR #233. `core/kvkk_compliance.py`
+    1.213 satirdan 36'ya: yalnizca `is_minor` + `KVKK_RESIT_YASI` kaldi
+    (uretimde tek kullanim buydu); golge ORM/Base/Column silindi, iki eski
+    test dosyasi ve unit dosyasindaki bes sinif kaldirildi. Bekci
+    `tests/fast/test_kvkk_tek_model.py`: `kvkk_*` tablosu tam bir ORM
+    modelinde ve `models/` altinda; modul yalnizca bes ad disari verir.
+    Mutasyon: eski modul geri konunca 2/2 FAILED.
+14. **`MAT.GEO`'nun 63 sorusu GEOMETRI dersine mi ait?** -- YAPILDI, 0007,
+    PR #234. Olcum: 63'un 57'si guclu geometri terimi tasiyor, 6'si degil
+    (4 geometrik dizi -> MAT.DIZ, 1 sembol tanimi -> MAT.SAY, 1 kartezyen
+    carpim -> MAT.FON; sabit id ile). Kalan 57 `GEOMETRI`, konu GEO kokune
+    (kod `MAT.GEO` korundu; seed/dungeon scriptleri koda bagli). Sinav
+    motoru MAT dalini `code IN (MAT, GEO, ...)` VEYA `subject_area IN
+    (matematik, geometri)` ile kurdugu icin MATEMATIK derlemesi kucul-MEDI,
+    ustune GEOMETRI yuvasi 0 -> 57 doldu (blueprint 14 istiyor). Gidis-donus
+    birebir; iki yeni agac bekcisi (konu-kok ders uyumu, GEO altinda
+    GEOMETRI etiketi). Yan bulgu: 21 soru daha kokuyle uyusmuyor (SOS
+    kokunde 11 TARIH + 4 COGRAFYA, FIZ kokunde 5 KIMYA, FEN'de 1 KIMYA) ve
+    1.011 soru dogrudan kok konuya bagli (kok `subject_area` NULL) -- ayri
+    kucuk migration, siradaki.
 15. ~~Genel "ham SQL bolunmus kolon" tarayicisi yazilsin mi?~~ **OLCULDU**
     (AST, `backend/` altinda `FROM question_bank` gecen string sabitleri,
     tests/arsiv haric): 325 sabit, 137'si bolunmus kolon okuyup ilgili
@@ -811,12 +888,27 @@ karar/onay vermen gereken.
     yol); `tests/unit/test_bkt_havuz_zehirlenmesi.py` havuz yolunu TAZE
     havuzla olcer ve mekanizmayi fork platformunda kanitlar (CI'da 3/3
     PASSED). Uretim kodu degismedi -> madde 18.
-18. **Surec havuzu `fork` ile dogsun mu?** (sen) `bkt_service` havuzu
-    asyncio + thread'li bir surecten `fork` ile dogar; Python 3.12+ bunun
-    icin DeprecationWarning veriyor (thread'li surecte fork guvensiz).
-    `mp_context=multiprocessing.get_context("spawn")` daha guvenli, ama her
-    cocuk modulleri bastan import eder (4 cocuk x baslangic maliyeti). #229
-    uretim davranisina dokunmadi; karar senin.
+18. **Surec havuzu `fork` ile dogsun mu?** -- YAPILDI, PR #232: ne fork ne
+    spawn, havuz kaldirildi. Olcum (p50): `review_card` surec ici 1,65 ms /
+    thread 1,47 / surec havuzu 2,70; `eap_theta` 3,31 / 2,69 / 3,24; surec
+    havuzunda ilk cagri p95 578 ms (cocuk dogumu). Saf hesap icin surec
+    havuzu kazanc degil maliyet; `asyncio.run_in_executor(None, ...)`
+    (thread havuzu) ile fork/pickle/mock-miras sinifi tamamen kalkti.
+    `tests/conftest.py`'deki gecici fixture kaldirildi; bekci
+    `test_bkt_havuz_zehirlenmesi.py` AST ile `ProcessPoolExecutor`/
+    `concurrent.futures` yoklugunu ve sonucun thread'de aynen geldigini
+    olcer. CI: yalnizca miras 3 kirmizi, FSRS testleri yesil.
+19. **Aksam yan bulgulari (yeni, karar/siradaki is):**
+    - `source_book = "Esen Apt Ayt Fizik 2025"` etiketli 61 soru icerik
+      olarak KIMYA (3 ornek elle okundu: bag entalpisi, denge sabiti,
+      hibritlesme) -- `subject_area` dogru, kaynak adi yanlis; 52'si
+      `exam_type=TYT` ama konular AYT (denge, hibritlesme). Etiket karari
+      icerik tarafinin.
+    - 1.140 aktif sorunun anahtari cozucu oylamasiyla yazilmis, 267'si
+      tek-cozucu uyusmasina dayaniyor (bolum 3.3 yan bulgu).
+    - `core/irt_daemon.py` bolunmus semadan once yazilmis (`q.option_a`,
+      `q.subject_area` dogrudan `QuestionBankItem`'dan okuyor); devre disi
+      ve calistirilirsa kirilir. Silinsin mi, yeniden yazilsin mi -- karar.
 
 ---
 
@@ -841,9 +933,18 @@ acildi):** yukaridakiler master'da duzeltildi ve her biri
 mutasyonla civili bekciyle korunuyor; Golden Flows kapisi 199 testi
 gercekten kosuyor (`hata=0 atlanan=4`).
 
-**Hala kirik:** IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil;
-semantik arama altyapisi bos (0 embedding); CI'da ES servisi yok; dort
-altyapi testi (7.6 gun sonu) sabit kirmizi.
+**Aksam turu (#232-#234 birlesti; #235-#237 acik, CI'da):** yedi karar
+maddesi olculerek kapatildi -- surec havuzu kaldirildi (#232), KVKK golge
+ORM emekli (#233), MAT.GEO -> GEOMETRI 57 soru (#234), 20 sahte kalibrasyon
+bayragi sifirlandi ve bayrak tek kapiya baglandi (#235), cevap anahtari
+%25 tavani + OCR hipotezinin 20/20 ile cokusu (#236), yedek tablolar icin
+dump -> gercek restore ile dogrulanmis arsiv araci, DROP "sil" bekliyor
+(#237). Her PR mutasyonla civili bekci tasiyor.
+
+**Hala kirik:** IRT kalibrasyonu ogrenci verisi olmadigi icin gercek degil
+(artik en azindan "kalibre" DEMIYOR); semantik arama altyapisi bos (0
+embedding); CI'da ES servisi yok; altyapi testleri (7.6 gun sonu +
+`test_get_history_deep` 404 + Kanon lint) sabit kirmizi -- master'da da.
 
 **Cozulemeyen:** icerik. 5.796 soru, dort ders tamamen eksik, yedekteki
 36.967 soru halusinasyon. Bu bir veritabani sorunu degil, bir icerik sorunu.
