@@ -36,7 +36,9 @@ class OSYMInspiredGenerator:
     3. Style mimicking: Analyze and replicate ÖSYM question style
     """
 
-    def __init__(self, openai_api_key: str = None, anthropic_api_key: str = None):
+    def __init__(
+        self, openai_api_key: str | None = None, anthropic_api_key: str | None = None
+    ):
         self.openai_client = (
             openai.AsyncOpenAI(api_key=openai_api_key) if openai_api_key else None
         )
@@ -95,17 +97,23 @@ class OSYMInspiredGenerator:
             # Wave 1: Fetch MORE candidates for reranking (3x multiplier)
             fetch_count = count * 3 if use_reranking and topic else count
 
-            # Get random ÖSYM questions (question_bank table)
+            # Rastgele OSYM sorulari. question_bank BOLUNMUS tablo (9 Eyl 2026
+            # olcumu): metin/secenek/cevap question_content'te,
+            # subject_area/exam_type/osym_* question_metadata'da, is_active
+            # question_bank'ta. Eski tek-tablo sorgu 500 veriyordu
+            # (column "question_text" does not exist).
             query = """
-                SELECT id, subject_area, question_text,
-                       option_a, option_b, option_c, option_d, option_e,
-                       correct_answer, osym_year
-                FROM question_bank
-                WHERE osym_format_compliant = true
-                  AND is_active = true
-                  AND subject_area = $1
-                  AND exam_type = $2
-                  AND correct_answer IS NOT NULL
+                SELECT b.id, m.subject_area, c.question_text,
+                       c.option_a, c.option_b, c.option_c, c.option_d, c.option_e,
+                       c.correct_answer, m.osym_year
+                FROM question_bank b
+                JOIN question_content c ON c.id = b.id
+                JOIN question_metadata m ON m.id = b.id
+                WHERE m.osym_format_compliant = true
+                  AND b.is_active = true
+                  AND m.subject_area = $1
+                  AND m.exam_type = $2
+                  AND c.correct_answer IS NOT NULL
                 ORDER BY RANDOM()
                 LIMIT $3
             """
@@ -576,7 +584,7 @@ Soruyu oluşturduktan sonra kontrol et:
                 json_text = result_text.strip()
 
         try:
-            result = json.loads(json_text)
+            result: dict = json.loads(json_text)
             result["method"] = "few-shot"
             result["osym_examples_used"] = len(osym_examples)
 
@@ -621,14 +629,17 @@ Soruyu oluşturduktan sonra kontrol et:
         conn = await self.get_db_connection()
 
         try:
-            # Get many ÖSYM questions for analysis (question_bank = 77K production)
+            # Stil analizi icin ornek sorular (bolunmus tablo: metin
+            # question_content'te, filtre kolonlari question_metadata'da).
             query = """
-                SELECT question_text
-                FROM question_bank
-                WHERE osym_format_compliant = true
-                  AND is_active = true
-                  AND subject_area = $1
-                  AND exam_type = $2
+                SELECT c.question_text
+                FROM question_bank b
+                JOIN question_content c ON c.id = b.id
+                JOIN question_metadata m ON m.id = b.id
+                WHERE m.osym_format_compliant = true
+                  AND b.is_active = true
+                  AND m.subject_area = $1
+                  AND m.exam_type = $2
                 LIMIT 50
             """
 
@@ -656,7 +667,7 @@ Soruyu oluşturduktan sonra kontrol et:
                 )
 
             # Common question starters
-            starters = {}
+            starters: dict[str, int] = {}
             for row in rows:
                 first_words = " ".join(row["question_text"].split()[:3])
                 starters[first_words] = starters.get(first_words, 0) + 1
@@ -701,14 +712,12 @@ Soruyu oluşturduktan sonra kontrol et:
         template_q = osym_questions[0]
 
         # Extract structure
-        template = {
+        return {
             "stem_structure": f"Template from ÖSYM {template_q['year']}",
             "num_options": len(template_q["options"]),
             "original_stem": template_q["stem"][:100] + "...",
             "generation_note": f"Yeni soru {topic} konusunda bu template'i taklit edecek",
         }
-
-        return template
 
     async def get_osym_statistics(self) -> dict:
         """
@@ -717,28 +726,33 @@ Soruyu oluşturduktan sonra kontrol et:
         conn = await self.get_db_connection()
 
         try:
-            # Total questions (question_bank = 77K production)
+            # Toplam (bolunmus tablo: osym_format_compliant question_metadata'da,
+            # is_active question_bank'ta, correct_answer question_content'te).
             total = await conn.fetchval(
-                "SELECT COUNT(*) FROM question_bank"
-                " WHERE osym_format_compliant = true"
-                " AND is_active = true"
+                "SELECT COUNT(*) FROM question_bank b"
+                " JOIN question_metadata m ON m.id = b.id"
+                " WHERE m.osym_format_compliant = true"
+                " AND b.is_active = true"
             )
 
-            # By subject
+            # Derse gore
             by_subject = await conn.fetch(
-                "SELECT subject_area, COUNT(*) as count"
-                " FROM question_bank"
-                " WHERE osym_format_compliant = true"
-                " AND is_active = true"
-                " GROUP BY subject_area"
+                "SELECT m.subject_area, COUNT(*) as count"
+                " FROM question_bank b"
+                " JOIN question_metadata m ON m.id = b.id"
+                " WHERE m.osym_format_compliant = true"
+                " AND b.is_active = true"
+                " GROUP BY m.subject_area"
             )
 
-            # With answers (usable for training)
+            # Cevapli (egitim icin kullanilabilir)
             with_answers = await conn.fetchval(
-                "SELECT COUNT(*) FROM question_bank"
-                " WHERE osym_format_compliant = true"
-                " AND is_active = true"
-                " AND correct_answer IS NOT NULL"
+                "SELECT COUNT(*) FROM question_bank b"
+                " JOIN question_metadata m ON m.id = b.id"
+                " JOIN question_content c ON c.id = b.id"
+                " WHERE m.osym_format_compliant = true"
+                " AND b.is_active = true"
+                " AND c.correct_answer IS NOT NULL"
             )
 
             return {
