@@ -1,15 +1,20 @@
-"""Neofizik pasif ithalinin (0013 + scripts/kitap/neofizik_ithal.py) bekcisi.
+"""Neofizik ithali (0013) ve beta toplu onayinin (0014) bekcisi.
 
-10 Eyl 2026: Neofizik AYT Fizik Soru Bankasi 2025'in 1218 sorusu OCR/VLM
-hattiyla cikarilip question_bank'a PASIF ithal edildi. Metin insan gozuyle
-onaylanmadigi icin ithal sozlesmesi su: her satir `is_active=false`,
-`is_ai_generated=true`, `review_status='PENDING'`.
+10 Eyl 2026 sabahi: Neofizik AYT Fizik Soru Bankasi 2025'in 1218 sorusu
+OCR/VLM hattiyla cikarilip question_bank'a PASIF ithal edildi.
 
-Kapinin (`v_safe_for_beta`, D9/D10) sozlesmesi
-`(is_ai_generated = false OR review_status = 'APPROVED')` istiyor; iki alan
-birlikte bu satirlari kapinin DISINDA tutuyor. Bu dosya SONUCU dogrular --
-ithal script'inin ya da view'in SQL'ini tekrarlamaz (tekrarlamak, D9/D10
-sirasinda duzeltmeye calistigimiz kod<->view drift'inin ta kendisi olurdu).
+10 Eyl 2026 ogleden sonra (0014): urun sahibi bireysel insan denetimini
+ATLAYIP toplu denetimi beta surumune ertelemeye karar verdi. Sozlesme
+degisti: `sik_bos` bayragi TASIMAYAN satirlar artik `is_active=true`,
+`review_status='APPROVED'`, `quality_review_status='auto_judged_high'` --
+yani kapidan GECIYORLAR. `is_ai_generated` true KALIR ve bu satirlar
+`onay_turu='toplu_beta_sahibi'` + `bireysel_denetim_yapildi=false` izini
+tasir; boylece "servis edilen kac soru hic bireysel denetimden gecmedi"
+her zaman olculebilir.
+
+Bu dosya SONUCU dogrular -- ithal script'inin ya da view'in SQL'ini
+tekrarlamaz (tekrarlamak, D9/D10 sirasinda duzeltmeye calistigimiz
+kod<->view drift'inin ta kendisi olurdu).
 
 Ayrica 0012'nin acikca gosterdigi dersi burada ONCEDEN uyguluyoruz: cevap
 anahtarinin dolu bir sikka isaret etmesi (R5) ithal ANINDA denetlenir
@@ -74,6 +79,30 @@ async def _neofizik_ids(session: AsyncSession) -> list[str]:
     return [r[0] for r in sonuc.fetchall()]
 
 
+async def _neofizik_ids_bolunmus(session: AsyncSession) -> tuple[list[str], list[str]]:
+    """(temiz, sik_bos) -- 0014 yalnizca temiz olanlari kapidan gecirdi.
+
+    Sorgu bilerek TEK PARCA sabit metin: sik_bos yuklemi bir f-string'e
+    cikarilirsa hem ruff S608 hem bandit B608 (SQL enjeksiyon vektoru)
+    kizarir. Burada enjekte edilecek bir sey yok, ama kurali baskilamak
+    yerine ihtiyaci ortadan kaldirmak dogrusu.
+    """
+    sonuc = await session.execute(
+        text(
+            "SELECT b.id, "
+            "(m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos' AS sik_bos "
+            "FROM question_bank b JOIN question_metadata m ON m.id = b.id "
+            "WHERE m.source_book = :kaynak"
+        ),
+        {"kaynak": _KAYNAK},
+    )
+    temiz: list[str] = []
+    bos: list[str] = []
+    for sid, sik_bos in sonuc.fetchall():
+        (bos if sik_bos else temiz).append(sid)
+    return temiz, bos
+
+
 @pytest.mark.asyncio
 async def test_neofizik_ithal_edildi(db_session):
     """Ithal gerceklesti ve her satirin metni + 5 sikki + cevabi var."""
@@ -103,8 +132,13 @@ async def test_neofizik_ithal_edildi(db_session):
 
 
 @pytest.mark.asyncio
-async def test_neofizik_sorulari_pasif_ve_ai_isaretli(db_session):
-    """Ithal sozlesmesi: is_active=false, is_ai_generated=true, review_status='PENDING'."""
+async def test_neofizik_ai_isareti_korunuyor(db_session):
+    """0014 kapiyi acti ama KOKENI gizlemedi: is_ai_generated hala true.
+
+    Kapidan gecirmenin kolay ama yanlis yolu `is_ai_generated=false` yazmakti
+    (view'in oteki kolu). O yol DB'ye yanlis bir kaynak beyani birakirdi.
+    Bu bekci, ileride biri "kolayina kacip" o alani cevirirse kizarir.
+    """
     ids = await _neofizik_ids(db_session)
     if not ids:
         pytest.skip("Neofizik verisi ithal edilmemis")
@@ -113,33 +147,59 @@ async def test_neofizik_sorulari_pasif_ve_ai_isaretli(db_session):
         await db_session.execute(
             text(
                 """
-                SELECT count(*) FILTER (WHERE b.is_active IS TRUE)            AS aktif,
-                       count(*) FILTER (WHERE b.is_public IS TRUE)            AS acik,
-                       count(*) FILTER (WHERE b.is_ai_generated IS NOT TRUE)  AS ai_isaretsiz,
-                       count(*) FILTER (WHERE b.review_status <> 'PENDING')   AS beklemiyor
+                SELECT count(*) FILTER (WHERE b.is_ai_generated IS NOT TRUE) AS ai_isaretsiz,
+                       count(*) FILTER (WHERE b.is_public IS TRUE)           AS acik
                   FROM question_bank b WHERE b.id = ANY(:ids)
                 """
             ),
             {"ids": ids},
         )
     ).one()
-    assert satir.aktif == 0, f"{satir.aktif} Neofizik satiri is_active=true"
-    assert satir.acik == 0, f"{satir.acik} Neofizik satiri is_public=true"
     assert satir.ai_isaretsiz == 0, (
         f"{satir.ai_isaretsiz} satirda is_ai_generated=true degil -- "
-        "OCR kaynakli icerik AI uretimi olarak isaretlenmeli"
+        "OCR kaynakli icerik AI uretimi olarak isaretli KALMALI"
     )
-    assert (
-        satir.beklemiyor == 0
-    ), f"{satir.beklemiyor} satirda review_status 'PENDING' degil"
+    assert satir.acik == 0, f"{satir.acik} Neofizik satiri is_public=true"
 
 
 @pytest.mark.asyncio
-async def test_neofizik_sorulari_kapidan_gecmiyor(db_session):
-    """Asil bekci: hicbir Neofizik satiri servis kapisindan (v_safe_for_beta) gecmemeli."""
-    ids = await _neofizik_ids(db_session)
-    if not ids:
+async def test_neofizik_temiz_sorular_kapidan_geciyor(db_session):
+    """0014 sonrasi sozlesme: sik_bos TASIMAYAN her satir kapidan gecmeli.
+
+    0014'ten once bu testin tersi savunuluyordu (hicbiri gecmemeli). Karar
+    degisti; bekci de degisti. Ama bekci KAYBOLMADI: kapinin hala olculdugu,
+    sessizce bozulmadigi burada dogrulanir.
+    """
+    temiz, _ = await _neofizik_ids_bolunmus(db_session)
+    if not temiz:
         pytest.skip("Neofizik verisi ithal edilmemis")
+
+    gecmeyen = (
+        await db_session.execute(
+            text(
+                "SELECT count(*) FROM unnest(CAST(:ids AS text[])) AS x(id) "
+                "WHERE NOT EXISTS (SELECT 1 FROM v_safe_for_beta v WHERE v.id = x.id)"
+            ),
+            {"ids": temiz},
+        )
+    ).scalar()
+    assert gecmeyen == 0, (
+        f"{len(temiz)} temiz Neofizik sorusundan {gecmeyen} tanesi "
+        "kapidan GECMIYOR -- 0014 kosmadi mi, yoksa kapi mi degisti?"
+    )
+
+
+@pytest.mark.asyncio
+async def test_neofizik_sik_bos_sorulari_kapi_disinda(db_session):
+    """D10 kurali bozulmadi: sikki gorsel olan satirlar hala kapinin disinda.
+
+    0014 toplu onayi verirken bu satirlari BILEREK disarida birakti; kural
+    kaynaktan bagimsiz genel bir kural (bkz 0012 + D10). Gorsel-sik destegi
+    gelene kadar boyle kalmali.
+    """
+    _, sik_bos = await _neofizik_ids_bolunmus(db_session)
+    if not sik_bos:
+        pytest.skip("sik_bos bayrakli Neofizik sorusu yok")
 
     sonuc = await db_session.execute(
         text(
@@ -147,12 +207,45 @@ async def test_neofizik_sorulari_kapidan_gecmiyor(db_session):
             "WHERE EXISTS (SELECT 1 FROM v_safe_for_beta v WHERE v.id = x.id) "
             "LIMIT 5"
         ),
-        {"ids": ids},
+        {"ids": sik_bos},
     )
     sizanlar = [r[0] for r in sonuc.fetchall()]
     assert not sizanlar, (
-        f"{len(sizanlar)}+ Neofizik sorusu kapidan gecti -- insan onayi olmadan "
-        f"servis edilebilir durumda: {sizanlar}"
+        f"{len(sizanlar)}+ sik_bos bayrakli Neofizik sorusu kapidan gecti -- "
+        f"ogrenci bos sik gorur (D10 ihlali): {sizanlar}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_neofizik_toplu_onay_izi_kayitli(db_session):
+    """Durustluk bekcisi: 'APPROVED' olan her satir NASIL onaylandigini soylemeli.
+
+    review_status='APPROVED' tek basina "biri bu soruyu inceledi" gibi okunur.
+    0014 bunu toplu bir sahip karariyla verdi. Iz kaybolursa "servis edilen kac
+    soru hic bireysel denetimden gecmedi" sorusu bir daha yanitlanamaz.
+    """
+    temiz, _ = await _neofizik_ids_bolunmus(db_session)
+    if not temiz:
+        pytest.skip("Neofizik verisi ithal edilmemis")
+
+    izsiz = (
+        await db_session.execute(
+            text(
+                """
+                SELECT count(*) FROM question_bank b
+                  JOIN question_metadata m ON m.id = b.id
+                 WHERE b.id = ANY(:ids)
+                   AND b.review_status = 'APPROVED'
+                   AND (m.pipeline_metadata::jsonb ->> 'onay_turu') IS DISTINCT FROM
+                       'toplu_beta_sahibi'
+                """
+            ),
+            {"ids": temiz},
+        )
+    ).scalar()
+    assert izsiz == 0, (
+        f"{izsiz} satir 'APPROVED' ama onay_turu izi yok -- toplu onay ile "
+        "bireysel denetim birbirine karisti"
     )
 
 
@@ -213,8 +306,9 @@ async def test_neofizik_gorsel_bayrakli_sorularda_varlik_kayitli(db_session):
     """Sekle atif yapan sorularda gorsel varlik referansi bulunmali.
 
     902 sorunun koku sekle atif yapiyor; metin tek basina yeterli degil.
-    pipeline_metadata->'gorsel_varliklar' bos ise soru ileride aktiflestirilse
-    bile ogrenciye eksik gosterilir -- OSYM'deki sik_bos hatasinin ayni sinifi.
+    pipeline_metadata->'gorsel_varliklar' bos ise soru ogrenciye EKSIK gosterilir
+    -- OSYM'deki sik_bos hatasinin ayni sinifi. 0014 ile bu satirlar artik canli
+    servis ediliyor, yani bu bekci artik teorik degil.
     """
     ids = await _neofizik_ids(db_session)
     if not ids:
