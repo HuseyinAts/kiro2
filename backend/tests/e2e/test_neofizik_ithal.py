@@ -79,15 +79,18 @@ async def _neofizik_ids(session: AsyncSession) -> list[str]:
     return [r[0] for r in sonuc.fetchall()]
 
 
-_SIK_BOS = "(m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos'"
-
-
 async def _neofizik_ids_bolunmus(session: AsyncSession) -> tuple[list[str], list[str]]:
-    """(temiz, sik_bos) -- 0014 yalnizca temiz olanlari kapidan gecirdi."""
+    """(temiz, sik_bos) -- 0014 yalnizca temiz olanlari kapidan gecirdi.
+
+    Sorgu bilerek TEK PARCA sabit metin: sik_bos yuklemi bir f-string'e
+    cikarilirsa hem ruff S608 hem bandit B608 (SQL enjeksiyon vektoru)
+    kizarir. Burada enjekte edilecek bir sey yok, ama kurali baskilamak
+    yerine ihtiyaci ortadan kaldirmak dogrusu.
+    """
     sonuc = await session.execute(
         text(
-            "SELECT b.id, "  # noqa: S608
-            f"({_SIK_BOS}) AS sik_bos "
+            "SELECT b.id, "
+            "(m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos' AS sik_bos "
             "FROM question_bank b JOIN question_metadata m ON m.id = b.id "
             "WHERE m.source_book = :kaynak"
         ),
