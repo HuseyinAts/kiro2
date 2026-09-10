@@ -1103,3 +1103,101 @@ pasif (ileride yeniden aktif edilebilir -- bkz D10 dosyasinin ust notu).
 FIZIK/BIYOLOJI/EDEBIYAT/GEOMETRI hala buyuk olcude eksik; 28 OSYM sorusu
 gorsel-sik destegi bekliyor). Bu bir veritabani sorunu degil, bir icerik
 sorunu.
+
+**10 Eylul (0013 + Neofizik ithalati, 1.218 satir):** "Neofizik AYT Fizik
+Soru Bankasi 2025" (336 sayfa, taranmis PDF) hibrit bir okuma hattiyla
+cikarilip veri tabanina PASIF olarak alindi. Bu, D10 notunun kapanisinda
+"cozulemeyen" diye isaretlenen FIZIK icerik acigina karsi atilan ilk adim.
+
+Neden hibrit hat: PDF'in METIN KATMANI YOK -- 336 sayfada toplam 0
+karakter olculdu, stok docling 10 sayfadan yalnizca 14 karakter cikardi.
+Yani tek motorlu hicbir cozum (docling dahil) bu kitabi okuyamaz; okuma,
+mizanpaj tespiti ve dogrulama ayri katmanlara bolundu.
+
+Cikarim ve olcumler (`veriseti/zkitap/cikti/YONTEM.md` tam raporu tutar):
+- Bolutleme, kitabin KENDI basili cevap anahtarlarina karsi dogrulandi:
+  145 test blogundan 139'u birebir esti.
+- 1.319 sorunun tamami IKI KEZ bagimsiz okundu; %89,3'u bayt-bayt ayni
+  cikti. Bicim farklari normalize edilince gercek icerik uyusmazligi 18
+  soruda (%1,36) kaldi; hepsi piksel duzeyinde kanitla karara baglandi,
+  askida kalan yok.
+- Cozum-dogrulama BAGIMSIZ bir kanal olarak kullanildi, cevap kaynagi
+  olarak DEGIL (PhysUniBench, arXiv 2506.17667: en iyi model coklu-ortam
+  fizik sorularinda %63,6'da kaliyor -- model cevabi anahtar yerine
+  gecemez). Basili anahtarlarla uyum %96,0 (yuksek guvenli altkumede
+  %98,1). Bu kanal 1.319 soruda tam 1 gercek yazim hatasi yakaladi
+  (s297-01, alt indis 88<->86), ayrica 3 kitap dizgi hatasi ve 2 supheli
+  kitap anahtari isaretlendi.
+- D10'da OSYM'yi vuran `sik_bos` sorunu bu hatta ithalattan ONCE ele
+  alindi: sikki gorsel olan 44 sorunun 42'sinde secenek gorselleri
+  DocLayout-YOLO (arXiv 2410.12628) ile ayri varlik olarak cikarildi.
+
+Veri tabanina yansiyan degisiklik dort dosya:
+- `backend/alembic/versions/0013_neofizik_konu_agaci.py`: FIZ kokunun
+  altina 6 bolum + 44 yaprak konu tanimladi (bu kosumda eklenen dugum:
+  50). Gunluklu (`neofizik_konu_gunlugu_0013`), tekrar kosulabilir,
+  geri alinabilir (`downgrade` yalnizca kendi ekledigi ve referanssiz
+  dugumleri siler). NOT: `topic_hierarchy.code` varchar(50) -- konu
+  kodlari bu sinira gore kisaltiliyor, 44 kodda carpisma yok.
+- `backend/scripts/kitap/neofizik_ithal.py`: 1.218 `ONAYA_HAZIR` satiri
+  yazar. Yazmadan once bir on kontrol kapisi var (5 sik + dolu anahtar +
+  R5: anahtarin gosterdigi sikkin metni dolu + dolu soru metni); tek bir
+  ihlalde ithalat baslamadan durur.
+- `backend/scripts/kitap/neofizik_kirp.py`: gorselleri PDF'ten yeniden
+  uretir. Gorseller git'e GIRMEZ (`d-dataset/` zaten .gitignore'da,
+  satir 216); veri setinde her kaydin kirpim kutusu durdugu icin
+  gorseller her ortamda yeniden uretilebilir -- tasinan tek sey
+  koordinatlar.
+- `backend/tests/e2e/test_neofizik_ithal.py`: 6 bekci.
+
+Ithalat sozlesmesi (bilerek muhafazakar): her satir
+`is_ai_generated = true` + `review_status = 'PENDING'` + `is_active =
+false` ile yazildi. Bu kombinasyon `v_safe_for_beta`'nin
+`(is_ai_generated = false OR review_status = 'APPROVED')` kolunu
+DUSURUR, yani insan onayi gelmeden hicbir soru ogrenciye gitmez.
+
+Dogrulama (canli dev DB, uygulamadan sonra olculdu): `question_bank`
+6.087 -> 7.305 (+1.218); `v_safe_for_beta` 5.222 -> 5.222 (DEGISMEDI --
+ithalatin kapiyi hic kimildatmadigi olcumle sabit); Neofizik satirlari
+icin `is_active` 0, kapidan gecen 0, farkli yaprak konu 44 (yani sorular
+FIZ kokune yigilmadi, gercek konulara bagli).
+
+Gorsel referanslari: her satirin `question_content.question_image_url`
+alani ve `question_metadata.pipeline_metadata->'gorsel_varliklar'`
+listesi `/static/crops/NEOFIZIK_2025/...` yollarini tutar; bu montaj
+`core/application.py:441`deki `CROP_IMAGE_DIR` eslemesiyle ayni. Olcum
+(`backend/_ci_art/_neo_url_kontrol.py`): 1.218 soru gorseli + 1.215
+varlik referansinin tamami diskte mevcut, eksik 0.
+
+Mutasyon testi (bekcinin gercekten KAPIYI izledigini kanitlamak icin):
+ilk denemede yalnizca `is_ai_generated`/`review_status` cevrildi ve
+sonuc BELIRSIZ cikti -- satir hala kapinin disindaydi (kapidan gecen 0),
+yani yalnizca bayrak testi kizardi, kapi bekcisi kizarmadi. Bunun uzerine
+kapi yuklemi bastan olculdu (`_neo_kapi_teshis.py`) ve UC kilit birden
+cevrildi: `quality_review_status = 'human_verified'`, `pipeline_metadata`
+icine `student_coherent: "true"`, `is_ai_generated = false` +
+`review_status = 'APPROVED'`. Sonuc: kapidan gecer mi = 1 ve
+`test_neofizik_sorulari_kapidan_gecmiyor` sizan satirin id'siyle FIRLADI;
+tam geri alma sonrasi 6/6 yesil. Yani bekci bayat degil.
+
+`golden_flow` isareti BILEREK konulmadi -- ayni gerekce
+`test_osym_aktiflestirme.py`de de gecerli: bu veri elle kosulan bir
+ithalat script'inden gelir, CI'da hic tohumlanmaz, dolayisiyla isaretli
+olsa her kosumda atlanir ve en fazla 5 atlama butcesini bosa harcardi.
+
+Kalan is (icerik karari, kod degil): 1.319 sorunun 101'i insan incelemesi
+kuyrugunda (`veriseti/zkitap/cikti/inceleme_kuyrugu.csv`); 1.218 satirin
+tamami `review_status = 'PENDING'` bekliyor. Onay verilene kadar FIZIK
+acigi kapanmis SAYILMAZ -- sorular DB'de duruyor ama servis edilmiyor.
+
+Depoya NE GIRMEDI (bilerek): kitabin cikarilmis metni
+(`veriseti/zkitap/cikti/neofizik_2025_sorular_v2.json`, 1.319 soru),
+yontem raporu (`YONTEM.md`) ve inceleme kuyrugu, `.gitignore:380`
+(`veriseti/`) tarafindan disarida tutuluyor; gorseller de `.gitignore:216`
+(`d-dataset/`) ile. Gerekce iki katmanli: (1) bu depo PUBLIC ve soz konusu
+kitap TICARI bir yayin -- 1.319 sorunun tam metnini herkese acik bir
+depoya koymak telif acisindan yanlis olur; (2) gorseller zaten
+koordinatlardan yeniden uretilebiliyor. Sonuc: bu commit ithalat
+MEKANIZMASINI tasir, kitabin ICERIGINI tasimaz. Veri seti yalnizca yerel
+makinede durur; baska bir ortamda ithalat kosulacaksa dosyanin oraya elle
+kopyalanmasi gerekir.
