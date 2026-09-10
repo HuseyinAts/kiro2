@@ -835,7 +835,8 @@ karar/onay vermen gereken.
     is_public=false, review_status=pending; 125 satir, id=uuid5(soru_hash),
     idempotent). Kitapcigin telif notu: "her hakki saklidir ... yazili izin
     olmadan kullanilmasi yasaktir" -- sayfalarda da diyagonal filigran var.
-    Aktiflestirme hukuki onay bekler (kullanici karari). **AYT 2025** de
+    Aktiflestirme hukuki onay bekler (kullanici karari) -- **10 Eylul:
+    onay geldi, aktiflestirildi (asagida, "10 Eylul sabahi").** **AYT 2025** de
     okundu (50 sayfa): **166/166 soru** (TDE-SB1 40 = Edebiyat 24 + Tarih-1
     10 + Cografya-1 6; SB2 46 = Tarih-2 11 + Cografya-2 11 + Felsefe 12 +
     Din 6 + ek Felsefe 6; MAT 40; FEN 40 = Fizik 14 + Kimya 13 + Biyoloji
@@ -1002,5 +1003,62 @@ Madde 19'daki bulgularin karari yukarida, kalan ikisi (2 supheli anahtar,
 embedding); CI'da ES servisi yok; altyapi testleri (7.6 gun sonu +
 `test_get_history_deep` 404 + Kanon lint) sabit kirmizi -- master'da da.
 
+**10 Eylul sabahi (0011 + D9):** kullanici "OSYM sorularini aktiflestir"
+dedi. Duz `is_active=true` yetmedi -- olcum (`backend/_ci_art/_aktif_olcum.py`)
+gosterdi ki gercek servis kapisi (`v_safe_for_beta`, `core/quality_gate.py`)
+uc alan daha ister: `question_bank.review_status='approved'`,
+`question_statistics.quality_review_status IN ('human_verified',
+'auto_judged_high')`, ve `question_metadata.pipeline_metadata` icinde bir
+"coherence signal" anahtari (student_coherent/verified_provisional/
+consensus_2signal_run/math_promote_run/verbal_promote_run) -- OSYM
+ithalatinin hicbiri bunlara sahip degildi. Var olan bir imzayi odunc almak
+yanlis provenance yazardi (OSYM icerigi blind-solve/konsensustan gecmedi,
+resmi cevap anahtarindan geldi); bunun yerine yeni bir imza eklendi:
+`osym_resmi_kaynak`. Ayrica FIZ/BIO/EDB kokleri SIFIR alt konuya sahipti
+(agac bekcisi bu ana kadar sessizdi, cunku sayilan sorular pasifti);
+aktiflestirme bu koklere 21+19+24=64 aktif soru koyacagindan bekci
+firlardi.
+
+Iki dosya birlikte calisti:
+- `backend/migrations/D9_safe_for_beta_osym_resmi_kaynak.sql` (+ ROLLBACK):
+  `v_safe_for_beta`'nin coherence-signal daline `osym_resmi_kaynak` eklendi.
+  D6-D8 numaralari kasitli bos: gate2b/wave1 kampanyalarinda ayni isimle
+  scratch dizinlerine (`scripts/quality/_gate2b/`, `_wave1/`) uygulanmis
+  ama `backend/migrations/`e hic tasinmamis (canli view D5 + o dalgalarin
+  toplami; `pg_get_viewdef` ile dogrulandi, D5'in kendi dosyasindan farkli).
+  Elle uygulanir (bu view alembic zincirinin DISINDA, bkz
+  `20260727_mv_safe_for_beta.py` docstring'i).
+- `backend/alembic/versions/0011_osym_aktiflestirme.py`: 291 satirin
+  `is_active`, `review_status`, `quality_review_status` alanlarini cevirdi;
+  `pipeline_metadata`'ya `osym_resmi_kaynak` anahtarini ekledi; FIZ/BIO/EDB
+  altina birer "GENEL" alt konu yaratip (kod: `FIZ-OSYM-GENEL` vb., sabit
+  uuid5 id) o derslerin OSYM sorularini koklerden bu alt konuya tasidi (64
+  soru); `total_questions` sayaclarini yeniden hesapladi;
+  `refresh_safe_for_beta()`i cagirdi (fonksiyon yoksa -- taze/CI DB --
+  sessizce atlar). Gunluklu (`aktiflestirme_gunlugu_0011`), geri alinabilir.
+
+`quality_review_status='human_verified'` secildi, `auto_judged_high` degil:
+canli DB'de su an hicbir satir `human_verified` degildi (hepsi
+`auto_judged_high`; D4 migration'inin kendi docstring'i bunu "beklenen 0"
+diye not dusmustu). OSYM icerigi bir LLM tarafindan "auto_judged" edilmedi;
+resmi kaynagin kendi cevap anahtari + tam eslesen cikarici (125/125 TYT,
+166/166 AYT, `tests/fast/test_osym_kitapcik.py`) + elle cozulen supheli alt
+kume (0009/0010) ile kuruldu -- bu "auto_judged" degil "human_verified"
+tanimina yakin.
+
+Dogrulama (canli DB, uygulamadan once/sonra): `v_safe_for_beta` 4.959 ->
+5.250 (+291, tam OSYM sayisi); 291/291 OSYM sorusu `mv_safe_for_beta`
+icinde; FIZ/BIO/EDB her biri artik 1 alt konuya sahip (soru sayilari
+sirasiyla 21/19/24 ile eslesiyor); `core/osym_exam_engine.py`nin gercek
+sorgu deseni (is_active + safe_for_beta_gate) FIZIK icin 21 soru donuyor.
+Mutasyon testi: `alembic downgrade -1` sonrasi yeni bekci
+(`tests/e2e/test_osym_aktiflestirme.py`, gercek Postgres ister) 2/3 testte
+FIRLADI (aktiflestirilmemis durumu yakaladi), `alembic upgrade head` ile
+tekrar 3/3 yesil. `tests/e2e/test_quality_gate_leak.py` (donen sorularin
+kapinin alt kumesi oldugunu dogrulayan, sayi iddia etmeyen bekci) ve
+`tests/db/test_mufredat_agaci_saglik.py` etkilenmedi, hala yesil.
+
 **Cozulemeyen:** icerik. 5.796 soru, dort ders tamamen eksik, yedekteki
-36.967 soru halusinasyon. Bu bir veritabani sorunu degil, bir icerik sorunu.
+36.967 soru halusinasyon (simdi OSYM'nin 291 sorusuyla biraz azaldi, ama
+FIZIK/BIYOLOJI/EDEBIYAT/GEOMETRI hala buyuk olcude eksik). Bu bir veritabani
+sorunu degil, bir icerik sorunu.
