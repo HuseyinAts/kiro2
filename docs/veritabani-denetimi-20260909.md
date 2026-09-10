@@ -1201,3 +1201,66 @@ koordinatlardan yeniden uretilebiliyor. Sonuc: bu commit ithalat
 MEKANIZMASINI tasir, kitabin ICERIGINI tasimaz. Veri seti yalnizca yerel
 makinede durur; baska bir ortamda ithalat kosulacaksa dosyanin oraya elle
 kopyalanmasi gerekir.
+
+**10 Eylul, ogleden sonra (0014, karar degisikligi):** Urun sahibi bireysel
+insan denetimini ATLAYIP toplu denetimi beta surumune ertelemeye karar
+verdi. 0013'un muhafazakar sozlesmesi (hepsi pasif, hepsi PENDING) bu
+kararla degisti; 0014 onu uygular.
+
+Kapi yuklemi tahminle degil BIRINCIL KAYNAKTAN okundu (`pg_views`,
+`v_safe_for_beta` tanimi) ve her kolu ayri ayri olculdu
+(`backend/_ci_art/_neo_kapi_olc.py`). Uc kol engelliyordu:
+`quality_review_status` 1218/1218 'pending'; uyum sinyali 0/1218; AI/onay
+kolu 0/1218. Diger kollar (demoted_at, topic_match_quality, match_tier)
+zaten 1218/1218 geciyordu.
+
+Uc alan degisti ve UCU DE GERCEGI SOYLUYOR:
+- `quality_review_status` -> `'auto_judged_high'`. Dogru: hat bu sorulari
+  otomatik ve yuksek guvenle yargiladi (iki bagimsiz okuma + cozum
+  dogrulama). `'human_verified'` YAZILMADI -- hicbir insan bunlari tek tek
+  dogrulamadi.
+- `pipeline_metadata` += `consensus_2signal_run`. Dogru: iki sinyalli
+  uzlasma kosumu gercekten yapildi.
+- `review_status` -> `'APPROVED'`, YANINDA `onay_turu='toplu_beta_sahibi'`
+  ve `bireysel_denetim_yapildi=false`. 'APPROVED' tek basina "biri bu
+  soruyu inceledi" gibi okunur; iz olmadan "servis edilen kac soru hic
+  bireysel denetimden gecmedi" sorusu bir daha yanitlanamazdi.
+
+`is_ai_generated` alanina DOKUNULMADI -- true kalir. Kapiyi acmanin kolay
+ama yanlis yolu bu alani false yapmakti (view'in oteki kolu); o yol DB'ye
+yanlis bir kaynak beyani birakirdi. Bir bekci artik bunu koruyor.
+
+KAPSAM -- 37 satir BILEREK disarida: D10'un genel kurali (`bayraklar`
+icinde `sik_bos` tasiyan hicbir satir kapidan gecemez) BOZULMADI. 1218
+Neofizik satirindan 37'si bu bayragi tasiyor: sikki metin degil gorsel
+oldugu icin mevcut metin-tabanli sunum katmaninda eksik gorunurler. Toplu
+onay bu satirlari kapsamadi; gorsel-sik destegi gelene kadar pasif
+kalirlar. Yani 1218 degil, **1181** satir aktiflesti.
+
+Dogrulama (canli dev DB, once/sonra):
+
+| Olcum | Once | Sonra |
+|---|---|---|
+| `v_safe_for_beta` | 5.222 | **6.403** (+1.181, hedefle birebir) |
+| Neofizik `is_active` | 0 | **1.181** |
+| Neofizik kapidan gecen | 0 | **1.181** |
+| Servis edilen FIZIK sorusu | 21 | **1.202** |
+
+Mutasyon testi: `alembic downgrade 0013` sonrasi `v_safe_for_beta` TAM
+OLARAK 5.222'ye dondu (kayma yok -- geri alinabilirligin kaniti) ve yeni
+bekci `test_neofizik_temiz_sorular_kapidan_geciyor` FIRLADI; `upgrade head`
+ile 6.403 ve 8/8 yesil.
+
+Bekciler guncellendi (`tests/e2e/test_neofizik_ithal.py`, 6 -> 8 test).
+`test_neofizik_sorulari_kapidan_gecmiyor` artik yanlis sozlesmeyi
+savundugu icin kaldirildi, ama YERINE KOYULMADAN degil:
+- `test_neofizik_temiz_sorular_kapidan_geciyor` (ters yon, ayni kapi)
+- `test_neofizik_sik_bos_sorulari_kapi_disinda` (D10 hala gecerli)
+- `test_neofizik_toplu_onay_izi_kayitli` (onay_turu izi kaybolamaz)
+- `test_neofizik_ai_isareti_korunuyor` (is_ai_generated cevrilemez)
+R5 bekcisi (`test_icerik_gecerliligi.py`) ve mevcut kapi/agac bekcileri
+1.181 satir CANLIYKEN kosuldu: 34 passed, 0 failed.
+
+**Yeni olculebilir gercek:** servis edilen 6.399 sorunun 1.181'i (%18,5)
+hicbir bireysel denetimden gecmedi. Bu sayi `onay_turu='toplu_beta_sahibi'`
+sorgusuyla her an olculebilir; beta toplu denetimi ilerledikce dusmeli.
