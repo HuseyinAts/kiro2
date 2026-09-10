@@ -1264,3 +1264,68 @@ R5 bekcisi (`test_icerik_gecerliligi.py`) ve mevcut kapi/agac bekcileri
 **Yeni olculebilir gercek:** servis edilen 6.399 sorunun 1.181'i (%18,5)
 hicbir bireysel denetimden gecmedi. Bu sayi `onay_turu='toplu_beta_sahibi'`
 sorgusuyla her an olculebilir; beta toplu denetimi ilerledikce dusmeli.
+
+**10 Eylul, DUZELTME (0013/0014 raporlarindaki iki sisik rakam):** Yukleme
+sonrasi yapilan tam denetimde, bu belgenin ve PR #246/#247'nin metninde
+YANLIS iki rakam bulundu. Rakamlar sikistirma oncesi bir ara ozetten
+alinmis, kaynaktan yeniden olculmemisti -- yani "raporlar bayatlar,
+birincil kaynagi oku" ve "olcum kapsami = iddia kapsami" kurallarinin tam
+olarak yakalamak icin var oldugu hata yapildi. Commit mesajlari ve PR
+govdeleri degistirilemez; dogru rakamlar burada duruyor.
+
+| Yazilan | Olculen (canli 1181 satir) |
+|---|---|
+| iki bagimsiz okuma %89,3 bayt-bayt ayni | **%83,3** (984/1181) |
+| cozum-dogrulama %96,0 uyum (1319 soruda) | oran dogru (**%96,0**) ama kapsam yanlis |
+
+Kanit tabaninin GERCEK genisligi (`_ci_art/_neo_kanit_tabani.py`):
+
+- cift okuma kosuldu: **1.164 / 1.181 (%98,6)** -- kalan 17 hakem yolundan gecti
+- iki okuma birebir ayni: **984 (%83,3)**; ortalama uyum 0,9915
+- bagimsiz cozum kosuldu: **374 (%31,7)**; bunlarin 359'u anahtarla uyustu (%96,0)
+- **bagimsiz cozum KOSULMADI: 807 (%68,3)**
+
+Karari degistirir mi: `auto_judged_high` etiketi hala savunulabilir --
+cift okuma canli satirlarin %98,6'sinda kosuldu ve cevaplarin tamami
+kitabin BASILI anahtarindan geliyor (`cevap_kaynagi=kitap_anahtari`,
+1218/1218), model cikariminan degil. Ama beta toplu denetimi yapilirken
+bilinmeli: sorularin ucte ikisinde anahtari dogrulayan ikinci bir bagimsiz
+kanal yok. Denetime cozum kontrolu kosmamis 807 soruyla baslamak
+rastgele baslamaktan olculebilir sekilde daha verimli.
+
+**10 Eylul, YUKLEME TAM DENETIMI:** "eksiksiz ve sorunsuz yuklendi mi"
+sorusu iddiayla degil, kaynak JSON ile DB'nin alan alan karsilastirilmasiyla
+yanitlandi (`_ci_art/_neo_tam_denetim.py`). Karsilastirma hash uzerinden
+DEGIL alanlar uzerinden yapildi -- hash zaten alanlardan turedigi icin hash
+karsilastirmasi kendi kendini dogrulayan bos bir test olurdu.
+
+| Denetim | Sonuc |
+|---|---|
+| JSON'da olup DB'de olmayan | 0 |
+| DB'de olup JSON'da olmayan | 0 |
+| cocuk tablo yetimi (content/statistics) | 0 |
+| id = uuid5(soru_hash) tutarli | 1.218/1.218 |
+| soru metni birebir | 1.218/1.218 |
+| 5 sik birebir | 6.090/6.090 |
+| cevap anahtari birebir | 1.218/1.218 |
+| kaynak sayfa + kayit_id izi birebir | 1.218/1.218 |
+| bozuk kodlama (mojibake) | 0 |
+| FIZ-NEO-B* yapraginda | 1.218/1.218 (44 farkli konu) |
+| gorsel dosyalari diskte | 1.218 soru + 1.215 varlik, eksik 0 |
+| ithal edilmeyenler = inceleme kuyrugu | 101 = 101, simetrik fark 0 |
+| durum tutarliligi | temiz 1.181 tam, sik_bos 37 pasif |
+
+Bir yanlis alarm: `A` (U+00C5) tasiyan bir satir mojibake sanildi --
+`neofizik2025-s318-06`, fotoelektrik sorusu, **Angstrom** simgesi yerinde
+kullanilmis ve kaynak JSON ile birebir ayni. Dedektorden `A`/`A"`
+cikarildi.
+
+CEVAP DAGILIMI EGRILIGI (arastirildi, kusur DEGIL): A=%13,6 B=%16,4
+C=%24,0 D=%21,8 E=%24,2; ki-kare 54,9 (df=4) -- duzgun dagilimdan anlamli
+sapma. Cikarim hatasi mi kitabin kendisi mi diye ayirt edildi: cozum
+dogrulamasinin UYUSTUGU altkumede A=%13,4, UYUSMADIGI altkumede A=%13,7 --
+egrilik iki kumede AYNI, yani cikarim A'lari sistematik kacirmiyor. Ayrica
+cevaplarin tamami kitabin basili anahtarindan geliyor. Karsilastirma
+tabani: OSYM'nin 291 resmi sorusu neredeyse duzgun (ki-kare 1,4), yani
+olcum yontemi kendi basina egrilik uretmiyor. Sonuc: egrilik KITABIN
+basili anahtarinin ozelligi.
