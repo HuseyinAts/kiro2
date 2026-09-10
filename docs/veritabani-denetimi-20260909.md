@@ -1329,3 +1329,15 @@ cevaplarin tamami kitabin basili anahtarindan geliyor. Karsilastirma
 tabani: OSYM'nin 291 resmi sorusu neredeyse duzgun (ki-kare 1,4), yani
 olcum yontemi kendi basina egrilik uretmiyor. Sonuc: egrilik KITABIN
 basili anahtarinin ozelligi.
+
+**10 Eylul, DUZELTMENIN DUZELTMESI (%89,3 / %83,3):** Bir onceki notta
+"%89,3 yazildi, gercek %83,3" dendi. Bu eksik dogruydu. Hattin kendi
+raporu (`veriseti/zkitap/cikti/YONTEM.md`) ve `uyum_olc.py` birincil
+kaynaktan okununca: %89,3 rakami **normalize edilmis uyum >= 0,995**
+esigiyle olculmus (noktalama, tirnak/tire cesitleri, bosluk elenerek);
+%82,8 / %83,3 ise **ham >= 1,0** (bayt-bayt) esigi. Ayni JSON uzerinde
+ikisi de dogru: >=1,0 -> %82,8; >=0,995 -> %89,3; >=0,95 -> %95,5.
+Yanlis olan rakam degil, raporun 0,995 esigine "birebir ayni" etiketini
+yapistirmasiydi. Cozum-dogrulama KAPSAMI hakkindaki duzeltme (374/1181,
+%31,7) aynen gecerli -- o hata rapordan degil, PR metnini hafizadan
+yazmaktan kaynaklandi.
