@@ -1341,3 +1341,115 @@ Yanlis olan rakam degil, raporun 0,995 esigine "birebir ayni" etiketini
 yapistirmasiydi. Cozum-dogrulama KAPSAMI hakkindaki duzeltme (374/1181,
 %31,7) aynen gecerli -- o hata rapordan degil, PR metnini hafizadan
 yazmaktan kaynaklandi.
+
+## 10 Eylul -- Neofizik TYT Fizik Soru Bankasi ithali (0015)
+
+Ayni yayinevinin TYT kitabi. AYT'den iki noktada ayrilir ve bu iki fark
+denetimin de sekillini degistirir:
+
+1. **Cevap kaynagi tek: kitabin basili anahtari.** Urun sahibi sorularin
+   tekrar cozulerek dogrulanmasini istemedi. Bu yuzden `explanation` NULL
+   birakildi; uretilmemis bir cozumun sonradan "varmis gibi" gorunmemesi
+   icin bekci `explanation IS NOT NULL` sayisini sifirda tutuyor.
+2. **Turetik alanlar sabit degil, hesaplaniyor.** AYT ithali
+   `readability_score=50.0` ve `morphology_complexity=0.5` sabitleriyle
+   yazmisti; TYT'de ikisi de repo'nun KENDI servislerinden geciyor.
+
+### Kitaptan olculen sayilar
+
+| Olcu | Sonuc |
+|---|---|
+| PDF metin katmani | **0 karakter / 256 sayfa** (tam raster) |
+| icerik sayfasi | 238 |
+| soru | **891** |
+| test blogu | 109 |
+| unite / konu | 7 / 35 |
+| cikmis soru (OSYM + MSU) | 91 |
+
+### Segmentasyon: iki bagimsiz yer gercegi
+
+El etiketi (82 sayfa, 308 kutu) ve basili cevap anahtarlari (109 blok)
+birbirinden bagimsiz. Nihai tespit **82/82 sayfa** ve **109/109 blok**
+birebir. Anahtar sayimi, el etiketinin goremedigi iki hatayi yakaladi
+(s215 ikon penceresi kirpigi, s243 sekil ici gurultunun baskin kumeyi
+kazanmasi); ikisi de olcumle duzeltildi, tahminle degil.
+
+Ayrica basili soru numaralarinin **891'i 891** gorsel olarak dogrulandi --
+"sayfa ici okuma sirasi" artik varsayim degil olcum.
+
+### Transkripsiyon
+
+238 sayfa iki kez, bagimsiz okundu. Ham normalize uyum %98,0 (873/891).
+Iki BICIMSEL ayrisma deseni (Unicode alt simge harfi; icerigi sekil olan
+bos roma maddeleri) normalize edildikten sonra **hakem disi 870 sorunun
+870'i birebir**. Kalan 21 soru hakem turunda yuksek cozunurluklu kirpimla
+cozuldu.
+
+Hakem bulgusu: uyusmazliklarin **hicbiri okuma hatasi degildi**. Hepsi ya
+konvansiyon farkiydi (sekil-sik etiketi yazilir mi, sekil alti roma
+maddeleri soru kokune girer mi) ya da kitabin kendi dizgi hatasiydi
+("III ve III", ayni metinli iki sik, iki kez basilan "Yalniz I"). Dizgi
+hatalari oldugu gibi korundu.
+
+### Cevap dagilimi egriligi -- kontrol grubu kitabin kendi icinde
+
+Egrilik var (ki-kare 33,0; df=4). AYT'de bunun kitaba mi hatta mi ait
+oldugunu ayirt etmek icin disaridan OSYM verisi gerekmisti. Burada kontrol
+grubu kitabin icinde:
+
+| Altkume | n | ki-kare | A% | E% |
+|---|---|---|---|---|
+| Cikmis sorular (OSYM/MSU) | 91 | **4,1** | 16,5 | 22,0 |
+| Yayinevinin kendi sorulari | 800 | **33,2** | 14,1 | 26,4 |
+
+Ayni sayfalar, ayni tespit edici, ayni okuyucular. OSYM sorulari duzgun
+dagilirken yayinevi sorulari egri -- egrilik **yayinevinin** ozelligi.
+
+Ek capraz dogrulama: 91 cikmis sorunun 91'inde metinde basili sinav-yil
+etiketi var ve bu, konu agacindan gelen "Cikmis Sorular" etiketiyle 91/91
+ortusuyor.
+
+### Yonlendirici adayi TYT'de REDDEDILDI
+
+PR #250'nin harness'i AYT verisinde `alt_ust_simge >= 1 VEYA tablo_sik
+VEYA ondalik >= 1` kuralini ADAY isaretlemis, "bir sonraki kitapta
+dogrulanmali" demisti. TYT'de 891 sorunun tamami iki kez okundugu icin
+kuralin recall'u dogrudan olculdu: hakeme giden 6 sorunun **3'unu**
+yakaliyor, birebir-olmayan 18 sorunun **9'unu** -- ve bunu %28,4
+yonlendirme maliyetiyle yapiyor. Sifir tolerans kurali geregi **RET**.
+AYT'deki 18/18 sonucu o kitaba asiri uyum cikti.
+
+Bu, harness'in ise yaramadigi anlamina gelmiyor; tam tersine harness'in
+sordugu soruyu cevapladi ve kurali uretime tasimadan once eledi.
+
+### Ithal sonucu
+
+| Denetim | Sonuc |
+|---|---|
+| yazilan satir | 891 |
+| `is_active` | **0** |
+| `v_safe_for_beta` kapisindan gecen | **0** |
+| JSON <-> DB simetrik fark | 0 / 0 |
+| soru metni / 5 sik / cevap / sayfa birebir | 891/891 (her biri) |
+| FIZ-NEOT yapraginda | 891/891 |
+| kirpim dosyasi diskte | 891 soru + 951 varlik |
+| cocuk tablo yetimi | 0 |
+| mojibake | 0 |
+| bekci mutasyonu | **5/5 bozuk durumda kirmizi** |
+
+### Doldurulamayan tek alan ve nedeni
+
+`morphology_complexity` 891 satirin tamaminda **0,35** -- yani sabit.
+Sebep uydurma degil, olcum: repo'nun Zemberek'siz yolu
+(`_simple_root_suffix_split`) kelime basina EN FAZLA BIR ek soyuyor, bu
+yuzden soru duzeyinde deger {0,0; 0,35} ikilisine cokuyor ve her fizik
+sorusunda en az bir ekli kelime bulundugu icin 0,35 cikiyor.
+
+Alan bu haliyle bilgi tasimiyor. Iki secenek vardi: (a) 0,5 sabitini
+yazmak (AYT'nin yaptigi), (b) hesaplanan sabiti yazip ACIKCA isaretlemek.
+(b) secildi: `pipeline_metadata.morfoloji_kaynagi =
+'heuristik_zemberek_yok_sabit'`. Bir bekci bu isaretin dusmesini yakalar,
+boylece ileride kimse bu sabiti "olculmus morfolojik karmasiklik"
+sanmaz. Makinede `zemberek-full.jar` var ama jpype Java 9+ istiyor ve
+kurulu Java 8; Zemberek acildiginda `--meta-guncelle` 891 satiri yeniden
+hesaplar.
