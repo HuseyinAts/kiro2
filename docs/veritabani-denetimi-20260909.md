@@ -1453,3 +1453,88 @@ boylece ileride kimse bu sabiti "olculmus morfolojik karmasiklik"
 sanmaz. Makinede `zemberek-full.jar` var ama jpype Java 9+ istiyor ve
 kurulu Java 8; Zemberek acildiginda `--meta-guncelle` 891 satiri yeniden
 hesaplar.
+
+### 10 Eylul -- TYT toplu beta onayi (0016)
+
+Urun sahibi bireysel insan denetimini atlayip toplu denetimi beta surumune
+ertelemeye karar verdi; AYT icin ayni karar 0014 ile uygulanmisti.
+
+**Kapi yuku once OLCULDU.** `v_safe_for_beta` tanimi pg_views'ten okundu ve
+her kosul TYT satirlarina karsi ayri sayildi:
+
+| Kosul | TYT'de |
+|---|---|
+| demoted_at yok | 891/891 geciyor |
+| pipeline_metadata NOT NULL | 891/891 geciyor |
+| sik_bos yok | 827/891 (64'u engelli) |
+| quality_review_status in (human_verified, auto_judged_high) | **0/891 ENGEL** |
+| (is_ai_generated=false OR review_status=APPROVED) | **0/891 ENGEL** |
+| uyum sinyali (6 anahtardan biri) | **0/891 ENGEL** |
+
+Uc kilit acildi, `sik_bos` kilidi ACILMADI. Sonuc: **827 satir kapidan
+geciyor, 64'u pasif kaldi.**
+
+#### AYT'den ayrilan nokta: konsensus gerekcesi
+
+0014 (AYT) `auto_judged_high`i **cift okuma VE bagimsiz cozum-dogrulamasina**
+dayandirmisti. TYT'de cozum dogrulamasi YOK -- urun karari geregi sorular
+tekrar cozulmedi. Ayni gerekceyi kopyalamak yanlis bir kalite beyani olurdu.
+
+TYT'nin iki sinyali sunlar ve ikisi de olculdu:
+
+1. **Cift bagimsiz okuma** (tam kapsam): bicimsel normalizasyon sonrasi hakem
+   disi 870/870 birebir; kalan 21 soru hakem turunda cozuldu; uyusmazliklarin
+   hicbiri okuma hatasi degildi.
+2. **Basili cevap anahtari capraz kontrolu** (iki duzeyde): soru duzeyinde
+   anahtarin harfi transkript edilen siklarda var (891/891); blok duzeyinde
+   anahtardaki cevap sayisi bloktaki soru sayisina esit (109/109).
+
+Bu iki sinyal **transkripsiyonu** dogrular. **Cevabin kendisi dogrulanmadi**;
+cevap kitabin basili anahtarindan gelir ve tek kaynaktir. Ayrim kaybolmasin
+diye metadata'ya acikca yazildi:
+
+    konsensus_sinyalleri = ['cift_bagimsiz_okuma',
+                            'basili_anahtar_capraz_kontrolu']
+    cozum_dogrulamasi    = 'yapilmadi_urun_karari'   (ithalden beri duruyor)
+
+`human_verified` YAZILMADI, `is_ai_generated` true KALDI.
+
+#### Iki hata, ikisi de olcumle yakalandi
+
+**1. SQL NULL tuzagi (bekcide).** `toplu_onay_izi` bekcisi 0016'dan ONCE de
+yesildi. Sebep: anahtar hic yokken `pipeline_metadata ->> 'onay_turu'` NULL
+doner, `NULL <> 'toplu_beta_sahibi'` de NULL uretir ve `FILTER` onu saymaz --
+yani **iz hic yokken bekci yesil kaliyordu**. Karsilastirmalar
+`IS DISTINCT FROM` ile NULL-guvenli hale getirildi; duzeltmeden sonra bekci
+0016 oncesi dogru sekilde kirmizi oldu.
+
+**2. Alembic revizyon adi 32 karakteri asti.** Ilk ad
+`0016_neofizik_tyt_beta_toplu_onay` (33 karakter) idi;
+`alembic_version.version_num` `varchar(32)` oldugu icin migration kendi
+UPDATE'lerini kosduktan SONRA patladi ve islem tamamen geri alindi (DB
+dokunulmadan kaldi). Ad `0016_neofizik_tyt_beta_onay` (27) olarak
+kisaltildi. **Revizyon adlari 32 karakteri asmamali.**
+
+#### Bekci mutasyonu
+
+| Mutasyon | Bozukken | Geri alinca |
+|---|---|---|
+| `quality_review_status = 'pending'` | KIRMIZI | yesil |
+| `onay_turu` anahtarini sil | KIRMIZI | yesil |
+| `quality_review_status = 'human_verified'` | KIRMIZI | yesil |
+| `konsensus_sinyalleri` anahtarini sil | KIRMIZI | yesil |
+| **AYT gerekcesini kopyala** (cozum dogrulamasi iddiasi) | **KIRMIZI** | yesil |
+| `is_ai_generated = false` | KIRMIZI | yesil |
+
+**6/6.** Ayrica `sik_bos` kilidi ayri dogrulandi: bir `sik_bos` satirina TAM
+onay izi verilse bile kapidan gecmiyor (kural view'de zorunlu tutuluyor).
+
+#### Sonuc
+
+| Kitap | Toplam | Aktif | Kapidan gecen | sik_bos |
+|---|---|---|---|---|
+| Neofizik AYT Fizik Soru Bankasi 2025 | 1218 | 1181 | 1181 | 37 |
+| Neofizik TYT Fizik Soru Bankasi | 891 | **827** | **827** | 64 |
+
+Konu sayaclari yenilendi: FIZ-NEOT agacinda toplam 827 aktif soru.
+Bekciler: TYT 13 + AYT 8 = **21/21 yesil**.
