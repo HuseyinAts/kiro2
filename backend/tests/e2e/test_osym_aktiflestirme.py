@@ -32,7 +32,17 @@ from sqlalchemy.pool import NullPool
 
 from tests.e2e.pg_dsn import SKIP_REASON, resolve_pg_dsn
 
-pytestmark = [pytest.mark.golden_flow]
+# BILEREK golden_flow ISARETSIZ: golden-flows.yml CI isi taze/tohumlanmis
+# bir Postgres'e karsi kosuyor -- kitapcik_ithal.py (291 OSYM sorusunun
+# GERCEK verisi) hicbir migration/seed script'inde degil, elle calistirilan
+# bir ithalat script'i. Yani bu dosyanin 4 testi o iste HER ZAMAN
+# "OSYM verisi yok" ile skip eder (yapisal, gecici degil) -- golden_flow
+# skip-butcesini (azami 5, bkz pytest.ini) bosuna tuketirdi. 10 Eyl 2026
+# CI kosusunda tam bunu yapti: onceki 4 pre-existing skip + bu dosyanin 4
+# skip'i = 8 > 5, gate FIRLADI. Bu bekci GERCEK bir dev/staging DB'ye
+# (OSYM verisi ithal edilmis) karsi elle/ayri bir is akisinda kosmak icin
+# -- golden_flow'un "her PR'da tohumlanmis DB'ye karsi kosar" sozlesmesine
+# uymuyor.
 
 _KAYNAKLAR = ("OSYM 2025 TYT", "OSYM 2025 AYT")
 _KOKLER = ("FIZ", "BIO", "EDB")
