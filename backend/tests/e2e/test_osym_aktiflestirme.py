@@ -60,6 +60,7 @@ async def db_session():
     except Exception as exc:
         await engine.dispose()
         pytest.skip(f"DB erisilemiyor: {type(exc).__name__}")
+        raise  # pytest.skip() zaten firlatir -- akis analizi icin acik hale getirir
 
     maker = async_sessionmaker(bind=conn, class_=AsyncSession, expire_on_commit=False)
     session = maker()
