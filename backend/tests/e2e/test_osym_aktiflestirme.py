@@ -11,6 +11,15 @@ tekrarlamak, duzeltmeye calistigimiz kod<->view drift'inin ta kendisi olurdu).
 
 Gercek Postgres yoksa ya da OSYM verisi henuz ithal edilmemisse SKIP olur;
 sahte motorla (sqlite) YANLIS pozitif donmez (bkz. tests/e2e/pg_dsn.py).
+
+10 Eyl 2026 (ek): push-oncesi ders-zorlayici hook'u 28 satirin (dogru sikki
+GORSEL/GRAFIK oldugu icin metni BOS olan sorular, pipeline_metadata->
+'bayraklar' icinde 'sik_bos' ile isaretli) cevap anahtarinin gecersiz
+oldugunu buldu -- bkz backend/migrations/D10_safe_for_beta_exclude_sik_bos.sql
+ve backend/alembic/versions/0012_osym_sikki_bos_pasif.py. Bu yuzden asagidaki
+"tum OSYM sorulari aktif/kapidan gecer" testleri artik sik_bos bayrakli
+28 satiri BILEREK haric tutuyor (`_osym_ids_servis_edilebilir`); onlar icin
+ayri, TERS yonlu bir bekci var (`test_osym_sik_bos_sorulari_kapi_disinda`).
 """
 
 from __future__ import annotations
@@ -52,11 +61,33 @@ async def db_session():
         await engine.dispose()
 
 
-async def _osym_ids(session: AsyncSession) -> list[str]:
+async def _osym_ids_servis_edilebilir(session: AsyncSession) -> list[str]:
+    """Tum OSYM sorulari EKSI sik_bos bayrakli 28 satir (bkz D10/0012).
+
+    NULL-guvenli: 'bayraklar' anahtari hic yoksa (bugun 291/291'de VAR ama
+    ileride farkli bir kaynak icin olmayabilir) satir YANLISLIKLA disari
+    atilmasin diye D10'daki ayni savunmaci OR deseni kullanilir.
+    """
     result = await session.execute(
         text(
             "SELECT b.id FROM question_bank b JOIN question_metadata m ON m.id = b.id "
-            "WHERE m.source_book = ANY(:kaynaklar)"
+            "WHERE m.source_book = ANY(:kaynaklar) "
+            "AND (m.pipeline_metadata IS NULL "
+            "     OR NOT m.pipeline_metadata::jsonb ? 'bayraklar' "
+            "     OR NOT (m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos')"
+        ),
+        {"kaynaklar": list(_KAYNAKLAR)},
+    )
+    return [str(r[0]) for r in result.fetchall()]
+
+
+async def _osym_ids_sik_bos(session: AsyncSession) -> list[str]:
+    """Dogru sikki gorsel/grafik oldugu icin metni bos olan OSYM sorulari."""
+    result = await session.execute(
+        text(
+            "SELECT b.id FROM question_bank b JOIN question_metadata m ON m.id = b.id "
+            "WHERE m.source_book = ANY(:kaynaklar) "
+            "AND (m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos'"
         ),
         {"kaynaklar": list(_KAYNAKLAR)},
     )
@@ -65,8 +96,12 @@ async def _osym_ids(session: AsyncSession) -> list[str]:
 
 @pytest.mark.asyncio
 async def test_osym_sorulari_aktif(db_session):
-    """0011 sonrasi: OSYM kaynakli tum sorular is_active olmali."""
-    ids = await _osym_ids(db_session)
+    """0011 sonrasi: sik_bos DISINDAKI tum OSYM sorulari is_active olmali.
+
+    sik_bos bayrakli 28 satir BILEREK haric -- onlar icin ters yonlu bekci
+    asagida (`test_osym_sik_bos_sorulari_kapi_disinda`).
+    """
+    ids = await _osym_ids_servis_edilebilir(db_session)
     if not ids:
         pytest.skip("OSYM verisi yok -- henuz ithal edilmemis")
     pasif = (
@@ -78,13 +113,13 @@ async def test_osym_sorulari_aktif(db_session):
             {"ids": ids},
         )
     ).scalar()
-    assert pasif == 0, f"{pasif}/{len(ids)} OSYM sorusu hala pasif"
+    assert pasif == 0, f"{pasif}/{len(ids)} servis-edilebilir OSYM sorusu hala pasif"
 
 
 @pytest.mark.asyncio
 async def test_osym_sorulari_kalite_kapisindan_geciyor(db_session):
-    """OSYM sorulari v_safe_for_beta icinde olmali (D9 sinyali + 0011 flip)."""
-    ids = await _osym_ids(db_session)
+    """sik_bos DISINDAKI OSYM sorulari v_safe_for_beta icinde olmali."""
+    ids = await _osym_ids_servis_edilebilir(db_session)
     if not ids:
         pytest.skip("OSYM verisi yok -- henuz ithal edilmemis")
     result = await db_session.execute(
@@ -98,9 +133,52 @@ async def test_osym_sorulari_kalite_kapisindan_geciyor(db_session):
     )
     disari_kalan = [r[0] for r in result.fetchall()]
     assert not disari_kalan, (
-        f"{len(disari_kalan)}/{len(ids)} OSYM sorusu kalite kapisi disinda "
-        f"(D9 SQL'i uygulanmamis olabilir -- bkz backend/migrations/D9_*.sql). "
-        f"Ornek: {disari_kalan[:3]}"
+        f"{len(disari_kalan)}/{len(ids)} servis-edilebilir OSYM sorusu kalite "
+        f"kapisi disinda (D9 SQL'i uygulanmamis olabilir -- bkz "
+        f"backend/migrations/D9_*.sql). Ornek: {disari_kalan[:3]}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_osym_sik_bos_sorulari_kapi_disinda(db_session):
+    """Dogru sikki gorsel/grafik olan (metni bos) 28 soru kapi DISINDA kalmali.
+
+    Ters yonlu bekci: test_k2_anahtar_dolu_bir_sikka_isaret_ediyor
+    (integration/test_icerik_gecerliligi.py) bu sinifin hicbir ornegini
+    mv_safe_for_beta'da tolere etmez -- burada ayni sozlesmeyi is_active +
+    v_safe_for_beta uzerinden, D10/0012'nin SONUCUNU dogrulayarak tekrarlar.
+    """
+    ids = await _osym_ids_sik_bos(db_session)
+    if not ids:
+        pytest.skip("OSYM verisi yok ya da sik_bos bayrakli satir yok")
+    aktif_kalan = (
+        await db_session.execute(
+            text(
+                "SELECT count(*) FROM question_bank "
+                "WHERE id = ANY(:ids) AND is_active IS TRUE"
+            ),
+            {"ids": ids},
+        )
+    ).scalar()
+    assert aktif_kalan == 0, (
+        f"{aktif_kalan}/{len(ids)} sik_bos bayrakli soru hala is_active=true "
+        "(0012 uygulanmamis olabilir)"
+    )
+    result = await db_session.execute(
+        text(
+            """
+            SELECT x.id FROM unnest(CAST(:ids AS text[])) AS x(id)
+            WHERE EXISTS (SELECT 1 FROM v_safe_for_beta v WHERE v.id = x.id)
+            """
+        ),
+        {"ids": ids},
+    )
+    kapidan_gecen = [r[0] for r in result.fetchall()]
+    assert not kapidan_gecen, (
+        f"{len(kapidan_gecen)}/{len(ids)} sik_bos bayrakli soru hala kapidan "
+        "geciyor (D10 uygulanmamis olabilir -- bkz "
+        "backend/migrations/D10_safe_for_beta_exclude_sik_bos.sql). "
+        f"Ornek: {kapidan_gecen[:3]}"
     )
 
 

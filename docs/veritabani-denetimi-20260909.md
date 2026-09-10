@@ -1058,7 +1058,48 @@ tekrar 3/3 yesil. `tests/e2e/test_quality_gate_leak.py` (donen sorularin
 kapinin alt kumesi oldugunu dogrulayan, sayi iddia etmeyen bekci) ve
 `tests/db/test_mufredat_agaci_saglik.py` etkilenmedi, hala yesil.
 
+**10 Eylul (D10 + 0012, push-oncesi bulunan kusur):** `duzeltme/
+0011-osym-aktiflestirme` dalini pushlarken `ders-zorlayici` pre-push
+bekcisi (`test_icerik_gecerliligi.py::test_k2_anahtar_dolu_bir_sikka_
+isaret_ediyor`) 28 satirin cevap anahtarinin GECERSIZ oldugunu buldu:
+dogru sikkin metni BOS. Teshis (`backend/_ci_art/_r5_teshis.py`,
+`_bayrak_analiz.py`): 28/28 satir OSYM ithalati, hepsi MATEMATIK, hepsi
+`kitapcik_ithal.py`'nin ITHALAT ANINDA kendi koydugu `pipeline_metadata->
+'bayraklar'` isaretinde `sik_bos` tasiyor -- birebir ortusme (havuzun geri
+kalaninda, 5.250-28 satirda, SIFIR R5 hatasi var). Kok neden: bu sorularin
+dogru sikki bir GORSEL/GRAFIK (metin degil) -- import script'i bunu
+ithalat aninda saptayip bayrakladi ama D9 (`osym_resmi_kaynak` imzasi) 28'i
+elemeden butun 291'i tek imzayla ice aldi. **Kusur gercek** (test bayat
+degil): bu 28 soru mevcut metin-tabanli sunum katmaninda hicbir ogrenci
+tarafindan yanitlanamaz.
+
+Duzeltme iki dosya:
+- `backend/migrations/D10_safe_for_beta_exclude_sik_bos.sql` (+ ROLLBACK):
+  `v_safe_for_beta`'ya bagimsiz bir disari-atma eklendi -- `bayraklar`
+  icinde `sik_bos` tasiyan hicbir satir kapidan gecemez (kaynagi ne olursa
+  olsun, genel kural). `osym_resmi_kaynak` imzasina DOKUNULMADI (cevap
+  HARFI hala resmi kaynaktan dogrulanmis, sorun harfin dogrulugu degil
+  sikkin metninin eksikligi).
+- `backend/alembic/versions/0012_osym_sikki_bos_pasif.py`: ayni 28 satirin
+  `is_active`'ini FALSE'a cevirdi (kapi zaten disliyor ama is_active=true
+  birakmak DB'yi dogrudan okuyan baska araclara yanlis bilgi verirdi).
+  Gunluklu (`sikki_bos_gunlugu_0012`), geri alinabilir. `review_status`a
+  dokunulmadi ('approved' kalir).
+
+Dogrulama: uygulamadan once dogrulama sorgusu
+(`backend/_ci_art/_d10_dogrula.py`) 5.250->5.222 (-28), OSYM 291->263
+bekledi; uygulamadan sonra olcum tam eslesti. Mutasyon testi: D10 geri
+alinip (`_d10_geri_al.py`) is_active=true birakildiginda AYNI 28 satir
+R5'i tekrar tetikledi (ne fazla ne eksik); D10 + `alembic upgrade head`
+ile tekrar 0/0. `tests/e2e/test_osym_aktiflestirme.py`'ye ters yonlu bir
+bekci eklendi (`test_osym_sik_bos_sorulari_kapi_disinda`) ve mevcut iki
+test sik_bos'u BILEREK haric tutacak sekilde guncellendi
+(`_osym_ids_servis_edilebilir` / `_osym_ids_sik_bos`). Sonuc: 291 OSYM
+sorusundan 263'u servis ediliyor, 28'i gorsel-sik destegi eklenene kadar
+pasif (ileride yeniden aktif edilebilir -- bkz D10 dosyasinin ust notu).
+
 **Cozulemeyen:** icerik. 5.796 soru, dort ders tamamen eksik, yedekteki
-36.967 soru halusinasyon (simdi OSYM'nin 291 sorusuyla biraz azaldi, ama
-FIZIK/BIYOLOJI/EDEBIYAT/GEOMETRI hala buyuk olcude eksik). Bu bir veritabani
-sorunu degil, bir icerik sorunu.
+36.967 soru halusinasyon (simdi OSYM'nin 263 sorusuyla biraz azaldi, ama
+FIZIK/BIYOLOJI/EDEBIYAT/GEOMETRI hala buyuk olcude eksik; 28 OSYM sorusu
+gorsel-sik destegi bekliyor). Bu bir veritabani sorunu degil, bir icerik
+sorunu.
