@@ -69,8 +69,9 @@ Kurallar
 - id = uuid5(NAMESPACE_OID, soru_hash); soru_hash = pilot_500p formulu
   (md5(lower(nfc(question_text))|A|B|C|D|E)) -- uq_qb_soru_hash_active uyumlu.
 - Ayni id varsa satir ATLANIR (idempotent; tekrar kosum guvenli).
-- primary_topic_id: 0017 migration'inin kurdugu GEO alt agaci
-  (GEO-MIKRO-U<n>-<KONU>); bulunamazsa GEO koku.
+- primary_topic_id: 0017'nin kurdugu, 0020'nin yayinevi-bagimsiz hale
+  getirdigi GEO alt agaci (GEO-U<n>-<KONU>); bulunamazsa GEO koku.
+  (0020 oncesi kodlar GEO-MIKRO-U<n>-<KONU> idi; id'ler degismedi.)
 - question_image_url = /static/crops/MIKRO_GEO/<id>.png
 
 KULLANIM
@@ -109,7 +110,12 @@ VARSAYILAN_VERI = "veriseti/zkitap/cikti/mikro_geometri_sorular.json"
 KAYNAK_ADI = "Mikro Orijinal 2025 AYT Geometri Soru Bankasi"
 ONEK = KAYNAK_KAYITLARI[KAYNAK_ADI]["onek"]
 GEO_KOK_KODU = "GEO"
-KOD_ONEKI = "GEO-MIKRO-"
+# 0020 kodlari yayinevi-bagimsiz hale getirdi (GEO-MIKRO-U1-... -> GEO-U1-...).
+# Yaprak id'leri degismedi; degisen yalnizca kod oneki.
+# DIKKAT: konu_kodu() bunun ardina "U<n>-" ekler, yani onek "GEO-" olmali
+# ("GEO-U" yazilirsa kod GEO-UU1-... cikar). LIKE deseni GEO-% kokun
+# kendisini (tam "GEO") kapsamaz, yalnizca unite ve yapraklari kapsar.
+KOD_ONEKI = "GEO-"
 SINAV_TURU = "AYT"
 DERS_ALANI = "GEOMETRI"
 SINIF_DUZEYI = 12  # mevcut AYT satirlarinin ev sozlesmesi (1232/1232 FIZIK AYT)
