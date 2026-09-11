@@ -1781,3 +1781,66 @@ Ders: "toplamda kayip yok" turu bir metrik, bilesenler ust uste biniyorsa
 tekil kayiplari gizler. Kapsama olcusu, kapsamasi gereken BIRIMIN duzeyinde
 alinmali. Ve bir olcum penceresi, olctugu buyuklugun beklenen araligindan
 DAR olmamali -- yoksa cevap penceresinin kenarindan gelir.
+
+### 11 Eylul -- Mikro Geometri toplu beta onayi (0018)
+
+Urun sahibi ayni gun, ithal ve duzeltmelerden sonra toplu beta onayini verdi.
+Fizik kitaplarindaki (0014 AYT, 0016 TYT) karara denk; kapsam ve gerekce
+FARKLI.
+
+#### Kapi yuku olculdu
+
+`v_safe_for_beta` tanimi `pg_views`'ten okundu, her kosul 1211 satira karsi
+ayri sayildi. Uc kilit vardi (`quality_review_status`, `review_status`/
+`is_ai_generated`, uyum sinyali); diger bes kosulu 1211/1211 satir zaten
+geciyordu. **`sik_bos` bayrakli soru YOK** -- bu kitapta sikki gorsel olan
+soru cikmadi, sikler her zaman metin. Bu yuzden hedef, TYT'den farkli
+olarak, satirlarin TAMAMI: 1211 (TYT'de 891'in 827'si).
+
+#### Konsensus gerekcesi fizigin gerekcesi DEGIL
+
+0014 gerekcesi bagimsiz cozum dogrulamasina dayaniyordu; geometride sorular
+tekrar cozulmedi. 0016 iki sinyal kullanmisti. Geometride DORT sinyal var ve
+ikisi TYT'de hic yoktu:
+
+| Sinyal | Olcum | TYT'de var mi |
+|---|---|---|
+| `cift_bagimsiz_okuma` | 1213/1213 iki kez okundu; 1187 birebir, 10 hakeme, 0 dusuk; basili numara 1213/1213 ayni | var |
+| `anahtar_seridi_cift_okuma` | 237 serit iki bagimsiz okuma, **uyusmazlik sifir** | YOK |
+| `basili_anahtar_capraz_kontrolu` | soru duzeyi 1211/1211 (R5), sayfa duzeyi 237/237 | var |
+| `banner_anahtar_zinciri_ortusmesi` | serit zinciri 149 test, banner 149 test, sayfa kumeleri birebir ayni | YOK |
+
+Dordu de TRANSKRIPSIYONU ve SEGMENTASYONU dogrular; CEVABIN KENDISI
+dogrulanmadi ve `cozum_dogrulamasi='yapilmadi_urun_karari'` izi yerinde
+kaldi. OSYM ile birebir carpisma (2 soru) bilerek sinyal listesine
+KONULMADI -- 1213'un 2'sini kapsayan bir bulguyu satir duzeyi sinyal gibi
+yazmak diger 1209 icin fazla iddia olurdu.
+
+#### Bekcinin gercekten olctugunun kaniti
+
+Degisen/yeni dort bekci migration'dan ONCE kosuldu ve **4/4 KIRMIZI** cikti;
+migration sonrasi yesile dondu. Ayrica 8 mutasyon uygulandi, **8'i de
+yakalandi**: is_active=false, review_status=PENDING, human_verified,
+onay_turu silme, **fizigin gerekcesini kopyalama**, cozum_dogrulamasi silme,
+is_ai_generated=false, ve tam onay izi olan bir satira `sik_bos` eklenince
+view'in onu kapinin disina atmasi (D10 kilidi).
+
+#### Geri alinabilirlik iddia degil, olcum
+
+`downgrade` CANLI kosuldu: 1211 satir birebir eski haline dondu (aktif 0,
+PENDING 1211, quality pending 1211, eklenen dort anahtar silindi, onceki
+anahtarlar -- `kirpim_kutusu`, `cozum_dogrulamasi` -- korundu, gunluk
+tablosu dusuruldu, kapidan gecen 0). Sonra yeniden `upgrade` kosuldu ve
+37/37 bekci yesile dondu.
+
+#### Sonuc
+
+| Kitap | Toplam | Aktif | Kapidan gecen | sik_bos |
+|---|---|---|---|---|
+| Neofizik AYT Fizik Soru Bankasi 2025 | 1218 | 1181 | 1181 | 37 |
+| Neofizik TYT Fizik Soru Bankasi | 891 | 827 | 827 | 64 |
+| **Mikro Orijinal 2025 AYT Geometri** | **1211** | **1211** | **1211** | **0** |
+
+`is_ai_generated` uc kitapta da true KALIR; `is_public` uc kitapta da false.
+Konu sayaclari yenilendi (ornek: GEO-MIKRO-U1-BENZERLIK 79, UCGENDE-ACI 74).
+Bekciler: geometri 16 + TYT 13 + AYT 8 = **37/37 yesil**.
