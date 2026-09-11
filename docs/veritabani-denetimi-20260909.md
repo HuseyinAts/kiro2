@@ -1961,3 +1961,106 @@ satir numarasi vermesine gerek yok, testin adini vermesi yeter.
 - Eski degerlerde gorunen dizgi hatalari (`Sopru Bankasi`, `Soeu Bankasi`,
   `Matemateik`, `Porblemler`, `Sohagi`, `Aramot`) duzeltilmedi; hicbiri
   normalize cakismasina yol acmiyor, yani bugun bir korumayi delmiyorlar.
+
+---
+
+## EK-5: GEO konu agaci yayinevi-bagimsiz hale getirildi (11 Eyl 2026)
+
+### Neden
+
+0017, ilk geometri kitabi (Mikro Orijinal) ithal edilirken `GEO` kokunun
+altina 5 unite + 31 yaprak kurdu ve kodlari yayinevinin adiyla isimlendirdi:
+`GEO-MIKRO-U1-UCGENDE-ACI`. O gun tek geometri kitabi vardi.
+
+Ikinci geometri kitabi geldi (345 Yayinlari / UcDortBes, TYT-AYT Geometri
+1 ve 2). "Ucgende Aci" matematiksel olarak ayni konudur: iki kitabin
+sorulari AYNI yapraga baglanmali, yoksa ogrenciye ayni konu iki kez gorunur
+ve `total_questions` bolunur. Ama yaprak kodu "MIKRO" diyorsa, icinde iki
+yayinevinin sorusu duran bir dugum yanlis yayinevini ima eder.
+
+Urun sahibi karari verdi: once namespace notrlestir, sonra 345'i ayni
+yapraklara bagla.
+
+### Olcum (canli DB, 0020 oncesi)
+
+| Olcu | Deger |
+|---|---|
+| GEO alt agaci | 37 dugum (1 kok + 5 unite + 31 yaprak) |
+| Yeniden adlandirilacak | 36 (kok `GEO` zaten notr) |
+| Uretilecek notr kodun DB'de esi | **0** -- cakisma yok |
+| En uzun notr kod | 28 karakter (`topic_hierarchy.code` varchar(50)) |
+| GEO yapraklarina bagli soru | 1211, hepsi tek kaynaktan |
+
+### Ne degisti, ne degismedi
+
+DEGISEN: yalnizca `topic_hierarchy.code` oneki.
+
+    GEO-MIKRO-U1              ->  GEO-U1
+    GEO-MIKRO-U1-UCGENDE-ACI  ->  GEO-U1-UCGENDE-ACI
+
+DEGISMEYEN: `topic_hierarchy.id`. Bu yuzden `question_bank.primary_topic_id`
+hic dokunulmadi -- 1211 sorunun konu baglantisi oldugu gibi kaldi.
+`name_tr`, `level`, `parent_id`, `subject_area`, `total_questions` de
+degismedi.
+
+Ev kalibindaki `_SAYAC_SQL` ve `refresh_safe_for_beta()` cagrilari bu
+geciste BILEREK yok: sayac `primary_topic_id` uzerinden sayar, view
+`primary_topic_id` tasir; hicbir id degismedigi icin ikisi de gereksiz
+olurdu. Gereksiz tazeleme "bir sey degisti" izlenimi birakan gurultudur.
+
+### Kod tarafi
+
+- `scripts/kitap/mikro_geo_ithal.py`: `KOD_ONEKI` `"GEO-MIKRO-"` -> `"GEO-"`.
+  (Onek `"GEO-U"` YAZILAMAZ: `konu_kodu()` ardina `U<n>-` ekliyor, kod
+  `GEO-UU1-...` cikardi. `GEO-%` LIKE deseni kokun kendisini kapsamaz.)
+- `tests/e2e/test_mikro_geo_ithal.py`: yaprak bekcisinin deseni
+  `GEO-MIKRO-U%-%` -> `GEO-U%-%`. Eski desen 0020 sonrasi hicbir seyi
+  olcmezdi.
+- `alembic/versions/0017_*`: DOKUNULMADI. Taze bir DB'de 0017 hala
+  `GEO-MIKRO-*` uretir, ardindan 0020 notrlestirir; zincir tutarli.
+
+### Bekcinin gercekten olctugunun kaniti
+
+`test_mikro_geo_sorulari_yaprak_konuya_bagli`, 0020'den ONCE kosuldu ve
+**KIRMIZI** cikti: "1211 soru GEO yapragina degil baska bir dugume bagli"
+(1211/1211). 0020 sonrasi yesil.
+
+`downgrade` CANLI kosuldu: 36 dugum eski koduna dondu, gunluk tablosu
+dusuruldu; sonra yeniden `upgrade` kosuldu ve durum dogrulandi
+(mikro_onekli=0, notr=36, toplam=37, notr yapraga bagli soru=1211).
+
+Paket: `test_mikro_geo_ithal` + `test_kaynak_sozlesmesi` +
+`test_neofizik_ithal` + `test_neofizik_tyt_ithal` +
+`test_osym_aktiflestirme` + `test_kirpim_mount_sozlesmesi` +
+`test_alembic_autogen_guard` = **66/66 yesil**.
+
+### Yan bulgu: hangi 345 klasoru dogru cilt
+
+Ayni turda uc aday klasor olculdu ve biri **eksik kopya** cikti:
+
+| Klasor | Sayfa | Ne |
+|---|---|---|
+| `345 Tyt Ayt Geometri Soru Bankasi` | 440 | TAM Cilt 1 (9 konu: acilar -> cokgenler) |
+| `345 Tyt Ayt Geometri Soru Bankasi 2` | 336 | Cilt 2 (8 konu: cemberde aci -> kati cisimler) |
+| `345 2025 Tyt Ayt Geometri Soru Bankasi 1` | 336 | **440'in ilk 336 sayfasi -- EKSIK** |
+
+Olcum: sayfa alani imzasi (tarayici kromu kirpilip 64x64 griye indirgenmis)
+ile 336 sayfanin **318'i birebir ayni**. Farkli cikan 18 sayfanin 4'u
+kapak/kunye/icindekiler, 6'si konu ayirici kapagi (s.43, 93, 141, 195, 233,
+287 -- her biri bir sonraki konunun baslangicindan hemen once), kalan 8'i
+esik sinirinda. Kontrol grubu (Cilt 2 ile ayni kiyas) hicbir sayfada
+eslesmedi. Iki klasorun s.336'si da ayni "TEST 8 / AYT TARZINDA" sayfasi,
+ayni 6 soru, ayni anahtar (1.C 2.D 3.A | 4.D 5.C 6.D) -- ve o sayfa KONU
+07'nin ORTASI, yani kopya kitabin ortasinda kesilmis (~104 sayfa eksik:
+KONU 07 kalani + KONU 08 Dikdortgen-Kare + KONU 09 Cokgenler).
+
+Ithal 440 + 336 uzerinden yapilacak; 336'lik kopya kullanilmayacak.
+
+### Cikarim hatti icin iki erken bulgu (345)
+
+- **Ayri cevap anahtari bolumu YOK.** Cevaplar her sayfanin altinda, sutun
+  bazinda ve NUMARA ETIKETLI ("1.C 2.D 3.A" solda, "4.D 5.C 6.D" sagda).
+  Mikro'da esleme konumsaldi; burada acik numarali, yani daha guvenli.
+- **Sinav turu test basliginda basili**: "TEST 2 / **TYT TARZINDA**",
+  "TEST 8 / **AYT TARZINDA**". `exam_type`in soru basina kaynagi bu etiket
+  olacak -- kitap TYT/AYT ayrimini test duzeyinde yapiyor.

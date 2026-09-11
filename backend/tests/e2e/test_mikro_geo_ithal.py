@@ -461,12 +461,17 @@ async def test_mikro_geo_sinav_turu_ve_yil(db_session: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_mikro_geo_sorulari_yaprak_konuya_bagli(db_session: AsyncSession):
-    """Her soru 0017'nin kurdugu GEO-MIKRO yapragina bagli olmali, koke degil."""
+    """Her soru GEO yapragina bagli olmali, koke degil.
+
+    0020 kodlari yayinevi-bagimsiz hale getirdi (GEO-MIKRO-U1-... -> GEO-U1-...);
+    yaprak id'leri degismedigi icin sorularin baglantisi aynen korundu. Bekci
+    artik notr deseni arar -- eski desen 0020 sonrasi hicbir seyi olcmezdi.
+    """
     await _gerekli(db_session)
     sonuc = await db_session.execute(
         text(
             "SELECT count(*) FILTER (WHERE t.code IS NULL), "
-            "       count(*) FILTER (WHERE t.code NOT LIKE 'GEO-MIKRO-U%-%'), "
+            "       count(*) FILTER (WHERE t.code NOT LIKE 'GEO-U%-%'), "
             "       count(DISTINCT t.code) "
             "  FROM question_bank b JOIN question_metadata m ON m.id = b.id "
             "  LEFT JOIN topic_hierarchy t ON t.id = b.primary_topic_id "
@@ -477,8 +482,9 @@ async def test_mikro_geo_sorulari_yaprak_konuya_bagli(db_session: AsyncSession):
     konusuz, yaprak_disi, farkli = sonuc.one()
     assert konusuz == 0, f"{konusuz} sorunun primary_topic_id'si cozulmuyor"
     assert yaprak_disi == 0, (
-        f"{yaprak_disi} soru GEO-MIKRO yapragina degil baska bir dugume bagli "
-        "(0017 kosmadiysa GEO kokune dusmus olabilir)"
+        f"{yaprak_disi} soru GEO yapragina degil baska bir dugume bagli "
+        "(0017 kosmadiysa GEO kokune dusmus olabilir; 0020 kosmadiysa kod "
+        "hala GEO-MIKRO- onekli olabilir)"
     )
     assert farkli >= 25, f"sorular yalnizca {farkli} farkli konuya dagilmis"
 
