@@ -20,17 +20,26 @@ BU KITABIN NEOFIZIK'TEN AYRILDIGI UC NOKTA -- BEKCILER BUNU KORUR
    isaretli. Kirpim kutusu kaybolursa gorseller bir daha uretilemez --
    bir bekci her satirda 4 elemanli kutunun durdugunu dogrular.
 
-3. ITHAL HENUZ PASIF. Neofizik'te (0014/0016) urun sahibi toplu beta onayi
-   verdi; geometride BOYLE BIR KARAR HENUZ YOK. Bir bekci hicbir satirin
-   kapidan gecmedigini ve hicbir satirda toplu-onay izi olmadigini
-   dogrular -- Neofizik'in gerekcesi kopyala-yapistir ile buraya
-   kaymasin diye.
+3. TOPLU BETA ONAYI VERILDI (0018). Urun sahibi 11 Eyl 2026'da bireysel
+   denetimi atlayip toplu onayi beta surumune ertelemeye karar verdi;
+   1211 satirin TAMAMI artik is_active=true, review_status='APPROVED',
+   quality_review_status='auto_judged_high' -- yani kapidan GECIYORLAR.
+   `is_ai_generated` true KALIR.
+
+   Geometrinin konsensus gerekcesi fizik kitaplarininkinden FARKLIDIR:
+   0014 (AYT) cozum dogrulamasina dayanmisti, 0016 (TYT) iki sinyale;
+   geometride dort sinyal var (cift okuma, anahtar seridinin cift okumasi,
+   basili anahtar capraz kontrolu, banner<->anahtar zinciri ortusmesi).
+   Bir bekci bu listenin fizigin gerekcesine KAYDIRILMADIGINI dogrular --
+   kopyala-yapistir ile yanlis bir kalite beyani olusmasin diye.
 
 Gercek Postgres yoksa ya da veri henuz ithal edilmemisse SKIP olur;
 sahte motorla (sqlite) YANLIS pozitif donmez (bkz tests/e2e/pg_dsn.py).
 """
 
 from __future__ import annotations
+
+import json
 
 import pytest
 import pytest_asyncio
@@ -48,6 +57,14 @@ _KAYNAK = "Mikro Orijinal 2025 AYT Geometri Soru Bankasi"
 _ASGARI = 1150  # kitapta olculen 1213; esik altinda kalmasi ithal kaybi demektir
 _SAPMA_SAYFASI = 77  # yayinevinin serit numarasi kaydirdigi tek sayfa
 _SAPMA_ADEDI = 4
+# 0018'in yazdigi gerekce -- fizik kitaplarininkinden FARKLI olmali
+_SINYALLER = [
+    "cift_bagimsiz_okuma",
+    "anahtar_seridi_cift_okuma",
+    "basili_anahtar_capraz_kontrolu",
+    "banner_anahtar_zinciri_ortusmesi",
+]
+_SINYALLER_JSON = json.dumps(_SINYALLER)
 
 
 @pytest_asyncio.fixture
@@ -100,76 +117,160 @@ async def test_mikro_geo_ithal_edildi(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_mikro_geo_pasif_ithal_sozlesmesi(db_session: AsyncSession):
-    """PASIF ithal: aktif degil, acik degil, AI isaretli, incelenmemis."""
-    await _gerekli(db_session)
+async def test_mikro_geo_onay_sonrasi_sozlesme(db_session: AsyncSession):
+    """0018 sonrasi: aktif ve APPROVED, ama KOKEN gizlenmemis.
+
+    Kapiyi acmanin kolay ama yanlis yolu `is_ai_generated=false` yazmakti
+    (view'in oteki kolu). O yol DB'ye yanlis bir kaynak beyani birakirdi.
+    is_public de acilmaz -- beta kapisi ile herkese aciklik ayri seylerdir.
+    """
+    n = await _gerekli(db_session)
     sonuc = await db_session.execute(
         text(
-            "SELECT count(*) FILTER (WHERE b.is_active IS TRUE), "
+            "SELECT count(*) FILTER (WHERE b.is_active IS NOT TRUE), "
             "       count(*) FILTER (WHERE b.is_public IS TRUE), "
             "       count(*) FILTER (WHERE b.is_ai_generated IS NOT TRUE), "
-            "       count(*) FILTER (WHERE b.review_status <> 'PENDING') "
+            "       count(*) FILTER (WHERE b.review_status <> 'APPROVED') "
             "  FROM question_bank b JOIN question_metadata m ON m.id = b.id "
             " WHERE m.source_book = :k"
         ),
         {"k": _KAYNAK},
     )
-    aktif, acik, ai_isaretsiz, onayli = sonuc.one()
-    assert aktif == 0, f"{aktif} geometri satiri is_active=true"
+    pasif, acik, ai_isaretsiz, onaysiz = sonuc.one()
+    assert pasif == 0, f"{n} satirdan {pasif} tanesi hala is_active=false"
     assert acik == 0, f"{acik} geometri satiri is_public=true"
     assert ai_isaretsiz == 0, (
         f"{ai_isaretsiz} satirda is_ai_generated=true degil -- "
         "OCR kaynakli icerik AI uretimi olarak isaretli KALMALI"
     )
-    assert onayli == 0, f"{onayli} satirin review_status'u PENDING degil"
+    assert onaysiz == 0, f"{onaysiz} satirin review_status'u APPROVED degil"
 
 
 @pytest.mark.asyncio
-async def test_mikro_geo_hicbiri_kapidan_gecmiyor(db_session: AsyncSession):
-    """Toplu beta onayi HENUZ VERILMEDI -- hicbir satir servis kapisindan gecmez."""
+async def test_mikro_geo_temiz_sorular_kapidan_geciyor(db_session: AsyncSession):
+    """0018 sonrasi sozlesme: sik_bos TASIMAYAN her satir kapidan gecmeli.
+
+    Bu kitapta sik_bos bayrakli soru YOK (sikler her zaman metin), yani
+    hedef 1211 satirin TAMAMI.
+    """
+    n = await _gerekli(db_session)
+    gecmeyen = (
+        await db_session.execute(
+            text(
+                "SELECT count(*) FROM question_bank b "
+                "  JOIN question_metadata m ON m.id = b.id "
+                " WHERE m.source_book = :k "
+                "   AND NOT ((m.pipeline_metadata::jsonb ? 'bayraklar') "
+                "            AND (m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos') "
+                "   AND NOT EXISTS (SELECT 1 FROM v_safe_for_beta v WHERE v.id = b.id)"
+            ),
+            {"k": _KAYNAK},
+        )
+    ).scalar()
+    assert gecmeyen == 0, (
+        f"{n} geometri sorusundan {gecmeyen} tanesi kapidan GECMIYOR "
+        "-- 0018 kosmadi mi, yoksa kapi mi degisti?"
+    )
+
+
+@pytest.mark.asyncio
+async def test_mikro_geo_sik_bos_kilidi_yerinde(db_session: AsyncSession):
+    """D10 kurali: sikki gorsel olan satir TAM onay izi tasisa bile gecemez.
+
+    Bu kitapta sik_bos bayrakli soru YOK; bekci yine de kuralin view'de
+    zorunlu tutuldugunu dogrular, cunku ileride boyle bir satir eklenebilir.
+    """
     await _gerekli(db_session)
     gecen = (
         await db_session.execute(
             text(
                 "SELECT count(*) FROM question_bank b "
                 "  JOIN question_metadata m ON m.id = b.id "
-                " WHERE m.source_book = :k "
+                " WHERE (m.pipeline_metadata::jsonb ? 'bayraklar') "
+                "   AND (m.pipeline_metadata::jsonb -> 'bayraklar') ? 'sik_bos' "
                 "   AND EXISTS (SELECT 1 FROM v_safe_for_beta v WHERE v.id = b.id)"
-            ),
-            {"k": _KAYNAK},
+            )
         )
     ).scalar()
     assert gecen == 0, (
-        f"{gecen} geometri sorusu v_safe_for_beta'dan geciyor -- "
-        "bu kitap icin toplu onay karari verilmedi"
+        f"{gecen} sik_bos bayrakli satir kapidan geciyor -- "
+        "metin tabanli sunumda sikki eksik gorunur"
     )
 
 
 @pytest.mark.asyncio
-async def test_mikro_geo_toplu_onay_izi_yok(db_session: AsyncSession):
-    """Neofizik'in toplu onay gerekcesi buraya KOPYALANMAMIS olmali."""
+async def test_mikro_geo_toplu_onay_izi_kayitli(db_session: AsyncSession):
+    """Toplu onay, bireysel denetimden AYIRT EDILEBILIR kalmali.
+
+    IS DISTINCT FROM kullanilir: anahtar HIC YOKSA `->>` NULL doner ve duz
+    `<>` karsilastirmasi NULL uretir; FILTER onu saymaz, yani iz hic yokken
+    bekci YESIL kalirdi. 0016'da tam olarak bu goruldu ve boyle duzeltildi.
+    """
     await _gerekli(db_session)
     sonuc = await db_session.execute(
         text(
-            # IS DISTINCT FROM degil: burada anahtarin HIC OLMAMASINI
-            # bekliyoruz, bu yuzden dogrudan varligina bakilir.
-            "SELECT count(*) FILTER (WHERE m.pipeline_metadata::jsonb ? 'onay_turu'), "
-            "       count(*) FILTER (WHERE m.pipeline_metadata::jsonb ? "
-            "                        'konsensus_sinyalleri'), "
-            "       count(*) FILTER (WHERE s.quality_review_status <> 'pending') "
+            "SELECT count(*) FILTER (WHERE (m.pipeline_metadata::jsonb ->> 'onay_turu') "
+            "                        IS DISTINCT FROM 'toplu_beta_sahibi'), "
+            "       count(*) FILTER (WHERE (m.pipeline_metadata::jsonb ->> "
+            "                        'bireysel_denetim_yapildi') IS DISTINCT FROM 'false'), "
+            "       count(*) FILTER (WHERE s.quality_review_status = 'human_verified'), "
+            "       count(*) FILTER (WHERE s.quality_review_status "
+            "                        IS DISTINCT FROM 'auto_judged_high') "
             "  FROM question_bank b JOIN question_metadata m ON m.id = b.id "
             "  JOIN question_statistics s ON s.id = b.id "
             " WHERE m.source_book = :k"
         ),
         {"k": _KAYNAK},
     )
-    onay, sinyal, kalite = sonuc.one()
-    assert onay == 0, f"{onay} satirda onay_turu izi var -- toplu onay verilmedi"
-    assert sinyal == 0, (
-        f"{sinyal} satirda konsensus_sinyalleri var -- Neofizik'in gerekcesi "
-        "geometriye kaydirilmis olabilir"
+    izsiz, denetim_izsiz, insan_dogrulandi, kalite_yanlis = sonuc.one()
+    assert izsiz == 0, f"{izsiz} satirda onay_turu='toplu_beta_sahibi' izi yok"
+    assert (
+        denetim_izsiz == 0
+    ), f"{denetim_izsiz} satirda bireysel_denetim_yapildi=false izi yok"
+    assert insan_dogrulandi == 0, (
+        f"{insan_dogrulandi} satir 'human_verified' isaretli -- hicbir insan "
+        "bu sorulari tek tek dogrulamadi, dogru deger 'auto_judged_high'"
     )
-    assert kalite == 0, f"{kalite} satirin quality_review_status'u pending degil"
+    assert (
+        kalite_yanlis == 0
+    ), f"{kalite_yanlis} satirin quality_review_status'u auto_judged_high degil"
+
+
+@pytest.mark.asyncio
+async def test_mikro_geo_konsensus_gerekcesi_fizige_kaymamis(
+    db_session: AsyncSession,
+):
+    """Geometrinin konsensus gerekcesi fizik kitaplarininkine KAYDIRILMAMIS olmali.
+
+    0014 (AYT fizik) gerekcesi bagimsiz COZUM DOGRULAMASINI iceriyordu;
+    geometride sorular tekrar cozulmedi. 0016 (TYT fizik) iki sinyal
+    kullanmisti; geometride dort sinyal var (anahtar seridinin cift okumasi
+    ve banner<->anahtar zinciri ortusmesi TYT'de YOKTU).
+
+    Kopyala-yapistir ile yanlis bir kalite beyani olusmasin diye bu bekci
+    listenin BIREBIR geometrinin dort sinyali oldugunu dogrular ve cozum
+    dogrulamasi izinin 'yapilmadi' kalmasini korur.
+    """
+    await _gerekli(db_session)
+    sonuc = await db_session.execute(
+        text(
+            "SELECT count(*) FILTER (WHERE (m.pipeline_metadata::jsonb -> "
+            "         'konsensus_sinyalleri') IS DISTINCT FROM CAST(:beklenen AS jsonb)), "
+            "       count(*) FILTER (WHERE (m.pipeline_metadata::jsonb ->> "
+            "         'cozum_dogrulamasi') IS DISTINCT FROM 'yapilmadi_urun_karari') "
+            "  FROM question_metadata m WHERE m.source_book = :k"
+        ),
+        {"k": _KAYNAK, "beklenen": _SINYALLER_JSON},
+    )
+    farkli, cozum_izi_yok = sonuc.one()
+    assert farkli == 0, (
+        f"{farkli} satirin konsensus_sinyalleri listesi geometrinin dort "
+        "sinyalinden farkli -- baska bir kitabin gerekcesi kopyalanmis olabilir"
+    )
+    assert cozum_izi_yok == 0, (
+        f"{cozum_izi_yok} satirda cozum_dogrulamasi='yapilmadi_urun_karari' izi "
+        "yok -- uretilmemis bir cozum varmis gibi gorunebilir"
+    )
 
 
 @pytest.mark.asyncio
