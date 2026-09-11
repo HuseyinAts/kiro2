@@ -380,3 +380,36 @@ async def test_mikro_geo_sorulari_yaprak_konuya_bagli(db_session: AsyncSession):
         "(0017 kosmadiysa GEO kokune dusmus olabilir)"
     )
     assert farkli >= 25, f"sorular yalnizca {farkli} farkli konuya dagilmis"
+
+
+@pytest.mark.asyncio
+async def test_mikro_geo_ayni_hash_li_yabanci_satirlar_bozulmamis(
+    db_session: AsyncSession,
+):
+    """soru_hash carpismasi olan satirlar KENDI kaynaginda kalmali.
+
+    Bu kitaptaki iki soru resmi "OSYM 2025 TYT" kitapciginda da var; metin ve
+    besi de sik birebir ayni oldugu icin soru_hash ve dolayisiyla id de ayni.
+    O satirlar OSYM ithaliyle yazildi, OSYM kaynagina ait ve AKTIF.
+
+    11 Eyl 2026'da mikro_geo_ithal.py --meta-guncelle kaynak ayrimi yapmadigi
+    icin bu iki satirin pipeline_metadata'sini ezdi; osym_resmi_kaynak sinyali
+    kayboldu ve ikisi de v_safe_for_beta'dan DUSTU. Bu bekci o regresyonun
+    tekrarini yakalar: OSYM kaynakli hicbir satir geometri hattinin izini
+    tasimamali.
+    """
+    await _gerekli(db_session)
+    sonuc = await db_session.execute(
+        text(
+            "SELECT count(*) FROM question_metadata m "
+            " WHERE m.source_book <> :k "
+            "   AND (m.pipeline_metadata::jsonb ->> 'ithal_araci') "
+            "       = 'scripts/kitap/mikro_geo_ithal.py'"
+        ),
+        {"k": _KAYNAK},
+    )
+    sizan = sonuc.scalar()
+    assert sizan == 0, (
+        f"{sizan} satir baska bir kaynaga ait oldugu halde geometri hattinin "
+        "ithal_araci izini tasiyor -- --meta-guncelle yabanci satira dokunmus"
+    )

@@ -495,18 +495,36 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
         for k in kayitlar:
             k["konu_id"] = konular.get(k["konu_kodu"], kok[0])
 
-        var = {
-            r[0]
+        # DIKKAT: soru_hash metin+5 sik uzerinden hesaplandigi icin ayni soru
+        # baska bir kaynakta da varsa ID AYNI olur. Bu kitapta 2 soru boyle:
+        # resmi "OSYM 2025 TYT" ithalinde zaten yazilmislar. Bu yuzden var olan
+        # satirlar KAYNAK KITABA GORE ayrilir; --meta-guncelle YALNIZ bu kitabin
+        # satirlarina dokunur. (11 Eyl 2026: kaynak ayrimi yokken bu iki OSYM
+        # satirinin metadata'si ezildi ve ikisi de servis kapisindan dustu.)
+        var_kaynak = {
+            r[0]: r[1]
             for r in conn.execute(
-                "SELECT id FROM question_bank WHERE id = ANY(%s)",
+                "SELECT b.id, m.source_book FROM question_bank b "
+                "  LEFT JOIN question_metadata m ON m.id = b.id "
+                " WHERE b.id = ANY(%s)",
                 ([k["id"] for k in kayitlar],),
             ).fetchall()
         }
+        var = set(var_kaynak)
+        yabanci = {i for i, kitap in var_kaynak.items() if kitap != KAYNAK_ADI}
         yeni = [k for k in kayitlar if k["id"] not in var]
         print(f"zaten var: {len(var)}, yazilacak: {len(yeni)}")
+        if yabanci:
+            print(
+                f"BASKA KAYNAKTA duran {len(yabanci)} soru (ayni soru_hash) "
+                "-- dokunulmayacak:"
+            )
+            for i in sorted(yabanci):
+                print(f"    {i}  <- {var_kaynak[i]}")
 
-        if meta_guncelle and var:
-            _meta_yenile(conn, [k for k in kayitlar if k["id"] in var], yaz)
+        bizim = [k for k in kayitlar if k["id"] in var and k["id"] not in yabanci]
+        if meta_guncelle and bizim:
+            _meta_yenile(conn, bizim, yaz)
         _ozet(yeni or kayitlar)
         if not yaz:
             print("(--yaz verilmedi; hicbir sey yazilmadi)")

@@ -1712,3 +1712,72 @@ DB durumu birebir eski haline dondu (dogrulandi).
 verilecek mi? Verilmedigi surece bu 1211 soru kapinin disinda kalir.
 Geometride sik_bos bayrakli soru YOK, yani onay verilirse 1211'in tamami
 kapidan gecmeye aday olur.
+
+### 11 Eylul (ayni gun, ithal sonrasi) -- "eksiksiz mi?" denetimi iki kusur buldu
+
+Ithal merge edildikten sonra sorulan "tum sorular ve gorseller eksiksiz
+kaydedildi mi?" sorusu uzerine yapilan olcum, ikisi de gercek olan iki kusur
+cikardi.
+
+#### 1. Kirpim kutusu 291 soruda 1-3 piksel kesiyordu
+
+Sol sutunun sag siniri `sagx - 8` idi. Bu deger, kendi olcum penceresi
+`sagx - 8`'de bittigi icin dogru gorunen bir SONUC DEGIL, PENCERE
+ARTEFAKTIYDI. Sinirsiz tarama gercek dagilimi verdi: sol sutun metni
+`sagx - 3`'e kadar uzaniyor, sag sutun ikonu ise `sagx - 6`'dan basliyor --
+iki sutun x ekseninde CAKISIYOR, onlari ayiran sey dikey konum.
+
+Kayip neden daha once gorulmedi: "237 sayfanin 237'sinde kutu disinda sifir
+murekkep" olcusu SAYFA duzeyindeydi ve sol/sag kutular oluk bolgesinde ust
+uste bindigi icin sol sutundan kesilen pikseller SAG kutunun icine dusuyordu.
+Birlesim her seyi kapsiyordu, tekil kutu kapsamiyordu. Olcum KUTU BAZINA
+indirilince kayip gorundu.
+
+Ayni hata dikey sinirda da vardi (`nxt - 11`, 8 sinirda kesiyordu). Yeni
+degerler: `bol = sagx - 2`, `alt = nxt - 9`. Duzeltme sonrasi dort kenarda da
+kutu bazinda kayip **0**. Metin ve cevaplar DEGISMEDI (transkripsiyon
+montajlari zaten x=976'ya kadar genisti; soru_hash ve id sabit kaldi);
+yalnizca `kirpim_kutusu` ve 1213 PNG yenilendi.
+
+#### 2. `--meta-guncelle` baska bir kaynagin 2 satirini ezdi ve servisten dusurdu
+
+Kutulari duzelttikten sonra kosulan `mikro_geo_ithal.py --meta-guncelle`,
+"id'si zaten var olan" TUM satirlari yeniliyordu ve kaynak kitap kontrolu
+yoktu. Bu kitaptaki iki soru resmi `OSYM 2025 TYT` kitapciginda da var (ayni
+metin + ayni 5 sik -> ayni soru_hash -> ayni id). Sonuc: o iki OSYM satirinin
+`pipeline_metadata`'si geometri hattininkiyle degisti, `osym_resmi_kaynak`
+sinyali kayboldu ve **iki satir da `v_safe_for_beta`'dan dustu** -- aktif
+kalmalarina ragmen servis havuzundan sessizce cikmis oldular.
+
+Geri yukleme TAHMINLE YAPILMADI. `scripts/osym/kitapcik_cikar.py`
+`backend/data/osym/tyt_2025.pdf` uzerinde yeniden kosuldu ve iki sorunun
+orijinal `soru_no` (34, 36) ve `bayraklar` (`["gorsel"]`) degerleri dogrudan
+PDF'ten okundu. Sabit alanlar ve skaler sutunlar ayni sayfalardaki kardes
+OSYM satirlarindan birebir alindi; `question_image_url` OSYM adlandirma
+kuralindan uretildi (kural 4 kardes satirda dogrulandi, iki dosya da diskte).
+Iki satir da yeniden kapidan geciyor.
+
+**Kok neden:** `--meta-guncelle` artik yalnizca `source_book`'u bu kitap olan
+satirlara dokunuyor; baska kaynakta duran ayni-hash'li satirlari adiyla
+listeleyip atliyor. Regresyonu yakalayan bekci eklendi
+(`test_mikro_geo_ayni_hash_li_yabanci_satirlar_bozulmamis`), mutasyonla
+dogrulandi (temiz veride yesil, OSYM satirina geometri izi eklenince
+kirmizi, geri alininca yesil).
+
+#### Duzeltme sonrasi olculen son durum
+
+| Olcu | Deger |
+|---|---|
+| Dort tabloda satir (bank/content/metadata/statistics) | 1211 / 1211 / 1211 / 1211 |
+| Bos sik, bos metin, R5 ihlali | 0, 0, 0 |
+| Diskte OLMAYAN gorsel | **0 / 1211** |
+| Acilamayan / kutu boyutuyla uyumsuz / tek renk gorsel | 0 / 0 / 0 |
+| Toplam gorsel | 1213 dosya, 52,7 MB |
+| Ayni-hash'li 2 OSYM satiri | kendi kaynaginda, aktif, kapidan geciyor |
+| Geometri satirlarindan kapidan gecen | 0 (toplu onay hala verilmedi) |
+| Bekci | **14/14 yesil**, mutasyon **8/8 kirmizi** |
+
+Ders: "toplamda kayip yok" turu bir metrik, bilesenler ust uste biniyorsa
+tekil kayiplari gizler. Kapsama olcusu, kapsamasi gereken BIRIMIN duzeyinde
+alinmali. Ve bir olcum penceresi, olctugu buyuklugun beklenen araligindan
+DAR olmamali -- yoksa cevap penceresinin kenarindan gelir.
