@@ -1538,3 +1538,177 @@ onay izi verilse bile kapidan gecmiyor (kural view'de zorunlu tutuluyor).
 
 Konu sayaclari yenilendi: FIZ-NEOT agacinda toplam 827 aktif soru.
 Bekciler: TYT 13 + AYT 8 = **21/21 yesil**.
+
+---
+
+## 11 Eylul -- Mikro Orijinal 2025 AYT Geometri Soru Bankasi ithali (0017)
+
+Baska bir yayinevinin geometri kitabi PASIF ithal edildi: **1211 yeni satir**
+(veri setinde 1213 soru; 2'si asagida anlatilan nedenle zaten DB'de). Yontem
+ve tum olcumler `veriseti/zkitap/cikti/GEO_YONTEM.md`'de.
+
+### Kaynak: cozunurluk tavani 1080p
+
+Kitap 416 sayfa, PDF'te metin katmani YOK ve gomulu goruntu 1920x1080 --
+kaynak PNG'ler de ayni. Gercek icerik alani ~725x790 piksel; cevap seridi
+metni 8 piksel yuksek. Daha yuksek cozunurluk YOK, yontem bu tavana gore
+secildi.
+
+### Neofizik'ten ayrilan uc nokta
+
+**1. Sayfa turu ayrimi gerekiyordu.** Kitapta iki tur icerik sayfasi var:
+coktan secmeli test sayfalari ve acik uclu "Ornek" (konu anlatimi) sayfalari.
+Ornek sayfalari ithal EDILMEMELI. Ayirt edici olcu, sayfa alti serit
+kutusunun cerceve genisligi: test sayfalarinda 615/616, ornek sayfalarinda
+443-446. 403 icerik sayfasi -> **237 test sayfasi**. 8 aykiri deger tek tek
+goruldu, hepsi ornek sayfasi cikti.
+
+Once "kirmizi konu sekmesinin tarafi sayfa turunu ayirir" hipotezi denendi ve
+OLCUMLE CURUTULDU (solda 202 / sagda 201; taraf sayfa PARITESINE bagli).
+
+**2. Sayfa paritesi kaymasi.** Icerik blogu tek/cift sayfalarda ~15 px
+kayiyor (tek: sol ikon x=627, cift: 642; 237/237 istisnasiz). Sabit sutun
+siniri kullanilamiyor; sinirlar her sayfada ikon x'inden turetiliyor.
+
+**3. Birincil sinyal IKON.** Neofizik'te magenta soru numarasiydi; burada
+numara zayif bordo, buna karsilik buyutec ikonu cok kararli (alan 115-145 px,
+14x14). Ikon birincil, bordo numara dogrulayici.
+
+### Segmentasyon dogrulamasi
+
+| Olcum | Sonuc |
+|---|---|
+| El etiketi (20 sayfa) | **20/20 sayfa, 108/108 soru** |
+| Kutu disinda kalan murekkep pikseli | **237 sayfanin 237'sinde 0** |
+| Toplam soru kutusu | **1213** |
+
+"Kutu disinda sifir piksel" olcusu, segmentasyonun hicbir icerigi
+kaybetmediginin dogrudan kanitidir -- IoU gibi dolayli bir skor degil.
+
+### Uc bagimsiz kanalin ayni sonuca varmasi
+
+| Kanal | Sonuc |
+|---|---|
+| Cevap seridi, iki bagimsiz okuma | 237/237 sayfa **sifir uyusmazlik** |
+| Serit girdi sayisi == tespit edilen soru sayisi | **237/237 sayfa** |
+| Serit numara zincirinden cikan test grubu | **149** |
+| Sayfa basligindan (banner) cikan test grubu | **149**, sayfa kumeleri **birebir ayni** |
+| Kitabin icindekiler sayfasi | 149 test (iki dizgi hatasi birbirini goturuyor) |
+| Kirpim etiketindeki tahmin == basili numara | **1209 / 1213** |
+
+### Iki YAYINEVI dizgi hatasi (kitabin kendi hatasi)
+
+1. **s77 numara kaymasi.** Sayfada basili numaralar 6,7,8,9; sayfanin cevap
+   seridi 7,8,9,10 diyor (onceki sayfa 1-5'te bitiyor, yani BASILI olan
+   dogru). Iki bagimsiz okuma da 6,7,8,9 okudu. Cevap eslemesi KONUMSAL
+   oldugu icin sonuc degismiyor; sapma
+   `pipeline_metadata.anahtar_numara_sapmasi=true` ile 4 satirda isaretli ve
+   bir bekci bunun yalnizca o 4 satirda kalmasini koruyor.
+2. **Icindekiler ile kitap celisiyor.** Icindekiler "CEMBERDE UZUNLUK ...
+   Kazanim Testi 1-2-3-4-5" diyor, kitapta 4 tane basili ("Kiris Ozellikleri
+   1" var, 2 yok). Buna karsilik icindekilerin "DOGRUNUN ANALITIGI" basligi
+   altina sakladigi ayri bir test var: **ESITSIZLIK GRAFIKLERI** (s358-359).
+   Ikisi birbirini goturuyor. Konu agaci bu yuzden icindekilerden DEGIL,
+   her sayfanin kendi basligindan uretildi: 5 unite, **31 konu**.
+
+### Iki bagimsiz transkripsiyon + hakem
+
+1213 soru iki kez bagimsiz okundu:
+
+| Uyum | Soru |
+|---|---|
+| Birebir (>= 0.995) | **1187** |
+| Yuksek (0.95-0.995) | 16 |
+| Hakeme giden (< 0.95) | **10** |
+| Dusuk (< 0.85) | 0 |
+| `basili_no` farkli okunan | **0 / 1213** |
+
+Hakem turu 46 kalem (10 dusuk uyum + okuyucularin supheli isaretledigi 37,
+tekillestirilmis): 39 kez P, 6 kez Q, 1 kez hakemin kendi okumasi.
+
+Ayrica ilk montajlarda kutu dibinin 13 px kisa olmasi nedeniyle icerik kaybi
+olup olmadigi PIKSEL DUZEYINDE olculdu: 1213 sorunun **2'sinde** toplam 2
+satir piksel disarida kalmisti; ikisi de tam kirpimla yeniden okundu ve metin
+degismedi.
+
+### DIS DOGRULAMA: OSYM ile birebir carpisma
+
+Ithal, iki sorunun DB'de ZATEN var oldugunu bildirdi. Inceleme: her ikisi de
+`OSYM 2025 TYT` kaynagindan (s33 ve s34) daha once ithal edilmis satirlar.
+Yani iki tamamen bagimsiz hat -- biri resmi OSYM PDF'inden, digeri bir
+yayinevinin 1080p ekran goruntusu kitabindan -- ayni soru icin:
+
+| Alan | OSYM kaynagi | Geometri hatti |
+|---|---|---|
+| Soru metni + 5 sik | ayni md5 | ayni md5 |
+| Dogru cevap | E / D | E / D |
+| Sinav yili | 2025 / 2025 | 2025 / 2025 |
+| Sinav turu | TYT / TYT | TYT / TYT (rozetten) |
+
+Bu, segmentasyon + transkripsiyon + konumsal cevap eslemesi + rozet okumasi
+zincirinin tamaminin sifir serbestlik dereceli bir dis kontrolu. Iki satir
+OSYM kaynagina bagli KALDI (ithal atladi; idempotent).
+
+### Cevap dagilimi -- kontrol grubu yine kitabin icinde
+
+| Kume | n | A | B | C | D | E | ki-kare (sd=4) |
+|---|---|---|---|---|---|---|---|
+| Tumu | 1213 | 198 | 245 | 295 | 262 | 213 | **24.70** |
+| OSYM cikmis (kontrol) | 86 | 11 | 17 | 20 | 23 | 15 | **4.93** |
+| Yayinevinin kendi yazdigi | 1127 | 187 | 228 | 275 | 239 | 198 | **21.64** |
+
+p<0.05 esigi 9.49. Kontrol grubu esigin ALTINDA, yayinevi kumesi USTUNDE:
+sapma HATTAN degil YAYINEVINDEN geliyor. Ayni tasarim Neofizik TYT'de
+kurulmustu; burada bagimsiz bir kitapta tekrarlandi.
+
+### Cikmis soru rozetleri
+
+Turuncu "Cikmis Soru (YIL / SINAV)" rozeti renkle tespit edildi; 91 adayin
+iki bagimsiz okumasi **sifir uyusmazlikla** 5'inin turuncu bir SEKIL oldugunu
+(rozet degil) bildirdi. Bagimsiz ikinci dedektor (renk + sekil filtresi) ayni
+**86** rozeti buldu. Dagilim: TYT 39, AYT 28, MSU 17, YGS 1, LYS 1
+(2012-2025). `osym_year` yalniz bu satirlarda dolu.
+
+### Gorseller
+
+Sorularin **1069 / 1213**'u sekil iceriyor; sekil olmadan soru eksik kalir.
+`question_image_url` TAM SORU KIRPIMIDIR ve kirpim kutusu her satirda
+saklanir, yani gorseller PDF'ten her ortamda yeniden uretilebilir
+(`scripts/kitap/mikro_geo_kirp.py`, 1213 gorsel uretildi). Neofizik'teki gibi
+VARLIK DUZEYINDE ayristirma yapilmadi; bu bilerek boyle ve
+`gorsel_kaynagi='tam_soru_kirpimi'` ile isaretli -- bos bir varlik listesi
+"aradik bulamadik" gibi okunmasin diye.
+
+### Bekci mutasyonu
+
+| Mutasyon | Sonuc |
+|---|---|
+| `cevap_eslemesi` izini degistir | **KIRMIZI** |
+| s77 disinda bir satira sapma isareti koy | **KIRMIZI** |
+| `kirpim_kutusu`'nu bosalt | **KIRMIZI** |
+| Anahtarin gosterdigi sikki bosalt (R5) | **KIRMIZI** |
+| Rozetsiz satira `osym_year` yaz | **KIRMIZI** |
+| `review_status='APPROVED'` yap | **KIRMIZI** |
+| `onay_turu` (toplu onay izi) ekle | **KIRMIZI** |
+
+**7/7.** Her mutasyon uygulandi, test kosuldu, deger geri alindi; sonrasinda
+DB durumu birebir eski haline dondu (dogrulandi).
+
+### Sonuc
+
+| Olcu | Deger |
+|---|---|
+| Toplam satir | **1211** |
+| `is_active` | **0** |
+| `is_public` | **0** |
+| `is_ai_generated` | 1211 |
+| `review_status='PENDING'` | 1211 |
+| **Kapidan (`v_safe_for_beta`) gecen** | **0** |
+| Yaprak konuya bagli | 1211 / 1211 (31 konu) |
+| `explanation` dolu | 0 |
+| R5 ihlali | 0 |
+
+**Bekleyen karar (urun sahibi):** Neofizik'te oldugu gibi toplu beta onayi
+verilecek mi? Verilmedigi surece bu 1211 soru kapinin disinda kalir.
+Geometride sik_bos bayrakli soru YOK, yani onay verilirse 1211'in tamami
+kapidan gecmeye aday olur.
