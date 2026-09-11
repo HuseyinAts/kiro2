@@ -60,12 +60,17 @@ from typing import Any
 
 import psycopg
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from scripts.kitap.kaynak_sozlesmesi import KAYNAK_KAYITLARI, ayristir, yabanci_yaz
+
 VARSAYILAN_DSN = (
     "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
 )
 VARSAYILAN_VERI = "veriseti/zkitap/cikti/neofizik_2025_sorular_v2.json"
+# Kanonik ad tek yerde durur (scripts/kitap/kaynak_sozlesmesi.py).
 KAYNAK_ADI = "Neofizik AYT Fizik Soru Bankasi 2025"
-ONEK = "NEOFIZIK_2025"
+ONEK = KAYNAK_KAYITLARI[KAYNAK_ADI]["onek"]
 FIZ_KOK_KODU = "FIZ"
 TELIF_NOTU = (
     "Neofizik Yayinlari, 2025. Ticari soru bankasi; icerik hak sahibinin izni "
@@ -272,18 +277,18 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
         for k in kayitlar:
             k["konu_id"] = konular.get(k["konu_kodu"], kok[0])
 
-        var = {
-            r[0]
-            for r in conn.execute(
-                "SELECT id FROM question_bank WHERE id = ANY(%s)",
-                ([k["id"] for k in kayitlar],),
-            ).fetchall()
-        }
-        yeni = [k for k in kayitlar if k["id"] not in var]
-        print(f"zaten var: {len(var)}, yazilacak: {len(yeni)}")
+        # 11 Eyl 2026: burada KAYNAK AYRIMI YOKTU. soru_hash metin+5 sik
+        # uzerinden hesaplandigi ve id = uuid5(soru_hash) oldugu icin ayni soru
+        # resmi OSYM kitapciginda da varsa ID AYNI olur; ayrim olmadan
+        # --meta-guncelle o yabanci satirin metadata'sini eziyordu (mikro geo
+        # ithalinde tam olarak bu oldu, 2 OSYM satiri servis kapisindan dustu).
+        # Ayrim artik ortak fonksiyonda: scripts/kitap/kaynak_sozlesmesi.py
+        yeni, bizim, yabanci = ayristir(conn, kayitlar, KAYNAK_ADI)
+        print(f"zaten var: {len(kayitlar) - len(yeni)}, yazilacak: {len(yeni)}")
+        yabanci_yaz(yabanci)
 
-        if meta_guncelle and var:
-            _meta_yenile(conn, [k for k in kayitlar if k["id"] in var], yaz)
+        if meta_guncelle and bizim:
+            _meta_yenile(conn, bizim, yaz)
         print(
             "konu dagilimi (ilk 6):",
             dict(Counter(k["pipeline_metadata"]["konu"] for k in yeni).most_common(6)),

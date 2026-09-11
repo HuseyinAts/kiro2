@@ -1844,3 +1844,120 @@ tablosu dusuruldu, kapidan gecen 0). Sonra yeniden `upgrade` kosuldu ve
 `is_ai_generated` uc kitapta da true KALIR; `is_public` uc kitapta da false.
 Konu sayaclari yenilendi (ornek: GEO-MIKRO-U1-BENZERLIK 79, UCGENDE-ACI 74).
 Bekciler: geometri 16 + TYT 13 + AYT 8 = **37/37 yesil**.
+
+---
+
+## EK-4: `source_book` bir kimliktir -- adlandirma sozlesmesi (11 Eyl 2026)
+
+### Sorun nasil gorundu
+
+Mikro geometri ithali icin yazilan devir notunda `source_book` degerinin evde
+iki turlu yazildigi gorundu: modern ithaller ASCII
+(`Mikro Orijinal 2025 AYT Geometri Soru Bankasi`), eski kayitlar Turkce
+karakterli (`345 2025 Tyt Kimya Soru Bankasi`). "Hangisi dogru" sorusu
+tahminle degil sayimla cevaplandi.
+
+### Olcum (canli DB, tum kolon tarandi)
+
+| Kume | Farkli deger | Satir | ASCII |
+|---|---|---|---|
+| `pipeline_metadata ? 'ithal_araci'` (modern ithaller) | 5 | 3.611 | 5/5 |
+| Eski hattan kalan, ASCII | 50 | 2.973 | -- |
+| Eski hattan kalan, Turkce karakterli | 137 | 2.823 | -- |
+| **Toplam** | **192** | **9.407** | |
+
+Yani ortada canli bir anlasmazlik YOK: ASCII yazim modern ithal araclarinin
+yazdigi yazimdir ve 5/5 tutarlidir. Turkce karakterli olanlarin tamami eski
+hattan kalmadir. Sozlesme bu olcumden turetildi, secilmedi.
+
+### Asil bulgu: bolunmus ad
+
+192 deger Turkce katlanip (c-cedilla -> c vb.) kucuk harfe indirilip
+alfanumerik disi karakterler atilarak normalize edildi. **Tek bir cakisma**
+cikti -- ayni kitap iki yazimla bolunmus, fark tek harfte:
+
+| source_book | Satir | Fark |
+|---|---|---|
+| `Aromat Tyt T<u>rkce Model Sorular` | 8 | duz `c` (U+0063) |
+| `Aromat Tyt T<u>rk<c>e Model Sorular` | 1 | `c` cedilla (U+00E7) |
+
+Hangisinin dogru oldugu OLCULDU: diskteki kitap klasoru
+`veriseti/zkitap/screenshots/` altinda duz `c` ile yazili, yani 8 satirlik
+yazimla birebir. Tek satirlik olan dizgi hatasidir.
+
+**Neden onemli:** `source_book` bu depoda etiket degil KIMLIKTIR -- toplu
+onay/aktiflestirme migration'lari (0011, 0012, 0014, 0016, 0018) hedeflerini
+bu kolona gore secer. Bolunmus ad, bu kolona bakan HER korumada sessiz bir
+delik acar: koruma "benim kitabim" derken 9 satirin 1'ini disarida birakir.
+
+### Ikinci bulgu: koruma kopyalanmamis
+
+PR #254'te `mikro_geo_ithal.py`'ye eklenen yabanci-satir korumasi
+(`--meta-guncelle` yalnizca bu kitabin satirlarina dokunsun) diger iki ithal
+script'ine TASINMAMISTI. 11 Eyl 2026'da olculdu:
+
+| Script | Eski ayrimsiz desen | Ortak koruma |
+|---|---|---|
+| `mikro_geo_ithal.py` | yok (PR #254'te duzeltildi) | yoktu (kendi kopyasi vardi) |
+| `neofizik_ithal.py` | **VAR** | **YOK** |
+| `neofizik_tyt_ithal.py` | **VAR** | **YOK** |
+
+Yani `soru_hash` carpismasi durumunda (ayni metin + ayni 5 sik -> ayni
+`id`) iki fizik ithali de baska bir kitabin satirini ezebiliyordu. Ayni acik
+11 Eyl 2026'da 2 resmi OSYM satirinin metadata'sini ezmis ve ikisi de servis
+kapisindan dusmustu. Depoda `source_book` sabiti tanimlayan **26 ayri yer**
+var; korumayi kopyalanacak bir kalip olarak birakmak, her yeni kitapta
+unutulma sansi demekti.
+
+### Yapilan
+
+1. **`backend/scripts/kitap/kaynak_sozlesmesi.py`** (yeni): kanonik ad
+   kayitlari (`KAYNAK_KAYITLARI`), ad dogrulama (`kaynak_adi_dogrula`),
+   normalize anahtar (`normalize_anahtar`) ve yabanci-satir ayrimi
+   (`ayristir`). Koruma artik kopyalanan bir kalip degil, cagrilan tek
+   fonksiyon.
+2. **Uc ithal script'i** adi ve onegi bu kayittan okuyor; ucu de `ayristir`
+   kullaniyor.
+3. **`0019_kaynak_adi_tekil`**: bolunmus Aromat yazimini birlestirir.
+   Yalnizca `source_book` kolonu degisir; silme yok, gunluk tablosu var,
+   `downgrade` tam tersini yapar.
+4. **`tests/e2e/test_kaynak_sozlesmesi.py`** (yeni, 13 bekci): adlandirma
+   kurallari, "iki farkli yazim ayni kitaba cozulmesin", modern ithallerin
+   kayitli+ASCII olmasi, uc script'in ortak korumayi kullanmasi ve eski
+   desenin geri gelmemesi.
+
+### Bekcilerin gercekten olctugunun kaniti
+
+- `test_iki_yazim_ayni_kitaba_cozulmuyor` migration'dan **ONCE KIRMIZI**
+  (Aromat ciftini adiyla raporladi), migration sonrasi yesil.
+- `test_ithal_scriptleri_ortak_korumayi_kullaniyor` icin HEAD surumleri
+  ayni olcutle tarandi: 3/3 script "ortak koruma yok", 2/3 ayrica "eski
+  ayrimsiz desen var" -- yani bekci yamasiz kodda **KIRMIZI** olurdu.
+  Calisma agacinda 3/3 temiz.
+- `downgrade` CANLI kosuldu: 8 + 1 dagilimi birebir geri geldi, gunluk
+  tablosu dusuruldu; sonra yeniden `upgrade` kosuldu.
+- Ilgili paket: `test_kaynak_sozlesmesi` + `test_mikro_geo_ithal` +
+  `test_neofizik_ithal` + `test_neofizik_tyt_ithal` +
+  `test_osym_aktiflestirme` = **54/54 yesil**.
+
+### Yan urun: satir numarasi yerine bekci
+
+Ayni devir notu `/static/crops` mount'unu `core/application.py:441` diye
+SATIR NUMARASIYLA anlatiyordu. Satir numarasi ilk refactor'de bayatlar ve
+bayat bir referans dogrulanmis bir gercek gibi gorunur. Depoda kirpim
+URL'sinin BICIMINI dogrulayan uc test vardi ama mount'un varligini
+dogrulayan yoktu. `tests/fast/test_kirpim_mount_sozlesmesi.py` (3 bekci) bu
+boslugu kapatir: mount yolu, `CROP_IMAGE_DIR` ile disaridan ayarlanabilirlik
+ve "dizin yoksa mount etme" korumasi icerikten dogrulanir. Artik dokumanin
+satir numarasi vermesine gerek yok, testin adini vermesi yeter.
+
+### Kalan borc (bu turda KAPSAM DISI, bilerek)
+
+- Eski hattan kalan 187 deger (5.796 satir) normalize EDILMEDI. Bunlarin
+  cogu diskteki klasor adiyla birebir; toplu yeniden adlandirma ayri bir
+  olcum ve ayri bir karar ister. Yeni bekci yalnizca `ithal_araci` tasiyan
+  satirlari kapsar -- kapsam boyle secildi ki "yesil" yanlis bir sey
+  iddia etmesin.
+- Eski degerlerde gorunen dizgi hatalari (`Sopru Bankasi`, `Soeu Bankasi`,
+  `Matemateik`, `Porblemler`, `Sohagi`, `Aramot`) duzeltilmedi; hicbiri
+  normalize cakismasina yol acmiyor, yani bugun bir korumayi delmiyorlar.
