@@ -97,14 +97,17 @@ import psycopg
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from scripts.kitap.kaynak_sozlesmesi import KAYNAK_KAYITLARI, ayristir, yabanci_yaz
 from services.turkish_readability_service import TurkishReadabilityService
 
 VARSAYILAN_DSN = (
     "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
 )
 VARSAYILAN_VERI = "veriseti/zkitap/cikti/mikro_geometri_sorular.json"
+# Kanonik ad tek yerde durur (scripts/kitap/kaynak_sozlesmesi.py); burada elle
+# yazilmaz -- iki yerde yazilan ad, bir gun iki farkli yazim demektir.
 KAYNAK_ADI = "Mikro Orijinal 2025 AYT Geometri Soru Bankasi"
-ONEK = "MIKRO_GEO"
+ONEK = KAYNAK_KAYITLARI[KAYNAK_ADI]["onek"]
 GEO_KOK_KODU = "GEO"
 KOD_ONEKI = "GEO-MIKRO-"
 SINAV_TURU = "AYT"
@@ -501,28 +504,12 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
         # satirlar KAYNAK KITABA GORE ayrilir; --meta-guncelle YALNIZ bu kitabin
         # satirlarina dokunur. (11 Eyl 2026: kaynak ayrimi yokken bu iki OSYM
         # satirinin metadata'si ezildi ve ikisi de servis kapisindan dustu.)
-        var_kaynak = {
-            r[0]: r[1]
-            for r in conn.execute(
-                "SELECT b.id, m.source_book FROM question_bank b "
-                "  LEFT JOIN question_metadata m ON m.id = b.id "
-                " WHERE b.id = ANY(%s)",
-                ([k["id"] for k in kayitlar],),
-            ).fetchall()
-        }
-        var = set(var_kaynak)
-        yabanci = {i for i, kitap in var_kaynak.items() if kitap != KAYNAK_ADI}
-        yeni = [k for k in kayitlar if k["id"] not in var]
-        print(f"zaten var: {len(var)}, yazilacak: {len(yeni)}")
-        if yabanci:
-            print(
-                f"BASKA KAYNAKTA duran {len(yabanci)} soru (ayni soru_hash) "
-                "-- dokunulmayacak:"
-            )
-            for i in sorted(yabanci):
-                print(f"    {i}  <- {var_kaynak[i]}")
+        # Ayrim artik ortak fonksiyonda -- kopyalanan kalip her yeni ithalde
+        # unutulma sansi demekti (neofizik ithalleri tam olarak boyle atlamisti).
+        yeni, bizim, yabanci = ayristir(conn, kayitlar, KAYNAK_ADI)
+        print(f"zaten var: {len(kayitlar) - len(yeni)}, yazilacak: {len(yeni)}")
+        yabanci_yaz(yabanci)
 
-        bizim = [k for k in kayitlar if k["id"] in var and k["id"] not in yabanci]
         if meta_guncelle and bizim:
             _meta_yenile(conn, bizim, yaz)
         _ozet(yeni or kayitlar)
