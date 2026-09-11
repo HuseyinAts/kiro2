@@ -74,7 +74,7 @@ BIRLESTIRME: tuple[tuple[str, str], ...] = ((YANLIS, DOGRU),)
 
 
 def _tablolar_var(b) -> bool:
-    return sa.inspect(b).has_table("question_metadata")
+    return bool(sa.inspect(b).has_table("question_metadata"))
 
 
 def upgrade() -> None:
@@ -83,7 +83,7 @@ def upgrade() -> None:
         _log.info("[0019] question_metadata yok (taze DB?) -- atlandi")
         return
 
-    hedef = []
+    hedef: list[tuple[str, str, str]] = []
     for yanlis, dogru in BIRLESTIRME:
         idler = (
             b.execute(
