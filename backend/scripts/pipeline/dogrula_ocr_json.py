@@ -14,6 +14,7 @@ Kontroller:
   K8  soru numaralari sayfa icinde artan
   K9  ayni sayfada tekrar eden soru metni yok (sol/sag bindirme artefakti)
   K10 sayfalar arasi tekrar eden soru metni yok
+  K11 soru numaralari sayfalar arasi surekli (atlanan soru / kopyalanan sayfa)
 
 Kullanim:
     python dogrula_ocr_json.py --kitap "345 2025 Tyt Biyoloji Soru Bankası"
@@ -57,7 +58,9 @@ def _sayfa_kontrolleri(
         )
 
     gercek = len(sorular) == bekl
-    if "count_matches" in d and bool(d["count_matches"]) != gercek:
+    # count_matches=null -> uretici "olcemedim" diyor (orn. manifest okunamadi).
+    # Bu DURUST bir beyan yoklugudur; yalan beyan degil, K3 bunu cezalandirmaz.
+    if d.get("count_matches") is not None and bool(d["count_matches"]) != gercek:
         kusurlar.append(
             f"{ad}: K3 count_matches={d['count_matches']} ama gercek={gercek} (YANLIS BEYAN)"
         )
@@ -108,6 +111,29 @@ def _soru_kontrolleri(etiket: str, q: dict, kusurlar: list[str]) -> tuple[bool, 
     return ca is None, anahtar
 
 
+def _sureklilik_kontrol(
+    sayfalar: dict[int, tuple[int, int]], kusurlar: list[str]
+) -> None:
+    """K11: soru numaralari SAYFALAR ARASI surekli mi.
+
+    Kitapta numaralandirma test boyunca artar ve yeni testin ilk sayfasinda 1'e
+    doner. Bir sayfada soru ATLANMISSA zincir kirilir -- bu, sayfa-ici hicbir
+    kontrolun goremeyecegi bir kusur sinifidir (sayi manifestle tutsa bile).
+    Ayni sekilde bir sayfanin icerigi baska sayfaya KOPYALANMISSA numaralar
+    tekrar eder ve yine burada gorunur.
+    """
+    for no in sorted(sayfalar):
+        ilk, _son = sayfalar[no]
+        onceki = sayfalar.get(no - 1)
+        if onceki is None or ilk == 1:
+            continue  # kitabin ilk sayfasi, kapak atlamasi veya yeni test
+        if ilk != onceki[1] + 1:
+            kusurlar.append(
+                f"sayfa_{no:04d}: K11 numara zinciri kirik -- onceki sayfa {onceki[1]} "
+                f"ile bitti, bu sayfa {ilk} ile basliyor"
+            )
+
+
 def _tekrar_kontrol(
     etiket: str,
     ad: str,
@@ -143,6 +169,7 @@ def dogrula(hedef: Path) -> int:
     toplam_soru = bos_cevap = 0
     supheli_sayfa = 0
     metin_sahibi: dict[str, str] = {}
+    sayfa_numaralari: dict[int, tuple[int, int]] = {}
     beklenen_toplam = 0
 
     for f in dosyalar:
@@ -180,11 +207,15 @@ def dogrula(hedef: Path) -> int:
                 kusurlar=kusurlar,
             )
 
+        if numaralar:
+            sayfa_numaralari[int(ad.split("_")[1])] = (numaralar[0], numaralar[-1])
         if numaralar != sorted(numaralar):
             kusurlar.append(f"{ad}: K8 soru numaralari artan degil -> {numaralar}")
 
         if (d.get("page_notes") or "").strip():
             supheli_sayfa += 1
+
+    _sureklilik_kontrol(sayfa_numaralari, kusurlar)
 
     print(f"islenen sayfa: {len(dosyalar)} / manifest soru sayfasi: {len(manifest)}")
     print(

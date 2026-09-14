@@ -79,3 +79,24 @@ def test_soru_esigi_gozlemlenen_dagilimla_tutarli() -> None:
     """
     assert kirp.SORU_ESIGI == 2
     assert kirp.SORU_ESIGI <= 3, "esik 3'un uzerine cikarsa gercek sayfalar elenir"
+
+
+def test_limit_ile_manifest_yazilmaz() -> None:
+    """--limit verildiginde manifest YAZILMAMALI.
+
+    Gercek vaka: manifest 4 kez ilk 8 satira dustu. Bozulma "yarim yazma" gibi
+    gorunmuyordu -- dosya iyi bicimli, guncel baslikli ve eksiksiz yaziliyordu;
+    sadece GIRDI alt kumeydi. Bu yuzden once atomiklik suclandi (ki o da gercek
+    bir kusurdu ama bu degildi). Ayirt edici kanit: kirpik dosyanin basligi
+    GUNCEL surumun basligiydi ve tam olarak ilk N sayfayi iceriyordu.
+    """
+    kaynak = (PIPELINE / "sayfa_kirp_zkitap.py").read_text(encoding="utf-8")
+    manifest_blok = kaynak[kaynak.index("def _manifest_asamasi(") :]
+    manifest_blok = manifest_blok[: manifest_blok.index("def _ozet_yaz(")]
+
+    assert (
+        "args.limit" in manifest_blok
+    ), "--limit korumasi yok: kirpik girdiyle tam manifest ezilir"
+    yaz = manifest_blok.index("_manifest_yaz(")
+    kontrol = manifest_blok.index("args.limit")
+    assert kontrol < yaz, "--limit kontrolu _manifest_yaz cagrisindan SONRA geliyor"
