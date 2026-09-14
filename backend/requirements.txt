@@ -136,7 +136,15 @@ opentelemetry-instrumentation==0.42b0
 opentelemetry-instrumentation-fastapi==0.42b0
 opentelemetry-exporter-jaeger==1.21.0
 opentelemetry-exporter-jaeger-thrift==1.21.0
-opentelemetry-exporter-otlp==1.44.0
+# DIKKAT: bu paket 6 kardesiyle AYNI surumde kalmali.
+# opentelemetry-exporter-otlp==1.44.0 -> opentelemetry-sdk>=1.44.0 istiyor;
+# opentelemetry-exporter-jaeger-thrift ise PyPI'de 1.21.0'dan sonra HIC
+# yayin almadi (son yayin 2023-11-07, upstream terk edilmis -- PyPI JSON
+# API'den 14 Eyl 2026'da dogrulandi). Iki kisit ayni anda karsilanamaz ve
+# `uv pip install -r requirements.txt` tum repo icin cozumsuz kaliyor.
+# Bu ayni bump ikinci kez master'i kirdi (once #258, oncesinde #112;
+# ilkini #128 geri almisti).
+opentelemetry-exporter-otlp==1.21.0
 
 # Error Tracking
 sentry-sdk[fastapi]==1.40.0
