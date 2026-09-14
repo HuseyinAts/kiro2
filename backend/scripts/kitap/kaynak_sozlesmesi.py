@@ -105,6 +105,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "BIYO345",
         "ithal_araci": "scripts/kitap/biyo345_ithal.py",
     },
+    "345 2025 TYT-AYT Geometri Soru Bankasi": {
+        "onek": "GEO345",
+        "ithal_araci": "scripts/kitap/geo345_ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",
