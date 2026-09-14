@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-"""Mikro Orijinal 2025 AYT Geometri Soru Bankasi -- OCR ciktisini PASIF ithal eder.
+"""345 2025 AYT Biyoloji Soru Bankasi -- OCR ciktisini PASIF ithal eder.
 
 NEDEN PASIF VE is_ai_generated=TRUE
 -----------------------------------
-0013/0015'teki Neofizik ithalleriyle ayni gerekce: metin bir OCR/VLM hattindan
-geldi (kitabin kaynagi 1920x1080 EKRAN GORUNTUSUDUR; PDF'te metin katmani yok,
-gomulu goruntu de 1920x1080 -- cozunurluk tavani bu). Her satir su sekilde yazilir:
+0013/0015/0017'deki ithallerle ayni gerekce: metin bir OCR/VLM hattindan
+geldi. Kitabin kaynagi zkitap goruntuleyici EKRAN GORUNTUSUDUR; PDF yok,
+metin katmani yok. Her satir su sekilde yazilir:
 
     is_active = FALSE, is_public = FALSE,
     is_ai_generated = TRUE, review_status = 'PENDING'
@@ -16,67 +16,85 @@ basina hicbir soruyu ogrenciye ulastirmaz; aktiflestirme ayri karardir.
 
 CEVAP KAYNAGI: YALNIZ KITABIN BASILI ANAHTARI
 ---------------------------------------------
-Sorular tekrar cozulerek dogrulanmaz (urun karari). Bu kitapta anahtar HER
-SAYFANIN ALTINDA DUZ (ters degil) basili; iki bagimsiz okuma 237 sayfanin
-237'sinde birebir uyustu ve anahtardaki girdi sayisi her sayfada tespit edilen
-soru sayisina esit. `explanation` bu yuzden NULL birakilir.
+Sorular tekrar cozulerek dogrulanmaz (urun karari). Anahtar her soru
+sayfasinin altinda tek satir halinde basili (y 1792-1803, tum kitapta sabit).
+Iki bagimsiz okuma 307 sayfanin 294'unde birebir uyustu; 13 uyusmazligin
+tamami B/E ve C/D karismasiydi ve 10x hakem kirpimiyla cozuldu (13/13 ikinci
+okuma lehine). `explanation` bu yuzden NULL birakilir.
 
-ESLEME KONUMSALDIR: seritteki i. girdi <-> sayfadaki i. kirpim (okuma sirasi
-sol sutun yukaridan asagi, sonra sag sutun). Bu esleme BAGIMSIZ dogrulandi:
-her kirpimin basili numarasi okundu ve 1213 sorunun 1209'unda serit numarasiyla
-birebir uyustu. Kalan 4 sapma s77'dedir ve YAYINEVI DIZGI HATASIDIR: sayfada
-basili numaralar 6,7,8,9 iken serit 7,8,9,10 diyor (onceki sayfa 1-5'te
-bitiyor). Iki okuma da bagimsiz olarak 6,7,8,9 okudu. Konumsal esleme her iki
-yorumda da ayni sonucu verdigi icin cevap eslemesi etkilenmez; sapma
+ANAHTARIN SIFIR SERBESTLIK DERECELI DOGRULAMASI
+-----------------------------------------------
+Okuyuculara beklenen girdi sayisi hic soylenmedi (capa bastirma). Birlestirme
+sonrasi 1317 girdinin tamami NUMARA SUREKLILIGI denetiminden gecti: her girdi
+bir oncekinden +1 ya da yeni testin basi olarak 1. SIFIR kirilma. Bu denetimin
+serbestlik derecesi yok -- uydurulmus tek bir numara zinciri kirardi.
+
+ESLEME KONUMSALDIR: seritteki i. girdi <-> sutundaki i. soru. Bu esleme
+BAGIMSIZ dogrulandi: soru metinleri sutun granulerliginde ayri bir turda
+okundu ve her sorunun BASILI NUMARASI kaydedildi; 600 sutunun 599'unda
+numara dizisi anahtarla birebir ayni cikti. Tek sapma s0183 sag: sayfada
+"67." basili, anahtar ve test sirasi "2" diyor (onceki sutun 1'de bitiyor).
+YAYINEVI DIZGI HATASI; konumsal esleme etkilenmez, sapma
 pipeline_metadata.anahtar_numara_sapmasi ile ISARETLENIR.
 
-DOLDURULAN TURETIK ALANLAR (hepsi HESAPLANIR, sabit degil)
-----------------------------------------------------------
-- readability_score : Atesman okunabilirlik indeksi; repo'nun kendi
-  services/turkish_readability_service.py'sinden hesaplanir.
-- morphology_complexity : repo'nun kendi Turkce morfoloji hattinin ZEMBEREKSIZ
-  yolu (core/turkish_nlp_service._simple_root_suffix_split +
-  algorithms/irt_morfoloji_service._calculate_word_complexity agirliklari).
-  OLCULDU: bu yol kelime basina EN FAZLA BIR ek soyar, bu yuzden soru duzeyinde
-  deger {0.0, 0.35} ikilisine cokuyor -- yani bu alan Zemberek olmadan BILGI
-  TASIMIYOR. Uydurmak yerine oldugu gibi yazilir ve metadata'da
-  `morfoloji_kaynagi='heuristik_zemberek_yok_sabit'` ile ACIKCA isaretlenir.
-- word_count / unique_word_count / average_word_length : metinden sayilir.
-- bloom_level : 0015'teki DAR kuralin aynisi; yalnizca "sayisal sonuc isteyen +
-  besi de sayisal sik" deseninde 3/application, aksi halde 2/comprehension.
-- osym_year / osym_format_compliant : YALNIZCA uzerinde turuncu
-  "Cikmis Soru (YIL / SINAV)" rozeti BASILI olan sorularda doldurulur (86 soru;
-  2012-2025, TYT/AYT/MSU/YGS/LYS). Yayinevinin kendi yazdigi sorulara OSYM
-  damgasi vurulmaz.
+KONU BAGLAMA: UNITE DUZEYI
+--------------------------
+0021 migration'i kitabin 16 bolumunu BIO-U1..BIO-U16 olarak kurar. Soru ->
+bolum eslemesi sayfa araligindan gelir (bolum ayrac sayfalari kitaptan
+okundu). Kitapta UNITE ALTI konu etiketi YOKTUR; test basliklari
+("3. TEST - KAZANIM ODAKLI SORULAR", "KARMA SORULAR 2", "OSYM TADINDA
+SORULAR 1", "ORIJINAL SORULAR") konu degil TEST TURUDUR ve soru duzeyinde
+pipeline_metadata.test_basligi olarak tasinir. Var olmayan bir L3 katmani
+uydurulmadi; `konu_eslesme_duzeyi='unite'` ile ACIKCA isaretlenir.
 
 GORSELLER
 ---------
-Bu kitapta sorularin %88'i sekil iceriyor ve sekil olmadan soru eksik kalir.
-question_image_url TAM SORU KIRPIMIDIR (metin + sekil birlikte); kirpim kutusu
-pipeline_metadata.kirpim_kutusu'nda saklanir ve gorseller her ortamda PDF'ten
-yeniden uretilebilir (scripts/kitap/mikro_geo_kirp.py).
-Neofizik'teki gibi VARLIK DUZEYINDE (sekil sekil) ayristirma YAPILMADI;
-`gorsel_kaynagi='tam_soru_kirpimi'` ile isaretlenir -- bos bir liste "varlik
-aradik bulamadik" gibi okunmasin diye.
+question_image_url TAM SORU KIRPIMIDIR (metin + sekil birlikte); kirpim
+kutusu pipeline_metadata.kirpim_kutusu'nda saklanir ve gorseller her ortamda
+kaynaktan yeniden uretilebilir (scripts/kitap/biyo345_kirp.py).
+Varlik duzeyinde (sekil sekil) ayristirma YAPILMADI;
+`gorsel_kaynagi='tam_soru_kirpimi'` ile isaretlenir.
+
+BILINEN SINIR: SIKLARI GORSEL OLAN SORULAR
+------------------------------------------
+Bazi sorularin siklari metin degil GRAFIK/TABLO/RESIMDIR. Bu sorularda
+a..e alanlari okuyucunun TARIFIDIR, kitabin bastigi metin degil. Bir soruda
+(s0362 sag #6) iki tarif ayni cikti ve `sik_tekrar` bayragiyla isaretlendi.
+Bu sorularin dogru gosterimi KIRPIM GORSELIDIR; metin alanlari arama ve
+hash icindir.
+
+OSYM CIKMIS SORULARI
+--------------------
+Kitapta 71 "OSYM kosesi / CIKMIS SORU" kutusu var; kirmizi cerceveleri bagli
+bilesen olarak olculdu ve yil-sinav etiketleri ayri bir turda okundu
+(71/71 dolu; 2015 YGS bir tane, kalan 70'i AYT 2018-2025).
+osym_year / osym_format_compliant YALNIZCA bu sorularda doldurulur --
+yayinevinin kendi yazdigi sorulara OSYM damgasi vurulmaz.
+
+BAGIMSIZ CAPRAZ DOGRULAMA (BEDAVA GELEN)
+----------------------------------------
+1317 hash'in 2'si canli DB'de ZATEN VARDI ve ikisi de `source_book =
+'OSYM 2025 AYT'` etiketli. Ikisi de bu hattin OSYM-kutusu dedektorunun
+bagimsiz olarak isaretledigi sorular. Yani hash formulu, metin cikarimi ve
+OSYM tespiti UC AYRI KANALDAN birbirini dogruluyor.
 
 VERI NEREDEN GELIYOR
 --------------------
-`veriseti/zkitap/cikti/mikro_geometri_sorular.json` (git disinda; .gitignore
-`veriseti/`). Uretim yontemi ve tum olcumler ayni klasordeki GEO_YONTEM.md'de.
+`veriseti/zkitap/cikti/biyo345_sorular.json` (git disinda; .gitignore
+`veriseti/`). Uretim yontemi ve tum olcumler ayni klasordeki
+BIYO345_YONTEM.md'de.
 
 Kurallar
 --------
 - id = uuid5(NAMESPACE_OID, soru_hash); soru_hash = pilot_500p formulu
   (md5(lower(nfc(question_text))|A|B|C|D|E)) -- uq_qb_soru_hash_active uyumlu.
 - Ayni id varsa satir ATLANIR (idempotent; tekrar kosum guvenli).
-- primary_topic_id: 0017'nin kurdugu, 0020'nin yayinevi-bagimsiz hale
-  getirdigi GEO alt agaci (GEO-U<n>-<KONU>); bulunamazsa GEO koku.
-  (0020 oncesi kodlar GEO-MIKRO-U<n>-<KONU> idi; id'ler degismedi.)
-- question_image_url = /static/crops/MIKRO_GEO/<id>.png
+- primary_topic_id: 0021'in kurdugu BIO-U<n>; bulunamazsa BIO koku.
+- question_image_url = /static/crops/BIYO345/<id>.png
 
 KULLANIM
 --------
-    python backend/scripts/kitap/mikro_geo_ithal.py --dsn postgresql://... [--yaz]
+    python backend/scripts/kitap/biyo345_ithal.py --dsn postgresql://... [--yaz]
     (--yaz verilmezse yalnizca plan basilir)
 """
 
@@ -104,29 +122,27 @@ from services.turkish_readability_service import TurkishReadabilityService
 VARSAYILAN_DSN = (
     "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
 )
-VARSAYILAN_VERI = "veriseti/zkitap/cikti/mikro_geometri_sorular.json"
-# Kanonik ad tek yerde durur (scripts/kitap/kaynak_sozlesmesi.py); burada elle
-# yazilmaz -- iki yerde yazilan ad, bir gun iki farkli yazim demektir.
-KAYNAK_ADI = "Mikro Orijinal 2025 AYT Geometri Soru Bankasi"
+VARSAYILAN_VERI = "veriseti/zkitap/cikti/biyo345_sorular.json"
+# Kanonik ad tek yerde durur (scripts/kitap/kaynak_sozlesmesi.py).
+KAYNAK_ADI = "345 2025 AYT Biyoloji Soru Bankasi"
 ONEK = KAYNAK_KAYITLARI[KAYNAK_ADI]["onek"]
-GEO_KOK_KODU = "GEO"
-# 0020 kodlari yayinevi-bagimsiz hale getirdi (GEO-MIKRO-U1-... -> GEO-U1-...).
-# Yaprak id'leri degismedi; degisen yalnizca kod oneki.
-# DIKKAT: konu_kodu() bunun ardina "U<n>-" ekler, yani onek "GEO-" olmali
-# ("GEO-U" yazilirsa kod GEO-UU1-... cikar). LIKE deseni GEO-% kokun
-# kendisini (tam "GEO") kapsamaz, yalnizca unite ve yapraklari kapsar.
-KOD_ONEKI = "GEO-"
+BIO_KOK_KODU = "BIO"
+# 0021 kodlari: BIO-U1 ... BIO-U16. LIKE deseni kokun kendisini ve
+# BIO-OSYM-GENEL'i KAPSAMAZ.
+KOD_ONEKI = "BIO-U"
 SINAV_TURU = "AYT"
-DERS_ALANI = "GEOMETRI"
-SINIF_DUZEYI = 12  # mevcut AYT satirlarinin ev sozlesmesi (1232/1232 FIZIK AYT)
+DERS_ALANI = "BIYOLOJI"
+SINIF_DUZEYI = 12  # mevcut AYT satirlarinin ev sozlesmesi
 TELIF_NOTU = (
-    "Mikro Orijinal Yayinlari. Ticari soru bankasi; icerik hak sahibinin izni "
+    "UcDortBes Yayinlari. Ticari soru bankasi; icerik hak sahibinin izni "
     "olmadan servis edilemez. Ithal PASIF, aktiflestirme ayri karar."
 )
 URETIM_NOTU = (
-    "OCR/VLM hatti: iki bagimsiz okuma + uyusmazlikta hakem turu + kitabin "
-    "basili cevap anahtari (tek cevap kaynagi; soru tekrar cozulmedi). "
-    "Detay: veriseti/zkitap/cikti/GEO_YONTEM.md"
+    "OCR/VLM hatti: anahtar icin iki bagimsiz okuma + uyusmazlikta hakem "
+    "turu + numara surekliligi denetimi (1317 girdide 0 kirilma); metin "
+    "sutun granulerliginde okundu ve numara dizisi 599/600 sutunda "
+    "anahtarla birebir uyustu. Tek cevap kaynagi kitabin basili anahtaridir; "
+    "soru tekrar cozulmedi. Detay: veriseti/zkitap/cikti/BIYO345_YONTEM.md"
 )
 
 # core/turkish_nlp_service._simple_root_suffix_split ile BIREBIR ayni liste.
@@ -165,16 +181,17 @@ EKLER = (
 # algorithms/irt_morfoloji_service.complexity_weights ile ayni agirliklar
 W_EK, W_TURETIM, W_BIRLESIK = 0.15, 0.20, 0.25
 
-# Not: Turkce karakterler \u kacisiyla yazilir -- kaynak dosya ASCII kalir.
-# DIKKAT -- KATASTROFIK GERI IZLEME ONARIMI (14 Eyl 2026).
-# Onceki desen sondaki grubu ic ice nicelemisti:
-#     (?:[a-zA-Z...]{0,6}\\s)*
-# Bu, ESLESMEYEN girdilerde ustel geri izleme uretir. Bu kitapta
-# siklar cogunlukla ciplak sayi oldugu icin hic tetiklenmedi; AYNI
-# desen biyoloji kitabinda "2, karbondioksit olabilir." gibi
-# RAKAMLA BASLAYIP metinle suren 26 karakterlik bir sikta ithali
-# KILITLEDI (olculdu). Yeni desen ic ice nicelemez ve ayni sikleri
-# kabul eder: "12", "3,5 cm", "45 derece", "1/2", "100 m2".
+# DIKKAT -- KATASTROFIK GERI IZLEME ONARIMI.
+# mikro_geo_ithal.py'den devralinan desen sondaki grubu ic ice nicelemisti:
+#     (?:[a-zA-Z...]{0,6}\s*)*
+# Bu, ESLESMEYEN girdilerde ustel geri izleme uretiyor. Jeometride siklar
+# cogunlukla ciplak sayi oldugu icin hic tetiklenmedi; biyolojide ise
+# "2, karbondioksit olabilir." gibi RAKAMLA BASLAYIP metinle suren siklar
+# var ve ithal 26 karakterlik bir sikta KILITLENDI (olculdu: >0.25 s'de
+# bitmeyen 5 sik ilk 300 soruda).
+# Yeni desen ic ice nicelemez, ayni sikleri kabul eder (ornekler: "12",
+# "3,5 cm", "45\u00b0", "2\u221a3", "1/2", "100 m\u00b2") ve metin sikleri reddeder.
+# Olcum: 6585 sik 0.00 s'de tarandi, 15 sik sayisal sayildi.
 SAYISAL_SIK = re.compile(
     "^[\\s\\d.,/+\\-x*^()\u2212\u221a\u00b7]+[a-zA-Z\u00b0%/\u00b2\u00b3\\s]{0,12}$"
 )
@@ -194,37 +211,6 @@ def soru_hash(metin: str, secenekler: dict[str, str]) -> str:
         [_nfc(metin).lower()] + [_nfc(secenekler.get(h, "")) for h in "ABCDE"]
     )
     return hashlib.md5(payload.encode("utf-8"), usedforsecurity=False).hexdigest()
-
-
-def _ascii_tr(s: str) -> str:
-    esle = {
-        "\u0131": "i",
-        "\u0130": "I",
-        "\u015f": "s",
-        "\u015e": "S",
-        "\u011f": "g",
-        "\u011e": "G",
-        "\u00fc": "u",
-        "\u00dc": "U",
-        "\u00f6": "o",
-        "\u00d6": "O",
-        "\u00e7": "c",
-        "\u00c7": "C",
-    }
-    return "".join(esle.get(c, c) for c in s)
-
-
-def konu_kodu(unite_no: int, konu: str) -> str:
-    """0017 migration'inin urettigi kodla birebir ayni olmali.
-
-    topic_hierarchy.code varchar(50) -- kesme siniri buradan geliyor.
-    """
-    sade = unicodedata.normalize("NFKD", _ascii_tr(konu).upper())
-    sade = "".join(c for c in sade if not unicodedata.combining(c))
-    slug = "".join(ch if ch.isalnum() else "-" for ch in sade).strip("-")
-    while "--" in slug:
-        slug = slug.replace("--", "-")
-    return f"{KOD_ONEKI}U{unite_no}-{slug}"[:50].rstrip("-")
 
 
 def _kelime_istatistik(metin: str) -> tuple[int, int, float]:
@@ -255,7 +241,8 @@ def morfoloji_karmasikligi(metin: str) -> float:
     """Zemberek YOKKEN repo'nun dustugu heuristik yolun aynisi.
 
     _ek_ayikla en fazla 1 ek dondurdugu icin deger {0.0, 0.35} ikilisine
-    cokuyor. Bu, kaynak servisin davranisidir; burada duzeltilmez, isaretlenir.
+    cokuyor. Bu, kaynak servisin davranisidir; burada duzeltilmez, isaretlenir
+    (pipeline_metadata.morfoloji_kaynagi).
     """
     turkce = "\u00e7\u011f\u0131\u00f6\u015f\u00fc\u00c7\u011e\u0130\u00d6\u015e\u00dc"
     kelimeler = [
@@ -288,77 +275,74 @@ def bloom_belirle(metin: str, secenekler: dict[str, str]) -> tuple[int, str, str
     return 2, "comprehension", "varsayilan:ev_sozlesmesi"
 
 
-_UNITE_NO = {
-    "UCGENLER": 1,
-    "DORTGENLER": 2,
-    "CEMBER VE DAIRE": 3,
-    "ANALITIK GEOMETRI": 4,
-    "KATI CISIMLER": 5,
-}
+def _bayraklar(r: dict[str, Any], sec: dict[str, str]) -> list[str]:
+    b: list[str] = []
+    if any(not (sec[h] or "").strip() for h in "ABCDE"):
+        b.append("sik_bos")
+    if len({(sec[h] or "").strip().lower() for h in "ABCDE"}) < 5:
+        b.append("sik_tekrar")
+    if r.get("basili_no") is not None:
+        b.append("anahtar_numara_sapmasi")
+    return b
 
 
 def kayit_uret(r: dict[str, Any]) -> dict[str, Any]:
-    # strict=True: sik sayisi 5 degilse burada patlar (on kontrolden once)
-    sec = dict(zip("ABCDE", r["secenekler"], strict=True))
-    h = soru_hash(r["metin"], sec)
-    n, u, ort = _kelime_istatistik(r["metin"])
-    bloom, bloom_ad, bloom_kaynak = bloom_belirle(r["metin"], sec)
-    unite_no = _UNITE_NO[r["unite_kod"]]
+    sec = {h: r[h.lower()] for h in "ABCDE"}
+    h = soru_hash(r["question_text"], sec)
+    n, u, ort = _kelime_istatistik(r["question_text"])
+    bloom, bloom_ad, bloom_kaynak = bloom_belirle(r["question_text"], sec)
     resmi = bool(r.get("osym_yil"))
-    sapma = r["basili_no"] != r["anahtar_basili_no"]
     return {
         "id": str(uuid.uuid5(uuid.NAMESPACE_OID, h)),
         "soru_hash": h,
-        "konu_kodu": konu_kodu(unite_no, r["konu"]),
-        "question_text": r["metin"],
+        "konu_kodu": f"BIO-U{r['bolum_no']}",
+        "question_text": r["question_text"],
         "secenekler": sec,
-        "correct_answer": r["dogru_cevap"],
+        "correct_answer": r["correct_answer"],
         "question_image_url": f"/static/crops/{ONEK}/{r['id']}.png",
-        "source_page": r["sayfa"],
+        # DIKKAT: source_page DOSYA numarasidir, kitabin BASILI sayfa
+        # numarasi degil (olculdu: sayfa_0020 -> basili 19). Kitap icine
+        # referans verirken bu fark hatirlanmali.
+        "source_page": int(r["sayfa"]),
         "word_count": n,
         "unique_word_count": u,
         "average_word_length": ort,
-        "readability_score": okunabilirlik(r["metin"], sec),
-        "morphology_complexity": morfoloji_karmasikligi(r["metin"]),
+        "readability_score": okunabilirlik(r["question_text"], sec),
+        "morphology_complexity": morfoloji_karmasikligi(r["question_text"]),
         "bloom_level": bloom,
         "bloom_category": bloom_ad,
         "osym_year": r.get("osym_yil"),
         "osym_format_compliant": resmi,
         "pipeline_metadata": {
-            "kaynak": "mikro_orijinal_geometri_soru_bankasi",
-            "kayit_id": r["id"],
-            "unite_no": unite_no,
-            "unite_adi": r["unite_adi"],
-            "konu": r["konu"],
-            "test_no_genel": r["test_no_genel"],
-            "test_turu": r["test_turu"],
-            "test_alt_baslik": r["test_alt_baslik"],
-            "test_no": r["test_no"],
-            "test_sayfalari": r["test_sayfalari"],
-            "sayfa": r["sayfa"],
+            "kaynak": "345_2025_ayt_biyoloji_soru_bankasi",
+            "bolum_no": r["bolum_no"],
+            "bolum_adi": r["bolum_adi"],
+            "test_basligi": r.get("test_basligi") or None,
+            "konu_eslesme_duzeyi": "unite",
+            "sayfa_dosya_no": r["sayfa"],
             "sutun": r["sutun"],
-            "sira": r["sira"],
-            "basili_no": r["basili_no"],
-            "anahtar_basili_no": r["anahtar_basili_no"],
-            "anahtar_numara_sapmasi": sapma,
-            "bayraklar": r["bayraklar"],
-            "cevap_kaynagi": r["cevap_kaynagi"],
-            "cevap_eslemesi": "konumsal_serit_sirasi",
-            "cikmis_soru": r["cikmis_soru"],
+            "soru_no": r["soru_no"],
+            "basili_no": r.get("basili_no"),
+            "anahtar_numara_sapmasi": r.get("basili_no") is not None,
+            "bayraklar": _bayraklar(r, {h: r[h.lower()] for h in "ABCDE"}),
+            "cevap_kaynagi": "kitabin_basili_anahtari",
+            "cevap_eslemesi": "konumsal_sutun_sirasi",
+            "anahtar_dogrulamasi": "numara_surekliligi_1317_girdi_0_kirilma",
+            "cikmis_soru": bool(r.get("osym_cikmis")),
             "sinav_kaynagi": r.get("osym_sinav"),
             "sinav_yili": r.get("osym_yil"),
-            "sekil_var": r["sekil_var"],
+            "sekil_var": bool(r.get("sekil_var")),
+            "sekil_aciklama": r.get("sekil_aciklama") or None,
             "gorsel_kaynagi": "tam_soru_kirpimi",
             "kirpim_kutusu": r["kutu"],
-            "metin_kaynagi": r["okuma_kokeni"],
-            "ikinci_okuma_uyumu": r["ikinci_okuma_uyumu"],
+            "metin_kaynagi": "sutun_granulerliginde_tek_okuma",
             "bloom_kaynagi": bloom_kaynak,
             "morfoloji_kaynagi": "heuristik_zemberek_yok_sabit",
             "okunabilirlik_kaynagi": "atesman_turkish_readability_service",
             "cozum_dogrulamasi": "yapilmadi_urun_karari",
             "telif": TELIF_NOTU,
             "uretim": URETIM_NOTU,
-            "ithal_araci": "scripts/kitap/mikro_geo_ithal.py",
+            "ithal_araci": "scripts/kitap/biyo345_ithal.py",
         },
     }
 
@@ -370,14 +354,15 @@ VALUES (%(id)s, %(soru_hash)s, %(konu_id)s, FALSE, FALSE, NULL, NULL, now(), now
 """
 _QC = """
 INSERT INTO question_content (id, question_text, option_a, option_b, option_c, option_d, option_e,
-    correct_answer, explanation, question_image_url)
-VALUES (%(id)s, %(question_text)s, %(a)s, %(b)s, %(c)s, %(d)s, %(e)s, %(correct_answer)s, NULL, %(question_image_url)s)
+    correct_answer, explanation, question_image_url, image_width, image_height)
+VALUES (%(id)s, %(question_text)s, %(a)s, %(b)s, %(c)s, %(d)s, %(e)s, %(correct_answer)s, NULL,
+    %(question_image_url)s, %(image_width)s, %(image_height)s)
 """
 _QM = """
 INSERT INTO question_metadata (id, bloom_level, bloom_category, exam_type, subject_area, grade_level,
     osym_format_compliant, osym_year, source_book, source_page, pipeline_metadata, morphology_complexity,
     word_count, unique_word_count, average_word_length, readability_score, pedagogical_status)
-VALUES (%(id)s, %(bloom_level)s, %(bloom_category)s, 'AYT', 'GEOMETRI', %(grade_level)s,
+VALUES (%(id)s, %(bloom_level)s, %(bloom_category)s, 'AYT', 'BIYOLOJI', %(grade_level)s,
     %(osym_format_compliant)s, %(osym_year)s, %(source_book)s,
     %(source_page)s, %(pipeline_metadata)s::json, %(morphology_complexity)s, %(word_count)s,
     %(unique_word_count)s, %(average_word_length)s, %(readability_score)s, 'PENDING')
@@ -447,8 +432,12 @@ def _ozet(kayitlar: list[dict[str, Any]]) -> None:
     oku = [k["readability_score"] for k in kayitlar]
     morf = [k["morphology_complexity"] for k in kayitlar]
     print(
-        "konu dagilimi (ilk 6):",
-        dict(Counter(k["pipeline_metadata"]["konu"] for k in kayitlar).most_common(6)),
+        "bolum dagilimi:",
+        dict(
+            sorted(
+                Counter(k["pipeline_metadata"]["bolum_no"] for k in kayitlar).items()
+            )
+        ),
     )
     print(
         "sekil iceren      :",
@@ -458,6 +447,10 @@ def _ozet(kayitlar: list[dict[str, Any]]) -> None:
         "sik_bos bayrakli  :",
         sum(1 for k in kayitlar if "sik_bos" in k["pipeline_metadata"]["bayraklar"]),
     )
+    print(
+        "sik_tekrar bayrakli:",
+        sum(1 for k in kayitlar if "sik_tekrar" in k["pipeline_metadata"]["bayraklar"]),
+    )
     print("cikmis (yil dolu) :", sum(1 for k in kayitlar if k["osym_year"]))
     print(
         "anahtar no sapmasi:",
@@ -466,22 +459,24 @@ def _ozet(kayitlar: list[dict[str, Any]]) -> None:
     print("bloom dagilimi    :", dict(Counter(k["bloom_category"] for k in kayitlar)))
     if oku:
         print(
-            f"okunabilirlik     : ort {sum(oku) / len(oku):.1f}  min {min(oku)}  maks {max(oku)}"
+            f"okunabilirlik     : ort {sum(oku) / len(oku):.1f}  "
+            f"min {min(oku)}  maks {max(oku)}"
         )
         print(
-            f"morfoloji         : ort {sum(morf) / len(morf):.3f}  min {min(morf)}  maks {max(morf)}"
+            f"morfoloji         : ort {sum(morf) / len(morf):.3f}  "
+            f"min {min(morf)}  maks {max(morf)}"
         )
 
 
 def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> int:
     veri = json.loads(veri_yolu.read_text(encoding="utf-8"))
-    hazir = [r for r in veri if r["inceleme_durumu"] == "ONAYA_HAZIR"]
-    print(f"veri setinde {len(veri)} soru; ONAYA_HAZIR {len(hazir)}")
-    if not hazir:
-        print("DURDU: ithal edilecek ONAYA_HAZIR satir yok")
+    print(f"veri setinde {len(veri)} soru")
+    if not veri:
+        print("DURDU: ithal edilecek satir yok")
         return 2
 
-    kayitlar = [kayit_uret(r) for r in hazir]
+    kayitlar = [kayit_uret(r) for r in veri]
+    veri_kutu = {k["id"]: r["kutu"] for k, r in zip(kayitlar, veri, strict=True)}
     hata = _on_kontrol(kayitlar)
     if hata:
         print(f"DURDU: on kontrol {len(hata)} sorun buldu; ilk 10:")
@@ -493,10 +488,10 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
     with psycopg.connect(dsn) as conn:
         kok = conn.execute(
             "SELECT id FROM topic_hierarchy WHERE code = %s AND parent_id IS NULL",
-            (GEO_KOK_KODU,),
+            (BIO_KOK_KODU,),
         ).fetchone()
         if not kok:
-            print(f"DURDU: {GEO_KOK_KODU} kok konusu yok")
+            print(f"DURDU: {BIO_KOK_KODU} kok konusu yok")
             return 2
         konular: dict[str, str] = dict(
             conn.execute(
@@ -507,20 +502,17 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
         eksik_konu = {k["konu_kodu"] for k in kayitlar} - set(konular)
         if eksik_konu:
             print(
-                f"UYARI: {len(eksik_konu)} konu kodu yok (0017 migration kosmadi mi?); "
-                f"bunlar GEO koku ile yazilacak. Ornek: {sorted(eksik_konu)[:3]}"
+                f"UYARI: {len(eksik_konu)} unite kodu yok (0021 migration kosmadi mi?); "
+                f"bunlar BIO koku ile yazilacak. Ornek: {sorted(eksik_konu)[:3]}"
             )
         for k in kayitlar:
             k["konu_id"] = konular.get(k["konu_kodu"], kok[0])
 
         # DIKKAT: soru_hash metin+5 sik uzerinden hesaplandigi icin ayni soru
-        # baska bir kaynakta da varsa ID AYNI olur. Bu kitapta 2 soru boyle:
-        # resmi "OSYM 2025 TYT" ithalinde zaten yazilmislar. Bu yuzden var olan
-        # satirlar KAYNAK KITABA GORE ayrilir; --meta-guncelle YALNIZ bu kitabin
-        # satirlarina dokunur. (11 Eyl 2026: kaynak ayrimi yokken bu iki OSYM
-        # satirinin metadata'si ezildi ve ikisi de servis kapisindan dustu.)
-        # Ayrim artik ortak fonksiyonda -- kopyalanan kalip her yeni ithalde
-        # unutulma sansi demekti (neofizik ithalleri tam olarak boyle atlamisti).
+        # baska bir kaynakta da varsa ID AYNI olur. Bu kitapta 2 soru boyle
+        # (ikisi de "OSYM 2025 AYT" ithalinde zaten yazilmis cikmis sorular).
+        # Var olan satirlar KAYNAK KITABA GORE ayrilir; --meta-guncelle YALNIZ
+        # bu kitabin satirlarina dokunur.
         yeni, bizim, yabanci = ayristir(conn, kayitlar, KAYNAK_ADI)
         print(f"zaten var: {len(kayitlar) - len(yeni)}, yazilacak: {len(yeni)}")
         yabanci_yaz(yabanci)
@@ -535,6 +527,7 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
         with conn.transaction():
             for k in yeni:
                 s = k["secenekler"]
+                kutu = veri_kutu[k["id"]]
                 conn.execute(_QB, k)
                 conn.execute(
                     _QC,
@@ -548,6 +541,8 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                         "e": s["E"],
                         "correct_answer": k["correct_answer"],
                         "question_image_url": k["question_image_url"],
+                        "image_width": kutu[2] - kutu[0],
+                        "image_height": kutu[3] - kutu[1],
                     },
                 )
                 conn.execute(
@@ -578,7 +573,8 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
         )
         if aktif or kapida:
             print(
-                "HATA: pasif ithal sozlesmesi bozuldu (aktif ya da kapidan gecen satir var)"
+                "HATA: pasif ithal sozlesmesi bozuldu "
+                "(aktif ya da kapidan gecen satir var)"
             )
             return 3
     return 0
