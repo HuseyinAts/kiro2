@@ -73,7 +73,7 @@ huggingface_hub==1.4.0
 humanize==4.16.0
 hypothesis==6.151.5
 idna==3.11
-ImageIO==2.37.2
+ImageIO==2.37.4
 importlib-metadata==6.11.0
 iniconfig==2.3.0
 Jinja2==3.1.6
