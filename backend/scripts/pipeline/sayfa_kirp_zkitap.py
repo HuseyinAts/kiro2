@@ -209,7 +209,12 @@ def ocr_olcegi(genislik: int, yukseklik: int) -> float:
 
 
 def buyut(img: Image.Image, k: float) -> Image.Image:
-    return img.resize((round(img.width * k), round(img.height * k)), Image.LANCZOS)
+    # Image.Resampling.LANCZOS (Pillow 9.1+ kanonik yolu); duz Image.LANCZOS
+    # eski takma addir ve CI'nin mypy'si (--ignore-missing-imports) onu
+    # goremiyor. geo345_kirp.py ve mikro_geo_kirp.py de ayni yolu kullaniyor.
+    return img.resize(
+        (round(img.width * k), round(img.height * k)), Image.Resampling.LANCZOS
+    )
 
 
 class SayfaYollari(NamedTuple):
