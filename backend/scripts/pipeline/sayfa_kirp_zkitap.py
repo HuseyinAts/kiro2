@@ -23,15 +23,17 @@ Kullanim:
 from __future__ import annotations
 
 import argparse
+import csv
+import io
 import sys
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import NamedTuple
 
 import numpy as np
 from PIL import Image
 
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
+if isinstance(sys.stdout, io.TextIOWrapper):  # cp1254 konsolda Turkce cokmesin
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 KOK = Path(r"C:\Users\husey\kiro2\veriseti\zkitap\screenshots")
 
@@ -70,6 +72,11 @@ IKON_MIN_PIKSEL = 12
 # Buna karsilik y~100-139'daki ikonlar GERCEK sorulardir (basliksiz OSYM sayfalari;
 # 0016 ve 0020 bagimsiz cikarimla dogrulandi). Esik ikisinin arasina konuldu.
 IKON_MIN_Y = 60
+# Ikonun hangi SUTUNA ait oldugunu belirleyen esik. Kirpma sinirini (OLUK_SAG=370)
+# kullanmak HATALIYDI: olculen dagilim sol kume x=39..57, sag kume x=232..380 ->
+# 370'lik esik sag kumenin ICINDEN geciyor ve 360..369 arasindaki 14 ikonu sola
+# yaziyordu. Esik iki kumenin arasina konuldu (bos bolge: 57..232).
+IKON_SUTUN_ESIGI = 200
 
 # Cevap anahtari satiri ('1.A 2.D 3.D') sayfa altinda, her sutunun kendi altinda.
 # Olculdu: y=896..902 (h=6 px), 5 sayfada birebir ayni. Bu 6 px'lik satir tam
@@ -84,12 +91,8 @@ CEVAP_PAY = 8  # bulunan bandin altina/ustune birakilan pay
 SORU_ESIGI = 2
 
 
-class OlcumError(RuntimeError):
-    """Tespit penceresine degiyor -> olculen kutu kirpilmis, guvenilmez.
-
-    Ad Ingilizce `Error` sonekiyle biter (ruff N818, kaynak_sozlesmesi.py'deki
-    KaynakAdiError ile ayni kalip); govde Turkce.
-    """
+class OlcumHatasiError(RuntimeError):
+    """Tespit penceresine degiyor -> olculen kutu kirpilmis, guvenilmez."""
 
 
 def sayfa_bbox_olc(img: Image.Image) -> tuple[int, int, int, int] | None:
@@ -140,13 +143,13 @@ def modal_bbox(dosyalar: list[Path]) -> tuple[int, int, int, int]:
         if bb is None:
             continue
         if pencereye_degiyor(bb):
-            raise OlcumError(
+            raise OlcumHatasiError(
                 f"{dosyalar[i].name}: olculen kutu {bb} arama penceresine "
                 f"{PENCERE} degiyor -> olcum kirpilmis. PENCERE'yi daralt."
             )
         sayac[bb] = sayac.get(bb, 0) + 1
     if not sayac:
-        raise OlcumError("Orneklemde hicbir sayfa kutusu olculemedi")
+        raise OlcumHatasiError("Orneklemde hicbir sayfa kutusu olculemedi")
     return max(sayac.items(), key=lambda kv: kv[1])[0]
 
 
@@ -206,210 +209,169 @@ def ocr_olcegi(genislik: int, yukseklik: int) -> float:
 
 
 def buyut(img: Image.Image, k: float) -> Image.Image:
-    # Image.Resampling.LANCZOS (Pillow 9.1+ kanonik yolu); duz Image.LANCZOS
-    # eski takma addir ve CI'nin mypy'si (--ignore-missing-imports) onu
-    # goremiyor. geo345_kirp.py de ayni yolu kullaniyor.
-    return img.resize(
-        (round(img.width * k), round(img.height * k)), Image.Resampling.LANCZOS
-    )
+    return img.resize((round(img.width * k), round(img.height * k)), Image.LANCZOS)
 
 
-class Ciktilar(NamedTuple):
-    """Bir kaynak sayfanin uretecegi dosya yollari."""
+class SayfaYollari(NamedTuple):
+    """Bir kaynak PNG'nin uretecegi tum cikti yollari."""
 
     tam: Path
     sol: Path
     sag: Path
-    c_sol: Path
-    c_sag: Path
+    cevap_sol: Path
+    cevap_sag: Path
 
 
-@dataclass
-class Durum:
-    """Kosu boyunca biriken sayaclar ve kusur listeleri."""
-
-    tam: int = 0
-    sutun: int = 0
-    cevap: int = 0
-    atlandi: int = 0
-    cevap_yok: list[str] = field(default_factory=list)
-    sapanlar: list[str] = field(default_factory=list)
-    boyut_disi: list[str] = field(default_factory=list)
-    tespit_yok: list[str] = field(default_factory=list)
+def _guncel(cikti: Path, kaynak: Path) -> bool:
+    """Cikti kaynaktan yeni mi (yeniden uretmeye gerek var mi)."""
+    return cikti.exists() and cikti.stat().st_mtime >= kaynak.stat().st_mtime
 
 
-def _guncel(p: Path, kaynak: Path) -> bool:
-    """Cikti kaynagindan daha yeni mi (yani yeniden uretmeye gerek yok mu)?
-
-    Once dongu icinde tanimli bir ic fonksiyondu ve dongu degiskeni `f`'e
-    kapaniyordu (ruff B023): dongunun sonraki adimlarinda YANLIS dosyaya
-    bakma riski. Artik kaynak acikca parametre olarak geciyor.
-    """
-    return p.exists() and p.stat().st_mtime >= kaynak.stat().st_mtime
-
-
-def _ciktilar(f: Path, hedef: Path, hedef_sutun: Path, hedef_cevap: Path) -> Ciktilar:
-    return Ciktilar(
-        tam=hedef / f.name,
-        sol=hedef_sutun / f"{f.stem}_sol.png",
-        sag=hedef_sutun / f"{f.stem}_sag.png",
-        c_sol=hedef_cevap / f"{f.stem}_cevap_sol.png",
-        c_sag=hedef_cevap / f"{f.stem}_cevap_sag.png",
-    )
-
-
-def _gerekli_isler(
-    f: Path,
-    c: Ciktilar,
+def _gereken_isler(
+    kaynak: Path,
+    yol: SayfaYollari,
     *,
-    tam_yap: bool,
-    sutun_yap: bool,
-    cevap_yap: bool,
+    tam: bool,
+    sutun: bool,
+    cevap: bool,
     force: bool,
 ) -> list[str]:
-    """Bu sayfa icin hangi ciktilarin uretilmesi gerektigi."""
-    gerekli: list[str] = []
-    if tam_yap and not (_guncel(c.tam, f) and not force):
-        gerekli.append("tam")
-    if sutun_yap and not (_guncel(c.sol, f) and _guncel(c.sag, f) and not force):
-        gerekli.append("sutun")
-    if cevap_yap and not (_guncel(c.c_sol, f) and _guncel(c.c_sag, f) and not force):
-        gerekli.append("cevap")
-    return gerekli
+    isler = []
+    if tam and (force or not _guncel(yol.tam, kaynak)):
+        isler.append("tam")
+    if sutun and (force or not (_guncel(yol.sol, kaynak) and _guncel(yol.sag, kaynak))):
+        isler.append("sutun")
+    if cevap and (
+        force or not (_guncel(yol.cevap_sol, kaynak) and _guncel(yol.cevap_sag, kaynak))
+    ):
+        isler.append("cevap")
+    return isler
 
 
-def _bbox_sec(
+def _kutu_sec(
     img: Image.Image,
-    f: Path,
     kanonik: tuple[int, int, int, int],
-    durum: Durum,
+    ad: str,
+    sapanlar: list[str],
+    tespit_yok: list[str],
 ) -> tuple[int, int, int, int]:
-    """Sayfa kutusunu olcer; olculemez ya da saparsa kanonige duser."""
+    """Olculen kutu; guvenilmezse kanonige duser ve sebebi kaydeder."""
     bbox = sayfa_bbox_olc(img)
     if bbox is None:
-        durum.tespit_yok.append(f.name)
+        tespit_yok.append(ad)
         return kanonik
     if (
         pencereye_degiyor(bbox)
         or max(abs(a - b) for a, b in zip(bbox, kanonik, strict=True)) > TOLERANS
     ):
-        durum.sapanlar.append(f"{f.name} olculen={bbox}")
+        sapanlar.append(f"{ad} olculen={bbox}")
         return kanonik
     return bbox
 
 
-def _cevap_yaz(
+def _cevap_seridi_yaz(
     img: Image.Image,
     sayfa: Image.Image,
     bbox: tuple[int, int, int, int],
-    c: Ciktilar,
-    *,
-    f: Path,
-    cevap_yok: list[str],
+    yol: SayfaYollari,
 ) -> int:
-    """Cevap anahtari seridini kirpar; yazilan dosya sayisini dondurur.
+    """Cevap seridini yazar, yazilan dosya sayisini doner (0 = uretilmedi).
 
-    Soru sayfasi degilse serit uretmez ve eski uretilmis varsa TEMIZLER
-    (kapak basligi cevap bandina denk gelip serit sanilabiliyor).
+    Soru sayfasi degilse eski uretilmis seritleri TEMIZLER: kapak basligi
+    cevap bandina denk gelip serit sanilabiliyor.
     """
     if len(soru_ikonlari(img, bbox)) < SORU_ESIGI:
-        for yol in (c.c_sol, c.c_sag):
-            yol.unlink(missing_ok=True)
-        cevap_yok.append(f.name)
+        yol.cevap_sol.unlink(missing_ok=True)
+        yol.cevap_sag.unlink(missing_ok=True)
         return 0
     band = cevap_bandi(img, bbox)
     if band is None:
-        cevap_yok.append(f.name)
         return 0
     cy0, cy1 = band
-    yazildi = 0
-    for kutu, yol in (
-        ((0, cy0, OLUK_SOL, cy1), c.c_sol),
-        ((OLUK_SAG, cy0, sayfa.width, cy1), c.c_sag),
+    for kutu, hedef_yol in (
+        ((0, cy0, OLUK_SOL, cy1), yol.cevap_sol),
+        ((OLUK_SAG, cy0, sayfa.width, cy1), yol.cevap_sag),
     ):
         serit = sayfa.crop(kutu)
         buyut(serit, ocr_olcegi(serit.width, serit.height)).save(
-            yol, format="PNG", optimize=True
+            hedef_yol, format="PNG", optimize=True
         )
-        yazildi += 1
-    return yazildi
+    return 2
 
 
-def _sayfa_uret(
-    f: Path,
-    c: Ciktilar,
+def _ciktilari_yaz(
+    img: Image.Image,
+    bbox: tuple[int, int, int, int],
+    yol: SayfaYollari,
     gerekli: list[str],
-    kanonik: tuple[int, int, int, int],
-    durum: Durum,
-) -> None:
-    """Bir sayfanin istenen ciktilarini uretir ve sayaclari gunceller."""
-    img = Image.open(f)
-    if img.size != BEKLENEN_BOYUT:
-        durum.boyut_disi.append(f"{f.name} ({img.size[0]}x{img.size[1]})")
-        return
-
-    bbox = _bbox_sec(img, f, kanonik, durum)
+) -> tuple[int, int, int]:
+    """Istenen ciktilari yazar. Donus: (tam, sutun, cevap) yazilan dosya sayilari."""
     sayfa = img.crop(bbox)
+    tam = sutun = cevap = 0
 
     if "tam" in gerekli:
-        buyut(sayfa, TAM_OLCEK).save(c.tam, format="PNG", optimize=True)
-        durum.tam += 1
+        buyut(sayfa, TAM_OLCEK).save(yol.tam, format="PNG", optimize=True)
+        tam = 1
 
     if "sutun" in gerekli:
         sol = sayfa.crop((0, 0, OLUK_SOL, sayfa.height))
         sag = sayfa.crop((OLUK_SAG, 0, sayfa.width, sayfa.height))
         buyut(sol, ocr_olcegi(sol.width, sol.height)).save(
-            c.sol, format="PNG", optimize=True
+            yol.sol, format="PNG", optimize=True
         )
         buyut(sag, ocr_olcegi(sag.width, sag.height)).save(
-            c.sag, format="PNG", optimize=True
+            yol.sag, format="PNG", optimize=True
         )
-        durum.sutun += 2
+        sutun = 2
 
     if "cevap" in gerekli:
-        durum.cevap += _cevap_yaz(img, sayfa, bbox, c, f=f, cevap_yok=durum.cevap_yok)
+        cevap = _cevap_seridi_yaz(img, sayfa, bbox, yol)
+
+    return tam, sutun, cevap
 
 
-def _rapor(durum: Durum, *, cevap_yap: bool) -> int:
-    """Kosu ozetini basar; surec cikis kodunu dondurur."""
-    print(
-        f"yazildi: tam={durum.tam} sutun={durum.sutun} "
-        f"cevap={durum.cevap} | atlandi={durum.atlandi}"
-    )
-    if cevap_yap:
-        print(
-            f"cevap seridi bulunamayan sayfa: {len(durum.cevap_yok)} -> "
-            f"{durum.cevap_yok[:12]}"
-        )
-    print(
-        f"kanonige dusulen (sapma>{TOLERANS}px veya pencere temasi): "
-        f"{len(durum.sapanlar)}"
-    )
-    for s in durum.sapanlar[:20]:
-        print(f"  SAPMA {s}")
-    if durum.tespit_yok:
-        print(
-            f"tespit basarisiz (kanonik kullanildi): {len(durum.tespit_yok)} -> "
-            f"{durum.tespit_yok[:10]}"
-        )
-    if durum.boyut_disi:
-        print(
-            f"{BEKLENEN_BOYUT} DEGIL (islenmedi): {len(durum.boyut_disi)} -> "
-            f"{durum.boyut_disi[:10]}"
-        )
-    return 1 if (durum.boyut_disi or durum.tespit_yok) else 0
+def _duzeltmeleri_oku(hedef: Path) -> dict[str, tuple[int, int, int]]:
+    """Insan tarafindan DOGRULANMIS manifest duzeltmeleri (ikon sayacini EZER).
+
+    Ikon sayaci bir ALT SINIRDIR: viewer bazi sorulara ikon BASMIYOR. Olculdu:
+    sayfa_0106 s.4 ve sayfa_0111'de sorunun govdesi, 5 sikki, kaynak etiketi ve
+    cevap seridi kaydi var ama ikonu yok. Bu sayfalar bagimsiz kanitla
+    dogrulanip buraya yazilir; gerekce sutunu kanitin ozetidir.
+    """
+    yol = hedef / "manifest_duzeltme.csv"
+    if not yol.exists():
+        return {}
+    with yol.open(encoding="utf-8") as fh:
+        return {
+            r["dosya"]: (
+                int(r["beklenen_soru"]),
+                int(r["sol_sutun"]),
+                int(r["sag_sutun"]),
+            )
+            for r in csv.DictReader(fh)
+        }
 
 
 def _manifest_yaz(
     hedef: Path, dosyalar: list[Path], kanonik: tuple[int, int, int, int]
 ) -> None:
-    import csv
+    """Sayfa basina beklenen soru sayisi (ikon sayaci + dogrulanmis duzeltmeler).
 
+    ATOMIK: once .tmp'ye yazilir, sonra os.replace ile yerine konur. Dogrudan
+    "w" ile acmak dosyayi ANINDA sifirliyordu ve 235 PNG taranirken (1-2 dk)
+    manifest BOS kaliyordu; o pencerede okuyan tuketici sessizce bos veri
+    aliyor. Gercekten yasandi: paralel bir OCR ajani manifest'i 0 bayt gordu
+    (15 Eyl 2026).
+    """
     yol = hedef / "manifest.csv"
-    toplam = sifir = 0
-    with yol.open("w", newline="", encoding="utf-8") as fh:
+    gecici = hedef / "manifest.csv.tmp"
+    duzeltme = _duzeltmeleri_oku(hedef)
+    toplam = sifir = duzeltilen = 0
+    with gecici.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
-        w.writerow(["dosya", "beklenen_soru", "sol_sutun", "sag_sutun", "sayfa_tipi"])
+        w.writerow(
+            ["dosya", "beklenen_soru", "sol_sutun", "sag_sutun", "sayfa_tipi", "kaynak"]
+        )
         for f in dosyalar:
             with Image.open(f) as im:
                 if im.size != BEKLENEN_BOYUT:
@@ -417,16 +379,51 @@ def _manifest_yaz(
                 xler = soru_ikonlari(im, kanonik)
             soru = len(xler) >= SORU_ESIGI
             n = len(xler) if soru else 0
-            sol = sum(1 for x in xler if x < OLUK_SAG) if soru else 0
+            sol = sum(1 for x in xler if x < IKON_SUTUN_ESIGI) if soru else 0
+            sag = n - sol
+            kaynak = "ikon"
+            if f.name in duzeltme:
+                n, sol, sag = duzeltme[f.name]
+                soru = n >= SORU_ESIGI
+                kaynak = "duzeltme"
+                duzeltilen += 1
             toplam += n
             sifir += 0 if soru else 1
             w.writerow(
-                [f.name, n, sol, n - sol, "soru" if soru else "kapak_veya_anlatim"]
+                [f.name, n, sol, sag, "soru" if soru else "kapak_veya_anlatim", kaynak]
             )
+    gecici.replace(yol)  # atomik: tuketici yarim dosya gormez
     print(
         f"manifest: {yol.name} | beklenen toplam soru={toplam} | "
-        f"soru sayfasi={len(dosyalar) - sifir} | sorusuz sayfa={sifir}"
+        f"soru sayfasi={len(dosyalar) - sifir} | sorusuz sayfa={sifir} | "
+        f"dogrulanmis duzeltme={duzeltilen}"
     )
+
+
+def _ozet_yaz(
+    *,
+    sayilar: tuple[int, int, int, int],
+    cevap_yok: list[str] | None,
+    sapanlar: list[str],
+    tespit_yok: list[str],
+    boyut_disi: list[str],
+) -> None:
+    """Tur sonu ozeti. Sessiz basari yok: her sapma sayiyla raporlanir."""
+    tam, sutun, cevap, atlandi = sayilar
+    print(f"yazildi: tam={tam} sutun={sutun} cevap={cevap} | atlandi={atlandi}")
+    if cevap_yok is not None:
+        print(f"cevap seridi bulunamayan sayfa: {len(cevap_yok)} -> {cevap_yok[:12]}")
+    print(f"kanonige dusulen (sapma>{TOLERANS}px veya pencere temasi): {len(sapanlar)}")
+    for s in sapanlar[:20]:
+        print(f"  SAPMA {s}")
+    if tespit_yok:
+        print(
+            f"tespit basarisiz (kanonik kullanildi): {len(tespit_yok)} -> {tespit_yok[:10]}"
+        )
+    if boyut_disi:
+        print(
+            f"{BEKLENEN_BOYUT} DEGIL (islenmedi): {len(boyut_disi)} -> {boyut_disi[:10]}"
+        )
 
 
 def main() -> int:
@@ -472,7 +469,7 @@ def main() -> int:
 
     try:
         kanonik = modal_bbox(dosyalar)
-    except OlcumError as e:
+    except OlcumHatasiError as e:
         print(f"OLCUM HATASI: {e}")
         return 2
     ust_kenar_dogrula(kanonik)
@@ -494,26 +491,56 @@ def main() -> int:
     if args.cevap:
         hedef_cevap.mkdir(exist_ok=True)
 
-    durum = Durum()
+    yazildi_tam = yazildi_sutun = yazildi_cevap = atlandi = 0
+    cevap_yok: list[str] = []
+    sapanlar: list[str] = []
+    boyut_disi: list[str] = []
+    tespit_yok: list[str] = []
+
     for f in dosyalar:
-        c = _ciktilar(f, hedef, hedef_sutun, hedef_cevap)
-        gerekli = _gerekli_isler(
+        yol = SayfaYollari(
+            tam=hedef / f.name,
+            sol=hedef_sutun / f"{f.stem}_sol.png",
+            sag=hedef_sutun / f"{f.stem}_sag.png",
+            cevap_sol=hedef_cevap / f"{f.stem}_cevap_sol.png",
+            cevap_sag=hedef_cevap / f"{f.stem}_cevap_sag.png",
+        )
+        gerekli = _gereken_isler(
             f,
-            c,
-            tam_yap=tam_yap,
-            sutun_yap=sutun_yap,
-            cevap_yap=args.cevap,
+            yol,
+            tam=tam_yap,
+            sutun=sutun_yap,
+            cevap=args.cevap,
             force=args.force,
         )
         if not gerekli:
-            durum.atlandi += 1
+            atlandi += 1
             continue
-        _sayfa_uret(f, c, gerekli, kanonik, durum)
+
+        img = Image.open(f)
+        if img.size != BEKLENEN_BOYUT:
+            boyut_disi.append(f"{f.name} ({img.size[0]}x{img.size[1]})")
+            continue
+
+        bbox = _kutu_sec(img, kanonik, f.name, sapanlar, tespit_yok)
+        t, s, c = _ciktilari_yaz(img, bbox, yol, gerekli)
+        yazildi_tam += t
+        yazildi_sutun += s
+        yazildi_cevap += c
+        if "cevap" in gerekli and c == 0:
+            cevap_yok.append(f.name)
 
     if args.manifest:
         _manifest_yaz(hedef, dosyalar, kanonik)
 
-    return _rapor(durum, cevap_yap=args.cevap)
+    _ozet_yaz(
+        sayilar=(yazildi_tam, yazildi_sutun, yazildi_cevap, atlandi),
+        cevap_yok=cevap_yok if args.cevap else None,
+        sapanlar=sapanlar,
+        tespit_yok=tespit_yok,
+        boyut_disi=boyut_disi,
+    )
+    return 1 if (boyut_disi or tespit_yok) else 0
 
 
 if __name__ == "__main__":
