@@ -31,5 +31,5 @@ pillow>=10.2.0
 
 # Additional security-focused dependencies
 # (Optional but recommended)
-safety>=3.0.0  # Dependency vulnerability scanner
-bandit>=1.7.5  # Code security scanner
+safety>=3.8.1  # Dependency vulnerability scanner
+bandit>=1.9.4  # Code security scanner
