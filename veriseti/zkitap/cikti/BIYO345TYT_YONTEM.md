@@ -177,3 +177,50 @@ o satiri `yabanci` dondurdu ve UZERINE YAZMADI.
   `bloom_kaynagi='varsayilan:ev_sozlesmesi'` ile isaretlidir.
 - **Cozum dogrulamasi yapilmadi** (urun karari): tek cevap kaynagi kitabin
   basili cevap seridi.
+
+## Beta aktiflestirme (0023_345_beta_onay)
+
+Urun sahibi bireysel insan denetimini ATLAYIP toplu beta onayi verdi
+(0014/0016/0018 ile ayni karar). Kapsam karari onundur: "hepsi, ama
+TYT'nin sekilli sorulari HARIC".
+
+Kapi yuku olculdu, tahmin edilmedi: `v_safe_for_beta` tanimi pg_views'ten
+okundu ve her kosul uc kitap icin AYRI sayildi. Ustteki alti kosul zaten
+geciyordu; dordu (quality_review_status, uyum sinyali, APPROVED,
+is_active) tum satirlarda ENGEL idi ve migration dordunu de acti.
+
+Nominal kapsam 4712 idi, gercek sayi 4706: geometrinin 6 satiri `sik_bos`
+tasiyor ve o bayrak kapinin KENDI kosulu.
+
+| kitap | toplam | acilan | disarida |
+|---|---|---|---|
+| geometri | 2708 | 2702 | 6 (sik_bos) |
+| ayt biyoloji | 1315 | 1315 | 0 |
+| tyt biyoloji | 1023 | 689 | 334 (gorsel_yok_sekilli) |
+
+Olcum: `v_safe_for_beta` 8441 -> 13147 (+4706); GEOMETRI 1223 -> 3925,
+BIYOLOJI 19 -> 2023. Geri alinabilirlik KANITLANDI: downgrade calistirildi,
+havuz tam olarak 8441'e dondu, eklenen dort metadata anahtarindan kalan 0,
+ithal metadata'si korundu; sonra tekrar uygulandi, ayni 4706 cikti.
+
+Durustluk: `quality_review_status` `auto_judged_high` yazildi,
+`human_verified` DEGIL -- hicbir insan bu sorulari tek tek dogrulamadi.
+`is_ai_generated` alanina dokunulmadi, `true` kaldi. Cevaplar
+dogrulanmadi; tek cevap kaynagi kitabin basili anahtaridir.
+
+Bu kitabin `konsensus_sinyalleri` degeri (kopyalanmadi, bu belgeden
+turetildi): `konu_bandi_sifir_serbestlik`,
+`dogrulayici_k1_k11_sifir_kusur`, `manifest_soru_sayisi_ortusmesi`.
+Bu kitapta cevap anahtari CIFT OKUNMADI; digerlerinin
+`anahtar_seridi_cift_okuma` sinyali burada YOK ve listeye konulmadi.
+Metnin guvencesi K1-K11 denetimidir (K3 ureticinin kendi beyanini
+yeniden hesaplar, K11 numara surekliligini sayfalar arasi denetler).
+
+Acilan 689 satirin 303'u `konu_komsudan` tasiyor: konusu bantsiz bir
+sayfadan devralindi; varsayim 11 ornek sayfada olculdu (11/11 dogru) ama
+her bantsiz sayfa tek tek okunmadi. Kapiyi tutan bir kosul degil,
+kayit altina alindi.
+
+Disarida kalan 334 sekilli soru bir kutu tespit turunden sonra AYRI bir
+migration ile acilacak; `pipeline_metadata.sutun_gorseli` esleme icin
+hazir duruyor.

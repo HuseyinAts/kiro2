@@ -270,3 +270,43 @@ zaten PASIF; duzeltme `--meta-guncelle` ile geriye donuk yapilabilir.
 - 11 soruda `[okunamadi]` isareti var (uydurma yerine durust isaretleme).
 - F3'un %99.64'u DOGRULUK DEGIL gozlemciler arasi uyumdur; dogruluk
   iddiasi numara surekliligi ve DB hash eslesmesi kanallarina dayanir.
+
+## Beta aktiflestirme (0023_345_beta_onay)
+
+Urun sahibi bireysel insan denetimini ATLAYIP toplu beta onayi verdi
+(0014/0016/0018 ile ayni karar). Kapsam karari onundur: "hepsi, ama
+TYT'nin sekilli sorulari HARIC".
+
+Kapi yuku olculdu, tahmin edilmedi: `v_safe_for_beta` tanimi pg_views'ten
+okundu ve her kosul uc kitap icin AYRI sayildi. Ustteki alti kosul zaten
+geciyordu; dordu (quality_review_status, uyum sinyali, APPROVED,
+is_active) tum satirlarda ENGEL idi ve migration dordunu de acti.
+
+Nominal kapsam 4712 idi, gercek sayi 4706: geometrinin 6 satiri `sik_bos`
+tasiyor ve o bayrak kapinin KENDI kosulu.
+
+| kitap | toplam | acilan | disarida |
+|---|---|---|---|
+| geometri | 2708 | 2702 | 6 (sik_bos) |
+| ayt biyoloji | 1315 | 1315 | 0 |
+| tyt biyoloji | 1023 | 689 | 334 (gorsel_yok_sekilli) |
+
+Olcum: `v_safe_for_beta` 8441 -> 13147 (+4706); GEOMETRI 1223 -> 3925,
+BIYOLOJI 19 -> 2023. Geri alinabilirlik KANITLANDI: downgrade calistirildi,
+havuz tam olarak 8441'e dondu, eklenen dort metadata anahtarindan kalan 0,
+ithal metadata'si korundu; sonra tekrar uygulandi, ayni 4706 cikti.
+
+Durustluk: `quality_review_status` `auto_judged_high` yazildi,
+`human_verified` DEGIL -- hicbir insan bu sorulari tek tek dogrulamadi.
+`is_ai_generated` alanina dokunulmadi, `true` kaldi. Cevaplar
+dogrulanmadi; tek cevap kaynagi kitabin basili anahtaridir.
+
+Bu kitabin `konsensus_sinyalleri` degeri (kopyalanmadi, bu belgeden
+turetildi): `anahtar_seridi_cift_okuma`, `anahtar_numara_surekliligi`,
+`konu_bandi_sifir_serbestlik`. 0018'in `cift_bagimsiz_okuma` sinyali
+METNIN iki kez okunmasiydi; bu kitapta F4 metni TEK turda okundu, bu
+yuzden o sinyal listeye KONULMADI.
+
+Ithal sirasinda Mikro Orijinal ile carpisan 35 hash sifir serbestlik
+dereceli bir dis kontroldur ama 2743'un yalnizca 35'ini kapsar; satir
+duzeyinde sinyal gibi yazmak fazla iddia olurdu, listeye girmedi.
