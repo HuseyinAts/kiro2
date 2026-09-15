@@ -73,8 +73,8 @@ try:
     # Real numpy is present; don't override it
 except ImportError:
     np_mod = types.ModuleType("numpy")
-    np_mod.var = (
-        lambda x: sum((xi - sum(x) / len(x)) ** 2 for xi in x) / len(x) if x else 0
+    np_mod.var = lambda x: (
+        sum((xi - sum(x) / len(x)) ** 2 for xi in x) / len(x) if x else 0
     )
     np_mod.array = list
     np_mod.exp = math.exp
@@ -119,7 +119,12 @@ class _IRTParametreleri:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def hesapla_probability(self, theta: float) -> float:
+    # Gercek modelin (models.irt_morfoloji.IRTParametreleri) metot adi
+    # `olasilik_hesapla`dir. Stub uzun sure `hesapla_probability` adini
+    # kullandi; servis de oyle cagiriyordu ve GERCEK modelde o metot
+    # olmadigi icin uretimde AttributeError atip sabit 0.5'e dusuyordu.
+    # Stub artik gercek API adini tasiyor.
+    def olasilik_hesapla(self, theta: float) -> float:
         a = getattr(self, "discrimination", 1.0)
         b = getattr(self, "difficulty", 0.0)
         c = getattr(self, "guessing", 0.0)
@@ -859,7 +864,11 @@ class TestSecurityMiddleware:
 
     def test_mask_api_key(self):
         sm = iba_mod.SecurityMiddleware()
-        text = 'config: {"api_key": "secret-key-abc"}'
+        # Gercek bir sir DEGIL: maskeleme fonksiyonunun maskelemesi gereken
+        # ornek girdi (testin adi zaten bunu soyluyor). detect-secrets, dosya
+        # ilk kez TAM olarak tarandiginda bunu isaretledi; aracın kendi
+        # onerdigi satir-ici pragma kullanildi.
+        text = 'config: {"api_key": "secret-key-abc"}'  # pragma: allowlist secret
         result = sm.mask_sensitive_data(text)
         assert "[MASKED]" in result
 
@@ -1475,9 +1484,24 @@ class TestHesaplaOptimalZorluk:
 
 
 class TestGuncelleOgrenciMorfolojiProfili:
+    # SIRA BAGIMLILIGI: ustteki stub modul `sys.modules.setdefault` ile
+    # kuruluyor. setdefault, anahtar ZATEN VARSA hicbir sey yapmaz -- yani
+    # baska bir test gercek `models.irt_morfoloji`yi once import ettiyse stub
+    # KURULMAZ. O durumda irt_service gercek Pydantic modelini kullanir ve
+    # guncelle_ogrenci_morfoloji_profili, modelde olmayan 9 alana eristigi
+    # icin AttributeError atar. Test tek basina gecer, tam suite'te (xdist
+    # sirasina gore) duserdi.
+    #
+    # Cozum: hangi sinifin kurulduguna BAGLI OLMAMAK. Test, servisin
+    # kullandigi adi acikca stub'a baglar. Boylece ne test ettigi de durustce
+    # gorunur: bu test stub profile karsi kosar, gercek modele karsi DEGIL.
+    # Gercek modelin uyumsuzlugu ayri bir is (morfoloji alan karari).
     @pytest.mark.asyncio
-    async def test_creates_new_profile(self):
+    async def test_creates_new_profile(self, monkeypatch):
         svc = irt_mod.IRTService()
+        monkeypatch.setattr(
+            irt_mod, "OgrenciMorfolojiProfili", _OgrenciMorfolojiProfili
+        )
         analiz = _SoruMorfolojiAnalizi(
             ortalama_morfoloji_skoru=2.0, ortalama_ek_sayisi=2.0
         )
