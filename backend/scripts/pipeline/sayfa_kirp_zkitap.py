@@ -25,7 +25,9 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import NamedTuple
 
@@ -369,7 +371,13 @@ def _manifest_yaz(
     (15 Eyl 2026).
     """
     yol = hedef / "manifest.csv"
-    gecici = hedef / "manifest.csv.tmp"
+    # Gecici ad SURECE OZEL olmali: sabit ".tmp" kullanmak, iki surec ayni anda
+    # calisinca birbirinin gecici dosyasini eziyor ve YARIM manifest yerine
+    # konuyordu (15 Eyl 2026, ucuncu bozulma -- yeni basligi tasiyordu, yani
+    # atomik surum uretmisti ama tmp yarisi baska surecindi).
+    fd, gecici_ad = tempfile.mkstemp(dir=hedef, prefix="manifest.", suffix=".tmp")
+    os.close(fd)
+    gecici = Path(gecici_ad)
     duzeltme = _duzeltmeleri_oku(hedef)
     toplam = sifir = duzeltilen = 0
     with gecici.open("w", newline="", encoding="utf-8") as fh:
@@ -403,6 +411,30 @@ def _manifest_yaz(
         f"soru sayfasi={len(dosyalar) - sifir} | sorusuz sayfa={sifir} | "
         f"dogrulanmis duzeltme={duzeltilen}"
     )
+
+
+def _manifest_asamasi(
+    args: argparse.Namespace,
+    hedef: Path,
+    dosyalar: list[Path],
+    kanonik: tuple[int, int, int, int],
+) -> None:
+    """Manifest yazilsin mi kararini verir.
+
+    --limit ile manifest YAZILMAZ: tam manifest, yalnizca ilk N sayfayi iceren
+    IYI BICIMLI ama KIRPIK bir dosyayla ezilir. Bu bozulma "yarim yazma" gibi
+    gorunmedigi icin teshisi zordur -- gercekten 4 kez yasandi (15 Eyl 2026) ve
+    once atomiklik suclandi.
+    """
+    if not args.manifest:
+        return
+    if args.limit:
+        print(
+            f"UYARI: --limit {args.limit} verildi -> manifest YAZILMADI. "
+            "Manifest tum sayfalari kapsamak zorunda; --limit'siz calistir."
+        )
+        return
+    _manifest_yaz(hedef, dosyalar, kanonik)
 
 
 def _ozet_yaz(
@@ -535,8 +567,7 @@ def main() -> int:
         if "cevap" in gerekli and c == 0:
             cevap_yok.append(f.name)
 
-    if args.manifest:
-        _manifest_yaz(hedef, dosyalar, kanonik)
+    _manifest_asamasi(args, hedef, dosyalar, kanonik)
 
     _ozet_yaz(
         sayilar=(yazildi_tam, yazildi_sutun, yazildi_cevap, atlandi),
