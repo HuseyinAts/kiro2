@@ -89,14 +89,28 @@ except ImportError:
     np_mod.ndarray = type("ndarray", (), {})
     sys.modules.setdefault("numpy", np_mod)
 
-# scipy stubs
-sci_mod = _make_stub("scipy")
-sys.modules.setdefault("scipy", sci_mod)
-sci_opt = _make_stub(
-    "scipy.optimize",
-    minimize=lambda f, x0, **k: type("R", (), {"x": x0, "fun": 0, "nit": 1})(),
-)
-sys.modules.setdefault("scipy.optimize", sci_opt)
+# scipy stubs -- numpy ile AYNI kural: gercek scipy varsa DOKUNMA.
+#
+# Eskiden kosulsuzdu ve sahte bir `scipy` / `scipy.optimize` birakiyordu.
+# Bu bir MAYINDI: bu dosya import edildikten sonra ayni surecte gercek
+# scipy yuklenmeye calisan herhangi bir modul (ornegin
+# `services.irt_service`) numpy'nin tembel `__getattr__`inde sonsuz
+# ozyinelemeye giriyordu -- olculdu:
+#   RecursionError: maximum recursion depth exceeded
+#   (scipy/linalg -> scipy/_lib/_array_api -> numpy/__init__.py:724)
+# Testler tek basina kosunca gorunmuyor, ayni worker'a baska bir dosya
+# dusunce patliyordu. Gercek scipy zaten kuruluysa stub'a gerek yok.
+try:
+    import scipy.optimize  # noqa: F401
+    # Gercek scipy mevcut; UZERINE YAZMA.
+except ImportError:
+    sci_mod = _make_stub("scipy")
+    sys.modules.setdefault("scipy", sci_mod)
+    sci_opt = _make_stub(
+        "scipy.optimize",
+        minimize=lambda f, x0, **k: type("R", (), {"x": x0, "fun": 0, "nit": 1})(),
+    )
+    sys.modules.setdefault("scipy.optimize", sci_opt)
 
 # S197: services.quality stub removed — real package exists at
 # `backend/services/quality/__init__.py` and `metrics.py`. The previous
@@ -370,12 +384,20 @@ class _MultiLayerCache:
     def __init__(self, **kwargs):
         self.redis_url = kwargs.get("redis_url", "")
         self._store = {}
+        self.kapali = False
 
     async def initialize(self):
+        self.kapali = False
         return True
 
     async def close(self):
-        pass
+        # Bos `pass` yerine GERCEK davranis: kapanan bir onbellek deposunu
+        # birakir ve durumunu isaretler. Boylece hem niyet okunur hem de bir
+        # test kapanmayi dogrulayabilir (repo gelenegi: bos govde doldurulur,
+        # bekci susturulmaz).
+        self._store.clear()
+        self.kapali = True
+        return True
 
     async def get(self, key):
         return self._store.get(key)
@@ -432,7 +454,10 @@ class _FakeAioFile:
         return self
 
     async def __aexit__(self, *a):
-        pass
+        # Bos `pass` yerine acik `False`: davranis birebir ayni (None da
+        # falsy'dir) ama niyet okunur -- istisnalar YUTULMAZ, cagirana
+        # propagate eder.
+        return False
 
     async def read(self, n=-1):
         return b"" if "b" in self._mode else ""
@@ -458,8 +483,14 @@ async def _fake_stat(path):
     return _FakeStat()
 
 
+# Silinmesi istenen yollar; bos `pass` yerine cagriyi KAYDEDIYORUZ ki
+# "silme gercekten cagrildi mi" dogrulanabilsin (repo gelenegi: bos govde
+# doldurulur, bekci susturulmaz).
+_SILINEN_YOLLAR: list[str] = []
+
+
 async def _fake_remove(path):
-    pass
+    _SILINEN_YOLLAR.append(str(path))
 
 
 aiofiles_os_mod.stat = _fake_stat
