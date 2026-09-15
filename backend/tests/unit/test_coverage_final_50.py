@@ -73,8 +73,8 @@ try:
     # Real numpy is present; don't override it
 except ImportError:
     np_mod = types.ModuleType("numpy")
-    np_mod.var = (
-        lambda x: sum((xi - sum(x) / len(x)) ** 2 for xi in x) / len(x) if x else 0
+    np_mod.var = lambda x: (
+        sum((xi - sum(x) / len(x)) ** 2 for xi in x) / len(x) if x else 0
     )
     np_mod.array = list
     np_mod.exp = math.exp
@@ -89,14 +89,28 @@ except ImportError:
     np_mod.ndarray = type("ndarray", (), {})
     sys.modules.setdefault("numpy", np_mod)
 
-# scipy stubs
-sci_mod = _make_stub("scipy")
-sys.modules.setdefault("scipy", sci_mod)
-sci_opt = _make_stub(
-    "scipy.optimize",
-    minimize=lambda f, x0, **k: type("R", (), {"x": x0, "fun": 0, "nit": 1})(),
-)
-sys.modules.setdefault("scipy.optimize", sci_opt)
+# scipy stubs -- numpy ile AYNI kural: gercek scipy varsa DOKUNMA.
+#
+# Eskiden kosulsuzdu ve sahte bir `scipy` / `scipy.optimize` birakiyordu.
+# Bu bir MAYINDI: bu dosya import edildikten sonra ayni surecte gercek
+# scipy yuklenmeye calisan herhangi bir modul (ornegin
+# `services.irt_service`) numpy'nin tembel `__getattr__`inde sonsuz
+# ozyinelemeye giriyordu -- olculdu:
+#   RecursionError: maximum recursion depth exceeded
+#   (scipy/linalg -> scipy/_lib/_array_api -> numpy/__init__.py:724)
+# Testler tek basina kosunca gorunmuyor, ayni worker'a baska bir dosya
+# dusunce patliyordu. Gercek scipy zaten kuruluysa stub'a gerek yok.
+try:
+    import scipy.optimize  # noqa: F401
+    # Gercek scipy mevcut; UZERINE YAZMA.
+except ImportError:
+    sci_mod = _make_stub("scipy")
+    sys.modules.setdefault("scipy", sci_mod)
+    sci_opt = _make_stub(
+        "scipy.optimize",
+        minimize=lambda f, x0, **k: type("R", (), {"x": x0, "fun": 0, "nit": 1})(),
+    )
+    sys.modules.setdefault("scipy.optimize", sci_opt)
 
 # S197: services.quality stub removed — real package exists at
 # `backend/services/quality/__init__.py` and `metrics.py`. The previous
@@ -119,7 +133,12 @@ class _IRTParametreleri:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def hesapla_probability(self, theta: float) -> float:
+    # Gercek modelin (models.irt_morfoloji.IRTParametreleri) metot adi
+    # `olasilik_hesapla`dir. Stub uzun sure `hesapla_probability` adini
+    # kullandi; servis de oyle cagiriyordu ve GERCEK modelde o metot
+    # olmadigi icin uretimde AttributeError atip sabit 0.5'e dusuyordu.
+    # Stub artik gercek API adini tasiyor.
+    def olasilik_hesapla(self, theta: float) -> float:
         a = getattr(self, "discrimination", 1.0)
         b = getattr(self, "difficulty", 0.0)
         c = getattr(self, "guessing", 0.0)
@@ -365,12 +384,20 @@ class _MultiLayerCache:
     def __init__(self, **kwargs):
         self.redis_url = kwargs.get("redis_url", "")
         self._store = {}
+        self.kapali = False
 
     async def initialize(self):
+        self.kapali = False
         return True
 
     async def close(self):
-        pass
+        # Bos `pass` yerine GERCEK davranis: kapanan bir onbellek deposunu
+        # birakir ve durumunu isaretler. Boylece hem niyet okunur hem de bir
+        # test kapanmayi dogrulayabilir (repo gelenegi: bos govde doldurulur,
+        # bekci susturulmaz).
+        self._store.clear()
+        self.kapali = True
+        return True
 
     async def get(self, key):
         return self._store.get(key)
@@ -427,7 +454,10 @@ class _FakeAioFile:
         return self
 
     async def __aexit__(self, *a):
-        pass
+        # Bos `pass` yerine acik `False`: davranis birebir ayni (None da
+        # falsy'dir) ama niyet okunur -- istisnalar YUTULMAZ, cagirana
+        # propagate eder.
+        return False
 
     async def read(self, n=-1):
         return b"" if "b" in self._mode else ""
@@ -453,8 +483,14 @@ async def _fake_stat(path):
     return _FakeStat()
 
 
+# Silinmesi istenen yollar; bos `pass` yerine cagriyi KAYDEDIYORUZ ki
+# "silme gercekten cagrildi mi" dogrulanabilsin (repo gelenegi: bos govde
+# doldurulur, bekci susturulmaz).
+_SILINEN_YOLLAR: list[str] = []
+
+
 async def _fake_remove(path):
-    pass
+    _SILINEN_YOLLAR.append(str(path))
 
 
 aiofiles_os_mod.stat = _fake_stat
@@ -859,7 +895,11 @@ class TestSecurityMiddleware:
 
     def test_mask_api_key(self):
         sm = iba_mod.SecurityMiddleware()
-        text = 'config: {"api_key": "secret-key-abc"}'
+        # Gercek bir sir DEGIL: maskeleme fonksiyonunun maskelemesi gereken
+        # ornek girdi (testin adi zaten bunu soyluyor). detect-secrets, dosya
+        # ilk kez TAM olarak tarandiginda bunu isaretledi; aracın kendi
+        # onerdigi satir-ici pragma kullanildi.
+        text = 'config: {"api_key": "secret-key-abc"}'  # pragma: allowlist secret
         result = sm.mask_sensitive_data(text)
         assert "[MASKED]" in result
 
@@ -1475,9 +1515,24 @@ class TestHesaplaOptimalZorluk:
 
 
 class TestGuncelleOgrenciMorfolojiProfili:
+    # SIRA BAGIMLILIGI: ustteki stub modul `sys.modules.setdefault` ile
+    # kuruluyor. setdefault, anahtar ZATEN VARSA hicbir sey yapmaz -- yani
+    # baska bir test gercek `models.irt_morfoloji`yi once import ettiyse stub
+    # KURULMAZ. O durumda irt_service gercek Pydantic modelini kullanir ve
+    # guncelle_ogrenci_morfoloji_profili, modelde olmayan 9 alana eristigi
+    # icin AttributeError atar. Test tek basina gecer, tam suite'te (xdist
+    # sirasina gore) duserdi.
+    #
+    # Cozum: hangi sinifin kurulduguna BAGLI OLMAMAK. Test, servisin
+    # kullandigi adi acikca stub'a baglar. Boylece ne test ettigi de durustce
+    # gorunur: bu test stub profile karsi kosar, gercek modele karsi DEGIL.
+    # Gercek modelin uyumsuzlugu ayri bir is (morfoloji alan karari).
     @pytest.mark.asyncio
-    async def test_creates_new_profile(self):
+    async def test_creates_new_profile(self, monkeypatch):
         svc = irt_mod.IRTService()
+        monkeypatch.setattr(
+            irt_mod, "OgrenciMorfolojiProfili", _OgrenciMorfolojiProfili
+        )
         analiz = _SoruMorfolojiAnalizi(
             ortalama_morfoloji_skoru=2.0, ortalama_ek_sayisi=2.0
         )
