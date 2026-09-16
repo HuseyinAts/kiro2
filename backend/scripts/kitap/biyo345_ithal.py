@@ -437,7 +437,7 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                 )
                 conn.execute(_QS, {"id": k["id"]})
 
-        n, aktif, kapida = conn.execute(
+        satir = conn.execute(
             """SELECT count(*),
                       count(*) FILTER (WHERE b.is_active),
                       count(*) FILTER (WHERE EXISTS (
@@ -446,6 +446,9 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                WHERE m.source_book = %s""",
             (KAYNAK_ADI,),
         ).fetchone()
+        if satir is None:  # pragma: no cover  # count(*) hep satir dondurur
+            raise RuntimeError("ozet sorgusu satir dondurmedi")
+        n, aktif, kapida = satir
         print(f"YAZILDI: {len(yeni)} yeni satir")
         print(
             f"DB'de {KAYNAK_ADI}: toplam {n}, is_active {aktif}, kapidan gecen {kapida}"
