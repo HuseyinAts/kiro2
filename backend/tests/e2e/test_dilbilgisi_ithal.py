@@ -42,12 +42,12 @@ from scripts.kitap.kaynak_sozlesmesi import (  # noqa: E402
     normalize_anahtar,
 )
 
-VERI_YOLU = (
-    KOK.parent / "veriseti" / "zkitap" / "cikti" / "aktif_dilbilgisi_sorular.json"
-)
-DISLANAN_YOLU = (
-    KOK.parent / "veriseti" / "zkitap" / "cikti" / "aktif_dilbilgisi_dislanan.json"
-)
+CIKTI = KOK.parent / "veriseti" / "zkitap" / "cikti"
+VERI_YOLU = CIKTI / "aktif_dilbilgisi_sorular.json"
+DISLANAN_YOLU = CIKTI / "aktif_dilbilgisi_dislanan.json"
+# FAZ 2: Kavrama Bolumu "Ornek" + Uygulama Bolumu "Soru"
+KAVRAMA_YOLU = CIKTI / "aktif_dilbilgisi_kavrama_sorular.json"
+KAVRAMA_DISLANAN_YOLU = CIKTI / "aktif_dilbilgisi_kavrama_dislanan.json"
 
 # Kitabin DB'deki ESKI yazimi -- tek fark U+0131 (noktasiz i).
 ESKI_YAZIM = "Aktif Ogrenme Tyt Dilbilgisi Soru Bankas" + chr(0x0131) + " 2025"
@@ -64,6 +64,13 @@ KABA_TURKCE_KODLARI = (
     "TYT-TR-02",
     "TYT-TR-03",
 )
+
+
+@pytest.fixture(scope="module")
+def kavrama() -> list[dict]:
+    # Acik anotasyon: json.loads Any doner, kok config warn_return_any=true.
+    ham: list[dict] = json.loads(KAVRAMA_YOLU.read_text(encoding="utf-8"))
+    return ham
 
 
 @pytest.fixture(scope="module")
@@ -312,3 +319,119 @@ def test_on_kontrol_yanlis_konu_kodunu_yakaliyor(veri: list[dict]) -> None:
 
 def test_on_kontrol_temiz_kayitta_susuyor(veri: list[dict]) -> None:
     assert dlb._on_kontrol([dlb.kayit_uret(r) for r in veri[:40]]) == []
+
+
+# ============================ 7. FAZ 2: Kavrama / Uygulama kanali ===========
+# Kitabin Kavrama Bolumu ornekleri COZUMLU ve cevaplari satir ici basili;
+# Uygulama Bolumu sorularinin cevabi sayfa altindaki basili seritte.
+# Bu iki kanal AYNI kitaptan gelir ama AYRI dogrulama gecmisine sahiptir --
+# testler bu farkin metadata'da kaybolmadigini kilitler.
+
+
+def test_kavrama_veri_seti_boyutu(kavrama: list[dict]) -> None:
+    assert len(kavrama) == 141
+    ornek = [r for r in kavrama if r["test_turu"] == "Kavrama Bolumu - Ornek"]
+    soru = [r for r in kavrama if r["test_turu"] == "Uygulama Bolumu - Soru"]
+    assert len(ornek) == 70
+    assert len(soru) == 71
+    assert len(ornek) + len(soru) == len(kavrama)
+
+
+def test_kavrama_ornekleri_cozum_tasiyor(kavrama: list[dict]) -> None:
+    """Kitabin kendi adim adim cozumu explanation'a yazilir."""
+    for r in kavrama:
+        k = dlb.kayit_uret(r)
+        if r["test_turu"] == "Kavrama Bolumu - Ornek":
+            assert r.get("cozum"), r["id"]
+            assert k["explanation"] and len(k["explanation"]) > 20, r["id"]
+        else:
+            assert not r.get("cozum"), r["id"]
+            assert k["explanation"] is None, r["id"]
+
+
+def test_kavrama_cevap_kaynagi_dogru_isaretli(kavrama: list[dict]) -> None:
+    """Ornek = satir ici cevap (tek okuma); Soru = basili serit (cift okuma).
+
+    MUTASYON KARSILIGI: iki kanal ayni etiketi tasisaydi bu test kirmizi olur.
+    """
+    for r in kavrama:
+        pm = dlb.kayit_uret(r)["pipeline_metadata"]
+        if r["test_turu"] == "Kavrama Bolumu - Ornek":
+            assert pm["cevap_kaynagi"] == "satir_ici_cevap", r["id"]
+            assert pm["anahtar_cift_okuma"] is False, r["id"]
+            assert pm["anahtar_dogrulamasi"] == dlb.SATIR_ICI_DOGRULAMASI, r["id"]
+        else:
+            assert pm["cevap_kaynagi"] == "cevap_seridi", r["id"]
+            assert pm["anahtar_cift_okuma"] is True, r["id"]
+            assert pm["anahtar_dogrulamasi"] == dlb.ANAHTAR_DOGRULAMASI, r["id"]
+
+
+def test_kavrama_bes_dolu_sik_ve_gecerli_anahtar(kavrama: list[dict]) -> None:
+    for r in kavrama:
+        sec = {h: r[h.lower()] for h in "ABCDE"}
+        assert all(s and s.strip() for s in sec.values()), r["id"]
+        assert r["correct_answer"] in "ABCDE", r["id"]
+        assert sec[r["correct_answer"]].strip(), r["id"]
+
+
+def test_kavrama_konu_kodlari_desene_uyuyor(kavrama: list[dict]) -> None:
+    kodlar = {r["konu_kodu"] for r in kavrama}
+    assert all(_kapsiyor(k) for k in kodlar), sorted(kodlar)
+    # Bu kanalda OSYM bolumu YOK -- 16 unite dugumu kullanilir.
+    assert dlb.OSYM_KODU not in kodlar
+    assert len(kodlar) == 16
+
+
+def test_kavrama_faz1_ile_hash_cakismiyor(
+    veri: list[dict], kavrama: list[dict]
+) -> None:
+    """Iki veri seti AYNI kitaptan; ayni soru iki kez ithal edilmemeli."""
+    assert not ({r["soru_hash"] for r in veri} & {r["soru_hash"] for r in kavrama})
+
+
+def test_kavrama_hashler_benzersiz(kavrama: list[dict]) -> None:
+    h = [r["soru_hash"] for r in kavrama]
+    assert len(set(h)) == len(h)
+
+
+def test_kavrama_alt_harfli_numaralar_korunuyor(kavrama: list[dict]) -> None:
+    """Kitapta 'Soru : 2a' / 'Soru : 2b' var; kok numara + alt harf ayri durur."""
+    altli = [r for r in kavrama if r.get("soru_alt")]
+    assert altli, "alt harfli numara hic yok -- kurgu bozuk"
+    for r in altli:
+        assert r["basili_no"] == f"{r['soru_no']}{r['soru_alt']}", r["id"]
+        assert r["soru_alt"] in "ab", r["id"]
+
+
+def test_kavrama_dislananlar_veri_setinde_yok(kavrama: list[dict]) -> None:
+    dis = json.loads(KAVRAMA_DISLANAN_YOLU.read_text(encoding="utf-8"))
+    assert len(dis) == 2
+    anahtar = {(r["sayfa"], r["test_turu"], r["basili_no"]) for r in kavrama}
+    for d in dis:
+        assert (d["sayfa"], d["test_turu"], d["basili_no"]) not in anahtar
+        assert d["dislama"].startswith("mevcut_db_satiri")
+
+
+def test_kavrama_sekilli_soru_yok(kavrama: list[dict]) -> None:
+    assert not [r for r in kavrama if r.get("sekil_var")]
+    for r in kavrama[:20]:
+        sec = {h: r[h.lower()] for h in "ABCDE"}
+        assert "gorsel_yok_sekilli" not in dlb._bayraklar(r, sec)
+
+
+def test_kavrama_cikmis_soru_yok(kavrama: list[dict]) -> None:
+    """Bu kanal yayinevinin kendi icerigi; OSYM damgasi vurulmaz."""
+    for r in kavrama:
+        k = dlb.kayit_uret(r)
+        assert k["osym_year"] is None, r["id"]
+        assert k["osym_format_compliant"] is False, r["id"]
+
+
+def test_kavrama_on_kontrol_temiz(kavrama: list[dict]) -> None:
+    assert dlb._on_kontrol([dlb.kayit_uret(r) for r in kavrama[:40]]) == []
+
+
+def test_insert_metni_explanation_parametrik() -> None:
+    """explanation artik NULL sabit degil; cozum yazilabilmeli."""
+    qc = " ".join(dlb._QC.split())
+    assert "%(explanation)s" in qc, qc
