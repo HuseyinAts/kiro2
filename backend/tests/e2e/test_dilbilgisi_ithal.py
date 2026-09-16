@@ -109,11 +109,12 @@ def test_kaynak_dosyalari_ascii() -> None:
 def test_hash_pilot_formuluyle_ayni() -> None:
     metin = "Bu bir soru koku mu?"
     sec = {"A": "bir", "B": "iki", "C": "uc", "D": "dort", "E": "bes"}
-    beklenen = hashlib.md5(  # noqa: S324
+    beklenen = hashlib.md5(  # nosec B324
         "|".join(
             [unicodedata.normalize("NFC", metin).strip().lower()]
             + [unicodedata.normalize("NFC", sec[h]).strip() for h in "ABCDE"]
-        ).encode("utf-8")
+        ).encode("utf-8"),
+        usedforsecurity=False,
     ).hexdigest()
     assert olcum.soru_hash(metin, sec) == beklenen
 
