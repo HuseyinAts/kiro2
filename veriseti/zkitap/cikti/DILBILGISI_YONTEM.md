@@ -339,3 +339,84 @@ bu ayrimin metadata'da kaybolmadigini kilitler.
     ayni sonucu urettigi 537 soru x 5 olcumde dogrulandi (fark = 0) ve
     teste baglandi.
   * Mevcut 17 satirin 2'sindeki yanlis cevap duzeltilmedi (bolum 2).
+
+## 11. Beta aktiflestirme -- migration 0027
+
+Kitap PASIF ithal edildi; aktiflestirme AYRI bir karardir ve bu depoda
+`v_safe_for_beta` kapisindan gecirilerek yapilir. Kapinin yuku olculdu:
+
+    kosul                                        sonuc
+    pipeline_metadata NOT NULL ................. 678/678  geciyor
+    demoted_at yok ............................. 678/678  geciyor
+    topic_match_quality <> fallback ............ 678/678  geciyor
+    match_tier tier1 degil ..................... 678/678  geciyor
+    bayraklar.sik_bos yok ...................... 678/678  geciyor
+    quality_review_status uygun ................   0/678  TUTUYORDU
+    uyum sinyali (6 anahtardan biri) ...........   0/678  TUTUYORDU
+    (is_ai_generated=false OR APPROVED) ........   0/678  TUTUYORDU
+
+0027 bu uc kilidi acar. `is_public`e DOKUNULMAZ: bu depodaki dokuz kitap
+ithalinin dokuzunda da is_public=0 (olculdu).
+
+### Kapsam 644, 678 degil
+
+`bayraklar.kaynak_dizgi_kusuru` tasiyan 34 satir PASIF birakildi. Bu,
+0023'un `sik_bos` / `gorsel_yok_sekilli` disarida birakmasiyla ayni
+siniftadir: basili sayfanin KENDISI eksik ya da celiskili. Ornekler:
+
+    s130 q13 -- "alti cizili sozcukler" soruluyor, E'de alt cizgi YOK
+    s142 q4  -- "alti cizili eylem" soruluyor, D'de alt cizgi YOK
+    s105 q1  -- "alti cizili sozcuk" soruluyor, E'de alt cizgi YOK
+    s43  q4  -- noktalama sorusu, C'de iki ayracin ici BOS basilmis
+    s146 q6  -- dorduncu secenek "D)" yerine "C) IV" basilmis
+    s16  q9  -- hem "diyen" hem "sizliyor" altinda "V" basili
+
+Bolum dagilimi (toplam -> acilan):
+
+    Konu Testi .............. 521 -> 511
+    Uygulama Bolumu - Soru ... 71 ->  62
+    Kavrama Bolumu - Ornek ... 70 ->  57
+    OSYM Sorulari ............ 16 ->  14
+                               ---    ---
+                               678    644
+
+34 satirin her birinin kusuru `pipeline_metadata.kaynak_kusuru` alaninda
+TAM METIN olarak duruyor; tek tek incelenip acilmalari urun sahibinin
+kararidir.
+
+### Sinyal listeleri UC KANAL icin AYRI yazildi
+
+Satirlar `anahtar_dogrulamasi` degerine gore ayrilir. Tek liste yazip
+hepsine yapistirmak FAZLA IDDIA olurdu.
+
+| kanal | sinyaller |
+|---|---|
+| Konu Testi + OSYM | sayfa siniflandirmasi iki kanal 0 uyusmazlik; anahtar seridi cift okuma 553 soru fark 0; test ici numara surekliligi 44 test 0 kusur; imlec/anahtar sayisi esitligi 90/90; K1-K11 tek bulgu ithal disi |
+| Uygulama - Soru | anahtar seridi cift okuma 73 soru fark 0; unite ici numara surekliligi 16 unite 0 kusur; K1-K12 143 soruda 0 kusur; Ornek-Soru numara eslesmesi K4 kapisi |
+| Kavrama - Ornek | K1-K12 143 soruda 0 kusur; Ornek-Soru numara eslesmesi K4 kapisi; satir ici cevap ve cozum zorunlulugu K12 kapisi |
+
+**Ornek kanalinda anahtar CIFT OKUNMADI.** Cevap satir ici "Cevap: X"
+ibaresinden BIR KEZ okundu; `anahtar_cift_okuma=false` ve
+`anahtar_dogrulamasi` alanlari yerinde kalir ve sinyal listesine olmayan
+bir cift okuma YAZILMAZ. Ayni durum 0023'te TYT biyolojinin 689 satirinda
+da vardi. Bu ayrimi test kilitler
+(`test_ornek_grubu_anahtar_cift_okumasi_iddia_etmiyor`).
+
+### Ne oldugu konusunda durust olma
+
+  * `quality_review_status`: pending -> auto_judged_high. `human_verified`
+    YAZILMIYOR; hicbir insan sorulari tek tek dogrulamadi.
+  * `review_status`: PENDING -> APPROVED. Bu TOPLU sahip onayidir ve
+    metadata'ya `onay_turu='toplu_beta_sahibi'`,
+    `bireysel_denetim_yapildi=false` olarak yazilir.
+  * `is_ai_generated` true KALIR.
+  * CEVAPLAR DOGRULANMADI. Tek cevap kaynagi kitabin basili anahtaridir;
+    sinyaller transkripsiyonu ve segmentasyonu dogrular, cevabin kendisini
+    degil.
+
+### Eski 17 satir kapsam disi
+
+Hedef sorgusu `source_book` ile DEGIL `pipeline_metadata.ithal_araci` ile
+daraltilir. Eski gemini hattindan gelen 17 satir bu alani tasimaz; boylece
+onlara dokunulmaz. Bu, testle kilitlidir
+(`test_hedef_source_book_ile_degil_ithal_araci_ile_daraltilir`).
