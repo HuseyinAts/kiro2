@@ -68,7 +68,9 @@ KABA_TURKCE_KODLARI = (
 
 @pytest.fixture(scope="module")
 def veri() -> list[dict]:
-    return json.loads(VERI_YOLU.read_text(encoding="utf-8"))
+    # Acik anotasyon: json.loads Any doner, kok config warn_return_any=true.
+    ham: list[dict] = json.loads(VERI_YOLU.read_text(encoding="utf-8"))
+    return ham
 
 
 # --------------------------------------------------------------- 1. sozlesme
