@@ -55,7 +55,7 @@ dependencies = [
 
     # 2FA
     "pyotp==2.10.0",
-    "qrcode[pil]==7.4.2",
+    "qrcode[pil]==8.2",
 
     # Turkish NLP
     "zemberek-python==0.1.3",
