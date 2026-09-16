@@ -420,3 +420,44 @@ Hedef sorgusu `source_book` ile DEGIL `pipeline_metadata.ithal_araci` ile
 daraltilir. Eski gemini hattindan gelen 17 satir bu alani tasimaz; boylece
 onlara dokunulmaz. Bu, testle kilitlidir
 (`test_hedef_source_book_ile_degil_ithal_araci_ile_daraltilir`).
+
+## 12. Eski satirlardaki iki yanlis cevap -- migration 0028
+
+Bolum 2'de kayda gecen iki fark DUZELTILDI. Karar degisikligi urun
+sahibinindir; gerekce: bu iki satir `is_active=1` VE `is_public=1`, yani
+ogrenciye su anda YANLIS cevap donuyorlardi ve 0027 ile ayni kitabin 644
+sorusu acilirken iki farkli dogruluk standardi kalmis olurdu.
+
+### Serit ucuncu kez okundu
+
+Her iki cevap seridi, sayfanin kendi numarasi ayni kirpimda gorunur
+haldeyken 5x buyutmede yeniden okundu:
+
+    s033 serit: Soru 1/B  Soru 2/D  Soru 3/E  Soru 4/B  Soru 5/D  Soru 6/E
+    s107 serit: Soru 1/A  Soru 2/B  Soru 3/C  Soru 4/E  Soru 5/D  Soru 6/E
+
+### Secenek sirasi da dogrulandi
+
+Harf esleme ancak secenekler ayni sirada ise anlamlidir:
+
+    58238cd6...  A=I  B=II  C=III  D=IV  E=V   (basili sayfayla ayni)
+    e0afeff6...  A=1  B=2   C=3    D=4   E=5   (basili sayfayla ayni)
+
+Yani A->B "I yerine II", C->E "3 yerine 5" demektir.
+
+### Uc katli koruma
+
+Guncelleme yalnizca id, `soru_hash` ve mevcut `correct_answer` UCUNUN DE
+beklenen degerde oldugu satira uygulanir; biri tutmazsa satir atlanir ve
+loglanir. Boylece elle degistirilmis ya da icerigi kaymis bir satir
+sessizce uzerine yazilmaz.
+
+### Kapsam
+
+    58238cd6-4737-52b1-9443-0432a4c2dc96   A -> B   (s033 soru 4)
+    e0afeff6-6c8f-5790-ab22-f42e1ef4421a   C -> E   (s107 soru 6)
+
+`correct_answer` disinda HICBIR alan degismez; `is_active`, `is_public`,
+`review_status` ve metin/sik alanlari yerinde kalir. Metadata'ya
+`cevap_duzeltme_0028` anahtari yazilir ve icinde `soru_cozulmedi: true`
+bulunur -- soru COZULMEDI, yalnizca basili anahtara hizalandi.
