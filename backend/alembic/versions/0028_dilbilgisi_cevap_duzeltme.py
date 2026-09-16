@@ -123,7 +123,7 @@ _META_EKLE = sa.text(
        SET pipeline_metadata = (
              pipeline_metadata::jsonb
              || jsonb_build_object(
-                  :anahtar,
+                  CAST(:anahtar AS text),
                   jsonb_build_object(
                     'eski', CAST(:eski AS text),
                     'yeni', CAST(:yeni AS text),
