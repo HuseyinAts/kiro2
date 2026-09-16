@@ -110,12 +110,9 @@ KULLANIM
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
-import re
 import sys
-import unicodedata
 import uuid
 from collections import Counter
 from pathlib import Path
@@ -126,7 +123,15 @@ import psycopg
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.kitap.kaynak_sozlesmesi import KAYNAK_KAYITLARI, ayristir, yabanci_yaz
-from services.turkish_readability_service import TurkishReadabilityService
+from scripts.kitap.metin_olcum import (
+    bloom_belirle,
+    morfoloji_karmasikligi,
+    okunabilirlik,
+    soru_hash,
+)
+from scripts.kitap.metin_olcum import (
+    kelime_istatistik as _kelime_istatistik,
+)
 
 VARSAYILAN_DSN = (
     "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
@@ -202,64 +207,9 @@ KONU_BLOKLARI: dict[str, list[tuple[int, int, str]]] = {
     ],
 }
 
-# core/turkish_nlp_service._simple_root_suffix_split ile BIREBIR ayni liste.
-# Turkce harfler \u kacisiyla yazilir (kaynak dosya ASCII kalsin diye);
-# ASCII'ye duzlestirmek YANLIS olur -- gercek metinde "n\u0131n" gecer.
-EKLER = (
-    "lar",
-    "ler",
-    "dan",
-    "den",
-    "tan",
-    "ten",
-    "n\u0131n",
-    "nin",
-    "nun",
-    "n\u00fcn",
-    "nda",
-    "nde",
-    "n\u0131",
-    "ni",
-    "nu",
-    "n\u00fc",
-    "ya",
-    "ye",
-    "yla",
-    "yle",
-    "d\u0131r",
-    "dir",
-    "dur",
-    "d\u00fcr",
-    "t\u0131r",
-    "tir",
-    "tur",
-    "t\u00fcr",
-)
 W_EK, W_TURETIM, W_BIRLESIK = 0.15, 0.20, 0.25
 
-# DIKKAT -- KATASTROFIK GERI IZLEME ONARIMI (PR #266 ile ayni desen).
-# Eski desen sondaki grubu ic ice nicelemisti ve eslesmeyen girdilerde
-# ustel geri izleme uretiyordu. Yeni desen ic ice nicelemez.
-SAYISAL_SIK = re.compile(
-    "^[\\s\\d.,/+\\-x*^()\u2212\u221a\u00b7]+[a-zA-Z\u00b0%/\u00b2\u00b3\\s]{0,12}$"
-)
-NICELIK = re.compile(
-    "ka\u00e7|b\u00fcy\u00fckl\u00fc\u011f\u00fc\\s+ne|de\u011feri\\s+ne|ka\u00e7t\u0131r",
-    re.IGNORECASE,
-)
 OKUNAMADI = "[okunamadi]"
-
-
-def _nfc(t: str) -> str:
-    return unicodedata.normalize("NFC", t or "").strip()
-
-
-def soru_hash(metin: str, secenekler: dict[str, str]) -> str:
-    """scripts/pipeline/pilot_500p.py::_hash_question ile birebir."""
-    payload = "|".join(
-        [_nfc(metin).lower()] + [_nfc(secenekler.get(h, "")) for h in "ABCDE"]
-    )
-    return hashlib.md5(payload.encode("utf-8"), usedforsecurity=False).hexdigest()
 
 
 def konu_bandi(cilt: str, sayfa: int) -> str | None:
@@ -268,63 +218,6 @@ def konu_bandi(cilt: str, sayfa: int) -> str | None:
         if bas <= sayfa <= son:
             return ad
     return None
-
-
-def _kelime_istatistik(metin: str) -> tuple[int, int, float]:
-    kelimeler = metin.split()
-    if not kelimeler:
-        return 0, 0, 0.0
-    return (
-        len(kelimeler),
-        len(set(kelimeler)),
-        sum(len(k) for k in kelimeler) / len(kelimeler),
-    )
-
-
-def _ek_ayikla(kelime: str) -> list[str]:
-    """core/turkish_nlp_service._simple_root_suffix_split'in ek toplama adimi.
-
-    DIKKAT: kaynak dongu ilk eslesmede BREAK eder -- kelime basina EN FAZLA
-    BIR ek ayiklanir. Bu davranis birebir korunur.
-    """
-    kalan = kelime.lower()
-    for ek in sorted(EKLER, key=len, reverse=True):
-        if kalan.endswith(ek) and len(kalan) > len(ek):
-            return [ek]
-    return []
-
-
-def morfoloji_karmasikligi(metin: str) -> float:
-    """Zemberek YOKKEN repo'nun dustugu heuristik yolun aynisi."""
-    turkce = "\u00e7\u011f\u0131\u00f6\u015f\u00fc\u00c7\u011e\u0130\u00d6\u015e\u00dc"
-    kelimeler = [
-        "".join(c for c in k if c.isalnum() or c in turkce) for k in metin.split()
-    ]
-    kelimeler = [k for k in kelimeler if len(k) >= 2]
-    if not kelimeler:
-        return 0.3  # servisin bos-metin varsayilani
-    en = 0.0
-    for k in kelimeler:
-        n = len(_ek_ayikla(k))
-        en = max(en, min(1.0, n * W_EK + min(3, n) * W_TURETIM))
-    return round(en, 4)
-
-
-def okunabilirlik(metin: str, secenekler: dict[str, str]) -> float:
-    """Atesman indeksi (repo'nun kendi servisi), 0-100'e kirpilir."""
-    tam = metin + "\n" + "\n".join(secenekler.values())
-    ol = TurkishReadabilityService.analyze_text(tam)
-    return round(max(0.0, min(100.0, float(ol["atesman_index"]))), 2)
-
-
-def bloom_belirle(metin: str, secenekler: dict[str, str]) -> tuple[int, str, str]:
-    """Dar kural: sayisal sonuc istenen + besi de sayisal sik -> uygulama."""
-    sayisal = sum(
-        1 for s in secenekler.values() if s.strip() and SAYISAL_SIK.match(s.strip())
-    )
-    if sayisal == 5 and NICELIK.search(metin):
-        return 3, "application", "kural:sayisal_sonuc"
-    return 2, "comprehension", "varsayilan:ev_sozlesmesi"
 
 
 def _bayraklar(r: dict[str, Any], sec: dict[str, str]) -> list[str]:
@@ -632,7 +525,7 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                 )
                 conn.execute(_QS, {"id": k["id"]})
 
-        n, aktif, kapida = conn.execute(
+        satir = conn.execute(
             """SELECT count(*),
                       count(*) FILTER (WHERE b.is_active),
                       count(*) FILTER (WHERE EXISTS (
@@ -641,6 +534,9 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                WHERE m.source_book = %s""",
             (KAYNAK_ADI,),
         ).fetchone()
+        if satir is None:  # pragma: no cover  # count(*) hep satir dondurur
+            raise RuntimeError("ozet sorgusu satir dondurmedi")
+        n, aktif, kapida = satir
         print(f"YAZILDI: {len(yeni)} yeni satir")
         print(
             f"DB'de {KAYNAK_ADI}: toplam {n}, is_active {aktif}, kapidan gecen {kapida}"

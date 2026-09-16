@@ -48,11 +48,9 @@ KULLANIM
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import sys
-import unicodedata
 import uuid
 from collections import Counter
 from pathlib import Path
@@ -63,6 +61,12 @@ import psycopg
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.kitap.kaynak_sozlesmesi import KAYNAK_KAYITLARI, ayristir, yabanci_yaz
+from scripts.kitap.metin_olcum import (
+    kelime_istatistik as _kelime_istatistik,
+)
+from scripts.kitap.metin_olcum import (
+    soru_hash,
+)
 
 VARSAYILAN_DSN = (
     "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
@@ -82,18 +86,6 @@ URETIM_NOTU = (
 )
 
 
-def _nfc(t: str) -> str:
-    return unicodedata.normalize("NFC", t or "").strip()
-
-
-def soru_hash(metin: str, secenekler: dict[str, str]) -> str:
-    """scripts/pipeline/pilot_500p.py::_hash_question ile birebir."""
-    payload = "|".join(
-        [_nfc(metin).lower()] + [_nfc(secenekler.get(h, "")) for h in "ABCDE"]
-    )
-    return hashlib.md5(payload.encode("utf-8"), usedforsecurity=False).hexdigest()
-
-
 def konu_kodu(bolum_no: int, konu: str) -> str:
     """0013 migration'inin urettigi kodla birebir ayni olmali.
 
@@ -103,17 +95,6 @@ def konu_kodu(bolum_no: int, konu: str) -> str:
     while "--" in slug:
         slug = slug.replace("--", "-")
     return f"FIZ-NEO-B{bolum_no}-{slug}"[:50].rstrip("-")
-
-
-def _kelime_istatistik(metin: str) -> tuple[int, int, float]:
-    kelimeler = metin.split()
-    if not kelimeler:
-        return 0, 0, 0.0
-    return (
-        len(kelimeler),
-        len(set(kelimeler)),
-        sum(len(k) for k in kelimeler) / len(kelimeler),
-    )
 
 
 def kayit_uret(r: dict[str, Any]) -> dict[str, Any]:
@@ -335,7 +316,7 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                 )
                 conn.execute(_QS, {"id": k["id"]})
 
-        n, aktif, kapida = conn.execute(
+        satir = conn.execute(
             """SELECT count(*),
                       count(*) FILTER (WHERE b.is_active),
                       count(*) FILTER (WHERE EXISTS (
@@ -344,6 +325,9 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                WHERE m.source_book = %s""",
             (KAYNAK_ADI,),
         ).fetchone()
+        if satir is None:  # pragma: no cover  # count(*) hep satir dondurur
+            raise RuntimeError("ozet sorgusu satir dondurmedi")
+        n, aktif, kapida = satir
         print(f"YAZILDI: {len(yeni)} yeni satir")
         print(
             f"DB'de {KAYNAK_ADI}: toplam {n}, is_active {aktif}, kapidan gecen {kapida}"

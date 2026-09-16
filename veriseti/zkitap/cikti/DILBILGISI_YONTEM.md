@@ -333,11 +333,12 @@ bu ayrimin metadata'da kaybolmadigini kilitler.
   * Kitabin UCUNCU kanali (unite ayraci sayfalarindaki kucuk alistirmalar,
     konu anlatimi icindeki tablo/sema ornekleri) ITHAL EDILMEDI: bunlarin
     5 sikki ve basili cevabi YOK, dolayisiyla bu semaya girmiyorlar.
-  * `scripts/kitap/metin_olcum.py` yeni ithaller icin tek kaynaktir; var
-    olan alti ithal script'i hala kendi satir ici kopyasini tasiyor. O
-    tasima MEKANIK ve AYRI bir istir. Yeni modulun eski kopyayla birebir
-    ayni sonucu urettigi 537 soru x 5 olcumde dogrulandi (fark = 0) ve
-    teste baglandi.
+  * ~~`scripts/kitap/metin_olcum.py` yeni ithaller icin tek kaynaktir; var
+    olan alti ithal script'i hala kendi satir ici kopyasini tasiyor.~~
+    KAPANDI: alti script de modulu ice aktariyor. Tasima once OLCULDU --
+    her script'in `kayit_uret()` ciktisi, tasima oncesi kopyasinin
+    ciktisiyla o kitabin TUM veri seti uzerinde karsilastirildi:
+    8507 kayitta fark = 0. Ayrintili kayit: bolum 13.
   * Mevcut 17 satirin 2'sindeki yanlis cevap duzeltilmedi (bolum 2).
 
 ## 11. Beta aktiflestirme -- migration 0027
@@ -461,3 +462,58 @@ sessizce uzerine yazilmaz.
 `review_status` ve metin/sik alanlari yerinde kalir. Metadata'ya
 `cevap_duzeltme_0028` anahtari yazilir ve icinde `soru_cozulmedi: true`
 bulunur -- soru COZULMEDI, yalnizca basili anahtara hizalandi.
+
+## 13. metin_olcum.py tek kaynak oldu -- alti script tasindi
+
+`metin_olcum.py` bu kitapla birlikte dogdu ama alti eski ithal script'i
+kendi SATIR ICI kopyasini tasimaya devam ediyordu. Tasima yapildi.
+
+### Once olculdu: kopyalar gercekten ayni miydi?
+
+Iki kopyanin ayni GORUNMESI yeterli degil; sabitler metinsel olarak
+karsilastirildi ve IKI SAPMA bulundu:
+
+    neofizik_ithal.py      -- EKLER / SAYISAL_SIK / NICELIK hic YOK
+                              (daha eski, daha sade bir script)
+    neofizik_tyt_ithal.py  -- SAYISAL_SIK deseni FARKLI: hala PR #266/#269
+                              ile onarilan KATASTROFIK GERI IZLEME desenini
+                              tasiyordu: "(?:[...]{0,6}\\s*)*"
+
+Sonra davranis olculdu. Her fonksiyon, o kitabin GERCEK veri setindeki
+her soru icin iki kez cagrildi:
+
+    biyo345      1317 kayit    soru_hash / kelime / morfoloji /
+    biyo345tyt   1024 kayit    okunabilirlik / bloom / nfc /
+    geo345       2743 kayit    SAYISAL_SIK deseni
+    mikro_geo    1213 kayit
+    neofizik     1319 kayit    -> HEPSINDE FARK = 0
+    neofizik_tyt  891 kayit
+
+`_ek_ayikla` ayrica her kitabin TUM benzersiz sozcukleri uzerinde
+kiyaslandi (8343 / 7131 / 6192 / 3588 / 8002 sozcuk) -> FARK = 0.
+
+neofizik_tyt'nin FARKLI deseni, o kitabin 891 x 5 sik metninde onarilmis
+desenle AYNI sonucu veriyor. Iddia bu kadarla sinirlidir: gorulmemis
+girdide iki desen ayrisabilir -- zaten onarimin amaci budur.
+
+### Sonra tasindi ve ucu birden dogrulandi
+
+Tasima sonrasi her script'in `kayit_uret()` ciktisi, tasima ONCESI
+kopyasinin ciktisiyla kayit kayit karsilastirildi:
+
+    8507 kayit  ->  FARK = 0, HATA = 0
+
+Bu, tek tek fonksiyon kiyasindan daha gucludur: uretilen TUM alanlari
+(hash, id, metadata, istatistik) kapsar.
+
+### Testlerin ice aktarimi duzeltildi
+
+Uc test `biyo.SAYISAL_SIK` / `btyt.SAYISAL_SIK` / `geo.SAYISAL_SIK`
+okuyordu. Sabitin evi artik `metin_olcum`; testler oraya bakacak sekilde
+guncellendi (noqa ile gizlemek yerine).
+
+### Nobetci test
+
+`backend/tests/e2e/test_metin_olcum_tek_kaynak.py` hicbir ithal
+script'inin bu tanimlari YENIDEN olusturmadigini kilitler; kopya geri
+gelirse test duser.

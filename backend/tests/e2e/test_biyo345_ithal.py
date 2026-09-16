@@ -29,6 +29,7 @@ if str(KOK) not in sys.path:
     sys.path.insert(0, str(KOK))
 
 from scripts.kitap import biyo345_ithal as biyo  # noqa: E402
+from scripts.kitap import metin_olcum as olcum  # noqa: E402
 from scripts.kitap.kaynak_sozlesmesi import (  # noqa: E402
     KAYNAK_KAYITLARI,
     kaynak_adi_dogrula,
@@ -89,7 +90,7 @@ def test_sikkin_turkce_karakteri_duzlestirilmiyor() -> None:
     ["12", "3,5 cm", "45°", "2√3", "1/2", "100 m²"],
 )
 def test_sayisal_sik_kabul(sik: str) -> None:
-    assert biyo.SAYISAL_SIK.match(sik)
+    assert olcum.SAYISAL_SIK.match(sik)
 
 
 @pytest.mark.parametrize(
@@ -103,13 +104,13 @@ def test_sayisal_sik_kabul(sik: str) -> None:
     ],
 )
 def test_sayisal_sik_reddediyor(sik: str) -> None:
-    assert not biyo.SAYISAL_SIK.match(sik)
+    assert not olcum.SAYISAL_SIK.match(sik)
 
 
 def test_sayisal_sik_geri_izlemeye_girmiyor() -> None:
     """Gercek kitap sikkinda desen ANINDA sonuclanmali."""
     t = time.perf_counter()
-    biyo.SAYISAL_SIK.match(_PATLATAN)
+    olcum.SAYISAL_SIK.match(_PATLATAN)
     sure = time.perf_counter() - t
     assert sure < 0.05, f"desen {sure:.3f}s surdu -- geri izleme geri geldi"
 
@@ -121,7 +122,7 @@ def test_mutasyon_eski_desen_gercekten_patliyor() -> None:
     (Olculen: yeni ~4 us, eski ~294 ms; gercek oran ~65000, esik 50.)
     """
     t = time.perf_counter()
-    biyo.SAYISAL_SIK.match(_PATLATAN)
+    olcum.SAYISAL_SIK.match(_PATLATAN)
     yeni_sure = max(time.perf_counter() - t, 1e-7)
 
     # DIKKAT: dizginin SONUNDAKI NOKTA sart. Nokta ilk karakter sinifina
