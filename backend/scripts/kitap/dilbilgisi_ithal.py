@@ -454,7 +454,7 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                WHERE m.source_book = %s AND m.pipeline_metadata->>'ithal_araci' = %s""",
             (KAYNAK_ADI, "scripts/kitap/dilbilgisi_ithal.py"),
         ).fetchone()
-        if satir is None:  # pragma: no cover -- count(*) her zaman satir dondurur
+        if satir is None:  # pragma: no cover  # count(*) hep satir dondurur
             raise RuntimeError("dogrulama sorgusu satir dondurmedi")
         n, aktif, kapida = satir
         print(f"YAZILDI: {len(yeni)} yeni satir")
