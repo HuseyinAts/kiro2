@@ -56,6 +56,12 @@ class IRTService:
         self.kalibrasyon_gecmisi: dict[str, list[IRTKalibrasyonSonucu]] = {}
         self.ogrenci_profilleri: dict[str, OgrenciMorfolojiProfili] = {}
 
+        # Morfoloji ayarlamasının gerçekten uygulanıp uygulanmadığı gözlenebilir
+        # olsun diye işaretlenir; None = henüz hiç denenmedi.
+        # Ayrıntı: _hesapla_ogrenci_morfoloji_ayarlamasi docstring'i.
+        self.morfoloji_ayarlamasi_aktif: bool | None = None
+        self._morfoloji_ayarlamasi_uyarildi = False
+
         # IRT model parametreleri
         self.default_discrimination = 1.0
         self.default_difficulty = 0.0
@@ -96,8 +102,6 @@ class IRTService:
             IRTKalibrasyonSonucu: Kalibrasyon sonuç raporu
         """
         try:
-            baslangic_zamani = datetime.now()
-
             # Veri kontrolü
             if len(cevap_verileri) < self.min_sample_size:
                 raise ValueError(
@@ -166,7 +170,9 @@ class IRTService:
             return kalibrasyon_sonucu
 
         except Exception as e:
-            logger.error(f"IRT kalibrasyon hatası - Soru: {soru_id}, Hata: {e!s}", exc_info=True)
+            logger.error(
+                f"IRT kalibrasyon hatası - Soru: {soru_id}, Hata: {e!s}", exc_info=True
+            )
             raise
 
     async def hesapla_cevap_olasiligi(
@@ -187,8 +193,12 @@ class IRTService:
             float: Doğru cevap verme olasılığı (0-1 arası)
         """
         try:
-            # Temel IRT olasılığını hesapla
-            temel_olasilik = irt_parametreleri.hesapla_probability(theta)
+            # Temel IRT olasılığını hesapla.
+            # DİKKAT: modelin metodu `olasilik_hesapla`dır. Burada uzun süre
+            # `hesapla_probability` çağrılıyordu; öyle bir metot yok, çağrı
+            # AttributeError atıyor ve aşağıdaki geniş `except` bunu yutup
+            # sabit 0.5 döndürüyordu -- yani IRT eğrisi tamamen çökmüştü.
+            temel_olasilik = float(irt_parametreleri.olasilik_hesapla(theta))
 
             # Öğrenci morfoloji profiline göre ayarlama
             if ogrenci_morfoloji_profili:
@@ -286,7 +296,6 @@ class IRTService:
 
             # Cevap analizini yap
             dogru = soru_cevabi.get("dogru", False)
-            zorluk = soru_cevabi.get("zorluk", 5.0)
 
             # Morfoloji kategorisine göre güncelleme
             ortalama_karmasiklik = soru_morfoloji_analizi.ortalama_morfoloji_skoru
@@ -352,8 +361,9 @@ class IRTService:
 
         except Exception as e:
             logger.error(
-                f"Profil güncelleme hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
-            , exc_info=True)
+                f"Profil güncelleme hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}",
+                exc_info=True,
+            )
             raise
 
     async def analiz_et_soru_kalitesi(
@@ -428,7 +438,10 @@ class IRTService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Soru kalite analizi hatası - ID: {soru_id}, Hata: {e!s}", exc_info=True)
+            logger.error(
+                f"Soru kalite analizi hatası - ID: {soru_id}, Hata: {e!s}",
+                exc_info=True,
+            )
             raise
 
     # Yardımcı metodlar
@@ -453,7 +466,7 @@ class IRTService:
         )
 
         # -2 ile +2 arası normalize et
-        return (kombinasyon_faktoru - 1.0) * 2.0
+        return float((kombinasyon_faktoru - 1.0) * 2.0)
 
     def _get_baslangic_parametreleri(
         self, onceki_parametreler: IRTParametreleri | None, morfoloji_faktoru: float
@@ -481,11 +494,12 @@ class IRTService:
     ) -> dict[str, Any]:
         """IRT parametrelerini kalibre et - Offloaded to thread pool"""
         import asyncio
+
         return await asyncio.to_thread(
             self._irt_kalibrasyonu_sync,
             cevap_verileri,
             baslangic_parametreleri,
-            morfoloji_faktoru
+            morfoloji_faktoru,
         )
 
     def _irt_kalibrasyonu_sync(
@@ -581,7 +595,9 @@ class IRTService:
                 theta = veri["theta"]
                 dogru = veri["dogru"]
 
-                prob = parametreler.hesapla_probability(theta)
+                # Modelin gerçek metodu `olasilik_hesapla` (bkz.
+                # hesapla_cevap_olasiligi'ndaki not).
+                prob = parametreler.olasilik_hesapla(theta)
                 prob = max(1e-10, min(1 - 1e-10, prob))
 
                 if dogru:
@@ -638,15 +654,40 @@ class IRTService:
     async def _hesapla_ogrenci_morfoloji_ayarlamasi(
         self, profil: OgrenciMorfolojiProfili, irt_parametreleri: IRTParametreleri
     ) -> float:
-        """Öğrenci morfoloji profiline göre olasılık ayarlaması hesapla"""
-        # Öğrenci morfoloji yetkinliği
-        genel_yetkinlik = profil.hesapla_genel_morfoloji_yetkinligi()
+        """Öğrenci morfoloji profiline göre olasılık ayarlaması hesapla.
 
-        # Soru morfoloji zorluğu
-        morfoloji_zorluğu = abs(irt_parametreleri.morfoloji_faktoru) / 2.0
+        DEVRE DIŞI (ürün kararı, 15 Eyl 2026): bu hesap iki şeye dayanıyor ve
+        ikisi de `models.irt_morfoloji` içinde YOK --
+        `OgrenciMorfolojiProfili.hesapla_genel_morfoloji_yetkinligi()` ve
+        `IRTParametreleri.morfoloji_faktoru`. Servis, modelin sunmadığı bir
+        API'ye göre yazılmış (ölçüm: 19 kırık erişim).
 
-        # Uyum faktörü
-        uyum_faktoru = genel_yetkinlik - morfoloji_zorluğu
+        Eksik parçaların yerine bir formül UYDURULMADI. Alanlar bulunamazsa
+        ayarlama 0.0 döner, yani taban IRT olasılığı DEĞİŞMEDEN geçer. Eskiden
+        burada AttributeError atılıyor, çağıran taraftaki geniş `except` onu
+        yutuyor ve olasılık sabit 0.5'e düşüyordu; artık düşmüyor.
+
+        Morfoloji ağırlıklarının ne olacağı ayrı bir algoritma kararıdır.
+        """
+        yetkinlik_fn = getattr(profil, "hesapla_genel_morfoloji_yetkinligi", None)
+        morfoloji_faktoru = getattr(irt_parametreleri, "morfoloji_faktoru", None)
+
+        if not callable(yetkinlik_fn) or morfoloji_faktoru is None:
+            if not self._morfoloji_ayarlamasi_uyarildi:
+                self._morfoloji_ayarlamasi_uyarildi = True
+                logger.warning(
+                    "Morfoloji ayarlaması DEVRE DIŞI: model "
+                    "hesapla_genel_morfoloji_yetkinligi() ve/veya "
+                    "morfoloji_faktoru sunmuyor. Taban IRT olasılığı "
+                    "ayarlanmadan kullanılıyor (sabit 0.5'e DÜŞÜLMÜYOR)."
+                )
+            self.morfoloji_ayarlamasi_aktif = False
+            return 0.0
+
+        self.morfoloji_ayarlamasi_aktif = True
+        genel_yetkinlik = float(yetkinlik_fn())
+        morfoloji_zorlugu = abs(float(morfoloji_faktoru)) / 2.0
+        uyum_faktoru = genel_yetkinlik - morfoloji_zorlugu
 
         # -0.2 ile +0.2 arası ayarlama
         return max(-0.2, min(0.2, uyum_faktoru * 0.4))
@@ -783,4 +824,4 @@ class IRTService:
     ) -> bool:
         """Hatanın morfoloji odaklı olup olmadığını kontrol et"""
         # Basit heuristik: ortalama morfoloji skoru yüksekse morfoloji odaklı hata olabilir
-        return morfoloji_analizi.ortalama_morfoloji_skoru > 6.0
+        return bool(morfoloji_analizi.ortalama_morfoloji_skoru > 6.0)
