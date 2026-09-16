@@ -264,8 +264,17 @@ warn_unused_ignores = true
 check_untyped_defs = true
 plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
 
+# Testler tip denetiminden muaf. IKI MODUL YAZIMI da veriliyor:
+# mypy modul adini, `__init__.py` zinciri kirilana kadar yukari yurureyerek
+# uretir. `backend/__init__.py` VAR, bu yuzden depo kokunden cagrildiginda
+# (CI boyle cagiriyor: `mypy backend/tests/...`) modul adi
+# `backend.tests.unit.X` olur ve yalniz `tests.*` yazan desen TUTMAZ.
+# OLCULDU (PR #282, 15 Eyl 2026): `tests.*` tek basina yazilyken CI,
+# backend/tests/unit/test_coverage_final_50.py icin 55 hata dokuyordu --
+# yani bu muafiyet CI'da hic calismiyordu. Ayni cift yazim kalibi asagidaki
+# soru_bankasi_service / osym_exam_engine muafiyetlerinde de kullaniliyor.
 [[tool.mypy.overrides]]
-module = "tests.*"
+module = ["tests.*", "backend.tests.*"]
 ignore_errors = true
 
 # soru_bankasi_service.py: 10 ONCEDEN VAR OLAN tip hatasi (cogu eksik
