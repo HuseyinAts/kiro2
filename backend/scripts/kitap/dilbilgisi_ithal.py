@@ -16,8 +16,22 @@ aktiflestirme AYRI karardir.
 
 VERI NEREDEN GELIYOR
 --------------------
-`veriseti/zkitap/cikti/aktif_dilbilgisi_sorular.json` (537 soru).
+IKI VERI SETI, TEK ARAC (`--veri` ile secilir):
+
+  aktif_dilbilgisi_sorular.json          537  Konu Testi + OSYM bolumu
+  aktif_dilbilgisi_kavrama_sorular.json  141  Kavrama "Ornek" + Uygulama "Soru"
+
 Uretim yontemi ve tum olcumler: `veriseti/zkitap/cikti/DILBILGISI_YONTEM.md`.
+
+KAVRAMA BOLUMU "ORNEK" SATIRLARI COZUM TASIR
+--------------------------------------------
+Kitabin Kavrama Bolumu ornekleri ADIM ADIM COZUMLU basilir ve cevaplari
+satir ici ("Cevap: X") verilir. Bu cozum `question_content.explanation`
+alanina yazilir -- kitabin kendi metnidir, uretilmis aciklama DEGILDIR.
+Uygulama Bolumu "Soru" satirlarinin cozumu yoktur; onlarin cevabi sayfa
+altindaki basili seritten gelir ve CIFT OKUMA ile dogrulanmistir.
+Hangi satirin hangi kanaldan geldigi `pipeline_metadata.cevap_kaynagi` ve
+`anahtar_cift_okuma` alanlarinda durur.
 
 CEVAP KAYNAGI: KITABIN BASILI CEVAP SERIDI
 ------------------------------------------
@@ -133,9 +147,11 @@ URETIM_NOTU = (
     "seridinden okundu; soru cozulmedi. Konu, sayfanin kendi baslik "
     "bandindan. Detay: veriseti/zkitap/cikti/DILBILGISI_YONTEM.md"
 )
-ANAHTAR_DOGRULAMASI = (
-    "anahtar_seridi_cift_okuma_fark_0__numara_surekliligi_44_test_0_kusur"
-)
+ANAHTAR_DOGRULAMASI = "anahtar_seridi_cift_okuma_fark_0__numara_surekliligi_0_kusur"
+# Kavrama "Ornek" satirlari: cevap sayfa seridinde DEGIL, cozumun sonunda
+# satir ici basili. Cift okuma yapilmadi -- boyle ISARETLENIR, "yapildi"
+# diye yazilmaz.
+SATIR_ICI_DOGRULAMASI = "satir_ici_cevap_tek_okuma__cozum_metniyle_birlikte"
 
 
 def _bayraklar(r: dict[str, Any], sec: dict[str, str]) -> list[str]:
@@ -174,6 +190,8 @@ def kayit_uret(r: dict[str, Any]) -> dict[str, Any]:
         "correct_answer": r["correct_answer"],
         # Bu kitapta soru kirpimi yok ve sekilli soru da yok -- bkz. baslik.
         "question_image_url": None,
+        # Yalniz Kavrama "Ornek" satirlarinda dolu; kitabin kendi cozumu.
+        "explanation": (r.get("cozum") or "").strip() or None,
         # Bu kitapta dosya numarasi ile basili sayfa numarasi AYNI
         # (s118 sayfa rozeti "118" ile dogrulandi).
         "source_page": int(r["sayfa"]),
@@ -198,12 +216,19 @@ def kayit_uret(r: dict[str, Any]) -> dict[str, Any]:
             "sutun": r.get("sutun"),
             "pozisyon": r.get("pozisyon"),
             "soru_no": r.get("soru_no"),
+            "soru_alt": r.get("soru_alt"),
+            "basili_no": r.get("basili_no"),
             "test_turu": r.get("test_turu"),
             "test_no": r.get("test_no"),
             "basili_test_rozeti": r.get("basili_test_rozeti"),
             "bayraklar": _bayraklar(r, sec),
             "cevap_kaynagi": r.get("cevap_kaynagi") or "cevap_seridi",
-            "anahtar_dogrulamasi": ANAHTAR_DOGRULAMASI,
+            "anahtar_cift_okuma": bool(r.get("anahtar_cift_okuma", True)),
+            "anahtar_dogrulamasi": (
+                ANAHTAR_DOGRULAMASI
+                if r.get("anahtar_cift_okuma", True)
+                else SATIR_ICI_DOGRULAMASI
+            ),
             "cikmis_soru": cikmis,
             "sinav_yili": None,
             "sekil_var": bool(r.get("sekil_var")),
@@ -232,8 +257,8 @@ VALUES (%(id)s, %(soru_hash)s, %(konu_id)s, FALSE, FALSE, NULL, NULL, now(), now
 _QC = """
 INSERT INTO question_content (id, question_text, option_a, option_b, option_c, option_d, option_e,
     correct_answer, explanation, question_image_url, image_width, image_height)
-VALUES (%(id)s, %(question_text)s, %(a)s, %(b)s, %(c)s, %(d)s, %(e)s, %(correct_answer)s, NULL,
-    NULL, NULL, NULL)
+VALUES (%(id)s, %(question_text)s, %(a)s, %(b)s, %(c)s, %(d)s, %(e)s, %(correct_answer)s,
+    %(explanation)s, NULL, NULL, NULL)
 """
 _QM = """
 INSERT INTO question_metadata (id, bloom_level, bloom_category, exam_type, subject_area, grade_level,
@@ -362,6 +387,11 @@ def _ozet(kayitlar: list[dict[str, Any]]) -> None:
     for k in kayitlar:
         bayrak.update(k["pipeline_metadata"]["bayraklar"])
     print("bayraklar         :", dict(bayrak) or "(yok)")
+    print(
+        "cevap kaynagi     :",
+        dict(Counter(k["pipeline_metadata"]["cevap_kaynagi"] for k in kayitlar)),
+    )
+    print("cozumlu satir     :", sum(1 for k in kayitlar if k["explanation"]))
     print("cikmis (OSYM)     :", sum(1 for k in kayitlar if k["osym_format_compliant"]))
     print("bloom dagilimi    :", dict(Counter(k["bloom_category"] for k in kayitlar)))
     if oku:
@@ -430,6 +460,7 @@ def ithal(veri_yolu: Path, dsn: str, yaz: bool, meta_guncelle: bool = False) -> 
                         "d": s["D"],
                         "e": s["E"],
                         "correct_answer": k["correct_answer"],
+                        "explanation": k["explanation"],
                     },
                 )
                 conn.execute(

@@ -234,10 +234,105 @@ olarak eski degerine doner.
 | bloom_level | 2 / 3 | dar kural: besi de sayisal sik + nicelik sorusu -> 3 (6 soru) |
 | zorluk_tahmini | yok | uydurulmadi |
 
-## 9. Bilinen borc
+## 9. FAZ 2 -- Kavrama Bolumu "Ornek" + Uygulama Bolumu "Soru"
 
-  * Kavrama Bolumu "Ornek : N" ve Uygulama Bolumu "Soru : N" (115 sayfa,
-    ~271 soru) henuz cikarilmadi.
+Kitabin ikinci soru kanali. Konu anlatimi bittigi yerde su bant basilir:
+
+    KAVRAMA BOLUMU  <--  <unite adi>  -->  UYGULAMA BOLUMU
+
+  * SOL sutun  "Ornek : N" -- soru + 5 sik + ADIM ADIM COZUM + satir ici
+    "Cevap: X". Cozum kitabin kendi metnidir ve `explanation` alanina
+    yazilir; URETILMIS aciklama DEGILDIR.
+  * SAG sutun  "Soru : N" -- ayni soru tipinin cozumsuz uygulamasi.
+    Cevabi sayfa altindaki basili seritte.
+
+### Sayfa tespiti -- bir kusur ve onarimi
+
+Ilk tarama bandi yalnizca sayfanin UST bandinda (y 70-160) aradi ve 31
+sayfa buldu. OLCUM bunun EKSIK oldugunu gosterdi: s11'in cevap seridi
+"Soru 2/ C" ile basliyordu, yani "Soru 1" baska bir sayfadaydi. s10'a
+bakilinca bant sayfanin ORTASINDA (y~556) cikti -- konu anlatimi bittigi
+yerde basliyor.
+
+Tarama tum sayfa yuksekligine (y 70-1000) genisletildi: 42 aday. Bunlarin
+3'u yanlis pozitif (s4 icindekiler sayfasi, s134 ve s139 -- ucunde de
+cevap seridi YOK). Gercek sayfa sayisi: **39**.
+
+Bu, "bulduk, gecti" denip birakilsaydi 8 sorunun (her unitenin ilk
+Uygulama sorusu) sessizce kaybolacagi bir kusurdu.
+
+### Cevap anahtari -- cift okuma
+
+Okuma A: sag alt serit, x 1040-1340, 3.0x, 11 satir/montaj
+Okuma B: otomatik metin siniri, 4.2x, 13 satir/montaj
+
+    73 soru, hem numara hem harf  ->  FARK = 0
+
+SIFIR SERBESTLIK DERECELI DOGRULAMA: her unitede Soru numaralari 1..N
+kesintisiz (alt harfli "2a"/"2b" ayni numaranin iki parcasi).
+
+    16 unite  ->  sureklilik kusuru = 0
+
+Cevap harf dagilimi (Uygulama): A=9 B=16 C=15 D=16 E=17.
+
+### Ornek <-> Soru eslesmesi
+
+Kitap "Ornek : N" ile "Soru : N"yi AYNI numarayla esler. Ama esleme
+BIREBIR DEGIL: uc sayfada (s61, s105, s141) tek bir Ornek'e karsilik
+alt harfli IKI Uygulama sorusu var ("Soru : 2a", "Soru : 2b"). Bu kitabin
+gercek yapisidir, transkripsiyon hatasi degildir -- s105 orijinal
+goruntuden ayrica dogrulandi.
+
+Dogrulayici bunu K4 kapisi olarak kilitler: `ornekler[].no` listesi,
+`sorular[].no` listesinin ALT HARFSIZ KOKLERI kumesine esit olmali.
+
+### Yapisal dogrulayici (K1-K12)
+
+    39 dosya / 70 Ornek + 73 Soru = 143 soru  ->  KUSUR = 0
+
+Ek kapilar: Ornek satirlarinda satir ici cevap ve cozum ZORUNLU; Soru
+satirlarinda ikisi de YASAK; kitap ici yinelenen soru yok.
+
+22 soruda kaynak dizgi kusuru isaretlendi (bos ayrac, basilmamis alt
+cizgi, cozumle soru metni arasinda sozcuk uyusmazligi, eksik virgul...).
+Hicbiri duzeltilmedi.
+
+### Ithal
+
+    veriseti/zkitap/cikti/aktif_dilbilgisi_kavrama_sorular.json   141
+    veriseti/zkitap/cikti/aktif_dilbilgisi_kavrama_dislanan.json    2
+
+Dislanan 2 kayit, DB'de zaten olan 17 satirin bu kanaldaki ikisidir
+(s128 Uygulama #4, s178 Uygulama #5). Kelime kumesi ortusmesi 1.00 ile
+eslestiler ve CEVAPLARI DA UYUYOR. Boylece eski 17 satirin tamami
+hesaplandi: 15 uyum, 2 fark (s107 q6, s33 q4 -- bolum 2).
+
+FAZ 1 veri setiyle soru_hash cakismasi: 0.
+
+Kosum sonrasi olcum (16 Eyl 2026):
+
+    Konu Testi              521
+    Uygulama Bolumu - Soru   71
+    Kavrama Bolumu - Ornek   70   (70'inin explanation'i dolu)
+    OSYM Sorulari            16
+    TOPLAM                  678   is_active 0, konusuz 0, kapidan gecen 0
+
+### Iki kanalin dogrulama gecmisi AYRI tutulur
+
+`pipeline_metadata` alanlari:
+
+    cevap_kaynagi         cevap_seridi        | satir_ici_cevap
+    anahtar_cift_okuma    true                | false
+    anahtar_dogrulamasi   ..._cift_okuma_...  | satir_ici_cevap_tek_okuma_...
+
+Ornek satirlarinin cevabi CIFT OKUNMADI; "okundu" diye yazilmadi. Test
+bu ayrimin metadata'da kaybolmadigini kilitler.
+
+## 10. Bilinen borc
+
+  * Kitabin UCUNCU kanali (unite ayraci sayfalarindaki kucuk alistirmalar,
+    konu anlatimi icindeki tablo/sema ornekleri) ITHAL EDILMEDI: bunlarin
+    5 sikki ve basili cevabi YOK, dolayisiyla bu semaya girmiyorlar.
   * `scripts/kitap/metin_olcum.py` yeni ithaller icin tek kaynaktir; var
     olan alti ithal script'i hala kendi satir ici kopyasini tasiyor. O
     tasima MEKANIK ve AYRI bir istir. Yeni modulun eski kopyayla birebir
