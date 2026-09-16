@@ -32,6 +32,7 @@ if str(KOK) not in sys.path:
     sys.path.insert(0, str(KOK))
 
 from scripts.kitap import geo345_ithal as geo  # noqa: E402
+from scripts.kitap import metin_olcum as olcum  # noqa: E402
 from scripts.kitap.kaynak_sozlesmesi import (  # noqa: E402
     KAYNAK_KAYITLARI,
     kaynak_adi_dogrula,
@@ -242,7 +243,7 @@ def test_veri_setindeki_her_soru_bir_blokta() -> None:
 
 @pytest.mark.parametrize("sik", ["12", "3,5 cm", "45°", "2√3", "1/2", "100 m²"])
 def test_sayisal_sik_kabul(sik: str) -> None:
-    assert geo.SAYISAL_SIK.match(sik)
+    assert olcum.SAYISAL_SIK.match(sik)
 
 
 @pytest.mark.parametrize(
@@ -250,12 +251,12 @@ def test_sayisal_sik_kabul(sik: str) -> None:
     [_PATLATAN, "Yalnız I", "I ve II", "[şekil seçeneği]", "[okunamadi]"],
 )
 def test_sayisal_sik_reddediyor(sik: str) -> None:
-    assert not geo.SAYISAL_SIK.match(sik)
+    assert not olcum.SAYISAL_SIK.match(sik)
 
 
 def test_sayisal_sik_geri_izlemeye_girmiyor() -> None:
     t = time.perf_counter()
-    geo.SAYISAL_SIK.match(_PATLATAN)
+    olcum.SAYISAL_SIK.match(_PATLATAN)
     sure = time.perf_counter() - t
     assert sure < 0.05, f"desen {sure:.3f}s surdu -- geri izleme geri geldi"
 
@@ -267,7 +268,7 @@ def test_mutasyon_eski_desen_gercekten_patliyor() -> None:
     DIKKAT: dizginin SONUNDAKI NOKTA sart (PR #266'da olculdu).
     """
     t = time.perf_counter()
-    geo.SAYISAL_SIK.match(_PATLATAN)
+    olcum.SAYISAL_SIK.match(_PATLATAN)
     yeni_sure = max(time.perf_counter() - t, 1e-7)
 
     t = time.perf_counter()

@@ -32,6 +32,7 @@ if str(KOK) not in sys.path:
 
 from scripts.kitap import biyo345tyt_derle as derle  # noqa: E402
 from scripts.kitap import biyo345tyt_ithal as btyt  # noqa: E402
+from scripts.kitap import metin_olcum as olcum  # noqa: E402
 from scripts.kitap.kaynak_sozlesmesi import (  # noqa: E402
     KAYNAK_KAYITLARI,
     kaynak_adi_dogrula,
@@ -287,17 +288,17 @@ def test_veri_setinde_harf_duyarli_sik_tekrari_yok() -> None:
 
 @pytest.mark.parametrize("sik", ["12", "3,5 cm", "45°", "2√3", "1/2", "100 m²"])
 def test_sayisal_sik_kabul(sik: str) -> None:
-    assert btyt.SAYISAL_SIK.match(sik)
+    assert olcum.SAYISAL_SIK.match(sik)
 
 
 @pytest.mark.parametrize("sik", [_PATLATAN, "Yalnız I", "I ve II", "Difüzyon", "aBCD"])
 def test_sayisal_sik_reddediyor(sik: str) -> None:
-    assert not btyt.SAYISAL_SIK.match(sik)
+    assert not olcum.SAYISAL_SIK.match(sik)
 
 
 def test_sayisal_sik_geri_izlemeye_girmiyor() -> None:
     t = time.perf_counter()
-    btyt.SAYISAL_SIK.match(_PATLATAN)
+    olcum.SAYISAL_SIK.match(_PATLATAN)
     sure = time.perf_counter() - t
     assert sure < 0.05, f"desen {sure:.3f}s surdu -- geri izleme geri geldi"
 
@@ -305,7 +306,7 @@ def test_sayisal_sik_geri_izlemeye_girmiyor() -> None:
 def test_mutasyon_eski_desen_gercekten_patliyor() -> None:
     """Olcut mutlak sure degil ORAN -- makineden bagimsiz olsun diye."""
     t = time.perf_counter()
-    btyt.SAYISAL_SIK.match(_PATLATAN)
+    olcum.SAYISAL_SIK.match(_PATLATAN)
     yeni_sure = max(time.perf_counter() - t, 1e-7)
 
     t = time.perf_counter()
