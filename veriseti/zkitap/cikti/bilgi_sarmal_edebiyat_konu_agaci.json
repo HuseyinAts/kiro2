@@ -1,0 +1,466 @@
+[
+ {
+  "kod": "EDB-BS1",
+  "ad": "EDEBÎ AKIMLAR EDEBİYATA GİRİŞ EDEBİYATIN GÜZEL SANATLARLA VE BİLİMLE İLİŞKİSİ",
+  "ad_ascii": "EDEBI AKIMLAR EDEBIYATA GIRIS EDEBIYATIN GUZEL SANATLARLA VE BILIMLE ILISKISI",
+  "seviye": 2,
+  "ust": "EDB",
+  "sira": 1
+ },
+ {
+  "kod": "EDB-BS2",
+  "ad": "MASAL - FABL - DESTAN - EFSANE - HİKÂYE (ÖYKÜ)",
+  "ad_ascii": "MASAL - FABL - DESTAN - EFSANE - HIKAYE (OYKU)",
+  "seviye": 2,
+  "ust": "EDB",
+  "sira": 2
+ },
+ {
+  "kod": "EDB-BS3",
+  "ad": "DUYGU VE HEYECANI DİLE GETİREN METİNLER (ŞİİR)",
+  "ad_ascii": "DUYGU VE HEYECANI DILE GETIREN METINLER (SIIR)",
+  "seviye": 2,
+  "ust": "EDB",
+  "sira": 3
+ },
+ {
+  "kod": "EDB-BS4",
+  "ad": "ROMAN",
+  "ad_ascii": "ROMAN",
+  "seviye": 2,
+  "ust": "EDB",
+  "sira": 4
+ },
+ {
+  "kod": "EDB-BS5",
+  "ad": "TİYATRO (GÖSTERMEYE DAYALI METİNLER)",
+  "ad_ascii": "TIYATRO (GOSTERMEYE DAYALI METINLER)",
+  "seviye": 2,
+  "ust": "EDB",
+  "sira": 5
+ },
+ {
+  "kod": "EDB-BS1-01",
+  "ad": "Edebî Akımlar ve Temsilcileri",
+  "ad_ascii": "Edebi Akimlar ve Temsilcileri",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 1
+ },
+ {
+  "kod": "EDB-BS1-02",
+  "ad": "Edebiyata Giriş - Edebiyatın Bilim ve Güzel Sanatlarla İlişkisi",
+  "ad_ascii": "Edebiyata Giris - Edebiyatin Bilim ve Guzel Sanatlarla Iliskisi",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 2
+ },
+ {
+  "kod": "EDB-BS1-03",
+  "ad": "Türk Edebiyatının Dönemleri - Edebiyatın Dönemlere Ayrılmasındaki Ölçütler",
+  "ad_ascii": "Turk Edebiyatinin Donemleri - Edebiyatin Donemlere Ayrilmasindaki Olcutler",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 3
+ },
+ {
+  "kod": "EDB-BS1-04",
+  "ad": "Türk Edebiyatının İlk Yazılı Ürünleri",
+  "ad_ascii": "Turk Edebiyatinin Ilk Yazili Urunleri",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 4
+ },
+ {
+  "kod": "EDB-BS1-05",
+  "ad": "Metinlerin Sınıflandırılması",
+  "ad_ascii": "Metinlerin Siniflandirilmasi",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 5
+ },
+ {
+  "kod": "EDB-BS1-06",
+  "ad": "Öğretici Metinler",
+  "ad_ascii": "Ogretici Metinler",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 6
+ },
+ {
+  "kod": "EDB-BS1-07",
+  "ad": "Sözlü Anlatım",
+  "ad_ascii": "Sozlu Anlatim",
+  "seviye": 3,
+  "ust": "EDB-BS1",
+  "sira": 7
+ },
+ {
+  "kod": "EDB-BS2-01",
+  "ad": "Masal / Fabl",
+  "ad_ascii": "Masal / Fabl",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 1
+ },
+ {
+  "kod": "EDB-BS2-02",
+  "ad": "Destan / Efsane",
+  "ad_ascii": "Destan / Efsane",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 2
+ },
+ {
+  "kod": "EDB-BS2-03",
+  "ad": "Hikâye Türleri ve Unsurları",
+  "ad_ascii": "Hikaye Turleri ve Unsurlari",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 3
+ },
+ {
+  "kod": "EDB-BS2-04",
+  "ad": "Dede Korkut Hikâyeleri / Halk Hikâyeleri",
+  "ad_ascii": "Dede Korkut Hikayeleri / Halk Hikayeleri",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 4
+ },
+ {
+  "kod": "EDB-BS2-05",
+  "ad": "Mesnevi",
+  "ad_ascii": "Mesnevi",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 5
+ },
+ {
+  "kod": "EDB-BS2-06",
+  "ad": "Tanzimat-Servetifünun Dönemi Hikâyeleri",
+  "ad_ascii": "Tanzimat-Servetifunun Donemi Hikayeleri",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 6
+ },
+ {
+  "kod": "EDB-BS2-07",
+  "ad": "Milli Edebiyat Dönemi Hikâyeleri",
+  "ad_ascii": "Milli Edebiyat Donemi Hikayeleri",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 7
+ },
+ {
+  "kod": "EDB-BS2-08",
+  "ad": "Cumhuriyet Dönemi Hikâyeleri",
+  "ad_ascii": "Cumhuriyet Donemi Hikayeleri",
+  "seviye": 3,
+  "ust": "EDB-BS2",
+  "sira": 8
+ },
+ {
+  "kod": "EDB-BS3-01",
+  "ad": "Şiirin Yapı Özellikleri / Ahenk Unsurları",
+  "ad_ascii": "Siirin Yapi Ozellikleri / Ahenk Unsurlari",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 1
+ },
+ {
+  "kod": "EDB-BS3-02",
+  "ad": "Şiir Türleri ve Şiirde Tema",
+  "ad_ascii": "Siir Turleri ve Siirde Tema",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 2
+ },
+ {
+  "kod": "EDB-BS3-03",
+  "ad": "Söz Sanatları / Şiirin Dili ve Anlatımı",
+  "ad_ascii": "Soz Sanatlari / Siirin Dili ve Anlatimi",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 3
+ },
+ {
+  "kod": "EDB-BS3-04",
+  "ad": "İslamiyet Öncesi Türk Şiiri",
+  "ad_ascii": "Islamiyet Oncesi Turk Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 4
+ },
+ {
+  "kod": "EDB-BS3-05",
+  "ad": "Geçiş Dönemi Eserleri",
+  "ad_ascii": "Gecis Donemi Eserleri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 5
+ },
+ {
+  "kod": "EDB-BS3-06",
+  "ad": "Anonim Halk Şiiri",
+  "ad_ascii": "Anonim Halk Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 6
+ },
+ {
+  "kod": "EDB-BS3-07",
+  "ad": "Âşık Tarzı Halk Şiiri",
+  "ad_ascii": "Asik Tarzi Halk Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 7
+ },
+ {
+  "kod": "EDB-BS3-08",
+  "ad": "Dinî / Tasavvufi Halk Şiiri",
+  "ad_ascii": "Dini / Tasavvufi Halk Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 8
+ },
+ {
+  "kod": "EDB-BS3-09",
+  "ad": "Divan Şiiri",
+  "ad_ascii": "Divan Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 9
+ },
+ {
+  "kod": "EDB-BS3-10",
+  "ad": "Tanzimat Şiiri",
+  "ad_ascii": "Tanzimat Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 10
+ },
+ {
+  "kod": "EDB-BS3-11",
+  "ad": "Servetifünun Şiiri",
+  "ad_ascii": "Servetifunun Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 11
+ },
+ {
+  "kod": "EDB-BS3-12",
+  "ad": "Fecriati Şiiri",
+  "ad_ascii": "Fecriati Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 12
+ },
+ {
+  "kod": "EDB-BS3-13",
+  "ad": "Saf (Öz) Şiir",
+  "ad_ascii": "Saf (Oz) Siir",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 13
+ },
+ {
+  "kod": "EDB-BS3-14",
+  "ad": "Millî Edebiyat Şiiri",
+  "ad_ascii": "Milli Edebiyat Siiri",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 14
+ },
+ {
+  "kod": "EDB-BS3-15",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Saf Öz) Şiir Anlayışı",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Saf Oz) Siir Anlayisi",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 15
+ },
+ {
+  "kod": "EDB-BS3-16",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Toplumcu Şiir)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Toplumcu Siir)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 16
+ },
+ {
+  "kod": "EDB-BS3-17",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Toplumcu Şiir ve Maviciler)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Toplumcu Siir ve Maviciler)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 17
+ },
+ {
+  "kod": "EDB-BS3-18",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Millî Edebiyat Zevk ve Anlayışını Sürdürenler)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Milli Edebiyat Zevk ve Anlayisini Surdurenler)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 18
+ },
+ {
+  "kod": "EDB-BS3-19",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Garip Şiiri I. Yeni)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Garip Siiri I. Yeni)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 19
+ },
+ {
+  "kod": "EDB-BS3-20",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (İkinci Yeni Şiiri)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Ikinci Yeni Siiri)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 20
+ },
+ {
+  "kod": "EDB-BS3-21",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Dinî Değerleri ve Metafiziği Öne Çıkaran Şiir)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Dini Degerleri ve Metafizigi One Cikaran Siir)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 21
+ },
+ {
+  "kod": "EDB-BS3-22",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (1960 Sonrası (II. Yeni Sonrası) Toplumcu Şiir)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (1960 Sonrasi (II. Yeni Sonrasi) Toplumcu Siir)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 22
+ },
+ {
+  "kod": "EDB-BS3-23",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (1980 Sonrası Şiir)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (1980 Sonrasi Siir)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 23
+ },
+ {
+  "kod": "EDB-BS3-24",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Halk Şiiri)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Halk Siiri)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 24
+ },
+ {
+  "kod": "EDB-BS3-25",
+  "ad": "Cumhuriyet Dönemi Türk Şiiri (Türkiye Dışındaki Türk Şiiri)",
+  "ad_ascii": "Cumhuriyet Donemi Turk Siiri (Turkiye Disindaki Turk Siiri)",
+  "seviye": 3,
+  "ust": "EDB-BS3",
+  "sira": 25
+ },
+ {
+  "kod": "EDB-BS4-01",
+  "ad": "Roman Türünün Genel Özellikleri",
+  "ad_ascii": "Roman Turunun Genel Ozellikleri",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 1
+ },
+ {
+  "kod": "EDB-BS4-02",
+  "ad": "Türk ve Dünya Edebiyatında Roman",
+  "ad_ascii": "Turk ve Dunya Edebiyatinda Roman",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 2
+ },
+ {
+  "kod": "EDB-BS4-03",
+  "ad": "Tanzimat Dönemi'nde Roman",
+  "ad_ascii": "Tanzimat Donemi'nde Roman",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 3
+ },
+ {
+  "kod": "EDB-BS4-04",
+  "ad": "Servetifünun Dönemi'nde Roman",
+  "ad_ascii": "Servetifunun Donemi'nde Roman",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 4
+ },
+ {
+  "kod": "EDB-BS4-05",
+  "ad": "Millî Edebiyat Dönemi'nde Roman",
+  "ad_ascii": "Milli Edebiyat Donemi'nde Roman",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 5
+ },
+ {
+  "kod": "EDB-BS4-06",
+  "ad": "Cumhuriyet Dönemi'nde Millî Anlayışını Sürdüren Romanlar",
+  "ad_ascii": "Cumhuriyet Donemi'nde Milli Anlayisini Surduren Romanlar",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 6
+ },
+ {
+  "kod": "EDB-BS4-07",
+  "ad": "Toplumsal Gerçekçiler",
+  "ad_ascii": "Toplumsal Gercekciler",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 7
+ },
+ {
+  "kod": "EDB-BS4-08",
+  "ad": "Bireyin İç Dünyasını Esas Alanlar",
+  "ad_ascii": "Bireyin Ic Dunyasini Esas Alanlar",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 8
+ },
+ {
+  "kod": "EDB-BS4-09",
+  "ad": "Modernizmi Esas Alanlar",
+  "ad_ascii": "Modernizmi Esas Alanlar",
+  "seviye": 3,
+  "ust": "EDB-BS4",
+  "sira": 9
+ },
+ {
+  "kod": "EDB-BS5-01",
+  "ad": "Genel Bilgiler, Tiyatro Terimleri",
+  "ad_ascii": "Genel Bilgiler, Tiyatro Terimleri",
+  "seviye": 3,
+  "ust": "EDB-BS5",
+  "sira": 1
+ },
+ {
+  "kod": "EDB-BS5-02",
+  "ad": "Geleneksel Türk Tiyatrosu",
+  "ad_ascii": "Geleneksel Turk Tiyatrosu",
+  "seviye": 3,
+  "ust": "EDB-BS5",
+  "sira": 2
+ },
+ {
+  "kod": "EDB-BS5-03",
+  "ad": "Dünya Edebiyatı'nda / Tanzimat ve Servetifünun Dönemi'nde Tiyatro",
+  "ad_ascii": "Dunya Edebiyati'nda / Tanzimat ve Servetifunun Donemi'nde Tiyatro",
+  "seviye": 3,
+  "ust": "EDB-BS5",
+  "sira": 3
+ },
+ {
+  "kod": "EDB-BS5-04",
+  "ad": "Millî Edebiyat ve Cumhuriyet Dönemi'nde Tiyatro",
+  "ad_ascii": "Milli Edebiyat ve Cumhuriyet Donemi'nde Tiyatro",
+  "seviye": 3,
+  "ust": "EDB-BS5",
+  "sira": 4
+ }
+]
