@@ -64,7 +64,10 @@ YENI = "Bilgi Sarmal Tyt Turkce Soru Bankasi"
 
 
 def _tablo_var(b) -> bool:
-    return sa.inspect(b).has_table("question_metadata")
+    # Acik anotasyon: depo KOKUNDEKI pyproject.toml `warn_return_any = true`
+    # diyor ve sa.inspect(...) donusu Any goruluyor (CI'da olculdu, PR #288).
+    var: bool = sa.inspect(b).has_table("question_metadata")
+    return var
 
 
 def upgrade() -> None:
