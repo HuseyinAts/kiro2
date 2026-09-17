@@ -121,6 +121,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "BS_TYT_TURKCE",
         "ithal_araci": "scripts/kitap/bilgi_sarmal_turkce_ithal.py",
     },
+    "Bilgi Sarmal Ayt Edebiyat Soru Bankasi": {
+        "onek": "BS_AYT_EDEBIYAT",
+        "ithal_araci": "scripts/kitap/bilgi_sarmal_edebiyat_ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",
