@@ -1,0 +1,330 @@
+[
+ {
+  "kod": "TUR-BS1",
+  "ad": "SÖZCÜK DÜZEYİNDE ANLAM",
+  "ad_ascii": "SOZCUK DUZEYINDE ANLAM",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS2",
+  "ad": "CÜMLEDE ANLAM",
+  "ad_ascii": "CUMLEDE ANLAM",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS3",
+  "ad": "PARAGRAFTA ANLATIM",
+  "ad_ascii": "PARAGRAFTA ANLATIM",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 3
+ },
+ {
+  "kod": "TUR-BS4",
+  "ad": "PARAGRAF DÜZEYİNDE ANLAM",
+  "ad_ascii": "PARAGRAF DUZEYINDE ANLAM",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 4
+ },
+ {
+  "kod": "TUR-BS5",
+  "ad": "SES - YAZIM - NOKTALAMA",
+  "ad_ascii": "SES - YAZIM - NOKTALAMA",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 5
+ },
+ {
+  "kod": "TUR-BS6",
+  "ad": "SÖZCÜKTE YAPI",
+  "ad_ascii": "SOZCUKTE YAPI",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 6
+ },
+ {
+  "kod": "TUR-BS7",
+  "ad": "SÖZCÜK TÜRLERİ",
+  "ad_ascii": "SOZCUK TURLERI",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 7
+ },
+ {
+  "kod": "TUR-BS8",
+  "ad": "CÜMLENİN ÖGELERİ CÜMLE TÜRLERİ",
+  "ad_ascii": "CUMLENIN OGELERI CUMLE TURLERI",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 8
+ },
+ {
+  "kod": "TUR-BS9",
+  "ad": "ANLATIM BOZUKLUKLARI",
+  "ad_ascii": "ANLATIM BOZUKLUKLARI",
+  "seviye": 2,
+  "ust": "TUR",
+  "sira": 9
+ },
+ {
+  "kod": "TUR-BS1-01",
+  "ad": "Sözcük Düzeyinde Anlam",
+  "ad_ascii": "Sozcuk Duzeyinde Anlam",
+  "seviye": 3,
+  "ust": "TUR-BS1",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS2-01",
+  "ad": "Cümle Tamamlama ve Cümle Oluşturma",
+  "ad_ascii": "Cumle Tamamlama ve Cumle Olusturma",
+  "seviye": 3,
+  "ust": "TUR-BS2",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS2-02",
+  "ad": "Cümle Tamamlama",
+  "ad_ascii": "Cumle Tamamlama",
+  "seviye": 3,
+  "ust": "TUR-BS2",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS2-03",
+  "ad": "Cümle Yorumu",
+  "ad_ascii": "Cumle Yorumu",
+  "seviye": 3,
+  "ust": "TUR-BS2",
+  "sira": 3
+ },
+ {
+  "kod": "TUR-BS2-04",
+  "ad": "Cümlede Kesin Yargı - Yargı Birleştirme",
+  "ad_ascii": "Cumlede Kesin Yargi - Yargi Birlestirme",
+  "seviye": 3,
+  "ust": "TUR-BS2",
+  "sira": 4
+ },
+ {
+  "kod": "TUR-BS2-05",
+  "ad": "Yargılar Arası İlişkiler ve Kavramlar",
+  "ad_ascii": "Yargilar Arasi Iliskiler ve Kavramlar",
+  "seviye": 3,
+  "ust": "TUR-BS2",
+  "sira": 5
+ },
+ {
+  "kod": "TUR-BS3-01",
+  "ad": "Anlatım Biçimleri",
+  "ad_ascii": "Anlatim Bicimleri",
+  "seviye": 3,
+  "ust": "TUR-BS3",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS3-02",
+  "ad": "Anlatımın Nitelikleri",
+  "ad_ascii": "Anlatimin Nitelikleri",
+  "seviye": 3,
+  "ust": "TUR-BS3",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS4-01",
+  "ad": "Paragrafın Yapısı",
+  "ad_ascii": "Paragrafin Yapisi",
+  "seviye": 3,
+  "ust": "TUR-BS4",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS4-02",
+  "ad": "Paragrafta Cümle Ekleme",
+  "ad_ascii": "Paragrafta Cumle Ekleme",
+  "seviye": 3,
+  "ust": "TUR-BS4",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS4-03",
+  "ad": "Paragrafta Konu ve Ana Düşünce",
+  "ad_ascii": "Paragrafta Konu ve Ana Dusunce",
+  "seviye": 3,
+  "ust": "TUR-BS4",
+  "sira": 3
+ },
+ {
+  "kod": "TUR-BS4-04",
+  "ad": "Paragrafta Yardımcı Düşünceler",
+  "ad_ascii": "Paragrafta Yardimci Dusunceler",
+  "seviye": 3,
+  "ust": "TUR-BS4",
+  "sira": 4
+ },
+ {
+  "kod": "TUR-BS4-05",
+  "ad": "Kişi Özellikleri",
+  "ad_ascii": "Kisi Ozellikleri",
+  "seviye": 3,
+  "ust": "TUR-BS4",
+  "sira": 5
+ },
+ {
+  "kod": "TUR-BS4-06",
+  "ad": "Paragrafın Hangi Soruya Karşılık Olduğu",
+  "ad_ascii": "Paragrafin Hangi Soruya Karsilik Oldugu",
+  "seviye": 3,
+  "ust": "TUR-BS4",
+  "sira": 6
+ },
+ {
+  "kod": "TUR-BS5-01",
+  "ad": "Ses Bilgisi",
+  "ad_ascii": "Ses Bilgisi",
+  "seviye": 3,
+  "ust": "TUR-BS5",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS5-02",
+  "ad": "Yazım Kuralları",
+  "ad_ascii": "Yazim Kurallari",
+  "seviye": 3,
+  "ust": "TUR-BS5",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS5-03",
+  "ad": "Noktalama İşaretleri",
+  "ad_ascii": "Noktalama Isaretleri",
+  "seviye": 3,
+  "ust": "TUR-BS5",
+  "sira": 3
+ },
+ {
+  "kod": "TUR-BS6-01",
+  "ad": "Sözcükte Yapı (Biçim Bilgisi)",
+  "ad_ascii": "Sozcukte Yapi (Bicim Bilgisi)",
+  "seviye": 3,
+  "ust": "TUR-BS6",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS7-01",
+  "ad": "Adlar (İsimler)",
+  "ad_ascii": "Adlar (Isimler)",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS7-02",
+  "ad": "Sıfatlar (Ön Adlar)",
+  "ad_ascii": "Sifatlar (On Adlar)",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS7-03",
+  "ad": "Tamlamalar",
+  "ad_ascii": "Tamlamalar",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 3
+ },
+ {
+  "kod": "TUR-BS7-04",
+  "ad": "Zamirler (Adıllar)",
+  "ad_ascii": "Zamirler (Adillar)",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 4
+ },
+ {
+  "kod": "TUR-BS7-05",
+  "ad": "Zarflar (Belirteçler)",
+  "ad_ascii": "Zarflar (Belirtecler)",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 5
+ },
+ {
+  "kod": "TUR-BS7-06",
+  "ad": "Edat - Bağlaç - Ünlem",
+  "ad_ascii": "Edat - Baglac - Unlem",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 6
+ },
+ {
+  "kod": "TUR-BS7-07",
+  "ad": "Eylemler",
+  "ad_ascii": "Eylemler",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 7
+ },
+ {
+  "kod": "TUR-BS7-08",
+  "ad": "Eylemsiler",
+  "ad_ascii": "Eylemsiler",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 8
+ },
+ {
+  "kod": "TUR-BS7-09",
+  "ad": "Eylemde Çatı",
+  "ad_ascii": "Eylemde Cati",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 9
+ },
+ {
+  "kod": "TUR-BS7-10",
+  "ad": "Ek Fiil",
+  "ad_ascii": "Ek Fiil",
+  "seviye": 3,
+  "ust": "TUR-BS7",
+  "sira": 10
+ },
+ {
+  "kod": "TUR-BS8-01",
+  "ad": "Cümlenin Ögeleri",
+  "ad_ascii": "Cumlenin Ogeleri",
+  "seviye": 3,
+  "ust": "TUR-BS8",
+  "sira": 1
+ },
+ {
+  "kod": "TUR-BS8-02",
+  "ad": "Cümle Türleri",
+  "ad_ascii": "Cumle Turleri",
+  "seviye": 3,
+  "ust": "TUR-BS8",
+  "sira": 2
+ },
+ {
+  "kod": "TUR-BS8-03",
+  "ad": "Dil, İletişim, Gösterge Bilim",
+  "ad_ascii": "Dil, Iletisim, Gosterge Bilim",
+  "seviye": 3,
+  "ust": "TUR-BS8",
+  "sira": 3
+ },
+ {
+  "kod": "TUR-BS9-01",
+  "ad": "Anlatım Bozuklukları",
+  "ad_ascii": "Anlatim Bozukluklari",
+  "seviye": 3,
+  "ust": "TUR-BS9",
+  "sira": 1
+ }
+]
