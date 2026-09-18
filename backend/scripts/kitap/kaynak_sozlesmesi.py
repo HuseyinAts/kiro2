@@ -129,6 +129,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "MIKRO_FIZIK_TYT",
         "ithal_araci": "scripts/kitap/mikro_fizik_ithal.py",
     },
+    "345 2025 AYT Fizik Soru Bankasi": {
+        "onek": "FIZ345",
+        "ithal_araci": "scripts/kitap/fiz345_ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",
