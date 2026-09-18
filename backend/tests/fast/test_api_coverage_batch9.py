@@ -44,6 +44,12 @@ def _mock_db():
     return db
 
 
+# Bu surumde bulunamadigi icin atlanan bagimlilik override'lari.
+# Bos `except ... : pass` yerine sebebi burada kayda geciyoruz; boylece
+# bir override sessizce dusmus mu, test icinden gorulebiliyor.
+_ATLANAN_OVERRIDELER: list[str] = []
+
+
 def _setup_overrides(app):
     from core.database import get_db_session
     from core.dependencies import get_current_admin_user, get_current_user
@@ -57,8 +63,8 @@ def _setup_overrides(app):
         from core.database import get_db
 
         app.dependency_overrides[get_db] = lambda: mock_db
-    except ImportError:
-        pass
+    except ImportError as exc:
+        _ATLANAN_OVERRIDELER.append(f"core.database.get_db: {exc}")
 
     try:
         from core.dependencies import get_redis_client
@@ -66,8 +72,8 @@ def _setup_overrides(app):
         # PLW0108: lambda gereksiz; AsyncMock'un kendisi cagrildiginda
         # zaten yeni bir AsyncMock ornegi donuyor.
         app.dependency_overrides[get_redis_client] = AsyncMock
-    except ImportError:
-        pass
+    except ImportError as exc:
+        _ATLANAN_OVERRIDELER.append(f"core.dependencies.get_redis_client: {exc}")
 
     return mock_db
 
@@ -396,8 +402,10 @@ class TestDiaryDeepCoverage:
             mock_service.update_summary = AsyncMock(return_value=MagicMock())
             mock_service.delete_summary = AsyncMock(return_value=True)
             self.app.dependency_overrides[get_diary_service] = lambda: mock_service
-        except (ImportError, Exception):
-            pass
+        except (ImportError, AttributeError) as exc:
+            # `except Exception` her hatayi yutuyordu; yalnizca "modul/oznitelik
+            # yok" halini gecistiriyoruz ve sebebi kayda geciyoruz.
+            _ATLANAN_OVERRIDELER.append(f"diary get_diary_service: {exc}")
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
