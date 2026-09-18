@@ -1,0 +1,482 @@
+[
+ {
+  "kod": "FIZ-MO1",
+  "ad": "FIZIK BILIMINE GIRIS",
+  "ad_ascii": "FIZIK BILIMINE GIRIS",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO2",
+  "ad": "MADDE VE OZELLIKLERI",
+  "ad_ascii": "MADDE VE OZELLIKLERI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO3",
+  "ad": "HAREKET",
+  "ad_ascii": "HAREKET",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO4",
+  "ad": "NEWTON'IN HAREKET YASALARI",
+  "ad_ascii": "NEWTON'IN HAREKET YASALARI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO5",
+  "ad": "IS VE ENERJI",
+  "ad_ascii": "IS VE ENERJI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-MO6",
+  "ad": "ISI VE SICAKLIK",
+  "ad_ascii": "ISI VE SICAKLIK",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-MO7",
+  "ad": "ELEKTRIK VE MANYETIZMA",
+  "ad_ascii": "ELEKTRIK VE MANYETIZMA",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 7
+ },
+ {
+  "kod": "FIZ-MO8",
+  "ad": "BASINC",
+  "ad_ascii": "BASINC",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 8
+ },
+ {
+  "kod": "FIZ-MO9",
+  "ad": "KALDIRMA KUVVETI",
+  "ad_ascii": "KALDIRMA KUVVETI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 9
+ },
+ {
+  "kod": "FIZ-MO10",
+  "ad": "DALGALAR",
+  "ad_ascii": "DALGALAR",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 10
+ },
+ {
+  "kod": "FIZ-MO11",
+  "ad": "OPTIK",
+  "ad_ascii": "OPTIK",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 11
+ },
+ {
+  "kod": "FIZ-MO1-01",
+  "ad": "Fizik Bilimine Giriş",
+  "ad_ascii": "Fizik Bilimine Giris",
+  "seviye": 3,
+  "ust": "FIZ-MO1",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO2-01",
+  "ad": "Kütle-Hacim-Özkütle",
+  "ad_ascii": "Kutle-Hacim-Ozkutle",
+  "seviye": 3,
+  "ust": "FIZ-MO2",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO2-02",
+  "ad": "Özkütle",
+  "ad_ascii": "Ozkutle",
+  "seviye": 3,
+  "ust": "FIZ-MO2",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO2-03",
+  "ad": "Dayanıklılık",
+  "ad_ascii": "Dayaniklilik",
+  "seviye": 3,
+  "ust": "FIZ-MO2",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO2-04",
+  "ad": "Adezyon-Kohezyon-Kılcallık",
+  "ad_ascii": "Adezyon-Kohezyon-Kilcallik",
+  "seviye": 3,
+  "ust": "FIZ-MO2",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO3-01",
+  "ad": "Temel Hareket Kavramlar",
+  "ad_ascii": "Temel Hareket Kavramlar",
+  "seviye": 3,
+  "ust": "FIZ-MO3",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO3-02",
+  "ad": "Düzgün Doğrusal Hareket",
+  "ad_ascii": "Duzgun Dogrusal Hareket",
+  "seviye": 3,
+  "ust": "FIZ-MO3",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO3-03",
+  "ad": "Düzgün Doğrusal Hareket Grafikleri",
+  "ad_ascii": "Duzgun Dogrusal Hareket Grafikleri",
+  "seviye": 3,
+  "ust": "FIZ-MO3",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO3-04",
+  "ad": "Ortalama Hız ve Sürat",
+  "ad_ascii": "Ortalama Hiz ve Surat",
+  "seviye": 3,
+  "ust": "FIZ-MO3",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO3-05",
+  "ad": "İvme Kavramı, Sabit İvmeli Hareket",
+  "ad_ascii": "Ivme Kavrami, Sabit Ivmeli Hareket",
+  "seviye": 3,
+  "ust": "FIZ-MO3",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-MO3-06",
+  "ad": "Karma",
+  "ad_ascii": "Karma",
+  "seviye": 3,
+  "ust": "FIZ-MO3",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-MO4-01",
+  "ad": "Kuvvet ve Özellikleri",
+  "ad_ascii": "Kuvvet ve Ozellikleri",
+  "seviye": 3,
+  "ust": "FIZ-MO4",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO4-02",
+  "ad": "Newton'ın Hareket Yasaları",
+  "ad_ascii": "Newton'in Hareket Yasalari",
+  "seviye": 3,
+  "ust": "FIZ-MO4",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO4-03",
+  "ad": "Sürtünme Kuvveti",
+  "ad_ascii": "Surtunme Kuvveti",
+  "seviye": 3,
+  "ust": "FIZ-MO4",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO5-01",
+  "ad": "İş ve Enerji",
+  "ad_ascii": "Is ve Enerji",
+  "seviye": 3,
+  "ust": "FIZ-MO5",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO5-02",
+  "ad": "Enerji Kaynakları",
+  "ad_ascii": "Enerji Kaynaklari",
+  "seviye": 3,
+  "ust": "FIZ-MO5",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO5-03",
+  "ad": "Karma",
+  "ad_ascii": "Karma",
+  "seviye": 3,
+  "ust": "FIZ-MO5",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO6-01",
+  "ad": "Temel Kavramlar",
+  "ad_ascii": "Temel Kavramlar",
+  "seviye": 3,
+  "ust": "FIZ-MO6",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO6-02",
+  "ad": "Hâl Değişimi",
+  "ad_ascii": "Hal Degisimi",
+  "seviye": 3,
+  "ust": "FIZ-MO6",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO6-03",
+  "ad": "Isının Yayılma Yolları",
+  "ad_ascii": "Isinin Yayilma Yollari",
+  "seviye": 3,
+  "ust": "FIZ-MO6",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO6-04",
+  "ad": "Genleşme",
+  "ad_ascii": "Genlesme",
+  "seviye": 3,
+  "ust": "FIZ-MO6",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO6-05",
+  "ad": "Karma",
+  "ad_ascii": "Karma",
+  "seviye": 3,
+  "ust": "FIZ-MO6",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-MO7-01",
+  "ad": "Elektrostatik",
+  "ad_ascii": "Elektrostatik",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO7-02",
+  "ad": "Elektrik Akımı, Potansiyel Farkı ve Direnç",
+  "ad_ascii": "Elektrik Akimi, Potansiyel Farki ve Direnc",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO7-03",
+  "ad": "Eşdeğer Direnç",
+  "ad_ascii": "Esdeger Direnc",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO7-04",
+  "ad": "Elektrik Devreleri",
+  "ad_ascii": "Elektrik Devreleri",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO7-05",
+  "ad": "Elektrik Devreleri ve Eşdeğer Direnç",
+  "ad_ascii": "Elektrik Devreleri ve Esdeger Direnc",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-MO7-06",
+  "ad": "Üreteçlerin Emk'sı, Seri ve Paralel Bağlanması",
+  "ad_ascii": "Ureteclerin Emk'si, Seri ve Paralel Baglanmasi",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-MO7-07",
+  "ad": "Lambalı Devreleri",
+  "ad_ascii": "Lambali Devreleri",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 7
+ },
+ {
+  "kod": "FIZ-MO7-08",
+  "ad": "Mıknatıs ve Manyetik Alan",
+  "ad_ascii": "Miknatis ve Manyetik Alan",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 8
+ },
+ {
+  "kod": "FIZ-MO7-09",
+  "ad": "Akım - Manyetik Alan İlişkisi",
+  "ad_ascii": "Akim - Manyetik Alan Iliskisi",
+  "seviye": 3,
+  "ust": "FIZ-MO7",
+  "sira": 9
+ },
+ {
+  "kod": "FIZ-MO8-01",
+  "ad": "Katı Basıncı",
+  "ad_ascii": "Kati Basinci",
+  "seviye": 3,
+  "ust": "FIZ-MO8",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO8-02",
+  "ad": "Sıvı Basıncı",
+  "ad_ascii": "Sivi Basinci",
+  "seviye": 3,
+  "ust": "FIZ-MO8",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO8-03",
+  "ad": "Gaz Basıncı",
+  "ad_ascii": "Gaz Basinci",
+  "seviye": 3,
+  "ust": "FIZ-MO8",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO8-04",
+  "ad": "Akışkan Basıncı",
+  "ad_ascii": "Akiskan Basinci",
+  "seviye": 3,
+  "ust": "FIZ-MO8",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO9-01",
+  "ad": "Archimedes İlkesi",
+  "ad_ascii": "Archimedes Ilkesi",
+  "seviye": 3,
+  "ust": "FIZ-MO9",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO10-01",
+  "ad": "Dalgaların Genel Özellikleri",
+  "ad_ascii": "Dalgalarin Genel Ozellikleri",
+  "seviye": 3,
+  "ust": "FIZ-MO10",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO10-02",
+  "ad": "Yay Dalgaları",
+  "ad_ascii": "Yay Dalgalari",
+  "seviye": 3,
+  "ust": "FIZ-MO10",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO10-03",
+  "ad": "Yay Dalgası",
+  "ad_ascii": "Yay Dalgasi",
+  "seviye": 3,
+  "ust": "FIZ-MO10",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO10-04",
+  "ad": "Su Dalgası",
+  "ad_ascii": "Su Dalgasi",
+  "seviye": 3,
+  "ust": "FIZ-MO10",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO10-05",
+  "ad": "Ses Dalgası ve Deprem Dalgası",
+  "ad_ascii": "Ses Dalgasi ve Deprem Dalgasi",
+  "seviye": 3,
+  "ust": "FIZ-MO10",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-MO10-06",
+  "ad": "Karma",
+  "ad_ascii": "Karma",
+  "seviye": 3,
+  "ust": "FIZ-MO10",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-MO11-01",
+  "ad": "Aydınlanma",
+  "ad_ascii": "Aydinlanma",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-MO11-02",
+  "ad": "Gölge",
+  "ad_ascii": "Golge",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-MO11-03",
+  "ad": "Yansıma ve Düzlem Ayna",
+  "ad_ascii": "Yansima ve Duzlem Ayna",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-MO11-04",
+  "ad": "Küresel Aynalar",
+  "ad_ascii": "Kuresel Aynalar",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-MO11-05",
+  "ad": "Kırılma",
+  "ad_ascii": "Kirilma",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-MO11-06",
+  "ad": "Kırılma ve Renk",
+  "ad_ascii": "Kirilma ve Renk",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-MO11-07",
+  "ad": "Mercekler",
+  "ad_ascii": "Mercekler",
+  "seviye": 3,
+  "ust": "FIZ-MO11",
+  "sira": 7
+ }
+]
