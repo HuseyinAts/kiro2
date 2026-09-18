@@ -1,0 +1,482 @@
+[
+ {
+  "kod": "FIZ-345-B01",
+  "ad": "VEKTORLER",
+  "ad_ascii": "VEKTORLER",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B02",
+  "ad": "BAGIL HAREKET",
+  "ad_ascii": "BAGIL HAREKET",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B03",
+  "ad": "NEWTON'IN HAREKET YASALARI",
+  "ad_ascii": "NEWTON'IN HAREKET YASALARI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B04",
+  "ad": "BIR BOYUTTA SABIT IVMELI HAREKET",
+  "ad_ascii": "BIR BOYUTTA SABIT IVMELI HAREKET",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-345-B05",
+  "ad": "IKI BOYUTTA HAREKET",
+  "ad_ascii": "IKI BOYUTTA HAREKET",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-345-B06",
+  "ad": "ENERJI",
+  "ad_ascii": "ENERJI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-345-B07",
+  "ad": "ITME VE CIZGISEL MOMENTUM",
+  "ad_ascii": "ITME VE CIZGISEL MOMENTUM",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 7
+ },
+ {
+  "kod": "FIZ-345-B08",
+  "ad": "TORK",
+  "ad_ascii": "TORK",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 8
+ },
+ {
+  "kod": "FIZ-345-B09",
+  "ad": "DENGE",
+  "ad_ascii": "DENGE",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 9
+ },
+ {
+  "kod": "FIZ-345-B10",
+  "ad": "KUTLE VE AGIRLIK MERKEZI",
+  "ad_ascii": "KUTLE VE AGIRLIK MERKEZI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 10
+ },
+ {
+  "kod": "FIZ-345-B11",
+  "ad": "BASIT MAKINELER",
+  "ad_ascii": "BASIT MAKINELER",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 11
+ },
+ {
+  "kod": "FIZ-345-B12",
+  "ad": "ELEKTRIK",
+  "ad_ascii": "ELEKTRIK",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 12
+ },
+ {
+  "kod": "FIZ-345-B13",
+  "ad": "MANYETIZMA",
+  "ad_ascii": "MANYETIZMA",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 13
+ },
+ {
+  "kod": "FIZ-345-B14",
+  "ad": "ALTERNATIF AKIM VE TRANSFORMATORLER",
+  "ad_ascii": "ALTERNATIF AKIM VE TRANSFORMATORLER",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 14
+ },
+ {
+  "kod": "FIZ-345-B15",
+  "ad": "CEMBERSEL HAREKET",
+  "ad_ascii": "CEMBERSEL HAREKET",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 15
+ },
+ {
+  "kod": "FIZ-345-B16",
+  "ad": "BASIT HARMONIK HAREKET",
+  "ad_ascii": "BASIT HARMONIK HAREKET",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 16
+ },
+ {
+  "kod": "FIZ-345-B17",
+  "ad": "DALGA MEKANIGI",
+  "ad_ascii": "DALGA MEKANIGI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 17
+ },
+ {
+  "kod": "FIZ-345-B18",
+  "ad": "ATOM FIZIGINE GIRIS VE RADYOAKTIVITE",
+  "ad_ascii": "ATOM FIZIGINE GIRIS VE RADYOAKTIVITE",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 18
+ },
+ {
+  "kod": "FIZ-345-B19",
+  "ad": "MODERN FIZIK",
+  "ad_ascii": "MODERN FIZIK",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 19
+ },
+ {
+  "kod": "FIZ-345-B20",
+  "ad": "MODERN FIZIGIN TEKNOLOJIDEKI UYGULAMALARI",
+  "ad_ascii": "MODERN FIZIGIN TEKNOLOJIDEKI UYGULAMALARI",
+  "seviye": 2,
+  "ust": "FIZ",
+  "sira": 20
+ },
+ {
+  "kod": "FIZ-345-B04-01",
+  "ad": "DÜZGÜN HIZLANAN DOĞRUSAL HAREKET",
+  "ad_ascii": "DUZGUN HIZLANAN DOGRUSAL HAREKET",
+  "seviye": 3,
+  "ust": "FIZ-345-B04",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B04-02",
+  "ad": "DÜZGÜN YAVAŞLAYAN DOĞRUSAL HAREKET",
+  "ad_ascii": "DUZGUN YAVASLAYAN DOGRUSAL HAREKET",
+  "seviye": 3,
+  "ust": "FIZ-345-B04",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B06-01",
+  "ad": "İŞ ve ENERJİ İLİŞKİSİ",
+  "ad_ascii": "IS ve ENERJI ILISKISI",
+  "seviye": 3,
+  "ust": "FIZ-345-B06",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B06-02",
+  "ad": "ESNEKLİK POTANSİYEL ENERJİSİ",
+  "ad_ascii": "ESNEKLIK POTANSIYEL ENERJISI",
+  "seviye": 3,
+  "ust": "FIZ-345-B06",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B06-03",
+  "ad": "SÜRTÜNMESİZ ORTAMDA ENERJİ KORUNUMU",
+  "ad_ascii": "SURTUNMESIZ ORTAMDA ENERJI KORUNUMU",
+  "seviye": 3,
+  "ust": "FIZ-345-B06",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B06-04",
+  "ad": "SÜRTÜNMELİ ORTAMDA ENERJİ KORUNUMU",
+  "ad_ascii": "SURTUNMELI ORTAMDA ENERJI KORUNUMU",
+  "seviye": 3,
+  "ust": "FIZ-345-B06",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-345-B07-01",
+  "ad": "ÇARPIŞMALAR",
+  "ad_ascii": "CARPISMALAR",
+  "seviye": 3,
+  "ust": "FIZ-345-B07",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B11-01",
+  "ad": "KALDIRAÇ ve MAKARALAR",
+  "ad_ascii": "KALDIRAC ve MAKARALAR",
+  "seviye": 3,
+  "ust": "FIZ-345-B11",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B11-02",
+  "ad": "PALANGA - EĞİK DÜZLEM ve ÇIKRIK",
+  "ad_ascii": "PALANGA - EGIK DUZLEM ve CIKRIK",
+  "seviye": 3,
+  "ust": "FIZ-345-B11",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B11-03",
+  "ad": "KASNAKLAR - DİŞLİ ÇARKLAR ve VİDA",
+  "ad_ascii": "KASNAKLAR - DISLI CARKLAR ve VIDA",
+  "seviye": 3,
+  "ust": "FIZ-345-B11",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B12-01",
+  "ad": "ELEKTRİKSEL KUVVET ve ELEKTRİK ALANI",
+  "ad_ascii": "ELEKTRIKSEL KUVVET ve ELEKTRIK ALANI",
+  "seviye": 3,
+  "ust": "FIZ-345-B12",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B12-02",
+  "ad": "ELEKTRİK POTANSİYEL ENERJİ ve ELEKTRİK POTANSİYELİ",
+  "ad_ascii": "ELEKTRIK POTANSIYEL ENERJI ve ELEKTRIK POTANSIYELI",
+  "seviye": 3,
+  "ust": "FIZ-345-B12",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B12-03",
+  "ad": "İKİ NOKTA ARASI POTANSİYEL FARK ve ELEKTRİKSEL İŞ",
+  "ad_ascii": "IKI NOKTA ARASI POTANSIYEL FARK ve ELEKTRIKSEL IS",
+  "seviye": 3,
+  "ust": "FIZ-345-B12",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B12-04",
+  "ad": "YÜKLÜ PARÇACIKLARIN DÜZGÜN ELEKTRİK ALANDA HAREKETİ",
+  "ad_ascii": "YUKLU PARCACIKLARIN DUZGUN ELEKTRIK ALANDA HAREKETI",
+  "seviye": 3,
+  "ust": "FIZ-345-B12",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-345-B12-05",
+  "ad": "SIĞAÇLAR",
+  "ad_ascii": "SIGACLAR",
+  "seviye": 3,
+  "ust": "FIZ-345-B12",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-345-B14-01",
+  "ad": "ALTERNATİF AKIM",
+  "ad_ascii": "ALTERNATIF AKIM",
+  "seviye": 3,
+  "ust": "FIZ-345-B14",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B14-02",
+  "ad": "TRANSFORMATÖRLER",
+  "ad_ascii": "TRANSFORMATORLER",
+  "seviye": 3,
+  "ust": "FIZ-345-B14",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B15-01",
+  "ad": "DÜZGÜN ÇEMBERSEL HAREKET",
+  "ad_ascii": "DUZGUN CEMBERSEL HAREKET",
+  "seviye": 3,
+  "ust": "FIZ-345-B15",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B15-02",
+  "ad": "MERKEZCİL KUVVET",
+  "ad_ascii": "MERKEZCIL KUVVET",
+  "seviye": 3,
+  "ust": "FIZ-345-B15",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B15-03",
+  "ad": "DÜŞEY DÜZLEMDE DÜZGÜN ÇEMBERSEL HAREKET",
+  "ad_ascii": "DUSEY DUZLEMDE DUZGUN CEMBERSEL HAREKET",
+  "seviye": 3,
+  "ust": "FIZ-345-B15",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B15-04",
+  "ad": "DÖNEREK ÖTELEME HAREKETİ",
+  "ad_ascii": "DONEREK OTELEME HAREKETI",
+  "seviye": 3,
+  "ust": "FIZ-345-B15",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-345-B15-05",
+  "ad": "AÇISAL MOMENTUM",
+  "ad_ascii": "ACISAL MOMENTUM",
+  "seviye": 3,
+  "ust": "FIZ-345-B15",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-345-B15-06",
+  "ad": "KÜTLE ÇEKİM KUVVETİ ve KEPLER YASASI",
+  "ad_ascii": "KUTLE CEKIM KUVVETI ve KEPLER YASASI",
+  "seviye": 3,
+  "ust": "FIZ-345-B15",
+  "sira": 6
+ },
+ {
+  "kod": "FIZ-345-B16-01",
+  "ad": "YAY SARKACI",
+  "ad_ascii": "YAY SARKACI",
+  "seviye": 3,
+  "ust": "FIZ-345-B16",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B16-02",
+  "ad": "BASİT SARKAÇ",
+  "ad_ascii": "BASIT SARKAC",
+  "seviye": 3,
+  "ust": "FIZ-345-B16",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B17-01",
+  "ad": "SU DALGALARINDA KIRINIM ve GİRİŞİM",
+  "ad_ascii": "SU DALGALARINDA KIRINIM ve GIRISIM",
+  "seviye": 3,
+  "ust": "FIZ-345-B17",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B17-02",
+  "ad": "ÇİFT YARIKTA GİRİŞİM ve TEK YARIKTA KIRINIM",
+  "ad_ascii": "CIFT YARIKTA GIRISIM ve TEK YARIKTA KIRINIM",
+  "seviye": 3,
+  "ust": "FIZ-345-B17",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B17-03",
+  "ad": "ELEKTROMANYETİK DALGALAR ve DOPPLER OLAYI",
+  "ad_ascii": "ELEKTROMANYETIK DALGALAR ve DOPPLER OLAYI",
+  "seviye": 3,
+  "ust": "FIZ-345-B17",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B18-01",
+  "ad": "ATOM MODELLERİ",
+  "ad_ascii": "ATOM MODELLERI",
+  "seviye": 3,
+  "ust": "FIZ-345-B18",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B18-02",
+  "ad": "ATOMUN UYARILMASI ve ENERJİ SEVİYELERİ",
+  "ad_ascii": "ATOMUN UYARILMASI ve ENERJI SEVIYELERI",
+  "seviye": 3,
+  "ust": "FIZ-345-B18",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B18-03",
+  "ad": "BÜYÜK PATLAMA ve ATOM ALTI PARÇACIKLAR",
+  "ad_ascii": "BUYUK PATLAMA ve ATOM ALTI PARCACIKLAR",
+  "seviye": 3,
+  "ust": "FIZ-345-B18",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B18-04",
+  "ad": "RADYOAKTİVİTE",
+  "ad_ascii": "RADYOAKTIVITE",
+  "seviye": 3,
+  "ust": "FIZ-345-B18",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-345-B19-01",
+  "ad": "ÖZEL GÖRELİLİK TEORİSİ",
+  "ad_ascii": "OZEL GORELILIK TEORISI",
+  "seviye": 3,
+  "ust": "FIZ-345-B19",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B19-02",
+  "ad": "KUANTUM FİZİĞİNE GİRİŞ",
+  "ad_ascii": "KUANTUM FIZIGINE GIRIS",
+  "seviye": 3,
+  "ust": "FIZ-345-B19",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B19-03",
+  "ad": "FOTOELEKTRİK OLAY",
+  "ad_ascii": "FOTOELEKTRIK OLAY",
+  "seviye": 3,
+  "ust": "FIZ-345-B19",
+  "sira": 3
+ },
+ {
+  "kod": "FIZ-345-B19-04",
+  "ad": "ÜRETECE BAĞLI DEVRELER",
+  "ad_ascii": "URETECE BAGLI DEVRELER",
+  "seviye": 3,
+  "ust": "FIZ-345-B19",
+  "sira": 4
+ },
+ {
+  "kod": "FIZ-345-B19-05",
+  "ad": "COMPTON SAÇILMASI",
+  "ad_ascii": "COMPTON SACILMASI",
+  "seviye": 3,
+  "ust": "FIZ-345-B19",
+  "sira": 5
+ },
+ {
+  "kod": "FIZ-345-B20-01",
+  "ad": "GÖRÜNTÜLEME CİHAZLARI",
+  "ad_ascii": "GORUNTULEME CIHAZLARI",
+  "seviye": 3,
+  "ust": "FIZ-345-B20",
+  "sira": 1
+ },
+ {
+  "kod": "FIZ-345-B20-02",
+  "ad": "YARI İLETKEN TEKNOLOJİSİ",
+  "ad_ascii": "YARI ILETKEN TEKNOLOJISI",
+  "seviye": 3,
+  "ust": "FIZ-345-B20",
+  "sira": 2
+ },
+ {
+  "kod": "FIZ-345-B20-03",
+  "ad": "SÜPER İLETKENLER, NANOTEKNOLOJİ ve LASER",
+  "ad_ascii": "SUPER ILETKENLER, NANOTEKNOLOJI ve LASER",
+  "seviye": 3,
+  "ust": "FIZ-345-B20",
+  "sira": 3
+ }
+]
