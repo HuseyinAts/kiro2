@@ -330,6 +330,7 @@ edilmis bir PR ve bir YONTEM belgesi vardir.
 | B3 | Apotemi 2019 2020 Tyt Ayt Fizik (#2) | -- | -- | SAHIP KARARI BEKLIYOR (eski baski istenip istenmedigi) | -- |
 | C | 345 2024 Ayt Biyoloji (#13) | -- | -- | **ATLA onerisi** (Faz 0 olculdu: DB ile %85 ortusme, beklenen yeni soru ~45) | `BIO_345_2024_KESIF.md` |
 | D | Geometri (#1, #3/#4, #5, #8, #9) | -- | -- | on kesif yapildi: dalga 5 degil **4 kitap** (#3/#4 ayni yakalama) | `GEO_DALGA_D_KESIF.md` |
+| D / #1 | ACIL 2023-2024 Tyt Ayt Geometri | 1881 (beklenen) | -- | Faz 0 bitti, **GIT**; Faz 1 SAHIP baski secimini bekliyor | `GEO_ACIL_2324_KESIF.md` |
 
 Toplam ithal: **4231 soru**, hepsi PASIF.
 
@@ -361,3 +362,16 @@ Toplam ithal: **4231 soru**, hepsi PASIF.
    ornek cozumlerin de soluna simge koyuyor. Kirpim kutusu turetimi
    bu yuzden "sutundaki simge sayisi == o sutunun anahtar girdisi"
    kapisina baglandi.
+6. **Dorduncu anahtar bicimi**: ACIL geometride anahtar, testin son
+   sayfasinin altinda iki satirlik IZGARA KUTUSU olarak duruyor (kitap
+   sonu izgarasi / test sonu seridi / sayfa alti sutun satiri disinda
+   bir tur).
+7. **Kirpim koordinati tek/cift sayfada kayabiliyor**: ACIL geometride
+   simge sutunlari tek sayfada gx 14 ve 346, cift sayfada gx 32 ve 361
+   -- 18 px recto/verso kaymasi. Tek koordinat varsayilsa sayfalarin
+   yarisi kayardi.
+8. **Ortme olcumunun maskesi DAIRE olmali**: disk daireseldir; kare
+   ayak izi kosede sayfayi gosterip "diskin ALTINDA murekkep var" gibi
+   fiziken imkansiz bir sonuc uretiyor (opak disk). Ayrica cizimlerdeki
+   lacivert tonlar glif rengine 40 tolerans icinde dusebiliyor, bu
+   yuzden glif blogunun cevresinde DISK halkasi sarti gerekiyor.
