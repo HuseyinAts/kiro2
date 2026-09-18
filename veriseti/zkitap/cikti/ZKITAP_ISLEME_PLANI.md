@@ -328,7 +328,7 @@ edilmis bir PR ve bir YONTEM belgesi vardir.
 | B1 | Mikro Orijinal Tyt Fizik Soru Bankasi 2025 (#10) | 1326 | #290 | MERGE | `MIKRO_FIZIK_TYT_YONTEM.md` |
 | B2 | 345 2025 Ayt Fizik Soru Bankasi (#12) | 1308 | #291 | MERGE | `FIZ_345_AYT_YONTEM.md` |
 | B3 | Apotemi 2019 2020 Tyt Ayt Fizik (#2) | -- | -- | SAHIP KARARI BEKLIYOR (eski baski istenip istenmedigi) | -- |
-| C | 345 2024 Ayt Biyoloji (#13) | -- | -- | Faz 0 ortusme olcumu yapilmadi | -- |
+| C | 345 2024 Ayt Biyoloji (#13) | -- | -- | **ATLA onerisi** (Faz 0 olculdu: DB ile %85 ortusme, beklenen yeni soru ~45) | `BIO_345_2024_KESIF.md` |
 | D | Geometri (#1, #3/#4, #5, #8, #9) | -- | -- | baslanmadi | -- |
 
 Toplam ithal: **4231 soru**, hepsi PASIF.
