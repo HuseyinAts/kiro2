@@ -75,12 +75,72 @@ benzer sisecekti. Ayrica C orani ucta olan alti test (90, 6, 31, 22,
 Pratik sonucu: bu kitapta "hep C isaretle" taban cizgisi %30 yapar.
 Kalibrasyon ve zorluk kestirimi bunu hesaba katmali.
 
+## Adim 2 -- Kirpim kutulari (BITTI)
+
+Cikti: `acil_2324_geometri_kirpim_kutulari.json` (**1881 kutu**).
+Uretici: `backend/scripts/kitap/acil_geo_kutu.py` (kutulari uretir VE dort
+kapiyi kosar; kapilardan biri patlarsa dosyayi hic yazmaz).
+
+Kutular sabit bir izgaradan degil, **simgeden** turetiliyor. Kurallar
+Faz 0'da olculmustu; burada uygulandi:
+
+| kural | deger |
+|---|---|
+| kutu ustu | simge_y - 6 |
+| kutu alti | ayni sutunda sonraki simge_y - 9 |
+| son kutunun alti (cevap kutulu sayfa) | kutunun ustu - 4 |
+| son kutunun alti (kutusuz sayfa) | 902 |
+| kutu sol kenari | simge_x + 24 (disk disarida kalsin) |
+| sol sutun sag kenari | gx_sag + 1 |
+| sag sutun sag kenari | 706 |
+| tam genislik sayfa | sag sutunda simge yok + govde 400'un sagina tasiyor |
+
+### Dort kapi (hepsi gecti)
+
+| kapi | olctugu sey | sonuc |
+|---|---|---|
+| 1 | kutu sayisi == 1881 | gecti |
+| 2 | hicbir kutunun alti cevap kutusuna girmiyor | 0 ihlal |
+| 3 | ayni sutunda ortusme yok, 40 px'ten kisa kutu yok | 0 / 0 |
+| 4 | her kutuda murekkep var (>= 120 px) | 0 bos |
+
+**Kapilarin gecmesi kutular DOGRU demek degil**, yalnizca bilinen dort
+hata sinifinin olmadigini soyler. Bu yuzden ayrica gozle ornekleme
+yapildi: s5, s47, s200, s435 sayfalarinda kutular sayfanin uzerine
+cizilip bakildi.
+
+### Gozle ornekleme iki kusuru yakaladi (kapilar yakalayamadi)
+
+**(a) Sol sutunun sag kenari sikki kesiyordu.** Ilk turetme
+`gx_sag - 8` kullaniyordu; s200'de "E) 14" ve "E) 34" siklarinin son
+harfi kutunun disinda kaldi. Olcum: sol sutunun metni **tam gx_sag'da**
+bitiyor (s200 sik satiri, murekkep x 84-361, gx_sag = 361). Kenar
+`gx_sag + 1` yapildi.
+
+  Yan etkisi: sag sutun simgesinin diskinden ~10 px sol kutuya siziyor.
+  Disk sabit renkli oldugu icin (240,238,247 / glif 69,39,160) disa
+  aktarimda beyaza boyanacak -- adim 2b.
+
+**(b) Okuyucu simgesi kutunun icindeydi.** Ilk turetme kutuyu simgenin
+x'inden baslatiyordu, yani ogrenciye gosterilecek gorsele okuyucunun
+kendi arayuzu giriyordu. Sol kenar `simge_x + 24` yapildi.
+
+**(c) Tam genislik sayfa yaridan kesiliyordu.** s47 ("Karma Test - 4")
+tek sutunlu; sol kutunun sag kenari 338'de kaliyor ve soruyu ortadan
+bicdi. Sag sutunda hic simge yokken govdenin ayiricinin sagina tasiyip
+tasmadigi olculuyor; tasiyorsa kutu sayfanin tamamini kapliyor.
+
+Not: (a) ve (c) dort kapinin da GECTIGI durumlardi -- kapilar "kutu bos
+mu, tasiyor mu, cakisiyor mu" diye bakiyor, "dogru yeri mi kapsiyor"
+diye bakmiyor. Gozle ornekleme bu yuzden zorunlu.
+
 ## Sirada ne var
 
 | adim | durum |
 |---|---|
 | 1. cevap anahtari | **BITTI** (1881 cevap, 3 kanal + simge caprazi) |
-| 2. kirpim koordinatlari (simgeden turetilir; tek/cift 18 px kaymasi) | siradaki |
+| 2. kirpim koordinatlari (simgeden turetilir; tek/cift 18 px kaymasi) | **BITTI** (1881 kutu, dort kapi + gozle ornekleme) |
+| 2b. kirpim disa aktarimi (disk beyazlatma dahil) | siradaki |
 | 3. sayfa transkripsiyonu (442 sayfa, ~37 grup, ~5,5M jeton) | -- |
 | 4. konu agaci migration (6 bolum / 27 konu) | -- |
 | 5. ithal araci + e2e testler | -- |
