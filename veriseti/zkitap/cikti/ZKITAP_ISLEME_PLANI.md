@@ -330,8 +330,9 @@ edilmis bir PR ve bir YONTEM belgesi vardir.
 | B3 | Apotemi 2019 2020 Tyt Ayt Fizik (#2) | -- | -- | SAHIP KARARI BEKLIYOR (eski baski istenip istenmedigi) | -- |
 | C | 345 2024 Ayt Biyoloji (#13) | -- | -- | **ATLA onerisi** (Faz 0 olculdu: DB ile %85 ortusme, beklenen yeni soru ~45) | `BIO_345_2024_KESIF.md` |
 | D | Geometri (#1, #3/#4, #5, #8, #9) | -- | -- | on kesif yapildi: dalga 5 degil **4 kitap** (#3/#4 ayni yakalama) | `GEO_DALGA_D_KESIF.md` |
-| D / #1 | ACIL 2023-2024 Tyt Ayt Geometri | 1881 (beklenen) | -- | Faz 0 bitti, **GIT**; Faz 1 SAHIP baski secimini bekliyor | `GEO_ACIL_2324_KESIF.md` |
+| D / #1 | ACIL 2023-2024 Tyt Ayt Geometri | 1881 (beklenen) | -- | Faz 0 bitti, **GIT**; baski karari verildi (ikisi de) | `GEO_ACIL_2324_KESIF.md` |
 | D / #3 | Orijinal 2024 Tyt Ayt Geometri | ~2099 (beklenen) | -- | Faz 0 bitti, **GIT**; test haritasi Faz 1'de icindekilerden kurulacak | `GEO_ORIJINAL_2024_KESIF.md` |
+| D / ek | ACIL 2025 KURS Tyt Ayt Geometri | ~1951 (beklenen) | -- | Faz 0 bitti, **GIT** (sahip karari: iki ACIL baskisi da islenecek) | `GEO_ACIL_2025_KURS_KESIF.md` |
 
 Toplam ithal: **4231 soru**, hepsi PASIF.
 
@@ -385,3 +386,19 @@ Toplam ithal: **4231 soru**, hepsi PASIF.
    x'te basliyordu, Orijinal 2024'te icerige gore ortalaniyor (s200
    x0=82, s230 x0=235). Sabit x varsayan dedektor sayfalarin yarisini
    kaciriyor.
+11. **Yakalama tekrari (ayni dosyanin birden fazla kopyasi) olabilir**:
+   ACIL 2025 KURS'ta dosya 3-4-5 bayt bayt ayni. Bu yuzden "PNG sayisi
+   = PDF /Count" tek basina uzlasma degil -- PDF ayni PNG'lerden
+   uretildigi icin ayni fazlaligi tasiyor. Sayfa sayisi kapisina md5
+   tekrar taramasi eklenmeli.
+12. **Basili sayfa no ofseti 0 olmak zorunda degil**: ACIL 2025'te
+   basili no = dosya no - 4 (12 ornekte sabit). Ofset olculmeden
+   icindekiler sayfa numaralari kullanilamaz.
+13. **Icindekiler sayfasi yakalamada olmayabilir**: ACIL 2025 KURS'ta
+   kunyeden sonra dogrudan icerik geliyor. Konu agaci o zaman sayfa
+   ust bandindaki basliklardan turetilmek zorunda -- ek is ve ek hata
+   riski.
+14. **Baski ayrimi icin en ucuz kanit KUNYE**: ISBN + yazar/editor
+   listesi, piksel karsilastirmasindan once bakilmali. ACIL'in iki
+   baskisi boyle bir dakikada "ayri kitap" olarak ayrildi
+   (978-625-7134-31-6 vs 978-625-7134-96-5).
