@@ -44,6 +44,12 @@ def _mock_db():
     return db
 
 
+# Bu surumde bulunamadigi icin atlanan bagimlilik override'lari.
+# Bos `except ... : pass` yerine sebebi burada kayda geciyoruz; boylece
+# bir override sessizce dusmus mu, test icinden gorulebiliyor.
+_ATLANAN_OVERRIDELER: list[str] = []
+
+
 def _setup_overrides(app):
     from core.database import get_db_session
     from core.dependencies import get_current_admin_user, get_current_user
@@ -57,15 +63,17 @@ def _setup_overrides(app):
         from core.database import get_db
 
         app.dependency_overrides[get_db] = lambda: mock_db
-    except ImportError:
-        pass
+    except ImportError as exc:
+        _ATLANAN_OVERRIDELER.append(f"core.database.get_db: {exc}")
 
     try:
         from core.dependencies import get_redis_client
 
-        app.dependency_overrides[get_redis_client] = lambda: AsyncMock()
-    except ImportError:
-        pass
+        # PLW0108: lambda gereksiz; AsyncMock'un kendisi cagrildiginda
+        # zaten yeni bir AsyncMock ornegi donuyor.
+        app.dependency_overrides[get_redis_client] = AsyncMock
+    except ImportError as exc:
+        _ATLANAN_OVERRIDELER.append(f"core.dependencies.get_redis_client: {exc}")
 
     return mock_db
 
@@ -394,8 +402,10 @@ class TestDiaryDeepCoverage:
             mock_service.update_summary = AsyncMock(return_value=MagicMock())
             mock_service.delete_summary = AsyncMock(return_value=True)
             self.app.dependency_overrides[get_diary_service] = lambda: mock_service
-        except (ImportError, Exception):
-            pass
+        except (ImportError, AttributeError) as exc:
+            # `except Exception` her hatayi yutuyordu; yalnizca "modul/oznitelik
+            # yok" halini gecistiriyoruz ve sebebi kayda geciyoruz.
+            _ATLANAN_OVERRIDELER.append(f"diary get_diary_service: {exc}")
 
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
@@ -516,6 +526,16 @@ class TestEnhancedChatDeepCoverage:
         self.app = FastAPI()
         self.app.include_router(mod.router)
         self.mock_db = _setup_overrides(self.app)
+
+        # enhanced_chat'in DB bağımlılığı `core.dependencies.get_db`'dir
+        # (api/enhanced_chat.py:_get_db_dependency). `_setup_overrides`
+        # yalnızca `core.database.get_db` / `get_db_session`'ı geçiyor,
+        # yani bu router için override HİÇ İŞLEMİYORDU: handler gerçek
+        # oturumu alıyor, sonuç da o işçide DB'nin durumuna göre
+        # 200/404/500 arasında değişiyordu (CI'da sıra bağımlı kırmızı).
+        from core.dependencies import get_db as _chat_get_db
+
+        self.app.dependency_overrides[_chat_get_db] = lambda: self.mock_db
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
     @patch("api.enhanced_chat._call_llm")
@@ -548,9 +568,29 @@ class TestEnhancedChatDeepCoverage:
 
     @patch("api.enhanced_chat._verify_chat_tables")
     def test_get_history_deep(self, mock_tables):
+        """Profili olmayan öğrenci 404; profil varsa geçmiş 200 döner.
+
+        Eski hâli `in (200, 500)` diyordu ve DB override'ı işlemediği
+        için sonuç işçiye göre değişiyordu. Artık iki yol da tek tek
+        ölçülüyor.
+        """
         mock_tables.return_value = True
+
+        # mock DB'de profil satırı yok -> sözleşme gereği 404
         r = self.client.get("/api/v1/enhanced-chat/history/test-user-123")
-        assert r.status_code in (200, 500)
+        assert r.status_code == 404
+
+        # profil varsa handler'ın kendi SQL yolu koşar ve 200 döner
+        with patch(
+            "api.enhanced_chat.get_learning_path_profile_user_id",
+            new_callable=AsyncMock,
+            return_value="test-user-123",
+        ):
+            r = self.client.get("/api/v1/enhanced-chat/history/test-user-123")
+        assert r.status_code == 200
+        body = r.json()
+        assert body["success"] is True
+        assert body["data"]["history"] == []
 
 
 # ---------------------------------------------------------------------------
