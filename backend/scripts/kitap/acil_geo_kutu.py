@@ -55,9 +55,11 @@ DISK = np.array([240, 238, 247])
 
 
 def _murekkep(a: np.ndarray) -> np.ndarray:
+    """Kitap murekkebi maskesi: koyu VE notr (renkli sekil dolgusu degil)."""
     mx = a.max(axis=2)
     mn = a.min(axis=2)
-    return (mx < 170) & ((mx - mn) < 60)
+    maske: np.ndarray = (mx < 170) & ((mx - mn) < 60)
+    return maske
 
 
 def _kart(yol: Path) -> np.ndarray:
