@@ -23,8 +23,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 # Mock chromadb before import to avoid Windows directory creation issues
-sys.modules.setdefault('chromadb', MagicMock())
-sys.modules.setdefault('chromadb.config', MagicMock())
+sys.modules.setdefault("chromadb", MagicMock())
+sys.modules.setdefault("chromadb.config", MagicMock())
 
 
 class TestSearchRequest:
@@ -35,9 +35,7 @@ class TestSearchRequest:
         from api.v1.semantic_search import SearchRequest
 
         request = SearchRequest(
-            query="Matematik sorusu",
-            limit=10,
-            similarity_threshold=0.7
+            query="Matematik sorusu", limit=10, similarity_threshold=0.7
         )
 
         assert request.query == "Matematik sorusu"
@@ -65,7 +63,7 @@ class TestSearchRequest:
             subject="matematik",
             exam_type="TYT",
             difficulty_min=-2.0,
-            difficulty_max=2.0
+            difficulty_max=2.0,
         )
 
         assert request.subject == "matematik"
@@ -77,11 +75,7 @@ class TestSearchRequest:
         """MMR aktif istek."""
         from api.v1.semantic_search import SearchRequest
 
-        request = SearchRequest(
-            query="test",
-            use_mmr=True,
-            mmr_lambda=0.7
-        )
+        request = SearchRequest(query="test", use_mmr=True, mmr_lambda=0.7)
 
         assert request.use_mmr is True
         assert request.mmr_lambda == 0.7
@@ -98,7 +92,7 @@ class TestSearchResult:
             id="q1",
             content="Test sorusu",
             similarity=0.85,
-            metadata={"subject": "matematik"}
+            metadata={"subject": "matematik"},
         )
 
         assert result.id == "q1"
@@ -115,7 +109,7 @@ class TestSearchResult:
             similarity=0.85,
             metadata={},
             hybrid_score=0.82,
-            score_breakdown={"similarity": 0.85, "recency": 0.7, "popularity": 0.5}
+            score_breakdown={"similarity": 0.85, "recency": 0.7, "popularity": 0.5},
         )
 
         assert result.hybrid_score == 0.82
@@ -130,8 +124,8 @@ class TestSemanticSearchService:
         """Mock search service."""
         with patch("api.v1.semantic_search.CHROMADB_AVAILABLE", False):
             from api.v1.semantic_search import SemanticSearchService
-            service = SemanticSearchService()
-            return service
+
+            return SemanticSearchService()
 
     def test_build_where_clause_empty(self, mock_service):
         """Filtre yoksa None dönmeli."""
@@ -155,11 +149,7 @@ class TestSemanticSearchService:
         """Birden fazla filtre $and ile birleşmeli."""
         from api.v1.semantic_search import SearchRequest
 
-        request = SearchRequest(
-            query="test",
-            subject="matematik",
-            exam_type="TYT"
-        )
+        request = SearchRequest(query="test", subject="matematik", exam_type="TYT")
         where = mock_service._build_where_clause(request)
 
         assert "$and" in where
@@ -174,6 +164,7 @@ class TestMMRAlgorithm:
         """Service fixture."""
         with patch("api.v1.semantic_search.CHROMADB_AVAILABLE", False):
             from api.v1.semantic_search import SemanticSearchService
+
             return SemanticSearchService()
 
     @pytest.fixture
@@ -186,25 +177,25 @@ class TestMMRAlgorithm:
                 id="q1",
                 content="Soru 1",
                 similarity=0.95,
-                metadata={"_embedding": [1.0, 0.0, 0.0]}
+                metadata={"_embedding": [1.0, 0.0, 0.0]},
             ),
             SearchResult(
                 id="q2",
                 content="Soru 2",
                 similarity=0.90,
-                metadata={"_embedding": [0.9, 0.1, 0.0]}  # q1'e çok benzer
+                metadata={"_embedding": [0.9, 0.1, 0.0]},  # q1'e çok benzer
             ),
             SearchResult(
                 id="q3",
                 content="Soru 3",
                 similarity=0.85,
-                metadata={"_embedding": [0.0, 1.0, 0.0]}  # q1'e dik
+                metadata={"_embedding": [0.0, 1.0, 0.0]},  # q1'e dik
             ),
             SearchResult(
                 id="q4",
                 content="Soru 4",
                 similarity=0.80,
-                metadata={"_embedding": [0.0, 0.0, 1.0]}  # Tamamen farklı
+                metadata={"_embedding": [0.0, 0.0, 1.0]},  # Tamamen farklı
             ),
         ]
 
@@ -256,6 +247,7 @@ class TestHybridRanking:
         """Service fixture."""
         with patch("api.v1.semantic_search.CHROMADB_AVAILABLE", False):
             from api.v1.semantic_search import SemanticSearchService
+
             return SemanticSearchService()
 
     @pytest.fixture
@@ -271,8 +263,8 @@ class TestHybridRanking:
                 similarity=0.80,
                 metadata={
                     "created_at": (now - timedelta(days=300)).isoformat(),
-                    "view_count": 100
-                }
+                    "view_count": 100,
+                },
             ),
             SearchResult(
                 id="q2",
@@ -280,8 +272,8 @@ class TestHybridRanking:
                 similarity=0.75,
                 metadata={
                     "created_at": (now - timedelta(days=7)).isoformat(),
-                    "view_count": 5
-                }
+                    "view_count": 5,
+                },
             ),
             SearchResult(
                 id="q3",
@@ -289,8 +281,8 @@ class TestHybridRanking:
                 similarity=0.85,
                 metadata={
                     "created_at": (now - timedelta(days=30)).isoformat(),
-                    "view_count": 50
-                }
+                    "view_count": 50,
+                },
             ),
         ]
 
@@ -334,10 +326,7 @@ class TestSimilarRequest:
         """Geçerli benzer soru isteği."""
         from api.v1.semantic_search import SimilarRequest
 
-        request = SimilarRequest(
-            question_id="q123",
-            limit=5
-        )
+        request = SimilarRequest(question_id="q123", limit=5)
 
         assert request.question_id == "q123"
         assert request.limit == 5
@@ -349,8 +338,19 @@ class TestSearchHealth:
 
     @pytest.mark.asyncio
     async def test_health_returns_status(self):
-        """Health endpoint status dönmeli."""
-        with patch("api.v1.semantic_search.CHROMADB_AVAILABLE", False):
+        """Health endpoint status dönmeli.
+
+        `_search_service` modül düzeyinde singleton'dır ve
+        `initialize()` `_initialized` True ise `CHROMADB_AVAILABLE`
+        bayrağını hiç okumadan True döner. Bu yüzden aynı xdist
+        işçisinde daha önce servisi başlatan bir test koştuysa bu test
+        "healthy" görüp patlıyordu (CI'da sıra bağımlı kırmızı).
+        Singleton da sıfırlanarak test kendi durumunu kuruyor.
+        """
+        with (
+            patch("api.v1.semantic_search._search_service", None),
+            patch("api.v1.semantic_search.CHROMADB_AVAILABLE", False),
+        ):
             from api.v1.semantic_search import search_health
 
             result = await search_health()
@@ -372,13 +372,15 @@ class TestIntegrationScenarios:
         mock_collection.query.return_value = {
             "ids": [["q1", "q2", "q3"]],
             "documents": [["Soru 1", "Soru 2", "Soru 3"]],
-            "metadatas": [[
-                {"subject": "matematik", "difficulty": 0.5},
-                {"subject": "fizik", "difficulty": 0.3},
-                {"subject": "matematik", "difficulty": 0.7}
-            ]],
+            "metadatas": [
+                [
+                    {"subject": "matematik", "difficulty": 0.5},
+                    {"subject": "fizik", "difficulty": 0.3},
+                    {"subject": "matematik", "difficulty": 0.7},
+                ]
+            ],
             "distances": [[0.1, 0.2, 0.3]],
-            "embeddings": [[[0.1] * 768, [0.2] * 768, [0.3] * 768]]
+            "embeddings": [[[0.1] * 768, [0.2] * 768, [0.3] * 768]],
         }
         mock_collection.count.return_value = 100
 
@@ -387,30 +389,30 @@ class TestIntegrationScenarios:
     @pytest.mark.asyncio
     async def test_search_with_filters(self, mock_chromadb):
         """Filtreli arama senaryosu."""
-        with patch("api.v1.semantic_search.CHROMADB_AVAILABLE", True):
-            with patch("api.v1.semantic_search.chromadb") as mock_chroma:
-                mock_client = MagicMock()
-                mock_client.get_or_create_collection.return_value = mock_chromadb
-                mock_chroma.Client.return_value = mock_client
+        with (
+            patch("api.v1.semantic_search.CHROMADB_AVAILABLE", True),
+            patch("api.v1.semantic_search.chromadb") as mock_chroma,
+        ):
+            mock_client = MagicMock()
+            mock_client.get_or_create_collection.return_value = mock_chromadb
+            mock_chroma.Client.return_value = mock_client
 
-                with patch("api.v1.semantic_search.get_embedding_service") as mock_emb:
-                    mock_emb_service = MagicMock()
-                    mock_emb_service.embed.return_value = [0.1] * 768
-                    mock_emb.return_value = mock_emb_service
+            with patch("api.v1.semantic_search.get_embedding_service") as mock_emb:
+                mock_emb_service = MagicMock()
+                mock_emb_service.embed.return_value = [0.1] * 768
+                mock_emb.return_value = mock_emb_service
 
-                    from api.v1.semantic_search import (
-                        SearchRequest,
-                        SemanticSearchService,
-                    )
+                from api.v1.semantic_search import (
+                    SearchRequest,
+                    SemanticSearchService,
+                )
 
-                    service = SemanticSearchService()
-                    request = SearchRequest(
-                        query="integral hesaplama",
-                        subject="matematik",
-                        limit=5
-                    )
+                service = SemanticSearchService()
+                request = SearchRequest(
+                    query="integral hesaplama", subject="matematik", limit=5
+                )
 
-                    response = await service.search(request)
+                response = await service.search(request)
 
-                    assert response.query == "integral hesaplama"
-                    assert response.filters_applied["subject"] == "matematik"
+                assert response.query == "integral hesaplama"
+                assert response.filters_applied["subject"] == "matematik"
