@@ -134,14 +134,51 @@ Not: (a) ve (c) dort kapinin da GECTIGI durumlardi -- kapilar "kutu bos
 mu, tasiyor mu, cakisiyor mu" diye bakiyor, "dogru yeri mi kapsiyor"
 diye bakmiyor. Gozle ornekleme bu yuzden zorunlu.
 
+## Adim 2b -- Kirpim disa aktarimi (BITTI)
+
+Uretici: `backend/scripts/kitap/acil_geo_kirp.py`
+Cikti: `<CROP_IMAGE_DIR>/ACILGEO_2324/s<sayfa>_<sutun>_<sira>.png`
+(**1881 gorsel**; git'e girmez, her ortamda yeniden uretilir.)
+
+### Kaynak PDF degil PNG
+
+Bu kitabin PDF'i zaten ayni PNG'lerden uretilmis; PNG'den kirpmak
+render boyutu uyusmazligi riskini bastan kaldiriyor. Yine de her
+sayfanin boyutu 1920x1080 ile karsilastiriliyor ve tutmazsa script
+DURUYOR -- kaymis kirpim uretmektense hic uretmemek.
+
+### Okuyucu simgesi beyazlatiliyor
+
+Adim 2'de sol kutu `gx_sag + 1`'e kadar uzatilmisti (yoksa son sikkin
+son harfi kesiliyordu); bunun yan etkisi sag sutun simgesinin diskinden
+~10 px'in kutuya girmesiydi. Disk OPAK oldugu icin altinda kitap
+icerigi zaten gorunmuyor: beyaza boyamak bilgi kaybettirmiyor.
+
+Beyazlatma **renge gore degil, konuma gore** yapiliyor. Gerekce Faz
+0'dan: s435'teki bisikletli cizimin lacivert formasi glif rengine 40
+tolerans icinde dusuyordu; renk filtresi kitabin kendi cizimini de
+silerdi. Konumlar kutu dosyasinin kendi `simge` alanindan geliyor --
+her simgenin bir kutusu oldugu icin liste tam, ve script git disi bir
+dosyaya bagimli degil.
+
+### Dogrulama
+
+* 1881 kutu -> **1881 gorsel**, eksik yok.
+* Gozle ornekleme: s0200_sol_1 (soru 10, "E) 14" tam), s0200_sag_1
+  (soru 12, bes sik tam), s0005_sol_1 ("E) 25" tam), s0047_sol_1 (tam
+  genislik soru, uc vinc sekli de iceride). Hicbirinde okuyucu simgesi
+  yok, hicbirinde cevap kutusu yok.
+* Script'in `faz0b.json` bagimliligi kaldirildiktan sonra cikti
+  degismedi: 120 rastgele dosyada md5 farki 0.
+
 ## Sirada ne var
 
 | adim | durum |
 |---|---|
 | 1. cevap anahtari | **BITTI** (1881 cevap, 3 kanal + simge caprazi) |
 | 2. kirpim koordinatlari (simgeden turetilir; tek/cift 18 px kaymasi) | **BITTI** (1881 kutu, dort kapi + gozle ornekleme) |
-| 2b. kirpim disa aktarimi (disk beyazlatma dahil) | siradaki |
-| 3. sayfa transkripsiyonu (442 sayfa, ~37 grup, ~5,5M jeton) | -- |
+| 2b. kirpim disa aktarimi (disk beyazlatma dahil) | **BITTI** (1881 gorsel) |
+| 3. sayfa transkripsiyonu (442 sayfa, ~37 grup, ~5,5M jeton) | siradaki |
 | 4. konu agaci migration (6 bolum / 27 konu) | -- |
 | 5. ithal araci + e2e testler | -- |
 
