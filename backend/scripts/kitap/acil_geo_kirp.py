@@ -77,7 +77,9 @@ def ana() -> int:
     kok = kokler[0]
 
     veri = json.loads(Path(a.kutular).read_text("utf-8"))
-    kutular = veri["kutular"]
+    # ORTULU sorular islenmez (sahip karari): sag sutun simgesi sol sutundaki
+    # satirin uzerine biniyor ve son sik diskin altinda kaliyor.
+    kutular = [b for b in veri["kutular"] if not b.get("ortulu")]
     if a.ornek:
         kutular = kutular[: a.ornek]
     hedef = Path(a.crop_dir) / ONEK
@@ -115,7 +117,11 @@ def ana() -> int:
             kirp.save(hedef / ad)
             uretilen += 1
 
-    print(f"{uretilen} kirpim -> {hedef}  (beyazlatilan simge: {beyazlatilan})")
+    atlanan = sum(1 for b in veri["kutular"] if b.get("ortulu"))
+    print(
+        f"{uretilen} kirpim -> {hedef}  (beyazlatilan simge: {beyazlatilan}; "
+        f"ortulu oldugu icin atlanan soru: {atlanan})"
+    )
     return 0
 
 
