@@ -156,7 +156,12 @@ def test_test_sayisi_ve_yapisi(veri) -> None:
         bas = {r["test_bas_sayfa"] for r in rs}
         son = {r["test_son_sayfa"] for r in rs}
         assert len(bas) == len(son) == 1, tno
-        assert min(sayfalar) >= bas.pop() and max(sayfalar) <= son.pop(), tno
+        # assert icinde pop() yan etkidir (CodeQL py/side-effect-in-assert);
+        # degerler once cikarilir.
+        ilk_sayfa = next(iter(bas))
+        son_sayfa = next(iter(son))
+        assert min(sayfalar) >= ilk_sayfa, (tno, min(sayfalar), ilk_sayfa)
+        assert max(sayfalar) <= son_sayfa, (tno, max(sayfalar), son_sayfa)
 
 
 def test_her_test_tek_bolumde(veri) -> None:
