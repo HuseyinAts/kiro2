@@ -85,6 +85,35 @@ Anahtar <-> soru sayisi caprazi, 6 testte simge sayimi ile karsilastirildi:
 
 6/6 tam tutuyor (78 soru). Kalan 132 testin caprazi Faz 1'e birakildi.
 
+## DUZELTME (19 Eyl 2026) -- K0.4'teki ortme olcumu YANLISTI
+
+Asagidaki K0.4 bolumu "diskin icinde kitap murekkebi var mi" diye olctu
+ve "soru icerigi 0" sonucuna vardi. **Bu metrik ortmeyi yapisal olarak
+goremez**: disk OPAK, altinda kalan murekkep goruntude zaten yok. Metrik
+ancak diskin kenarindan tasan seyi (sutun cizgisi, kutu kenari, filigran)
+sayar -- nitekim saydigi da oydu.
+
+Dogru metrik: **diskin hemen solundaki bantta metin satiri bitiyor mu**
+(diskin sol kenarindan 7-13 px). Faz 1'de bu metrikle olculdu:
+
+| olcum | deger |
+|---|---|
+| sag sutun simgesi | 916 |
+| ortme olayi | **154** |
+| etkilenen essiz soru | **151** |
+| etkilenen sayfa | 136 |
+
+Dogrulama: duzeltilmeden once dort kirpim (s43 sol 2, s50 sol 3,
+s68 sol 3, s71 sol 3) son sik satirini TASIMIYORDU; duzeltmeden sonra
+dordu de tasiyor. Sahip karari ile bu 151 soru islenmedi.
+
+Olcum artik tekrar uretilebilir:
+`backend/scripts/kitap/ortme_olc.py` -- ACIL 2023-2024 uzerinde
+`--beklenen-olay 154` ile kalibrasyon testi olarak kosar.
+
+Asagidaki K0.4 metni TARIHSEL KAYIT olarak birakildi; sayisi
+kullanilmamalidir.
+
 ## K0.4 -- Simge ortmesi: YOK denecek kadar az
 
 Okuyucu ayni FERNUS: disk (240,238,247), glif (69,39,160), disk boyutu
