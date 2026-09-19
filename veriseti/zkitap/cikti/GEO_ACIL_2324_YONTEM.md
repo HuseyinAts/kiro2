@@ -283,6 +283,59 @@ Kapinin olcum penceresi iki kez daraltildi, ikisi de yanlis alarmdan:
 Ilk 8 partinin transkripsiyonu (376 soru) IPTAL edildi ve 1730 kirpimin
 tamami yeniden uretildi; transkripsiyon sifirdan baslatildi.
 
+## Adim 3 -- Transkripsiyon (1730 soru)
+
+37 parti, her biri 47 soru (sonuncusu 38). Her partiyi ayri bir ajan
+isledi; ajan yalniz kendi gorsellerini gordu, ciktisini dogrudan dosyaya
+yazdi ve geriye tek satir ("yazildi: N") dondu -- boylece 1730 sorunun
+metni ust baglama hic girmedi.
+
+Ajan kurallari (`GOREV.md`): soruyu COZME, gordugunu aynen kopyala, sekli
+metne cevirme (`sekil_var` + tek cumlelik aciklama), okuyamadigini uydurma
+(`okunamayan`), basim kusurunu not et (`kaynak_kusuru`), soru numarasini
+gorseldeki kirmizi rakamdan al.
+
+### Yapisal kapilar (`acil_geo_metin_kapi.py`)
+
+Hicbir ajan butunu gormedigi icin "sira kaydi / eksik soru / yanlis test"
+sinifi hatalar ajan icinde yakalanamaz. Veri seti kitabin KENDI cevap
+anahtarina ve kirpim kutularina karsi yedi kapidan gecirilir:
+
+| kapi | ne dogrular |
+|---|---|
+| 1 | kayit sayisi == kutu - ortulu |
+| 2 | veri sette hicbir ortulu kutu yok |
+| 3 | gorsel adlari kutu listesiyle birebir |
+| 4 | test basina kutu sayisi == cevap sayisi |
+| 5 | basili soru numarasi == test ici sira |
+| 6 | kaydin cevabi == anahtarin ayni test+sira cevabi |
+| 7 | govde dolu, tam 5 sik |
+
+Sonuc: **yedi kapi da gecti** (1730 soru, 138 test, 151 ortulu disarida).
+Kapilarin korlugu yedi mutasyonla olculdu (kayit silme, cevap bozma,
+numara bozma, govde bosaltma, sik silme, sira bozma, ortulu kutu ekleme):
+yedisi de tetikledi.
+
+### Tek numara uyusmazligi -- kitabin kendi hatasi
+
+KAPI 5, `s0185_sag_2` icin basili numarayi 10, test ici sirayi 8 buldu.
+Kaynak sayfa acilip bakildi: s185'te numaralar gercekten **5, 6, 7, 10**
+gidiyor ve ayni testin bir sonraki sorusu da 10 numarali. Yani kirpim ya
+da transkripsiyon hatasi degil, kitabin basim hatasi; kayit
+`kaynak_kusuru` alanina yazildi. Kapi, `kaynak_kusuru` dolu olan numara
+uyusmazliklarini rapor eder ama dusurmez.
+
+### Veri seti
+
+`acil_2324_geometri_metin.json` -- 1,26 MB, 1730 kayit. Her kayit:
+gorsel, sayfa/sutun/sira, test, test_ici_sira, soru_no_basili, cevap,
+govde, sikler (A-E), sekil_var, sekil_aciklama, sikler_gorsel,
+kaynak_kusuru, okunamayan.
+
+Olculen dagilimlar: sekilli soru 1513 / 1730; gorsel sikli 17;
+kaynak_kusuru isaretli 36; okunamayan alani dolu 10.
+Cevap dagilimi A 216 / B 300 / C 530 / D 423 / E 261.
+
 ## Sirada ne var
 
 | adim | durum |
@@ -292,7 +345,7 @@ tamami yeniden uretildi; transkripsiyon sifirdan baslatildi.
 | 2b. kirpim disa aktarimi (disk beyazlatma dahil) | **BITTI** (1881 gorsel) |
 | 2c. kirpim duzeltmeleri + 151 ortulu sorunun disarida birakilmasi | **BITTI** |
 | 2d. soru numarasini beyazlatan pay (KAPI 6) | **BITTI** |
-| 3. transkripsiyon (1730 soru, 37 parti, ~4,2M jeton) | siradaki |
+| 3. transkripsiyon (1730 soru, 37 parti) | **BITTI** (yedi kapi gecti) |
 | 4. konu agaci migration (6 bolum / 27 konu) | -- |
 | 5. ithal araci + e2e testler | -- |
 
