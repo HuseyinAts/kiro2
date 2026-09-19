@@ -165,11 +165,14 @@ kullanilir, AMA iki yeni is var: (1) sayfa-tipi siniflandirici (Faz 1
 adim 1), (2) beyazlatma payinin ACIL 2025 KURS gibi dar olmasi -- KAPI 6
 payi bu kitaba gore yeniden olculecek.
 
-**Ayrica (sahip karari bekliyor):** Wave D geneli bulgu (GEO_DALGA_D
-eki), FERNUS "Zenginlestirme ve Aktivite Dugmelerini Goster" kapali
-yeniden yakalamanin disk sinifini butun dalgadan silecegini soyluyor.
-C1CELL de 3 px'lik dar-pay kitaplarindan; o test ACIL 2025 KURS'ta
-dogrulanirsa C1CELL yeniden yakalamadan da kazanir.
+**Sahip karari (19 Eyl 2026): yeniden yakalama YOK.** Wave D ekinde
+FERNUS "Zenginlestirme ve Aktivite Dugmelerini Goster" kapali yeniden
+yakalama onerilmisti; sahip okuyucuya giris yapamadigi icin bu yol
+KAPALI. Butun Wave D kitaplari MEVCUT yakalamalarla, ACIL 2023-2024'te
+kanitlanan yolla islenir: KAPI 6 (beyazlatma payi kitaba gore olculur)
++ ortme dislama (diskin ortttugu sorular ortulu isaretlenip islenmez,
+ACIL 2023-2024'teki 151 soru gibi). Bu kitapta ekranin yeniden
+acilmasina gerek yok.
 
 ## Olcum dosyalari (git disi, `backend/_geo1_gecici/`)
 
