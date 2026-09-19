@@ -1,0 +1,6 @@
+# gitleaks yanlis-pozitif bastirma -- yalnizca asagidaki parmak izleri; tum varsayilan kurallar aktif kalir.
+# C1CELL Faz 1: kapinin Turkce yontem metni sir sanildi (yanlis-pozitif). Gercek sir yok; TruffleHog gecti.
+# Ucuncu satir: onceki bir commit'in bu dosyaya koydugu yorum da ayni sebeple bastirildi.
+00c6757736d1c2274368e292679d02b2267dffaf:veriseti/zkitap/cikti/c1cell_2024_geometri_kapi_raporu.json:generic-api-key:3
+00c6757736d1c2274368e292679d02b2267dffaf:backend/scripts/kitap/c1cell_geo_kapi.py:generic-api-key:160
+cb2a1b5fc713edc99e9c355c03d7bf1adaf7c5ca:.gitleaksignore:generic-api-key:2

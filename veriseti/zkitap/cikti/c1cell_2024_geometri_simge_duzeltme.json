@@ -1,0 +1,43 @@
+{
+ "_aciklama": "Kapinin yakaladigi simge-dedektoru yanlis-pozitifleri (gorsel dogrulama, _anomali_montaj.png). Ham faz0_c1.json'a dokunulmaz; kapi/kirpim bu overlay'i uygular. Her giris: kaldirilacak [x,y] konum + gerekce.",
+ "14": {
+  "kaldir": [
+   [
+    584,
+    137
+   ],
+   [
+    521,
+    287
+   ]
+  ],
+  "gerekce": "sekil/figur ogeleri; soru izgarasinin disinda (x=584,521). Gercek: 4 soru (5-8)."
+ },
+ "68": {
+  "kaldir": [
+   [
+    63,
+    129
+   ]
+  ],
+  "gerekce": "ust konu-kutusu (pembe formul) isareti; soru degil. Gercek: 4 soru."
+ },
+ "148": {
+  "kaldir": [
+   [
+    59,
+    123
+   ]
+  ],
+  "gerekce": "ust konu-kutusu (Heron formulu) isareti; soru degil. Gercek: 4 soru."
+ },
+ "149": {
+  "kaldir": [
+   [
+    41,
+    119
+   ]
+  ],
+  "gerekce": "ust konu-kutusu (Sinus alan formulu) isareti; soru degil. Gercek: 4 soru."
+ }
+}

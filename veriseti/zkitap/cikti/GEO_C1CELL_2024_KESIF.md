@@ -178,3 +178,45 @@ acilmasina gerek yok.
 
 `faz0_c1.json` (simge/murekkep taramasi), `ortme_c1.json` (kalibre ortme),
 `_waved_ortme.py`, `c1_*.png` (ornek sayfa/serit/icindekiler goruntuleri).
+
+## Faz 1 -- Cevap seridi okumasi + kirpim kapisi (19 Eyl 2026)
+
+**Serit okumasi.** 163 test-sonu cevap seridi (Faz 0'da `yayilim>300 &
+mavi_px>200` ile tespit) 8 montaj halinde birlestirilip gorsel okundu.
+Montaj kirpimi ONCE x=1180'de kesiliyordu; sag-sayfa anahtarlari (x~1269)
+budaniyordu -- tam genislige (x 630-1290) cekildi. Sonuc: **1770 cevap**.
+N dagilimi: 118 birim x 12, 34 x 8, 3'er 4/6/10, 2 x 11. Tum harfler A-E.
+
+> UYARI: cevap harfleri su an PROVISIONAL (tek gorsel okuma). Faz 4
+> ikinci-okuma dogrulamasi ice-aktarimdan once yapilacak. N sayilari
+> saglam (seritteki son numara); kapi zaten N ile capraz dogruluyor.
+
+**Kirpim kapisi (birim cevap-sayisi).** Her birim icin iki bagimsiz
+sayimin esitligi aranir: (a) sayfa basina SIMGE sayisi (faz0 'yer'),
+(b) test sonu cevap sayisi N. Segmentasyon "N'e geri topla": serit
+sayfasindan geriye simge biriktir, toplam==N olunca birim baslar (onceki
+serit sinirinda). Simge_toplam==N ise birim GECER (kirpima uygun).
+
+**Sonuc: 163/163 gecti (1770 soru).** Ilk turda 4 birim bayrakti; hepsi
+simge-dedektorunun yanlis-pozitifiydi (gorsel dogrulandi, `_anomali_montaj.png`):
+
+| birim | sorun | duzeltme |
+|---|---|---|
+| s14 (p14) | 2 sekil/figur ogesi soru sanilmis | 2 konum kaldirildi -> 4 soru |
+| s69 (p68) | ust konu-kutusu (pembe formul) isareti | 1 konum kaldirildi -> 4 soru |
+| s148 (p148) | Heron formul kutusu isareti | 1 konum kaldirildi -> 4 soru |
+| s150 (p149) | Sinus alan formul kutusu isareti | 1 konum kaldirildi -> 4 soru |
+
+Ham `faz0_c1.json`'a dokunulmadi; yanlis-pozitifler
+`c1cell_2024_geometri_simge_duzeltme.json` overlay'ine gerekceleriyle
+yazildi, kapi/kirpim overlay'i uygular. Kapi mutasyon-dogrulandi: temizde
+bayrak=0; bir N bozulunca ya da gercek bir simge cikinca bayrak artiyor.
+
+**Committed ciktilar:**
+- `backend/scripts/kitap/c1cell_geo_kapi.py` -- kapi scripti
+- `veriseti/zkitap/cikti/c1cell_2024_geometri_cevap_anahtari.json` -- 1770 cevap (PROVISIONAL)
+- `veriseti/zkitap/cikti/c1cell_2024_geometri_kapi_raporu.json` -- 163 birim segmentasyon + gecer
+- `veriseti/zkitap/cikti/c1cell_2024_geometri_simge_duzeltme.json` -- 4 dogrulanmis duzeltme
+
+**Kalan (Faz 3-4):** cevap-anahtari ikinci-okuma dogrulamasi (Faz 4);
+gecen birimlerin kirpimi + ithal + konu agaci (Faz 3).

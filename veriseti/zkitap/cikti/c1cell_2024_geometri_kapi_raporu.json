@@ -1,0 +1,1801 @@
+{
+ "kaynak": "C1CELL 2024 TYT-AYT Geometri Soru Bankasi",
+ "yontem": "birim segmentasyonu: serit sayfasindan geriye simge biriktir, toplam N olunca birim baslar (onceki serit sinirinda). kural: her birimde simge sayisi cevap sayisina esit.",
+ "ozet": {
+  "toplam": 163,
+  "gecen": 163,
+  "bayrak": 0
+ },
+ "birimler": [
+  {
+   "birim": 1,
+   "serit": 9,
+   "bas_sayfa": 8,
+   "sayfalar": [
+    8,
+    9
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 2,
+   "serit": 11,
+   "bas_sayfa": 10,
+   "sayfalar": [
+    10,
+    11
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 3,
+   "serit": 12,
+   "bas_sayfa": 12,
+   "sayfalar": [
+    12
+   ],
+   "cevap_N": 4,
+   "gecer": true
+  },
+  {
+   "birim": 4,
+   "serit": 14,
+   "bas_sayfa": 13,
+   "sayfalar": [
+    13,
+    14
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 5,
+   "serit": 18,
+   "bas_sayfa": 17,
+   "sayfalar": [
+    17,
+    18
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 6,
+   "serit": 20,
+   "bas_sayfa": 19,
+   "sayfalar": [
+    19,
+    20
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 7,
+   "serit": 22,
+   "bas_sayfa": 21,
+   "sayfalar": [
+    21,
+    22
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 8,
+   "serit": 24,
+   "bas_sayfa": 23,
+   "sayfalar": [
+    23,
+    24
+   ],
+   "cevap_N": 10,
+   "gecer": true
+  },
+  {
+   "birim": 9,
+   "serit": 26,
+   "bas_sayfa": 25,
+   "sayfalar": [
+    25,
+    26
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 10,
+   "serit": 28,
+   "bas_sayfa": 27,
+   "sayfalar": [
+    27,
+    28
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 11,
+   "serit": 30,
+   "bas_sayfa": 29,
+   "sayfalar": [
+    29,
+    30
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 12,
+   "serit": 32,
+   "bas_sayfa": 31,
+   "sayfalar": [
+    31,
+    32
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 13,
+   "serit": 34,
+   "bas_sayfa": 33,
+   "sayfalar": [
+    33,
+    34
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 14,
+   "serit": 36,
+   "bas_sayfa": 35,
+   "sayfalar": [
+    35,
+    36
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 15,
+   "serit": 38,
+   "bas_sayfa": 37,
+   "sayfalar": [
+    37,
+    38
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 16,
+   "serit": 40,
+   "bas_sayfa": 39,
+   "sayfalar": [
+    39,
+    40
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 17,
+   "serit": 42,
+   "bas_sayfa": 41,
+   "sayfalar": [
+    41,
+    42
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 18,
+   "serit": 44,
+   "bas_sayfa": 43,
+   "sayfalar": [
+    43,
+    44
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 19,
+   "serit": 46,
+   "bas_sayfa": 45,
+   "sayfalar": [
+    45,
+    46
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 20,
+   "serit": 48,
+   "bas_sayfa": 47,
+   "sayfalar": [
+    47,
+    48
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 21,
+   "serit": 51,
+   "bas_sayfa": 50,
+   "sayfalar": [
+    50,
+    51
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 22,
+   "serit": 53,
+   "bas_sayfa": 52,
+   "sayfalar": [
+    52,
+    53
+   ],
+   "cevap_N": 11,
+   "gecer": true
+  },
+  {
+   "birim": 23,
+   "serit": 57,
+   "bas_sayfa": 56,
+   "sayfalar": [
+    56,
+    57
+   ],
+   "cevap_N": 11,
+   "gecer": true
+  },
+  {
+   "birim": 24,
+   "serit": 59,
+   "bas_sayfa": 58,
+   "sayfalar": [
+    58,
+    59
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 25,
+   "serit": 61,
+   "bas_sayfa": 60,
+   "sayfalar": [
+    60,
+    61
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 26,
+   "serit": 63,
+   "bas_sayfa": 62,
+   "sayfalar": [
+    62,
+    63
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 27,
+   "serit": 65,
+   "bas_sayfa": 64,
+   "sayfalar": [
+    64,
+    65
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 28,
+   "serit": 67,
+   "bas_sayfa": 66,
+   "sayfalar": [
+    66,
+    67
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 29,
+   "serit": 69,
+   "bas_sayfa": 68,
+   "sayfalar": [
+    68,
+    69
+   ],
+   "cevap_N": 10,
+   "gecer": true
+  },
+  {
+   "birim": 30,
+   "serit": 80,
+   "bas_sayfa": 79,
+   "sayfalar": [
+    79,
+    80
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 31,
+   "serit": 82,
+   "bas_sayfa": 81,
+   "sayfalar": [
+    81,
+    82
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 32,
+   "serit": 84,
+   "bas_sayfa": 84,
+   "sayfalar": [
+    84
+   ],
+   "cevap_N": 6,
+   "gecer": true
+  },
+  {
+   "birim": 33,
+   "serit": 86,
+   "bas_sayfa": 85,
+   "sayfalar": [
+    85,
+    86
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 34,
+   "serit": 88,
+   "bas_sayfa": 87,
+   "sayfalar": [
+    87,
+    88
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 35,
+   "serit": 91,
+   "bas_sayfa": 90,
+   "sayfalar": [
+    90,
+    91
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 36,
+   "serit": 93,
+   "bas_sayfa": 92,
+   "sayfalar": [
+    92,
+    93
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 37,
+   "serit": 95,
+   "bas_sayfa": 94,
+   "sayfalar": [
+    94,
+    95
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 38,
+   "serit": 96,
+   "bas_sayfa": 96,
+   "sayfalar": [
+    96
+   ],
+   "cevap_N": 6,
+   "gecer": true
+  },
+  {
+   "birim": 39,
+   "serit": 99,
+   "bas_sayfa": 97,
+   "sayfalar": [
+    97,
+    98,
+    99
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 40,
+   "serit": 102,
+   "bas_sayfa": 100,
+   "sayfalar": [
+    100,
+    101,
+    102
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 41,
+   "serit": 105,
+   "bas_sayfa": 104,
+   "sayfalar": [
+    104,
+    105
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 42,
+   "serit": 107,
+   "bas_sayfa": 106,
+   "sayfalar": [
+    106,
+    107
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 43,
+   "serit": 109,
+   "bas_sayfa": 108,
+   "sayfalar": [
+    108,
+    109
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 44,
+   "serit": 111,
+   "bas_sayfa": 110,
+   "sayfalar": [
+    110,
+    111
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 45,
+   "serit": 113,
+   "bas_sayfa": 112,
+   "sayfalar": [
+    112,
+    113
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 46,
+   "serit": 115,
+   "bas_sayfa": 114,
+   "sayfalar": [
+    114,
+    115
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 47,
+   "serit": 116,
+   "bas_sayfa": 116,
+   "sayfalar": [
+    116
+   ],
+   "cevap_N": 6,
+   "gecer": true
+  },
+  {
+   "birim": 48,
+   "serit": 126,
+   "bas_sayfa": 125,
+   "sayfalar": [
+    125,
+    126
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 49,
+   "serit": 128,
+   "bas_sayfa": 127,
+   "sayfalar": [
+    127,
+    128
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 50,
+   "serit": 130,
+   "bas_sayfa": 129,
+   "sayfalar": [
+    129,
+    130
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 51,
+   "serit": 132,
+   "bas_sayfa": 131,
+   "sayfalar": [
+    131,
+    132
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 52,
+   "serit": 134,
+   "bas_sayfa": 133,
+   "sayfalar": [
+    133,
+    134
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 53,
+   "serit": 136,
+   "bas_sayfa": 135,
+   "sayfalar": [
+    135,
+    136
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 54,
+   "serit": 138,
+   "bas_sayfa": 137,
+   "sayfalar": [
+    137,
+    138
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 55,
+   "serit": 140,
+   "bas_sayfa": 139,
+   "sayfalar": [
+    139,
+    140
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 56,
+   "serit": 142,
+   "bas_sayfa": 141,
+   "sayfalar": [
+    141,
+    142
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 57,
+   "serit": 144,
+   "bas_sayfa": 143,
+   "sayfalar": [
+    143,
+    144
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 58,
+   "serit": 147,
+   "bas_sayfa": 146,
+   "sayfalar": [
+    146,
+    147
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 59,
+   "serit": 148,
+   "bas_sayfa": 148,
+   "sayfalar": [
+    148
+   ],
+   "cevap_N": 4,
+   "gecer": true
+  },
+  {
+   "birim": 60,
+   "serit": 150,
+   "bas_sayfa": 149,
+   "sayfalar": [
+    149,
+    150
+   ],
+   "cevap_N": 10,
+   "gecer": true
+  },
+  {
+   "birim": 61,
+   "serit": 152,
+   "bas_sayfa": 151,
+   "sayfalar": [
+    151,
+    152
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 62,
+   "serit": 155,
+   "bas_sayfa": 154,
+   "sayfalar": [
+    154,
+    155
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 63,
+   "serit": 157,
+   "bas_sayfa": 156,
+   "sayfalar": [
+    156,
+    157
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 64,
+   "serit": 159,
+   "bas_sayfa": 158,
+   "sayfalar": [
+    158,
+    159
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 65,
+   "serit": 170,
+   "bas_sayfa": 169,
+   "sayfalar": [
+    169,
+    170
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 66,
+   "serit": 172,
+   "bas_sayfa": 171,
+   "sayfalar": [
+    171,
+    172
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 67,
+   "serit": 174,
+   "bas_sayfa": 173,
+   "sayfalar": [
+    173,
+    174
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 68,
+   "serit": 176,
+   "bas_sayfa": 175,
+   "sayfalar": [
+    175,
+    176
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 69,
+   "serit": 178,
+   "bas_sayfa": 177,
+   "sayfalar": [
+    177,
+    178
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 70,
+   "serit": 180,
+   "bas_sayfa": 179,
+   "sayfalar": [
+    179,
+    180
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 71,
+   "serit": 182,
+   "bas_sayfa": 181,
+   "sayfalar": [
+    181,
+    182
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 72,
+   "serit": 185,
+   "bas_sayfa": 184,
+   "sayfalar": [
+    184,
+    185
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 73,
+   "serit": 187,
+   "bas_sayfa": 186,
+   "sayfalar": [
+    186,
+    187
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 74,
+   "serit": 189,
+   "bas_sayfa": 188,
+   "sayfalar": [
+    188,
+    189
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 75,
+   "serit": 191,
+   "bas_sayfa": 190,
+   "sayfalar": [
+    190,
+    191
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 76,
+   "serit": 193,
+   "bas_sayfa": 192,
+   "sayfalar": [
+    192,
+    193
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 77,
+   "serit": 202,
+   "bas_sayfa": 201,
+   "sayfalar": [
+    201,
+    202
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 78,
+   "serit": 204,
+   "bas_sayfa": 203,
+   "sayfalar": [
+    203,
+    204
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 79,
+   "serit": 206,
+   "bas_sayfa": 205,
+   "sayfalar": [
+    205,
+    206
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 80,
+   "serit": 208,
+   "bas_sayfa": 207,
+   "sayfalar": [
+    207,
+    208
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 81,
+   "serit": 210,
+   "bas_sayfa": 209,
+   "sayfalar": [
+    209,
+    210
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 82,
+   "serit": 212,
+   "bas_sayfa": 211,
+   "sayfalar": [
+    211,
+    212
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 83,
+   "serit": 215,
+   "bas_sayfa": 214,
+   "sayfalar": [
+    214,
+    215
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 84,
+   "serit": 217,
+   "bas_sayfa": 216,
+   "sayfalar": [
+    216,
+    217
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 85,
+   "serit": 219,
+   "bas_sayfa": 218,
+   "sayfalar": [
+    218,
+    219
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 86,
+   "serit": 221,
+   "bas_sayfa": 220,
+   "sayfalar": [
+    220,
+    221
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 87,
+   "serit": 230,
+   "bas_sayfa": 229,
+   "sayfalar": [
+    229,
+    230
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 88,
+   "serit": 232,
+   "bas_sayfa": 231,
+   "sayfalar": [
+    231,
+    232
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 89,
+   "serit": 234,
+   "bas_sayfa": 233,
+   "sayfalar": [
+    233,
+    234
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 90,
+   "serit": 236,
+   "bas_sayfa": 235,
+   "sayfalar": [
+    235,
+    236
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 91,
+   "serit": 238,
+   "bas_sayfa": 237,
+   "sayfalar": [
+    237,
+    238
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 92,
+   "serit": 240,
+   "bas_sayfa": 239,
+   "sayfalar": [
+    239,
+    240
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 93,
+   "serit": 243,
+   "bas_sayfa": 242,
+   "sayfalar": [
+    242,
+    243
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 94,
+   "serit": 245,
+   "bas_sayfa": 244,
+   "sayfalar": [
+    244,
+    245
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 95,
+   "serit": 246,
+   "bas_sayfa": 246,
+   "sayfalar": [
+    246
+   ],
+   "cevap_N": 4,
+   "gecer": true
+  },
+  {
+   "birim": 96,
+   "serit": 248,
+   "bas_sayfa": 247,
+   "sayfalar": [
+    247,
+    248
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 97,
+   "serit": 251,
+   "bas_sayfa": 250,
+   "sayfalar": [
+    250,
+    251
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 98,
+   "serit": 253,
+   "bas_sayfa": 252,
+   "sayfalar": [
+    252,
+    253
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 99,
+   "serit": 255,
+   "bas_sayfa": 254,
+   "sayfalar": [
+    254,
+    255
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 100,
+   "serit": 264,
+   "bas_sayfa": 263,
+   "sayfalar": [
+    263,
+    264
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 101,
+   "serit": 266,
+   "bas_sayfa": 265,
+   "sayfalar": [
+    265,
+    266
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 102,
+   "serit": 268,
+   "bas_sayfa": 267,
+   "sayfalar": [
+    267,
+    268
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 103,
+   "serit": 270,
+   "bas_sayfa": 269,
+   "sayfalar": [
+    269,
+    270
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 104,
+   "serit": 272,
+   "bas_sayfa": 271,
+   "sayfalar": [
+    271,
+    272
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 105,
+   "serit": 274,
+   "bas_sayfa": 273,
+   "sayfalar": [
+    273,
+    274
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 106,
+   "serit": 276,
+   "bas_sayfa": 275,
+   "sayfalar": [
+    275,
+    276
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 107,
+   "serit": 281,
+   "bas_sayfa": 280,
+   "sayfalar": [
+    280,
+    281
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 108,
+   "serit": 283,
+   "bas_sayfa": 282,
+   "sayfalar": [
+    282,
+    283
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 109,
+   "serit": 285,
+   "bas_sayfa": 284,
+   "sayfalar": [
+    284,
+    285
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 110,
+   "serit": 287,
+   "bas_sayfa": 286,
+   "sayfalar": [
+    286,
+    287
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 111,
+   "serit": 289,
+   "bas_sayfa": 288,
+   "sayfalar": [
+    288,
+    289
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 112,
+   "serit": 291,
+   "bas_sayfa": 290,
+   "sayfalar": [
+    290,
+    291
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 113,
+   "serit": 293,
+   "bas_sayfa": 292,
+   "sayfalar": [
+    292,
+    293
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 114,
+   "serit": 295,
+   "bas_sayfa": 294,
+   "sayfalar": [
+    294,
+    295
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 115,
+   "serit": 297,
+   "bas_sayfa": 296,
+   "sayfalar": [
+    296,
+    297
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 116,
+   "serit": 299,
+   "bas_sayfa": 298,
+   "sayfalar": [
+    298,
+    299
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 117,
+   "serit": 301,
+   "bas_sayfa": 300,
+   "sayfalar": [
+    300,
+    301
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 118,
+   "serit": 303,
+   "bas_sayfa": 302,
+   "sayfalar": [
+    302,
+    303
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 119,
+   "serit": 305,
+   "bas_sayfa": 304,
+   "sayfalar": [
+    304,
+    305
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 120,
+   "serit": 307,
+   "bas_sayfa": 306,
+   "sayfalar": [
+    306,
+    307
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 121,
+   "serit": 309,
+   "bas_sayfa": 308,
+   "sayfalar": [
+    308,
+    309
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 122,
+   "serit": 324,
+   "bas_sayfa": 323,
+   "sayfalar": [
+    323,
+    324
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 123,
+   "serit": 326,
+   "bas_sayfa": 325,
+   "sayfalar": [
+    325,
+    326
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 124,
+   "serit": 328,
+   "bas_sayfa": 327,
+   "sayfalar": [
+    327,
+    328
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 125,
+   "serit": 330,
+   "bas_sayfa": 329,
+   "sayfalar": [
+    329,
+    330
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 126,
+   "serit": 332,
+   "bas_sayfa": 331,
+   "sayfalar": [
+    331,
+    332
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 127,
+   "serit": 334,
+   "bas_sayfa": 333,
+   "sayfalar": [
+    333,
+    334
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 128,
+   "serit": 336,
+   "bas_sayfa": 335,
+   "sayfalar": [
+    335,
+    336
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 129,
+   "serit": 338,
+   "bas_sayfa": 337,
+   "sayfalar": [
+    337,
+    338
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 130,
+   "serit": 340,
+   "bas_sayfa": 339,
+   "sayfalar": [
+    339,
+    340
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 131,
+   "serit": 342,
+   "bas_sayfa": 341,
+   "sayfalar": [
+    341,
+    342
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 132,
+   "serit": 344,
+   "bas_sayfa": 343,
+   "sayfalar": [
+    343,
+    344
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 133,
+   "serit": 346,
+   "bas_sayfa": 345,
+   "sayfalar": [
+    345,
+    346
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 134,
+   "serit": 348,
+   "bas_sayfa": 347,
+   "sayfalar": [
+    347,
+    348
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 135,
+   "serit": 350,
+   "bas_sayfa": 349,
+   "sayfalar": [
+    349,
+    350
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 136,
+   "serit": 352,
+   "bas_sayfa": 351,
+   "sayfalar": [
+    351,
+    352
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 137,
+   "serit": 356,
+   "bas_sayfa": 355,
+   "sayfalar": [
+    355,
+    356
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 138,
+   "serit": 358,
+   "bas_sayfa": 357,
+   "sayfalar": [
+    357,
+    358
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 139,
+   "serit": 360,
+   "bas_sayfa": 359,
+   "sayfalar": [
+    359,
+    360
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 140,
+   "serit": 362,
+   "bas_sayfa": 361,
+   "sayfalar": [
+    361,
+    362
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 141,
+   "serit": 364,
+   "bas_sayfa": 363,
+   "sayfalar": [
+    363,
+    364
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 142,
+   "serit": 366,
+   "bas_sayfa": 365,
+   "sayfalar": [
+    365,
+    366
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 143,
+   "serit": 368,
+   "bas_sayfa": 367,
+   "sayfalar": [
+    367,
+    368
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 144,
+   "serit": 370,
+   "bas_sayfa": 369,
+   "sayfalar": [
+    369,
+    370
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 145,
+   "serit": 372,
+   "bas_sayfa": 371,
+   "sayfalar": [
+    371,
+    372
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 146,
+   "serit": 374,
+   "bas_sayfa": 373,
+   "sayfalar": [
+    373,
+    374
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 147,
+   "serit": 376,
+   "bas_sayfa": 375,
+   "sayfalar": [
+    375,
+    376
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 148,
+   "serit": 378,
+   "bas_sayfa": 377,
+   "sayfalar": [
+    377,
+    378
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 149,
+   "serit": 380,
+   "bas_sayfa": 379,
+   "sayfalar": [
+    379,
+    380
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 150,
+   "serit": 382,
+   "bas_sayfa": 381,
+   "sayfalar": [
+    381,
+    382
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 151,
+   "serit": 384,
+   "bas_sayfa": 383,
+   "sayfalar": [
+    383,
+    384
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 152,
+   "serit": 387,
+   "bas_sayfa": 386,
+   "sayfalar": [
+    386,
+    387
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 153,
+   "serit": 389,
+   "bas_sayfa": 388,
+   "sayfalar": [
+    388,
+    389
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 154,
+   "serit": 391,
+   "bas_sayfa": 390,
+   "sayfalar": [
+    390,
+    391
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 155,
+   "serit": 394,
+   "bas_sayfa": 392,
+   "sayfalar": [
+    392,
+    393,
+    394
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 156,
+   "serit": 396,
+   "bas_sayfa": 395,
+   "sayfalar": [
+    395,
+    396
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 157,
+   "serit": 398,
+   "bas_sayfa": 397,
+   "sayfalar": [
+    397,
+    398
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 158,
+   "serit": 400,
+   "bas_sayfa": 399,
+   "sayfalar": [
+    399,
+    400
+   ],
+   "cevap_N": 8,
+   "gecer": true
+  },
+  {
+   "birim": 159,
+   "serit": 403,
+   "bas_sayfa": 402,
+   "sayfalar": [
+    402,
+    403
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 160,
+   "serit": 405,
+   "bas_sayfa": 404,
+   "sayfalar": [
+    404,
+    405
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 161,
+   "serit": 407,
+   "bas_sayfa": 406,
+   "sayfalar": [
+    406,
+    407
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 162,
+   "serit": 409,
+   "bas_sayfa": 408,
+   "sayfalar": [
+    408,
+    409
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  },
+  {
+   "birim": 163,
+   "serit": 411,
+   "bas_sayfa": 410,
+   "sayfalar": [
+    410,
+    411
+   ],
+   "cevap_N": 12,
+   "gecer": true
+  }
+ ]
+}

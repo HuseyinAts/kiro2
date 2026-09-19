@@ -1,0 +1,12400 @@
+{
+ "kaynak": "C1CELL 2024 TYT-AYT Geometri Soru Bankasi",
+ "klasor": "veriseti/zkitap/screenshots/C1CELL-2024-TYT-AYT-Geometri Soru Bankasi",
+ "bicim": "test sonu cevap seridi (kart-ici bant y 928-962, x 630-1290; sol/sag sayfa)",
+ "birim": 163,
+ "cevap": 1770,
+ "yontem": "PROVISIONAL tek gorsel okuma (8 montaj, 163 serit) + birim simge-sayisi caprazi (kapi 163/163). Faz 4 ikinci-okuma dogrulamasi BEKLIYOR.",
+ "anahtar": [
+  {
+   "birim": 1,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 1,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 8,
+   "son_sayfa": 9
+  },
+  {
+   "birim": 2,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 2,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 10,
+   "son_sayfa": 11
+  },
+  {
+   "birim": 3,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 12,
+   "son_sayfa": 12
+  },
+  {
+   "birim": 3,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 12,
+   "son_sayfa": 12
+  },
+  {
+   "birim": 3,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 12,
+   "son_sayfa": 12
+  },
+  {
+   "birim": 3,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 12,
+   "son_sayfa": 12
+  },
+  {
+   "birim": 4,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 4,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 13,
+   "son_sayfa": 14
+  },
+  {
+   "birim": 5,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 5,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 17,
+   "son_sayfa": 18
+  },
+  {
+   "birim": 6,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 7,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 7,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 21,
+   "son_sayfa": 22
+  },
+  {
+   "birim": 8,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 8,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 23,
+   "son_sayfa": 24
+  },
+  {
+   "birim": 9,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 9,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 25,
+   "son_sayfa": 26
+  },
+  {
+   "birim": 10,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 10,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 27,
+   "son_sayfa": 28
+  },
+  {
+   "birim": 11,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 11,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 29,
+   "son_sayfa": 30
+  },
+  {
+   "birim": 12,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 12,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 31,
+   "son_sayfa": 32
+  },
+  {
+   "birim": 13,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 13,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 33,
+   "son_sayfa": 34
+  },
+  {
+   "birim": 14,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 14,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 35,
+   "son_sayfa": 36
+  },
+  {
+   "birim": 15,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 15,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 37,
+   "son_sayfa": 38
+  },
+  {
+   "birim": 16,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 16,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 39,
+   "son_sayfa": 40
+  },
+  {
+   "birim": 17,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 17,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 41,
+   "son_sayfa": 42
+  },
+  {
+   "birim": 18,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 18,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 43,
+   "son_sayfa": 44
+  },
+  {
+   "birim": 19,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 19,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 45,
+   "son_sayfa": 46
+  },
+  {
+   "birim": 20,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 20,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 47,
+   "son_sayfa": 48
+  },
+  {
+   "birim": 21,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 21,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "birim": 22,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 22,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 52,
+   "son_sayfa": 53
+  },
+  {
+   "birim": 23,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 23,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 56,
+   "son_sayfa": 57
+  },
+  {
+   "birim": 24,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 24,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 58,
+   "son_sayfa": 59
+  },
+  {
+   "birim": 25,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 25,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 60,
+   "son_sayfa": 61
+  },
+  {
+   "birim": 26,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 26,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 62,
+   "son_sayfa": 63
+  },
+  {
+   "birim": 27,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 27,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 64,
+   "son_sayfa": 65
+  },
+  {
+   "birim": 28,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 28,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 66,
+   "son_sayfa": 67
+  },
+  {
+   "birim": 29,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 29,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 68,
+   "son_sayfa": 69
+  },
+  {
+   "birim": 30,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 30,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 79,
+   "son_sayfa": 80
+  },
+  {
+   "birim": 31,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 31,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 81,
+   "son_sayfa": 82
+  },
+  {
+   "birim": 32,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 84,
+   "son_sayfa": 84
+  },
+  {
+   "birim": 32,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 84,
+   "son_sayfa": 84
+  },
+  {
+   "birim": 32,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 84,
+   "son_sayfa": 84
+  },
+  {
+   "birim": 32,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 84,
+   "son_sayfa": 84
+  },
+  {
+   "birim": 32,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 84,
+   "son_sayfa": 84
+  },
+  {
+   "birim": 32,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 84,
+   "son_sayfa": 84
+  },
+  {
+   "birim": 33,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 33,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 85,
+   "son_sayfa": 86
+  },
+  {
+   "birim": 34,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 34,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 87,
+   "son_sayfa": 88
+  },
+  {
+   "birim": 35,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 35,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "birim": 36,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 36,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 92,
+   "son_sayfa": 93
+  },
+  {
+   "birim": 37,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 37,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 94,
+   "son_sayfa": 95
+  },
+  {
+   "birim": 38,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 96,
+   "son_sayfa": 96
+  },
+  {
+   "birim": 38,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 96,
+   "son_sayfa": 96
+  },
+  {
+   "birim": 38,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 96,
+   "son_sayfa": 96
+  },
+  {
+   "birim": 38,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 96,
+   "son_sayfa": 96
+  },
+  {
+   "birim": 38,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 96,
+   "son_sayfa": 96
+  },
+  {
+   "birim": 38,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 96,
+   "son_sayfa": 96
+  },
+  {
+   "birim": 39,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 39,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 97,
+   "son_sayfa": 99
+  },
+  {
+   "birim": 40,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 40,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 100,
+   "son_sayfa": 102
+  },
+  {
+   "birim": 41,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 41,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 104,
+   "son_sayfa": 105
+  },
+  {
+   "birim": 42,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 42,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 106,
+   "son_sayfa": 107
+  },
+  {
+   "birim": 43,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 43,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 108,
+   "son_sayfa": 109
+  },
+  {
+   "birim": 44,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 44,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 110,
+   "son_sayfa": 111
+  },
+  {
+   "birim": 45,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 45,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 112,
+   "son_sayfa": 113
+  },
+  {
+   "birim": 46,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 46,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 114,
+   "son_sayfa": 115
+  },
+  {
+   "birim": 47,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 116,
+   "son_sayfa": 116
+  },
+  {
+   "birim": 47,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 116,
+   "son_sayfa": 116
+  },
+  {
+   "birim": 47,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 116,
+   "son_sayfa": 116
+  },
+  {
+   "birim": 47,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 116,
+   "son_sayfa": 116
+  },
+  {
+   "birim": 47,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 116,
+   "son_sayfa": 116
+  },
+  {
+   "birim": 47,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 116,
+   "son_sayfa": 116
+  },
+  {
+   "birim": 48,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 48,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 125,
+   "son_sayfa": 126
+  },
+  {
+   "birim": 49,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 49,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 127,
+   "son_sayfa": 128
+  },
+  {
+   "birim": 50,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 50,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 129,
+   "son_sayfa": 130
+  },
+  {
+   "birim": 51,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 51,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 131,
+   "son_sayfa": 132
+  },
+  {
+   "birim": 52,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 52,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 133,
+   "son_sayfa": 134
+  },
+  {
+   "birim": 53,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 53,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 135,
+   "son_sayfa": 136
+  },
+  {
+   "birim": 54,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 54,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 137,
+   "son_sayfa": 138
+  },
+  {
+   "birim": 55,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 55,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 139,
+   "son_sayfa": 140
+  },
+  {
+   "birim": 56,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 56,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 141,
+   "son_sayfa": 142
+  },
+  {
+   "birim": 57,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 57,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 143,
+   "son_sayfa": 144
+  },
+  {
+   "birim": 58,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 58,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 146,
+   "son_sayfa": 147
+  },
+  {
+   "birim": 59,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 148,
+   "son_sayfa": 148
+  },
+  {
+   "birim": 59,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 148,
+   "son_sayfa": 148
+  },
+  {
+   "birim": 59,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 148,
+   "son_sayfa": 148
+  },
+  {
+   "birim": 59,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 148,
+   "son_sayfa": 148
+  },
+  {
+   "birim": 60,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 60,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 149,
+   "son_sayfa": 150
+  },
+  {
+   "birim": 61,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 61,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 151,
+   "son_sayfa": 152
+  },
+  {
+   "birim": 62,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 62,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 154,
+   "son_sayfa": 155
+  },
+  {
+   "birim": 63,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 63,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 156,
+   "son_sayfa": 157
+  },
+  {
+   "birim": 64,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 64,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 158,
+   "son_sayfa": 159
+  },
+  {
+   "birim": 65,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 65,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 169,
+   "son_sayfa": 170
+  },
+  {
+   "birim": 66,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 66,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 171,
+   "son_sayfa": 172
+  },
+  {
+   "birim": 67,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 67,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 173,
+   "son_sayfa": 174
+  },
+  {
+   "birim": 68,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 68,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 175,
+   "son_sayfa": 176
+  },
+  {
+   "birim": 69,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 69,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 177,
+   "son_sayfa": 178
+  },
+  {
+   "birim": 70,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 70,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 179,
+   "son_sayfa": 180
+  },
+  {
+   "birim": 71,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 71,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 181,
+   "son_sayfa": 182
+  },
+  {
+   "birim": 72,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 72,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 184,
+   "son_sayfa": 185
+  },
+  {
+   "birim": 73,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 73,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 186,
+   "son_sayfa": 187
+  },
+  {
+   "birim": 74,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 74,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 188,
+   "son_sayfa": 189
+  },
+  {
+   "birim": 75,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 76,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 76,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 192,
+   "son_sayfa": 193
+  },
+  {
+   "birim": 77,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 77,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 201,
+   "son_sayfa": 202
+  },
+  {
+   "birim": 78,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 78,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 203,
+   "son_sayfa": 204
+  },
+  {
+   "birim": 79,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 79,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 205,
+   "son_sayfa": 206
+  },
+  {
+   "birim": 80,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 80,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 207,
+   "son_sayfa": 208
+  },
+  {
+   "birim": 81,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 81,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 209,
+   "son_sayfa": 210
+  },
+  {
+   "birim": 82,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 82,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 211,
+   "son_sayfa": 212
+  },
+  {
+   "birim": 83,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 83,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 214,
+   "son_sayfa": 215
+  },
+  {
+   "birim": 84,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 84,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 216,
+   "son_sayfa": 217
+  },
+  {
+   "birim": 85,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 85,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 218,
+   "son_sayfa": 219
+  },
+  {
+   "birim": 86,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 86,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 220,
+   "son_sayfa": 221
+  },
+  {
+   "birim": 87,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 87,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 229,
+   "son_sayfa": 230
+  },
+  {
+   "birim": 88,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 88,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 231,
+   "son_sayfa": 232
+  },
+  {
+   "birim": 89,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 89,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 233,
+   "son_sayfa": 234
+  },
+  {
+   "birim": 90,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 90,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 235,
+   "son_sayfa": 236
+  },
+  {
+   "birim": 91,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 91,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 237,
+   "son_sayfa": 238
+  },
+  {
+   "birim": 92,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 92,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 239,
+   "son_sayfa": 240
+  },
+  {
+   "birim": 93,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 93,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 242,
+   "son_sayfa": 243
+  },
+  {
+   "birim": 94,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 94,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "birim": 95,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 246,
+   "son_sayfa": 246
+  },
+  {
+   "birim": 95,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 246,
+   "son_sayfa": 246
+  },
+  {
+   "birim": 95,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 246,
+   "son_sayfa": 246
+  },
+  {
+   "birim": 95,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 246,
+   "son_sayfa": 246
+  },
+  {
+   "birim": 96,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 96,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 247,
+   "son_sayfa": 248
+  },
+  {
+   "birim": 97,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 97,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "birim": 98,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 98,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 252,
+   "son_sayfa": 253
+  },
+  {
+   "birim": 99,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 99,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 254,
+   "son_sayfa": 255
+  },
+  {
+   "birim": 100,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 100,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 263,
+   "son_sayfa": 264
+  },
+  {
+   "birim": 101,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 101,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 265,
+   "son_sayfa": 266
+  },
+  {
+   "birim": 102,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 102,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 267,
+   "son_sayfa": 268
+  },
+  {
+   "birim": 103,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 103,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 269,
+   "son_sayfa": 270
+  },
+  {
+   "birim": 104,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 104,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 271,
+   "son_sayfa": 272
+  },
+  {
+   "birim": 105,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 105,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 273,
+   "son_sayfa": 274
+  },
+  {
+   "birim": 106,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 106,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 275,
+   "son_sayfa": 276
+  },
+  {
+   "birim": 107,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 107,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 280,
+   "son_sayfa": 281
+  },
+  {
+   "birim": 108,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 108,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 282,
+   "son_sayfa": 283
+  },
+  {
+   "birim": 109,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 109,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 284,
+   "son_sayfa": 285
+  },
+  {
+   "birim": 110,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 110,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "birim": 111,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 111,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 288,
+   "son_sayfa": 289
+  },
+  {
+   "birim": 112,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 112,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 290,
+   "son_sayfa": 291
+  },
+  {
+   "birim": 113,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 113,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 292,
+   "son_sayfa": 293
+  },
+  {
+   "birim": 114,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 114,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 294,
+   "son_sayfa": 295
+  },
+  {
+   "birim": 115,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 115,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "birim": 116,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 116,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "birim": 117,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 117,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 300,
+   "son_sayfa": 301
+  },
+  {
+   "birim": 118,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 118,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 302,
+   "son_sayfa": 303
+  },
+  {
+   "birim": 119,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 119,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "birim": 120,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 120,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 306,
+   "son_sayfa": 307
+  },
+  {
+   "birim": 121,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 121,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 308,
+   "son_sayfa": 309
+  },
+  {
+   "birim": 122,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 122,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 323,
+   "son_sayfa": 324
+  },
+  {
+   "birim": 123,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 123,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 325,
+   "son_sayfa": 326
+  },
+  {
+   "birim": 124,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 124,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 327,
+   "son_sayfa": 328
+  },
+  {
+   "birim": 125,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 125,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 329,
+   "son_sayfa": 330
+  },
+  {
+   "birim": 126,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 126,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 331,
+   "son_sayfa": 332
+  },
+  {
+   "birim": 127,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 127,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 333,
+   "son_sayfa": 334
+  },
+  {
+   "birim": 128,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 128,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 335,
+   "son_sayfa": 336
+  },
+  {
+   "birim": 129,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 129,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 337,
+   "son_sayfa": 338
+  },
+  {
+   "birim": 130,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 130,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 339,
+   "son_sayfa": 340
+  },
+  {
+   "birim": 131,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 131,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 341,
+   "son_sayfa": 342
+  },
+  {
+   "birim": 132,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 132,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 343,
+   "son_sayfa": 344
+  },
+  {
+   "birim": 133,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 133,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 345,
+   "son_sayfa": 346
+  },
+  {
+   "birim": 134,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 134,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 347,
+   "son_sayfa": 348
+  },
+  {
+   "birim": 135,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 135,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 349,
+   "son_sayfa": 350
+  },
+  {
+   "birim": 136,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 136,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 351,
+   "son_sayfa": 352
+  },
+  {
+   "birim": 137,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 6,
+   "cevap": "E",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 137,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 355,
+   "son_sayfa": 356
+  },
+  {
+   "birim": 138,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 9,
+   "cevap": "E",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 138,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 357,
+   "son_sayfa": 358
+  },
+  {
+   "birim": 139,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 139,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 359,
+   "son_sayfa": 360
+  },
+  {
+   "birim": 140,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 11,
+   "cevap": "A",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 140,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 361,
+   "son_sayfa": 362
+  },
+  {
+   "birim": 141,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 141,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 363,
+   "son_sayfa": 364
+  },
+  {
+   "birim": 142,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 142,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 365,
+   "son_sayfa": 366
+  },
+  {
+   "birim": 143,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 143,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 367,
+   "son_sayfa": 368
+  },
+  {
+   "birim": 144,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 7,
+   "cevap": "A",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 144,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 369,
+   "son_sayfa": 370
+  },
+  {
+   "birim": 145,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 3,
+   "cevap": "B",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 145,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 371,
+   "son_sayfa": 372
+  },
+  {
+   "birim": 146,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 146,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 373,
+   "son_sayfa": 374
+  },
+  {
+   "birim": 147,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 147,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 375,
+   "son_sayfa": 376
+  },
+  {
+   "birim": 148,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 148,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 377,
+   "son_sayfa": 378
+  },
+  {
+   "birim": 149,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 149,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 379,
+   "son_sayfa": 380
+  },
+  {
+   "birim": 150,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 150,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 381,
+   "son_sayfa": 382
+  },
+  {
+   "birim": 151,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 151,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 383,
+   "son_sayfa": 384
+  },
+  {
+   "birim": 152,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 152,
+   "soru_no": 12,
+   "cevap": "A",
+   "bas_sayfa": 386,
+   "son_sayfa": 387
+  },
+  {
+   "birim": 153,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 10,
+   "cevap": "E",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 153,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 388,
+   "son_sayfa": 389
+  },
+  {
+   "birim": 154,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 2,
+   "cevap": "E",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 154,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 390,
+   "son_sayfa": 391
+  },
+  {
+   "birim": 155,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 10,
+   "cevap": "C",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 155,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 392,
+   "son_sayfa": 394
+  },
+  {
+   "birim": 156,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 6,
+   "cevap": "B",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 156,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 395,
+   "son_sayfa": 396
+  },
+  {
+   "birim": 157,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 3,
+   "cevap": "D",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 4,
+   "cevap": "C",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 7,
+   "cevap": "D",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 157,
+   "soru_no": 8,
+   "cevap": "B",
+   "bas_sayfa": 397,
+   "son_sayfa": 398
+  },
+  {
+   "birim": 158,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 5,
+   "cevap": "A",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 158,
+   "soru_no": 8,
+   "cevap": "C",
+   "bas_sayfa": 399,
+   "son_sayfa": 400
+  },
+  {
+   "birim": 159,
+   "soru_no": 1,
+   "cevap": "B",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 5,
+   "cevap": "B",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 7,
+   "cevap": "E",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 8,
+   "cevap": "A",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 9,
+   "cevap": "C",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 159,
+   "soru_no": 12,
+   "cevap": "E",
+   "bas_sayfa": 402,
+   "son_sayfa": 403
+  },
+  {
+   "birim": 160,
+   "soru_no": 1,
+   "cevap": "D",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 2,
+   "cevap": "B",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 3,
+   "cevap": "A",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 4,
+   "cevap": "E",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 5,
+   "cevap": "E",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 6,
+   "cevap": "A",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 11,
+   "cevap": "C",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 160,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 404,
+   "son_sayfa": 405
+  },
+  {
+   "birim": 161,
+   "soru_no": 1,
+   "cevap": "A",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 2,
+   "cevap": "C",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 3,
+   "cevap": "E",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 4,
+   "cevap": "A",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 5,
+   "cevap": "C",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 8,
+   "cevap": "E",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 9,
+   "cevap": "A",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 10,
+   "cevap": "B",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 161,
+   "soru_no": 12,
+   "cevap": "B",
+   "bas_sayfa": 406,
+   "son_sayfa": 407
+  },
+  {
+   "birim": 162,
+   "soru_no": 1,
+   "cevap": "E",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 2,
+   "cevap": "A",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 4,
+   "cevap": "B",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 6,
+   "cevap": "C",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 7,
+   "cevap": "C",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 9,
+   "cevap": "D",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 11,
+   "cevap": "B",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 162,
+   "soru_no": 12,
+   "cevap": "D",
+   "bas_sayfa": 408,
+   "son_sayfa": 409
+  },
+  {
+   "birim": 163,
+   "soru_no": 1,
+   "cevap": "C",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 2,
+   "cevap": "D",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 3,
+   "cevap": "C",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 4,
+   "cevap": "D",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 5,
+   "cevap": "D",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 6,
+   "cevap": "D",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 7,
+   "cevap": "B",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 8,
+   "cevap": "D",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 9,
+   "cevap": "B",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 10,
+   "cevap": "A",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 11,
+   "cevap": "E",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  },
+  {
+   "birim": 163,
+   "soru_no": 12,
+   "cevap": "C",
+   "bas_sayfa": 410,
+   "son_sayfa": 411
+  }
+ ]
+}
