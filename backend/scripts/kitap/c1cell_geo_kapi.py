@@ -156,8 +156,8 @@ def main():
         "kaynak": "C1CELL 2024 TYT-AYT Geometri Soru Bankasi",
         "yontem": (
             "birim segmentasyonu: serit sayfasindan geriye simge biriktir, "
-            "toplam==N olunca birim baslar (onceki serit sinirinda). "
-            "kapi: simge_toplam==cevap_N."
+            "toplam N olunca birim baslar (onceki serit sinirinda). "
+            "kural: her birimde simge sayisi cevap sayisina esit."
         ),
         "ozet": {"toplam": len(sonuc), "gecen": len(gecen), "bayrak": len(bayrak)},
         "birimler": sonuc,
