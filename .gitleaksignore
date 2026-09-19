@@ -1,0 +1,5 @@
+# gitleaks yanlis-pozitif bastirma (parmak izine gore -- yalnizca bu 2 bulgu, tum kurallar aktif kalir)
+# C1CELL Faz 1: "kapi: simge_toplam==cevap_N" -- kapinin Turkce yontem aciklamasi.
+# generic-api-key kurali "kapi" icindeki "api" + ":" + token-benzeri degeri sir sandi. Gercek sir yok; TruffleHog gecti.
+00c6757736d1c2274368e292679d02b2267dffaf:veriseti/zkitap/cikti/c1cell_2024_geometri_kapi_raporu.json:generic-api-key:3
+00c6757736d1c2274368e292679d02b2267dffaf:backend/scripts/kitap/c1cell_geo_kapi.py:generic-api-key:160
