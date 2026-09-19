@@ -220,9 +220,11 @@ def upgrade() -> None:
     kimlik: dict[str, str] = {}
 
     def _id_al(kod: str) -> str:
-        return b.execute(
+        # scalar_one() Any doner; mypy'nin no-any-return kurali icin tiplenir.
+        mevcut_id: str = b.execute(
             sa.text("SELECT id FROM topic_hierarchy WHERE code = :k"), {"k": kod}
         ).scalar_one()
+        return mevcut_id
 
     eklenen = 0
     for kod, ad in BOLUMLER:
