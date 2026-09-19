@@ -171,6 +171,118 @@ dosyaya bagimli degil.
 * Script'in `faz0b.json` bagimliligi kaldirildiktan sonra cikti
   degismedi: 120 rastgele dosyada md5 farki 0.
 
+## Adim 2c -- Kirpim duzeltmeleri ve ORTULU sorularin disarida birakilmasi
+
+Transkripsiyonun ilk 288 sorusu kosunca ajanlar bagimsiz olarak "son sik
+kesik" diye rapor etti. Dort kapi da yesildi, yani kapilar bu hatayi
+GORMUYORDU. Eklenen besinci kapi olctu: 1881 kirpimin **664'unde** murekkep
+sag kenara, **32'sinde** alt kenara degiyordu.
+
+Kok neden tek degil, **uc ayri** seymis.
+
+### (a) Sol sutunun sag siniri: oluk, gx_sag degil
+
+Ilk kural `gx_sag + 1` idi. Simgeler beyazlatildiktan sonra olculdu: iki
+sutun arasindaki OLUK her sayfada `gx_sag + 18` ile `+47` arasinda, tam
+30 px. Sol sutunun metni en fazla `gx_sag + 17`'ye geliyor. Sinir
+`gx_sag + 18` yapildi.
+
+Arada bir yanlis deneme daha belgeleniyor: "ayirici cizgiyi sayfa basina
+dedektorle bul". **Cizgi her sayfada yok** (s44, s53, s57'de 340-430
+arasinda en uzun dikey kolon 10 px) ve dedektor s44'te bir seklin dikey
+kenarina takilip siniri 329'a cekerek E sikkini tamamen kesti. Yapisal
+sabit, dedektorden guvenli cikti.
+
+Ilk olcumlerin "metin gx_sag'da bitiyor" demesinin sebebi de anlasildi:
+olcum penceresi `x < gx_sag` ile sinirliydi, yani cevabi sorunun icine
+koymustu.
+
+### (b) Cevap kutusu SAYFAYI degil SUTUNU sinirlar
+
+Cevap kutusu x 377-393 ile 637-660 arasinda, yani SAG sutunun altinda.
+Ilk surum bu limiti iki sutuna da uyguladi; s43'te sol sutunun sik satiri
+(y ~892) kutunun disinda kaldi ve o soru siksiz kirpildi. Artik limit
+yalniz kutuyla YATAYDA 20 px'ten fazla ortusen sutuna uygulaniyor.
+
+### (c) ORTME: Faz 0'in K0.4 olcumu yapisal olarak yanlisti
+
+s44'un sik satiri 4x buyutulunce goruldu: "A) V7  B) 2V2  C) 3  D) 3V2
+E) 5" ve **"5"in uzerinde okuyucunun buyutec diski duruyor**.
+
+Disk OPAK. Altindaki murekkep goruntude zaten yok. Yani "disk icinde
+murekkep var mi" diye bakan olcum ortmeyi **hicbir zaman bulamaz**. Faz
+0'da "soru metnini ortme olculemedi" sonucuna varmamizin sebebi buydu ve
+sonuc yanlisti.
+
+Dogru olcum: bir metin SATIRI diskin icine giriyor mu -- yani diskin
+HEMEN SOLUNDA (6 px) kitap murekkebi var mi. Olculdu:
+
+| olcu | deger |
+|---|---|
+| ortme olayi | **154** |
+| etkilenen essiz soru | **151** |
+| hepsi | sag sutun simgesi, sol sutun sorusunu ortuyor |
+
+**SAHIP KARARI: bu 151 soru islenmeyecek.** Kutu dosyasinda
+`ortulu: true` ile isaretleniyor, kirpim araci onlari atliyor.
+Islenecek soru: **1730**.
+
+Kurtarma kanali yok (bu kitabin ikinci bir yakalamasi yok). Okuyucunun
+ayar panelinde "Zenginlestirme ve Aktivite Dugmelerini Goster" anahtari
+var; kapali yakalanirsa bu ortme sinifi tamamen ortadan kalkar -- sonraki
+kitaplar icin not.
+
+### Besinci kapi
+
+`KAPI5`: kutunun DISINDA ama ayni sutunun tavani icinde murekkep kaldi mi.
+"Kenarda murekkep var mi" diye sormak yanlis olurdu: icerik oluga kadar
+mesru sekilde gidebiliyor.
+
+Ders: **dort kapi da yesilken uc ayri kusur vardi.** Kapilar "kutu bos mu,
+tasiyor mu, cakisiyor mu" diye bakar; "dogru yeri mi kapsiyor" sorusunu
+ancak gozle ornekleme ve -- bu sefer -- transkripsiyon ajanlarinin
+geri bildirimi yakaladi.
+
+## Adim 2d -- Soru numarasini beyazlatan pay (KAPI 6)
+
+Transkripsiyonun ilk 8 partisi (376 soru) kosarken iki ajan ayni sikayeti
+getirdi: `s0009_sag_2` ve `s0073_sag_1` kirpimlarinda basili numara **3**
+gorunuyordu, oysa sayfa sirasi 8 diyordu. Kaynak goruntude olculdu: her
+ikisinde de basili numara **8**. Kirpim uretirken okuyucu diskini
+beyazlatan dikdortgenin sag payi `gx+27` idi; numaranin kirmizi glifi ise
+`gx+26`'da basliyor. Yani beyazlatma numaranin ilk 1-2 sutununu siliyor ve
+"8" gozle "3" oluyordu.
+
+Pay OLCUMLE yeniden secildi. 41 sayfada her simgenin cevresi tarandi:
+
+| olculen sey | deger |
+|---|---|
+| diskin (golge dahil) en sag sutunu | `gx+22` |
+| kirmizi numaranin en sol sutunu | `gx+26` (antialias `gx+25`) |
+| numaranin satir araligi | `gy+1 .. gy+15` |
+
+Yeni pay `gx+23`: golgeyi tam kapsar, numaraya 2 px uzak kalir.
+
+**KAPI 6** eklendi: her sayfa icin, beyazlatmadan ONCE, her simgenin
+sagindaki kirmizi numaranin sol kenari olculur; `gx + DISK_SAG` bu degere
+esit ya da ondan buyukse script DURUR ve hicbir dosya yazmaz (iki gecisli:
+once tum sayfalar dogrulanir, sonra kirpim yazilir). Mutasyon dogrulamasi:
+pay 27'ye geri cekildiginde kapi tetikleniyor, 23 ile 442 sayfanin
+tamami temiz.
+
+Kapinin olcum penceresi iki kez daraltildi, ikisi de yanlis alarmdan:
+
+1. Dikeyde `gy-20 .. gy+34` iken sayfa kenarindaki dondurulmus kirmizi-sari
+   "ACIL MATEMATIK" logosunu numara sandi (s6). `gy-2 .. gy+20` yapildi.
+2. Yatayda `gx .. gx+60` iken ayni logo serit halinde olugun icinden
+   geciyor ve diskin hemen alt/ust ucunda `gx+14` civarinda kirmizi
+   birakiyordu (28 yanlis alarm). `gx+22 .. gx+60` yapildi; pencere
+   beyazlatmadan onceki goruntude calistigi icin pay 22'yi assa bile
+   numara hala gorulur, yani kapi korlesmiyor.
+
+Ilk 8 partinin transkripsiyonu (376 soru) IPTAL edildi ve 1730 kirpimin
+tamami yeniden uretildi; transkripsiyon sifirdan baslatildi.
+
 ## Sirada ne var
 
 | adim | durum |
@@ -178,7 +290,9 @@ dosyaya bagimli degil.
 | 1. cevap anahtari | **BITTI** (1881 cevap, 3 kanal + simge caprazi) |
 | 2. kirpim koordinatlari (simgeden turetilir; tek/cift 18 px kaymasi) | **BITTI** (1881 kutu, dort kapi + gozle ornekleme) |
 | 2b. kirpim disa aktarimi (disk beyazlatma dahil) | **BITTI** (1881 gorsel) |
-| 3. sayfa transkripsiyonu (442 sayfa, ~37 grup, ~5,5M jeton) | siradaki |
+| 2c. kirpim duzeltmeleri + 151 ortulu sorunun disarida birakilmasi | **BITTI** |
+| 2d. soru numarasini beyazlatan pay (KAPI 6) | **BITTI** |
+| 3. transkripsiyon (1730 soru, 37 parti, ~4,2M jeton) | siradaki |
 | 4. konu agaci migration (6 bolum / 27 konu) | -- |
 | 5. ithal araci + e2e testler | -- |
 
