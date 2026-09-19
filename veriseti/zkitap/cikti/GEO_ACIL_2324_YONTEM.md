@@ -243,6 +243,46 @@ tasiyor mu, cakisiyor mu" diye bakar; "dogru yeri mi kapsiyor" sorusunu
 ancak gozle ornekleme ve -- bu sefer -- transkripsiyon ajanlarinin
 geri bildirimi yakaladi.
 
+## Adim 2d -- Soru numarasini beyazlatan pay (KAPI 6)
+
+Transkripsiyonun ilk 8 partisi (376 soru) kosarken iki ajan ayni sikayeti
+getirdi: `s0009_sag_2` ve `s0073_sag_1` kirpimlarinda basili numara **3**
+gorunuyordu, oysa sayfa sirasi 8 diyordu. Kaynak goruntude olculdu: her
+ikisinde de basili numara **8**. Kirpim uretirken okuyucu diskini
+beyazlatan dikdortgenin sag payi `gx+27` idi; numaranin kirmizi glifi ise
+`gx+26`'da basliyor. Yani beyazlatma numaranin ilk 1-2 sutununu siliyor ve
+"8" gozle "3" oluyordu.
+
+Pay OLCUMLE yeniden secildi. 41 sayfada her simgenin cevresi tarandi:
+
+| olculen sey | deger |
+|---|---|
+| diskin (golge dahil) en sag sutunu | `gx+22` |
+| kirmizi numaranin en sol sutunu | `gx+26` (antialias `gx+25`) |
+| numaranin satir araligi | `gy+1 .. gy+15` |
+
+Yeni pay `gx+23`: golgeyi tam kapsar, numaraya 2 px uzak kalir.
+
+**KAPI 6** eklendi: her sayfa icin, beyazlatmadan ONCE, her simgenin
+sagindaki kirmizi numaranin sol kenari olculur; `gx + DISK_SAG` bu degere
+esit ya da ondan buyukse script DURUR ve hicbir dosya yazmaz (iki gecisli:
+once tum sayfalar dogrulanir, sonra kirpim yazilir). Mutasyon dogrulamasi:
+pay 27'ye geri cekildiginde kapi tetikleniyor, 23 ile 442 sayfanin
+tamami temiz.
+
+Kapinin olcum penceresi iki kez daraltildi, ikisi de yanlis alarmdan:
+
+1. Dikeyde `gy-20 .. gy+34` iken sayfa kenarindaki dondurulmus kirmizi-sari
+   "ACIL MATEMATIK" logosunu numara sandi (s6). `gy-2 .. gy+20` yapildi.
+2. Yatayda `gx .. gx+60` iken ayni logo serit halinde olugun icinden
+   geciyor ve diskin hemen alt/ust ucunda `gx+14` civarinda kirmizi
+   birakiyordu (28 yanlis alarm). `gx+22 .. gx+60` yapildi; pencere
+   beyazlatmadan onceki goruntude calistigi icin pay 22'yi assa bile
+   numara hala gorulur, yani kapi korlesmiyor.
+
+Ilk 8 partinin transkripsiyonu (376 soru) IPTAL edildi ve 1730 kirpimin
+tamami yeniden uretildi; transkripsiyon sifirdan baslatildi.
+
 ## Sirada ne var
 
 | adim | durum |
@@ -251,6 +291,7 @@ geri bildirimi yakaladi.
 | 2. kirpim koordinatlari (simgeden turetilir; tek/cift 18 px kaymasi) | **BITTI** (1881 kutu, dort kapi + gozle ornekleme) |
 | 2b. kirpim disa aktarimi (disk beyazlatma dahil) | **BITTI** (1881 gorsel) |
 | 2c. kirpim duzeltmeleri + 151 ortulu sorunun disarida birakilmasi | **BITTI** |
+| 2d. soru numarasini beyazlatan pay (KAPI 6) | **BITTI** |
 | 3. transkripsiyon (1730 soru, 37 parti, ~4,2M jeton) | siradaki |
 | 4. konu agaci migration (6 bolum / 27 konu) | -- |
 | 5. ithal araci + e2e testler | -- |
