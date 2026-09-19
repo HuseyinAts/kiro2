@@ -95,6 +95,49 @@ farkli: burada serit sutun basina degil, sayfa basina tek parca.
 **Sizinti kapisi: kirpim kutularinin alti kart-ici y = 908'in ustunde
 kalmali.**
 
+## DUZELTME (19 Eyl 2026) -- K0.4'teki %8,40 ORTME OLCUSU DEGIL
+
+Asagidaki K0.4, ACIL 2023-2024 fisiyle ayni yanlis metrigi kullaniyor:
+"disk dairesinin icinde kitap murekkebi". Disk OPAK oldugu icin bu metrik
+ortmeyi goremez; kenardan tasan sayfa mobilyasini sayar. **%8,40 bir
+ortme orani DEGILDIR.**
+
+Bu kitap icin dogru metrikle (diskin sol kenarindan 7-13 px'lik bantta
+metin) yeniden olculdu -- olcum 2023-2024 kitabinda 154 olayi birebir
+yeniden ureten, yani kalibre edilmis dedektorle yapildi:
+
+| olcum | ACIL 2023-2024 | ACIL 2025 KURS |
+|---|---|---|
+| sag sutun simgesi | 916 | **961** |
+| bantta sinyal | 154 (%16,8) | **403 (%41,9)** |
+| etkilenen sayfa | 136 | **313** |
+| eski (yanlis) metrik | 228 | 149 |
+| diskin sagindaki en kucuk bosluk | 27 px | **3 px** |
+
+Iki uyari:
+
+1. **403 rakami ORTME SAYISI DEGIL, UST SINIRDIR.** 16 olay gozle
+   incelendi: bir kismi gercekten diske dayanan soru metni, bir kismi ise
+   bu kitaba ozgu sayfa mobilyasi (sari "Konu Ogrenme" basligi, ilerleme
+   seridi, sekil kenari). 2023-2024'un bandi bu sikisik dizgide mobilyayi
+   da yakaliyor. Kesin sayi ancak Faz 1 adim 2'de kirpim kutulari
+   cikinca, "sik satirinda bes etiket (A-E) gorunuyor mu" kapisiyla
+   belirlenebilir.
+2. **Diskin sagindaki bosluk 3 px.** Yani beyazlatma payi en fazla
+   `gx+23` olabilir; daha genis bir pay soru numarasini siler. ACIL
+   2023-2024'te tam bu hata yapilmisti (pay 27, ilk metin gx+26) ve
+   basili "8" kirpimda "3" gibi okundu. Bu kitapta pay daha da dar.
+
+**Onemli oneri (sahip karari gerektirir):** FERNUS okuyucusunun ayar
+panelinde "Zenginlestirme ve Aktivite Dugmelerini Goster" anahtari var.
+Bu kitap Faz 1 icin YENIDEN YAKALANIRSA (anahtar kapali) simge sinifi
+tamamen ortadan kalkar: ne ortme, ne beyazlatma payi, ne KAPI 6. 392
+sayfalik yeniden yakalama, %42'ye varabilecek bir ortme borcunu ve onun
+butun kapilarini bir defada siler. Kirpim kutulari simge konumundan
+turetildigi icin yakalama degisirse o adim yeniden olculur.
+
+Asagidaki K0.4 metni TARIHSEL KAYIT olarak birakildi.
+
 ## K0.4 -- Simge ortmesi: uc geometri kitabinin EN YUKSEGI
 
 1964 simge olculdu (soru sayfalarinda 1951). Dairesel disk maskesi ile:
