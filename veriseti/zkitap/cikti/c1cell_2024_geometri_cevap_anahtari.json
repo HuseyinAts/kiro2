@@ -4,7 +4,7 @@
  "bicim": "test sonu cevap seridi (kart-ici bant y 928-962, x 630-1290; sol/sag sayfa)",
  "birim": 163,
  "cevap": 1770,
- "yontem": "PROVISIONAL tek gorsel okuma (8 montaj, 163 serit) + birim simge-sayisi caprazi (kapi 163/163). Faz 4 ikinci-okuma dogrulamasi BEKLIYOR.",
+ "yontem": "DOGRULANDI: uc bagimsiz gorsel okuma (benim ilk okumam + iki ajan, 8 montaj) + birim simge-sayisi caprazi (kapi 163/163). 5 pozisyon uyusmazligi yuksek-zoom yeniden incelemeyle cozuldu (s20,s30,s191,s287).",
  "anahtar": [
   {
    "birim": 1,
@@ -408,19 +408,19 @@
   {
    "birim": 6,
    "soru_no": 10,
-   "cevap": "B",
-   "bas_sayfa": 19,
-   "son_sayfa": 20
-  },
-  {
-   "birim": 6,
-   "soru_no": 11,
    "cevap": "D",
    "bas_sayfa": 19,
    "son_sayfa": 20
   },
   {
    "birim": 6,
+   "soru_no": 11,
+   "cevap": "D",
+   "bas_sayfa": 19,
+   "son_sayfa": 20
+  },
+  {
+   "birim": 6,
    "soru_no": 12,
    "cevap": "B",
    "bas_sayfa": 19,
@@ -793,14 +793,14 @@
   {
    "birim": 11,
    "soru_no": 7,
-   "cevap": "C",
+   "cevap": "D",
    "bas_sayfa": 29,
    "son_sayfa": 30
   },
   {
    "birim": 11,
    "soru_no": 8,
-   "cevap": "D",
+   "cevap": "C",
    "bas_sayfa": 29,
    "son_sayfa": 30
   },
@@ -5679,19 +5679,19 @@
   {
    "birim": 75,
    "soru_no": 9,
-   "cevap": "B",
-   "bas_sayfa": 190,
-   "son_sayfa": 191
-  },
-  {
-   "birim": 75,
-   "soru_no": 10,
    "cevap": "D",
    "bas_sayfa": 190,
    "son_sayfa": 191
   },
   {
    "birim": 75,
+   "soru_no": 10,
+   "cevap": "D",
+   "bas_sayfa": 190,
+   "son_sayfa": 191
+  },
+  {
+   "birim": 75,
    "soru_no": 11,
    "cevap": "C",
    "bas_sayfa": 190,
@@ -8290,7 +8290,7 @@
   {
    "birim": 110,
    "soru_no": 10,
-   "cevap": "E",
+   "cevap": "C",
    "bas_sayfa": 286,
    "son_sayfa": 287
   },

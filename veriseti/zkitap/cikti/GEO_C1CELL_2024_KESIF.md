@@ -220,3 +220,22 @@ bayrak=0; bir N bozulunca ya da gercek bir simge cikinca bayrak artiyor.
 
 **Kalan (Faz 3-4):** cevap-anahtari ikinci-okuma dogrulamasi (Faz 4);
 gecen birimlerin kirpimi + ithal + konu agaci (Faz 3).
+
+## Faz 4 -- Cevap anahtari dogrulama (19 Eyl 2026)
+
+163 serit UC BAGIMSIZ okundu: benim ilk okumam + iki ajan (montajlari
+ayri ayri, biri ters sirada). Uc-yollu diff: 158/163 sayfa oybirligi;
+yalnizca 5 pozisyon (4 sayfa) uyusmazlik -- hepsinde iki ajan ayni,
+benim ilk okumam farkliydi. Her biri yuksek-zoom (4x) yeniden
+incelendi; 5'inde de ajanlar hakli cikti:
+
+| sayfa | poz | ilk okuma | dogru | tam anahtar (duzeltilmis) |
+|---|---|---|---|---|
+| s20  | 10   | B    | D    | BEBCADCDCDDB |
+| s30  | 7,8  | C,D  | D,C  | CDCCBDDCDDCD |
+| s191 | 9    | B    | D    | CECCDEBBDDCC |
+| s287 | 10   | E    | C    | CEEBADBBECAD |
+
+Ilk okuma dogrulugu: 1765/1770 (%99.72). Duzeltmeler uygulandi; cevap
+sayilari degismedi (yalnizca harfler), kapi 163/163 sabit kaldi. Cevap
+anahtari artik DOGRULANDI (PROVISIONAL degil) -- ithale hazir.
