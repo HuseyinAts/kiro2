@@ -336,6 +336,50 @@ Olculen dagilimlar: sekilli soru 1513 / 1730; gorsel sikli 17;
 kaynak_kusuru isaretli 36; okunamayan alani dolu 10.
 Cevap dagilimi A 216 / B 300 / C 530 / D 423 / E 261.
 
+## Adim 4 -- Konu agaci (migration 0034)
+
+Kitabin kendi agaci GEO kokunun altina **GEO-ACL24** onekiyle ayri bir alt
+agac olarak kuruldu: 6 bolum + 27 konu + 3 alt konu = 36 dugum.
+
+Mevcut `GEO-U1..GEO-U5` agacina DOKUNULMADI. Sebep olculdu: kitapta
+"Ozel Ucgenler", "Ucgende Merkezler", "Genel Dortgenler", "Cemberin
+Cevresi" dugumleri var, mevcut agacta yok; mevcut agacta "Dik Ucgen",
+"Egim", "Esitsizlik Grafikleri" var, kitapta yok. Sessizce "en yakin"
+dugume baglamak yanlis veri olurdu (FIZ-345 / FIZ-MO / TUR-BS / EDB-BS
+deseninin aynisi).
+
+### Iki bagimsiz kanal
+
+| kanal | ne verdi |
+|---|---|
+| A: icindekiler (s3) | 6 bolum, 27 konu, her konunun baslangic sayfasi |
+| B: 138 testin ILK sayfasindaki ust bant | testin konu adi |
+
+Karsilastirma: **128 test birebir ayni ad**, 10 test ayni adin UZUN hali
+("OZEL UCGENLER Pisagor Bagintisi", "Analitik Geometri Karma Testler").
+Celisen tek test YOK.
+
+Bandin kendi alt basligi olan uc test (8, 9, 10) icin uc ALT KONU dugumu
+acildi; adlari bandin kendisinden geliyor. "Analitik Geometri" konusunun
+7 testinin TAMAMI "Karma Testler" bandini tasidigi icin ayri bir alt
+dugum ACILMADI -- ebeveyniyle birebir ayni kumeyi kapsayan dugum bilgi
+tasimaz.
+
+Ucuncu kontrol: testlerin sayfa sinirlari cevap anahtarindan turetildi ve
+icindekilerden gelen konu araliklariyla karsilastirildi -- **138 testin
+138'i tek bir konunun icinde kaldi**, konu sinirini asan test yok.
+
+### Dogrulama
+
+  * Yerel Postgres'te `alembic upgrade head` -> 36 dugum eklendi
+    (level 2: 6, level 3: 27, level 4: 3).
+  * `alembic downgrade -1` -> 36 dugum silindi, `GEO-U*` agacindaki 36
+    dugum dokunulmadan kaldi.
+  * Yeniden `upgrade head` -> tekrar 36 dugum (tekrarlanabilir).
+  * `test_acilgeo_konu_agaci.py`: 14 test. Iki mutasyon denendi --
+    migration'da bir dugum adini degistirmek ve haritada bir testi
+    yanlis konuya atamak; ikisi de yakalandi.
+
 ## Sirada ne var
 
 | adim | durum |
@@ -346,7 +390,7 @@ Cevap dagilimi A 216 / B 300 / C 530 / D 423 / E 261.
 | 2c. kirpim duzeltmeleri + 151 ortulu sorunun disarida birakilmasi | **BITTI** |
 | 2d. soru numarasini beyazlatan pay (KAPI 6) | **BITTI** |
 | 3. transkripsiyon (1730 soru, 37 parti) | **BITTI** (yedi kapi gecti) |
-| 4. konu agaci migration (6 bolum / 27 konu) | -- |
+| 4. konu agaci migration (0034; 6 bolum / 27 konu / 3 alt konu) | **BITTI** |
 | 5. ithal araci + e2e testler | -- |
 
 ## Olcum dosyalari (git disi, `backend/_geo1_gecici/`)

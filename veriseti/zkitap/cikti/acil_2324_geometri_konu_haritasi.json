@@ -1,0 +1,389 @@
+{
+ "kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+ "kok": "GEO",
+ "onek": "GEO-ACL24",
+ "bolumler": [
+  {
+   "kod": "GEO-ACL24-B01",
+   "ad": "UCGENLER"
+  },
+  {
+   "kod": "GEO-ACL24-B02",
+   "ad": "DORTGENLER"
+  },
+  {
+   "kod": "GEO-ACL24-B03",
+   "ad": "CEMBERLER"
+  },
+  {
+   "kod": "GEO-ACL24-B04",
+   "ad": "ANALITIK GEOMETRI"
+  },
+  {
+   "kod": "GEO-ACL24-B05",
+   "ad": "KATI CISIMLER"
+  },
+  {
+   "kod": "GEO-ACL24-B06",
+   "ad": "CEMBER ANALITIGI"
+  }
+ ],
+ "konular": [
+  {
+   "kod": "GEO-ACL24-B01-01",
+   "ad": "Dogruda Acilar",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 5,
+   "son_sayfa": 10
+  },
+  {
+   "kod": "GEO-ACL24-B01-02",
+   "ad": "Ucgende Acilar",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 11,
+   "son_sayfa": 25
+  },
+  {
+   "kod": "GEO-ACL24-B01-03",
+   "ad": "Ozel Ucgenler",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 26,
+   "son_sayfa": 47
+  },
+  {
+   "kod": "GEO-ACL24-B01-04",
+   "ad": "Aciortay",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 48,
+   "son_sayfa": 56
+  },
+  {
+   "kod": "GEO-ACL24-B01-05",
+   "ad": "Kenarortay",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 57,
+   "son_sayfa": 65
+  },
+  {
+   "kod": "GEO-ACL24-B01-06",
+   "ad": "Eslik ve Benzerlik",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 66,
+   "son_sayfa": 86
+  },
+  {
+   "kod": "GEO-ACL24-B01-07",
+   "ad": "Ucgende Alan",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 87,
+   "son_sayfa": 108
+  },
+  {
+   "kod": "GEO-ACL24-B01-08",
+   "ad": "Aci Kenar Bagintilari",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 109,
+   "son_sayfa": 115
+  },
+  {
+   "kod": "GEO-ACL24-B01-09",
+   "ad": "Ucgende Merkezler",
+   "ust": "GEO-ACL24-B01",
+   "bas_sayfa": 116,
+   "son_sayfa": 122
+  },
+  {
+   "kod": "GEO-ACL24-B02-01",
+   "ad": "Genel Dortgenler",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 123,
+   "son_sayfa": 128
+  },
+  {
+   "kod": "GEO-ACL24-B02-02",
+   "ad": "Paralelkenar",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 129,
+   "son_sayfa": 146
+  },
+  {
+   "kod": "GEO-ACL24-B02-03",
+   "ad": "Eskenar Dortgen",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 147,
+   "son_sayfa": 155
+  },
+  {
+   "kod": "GEO-ACL24-B02-04",
+   "ad": "Dikdortgen",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 156,
+   "son_sayfa": 177
+  },
+  {
+   "kod": "GEO-ACL24-B02-05",
+   "ad": "Kare",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 178,
+   "son_sayfa": 200
+  },
+  {
+   "kod": "GEO-ACL24-B02-06",
+   "ad": "Deltoid",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 201,
+   "son_sayfa": 206
+  },
+  {
+   "kod": "GEO-ACL24-B02-07",
+   "ad": "Yamuk",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 207,
+   "son_sayfa": 223
+  },
+  {
+   "kod": "GEO-ACL24-B02-08",
+   "ad": "Cokgenler",
+   "ust": "GEO-ACL24-B02",
+   "bas_sayfa": 224,
+   "son_sayfa": 239
+  },
+  {
+   "kod": "GEO-ACL24-B03-01",
+   "ad": "Cemberde Acilar",
+   "ust": "GEO-ACL24-B03",
+   "bas_sayfa": 240,
+   "son_sayfa": 252
+  },
+  {
+   "kod": "GEO-ACL24-B03-02",
+   "ad": "Cemberde Uzunluk",
+   "ust": "GEO-ACL24-B03",
+   "bas_sayfa": 253,
+   "son_sayfa": 273
+  },
+  {
+   "kod": "GEO-ACL24-B03-03",
+   "ad": "Cemberin Cevresi",
+   "ust": "GEO-ACL24-B03",
+   "bas_sayfa": 274,
+   "son_sayfa": 279
+  },
+  {
+   "kod": "GEO-ACL24-B03-04",
+   "ad": "Dairenin Alani",
+   "ust": "GEO-ACL24-B03",
+   "bas_sayfa": 280,
+   "son_sayfa": 302
+  },
+  {
+   "kod": "GEO-ACL24-B04-01",
+   "ad": "Noktanin Analitigi",
+   "ust": "GEO-ACL24-B04",
+   "bas_sayfa": 303,
+   "son_sayfa": 315
+  },
+  {
+   "kod": "GEO-ACL24-B04-02",
+   "ad": "Dogrunun Analitigi",
+   "ust": "GEO-ACL24-B04",
+   "bas_sayfa": 316,
+   "son_sayfa": 333
+  },
+  {
+   "kod": "GEO-ACL24-B04-03",
+   "ad": "Donusum Geometrisi",
+   "ust": "GEO-ACL24-B04",
+   "bas_sayfa": 334,
+   "son_sayfa": 343
+  },
+  {
+   "kod": "GEO-ACL24-B04-04",
+   "ad": "Analitik Geometri",
+   "ust": "GEO-ACL24-B04",
+   "bas_sayfa": 344,
+   "son_sayfa": 368
+  },
+  {
+   "kod": "GEO-ACL24-B05-01",
+   "ad": "Kati Cisimler",
+   "ust": "GEO-ACL24-B05",
+   "bas_sayfa": 369,
+   "son_sayfa": 422
+  },
+  {
+   "kod": "GEO-ACL24-B06-01",
+   "ad": "Cemberin Analitik Incelenmesi",
+   "ust": "GEO-ACL24-B06",
+   "bas_sayfa": 423,
+   "son_sayfa": 446
+  }
+ ],
+ "alt_konular": [
+  {
+   "kod": "GEO-ACL24-B01-03-01",
+   "ad": "Pisagor Bagintisi",
+   "ust": "GEO-ACL24-B01-03",
+   "testler": [
+    8
+   ]
+  },
+  {
+   "kod": "GEO-ACL24-B01-03-02",
+   "ad": "Oklid Teoremi ve Acilarina Gore Ozel Ucgenler",
+   "ust": "GEO-ACL24-B01-03",
+   "testler": [
+    9
+   ]
+  },
+  {
+   "kod": "GEO-ACL24-B01-03-03",
+   "ad": "Ikizkenar ve Eskenar Ucgen",
+   "ust": "GEO-ACL24-B01-03",
+   "testler": [
+    10
+   ]
+  }
+ ],
+ "test_konu": {
+  "1": "GEO-ACL24-B01-01",
+  "2": "GEO-ACL24-B01-01",
+  "3": "GEO-ACL24-B01-02",
+  "4": "GEO-ACL24-B01-02",
+  "5": "GEO-ACL24-B01-02",
+  "6": "GEO-ACL24-B01-02",
+  "7": "GEO-ACL24-B01-02",
+  "8": "GEO-ACL24-B01-03-01",
+  "9": "GEO-ACL24-B01-03-02",
+  "10": "GEO-ACL24-B01-03-03",
+  "11": "GEO-ACL24-B01-03",
+  "12": "GEO-ACL24-B01-03",
+  "13": "GEO-ACL24-B01-03",
+  "14": "GEO-ACL24-B01-03",
+  "15": "GEO-ACL24-B01-04",
+  "16": "GEO-ACL24-B01-04",
+  "17": "GEO-ACL24-B01-04",
+  "18": "GEO-ACL24-B01-05",
+  "19": "GEO-ACL24-B01-05",
+  "20": "GEO-ACL24-B01-05",
+  "21": "GEO-ACL24-B01-06",
+  "22": "GEO-ACL24-B01-06",
+  "23": "GEO-ACL24-B01-06",
+  "24": "GEO-ACL24-B01-06",
+  "25": "GEO-ACL24-B01-06",
+  "26": "GEO-ACL24-B01-06",
+  "27": "GEO-ACL24-B01-06",
+  "28": "GEO-ACL24-B01-07",
+  "29": "GEO-ACL24-B01-07",
+  "30": "GEO-ACL24-B01-07",
+  "31": "GEO-ACL24-B01-07",
+  "32": "GEO-ACL24-B01-07",
+  "33": "GEO-ACL24-B01-07",
+  "34": "GEO-ACL24-B01-07",
+  "35": "GEO-ACL24-B01-08",
+  "36": "GEO-ACL24-B01-08",
+  "37": "GEO-ACL24-B01-08",
+  "38": "GEO-ACL24-B01-09",
+  "39": "GEO-ACL24-B01-09",
+  "40": "GEO-ACL24-B02-01",
+  "41": "GEO-ACL24-B02-01",
+  "42": "GEO-ACL24-B02-02",
+  "43": "GEO-ACL24-B02-02",
+  "44": "GEO-ACL24-B02-02",
+  "45": "GEO-ACL24-B02-02",
+  "46": "GEO-ACL24-B02-02",
+  "47": "GEO-ACL24-B02-02",
+  "48": "GEO-ACL24-B02-03",
+  "49": "GEO-ACL24-B02-03",
+  "50": "GEO-ACL24-B02-03",
+  "51": "GEO-ACL24-B02-04",
+  "52": "GEO-ACL24-B02-04",
+  "53": "GEO-ACL24-B02-04",
+  "54": "GEO-ACL24-B02-04",
+  "55": "GEO-ACL24-B02-04",
+  "56": "GEO-ACL24-B02-04",
+  "57": "GEO-ACL24-B02-04",
+  "58": "GEO-ACL24-B02-05",
+  "59": "GEO-ACL24-B02-05",
+  "60": "GEO-ACL24-B02-05",
+  "61": "GEO-ACL24-B02-05",
+  "62": "GEO-ACL24-B02-05",
+  "63": "GEO-ACL24-B02-05",
+  "64": "GEO-ACL24-B02-05",
+  "65": "GEO-ACL24-B02-06",
+  "66": "GEO-ACL24-B02-06",
+  "67": "GEO-ACL24-B02-07",
+  "68": "GEO-ACL24-B02-07",
+  "69": "GEO-ACL24-B02-07",
+  "70": "GEO-ACL24-B02-07",
+  "71": "GEO-ACL24-B02-07",
+  "72": "GEO-ACL24-B02-08",
+  "73": "GEO-ACL24-B02-08",
+  "74": "GEO-ACL24-B02-08",
+  "75": "GEO-ACL24-B02-08",
+  "76": "GEO-ACL24-B02-08",
+  "77": "GEO-ACL24-B03-01",
+  "78": "GEO-ACL24-B03-01",
+  "79": "GEO-ACL24-B03-01",
+  "80": "GEO-ACL24-B03-01",
+  "81": "GEO-ACL24-B03-02",
+  "82": "GEO-ACL24-B03-02",
+  "83": "GEO-ACL24-B03-02",
+  "84": "GEO-ACL24-B03-02",
+  "85": "GEO-ACL24-B03-02",
+  "86": "GEO-ACL24-B03-02",
+  "87": "GEO-ACL24-B03-03",
+  "88": "GEO-ACL24-B03-03",
+  "89": "GEO-ACL24-B03-04",
+  "90": "GEO-ACL24-B03-04",
+  "91": "GEO-ACL24-B03-04",
+  "92": "GEO-ACL24-B03-04",
+  "93": "GEO-ACL24-B03-04",
+  "94": "GEO-ACL24-B03-04",
+  "95": "GEO-ACL24-B03-04",
+  "96": "GEO-ACL24-B04-01",
+  "97": "GEO-ACL24-B04-01",
+  "98": "GEO-ACL24-B04-01",
+  "99": "GEO-ACL24-B04-01",
+  "100": "GEO-ACL24-B04-02",
+  "101": "GEO-ACL24-B04-02",
+  "102": "GEO-ACL24-B04-02",
+  "103": "GEO-ACL24-B04-02",
+  "104": "GEO-ACL24-B04-02",
+  "105": "GEO-ACL24-B04-02",
+  "106": "GEO-ACL24-B04-03",
+  "107": "GEO-ACL24-B04-03",
+  "108": "GEO-ACL24-B04-03",
+  "109": "GEO-ACL24-B04-04",
+  "110": "GEO-ACL24-B04-04",
+  "111": "GEO-ACL24-B04-04",
+  "112": "GEO-ACL24-B04-04",
+  "113": "GEO-ACL24-B04-04",
+  "114": "GEO-ACL24-B04-04",
+  "115": "GEO-ACL24-B04-04",
+  "116": "GEO-ACL24-B05-01",
+  "117": "GEO-ACL24-B05-01",
+  "118": "GEO-ACL24-B05-01",
+  "119": "GEO-ACL24-B05-01",
+  "120": "GEO-ACL24-B05-01",
+  "121": "GEO-ACL24-B05-01",
+  "122": "GEO-ACL24-B05-01",
+  "123": "GEO-ACL24-B05-01",
+  "124": "GEO-ACL24-B05-01",
+  "125": "GEO-ACL24-B05-01",
+  "126": "GEO-ACL24-B05-01",
+  "127": "GEO-ACL24-B05-01",
+  "128": "GEO-ACL24-B05-01",
+  "129": "GEO-ACL24-B05-01",
+  "130": "GEO-ACL24-B05-01",
+  "131": "GEO-ACL24-B05-01",
+  "132": "GEO-ACL24-B06-01",
+  "133": "GEO-ACL24-B06-01",
+  "134": "GEO-ACL24-B06-01",
+  "135": "GEO-ACL24-B06-01",
+  "136": "GEO-ACL24-B06-01",
+  "137": "GEO-ACL24-B06-01",
+  "138": "GEO-ACL24-B06-01"
+ },
+ "yontem": "Bolum/konu adlari ve baslangic sayfalari kitabin KENDI icindekiler sayfasindan (s3) okundu. Bagimsiz ikinci kanal: 138 testin ILK sayfasinin ust bandi okundu; 128'i icindekiler adiyla birebir, 10'u ayni adin uzun hali (ornek 'OZEL UCGENLER Pisagor Bagintisi', 'Analitik Geometri Karma Testler'). Celiski YOK. Bandin kendi alt basligi olan uc test (8, 9, 10) alt konu dugumune, kalanlar konu dugumune baglanir. 'Analitik Geometri' konusunun 7 testinin TAMAMI 'Karma Testler' bandini tasidigi icin ayri bir alt dugum acilmadi."
+}
