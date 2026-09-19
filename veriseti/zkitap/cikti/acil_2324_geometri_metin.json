@@ -11800,15 +11800,13 @@
     "B": "1/3",
     "C": "1/2",
     "D": "1",
-    "E": ""
+    "E": "2"
    },
    "sekil_var": true,
    "sekil_aciklama": "ABCD paralelkenarında [DA] ve [AB] kenarları E ve F noktalarına uzatılmış, [EF] doğrusu köşegen ve kenarları M, K, N noktalarında kesiyor.",
    "sikler_gorsel": false,
    "kaynak_kusuru": "",
-   "okunamayan": [
-    "E sikkinin degeri goruntunun sag kenarinda kesilmis, okunamiyor"
-   ]
+   "okunamayan": []
   },
   {
    "gorsel": "s0134_sag_2.png",
@@ -13987,15 +13985,13 @@
     "B": "1",
     "C": "3/2",
     "D": "2",
-    "E": ""
+    "E": "5/2"
    },
    "sekil_var": true,
    "sekil_aciklama": "ABCD dikdörtgeninde [AC] köşegenine D'den inen dikmenin ayağı F'den [BC]'ye çizilen [EF] doğru parçasının gösterildiği şekil.",
    "sikler_gorsel": false,
    "kaynak_kusuru": "E şıkkındaki kesrin paydası görüntünün alt kenarında kesilmiş.",
-   "okunamayan": [
-    "E şıkkı: yalnızca kesrin payı olan 5 görünüyor, payda kesik."
-   ]
+   "okunamayan": []
   },
   {
    "gorsel": "s0158_sag_2.png",
@@ -16611,15 +16607,13 @@
     "B": "1/2",
     "C": "2/3",
     "D": "3/4",
-    "E": ""
+    "E": "4/5"
    },
    "sekil_var": true,
    "sekil_aciklama": "Beş birim kareden oluşan basamaklı şekil ve E'den D'ye çizilerek turuncu bölgeyi ayıran doğru parçası.",
    "sikler_gorsel": false,
    "kaynak_kusuru": "",
-   "okunamayan": [
-    "E şıkkının değeri görüntünün sağ kenarında kesik"
-   ]
+   "okunamayan": []
   },
   {
    "gorsel": "s0190_sol_1.png",
@@ -16933,7 +16927,7 @@
    "sikler": {
     "A": "√2",
     "B": "√3",
-    "C": "",
+    "C": "√2 − 1",
     "D": "2√2 − 2",
     "E": "3√2 − 3"
    },
@@ -16941,9 +16935,7 @@
    "sekil_aciklama": "Üstte köşesi üzerinde duran EFGH karesi, altta yan yana ABCD ve KLMN eş kareleri.",
    "sikler_gorsel": false,
    "kaynak_kusuru": "",
-   "okunamayan": [
-    "C şıkkının tamamı görüntünün sağ kenarında kesik"
-   ]
+   "okunamayan": []
   },
   {
    "gorsel": "s0194_sag_1.png",
@@ -17257,7 +17249,7 @@
    "sikler": {
     "A": "Yalnız I",
     "B": "Yalnız II",
-    "C": "",
+    "C": "I ve II",
     "D": "I ve III",
     "E": "I, II ve III"
    },
@@ -17265,9 +17257,7 @@
    "sekil_aciklama": "ABCD karesinin beş parçaya ayrılışı ile bu parçalardan kurulmuş I, II ve III numaralı üç aday şekil.",
    "sikler_gorsel": false,
    "kaynak_kusuru": "",
-   "okunamayan": [
-    "C şıkkının tamamı görüntünün sağ kenarında kesik"
-   ]
+   "okunamayan": []
   },
   {
    "gorsel": "s0198_sol_1.png",
@@ -29320,7 +29310,7 @@
    "sikler_gorsel": false,
    "kaynak_kusuru": "B şıkkındaki (k  ℓ)² ifadesinin içindeki işlem işareti soluk basılmış, seçilemiyor.",
    "okunamayan": [
-    "B şıkkı: (k  ℓ)² ifadesindeki işlem işareti okunamıyor"
+    "B sikki: (k ? l)^2 ifadesindeki islem isareti kaynakta bulanik, okunamadi"
    ]
   },
   {
@@ -33830,7 +33820,7 @@
    "sikler_gorsel": false,
    "kaynak_kusuru": "",
    "okunamayan": [
-    "E sikkindeki x'in usteli okunamadi"
+    "E sikki: x^? us degeri kaynakta bulanik (5 mi 6 mi ayirt edilemedi)"
    ]
   },
   {
@@ -36010,15 +36000,13 @@
     "B": "3",
     "C": "7/2",
     "D": "4",
-    "E": ""
+    "E": "9/2"
    },
    "sekil_var": true,
    "sekil_aciklama": "Tepesi T olan ABC tabanlı üçgen piramitte K, L, M orta noktalarıyla oluşan sarı taranmış küçük piramidin gösterildiği çizim.",
    "sikler_gorsel": false,
    "kaynak_kusuru": "",
-   "okunamayan": [
-    "E şıkkının paydası görüntünün altında kırpılmış"
-   ]
+   "okunamayan": []
   },
   {
    "gorsel": "s0406_sol_2.png",

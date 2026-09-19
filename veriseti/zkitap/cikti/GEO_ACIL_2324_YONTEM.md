@@ -380,6 +380,71 @@ icindekilerden gelen konu araliklariyla karsilastirildi -- **138 testin
     migration'da bir dugum adini degistirmek ve haritada bir testi
     yanlis konuya atamak; ikisi de yakalandi.
 
+## Adim 5 -- Ithal araci (`acil_geo_ithal.py`)
+
+Ithal PASIF: `is_active=FALSE`, `is_public=FALSE`, `review_status='PENDING'`.
+Aktiflestirme ayri bir karardir. Kaynak adi sozlesmeye eklendi:
+`ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi` / onek `ACIL_GEO_2324`.
+
+Script uc dosyayi birlestirir -- ayri bir "ithal veri seti" uretilmez:
+
+| dosya | ne verir |
+|---|---|
+| `acil_2324_geometri_metin.json` | govde, siklar, cevap, sekil bilgisi |
+| `acil_2324_geometri_konu_haritasi.json` | test -> konu dugumu |
+| `acil_2324_geometri_kirpim_kutulari.json` | kirpim kutusu (ortulu olanlar HARIC) |
+
+`question_image_url` kirpim script'inin KENDI urettigi adi kullanir
+(`ACILGEO_2324/sNNNN_sutun_sira.png`). fiz345'te ad kayit id'siydi, cunku
+orada veri seti id'yi zaten tasiyordu; burada kirpim script'i metin
+hattindan bagimsiz calisiyor ve hash'i bilmiyor. Ikinci bir adlandirma
+semasi uydurmak yerine kirpimin deterministik adi kullanildi.
+
+### Bos sik avi -- 8 kayit
+
+On kontrol iki kayitta "anahtar sikki bos" diye DURDU. Sebep arandi ve
+sekiz kayitta bos sik bulundu. Sekizi de kaynakta tek tek acildi:
+
+  * ALTISI okunabiliyordu, transkripsiyon ajani fazla temkinliydi
+    (sik goruntunun sag kenarina 3-4 px kala bitiyor). Degerler kaynaktan
+    okunup yazildi: s0134 E=2, s0158 E=5/2, s0189 E=4/5,
+    s0194 C=(karekok2 - 1), s0197 C="I ve II", s0406 E=9/2.
+  * IKISI gercekten bulanik: s0328'de B sikkindeki islem isareti,
+    s0380'de E sikkindeki us degeri (5 mi 6 mi ayirt edilemedi).
+    UYDURULMADI; `okunamayan` alaninda belgelendi.
+
+s0380'de bulanik sik ANAHTAR sikki. Satir silinmedi: tam soru kirpimi
+gercek sikki tasiyor, ogrenci gorselde goruyor. On kontrolun "anahtar
+sikki bos" kapisi bu tek durum icin daraltildi -- bos anahtar sikki
+yalniz `okunamayan` dolu VE kirpim varsa affedilir; belgelenmemis bos
+anahtar hala DURDURUR. Satir `anahtar_sikki_okunamadi` bayragi tasir.
+
+### Yerel olcum (Postgres 5434)
+
+```
+veri setinde 1730 soru (ortme yuzunden disarida: 151)
+on kontrol: ... TEMIZ
+YAZILDI: 1730 yeni satir
+DB'de bu ithalin satirlari: toplam 1730, is_active 0, kapidan gecen 0
+gorselli: 1730 / 1730     konu kodu: 30
+bayraklar: kaynak_dizgi_kusuru 36, konu_alt_konu_duzeyinde 39,
+           sik_tekrar 21, sikler_gorsel 17, okunamayan_parca 4,
+           sik_bos 2, anahtar_sikki_okunamadi 1
+bloom: application 1372, comprehension 358   okunabilirlik ort 90,4
+```
+
+### Koruma testleri
+
+`tests/e2e/test_acilgeo_ithal.py` -- 21 test, canli DB istemez. Kapsam:
+veri seti butunlugu, **ortulu 151 sorunun ithale girmemesi**, konu
+baglantisi (kok dugume dusen kayit yok), kaynak adi sozlesmesi, ithalin
+PASIF olmasi, cozumun uydurulmamasi, kirpim/gorsel tutarliligi, kirpim
+kutularinin kart icinde kalmasi ve bayrak sayilari.
+
+Bes mutasyon denendi, besi de yakalandi: anahtar sikkini belgesiz
+bosaltmak, bir sikki silmek, govdeyi bosaltmak, konu kodunu agac disina
+tasimak, ayni soruyu iki kez koymak.
+
 ## Sirada ne var
 
 | adim | durum |
@@ -391,7 +456,7 @@ icindekilerden gelen konu araliklariyla karsilastirildi -- **138 testin
 | 2d. soru numarasini beyazlatan pay (KAPI 6) | **BITTI** |
 | 3. transkripsiyon (1730 soru, 37 parti) | **BITTI** (yedi kapi gecti) |
 | 4. konu agaci migration (0034; 6 bolum / 27 konu / 3 alt konu) | **BITTI** |
-| 5. ithal araci + e2e testler | -- |
+| 5. ithal araci + e2e testler | **BITTI** (1730 satir PASIF) |
 
 ## Olcum dosyalari (git disi, `backend/_geo1_gecici/`)
 
