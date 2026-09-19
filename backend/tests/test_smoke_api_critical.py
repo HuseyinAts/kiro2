@@ -105,9 +105,9 @@ def admin_headers():
 
 def _assert_no_crash(resp: httpx.Response, endpoint: str) -> None:
     """5xx response = crash = regression. 4xx auth/not-found kabul edilir."""
-    assert resp.status_code < 500, (
-        f"CRASH at {endpoint}: status={resp.status_code} body={resp.text[:200]!r}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"CRASH at {endpoint}: status={resp.status_code} body={resp.text[:200]!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -120,19 +120,24 @@ async def test_smoke_auth_login(client: httpx.AsyncClient):
     """Login endpoint reachable + non-crash (seed user yoksa 401 kabul)."""
     resp = await client.post(
         "/api/v1/auth/login",
-        json={"email": "test@kiro2.com", "password": "Kiro2Beta2026@x"},
+        json={
+            "email": "test@kiro2.com",
+            "password": "Kiro2Beta2026@x",  # pragma: allowlist secret
+        },
     )
     _assert_no_crash(resp, "/api/v1/auth/login")
     # 200 (seed user var) veya 401 (yok) veya 422 (validation) acceptable
-    assert resp.status_code in (200, 401, 422), (
-        f"Unexpected login status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        422,
+    ), f"Unexpected login status: {resp.status_code}"
     if resp.status_code == 200:
         # Schema assertion sadece happy path için
         body = resp.json()
-        assert "access_token" in body or "Set-Cookie" in str(resp.headers), (
-            f"Login 200 ama token yok: {body}"
-        )
+        assert "access_token" in body or "Set-Cookie" in str(
+            resp.headers
+        ), f"Login 200 ama token yok: {body}"
 
 
 # ---------------------------------------------------------------------------
@@ -145,9 +150,11 @@ async def test_smoke_auth_me(client: httpx.AsyncClient, student_headers: dict):
     resp = await client.get("/api/v1/auth/me", headers=student_headers)
     _assert_no_crash(resp, "/api/v1/auth/me")
     # 200 (user DB'de var) veya 401 (yok) acceptable
-    assert resp.status_code in (200, 401, 404), (
-        f"Unexpected /me status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        404,
+    ), f"Unexpected /me status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -163,9 +170,13 @@ async def test_smoke_auth_refresh(client: httpx.AsyncClient):
     )
     _assert_no_crash(resp, "/api/v1/auth/refresh")
     # Geçersiz token → 401/403/422 beklenir
-    assert resp.status_code in (200, 400, 401, 403, 422), (
-        f"Unexpected refresh status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        400,
+        401,
+        403,
+        422,
+    ), f"Unexpected refresh status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -178,9 +189,11 @@ async def test_smoke_auth_logout(client: httpx.AsyncClient, student_headers: dic
     resp = await client.post("/api/v1/auth/logout", headers=student_headers)
     _assert_no_crash(resp, "/api/v1/auth/logout")
     # 200/204 (logout başarılı) veya 401 (token zaten geçersiz) acceptable
-    assert resp.status_code in (200, 204, 401), (
-        f"Unexpected logout status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        204,
+        401,
+    ), f"Unexpected logout status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -194,14 +207,16 @@ async def test_smoke_osym_exam_configs(
     """TYT/AYT exam configs list. Auth gerekirse 401 acceptable."""
     resp = await client.get("/api/v1/osym-exam/exam-configs", headers=student_headers)
     _assert_no_crash(resp, "/api/v1/osym-exam/exam-configs")
-    assert resp.status_code in (200, 401, 403), (
-        f"Unexpected exam-configs status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+    ), f"Unexpected exam-configs status: {resp.status_code}"
     if resp.status_code == 200:
         body = resp.json()
-        assert isinstance(body, (list, dict)), (
-            f"exam-configs 200 ama geçersiz format: {type(body)}"
-        )
+        assert isinstance(
+            body, list | dict
+        ), f"exam-configs 200 ama geçersiz format: {type(body)}"
 
 
 # ---------------------------------------------------------------------------
@@ -209,15 +224,26 @@ async def test_smoke_osym_exam_configs(
 # ---------------------------------------------------------------------------
 
 
+# /learning-path/today, app/api/learning_path_daily.py:290'da POSTGRES'E
+# OZGU "ON CONFLICT (user_id) DO UPDATE SET" yaziyor. Mock-DB kosumunda
+# gercek sqlite oturumu araya girdiginde endpoint 500 doner ve bu test
+# ARALIKLI kirmizi olur (19 Eyl 2026: master'da ve uc ayri PR'da goruldu).
+# Proje zaten PostgreSQL sart kosuyor (tests/smoke/test_smoke_database.py),
+# yani sqlite uzerinde bu ucu denemek DESTEKLENMEYEN bir yapilandirmayi
+# olcmektir. Kardes 13 testle ayni isaret kondu.
+@requires_live_db
 async def test_smoke_learning_path_today(
     client: httpx.AsyncClient, student_headers: dict
 ):
     """Daily learning path. Student auth + DAG lookup smoke."""
     resp = await client.get("/api/v1/learning-path/today", headers=student_headers)
     _assert_no_crash(resp, "/api/v1/learning-path/today")
-    assert resp.status_code in (200, 401, 403, 404), (
-        f"Unexpected learning-path/today status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+        404,
+    ), f"Unexpected learning-path/today status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -225,15 +251,21 @@ async def test_smoke_learning_path_today(
 # ---------------------------------------------------------------------------
 
 
+# /fsrs/due ham SQL'i POSTGRES'E OZGU: "f.question_id::text",
+# "NOW() + INTERVAL '4 hours'" ve materyalize gorunum mv_safe_for_beta.
+# Yukaridaki ile ayni aralikli kirmizinin ikinci kaynagi.
+@requires_live_db
 async def test_smoke_fsrs_review_queue(
     client: httpx.AsyncClient, student_headers: dict
 ):
     """FSRS due cards queue. Auth + FSRS service smoke."""
     resp = await client.get("/api/v1/fsrs/due", headers=student_headers)
     _assert_no_crash(resp, "/api/v1/fsrs/due")
-    assert resp.status_code in (200, 401, 403), (
-        f"Unexpected fsrs/due status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+    ), f"Unexpected fsrs/due status: {resp.status_code}"
     if resp.status_code == 200:
         body = resp.json()
         assert isinstance(body, list), f"fsrs/due 200 ama list değil: {type(body)}"
@@ -249,9 +281,12 @@ async def test_smoke_teacher_profile(client: httpx.AsyncClient, teacher_headers:
     """Teacher role auth + profile lookup smoke."""
     resp = await client.get("/api/v1/teachers/my-profile", headers=teacher_headers)
     _assert_no_crash(resp, "/api/v1/teachers/my-profile")
-    assert resp.status_code in (200, 401, 403, 404), (
-        f"Unexpected teacher profile status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+        404,
+    ), f"Unexpected teacher profile status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -264,9 +299,12 @@ async def test_smoke_parent_children(client: httpx.AsyncClient, parent_headers: 
     """Parent role auth + children list smoke."""
     resp = await client.get("/api/v1/parent/children", headers=parent_headers)
     _assert_no_crash(resp, "/api/v1/parent/children")
-    assert resp.status_code in (200, 401, 403, 404), (
-        f"Unexpected parent/children status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+        404,
+    ), f"Unexpected parent/children status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -281,9 +319,12 @@ async def test_smoke_admin_question_bank(
     """Admin role auth + question_bank read smoke."""
     resp = await client.get("/api/v1/admin/content/questions", headers=admin_headers)
     _assert_no_crash(resp, "/api/v1/admin/content/questions")
-    assert resp.status_code in (200, 401, 403, 404), (
-        f"Unexpected admin/content/questions status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+        404,
+    ), f"Unexpected admin/content/questions status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -299,9 +340,13 @@ async def test_smoke_youtube_search(client: httpx.AsyncClient, student_headers: 
         json={"query": "matematik türev", "max_results": 3},
     )
     _assert_no_crash(resp, "/api/v1/youtube/search")
-    assert resp.status_code in (200, 400, 401, 403, 422), (
-        f"Unexpected youtube/search status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        400,
+        401,
+        403,
+        422,
+    ), f"Unexpected youtube/search status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -326,9 +371,16 @@ async def test_smoke_student_feedback_flag(
     _assert_no_crash(resp, "/api/v1/quality/feedback/flag")
     # 201 (success), 400/409 (FK/unique violation), 401/403 (auth),
     # 404 (router yoksa) hepsi acceptable
-    assert resp.status_code in (201, 400, 401, 403, 404, 409, 422, 429), (
-        f"Unexpected flag status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        201,
+        400,
+        401,
+        403,
+        404,
+        409,
+        422,
+        429,
+    ), f"Unexpected flag status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -343,9 +395,12 @@ async def test_smoke_curator_queue(client: httpx.AsyncClient, admin_headers: dic
     # curator queue rolünü oynuyor (admin/curator review için)
     resp = await client.get("/api/v1/quality/feedback/summary", headers=admin_headers)
     _assert_no_crash(resp, "/api/v1/quality/feedback/summary")
-    assert resp.status_code in (200, 401, 403, 404), (
-        f"Unexpected curator/summary status: {resp.status_code}"
-    )
+    assert resp.status_code in (
+        200,
+        401,
+        403,
+        404,
+    ), f"Unexpected curator/summary status: {resp.status_code}"
 
 
 # ---------------------------------------------------------------------------
@@ -367,9 +422,9 @@ async def test_smoke_health(client: httpx.AsyncClient):
             if resp.status_code == 200:
                 body = resp.json()
                 # Health response schemas vary: status/healthy/ok
-                assert any(k in body for k in ("status", "healthy", "ok", "service")), (
-                    f"Health 200 ama schema bilinmiyor: {body}"
-                )
+                assert any(
+                    k in body for k in ("status", "healthy", "ok", "service")
+                ), f"Health 200 ama schema bilinmiyor: {body}"
             break
     assert found, f"Hiçbir health endpoint bulunamadı (son: {last_status})"
 
@@ -392,6 +447,50 @@ async def test_smoke_exam_create(client: httpx.AsyncClient, student_headers: dic
     )
     _assert_no_crash(resp, "/api/v1/osym-exam/create")
     # 200/201 (success), 400 (validation/no questions), 401/403 (auth) acceptable
-    assert resp.status_code in (200, 201, 400, 401, 403, 404, 422), (
-        f"Unexpected exam create status: {resp.status_code}"
+    assert resp.status_code in (
+        200,
+        201,
+        400,
+        401,
+        403,
+        404,
+        422,
+    ), f"Unexpected exam create status: {resp.status_code}"
+
+
+# ---------------------------------------------------------------------------
+# YAPISAL KAPI -- "hangi test canli DB ister" politikasi acik kalsin
+# ---------------------------------------------------------------------------
+
+# Bu testler DB'ye DOKUNMAYAN uclari olcer; isaret istemezler.
+# Yeni bir test eklenirken ya buraya yazilir ya da @requires_live_db alir.
+# Aksi halde asagidaki kapi duser -- aralikli kirmizilar boyle olusuyordu.
+DB_SIZ_TESTLER = frozenset(
+    {
+        "test_smoke_auth_me",
+        "test_smoke_auth_refresh",
+        "test_smoke_auth_logout",
+        "test_smoke_osym_exam_configs",
+        "test_smoke_youtube_search",
+        "test_smoke_health",
+    }
+)
+
+
+def test_canli_db_isareti_politikasi() -> None:
+    """Her smoke testi ya isaretli ya da DB_SIZ_TESTLER listesinde olmali."""
+    import inspect
+
+    kaynak = inspect.getsource(inspect.getmodule(test_canli_db_isareti_politikasi))
+    isaretsiz = []
+    for satir in kaynak.splitlines():
+        ad = satir.partition("async def ")[2].partition("(")[0]
+        if not ad.startswith("test_smoke_"):
+            continue
+        blok = kaynak.split(f"async def {ad}(")[0]
+        onceki = blok.rstrip().splitlines()[-1].strip() if blok.strip() else ""
+        if onceki != "@requires_live_db" and ad not in DB_SIZ_TESTLER:
+            isaretsiz.append(ad)
+    assert not isaretsiz, (
+        "su testler ne @requires_live_db tasiyor ne DB_SIZ_TESTLER'de: " f"{isaretsiz}"
     )
