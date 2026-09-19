@@ -101,3 +101,66 @@ kapatir ve dalganin kapsamini bir kitap kucultur. Kitap basina Faz 0
 
 `_cift.py`, `_yanyana.py`, `_mikro8.py`, `cift/` (karsilastirma
 goruntuleri), `_db_geo.py`.
+
+---------------------------------------------------------------------
+
+## EK (19 Eyl 2026) -- Dalga geneli yakalama geometrisi + ortme
+
+Bu ek, dalganin butun geometri kitaplarina AYNI kalibre araci
+(`backend/scripts/kitap/ortme_olc.py`) uygulanarak olculdu. Arac ACIL
+2023-2024 uzerinde 154 olayi birebir yeniden urettigi icin kalibredir.
+Her kitabin karti ve diski ayri olculdu -- varsayilmadi.
+
+### Kart ve disk
+
+| kitap | kart | disk (simge merkezine gore sol/ust/sag/alt) |
+|---|---|---|
+| ACIL 2023-2024 | 734x968 @ (593,46) | -6 / -5 / 21 / 24 |
+| ACIL 2025 KURS | 734x968 @ (593,46) | -5 / -5 / 21 / 19 |
+| C1CELL 2024 | 738x968 @ (591,46) | -6 / -5 / 22 / 24 |
+| Orijinal 2024 | 734x968 @ (593,46) | -6 / -5 / 22 / 24 |
+| Bilgi Sarmali 22-23 | 734x968 @ (593,46) | -6 / -5 / 22 / 24 |
+| Mikro Orijinal 2 | 734x968 @ (593,46) | -6 / -5 / 22 / 24 |
+
+Disk butun kitaplarda ayni FERNUS diski (dolgu 240,238,247).
+
+### Iki olcu -- biri temiz, biri UST SINIR
+
+| kitap | sag sutun simgesi | ortme sinyali (UST SINIR) | diskin sagindaki en kucuk bosluk |
+|---|---|---|---|
+| ACIL 2023-2024 | 916 | 154 (olculu, dogrulandi) | 27 px |
+| ACIL 2025 KURS | 961 | 403 | 3 px |
+| C1CELL 2024 | 1036 | 301 | 3 px |
+| Orijinal 2024 | 1033 | 309 | 3 px |
+| Bilgi Sarmali 22-23 | 868 | 167 | 14 px |
+| Mikro Orijinal 2 (3 sutun) | 1559 | 861 (*) | 3 px |
+
+**Diskin sagindaki bosluk TEMIZ olcumdur:** beyazlatma payinin tavan
+siniridir. ACIL 2023-2024'te 27 px (rahat); kalan besin dordunde 3 px,
+biri (Bilgi Sarmali) 14 px. 3 px'lik kitaplarda ACIL 2023-2024'teki
+"8 -> 3" beyazlatma hatasi daha da kolay olur; her birinde KAPI 6 sart
+(bkz. acil_geo_kirp.py).
+
+**Ortme sinyali UST SINIRDIR, ortme sayisi DEGIL.** Bant hem gercek
+soru metnini hem kitap mobilyasini (baslik bandi, ilerleme seridi,
+sekil kenari) yakalar; ACIL 2025 KURS'ta 16 olayin gozle incelemesi
+karisik cikti. Kesin sayi her kitabin Faz 1 adim 2'sinde "sik satirinda
+bes etiket (A-E) gorunuyor mu" kapisiyla belirlenir.
+
+(*) Mikro Orijinal 2 UC SUTUNLUDUR. 861, iki-sutun aracinin yaklasik
+sayimidir; gercek degildir. Bu kitap Faz 1'de uc-sutunlu ortme
+kapisina ihtiyac duyar (orta sutun simgesi sol sutunu, sag sutun
+simgesi orta sutunu ortebilir).
+
+### Stratejik sonuc
+
+Alti geometri kitabinin hepsi ayni FERNUS diskini ve (biri haric) ayni
+dar payi tasiyor. Yani FERNUS okuyucusunun "Zenginlestirme ve Aktivite
+Dugmelerini Goster" ayari KAPALI yakalama, tek bir kitapta dogrulanirsa
+butun dalganin yakalama stratejisini birden cozer: disk sinifini alti
+kitaptan da siler, alti ayri KAPI 6 yukunu ortadan kaldirir. Bu yuzden
+ayar testi ACIL 2025 KURS uzerinde once yapilir; sonucu dalga geneli
+karardir.
+
+Olcum dosyalari: `backend/_geo1_gecici/ortme_*.json` (git disi),
+`_waved_ortme.py` (sarmalayici).
