@@ -890,12 +890,11 @@ Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 
 ---
 
-## İletişim
+## İletişim & Geliştirici
 
-**Proje Sahibi**: [Adınız]
-**Email**: [your.email@example.com]
-**GitHub**: [https://github.com/your-username](https://github.com/your-username)
-**Teknofest**: [Takım Bilgisi]
+**Proje Sahibi**: Hüseyin Ateş
+**GitHub**: [@HuseyinAts](https://github.com/HuseyinAts)
+**Araştırma Alanı**: Uyarlamalı Öğrenme Sistemleri, Soru Bankası Veri Madenciliği (IRT/FSRS) & Full-Stack Mühendislik
 
 ---
 
