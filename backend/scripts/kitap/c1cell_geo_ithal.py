@@ -189,11 +189,12 @@ def kayit_uret(r: dict[str, Any]) -> dict[str, Any]:
         # GORSEL ADI: kirpim script'inin KENDI urettigi ad (sNNNN_sutun_sira);
         # acil_geo_ithal.py ile ayni gerekce -- kirpim hatti metin hattindan
         # bagimsiz calisir, hash'i bilmez.
+        # URL, dosya sistemi yolu DEGIL: core/application.py CROP_IMAGE_DIR
+        # dizinini /static/crops yoluna mount eder. geo345/mikro_geo ile ayni
+        # bicim. (Once burada CROP_IMAGE_DIR'in kendisi yaziliyordu; DB'ye
+        # tarayicinin cozemedigi goreli bir yol giriyordu -- 0036 onardi.)
         "question_image_url": (
-            f"{os.environ.get('CROP_IMAGE_DIR', 'd-dataset/output/crops')}/"
-            f"{CROP_ONEK}/{r['gorsel']}"
-            if kutu
-            else None
+            f"/static/crops/{CROP_ONEK}/{r['gorsel']}" if kutu else None
         ),
         # Kitabin soru sayfalarinda cozum YOK; serit yalniz harf verir.
         "explanation": None,

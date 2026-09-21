@@ -375,13 +375,41 @@ question_statistics 1770    ithal_araci imzali 1770
 kitaplar (Matematik SB, Problemler SB, Deneme -- eski hattan, hicbirinde
 `ithal_araci` yok). Geometri kitabinin tek yazimi var.
 
-**Gorseller yerlestirildi.** 1770 kirpim
-`d-dataset/output/crops/C1CELLGEO_2024/` altina kopyalandi. Ilk kopyalama
-mount dususu yuzunden yarida kesildi ve bir dosya (`s0406_sag_2.png`)
-yarim kaldi; robocopy'nin "var olani atla" bayraklari onu yenilemedi.
-Bozukluk PIL acamayinca yakalandi, sha256 karsilastirmasiyla onarildi.
-Son durum **bayt-ayni 1770/1770**; DB'nin kaydettigi `image_width` /
-`image_height` ile diskteki PNG boyutlari **1770/1770 uyumlu**.
+**Gorseller yerlestirildi (iki duzeltmeden sonra).** 1770 kirpim
+kopyalandi; bayt-ayni 1770/1770 ve DB'nin `image_width`/`image_height`
+degerleriyle 1770/1770 uyumlu.
+
+Yolda iki hata yapildi, ikisi de olcumle yakalandi:
+
+1. Ilk kopyalama mount dususu yuzunden yarida kesildi ve bir dosya
+   (`s0406_sag_2.png`) yarim kaldi; robocopy'nin "var olani atla"
+   bayraklari onu yenilemedi, yani DOSYA SAYIMI 1770/1770 dogru
+   gorunuyordu. Bozukluk ancak dosyalar PIL ile ACILARAK yakalandi ve
+   sha256 karsilastirmasiyla onarildi.
+2. **Kopyalama YANLIS DIZINE yapildi.** Servis dizini docker bind
+   mount'undan olculur: host `kiro2/d-dataset/output/crops` -> kap
+   `/app/static/crops` (`CROP_IMAGE_DIR=/app/static/crops`). Dosyalar
+   once ev dizinindeki `~/d-dataset/output/crops` altina yazilmisti --
+   benzer adli, tamamen baska bir yer. Bu belgenin onceki surumu
+   "yerlestirildi" derken bunu dogru sanmisti. Kirpimlar dogru dizine
+   tasindi; dogrulama HTTP ile yapildi (asagi).
+
+**Gorsel URL'i de hataliydi (0036 onardi).** Ithal araci
+`question_image_url` kolonuna `CROP_IMAGE_DIR`in KENDISINI yaziyordu
+(`d-dataset/output/crops/C1CELLGEO_2024/...`) -- bu bir dosya sistemi
+yolu, tarayicinin cozebilecegi bir URL degil. Calisan kitaplarin bicimi
+`/static/crops/<ONEK>/<dosya>`. Olcum (calisan backend'e HTTP istegi):
+
+```
+200  png=True   /static/crops/C1CELLGEO_2024/s0008_sol_1.png
+200  png=True   /static/crops/ACILGEO_2324/s0005_sol_1.png
+404             /d-dataset/output/crops/C1CELLGEO_2024/s0008_sol_1.png
+```
+
+Satirlar PASIF oldugu icin bu hata kimseye gorunmedi; aktiflestirme
+oncesi yakalandi. C1CELL'in 1519, ACIL'in 1513 sorusu SEKIL iceriyor --
+bozuk URL ile aktiflestirilselerdi 3032 soru cozulemez halde servis
+edilecekti. Hem ithal araclari hem de mevcut 3500 satir duzeltildi.
 
 Satirlar PASIF: `is_active=FALSE`, `is_public=FALSE`,
 `review_status='PENDING'`. **Aktiflestirme ayri bir karar.**
