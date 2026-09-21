@@ -137,6 +137,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "ACIL_GEO_2324",
         "ithal_araci": "scripts/kitap/acil_geo_ithal.py",
     },
+    "C1CELL 2024 TYT-AYT Geometri Soru Bankasi": {
+        "onek": "C1CELL_GEO_2024",
+        "ithal_araci": "scripts/kitap/c1cell_geo_ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",
@@ -239,8 +243,7 @@ def yabanci_yaz(yabanci: Sequence[tuple[str, str | None]]) -> None:
     if not yabanci:
         return
     print(
-        f"BASKA KAYNAKTA duran {len(yabanci)} soru (ayni soru_hash) "
-        "-- dokunulmayacak:"
+        f"BASKA KAYNAKTA duran {len(yabanci)} soru (ayni soru_hash) -- dokunulmayacak:"
     )
     for soru_id, kitap in yabanci:
         print(f"    {soru_id}  <- {kitap}")

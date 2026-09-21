@@ -285,4 +285,56 @@ birim: 0).
 
 Gorseller git'e girmez; `c1cell_geo_kirp.py` ile yeniden uretilir.
 
-**Kalan:** konu agaci migration'i + PASIF ithal + e2e testler (Faz 3c-3d).
+**Kalan:** -- (Faz 3c ve 3d tamamlandi, asagi bkz.)
+
+## Faz 3d -- PASIF ithal araci + e2e testler
+
+**Kaynak sozlesmesi.** `C1CELL 2024 TYT-AYT Geometri Soru Bankasi` adi
+`KAYNAK_KAYITLARI`'na eklendi (onek `C1CELL_GEO_2024`). Ad yazdirilabilir
+ASCII; normalize anahtari mevcut 14 kaynagin hicbiriyle cakismiyor
+(olculdu: `cakisan_kaynak` None dondu).
+
+**Ithal araci.** `backend/scripts/kitap/c1cell_geo_ithal.py`,
+`acil_geo_ithal.py` desenini izler: satirlar `is_active=FALSE`,
+`is_public=FALSE`, `review_status='PENDING'`, `pedagogical_status='PENDING'`
+yazilir; yazimdan sonra "aktif ya da kapidan gecen satir var mi" diye
+sorulur ve varsa 3 ile cikilir.
+
+**Konu atamasi BIRIM duzeyinde.** Kitabin konu sinirlari sayfa araligi
+olarak basili. Soru duzeyinde atama yapilsaydi bir birimin sorulari konu
+sinirinda ikiye bolunebilirdi. Olculdu: 163 birimin 163'u tek bir konunun
+araliginda kaliyor; atama birimin sayfa KUMESI uzerinden dogrulanarak
+yapilir, iki konuya yayilan birim gorulurse script DURUR.
+
+**Yapisal kapilar (ithal oncesi, DB'ye dokunmadan).**
+
+| kapi | olctugu sey |
+|---|---|
+| sayi | 1770 soru / 163 birim / 1770 anahtar / 1770 kutu |
+| ortulu | 0 -- C1CELL'de disarida birakilan soru YOK |
+| numara paritesi | basili numara == birim ici sira (1770/1770) |
+| metin<->anahtar | iki BAGIMSIZ hattin cevabi ayni (1770/1770) |
+| konu | her birim tek konuda; her konu soru aliyor (21/21) |
+| satir | 5 dolu sik, dolu govde, dolu anahtar sikki, benzersiz hash |
+| gorsel | her satirda kirpim var; kutu ile gorsel yolu tutarli |
+
+**Kapilarin kapi oldugu OLCULDU.** 13 mutasyon uygulandi (soru sil, kutu
+sil, kutuyu ortulu isaretle, metin cevabini degistir, anahtar cevabini
+degistir, basili numarayi kaydir, birimi iki konuya yay, sayfayi harita
+disina cikar, govdeyi bosalt, sik anahtarini dusur, anahtar sikkini
+bosalt, ayni soruyu iki kez koy, konu kodu onekini boz). Ilk gecis 12/13
+yakaladi: "kutuyu ortulu isaretle" sessizce geciyordu -- satir gorselsiz
+ithal edilirdi ve 1519 soru sekilsiz anlamsiz oldugu icin bu sessiz kayip
+kabul edilemez. Kapi eklendi, ikinci gecis **13/13**. Mutasyonlar
+`test_c1cellgeo_ithal.py` icinde parametrik test olarak duruyor; kapi
+ileride zayiflarsa CI soyler.
+
+**Testler.** `backend/tests/e2e/test_c1cellgeo_ithal.py` (ithal, mutasyon
+dahil) ve `backend/tests/e2e/test_c1cellgeo_konu_agaci.py` (harita <->
+0035 migration birebir; sayfa araliklari s7..s414 bosluksuz). Ikisi de
+canli DB istemez. Yerel kosu: 71 gecti. `test_acilgeo_ithal.py` ve
+`test_kaynak_sozlesmesi.py` regresyon icin birlikte kosuldu: 74 gecti,
+3 atlandi (DB isteyenler).
+
+**Ithal HENUZ KOSULMADI.** Araci ve kapilar hazir; canli DB'ye yazma ayri
+bir adim ve ayri bir karar.
