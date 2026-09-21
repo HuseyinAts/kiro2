@@ -330,11 +330,17 @@ edilmis bir PR ve bir YONTEM belgesi vardir.
 | B3 | Apotemi 2019 2020 Tyt Ayt Fizik (#2) | -- | -- | SAHIP KARARI BEKLIYOR (eski baski istenip istenmedigi) | -- |
 | C | 345 2024 Ayt Biyoloji (#13) | -- | -- | **ATLA onerisi** (Faz 0 olculdu: DB ile %85 ortusme, beklenen yeni soru ~45) | `BIO_345_2024_KESIF.md` |
 | D | Geometri (#1, #3/#4, #5, #8, #9) | -- | -- | on kesif yapildi: dalga 5 degil **4 kitap** (#3/#4 ayni yakalama) | `GEO_DALGA_D_KESIF.md` |
-| D / #1 | ACIL 2023-2024 Tyt Ayt Geometri | 1881 (beklenen) | -- | **Faz 1 adim 1 bitti**: 1881 cevaplik anahtar cikarildi, uc kanal + simge caprazi | `GEO_ACIL_2324_KESIF.md`, `GEO_ACIL_2324_YONTEM.md` |
+| D / #1 | ACIL 2023-2024 Tyt Ayt Geometri | 1730 | #304 | **MERGE** (ithal kosuldu, PASIF; 151 soru okuyucu diski ortmesi yuzunden disarida) | `GEO_ACIL_2324_KESIF.md`, `GEO_ACIL_2324_YONTEM.md` |
+| D / #5 | C1CELL 2024 Tyt Ayt Geometri | 1770 | #311, #312, #313, #314 | **MERGE** (ithal kosuldu, PASIF; ortulu soru YOK -- 1770/1770 girdi) | `GEO_C1CELL_2024_KESIF.md` |
 | D / #3 | Orijinal 2024 Tyt Ayt Geometri | ~2099 (beklenen) | -- | Faz 0 bitti, **GIT**; test haritasi Faz 1'de icindekilerden kurulacak | `GEO_ORIJINAL_2024_KESIF.md` |
 | D / ek | ACIL 2025 KURS Tyt Ayt Geometri | ~1951 (beklenen) | -- | Faz 0 bitti, **GIT** (sahip karari: iki ACIL baskisi da islenecek) | `GEO_ACIL_2025_KURS_KESIF.md` |
 
-Toplam ithal: **4231 soru**, hepsi PASIF.
+Bu planin tablosundan gelen toplam: **7731 soru**, hepsi PASIF
+(A 1597 + B1 1326 + B2 1308 + D/#1 1730 + D/#5 1770). Her satir canli
+DB'de tek tek dogrulandi (21 Eyl 2026). DIKKAT: bu sayi DB'nin tamami
+DEGILDIR -- `pipeline_metadata->>'ithal_araci'` tasiyan modern ithal
+satirlarinin tamami ayni olcumde 15 kitapta 18534; kalani bu plandan
+onceki hatlardan gelir.
 
 ### 8.1 Baski ikilemleri nasil kapandi
 
@@ -410,3 +416,30 @@ Toplam ithal: **4231 soru**, hepsi PASIF.
    `cerceve_ust` bazi sayfalarda izgaranin ORTA cizgisini yakaliyor ve
    ust satiri kesiyor; kirmizi piksel x'i de son hucrenin harfini
    disarida birakiyor. Comert sabit pencere daha guvenli.
+17. **3 px pay ortme demek DEGIL; konum-bazli beyazlatma orada da
+   calisiyor.** `GEO_DALGA_D_KESIF.md` eki, C1CELL'i "diskin sagindaki
+   en kucuk bosluk 3 px, ortme sinyali 301" diye isaretlemis ve bu dar
+   payli kitaplarda ortme borcu beklenmisti. C1CELL islenince olculen
+   sonuc: **ortulu soru 0**, 1770 sorunun tamami dort kapidan gecti.
+   Yani (a) "ortme sinyali" bant olcusu bir UST SINIRDIR ve gercek
+   sayiyi 300 kat asabilir -- planlama girdisi olarak kullanilabilir,
+   kapsam kararina temel yapilamaz; (b) KAPI 6'nin konum-bazli
+   beyazlatmasi (renk-bazli degil) 3 px payda da sayfayi bozmadan
+   calisiyor. Dalga D'nin "ayar testi once ACIL 2025 KURS'ta yapilsin,
+   sonucu dalga geneli karardir" onerisi bu yuzden artik kritik yolda
+   DEGIL: dar pay tek basina yeniden yakalamayi gerektirmiyor.
+18. **Tasiyici kapi birim/test duzeyinde sayim olmali.** C1CELL'de
+   birim sinirlari basili degildi; "N'e geri topla" (seritten geriye
+   dogru simge toplayip birimin cevap sayisina esitleme) 163 birimin
+   163'unde tutturdu ve 1770 == 1770 esitligini yapisal garanti haline
+   getirdi. Naif segmentasyon 135/163'te kaliyordu.
+19. **Kapinin kapi oldugu ayrica olculmeli.** C1CELL ithal aracinda 13
+   mutasyon denendi; ilk gecis 12'sini yakaladi. Kacan mutasyon (bir
+   kirpim kutusunu `ortulu` isaretlemek) satiri gorselsiz ithal
+   ettiriyordu ve dosya SAYIMI dogru gorundugu icin fark edilmezdi.
+   Mutasyon testi olmasa bu delik uretime giderdi.
+20. **Dosya sayimi bozuk dosyayi gizler.** C1CELL kirpimlari servis
+   dizinine kopyalanirken mount dustu ve bir PNG yarim kaldi; robocopy
+   "var olani atla" bayragiyla onu yenilemedi. Sayim 1770/1770 dogru
+   gorunuyordu. Bozukluk ancak dosyalar ACILARAK (PIL) yakalandi --
+   kopyalama dogrulamasi sayim degil sha256 + acilabilirlik olmali.
