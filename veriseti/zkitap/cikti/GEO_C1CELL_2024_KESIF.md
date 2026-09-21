@@ -336,5 +336,52 @@ canli DB istemez. Yerel kosu: 71 gecti. `test_acilgeo_ithal.py` ve
 `test_kaynak_sozlesmesi.py` regresyon icin birlikte kosuldu: 74 gecti,
 3 atlandi (DB isteyenler).
 
-**Ithal HENUZ KOSULMADI.** Araci ve kapilar hazir; canli DB'ye yazma ayri
-bir adim ve ayri bir karar.
+## Faz 3e -- ithal KOSULDU (canli DB)
+
+**Migration 0035 uygulandi.** Once/sonra olcumu:
+
+| olcum | once | sonra |
+|---|---|---|
+| topic_hierarchy dugum | 504 | 530 (+26 = 5 bolum + 21 konu) |
+| GEO-U* dugum | 36 | 36 (dokunulmadi) |
+| GEO-ACL24 dugum | 36 | 36 (dokunulmadi) |
+| question_bank | 22560 | 22560 (migration soru yazmaz) |
+
+**DB kapisi once bos calistirildi.** 0035 uygulanmadan ithal denendi:
+script 21 konu kodunun agacta olmadigini gorup DURDU ("kok dugume
+dusurup sessizce yanlis baglamaktansa duruyorum"). Kapi calisiyor.
+
+**Ithal (1770 satir).** Once/sonra:
+
+| olcum | once | sonra |
+|---|---|---|
+| question_bank | 22560 | 24330 (+1770) |
+| is_active | 14957 | 14957 (degismedi) |
+| v_safe_for_beta | 14124 | 14124 (degismedi) |
+
+Yazilan satirlarin denetimi (bagimsiz SQL, script'in kendi raporundan ayri):
+
+```
+c1cell satir      1770      tekil id          1770
+is_active            0      is_public            0
+review_status disi   0      pedagogical disi     0
+konusuz satir        0      yanlis agac          0
+gorselsiz            0      cozumlu (uydurma)    0
+konu adedi          21      sayfa araligi   8..411
+question_statistics 1770    ithal_araci imzali 1770
+```
+
+**Kaynak adi bolunmedi.** DB'de `%C1CELL%` eslesen 5 ad var; dordu BASKA
+kitaplar (Matematik SB, Problemler SB, Deneme -- eski hattan, hicbirinde
+`ithal_araci` yok). Geometri kitabinin tek yazimi var.
+
+**Gorseller yerlestirildi.** 1770 kirpim
+`d-dataset/output/crops/C1CELLGEO_2024/` altina kopyalandi. Ilk kopyalama
+mount dususu yuzunden yarida kesildi ve bir dosya (`s0406_sag_2.png`)
+yarim kaldi; robocopy'nin "var olani atla" bayraklari onu yenilemedi.
+Bozukluk PIL acamayinca yakalandi, sha256 karsilastirmasiyla onarildi.
+Son durum **bayt-ayni 1770/1770**; DB'nin kaydettigi `image_width` /
+`image_height` ile diskteki PNG boyutlari **1770/1770 uyumlu**.
+
+Satirlar PASIF: `is_active=FALSE`, `is_public=FALSE`,
+`review_status='PENDING'`. **Aktiflestirme ayri bir karar.**
