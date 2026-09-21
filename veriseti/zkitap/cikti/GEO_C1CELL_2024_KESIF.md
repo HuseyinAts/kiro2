@@ -239,3 +239,50 @@ incelendi; 5'inde de ajanlar hakli cikti:
 Ilk okuma dogrulugu: 1765/1770 (%99.72). Duzeltmeler uygulandi; cevap
 sayilari degismedi (yalnizca harfler), kapi 163/163 sabit kaldi. Cevap
 anahtari artik DOGRULANDI (PROVISIONAL degil) -- ithale hazir.
+
+## Faz 3a-3b -- Kirpim ve 1770 soru transkripsiyonu (21 Eyl 2026)
+
+**Kirpim kutulari (simgeden, LLM tahmini degil).** Kart (591,46) 738x968;
+kolon x<180 sol / >=180 sag; simge x paritede kayiyor (tek ~30/348, cift
+~47/365). Kutu ust = simge_y-6, alt = ayni sutunda sonraki simge_y-9 ya da
+sayfa alt siniri. Sol sutun x:[gx_sol+22, gx_sag+18], sag x:[gx_sag+22, 690].
+
+> DUZELTME (Faz 3): alt sinir once "seritteki ilk mavi piksel" ile
+> bulunuyordu; bazi sayfalarda seridin USTUNDE duran ince mavi bir oge
+> siniri ~30 px yukari cekip SON sorunun siklarini kesiyordu (ajanlar
+> yakaladi: ~35 soruda sik bos). Serit aslinda FERNUS'ta SABIT kart-ici
+> y~896'da; dedektor "genis mavi bant tepesi" (satir mavi sayisi > 80,
+> [885,905]'e kilitli, yoksa sabit 896) olarak yeniden yazildi.
+> Ikinci duzeltme: sol sutun x1 = gx_sag+1 iken tasan son sik kesiliyordu
+> (4 soruda E bos); x1 = gx_sag+18 yapildi (beyazlatilan disk boslugu,
+> sag numaraya degmez).
+
+**Dort kapi GECTI:** kutu==1770; her birimde kutu==cevap sayisi N;
+ayni sutunda ortusme/kisa kutu yok; her kutuda murekkep var. Kutu uretimi
+deterministik (yeniden calistirinca bayt-ayni cikti).
+
+**Transkripsiyon.** 1770 kirpim 295 montaja (6'sar, etiketli) toplanip 12
+ajanla soru-granuler okundu. Sonuc: **1770/1770**, tekil gorsel anahtari,
+bozuk JSON yok, duplike yok, manifestle bire bir; bos govde yok. Yalnizca
+4 soruda E sikki okunamadi (sol-sutun tasmasi) -- dordu de yuksek-zoom ile
+elle okunup dolduruldu (s0133_sol_2=8, s0146_sol_1=48, s0330_sol_2=16,
+s0390_sol_2=-3). 1 soruda siklar gorsel (`sikler_gorsel`).
+
+**Dogrulama:** her sorunun cevabi var; her sorunun DOGRU sikki dolu;
+birim soru sayisi == N (163/163). 6 soruda kirpim ile transkripsiyon
+gozle karsilastirildi -- govde, bes sik ve sekil aciklamasi birebir.
+
+**Konu agaci haritasi.** Icindekilerdeki 21 ana konu 5 bolume toplandi
+(GEO-C1C24 oneki); her birim bas_sayfasindan konuya dusuyor (konusuz
+birim: 0).
+
+**Committed ciktilar:**
+- `backend/scripts/kitap/c1cell_geo_kutu.py` -- kutu uretimi + 4 kapi
+- `backend/scripts/kitap/c1cell_geo_kirp.py` -- kutulardan soru gorseli (disk beyazlatma)
+- `veriseti/zkitap/cikti/c1cell_2024_geometri_kirpim_kutulari.json` -- 1770 kutu
+- `veriseti/zkitap/cikti/c1cell_2024_geometri_metin.json` -- 1770 soru metni
+- `veriseti/zkitap/cikti/c1cell_2024_geometri_konu_haritasi.json` -- 21 konu / 5 bolum
+
+Gorseller git'e girmez; `c1cell_geo_kirp.py` ile yeniden uretilir.
+
+**Kalan:** konu agaci migration'i + PASIF ithal + e2e testler (Faz 3c-3d).
