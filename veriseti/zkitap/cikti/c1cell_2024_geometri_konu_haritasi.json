@@ -1,0 +1,176 @@
+{
+ "kaynak": "C1CELL 2024 TYT-AYT Geometri Soru Bankasi",
+ "kok": "GEO",
+ "onek": "GEO-C1C24",
+ "bolumler": [
+  {
+   "kod": "GEO-C1C24-B01",
+   "ad": "UCGENLER"
+  },
+  {
+   "kod": "GEO-C1C24-B02",
+   "ad": "COKGENLER VE DORTGENLER"
+  },
+  {
+   "kod": "GEO-C1C24-B03",
+   "ad": "CEMBER VE DAIRE"
+  },
+  {
+   "kod": "GEO-C1C24-B04",
+   "ad": "KATI CISIMLER"
+  },
+  {
+   "kod": "GEO-C1C24-B05",
+   "ad": "ANALITIK GEOMETRI"
+  }
+ ],
+ "konular": [
+  {
+   "kod": "GEO-C1C24-B01-01",
+   "ad": "Dogruda Aci",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 7,
+   "son_sayfa": 14
+  },
+  {
+   "kod": "GEO-C1C24-B01-02",
+   "ad": "Ucgende Acilar",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 15,
+   "son_sayfa": 48
+  },
+  {
+   "kod": "GEO-C1C24-B01-03",
+   "ad": "Dik Ucgen",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 49,
+   "son_sayfa": 77
+  },
+  {
+   "kod": "GEO-C1C24-B01-04",
+   "ad": "Ikizkenar Ucgen",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 78,
+   "son_sayfa": 88
+  },
+  {
+   "kod": "GEO-C1C24-B01-05",
+   "ad": "Eskenar Ucgen",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 89,
+   "son_sayfa": 102
+  },
+  {
+   "kod": "GEO-C1C24-B01-06",
+   "ad": "Aciortay-Kenarortay ve Ucgenin Merkezleri",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 103,
+   "son_sayfa": 123
+  },
+  {
+   "kod": "GEO-C1C24-B01-07",
+   "ad": "Ucgende Benzerlik",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 124,
+   "son_sayfa": 144
+  },
+  {
+   "kod": "GEO-C1C24-B01-08",
+   "ad": "Ucgenin Alani",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 145,
+   "son_sayfa": 167
+  },
+  {
+   "kod": "GEO-C1C24-B01-09",
+   "ad": "Aci-Kenar Bagintilari",
+   "ust": "GEO-C1C24-B01",
+   "bas_sayfa": 168,
+   "son_sayfa": 182
+  },
+  {
+   "kod": "GEO-C1C24-B02-10",
+   "ad": "Cokgenler",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 183,
+   "son_sayfa": 199
+  },
+  {
+   "kod": "GEO-C1C24-B02-11",
+   "ad": "Dortgenler",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 200,
+   "son_sayfa": 212
+  },
+  {
+   "kod": "GEO-C1C24-B02-12",
+   "ad": "Yamuk",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 213,
+   "son_sayfa": 227
+  },
+  {
+   "kod": "GEO-C1C24-B02-13",
+   "ad": "Paralelkenar",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 228,
+   "son_sayfa": 240
+  },
+  {
+   "kod": "GEO-C1C24-B02-14",
+   "ad": "Eskenar Dortgen ve Deltoid",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 241,
+   "son_sayfa": 248
+  },
+  {
+   "kod": "GEO-C1C24-B02-15",
+   "ad": "Dikdortgen",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 249,
+   "son_sayfa": 261
+  },
+  {
+   "kod": "GEO-C1C24-B02-16",
+   "ad": "Kare",
+   "ust": "GEO-C1C24-B02",
+   "bas_sayfa": 262,
+   "son_sayfa": 276
+  },
+  {
+   "kod": "GEO-C1C24-B03-17",
+   "ad": "Cember ve Daire",
+   "ust": "GEO-C1C24-B03",
+   "bas_sayfa": 277,
+   "son_sayfa": 321
+  },
+  {
+   "kod": "GEO-C1C24-B04-18",
+   "ad": "Kati Cisimler",
+   "ust": "GEO-C1C24-B04",
+   "bas_sayfa": 322,
+   "son_sayfa": 352
+  },
+  {
+   "kod": "GEO-C1C24-B05-19",
+   "ad": "Nokta ve Dogrunun Analitik Incelenmesi",
+   "ust": "GEO-C1C24-B05",
+   "bas_sayfa": 353,
+   "son_sayfa": 384
+  },
+  {
+   "kod": "GEO-C1C24-B05-20",
+   "ad": "Donusum Geometrisi",
+   "ust": "GEO-C1C24-B05",
+   "bas_sayfa": 385,
+   "son_sayfa": 400
+  },
+  {
+   "kod": "GEO-C1C24-B05-21",
+   "ad": "Cemberin Analitik Incelenmesi",
+   "ust": "GEO-C1C24-B05",
+   "bas_sayfa": 401,
+   "son_sayfa": 414
+  }
+ ]
+}
