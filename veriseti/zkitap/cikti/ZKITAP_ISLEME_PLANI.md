@@ -483,3 +483,23 @@ onceki hatlardan gelir.
 
    Kapi bicimi: bilinen sapmalar teste CIVILENDI (tam olarak bu ikisi).
    Ucuncusu cikarsa da biri sessizce duzelirse de test kirmizi olur.
+
+23. **Siniflandirici kullaniyorsan marji da yaz.** Orijinal 2024'un cevap
+    anahtarinda 2072 harfin 1249'u 1-NN ile siniflandirildi. Ilk turda 7
+    girdi yanlis cikti (E yerine B) ve harf dagiliminin TOPLAMI yine
+    tutuyordu -- madde 22'nin ayni tuzagi, bu kez harf duzeyinde.
+
+    Hatayi bulan sey daha buyuk bir toplam degil, olcumun kendi guven
+    payiydi: her girdinin marji (en iyi sinif skoru - ikinci sinif skoru)
+    hesaplaninca, yanlis cikan 7 girdi tum kumenin en dusuk marjli TAM
+    OLARAK 7 girdisi oldu. Gozle okunup duzeltildi, en dusuk marj
+    0.0101'den 0.1004'e cikti.
+
+    Kural: bir cikti bir siniflandiriciyla uretiliyorsa, satir yalniz
+    etiketi degil etiketin marjini da tasimali ve kapi marja bir alt sinir
+    koymali. Marjsiz etiket, nerede supheli oldugunu soramayacagin bir
+    etikettir.
+
+    Ikinci kural: etiketli altkume ile makine altkumesi ayni dosyada
+    KAYNAK alaniyla ayrilmali. Gozle okunan yerde otorite okumadir; kapi
+    "anahtar, gozle okuma dosyasiyla birebir ayni olmali" diye capalanir.

@@ -519,3 +519,90 @@ bagimsiz olcum ayni dortluyu veriyor.
 bunu capaliyor. Bir mutasyon bilerek bu cumleyi "her sayfadaki numara okundu"
 yapiyor; test kirmizi oluyor. Olculmeyen bir seyin olculmus gibi yazilmasi
 kapiyla engelleniyor.
+
+## 16. FAZ 3 birinci adim: cevap anahtari
+
+Anahtar **kitabin kendi basili cevap seritlerinden** cikarildi. Hicbir soru
+cozulmedi, hicbir cevap uretilmedi; uretilen tek sey, seritteki harfin ne
+oldugunun okunmasi.
+
+### 16.1 Kaynak: 231 serit, 2072 girdi
+
+13. bolumde her birimin son sayfasinda cevap seridi bulunmustu (231/231).
+Serit icindeki her girdi bir soru numarasi + bir harften olusuyor; harf
+glifi kirpilip 14x12 gri yamaya indirildi ve ikili maskeye cevrildi.
+
+### 16.2 Once gozle, sonra makine
+
+90 seridin tamami (823 girdi) sayfadan 9x buyutmeyle **gozle okundu**. Bu
+etiketli kume ile 1-NN (kosinus benzerligi) siniflandirici kuruldu, kalan
+1249 girdi siniflandirildi.
+
+    toplam cevap          2072
+    gozle okunan           823   (otorite: okuma)
+    makine siniflandirilan 1249
+    LOO dogrulugu       822/823
+    egitim kumesi uyumu 823/823
+
+**Gozle okunan yerde otorite okumadir, makine degil.** Test bunu capaliyor:
+anahtardaki 823 girdi, gozle okuma dosyasindaki harflerle birebir ayni olmak
+zorunda ve kaynaklari "gozle" yazmak zorunda.
+
+### 16.3 Yedi hata: toplam degil, marj yakaladi
+
+Ilk turda harfler denetimsiz kumelemeyle etiketlenmisti ve **7 girdi yanlis
+cikti** (E yerine B). Harf dagilimi toplami tutuyordu; hatayi toplam
+gostermedi. Her girdinin **marji** (en iyi sinif skoru - ikinci sinif skoru)
+hesaplandi: yanlis cikan 7 girdi, tum kumenin **en dusuk marjli tam olarak 7
+girdisiydi** (marj 0.0101) -- s186#2, s195#3, s200#2, s208#2, s216#2,
+s375#2, s377#2.
+
+Bu 7 serit gozle okundu ve egitim kumesine eklendi. Duzeltmeden sonra:
+
+    en dusuk marj (makine)   0.0101 -> 0.1004
+    0.05 altindaki girdi          7 -> 0
+    kaydedilen en dusuk marj          0.0845
+
+Marj dagiliminin kalani: 5. yuzdelik 0.1107, medyan 0.2332. Test "makine
+kaynakli hicbir cevabin marji 0.10'un altinda olmayacak" diye capaliyor.
+
+### 16.4 Harf dagilimi
+
+| harf | adet |
+|------|------|
+| A | 208 |
+| B | 392 |
+| C | 634 |
+| D | 564 |
+| E | 274 |
+| **toplam** | **2072** |
+
+Dagilim duz degil (C ve D agir basiyor); bu kitabin kendi dagilimi, bir
+olcum hatasi isareti degil -- cunku 823 girdilik gozle okunan altkume de
+ayni egilimi gosteriyor ve makine ile birebir uyusuyor.
+
+### 16.5 Kapilar
+
+Iki yeni cikti dosyasi ve 11 yeni test:
+
+- `orijinal_2024_geometri_cevap_anahtari.json` (2072 cevap)
+- `orijinal_2024_geometri_serit_gozle_okuma.json` (90 serit / 823 girdi)
+
+Test toplami 64 -> **75**. Mutasyon taramasi 51 -> **65**; Faz 3 icin eklenen
+14 mutasyon: cevap harfi degistirildi, anahtardan cevap silindi, A-E disi
+harf yazildi, harf dagilimi yalan soyluyor, gozle okunan cevap makine dendi,
+kaynak dagilimi yalan soyluyor, dusuk marjli makine cevabi, en dusuk marj
+yalan soyluyor, gozle uyusmazligi gizlendi, anahtar cozumle uretildi, gozle
+okumadan sayfa silindi, gozle okunan serit kisaldi, gozle sayfasi birim sonu
+degil, gozle girdi sayaci yalan.
+
+**65 mutasyonun 65'i yakalandi, kacan yok.** Temiz durum mutasyon oncesi ve
+geri yazma sonrasi yesil.
+
+### 16.6 Ders (8.2 madde 22'nin devami)
+
+7 hata, toplamin tutmasina ragmen vardi. Onlari bulan sey daha buyuk bir
+toplam degil, **olcumun kendi guven payini disari vermesiydi**. Bir
+siniflandirici kullaniliyorsa, ciktisi yalniz etiketi degil etiketin
+marjini da tasimali; aksi halde hatanin nerede oldugunu sorabilecegin bir
+alan kalmaz.
