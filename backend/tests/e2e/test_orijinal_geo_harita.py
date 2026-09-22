@@ -517,12 +517,64 @@ def test_kutular_kart_icinde_ve_ters_degil(kutu: dict) -> None:
         assert y1 - y0 >= 40, k
 
 
-def test_kutular_sutun_sinirlarina_oturuyor(kutu: dict) -> None:
-    sinir = {ad: tuple(v) for ad, v in kutu["sutunlar"].items()}
+def test_kutular_sayfanin_kendi_sutun_sinirlarina_oturuyor(kutu: dict) -> None:
+    """Sinirlar SAYFA BASINA; tek sabit sinir kullanilamaz (bkz. bolum 16)."""
+    sinir = kutu["sayfa_sutunlari"]
     for k in kutu["kutular"]:
-        assert (k["kutu"][0], k["kutu"][2]) == sinir[k["sutun"]], k
-    sol, sag = sinir["sol"], sinir["sag"]
-    assert sol[1] < sag[0], "sutunlar ortusuyor"
+        s = sinir[str(k["sayfa"])][k["sutun"]]
+        assert [k["kutu"][0], k["kutu"][2]] == s, k
+    for s, v in sinir.items():
+        assert v["sol"][0] < v["sol"][1] < v["sag"][0] < v["sag"][1], s
+
+
+def test_sutun_sinirlari_sayfanin_kendi_simgelerinden(kutu: dict, simge: dict) -> None:
+    """Sol kenarlar o sayfanin en soldaki SOL/SAG simgesinden 7 px solda."""
+    for s, v in kutu["sayfa_sutunlari"].items():
+        konum = simge["sayfalar"][s]
+        sol = min(x for _, x in konum if x < 200)
+        sag = min(x for _, x in konum if x >= 200)
+        assert v["sag"][0] == sag - 7, s
+        # cift sayfada sol kenar filigran bandinin sagina itilir
+        ham = sol - 7
+        bant = kutu["filigran_bantlari"]["cift" if int(s) % 2 == 0 else "tek"]
+        beklenen = max(ham, bant[1] + 1) if int(s) % 2 == 0 else ham
+        assert v["sol"][0] == beklenen, s
+
+
+def test_sutun_sinirlari_paritede_kayiyor(kutu: dict) -> None:
+    """Kitabin metin blogu tek/cift sayfada kayiyor -- sabit sinir bu yuzden yanlisti."""
+    tek = sorted(v["sag"][0] for s, v in kutu["sayfa_sutunlari"].items() if int(s) % 2)
+    cift = sorted(
+        v["sag"][0] for s, v in kutu["sayfa_sutunlari"].items() if int(s) % 2 == 0
+    )
+    assert tek and cift
+    kayma = cift[len(cift) // 2] - tek[len(tek) // 2]
+    assert 10 <= kayma <= 22, kayma
+
+
+def test_kutular_filigran_bandina_girmiyor(kutu: dict) -> None:
+    """Yayinevi dis kenar filigrani kirpimin disinda kalmali."""
+    tek = kutu["filigran_bantlari"]["tek"]
+    cift = kutu["filigran_bantlari"]["cift"]
+    for k in kutu["kutular"]:
+        x0, _, x1, _ = k["kutu"]
+        if k["sayfa"] % 2:
+            assert x1 < tek[0], k
+        else:
+            assert x0 > cift[1], k
+    # kutusu olmayan sayfanin siniri de banda giremez (yoksa sinir sessizce
+    # bozulur ve hicbir kutu onu tasimadigi icin kapi goremez)
+    for s, v in kutu["sayfa_sutunlari"].items():
+        if int(s) % 2:
+            assert v["sag"][1] < tek[0], s
+        else:
+            assert v["sol"][0] > cift[1], s
+
+
+def test_kutu_genisligi_olculen_aralikta(kutu: dict) -> None:
+    gen = sorted(k["kutu"][2] - k["kutu"][0] for k in kutu["kutular"])
+    assert gen[0] == 312 and gen[-1] == 330, (gen[0], gen[-1])
+    assert gen[len(gen) // 2] == 320
 
 
 def test_ayni_sayfa_sutununda_kutular_cakismiyor(kutu: dict) -> None:

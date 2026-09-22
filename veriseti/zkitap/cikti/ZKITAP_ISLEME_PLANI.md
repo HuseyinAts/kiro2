@@ -503,3 +503,33 @@ onceki hatlardan gelir.
     Ikinci kural: etiketli altkume ile makine altkumesi ayni dosyada
     KAYNAK alaniyla ayrilmali. Gozle okunan yerde otorite okumadir; kapi
     "anahtar, gozle okuma dosyasiyla birebir ayni olmali" diye capalanir.
+
+24. **Kapi, olculen seyin KENDISINE degil, KAYNAGINA bagli olmali.**
+    Orijinal 2024'un kirpim kutulari PR #322'de 9 kapidan gecmisti: kart
+    icinde mi, ters mi, cakisiyor mu, cevap seridine siziyor mu, hepsi ayni
+    sutun sinirina oturuyor mu. Hepsi yesildi. Kutular yine de yanlisti:
+    kitabin metin blogu tek/cift sayfada ~16 px kayiyor ve sabit sutun
+    siniri cift sayfalarda sol sutunun sag kenarini kesiyordu.
+
+    Kapilar bunu goremedi cunku hepsi kutulari BIRBIRIYLE karsilastiriyordu.
+    Hepsi ayni yanlis sinira oturuyordu, yani "tutarli" idiler. Hata ancak
+    kirpim URETILIP GOZLE bakilinca goruldu (s432 sol #2'de son sik yoktu).
+
+    Kural: bir olcumun kapisi, o olcumun TURETILDIGI kaynaga bagli olmali.
+    Kutunun kapisi "hepsi ayni sinirda mi" degil, "sinir o sayfanin kendi
+    simgelerinden mi turetilmis" olmali. Ic tutarlilik, kaynakla
+    tutarliligin yerine gecmez.
+
+    Ikinci ders: goruntu ureten her adimda **urune gozle bakilmali**. 2072
+    kutunun sayisi, boyutu, cakismamasi dogruydu; iceriginin eksik oldugunu
+    yalnizca bir kirpima bakmak gosterdi.
+
+25. **Gevsek dosya deseni yanlis kaynagi sessizce secer.** Ayni ekran
+    goruntusu dizininde `Orijinal-2024-Geometri` (160 sayfa) ve
+    `Orijinal-2024-Geometri Soru Bankasi` (432 sayfa) yan yana duruyor.
+    `Orijinal-2024-Geometri*` deseni birincisini secti ve 761 dosya yanlis
+    kitaptan kirpildi; hata ancak sayfa 161 bulunamayinca ortaya cikti.
+
+    Kural: kaynak dizin SECILMEZ, DOGRULANIR. Desen dar olmali, eslesme tek
+    olmali, ve dizinin kimligi olculen bir degerle (sayfa sayisi)
+    karsilastirilmali.
