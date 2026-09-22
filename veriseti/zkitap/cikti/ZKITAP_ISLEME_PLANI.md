@@ -462,3 +462,24 @@ onceki hatlardan gelir.
    Dort kitabin dordu de PASIF oldugu icin bu hata hicbir ogrenciye
    yansimadi; ikisi (3032 sekilli soru) aktiflestirmeden hemen once
    yakalandi.
+
+22. **Basili icindekiler bir OZETTIR, olcum degildir.** Orijinal 2024
+   Geometri'nin Faz 0 fisi "sayim otoritesi piksel degil, iki bagimsiz
+   okuma olmali" demisti. Iki okuma yapildi, birebir tuttu -- ama okunan
+   sey kitabin icindekiler tablosuydu. Sayfalardaki TEST rozetleri 425
+   sayfada tarandiginda iki konuda sapma cikti: Ucgende Acilar rozet 8 /
+   icindekiler 9, Aci-Kenar Bagintilari rozet 5 / icindekiler 4. Kitabin
+   kendi dizgi hatasi; 5x buyutmeyle iki kez okundu, okuma hatasi degil.
+
+   Iki bagimsiz okuma OKUMA hatasini eler, KAYNAGIN KENDI hatasini elemez.
+   Sayim otoritesi her zaman birimin uzerindeki kendi kimligidir (burada
+   testin kendi rozet numarasi); ozet tablo denetim icin yaninda durur.
+
+   Sapmalar ZIT YONLU oldugu icin TOPLAM iki kanalda da 226 cikti. Toplama
+   bakip gecilseydi iki konunun atamasi sessizce yanlis ithal edilecekti.
+   **Toplamin tutmasi dagilimin dogru oldugunu gostermez** -- madde 20'deki
+   "dosya sayimi dogru gorunuyordu" tuzaginin ayni ailesi, bu kez sayfa
+   degil konu duzeyinde.
+
+   Kapi bicimi: bilinen sapmalar teste CIVILENDI (tam olarak bu ikisi).
+   Ucuncusu cikarsa da biri sessizce duzelirse de test kirmizi olur.
