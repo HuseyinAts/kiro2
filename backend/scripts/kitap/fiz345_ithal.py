@@ -191,11 +191,12 @@ def kayit_uret(r: dict[str, Any]) -> dict[str, Any]:
         "question_text": r["question_text"],
         "secenekler": sec,
         "correct_answer": r["correct_answer"],
+        # URL, dosya sistemi yolu DEGIL: core/application.py CROP_IMAGE_DIR
+        # dizinini /static/crops yoluna mount eder. geo345/mikro_geo ile ayni
+        # bicim. (Once burada CROP_IMAGE_DIR'in kendisi yaziliyordu; DB'ye
+        # tarayicinin cozemedigi goreli bir yol giriyordu -- 0038 onardi.)
         "question_image_url": (
-            f"{os.environ.get('CROP_IMAGE_DIR', 'd-dataset/output/crops')}/"
-            f"{CROP_ONEK}/{kayit_id}.png"
-            if kutu
-            else None
+            f"/static/crops/{CROP_ONEK}/{kayit_id}.png" if kutu else None
         ),
         # Kitabin soru sayfalarinda cozum YOK; satir yalnizca harf verir.
         "explanation": None,
