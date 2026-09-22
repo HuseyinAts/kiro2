@@ -443,3 +443,22 @@ onceki hatlardan gelir.
    "var olani atla" bayragiyla onu yenilemedi. Sayim 1770/1770 dogru
    gorunuyordu. Bozukluk ancak dosyalar ACILARAK (PIL) yakalandi --
    kopyalama dogrulamasi sayim degil sha256 + acilabilirlik olmali.
+21. **Bir hatayi bulunca AYNI SINIFI repo genelinde ara.** Gorsel URL
+   hatasi (`CROP_IMAGE_DIR` dizininin URL kolonuna yazilmasi) once iki
+   geometri kitabinda bulundu ve 0036 ile onarildi. Onarimdan SONRA
+   "DB genelinde `/static/crops` disi URL sifir olmali" diye taraninca
+   **2542 satir daha** cikti: 345 AYT Fizik (1295) ve Mikro TYT Fizik
+   (1247). Yani ilk tur eksik kalmisti ve bunu ancak kapsam disi bir
+   dogrulama sorgusu gosterdi -- "duzelttim" demek ile "artik hic
+   kalmadi" demek ayri iddialardir ve ikincisi ayri bir olcum ister.
+   0038 kalan ikisini onardi.
+
+   Testin bicimi de bu yuzden degisti: kitap basina test yazmak yerine
+   `tests/e2e/test_kitap_gorsel_url.py` `scripts/kitap/` altindaki URL
+   ureten HER araci tarar, boylece yeni bir kitap eklendiginde
+   kendiliginden kapsar. Taramanin kendisi de test edilir (en az dort
+   arac bulmali), yoksa desen degisince test sessizce bosa duserdi.
+
+   Dort kitabin dordu de PASIF oldugu icin bu hata hicbir ogrenciye
+   yansimadi; ikisi (3032 sekilli soru) aktiflestirmeden hemen once
+   yakalandi.
