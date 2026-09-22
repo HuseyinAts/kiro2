@@ -171,6 +171,7 @@ esik tabanli degil. Bu, olumsuz bir olcum olarak buraya yazildi.
 | `orijinal_2024_geometri_birim_haritasi.json` | 231 birim: bas, son, tur, soru ve simge sayisi |
 | `orijinal_2024_geometri_simge_taramasi.json` | 2099 okuyucu simgesinin kart ici konumu |
 | `orijinal_2024_geometri_kirpim_kutulari.json` | 2072 soru kutusu (kart ici) |
+| `orijinal_2024_geometri_ortme_olcumu.json` | 2099 simgenin altinda icerik var mi |
 
 Harita dugumlerinde: `test_sayisi` (rozetten), `test_sayisi_icindekiler`
 (denetim), `test_bas_sayfalari` (her testin ilk sayfasi). Sonuncusu Faz 3'te
@@ -183,13 +184,13 @@ uretirdi.
 
 ## 9. Faz 1 kapilari -- mutasyonla olculdu
 
-`backend/tests/e2e/test_orijinal_geo_harita.py` (51 test); canli DB de sayfa
+`backend/tests/e2e/test_orijinal_geo_harita.py` (57 test); canli DB de sayfa
 goruntusu de istemez.
 
-42 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
+46 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
 
     temiz durum: YESIL
-    toplam 42 mutasyon, 0 kacan
+    toplam 46 mutasyon, 0 kacan
     geri yazma dogrulamasi: YESIL
 
 Bozmalardan ucu bilerek "iddiayi koruyan" kapilari hedefliyor:
@@ -432,3 +433,43 @@ cizilerek bakildi; kesme ya da tasma yok.
 Kutular Faz 3'te kirpim uretmek icin hazir. Simge diskinin beyazlatilmasi
 (C1CELL'deki KAPI 6: renk degil KONUM tabanli, kitabin kendi mor cizimleri
 sagkalsin) Faz 3'e ait; bu belgede yapilmadi.
+
+## 14. FAZ 2 dorduncu kapanis: ortme olcumu (disk beyazlatmak guvenli mi?)
+
+10. bolumun 6. maddesi. Faz 0 fisi "%2.72 (57 simge) ortulu" demisti ve
+0039'un dersi geregi bir bayragin tek basina dislama karari vermemesi
+gerekiyordu. Sorulan soru su: **simge diskini beyazlatirsak (C1CELL KAPI 6)
+altinda soru icerigi kalir mi?**
+
+### 14.1 Olcum dolayli, cunku diskin ALTI gorunmuyor
+
+Diskin altindaki pikseller zaten diskle kapli; oraya bakip "icerik var mi"
+denemez. Onun yerine diskin hemen DISINDAKI ince halkaya bakildi (yaricap
+17-21 px): disk beyaz zemine basilmissa halka bos olur, bir cizginin uzerine
+basilmissa cizgi halkanin iki yanindan gorunur.
+
+### 14.2 Sonuc
+
+| kume | medyan | %95 | %99 | max |
+|------|--------|-----|-----|-----|
+| soru sayfalari (2070 simge) | 0 | 6 | 18 | 43 |
+| soru disi sayfalar (29 simge) | 0 | 105 | 113 | 113 |
+
+Soru sayfalarinda halka >= 20 olan **20 simge** var (%0.97). Bunlarin
+**19'u SAG sutunda x=358-390**, biri SOL sutunda x=56. Bu x degerleri
+yayinevinin sutun arasindaki soluk filigranina denk geliyor; en yuksek ornek
+(s408) buyutulup bakildi: simge, sorunun icerigine degil, kenar bosluguna
+basili "Y" logosuna ve dikey "ORIJINAL YAYINLARI" yazisina biniyor.
+
+**Yani hicbir sorunun icerigi simge diskinin altinda kalmiyor; disk
+beyazlatmak soru kaybettirmez.** Soru disi sayfalarda (bilgi notlari) halka
+105-113'e cikiyor, cunku orada simge baslik bandina bitisik basilmis -- o
+sayfalarda zaten soru yok.
+
+### 14.3 Ayrica gorulen (Faz 3'e not)
+
+SAG sutun kutulari x=352'den basliyor ve sutun arasindaki filigran (logo +
+dikey yazi) bu araliga giriyor; kirpimlarin sol kenarinda soluk gri bir
+filigran gorunebilir. Icerigi kesmemek icin sutun siniri daraltilmadi;
+filigran soluk oldugu icin OCR'i bozmasi beklenmiyor, ama Faz 3'te kirpim
+kalitesi olculurken bu bilinerek bakilmali.
