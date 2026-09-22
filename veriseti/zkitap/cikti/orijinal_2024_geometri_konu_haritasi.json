@@ -229,7 +229,7 @@
    "ad": "OSYM'de Cikmis Sorular (Ucgenler)",
    "ust": "GEO-ORJ24-B01",
    "bas_sayfa": 145,
-   "son_sayfa": 150,
+   "son_sayfa": 148,
    "test_sayisi": null,
    "test_sayisi_icindekiler": null,
    "test_bas_sayfalari": []
@@ -388,7 +388,7 @@
    "ad": "OSYM'de Cikmis Sorular (Cokgenler ve Dortgenler)",
    "ust": "GEO-ORJ24-B02",
    "bas_sayfa": 257,
-   "son_sayfa": 261,
+   "son_sayfa": 259,
    "test_sayisi": null,
    "test_sayisi_icindekiler": null,
    "test_bas_sayfalari": []
@@ -462,7 +462,7 @@
    "ad": "OSYM'de Cikmis Sorular (Cember ve Daire)",
    "ust": "GEO-ORJ24-B03",
    "bas_sayfa": 318,
-   "son_sayfa": 322,
+   "son_sayfa": 320,
    "test_sayisi": null,
    "test_sayisi_icindekiler": null,
    "test_bas_sayfalari": []
@@ -551,7 +551,7 @@
    "ad": "OSYM'de Cikmis Sorular (Analitik Geometri)",
    "ust": "GEO-ORJ24-B04",
    "bas_sayfa": 386,
-   "son_sayfa": 389,
+   "son_sayfa": 387,
    "test_sayisi": null,
    "test_sayisi_icindekiler": null,
    "test_bas_sayfalari": []
@@ -632,5 +632,23 @@
    "test_sayisi_icindekiler": null,
    "test_bas_sayfalari": []
   }
- ]
+ ],
+ "soru_disi_sayfalar": [
+  149,
+  150,
+  260,
+  261,
+  321,
+  322,
+  388,
+  389
+ ],
+ "sayfa_turu_sayimi": {
+  "bilgi_notlari": 4,
+  "bolum_ayraci": 4,
+  "kazanim": 206,
+  "orijinal": 29,
+  "osym_cikmis": 17,
+  "osym_tarzi": 165
+ }
 }

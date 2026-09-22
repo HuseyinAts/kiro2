@@ -1,0 +1,2328 @@
+{
+ "kaynak": "Orijinal 2024 TYT-AYT Geometri Soru Bankasi",
+ "onek": "GEO-ORJ24",
+ "nasil_kuruldu": "Birim basi TEST rozetinden (OSYM bolumlerinde konu baslangicindan), birim sonu cevap seridinden. Iki kanal bagimsiz; 231 bas ve 231 son birebir eslesti, artan serit ve kapsanmayan soru sayfasi kalmadi.",
+ "birim_sayisi": 231,
+ "soru_disi_sayfalar": [
+  149,
+  150,
+  260,
+  261,
+  321,
+  322,
+  388,
+  389
+ ],
+ "birimler": [
+  {
+   "kod": "GEO-ORJ24-B01-01-T01",
+   "konu": "GEO-ORJ24-B01-01",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 8,
+   "son_sayfa": 9,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 32
+  },
+  {
+   "kod": "GEO-ORJ24-B01-01-T02",
+   "konu": "GEO-ORJ24-B01-01",
+   "sira": 2,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 10,
+   "son_sayfa": 11,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-01-T03",
+   "konu": "GEO-ORJ24-B01-01",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 12,
+   "son_sayfa": 13,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T01",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 14,
+   "son_sayfa": 15,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T02",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 16,
+   "son_sayfa": 17,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T03",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 18,
+   "son_sayfa": 19,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T04",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 20,
+   "son_sayfa": 21,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T05",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 22,
+   "son_sayfa": 23,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T06",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 24,
+   "son_sayfa": 25,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T07",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 26,
+   "son_sayfa": 26,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02-T08",
+   "konu": "GEO-ORJ24-B01-02",
+   "sira": 8,
+   "tur": "orijinal",
+   "bas_sayfa": 27,
+   "son_sayfa": 27,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T01",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 28,
+   "son_sayfa": 29,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T02",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 30,
+   "son_sayfa": 31,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 32
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T03",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 32,
+   "son_sayfa": 33,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T04",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 34,
+   "son_sayfa": 35,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T05",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 36,
+   "son_sayfa": 37,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T06",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 38,
+   "son_sayfa": 39,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T07",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 40,
+   "son_sayfa": 41,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T08",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 42,
+   "son_sayfa": 43,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T09",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 44,
+   "son_sayfa": 44,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03-T10",
+   "konu": "GEO-ORJ24-B01-03",
+   "sira": 10,
+   "tur": "orijinal",
+   "bas_sayfa": 45,
+   "son_sayfa": 45,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04-T01",
+   "konu": "GEO-ORJ24-B01-04",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 46,
+   "son_sayfa": 47,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04-T02",
+   "konu": "GEO-ORJ24-B01-04",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 48,
+   "son_sayfa": 49,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 32
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04-T03",
+   "konu": "GEO-ORJ24-B01-04",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 50,
+   "son_sayfa": 51,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04-T04",
+   "konu": "GEO-ORJ24-B01-04",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 52,
+   "son_sayfa": 53,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04-T05",
+   "konu": "GEO-ORJ24-B01-04",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 54,
+   "son_sayfa": 54,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04-T06",
+   "konu": "GEO-ORJ24-B01-04",
+   "sira": 6,
+   "tur": "orijinal",
+   "bas_sayfa": 55,
+   "son_sayfa": 55,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05-T01",
+   "konu": "GEO-ORJ24-B01-05",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 56,
+   "son_sayfa": 57,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05-T02",
+   "konu": "GEO-ORJ24-B01-05",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 58,
+   "son_sayfa": 59,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05-T03",
+   "konu": "GEO-ORJ24-B01-05",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 60,
+   "son_sayfa": 61,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05-T04",
+   "konu": "GEO-ORJ24-B01-05",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 62,
+   "son_sayfa": 63,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05-T05",
+   "konu": "GEO-ORJ24-B01-05",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 64,
+   "son_sayfa": 64,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05-T06",
+   "konu": "GEO-ORJ24-B01-05",
+   "sira": 6,
+   "tur": "orijinal",
+   "bas_sayfa": 65,
+   "son_sayfa": 65,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 15
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06-T01",
+   "konu": "GEO-ORJ24-B01-06",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 66,
+   "son_sayfa": 67,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06-T02",
+   "konu": "GEO-ORJ24-B01-06",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 68,
+   "son_sayfa": 69,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06-T03",
+   "konu": "GEO-ORJ24-B01-06",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 70,
+   "son_sayfa": 71,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06-T04",
+   "konu": "GEO-ORJ24-B01-06",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 72,
+   "son_sayfa": 73,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06-T05",
+   "konu": "GEO-ORJ24-B01-06",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 74,
+   "son_sayfa": 74,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06-T06",
+   "konu": "GEO-ORJ24-B01-06",
+   "sira": 6,
+   "tur": "orijinal",
+   "bas_sayfa": 75,
+   "son_sayfa": 75,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 15
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07-T01",
+   "konu": "GEO-ORJ24-B01-07",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 76,
+   "son_sayfa": 77,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07-T02",
+   "konu": "GEO-ORJ24-B01-07",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 78,
+   "son_sayfa": 79,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07-T03",
+   "konu": "GEO-ORJ24-B01-07",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 80,
+   "son_sayfa": 81,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07-T04",
+   "konu": "GEO-ORJ24-B01-07",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 82,
+   "son_sayfa": 83,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07-T05",
+   "konu": "GEO-ORJ24-B01-07",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 84,
+   "son_sayfa": 84,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07-T06",
+   "konu": "GEO-ORJ24-B01-07",
+   "sira": 6,
+   "tur": "orijinal",
+   "bas_sayfa": 85,
+   "son_sayfa": 85,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T01",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 86,
+   "son_sayfa": 87,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 32
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T02",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 88,
+   "son_sayfa": 89,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T03",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 90,
+   "son_sayfa": 91,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T04",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 92,
+   "son_sayfa": 93,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T05",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 94,
+   "son_sayfa": 95,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T06",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 6,
+   "tur": "kazanim",
+   "bas_sayfa": 96,
+   "son_sayfa": 97,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 33
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T07",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 7,
+   "tur": "kazanim",
+   "bas_sayfa": 98,
+   "son_sayfa": 99,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T08",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 100,
+   "son_sayfa": 101,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T09",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 102,
+   "son_sayfa": 103,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T10",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 10,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 104,
+   "son_sayfa": 105,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T11",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 11,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 106,
+   "son_sayfa": 107,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T12",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 12,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 108,
+   "son_sayfa": 108,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08-T13",
+   "konu": "GEO-ORJ24-B01-08",
+   "sira": 13,
+   "tur": "orijinal",
+   "bas_sayfa": 109,
+   "son_sayfa": 109,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-09-T01",
+   "konu": "GEO-ORJ24-B01-09",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 110,
+   "son_sayfa": 111,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-09-T02",
+   "konu": "GEO-ORJ24-B01-09",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 112,
+   "son_sayfa": 113,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-09-T03",
+   "konu": "GEO-ORJ24-B01-09",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 114,
+   "son_sayfa": 115,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T01",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 116,
+   "son_sayfa": 117,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T02",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 118,
+   "son_sayfa": 119,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T03",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 120,
+   "son_sayfa": 121,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T04",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 122,
+   "son_sayfa": 123,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T05",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 124,
+   "son_sayfa": 125,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T06",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 6,
+   "tur": "kazanim",
+   "bas_sayfa": 126,
+   "son_sayfa": 127,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T07",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 7,
+   "tur": "kazanim",
+   "bas_sayfa": 128,
+   "son_sayfa": 129,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T08",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 130,
+   "son_sayfa": 131,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T09",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 132,
+   "son_sayfa": 133,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T10",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 10,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 134,
+   "son_sayfa": 135,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10-T11",
+   "konu": "GEO-ORJ24-B01-10",
+   "sira": 11,
+   "tur": "orijinal",
+   "bas_sayfa": 136,
+   "son_sayfa": 136,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-11-T01",
+   "konu": "GEO-ORJ24-B01-11",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 137,
+   "son_sayfa": 138,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B01-11-T02",
+   "konu": "GEO-ORJ24-B01-11",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 139,
+   "son_sayfa": 140,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-11-T03",
+   "konu": "GEO-ORJ24-B01-11",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 141,
+   "son_sayfa": 142,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B01-11-T04",
+   "konu": "GEO-ORJ24-B01-11",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 143,
+   "son_sayfa": 143,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-11-T05",
+   "konu": "GEO-ORJ24-B01-11",
+   "sira": 5,
+   "tur": "orijinal",
+   "bas_sayfa": 144,
+   "son_sayfa": 144,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B01-12-O01",
+   "konu": "GEO-ORJ24-B01-12",
+   "sira": 1,
+   "tur": "osym_cikmis",
+   "bas_sayfa": 145,
+   "son_sayfa": 148,
+   "sayfa_sayisi": 4,
+   "serit_jetonu": 51
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T01",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 151,
+   "son_sayfa": 152,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 48
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T02",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 153,
+   "son_sayfa": 154,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T03",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 155,
+   "son_sayfa": 156,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T04",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 157,
+   "son_sayfa": 158,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T05",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 159,
+   "son_sayfa": 160,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T06",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 161,
+   "son_sayfa": 162,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T07",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 163,
+   "son_sayfa": 164,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T08",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 165,
+   "son_sayfa": 165,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01-T09",
+   "konu": "GEO-ORJ24-B02-01",
+   "sira": 9,
+   "tur": "orijinal",
+   "bas_sayfa": 166,
+   "son_sayfa": 166,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-02-T01",
+   "konu": "GEO-ORJ24-B02-02",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 167,
+   "son_sayfa": 168,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B02-02-T02",
+   "konu": "GEO-ORJ24-B02-02",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 169,
+   "son_sayfa": 170,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-02-T03",
+   "konu": "GEO-ORJ24-B02-02",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 171,
+   "son_sayfa": 172,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-02-T04",
+   "konu": "GEO-ORJ24-B02-02",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 173,
+   "son_sayfa": 173,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 10
+  },
+  {
+   "kod": "GEO-ORJ24-B02-02-T05",
+   "konu": "GEO-ORJ24-B02-02",
+   "sira": 5,
+   "tur": "orijinal",
+   "bas_sayfa": 174,
+   "son_sayfa": 174,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-03-T01",
+   "konu": "GEO-ORJ24-B02-03",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 175,
+   "son_sayfa": 176,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 32
+  },
+  {
+   "kod": "GEO-ORJ24-B02-03-T02",
+   "konu": "GEO-ORJ24-B02-03",
+   "sira": 2,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 177,
+   "son_sayfa": 177,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 13
+  },
+  {
+   "kod": "GEO-ORJ24-B02-03-T03",
+   "konu": "GEO-ORJ24-B02-03",
+   "sira": 3,
+   "tur": "orijinal",
+   "bas_sayfa": 178,
+   "son_sayfa": 178,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T01",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 179,
+   "son_sayfa": 180,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T02",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 181,
+   "son_sayfa": 182,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T03",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 183,
+   "son_sayfa": 184,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T04",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 185,
+   "son_sayfa": 186,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 31
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T05",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 187,
+   "son_sayfa": 188,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 31
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T06",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 189,
+   "son_sayfa": 190,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T07",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 191,
+   "son_sayfa": 192,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T08",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 193,
+   "son_sayfa": 194,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T09",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 195,
+   "son_sayfa": 195,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04-T10",
+   "konu": "GEO-ORJ24-B02-04",
+   "sira": 10,
+   "tur": "orijinal",
+   "bas_sayfa": 196,
+   "son_sayfa": 196,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05-T01",
+   "konu": "GEO-ORJ24-B02-05",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 197,
+   "son_sayfa": 198,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05-T02",
+   "konu": "GEO-ORJ24-B02-05",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 199,
+   "son_sayfa": 200,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05-T03",
+   "konu": "GEO-ORJ24-B02-05",
+   "sira": 3,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 201,
+   "son_sayfa": 202,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 22
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05-T04",
+   "konu": "GEO-ORJ24-B02-05",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 203,
+   "son_sayfa": 204,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05-T05",
+   "konu": "GEO-ORJ24-B02-05",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 205,
+   "son_sayfa": 205,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05-T06",
+   "konu": "GEO-ORJ24-B02-05",
+   "sira": 6,
+   "tur": "orijinal",
+   "bas_sayfa": 206,
+   "son_sayfa": 206,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T01",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 207,
+   "son_sayfa": 208,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T02",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 209,
+   "son_sayfa": 210,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 38
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T03",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 211,
+   "son_sayfa": 212,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T04",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 213,
+   "son_sayfa": 214,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T05",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 215,
+   "son_sayfa": 216,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 22
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T06",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 217,
+   "son_sayfa": 218,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T07",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 219,
+   "son_sayfa": 220,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T08",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 221,
+   "son_sayfa": 222,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 26
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T09",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 223,
+   "son_sayfa": 223,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06-T10",
+   "konu": "GEO-ORJ24-B02-06",
+   "sira": 10,
+   "tur": "orijinal",
+   "bas_sayfa": 224,
+   "son_sayfa": 224,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T01",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 225,
+   "son_sayfa": 226,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T02",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 227,
+   "son_sayfa": 228,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T03",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 229,
+   "son_sayfa": 230,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 34
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T04",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 4,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 231,
+   "son_sayfa": 232,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T05",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 233,
+   "son_sayfa": 234,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T06",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 235,
+   "son_sayfa": 236,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T07",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 237,
+   "son_sayfa": 238,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 22
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T08",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 239,
+   "son_sayfa": 239,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07-T09",
+   "konu": "GEO-ORJ24-B02-07",
+   "sira": 9,
+   "tur": "orijinal",
+   "bas_sayfa": 240,
+   "son_sayfa": 240,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T01",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 241,
+   "son_sayfa": 242,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 34
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T02",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 243,
+   "son_sayfa": 244,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T03",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 245,
+   "son_sayfa": 246,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T04",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 247,
+   "son_sayfa": 248,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T05",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 249,
+   "son_sayfa": 250,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T06",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 251,
+   "son_sayfa": 252,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T07",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 253,
+   "son_sayfa": 254,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 22
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T08",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 255,
+   "son_sayfa": 255,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08-T09",
+   "konu": "GEO-ORJ24-B02-08",
+   "sira": 9,
+   "tur": "orijinal",
+   "bas_sayfa": 256,
+   "son_sayfa": 256,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B02-09-O01",
+   "konu": "GEO-ORJ24-B02-09",
+   "sira": 1,
+   "tur": "osym_cikmis",
+   "bas_sayfa": 257,
+   "son_sayfa": 259,
+   "sayfa_sayisi": 3,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T01",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 262,
+   "son_sayfa": 263,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T02",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 264,
+   "son_sayfa": 265,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T03",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 266,
+   "son_sayfa": 267,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T04",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 268,
+   "son_sayfa": 269,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T05",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 270,
+   "son_sayfa": 271,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T06",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 272,
+   "son_sayfa": 273,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T07",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 274,
+   "son_sayfa": 275,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T08",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 276,
+   "son_sayfa": 276,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 15
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01-T09",
+   "konu": "GEO-ORJ24-B03-01",
+   "sira": 9,
+   "tur": "orijinal",
+   "bas_sayfa": 277,
+   "son_sayfa": 277,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T01",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 278,
+   "son_sayfa": 279,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T02",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 280,
+   "son_sayfa": 281,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T03",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 282,
+   "son_sayfa": 283,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T04",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 284,
+   "son_sayfa": 285,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T05",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 286,
+   "son_sayfa": 287,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T06",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 288,
+   "son_sayfa": 289,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T07",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 290,
+   "son_sayfa": 291,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T08",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 292,
+   "son_sayfa": 293,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T09",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 294,
+   "son_sayfa": 295,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T10",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 10,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 296,
+   "son_sayfa": 296,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02-T11",
+   "konu": "GEO-ORJ24-B03-02",
+   "sira": 11,
+   "tur": "orijinal",
+   "bas_sayfa": 297,
+   "son_sayfa": 297,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T01",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 298,
+   "son_sayfa": 299,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T02",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 300,
+   "son_sayfa": 301,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T03",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 302,
+   "son_sayfa": 303,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T04",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 304,
+   "son_sayfa": 305,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T05",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 306,
+   "son_sayfa": 307,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T06",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 308,
+   "son_sayfa": 309,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T07",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 310,
+   "son_sayfa": 311,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T08",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 312,
+   "son_sayfa": 313,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T09",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 314,
+   "son_sayfa": 315,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T10",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 10,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 316,
+   "son_sayfa": 316,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03-T11",
+   "konu": "GEO-ORJ24-B03-03",
+   "sira": 11,
+   "tur": "orijinal",
+   "bas_sayfa": 317,
+   "son_sayfa": 317,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B03-04-O01",
+   "konu": "GEO-ORJ24-B03-04",
+   "sira": 1,
+   "tur": "osym_cikmis",
+   "bas_sayfa": 318,
+   "son_sayfa": 320,
+   "sayfa_sayisi": 3,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T01",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 323,
+   "son_sayfa": 324,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T02",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 325,
+   "son_sayfa": 326,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 43
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T03",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 327,
+   "son_sayfa": 328,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T04",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 329,
+   "son_sayfa": 330,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T05",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 331,
+   "son_sayfa": 332,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T06",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 333,
+   "son_sayfa": 334,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T07",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 335,
+   "son_sayfa": 335,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01-T08",
+   "konu": "GEO-ORJ24-B04-01",
+   "sira": 8,
+   "tur": "orijinal",
+   "bas_sayfa": 336,
+   "son_sayfa": 336,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T01",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 337,
+   "son_sayfa": 338,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T02",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 339,
+   "son_sayfa": 340,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T03",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 341,
+   "son_sayfa": 342,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 39
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T04",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 343,
+   "son_sayfa": 344,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T05",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 345,
+   "son_sayfa": 346,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T06",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 347,
+   "son_sayfa": 348,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T07",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 349,
+   "son_sayfa": 350,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 22
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T08",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 351,
+   "son_sayfa": 352,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T09",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 353,
+   "son_sayfa": 354,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 26
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T10",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 10,
+   "tur": "orijinal",
+   "bas_sayfa": 355,
+   "son_sayfa": 355,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 11
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02-T11",
+   "konu": "GEO-ORJ24-B04-02",
+   "sira": 11,
+   "tur": "orijinal",
+   "bas_sayfa": 356,
+   "son_sayfa": 357,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T01",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 358,
+   "son_sayfa": 359,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T02",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 360,
+   "son_sayfa": 361,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T03",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 362,
+   "son_sayfa": 363,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 52
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T04",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 364,
+   "son_sayfa": 365,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 48
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T05",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 366,
+   "son_sayfa": 367,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T06",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 368,
+   "son_sayfa": 368,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03-T07",
+   "konu": "GEO-ORJ24-B04-03",
+   "sira": 7,
+   "tur": "orijinal",
+   "bas_sayfa": 369,
+   "son_sayfa": 369,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T01",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 370,
+   "son_sayfa": 371,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 41
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T02",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 372,
+   "son_sayfa": 373,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 47
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T03",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 374,
+   "son_sayfa": 375,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 43
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T04",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 376,
+   "son_sayfa": 377,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T05",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 378,
+   "son_sayfa": 379,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 31
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T06",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 380,
+   "son_sayfa": 381,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T07",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 382,
+   "son_sayfa": 383,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T08",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 384,
+   "son_sayfa": 384,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04-T09",
+   "konu": "GEO-ORJ24-B04-04",
+   "sira": 9,
+   "tur": "orijinal",
+   "bas_sayfa": 385,
+   "son_sayfa": 385,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B04-05-O01",
+   "konu": "GEO-ORJ24-B04-05",
+   "sira": 1,
+   "tur": "osym_cikmis",
+   "bas_sayfa": 386,
+   "son_sayfa": 387,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T01",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 390,
+   "son_sayfa": 391,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 28
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T02",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 392,
+   "son_sayfa": 393,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T03",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 394,
+   "son_sayfa": 395,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 25
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T04",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 396,
+   "son_sayfa": 397,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T05",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 5,
+   "tur": "kazanim",
+   "bas_sayfa": 398,
+   "son_sayfa": 399,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 24
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T06",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 6,
+   "tur": "kazanim",
+   "bas_sayfa": 400,
+   "son_sayfa": 401,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T07",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 7,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 402,
+   "son_sayfa": 403,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T08",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 8,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 404,
+   "son_sayfa": 405,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T09",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 9,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 406,
+   "son_sayfa": 407,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 21
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T10",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 10,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 408,
+   "son_sayfa": 408,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01-T11",
+   "konu": "GEO-ORJ24-B05-01",
+   "sira": 11,
+   "tur": "orijinal",
+   "bas_sayfa": 409,
+   "son_sayfa": 409,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T01",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 410,
+   "son_sayfa": 411,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T02",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 2,
+   "tur": "kazanim",
+   "bas_sayfa": 412,
+   "son_sayfa": 413,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 35
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T03",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 3,
+   "tur": "kazanim",
+   "bas_sayfa": 414,
+   "son_sayfa": 415,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 31
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T04",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 4,
+   "tur": "kazanim",
+   "bas_sayfa": 416,
+   "son_sayfa": 417,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 20
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T05",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 5,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 418,
+   "son_sayfa": 419,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 19
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T06",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 6,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 420,
+   "son_sayfa": 420,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02-T07",
+   "konu": "GEO-ORJ24-B05-02",
+   "sira": 7,
+   "tur": "orijinal",
+   "bas_sayfa": 421,
+   "son_sayfa": 421,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B05-03-T01",
+   "konu": "GEO-ORJ24-B05-03",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 422,
+   "son_sayfa": 423,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B05-03-T02",
+   "konu": "GEO-ORJ24-B05-03",
+   "sira": 2,
+   "tur": "osym_tarzi",
+   "bas_sayfa": 424,
+   "son_sayfa": 424,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B05-03-T03",
+   "konu": "GEO-ORJ24-B05-03",
+   "sira": 3,
+   "tur": "orijinal",
+   "bas_sayfa": 425,
+   "son_sayfa": 425,
+   "sayfa_sayisi": 1,
+   "serit_jetonu": 12
+  },
+  {
+   "kod": "GEO-ORJ24-B05-04-T01",
+   "konu": "GEO-ORJ24-B05-04",
+   "sira": 1,
+   "tur": "kazanim",
+   "bas_sayfa": 426,
+   "son_sayfa": 427,
+   "sayfa_sayisi": 2,
+   "serit_jetonu": 36
+  },
+  {
+   "kod": "GEO-ORJ24-B05-05-O01",
+   "konu": "GEO-ORJ24-B05-05",
+   "sira": 1,
+   "tur": "osym_cikmis",
+   "bas_sayfa": 428,
+   "son_sayfa": 432,
+   "sayfa_sayisi": 5,
+   "serit_jetonu": 58
+  }
+ ]
+}

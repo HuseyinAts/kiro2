@@ -167,6 +167,8 @@ esik tabanli degil. Bu, olumsuz bir olcum olarak buraya yazildi.
 | `orijinal_2024_geometri_icindekiler_okuma1.json` | okuma 1 (tam sayfa kirpim) |
 | `orijinal_2024_geometri_icindekiler_okuma2.json` | okuma 2 (sutun kirpimi) |
 | `orijinal_2024_geometri_rozet_taramasi.json` | 425 sayfanin rozet olcumu + esik gerekcesi |
+| `orijinal_2024_geometri_serit_taramasi.json` | cevap seridi yapisal taramasi (231 sayfa) |
+| `orijinal_2024_geometri_birim_haritasi.json` | 231 birim: bas, son, tur, sayfa sayisi |
 
 Harita dugumlerinde: `test_sayisi` (rozetten), `test_sayisi_icindekiler`
 (denetim), `test_bas_sayfalari` (her testin ilk sayfasi). Sonuncusu Faz 3'te
@@ -179,13 +181,13 @@ uretirdi.
 
 ## 9. Faz 1 kapilari -- mutasyonla olculdu
 
-`backend/tests/e2e/test_orijinal_geo_harita.py` (23 test); canli DB de sayfa
+`backend/tests/e2e/test_orijinal_geo_harita.py` (34 test); canli DB de sayfa
 goruntusu de istemez.
 
-19 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
+28 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
 
     temiz durum: YESIL
-    toplam 19 mutasyon, 0 kacan
+    toplam 28 mutasyon, 0 kacan
     geri yazma dogrulamasi: YESIL
 
 Bozmalardan ucu bilerek "iddiayi koruyan" kapilari hedefliyor:
@@ -215,3 +217,89 @@ Bozmalardan ucu bilerek "iddiayi koruyan" kapilari hedefliyor:
 7. Test turu (sari/mavi/kirmizi/turuncu) her birime yazilmali -- iki bagimsiz
    renk kanali var (baslik bandi ve sayfa numarasi rozeti); ikisi uyusmuyorsa
    o sayfa durdurulur.
+
+## 11. FAZ 2 ilk kapanis: birim haritasi (iki kanal ortusuyor)
+
+10. bolumun 1. maddesi bu belgede yapildi. Sonuc 8. bolumdeki konu
+haritasini da DUZELTTI; asagisi o duzeltmenin tutanagi.
+
+### 11.1 Serit dedektoru: esik degil desen
+
+7. bolumde ham murekkep sayiminin ise yaramadigi yazilmisti (ayni bantta 425
+sayfanin 424'u esigi asiyor). Ayirt edici buyukluk MIKTAR degil BICIM:
+
+- blok bandin kenarina degmiyor (degen blok, banda kirpilmis bir metin satiri)
+- satir yuksekligi <= 8 px (soru metni satirlari 11-20)
+- en genis murekkep kosusu <= 8 px (soru metninde harfler birlesip 10-12 verir)
+- jeton sayisi >= 8
+
+Ilk surumde kosu siniri 6 idi ve s417'nin seridi kaciyordu (iki glif birlesip
+7 vermis). Kacak, birim kapanisi capraz kontrolunde ortaya cikti -- dedektor
+kendi basina "231 buldum" demiyor, rozet kanaliyla kapanmak zorunda.
+
+### 11.2 Iki kanal birebir kapaniyor
+
+    birim baslangici (TEST rozeti + OSYM bolum basi) : 231
+    birim sonu (cevap seridi)                        : 231
+    eslesmeyen bas                                   : 0
+    kullanilmayan serit                              : 0
+    birimlere girmeyen soru sayfasi                  : 0
+
+### 11.3 Sekiz sayfa hicbir konuya ait degil
+
+Kapanis, kitabin 8 sayfasinin hicbir birime girmedigini gosterdi:
+
+    149, 150, 260, 261, 321, 322, 388, 389
+
+Sayfalar acilip bakildi: 149 "2. BOLUM" ayraci (bolumun konu listesi + OSYM
+yil tablosu), 150 "BILGI NOTLARI" (formul ozeti). Ayni desen dortunde de var.
+
+Bu, 8. bolumdeki konu haritasini duzeltti: OSYM dugumleri bolum ayracini
+yutuyordu. Dogrusu:
+
+| dugum | eski | dogru |
+|-------|------|-------|
+| B01-12 OSYM (Ucgenler)      | s145-150 | s145-148 |
+| B02-09 OSYM (Cokgenler)     | s257-261 | s257-259 |
+| B03-04 OSYM (Cember)        | s318-322 | s318-320 |
+| B04-05 OSYM (Analitik)      | s386-389 | s386-387 |
+| B05-05 OSYM (Kati Cisimler) | s428-432 | s428-432 (kitap burada bitiyor) |
+
+UYARI (Faz 2'nin kalan maddelerini dogrudan etkiler): BILGI NOTLARI sayfalari
+SORU TASIMIYOR ama OKUYUCU SIMGESI TASIYOR (s150'de 8 tane). Faz 0 fisinin
+"2099 simge" sayimi bu sayfalari da iceriyor. Yani
+**simge sayisi = soru sayisi denklemi once sayfa turune gore suzulmeden
+kurulamaz.** Bu, 10. bolumun 2. maddesinin on kosuludur.
+
+### 11.4 Ucuncu renk kanali: sayfa numarasi rozeti
+
+Sayfa numarasi rozetinin rengi 425 sayfada olculdu ve tam 6 kume verdi:
+
+| renk | sayfa | anlam |
+|------|-------|-------|
+| (255,203,5/6) sari  | 206 | Kazanimlari Ogreten Sorular |
+| (1,174,239) mavi    | 165 | OSYM Tarzi Sorular |
+| (236,2,140) pembe   | 29  | OSYM Tarzi Orijinal Sorular |
+| (243,112,34) turuncu| 17  | OSYM'de Cikmis Sorular |
+| (253,185,52) acik turuncu | 4 | BILGI NOTLARI |
+| rozet yok           | 4   | BOLUM AYRACI |
+
+Toplam 425. Bu kanal 11.3'teki 8 sayfayi BAGIMSIZ olarak da isaretliyor:
+ayrac sayfalarinda rozet hic yok, bilgi notlarinda rengi farkli. Yani soru
+disi sayfalar iki ayri yoldan bulundu (birim kapanisi ve rozet rengi) ve ayni
+8 sayfayi verdi.
+
+Her birimin tum sayfalarinin TEK tur tasidigi da dogrulandi (uretimde assert).
+Birim turu dagilimi:
+
+    kazanim 103 + osym_tarzi 95 + orijinal 28 = 226 adli test
+    osym_cikmis 5                              =   5 bolum sonu
+                                                 231 birim
+
+### 11.5 Henuz iddia EDILMEYEN sey
+
+`birim_haritasi.json` her birimde `serit_jetonu` tasiyor (seritteki murekkep
+jetonu sayisi, toplam 6026). Bu **cevap sayisi DEGILDIR**: "12." gibi bir
+girdi birden fazla jetona bolunebiliyor. Cevap anahtari, seridin jetonlarini
+saymakla degil OKUMAKLA cikarilacak (Faz 3). Alan adi bu yuzden `serit_jetonu`;
+`cevap_sayisi` demek olculmemis bir sey iddia etmek olurdu.

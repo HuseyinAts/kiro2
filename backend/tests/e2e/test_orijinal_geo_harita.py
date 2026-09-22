@@ -45,12 +45,22 @@ HARITA_YOLU = CIKTI / "orijinal_2024_geometri_konu_haritasi.json"
 OKUMA1_YOLU = CIKTI / "orijinal_2024_geometri_icindekiler_okuma1.json"
 OKUMA2_YOLU = CIKTI / "orijinal_2024_geometri_icindekiler_okuma2.json"
 ROZET_YOLU = CIKTI / "orijinal_2024_geometri_rozet_taramasi.json"
+SERIT_YOLU = CIKTI / "orijinal_2024_geometri_serit_taramasi.json"
+BIRIM_YOLU = CIKTI / "orijinal_2024_geometri_birim_haritasi.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
 BEKLENEN_ADLI_KONU = 30
 BEKLENEN_OSYM_DUGUM = 5
 BEKLENEN_TEST = 226
+BEKLENEN_BIRIM = 231  # 226 adli test + 5 OSYM bolumu
+SORU_DISI_SAYFALAR = [149, 150, 260, 261, 321, 322, 388, 389]
+BIRIM_TURU_SAYIMI = {
+    "kazanim": 103,
+    "osym_tarzi": 95,
+    "orijinal": 28,
+    "osym_cikmis": 5,
+}
 ILK_SAYFA, SON_SAYFA = 8, 432
 ONEK = "GEO-ORJ24"
 KAYNAK = "Orijinal 2024 TYT-AYT Geometri Soru Bankasi"
@@ -79,6 +89,16 @@ def okuma2() -> dict:
 @pytest.fixture(scope="module")
 def rozet() -> dict:
     return json.loads(ROZET_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def serit() -> dict:
+    return json.loads(SERIT_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def birim() -> dict:
+    return json.loads(BIRIM_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -140,11 +160,32 @@ def test_harita_okumadan_turetilebilir(harita: dict, okuma1: dict) -> None:
         assert dugum["ust"] == f"{ONEK}-B{bolum_no:02d}", dugum["kod"]
 
 
-def test_son_sayfalar_bir_sonrakinin_basindan_turuyor(harita: dict) -> None:
-    konular = harita["konular"]
-    for onceki, sonraki in itertools.pairwise(konular):
-        assert onceki["son_sayfa"] == sonraki["bas_sayfa"] - 1, onceki["kod"]
-    assert konular[-1]["son_sayfa"] == SON_SAYFA
+def test_konu_araliklari_ile_soru_disi_sayfalar_kitabi_tam_ortuyor(
+    harita: dict,
+) -> None:
+    """Bolum ayraci ve bilgi notlari sayfalari hicbir konuya ait DEGIL.
+
+    Once bu sayfalar OSYM dugumlerinin araligina dahil edilmisti; serit
+    taramasi OSYM bolumlerinin bir onceki sayfada bittigini gosterdi.
+    """
+    ortulen: list[int] = []
+    for k in harita["konular"]:
+        ortulen.extend(range(k["bas_sayfa"], k["son_sayfa"] + 1))
+    ortulen.extend(harita["soru_disi_sayfalar"])
+    assert sorted(ortulen) == list(
+        range(ILK_SAYFA, SON_SAYFA + 1)
+    ), "konu araliklari + soru disi sayfalar kitabi tam bir kez ortmeli"
+
+
+def test_soru_disi_sayfalar_olculen_sekiz_sayfa(harita: dict) -> None:
+    assert harita["soru_disi_sayfalar"] == SORU_DISI_SAYFALAR
+
+
+def test_sayfa_turu_sayimi_toplami_kitap_kadar(harita: dict) -> None:
+    sayim = harita["sayfa_turu_sayimi"]
+    assert sum(sayim.values()) == SON_SAYFA - ILK_SAYFA + 1
+    assert sayim["bolum_ayraci"] == sayim["bilgi_notlari"] == 4
+    assert sayim["kazanim"] + sayim["osym_tarzi"] + sayim["orijinal"] == 400
 
 
 # -------------------------------------------------- 3. harita <-> rozet taramasi
@@ -230,17 +271,16 @@ def test_harita_kimligi(harita: dict) -> None:
     assert len(harita["bolumler"]) == BEKLENEN_BOLUM
 
 
-def test_araliklar_bosluksuz_ve_cakismasiz(harita: dict) -> None:
+def test_araliklar_cakismiyor_ve_kitap_sinirlarinda(harita: dict) -> None:
     araliklar = sorted(
         (k["bas_sayfa"], k["son_sayfa"], k["kod"]) for k in harita["konular"]
     )
     assert araliklar[0][0] == ILK_SAYFA
     assert araliklar[-1][1] == SON_SAYFA
     for onceki, sonraki in itertools.pairwise(araliklar):
-        assert onceki[1] + 1 == sonraki[0], (
-            f"{onceki[2]} s{onceki[1]} ile {sonraki[2]} s{sonraki[0]} "
-            "arasi bosluk/cakisma"
-        )
+        assert (
+            onceki[1] < sonraki[0]
+        ), f"{onceki[2]} s{onceki[1]} ile {sonraki[2]} s{sonraki[0]} cakisiyor"
 
 
 def test_kodlar_onekli_ve_benzersiz(harita: dict) -> None:
@@ -283,10 +323,74 @@ def test_adli_konu_sayilari(harita: dict) -> None:
     assert all(k["test_sayisi"] > 0 for k in adli)
 
 
-# ------------------------------------------------------------------- 6. ASCII
+# ------------------------------------------ 6. birim haritasi (iki kanal kapanisi)
 
 
-@pytest.mark.parametrize("yol", [HARITA_YOLU, OKUMA1_YOLU, OKUMA2_YOLU, ROZET_YOLU])
+def test_birim_sayisi_iki_kanalda_da_ayni(birim: dict, harita: dict) -> None:
+    """Birim basi rozetten, birim sonu seritten; ikisi birebir eslesmeli."""
+    assert birim["birim_sayisi"] == len(birim["birimler"]) == BEKLENEN_BIRIM
+    rozetten = sum(len(k["test_bas_sayfalari"]) for k in harita["konular"])
+    assert rozetten + BEKLENEN_OSYM_DUGUM == BEKLENEN_BIRIM
+
+
+def test_birimler_kitabi_cakismadan_ortuyor(birim: dict) -> None:
+    ortulen: list[int] = []
+    for b in birim["birimler"]:
+        assert b["bas_sayfa"] <= b["son_sayfa"], b["kod"]
+        assert b["sayfa_sayisi"] == b["son_sayfa"] - b["bas_sayfa"] + 1, b["kod"]
+        ortulen.extend(range(b["bas_sayfa"], b["son_sayfa"] + 1))
+    ortulen.extend(birim["soru_disi_sayfalar"])
+    assert sorted(ortulen) == list(range(ILK_SAYFA, SON_SAYFA + 1))
+
+
+def test_her_birimin_sonunda_serit_var(birim: dict, serit: dict) -> None:
+    seritli = {int(s) for s in serit["sayfalar"]}
+    assert len(seritli) == serit["seritli_sayfa_sayisi"] == BEKLENEN_BIRIM
+    sonlar = {b["son_sayfa"] for b in birim["birimler"]}
+    assert (
+        sonlar == seritli
+    ), "her serit tam olarak bir birimi kapatmali; artan ya da eksik serit yok"
+
+
+def test_birim_baslari_rozet_sayfalari(birim: dict, harita: dict) -> None:
+    rozet_sayfalari = {s for k in harita["konular"] for s in k["test_bas_sayfalari"]}
+    osym_baslari = {
+        k["bas_sayfa"] for k in harita["konular"] if not k["test_bas_sayfalari"]
+    }
+    baslar = {b["bas_sayfa"] for b in birim["birimler"]}
+    assert baslar == rozet_sayfalari | osym_baslari
+
+
+def test_birim_turleri_olculen_dagilim(birim: dict) -> None:
+    sayim: dict[str, int] = {}
+    for b in birim["birimler"]:
+        sayim[b["tur"]] = sayim.get(b["tur"], 0) + 1
+    assert sayim == BIRIM_TURU_SAYIMI
+    adli = sum(v for t, v in sayim.items() if t != "osym_cikmis")
+    assert adli == BEKLENEN_TEST
+
+
+def test_osym_birimleri_bolum_sonunda(birim: dict) -> None:
+    osym = [b for b in birim["birimler"] if b["tur"] == "osym_cikmis"]
+    assert len(osym) == BEKLENEN_OSYM_DUGUM
+    assert all(b["kod"].endswith("-O01") for b in osym), [b["kod"] for b in osym]
+
+
+def test_serit_taramasi_desenle_kuruldu(serit: dict) -> None:
+    """Dedektorun neden esik degil desen oldugu belgede degil, dosyada dursun."""
+    assert "desen" in serit["neden_esik_degil_desen"] or (
+        "bicim" in serit["neden_esik_degil_desen"]
+    )
+    assert serit["seritli_sayfa_sayisi"] == BEKLENEN_BIRIM
+
+
+# ------------------------------------------------------------------- 7. ASCII
+
+
+@pytest.mark.parametrize(
+    "yol",
+    [HARITA_YOLU, OKUMA1_YOLU, OKUMA2_YOLU, ROZET_YOLU, SERIT_YOLU, BIRIM_YOLU],
+)
 def test_ciktilar_ascii(yol: Path) -> None:
     metin = yol.read_text("utf-8")
     disarida = sorted({c for c in metin if ord(c) > 127})
