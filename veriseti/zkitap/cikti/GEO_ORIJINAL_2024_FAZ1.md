@@ -168,7 +168,8 @@ esik tabanli degil. Bu, olumsuz bir olcum olarak buraya yazildi.
 | `orijinal_2024_geometri_icindekiler_okuma2.json` | okuma 2 (sutun kirpimi) |
 | `orijinal_2024_geometri_rozet_taramasi.json` | 425 sayfanin rozet olcumu + esik gerekcesi |
 | `orijinal_2024_geometri_serit_taramasi.json` | cevap seridi yapisal taramasi (231 sayfa) |
-| `orijinal_2024_geometri_birim_haritasi.json` | 231 birim: bas, son, tur, sayfa sayisi |
+| `orijinal_2024_geometri_birim_haritasi.json` | 231 birim: bas, son, tur, soru ve simge sayisi |
+| `orijinal_2024_geometri_simge_taramasi.json` | 2099 okuyucu simgesinin kart ici konumu |
 
 Harita dugumlerinde: `test_sayisi` (rozetten), `test_sayisi_icindekiler`
 (denetim), `test_bas_sayfalari` (her testin ilk sayfasi). Sonuncusu Faz 3'te
@@ -181,13 +182,13 @@ uretirdi.
 
 ## 9. Faz 1 kapilari -- mutasyonla olculdu
 
-`backend/tests/e2e/test_orijinal_geo_harita.py` (34 test); canli DB de sayfa
+`backend/tests/e2e/test_orijinal_geo_harita.py` (42 test); canli DB de sayfa
 goruntusu de istemez.
 
-28 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
+35 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
 
     temiz durum: YESIL
-    toplam 28 mutasyon, 0 kacan
+    toplam 35 mutasyon, 0 kacan
     geri yazma dogrulamasi: YESIL
 
 Bozmalardan ucu bilerek "iddiayi koruyan" kapilari hedefliyor:
@@ -303,3 +304,72 @@ jetonu sayisi, toplam 6026). Bu **cevap sayisi DEGILDIR**: "12." gibi bir
 girdi birden fazla jetona bolunebiliyor. Cevap anahtari, seridin jetonlarini
 saymakla degil OKUMAKLA cikarilacak (Faz 3). Alan adi bu yuzden `serit_jetonu`;
 `cevap_sayisi` demek olculmemis bir sey iddia etmek olurdu.
+
+## 12. FAZ 2 ikinci kapanis: soru sayisi 2072, simge 2099
+
+10. bolumun 2. maddesi. Uc sayi birbirine baglandi ve ucu de acikta kalmadi.
+
+### 12.1 Soru sayisinin otoritesi cevap seridi
+
+Seritteki GIRDI sayisi (jeton degil) sayildi. Jetonlari girdiye bolen kural
+olculdu: girdi ICI bosluk <= 8 px, girdi ARASI bosluk >= 20 px; esik 12 ikisi
+arasindaki genis boslukta duruyor.
+
+Bir tuzak once buraya dusurdu: sayfa numarasi rozeti SABIT bir x penceresiyle
+dislaniyordu; serit o pencereye tasidiginda son girdi kayboluyordu (s13'te 8
+yerine 7). Rozet artik rengiyle bulunup YALNIZ kendi kutusu dislaniyor.
+Kalibrasyon sayfalarinin onunda da (s13=8, s176=12, s417=8, s432=12+8=20)
+basili anahtarla birebir.
+
+    231 birim, toplam serit girdisi = 2072 soru
+
+### 12.2 Simge sayaci: glif rengi + kapama
+
+Iki deneme elendi:
+
+- genis mor maske: glif sayfa cizimleriyle birlesiyordu (1940 buldu, 132 eksik)
+- lila diski aramak: disk lila bir bara degince birlesip eleniyordu
+  (s145'te 4 yerine 3)
+
+Calisan bicim: glifin TAM rengi (69,39,160), 7x7 kapama ile tek parca, sonra
+cevresindeki lila disk orani >= 0.25. Gercek simgelerin hepsi ayni imzayi
+veriyor: alan 86, lila orani 0.44-0.51. Esige degil sabit bir desene oturuyor.
+
+    tum kitapta simge = 2099
+
+2099, Faz 0 fisinin verdigi sayinin AYNISI -- bagimsiz bir dedektorle
+yeniden uretildi.
+
+### 12.3 Ucu birden kapaniyor
+
+| ne | sayi |
+|----|------|
+| cevap seridi girdisi (soru)            | 2072 |
+| birim sayfalarindaki simge             | 2070 |
+| bilgi notlari sayfalarindaki simge     |   29 |
+| TOPLAM simge                           | 2099 |
+
+29 simge soru degil: s5, s6, s7 (Bolum 1 bilgi notlari) ve s150, s261, s322,
+s389. Bolum ayraci sayfalarinda (149, 260, 321, 388) simge YOK -- Faz 0
+fisinin "simgesiz sayfalar" notuyla ayni.
+
+### 12.4 Kalan 2 fark: kitap iki soruda simgeyi basmamis
+
+Soru 2072, birim ici simge 2070. Fark iki birimde, ikisi de 1:
+
+    GEO-ORJ24-B02-01-T01  s151-152  soru 15  simge 14
+    GEO-ORJ24-B04-01-T01  s323-324  soru 12  simge 11
+
+Iki sayfa da acilip bakildi: **s151'de 8. sorunun, s323'te 3. sorunun yaninda
+okuyucu simgesi YOK.** Dedektor hatasi degil, kitabin dizgisi.
+
+Sonuc, Faz 3 icin bir kural: **soru sayisinin otoritesi cevap seridi, simge
+degil.** Simge yalniz kirpim kutusunun yerini soyler; simgesiz iki soruda
+kirpim kutusu baska bir yoldan kurulmali (ya da o iki soru ayrica isaretlenip
+elle gozden gecirilmeli). `birim_haritasi.json` bu iki soruyu
+`simgesiz_sorular` alaninda tasiyor ve test onlari civiliyor.
+
+### 12.5 Bu bolumde YAPILMAYAN
+
+Serit OKUNMADI -- yalnizca girdi SAYISI cikarildi. Cevap anahtari (hangi soru
+hangi sik) Faz 3'un isi; bu belgede hicbir cevap iddia edilmiyor.

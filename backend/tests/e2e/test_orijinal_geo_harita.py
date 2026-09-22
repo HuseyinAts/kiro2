@@ -47,6 +47,7 @@ OKUMA2_YOLU = CIKTI / "orijinal_2024_geometri_icindekiler_okuma2.json"
 ROZET_YOLU = CIKTI / "orijinal_2024_geometri_rozet_taramasi.json"
 SERIT_YOLU = CIKTI / "orijinal_2024_geometri_serit_taramasi.json"
 BIRIM_YOLU = CIKTI / "orijinal_2024_geometri_birim_haritasi.json"
+SIMGE_YOLU = CIKTI / "orijinal_2024_geometri_simge_taramasi.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
@@ -61,6 +62,10 @@ BIRIM_TURU_SAYIMI = {
     "orijinal": 28,
     "osym_cikmis": 5,
 }
+BEKLENEN_SORU = 2072  # cevap seridi girdisi -- otorite
+BEKLENEN_SIMGE_TOPLAM = 2099  # tum kitap (soru disi sayfalar dahil)
+BEKLENEN_SIMGE_BIRIM = 2070  # birim sayfalarinda
+SIMGESIZ_SORULAR = [[151, 8], [323, 3]]
 ILK_SAYFA, SON_SAYFA = 8, 432
 ONEK = "GEO-ORJ24"
 KAYNAK = "Orijinal 2024 TYT-AYT Geometri Soru Bankasi"
@@ -99,6 +104,11 @@ def serit() -> dict:
 @pytest.fixture(scope="module")
 def birim() -> dict:
     return json.loads(BIRIM_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def simge() -> dict:
+    return json.loads(SIMGE_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -384,12 +394,82 @@ def test_serit_taramasi_desenle_kuruldu(serit: dict) -> None:
     assert serit["seritli_sayfa_sayisi"] == BEKLENEN_BIRIM
 
 
-# ------------------------------------------------------------------- 7. ASCII
+# ------------------------------------- 7. soru sayisi <-> simge sayisi kapanisi
+
+
+def test_soru_sayisi_otoritesi_serit(birim: dict) -> None:
+    """Otorite serit girdisi; simge degil -- kitap 2 soruda simgeyi basmamis."""
+    assert "cevap seridi" in birim["soru_sayisi_otoritesi"]
+    assert "simge sayisi degil" in birim["soru_sayisi_otoritesi"]
+    assert birim["toplam_soru"] == BEKLENEN_SORU
+    assert sum(b["soru_sayisi"] for b in birim["birimler"]) == BEKLENEN_SORU
+
+
+def test_simgesiz_sorular_civili(birim: dict) -> None:
+    assert birim["simgesiz_sorular"] == SIMGESIZ_SORULAR
+
+
+def test_soru_ile_simge_farki_tam_olarak_simgesizler_kadar(birim: dict) -> None:
+    fark = birim["toplam_soru"] - birim["toplam_simge_birim_icinde"]
+    assert fark == len(SIMGESIZ_SORULAR) == 2
+    assert birim["toplam_simge_birim_icinde"] == BEKLENEN_SIMGE_BIRIM
+
+
+def test_sapan_birimler_yalniz_simgesiz_sayfalari_tasiyanlar(birim: dict) -> None:
+    sapan = {
+        b["kod"]: (b["soru_sayisi"], b["simge_sayisi"])
+        for b in birim["birimler"]
+        if b["soru_sayisi"] != b["simge_sayisi"]
+    }
+    assert len(sapan) == 2, sapan
+    assert all(g - s == 1 for g, s in sapan.values()), sapan
+    simgesiz_sayfa = {s for s, _ in SIMGESIZ_SORULAR}
+    for kod in sapan:
+        b = next(x for x in birim["birimler"] if x["kod"] == kod)
+        aralik = set(range(b["bas_sayfa"], b["son_sayfa"] + 1))
+        assert aralik & simgesiz_sayfa, kod
+
+
+def test_simge_taramasi_toplami(simge: dict) -> None:
+    toplam = sum(len(v) for v in simge["sayfalar"].values())
+    assert toplam == simge["toplam_simge"] == BEKLENEN_SIMGE_TOPLAM
+
+
+def test_simgeler_birim_ici_ve_bilgi_notlarinda(simge: dict, birim: dict) -> None:
+    """Birim disinda simge yalniz BILGI NOTLARI sayfalarinda olabilir."""
+    birim_sayfalari: set[int] = set()
+    for b in birim["birimler"]:
+        birim_sayfalari.update(range(b["bas_sayfa"], b["son_sayfa"] + 1))
+    disarida = {
+        int(s): len(v)
+        for s, v in simge["sayfalar"].items()
+        if int(s) not in birim_sayfalari
+    }
+    # s5-s7 Bolum 1'in bilgi notlari; digerleri haritadaki soru disi sayfalar
+    bilgi_notlari = {150, 261, 322, 389}
+    assert set(disarida) - {5, 6, 7} == bilgi_notlari, disarida
+    assert sum(disarida.values()) == BEKLENEN_SIMGE_TOPLAM - BEKLENEN_SIMGE_BIRIM
+
+
+def test_bolum_ayraci_sayfalarinda_simge_yok(simge: dict) -> None:
+    for s in (149, 260, 321, 388):
+        assert str(s) not in simge["sayfalar"], s
+
+
+# ------------------------------------------------------------------- 8. ASCII
 
 
 @pytest.mark.parametrize(
     "yol",
-    [HARITA_YOLU, OKUMA1_YOLU, OKUMA2_YOLU, ROZET_YOLU, SERIT_YOLU, BIRIM_YOLU],
+    [
+        HARITA_YOLU,
+        OKUMA1_YOLU,
+        OKUMA2_YOLU,
+        ROZET_YOLU,
+        SERIT_YOLU,
+        BIRIM_YOLU,
+        SIMGE_YOLU,
+    ],
 )
 def test_ciktilar_ascii(yol: Path) -> None:
     metin = yol.read_text("utf-8")
