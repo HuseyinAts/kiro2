@@ -50,6 +50,7 @@ BIRIM_YOLU = CIKTI / "orijinal_2024_geometri_birim_haritasi.json"
 SIMGE_YOLU = CIKTI / "orijinal_2024_geometri_simge_taramasi.json"
 KUTU_YOLU = CIKTI / "orijinal_2024_geometri_kirpim_kutulari.json"
 ORTME_YOLU = CIKTI / "orijinal_2024_geometri_ortme_olcumu.json"
+SAYFANO_YOLU = CIKTI / "orijinal_2024_geometri_sayfa_numarasi.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
@@ -121,6 +122,11 @@ def kutu() -> dict:
 @pytest.fixture(scope="module")
 def ortme() -> dict:
     return json.loads(ORTME_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def sayfano() -> dict:
+    return json.loads(SAYFANO_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -587,7 +593,53 @@ def test_ortme_sonucu_disk_beyazlatmayi_onaylyor(ortme: dict) -> None:
     assert ortme["soru_sayfasi_ozeti"]["medyan"] == 0
 
 
-# ------------------------------------------------------------------ 10. ASCII
+# ----------------------------------------- 10. basili sayfa numarasi (Faz 2.3)
+
+
+def test_sayfa_numarasi_taramasi_tum_kitabi_kapsiyor(sayfano: dict) -> None:
+    basamak = sayfano["sayfa_basamak_sayisi"]
+    assert sayfano["taranan_sayfa"] == SON_SAYFA - ILK_SAYFA + 1 == len(basamak)
+    assert sorted(int(s) for s in basamak) == list(range(ILK_SAYFA, SON_SAYFA + 1))
+
+
+def test_basamak_sayisi_dosya_numarasiyla_uyusuyor(sayfano: dict) -> None:
+    """Duzgun bir kaydirmayi disliyor: 9/10 ve 99/100 sinirlarinda patlardi."""
+    basamak = sayfano["sayfa_basamak_sayisi"]
+    rakamsiz = set(sayfano["rakamsiz_sayfalar"])
+    uyusan = 0
+    for s, n in basamak.items():
+        if int(s) in rakamsiz:
+            assert n == 0, s
+            continue
+        assert n == len(s), (s, n)
+        uyusan += 1
+    assert uyusan == sayfano["basamak_uyusan"] == 421
+    assert sayfano["basamak_uyusmayan"] == []
+    assert sayfano["ofset"] == 0
+
+
+def test_rakamsiz_sayfalar_bolum_ayraclari(sayfano: dict, harita: dict) -> None:
+    """Numarasiz dort sayfa, renk kanalinin rozetsiz dedigi dort sayfa."""
+    assert sayfano["rakamsiz_sayfalar"] == [149, 260, 321, 388]
+    assert set(sayfano["rakamsiz_sayfalar"]) < set(harita["soru_disi_sayfalar"])
+
+
+def test_dogrudan_okunan_capalar_kendini_dogruluyor(sayfano: dict) -> None:
+    capalar = sayfano["dogrudan_okunan_capalar"]
+    assert len(capalar) == 7
+    for dosya, basili in capalar.items():
+        assert int(dosya) == basili, (dosya, basili)
+    assert min(int(s) for s in capalar) == ILK_SAYFA
+    assert max(int(s) for s in capalar) == SON_SAYFA
+
+
+def test_deger_okunmadigi_yazili(sayfano: dict) -> None:
+    """Basamak sayildi, rakamin DEGERI okunmadi -- cikti bunu soylemeli."""
+    assert "DEGERI okunmadi" in sayfano["ne_olculdu"]
+    assert "kaydirma" in sayfano["neden_yeterli"]
+
+
+# ------------------------------------------------------------------ 11. ASCII
 
 
 @pytest.mark.parametrize(
@@ -602,6 +654,7 @@ def test_ortme_sonucu_disk_beyazlatmayi_onaylyor(ortme: dict) -> None:
         SIMGE_YOLU,
         KUTU_YOLU,
         ORTME_YOLU,
+        SAYFANO_YOLU,
     ],
 )
 def test_ciktilar_ascii(yol: Path) -> None:

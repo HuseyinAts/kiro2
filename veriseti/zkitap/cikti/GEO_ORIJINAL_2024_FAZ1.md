@@ -172,6 +172,7 @@ esik tabanli degil. Bu, olumsuz bir olcum olarak buraya yazildi.
 | `orijinal_2024_geometri_simge_taramasi.json` | 2099 okuyucu simgesinin kart ici konumu |
 | `orijinal_2024_geometri_kirpim_kutulari.json` | 2072 soru kutusu (kart ici) |
 | `orijinal_2024_geometri_ortme_olcumu.json` | 2099 simgenin altinda icerik var mi |
+| `orijinal_2024_geometri_sayfa_numarasi.json` | 425 sayfanin basili numara basamak sayisi |
 
 Harita dugumlerinde: `test_sayisi` (rozetten), `test_sayisi_icindekiler`
 (denetim), `test_bas_sayfalari` (her testin ilk sayfasi). Sonuncusu Faz 3'te
@@ -184,13 +185,13 @@ uretirdi.
 
 ## 9. Faz 1 kapilari -- mutasyonla olculdu
 
-`backend/tests/e2e/test_orijinal_geo_harita.py` (57 test); canli DB de sayfa
+`backend/tests/e2e/test_orijinal_geo_harita.py` (63 test); canli DB de sayfa
 goruntusu de istemez.
 
-46 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
+51 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
 
     temiz durum: YESIL
-    toplam 46 mutasyon, 0 kacan
+    toplam 51 mutasyon, 0 kacan
     geri yazma dogrulamasi: YESIL
 
 Bozmalardan ucu bilerek "iddiayi koruyan" kapilari hedefliyor:
@@ -473,3 +474,48 @@ dikey yazi) bu araliga giriyor; kirpimlarin sol kenarinda soluk gri bir
 filigran gorunebilir. Icerigi kesmemek icin sutun siniri daraltilmadi;
 filigran soluk oldugu icin OCR'i bozmasi beklenmiyor, ama Faz 3'te kirpim
 kalitesi olculurken bu bilinerek bakilmali.
+
+## 15. FAZ 2 besinci kapanis: basili sayfa numarasi tam tarama
+
+10. bolumun 3. maddesi. 4. bolumde 7 noktada okunmustu; bu bolum taramayi
+425 sayfaya yayiyor.
+
+### 15.1 Rakamin DEGERI okunmadi, BASAMAK SAYISI sayildi
+
+Once deger okunmaya calisildi: rozet rengiyle bulundu, icindeki murekkep
+rakamlara ayrildi, ayni rakamlar kumelenmeye calisildi. **Ise yaramadi:** her
+sayfa ayri bir ekran goruntusu oldugu icin ayni rakam farkli piksel
+fazlarinda dusuyor; 1063 glif 118 farkli bit desenine dagildi ve tam esleme
+10 kumeye inmedi. Hamming esigiyle kumelemek de 42-88 kume verdi.
+
+Deger okumak yerine her sayfada kac BASAMAK basili oldugu sayildi. Bilesen
+etiketleme bitisen rakamlari birlestirdigi icin (s110 -> 2 parca) ayirma
+dikey izdusumle yapildi, 6 pikselden genis parcalar esit bolundu.
+
+### 15.2 Basamak sayisi neden yeterli
+
+Tum kitap k kadar kaysaydi, basamak siniri gecilen her yerde (9/10 ve 99/100)
+basamak sayisi uyusmazdi. s8-s432 araliginda bu sinirlar var ve **uyusmazlik
+sifir** -- yani duzgun bir kaydirma bu olcumle diskanmis oluyor.
+
+    taranan sayfa            425
+    basamak sayisi uyusan    421
+    uyusmayan                  0
+    numarasiz (0 rakam)        4  -> 149, 260, 321, 388
+
+Yerel (tek sayfalik) kaymalar icin uc dayanak daha var: 7 sayfada numara
+dogrudan okundu (s8, s14, s116, s262, s390, s428, s432 -- hepsi ofset 0),
+her konuda rozet dizisi 1..N kesintisiz, ve serit<->rozet kapanisi 231/231.
+
+### 15.3 Numarasiz dort sayfa
+
+149, 260, 321, 388 -- bolum ayraclari. Uzerlerinde basili sayfa numarasi hic
+yok. **Renk kanali da ayni dort sayfayi rozetsiz isaretlemisti** (11.4); iki
+bagimsiz olcum ayni dortluyu veriyor.
+
+### 15.4 Ciktinin kendi sinirini soylemesi
+
+`sayfa_numarasi.json` "rakamin DEGERI okunmadi" cumlesini tasiyor ve test
+bunu capaliyor. Bir mutasyon bilerek bu cumleyi "her sayfadaki numara okundu"
+yapiyor; test kirmizi oluyor. Olculmeyen bir seyin olculmus gibi yazilmasi
+kapiyla engelleniyor.
