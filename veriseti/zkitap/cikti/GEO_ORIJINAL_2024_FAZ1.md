@@ -170,6 +170,7 @@ esik tabanli degil. Bu, olumsuz bir olcum olarak buraya yazildi.
 | `orijinal_2024_geometri_serit_taramasi.json` | cevap seridi yapisal taramasi (231 sayfa) |
 | `orijinal_2024_geometri_birim_haritasi.json` | 231 birim: bas, son, tur, soru ve simge sayisi |
 | `orijinal_2024_geometri_simge_taramasi.json` | 2099 okuyucu simgesinin kart ici konumu |
+| `orijinal_2024_geometri_kirpim_kutulari.json` | 2072 soru kutusu (kart ici) |
 
 Harita dugumlerinde: `test_sayisi` (rozetten), `test_sayisi_icindekiler`
 (denetim), `test_bas_sayfalari` (her testin ilk sayfasi). Sonuncusu Faz 3'te
@@ -182,13 +183,13 @@ uretirdi.
 
 ## 9. Faz 1 kapilari -- mutasyonla olculdu
 
-`backend/tests/e2e/test_orijinal_geo_harita.py` (42 test); canli DB de sayfa
+`backend/tests/e2e/test_orijinal_geo_harita.py` (51 test); canli DB de sayfa
 goruntusu de istemez.
 
-35 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
+42 bozma denendi, her biri dosyanin kendisinde yapilip sonra geri yazildi:
 
     temiz durum: YESIL
-    toplam 35 mutasyon, 0 kacan
+    toplam 42 mutasyon, 0 kacan
     geri yazma dogrulamasi: YESIL
 
 Bozmalardan ucu bilerek "iddiayi koruyan" kapilari hedefliyor:
@@ -373,3 +374,61 @@ elle gozden gecirilmeli). `birim_haritasi.json` bu iki soruyu
 
 Serit OKUNMADI -- yalnizca girdi SAYISI cikarildi. Cevap anahtari (hangi soru
 hangi sik) Faz 3'un isi; bu belgede hicbir cevap iddia edilmiyor.
+
+## 13. FAZ 2 ucuncu kapanis: kirpim kutulari (2072 kutu)
+
+10. bolumun 4. maddesi.
+
+### 13.1 Kural
+
+    kutu ustu = okuyucu simgesinin disk ustu - 6 px
+    kutu altu = ayni sutundaki BIR SONRAKI simgenin disk ustu - 8 px
+                yoksa sayfanin ALT SINIRI
+    alt sinir = o sayfada cevap seridi varsa seridin ust kenari - 4 px
+                yoksa 944
+    sutunlar  = SOL (30, 349) / SAG (352, 700); 350-351 sutun ayirac cizgisi
+
+Kutu bir sonraki simgeye kadar uzatiliyor, sayfa ortasina kadar DEGIL: soru
+yuksekligi sabit degil (olculen dagilim: min 114, medyan 299, max 800 px).
+
+### 13.2 Simgesiz iki sorunun kutusu
+
+7. bolumde kurulan kural simge capasina dayaniyor; 12.4'te kitabin iki soruda
+simgeyi basmadigi olculmustu. Ilk gecis bu yuzden 2070 kutu uretti ve s323'te
+2. sorunun kutusu 3. soruyu da yutuyordu (goruntuyle dogrulandi).
+
+Bu iki soru icin kutu ustu soru numarasinin ust kenarindan ELLE olculdu:
+
+    s151 sag  "8."  y = 814  ->  kutu ustu 806
+    s323 sol  "3."  y = 796  ->  kutu ustu 790
+
+Baska hicbir kutu elle girilmedi. Cikti dosyasi bu iki kutuyu `elle: true` ile
+isaretliyor; test "elle girilen kutu sayisi = simgesiz soru sayisi = 2" ve
+"elle olmayan her kutunun capasi simge taramasinda var" diye capaliyor.
+
+Bir ara adim burada elendi ve kayda geciyor: soru NUMARASINI (pembe metin)
+genel bir capa yapmayi denedim; numara glifleri cok kucuk ve yari saydam
+(s8'de "1." icin 11 piksel tam renk), ve ayni pembe "Bilgi:" kutucuklarinda da
+kullaniliyor -- ilk denemede s323'te "Bilgi:" etiketini soru numarasi sandi ve
+kutuyu yanlis yere boldu. Iki soruluk bir sapma icin guvenilmez bir dedektor
+kurmak yerine iki olcum elle alindi.
+
+### 13.3 Kapilar (hepsi otomatik, hepsi mutasyonla olculdu)
+
+- kutu sayisi = soru sayisi (2072)
+- her kutu kart icinde, ters degil, en az 40 px yuksek
+- kutu x sinirlari sutun sinirlariyla BIREBIR (sutunlar ortusmuyor)
+- ayni sayfa+sutundaki kutular cakismiyor
+- **sizinti kapisi**: hicbir kutunun altu o sayfadaki seridin ust kenarini
+  gecmiyor
+- elle olmayan her kutunun capasi simge taramasindaki bir konum
+- dosyadaki yukseklik ozeti gercek kutulardan yeniden hesaplanabiliyor
+
+Ayrica goz kontrolu: s8, s100, s151, s176, s280, s323, s410 sayfalari kutular
+cizilerek bakildi; kesme ya da tasma yok.
+
+### 13.4 Bundan sonra
+
+Kutular Faz 3'te kirpim uretmek icin hazir. Simge diskinin beyazlatilmasi
+(C1CELL'deki KAPI 6: renk degil KONUM tabanli, kitabin kendi mor cizimleri
+sagkalsin) Faz 3'e ait; bu belgede yapilmadi.
