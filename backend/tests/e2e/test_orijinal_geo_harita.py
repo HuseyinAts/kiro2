@@ -49,6 +49,7 @@ SERIT_YOLU = CIKTI / "orijinal_2024_geometri_serit_taramasi.json"
 BIRIM_YOLU = CIKTI / "orijinal_2024_geometri_birim_haritasi.json"
 SIMGE_YOLU = CIKTI / "orijinal_2024_geometri_simge_taramasi.json"
 KUTU_YOLU = CIKTI / "orijinal_2024_geometri_kirpim_kutulari.json"
+ORTME_YOLU = CIKTI / "orijinal_2024_geometri_ortme_olcumu.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
@@ -115,6 +116,11 @@ def simge() -> dict:
 @pytest.fixture(scope="module")
 def kutu() -> dict:
     return json.loads(KUTU_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def ortme() -> dict:
+    return json.loads(ORTME_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -537,7 +543,51 @@ def test_kutu_yukseklik_ozeti_gercek(kutu: dict) -> None:
     assert ozet["medyan"] == yuk[len(yuk) // 2]
 
 
-# ------------------------------------------------------------------- 9. ASCII
+# ------------------------------------------------- 9. ortme olcumu (Faz 2.6)
+
+
+def test_ortme_olcumu_her_simgeyi_kapsiyor(ortme: dict, simge: dict) -> None:
+    assert ortme["olculen_simge"] == BEKLENEN_SIMGE_TOPLAM
+    assert len(ortme["olcum"]) == BEKLENEN_SIMGE_TOPLAM
+    konumlar = {(int(s), tuple(p)) for s, v in simge["sayfalar"].items() for p in v}
+    assert {(r["sayfa"], (r["y"], r["x"])) for r in ortme["olcum"]} == konumlar
+
+
+def test_ortme_ozeti_olcumden_turetilebilir(ortme: dict) -> None:
+    disi = set(ortme["soru_disi_sayfalar"])
+    soru = [r for r in ortme["olcum"] if r["sayfa"] not in disi]
+    assert len(soru) == ortme["soru_sayfasindaki_simge"] == BEKLENEN_SIMGE_BIRIM
+    v = sorted(r["halka"] for r in soru)
+    assert ortme["soru_sayfasi_ozeti"]["max"] == v[-1]
+    assert ortme["soru_sayfasi_ozeti"]["medyan"] == v[len(v) // 2]
+
+
+def test_yuksek_simgeler_esikten_turetilebilir(ortme: dict) -> None:
+    disi = set(ortme["soru_disi_sayfalar"])
+    esik = ortme["yuksek_esik"]
+    beklenen = [
+        r for r in ortme["olcum"] if r["sayfa"] not in disi and r["halka"] >= esik
+    ]
+    assert ortme["yuksek_simge"] == beklenen
+    assert len(beklenen) == 20
+
+
+def test_yuksek_simgeler_sutun_araligindaki_filigranda(ortme: dict) -> None:
+    """19'u sag sutunun gutter'inda, 1'i sol sutunda -- soru icerigi degil."""
+    xler = sorted({r["x"] for r in ortme["yuksek_simge"]})
+    assert min(xler) == 56, xler
+    assert all(358 <= x <= 390 for x in xler if x != 56), xler
+    sag = [r for r in ortme["yuksek_simge"] if r["x"] >= 200]
+    assert len(sag) == 19
+    assert len(ortme["yuksek_simge"]) - len(sag) == 1
+
+
+def test_ortme_sonucu_disk_beyazlatmayi_onaylyor(ortme: dict) -> None:
+    assert "soru kaybettirmez" in ortme["sonuc"]
+    assert ortme["soru_sayfasi_ozeti"]["medyan"] == 0
+
+
+# ------------------------------------------------------------------ 10. ASCII
 
 
 @pytest.mark.parametrize(
@@ -551,6 +601,7 @@ def test_kutu_yukseklik_ozeti_gercek(kutu: dict) -> None:
         BIRIM_YOLU,
         SIMGE_YOLU,
         KUTU_YOLU,
+        ORTME_YOLU,
     ],
 )
 def test_ciktilar_ascii(yol: Path) -> None:
