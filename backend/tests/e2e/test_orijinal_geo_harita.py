@@ -51,6 +51,8 @@ SIMGE_YOLU = CIKTI / "orijinal_2024_geometri_simge_taramasi.json"
 KUTU_YOLU = CIKTI / "orijinal_2024_geometri_kirpim_kutulari.json"
 ORTME_YOLU = CIKTI / "orijinal_2024_geometri_ortme_olcumu.json"
 SAYFANO_YOLU = CIKTI / "orijinal_2024_geometri_sayfa_numarasi.json"
+ANAHTAR_YOLU = CIKTI / "orijinal_2024_geometri_cevap_anahtari.json"
+GOZLE_YOLU = CIKTI / "orijinal_2024_geometri_serit_gozle_okuma.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
@@ -69,6 +71,9 @@ BEKLENEN_SORU = 2072  # cevap seridi girdisi -- otorite
 BEKLENEN_SIMGE_TOPLAM = 2099  # tum kitap (soru disi sayfalar dahil)
 BEKLENEN_SIMGE_BIRIM = 2070  # birim sayfalarinda
 SIMGESIZ_SORULAR = [[151, 8], [323, 3]]
+HARF_DAGILIMI = {"A": 208, "B": 392, "C": 634, "D": 564, "E": 274}
+GOZLE_SAYFA, GOZLE_GIRDI = 90, 823
+EN_DUSUK_MARJ = 0.0845
 ILK_SAYFA, SON_SAYFA = 8, 432
 ONEK = "GEO-ORJ24"
 KAYNAK = "Orijinal 2024 TYT-AYT Geometri Soru Bankasi"
@@ -127,6 +132,16 @@ def ortme() -> dict:
 @pytest.fixture(scope="module")
 def sayfano() -> dict:
     return json.loads(SAYFANO_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def anahtar() -> dict:
+    return json.loads(ANAHTAR_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def gozle() -> dict:
+    return json.loads(GOZLE_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -639,7 +654,90 @@ def test_deger_okunmadigi_yazili(sayfano: dict) -> None:
     assert "kaydirma" in sayfano["neden_yeterli"]
 
 
-# ------------------------------------------------------------------ 11. ASCII
+# ------------------------------------------------- 11. cevap anahtari (Faz 3)
+
+
+def test_anahtar_her_soruya_bir_cevap_veriyor(anahtar: dict, birim: dict) -> None:
+    cevaplar = anahtar["cevaplar"]
+    assert anahtar["toplam_cevap"] == len(cevaplar) == BEKLENEN_SORU
+    beklenen = {
+        (b["kod"], i) for b in birim["birimler"] for i in range(1, b["soru_sayisi"] + 1)
+    }
+    assert {(c["birim"], c["soru"]) for c in cevaplar} == beklenen
+
+
+def test_cevaplar_yalniz_a_e(anahtar: dict) -> None:
+    assert {c["cevap"] for c in anahtar["cevaplar"]} == set("ABCDE")
+
+
+def test_harf_dagilimi_olculen_dagilim(anahtar: dict) -> None:
+    sayim: dict[str, int] = {}
+    for c in anahtar["cevaplar"]:
+        sayim[c["cevap"]] = sayim.get(c["cevap"], 0) + 1
+    assert sayim == anahtar["harf_dagilimi"] == HARF_DAGILIMI
+    assert sum(sayim.values()) == BEKLENEN_SORU
+
+
+def test_kaynak_dagilimi_gozle_ve_makine(anahtar: dict) -> None:
+    sayim: dict[str, int] = {}
+    for c in anahtar["cevaplar"]:
+        sayim[c["kaynak"]] = sayim.get(c["kaynak"], 0) + 1
+    assert sayim == anahtar["kaynak_dagilimi"]
+    assert sayim["gozle"] == GOZLE_GIRDI
+    assert sayim["gozle"] + sayim["makine"] == BEKLENEN_SORU
+
+
+def test_gozle_okuma_dosyasi_kendi_icinde_tutarli(gozle: dict) -> None:
+    seritler = gozle["seritler"]
+    assert gozle["sayfa_sayisi"] == len(seritler) == GOZLE_SAYFA
+    assert sum(len(v) for v in seritler.values()) == gozle["girdi_sayisi"]
+    assert gozle["girdi_sayisi"] == GOZLE_GIRDI
+    assert all(set(v) <= set("ABCDE") for v in seritler.values())
+
+
+def test_gozle_okunan_sayfalar_birim_sonu(gozle: dict, birim: dict) -> None:
+    sonlar = {b["son_sayfa"] for b in birim["birimler"]}
+    assert {int(s) for s in gozle["seritler"]} <= sonlar
+
+
+def test_gozle_okunan_serit_uzunlugu_birim_soru_sayisi(
+    gozle: dict, birim: dict
+) -> None:
+    soru = {b["son_sayfa"]: b["soru_sayisi"] for b in birim["birimler"]}
+    for s, metin in gozle["seritler"].items():
+        assert len(metin) == soru[int(s)], s
+
+
+def test_gozle_okunan_cevaplar_anahtarla_ayni(
+    anahtar: dict, gozle: dict, birim: dict
+) -> None:
+    """Gozle okunan yerde otorite okuma; anahtar onu tasimali."""
+    birim_of = {b["son_sayfa"]: b["kod"] for b in birim["birimler"]}
+    cevap = {(c["birim"], c["soru"]): c for c in anahtar["cevaplar"]}
+    for s, metin in gozle["seritler"].items():
+        kod = birim_of[int(s)]
+        for i, h in enumerate(metin, start=1):
+            c = cevap[(kod, i)]
+            assert c["cevap"] == h, (s, i)
+            assert c["kaynak"] == "gozle", (s, i)
+
+
+def test_makine_kaynakli_cevaplarda_marj_yuksek(anahtar: dict) -> None:
+    """Ilk turda yanlis cikan 7 girdinin marji 0.0101 idi; o bant bos."""
+    makine = [c for c in anahtar["cevaplar"] if c["kaynak"] == "makine"]
+    assert len(makine) == BEKLENEN_SORU - GOZLE_GIRDI
+    assert min(c["marj"] for c in makine) >= 0.10
+    assert anahtar["en_dusuk_marj"] == EN_DUSUK_MARJ
+
+
+def test_anahtar_cozumle_degil_kitaptan(anahtar: dict) -> None:
+    assert "basili cevap seridinden" in anahtar["nereden"]
+    assert "hicbir cevap uretilmedi" in anahtar["nereden"].lower()
+    assert anahtar["gozle_ile_uyusmayan"] == 0
+    assert anahtar["gozle_ile_uyusan"] == GOZLE_GIRDI
+
+
+# ------------------------------------------------------------------ 12. ASCII
 
 
 @pytest.mark.parametrize(
@@ -655,6 +753,8 @@ def test_deger_okunmadigi_yazili(sayfano: dict) -> None:
         KUTU_YOLU,
         ORTME_YOLU,
         SAYFANO_YOLU,
+        ANAHTAR_YOLU,
+        GOZLE_YOLU,
     ],
 )
 def test_ciktilar_ascii(yol: Path) -> None:
