@@ -48,6 +48,7 @@ ROZET_YOLU = CIKTI / "orijinal_2024_geometri_rozet_taramasi.json"
 SERIT_YOLU = CIKTI / "orijinal_2024_geometri_serit_taramasi.json"
 BIRIM_YOLU = CIKTI / "orijinal_2024_geometri_birim_haritasi.json"
 SIMGE_YOLU = CIKTI / "orijinal_2024_geometri_simge_taramasi.json"
+KUTU_YOLU = CIKTI / "orijinal_2024_geometri_kirpim_kutulari.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
@@ -109,6 +110,11 @@ def birim() -> dict:
 @pytest.fixture(scope="module")
 def simge() -> dict:
     return json.loads(SIMGE_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def kutu() -> dict:
+    return json.loads(KUTU_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -456,7 +462,82 @@ def test_bolum_ayraci_sayfalarinda_simge_yok(simge: dict) -> None:
         assert str(s) not in simge["sayfalar"], s
 
 
-# ------------------------------------------------------------------- 8. ASCII
+# --------------------------------------------------- 8. kirpim kutulari (Faz 2.4)
+
+
+def test_kutu_sayisi_soru_sayisina_esit(kutu: dict, birim: dict) -> None:
+    assert kutu["kutu_sayisi"] == len(kutu["kutular"]) == BEKLENEN_SORU
+    assert birim["toplam_soru"] == BEKLENEN_SORU
+
+
+def test_elle_girilen_kutu_yalniz_iki_simgesiz_soru(kutu: dict) -> None:
+    elle = [k for k in kutu["kutular"] if k.get("elle")]
+    assert len(elle) == len(SIMGESIZ_SORULAR) == 2
+    assert {(k["sayfa"], k["sutun"]) for k in elle} == {(151, "sag"), (323, "sol")}
+    assert all(k["simge"] is None for k in elle)
+    # simge capali kutularin hepsinde simge var
+    capali = [k for k in kutu["kutular"] if not k.get("elle")]
+    assert len(capali) == BEKLENEN_SIMGE_BIRIM
+    assert all(k["simge"] is not None for k in capali)
+
+
+def test_kutular_kart_icinde_ve_ters_degil(kutu: dict) -> None:
+    kart_g, kart_y = kutu["kart"][2], kutu["kart"][3]
+    for k in kutu["kutular"]:
+        x0, y0, x1, y1 = k["kutu"]
+        assert 0 <= x0 < x1 <= kart_g, k
+        assert 0 <= y0 < y1 <= kart_y, k
+        assert y1 - y0 >= 40, k
+
+
+def test_kutular_sutun_sinirlarina_oturuyor(kutu: dict) -> None:
+    sinir = {ad: tuple(v) for ad, v in kutu["sutunlar"].items()}
+    for k in kutu["kutular"]:
+        assert (k["kutu"][0], k["kutu"][2]) == sinir[k["sutun"]], k
+    sol, sag = sinir["sol"], sinir["sag"]
+    assert sol[1] < sag[0], "sutunlar ortusuyor"
+
+
+def test_ayni_sayfa_sutununda_kutular_cakismiyor(kutu: dict) -> None:
+    grup: dict[tuple, list] = {}
+    for k in kutu["kutular"]:
+        grup.setdefault((k["sayfa"], k["sutun"]), []).append(k)
+    for anahtar, g in grup.items():
+        g.sort(key=lambda k: k["kutu"][1])
+        for a, b in itertools.pairwise(g):
+            assert a["kutu"][3] <= b["kutu"][1], (anahtar, a["kutu"], b["kutu"])
+
+
+def test_hicbir_kutu_cevap_seridine_girmiyor(kutu: dict, serit: dict) -> None:
+    """Sizinti kapisi: kirpim alti, o sayfadaki seridin ust kenarinin ustunde."""
+    serit_ust = {
+        int(s): min(b["y"][0] for b in bloklar)
+        for s, bloklar in serit["sayfalar"].items()
+    }
+    for k in kutu["kutular"]:
+        ust = serit_ust.get(k["sayfa"])
+        if ust is None:
+            continue
+        assert k["kutu"][3] <= ust, (k["sayfa"], k["kutu"], ust)
+
+
+def test_kutu_capasi_simge_taramasindan_geliyor(kutu: dict, simge: dict) -> None:
+    konumlar = {(int(s), tuple(p)) for s, v in simge["sayfalar"].items() for p in v}
+    for k in kutu["kutular"]:
+        if k.get("elle"):
+            continue
+        assert (k["sayfa"], tuple(k["simge"])) in konumlar, k
+
+
+def test_kutu_yukseklik_ozeti_gercek(kutu: dict) -> None:
+    yuk = sorted(k["kutu"][3] - k["kutu"][1] for k in kutu["kutular"])
+    ozet = kutu["yukseklik"]
+    assert ozet["min"] == yuk[0]
+    assert ozet["max"] == yuk[-1]
+    assert ozet["medyan"] == yuk[len(yuk) // 2]
+
+
+# ------------------------------------------------------------------- 9. ASCII
 
 
 @pytest.mark.parametrize(
@@ -469,6 +550,7 @@ def test_bolum_ayraci_sayfalarinda_simge_yok(simge: dict) -> None:
         SERIT_YOLU,
         BIRIM_YOLU,
         SIMGE_YOLU,
+        KUTU_YOLU,
     ],
 )
 def test_ciktilar_ascii(yol: Path) -> None:
