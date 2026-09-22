@@ -606,3 +606,116 @@ toplam degil, **olcumun kendi guven payini disari vermesiydi**. Bir
 siniflandirici kullaniliyorsa, ciktisi yalniz etiketi degil etiketin
 marjini da tasimali; aksi halde hatanin nerede oldugunu sorabilecegin bir
 alan kalmaz.
+
+## 17. FAZ 3 ikinci adim: kirpim ve sutun sinirlarinin DUZELTILMESI
+
+Kirpimlari uretmeye baslayinca 13. bolumun kutulari sinandi ve **yanlis
+cikti**. Iki ayri hata bulundu; ikisi de ancak KIRPIMA BAKILINCA gorundu.
+
+### 17.1 Yanlis kitabi kirpma tehlikesi
+
+`screenshots/` altinda `Orijinal-2024-Geometri` adinda **AYRI bir 160
+sayfalik kitap** var. Ilk yazilan script `Orijinal-2024-Geometri*` desenini
+kullandi ve sessizce o kitabi kirpmaya basladi (761 dosya uretti, s161'de
+dosya bulunamayinca durdu).
+
+Script artik kaynak dizini SECMIYOR, DOGRULUYOR: desen dar
+(`Orijinal-2024-Geometri Soru Bank*`), eslesme **tek** olmak zorunda,
+sayfa sayisi **432** olmak zorunda, kutu sayisi **2072** olmak zorunda.
+Uctu de tutmazsa script durur.
+
+### 17.2 Sabit sutun siniri kitabin kendisine uymuyor
+
+13. bolum tum kitapta tek bir sutun siniri kullaniyordu:
+SOL (30, 349) / SAG (352, 700). Olculdu ki bu yanlis.
+
+**Kitabin metin blogu TEK ve CIFT sayfalarda ~16 px kayiyor** (ic/dis kenar
+payi). Olcum -- simge x konumlari:
+
+| | SOL simge x | SAG simge x |
+|---|---|---|
+| tek sayfa  | 37 / 43 | 358 / 360 |
+| cift sayfa | 53 / 56 | 376 |
+
+Ustelik sutun genisligi de bolumden bolume degisiyor (sag capa - sol capa:
+315, 320 ya da 323).
+
+Sonuc: **cift sayfalarda sol sutunun sag kenari kesiliyordu.** Gozle
+dogrulanan ornekler:
+
+- s432 sol #2 -- son satir "...yuzey alani ka|c" diye kesik, son sik (E)
+  yok
+- s10 sag #2 -- uc satirin sag ucu kesik
+- s145 sol #2 -- seklin sag kenari (ucuncu ucgen) kesik
+- s8 sol #1 -- soru numarasi diskin beyazlatma dairesi altinda kalmis
+
+### 17.3 Yeni kural: sinir SAYFANIN KENDISINDEN
+
+Sinirlar artik her sayfanin kendi simge konumlarindan turetiliyor:
+
+    sol_x0 = (o sayfadaki en kucuk SOL simge x) - 7
+    sag_x0 = (o sayfadaki en kucuk SAG simge x) - 7
+    genislik = sag_x0 - sol_x0            # HAM sol kenardan
+    sol_x1 = sag_x0 - 2
+    sag_x1 = sag_x0 + genislik - 2
+
+Sayfa ici simge x yayilimi olculdu: 417 sayfanin 382'sinde SOL simgelerin
+x'i birebir ayni, 385'inde SAG simgelerin x'i birebir ayni. Yani capa
+guvenilir.
+
+### 17.4 Filigran bantlari
+
+Yayinevi filigrani (dikey "ORIJINAL YAYINLARI" yazisi) DIS kenarda basili:
+tek sayfada sagda, cift sayfada solda. 425 sayfanin piksel sikligi olculdu
+(bir pikselin sayfalarin >= %70'inde koyu olmasi):
+
+    tek sayfa : x 678-699   (asil yazi 687-691, 223 piksel)
+    cift sayfa: x  33-46    (asil yazi  43-46, 247 piksel)
+
+Sinirlar bu bantlarin disinda tutuluyor. **Onemli ayrinti:** bant kirpmasi
+sutun GENISLIGINI degistirmiyor. Ilk denemede cift sayfada sol kenar
+banttan oturu saga itilince genislik kisaldi ve bu kez SAG sutun kesildi
+(s10 sag #2). Genislik ham sol kenardan olculur.
+
+### 17.5 Disk beyazlatma: daire degil, renk
+
+Daire (yaricap 20) ile beyazlatma **soru numarasini yiyordu**: s8'de disk
+x 40-67 arasinda, numara x 69'da basliyor; merkez 54 + yaricap 20 = 74
+numaranin uzerine biniyor.
+
+Beyazlatma artik **konum + renk**: yalnizca bilinen simge konumunun 22 px
+penceresinde, yalnizca okuyucu katmaninin renkleri (glif moru 69,39,160 /
+lila disk 240,238,247 / diskin acik gri golgesi) beyaza cevriliyor. Soru
+numarasinin pembesi ve metnin siyahi kaliyor; kitabin kendi mor cizimleri
+pencere disinda oldugu icin etkilenmiyor.
+
+Olcum: 2072 kirpimin hicbirinde simge merkezinin 20 px yaricapinda lila
+ya da glif rengi piksel **kalmadi** (onceki daire yonteminde 937 kirpimda
+kalinti vardi).
+
+### 17.6 Kirpim dogrulamasi
+
+    uretilen dosya        2072
+    essiz sha256          2072   (hicbiri ayni degil)
+    boyut = kutu boyutu   2072   (uyusmazlik 0)
+    acilamayan dosya         0   (hepsi PIL ile acildi -- madde 20)
+    neredeyse bos kirpim     0
+    disk kalintisi           0
+    murekkep orani        min 0.0250 / medyan 0.0695 / max 0.4282
+    kutu genisligi        min 312 / medyan 320 / max 330
+
+Gozle dogrulanan kirpim (her iki parite, her iki sutun, iki elle kutu):
+s8 sol #1, s10 sag #2, s16 sol #3, s27 sag #1, s65 sag #1, s145 sol #2,
+s151 sag #4 (elle), s323 sol #3 (elle), s432 sol #2.
+
+### 17.7 PR #322'nin kapisi bunu neden yakalamadi
+
+Kapi kutularin **birbirleriyle** tutarliligini olcuyordu: kart icinde mi,
+cakisiyor mu, serit sizintisi var mi, hepsi ayni sutun sinirina oturuyor
+mu. Hepsi yesildi -- cunku hepsi AYNI YANLIS sinira oturuyordu.
+
+Eksik olan sey, kutunun **sayfanin kendi icerigiyle** iliskisiydi. Yeni
+kapilar bunu capaliyor: sinirlar o sayfanin simgelerinden turetilmis
+olmali, parite kaymasi gercekten var olmali, sinir filigran bandina
+girmemeli. "Sutun siniri sabitlendi" mutasyonu (eski hatanin kendisi)
+artik testi kirmizi yapiyor.
