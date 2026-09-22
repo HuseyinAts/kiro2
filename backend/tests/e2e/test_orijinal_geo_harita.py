@@ -53,6 +53,7 @@ ORTME_YOLU = CIKTI / "orijinal_2024_geometri_ortme_olcumu.json"
 SAYFANO_YOLU = CIKTI / "orijinal_2024_geometri_sayfa_numarasi.json"
 ANAHTAR_YOLU = CIKTI / "orijinal_2024_geometri_cevap_anahtari.json"
 GOZLE_YOLU = CIKTI / "orijinal_2024_geometri_serit_gozle_okuma.json"
+METIN_YOLU = CIKTI / "orijinal_2024_geometri_metin.json"
 
 # Olculen capalar; sessizce degistirilemez.
 BEKLENEN_BOLUM = 5
@@ -74,6 +75,10 @@ SIMGESIZ_SORULAR = [[151, 8], [323, 3]]
 HARF_DAGILIMI = {"A": 208, "B": 392, "C": 634, "D": 564, "E": 274}
 GOZLE_SAYFA, GOZLE_GIRDI = 90, 823
 EN_DUSUK_MARJ = 0.0845
+# transkripsiyon (Faz 3.3) -- olculen degerler
+SEKILLI_SORU, SEKILSIZ_SORU = 1784, 288
+GORSEL_SIKLI_SORU = 4
+KUSURLU_SORU = 101
 ILK_SAYFA, SON_SAYFA = 8, 432
 ONEK = "GEO-ORJ24"
 KAYNAK = "Orijinal 2024 TYT-AYT Geometri Soru Bankasi"
@@ -142,6 +147,11 @@ def anahtar() -> dict:
 @pytest.fixture(scope="module")
 def gozle() -> dict:
     return json.loads(GOZLE_YOLU.read_text("utf-8"))
+
+
+@pytest.fixture(scope="module")
+def metin() -> dict:
+    return json.loads(METIN_YOLU.read_text("utf-8"))
 
 
 def _duzle(okuma: dict) -> list[tuple]:
@@ -789,7 +799,97 @@ def test_anahtar_cozumle_degil_kitaptan(anahtar: dict) -> None:
     assert anahtar["gozle_ile_uyusan"] == GOZLE_GIRDI
 
 
-# ------------------------------------------------------------------ 12. ASCII
+# ------------------------------------------- 12. transkripsiyon (Faz 3.3)
+
+
+def test_metin_her_soruya_bir_kayit(metin: dict, kutu: dict) -> None:
+    """Okunan soru sayisi, piksel olcumunun verdigi kutu sayisina esit."""
+    sorular = metin["sorular"]
+    assert metin["soru_sayisi"] == len(sorular) == BEKLENEN_SORU
+    sayim: dict[tuple, int] = {}
+    for s in sorular:
+        sayim[(s["sayfa"], s["sutun"])] = sayim.get((s["sayfa"], s["sutun"]), 0) + 1
+    kutu_sayim: dict[tuple, int] = {}
+    for k in kutu["kutular"]:
+        kutu_sayim[(k["sayfa"], k["sutun"])] = (
+            kutu_sayim.get((k["sayfa"], k["sutun"]), 0) + 1
+        )
+    assert sayim == kutu_sayim
+
+
+def test_metin_sira_sutun_icinde_kesintisiz(metin: dict) -> None:
+    grup: dict[tuple, list[int]] = {}
+    for s in metin["sorular"]:
+        grup.setdefault((s["sayfa"], s["sutun"]), []).append(s["sira"])
+    for anahtar, sira in grup.items():
+        assert sorted(sira) == list(range(1, len(sira) + 1)), anahtar
+
+
+def test_metin_basili_numaralar_birim_ici_1_n(metin: dict, birim: dict) -> None:
+    """Okuyucuya soru sayisi SOYLENMEDI; basili numara yapiyla capalanir."""
+    okunan: dict[tuple, list[dict]] = {}
+    for s in metin["sorular"]:
+        okunan.setdefault((s["sayfa"], s["sutun"]), []).append(s)
+    for b in birim["birimler"]:
+        dizi = []
+        for p in range(b["bas_sayfa"], b["son_sayfa"] + 1):
+            for sut in ("sol", "sag"):
+                dizi += [
+                    s["basili_no"]
+                    for s in sorted(okunan.get((p, sut), []), key=lambda x: x["sira"])
+                ]
+        assert dizi == list(range(1, b["soru_sayisi"] + 1)), b["kod"]
+
+
+def test_metin_bes_sik_dolu(metin: dict) -> None:
+    for s in metin["sorular"]:
+        assert set(s["sikler"]) == set("ABCDE"), s["sayfa"]
+        for h in "ABCDE":
+            assert str(s["sikler"][h]).strip(), (s["sayfa"], s["sutun"], s["sira"], h)
+
+
+def test_metin_cevap_tasimiyor(metin: dict) -> None:
+    """Transkripsiyon anahtardan BAGIMSIZ kanal: cevap alani bulunmamali."""
+    yasak = {"cevap", "dogru_cevap", "correct_answer", "answer", "anahtar"}
+    for s in metin["sorular"]:
+        assert not (set(s) & yasak), s
+    assert "cozulmedi" in metin["nereden"]
+
+
+def test_metin_govdeler_bos_ve_kopya_degil(metin: dict) -> None:
+    """Birebir tekrar eden govde, okuma yerine kopyalama isaretidir."""
+    govde = [s["govde"].strip() for s in metin["sorular"]]
+    assert all(len(g) >= 30 for g in govde)
+    assert len(set(govde)) == len(govde)
+
+
+def test_metin_sekil_dagilimi_olculen(metin: dict) -> None:
+    sekilli = sum(1 for s in metin["sorular"] if s["sekil_var"])
+    assert sekilli == SEKILLI_SORU
+    assert len(metin["sorular"]) - sekilli == SEKILSIZ_SORU
+
+
+def test_metin_gorsel_sik_ve_kusur_capalari(metin: dict) -> None:
+    gorsel = [
+        s
+        for s in metin["sorular"]
+        if any("rsel" in str(v) for v in s["sikler"].values())
+    ]
+    assert len(gorsel) == GORSEL_SIKLI_SORU
+    kusur = [s for s in metin["sorular"] if s.get("kaynak_kusuru")]
+    assert len(kusur) == KUSURLU_SORU
+    assert all(isinstance(s["kaynak_kusuru"], str) for s in kusur)
+
+
+def test_metin_turkce_kalir_ascii_kurali_kapsamaz(metin: dict) -> None:
+    """ASCII sozlesmesi kaynak ADINI baglar, SORU METNINI degil."""
+    ham = METIN_YOLU.read_text("utf-8")
+    assert any(ord(c) > 127 for c in ham), "soru metni Turkce karakter tasimali"
+    assert metin["kaynak"] == KAYNAK
+    assert all(ord(c) < 128 for c in metin["kaynak"])
+
+
+# ------------------------------------------------------------------ 13. ASCII
 
 
 @pytest.mark.parametrize(

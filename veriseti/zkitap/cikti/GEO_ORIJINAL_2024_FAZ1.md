@@ -719,3 +719,86 @@ kapilar bunu capaliyor: sinirlar o sayfanin simgelerinden turetilmis
 olmali, parite kaymasi gercekten var olmali, sinir filigran bandina
 girmemeli. "Sutun siniri sabitlendi" mutasyonu (eski hatanin kendisi)
 artik testi kirmizi yapiyor.
+
+## 18. FAZ 3 ucuncu adim: transkripsiyon
+
+### 18.1 Once SURUM KAPISI
+
+Plan bolum 1b: transkripsiyon pahali oldugu icin once kardes kitap kontrolu
+yapilir. Orijinal 2024'un 231 birimlik cevap dizisi, depodaki iki geometri
+kitabinin anahtariyla karsilastirildi:
+
+    C1CELL 2024 (163 birim / 1770 cevap)  -> birebir ayni dizi: 0
+    ACIL 2023-24 (138 birim / 1881 cevap) -> birebir ayni dizi: 0
+
+Ayrica `screenshots/` altindaki `Orijinal-Tyt Ayt Geometri Soru Bankasi`
+(432 sayfa) klasorunun ayni kitabin ikizi olup olmadigi sinandi: sayfalar
+birebir ayni degil ve okuyucu sekmesi **"ORIJINAL - 2025"** yaziyor. Yani
+o klasor AYRI bir baski (2025), bu kitabin kopyasi degil.
+
+Kapi gecti: transkripsiyon gerekli.
+
+### 18.2 Okuma birimi: sayfa karti
+
+Kirpimlar soru basinadir, ama transkripsiyon SAYFA KARTINDAN yapildi
+(734x968, kart ici). Gerekce: sayfa karti baslik bandini, test numarasini ve
+iki sutunu birlikte gosterir; soru kirpimi bunlari kaybeder. 417 soru
+sayfasinin karti cikarildi.
+
+### 18.3 Pilot: uc kanal, ayni sayfa
+
+Once s8-s9 (11 soru) UC bagimsiz kanaldan okundu: (1) dogrudan benim okumam,
+(2) bir pilot okuyucu, (3) fan-out'ta o sayfalari alan okuyucu. Sonuc:
+
+    ayni soru kumesi        11/11
+    ayni basili numara      11/11
+    ayni sik metni          55/55   (5 sik x 11 soru, her uc kanalda)
+    birebir ayni govde       9/11
+    farkli iki govde        yalniz noktalama ("110 derece dir." vs "...'dir.")
+
+Yani okuma kanali bu kitapta kararli.
+
+### 18.4 Fan-out ve OKUYUCUYA SOYLENMEYEN kapi
+
+417 sayfa, birim sinirina hizali **30 gruba** bolundu (grup basi ~14 sayfa).
+Her grubu ayri bir okuyucu okudu. Okuyucuya sayfada kac soru oldugu
+SOYLENMEDI ve cevap anahtari GOSTERILMEDI.
+
+Kapilar bagimsiz olculmus yapidan gelir:
+
+    KAPI1  her (sayfa, sutun) icin okunan soru sayisi == kirpim kutusu sayisi
+    KAPI2  her birimde basili numaralar okuma sirasina gore 1..N
+    KAPI3  bes sik da bos olmayan metin tasiyor
+    KAPI4  toplam 2072
+
+KAPI2 ozellikle guclu: kutular okuyucu simgesinden turetildi, basili numara
+ise kitabin kendi dizgisi. Ikisi ayni sirayi vermek zorunda degildi; verdi.
+
+**30 grubun 30'u, 2072 sorunun tamami dort kapidan da gecti.**
+
+### 18.5 Uydurma karsiti olcumler
+
+    bos govde                         0
+    30 karakterden kisa govde         0
+    BIREBIR tekrar eden govde         0 / 2072
+    cevap alani sizintisi             0
+    sekilli soru                   1784
+    sekilsiz soru                   288
+    gorsel sikli soru                 4  (s61 sol1, s93 sag1, s232 sag2, s355 sag1)
+    kaynak kusuru isaretlenen soru  101
+
+Birebir tekrar eden govde sayisinin sifir olmasi onemli: kopyala-yapistir ya
+da uydurma uretim en cok tekrar biraktirir.
+
+### 18.6 ASCII sozlesmesi transkripsiyonu KAPSAMAZ
+
+`kaynak_sozlesmesi.py` yalnizca `source_book` ADINI ASCII'ye baglar; soru
+metni Turkce kalir. Test bunu iki yonlu capaliyor: metin dosyasi Turkce
+karakter TASIMALI, kaynak adi ise ASCII olmali.
+
+### 18.7 Kapilar ve mutasyon
+
+Test 79 -> 88. Mutasyon 71 -> 80; transkripsiyon icin eklenen 9 mutasyon:
+metinden soru silindi, basili numara kaydirildi, bir sik bosaltildi, govde
+kopyalandi, transkripsiyona cevap sizdi, sekil dagilimi degisti, kaynak
+kusuru gizlendi, cozulmedi iddiasi degisti, sutun ici sira atlandi.
