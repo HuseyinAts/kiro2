@@ -1,0 +1,309 @@
+{
+ "kaynak": "Orijinal 2024 TYT-AYT Geometri Soru Bankasi",
+ "kok": "GEO",
+ "onek": "GEO-ORJ24",
+ "bolumler": [
+  {
+   "kod": "GEO-ORJ24-B01",
+   "ad": "UCGENLER"
+  },
+  {
+   "kod": "GEO-ORJ24-B02",
+   "ad": "COKGENLER VE DORTGENLER"
+  },
+  {
+   "kod": "GEO-ORJ24-B03",
+   "ad": "CEMBER VE DAIRE"
+  },
+  {
+   "kod": "GEO-ORJ24-B04",
+   "ad": "ANALITIK GEOMETRI"
+  },
+  {
+   "kod": "GEO-ORJ24-B05",
+   "ad": "KATI CISIMLER"
+  }
+ ],
+ "konular": [
+  {
+   "kod": "GEO-ORJ24-B01-01",
+   "ad": "Temel Kavramlar ve Dogruda Acilar",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 8,
+   "son_sayfa": 13,
+   "test_sayisi": 3
+  },
+  {
+   "kod": "GEO-ORJ24-B01-02",
+   "ad": "Ucgende Acilar",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 14,
+   "son_sayfa": 27,
+   "test_sayisi": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B01-03",
+   "ad": "Dik ve Ozel Ucgenler",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 28,
+   "son_sayfa": 45,
+   "test_sayisi": 10
+  },
+  {
+   "kod": "GEO-ORJ24-B01-04",
+   "ad": "Ikizkenar Ucgen",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 46,
+   "son_sayfa": 55,
+   "test_sayisi": 6
+  },
+  {
+   "kod": "GEO-ORJ24-B01-05",
+   "ad": "Eskenar Ucgen",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 56,
+   "son_sayfa": 65,
+   "test_sayisi": 6
+  },
+  {
+   "kod": "GEO-ORJ24-B01-06",
+   "ad": "Ucgende Aciortay Bagintilari",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 66,
+   "son_sayfa": 75,
+   "test_sayisi": 6
+  },
+  {
+   "kod": "GEO-ORJ24-B01-07",
+   "ad": "Ucgende Kenarortay Bagintilari",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 76,
+   "son_sayfa": 85,
+   "test_sayisi": 6
+  },
+  {
+   "kod": "GEO-ORJ24-B01-08",
+   "ad": "Ucgende Eslik ve Benzerlik",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 86,
+   "son_sayfa": 109,
+   "test_sayisi": 13
+  },
+  {
+   "kod": "GEO-ORJ24-B01-09",
+   "ad": "Ucgende Merkezler",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 110,
+   "son_sayfa": 115,
+   "test_sayisi": 3
+  },
+  {
+   "kod": "GEO-ORJ24-B01-10",
+   "ad": "Ucgende Alan",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 116,
+   "son_sayfa": 136,
+   "test_sayisi": 11
+  },
+  {
+   "kod": "GEO-ORJ24-B01-11",
+   "ad": "Ucgende Aci-Kenar Bagintilari",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 137,
+   "son_sayfa": 144,
+   "test_sayisi": 4
+  },
+  {
+   "kod": "GEO-ORJ24-B01-12",
+   "ad": "OSYM'de Cikmis Sorular (Ucgenler)",
+   "ust": "GEO-ORJ24-B01",
+   "bas_sayfa": 145,
+   "son_sayfa": 150,
+   "test_sayisi": null
+  },
+  {
+   "kod": "GEO-ORJ24-B02-01",
+   "ad": "Cokgen ve Duzgun Cokgenler",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 151,
+   "son_sayfa": 166,
+   "test_sayisi": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B02-02",
+   "ad": "Dortgenler",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 167,
+   "son_sayfa": 174,
+   "test_sayisi": 5
+  },
+  {
+   "kod": "GEO-ORJ24-B02-03",
+   "ad": "Deltoid",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 175,
+   "son_sayfa": 178,
+   "test_sayisi": 3
+  },
+  {
+   "kod": "GEO-ORJ24-B02-04",
+   "ad": "Paralelkenar",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 179,
+   "son_sayfa": 196,
+   "test_sayisi": 10
+  },
+  {
+   "kod": "GEO-ORJ24-B02-05",
+   "ad": "Eskenar Dortgen",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 197,
+   "son_sayfa": 206,
+   "test_sayisi": 6
+  },
+  {
+   "kod": "GEO-ORJ24-B02-06",
+   "ad": "Dikdortgen",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 207,
+   "son_sayfa": 224,
+   "test_sayisi": 10
+  },
+  {
+   "kod": "GEO-ORJ24-B02-07",
+   "ad": "Kare",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 225,
+   "son_sayfa": 240,
+   "test_sayisi": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B02-08",
+   "ad": "Yamuk",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 241,
+   "son_sayfa": 256,
+   "test_sayisi": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B02-09",
+   "ad": "OSYM'de Cikmis Sorular (Cokgenler ve Dortgenler)",
+   "ust": "GEO-ORJ24-B02",
+   "bas_sayfa": 257,
+   "son_sayfa": 261,
+   "test_sayisi": null
+  },
+  {
+   "kod": "GEO-ORJ24-B03-01",
+   "ad": "Cemberde Aci",
+   "ust": "GEO-ORJ24-B03",
+   "bas_sayfa": 262,
+   "son_sayfa": 277,
+   "test_sayisi": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B03-02",
+   "ad": "Cemberde Uzunluk",
+   "ust": "GEO-ORJ24-B03",
+   "bas_sayfa": 278,
+   "son_sayfa": 297,
+   "test_sayisi": 11
+  },
+  {
+   "kod": "GEO-ORJ24-B03-03",
+   "ad": "Dairede Cevre ve Alan",
+   "ust": "GEO-ORJ24-B03",
+   "bas_sayfa": 298,
+   "son_sayfa": 317,
+   "test_sayisi": 11
+  },
+  {
+   "kod": "GEO-ORJ24-B03-04",
+   "ad": "OSYM'de Cikmis Sorular (Cember ve Daire)",
+   "ust": "GEO-ORJ24-B03",
+   "bas_sayfa": 318,
+   "son_sayfa": 322,
+   "test_sayisi": null
+  },
+  {
+   "kod": "GEO-ORJ24-B04-01",
+   "ad": "Noktanin Analitik Incelenmesi",
+   "ust": "GEO-ORJ24-B04",
+   "bas_sayfa": 323,
+   "son_sayfa": 336,
+   "test_sayisi": 8
+  },
+  {
+   "kod": "GEO-ORJ24-B04-02",
+   "ad": "Dogrunun Analitik Incelenmesi",
+   "ust": "GEO-ORJ24-B04",
+   "bas_sayfa": 337,
+   "son_sayfa": 357,
+   "test_sayisi": 11
+  },
+  {
+   "kod": "GEO-ORJ24-B04-03",
+   "ad": "Analitik Duzlemde Donusumler",
+   "ust": "GEO-ORJ24-B04",
+   "bas_sayfa": 358,
+   "son_sayfa": 369,
+   "test_sayisi": 7
+  },
+  {
+   "kod": "GEO-ORJ24-B04-04",
+   "ad": "Cemberin Analitik Incelenmesi",
+   "ust": "GEO-ORJ24-B04",
+   "bas_sayfa": 370,
+   "son_sayfa": 385,
+   "test_sayisi": 9
+  },
+  {
+   "kod": "GEO-ORJ24-B04-05",
+   "ad": "OSYM'de Cikmis Sorular (Analitik Geometri)",
+   "ust": "GEO-ORJ24-B04",
+   "bas_sayfa": 386,
+   "son_sayfa": 389,
+   "test_sayisi": null
+  },
+  {
+   "kod": "GEO-ORJ24-B05-01",
+   "ad": "Prizmalar",
+   "ust": "GEO-ORJ24-B05",
+   "bas_sayfa": 390,
+   "son_sayfa": 409,
+   "test_sayisi": 11
+  },
+  {
+   "kod": "GEO-ORJ24-B05-02",
+   "ad": "Piramit",
+   "ust": "GEO-ORJ24-B05",
+   "bas_sayfa": 410,
+   "son_sayfa": 421,
+   "test_sayisi": 7
+  },
+  {
+   "kod": "GEO-ORJ24-B05-03",
+   "ad": "Kure",
+   "ust": "GEO-ORJ24-B05",
+   "bas_sayfa": 422,
+   "son_sayfa": 425,
+   "test_sayisi": 3
+  },
+  {
+   "kod": "GEO-ORJ24-B05-04",
+   "ad": "Donel Cisimler",
+   "ust": "GEO-ORJ24-B05",
+   "bas_sayfa": 426,
+   "son_sayfa": 427,
+   "test_sayisi": 1
+  },
+  {
+   "kod": "GEO-ORJ24-B05-05",
+   "ad": "OSYM'de Cikmis Sorular (Kati Cisimler)",
+   "ust": "GEO-ORJ24-B05",
+   "bas_sayfa": 428,
+   "son_sayfa": 432,
+   "test_sayisi": null
+  }
+ ]
+}

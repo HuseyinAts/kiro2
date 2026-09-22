@@ -1,0 +1,210 @@
+{
+ "kaynak": "s0003 sol/sag sutun ayri kirpim 3x",
+ "bolumler": [
+  {
+   "no": 1,
+   "ad": "Ucgenler",
+   "konular": [
+    {
+     "ad": "Temel Kavramlar ve Dogruda Acilar",
+     "test": 3,
+     "sayfa": 8
+    },
+    {
+     "ad": "Ucgende Acilar",
+     "test": 9,
+     "sayfa": 14
+    },
+    {
+     "ad": "Dik ve Ozel Ucgenler",
+     "test": 10,
+     "sayfa": 28
+    },
+    {
+     "ad": "Ikizkenar Ucgen",
+     "test": 6,
+     "sayfa": 46
+    },
+    {
+     "ad": "Eskenar Ucgen",
+     "test": 6,
+     "sayfa": 56
+    },
+    {
+     "ad": "Ucgende Aciortay Bagintilari",
+     "test": 6,
+     "sayfa": 66
+    },
+    {
+     "ad": "Ucgende Kenarortay Bagintilari",
+     "test": 6,
+     "sayfa": 76
+    },
+    {
+     "ad": "Ucgende Eslik ve Benzerlik",
+     "test": 13,
+     "sayfa": 86
+    },
+    {
+     "ad": "Ucgende Merkezler",
+     "test": 3,
+     "sayfa": 110
+    },
+    {
+     "ad": "Ucgende Alan",
+     "test": 11,
+     "sayfa": 116
+    },
+    {
+     "ad": "Ucgende Aci-Kenar Bagintilari",
+     "test": 4,
+     "sayfa": 137
+    },
+    {
+     "ad": "OSYM'DE CIKMIS SORULAR",
+     "test": null,
+     "sayfa": 145
+    }
+   ]
+  },
+  {
+   "no": 2,
+   "ad": "Cokgenler ve Dortgenler",
+   "konular": [
+    {
+     "ad": "Cokgen ve Duzgun Cokgenler",
+     "test": 9,
+     "sayfa": 151
+    },
+    {
+     "ad": "Dortgenler",
+     "test": 5,
+     "sayfa": 167
+    },
+    {
+     "ad": "Deltoid",
+     "test": 3,
+     "sayfa": 175
+    },
+    {
+     "ad": "Paralelkenar",
+     "test": 10,
+     "sayfa": 179
+    },
+    {
+     "ad": "Eskenar Dortgen",
+     "test": 6,
+     "sayfa": 197
+    },
+    {
+     "ad": "Dikdortgen",
+     "test": 10,
+     "sayfa": 207
+    },
+    {
+     "ad": "Kare",
+     "test": 9,
+     "sayfa": 225
+    },
+    {
+     "ad": "Yamuk",
+     "test": 9,
+     "sayfa": 241
+    },
+    {
+     "ad": "OSYM'DE CIKMIS SORULAR",
+     "test": null,
+     "sayfa": 257
+    }
+   ]
+  },
+  {
+   "no": 3,
+   "ad": "Cember ve Daire",
+   "konular": [
+    {
+     "ad": "Cemberde Aci",
+     "test": 9,
+     "sayfa": 262
+    },
+    {
+     "ad": "Cemberde Uzunluk",
+     "test": 11,
+     "sayfa": 278
+    },
+    {
+     "ad": "Dairede Cevre ve Alan",
+     "test": 11,
+     "sayfa": 298
+    },
+    {
+     "ad": "OSYM'DE CIKMIS SORULAR",
+     "test": null,
+     "sayfa": 318
+    }
+   ]
+  },
+  {
+   "no": 4,
+   "ad": "Analitik Geometri",
+   "konular": [
+    {
+     "ad": "Noktanin Analitik Incelenmesi",
+     "test": 8,
+     "sayfa": 323
+    },
+    {
+     "ad": "Dogrunun Analitik Incelenmesi",
+     "test": 11,
+     "sayfa": 337
+    },
+    {
+     "ad": "Analitik Duzlemde Donusumler",
+     "test": 7,
+     "sayfa": 358
+    },
+    {
+     "ad": "Cemberin Analitik Incelenmesi",
+     "test": 9,
+     "sayfa": 370
+    },
+    {
+     "ad": "OSYM'DE CIKMIS SORULAR",
+     "test": null,
+     "sayfa": 386
+    }
+   ]
+  },
+  {
+   "no": 5,
+   "ad": "Kati Cisimler",
+   "konular": [
+    {
+     "ad": "Prizmalar",
+     "test": 11,
+     "sayfa": 390
+    },
+    {
+     "ad": "Piramit",
+     "test": 7,
+     "sayfa": 410
+    },
+    {
+     "ad": "Kure",
+     "test": 3,
+     "sayfa": 422
+    },
+    {
+     "ad": "Donel Cisimler",
+     "test": 1,
+     "sayfa": 426
+    },
+    {
+     "ad": "OSYM'DE CIKMIS SORULAR",
+     "test": null,
+     "sayfa": 428
+    }
+   ]
+  }
+ ]
+}
