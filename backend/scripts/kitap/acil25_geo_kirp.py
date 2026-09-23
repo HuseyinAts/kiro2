@@ -95,7 +95,8 @@ def _okuyucu_rengi(a: np.ndarray) -> np.ndarray:
     # (145,128,198) / (209,202,231) kalintisi.
     r, gg, bb = ai[..., 0], ai[..., 1], ai[..., 2]
     mor = (bb - r > MOR_FARK) & (bb - gg > MOR_FARK) & (r >= gg - 8)
-    return (fark_glif < GLIF_ESIK) | (fark_disk < DISK_ESIK) | golge | mor
+    renk: np.ndarray = (fark_glif < GLIF_ESIK) | (fark_disk < DISK_ESIK) | golge | mor
+    return renk
 
 
 def _pencere(shape: tuple[int, ...], gy: int, gx: int, r: int):

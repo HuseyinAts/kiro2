@@ -142,7 +142,25 @@ Dosya: `acil_2025_geometri_metin.json`.
 `backend/scripts/kitap/acil25_geo_ithal.py` -- `kaynak_sozlesmesi.py`'de
 `ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi` / `ACIL_GEO_2025`. Kuru kosum:
 yapisal kapi + on kontrol temiz; 348 dugumun (33 + 315) hepsine en az bir
-soru baglaniyor. DB'ye yazma 0041 migration'i kostuktan sonra.
+soru baglaniyor.
+
+**Yerel DB (23 Eyl 2026):** 0041 kostu (348 dugum eklendi). `--yaz`:
+
+| olcum | deger |
+|---|---|
+| DB'de zaten var (baska kaynak, ayni soru_hash) | **189** -- hepsi ACIL 2023-2024 |
+| yeni yazilan | **1759** (is_active 0, kapidan gecen 0) |
+| soru tasiyan GEO-ACL25 dugumu | 346 / 348 |
+
+**189 ortak soru ayni sorudur:** ayni soru_hash (metin + bes sik), kitabin
+anahtari 2023-2024 satirinin cevabiyla 189/189 ayni, sekil bayragi 189/189
+ayni. Faz 0'daki '%0 ortaklik' sayfa/blok olcusuydu; soru duzeyinde 2025
+KURS'un ~%9,7'si 2023-2024 baskisindan birebir alinmis. `ayristir` bunlara
+dokunmadi (2023-2024 satirlari ve konu baglari oldugu gibi); 2 alt konu
+dugumunun sorularinin tamami bu ortak kumede oldugu icin 346/348.
+
+Gorseller `d-dataset/output/crops/ACILGEO_2025/` altina uretildi
+(`acil25_geo_kirp.py --cikti ... --rapor ""`), `/static/crops` bunu servis eder.
 
 * **Sekil ikizi:** d8 sol #2 ve sag #5 ayni govde + ayni siklar, farkli
   sekil, farkli anahtar (C / D). `soru_hash` formulu ortak altyapi,

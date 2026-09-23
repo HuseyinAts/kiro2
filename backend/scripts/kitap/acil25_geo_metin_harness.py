@@ -77,9 +77,9 @@ def hazirla() -> None:
     for x in g:
         for ad in x["dosyalar"]:
             im = Image.open(KIRPIM / f"{ad}.png")
-            im.resize((im.width * OLCEK, im.height * OLCEK), Image.LANCZOS).save(
-                OKUMA_KOKU / f"{ad}.png"
-            )
+            im.resize(
+                (im.width * OLCEK, im.height * OLCEK), Image.Resampling.LANCZOS
+            ).save(OKUMA_KOKU / f"{ad}.png")
             n += 1
         (PARCA_DIZINI / f"liste_{x['no']:02d}.txt").write_text(
             "\n".join(x["dosyalar"]) + "\n", encoding="ascii"

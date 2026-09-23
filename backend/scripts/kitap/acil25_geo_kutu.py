@@ -105,7 +105,8 @@ def _satir_murekkebi(d: int, t: str, simge: dict, kaynak: Path) -> np.ndarray:
     a = np.array(Image.open(kaynak / f"sayfa_{d:04d}.png").convert("RGB").crop(KART_PX))
     a[okuyucu_maskesi(a, simge.get(str(d), []))] = 255
     x0, x1 = SUTUNLAR[d % 2][t]
-    return (a[:, x0:x1].min(axis=2) < MUREKKEP).any(axis=1)
+    satir: np.ndarray = (a[:, x0:x1].min(axis=2) < MUREKKEP).any(axis=1)
+    return satir
 
 
 def _ust(y: int, tavan: int, murekkep: np.ndarray) -> int:
