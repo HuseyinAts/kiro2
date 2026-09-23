@@ -1,5 +1,14 @@
 # Dalga D (geometri) -- FAZ 0 ON KESIF
 
+> **DUZELTME (23 Eyl 2026, `ZKITAP_KITAP_DURUMU.md` bolum 2):** bu fisin iki hukmu olcumle
+> yanlis cikti. (a) #3 ile #4 ayni yakalama DEGIL: #4'un sekmesi `ORIJINAL - 2025`, 432 sayfanin
+> tamami karsilastirildi, soru degisen sayfalar var (s227: 7. ve 10. soru; s146: 2025 OSYM sorulari).
+> Kart piksel farki kucuk gorunur cunku kartin cogu beyazdir. (b) #8 ayri kitap DEGIL: islenmis
+> Mikro 2025'in 2024 baskisi; ayni testler birkac sayfa kaymis (2024 s247 = 2025 s243, s399 = s399,
+> s150 = s145). Ayni sayfa NUMARASI karsilastirmasi bu kaymayi goremez. #8 islenirse sorularin
+> cogu ikinci kez girer.
+
+
 Plan: `ZKITAP_ISLEME_PLANI.md` bolum 1, dalga D. Bu fis SALT OKUNUR
 olcumlerin sonucudur: transkripsiyon yok, DB'ye yazilmadi.
 Tarih: 18 Eyl 2026.
