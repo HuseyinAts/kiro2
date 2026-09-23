@@ -1,0 +1,913 @@
+{
+"kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+"arac": "scripts/kitap/acil25_geo_kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE, her okuyucu diskinin disindaki halkada (yaricap 15-19 px, diskin sagindaki 90 derece haric) koyu (< 160) kitap murekkebi. Bir kirpimin icine >= 4 halka pikseli dusuyorsa o soru 'ortme suphesi' tasir: metin ya da sekil diskin altina giriyor olabilir. Disk opak; altindaki icerik goruntude yoktur.",
+"tam_kitap": true,
+"kenar_kapisi_ihlali": 0,
+"ortme_suphesi_soru": 82,
+"kenar": [],
+"ortme": [
+{
+"birim": "GEO-ACL25-K01-B08",
+"soru": 2,
+"dosya": 11,
+"sutun": "L",
+"simge": [
+564,
+356
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K01-B08",
+"soru": 6,
+"dosya": 12,
+"sutun": "L",
+"simge": [
+623,
+374
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K02-B06",
+"soru": 2,
+"dosya": 20,
+"sutun": "L",
+"simge": [
+85,
+372
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K02-B11",
+"soru": 2,
+"dosya": 23,
+"sutun": "L",
+"simge": [
+506,
+356
+],
+"piksel": 10
+},
+{
+"birim": "GEO-ACL25-K02-B17",
+"soru": 2,
+"dosya": 31,
+"sutun": "L",
+"simge": [
+530,
+354
+],
+"piksel": 10
+},
+{
+"birim": "GEO-ACL25-K03-B01",
+"soru": 1,
+"dosya": 33,
+"sutun": "L",
+"simge": [
+392,
+357
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K03-B01",
+"soru": 7,
+"dosya": 34,
+"sutun": "L",
+"simge": [
+271,
+373
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K03-B04",
+"soru": 1,
+"dosya": 35,
+"sutun": "L",
+"simge": [
+443,
+355
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K05-B04",
+"soru": 1,
+"dosya": 44,
+"sutun": "L",
+"simge": [
+350,
+372
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K06-B08",
+"soru": 1,
+"dosya": 60,
+"sutun": "L",
+"simge": [
+128,
+372
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K06-B10",
+"soru": 5,
+"dosya": 64,
+"sutun": "L",
+"simge": [
+83,
+373
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K07-B03",
+"soru": 1,
+"dosya": 67,
+"sutun": "L",
+"simge": [
+356,
+357
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K08-B06",
+"soru": 1,
+"dosya": 77,
+"sutun": "L",
+"simge": [
+357,
+356
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K08-B19",
+"soru": 7,
+"dosya": 89,
+"sutun": "L",
+"simge": [
+532,
+356
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K09-B04",
+"soru": 1,
+"dosya": 96,
+"sutun": "L",
+"simge": [
+617,
+372
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K09-B09",
+"soru": 4,
+"dosya": 99,
+"sutun": "L",
+"simge": [
+369,
+356
+],
+"piksel": 13
+},
+{
+"birim": "GEO-ACL25-K09-B09",
+"soru": 5,
+"dosya": 99,
+"sutun": "L",
+"simge": [
+616,
+357
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K09-B16",
+"soru": 2,
+"dosya": 103,
+"sutun": "L",
+"simge": [
+527,
+355
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K09-B18",
+"soru": 1,
+"dosya": 107,
+"sutun": "L",
+"simge": [
+391,
+356
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K09-B19",
+"soru": 5,
+"dosya": 110,
+"sutun": "L",
+"simge": [
+84,
+373
+],
+"piksel": 15
+},
+{
+"birim": "GEO-ACL25-K10-B02",
+"soru": 1,
+"dosya": 113,
+"sutun": "L",
+"simge": [
+445,
+357
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K10-B07",
+"soru": 1,
+"dosya": 117,
+"sutun": "L",
+"simge": [
+129,
+357
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K10-B10",
+"soru": 2,
+"dosya": 123,
+"sutun": "L",
+"simge": [
+552,
+354
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K11-B03",
+"soru": 4,
+"dosya": 127,
+"sutun": "L",
+"simge": [
+583,
+356
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K12-B01",
+"soru": 1,
+"dosya": 130,
+"sutun": "L",
+"simge": [
+171,
+373
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K12-B14",
+"soru": 1,
+"dosya": 138,
+"sutun": "L",
+"simge": [
+458,
+373
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K12-B16",
+"soru": 1,
+"dosya": 140,
+"sutun": "L",
+"simge": [
+129,
+372
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K12-B16",
+"soru": 2,
+"dosya": 140,
+"sutun": "L",
+"simge": [
+524,
+373
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K12-B17",
+"soru": 2,
+"dosya": 142,
+"sutun": "L",
+"simge": [
+532,
+372
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K14-B06",
+"soru": 2,
+"dosya": 155,
+"sutun": "L",
+"simge": [
+415,
+356
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K14-B06",
+"soru": 3,
+"dosya": 155,
+"sutun": "L",
+"simge": [
+701,
+356
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K15-B14",
+"soru": 1,
+"dosya": 176,
+"sutun": "L",
+"simge": [
+403,
+372
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K15-B21",
+"soru": 6,
+"dosya": 184,
+"sutun": "L",
+"simge": [
+463,
+373
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K16-B03",
+"soru": 2,
+"dosya": 186,
+"sutun": "L",
+"simge": [
+634,
+373
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K16-B05",
+"soru": 2,
+"dosya": 188,
+"sutun": "L",
+"simge": [
+576,
+373
+],
+"piksel": 10
+},
+{
+"birim": "GEO-ACL25-K16-B06",
+"soru": 3,
+"dosya": 189,
+"sutun": "L",
+"simge": [
+127,
+357
+],
+"piksel": 14
+},
+{
+"birim": "GEO-ACL25-K16-B09",
+"soru": 8,
+"dosya": 192,
+"sutun": "L",
+"simge": [
+647,
+373
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K17-B03",
+"soru": 2,
+"dosya": 195,
+"sutun": "L",
+"simge": [
+549,
+356
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K17-B08",
+"soru": 1,
+"dosya": 198,
+"sutun": "L",
+"simge": [
+127,
+372
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K18-B11",
+"soru": 2,
+"dosya": 207,
+"sutun": "L",
+"simge": [
+126,
+356
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K18-B11",
+"soru": 3,
+"dosya": 207,
+"sutun": "L",
+"simge": [
+559,
+356
+],
+"piksel": 23
+},
+{
+"birim": "GEO-ACL25-K19-B07",
+"soru": 1,
+"dosya": 223,
+"sutun": "L",
+"simge": [
+344,
+356
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K19-B14",
+"soru": 5,
+"dosya": 228,
+"sutun": "L",
+"simge": [
+84,
+372
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K19-B16",
+"soru": 1,
+"dosya": 231,
+"sutun": "L",
+"simge": [
+129,
+356
+],
+"piksel": 16
+},
+{
+"birim": "GEO-ACL25-K19-B18",
+"soru": 1,
+"dosya": 235,
+"sutun": "L",
+"simge": [
+130,
+356
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K20-B01",
+"soru": 3,
+"dosya": 237,
+"sutun": "L",
+"simge": [
+674,
+356
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K20-B08",
+"soru": 1,
+"dosya": 241,
+"sutun": "L",
+"simge": [
+351,
+356
+],
+"piksel": 14
+},
+{
+"birim": "GEO-ACL25-K21-B03",
+"soru": 1,
+"dosya": 252,
+"sutun": "L",
+"simge": [
+348,
+371
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K21-B12",
+"soru": 2,
+"dosya": 258,
+"sutun": "L",
+"simge": [
+538,
+372
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K22-B06",
+"soru": 2,
+"dosya": 274,
+"sutun": "L",
+"simge": [
+550,
+371
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K23-B09",
+"soru": 1,
+"dosya": 281,
+"sutun": "L",
+"simge": [
+344,
+357
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K23-B13",
+"soru": 2,
+"dosya": 283,
+"sutun": "L",
+"simge": [
+89,
+357
+],
+"piksel": 15
+},
+{
+"birim": "GEO-ACL25-K23-B16",
+"soru": 1,
+"dosya": 286,
+"sutun": "L",
+"simge": [
+129,
+373
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K23-B19",
+"soru": 1,
+"dosya": 292,
+"sutun": "L",
+"simge": [
+130,
+373
+],
+"piksel": 14
+},
+{
+"birim": "GEO-ACL25-K24-B01",
+"soru": 1,
+"dosya": 294,
+"sutun": "L",
+"simge": [
+406,
+372
+],
+"piksel": 8
+},
+{
+"birim": "GEO-ACL25-K24-B05",
+"soru": 1,
+"dosya": 296,
+"sutun": "L",
+"simge": [
+349,
+372
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K24-B10",
+"soru": 2,
+"dosya": 299,
+"sutun": "L",
+"simge": [
+253,
+356
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K24-B16",
+"soru": 5,
+"dosya": 305,
+"sutun": "L",
+"simge": [
+417,
+357
+],
+"piksel": 10
+},
+{
+"birim": "GEO-ACL25-K25-B19",
+"soru": 1,
+"dosya": 313,
+"sutun": "L",
+"simge": [
+640,
+357
+],
+"piksel": 8
+},
+{
+"birim": "GEO-ACL25-K25-B21",
+"soru": 1,
+"dosya": 314,
+"sutun": "L",
+"simge": [
+127,
+372
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K26-B01",
+"soru": 2,
+"dosya": 324,
+"sutun": "L",
+"simge": [
+365,
+373
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K26-B02",
+"soru": 2,
+"dosya": 325,
+"sutun": "L",
+"simge": [
+360,
+356
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K26-B05",
+"soru": 2,
+"dosya": 326,
+"sutun": "L",
+"simge": [
+401,
+372
+],
+"piksel": 13
+},
+{
+"birim": "GEO-ACL25-K26-B08",
+"soru": 2,
+"dosya": 327,
+"sutun": "L",
+"simge": [
+339,
+357
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K26-B08",
+"soru": 6,
+"dosya": 327,
+"sutun": "L",
+"simge": [
+815,
+356
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K28-B07",
+"soru": 1,
+"dosya": 346,
+"sutun": "L",
+"simge": [
+392,
+372
+],
+"piksel": 14
+},
+{
+"birim": "GEO-ACL25-K28-B09",
+"soru": 3,
+"dosya": 347,
+"sutun": "L",
+"simge": [
+621,
+356
+],
+"piksel": 15
+},
+{
+"birim": "GEO-ACL25-K28-B17",
+"soru": 1,
+"dosya": 357,
+"sutun": "L",
+"simge": [
+130,
+356
+],
+"piksel": 15
+},
+{
+"birim": "GEO-ACL25-K29-B03",
+"soru": 2,
+"dosya": 361,
+"sutun": "L",
+"simge": [
+372,
+356
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K29-B05",
+"soru": 2,
+"dosya": 362,
+"sutun": "L",
+"simge": [
+380,
+373
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K29-B08",
+"soru": 1,
+"dosya": 364,
+"sutun": "L",
+"simge": [
+369,
+373
+],
+"piksel": 9
+},
+{
+"birim": "GEO-ACL25-K29-B08",
+"soru": 2,
+"dosya": 364,
+"sutun": "L",
+"simge": [
+604,
+373
+],
+"piksel": 4
+},
+{
+"birim": "GEO-ACL25-K29-B12",
+"soru": 1,
+"dosya": 367,
+"sutun": "L",
+"simge": [
+129,
+356
+],
+"piksel": 19
+},
+{
+"birim": "GEO-ACL25-K29-B12",
+"soru": 2,
+"dosya": 367,
+"sutun": "L",
+"simge": [
+541,
+356
+],
+"piksel": 5
+},
+{
+"birim": "GEO-ACL25-K29-B13",
+"soru": 6,
+"dosya": 370,
+"sutun": "L",
+"simge": [
+491,
+372
+],
+"piksel": 6
+},
+{
+"birim": "GEO-ACL25-K30-B09",
+"soru": 1,
+"dosya": 374,
+"sutun": "L",
+"simge": [
+327,
+371
+],
+"piksel": 12
+},
+{
+"birim": "GEO-ACL25-K31-B01",
+"soru": 5,
+"dosya": 379,
+"sutun": "L",
+"simge": [
+360,
+356
+],
+"piksel": 10
+},
+{
+"birim": "GEO-ACL25-K31-B08",
+"soru": 1,
+"dosya": 383,
+"sutun": "L",
+"simge": [
+127,
+355
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K31-B10",
+"soru": 1,
+"dosya": 387,
+"sutun": "L",
+"simge": [
+128,
+356
+],
+"piksel": 11
+},
+{
+"birim": "GEO-ACL25-K33-B03",
+"soru": 2,
+"dosya": 395,
+"sutun": "L",
+"simge": [
+681,
+356
+],
+"piksel": 7
+},
+{
+"birim": "GEO-ACL25-K33-B04",
+"soru": 4,
+"dosya": 396,
+"sutun": "L",
+"simge": [
+85,
+373
+],
+"piksel": 10
+},
+{
+"birim": "GEO-ACL25-K33-B05",
+"soru": 1,
+"dosya": 396,
+"sutun": "L",
+"simge": [
+480,
+372
+],
+"piksel": 12
+}
+]
+}

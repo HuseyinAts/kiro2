@@ -11,9 +11,9 @@ Bu belge onceki envanteri (`ZKITAP_ENVANTER.md`, klasor ADINA gore eslestirilmis
 | PNG iceren klasor | 278 |
 | tekil kitap (ayni icerikli klasorler birlestirildi) | 237 |
 | modern hatla islenmis ve DB'ye PASIF ithal edilmis | 13 kitap (345 Geometri 2 cilt = 14 grup) |
-| islenmis, ithal EDILMEMIS (Orijinal 2024 Geometri, Faz 3 bitti) | 1 |
-| islenmemis | 222 |
-| -- bunlardan DB'de HIC satiri olmayan | 100 |
+| islenmis, ithal EDILMEMIS (Orijinal 2024 Geometri; ACIL 2025 KURS Geometri) | 2 |
+| islenmemis | 221 |
+| -- bunlardan DB'de HIC satiri olmayan | 99 |
 | -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 122 |
 | kitap olmayan / kullanilamaz klasor | 6 |
 
@@ -23,7 +23,7 @@ Modern ithal toplami (13 kitap): **18273 satir**. Canli DB'deki toplam `source_b
 
 1. **`Mikro Orijinal-Tyt Ayt-Geometri Soru Bankasi 2` (plan #8) islenmis Mikro 2025 kitabinin ONCEKI BASKISIDIR, ayri kitap/ikinci cilt DEGIL.** `GEO_DALGA_D_KESIF.md` (b) ayni sayfa NUMARASINDAKI iki sayfayi karsilastirip 'tamamen farkli' demisti; oysa ayni testler birkac sayfa kaymis durumda. Sekme basligi: `MIKRO - ORJINAL - 2024 - TYT - AYT - GEOMETRI - SB`. Olcum: 16 ornek sayfanin 11-13'u islenmis 2025 baskisinda bulundu (sayfa kaymasi 0-7). Gozle: 2024 s247 = 2025 s243 (Kare, Ornek 1-6 birebir), 2024 s399 = 2025 s399 (Piramitler), 2024 s94 = 2025 s82 (Eskenar Ucgen, orneklerin cogu ayni), 2024 s150 = 2025 s145 (Kazanim Testi, Ucgende Alan). **Islenirse sorularin cogu ikinci kez girer.**
 2. **`Orijinal-2024-Geometri Soru Bankasi` (#3) ile `Orijinal-Tyt Ayt Geometri Soru Bankasi` (#4) 'ayni yakalama' DEGIL**, 2024 ve 2025 baskilaridir (`GEO_ORIJINAL_2024_FAZ1.md` bolum 18.1 bunu zaten dogru yaziyor; plan ve kesif fisleri eski hukmu tasiyor). 432 sayfanin tamami ayni indekste karsilastirildi: kart piksel farki medyani %1,9, 87 sayfada >%5. Gozle: s227'de 7. ve 10. sorular degismis, 8/9/11/12 ayni; s146 'OSYM'de Cikmis Sorular' sayfasinda 2025 sorulari eklenmis (9, 11, 12 yeni). Revize baski; olculen ortaklik en az %69. Kart farki orani dusuk gorunur cunku kartin cogu beyazdir; tek bir soru degisse de oran %1-3 kalir.
-3. **`ACIL-TYT-AYT-Geometri Soru Bankasi` islenmis DEGIL.** Yerel envanter klasor adina gore onu islenmis ACIL 2023-2024'e eslemisti. Sekme: `ACIL - 2025 - TYT - AYT - Geometri Soru Bankasi`; icerik ortakligi %0 (`GEO_ACIL_2025_KURS_KESIF.md`: farkli ISBN, KURS serisi). Sahip karari 'ikisi de' -- sirada.
+3. **`ACIL-TYT-AYT-Geometri Soru Bankasi` islenmis DEGIL.** Yerel envanter klasor adina gore onu islenmis ACIL 2023-2024'e eslemisti. Sekme: `ACIL - 2025 - TYT - AYT - Geometri Soru Bankasi`; icerik ortakligi %0 (`GEO_ACIL_2025_KURS_KESIF.md`: farkli ISBN, KURS serisi). Sahip karari 'ikisi de'. **23 Eyl 2026: veri hatti bitti** (1948 soru, `GEO_ACIL_2025_FAZ1.md`); DB ithali 0041 migration'i sonrasi.
 4. **345 2024 AYT Biyoloji / 345 2024 TYT Biyoloji** yerel envanterde islenmis gorunuyordu; ikisi de 2024 baskisi. Islenmis 2025 baskilariyla ortaklik: AYT en az %69 (bu olcum; `BIO_345_2024_KESIF.md` cevap dizisi hizalamasi %85,2 -- tutarli), TYT en az %72.
 5. **Bilgi Sarmal AYT Edebiyat:** plan 8.1 '#6 islendi, #7 islenmedi' diyor; birincil kaynak (`BILGI_SARMAL_EDEBIYAT_YONTEM.md` satir 5, ithal araci docstring) ithal edilen baskinin **2024** klasoru (`...Soru Bankasi 2024`) oldugunu, 2023-2024 klasorunun kurtarma kanali oldugunu soyluyor. Plan satiri ters.
 6. **Klasor adlari guvenilmez.** Ornekler: `Esen Ayt Tarih Soru Bankasi` = AYT Cografya; `Esen Aylik Planli Biyoloji` = 2025 APS AYT Kimya; `Esen Apt Ayt Fizik 2025` = 2025 APS AYT Biyoloji; `Esen Aps Fizik Soru Bankasi 3` = APS TYT Fizik; `Vaf Capli Paragraf` = CAP Capli Paragraf; `Bilgi Sarmali-2022-2023-Tyt-Matematik` = 2022-2023 BS **AYT** Matematik; `ACIL-2025-TYT-Soeu Bankasi` = ACIL 2025 **AYT** SB; `345 Tyt *` klasorleri 2024 baskisi. Tam eslesme bolum 7'de.
@@ -90,7 +90,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | ACIL 2025 Matematigin Ilaci Sayilar-2 | ISLENMEDI | `ACIL-2025-Matematigin Ilaci Sayilar-2` | 192 | - | eski hat 53 / aktif 53 | - | - | ISLENEBILIR |
 | ACIL 2025 Problemlerin Ilaci | ISLENMEDI | `ACIL-2025-Problemin Ilaci` | 196 | - | eski hat 5 / aktif 5 | 2020-2021 Acil Problemlerin Ilaci %82 | - | AILE: yalniz biri islenmeli (2020-2021 Acil Problemlerin Ilaci %82) |
 | ACIL 2025 TYT Soru Bankasi | ISLENMEDI | `ACIL-2025-TYT-Soru Bankasi` | 400 | - | eski hat 22 / aktif 22 | 2023-2024 ACIL TYT Matematik Soru Bankasi %33 | - | AILE: yalniz biri islenmeli (2023-2024 ACIL TYT Matematik Soru Bankasi %33) |
-| ACIL 2025 TYT-AYT Geometri Soru Bankasi | ISLENMEDI | `ACIL-TYT-AYT-Geometri Soru Bankasi` | 400 | - | yok | - | - | ISLENEBILIR |
+| ACIL 2025 TYT-AYT Geometri Soru Bankasi | HAZIR | `ACIL-TYT-AYT-Geometri Soru Bankasi` | 400 | - | 0 (1948 soru hazir) | - | - | `--yaz` bekliyor (0041 sonrasi) |
 | Acil 2024 AYT Matematik Kitap-1 | ISLENMEDI | `Acil-2024-AYT Matematik Kitap-1` | 224 | - | eski hat 7 / aktif 7 | - | - | ISLENEBILIR |
 
 ### AKTIF / ALTYAPI (Kartlarla) (12 kitap)
@@ -472,7 +472,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 54 | `ACIL-2025-Problemin Ilaci` | 196 | ACIL 2025 Problemlerin Ilaci |  | ISLENMEDI |
 | 55 | `ACIL-2025-TYT-Soeu Bankasi` | 416 | ACIL 2025 AYT Soru Bankasi | ! | ISLENMEDI |
 | 56 | `ACIL-2025-TYT-Soru Bankasi` | 400 | ACIL 2025 TYT Soru Bankasi |  | ISLENMEDI |
-| 57 | `ACIL-TYT-AYT-Geometri Soru Bankasi` | 400 | ACIL 2025 TYT-AYT Geometri Soru Bankasi |  | ISLENMEDI |
+| 57 | `ACIL-TYT-AYT-Geometri Soru Bankasi` | 400 | ACIL 2025 TYT-AYT Geometri Soru Bankasi |  | HAZIR |
 | 58 | `Acil-2024-AYT Matematik Kitap-1` | 224 | Acil 2024 AYT Matematik Kitap-1 |  | ISLENMEDI |
 | 59 | `Aktif Ogrenme 0 Baslayanlara Kimya 2019 2020` | 368 | 2019-2020 Aktif 0'dan Baslayanlara Aktif Kimya |  | ISLENMEDI |
 | 60 | `Aktif Ogrenme 2023 2024 Biyoloji` | 272 | 2023-2024 AKTIF Biyoloji |  | ISLENMEDI |
