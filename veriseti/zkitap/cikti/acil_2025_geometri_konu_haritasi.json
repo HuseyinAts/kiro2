@@ -1,0 +1,2549 @@
+{
+ "kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+ "klasor": "veriseti/zkitap/screenshots/ACIL-TYT-AYT-Geometri Soru Bankasi",
+ "kok": "GEO",
+ "onek": "GEO-ACL25",
+ "nereden": "Kitapta icindekiler sayfasi yakalanmadi (Faz 0 K0.7). Konu adlari her soru sayfasinin ust bandindaki kirmizi basliktan, alt konu adlari 'Konu Ogrenme' sayfalarindaki sari alt baslik kutularindan okundu. Hicbir ad uydurulmadi; bolum (ust grup) duzeyi kitapta gorunmedigi icin ACILMADI.",
+ "nasil": "392 sayfa basligi iki bagimsiz okuyucu (duz ve ters sira) ile okundu: 391/392 ayni, fark d139 (kitabin kendi basim hatasi 'Yeni Nesil Test Test', goz ile). 331 sari kutu iki bagimsiz okuma: 330/331 ayni, fark K019 (virgul, goz ile). Konu sirasi yalniz buyuk (acilis) basliklarda degisiyor; hicbir konu geri donmuyor.",
+ "ad_bicimi": "ad = ASCII katlanmis (diger GEO agaclari gibi); ad_basili = kitaptaki yazim",
+ "duzey": "kok+1 konu (33), kok+2 alt konu (Konu Ogrenme sari kutulari). Test birimleri konu dugumune baglanir.",
+ "konular": [
+  {
+   "kod": "GEO-ACL25-K01",
+   "ad": "Dogruda Aci",
+   "bas_sayfa": 7,
+   "son_sayfa": 16,
+   "ad_basili": "Do\u011fruda A\u00e7\u0131",
+   "birim_sayisi": 10,
+   "soru_sayisi": 49,
+   "alt_konu_sayisi": 7
+  },
+  {
+   "kod": "GEO-ACL25-K02",
+   "ad": "Ucgende Aci",
+   "bas_sayfa": 17,
+   "son_sayfa": 32,
+   "ad_basili": "\u00dc\u00e7gende A\u00e7\u0131",
+   "birim_sayisi": 17,
+   "soru_sayisi": 74,
+   "alt_konu_sayisi": 13
+  },
+  {
+   "kod": "GEO-ACL25-K03",
+   "ad": "Pisagor Teoremi",
+   "bas_sayfa": 33,
+   "son_sayfa": 38,
+   "ad_basili": "Pisagor Teoremi",
+   "birim_sayisi": 5,
+   "soru_sayisi": 29,
+   "alt_konu_sayisi": 3
+  },
+  {
+   "kod": "GEO-ACL25-K04",
+   "ad": "Oklit Teoremi",
+   "bas_sayfa": 39,
+   "son_sayfa": 41,
+   "ad_basili": "\u00d6klit Teoremi",
+   "birim_sayisi": 4,
+   "soru_sayisi": 13,
+   "alt_konu_sayisi": 3
+  },
+  {
+   "kod": "GEO-ACL25-K05",
+   "ad": "Ozel Ucgenler",
+   "bas_sayfa": 42,
+   "son_sayfa": 55,
+   "ad_basili": "\u00d6zel \u00dc\u00e7genler",
+   "birim_sayisi": 13,
+   "soru_sayisi": 66,
+   "alt_konu_sayisi": 8
+  },
+  {
+   "kod": "GEO-ACL25-K06",
+   "ad": "Aciortay",
+   "bas_sayfa": 56,
+   "son_sayfa": 64,
+   "ad_basili": "A\u00e7\u0131ortay",
+   "birim_sayisi": 10,
+   "soru_sayisi": 43,
+   "alt_konu_sayisi": 7
+  },
+  {
+   "kod": "GEO-ACL25-K07",
+   "ad": "Kenarortay",
+   "bas_sayfa": 65,
+   "son_sayfa": 73,
+   "ad_basili": "Kenarortay",
+   "birim_sayisi": 8,
+   "soru_sayisi": 43,
+   "alt_konu_sayisi": 5
+  },
+  {
+   "kod": "GEO-ACL25-K08",
+   "ad": "Eslik ve Benzerlik",
+   "bas_sayfa": 74,
+   "son_sayfa": 93,
+   "ad_basili": "E\u015flik ve Benzerlik",
+   "birim_sayisi": 21,
+   "soru_sayisi": 102,
+   "alt_konu_sayisi": 16
+  },
+  {
+   "kod": "GEO-ACL25-K09",
+   "ad": "Ucgende Alan",
+   "bas_sayfa": 94,
+   "son_sayfa": 111,
+   "ad_basili": "\u00dc\u00e7gende Alan",
+   "birim_sayisi": 20,
+   "soru_sayisi": 92,
+   "alt_konu_sayisi": 15
+  },
+  {
+   "kod": "GEO-ACL25-K10",
+   "ad": "Ucgende Aci ve Kenar Bagintilari",
+   "bas_sayfa": 112,
+   "son_sayfa": 123,
+   "ad_basili": "\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+   "birim_sayisi": 10,
+   "soru_sayisi": 50,
+   "alt_konu_sayisi": 6
+  },
+  {
+   "kod": "GEO-ACL25-K11",
+   "ad": "Geometrik Merkezler",
+   "bas_sayfa": 124,
+   "son_sayfa": 129,
+   "ad_basili": "Geometrik Merkezler",
+   "birim_sayisi": 5,
+   "soru_sayisi": 33,
+   "alt_konu_sayisi": 4
+  },
+  {
+   "kod": "GEO-ACL25-K12",
+   "ad": "Cokgenler",
+   "bas_sayfa": 130,
+   "son_sayfa": 145,
+   "ad_basili": "\u00c7okgenler",
+   "birim_sayisi": 18,
+   "soru_sayisi": 77,
+   "alt_konu_sayisi": 14
+  },
+  {
+   "kod": "GEO-ACL25-K13",
+   "ad": "Genel Dortgenler",
+   "bas_sayfa": 146,
+   "son_sayfa": 151,
+   "ad_basili": "Genel D\u00f6rtgenler",
+   "birim_sayisi": 8,
+   "soru_sayisi": 29,
+   "alt_konu_sayisi": 7
+  },
+  {
+   "kod": "GEO-ACL25-K14",
+   "ad": "Yamuk",
+   "bas_sayfa": 152,
+   "son_sayfa": 167,
+   "ad_basili": "Yamuk",
+   "birim_sayisi": 18,
+   "soru_sayisi": 83,
+   "alt_konu_sayisi": 14
+  },
+  {
+   "kod": "GEO-ACL25-K15",
+   "ad": "Paralelkenar",
+   "bas_sayfa": 168,
+   "son_sayfa": 184,
+   "ad_basili": "Paralelkenar",
+   "birim_sayisi": 21,
+   "soru_sayisi": 90,
+   "alt_konu_sayisi": 17
+  },
+  {
+   "kod": "GEO-ACL25-K16",
+   "ad": "Eskenar Dortgen",
+   "bas_sayfa": 185,
+   "son_sayfa": 193,
+   "ad_basili": "E\u015fkenar D\u00f6rtgen",
+   "birim_sayisi": 10,
+   "soru_sayisi": 48,
+   "alt_konu_sayisi": 7
+  },
+  {
+   "kod": "GEO-ACL25-K17",
+   "ad": "Deltoid",
+   "bas_sayfa": 194,
+   "son_sayfa": 200,
+   "ad_basili": "Deltoid",
+   "birim_sayisi": 9,
+   "soru_sayisi": 32,
+   "alt_konu_sayisi": 7
+  },
+  {
+   "kod": "GEO-ACL25-K18",
+   "ad": "Dikdortgen",
+   "bas_sayfa": 201,
+   "son_sayfa": 218,
+   "ad_basili": "Dikd\u00f6rtgen",
+   "birim_sayisi": 19,
+   "soru_sayisi": 86,
+   "alt_konu_sayisi": 14
+  },
+  {
+   "kod": "GEO-ACL25-K19",
+   "ad": "Kare",
+   "bas_sayfa": 219,
+   "son_sayfa": 236,
+   "ad_basili": "Kare",
+   "birim_sayisi": 18,
+   "soru_sayisi": 85,
+   "alt_konu_sayisi": 13
+  },
+  {
+   "kod": "GEO-ACL25-K20",
+   "ad": "Cemberde Aci",
+   "bas_sayfa": 237,
+   "son_sayfa": 249,
+   "ad_basili": "\u00c7emberde A\u00e7\u0131",
+   "birim_sayisi": 15,
+   "soru_sayisi": 61,
+   "alt_konu_sayisi": 12
+  },
+  {
+   "kod": "GEO-ACL25-K21",
+   "ad": "Cemberde Uzunluk",
+   "bas_sayfa": 250,
+   "son_sayfa": 269,
+   "ad_basili": "\u00c7emberde Uzunluk",
+   "birim_sayisi": 19,
+   "soru_sayisi": 93,
+   "alt_konu_sayisi": 14
+  },
+  {
+   "kod": "GEO-ACL25-K22",
+   "ad": "Cemberin Cevresi",
+   "bas_sayfa": 270,
+   "son_sayfa": 276,
+   "ad_basili": "\u00c7emberin \u00c7evresi",
+   "birim_sayisi": 7,
+   "soru_sayisi": 30,
+   "alt_konu_sayisi": 4
+  },
+  {
+   "kod": "GEO-ACL25-K23",
+   "ad": "Dairenin Alani",
+   "bas_sayfa": 277,
+   "son_sayfa": 293,
+   "ad_basili": "Dairenin Alan\u0131",
+   "birim_sayisi": 19,
+   "soru_sayisi": 83,
+   "alt_konu_sayisi": 14
+  },
+  {
+   "kod": "GEO-ACL25-K24",
+   "ad": "Noktanin Analitigi",
+   "bas_sayfa": 294,
+   "son_sayfa": 305,
+   "ad_basili": "Noktan\u0131n Analiti\u011fi",
+   "birim_sayisi": 16,
+   "soru_sayisi": 67,
+   "alt_konu_sayisi": 13
+  },
+  {
+   "kod": "GEO-ACL25-K25",
+   "ad": "Dogrunun Analitigi",
+   "bas_sayfa": 306,
+   "son_sayfa": 323,
+   "ad_basili": "Do\u011frunun Analiti\u011fi",
+   "birim_sayisi": 25,
+   "soru_sayisi": 104,
+   "alt_konu_sayisi": 19
+  },
+  {
+   "kod": "GEO-ACL25-K26",
+   "ad": "Donusum Geometrisi",
+   "bas_sayfa": 324,
+   "son_sayfa": 332,
+   "ad_basili": "D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+   "birim_sayisi": 13,
+   "soru_sayisi": 59,
+   "alt_konu_sayisi": 10
+  },
+  {
+   "kod": "GEO-ACL25-K27",
+   "ad": "Analitik Geometri Genel",
+   "bas_sayfa": 333,
+   "son_sayfa": 342,
+   "ad_basili": "Analitik Geometri Genel",
+   "birim_sayisi": 5,
+   "soru_sayisi": 40,
+   "alt_konu_sayisi": 0
+  },
+  {
+   "kod": "GEO-ACL25-K28",
+   "ad": "Dik Prizmalar",
+   "bas_sayfa": 343,
+   "son_sayfa": 359,
+   "ad_basili": "Dik Prizmalar",
+   "birim_sayisi": 18,
+   "soru_sayisi": 82,
+   "alt_konu_sayisi": 12
+  },
+  {
+   "kod": "GEO-ACL25-K29",
+   "ad": "Dik Dairesel Silindir",
+   "bas_sayfa": 360,
+   "son_sayfa": 370,
+   "ad_basili": "Dik Dairesel Silindir",
+   "birim_sayisi": 13,
+   "soru_sayisi": 57,
+   "alt_konu_sayisi": 10
+  },
+  {
+   "kod": "GEO-ACL25-K30",
+   "ad": "Dik Piramitler",
+   "bas_sayfa": 371,
+   "son_sayfa": 377,
+   "ad_basili": "Dik Piramitler",
+   "birim_sayisi": 12,
+   "soru_sayisi": 39,
+   "alt_konu_sayisi": 10
+  },
+  {
+   "kod": "GEO-ACL25-K31",
+   "ad": "Koni",
+   "bas_sayfa": 378,
+   "son_sayfa": 388,
+   "ad_basili": "Koni",
+   "birim_sayisi": 10,
+   "soru_sayisi": 49,
+   "alt_konu_sayisi": 7
+  },
+  {
+   "kod": "GEO-ACL25-K32",
+   "ad": "Kure",
+   "bas_sayfa": 389,
+   "son_sayfa": 393,
+   "ad_basili": "K\u00fcre",
+   "birim_sayisi": 4,
+   "soru_sayisi": 23,
+   "alt_konu_sayisi": 2
+  },
+  {
+   "kod": "GEO-ACL25-K33",
+   "ad": "Cemberin Analitigi",
+   "bas_sayfa": 394,
+   "son_sayfa": 398,
+   "ad_basili": "\u00c7emberin Analiti\u011fi",
+   "birim_sayisi": 9,
+   "soru_sayisi": 37,
+   "alt_konu_sayisi": 8
+  }
+ ],
+ "alt_konular": [
+  {
+   "kod": "GEO-ACL25-K01-A01",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Aci Cesitleri",
+   "ad_basili": "A\u00e7\u0131 \u00c7e\u015fitleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K01-A02",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Tumler ve Butunler Aci",
+   "ad_basili": "T\u00fcmler ve B\u00fct\u00fcnler A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K01-A03",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Aciortay Dogrulari",
+   "ad_basili": "A\u00e7\u0131ortay Do\u011frular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K01-A04",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Paralel Dogrularin Olusturdugu Acilar 1",
+   "ad_basili": "Paralel Do\u011frular\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K01-A05",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Paralel Dogrularin Olusturdugu Acilar 2",
+   "ad_basili": "Paralel Do\u011frular\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K01-A06",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Yorum Sorulari",
+   "ad_basili": "Yorum Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K01-A07",
+   "ust": "GEO-ACL25-K01",
+   "ad": "Yon ve Dondurme Sorulari",
+   "ad_basili": "Y\u00f6n ve D\u00f6nd\u00fcrme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A01",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Ucgende Aci",
+   "ad_basili": "\u00dc\u00e7gende A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A02",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Ikizkenar Ucgende Aci",
+   "ad_basili": "\u0130kizkenar \u00dc\u00e7gende A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A03",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Ikizkenar Ucgende Simetri",
+   "ad_basili": "\u0130kizkenar \u00dc\u00e7gende Simetri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A04",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Eskenar Ucgende Aci",
+   "ad_basili": "E\u015fkenar \u00dc\u00e7gende A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A05",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Kes Yapistir Sorulari",
+   "ad_basili": "Kes Yap\u0131\u015ft\u0131r Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A06",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A07",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Dondurme Sorulari",
+   "ad_basili": "D\u00f6nd\u00fcrme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A08",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Aciortaylarin Olusturdugu Acilar",
+   "ad_basili": "A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A09",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Muhtesem Uclu",
+   "ad_basili": "Muhte\u015fem \u00dc\u00e7l\u00fc",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A10",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Ozdes Ucgenlerle Olusturulmus Aci Sorulari",
+   "ad_basili": "\u00d6zde\u015f \u00dc\u00e7genlerle Olu\u015fturulmu\u015f A\u00e7\u0131 Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A11",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Sozel Olarak Ifade Edilmis Aci Sorulari",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f A\u00e7\u0131 Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A12",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Cetvel, Cubuk, Makas vb Kullanilarak Olusturulmus Aci Sorulari",
+   "ad_basili": "Cetvel, \u00c7ubuk, Makas vb Kullan\u0131larak Olu\u015fturulmu\u015f A\u00e7\u0131 Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K02-A13",
+   "ust": "GEO-ACL25-K02",
+   "ad": "Pusula Sorulari",
+   "ad_basili": "Pusula Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K03-A01",
+   "ust": "GEO-ACL25-K03",
+   "ad": "Pisagor Teoremi",
+   "ad_basili": "Pisagor Teoremi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K03-A02",
+   "ust": "GEO-ACL25-K03",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K03-A03",
+   "ust": "GEO-ACL25-K03",
+   "ad": "En Kisa Mesafe Problemleri",
+   "ad_basili": "En K\u0131sa Mesafe Problemleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K04-A01",
+   "ust": "GEO-ACL25-K04",
+   "ad": "Oklit Teoremi 1",
+   "ad_basili": "\u00d6klit Teoremi 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K04-A02",
+   "ust": "GEO-ACL25-K04",
+   "ad": "Oklit Teoremi 2",
+   "ad_basili": "\u00d6klit Teoremi 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K04-A03",
+   "ust": "GEO-ACL25-K04",
+   "ad": "Oklit Teoremi 3",
+   "ad_basili": "\u00d6klit Teoremi 3",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A01",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Ozel Acili Ucgenler",
+   "ad_basili": "\u00d6zel A\u00e7\u0131l\u0131 \u00dc\u00e7genler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A02",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Ikizkenar Ucgen",
+   "ad_basili": "\u0130kizkenar \u00dc\u00e7gen",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A03",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Ikizkenar Ucgende Yukseklik 1",
+   "ad_basili": "\u0130kizkenar \u00dc\u00e7gende Y\u00fckseklik 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A04",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Ikizkenar Ucgende Yukseklik 2",
+   "ad_basili": "\u0130kizkenar \u00dc\u00e7gende Y\u00fckseklik 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A05",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Eskenar Ucgen",
+   "ad_basili": "E\u015fkenar \u00dc\u00e7gen",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A06",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A07",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Katlama Kesme Sorulari",
+   "ad_basili": "Katlama Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K05-A08",
+   "ust": "GEO-ACL25-K05",
+   "ad": "Tanim Verilen Sorular",
+   "ad_basili": "Tan\u0131m Verilen Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A01",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Aciortay Uzerindeki Bir Noktadan Yan Kenarlara Dikme Inme",
+   "ad_basili": "A\u00e7\u0131ortay \u00dczerindeki Bir Noktadan Yan Kenarlara Dikme \u0130nme",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A02",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Ic Aciortay Teoremi",
+   "ad_basili": "\u0130\u00e7 A\u00e7\u0131ortay Teoremi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A03",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Bir Dogru Parcasinin Aciortay, Yukseklik ve Kenarortaydan Ikisi Olmasi",
+   "ad_basili": "Bir Do\u011fru Par\u00e7as\u0131n\u0131n A\u00e7\u0131ortay, Y\u00fckseklik ve Kenarortaydan \u0130kisi Olmas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A04",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A05",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Ic teget Cemberin Merkezi",
+   "ad_basili": "\u0130\u00e7 te\u011fet \u00c7emberin Merkezi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A06",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Dis Aciortay Teoremi",
+   "ad_basili": "D\u0131\u015f A\u00e7\u0131ortay Teoremi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K06-A07",
+   "ust": "GEO-ACL25-K06",
+   "ad": "Ic ve Dis Aciortay Teoremi",
+   "ad_basili": "\u0130\u00e7 ve D\u0131\u015f A\u00e7\u0131ortay Teoremi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K07-A01",
+   "ust": "GEO-ACL25-K07",
+   "ad": "Kenarortaylarin Kesim Noktasi",
+   "ad_basili": "Kenarortaylar\u0131n Kesim Noktas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K07-A02",
+   "ust": "GEO-ACL25-K07",
+   "ad": "Agirlik Merkezi ve Aciortay",
+   "ad_basili": "A\u011f\u0131rl\u0131k Merkezi ve A\u00e7\u0131ortay",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K07-A03",
+   "ust": "GEO-ACL25-K07",
+   "ad": "Agirlik Merkezi ve Muhtesem Uclu Iliskisi",
+   "ad_basili": "A\u011f\u0131rl\u0131k Merkezi ve Muhte\u015fem \u00dc\u00e7l\u00fc \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K07-A04",
+   "ust": "GEO-ACL25-K07",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K07-A05",
+   "ust": "GEO-ACL25-K07",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A01",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Eslik",
+   "ad_basili": "E\u015flik",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A02",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Kenar Aci Kenar Esligi",
+   "ad_basili": "Kenar A\u00e7\u0131 Kenar E\u015fli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A03",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Aci Kenar Aci Esligi",
+   "ad_basili": "A\u00e7\u0131 Kenar A\u00e7\u0131 E\u015fli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A04",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Kenar Kenar Kenar Esligi",
+   "ad_basili": "Kenar Kenar Kenar E\u015fli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A05",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Benzer Ucgenler",
+   "ad_basili": "Benzer \u00dc\u00e7genler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A06",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Aci Aci Aci Benzerligi",
+   "ad_basili": "A\u00e7\u0131 A\u00e7\u0131 A\u00e7\u0131 Benzerli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A07",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Kenar Aci Kenar Benzerligi",
+   "ad_basili": "Kenar A\u00e7\u0131 Kenar Benzerli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A08",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Kenar Kenar Kenar Benzerligi",
+   "ad_basili": "Kenar Kenar Kenar Benzerli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A09",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Benzerlik Orani",
+   "ad_basili": "Benzerlik Oran\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A10",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Temel Benzerlik Teoremi",
+   "ad_basili": "Temel Benzerlik Teoremi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A11",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Orta Taban",
+   "ad_basili": "Orta Taban",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A12",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Kelebek Benzerligi",
+   "ad_basili": "Kelebek Benzerli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A13",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Aciortay Benzerlik Iliskisi",
+   "ad_basili": "A\u00e7\u0131ortay Benzerlik \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A14",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Kenarortay Benzerlik Iliskisi",
+   "ad_basili": "Kenarortay Benzerlik \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A15",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K08-A16",
+   "ust": "GEO-ACL25-K08",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A01",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Dar Acili Ucgenlerin Alani",
+   "ad_basili": "Dar A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A02",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Dik Ucgenin Alani",
+   "ad_basili": "Dik \u00dc\u00e7genin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A03",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Genis Acili Ucgenlerin Alani",
+   "ad_basili": "Geni\u015f A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A04",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Ozel Acili Ucgenlerin Alani",
+   "ad_basili": "\u00d6zel A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A05",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Eskenar Ucgenin Alani",
+   "ad_basili": "E\u015fkenar \u00dc\u00e7genin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A06",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Yukseklikleri Esit Ucgenlerin Alanlari Orani",
+   "ad_basili": "Y\u00fckseklikleri E\u015fit \u00dc\u00e7genlerin Alanlar\u0131 Oran\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A07",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Tabanlari Esit Ucgenlerin Alanlari Orani",
+   "ad_basili": "Tabanlar\u0131 E\u015fit \u00dc\u00e7genlerin Alanlar\u0131 Oran\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A08",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Esit Alanli Ucgenleri Gorme",
+   "ad_basili": "E\u015fit Alanl\u0131 \u00dc\u00e7genleri G\u00f6rme",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A09",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Ucgende Benzerlik Alan Iliskisi",
+   "ad_basili": "\u00dc\u00e7gende Benzerlik Alan \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A10",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Ucgende Aciortay ve Alan Iliskisi",
+   "ad_basili": "\u00dc\u00e7gende A\u00e7\u0131ortay ve Alan \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A11",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Ucgende Kenarortay ve Alan Iliskisi",
+   "ad_basili": "\u00dc\u00e7gende Kenarortay ve Alan \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A12",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Sinuslu Alan Formulu",
+   "ad_basili": "Sin\u00fcsl\u00fc Alan Form\u00fcl\u00fc",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A13",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Ozdes Ucgenlerle Olusturulan Alan Sorulari",
+   "ad_basili": "\u00d6zde\u015f \u00dc\u00e7genlerle Olu\u015fturulan Alan Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A14",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Katlama Kesme Sorulari",
+   "ad_basili": "Katlama Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K09-A15",
+   "ust": "GEO-ACL25-K09",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K10-A01",
+   "ust": "GEO-ACL25-K10",
+   "ad": "Acilarin Siralanisindan Hareketle Kenarlari Siralama",
+   "ad_basili": "A\u00e7\u0131lar\u0131n S\u0131ralan\u0131\u015f\u0131ndan Hareketle Kenarlar\u0131 S\u0131ralama",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K10-A02",
+   "ust": "GEO-ACL25-K10",
+   "ad": "Ucgen Esitsizligi",
+   "ad_basili": "\u00dc\u00e7gen E\u015fitsizli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K10-A03",
+   "ust": "GEO-ACL25-K10",
+   "ad": "Dar ya da Genis Aci Karsisindaki Kenar",
+   "ad_basili": "Dar ya da Geni\u015f A\u00e7\u0131 Kar\u015f\u0131s\u0131ndaki Kenar",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K10-A04",
+   "ust": "GEO-ACL25-K10",
+   "ad": "Ic Bolgede Alinan Nokta",
+   "ad_basili": "\u0130\u00e7 B\u00f6lgede Al\u0131nan Nokta",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K10-A05",
+   "ust": "GEO-ACL25-K10",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K10-A06",
+   "ust": "GEO-ACL25-K10",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K11-A01",
+   "ust": "GEO-ACL25-K11",
+   "ad": "Bir Ucgenin Kenarorta Dikmeleri",
+   "ad_basili": "Bir \u00dc\u00e7genin Kenarorta Dikmeleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K11-A02",
+   "ust": "GEO-ACL25-K11",
+   "ad": "Bir Ucgenin Diklik Merkezi",
+   "ad_basili": "Bir \u00dc\u00e7genin Diklik Merkezi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K11-A03",
+   "ust": "GEO-ACL25-K11",
+   "ad": "Ic-Dis Teget Cemberin Merkezi, Agirlik Merkezi",
+   "ad_basili": "\u0130\u00e7-D\u0131\u015f Te\u011fet \u00c7emberin Merkezi, A\u011f\u0131rl\u0131k Merkezi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K11-A04",
+   "ust": "GEO-ACL25-K11",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A01",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Ic Acilar Toplami ve Dis Acilar Toplami",
+   "ad_basili": "\u0130\u00e7 A\u00e7\u0131lar Toplam\u0131 ve D\u0131\u015f A\u00e7\u0131lar Toplam\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A02",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Cokgenlerde Aci Hesaplama",
+   "ad_basili": "\u00c7okgenlerde A\u00e7\u0131 Hesaplama",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A03",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Cokgenlerde Ic Aci ve Dis Acinin Hesaplanmasi",
+   "ad_basili": "D\u00fczg\u00fcn \u00c7okgenlerde \u0130\u00e7 A\u00e7\u0131 ve D\u0131\u015f A\u00e7\u0131n\u0131n Hesaplanmas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A04",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Besgende Aci Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn Be\u015fgende A\u00e7\u0131 Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A05",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Altigende Aci Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn Alt\u0131gende A\u00e7\u0131 Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A06",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Sekizgende Aci Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn Sekizgende A\u00e7\u0131 Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A07",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Ortak Kenari Olan Duzgun Cokgenler",
+   "ad_basili": "Ortak Kenar\u0131 Olan D\u00fczg\u00fcn \u00c7okgenler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A08",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Kenar Sayisi Bilinmeyen Duzgun Cokgenler",
+   "ad_basili": "Kenar Say\u0131s\u0131 Bilinmeyen D\u00fczg\u00fcn \u00c7okgenler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A09",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Cokgenlerde Katlama Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn \u00c7okgenlerde Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A10",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Besgende Uzunluk Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn Be\u015fgende Uzunluk Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A11",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Altigende Uzunluk Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn Alt\u0131gende Uzunluk Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A12",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Duzgun Altigende Alan Sorulari",
+   "ad_basili": "D\u00fczg\u00fcn Alt\u0131gende Alan Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A13",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K12-A14",
+   "ust": "GEO-ACL25-K12",
+   "ad": "Kesme Sorulari",
+   "ad_basili": "Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A01",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Dortgenlerde Aci",
+   "ad_basili": "D\u00f6rtgenlerde A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A02",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Dortgenlerde Aciortaylarin Olusturdugu Acilar",
+   "ad_basili": "D\u00f6rtgenlerde A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A03",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Pisagor Teoreminin Dortgenlerde Kullanilmasi",
+   "ad_basili": "Pisagor Teoreminin D\u00f6rtgenlerde Kullan\u0131lmas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A04",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Dortgenin Kosegenleri ile Orta Noktalar Dortgeni Arasindaki Iliski",
+   "ad_basili": "D\u00f6rtgenin K\u00f6\u015fegenleri ile Orta Noktalar D\u00f6rtgeni Aras\u0131ndaki \u0130li\u015fki",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A05",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Ozel Ucgenler Olusturma",
+   "ad_basili": "\u00d6zel \u00dc\u00e7genler Olu\u015fturma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A06",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Dortgenin Alani",
+   "ad_basili": "D\u00f6rtgenin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K13-A07",
+   "ust": "GEO-ACL25-K13",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A01",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Yamukta Aci",
+   "ad_basili": "Yamukta A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A02",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Yamugun Orta Tabani",
+   "ad_basili": "Yamu\u011fun Orta Taban\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A03",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Komsu Iki Acinin Aciortayi",
+   "ad_basili": "Kom\u015fu \u0130ki A\u00e7\u0131n\u0131n A\u00e7\u0131ortay\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A04",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Yamukta Temel Benzerlik Kurali ve Kelebek Benzerligi",
+   "ad_basili": "Yamukta Temel Benzerlik Kural\u0131 ve Kelebek Benzerli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A05",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Dik Yamuk",
+   "ad_basili": "Dik Yamuk",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A06",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Ikizkenar Yamuk",
+   "ad_basili": "\u0130kizkenar Yamuk",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A07",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Yamugun Alani 1",
+   "ad_basili": "Yamu\u011fun Alan\u0131 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A08",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Yamugun Alani 2",
+   "ad_basili": "Yamu\u011fun Alan\u0131 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A09",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Yamugun Alani 3",
+   "ad_basili": "Yamu\u011fun Alan\u0131 3",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A10",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Kosegenlerin Olusturdugu Alanlar",
+   "ad_basili": "K\u00f6\u015fegenlerin Olu\u015fturdu\u011fu Alanlar",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A11",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Dik Yamuk ve Ikizkenar Yamugun Alani",
+   "ad_basili": "Dik Yamuk ve \u0130kizkenar Yamu\u011fun Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A12",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Ozdes Yamuklarla Olusturulan Sekiller",
+   "ad_basili": "\u00d6zde\u015f Yamuklarla Olu\u015fturulan \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A13",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K14-A14",
+   "ust": "GEO-ACL25-K14",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A01",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Paralelkenarda Aci",
+   "ad_basili": "Paralelkenarda A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A02",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Aciortayin Olusturdugu Ikizkenar Ucgen",
+   "ad_basili": "A\u00e7\u0131ortay\u0131n Olu\u015fturdu\u011fu \u0130kizkenar \u00dc\u00e7gen",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A03",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Aciortaylarin Olusturdugu Dik Ucgen 1",
+   "ad_basili": "A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu Dik \u00dc\u00e7gen 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A04",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Aciortaylarin Olusturdugu Dik Ucgen 2",
+   "ad_basili": "A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu Dik \u00dc\u00e7gen 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A05",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Kosegenlerin Birbirini Ortalamasi",
+   "ad_basili": "K\u00f6\u015fegenlerin Birbirini Ortalamas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A06",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Paralelkenarda Benzerlik 1",
+   "ad_basili": "Paralelkenarda Benzerlik 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A07",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Paralelkenarda Benzerlik 2",
+   "ad_basili": "Paralelkenarda Benzerlik 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A08",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Paralelkenarda Benzerlik 3",
+   "ad_basili": "Paralelkenarda Benzerlik 3",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A09",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Paralelkenarda Alan",
+   "ad_basili": "Paralelkenarda Alan",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A10",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Paralelkenar ve Icine Cizilen Yamugun Alani",
+   "ad_basili": "Paralelkenar ve \u0130\u00e7ine \u00c7izilen Yamu\u011fun Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A11",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Kosegenin Olusturdugu Esit Yukseklikler",
+   "ad_basili": "K\u00f6\u015fegenin Olu\u015fturdu\u011fu E\u015fit Y\u00fckseklikler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A12",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Kenar Uzerindeki Bir Nokta Karsi Koselerle Birlestirilince Olusan Ucgenin Alani",
+   "ad_basili": "Kenar \u00dczerindeki Bir Nokta Kar\u015f\u0131 K\u00f6\u015felerle Birle\u015ftirilince Olu\u015fan \u00dc\u00e7genin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A13",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Kelebek Benzerligi ile Alan",
+   "ad_basili": "Kelebek Benzerli\u011fi ile Alan",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A14",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Ic Bolgedeki Noktanin Koselerle Olusturdugu Ucgenlerin Alanlari",
+   "ad_basili": "\u0130\u00e7 B\u00f6lgedeki Noktan\u0131n K\u00f6\u015felerle Olu\u015fturdu\u011fu \u00dc\u00e7genlerin Alanlar\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A15",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A16",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K15-A17",
+   "ust": "GEO-ACL25-K15",
+   "ad": "Ozdes Paralelkenarlarla Olusturulmus Sekiller",
+   "ad_basili": "\u00d6zde\u015f Paralelkenarlarla Olu\u015fturulmu\u015f \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A01",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Eskenar Dortgende Aci",
+   "ad_basili": "E\u015fkenar D\u00f6rtgende A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A02",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Eskenar Dortgenin Kenarlarinin Esitligi",
+   "ad_basili": "E\u015fkenar D\u00f6rtgenin Kenarlar\u0131n\u0131n E\u015fitli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A03",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Kosegenlerin Birbirini Dik Olarak Ortalamasi",
+   "ad_basili": "K\u00f6\u015fegenlerin Birbirini Dik Olarak Ortalamas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A04",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Eskenar Dortgenin Alani",
+   "ad_basili": "E\u015fkenar D\u00f6rtgenin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A05",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A06",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Ozdes Eskenar Dortgenlerle olusturulan Sekiller",
+   "ad_basili": "\u00d6zde\u015f E\u015fkenar D\u00f6rtgenlerle olu\u015fturulan \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K16-A07",
+   "ust": "GEO-ACL25-K16",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A01",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Deltoidde Aci",
+   "ad_basili": "Deltoidde A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A02",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Deltoidin Ozellikleri 1",
+   "ad_basili": "Deltoidin \u00d6zellikleri 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A03",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Deltoidin Ozellikleri 2",
+   "ad_basili": "Deltoidin \u00d6zellikleri 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A04",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Deltoidin Alani",
+   "ad_basili": "Deltoidin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A05",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Deltoidde Benzerlik",
+   "ad_basili": "Deltoidde Benzerlik",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A06",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K17-A07",
+   "ust": "GEO-ACL25-K17",
+   "ad": "Ozdes Deltoitlerle Sekiller Olusturma",
+   "ad_basili": "\u00d6zde\u015f Deltoitlerle \u015eekiller Olu\u015fturma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A01",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgende Aci",
+   "ad_basili": "Dikd\u00f6rtgende A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A02",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgenin Temel Ozellikleri",
+   "ad_basili": "Dikd\u00f6rtgenin Temel \u00d6zellikleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A03",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgende Benzerlik 1",
+   "ad_basili": "Dikd\u00f6rtgende Benzerlik 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A04",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgende Benzerlik 2",
+   "ad_basili": "Dikd\u00f6rtgende Benzerlik 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A05",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgende Kosegenlerin Esitligi ve Birbirini Ortalamasi",
+   "ad_basili": "Dikd\u00f6rtgende K\u00f6\u015fegenlerin E\u015fitli\u011fi ve Birbirini Ortalamas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A06",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgenin Ic Bolgesindeki Noktanin Koselere Uzakliklari",
+   "ad_basili": "Dikd\u00f6rtgenin \u0130\u00e7 B\u00f6lgesindeki Noktan\u0131n K\u00f6\u015felere Uzakl\u0131klar\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A07",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgenin Alani",
+   "ad_basili": "Dikd\u00f6rtgenin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A08",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgende Alan Paylasimi",
+   "ad_basili": "Dikd\u00f6rtgende Alan Payla\u015f\u0131m\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A09",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dikdortgende Benzerlik ve Alan Iliskisi",
+   "ad_basili": "Dikd\u00f6rtgende Benzerlik ve Alan \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A10",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Ozdes Dikdortgenlerle Olusturulan Sekiller",
+   "ad_basili": "\u00d6zde\u015f Dikd\u00f6rtgenlerle Olu\u015fturulan \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A11",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Katlama Sorulari",
+   "ad_basili": "Katlama Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A12",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Kesme Sorulari",
+   "ad_basili": "Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A13",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Dondurme Sorulari",
+   "ad_basili": "D\u00f6nd\u00fcrme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K18-A14",
+   "ust": "GEO-ACL25-K18",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A01",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Karede Aci",
+   "ad_basili": "Karede A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A02",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Karenin Temel Ozellikleri",
+   "ad_basili": "Karenin Temel \u00d6zellikleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A03",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Kosegenin Aciortay Olusu",
+   "ad_basili": "K\u00f6\u015fegenin A\u00e7\u0131ortay Olu\u015fu",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A04",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Kosegenlerin Esit Olup Birbirini Dik Olarak Ortalamasi",
+   "ad_basili": "K\u00f6\u015fegenlerin E\u015fit Olup Birbirini Dik Olarak Ortalamas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A05",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Karede Benzerlik",
+   "ad_basili": "Karede Benzerlik",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A06",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Karede Eslik",
+   "ad_basili": "Karede E\u015flik",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A07",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Karede Alan Paylasimi",
+   "ad_basili": "Karede Alan Payla\u015f\u0131m\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A08",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Ozdes Karelerle Olusturulan Sekiller",
+   "ad_basili": "\u00d6zde\u015f Karelerle Olu\u015fturulan \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A09",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Katlama ve Kesme Sorulari",
+   "ad_basili": "Katlama ve Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A10",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Gorsel Yetenek Sorulari",
+   "ad_basili": "G\u00f6rsel Yetenek Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A11",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Dondurme Sorulari",
+   "ad_basili": "D\u00f6nd\u00fcrme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A12",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K19-A13",
+   "ust": "GEO-ACL25-K19",
+   "ad": "Yorum Sorulari",
+   "ad_basili": "Yorum Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A01",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Merkez Aci",
+   "ad_basili": "\u00c7emberde Merkez A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A02",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Yaricaplarin Esitligi",
+   "ad_basili": "Yar\u0131\u00e7aplar\u0131n E\u015fitli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A03",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Kiris ve Yay Arasindaki Iliski",
+   "ad_basili": "Kiri\u015f ve Yay Aras\u0131ndaki \u0130li\u015fki",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A04",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Cevre Aci",
+   "ad_basili": "\u00c7emberde \u00c7evre A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A05",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Capi Goren Cevre Aci",
+   "ad_basili": "\u00c7emberde \u00c7ap\u0131 G\u00f6ren \u00c7evre A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A06",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Paralel Kirisler Arasindaki Yaylar",
+   "ad_basili": "Paralel Kiri\u015fler Aras\u0131ndaki Yaylar",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A07",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Teget-Kiris Aci",
+   "ad_basili": "\u00c7emberde Te\u011fet-Kiri\u015f A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A08",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Ic Aci",
+   "ad_basili": "\u00c7emberde \u0130\u00e7 A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A09",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Dis Aci 1",
+   "ad_basili": "\u00c7emberde D\u0131\u015f A\u00e7\u0131 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A10",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Dis Aci 2",
+   "ad_basili": "\u00c7emberde D\u0131\u015f A\u00e7\u0131 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A11",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Cemberde Dis Aci 3",
+   "ad_basili": "\u00c7emberde D\u0131\u015f A\u00e7\u0131 3",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K20-A12",
+   "ust": "GEO-ACL25-K20",
+   "ad": "Katlama ve Kesme Sorulari",
+   "ad_basili": "Katlama ve Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A01",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Cemberin Yaricapini Gorme",
+   "ad_basili": "\u00c7emberin Yar\u0131\u00e7ap\u0131n\u0131 G\u00f6rme",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A02",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Cemberin Merkezinden Kirise Indirilen Dikme",
+   "ad_basili": "\u00c7emberin Merkezinden Kiri\u015fe \u0130ndirilen Dikme",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A03",
+   "ust": "GEO-ACL25-K21",
+   "ad": "En Uzun ve En Kisa Kiris",
+   "ad_basili": "En Uzun ve En K\u0131sa Kiri\u015f",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A04",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Merkeze Uzakliklari Esit Olan Kirisler",
+   "ad_basili": "Merkeze Uzakl\u0131klar\u0131 E\u015fit Olan Kiri\u015fler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A05",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Cemberde Teget Ozellikleri",
+   "ad_basili": "\u00c7emberde Te\u011fet \u00d6zellikleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A06",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Bir Noktadan Cembere Cizilen Iki Teget",
+   "ad_basili": "Bir Noktadan \u00c7embere \u00c7izilen \u0130ki Te\u011fet",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A07",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Bir Ucgenin Ic Teget Cemberi",
+   "ad_basili": "Bir \u00dc\u00e7genin \u0130\u00e7 Te\u011fet \u00c7emberi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A08",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Bir Ucgenin Dis Teget Cemberi",
+   "ad_basili": "Bir \u00dc\u00e7genin D\u0131\u015f Te\u011fet \u00c7emberi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A09",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Birbirlerine Teget Olan Cemberler",
+   "ad_basili": "Birbirlerine Te\u011fet Olan \u00c7emberler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A10",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Cembere En Yakin ve En Uzak Olan Nokta",
+   "ad_basili": "\u00c7embere En Yak\u0131n ve En Uzak Olan Nokta",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A11",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Benzerlikle Cozulen Cemberde Uzunluk Sorulari",
+   "ad_basili": "Benzerlikle \u00c7\u00f6z\u00fclen \u00c7emberde Uzunluk Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A12",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Katlama ve Kesme Sorulari",
+   "ad_basili": "Katlama ve Kesme Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A13",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K21-A14",
+   "ust": "GEO-ACL25-K21",
+   "ad": "Ozdes Cemberlerle Olusturulmus Sekiller",
+   "ad_basili": "\u00d6zde\u015f \u00c7emberlerle Olu\u015fturulmu\u015f \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K22-A01",
+   "ust": "GEO-ACL25-K22",
+   "ad": "Yay Uzunlugu",
+   "ad_basili": "Yay Uzunlu\u011fu",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K22-A02",
+   "ust": "GEO-ACL25-K22",
+   "ad": "Cemberin Cevresi",
+   "ad_basili": "\u00c7emberin \u00c7evresi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K22-A03",
+   "ust": "GEO-ACL25-K22",
+   "ad": "Yarim Cemberin Cevresi",
+   "ad_basili": "Yar\u0131m \u00c7emberin \u00c7evresi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K22-A04",
+   "ust": "GEO-ACL25-K22",
+   "ad": "Cembersel Hareket",
+   "ad_basili": "\u00c7embersel Hareket",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A01",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Dairenin Alani 1",
+   "ad_basili": "Dairenin Alan\u0131 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A02",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Dairenin Alani 2",
+   "ad_basili": "Dairenin Alan\u0131 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A03",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Halkanin Alani",
+   "ad_basili": "Halkan\u0131n Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A04",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Yarim Dairenin Alani",
+   "ad_basili": "Yar\u0131m Dairenin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A05",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Daire Diliminin Alani",
+   "ad_basili": "Daire Diliminin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A06",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Istenmeyen Bolgenin Alanini Cikarmak",
+   "ad_basili": "\u0130stenmeyen B\u00f6lgenin Alan\u0131n\u0131 \u00c7\u0131karmak",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A07",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Merkez Acidan Hareketle Alan Hesaplama",
+   "ad_basili": "Merkez A\u00e7\u0131dan Hareketle Alan Hesaplama",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A08",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Uygun Bolgelerin Alanlarini Isimlendirerek Alani Bulunabilir Geometrik Sekiller Elde Etme",
+   "ad_basili": "Uygun B\u00f6lgelerin Alanlar\u0131n\u0131 \u0130simlendirerek Alan\u0131 Bulunabilir Geometrik \u015eekiller Elde Etme",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A09",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Pisagor ile Alan Bulma",
+   "ad_basili": "Pisagor ile Alan Bulma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A10",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Daire Dilimlerinin Alanlari Orani",
+   "ad_basili": "Daire Dilimlerinin Alanlar\u0131 Oran\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A11",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Dairede Katlama",
+   "ad_basili": "Dairede Katlama",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A12",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A13",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Daire Icine Yerlestirilmis Es Sekiller",
+   "ad_basili": "Daire \u0130\u00e7ine Yerle\u015ftirilmi\u015f E\u015f \u015eekiller",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K23-A14",
+   "ust": "GEO-ACL25-K23",
+   "ad": "Ozdes Sekillerden Olusan Sorular",
+   "ad_basili": "\u00d6zde\u015f \u015eekillerden Olu\u015fan Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A01",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Nokta ve Eksenlere Uzaklik",
+   "ad_basili": "Nokta ve Eksenlere Uzakl\u0131k",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A02",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Analitik Duzlemin Bolgeleri",
+   "ad_basili": "Analitik D\u00fczlemin B\u00f6lgeleri",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A03",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Koselerinin Koordinatlari Verilen Cokgenler",
+   "ad_basili": "K\u00f6\u015felerinin Koordinatlar\u0131 Verilen \u00c7okgenler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A04",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Analitik Duzlemde Ucgenlerin Benzerligi",
+   "ad_basili": "Analitik D\u00fczlemde \u00dc\u00e7genlerin Benzerli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A05",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Ozdes Sekillerle Olusturulan Sorular",
+   "ad_basili": "\u00d6zde\u015f \u015eekillerle Olu\u015fturulan Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A06",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Iki Nokta Arasindaki Uzaklik",
+   "ad_basili": "\u0130ki Nokta Aras\u0131ndaki Uzakl\u0131k",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A07",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Orta Noktanin Koordinatlari",
+   "ad_basili": "Orta Noktan\u0131n Koordinatlar\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A08",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Dogru Parcasini Belirli Oranda Bolen Nokta",
+   "ad_basili": "Do\u011fru Par\u00e7as\u0131n\u0131 Belirli Oranda B\u00f6len Nokta",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A09",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Paralelkenarin Karsilikli Koseleri Arasindaki Iliski",
+   "ad_basili": "Paralelkenar\u0131n Kar\u015f\u0131l\u0131kl\u0131 K\u00f6\u015feleri Aras\u0131ndaki \u0130li\u015fki",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A10",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Ucgenin Agirlik Merkezinin Koordinatlari",
+   "ad_basili": "\u00dc\u00e7genin A\u011f\u0131rl\u0131k Merkezinin Koordinatlar\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A11",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Koselerinin Koordinatlari Verilen Ucgenlerin Alani",
+   "ad_basili": "K\u00f6\u015felerinin Koordinatlar\u0131 Verilen \u00dc\u00e7genlerin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A12",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Analitik Duzlemde Katlama",
+   "ad_basili": "Analitik D\u00fczlemde Katlama",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K24-A13",
+   "ust": "GEO-ACL25-K24",
+   "ad": "Sozel Olarak Ifade Edilmis Sorular",
+   "ad_basili": "S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A01",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Egim Acisi Verilen Dogrunun Egimi",
+   "ad_basili": "E\u011fim A\u00e7\u0131s\u0131 Verilen Do\u011frunun E\u011fimi",
+   "birim_sayisi": 2
+  },
+  {
+   "kod": "GEO-ACL25-K25-A02",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Iki Noktasi Verilen Dogrunun Egimi",
+   "ad_basili": "\u0130ki Noktas\u0131 Verilen Do\u011frunun E\u011fimi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A03",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Dogru Uzerindeki Nokta",
+   "ad_basili": "Do\u011fru \u00dczerindeki Nokta",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A04",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Denklemi Verilen Dogrunun Egimi",
+   "ad_basili": "Denklemi Verilen Do\u011frunun E\u011fimi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A05",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Birbirine Paralel Dogrularin Egimleri Arasindaki Iliski",
+   "ad_basili": "Birbirine Paralel Do\u011frular\u0131n E\u011fimleri Aras\u0131ndaki \u0130li\u015fki",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A06",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Birbirine Dik Dogrularin Egimleri Arasindaki Iliski",
+   "ad_basili": "Birbirine Dik Do\u011frular\u0131n E\u011fimleri Aras\u0131ndaki \u0130li\u015fki",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A07",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Dogrunun Eksenleri Kestigi Noktalar",
+   "ad_basili": "Do\u011frunun Eksenleri Kesti\u011fi Noktalar",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A08",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Egimi ve Bir Noktasi Verilen Dogrunun Denklemi",
+   "ad_basili": "E\u011fimi ve Bir Noktas\u0131 Verilen Do\u011frunun Denklemi",
+   "birim_sayisi": 2
+  },
+  {
+   "kod": "GEO-ACL25-K25-A09",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Orijinden Gecen Dogrunun Denklemi",
+   "ad_basili": "Orijinden Ge\u00e7en Do\u011frunun Denklemi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A10",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Eksenleri Kestigi Noktalar Verilen Dogrunun Denklemi",
+   "ad_basili": "Eksenleri Kesti\u011fi Noktalar Verilen Do\u011frunun Denklemi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A11",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Eksenlere Paralel Dogrularin Denklemi ve Aciortay Dogrularinin Denklemi",
+   "ad_basili": "Eksenlere Paralel Do\u011frular\u0131n Denklemi ve A\u00e7\u0131ortay Do\u011frular\u0131n\u0131n Denklemi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A12",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Katlama Sorularinda Dogru Denkleminin Bulunmasi",
+   "ad_basili": "Katlama Sorular\u0131nda Do\u011fru Denkleminin Bulunmas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A13",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Iki Dogrunun Birbirine Gore Durumlari 1",
+   "ad_basili": "\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A14",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Iki Dogrunun Birbirine Gore Durumlari 2",
+   "ad_basili": "\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A15",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Iki Dogrunun Birbirine Gore Durumlari 3",
+   "ad_basili": "\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 3",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A16",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Bir Noktanin Bir Dogruya Uzakligi",
+   "ad_basili": "Bir Noktan\u0131n Bir Do\u011fruya Uzakl\u0131\u011f\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A17",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Paralel Iki Dogru Arasindaki Uzaklik",
+   "ad_basili": "Paralel \u0130ki Do\u011fru Aras\u0131ndaki Uzakl\u0131k",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A18",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Sekli Esit Alanli Iki Bolgeye Bolen Dogru",
+   "ad_basili": "\u015eekli E\u015fit Alanl\u0131 \u0130ki B\u00f6lgeye B\u00f6len Do\u011fru",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K25-A19",
+   "ust": "GEO-ACL25-K25",
+   "ad": "Birinci Dereceden Iki Bilinmeyenli Esitsizlikler",
+   "ad_basili": "Birinci Dereceden \u0130ki Bilinmeyenli E\u015fitsizlikler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A01",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Oteleme Donusumu",
+   "ad_basili": "\u00d6teleme D\u00f6n\u00fc\u015f\u00fcm\u00fc",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A02",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Eksenlere Gore Yansima",
+   "ad_basili": "Eksenlere G\u00f6re Yans\u0131ma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A03",
+   "ust": "GEO-ACL25-K26",
+   "ad": "x = a ve y = b Dogrularina Gore Yansima",
+   "ad_basili": "x = a ve y = b Do\u011frular\u0131na G\u00f6re Yans\u0131ma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A04",
+   "ust": "GEO-ACL25-K26",
+   "ad": "y = x ve y = -x Dogrularina Gore Yansima",
+   "ad_basili": "y = x ve y = \u2013x Do\u011frular\u0131na G\u00f6re Yans\u0131ma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A05",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Noktanin Noktaya Gore Yansimasi",
+   "ad_basili": "Noktan\u0131n Noktaya G\u00f6re Yans\u0131mas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A06",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Noktanin Dogruya Gore Yansimasi",
+   "ad_basili": "Noktan\u0131n Do\u011fruya G\u00f6re Yans\u0131mas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A07",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Dogrunun Noktaya Gore Yansimasi",
+   "ad_basili": "Do\u011frunun Noktaya G\u00f6re Yans\u0131mas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A08",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Dogrunun Dogruya Gore Yansimasi",
+   "ad_basili": "Do\u011frunun Do\u011fruya G\u00f6re Yans\u0131mas\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A09",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Donme Donusumu 1",
+   "ad_basili": "D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K26-A10",
+   "ust": "GEO-ACL25-K26",
+   "ad": "Donme Donusumu 2",
+   "ad_basili": "D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 2",
+   "birim_sayisi": 2
+  },
+  {
+   "kod": "GEO-ACL25-K28-A01",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Dik Prizmanin Alan ve Hacmi (Sozel)",
+   "ad_basili": "Dik Prizman\u0131n Alan ve Hacmi (S\u00f6zel)",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A02",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Dik Prizmanin Alan ve Hacmi (Sekilli)",
+   "ad_basili": "Dik Prizman\u0131n Alan ve Hacmi (\u015eekilli)",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A03",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmada Dogru Parcasi",
+   "ad_basili": "Prizmada Do\u011fru Par\u00e7as\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A04",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmada Cokgen",
+   "ad_basili": "Prizmada \u00c7okgen",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A05",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Yuzey Alani",
+   "ad_basili": "Prizman\u0131n Y\u00fczey Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A06",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Yuzey Alanindaki Degisim",
+   "ad_basili": "Prizman\u0131n Y\u00fczey Alan\u0131ndaki De\u011fi\u015fim",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A07",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Icine Cisim Atma",
+   "ad_basili": "Prizman\u0131n \u0130\u00e7ine Cisim Atma",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A08",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Icindeki Suyun Yuksekligi ve Hacmi",
+   "ad_basili": "Prizman\u0131n \u0130\u00e7indeki Suyun Y\u00fcksekli\u011fi ve Hacmi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A09",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Alan ve Hacmi (Sozel Sorular)",
+   "ad_basili": "Prizman\u0131n Alan ve Hacmi (S\u00f6zel Sorular)",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A10",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Acinimi",
+   "ad_basili": "Prizman\u0131n A\u00e7\u0131n\u0131m\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A11",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Kartondan Kutu Yapma Sorulari",
+   "ad_basili": "Kartondan Kutu Yapma Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K28-A12",
+   "ust": "GEO-ACL25-K28",
+   "ad": "Prizmanin Yuzeyi Uzerinde Hareket",
+   "ad_basili": "Prizman\u0131n Y\u00fczeyi \u00dczerinde Hareket",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A01",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Dik Dairesel Silindirde Uzunluk Hesaplama",
+   "ad_basili": "Dik Dairesel Silindirde Uzunluk Hesaplama",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A02",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Dik Dairesel Silindirin Yanal Alani",
+   "ad_basili": "Dik Dairesel Silindirin Yanal Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A03",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Dik Dairesel Silindirin Yuzey Alani",
+   "ad_basili": "Dik Dairesel Silindirin Y\u00fczey Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A04",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Yuzey Alanindaki Degisim",
+   "ad_basili": "Y\u00fczey Alan\u0131ndaki De\u011fi\u015fim",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A05",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Dik Dairesel Silindirin Hacmi",
+   "ad_basili": "Dik Dairesel Silindirin Hacmi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A06",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Birbirine Teget Olan Silindirler",
+   "ad_basili": "Birbirine Te\u011fet Olan Silindirler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A07",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Dik Dairesel Silindirin Acinimi",
+   "ad_basili": "Dik Dairesel Silindirin A\u00e7\u0131n\u0131m\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A08",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Silindir Yuzeyinde Hareket",
+   "ad_basili": "Silindir Y\u00fczeyinde Hareket",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A09",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Dondurme Sonucunda Olusan Silindir",
+   "ad_basili": "D\u00f6nd\u00fcrme Sonucunda Olu\u015fan Silindir",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K29-A10",
+   "ust": "GEO-ACL25-K29",
+   "ad": "Silindir ile Ilgili Sozel Sorular",
+   "ad_basili": "Silindir ile \u0130lgili S\u00f6zel Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A01",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramitte Uzunluk",
+   "ad_basili": "Piramitte Uzunluk",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A02",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramidin Yuksekligi",
+   "ad_basili": "Piramidin Y\u00fcksekli\u011fi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A03",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramidin Hacmi",
+   "ad_basili": "Piramidin Hacmi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A04",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramidin Yanal ve Yuzey Alani",
+   "ad_basili": "Piramidin Yanal ve Y\u00fczey Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A05",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramidin Acinimi",
+   "ad_basili": "Piramidin A\u00e7\u0131n\u0131m\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A06",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Yeni Nesil Soru",
+   "ad_basili": "Yeni Nesil Soru",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A07",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramitte Benzerlik ve Hacim Iliskisi",
+   "ad_basili": "Piramitte Benzerlik ve Hacim \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A08",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramidin Bir Yan Yuzunun Taban ile Yaptigi Aci",
+   "ad_basili": "Piramidin Bir Yan Y\u00fcz\u00fcn\u00fcn Taban ile Yapt\u0131\u011f\u0131 A\u00e7\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A09",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Piramidin Yuzeyi Uzerinde Hareket",
+   "ad_basili": "Piramidin Y\u00fczeyi \u00dczerinde Hareket",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K30-A10",
+   "ust": "GEO-ACL25-K30",
+   "ad": "Duzgun Dortyuzlu",
+   "ad_basili": "D\u00fczg\u00fcn D\u00f6rty\u00fczl\u00fc",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A01",
+   "ust": "GEO-ACL25-K31",
+   "ad": "Dik Dairesel koninin Yanal ve Yuzey Alani",
+   "ad_basili": "Dik Dairesel koninin Yanal ve Y\u00fczey Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A02",
+   "ust": "GEO-ACL25-K31",
+   "ad": "Dik Dairesel Koninin Hacmi",
+   "ad_basili": "Dik Dairesel Koninin Hacmi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A03",
+   "ust": "GEO-ACL25-K31",
+   "ad": "Konilerde Benzerlik Hacim Iliskisi",
+   "ad_basili": "Konilerde Benzerlik Hacim \u0130li\u015fkisi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A04",
+   "ust": "GEO-ACL25-K31",
+   "ad": "Dik Dairesel Koni ile Ilgili Sozel Sorular",
+   "ad_basili": "Dik Dairesel Koni ile \u0130lgili S\u00f6zel Sorular",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A05",
+   "ust": "GEO-ACL25-K31",
+   "ad": "Dik Dairesel Koninin Acinimi",
+   "ad_basili": "Dik Dairesel Koninin A\u00e7\u0131n\u0131m\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A06",
+   "ust": "GEO-ACL25-K31",
+   "ad": "Tabanlari Cakisik Koniler",
+   "ad_basili": "Tabanlar\u0131 \u00c7ak\u0131\u015f\u0131k Koniler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K31-A07",
+   "ust": "GEO-ACL25-K31",
+   "ad": "En Kisa Yol Sorulari",
+   "ad_basili": "En K\u0131sa Yol Sorular\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K32-A01",
+   "ust": "GEO-ACL25-K32",
+   "ad": "Kurenin Alani",
+   "ad_basili": "K\u00fcrenin Alan\u0131",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K32-A02",
+   "ust": "GEO-ACL25-K32",
+   "ad": "Kurenin Hacmi",
+   "ad_basili": "K\u00fcrenin Hacmi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A01",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Cemberin Standart Denklemi",
+   "ad_basili": "\u00c7emberin Standart Denklemi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A02",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Koordinat Duzleminde Verilen Cemberin Standart Denklemi",
+   "ad_basili": "Koordinat D\u00fczleminde Verilen \u00c7emberin Standart Denklemi",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A03",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Eksenlere Teget Olan Cemberler",
+   "ad_basili": "Eksenlere Te\u011fet Olan \u00c7emberler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A04",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Koordinat Duzleminde Eksenlere Teget Olan Cemberler",
+   "ad_basili": "Koordinat D\u00fczleminde Eksenlere Te\u011fet Olan \u00c7emberler",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A05",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Cemberin Genel Denklemi 1",
+   "ad_basili": "\u00c7emberin Genel Denklemi 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A06",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Cemberin Genel Denklemi 2",
+   "ad_basili": "\u00c7emberin Genel Denklemi 2",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A07",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Cember ve Dogrunun Birbirine Gore Durumlari 1",
+   "ad_basili": "\u00c7ember ve Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 1",
+   "birim_sayisi": 1
+  },
+  {
+   "kod": "GEO-ACL25-K33-A08",
+   "ust": "GEO-ACL25-K33",
+   "ad": "Cember ve Dogrunun Birbirine Gore Durumlari 2",
+   "ad_basili": "\u00c7ember ve Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 2",
+   "birim_sayisi": 1
+  }
+ ]
+}

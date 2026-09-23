@@ -1,0 +1,6711 @@
+{
+"kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+"baslik_ne": "392 sayfa ust bandi: [bicim B=buyuk/K=kucuk, bant, kirmizi baslik, etiket]; anahtar dosya no",
+"baslik": {
+"H1": {
+"7": [
+"B",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT AYT"
+],
+"8": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT-AYT"
+],
+"9": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT-AYT"
+],
+"10": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT-AYT"
+],
+"11": [
+"B",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"12": [
+"K",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Yeni Nesil Test + TYT-AYT"
+],
+"13": [
+"B",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"14": [
+"K",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"15": [
+"B",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"16": [
+"K",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"17": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT AYT"
+],
+"18": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"19": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"20": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"21": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"22": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"23": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"24": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"25": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"26": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Yeni Nesil Test + TYT-AYT"
+],
+"27": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"28": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"29": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"30": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"31": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 3 + TYT AYT"
+],
+"32": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 3 + TYT-AYT"
+],
+"33": [
+"B",
+"Konu \u00d6\u011frenme",
+"Pisagor Teoremi",
+"TYT AYT"
+],
+"34": [
+"K",
+"Konu \u00d6\u011frenme",
+"Pisagor Teoremi",
+"TYT-AYT"
+],
+"35": [
+"B",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Yeni Nesil Test + TYT AYT"
+],
+"36": [
+"K",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Yeni Nesil Test + TYT-AYT"
+],
+"37": [
+"B",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Karma Test + TYT AYT"
+],
+"38": [
+"K",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Karma Test + TYT-AYT"
+],
+"39": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00d6klit Teoremi",
+"TYT AYT"
+],
+"40": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6klit Teoremi",
+"TYT-AYT"
+],
+"41": [
+"B",
+"Konu Uygulama",
+"\u00d6klit Teoremi",
+"Yeni Nesil Test + TYT AYT"
+],
+"42": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT AYT"
+],
+"43": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"44": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"45": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"46": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"47": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Yeni Nesil Test + TYT AYT"
+],
+"48": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Yeni Nesil Test + TYT-AYT"
+],
+"49": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 1 + TYT AYT"
+],
+"50": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 1 + TYT-AYT"
+],
+"51": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 2 + TYT AYT"
+],
+"52": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 2 + TYT-AYT"
+],
+"53": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 3 + TYT AYT"
+],
+"54": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 3 + TYT-AYT"
+],
+"55": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 4 + TYT AYT"
+],
+"56": [
+"B",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT AYT"
+],
+"57": [
+"K",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT-AYT"
+],
+"58": [
+"K",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT-AYT"
+],
+"59": [
+"K",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT-AYT"
+],
+"60": [
+"B",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Yeni Nesil Test + TYT AYT"
+],
+"61": [
+"B",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 1 + TYT AYT"
+],
+"62": [
+"K",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 1 + TYT-AYT"
+],
+"63": [
+"B",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 2 + TYT AYT"
+],
+"64": [
+"K",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 2 + TYT-AYT"
+],
+"65": [
+"B",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT AYT"
+],
+"66": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT-AYT"
+],
+"67": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT-AYT"
+],
+"68": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT-AYT"
+],
+"69": [
+"B",
+"Konu Uygulama",
+"Kenarortay",
+"Yeni Nesil Test + TYT AYT"
+],
+"70": [
+"B",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 1 + TYT AYT"
+],
+"71": [
+"K",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 1 + TYT-AYT"
+],
+"72": [
+"B",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 2 + TYT AYT"
+],
+"73": [
+"K",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 2 + TYT-AYT"
+],
+"74": [
+"B",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT AYT"
+],
+"75": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"76": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"77": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"78": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"79": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"80": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"81": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"82": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"83": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"84": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 1 + TYT AYT"
+],
+"85": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 1 + TYT-AYT"
+],
+"86": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 2 + TYT AYT"
+],
+"87": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 2 + TYT-AYT"
+],
+"88": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 1 + TYT AYT"
+],
+"89": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 1 + TYT-AYT"
+],
+"90": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 2 + TYT AYT"
+],
+"91": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 2 + TYT-AYT"
+],
+"92": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 3 + TYT AYT"
+],
+"93": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 3 + TYT-AYT"
+],
+"94": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT AYT"
+],
+"95": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"96": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"97": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"98": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"99": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"100": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"101": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"102": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"103": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Yeni Nesil Test + TYT AYT"
+],
+"104": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Yeni Nesil Test + TYT-AYT"
+],
+"105": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 1 + TYT AYT"
+],
+"106": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 1 + TYT-AYT"
+],
+"107": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 2 + TYT AYT"
+],
+"108": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 2 + TYT-AYT"
+],
+"109": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 3 + TYT AYT"
+],
+"110": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 3 + TYT-AYT"
+],
+"111": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 4 + TYT AYT"
+],
+"112": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT AYT"
+],
+"113": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"114": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"115": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"116": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"117": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"118": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Yeni Nesil Test + TYT-AYT"
+],
+"119": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"120": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"121": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"122": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"123": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 3 + TYT AYT"
+],
+"124": [
+"B",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT AYT"
+],
+"125": [
+"K",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT-AYT"
+],
+"126": [
+"K",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT-AYT"
+],
+"127": [
+"K",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT-AYT"
+],
+"128": [
+"B",
+"Konu Uygulama",
+"Geometrik Merkezler",
+"Karma Test + TYT AYT"
+],
+"129": [
+"K",
+"Konu Uygulama",
+"Geometrik Merkezler",
+"Karma Test + TYT-AYT"
+],
+"130": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT AYT"
+],
+"131": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"132": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"133": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"134": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"135": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"136": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"137": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"138": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"139": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Yeni Nesil Test Test + TYT AYT"
+],
+"140": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 1 + TYT AYT"
+],
+"141": [
+"K",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 1 + TYT-AYT"
+],
+"142": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 2 + TYT AYT"
+],
+"143": [
+"K",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 2 + TYT-AYT"
+],
+"144": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 3 + TYT AYT"
+],
+"145": [
+"K",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 3 + TYT-AYT"
+],
+"146": [
+"B",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT AYT"
+],
+"147": [
+"K",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT-AYT"
+],
+"148": [
+"K",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT-AYT"
+],
+"149": [
+"K",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT-AYT"
+],
+"150": [
+"B",
+"Konu Uygulama",
+"Genel D\u00f6rtgenler",
+"Yeni Nesil Test + TYT AYT"
+],
+"151": [
+"K",
+"Konu Uygulama",
+"Genel D\u00f6rtgenler",
+"Yeni Nesil Test + TYT-AYT"
+],
+"152": [
+"B",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT AYT"
+],
+"153": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"154": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"155": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"156": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"157": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"158": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"159": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"160": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"161": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Yeni Nesil Test + TYT AYT"
+],
+"162": [
+"K",
+"Konu Uygulama",
+"Yamuk",
+"Yeni Nesil Test + TYT-AYT"
+],
+"163": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 1 + TYT AYT"
+],
+"164": [
+"K",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 1 + TYT-AYT"
+],
+"165": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 2 + TYT AYT"
+],
+"166": [
+"K",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 2 + TYT-AYT"
+],
+"167": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 3 + TYT AYT"
+],
+"168": [
+"B",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT AYT"
+],
+"169": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"170": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"171": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"172": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"173": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"174": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"175": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"176": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"177": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"178": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Yeni Nesil Test + TYT AYT"
+],
+"179": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 1 + TYT AYT"
+],
+"180": [
+"K",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 1 + TYT-AYT"
+],
+"181": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 2 + TYT AYT"
+],
+"182": [
+"K",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 2 + TYT-AYT"
+],
+"183": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 3 + TYT AYT"
+],
+"184": [
+"K",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 3 + TYT-AYT"
+],
+"185": [
+"B",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT AYT"
+],
+"186": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"187": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"188": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"189": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"190": [
+"B",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Yeni Nesil Test + TYT AYT"
+],
+"191": [
+"B",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Karma Test 1 + TYT AYT"
+],
+"192": [
+"K",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Karma Test 1 + TYT-AYT"
+],
+"193": [
+"B",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Karma Test 2 + TYT AYT"
+],
+"194": [
+"B",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT AYT"
+],
+"195": [
+"K",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT-AYT"
+],
+"196": [
+"K",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT-AYT"
+],
+"197": [
+"K",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT-AYT"
+],
+"198": [
+"B",
+"Konu Uygulama",
+"Deltoid",
+"Yeni Nesil Test + TYT AYT"
+],
+"199": [
+"B",
+"Konu Uygulama",
+"Deltoid",
+"Karma Test + TYT AYT"
+],
+"200": [
+"K",
+"Konu Uygulama",
+"Deltoid",
+"Karma Test + TYT-AYT"
+],
+"201": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT AYT"
+],
+"202": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"203": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"204": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"205": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"206": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"207": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"208": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"209": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Yeni Nesil Test + TYT AYT"
+],
+"210": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Yeni Nesil Test + TYT-AYT"
+],
+"211": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 1 + TYT AYT"
+],
+"212": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 1 + TYT-AYT"
+],
+"213": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 2 + TYT AYT"
+],
+"214": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 2 + TYT-AYT"
+],
+"215": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 3 + TYT AYT"
+],
+"216": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 3 + TYT-AYT"
+],
+"217": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 4 + TYT AYT"
+],
+"218": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 4 + TYT-AYT"
+],
+"219": [
+"B",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT AYT"
+],
+"220": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"221": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"222": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"223": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"224": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"225": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"226": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"227": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Yeni Nesil Test + TYT AYT"
+],
+"228": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Yeni Nesil Test + AYT"
+],
+"229": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 1 + TYT AYT"
+],
+"230": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 1 + TYT-AYT"
+],
+"231": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 2 + TYT AYT"
+],
+"232": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 2 + TYT-AYT"
+],
+"233": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 3 + TYT AYT"
+],
+"234": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 3 + TYT-AYT"
+],
+"235": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 4 + TYT AYT"
+],
+"236": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 4 + TYT-AYT"
+],
+"237": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT AYT"
+],
+"238": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"239": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"240": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"241": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"242": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"243": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"244": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"245": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Yeni Nesil Test + AYT"
+],
+"246": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"247": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"248": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"249": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"250": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT AYT"
+],
+"251": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"252": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"253": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"254": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"255": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"256": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"257": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"258": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"259": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"260": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Yeni Nesil Test + TYT AYT"
+],
+"261": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Yeni Nesil Test + AYT"
+],
+"262": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 1 + TYT AYT"
+],
+"263": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 1 + TYT-AYT"
+],
+"264": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 2 + TYT AYT"
+],
+"265": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 2 + TYT-AYT"
+],
+"266": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 3 + TYT AYT"
+],
+"267": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 3 + TYT-AYT"
+],
+"268": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 4 + TYT AYT"
+],
+"269": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 4 + TYT-AYT"
+],
+"270": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin \u00c7evresi",
+"TYT AYT"
+],
+"271": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin \u00c7evresi",
+"TYT-AYT"
+],
+"272": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin \u00c7evresi",
+"TYT-AYT"
+],
+"273": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Yeni Nesil Test + TYT AYT"
+],
+"274": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Karma Test 1 + TYT AYT"
+],
+"275": [
+"K",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Karma Test 1 + TYT-AYT"
+],
+"276": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Karma Test 2 + TYT AYT"
+],
+"277": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT AYT"
+],
+"278": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"279": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"280": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"281": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"282": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"283": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"284": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"285": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Yeni Nesil Test + AYT"
+],
+"286": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"287": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"288": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"289": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"290": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 3 + TYT AYT"
+],
+"291": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 3 + TYT-AYT"
+],
+"292": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 4 + TYT AYT"
+],
+"293": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 4 + TYT-AYT"
+],
+"294": [
+"B",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT AYT"
+],
+"295": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"296": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"297": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"298": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"299": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"300": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"301": [
+"B",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Yeni Nesil Test + TYT AYT"
+],
+"302": [
+"B",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 1 + TYT AYT"
+],
+"303": [
+"K",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 1 + TYT-AYT"
+],
+"304": [
+"B",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 2 + TYT AYT"
+],
+"305": [
+"K",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 2 + TYT-AYT"
+],
+"306": [
+"B",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT AYT"
+],
+"307": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"308": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"309": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"310": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"311": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"312": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"313": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"314": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Yeni Nesil Test + TYT AYT"
+],
+"315": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Yeni Nesil Test + AYT"
+],
+"316": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"317": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"318": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 1 + TYT AYT"
+],
+"319": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 1 + TYT-AYT"
+],
+"320": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 2 + TYT AYT"
+],
+"321": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 2 + TYT-AYT"
+],
+"322": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 3 + TYT AYT"
+],
+"323": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 3 + TYT-AYT"
+],
+"324": [
+"B",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT AYT"
+],
+"325": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"326": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"327": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"328": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"329": [
+"B",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 1 + TYT AYT"
+],
+"330": [
+"K",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 1 + TYT-AYT"
+],
+"331": [
+"B",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 2 + TYT AYT"
+],
+"332": [
+"K",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 2 + TYT-AYT"
+],
+"333": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 1 + TYT AYT"
+],
+"334": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 1 + TYT-AYT"
+],
+"335": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 2 + TYT AYT"
+],
+"336": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 2 + TYT-AYT"
+],
+"337": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 3 + TYT AYT"
+],
+"338": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 3 + TYT-AYT"
+],
+"339": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 4 + TYT AYT"
+],
+"340": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 4 + TYT-AYT"
+],
+"341": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 5 + TYT AYT"
+],
+"342": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 5 + TYT-AYT"
+],
+"343": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT AYT"
+],
+"344": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"345": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"346": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"347": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"348": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"349": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Yeni Nesil Test + TYT AYT"
+],
+"350": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Yeni Nesil Test + AYT"
+],
+"351": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 1 + TYT AYT"
+],
+"352": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 1 + TYT-AYT"
+],
+"353": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 2 + TYT AYT"
+],
+"354": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 2 + TYT-AYT"
+],
+"355": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 3 + TYT AYT"
+],
+"356": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 3 + TYT-AYT"
+],
+"357": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 4 + TYT AYT"
+],
+"358": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 4 + TYT-AYT"
+],
+"359": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 5 + TYT AYT"
+],
+"360": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT AYT"
+],
+"361": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"362": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"363": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"364": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"365": [
+"B",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Yeni Nesil Test + TYT AYT"
+],
+"366": [
+"K",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Yeni Nesil Test + AYT"
+],
+"367": [
+"B",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 1 + TYT AYT"
+],
+"368": [
+"K",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 1 + TYT-AYT"
+],
+"369": [
+"B",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 2 + TYT AYT"
+],
+"370": [
+"K",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 2 + TYT-AYT"
+],
+"371": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT AYT"
+],
+"372": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT-AYT"
+],
+"373": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT-AYT"
+],
+"374": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT-AYT"
+],
+"375": [
+"B",
+"Konu Uygulama",
+"Dik Piramitler",
+"Karma Test 1 + TYT AYT"
+],
+"376": [
+"K",
+"Konu Uygulama",
+"Dik Piramitler",
+"Karma Test 1 + TYT-AYT"
+],
+"377": [
+"B",
+"Konu Uygulama",
+"Dik Piramitler",
+"Karma Test 2 + TYT AYT"
+],
+"378": [
+"B",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT AYT"
+],
+"379": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"380": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"381": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"382": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"383": [
+"B",
+"Konu Uygulama",
+"Koni",
+"Yeni Nesil Test + TYT AYT"
+],
+"384": [
+"K",
+"Konu Uygulama",
+"Koni",
+"Yeni Nesil Test + AYT"
+],
+"385": [
+"B",
+"Konu Uygulama",
+"Koni",
+"Karma Test 1 + TYT AYT"
+],
+"386": [
+"K",
+"Konu Uygulama",
+"Koni",
+"Karma Test 1 + TYT-AYT"
+],
+"387": [
+"B",
+"Konu Uygulama",
+"Koni",
+"Karma Test 2 + TYT AYT"
+],
+"388": [
+"K",
+"Konu Uygulama",
+"Koni",
+"Karma Test 2 + TYT-AYT"
+],
+"389": [
+"B",
+"Konu \u00d6\u011frenme",
+"K\u00fcre",
+"TYT AYT"
+],
+"390": [
+"K",
+"Konu \u00d6\u011frenme",
+"K\u00fcre",
+"TYT-AYT"
+],
+"391": [
+"B",
+"Konu Uygulama",
+"K\u00fcre",
+"Yeni Nesil Test + TYT AYT"
+],
+"392": [
+"B",
+"Konu Uygulama",
+"K\u00fcre",
+"Karma Test + TYT AYT"
+],
+"393": [
+"K",
+"Konu Uygulama",
+"K\u00fcre",
+"Karma Test + TYT-AYT"
+],
+"394": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT AYT"
+],
+"395": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT-AYT"
+],
+"396": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT-AYT"
+],
+"397": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT-AYT"
+],
+"398": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin Analiti\u011fi",
+"Yeni Nesil Test + TYT AYT"
+]
+},
+"H2": {
+"7": [
+"B",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT AYT"
+],
+"8": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT-AYT"
+],
+"9": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT-AYT"
+],
+"10": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011fruda A\u00e7\u0131",
+"TYT-AYT"
+],
+"11": [
+"B",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"12": [
+"K",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Yeni Nesil Test + TYT-AYT"
+],
+"13": [
+"B",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"14": [
+"K",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"15": [
+"B",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"16": [
+"K",
+"Konu Uygulama",
+"Do\u011fruda A\u00e7\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"17": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT AYT"
+],
+"18": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"19": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"20": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"21": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"22": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"23": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"24": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"TYT-AYT"
+],
+"25": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"26": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Yeni Nesil Test + TYT-AYT"
+],
+"27": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"28": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"29": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"30": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"31": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 3 + TYT AYT"
+],
+"32": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131",
+"Karma Test 3 + TYT-AYT"
+],
+"33": [
+"B",
+"Konu \u00d6\u011frenme",
+"Pisagor Teoremi",
+"TYT AYT"
+],
+"34": [
+"K",
+"Konu \u00d6\u011frenme",
+"Pisagor Teoremi",
+"TYT-AYT"
+],
+"35": [
+"B",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Yeni Nesil Test + TYT AYT"
+],
+"36": [
+"K",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Yeni Nesil Test + TYT-AYT"
+],
+"37": [
+"B",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Karma Test + TYT AYT"
+],
+"38": [
+"K",
+"Konu Uygulama",
+"Pisagor Teoremi",
+"Karma Test + TYT-AYT"
+],
+"39": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00d6klit Teoremi",
+"TYT AYT"
+],
+"40": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6klit Teoremi",
+"TYT-AYT"
+],
+"41": [
+"B",
+"Konu Uygulama",
+"\u00d6klit Teoremi",
+"Yeni Nesil Test + TYT AYT"
+],
+"42": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT AYT"
+],
+"43": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"44": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"45": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"46": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00d6zel \u00dc\u00e7genler",
+"TYT-AYT"
+],
+"47": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Yeni Nesil Test + TYT AYT"
+],
+"48": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Yeni Nesil Test + TYT-AYT"
+],
+"49": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 1 + TYT AYT"
+],
+"50": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 1 + TYT-AYT"
+],
+"51": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 2 + TYT AYT"
+],
+"52": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 2 + TYT-AYT"
+],
+"53": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 3 + TYT AYT"
+],
+"54": [
+"K",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 3 + TYT-AYT"
+],
+"55": [
+"B",
+"Konu Uygulama",
+"\u00d6zel \u00dc\u00e7genler",
+"Karma Test 4 + TYT AYT"
+],
+"56": [
+"B",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT AYT"
+],
+"57": [
+"K",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT-AYT"
+],
+"58": [
+"K",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT-AYT"
+],
+"59": [
+"K",
+"Konu \u00d6\u011frenme",
+"A\u00e7\u0131ortay",
+"TYT-AYT"
+],
+"60": [
+"B",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Yeni Nesil Test + TYT AYT"
+],
+"61": [
+"B",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 1 + TYT AYT"
+],
+"62": [
+"K",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 1 + TYT-AYT"
+],
+"63": [
+"B",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 2 + TYT AYT"
+],
+"64": [
+"K",
+"Konu Uygulama",
+"A\u00e7\u0131ortay",
+"Karma Test 2 + TYT-AYT"
+],
+"65": [
+"B",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT AYT"
+],
+"66": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT-AYT"
+],
+"67": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT-AYT"
+],
+"68": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kenarortay",
+"TYT-AYT"
+],
+"69": [
+"B",
+"Konu Uygulama",
+"Kenarortay",
+"Yeni Nesil Test + TYT AYT"
+],
+"70": [
+"B",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 1 + TYT AYT"
+],
+"71": [
+"K",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 1 + TYT-AYT"
+],
+"72": [
+"B",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 2 + TYT AYT"
+],
+"73": [
+"K",
+"Konu Uygulama",
+"Kenarortay",
+"Karma Test 2 + TYT-AYT"
+],
+"74": [
+"B",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT AYT"
+],
+"75": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"76": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"77": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"78": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"79": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"80": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"81": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"82": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"83": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015flik ve Benzerlik",
+"TYT-AYT"
+],
+"84": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 1 + TYT AYT"
+],
+"85": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 1 + TYT-AYT"
+],
+"86": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 2 + TYT AYT"
+],
+"87": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Yeni Nesil Test 2 + TYT-AYT"
+],
+"88": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 1 + TYT AYT"
+],
+"89": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 1 + TYT-AYT"
+],
+"90": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 2 + TYT AYT"
+],
+"91": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 2 + TYT-AYT"
+],
+"92": [
+"B",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 3 + TYT AYT"
+],
+"93": [
+"K",
+"Konu Uygulama",
+"E\u015flik ve Benzerlik",
+"Karma Test 3 + TYT-AYT"
+],
+"94": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT AYT"
+],
+"95": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"96": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"97": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"98": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"99": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"100": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"101": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"102": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende Alan",
+"TYT-AYT"
+],
+"103": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Yeni Nesil Test + TYT AYT"
+],
+"104": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Yeni Nesil Test + TYT-AYT"
+],
+"105": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 1 + TYT AYT"
+],
+"106": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 1 + TYT-AYT"
+],
+"107": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 2 + TYT AYT"
+],
+"108": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 2 + TYT-AYT"
+],
+"109": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 3 + TYT AYT"
+],
+"110": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 3 + TYT-AYT"
+],
+"111": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende Alan",
+"Karma Test 4 + TYT AYT"
+],
+"112": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT AYT"
+],
+"113": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"114": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"115": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"116": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"TYT-AYT"
+],
+"117": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"118": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Yeni Nesil Test + TYT-AYT"
+],
+"119": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"120": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"121": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"122": [
+"K",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"123": [
+"B",
+"Konu Uygulama",
+"\u00dc\u00e7gende A\u00e7\u0131 ve Kenar Ba\u011f\u0131nt\u0131lar\u0131",
+"Karma Test 3 + TYT AYT"
+],
+"124": [
+"B",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT AYT"
+],
+"125": [
+"K",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT-AYT"
+],
+"126": [
+"K",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT-AYT"
+],
+"127": [
+"K",
+"Konu \u00d6\u011frenme",
+"Geometrik Merkezler",
+"TYT-AYT"
+],
+"128": [
+"B",
+"Konu Uygulama",
+"Geometrik Merkezler",
+"Karma Test + TYT AYT"
+],
+"129": [
+"K",
+"Konu Uygulama",
+"Geometrik Merkezler",
+"Karma Test + TYT-AYT"
+],
+"130": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT AYT"
+],
+"131": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"132": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"133": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"134": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"135": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"136": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"137": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"138": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7okgenler",
+"TYT-AYT"
+],
+"139": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Yeni Nesil Test Test? + TYT AYT"
+],
+"140": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 1 + TYT AYT"
+],
+"141": [
+"K",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 1 + TYT-AYT"
+],
+"142": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 2 + TYT AYT"
+],
+"143": [
+"K",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 2 + TYT-AYT"
+],
+"144": [
+"B",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 3 + TYT AYT"
+],
+"145": [
+"K",
+"Konu Uygulama",
+"\u00c7okgenler",
+"Karma Test 3 + TYT-AYT"
+],
+"146": [
+"B",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT AYT"
+],
+"147": [
+"K",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT-AYT"
+],
+"148": [
+"K",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT-AYT"
+],
+"149": [
+"K",
+"Konu \u00d6\u011frenme",
+"Genel D\u00f6rtgenler",
+"TYT-AYT"
+],
+"150": [
+"B",
+"Konu Uygulama",
+"Genel D\u00f6rtgenler",
+"Yeni Nesil Test + TYT AYT"
+],
+"151": [
+"K",
+"Konu Uygulama",
+"Genel D\u00f6rtgenler",
+"Yeni Nesil Test + TYT-AYT"
+],
+"152": [
+"B",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT AYT"
+],
+"153": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"154": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"155": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"156": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"157": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"158": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"159": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"160": [
+"K",
+"Konu \u00d6\u011frenme",
+"Yamuk",
+"TYT-AYT"
+],
+"161": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Yeni Nesil Test + TYT AYT"
+],
+"162": [
+"K",
+"Konu Uygulama",
+"Yamuk",
+"Yeni Nesil Test + TYT-AYT"
+],
+"163": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 1 + TYT AYT"
+],
+"164": [
+"K",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 1 + TYT-AYT"
+],
+"165": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 2 + TYT AYT"
+],
+"166": [
+"K",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 2 + TYT-AYT"
+],
+"167": [
+"B",
+"Konu Uygulama",
+"Yamuk",
+"Karma Test 3 + TYT AYT"
+],
+"168": [
+"B",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT AYT"
+],
+"169": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"170": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"171": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"172": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"173": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"174": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"175": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"176": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"177": [
+"K",
+"Konu \u00d6\u011frenme",
+"Paralelkenar",
+"TYT-AYT"
+],
+"178": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Yeni Nesil Test + TYT AYT"
+],
+"179": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 1 + TYT AYT"
+],
+"180": [
+"K",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 1 + TYT-AYT"
+],
+"181": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 2 + TYT AYT"
+],
+"182": [
+"K",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 2 + TYT-AYT"
+],
+"183": [
+"B",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 3 + TYT AYT"
+],
+"184": [
+"K",
+"Konu Uygulama",
+"Paralelkenar",
+"Karma Test 3 + TYT-AYT"
+],
+"185": [
+"B",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT AYT"
+],
+"186": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"187": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"188": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"189": [
+"K",
+"Konu \u00d6\u011frenme",
+"E\u015fkenar D\u00f6rtgen",
+"TYT-AYT"
+],
+"190": [
+"B",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Yeni Nesil Test + TYT AYT"
+],
+"191": [
+"B",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Karma Test 1 + TYT AYT"
+],
+"192": [
+"K",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Karma Test 1 + TYT-AYT"
+],
+"193": [
+"B",
+"Konu Uygulama",
+"E\u015fkenar D\u00f6rtgen",
+"Karma Test 2 + TYT AYT"
+],
+"194": [
+"B",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT AYT"
+],
+"195": [
+"K",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT-AYT"
+],
+"196": [
+"K",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT-AYT"
+],
+"197": [
+"K",
+"Konu \u00d6\u011frenme",
+"Deltoid",
+"TYT-AYT"
+],
+"198": [
+"B",
+"Konu Uygulama",
+"Deltoid",
+"Yeni Nesil Test + TYT AYT"
+],
+"199": [
+"B",
+"Konu Uygulama",
+"Deltoid",
+"Karma Test + TYT AYT"
+],
+"200": [
+"K",
+"Konu Uygulama",
+"Deltoid",
+"Karma Test + TYT-AYT"
+],
+"201": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT AYT"
+],
+"202": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"203": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"204": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"205": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"206": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"207": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"208": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dikd\u00f6rtgen",
+"TYT-AYT"
+],
+"209": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Yeni Nesil Test + TYT AYT"
+],
+"210": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Yeni Nesil Test + TYT-AYT"
+],
+"211": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 1 + TYT AYT"
+],
+"212": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 1 + TYT-AYT"
+],
+"213": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 2 + TYT AYT"
+],
+"214": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 2 + TYT-AYT"
+],
+"215": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 3 + TYT AYT"
+],
+"216": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 3 + TYT-AYT"
+],
+"217": [
+"B",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 4 + TYT AYT"
+],
+"218": [
+"K",
+"Konu Uygulama",
+"Dikd\u00f6rtgen",
+"Karma Test 4 + TYT-AYT"
+],
+"219": [
+"B",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT AYT"
+],
+"220": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"221": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"222": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"223": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"224": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"225": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"226": [
+"K",
+"Konu \u00d6\u011frenme",
+"Kare",
+"TYT-AYT"
+],
+"227": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Yeni Nesil Test + TYT AYT"
+],
+"228": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Yeni Nesil Test + AYT"
+],
+"229": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 1 + TYT AYT"
+],
+"230": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 1 + TYT-AYT"
+],
+"231": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 2 + TYT AYT"
+],
+"232": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 2 + TYT-AYT"
+],
+"233": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 3 + TYT AYT"
+],
+"234": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 3 + TYT-AYT"
+],
+"235": [
+"B",
+"Konu Uygulama",
+"Kare",
+"Karma Test 4 + TYT AYT"
+],
+"236": [
+"K",
+"Konu Uygulama",
+"Kare",
+"Karma Test 4 + TYT-AYT"
+],
+"237": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT AYT"
+],
+"238": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"239": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"240": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"241": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"242": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"243": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde A\u00e7\u0131",
+"TYT-AYT"
+],
+"244": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"245": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Yeni Nesil Test + AYT"
+],
+"246": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"247": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"248": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"249": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde A\u00e7\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"250": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT AYT"
+],
+"251": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"252": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"253": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"254": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"255": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"256": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"257": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"258": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"259": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberde Uzunluk",
+"TYT-AYT"
+],
+"260": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Yeni Nesil Test + TYT AYT"
+],
+"261": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Yeni Nesil Test + AYT"
+],
+"262": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 1 + TYT AYT"
+],
+"263": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 1 + TYT-AYT"
+],
+"264": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 2 + TYT AYT"
+],
+"265": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 2 + TYT-AYT"
+],
+"266": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 3 + TYT AYT"
+],
+"267": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 3 + TYT-AYT"
+],
+"268": [
+"B",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 4 + TYT AYT"
+],
+"269": [
+"K",
+"Konu Uygulama",
+"\u00c7emberde Uzunluk",
+"Karma Test 4 + TYT-AYT"
+],
+"270": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin \u00c7evresi",
+"TYT AYT"
+],
+"271": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin \u00c7evresi",
+"TYT-AYT"
+],
+"272": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin \u00c7evresi",
+"TYT-AYT"
+],
+"273": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Yeni Nesil Test + TYT AYT"
+],
+"274": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Karma Test 1 + TYT AYT"
+],
+"275": [
+"K",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Karma Test 1 + TYT-AYT"
+],
+"276": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin \u00c7evresi",
+"Karma Test 2 + TYT AYT"
+],
+"277": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT AYT"
+],
+"278": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"279": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"280": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"281": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"282": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"283": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dairenin Alan\u0131",
+"TYT-AYT"
+],
+"284": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Yeni Nesil Test + TYT AYT"
+],
+"285": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Yeni Nesil Test + AYT"
+],
+"286": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 1 + TYT AYT"
+],
+"287": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 1 + TYT-AYT"
+],
+"288": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 2 + TYT AYT"
+],
+"289": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 2 + TYT-AYT"
+],
+"290": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 3 + TYT AYT"
+],
+"291": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 3 + TYT-AYT"
+],
+"292": [
+"B",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 4 + TYT AYT"
+],
+"293": [
+"K",
+"Konu Uygulama",
+"Dairenin Alan\u0131",
+"Karma Test 4 + TYT-AYT"
+],
+"294": [
+"B",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT AYT"
+],
+"295": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"296": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"297": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"298": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"299": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"300": [
+"K",
+"Konu \u00d6\u011frenme",
+"Noktan\u0131n Analiti\u011fi",
+"TYT-AYT"
+],
+"301": [
+"B",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Yeni Nesil Test + TYT AYT"
+],
+"302": [
+"B",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 1 + TYT AYT"
+],
+"303": [
+"K",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 1 + TYT-AYT"
+],
+"304": [
+"B",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 2 + TYT AYT"
+],
+"305": [
+"K",
+"Konu Uygulama",
+"Noktan\u0131n Analiti\u011fi",
+"Karma Test 2 + TYT-AYT"
+],
+"306": [
+"B",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT AYT"
+],
+"307": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"308": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"309": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"310": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"311": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"312": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"313": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"314": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Yeni Nesil Test + TYT AYT"
+],
+"315": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Yeni Nesil Test + AYT"
+],
+"316": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"317": [
+"K",
+"Konu \u00d6\u011frenme",
+"Do\u011frunun Analiti\u011fi",
+"TYT-AYT"
+],
+"318": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 1 + TYT AYT"
+],
+"319": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 1 + TYT-AYT"
+],
+"320": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 2 + TYT AYT"
+],
+"321": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 2 + TYT-AYT"
+],
+"322": [
+"B",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 3 + TYT AYT"
+],
+"323": [
+"K",
+"Konu Uygulama",
+"Do\u011frunun Analiti\u011fi",
+"Karma Test 3 + TYT-AYT"
+],
+"324": [
+"B",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT AYT"
+],
+"325": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"326": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"327": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"328": [
+"K",
+"Konu \u00d6\u011frenme",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"TYT-AYT"
+],
+"329": [
+"B",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 1 + TYT AYT"
+],
+"330": [
+"K",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 1 + TYT-AYT"
+],
+"331": [
+"B",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 2 + TYT AYT"
+],
+"332": [
+"K",
+"Konu Uygulama",
+"D\u00f6n\u00fc\u015f\u00fcm Geometrisi",
+"Karma Test 2 + TYT-AYT"
+],
+"333": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 1 + TYT AYT"
+],
+"334": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 1 + TYT-AYT"
+],
+"335": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 2 + TYT AYT"
+],
+"336": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 2 + TYT-AYT"
+],
+"337": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 3 + TYT AYT"
+],
+"338": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 3 + TYT-AYT"
+],
+"339": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 4 + TYT AYT"
+],
+"340": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 4 + TYT-AYT"
+],
+"341": [
+"B",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 5 + TYT AYT"
+],
+"342": [
+"K",
+"Konu Uygulama",
+"Analitik Geometri Genel",
+"Genel Test 5 + TYT-AYT"
+],
+"343": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT AYT"
+],
+"344": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"345": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"346": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"347": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"348": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Prizmalar",
+"TYT-AYT"
+],
+"349": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Yeni Nesil Test + TYT AYT"
+],
+"350": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Yeni Nesil Test + AYT"
+],
+"351": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 1 + TYT AYT"
+],
+"352": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 1 + TYT-AYT"
+],
+"353": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 2 + TYT AYT"
+],
+"354": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 2 + TYT-AYT"
+],
+"355": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 3 + TYT AYT"
+],
+"356": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 3 + TYT-AYT"
+],
+"357": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 4 + TYT AYT"
+],
+"358": [
+"K",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 4 + TYT-AYT"
+],
+"359": [
+"B",
+"Konu Uygulama",
+"Dik Prizmalar",
+"Karma Test 5 + TYT AYT"
+],
+"360": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT AYT"
+],
+"361": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"362": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"363": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"364": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Dairesel Silindir",
+"TYT-AYT"
+],
+"365": [
+"B",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Yeni Nesil Test + TYT AYT"
+],
+"366": [
+"K",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Yeni Nesil Test + AYT"
+],
+"367": [
+"B",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 1 + TYT AYT"
+],
+"368": [
+"K",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 1 + TYT-AYT"
+],
+"369": [
+"B",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 2 + TYT AYT"
+],
+"370": [
+"K",
+"Konu Uygulama",
+"Dik Dairesel Silindir",
+"Karma Test 2 + TYT-AYT"
+],
+"371": [
+"B",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT AYT"
+],
+"372": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT-AYT"
+],
+"373": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT-AYT"
+],
+"374": [
+"K",
+"Konu \u00d6\u011frenme",
+"Dik Piramitler",
+"TYT-AYT"
+],
+"375": [
+"B",
+"Konu Uygulama",
+"Dik Piramitler",
+"Karma Test 1 + TYT AYT"
+],
+"376": [
+"K",
+"Konu Uygulama",
+"Dik Piramitler",
+"Karma Test 1 + TYT-AYT"
+],
+"377": [
+"B",
+"Konu Uygulama",
+"Dik Piramitler",
+"Karma Test 2 + TYT AYT"
+],
+"378": [
+"B",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT AYT"
+],
+"379": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"380": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"381": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"382": [
+"K",
+"Konu \u00d6\u011frenme",
+"Koni",
+"TYT-AYT"
+],
+"383": [
+"B",
+"Konu Uygulama",
+"Koni",
+"Yeni Nesil Test + TYT AYT"
+],
+"384": [
+"K",
+"Konu Uygulama",
+"Koni",
+"Yeni Nesil Test + AYT"
+],
+"385": [
+"B",
+"Konu Uygulama",
+"Koni",
+"Karma Test 1 + TYT AYT"
+],
+"386": [
+"K",
+"Konu Uygulama",
+"Koni",
+"Karma Test 1 + TYT-AYT"
+],
+"387": [
+"B",
+"Konu Uygulama",
+"Koni",
+"Karma Test 2 + TYT AYT"
+],
+"388": [
+"K",
+"Konu Uygulama",
+"Koni",
+"Karma Test 2 + TYT-AYT"
+],
+"389": [
+"B",
+"Konu \u00d6\u011frenme",
+"K\u00fcre",
+"TYT AYT"
+],
+"390": [
+"K",
+"Konu \u00d6\u011frenme",
+"K\u00fcre",
+"TYT-AYT"
+],
+"391": [
+"B",
+"Konu Uygulama",
+"K\u00fcre",
+"Yeni Nesil Test + TYT AYT"
+],
+"392": [
+"B",
+"Konu Uygulama",
+"K\u00fcre",
+"Karma Test + TYT AYT"
+],
+"393": [
+"K",
+"Konu Uygulama",
+"K\u00fcre",
+"Karma Test + TYT-AYT"
+],
+"394": [
+"B",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT AYT"
+],
+"395": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT-AYT"
+],
+"396": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT-AYT"
+],
+"397": [
+"K",
+"Konu \u00d6\u011frenme",
+"\u00c7emberin Analiti\u011fi",
+"TYT-AYT"
+],
+"398": [
+"B",
+"Konu Uygulama",
+"\u00c7emberin Analiti\u011fi",
+"Yeni Nesil Test + TYT AYT"
+]
+}
+},
+"kutu_ne": "331 sari alt baslik kutusu (acil_2025_geometri_sari_kutular.json sirasi); anahtar kutu no",
+"kutu": {
+"K1": {
+"1": [
+"A\u00e7\u0131 \u00c7e\u015fitleri"
+],
+"2": [
+"T\u00fcmler ve B\u00fct\u00fcnler A\u00e7\u0131"
+],
+"3": [
+"A\u00e7\u0131ortay Do\u011frular\u0131"
+],
+"4": [
+"Paralel Do\u011frular\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar 1"
+],
+"5": [
+"Paralel Do\u011frular\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar 2"
+],
+"6": [
+"Y\u00f6n ve D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"7": [
+"Yorum Sorular\u0131"
+],
+"8": [
+"\u00dc\u00e7gende A\u00e7\u0131"
+],
+"9": [
+"\u0130kizkenar \u00dc\u00e7gende A\u00e7\u0131"
+],
+"10": [
+"\u0130kizkenar \u00dc\u00e7gende Simetri"
+],
+"11": [
+"E\u015fkenar \u00dc\u00e7gende A\u00e7\u0131"
+],
+"12": [
+"Katlama Sorular\u0131"
+],
+"13": [
+"Kes Yap\u0131\u015ft\u0131r Sorular\u0131"
+],
+"14": [
+"A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar"
+],
+"15": [
+"D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"16": [
+"Muhte\u015fem \u00dc\u00e7l\u00fc"
+],
+"17": [
+"\u00d6zde\u015f \u00dc\u00e7genlerle Olu\u015fturulmu\u015f A\u00e7\u0131 Sorular\u0131"
+],
+"18": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f A\u00e7\u0131 Sorular\u0131"
+],
+"19": [
+"Cetvel, \u00c7ubuk, Makas vb Kullan\u0131larak Olu\u015fturulmu\u015f A\u00e7\u0131 Sorular\u0131"
+],
+"20": [
+"Pusula Sorular\u0131"
+],
+"21": [
+"Pisagor Teoremi"
+],
+"22": [
+"En K\u0131sa Mesafe Problemleri"
+],
+"23": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"24": [
+"\u00d6klit Teoremi 1"
+],
+"25": [
+"\u00d6klit Teoremi 2"
+],
+"26": [
+"\u00d6klit Teoremi 3"
+],
+"27": [
+"\u00d6zel A\u00e7\u0131l\u0131 \u00dc\u00e7genler"
+],
+"28": [
+"\u0130kizkenar \u00dc\u00e7gen"
+],
+"29": [
+"\u0130kizkenar \u00dc\u00e7gende Y\u00fckseklik 1"
+],
+"30": [
+"\u0130kizkenar \u00dc\u00e7gende Y\u00fckseklik 2"
+],
+"31": [
+"E\u015fkenar \u00dc\u00e7gen"
+],
+"32": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"33": [
+"Katlama Kesme Sorular\u0131"
+],
+"34": [
+"Tan\u0131m Verilen Sorular"
+],
+"35": [
+"A\u00e7\u0131ortay \u00dczerindeki Bir Noktadan Yan Kenarlara Dikme \u0130nme"
+],
+"36": [
+"\u0130\u00e7 A\u00e7\u0131ortay Teoremi"
+],
+"37": [
+"Bir Do\u011fru Par\u00e7as\u0131n\u0131n A\u00e7\u0131ortay, Y\u00fckseklik ve Kenarortaydan \u0130kisi Olmas\u0131"
+],
+"38": [
+"\u0130\u00e7 te\u011fet \u00c7emberin Merkezi"
+],
+"39": [
+"Katlama Sorular\u0131"
+],
+"40": [
+"D\u0131\u015f A\u00e7\u0131ortay Teoremi"
+],
+"41": [
+"\u0130\u00e7 ve D\u0131\u015f A\u00e7\u0131ortay Teoremi"
+],
+"42": [
+"Kenarortaylar\u0131n Kesim Noktas\u0131"
+],
+"43": [
+"A\u011f\u0131rl\u0131k Merkezi ve A\u00e7\u0131ortay"
+],
+"44": [
+"A\u011f\u0131rl\u0131k Merkezi ve Muhte\u015fem \u00dc\u00e7l\u00fc \u0130li\u015fkisi"
+],
+"45": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"46": [
+"Katlama Sorular\u0131"
+],
+"47": [
+"E\u015flik"
+],
+"48": [
+"Kenar A\u00e7\u0131 Kenar E\u015fli\u011fi"
+],
+"49": [
+"A\u00e7\u0131 Kenar A\u00e7\u0131 E\u015fli\u011fi"
+],
+"50": [
+"Kenar Kenar Kenar E\u015fli\u011fi"
+],
+"51": [
+"Benzer \u00dc\u00e7genler"
+],
+"52": [
+"A\u00e7\u0131 A\u00e7\u0131 A\u00e7\u0131 Benzerli\u011fi"
+],
+"53": [
+"Kenar A\u00e7\u0131 Kenar Benzerli\u011fi"
+],
+"54": [
+"Kenar Kenar Kenar Benzerli\u011fi"
+],
+"55": [
+"Benzerlik Oran\u0131"
+],
+"56": [
+"Temel Benzerlik Teoremi"
+],
+"57": [
+"Orta Taban"
+],
+"58": [
+"Kelebek Benzerli\u011fi"
+],
+"59": [
+"A\u00e7\u0131ortay Benzerlik \u0130li\u015fkisi"
+],
+"60": [
+"Kenarortay Benzerlik \u0130li\u015fkisi"
+],
+"61": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"62": [
+"Katlama Sorular\u0131"
+],
+"63": [
+"Dar A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131"
+],
+"64": [
+"Dik \u00dc\u00e7genin Alan\u0131"
+],
+"65": [
+"Geni\u015f A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131"
+],
+"66": [
+"\u00d6zel A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131"
+],
+"67": [
+"E\u015fkenar \u00dc\u00e7genin Alan\u0131"
+],
+"68": [
+"Y\u00fckseklikleri E\u015fit \u00dc\u00e7genlerin Alanlar\u0131 Oran\u0131"
+],
+"69": [
+"Tabanlar\u0131 E\u015fit \u00dc\u00e7genlerin Alanlar\u0131 Oran\u0131"
+],
+"70": [
+"\u00dc\u00e7gende Benzerlik Alan \u0130li\u015fkisi"
+],
+"71": [
+"E\u015fit Alanl\u0131 \u00dc\u00e7genleri G\u00f6rme"
+],
+"72": [
+"\u00dc\u00e7gende Benzerlik Alan \u0130li\u015fkisi"
+],
+"73": [
+"\u00dc\u00e7gende A\u00e7\u0131ortay ve Alan \u0130li\u015fkisi"
+],
+"74": [
+"\u00dc\u00e7gende Kenarortay ve Alan \u0130li\u015fkisi"
+],
+"75": [
+"Sin\u00fcsl\u00fc Alan Form\u00fcl\u00fc"
+],
+"76": [
+"\u00d6zde\u015f \u00dc\u00e7genlerle Olu\u015fturulan Alan Sorular\u0131"
+],
+"77": [
+"Katlama Kesme Sorular\u0131"
+],
+"78": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"79": [
+"A\u00e7\u0131lar\u0131n S\u0131ralan\u0131\u015f\u0131ndan Hareketle Kenarlar\u0131 S\u0131ralama"
+],
+"80": [
+"\u00dc\u00e7gen E\u015fitsizli\u011fi"
+],
+"81": [
+"\u00dc\u00e7gen E\u015fitsizli\u011fi"
+],
+"82": [
+"Dar ya da Geni\u015f A\u00e7\u0131 Kar\u015f\u0131s\u0131ndaki Kenar"
+],
+"83": [
+"\u0130\u00e7 B\u00f6lgede Al\u0131nan Nokta"
+],
+"84": [
+"Katlama Sorular\u0131"
+],
+"85": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"86": [
+"Bir \u00dc\u00e7genin Kenarorta Dikmeleri"
+],
+"87": [
+"Bir \u00dc\u00e7genin Diklik Merkezi"
+],
+"88": [
+"\u0130\u00e7-D\u0131\u015f Te\u011fet \u00c7emberin Merkezi, A\u011f\u0131rl\u0131k Merkezi"
+],
+"89": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"90": [
+"\u0130\u00e7 A\u00e7\u0131lar Toplam\u0131 ve D\u0131\u015f A\u00e7\u0131lar Toplam\u0131"
+],
+"91": [
+"\u00c7okgenlerde A\u00e7\u0131 Hesaplama"
+],
+"92": [
+"D\u00fczg\u00fcn \u00c7okgenlerde \u0130\u00e7 A\u00e7\u0131 ve D\u0131\u015f A\u00e7\u0131n\u0131n Hesaplanmas\u0131"
+],
+"93": [
+"D\u00fczg\u00fcn Be\u015fgende A\u00e7\u0131 Sorular\u0131"
+],
+"94": [
+"D\u00fczg\u00fcn Alt\u0131gende A\u00e7\u0131 Sorular\u0131"
+],
+"95": [
+"D\u00fczg\u00fcn Sekizgende A\u00e7\u0131 Sorular\u0131"
+],
+"96": [
+"Ortak Kenar\u0131 Olan D\u00fczg\u00fcn \u00c7okgenler"
+],
+"97": [
+"Kenar Say\u0131s\u0131 Bilinmeyen D\u00fczg\u00fcn \u00c7okgenler"
+],
+"98": [
+"D\u00fczg\u00fcn \u00c7okgenlerde Katlama Sorular\u0131"
+],
+"99": [
+"D\u00fczg\u00fcn Be\u015fgende Uzunluk Sorular\u0131"
+],
+"100": [
+"D\u00fczg\u00fcn Alt\u0131gende Uzunluk Sorular\u0131"
+],
+"101": [
+"D\u00fczg\u00fcn Alt\u0131gende Alan Sorular\u0131"
+],
+"102": [
+"D\u00fczg\u00fcn Alt\u0131gende Alan Sorular\u0131"
+],
+"103": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"104": [
+"Kesme Sorular\u0131"
+],
+"105": [
+"D\u00f6rtgenlerde A\u00e7\u0131"
+],
+"106": [
+"D\u00f6rtgenlerde A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar"
+],
+"107": [
+"Pisagor Teoreminin D\u00f6rtgenlerde Kullan\u0131lmas\u0131"
+],
+"108": [
+"D\u00f6rtgenin K\u00f6\u015fegenleri ile Orta Noktalar D\u00f6rtgeni Aras\u0131ndaki \u0130li\u015fki"
+],
+"109": [
+"\u00d6zel \u00dc\u00e7genler Olu\u015fturma"
+],
+"110": [
+"D\u00f6rtgenin Alan\u0131"
+],
+"111": [
+"D\u00f6rtgenin Alan\u0131"
+],
+"112": [
+"Katlama Sorular\u0131"
+],
+"113": [
+"Yamukta A\u00e7\u0131"
+],
+"114": [
+"Yamu\u011fun Orta Taban\u0131"
+],
+"115": [
+"Kom\u015fu \u0130ki A\u00e7\u0131n\u0131n A\u00e7\u0131ortay\u0131"
+],
+"116": [
+"Yamukta Temel Benzerlik Kural\u0131 ve Kelebek Benzerli\u011fi"
+],
+"117": [
+"Dik Yamuk"
+],
+"118": [
+"\u0130kizkenar Yamuk"
+],
+"119": [
+"Yamu\u011fun Alan\u0131 1"
+],
+"120": [
+"Yamu\u011fun Alan\u0131 2"
+],
+"121": [
+"Yamu\u011fun Alan\u0131 3"
+],
+"122": [
+"K\u00f6\u015fegenlerin Olu\u015fturdu\u011fu Alanlar"
+],
+"123": [
+"Dik Yamuk ve \u0130kizkenar Yamu\u011fun Alan\u0131"
+],
+"124": [
+"\u00d6zde\u015f Yamuklarla Olu\u015fturulan \u015eekiller"
+],
+"125": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"126": [
+"Katlama Sorular\u0131"
+],
+"127": [
+"Paralelkenarda A\u00e7\u0131"
+],
+"128": [
+"A\u00e7\u0131ortay\u0131n Olu\u015fturdu\u011fu \u0130kizkenar \u00dc\u00e7gen"
+],
+"129": [
+"A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu Dik \u00dc\u00e7gen 1"
+],
+"130": [
+"A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu Dik \u00dc\u00e7gen 2"
+],
+"131": [
+"K\u00f6\u015fegenlerin Birbirini Ortalamas\u0131"
+],
+"132": [
+"Paralelkenarda Benzerlik 1"
+],
+"133": [
+"Paralelkenarda Benzerlik 2"
+],
+"134": [
+"Paralelkenarda Benzerlik 3"
+],
+"135": [
+"Paralelkenarda Alan"
+],
+"136": [
+"Paralelkenarda Alan"
+],
+"137": [
+"Paralelkenar ve \u0130\u00e7ine \u00c7izilen Yamu\u011fun Alan\u0131"
+],
+"138": [
+"K\u00f6\u015fegenin Olu\u015fturdu\u011fu E\u015fit Y\u00fckseklikler"
+],
+"139": [
+"Kenar \u00dczerindeki Bir Nokta Kar\u015f\u0131 K\u00f6\u015felerle Birle\u015ftirilince Olu\u015fan \u00dc\u00e7genin Alan\u0131"
+],
+"140": [
+"Kenar \u00dczerindeki Bir Nokta Kar\u015f\u0131 K\u00f6\u015felerle Birle\u015ftirilince Olu\u015fan \u00dc\u00e7genin Alan\u0131"
+],
+"141": [
+"Kelebek Benzerli\u011fi ile Alan"
+],
+"142": [
+"\u0130\u00e7 B\u00f6lgedeki Noktan\u0131n K\u00f6\u015felerle Olu\u015fturdu\u011fu \u00dc\u00e7genlerin Alanlar\u0131"
+],
+"143": [
+"Katlama Sorular\u0131"
+],
+"144": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"145": [
+"\u00d6zde\u015f Paralelkenarlarla Olu\u015fturulmu\u015f \u015eekiller"
+],
+"146": [
+"E\u015fkenar D\u00f6rtgende A\u00e7\u0131"
+],
+"147": [
+"E\u015fkenar D\u00f6rtgenin Kenarlar\u0131n\u0131n E\u015fitli\u011fi"
+],
+"148": [
+"K\u00f6\u015fegenlerin Birbirini Dik Olarak Ortalamas\u0131"
+],
+"149": [
+"E\u015fkenar D\u00f6rtgenin Alan\u0131"
+],
+"150": [
+"Katlama Sorular\u0131"
+],
+"151": [
+"\u00d6zde\u015f E\u015fkenar D\u00f6rtgenlerle olu\u015fturulan \u015eekiller"
+],
+"152": [
+"\u00d6zde\u015f E\u015fkenar D\u00f6rtgenlerle olu\u015fturulan \u015eekiller"
+],
+"153": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"154": [
+"Deltoidde A\u00e7\u0131"
+],
+"155": [
+"Deltoidin \u00d6zellikleri 1"
+],
+"156": [
+"Deltoidin \u00d6zellikleri 2"
+],
+"157": [
+"Deltoidin Alan\u0131"
+],
+"158": [
+"Deltoidde Benzerlik"
+],
+"159": [
+"Deltoidin Alan\u0131"
+],
+"160": [
+"Katlama Sorular\u0131"
+],
+"161": [
+"\u00d6zde\u015f Deltoitlerle \u015eekiller Olu\u015fturma"
+],
+"162": [
+"Dikd\u00f6rtgende A\u00e7\u0131"
+],
+"163": [
+"Dikd\u00f6rtgenin Temel \u00d6zellikleri"
+],
+"164": [
+"Dikd\u00f6rtgende Benzerlik 1"
+],
+"165": [
+"Dikd\u00f6rtgende Benzerlik 2"
+],
+"166": [
+"Dikd\u00f6rtgende K\u00f6\u015fegenlerin E\u015fitli\u011fi ve Birbirini Ortalamas\u0131"
+],
+"167": [
+"Dikd\u00f6rtgenin \u0130\u00e7 B\u00f6lgesindeki Noktan\u0131n K\u00f6\u015felere Uzakl\u0131klar\u0131"
+],
+"168": [
+"Dikd\u00f6rtgenin Alan\u0131"
+],
+"169": [
+"Dikd\u00f6rtgende Alan Payla\u015f\u0131m\u0131"
+],
+"170": [
+"Dikd\u00f6rtgende Benzerlik ve Alan \u0130li\u015fkisi"
+],
+"171": [
+"\u00d6zde\u015f Dikd\u00f6rtgenlerle Olu\u015fturulan \u015eekiller"
+],
+"172": [
+"Katlama Sorular\u0131"
+],
+"173": [
+"Kesme Sorular\u0131"
+],
+"174": [
+"D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"175": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"176": [
+"Karede A\u00e7\u0131"
+],
+"177": [
+"Karenin Temel \u00d6zellikleri"
+],
+"178": [
+"K\u00f6\u015fegenin A\u00e7\u0131ortay Olu\u015fu"
+],
+"179": [
+"K\u00f6\u015fegenlerin E\u015fit Olup Birbirini Dik Olarak Ortalamas\u0131"
+],
+"180": [
+"Karede Benzerlik"
+],
+"181": [
+"Karede E\u015flik"
+],
+"182": [
+"Karede Alan Payla\u015f\u0131m\u0131"
+],
+"183": [
+"\u00d6zde\u015f Karelerle Olu\u015fturulan \u015eekiller"
+],
+"184": [
+"Katlama ve Kesme Sorular\u0131"
+],
+"185": [
+"G\u00f6rsel Yetenek Sorular\u0131"
+],
+"186": [
+"D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"187": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"188": [
+"Yorum Sorular\u0131"
+],
+"189": [
+"\u00c7emberde Merkez A\u00e7\u0131"
+],
+"190": [
+"Yar\u0131\u00e7aplar\u0131n E\u015fitli\u011fi"
+],
+"191": [
+"Kiri\u015f ve Yay Aras\u0131ndaki \u0130li\u015fki"
+],
+"192": [
+"\u00c7emberde \u00c7evre A\u00e7\u0131"
+],
+"193": [
+"\u00c7emberde \u00c7ap\u0131 G\u00f6ren \u00c7evre A\u00e7\u0131"
+],
+"194": [
+"Paralel Kiri\u015fler Aras\u0131ndaki Yaylar"
+],
+"195": [
+"\u00c7emberde Te\u011fet-Kiri\u015f A\u00e7\u0131"
+],
+"196": [
+"\u00c7emberde \u0130\u00e7 A\u00e7\u0131"
+],
+"197": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 1"
+],
+"198": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 2"
+],
+"199": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 3"
+],
+"200": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 3"
+],
+"201": [
+"Katlama ve Kesme Sorular\u0131"
+],
+"202": [
+"\u00c7emberin Yar\u0131\u00e7ap\u0131n\u0131 G\u00f6rme"
+],
+"203": [
+"\u00c7emberin Merkezinden Kiri\u015fe \u0130ndirilen Dikme"
+],
+"204": [
+"En Uzun ve En K\u0131sa Kiri\u015f"
+],
+"205": [
+"Merkeze Uzakl\u0131klar\u0131 E\u015fit Olan Kiri\u015fler"
+],
+"206": [
+"\u00c7emberde Te\u011fet \u00d6zellikleri"
+],
+"207": [
+"Bir Noktadan \u00c7embere \u00c7izilen \u0130ki Te\u011fet"
+],
+"208": [
+"Bir \u00dc\u00e7genin \u0130\u00e7 Te\u011fet \u00c7emberi"
+],
+"209": [
+"Bir \u00dc\u00e7genin D\u0131\u015f Te\u011fet \u00c7emberi"
+],
+"210": [
+"Birbirlerine Te\u011fet Olan \u00c7emberler"
+],
+"211": [
+"\u00c7embere En Yak\u0131n ve En Uzak Olan Nokta"
+],
+"212": [
+"Benzerlikle \u00c7\u00f6z\u00fclen \u00c7emberde Uzunluk Sorular\u0131"
+],
+"213": [
+"Katlama ve Kesme Sorular\u0131"
+],
+"214": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"215": [
+"\u00d6zde\u015f \u00c7emberlerle Olu\u015fturulmu\u015f \u015eekiller"
+],
+"216": [
+"Yay Uzunlu\u011fu"
+],
+"217": [
+"\u00c7emberin \u00c7evresi"
+],
+"218": [
+"\u00c7emberin \u00c7evresi"
+],
+"219": [
+"Yar\u0131m \u00c7emberin \u00c7evresi"
+],
+"220": [
+"\u00c7embersel Hareket"
+],
+"221": [
+"Dairenin Alan\u0131 1"
+],
+"222": [
+"Dairenin Alan\u0131 2"
+],
+"223": [
+"Halkan\u0131n Alan\u0131"
+],
+"224": [
+"Daire Diliminin Alan\u0131"
+],
+"225": [
+"Yar\u0131m Dairenin Alan\u0131"
+],
+"226": [
+"\u0130stenmeyen B\u00f6lgenin Alan\u0131n\u0131 \u00c7\u0131karmak"
+],
+"227": [
+"Merkez A\u00e7\u0131dan Hareketle Alan Hesaplama"
+],
+"228": [
+"Uygun B\u00f6lgelerin Alanlar\u0131n\u0131 \u0130simlendirerek Alan\u0131 Bulunabilir Geometrik \u015eekiller Elde Etme"
+],
+"229": [
+"Pisagor ile Alan Bulma"
+],
+"230": [
+"Daire Dilimlerinin Alanlar\u0131 Oran\u0131"
+],
+"231": [
+"Dairede Katlama"
+],
+"232": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"233": [
+"Daire \u0130\u00e7ine Yerle\u015ftirilmi\u015f E\u015f \u015eekiller"
+],
+"234": [
+"\u00d6zde\u015f \u015eekillerden Olu\u015fan Sorular"
+],
+"235": [
+"Nokta ve Eksenlere Uzakl\u0131k"
+],
+"236": [
+"K\u00f6\u015felerinin Koordinatlar\u0131 Verilen \u00c7okgenler"
+],
+"237": [
+"Analitik D\u00fczlemin B\u00f6lgeleri"
+],
+"238": [
+"Analitik D\u00fczlemde \u00dc\u00e7genlerin Benzerli\u011fi"
+],
+"239": [
+"\u00d6zde\u015f \u015eekillerle Olu\u015fturulan Sorular"
+],
+"240": [
+"\u0130ki Nokta Aras\u0131ndaki Uzakl\u0131k"
+],
+"241": [
+"Orta Noktan\u0131n Koordinatlar\u0131"
+],
+"242": [
+"Do\u011fru Par\u00e7as\u0131n\u0131 Belirli Oranda B\u00f6len Nokta"
+],
+"243": [
+"Paralelkenar\u0131n Kar\u015f\u0131l\u0131kl\u0131 K\u00f6\u015feleri Aras\u0131ndaki \u0130li\u015fki"
+],
+"244": [
+"\u00dc\u00e7genin A\u011f\u0131rl\u0131k Merkezinin Koordinatlar\u0131"
+],
+"245": [
+"K\u00f6\u015felerinin Koordinatlar\u0131 Verilen \u00dc\u00e7genlerin Alan\u0131"
+],
+"246": [
+"Analitik D\u00fczlemde Katlama"
+],
+"247": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"248": [
+"E\u011fim A\u00e7\u0131s\u0131 Verilen Do\u011frunun E\u011fimi"
+],
+"249": [
+"E\u011fim A\u00e7\u0131s\u0131 Verilen Do\u011frunun E\u011fimi"
+],
+"250": [
+"Do\u011fru \u00dczerindeki Nokta"
+],
+"251": [
+"\u0130ki Noktas\u0131 Verilen Do\u011frunun E\u011fimi"
+],
+"252": [
+"Denklemi Verilen Do\u011frunun E\u011fimi"
+],
+"253": [
+"Birbirine Dik Do\u011frular\u0131n E\u011fimleri Aras\u0131ndaki \u0130li\u015fki"
+],
+"254": [
+"Birbirine Paralel Do\u011frular\u0131n E\u011fimleri Aras\u0131ndaki \u0130li\u015fki"
+],
+"255": [
+"Do\u011frunun Eksenleri Kesti\u011fi Noktalar"
+],
+"256": [
+"E\u011fimi ve Bir Noktas\u0131 Verilen Do\u011frunun Denklemi"
+],
+"257": [
+"Orijinden Ge\u00e7en Do\u011frunun Denklemi"
+],
+"258": [
+"E\u011fimi ve Bir Noktas\u0131 Verilen Do\u011frunun Denklemi"
+],
+"259": [
+"Eksenleri Kesti\u011fi Noktalar Verilen Do\u011frunun Denklemi"
+],
+"260": [
+"Katlama Sorular\u0131nda Do\u011fru Denkleminin Bulunmas\u0131"
+],
+"261": [
+"Eksenlere Paralel Do\u011frular\u0131n Denklemi ve A\u00e7\u0131ortay Do\u011frular\u0131n\u0131n Denklemi"
+],
+"262": [
+"\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 2"
+],
+"263": [
+"\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 1"
+],
+"264": [
+"\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 3"
+],
+"265": [
+"Bir Noktan\u0131n Bir Do\u011fruya Uzakl\u0131\u011f\u0131"
+],
+"266": [
+"\u015eekli E\u015fit Alanl\u0131 \u0130ki B\u00f6lgeye B\u00f6len Do\u011fru"
+],
+"267": [
+"Paralel \u0130ki Do\u011fru Aras\u0131ndaki Uzakl\u0131k"
+],
+"268": [
+"Birinci Dereceden \u0130ki Bilinmeyenli E\u015fitsizlikler"
+],
+"269": [
+"Birinci Dereceden \u0130ki Bilinmeyenli E\u015fitsizlikler"
+],
+"270": [
+"\u00d6teleme D\u00f6n\u00fc\u015f\u00fcm\u00fc"
+],
+"271": [
+"Eksenlere G\u00f6re Yans\u0131ma"
+],
+"272": [
+"y = x ve y = \u2013x Do\u011frular\u0131na G\u00f6re Yans\u0131ma"
+],
+"273": [
+"x = a ve y = b Do\u011frular\u0131na G\u00f6re Yans\u0131ma"
+],
+"274": [
+"Noktan\u0131n Noktaya G\u00f6re Yans\u0131mas\u0131"
+],
+"275": [
+"Do\u011frunun Noktaya G\u00f6re Yans\u0131mas\u0131"
+],
+"276": [
+"Noktan\u0131n Do\u011fruya G\u00f6re Yans\u0131mas\u0131"
+],
+"277": [
+"Do\u011frunun Do\u011fruya G\u00f6re Yans\u0131mas\u0131"
+],
+"278": [
+"D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 1"
+],
+"279": [
+"D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 2"
+],
+"280": [
+"D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 2"
+],
+"281": [
+"Dik Prizman\u0131n Alan ve Hacmi (S\u00f6zel)"
+],
+"282": [
+"Dik Prizman\u0131n Alan ve Hacmi (\u015eekilli)"
+],
+"283": [
+"Prizmada Do\u011fru Par\u00e7as\u0131"
+],
+"284": [
+"Prizmada \u00c7okgen"
+],
+"285": [
+"Prizman\u0131n Y\u00fczey Alan\u0131"
+],
+"286": [
+"Prizman\u0131n Y\u00fczey Alan\u0131ndaki De\u011fi\u015fim"
+],
+"287": [
+"Prizman\u0131n \u0130\u00e7ine Cisim Atma"
+],
+"288": [
+"Prizman\u0131n \u0130\u00e7indeki Suyun Y\u00fcksekli\u011fi ve Hacmi"
+],
+"289": [
+"Prizman\u0131n Alan ve Hacmi (S\u00f6zel Sorular)"
+],
+"290": [
+"Kartondan Kutu Yapma Sorular\u0131"
+],
+"291": [
+"Prizman\u0131n A\u00e7\u0131n\u0131m\u0131"
+],
+"292": [
+"Prizman\u0131n Y\u00fczeyi \u00dczerinde Hareket"
+],
+"293": [
+"Dik Dairesel Silindirde Uzunluk Hesaplama"
+],
+"294": [
+"Dik Dairesel Silindirin Yanal Alan\u0131"
+],
+"295": [
+"Dik Dairesel Silindirin Y\u00fczey Alan\u0131"
+],
+"296": [
+"Y\u00fczey Alan\u0131ndaki De\u011fi\u015fim"
+],
+"297": [
+"Dik Dairesel Silindirin Hacmi"
+],
+"298": [
+"Dik Dairesel Silindirin A\u00e7\u0131n\u0131m\u0131"
+],
+"299": [
+"Birbirine Te\u011fet Olan Silindirler"
+],
+"300": [
+"Silindir Y\u00fczeyinde Hareket"
+],
+"301": [
+"Silindir ile \u0130lgili S\u00f6zel Sorular"
+],
+"302": [
+"D\u00f6nd\u00fcrme Sonucunda Olu\u015fan Silindir"
+],
+"303": [
+"Piramitte Uzunluk"
+],
+"304": [
+"Piramidin Hacmi"
+],
+"305": [
+"Piramidin Y\u00fcksekli\u011fi"
+],
+"306": [
+"Piramidin Yanal ve Y\u00fczey Alan\u0131"
+],
+"307": [
+"Piramidin A\u00e7\u0131n\u0131m\u0131"
+],
+"308": [
+"Yeni Nesil Soru"
+],
+"309": [
+"Piramidin Bir Yan Y\u00fcz\u00fcn\u00fcn Taban ile Yapt\u0131\u011f\u0131 A\u00e7\u0131"
+],
+"310": [
+"Piramitte Benzerlik ve Hacim \u0130li\u015fkisi"
+],
+"311": [
+"Piramidin Y\u00fczeyi \u00dczerinde Hareket"
+],
+"312": [
+"D\u00fczg\u00fcn D\u00f6rty\u00fczl\u00fc"
+],
+"313": [
+"Dik Dairesel koninin Yanal ve Y\u00fczey Alan\u0131"
+],
+"314": [
+"Dik Dairesel Koninin Hacmi"
+],
+"315": [
+"Dik Dairesel Koninin Yanal ve Y\u00fczey Alan\u0131"
+],
+"316": [
+"Dik Dairesel Koninin Hacmi"
+],
+"317": [
+"Konilerde Benzerlik Hacim \u0130li\u015fkisi"
+],
+"318": [
+"Dik Dairesel Koni ile \u0130lgili S\u00f6zel Sorular"
+],
+"319": [
+"Dik Dairesel Koninin A\u00e7\u0131n\u0131m\u0131"
+],
+"320": [
+"Tabanlar\u0131 \u00c7ak\u0131\u015f\u0131k Koniler"
+],
+"321": [
+"En K\u0131sa Yol Sorular\u0131"
+],
+"322": [
+"K\u00fcrenin Alan\u0131"
+],
+"323": [
+"K\u00fcrenin Hacmi"
+],
+"324": [
+"\u00c7emberin Standart Denklemi"
+],
+"325": [
+"Koordinat D\u00fczleminde Verilen \u00c7emberin Standart Denklemi"
+],
+"326": [
+"Koordinat D\u00fczleminde Eksenlere Te\u011fet Olan \u00c7emberler"
+],
+"327": [
+"Eksenlere Te\u011fet Olan \u00c7emberler"
+],
+"328": [
+"\u00c7emberin Genel Denklemi 2"
+],
+"329": [
+"\u00c7emberin Genel Denklemi 1"
+],
+"330": [
+"\u00c7ember ve Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 1"
+],
+"331": [
+"\u00c7ember ve Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 2"
+]
+},
+"K2": {
+"1": [
+"A\u00e7\u0131 \u00c7e\u015fitleri"
+],
+"2": [
+"T\u00fcmler ve B\u00fct\u00fcnler A\u00e7\u0131"
+],
+"3": [
+"A\u00e7\u0131ortay Do\u011frular\u0131"
+],
+"4": [
+"Paralel Do\u011frular\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar 1"
+],
+"5": [
+"Paralel Do\u011frular\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar 2"
+],
+"6": [
+"Y\u00f6n ve D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"7": [
+"Yorum Sorular\u0131"
+],
+"8": [
+"\u00dc\u00e7gende A\u00e7\u0131"
+],
+"9": [
+"\u0130kizkenar \u00dc\u00e7gende A\u00e7\u0131"
+],
+"10": [
+"\u0130kizkenar \u00dc\u00e7gende Simetri"
+],
+"11": [
+"E\u015fkenar \u00dc\u00e7gende A\u00e7\u0131"
+],
+"12": [
+"Katlama Sorular\u0131"
+],
+"13": [
+"Kes Yap\u0131\u015ft\u0131r Sorular\u0131"
+],
+"14": [
+"A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar"
+],
+"15": [
+"D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"16": [
+"Muhte\u015fem \u00dc\u00e7l\u00fc"
+],
+"17": [
+"\u00d6zde\u015f \u00dc\u00e7genlerle Olu\u015fturulmu\u015f A\u00e7\u0131 Sorular\u0131"
+],
+"18": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f A\u00e7\u0131 Sorular\u0131"
+],
+"19": [
+"Cetvel,? \u00c7ubuk, Makas vb Kullan\u0131larak Olu\u015fturulmu\u015f A\u00e7\u0131 Sorular\u0131"
+],
+"20": [
+"Pusula Sorular\u0131"
+],
+"21": [
+"Pisagor Teoremi"
+],
+"22": [
+"En K\u0131sa Mesafe Problemleri"
+],
+"23": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"24": [
+"\u00d6klit Teoremi 1"
+],
+"25": [
+"\u00d6klit Teoremi 2"
+],
+"26": [
+"\u00d6klit Teoremi 3"
+],
+"27": [
+"\u00d6zel A\u00e7\u0131l\u0131 \u00dc\u00e7genler"
+],
+"28": [
+"\u0130kizkenar \u00dc\u00e7gen"
+],
+"29": [
+"\u0130kizkenar \u00dc\u00e7gende Y\u00fckseklik 1"
+],
+"30": [
+"\u0130kizkenar \u00dc\u00e7gende Y\u00fckseklik 2"
+],
+"31": [
+"E\u015fkenar \u00dc\u00e7gen"
+],
+"32": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"33": [
+"Katlama Kesme Sorular\u0131"
+],
+"34": [
+"Tan\u0131m Verilen Sorular"
+],
+"35": [
+"A\u00e7\u0131ortay \u00dczerindeki Bir Noktadan Yan Kenarlara Dikme \u0130nme"
+],
+"36": [
+"\u0130\u00e7 A\u00e7\u0131ortay Teoremi"
+],
+"37": [
+"Bir Do\u011fru Par\u00e7as\u0131n\u0131n A\u00e7\u0131ortay, Y\u00fckseklik ve Kenarortaydan \u0130kisi Olmas\u0131"
+],
+"38": [
+"\u0130\u00e7 te\u011fet \u00c7emberin Merkezi"
+],
+"39": [
+"Katlama Sorular\u0131"
+],
+"40": [
+"D\u0131\u015f A\u00e7\u0131ortay Teoremi"
+],
+"41": [
+"\u0130\u00e7 ve D\u0131\u015f A\u00e7\u0131ortay Teoremi"
+],
+"42": [
+"Kenarortaylar\u0131n Kesim Noktas\u0131"
+],
+"43": [
+"A\u011f\u0131rl\u0131k Merkezi ve A\u00e7\u0131ortay"
+],
+"44": [
+"A\u011f\u0131rl\u0131k Merkezi ve Muhte\u015fem \u00dc\u00e7l\u00fc \u0130li\u015fkisi"
+],
+"45": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"46": [
+"Katlama Sorular\u0131"
+],
+"47": [
+"E\u015flik"
+],
+"48": [
+"Kenar A\u00e7\u0131 Kenar E\u015fli\u011fi"
+],
+"49": [
+"A\u00e7\u0131 Kenar A\u00e7\u0131 E\u015fli\u011fi"
+],
+"50": [
+"Kenar Kenar Kenar E\u015fli\u011fi"
+],
+"51": [
+"Benzer \u00dc\u00e7genler"
+],
+"52": [
+"A\u00e7\u0131 A\u00e7\u0131 A\u00e7\u0131 Benzerli\u011fi"
+],
+"53": [
+"Kenar A\u00e7\u0131 Kenar Benzerli\u011fi"
+],
+"54": [
+"Kenar Kenar Kenar Benzerli\u011fi"
+],
+"55": [
+"Benzerlik Oran\u0131"
+],
+"56": [
+"Temel Benzerlik Teoremi"
+],
+"57": [
+"Orta Taban"
+],
+"58": [
+"Kelebek Benzerli\u011fi"
+],
+"59": [
+"A\u00e7\u0131ortay Benzerlik \u0130li\u015fkisi"
+],
+"60": [
+"Kenarortay Benzerlik \u0130li\u015fkisi"
+],
+"61": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"62": [
+"Katlama Sorular\u0131"
+],
+"63": [
+"Dar A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131"
+],
+"64": [
+"Dik \u00dc\u00e7genin Alan\u0131"
+],
+"65": [
+"Geni\u015f A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131"
+],
+"66": [
+"\u00d6zel A\u00e7\u0131l\u0131 \u00dc\u00e7genlerin Alan\u0131"
+],
+"67": [
+"E\u015fkenar \u00dc\u00e7genin Alan\u0131"
+],
+"68": [
+"Y\u00fckseklikleri E\u015fit \u00dc\u00e7genlerin Alanlar\u0131 Oran\u0131"
+],
+"69": [
+"Tabanlar\u0131 E\u015fit \u00dc\u00e7genlerin Alanlar\u0131 Oran\u0131"
+],
+"70": [
+"\u00dc\u00e7gende Benzerlik Alan \u0130li\u015fkisi"
+],
+"71": [
+"E\u015fit Alanl\u0131 \u00dc\u00e7genleri G\u00f6rme"
+],
+"72": [
+"\u00dc\u00e7gende Benzerlik Alan \u0130li\u015fkisi"
+],
+"73": [
+"\u00dc\u00e7gende A\u00e7\u0131ortay ve Alan \u0130li\u015fkisi"
+],
+"74": [
+"\u00dc\u00e7gende Kenarortay ve Alan \u0130li\u015fkisi"
+],
+"75": [
+"Sin\u00fcsl\u00fc Alan Form\u00fcl\u00fc"
+],
+"76": [
+"\u00d6zde\u015f \u00dc\u00e7genlerle Olu\u015fturulan Alan Sorular\u0131"
+],
+"77": [
+"Katlama Kesme Sorular\u0131"
+],
+"78": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"79": [
+"A\u00e7\u0131lar\u0131n S\u0131ralan\u0131\u015f\u0131ndan Hareketle Kenarlar\u0131 S\u0131ralama"
+],
+"80": [
+"\u00dc\u00e7gen E\u015fitsizli\u011fi"
+],
+"81": [
+"\u00dc\u00e7gen E\u015fitsizli\u011fi"
+],
+"82": [
+"Dar ya da Geni\u015f A\u00e7\u0131 Kar\u015f\u0131s\u0131ndaki Kenar"
+],
+"83": [
+"\u0130\u00e7 B\u00f6lgede Al\u0131nan Nokta"
+],
+"84": [
+"Katlama Sorular\u0131"
+],
+"85": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"86": [
+"Bir \u00dc\u00e7genin Kenarorta Dikmeleri"
+],
+"87": [
+"Bir \u00dc\u00e7genin Diklik Merkezi"
+],
+"88": [
+"\u0130\u00e7-D\u0131\u015f Te\u011fet \u00c7emberin Merkezi, A\u011f\u0131rl\u0131k Merkezi"
+],
+"89": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"90": [
+"\u0130\u00e7 A\u00e7\u0131lar Toplam\u0131 ve D\u0131\u015f A\u00e7\u0131lar Toplam\u0131"
+],
+"91": [
+"\u00c7okgenlerde A\u00e7\u0131 Hesaplama"
+],
+"92": [
+"D\u00fczg\u00fcn \u00c7okgenlerde \u0130\u00e7 A\u00e7\u0131 ve D\u0131\u015f A\u00e7\u0131n\u0131n Hesaplanmas\u0131"
+],
+"93": [
+"D\u00fczg\u00fcn Be\u015fgende A\u00e7\u0131 Sorular\u0131"
+],
+"94": [
+"D\u00fczg\u00fcn Alt\u0131gende A\u00e7\u0131 Sorular\u0131"
+],
+"95": [
+"D\u00fczg\u00fcn Sekizgende A\u00e7\u0131 Sorular\u0131"
+],
+"96": [
+"Ortak Kenar\u0131 Olan D\u00fczg\u00fcn \u00c7okgenler"
+],
+"97": [
+"Kenar Say\u0131s\u0131 Bilinmeyen D\u00fczg\u00fcn \u00c7okgenler"
+],
+"98": [
+"D\u00fczg\u00fcn \u00c7okgenlerde Katlama Sorular\u0131"
+],
+"99": [
+"D\u00fczg\u00fcn Be\u015fgende Uzunluk Sorular\u0131"
+],
+"100": [
+"D\u00fczg\u00fcn Alt\u0131gende Uzunluk Sorular\u0131"
+],
+"101": [
+"D\u00fczg\u00fcn Alt\u0131gende Alan Sorular\u0131"
+],
+"102": [
+"D\u00fczg\u00fcn Alt\u0131gende Alan Sorular\u0131"
+],
+"103": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"104": [
+"Kesme Sorular\u0131"
+],
+"105": [
+"D\u00f6rtgenlerde A\u00e7\u0131"
+],
+"106": [
+"D\u00f6rtgenlerde A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu A\u00e7\u0131lar"
+],
+"107": [
+"Pisagor Teoreminin D\u00f6rtgenlerde Kullan\u0131lmas\u0131"
+],
+"108": [
+"D\u00f6rtgenin K\u00f6\u015fegenleri ile Orta Noktalar D\u00f6rtgeni Aras\u0131ndaki \u0130li\u015fki"
+],
+"109": [
+"\u00d6zel \u00dc\u00e7genler Olu\u015fturma"
+],
+"110": [
+"D\u00f6rtgenin Alan\u0131"
+],
+"111": [
+"D\u00f6rtgenin Alan\u0131"
+],
+"112": [
+"Katlama Sorular\u0131"
+],
+"113": [
+"Yamukta A\u00e7\u0131"
+],
+"114": [
+"Yamu\u011fun Orta Taban\u0131"
+],
+"115": [
+"Kom\u015fu \u0130ki A\u00e7\u0131n\u0131n A\u00e7\u0131ortay\u0131"
+],
+"116": [
+"Yamukta Temel Benzerlik Kural\u0131 ve Kelebek Benzerli\u011fi"
+],
+"117": [
+"Dik Yamuk"
+],
+"118": [
+"\u0130kizkenar Yamuk"
+],
+"119": [
+"Yamu\u011fun Alan\u0131 1"
+],
+"120": [
+"Yamu\u011fun Alan\u0131 2"
+],
+"121": [
+"Yamu\u011fun Alan\u0131 3"
+],
+"122": [
+"K\u00f6\u015fegenlerin Olu\u015fturdu\u011fu Alanlar"
+],
+"123": [
+"Dik Yamuk ve \u0130kizkenar Yamu\u011fun Alan\u0131"
+],
+"124": [
+"\u00d6zde\u015f Yamuklarla Olu\u015fturulan \u015eekiller"
+],
+"125": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"126": [
+"Katlama Sorular\u0131"
+],
+"127": [
+"Paralelkenarda A\u00e7\u0131"
+],
+"128": [
+"A\u00e7\u0131ortay\u0131n Olu\u015fturdu\u011fu \u0130kizkenar \u00dc\u00e7gen"
+],
+"129": [
+"A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu Dik \u00dc\u00e7gen 1"
+],
+"130": [
+"A\u00e7\u0131ortaylar\u0131n Olu\u015fturdu\u011fu Dik \u00dc\u00e7gen 2"
+],
+"131": [
+"K\u00f6\u015fegenlerin Birbirini Ortalamas\u0131"
+],
+"132": [
+"Paralelkenarda Benzerlik 1"
+],
+"133": [
+"Paralelkenarda Benzerlik 2"
+],
+"134": [
+"Paralelkenarda Benzerlik 3"
+],
+"135": [
+"Paralelkenarda Alan"
+],
+"136": [
+"Paralelkenarda Alan"
+],
+"137": [
+"Paralelkenar ve \u0130\u00e7ine \u00c7izilen Yamu\u011fun Alan\u0131"
+],
+"138": [
+"K\u00f6\u015fegenin Olu\u015fturdu\u011fu E\u015fit Y\u00fckseklikler"
+],
+"139": [
+"Kenar \u00dczerindeki Bir Nokta Kar\u015f\u0131 K\u00f6\u015felerle Birle\u015ftirilince Olu\u015fan \u00dc\u00e7genin Alan\u0131"
+],
+"140": [
+"Kenar \u00dczerindeki Bir Nokta Kar\u015f\u0131 K\u00f6\u015felerle Birle\u015ftirilince Olu\u015fan \u00dc\u00e7genin Alan\u0131"
+],
+"141": [
+"Kelebek Benzerli\u011fi ile Alan"
+],
+"142": [
+"\u0130\u00e7 B\u00f6lgedeki Noktan\u0131n K\u00f6\u015felerle Olu\u015fturdu\u011fu \u00dc\u00e7genlerin Alanlar\u0131"
+],
+"143": [
+"Katlama Sorular\u0131"
+],
+"144": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"145": [
+"\u00d6zde\u015f Paralelkenarlarla Olu\u015fturulmu\u015f \u015eekiller"
+],
+"146": [
+"E\u015fkenar D\u00f6rtgende A\u00e7\u0131"
+],
+"147": [
+"E\u015fkenar D\u00f6rtgenin Kenarlar\u0131n\u0131n E\u015fitli\u011fi"
+],
+"148": [
+"K\u00f6\u015fegenlerin Birbirini Dik Olarak Ortalamas\u0131"
+],
+"149": [
+"E\u015fkenar D\u00f6rtgenin Alan\u0131"
+],
+"150": [
+"Katlama Sorular\u0131"
+],
+"151": [
+"\u00d6zde\u015f E\u015fkenar D\u00f6rtgenlerle olu\u015fturulan \u015eekiller"
+],
+"152": [
+"\u00d6zde\u015f E\u015fkenar D\u00f6rtgenlerle olu\u015fturulan \u015eekiller"
+],
+"153": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"154": [
+"Deltoidde A\u00e7\u0131"
+],
+"155": [
+"Deltoidin \u00d6zellikleri 1"
+],
+"156": [
+"Deltoidin \u00d6zellikleri 2"
+],
+"157": [
+"Deltoidin Alan\u0131"
+],
+"158": [
+"Deltoidde Benzerlik"
+],
+"159": [
+"Deltoidin Alan\u0131"
+],
+"160": [
+"Katlama Sorular\u0131"
+],
+"161": [
+"\u00d6zde\u015f Deltoitlerle \u015eekiller Olu\u015fturma"
+],
+"162": [
+"Dikd\u00f6rtgende A\u00e7\u0131"
+],
+"163": [
+"Dikd\u00f6rtgenin Temel \u00d6zellikleri"
+],
+"164": [
+"Dikd\u00f6rtgende Benzerlik 1"
+],
+"165": [
+"Dikd\u00f6rtgende Benzerlik 2"
+],
+"166": [
+"Dikd\u00f6rtgende K\u00f6\u015fegenlerin E\u015fitli\u011fi ve Birbirini Ortalamas\u0131"
+],
+"167": [
+"Dikd\u00f6rtgenin \u0130\u00e7 B\u00f6lgesindeki Noktan\u0131n K\u00f6\u015felere Uzakl\u0131klar\u0131"
+],
+"168": [
+"Dikd\u00f6rtgenin Alan\u0131"
+],
+"169": [
+"Dikd\u00f6rtgende Alan Payla\u015f\u0131m\u0131"
+],
+"170": [
+"Dikd\u00f6rtgende Benzerlik ve Alan \u0130li\u015fkisi"
+],
+"171": [
+"\u00d6zde\u015f Dikd\u00f6rtgenlerle Olu\u015fturulan \u015eekiller"
+],
+"172": [
+"Katlama Sorular\u0131"
+],
+"173": [
+"Kesme Sorular\u0131"
+],
+"174": [
+"D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"175": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"176": [
+"Karede A\u00e7\u0131"
+],
+"177": [
+"Karenin Temel \u00d6zellikleri"
+],
+"178": [
+"K\u00f6\u015fegenin A\u00e7\u0131ortay Olu\u015fu"
+],
+"179": [
+"K\u00f6\u015fegenlerin E\u015fit Olup Birbirini Dik Olarak Ortalamas\u0131"
+],
+"180": [
+"Karede Benzerlik"
+],
+"181": [
+"Karede E\u015flik"
+],
+"182": [
+"Karede Alan Payla\u015f\u0131m\u0131"
+],
+"183": [
+"\u00d6zde\u015f Karelerle Olu\u015fturulan \u015eekiller"
+],
+"184": [
+"Katlama ve Kesme Sorular\u0131"
+],
+"185": [
+"G\u00f6rsel Yetenek Sorular\u0131"
+],
+"186": [
+"D\u00f6nd\u00fcrme Sorular\u0131"
+],
+"187": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"188": [
+"Yorum Sorular\u0131"
+],
+"189": [
+"\u00c7emberde Merkez A\u00e7\u0131"
+],
+"190": [
+"Yar\u0131\u00e7aplar\u0131n E\u015fitli\u011fi"
+],
+"191": [
+"Kiri\u015f ve Yay Aras\u0131ndaki \u0130li\u015fki"
+],
+"192": [
+"\u00c7emberde \u00c7evre A\u00e7\u0131"
+],
+"193": [
+"\u00c7emberde \u00c7ap\u0131 G\u00f6ren \u00c7evre A\u00e7\u0131"
+],
+"194": [
+"Paralel Kiri\u015fler Aras\u0131ndaki Yaylar"
+],
+"195": [
+"\u00c7emberde Te\u011fet-Kiri\u015f A\u00e7\u0131"
+],
+"196": [
+"\u00c7emberde \u0130\u00e7 A\u00e7\u0131"
+],
+"197": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 1"
+],
+"198": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 2"
+],
+"199": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 3"
+],
+"200": [
+"\u00c7emberde D\u0131\u015f A\u00e7\u0131 3"
+],
+"201": [
+"Katlama ve Kesme Sorular\u0131"
+],
+"202": [
+"\u00c7emberin Yar\u0131\u00e7ap\u0131n\u0131 G\u00f6rme"
+],
+"203": [
+"\u00c7emberin Merkezinden Kiri\u015fe \u0130ndirilen Dikme"
+],
+"204": [
+"En Uzun ve En K\u0131sa Kiri\u015f"
+],
+"205": [
+"Merkeze Uzakl\u0131klar\u0131 E\u015fit Olan Kiri\u015fler"
+],
+"206": [
+"\u00c7emberde Te\u011fet \u00d6zellikleri"
+],
+"207": [
+"Bir Noktadan \u00c7embere \u00c7izilen \u0130ki Te\u011fet"
+],
+"208": [
+"Bir \u00dc\u00e7genin \u0130\u00e7 Te\u011fet \u00c7emberi"
+],
+"209": [
+"Bir \u00dc\u00e7genin D\u0131\u015f Te\u011fet \u00c7emberi"
+],
+"210": [
+"Birbirlerine Te\u011fet Olan \u00c7emberler"
+],
+"211": [
+"\u00c7embere En Yak\u0131n ve En Uzak Olan Nokta"
+],
+"212": [
+"Benzerlikle \u00c7\u00f6z\u00fclen \u00c7emberde Uzunluk Sorular\u0131"
+],
+"213": [
+"Katlama ve Kesme Sorular\u0131"
+],
+"214": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"215": [
+"\u00d6zde\u015f \u00c7emberlerle Olu\u015fturulmu\u015f \u015eekiller"
+],
+"216": [
+"Yay Uzunlu\u011fu"
+],
+"217": [
+"\u00c7emberin \u00c7evresi"
+],
+"218": [
+"\u00c7emberin \u00c7evresi"
+],
+"219": [
+"Yar\u0131m \u00c7emberin \u00c7evresi"
+],
+"220": [
+"\u00c7embersel Hareket"
+],
+"221": [
+"Dairenin Alan\u0131 1"
+],
+"222": [
+"Dairenin Alan\u0131 2"
+],
+"223": [
+"Halkan\u0131n Alan\u0131"
+],
+"224": [
+"Daire Diliminin Alan\u0131"
+],
+"225": [
+"Yar\u0131m Dairenin Alan\u0131"
+],
+"226": [
+"\u0130stenmeyen B\u00f6lgenin Alan\u0131n\u0131 \u00c7\u0131karmak"
+],
+"227": [
+"Merkez A\u00e7\u0131dan Hareketle Alan Hesaplama"
+],
+"228": [
+"Uygun B\u00f6lgelerin Alanlar\u0131n\u0131 \u0130simlendirerek Alan\u0131 Bulunabilir Geometrik \u015eekiller Elde Etme"
+],
+"229": [
+"Pisagor ile Alan Bulma"
+],
+"230": [
+"Daire Dilimlerinin Alanlar\u0131 Oran\u0131"
+],
+"231": [
+"Dairede Katlama"
+],
+"232": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"233": [
+"Daire \u0130\u00e7ine Yerle\u015ftirilmi\u015f E\u015f \u015eekiller"
+],
+"234": [
+"\u00d6zde\u015f \u015eekillerden Olu\u015fan Sorular"
+],
+"235": [
+"Nokta ve Eksenlere Uzakl\u0131k"
+],
+"236": [
+"K\u00f6\u015felerinin Koordinatlar\u0131 Verilen \u00c7okgenler"
+],
+"237": [
+"Analitik D\u00fczlemin B\u00f6lgeleri"
+],
+"238": [
+"Analitik D\u00fczlemde \u00dc\u00e7genlerin Benzerli\u011fi"
+],
+"239": [
+"\u00d6zde\u015f \u015eekillerle Olu\u015fturulan Sorular"
+],
+"240": [
+"\u0130ki Nokta Aras\u0131ndaki Uzakl\u0131k"
+],
+"241": [
+"Orta Noktan\u0131n Koordinatlar\u0131"
+],
+"242": [
+"Do\u011fru Par\u00e7as\u0131n\u0131 Belirli Oranda B\u00f6len Nokta"
+],
+"243": [
+"Paralelkenar\u0131n Kar\u015f\u0131l\u0131kl\u0131 K\u00f6\u015feleri Aras\u0131ndaki \u0130li\u015fki"
+],
+"244": [
+"\u00dc\u00e7genin A\u011f\u0131rl\u0131k Merkezinin Koordinatlar\u0131"
+],
+"245": [
+"K\u00f6\u015felerinin Koordinatlar\u0131 Verilen \u00dc\u00e7genlerin Alan\u0131"
+],
+"246": [
+"Analitik D\u00fczlemde Katlama"
+],
+"247": [
+"S\u00f6zel Olarak \u0130fade Edilmi\u015f Sorular"
+],
+"248": [
+"E\u011fim A\u00e7\u0131s\u0131 Verilen Do\u011frunun E\u011fimi"
+],
+"249": [
+"E\u011fim A\u00e7\u0131s\u0131 Verilen Do\u011frunun E\u011fimi"
+],
+"250": [
+"Do\u011fru \u00dczerindeki Nokta"
+],
+"251": [
+"\u0130ki Noktas\u0131 Verilen Do\u011frunun E\u011fimi"
+],
+"252": [
+"Denklemi Verilen Do\u011frunun E\u011fimi"
+],
+"253": [
+"Birbirine Dik Do\u011frular\u0131n E\u011fimleri Aras\u0131ndaki \u0130li\u015fki"
+],
+"254": [
+"Birbirine Paralel Do\u011frular\u0131n E\u011fimleri Aras\u0131ndaki \u0130li\u015fki"
+],
+"255": [
+"Do\u011frunun Eksenleri Kesti\u011fi Noktalar"
+],
+"256": [
+"E\u011fimi ve Bir Noktas\u0131 Verilen Do\u011frunun Denklemi"
+],
+"257": [
+"Orijinden Ge\u00e7en Do\u011frunun Denklemi"
+],
+"258": [
+"E\u011fimi ve Bir Noktas\u0131 Verilen Do\u011frunun Denklemi"
+],
+"259": [
+"Eksenleri Kesti\u011fi Noktalar Verilen Do\u011frunun Denklemi"
+],
+"260": [
+"Katlama Sorular\u0131nda Do\u011fru Denkleminin Bulunmas\u0131"
+],
+"261": [
+"Eksenlere Paralel Do\u011frular\u0131n Denklemi ve A\u00e7\u0131ortay Do\u011frular\u0131n\u0131n Denklemi"
+],
+"262": [
+"\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 2"
+],
+"263": [
+"\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 1"
+],
+"264": [
+"\u0130ki Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 3"
+],
+"265": [
+"Bir Noktan\u0131n Bir Do\u011fruya Uzakl\u0131\u011f\u0131"
+],
+"266": [
+"\u015eekli E\u015fit Alanl\u0131 \u0130ki B\u00f6lgeye B\u00f6len Do\u011fru"
+],
+"267": [
+"Paralel \u0130ki Do\u011fru Aras\u0131ndaki Uzakl\u0131k"
+],
+"268": [
+"Birinci Dereceden \u0130ki Bilinmeyenli E\u015fitsizlikler"
+],
+"269": [
+"Birinci Dereceden \u0130ki Bilinmeyenli E\u015fitsizlikler"
+],
+"270": [
+"\u00d6teleme D\u00f6n\u00fc\u015f\u00fcm\u00fc"
+],
+"271": [
+"Eksenlere G\u00f6re Yans\u0131ma"
+],
+"272": [
+"y = x ve y = \u2013x Do\u011frular\u0131na G\u00f6re Yans\u0131ma"
+],
+"273": [
+"x = a ve y = b Do\u011frular\u0131na G\u00f6re Yans\u0131ma"
+],
+"274": [
+"Noktan\u0131n Noktaya G\u00f6re Yans\u0131mas\u0131"
+],
+"275": [
+"Do\u011frunun Noktaya G\u00f6re Yans\u0131mas\u0131"
+],
+"276": [
+"Noktan\u0131n Do\u011fruya G\u00f6re Yans\u0131mas\u0131"
+],
+"277": [
+"Do\u011frunun Do\u011fruya G\u00f6re Yans\u0131mas\u0131"
+],
+"278": [
+"D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 1"
+],
+"279": [
+"D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 2"
+],
+"280": [
+"D\u00f6nme D\u00f6n\u00fc\u015f\u00fcm\u00fc 2"
+],
+"281": [
+"Dik Prizman\u0131n Alan ve Hacmi (S\u00f6zel)"
+],
+"282": [
+"Dik Prizman\u0131n Alan ve Hacmi (\u015eekilli)"
+],
+"283": [
+"Prizmada Do\u011fru Par\u00e7as\u0131"
+],
+"284": [
+"Prizmada \u00c7okgen"
+],
+"285": [
+"Prizman\u0131n Y\u00fczey Alan\u0131"
+],
+"286": [
+"Prizman\u0131n Y\u00fczey Alan\u0131ndaki De\u011fi\u015fim"
+],
+"287": [
+"Prizman\u0131n \u0130\u00e7ine Cisim Atma"
+],
+"288": [
+"Prizman\u0131n \u0130\u00e7indeki Suyun Y\u00fcksekli\u011fi ve Hacmi"
+],
+"289": [
+"Prizman\u0131n Alan ve Hacmi (S\u00f6zel Sorular)"
+],
+"290": [
+"Kartondan Kutu Yapma Sorular\u0131"
+],
+"291": [
+"Prizman\u0131n A\u00e7\u0131n\u0131m\u0131"
+],
+"292": [
+"Prizman\u0131n Y\u00fczeyi \u00dczerinde Hareket"
+],
+"293": [
+"Dik Dairesel Silindirde Uzunluk Hesaplama"
+],
+"294": [
+"Dik Dairesel Silindirin Yanal Alan\u0131"
+],
+"295": [
+"Dik Dairesel Silindirin Y\u00fczey Alan\u0131"
+],
+"296": [
+"Y\u00fczey Alan\u0131ndaki De\u011fi\u015fim"
+],
+"297": [
+"Dik Dairesel Silindirin Hacmi"
+],
+"298": [
+"Dik Dairesel Silindirin A\u00e7\u0131n\u0131m\u0131"
+],
+"299": [
+"Birbirine Te\u011fet Olan Silindirler"
+],
+"300": [
+"Silindir Y\u00fczeyinde Hareket"
+],
+"301": [
+"Silindir ile \u0130lgili S\u00f6zel Sorular"
+],
+"302": [
+"D\u00f6nd\u00fcrme Sonucunda Olu\u015fan Silindir"
+],
+"303": [
+"Piramitte Uzunluk"
+],
+"304": [
+"Piramidin Hacmi"
+],
+"305": [
+"Piramidin Y\u00fcksekli\u011fi"
+],
+"306": [
+"Piramidin Yanal ve Y\u00fczey Alan\u0131"
+],
+"307": [
+"Piramidin A\u00e7\u0131n\u0131m\u0131"
+],
+"308": [
+"Yeni Nesil Soru"
+],
+"309": [
+"Piramidin Bir Yan Y\u00fcz\u00fcn\u00fcn Taban ile Yapt\u0131\u011f\u0131 A\u00e7\u0131"
+],
+"310": [
+"Piramitte Benzerlik ve Hacim \u0130li\u015fkisi"
+],
+"311": [
+"Piramidin Y\u00fczeyi \u00dczerinde Hareket"
+],
+"312": [
+"D\u00fczg\u00fcn D\u00f6rty\u00fczl\u00fc"
+],
+"313": [
+"Dik Dairesel koninin Yanal ve Y\u00fczey Alan\u0131"
+],
+"314": [
+"Dik Dairesel Koninin Hacmi"
+],
+"315": [
+"Dik Dairesel Koninin Yanal ve Y\u00fczey Alan\u0131"
+],
+"316": [
+"Dik Dairesel Koninin Hacmi"
+],
+"317": [
+"Konilerde Benzerlik Hacim \u0130li\u015fkisi"
+],
+"318": [
+"Dik Dairesel Koni ile \u0130lgili S\u00f6zel Sorular"
+],
+"319": [
+"Dik Dairesel Koninin A\u00e7\u0131n\u0131m\u0131"
+],
+"320": [
+"Tabanlar\u0131 \u00c7ak\u0131\u015f\u0131k Koniler"
+],
+"321": [
+"En K\u0131sa Yol Sorular\u0131"
+],
+"322": [
+"K\u00fcrenin Alan\u0131"
+],
+"323": [
+"K\u00fcrenin Hacmi"
+],
+"324": [
+"\u00c7emberin Standart Denklemi"
+],
+"325": [
+"Koordinat D\u00fczleminde Verilen \u00c7emberin Standart Denklemi"
+],
+"326": [
+"Koordinat D\u00fczleminde Eksenlere Te\u011fet Olan \u00c7emberler"
+],
+"327": [
+"Eksenlere Te\u011fet Olan \u00c7emberler"
+],
+"328": [
+"\u00c7emberin Genel Denklemi 2"
+],
+"329": [
+"\u00c7emberin Genel Denklemi 1"
+],
+"330": [
+"\u00c7ember ve Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 1"
+],
+"331": [
+"\u00c7ember ve Do\u011frunun Birbirine G\u00f6re Durumlar\u0131 2"
+]
+}
+},
+"goz_ile_cozulen": {
+"baslik_139": "kitapta basili 'Yeni Nesil Test Test' (H1 dogru)",
+"kutu_19": "virgul basili (K1 dogru)"
+}
+}
