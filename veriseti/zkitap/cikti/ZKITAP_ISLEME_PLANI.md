@@ -352,6 +352,19 @@ onceki hatlardan gelir.
   farkin medyani %0,28 (simge kaymasi) ama 25 sayfa gercekten farkli
   icerik. #12 (2025) islendi, #11 ISLENMEDI.
 
+### 8.3 Duzeltmeler -- mukerrer analizi (23 Eyl 2026)
+
+Olcum ve gozle dogrulama `ZKITAP_KITAP_DURUMU.md` bolum 2'de. Bu planin tablolarini etkileyenler:
+
+* **D / #3-#4:** "#3/#4 ayni yakalama" YANLIS -- 2024 ve 2025 baskilari (revize, en az %69 ortak).
+  `GEO_ORIJINAL_2024_FAZ1.md` 18.1 bunu zaten dogru yaziyordu; #4 kurtarma kanali olarak KULLANILMADI.
+* **D / #8 (Mikro Orijinal-Tyt Ayt-Geometri 2):** "ayri kitap, islenmeye deger" YANLIS -- islenmis
+  Mikro 2025 AYT Geometri'nin 2024 baskisi (en az %81 ortak). Islenirse mukerrer; SAHIP KARARI.
+* **8.1 #6/#7 (Edebiyat):** satir ters. Ithal edilen baski 2024 klasorudur (#7,
+  `...Soru Bankasi 2024`); 2023-2024 klasoru (#6) kurtarma kanalidir (`BILGI_SARMAL_EDEBIYAT_YONTEM.md` satir 5).
+* **Klasor adlari kitap kimligi degildir;** kimlik okuyucu sekme basligindan okunmali (278 klasorun eslemesi
+  `ZKITAP_KITAP_DURUMU.md` bolum 7).
+
 ### 8.2 Plan yazilirken bilinmeyen, uygulamada olculen seyler
 
 1. **Sayfa karti her kitap icin ayri**: Mikro TYT Fizik 728x968,

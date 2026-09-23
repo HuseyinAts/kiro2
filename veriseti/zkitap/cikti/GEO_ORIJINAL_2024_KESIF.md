@@ -1,4 +1,9 @@
 # Dalga D / kitap #3 -- Orijinal 2024 TYT-AYT Geometri Soru Bankasi
+
+> **DUZELTME (23 Eyl 2026):** asagida "#4 ayni yakalama / kurtarma kanali" deniyor; bu YANLIS.
+> #4 (`Orijinal-Tyt Ayt Geometri Soru Bankasi`) 2025 baskisidir, bazi sorulari farklidir.
+> `GEO_ORIJINAL_2024_FAZ1.md` 18.1 ve `ZKITAP_KITAP_DURUMU.md` bolum 2.
+
 # FAZ 0 KESIF FISI
 
 Plan: `ZKITAP_ISLEME_PLANI.md` bolum 1 (dalga D) ve bolum 3 (K0.1-K0.8).
