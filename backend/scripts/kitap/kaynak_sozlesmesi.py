@@ -141,6 +141,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "C1CELL_GEO_2024",
         "ithal_araci": "scripts/kitap/c1cell_geo_ithal.py",
     },
+    "Orijinal 2024 TYT-AYT Geometri Soru Bankasi": {
+        "onek": "ORIJINAL_GEO_2024",
+        "ithal_araci": "scripts/kitap/orijinal_geo_ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",
