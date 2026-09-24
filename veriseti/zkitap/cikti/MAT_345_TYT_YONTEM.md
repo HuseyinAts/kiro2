@@ -159,7 +159,9 @@ kactir?'); bu yuzden GUCLU aday = ayrica bes sikkin >= 3'u birebir: **27**.
 27'nin 23'unde DB cevabi bizim okumamizla ayni. 4 catismanin (T055_09,
 T055_13, T084_01 -- '345 2024 Tyt Matematik' eski hat; T169_02 -- bu kitabin
 eski hat satiri) hepsinde kitabin kendi cevap satiri 6x buyutmede gozle
-yeniden okundu: bizim okumamiz dogru. Eski hat satirlarina DOKUNULMADI.
+yeniden okundu: bizim okumamiz dogru. Ithalde eski hat satirlarina
+dokunulmadi; sahip karariyla 0044 onlari kitabin basili anahtarina hizaladi
+(bolum 7).
 
 Hash duzeyinde (metin + sikler) bu kitabin 2063 sorusu birbirinden farkli;
 sekil ikizi yok.
