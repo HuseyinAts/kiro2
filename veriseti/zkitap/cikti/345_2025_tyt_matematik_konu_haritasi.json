@@ -1,0 +1,2755 @@
+{
+ "kaynak": "345 2025 TYT Matematik Soru Bankasi",
+ "nereden": "Bolum ve konu adlari + baslangic sayfalari: kitabin KENDI icindekiler sayfalari (dosya 3-4). Bolum ayraci sayfalari (5, 57, 85, 111, 127, 169, 203, 265, 295, 327, 353, 381, 401) yalniz 'BOLUM NN' ve konu listesini basar; bolumun ayrica bir adi YOK, uydurulmadi. Test turu, tur ici sira ve bant konu adi: her testin ilk sayfasindaki baslik bandi (202 bant, goz ile okundu).",
+ "dogrulama": "Testlerin sayfa sinirlari cevap satiri numaralandirmasindan turetildi (345_2025_tyt_matematik_cevap_anahtari.json); 202 testin 202'si tek bir icindekiler araligina dustu. Bantta konu adi basili 184 testin 184'sinda bant adi == aralik konusu (bosluklar yok sayilarak; 2 acik esleme: FAKTORIYEL, SAYISAL VE SOZEL MANTIK). Klasiklesmis ve OSYM Tadinda sira numaralari her konuda 1'den kesintisiz.",
+ "bant_esleme": {
+  "FAKTORIYEL": "FAKTORIYEL KAVRAMI",
+  "SAYISAL VE SOZEL MANTIK": "SAYISAL - SOZEL MANTIK"
+ },
+ "bolum_sayisi": 13,
+ "bolumler": [
+  {
+   "kod": "MAT-345T25-B01",
+   "no": 1,
+   "ad": "B\u00f6l\u00fcm 01",
+   "ayrac_sayfasi": 5
+  },
+  {
+   "kod": "MAT-345T25-B02",
+   "no": 2,
+   "ad": "B\u00f6l\u00fcm 02",
+   "ayrac_sayfasi": 57
+  },
+  {
+   "kod": "MAT-345T25-B03",
+   "no": 3,
+   "ad": "B\u00f6l\u00fcm 03",
+   "ayrac_sayfasi": 85
+  },
+  {
+   "kod": "MAT-345T25-B04",
+   "no": 4,
+   "ad": "B\u00f6l\u00fcm 04",
+   "ayrac_sayfasi": 111
+  },
+  {
+   "kod": "MAT-345T25-B05",
+   "no": 5,
+   "ad": "B\u00f6l\u00fcm 05",
+   "ayrac_sayfasi": 127
+  },
+  {
+   "kod": "MAT-345T25-B06",
+   "no": 6,
+   "ad": "B\u00f6l\u00fcm 06",
+   "ayrac_sayfasi": 169
+  },
+  {
+   "kod": "MAT-345T25-B07",
+   "no": 7,
+   "ad": "B\u00f6l\u00fcm 07",
+   "ayrac_sayfasi": 203
+  },
+  {
+   "kod": "MAT-345T25-B08",
+   "no": 8,
+   "ad": "B\u00f6l\u00fcm 08",
+   "ayrac_sayfasi": 265
+  },
+  {
+   "kod": "MAT-345T25-B09",
+   "no": 9,
+   "ad": "B\u00f6l\u00fcm 09",
+   "ayrac_sayfasi": 295
+  },
+  {
+   "kod": "MAT-345T25-B10",
+   "no": 10,
+   "ad": "B\u00f6l\u00fcm 10",
+   "ayrac_sayfasi": 327
+  },
+  {
+   "kod": "MAT-345T25-B11",
+   "no": 11,
+   "ad": "B\u00f6l\u00fcm 11",
+   "ayrac_sayfasi": 353
+  },
+  {
+   "kod": "MAT-345T25-B12",
+   "no": 12,
+   "ad": "B\u00f6l\u00fcm 12",
+   "ayrac_sayfasi": 381
+  },
+  {
+   "kod": "MAT-345T25-B13",
+   "no": 13,
+   "ad": "B\u00f6l\u00fcm 13",
+   "ayrac_sayfasi": 401
+  }
+ ],
+ "konu_sayisi": 30,
+ "konular": [
+  {
+   "kod": "MAT-345T25-B01-01",
+   "bolum": 1,
+   "ad": "Ger\u00e7el Say\u0131lar - 1",
+   "ad_ascii": "GERCEL SAYILAR - 1",
+   "ilk_sayfa": 6,
+   "son_sayfa": 29
+  },
+  {
+   "kod": "MAT-345T25-B01-02",
+   "bolum": 1,
+   "ad": "Ger\u00e7el Say\u0131lar - 2",
+   "ad_ascii": "GERCEL SAYILAR - 2",
+   "ilk_sayfa": 30,
+   "son_sayfa": 45
+  },
+  {
+   "kod": "MAT-345T25-B01-03",
+   "bolum": 1,
+   "ad": "Fakt\u00f6riyel Kavram\u0131",
+   "ad_ascii": "FAKTORIYEL KAVRAMI",
+   "ilk_sayfa": 46,
+   "son_sayfa": 49
+  },
+  {
+   "kod": "MAT-345T25-B01-04",
+   "bolum": 1,
+   "ad": "Basamak Kavram\u0131",
+   "ad_ascii": "BASAMAK KAVRAMI",
+   "ilk_sayfa": 50,
+   "son_sayfa": 56
+  },
+  {
+   "kod": "MAT-345T25-B02-01",
+   "bolum": 2,
+   "ad": "G\u00f6rsel Zeka",
+   "ad_ascii": "GORSEL ZEKA",
+   "ilk_sayfa": 58,
+   "son_sayfa": 67
+  },
+  {
+   "kod": "MAT-345T25-B02-02",
+   "bolum": 2,
+   "ad": "Say\u0131sal - S\u00f6zel Mant\u0131k",
+   "ad_ascii": "SAYISAL - SOZEL MANTIK",
+   "ilk_sayfa": 68,
+   "son_sayfa": 73
+  },
+  {
+   "kod": "MAT-345T25-B02-03",
+   "bolum": 2,
+   "ad": "\u00d6r\u00fcnt\u00fcl\u00fc Say\u0131 Gruplar\u0131",
+   "ad_ascii": "ORUNTULU SAYI GRUPLARI",
+   "ilk_sayfa": 74,
+   "son_sayfa": 84
+  },
+  {
+   "kod": "MAT-345T25-B03-01",
+   "bolum": 3,
+   "ad": "I ve II Bilinmeyenli Denklemler",
+   "ad_ascii": "I VE II BILINMEYENLI DENKLEMLER",
+   "ilk_sayfa": 86,
+   "son_sayfa": 95
+  },
+  {
+   "kod": "MAT-345T25-B03-02",
+   "bolum": 3,
+   "ad": "I ve II Bilinmeyenli E\u015fitsizlikler",
+   "ad_ascii": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "ilk_sayfa": 96,
+   "son_sayfa": 110
+  },
+  {
+   "kod": "MAT-345T25-B04-01",
+   "bolum": 4,
+   "ad": "Mutlak De\u011fer",
+   "ad_ascii": "MUTLAK DEGER",
+   "ilk_sayfa": 112,
+   "son_sayfa": 126
+  },
+  {
+   "kod": "MAT-345T25-B05-01",
+   "bolum": 5,
+   "ad": "\u00dcsl\u00fc Say\u0131lar",
+   "ad_ascii": "USLU SAYILAR",
+   "ilk_sayfa": 128,
+   "son_sayfa": 147
+  },
+  {
+   "kod": "MAT-345T25-B05-02",
+   "bolum": 5,
+   "ad": "K\u00f6kl\u00fc Say\u0131lar",
+   "ad_ascii": "KOKLU SAYILAR",
+   "ilk_sayfa": 148,
+   "son_sayfa": 168
+  },
+  {
+   "kod": "MAT-345T25-B06-01",
+   "bolum": 6,
+   "ad": "Tan\u0131m ve Form\u00fcl Kullanabilme",
+   "ad_ascii": "TANIM VE FORMUL KULLANABILME",
+   "ilk_sayfa": 170,
+   "son_sayfa": 173
+  },
+  {
+   "kod": "MAT-345T25-B06-02",
+   "bolum": 6,
+   "ad": "Oran - Orant\u0131",
+   "ad_ascii": "ORAN - ORANTI",
+   "ilk_sayfa": 174,
+   "son_sayfa": 187
+  },
+  {
+   "kod": "MAT-345T25-B06-03",
+   "bolum": 6,
+   "ad": "\u00c7arpanlara Ay\u0131rma",
+   "ad_ascii": "CARPANLARA AYIRMA",
+   "ilk_sayfa": 188,
+   "son_sayfa": 202
+  },
+  {
+   "kod": "MAT-345T25-B07-01",
+   "bolum": 7,
+   "ad": "Say\u0131 Problemleri",
+   "ad_ascii": "SAYI PROBLEMLERI",
+   "ilk_sayfa": 204,
+   "son_sayfa": 235
+  },
+  {
+   "kod": "MAT-345T25-B07-02",
+   "bolum": 7,
+   "ad": "Kesir Problemleri",
+   "ad_ascii": "KESIR PROBLEMLERI",
+   "ilk_sayfa": 236,
+   "son_sayfa": 249
+  },
+  {
+   "kod": "MAT-345T25-B07-03",
+   "bolum": 7,
+   "ad": "Ya\u015f Problemleri",
+   "ad_ascii": "YAS PROBLEMLERI",
+   "ilk_sayfa": 250,
+   "son_sayfa": 264
+  },
+  {
+   "kod": "MAT-345T25-B08-01",
+   "bolum": 8,
+   "ad": "Y\u00fczde Problemleri",
+   "ad_ascii": "YUZDE PROBLEMLERI",
+   "ilk_sayfa": 266,
+   "son_sayfa": 283
+  },
+  {
+   "kod": "MAT-345T25-B08-02",
+   "bolum": 8,
+   "ad": "Kar\u0131\u015f\u0131m Problemleri",
+   "ad_ascii": "KARISIM PROBLEMLERI",
+   "ilk_sayfa": 284,
+   "son_sayfa": 294
+  },
+  {
+   "kod": "MAT-345T25-B09-01",
+   "bolum": 9,
+   "ad": "H\u0131z Problemleri",
+   "ad_ascii": "HIZ PROBLEMLERI",
+   "ilk_sayfa": 296,
+   "son_sayfa": 311
+  },
+  {
+   "kod": "MAT-345T25-B09-02",
+   "bolum": 9,
+   "ad": "Grafik Yorumlama",
+   "ad_ascii": "GRAFIK YORUMLAMA",
+   "ilk_sayfa": 312,
+   "son_sayfa": 319
+  },
+  {
+   "kod": "MAT-345T25-B09-03",
+   "bolum": 9,
+   "ad": "Emek Problemleri",
+   "ad_ascii": "EMEK PROBLEMLERI",
+   "ilk_sayfa": 320,
+   "son_sayfa": 326
+  },
+  {
+   "kod": "MAT-345T25-B10-01",
+   "bolum": 10,
+   "ad": "Asal \u00c7arpanlar",
+   "ad_ascii": "ASAL CARPANLAR",
+   "ilk_sayfa": 328,
+   "son_sayfa": 333
+  },
+  {
+   "kod": "MAT-345T25-B10-02",
+   "bolum": 10,
+   "ad": "B\u00f6lme - B\u00f6l\u00fcnebilme",
+   "ad_ascii": "BOLME - BOLUNEBILME",
+   "ilk_sayfa": 334,
+   "son_sayfa": 343
+  },
+  {
+   "kod": "MAT-345T25-B10-03",
+   "bolum": 10,
+   "ad": "EBOB - EKOK",
+   "ad_ascii": "EBOB - EKOK",
+   "ilk_sayfa": 344,
+   "son_sayfa": 352
+  },
+  {
+   "kod": "MAT-345T25-B11-01",
+   "bolum": 11,
+   "ad": "Mant\u0131k",
+   "ad_ascii": "MANTIK",
+   "ilk_sayfa": 354,
+   "son_sayfa": 365
+  },
+  {
+   "kod": "MAT-345T25-B11-02",
+   "bolum": 11,
+   "ad": "K\u00fcmeler - Kartezyen \u00c7arp\u0131m",
+   "ad_ascii": "KUMELER - KARTEZYEN CARPIM",
+   "ilk_sayfa": 366,
+   "son_sayfa": 380
+  },
+  {
+   "kod": "MAT-345T25-B12-01",
+   "bolum": 12,
+   "ad": "Fonksiyonlar",
+   "ad_ascii": "FONKSIYONLAR",
+   "ilk_sayfa": 382,
+   "son_sayfa": 400
+  },
+  {
+   "kod": "MAT-345T25-B13-01",
+   "bolum": 13,
+   "ad": "Sayma - Olas\u0131l\u0131k",
+   "ad_ascii": "SAYMA - OLASILIK",
+   "ilk_sayfa": 402,
+   "son_sayfa": 416
+  }
+ ],
+ "test_sayisi": 202,
+ "testler": [
+  {
+   "birim": "MAT345-T001",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    6,
+    7
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T002",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    8,
+    9
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T003",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    10,
+    11
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T004",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    12,
+    13
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T005",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    14,
+    15
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T006",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    16,
+    17
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T007",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    18,
+    19
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T008",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    20,
+    21
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T009",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    22,
+    23
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T010",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 6,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    24,
+    25
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T011",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 7,
+   "bant_konu": "GERCEL SAYILAR-1",
+   "sayfalar": [
+    26,
+    27
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T012",
+   "konu": "MAT-345T25-B01-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    28,
+    29
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T013",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    30,
+    31
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T014",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    32,
+    33
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T015",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    34,
+    35
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T016",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    36,
+    37
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T017",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    38,
+    39
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T018",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    40,
+    41
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T019",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    42,
+    43
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T020",
+   "konu": "MAT-345T25-B01-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "GERCEL SAYILAR-2",
+   "sayfalar": [
+    44,
+    45
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T021",
+   "konu": "MAT-345T25-B01-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "FAKTORIYEL",
+   "sayfalar": [
+    46,
+    47
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T022",
+   "konu": "MAT-345T25-B01-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "FAKTORIYEL",
+   "sayfalar": [
+    48,
+    49
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T023",
+   "konu": "MAT-345T25-B01-04",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "BASAMAK KAVRAMI",
+   "sayfalar": [
+    50,
+    51
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T024",
+   "konu": "MAT-345T25-B01-04",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "BASAMAK KAVRAMI",
+   "sayfalar": [
+    52,
+    53
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T025",
+   "konu": "MAT-345T25-B01-04",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "BASAMAK KAVRAMI",
+   "sayfalar": [
+    54
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T026",
+   "konu": "MAT-345T25-B01-04",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "BASAMAK KAVRAMI",
+   "sayfalar": [
+    55,
+    56
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T027",
+   "konu": "MAT-345T25-B02-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "GORSEL ZEKA",
+   "sayfalar": [
+    58,
+    59
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T028",
+   "konu": "MAT-345T25-B02-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "GORSEL ZEKA",
+   "sayfalar": [
+    60,
+    61
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T029",
+   "konu": "MAT-345T25-B02-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "GORSEL ZEKA",
+   "sayfalar": [
+    62,
+    63
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T030",
+   "konu": "MAT-345T25-B02-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "GORSEL ZEKA",
+   "sayfalar": [
+    64,
+    65
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T031",
+   "konu": "MAT-345T25-B02-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    66,
+    67
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T032",
+   "konu": "MAT-345T25-B02-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "SAYISAL VE SOZEL MANTIK",
+   "sayfalar": [
+    68,
+    69
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T033",
+   "konu": "MAT-345T25-B02-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "SAYISAL VE SOZEL MANTIK",
+   "sayfalar": [
+    70,
+    71
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T034",
+   "konu": "MAT-345T25-B02-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "SAYISAL VE SOZEL MANTIK",
+   "sayfalar": [
+    72,
+    73
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T035",
+   "konu": "MAT-345T25-B02-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "ORUNTULU SAYI GRUPLARI",
+   "sayfalar": [
+    74,
+    75
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T036",
+   "konu": "MAT-345T25-B02-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "ORUNTULU SAYI GRUPLARI",
+   "sayfalar": [
+    76,
+    77
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T037",
+   "konu": "MAT-345T25-B02-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "ORUNTULU SAYI GRUPLARI",
+   "sayfalar": [
+    78,
+    79
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "MAT345-T038",
+   "konu": "MAT-345T25-B02-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "ORUNTULU SAYI GRUPLARI",
+   "sayfalar": [
+    80,
+    81
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T039",
+   "konu": "MAT-345T25-B02-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "ORUNTULU SAYI GRUPLARI",
+   "sayfalar": [
+    82,
+    83
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T040",
+   "konu": "MAT-345T25-B02-03",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    84
+   ],
+   "soru_sayisi": 2
+  },
+  {
+   "birim": "MAT345-T041",
+   "konu": "MAT-345T25-B03-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "I VE II BILINMEYENLI DENKLEMLER",
+   "sayfalar": [
+    86,
+    87
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T042",
+   "konu": "MAT-345T25-B03-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "I VE II BILINMEYENLI DENKLEMLER",
+   "sayfalar": [
+    88,
+    89
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T043",
+   "konu": "MAT-345T25-B03-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "I VE II BILINMEYENLI DENKLEMLER",
+   "sayfalar": [
+    90,
+    91
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T044",
+   "konu": "MAT-345T25-B03-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "I VE II BILINMEYENLI DENKLEMLER",
+   "sayfalar": [
+    92,
+    93
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T045",
+   "konu": "MAT-345T25-B03-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "I VE II BILINMEYENLI DENKLEMLER",
+   "sayfalar": [
+    94,
+    95
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T046",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "sayfalar": [
+    96,
+    97
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T047",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "sayfalar": [
+    98,
+    99
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T048",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "sayfalar": [
+    100,
+    101
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T049",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "sayfalar": [
+    102,
+    103
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T050",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "sayfalar": [
+    104,
+    105
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "MAT345-T051",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "I VE II BILINMEYENLI ESITSIZLIKLER",
+   "sayfalar": [
+    106,
+    107
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T052",
+   "konu": "MAT-345T25-B03-02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    108,
+    109,
+    110
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T053",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    112,
+    113
+   ],
+   "soru_sayisi": 18
+  },
+  {
+   "birim": "MAT345-T054",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    114,
+    115
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T055",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    116,
+    117
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T056",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    118
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T057",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    119
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T058",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    120,
+    121
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T059",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    122,
+    123
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T060",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "MUTLAK DEGER",
+   "sayfalar": [
+    124,
+    125
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T061",
+   "konu": "MAT-345T25-B04-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    126
+   ],
+   "soru_sayisi": 2
+  },
+  {
+   "birim": "MAT345-T062",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    128,
+    129
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T063",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    130,
+    131
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T064",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    132,
+    133
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T065",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    134,
+    135
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T066",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 5,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    136,
+    137
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T067",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    138,
+    139
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T068",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    140,
+    141
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T069",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    142,
+    143
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T070",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    144,
+    145
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T071",
+   "konu": "MAT-345T25-B05-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "bant_konu": "USLU SAYILAR",
+   "sayfalar": [
+    146,
+    147
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T072",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    148,
+    149
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "MAT345-T073",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    150,
+    151
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T074",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    152,
+    153
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T075",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    154,
+    155
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T076",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 5,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    156,
+    157
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T077",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 6,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    158,
+    159
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T078",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    160,
+    161
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T079",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    162,
+    163
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T080",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    164,
+    165
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T081",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "KOKLU SAYILAR",
+   "sayfalar": [
+    166,
+    167
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T082",
+   "konu": "MAT-345T25-B05-02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    168
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "MAT345-T083",
+   "konu": "MAT-345T25-B06-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "TANIM VE FORMUL KULLANABILME",
+   "sayfalar": [
+    170,
+    171
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T084",
+   "konu": "MAT-345T25-B06-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "TANIM VE FORMUL KULLANABILME",
+   "sayfalar": [
+    172,
+    173
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T085",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "ORAN - ORANTI",
+   "sayfalar": [
+    174,
+    175
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T086",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "ORAN - ORANTI",
+   "sayfalar": [
+    176,
+    177
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T087",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "ORAN - ORANTI",
+   "sayfalar": [
+    178,
+    179
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T088",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "ORAN - ORANTI",
+   "sayfalar": [
+    180,
+    181
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T089",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "ORAN - ORANTI",
+   "sayfalar": [
+    182,
+    183
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T090",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "ORAN - ORANTI",
+   "sayfalar": [
+    184,
+    185
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T091",
+   "konu": "MAT-345T25-B06-02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    186,
+    187
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "MAT345-T092",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    188,
+    189
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T093",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    190,
+    191
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T094",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    192,
+    193
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T095",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    194,
+    195
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T096",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    196,
+    197
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T097",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    198,
+    199
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T098",
+   "konu": "MAT-345T25-B06-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "CARPANLARA AYIRMA",
+   "sayfalar": [
+    200,
+    201,
+    202
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T099",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    204,
+    205
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T100",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    206,
+    207
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T101",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    208,
+    209
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T102",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    210,
+    211
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "MAT345-T103",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    212,
+    213
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T104",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    214,
+    215
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T105",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    216,
+    217
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T106",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    218,
+    219
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T107",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 6,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    220,
+    221
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T108",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 7,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    222,
+    223
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T109",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 8,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    224,
+    225
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T110",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 9,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    226,
+    227
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T111",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 10,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    228,
+    229
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T112",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 11,
+   "bant_konu": "SAYI PROBLEMLERI",
+   "sayfalar": [
+    230,
+    231
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T113",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    232,
+    233
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T114",
+   "konu": "MAT-345T25-B07-01",
+   "tur": "orijinal",
+   "tur_sira": 2,
+   "bant_konu": null,
+   "sayfalar": [
+    234,
+    235
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T115",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    236,
+    237
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T116",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    238,
+    239
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T117",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    240,
+    241
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T118",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    242,
+    243
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T119",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    244,
+    245
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T120",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    246,
+    247
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T121",
+   "konu": "MAT-345T25-B07-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "KESIR PROBLEMLERI",
+   "sayfalar": [
+    248,
+    249
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T122",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    250,
+    251
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T123",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    252,
+    253
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T124",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    254,
+    255
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T125",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T126",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 5,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T127",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T128",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "YAS PROBLEMLERI",
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T129",
+   "konu": "MAT-345T25-B07-03",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    264
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "MAT345-T130",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T131",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    268,
+    269
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T132",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    270,
+    271
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T133",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    272,
+    273
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T134",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 5,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    274,
+    275
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T135",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T136",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T137",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "YUZDE PROBLEMLERI",
+   "sayfalar": [
+    280,
+    281
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T138",
+   "konu": "MAT-345T25-B08-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    282,
+    283
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T139",
+   "konu": "MAT-345T25-B08-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "KARISIM PROBLEMLERI",
+   "sayfalar": [
+    284,
+    285
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T140",
+   "konu": "MAT-345T25-B08-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "KARISIM PROBLEMLERI",
+   "sayfalar": [
+    286,
+    287
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T141",
+   "konu": "MAT-345T25-B08-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "KARISIM PROBLEMLERI",
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T142",
+   "konu": "MAT-345T25-B08-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "KARISIM PROBLEMLERI",
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T143",
+   "konu": "MAT-345T25-B08-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "KARISIM PROBLEMLERI",
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T144",
+   "konu": "MAT-345T25-B08-02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    294
+   ],
+   "soru_sayisi": 2
+  },
+  {
+   "birim": "MAT345-T145",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    296,
+    297
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T146",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    298,
+    299
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T147",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T148",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T149",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T150",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    306,
+    307
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T151",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "bant_konu": "HIZ PROBLEMLERI",
+   "sayfalar": [
+    308,
+    309
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T152",
+   "konu": "MAT-345T25-B09-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    310,
+    311
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "MAT345-T153",
+   "konu": "MAT-345T25-B09-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "GRAFIK YORUMLAMA",
+   "sayfalar": [
+    312,
+    313
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T154",
+   "konu": "MAT-345T25-B09-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "GRAFIK YORUMLAMA",
+   "sayfalar": [
+    314,
+    315
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "MAT345-T155",
+   "konu": "MAT-345T25-B09-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "GRAFIK YORUMLAMA",
+   "sayfalar": [
+    316,
+    317
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "MAT345-T156",
+   "konu": "MAT-345T25-B09-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "GRAFIK YORUMLAMA",
+   "sayfalar": [
+    318,
+    319
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "MAT345-T157",
+   "konu": "MAT-345T25-B09-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "EMEK PROBLEMLERI",
+   "sayfalar": [
+    320,
+    321
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T158",
+   "konu": "MAT-345T25-B09-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "EMEK PROBLEMLERI",
+   "sayfalar": [
+    322,
+    323
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T159",
+   "konu": "MAT-345T25-B09-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "EMEK PROBLEMLERI",
+   "sayfalar": [
+    324,
+    325,
+    326
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "MAT345-T160",
+   "konu": "MAT-345T25-B10-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "ASAL CARPANLAR",
+   "sayfalar": [
+    328,
+    329
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T161",
+   "konu": "MAT-345T25-B10-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "ASAL CARPANLAR",
+   "sayfalar": [
+    330,
+    331,
+    332
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "MAT345-T162",
+   "konu": "MAT-345T25-B10-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    333
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "MAT345-T163",
+   "konu": "MAT-345T25-B10-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "BOLME - BOLUNEBILME",
+   "sayfalar": [
+    334,
+    335
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T164",
+   "konu": "MAT-345T25-B10-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "BOLME - BOLUNEBILME",
+   "sayfalar": [
+    336,
+    337
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T165",
+   "konu": "MAT-345T25-B10-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "BOLME - BOLUNEBILME",
+   "sayfalar": [
+    338,
+    339
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T166",
+   "konu": "MAT-345T25-B10-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "BOLME - BOLUNEBILME",
+   "sayfalar": [
+    340,
+    341
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "MAT345-T167",
+   "konu": "MAT-345T25-B10-02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    342,
+    343
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T168",
+   "konu": "MAT-345T25-B10-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "EBOB - EKOK",
+   "sayfalar": [
+    344,
+    345
+   ],
+   "soru_sayisi": 18
+  },
+  {
+   "birim": "MAT345-T169",
+   "konu": "MAT-345T25-B10-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "EBOB - EKOK",
+   "sayfalar": [
+    346,
+    347
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T170",
+   "konu": "MAT-345T25-B10-03",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "EBOB - EKOK",
+   "sayfalar": [
+    348,
+    349
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T171",
+   "konu": "MAT-345T25-B10-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "EBOB - EKOK",
+   "sayfalar": [
+    350,
+    351
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T172",
+   "konu": "MAT-345T25-B10-03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "EBOB - EKOK",
+   "sayfalar": [
+    352
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "MAT345-T173",
+   "konu": "MAT-345T25-B11-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "MANTIK",
+   "sayfalar": [
+    354,
+    355
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T174",
+   "konu": "MAT-345T25-B11-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "MANTIK",
+   "sayfalar": [
+    356,
+    357
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T175",
+   "konu": "MAT-345T25-B11-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "MANTIK",
+   "sayfalar": [
+    358,
+    359
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T176",
+   "konu": "MAT-345T25-B11-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "MANTIK",
+   "sayfalar": [
+    360,
+    361
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T177",
+   "konu": "MAT-345T25-B11-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "MANTIK",
+   "sayfalar": [
+    362,
+    363
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T178",
+   "konu": "MAT-345T25-B11-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "MANTIK",
+   "sayfalar": [
+    364,
+    365
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T179",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    366,
+    367
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "MAT345-T180",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    368,
+    369
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T181",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    370,
+    371
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T182",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    372,
+    373
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T183",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    374,
+    375
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T184",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    376,
+    377
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T185",
+   "konu": "MAT-345T25-B11-02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "KUMELER - KARTEZYEN CARPIM",
+   "sayfalar": [
+    378,
+    379,
+    380
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "MAT345-T186",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    382,
+    383
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T187",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    384,
+    385
+   ],
+   "soru_sayisi": 14
+  },
+  {
+   "birim": "MAT345-T188",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    386,
+    387
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "MAT345-T189",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 4,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    388,
+    389
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T190",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 5,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    390,
+    391
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "MAT345-T191",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 6,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    392,
+    393
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T192",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    394,
+    395
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T193",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    396,
+    397
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T194",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "FONKSIYONLAR",
+   "sayfalar": [
+    398,
+    399
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "MAT345-T195",
+   "konu": "MAT-345T25-B12-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    400
+   ],
+   "soru_sayisi": 2
+  },
+  {
+   "birim": "MAT345-T196",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 1,
+   "bant_konu": "SAYMA - OLASILIK",
+   "sayfalar": [
+    402,
+    403
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T197",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 2,
+   "bant_konu": "SAYMA - OLASILIK",
+   "sayfalar": [
+    404,
+    405
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "MAT345-T198",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "klasiklesmis",
+   "tur_sira": 3,
+   "bant_konu": "SAYMA - OLASILIK",
+   "sayfalar": [
+    406,
+    407
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "MAT345-T199",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "bant_konu": "SAYMA - OLASILIK",
+   "sayfalar": [
+    408,
+    409
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T200",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "bant_konu": "SAYMA - OLASILIK",
+   "sayfalar": [
+    410,
+    411
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "MAT345-T201",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "bant_konu": "SAYMA - OLASILIK",
+   "sayfalar": [
+    412,
+    413
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "MAT345-T202",
+   "konu": "MAT-345T25-B13-01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "bant_konu": null,
+   "sayfalar": [
+    414,
+    415,
+    416
+   ],
+   "soru_sayisi": 8
+  }
+ ]
+}
