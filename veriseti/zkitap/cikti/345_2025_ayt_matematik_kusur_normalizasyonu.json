@@ -1,0 +1,349 @@
+{
+ "kaynak": "345 2025 AYT Matematik Soru Bankasi",
+ "ne": "Transkripsiyonun ilk 6 grubu, talimata 'Ek kurallar' eklenmeden once okundu ve kaynak_kusuru alanina okunabilen ama soluk basilmis isaretleri de yazdi. Ek kurallardan sonra okunan 24 grupla tutarlilik icin bu notlar dusuruldu. Okunan METIN DEGISMEDI; yalniz not alani bosaltildi. Kural mekaniktir (alan metninde 'soluk' + isaret adi, ve suphe bildiren hicbir sozcuk yok) ve bu dosyada her not aynen saklanir.",
+ "dusurulen": 57,
+ "kayitlar": [
+  {
+   "dosya": "MAT345AYT-T002_05",
+   "okuma": "grup_01",
+   "dusurulen_not": "\u015f\u0131klardaki eksi i\u015faretleri \u00e7ok soluk bas\u0131l\u0131",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T002_07",
+   "okuma": "grup_01",
+   "dusurulen_not": "ilk sat\u0131rdaki \"px \u2212 2\" i\u00e7indeki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T002_13",
+   "okuma": "grup_01",
+   "dusurulen_not": "\"P(1) \u2212 P(0) = 2\" sat\u0131r\u0131ndaki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T002_15",
+   "okuma": "grup_01",
+   "dusurulen_not": "\"x \u00b7 P(x) \u2212 x^2 \u00b7 Q(x)\" ifadesindeki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T003_05",
+   "okuma": "grup_01",
+   "dusurulen_not": "III. \u00f6nc\u00fcldeki e\u015fittir i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T003_13",
+   "okuma": "grup_01",
+   "dusurulen_not": "D ve E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T004_04",
+   "okuma": "grup_01",
+   "dusurulen_not": "\"\u22127\" ile A ve E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T004_06",
+   "okuma": "grup_01",
+   "dusurulen_not": "e\u015fitlikteki = ve + i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T004_15",
+   "okuma": "grup_01",
+   "dusurulen_not": "D \u015f\u0131kk\u0131ndaki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T004_16",
+   "okuma": "grup_01",
+   "dusurulen_not": "metindeki (x^2 + x) i\u00e7indeki art\u0131 i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T005_15",
+   "okuma": "grup_02",
+   "dusurulen_not": "bas\u0131l\u0131 soru numaras\u0131n\u0131n ilk hanesi beyaz lekeyle kapal\u0131 (yaln\u0131z '5.' g\u00f6r\u00fcn\u00fcyor)",
+   "neden": "numara_okuyucu_diski_altinda (basili_no null; kusur degil, Ek kurallar)"
+  },
+  {
+   "dosya": "MAT345AYT-T007_02",
+   "okuma": "grup_02",
+   "dusurulen_not": "bas\u0131l\u0131 soru numaras\u0131 beyaz lekeyle b\u00fcy\u00fck \u00f6l\u00e7\u00fcde kapal\u0131, okunam\u0131yor",
+   "neden": "numara_okuyucu_diski_altinda (basili_no null; kusur degil, Ek kurallar)"
+  },
+  {
+   "dosya": "MAT345AYT-T009_07",
+   "okuma": "grup_02",
+   "dusurulen_not": "A, B ve C \u015f\u0131klar\u0131ndaki eksi i\u015faretleri \u00e7ok soluk; g\u00f6vdedeki x^2 \u2212 5x + 6 ifadesinde + i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T009_08",
+   "okuma": "grup_02",
+   "dusurulen_not": "g\u00f6vdedeki (x + 1) ve (x \u2212 1) i\u015faretleri ile B ve D \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T009_09",
+   "okuma": "grup_02",
+   "dusurulen_not": "P(\u22122) i\u00e7indeki eksi i\u015fareti ve (x \u2212 5) i\u00e7indeki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T010_01",
+   "okuma": "grup_02",
+   "dusurulen_not": "bas\u0131l\u0131 soru numaras\u0131 beyaz lekeyle kapal\u0131, yaln\u0131z k\u00fc\u00e7\u00fck bir par\u00e7as\u0131 g\u00f6r\u00fcn\u00fcyor",
+   "neden": "numara_okuyucu_diski_altinda (basili_no null; kusur degil, Ek kurallar)"
+  },
+  {
+   "dosya": "MAT345AYT-T010_08",
+   "okuma": "grup_02",
+   "dusurulen_not": "bas\u0131l\u0131 soru numaras\u0131 g\u00f6r\u00fcnm\u00fcyor (yaln\u0131z nokta se\u00e7iliyor; beyaz leke/filigran)",
+   "neden": "numara_okuyucu_diski_altinda (basili_no null; kusur degil, Ek kurallar)"
+  },
+  {
+   "dosya": "MAT345AYT-T012_02",
+   "okuma": "grup_03",
+   "dusurulen_not": "Paydaki '\u2212' ve '+' i\u015faretleri soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T012_03",
+   "okuma": "grup_03",
+   "dusurulen_not": "Denklemdeki '\u2212' ve '+' i\u015faretleri ile C, D, E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T012_07",
+   "okuma": "grup_03",
+   "dusurulen_not": "\u0130lk sat\u0131rdaki 'i^2' i\u00e7indeki i ve '\u22121' eksi i\u015fareti soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T012_09",
+   "okuma": "grup_03",
+   "dusurulen_not": "'5 \u2212 x' i\u00e7indeki eksi i\u015fareti soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T013_10",
+   "okuma": "grup_03",
+   "dusurulen_not": "1/x_1 ile 1/x_2 aras\u0131ndaki '+' i\u015fareti soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T014_10",
+   "okuma": "grup_03",
+   "dusurulen_not": "'x_1 + 4/x_2 = 8' ifadesindeki '+' ve '=' i\u015faretleri soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T014_12",
+   "okuma": "grup_03",
+   "dusurulen_not": "\u0130lk sat\u0131rdaki 'i = \u221a(\u22121)' ifadesinde '=' i\u015fareti soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T014_16",
+   "okuma": "grup_03",
+   "dusurulen_not": "D ve E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T015_01",
+   "okuma": "grup_03",
+   "dusurulen_not": "'|4 \u2212 x|' i\u00e7indeki eksi i\u015fareti soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T015_13",
+   "okuma": "grup_03",
+   "dusurulen_not": "Paydaki ve sa\u011f taraftaki '+' i\u015faretleri soluk.",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T015_14",
+   "okuma": "grup_03",
+   "dusurulen_not": "Soru numaras\u0131n\u0131n ilk hanesi beyaz lekeyle \u00f6rt\u00fcl\u00fc; yaln\u0131z '4.' g\u00f6r\u00fcn\u00fcyor.",
+   "neden": "numara_okuyucu_diski_altinda (basili_no null; kusur degil, Ek kurallar)"
+  },
+  {
+   "dosya": "MAT345AYT-T016_07",
+   "okuma": "grup_04",
+   "dusurulen_not": "E \u015f\u0131kk\u0131ndaki eksi i\u015faretleri soluk bas\u0131l\u0131",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T018_07",
+   "okuma": "grup_04",
+   "dusurulen_not": "f(x) = (x \u2212 k)^2 \u2212 k^2 sat\u0131r\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T018_08",
+   "okuma": "grup_04",
+   "dusurulen_not": "2\u00b7f(x_1 + x_2) ifadesindeki + i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T019_01",
+   "okuma": "grup_04",
+   "dusurulen_not": "ax^2 \u2212 ax + 4 = 0 sat\u0131r\u0131ndaki + i\u015fareti, k \u2212 2/a ifadesindeki \u2212 i\u015fareti ve B, C \u015f\u0131klar\u0131ndaki eksi i\u015faretleri \u00e7ok soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T019_02",
+   "okuma": "grup_04",
+   "dusurulen_not": "A ve B \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T021_05",
+   "okuma": "grup_04",
+   "dusurulen_not": "A ve B \u015f\u0131klar\u0131ndaki \u2212 i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T022_02",
+   "okuma": "grup_05",
+   "dusurulen_not": "\u0130kinci maddede (1 \u2212 y^2) i\u00e7indeki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T023_04",
+   "okuma": "grup_05",
+   "dusurulen_not": "II. \u00f6nc\u00fcldeki 12'den \u00f6nceki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T023_05",
+   "okuma": "grup_05",
+   "dusurulen_not": "B \u015f\u0131kk\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T023_08",
+   "okuma": "grup_05",
+   "dusurulen_not": "C \u015f\u0131kk\u0131ndaki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T023_12",
+   "okuma": "grup_05",
+   "dusurulen_not": "E \u015f\u0131kk\u0131ndaki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T024_01",
+   "okuma": "grup_05",
+   "dusurulen_not": "C ve D \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T024_02",
+   "okuma": "grup_05",
+   "dusurulen_not": "C ve D \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T024_04",
+   "okuma": "grup_05",
+   "dusurulen_not": "A ve B \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk; g\u00f6vdedeki 2a + 6 ifadesindeki art\u0131 i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T024_06",
+   "okuma": "grup_05",
+   "dusurulen_not": "E \u015f\u0131kk\u0131ndaki eksi i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T024_07",
+   "okuma": "grup_05",
+   "dusurulen_not": "E \u015f\u0131kk\u0131ndaki eksi i\u015fareti soluk; g\u00f6vdede x^2'den sonraki art\u0131 i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T024_08",
+   "okuma": "grup_05",
+   "dusurulen_not": "C ve D \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T025_05",
+   "okuma": "grup_05",
+   "dusurulen_not": "A, C ve E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T026_02",
+   "okuma": "grup_05",
+   "dusurulen_not": "A ve B \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T026_07",
+   "okuma": "grup_05",
+   "dusurulen_not": "A ve B \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk; g\u00f6vdede x^2'den sonraki art\u0131 i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T026_08",
+   "okuma": "grup_05",
+   "dusurulen_not": "C, D ve E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T027_08",
+   "okuma": "grup_05",
+   "dusurulen_not": "B ve E \u015f\u0131klar\u0131ndaki eksi i\u015faretleri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T027_09",
+   "okuma": "grup_05",
+   "dusurulen_not": "G\u00f6vdede a^2'den \u00f6nceki art\u0131 i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T031_04",
+   "okuma": "grup_06",
+   "dusurulen_not": "B \u015f\u0131kk\u0131ndaki + i\u015faretlerinin dikey \u00e7izgileri soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T032_07",
+   "okuma": "grup_06",
+   "dusurulen_not": "soru numaras\u0131 beyaz lekeyle \u00f6rt\u00fcl\u00fc",
+   "neden": "numara_okuyucu_diski_altinda (basili_no null; kusur degil, Ek kurallar)"
+  },
+  {
+   "dosya": "MAT345AYT-T033_03",
+   "okuma": "grup_06",
+   "dusurulen_not": "A = (a + r) ifadesindeki + ve A \u015f\u0131kk\u0131ndaki + i\u015faretlerinin dikey \u00e7izgisi soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T033_08",
+   "okuma": "grup_06",
+   "dusurulen_not": "g(x) sat\u0131r\u0131ndaki x^2 sonras\u0131 + i\u015faretinin dikey \u00e7izgisi soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T035_02",
+   "okuma": "grup_06",
+   "dusurulen_not": "paydadaki + i\u015faretinin dikey \u00e7izgisi soluk; \u015f\u0131klardaki parantezler ve \u222a i\u015fareti soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  },
+  {
+   "dosya": "MAT345AYT-T035_07",
+   "okuma": "grup_06",
+   "dusurulen_not": "paydadaki + 4 i\u015faretinin dikey \u00e7izgisi soluk",
+   "neden": "soluk_ama_okunan_isaret (Ek kurallar oncesi grup; okuma degismedi)"
+  }
+ ]
+}
