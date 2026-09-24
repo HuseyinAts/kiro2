@@ -341,8 +341,10 @@ def upgrade() -> None:
             ),
             {"id": sid, "wc": ist[0], "uwc": ist[1], "awl": ist[2], "rs": ist[3]},
         )
-        ek = {META_ANAHTARI: ikinci_okuma_meta("metin")}
-        b.execute(_META_EKLE, {"id": sid, "ek": json.dumps(ek)})
+        b.execute(
+            _META_EKLE,
+            {"id": sid, "ek": json.dumps({META_ANAHTARI: ikinci_okuma_meta("metin")})},
+        )
         _log.info("[0048] %s: %s duzeltildi", dosya, sutun)
         degisen += 1
     for dosya, sid, h, kusur, bayrak in KUSUR:
@@ -353,7 +355,7 @@ def upgrade() -> None:
             _log.info("[0048] %s bulunamadi (id/hash tutmadi) -- atlandi", dosya)
             continue
         _gunluge_yaz(b, sid, h, satir)
-        ek = {
+        ek: dict[str, object] = {
             "kaynak_kusuru": kusur,
             "bayraklar": list(bayrak),
             META_ANAHTARI: ikinci_okuma_meta("kusur_notu"),
