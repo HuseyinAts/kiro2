@@ -159,7 +159,9 @@ kactir?'); bu yuzden GUCLU aday = ayrica bes sikkin >= 3'u birebir: **27**.
 27'nin 23'unde DB cevabi bizim okumamizla ayni. 4 catismanin (T055_09,
 T055_13, T084_01 -- '345 2024 Tyt Matematik' eski hat; T169_02 -- bu kitabin
 eski hat satiri) hepsinde kitabin kendi cevap satiri 6x buyutmede gozle
-yeniden okundu: bizim okumamiz dogru. Eski hat satirlarina DOKUNULMADI.
+yeniden okundu: bizim okumamiz dogru. Ithalde eski hat satirlarina
+dokunulmadi; sahip karariyla 0044 onlari kitabin basili anahtarina hizaladi
+(bolum 7).
 
 Hash duzeyinde (metin + sikler) bu kitabin 2063 sorusu birbirinden farkli;
 sekil ikizi yok.
@@ -169,8 +171,19 @@ sekil ikizi yok.
 DB'de bu kitaptan eski hattan gelen 12 satir var (`345 2025 Tyt Matematik
 Soru Bankas<U+0131>`, 12'si aktif). Yazim yeni ASCII adla ayni anahtara
 cozuluyor; 0043 yalniz `source_book` yazimini duzeltir (metin, cevap,
-aktiflik degismez; geri alinabilir). Bu 12 satirdan biri (T169_02 karsiligi)
-kitabin anahtariyla CELISIYOR ve AKTIF -- karar sahipte.
+aktiflik degismez; geri alinabilir).
+
+**0044 (sahip karari 24 Eyl 2026: "kitabin basili cevabi baz alinir").**
+Bolum 6'daki 4 celisen eski hat satiri (3'u `345 2024 Tyt Matematik`, 1'i
+bu kitap; dordu de aktif + public) kitabin basili cevap satirina hizalandi.
+Her satirin cevabi KENDI baskisinin seridinde 6x buyutmeyle gozle okundu
+(2024 s117 sol 9.C, sag 13.B, s172 sol 1.B; 2025 s346 sol 2.D). Uc satirda
+eski hattin METNI de basili sorudan farkliydi (mutlak deger cubuklari ya da
+'+' kaybolmus; eski cevap o bozuk metnin cevabiydi); bu uc satirda yalniz
+bozuk ifade parcasi sayfa gorseliyle karsilastirilarak duzeltildi ve
+soru_hash ayni formulle yeniden hesaplandi. Bir satirin 'Dogru cevap: C'
+tahmin notu (explanation) silindi. Geri alinabilir; yerel DB'de
+yukari/asagi/yukari gidis-donus olculdu.
 
 ## 8. Alanlar ve kaynaklari
 
@@ -194,6 +207,6 @@ review_status='PENDING'`.
    kullanilmadi.
 3. 101 soruda okuyucu kaynak kusuru notu (soluk isaret, belirsiz rakam,
    metin ici ikon); duzeltilmedi, bayrakli.
-4. 27 guclu mukerrer aday; birlestirme/eleme karari verilmedi. Bir eski hat
-   satiri (aktif) kitabin anahtariyla celisiyor.
+4. 27 guclu mukerrer aday; birlestirme/eleme karari verilmedi (celisen 4
+   eski hat satiri 0044 ile kitabin basili anahtarina hizalandi).
 5. 22 soruda siklar gorsel; soru gorselle birlikte gosterilmeli.
