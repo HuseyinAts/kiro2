@@ -21,6 +21,7 @@ import copy
 import importlib.util
 import json
 import sys
+import uuid
 from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
@@ -48,6 +49,7 @@ YOLLAR = {
     "anahtar": CIKTI / f"{ON}cevap_anahtari.json",
     "ortme": CIKTI / f"{ON}ortme_olcumu.json",
     "mukerrer": CIKTI / f"{ON}mukerrer_adaylari.json",
+    "ikinci": CIKTI / f"{ON}ikinci_okuma.json",
 }
 ITHAL_YOLU = KOK / "scripts" / "kitap" / "mat345ayt_ithal.py"
 AGAC_YOLU = KOK / "alembic" / "versions" / "0045_mat345ayt_konu_agaci.py"
@@ -66,7 +68,7 @@ BEKLENEN_SORU = 1942
 BEKLENEN_TEST = 187
 BEKLENEN_DUGUM = 15  # konu dugumu; bolum dugumleri soru tasimaz
 BAYRAKLAR = {
-    "kaynak_kusuru": 135,
+    "kaynak_kusuru": 137,
     "cikmis_soru": 142,
     "okuyucu_diski_ortme": 175,
     "sik_tekrar": 10,
@@ -109,6 +111,7 @@ def _bagla(p: dict[str, dict]) -> list[dict]:
 def kayitlar(paket: dict[str, dict]) -> list[dict]:
     k = [mi.kayit_uret(r) for r in _bagla(paket)]
     mi.sekil_ikizleri(k)
+    assert mi.ikinci_okuma_uygula(k, paket["ikinci"]) == []
     return k
 
 
@@ -137,6 +140,39 @@ def test_kayit_sayisi_ve_id(kayitlar: list[dict]) -> None:
     assert len(kayitlar) == BEKLENEN_SORU
     assert len({k["id"] for k in kayitlar}) == BEKLENEN_SORU
     assert len({k["soru_hash"] for k in kayitlar}) == BEKLENEN_SORU
+
+
+def test_ikinci_okuma_id_sabitlemesi(kayitlar: list[dict], paket: dict) -> None:
+    """Duzeltilen satirin id'si ILK hash'ten; digerleri kendi hash'inden (tekrar kosu cift yazmaz)."""
+    duz = {r["dosya"]: r for r in paket["ikinci"]["duzeltmeler"]}
+    sabit = 0
+    for k in kayitlar:
+        pm = k["pipeline_metadata"]
+        r = duz.get(pm["kaynak_gorseli"].removesuffix(".png"))
+        if r is None:
+            assert "ikinci_okuma" not in pm
+            continue
+        yeni_id = str(uuid.uuid5(uuid.NAMESPACE_OID, k["soru_hash"]))
+        assert yeni_id == r["yeni_hash_id"]
+        assert k["id"] == r["id"]
+        assert pm["ikinci_okuma"] == mi.ikinci_okuma_meta(r["tur"])
+        sabit += r["id"] != yeni_id
+    assert sabit == len(paket["ikinci"]["id_sabitleme"]) == 10
+
+
+def test_ikinci_okuma_kaydi_metinle_uyusmazsa_durur(paket: dict) -> None:
+    k = [mi.kayit_uret(r) for r in _bagla(copy.deepcopy(paket))]
+    mi.sekil_ikizleri(k)
+    ikinci = copy.deepcopy(paket["ikinci"])
+    ikinci["duzeltmeler"][0]["yeni_hash_id"] = str(uuid.uuid4())
+    assert any(
+        "ikinci okuma kaydindaki" in h for h in mi.ikinci_okuma_uygula(k, ikinci)
+    )
+    ikinci = copy.deepcopy(paket["ikinci"])
+    ikinci["duzeltmeler"].append(
+        {**ikinci["duzeltmeler"][0], "dosya": "MAT345AYT-T999_99"}
+    )
+    assert any("veri setinde yok" in h for h in mi.ikinci_okuma_uygula(k, ikinci))
 
 
 def test_her_kayitta_bes_sik_ve_dolu_cevap(kayitlar: list[dict]) -> None:

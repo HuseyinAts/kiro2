@@ -63,8 +63,9 @@ SAYFA_ALTI = 896
 CEVAP_SATIRI_UST = 899
 KART_G, KART_Y = 742, 977
 ORTME_SORU = 175
-SEKILLI, GORSEL_SIKLI, KUSURLU, ETIKETLI = 581, 10, 135, 142
-DUZELTME_OKUMASI = 6
+SEKILLI, GORSEL_SIKLI, KUSURLU, ETIKETLI = 581, 10, 137, 142
+# 6 ilk duzeltme + 14 hedefli ikinci okuma hakemi (10 esasli hata + 4 kusur notu).
+DUZELTME_OKUMASI = 20
 NUMARASI_ORTULU = 61
 # Capasi numaradan alinan ama diski numaranin ilk rakamini ortuyor (olculdu).
 DISK_ORTULU_NULL = [

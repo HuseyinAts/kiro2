@@ -8103,7 +8103,7 @@
   {
    "dosya": "MAT345AYT-T045_03",
    "basili_no": 3,
-   "govde": "Bir \u00f6\u011frenciye YKS deneme s\u0131nav\u0131nda\n2/x + 1 \u2265 x\ne\u015fitsizli\u011finin \u00e7\u00f6z\u00fcm k\u00fcmesi nedir?\nsorusu soruluyor.\n\u00d6\u011frenci bu soruyu a\u015fa\u011f\u0131daki a\u015famalardaki gibi \u00e7\u00f6z\u00fcyor.\nI. 2/x_((1)) + 1/1_((x)) \u2265 x \u2192 (x + 2)/x \u2265 x\nII. x + 2 \u2265 x^2\nIII. 0 \u2265 x^2 \u2212 x \u2212 2\nIV. 0 \u2265 (x \u2212 2) \u00b7 (x + 1)\nV. \u00c7K = [\u22121, 2]\nFakat \u00e7\u00f6z\u00fcm k\u00fcmesinde yer alan x = \u22121/2 de\u011ferini e\u015fitsizlikte yerine yazd\u0131\u011f\u0131nda\n2/(\u22121/2) + 1 \u2265 \u22121/2\n\u22123 \u2265 \u22121/2\noldu\u011fundan e\u015fitsizli\u011fin sa\u011flanmad\u0131\u011f\u0131n\u0131 g\u00f6r\u00fcyor.\nBuna g\u00f6re, \u00f6\u011frenci \u00e7\u00f6z\u00fcm\u00fcn ka\u00e7\u0131nc\u0131 a\u015famas\u0131nda hata yapm\u0131\u015ft\u0131r?",
+   "govde": "Bir \u00f6\u011frenciye YKS deneme s\u0131nav\u0131nda\n2/x + 1 \u2265 x\ne\u015fitsizli\u011finin \u00e7\u00f6z\u00fcm k\u00fcmesi nedir?\nsorusu soruluyor.\n\u00d6\u011frenci bu soruyu a\u015fa\u011f\u0131daki a\u015famalardaki gibi \u00e7\u00f6z\u00fcyor.\nI. 2/x + 1/1 \u2265 x \u2192 (x + 2)/x \u2265 x\nII. x + 2 \u2265 x^2\nIII. 0 \u2265 x^2 \u2212 x \u2212 2\nIV. 0 \u2265 (x \u2212 2) \u00b7 (x + 1)\nV. \u00c7K = [\u22121, 2]\nFakat \u00e7\u00f6z\u00fcm k\u00fcmesinde yer alan x = \u22121/2 de\u011ferini e\u015fitsizlikte yerine yazd\u0131\u011f\u0131nda\n2/(\u22121/2) + 1 \u2265 \u22121/2\n\u22123 \u2265 \u22121/2\noldu\u011fundan e\u015fitsizli\u011fin sa\u011flanmad\u0131\u011f\u0131n\u0131 g\u00f6r\u00fcyor.\nBuna g\u00f6re, \u00f6\u011frenci \u00e7\u00f6z\u00fcm\u00fcn ka\u00e7\u0131nc\u0131 a\u015famas\u0131nda hata yapm\u0131\u015ft\u0131r?",
    "sikler": {
     "A": "I",
     "B": "II",
@@ -8114,7 +8114,8 @@
    "sekil_var": true,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_08"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '2/x_((1)) + 1/1_((x))' -> '2/x + 1/1'",
+   "okuma": "duzeltme (grup_08 yerine)"
   },
   {
    "dosya": "MAT345AYT-T045_04",
@@ -8433,8 +8434,9 @@
    },
    "sekil_var": true,
    "etiket": null,
-   "kaynak_kusuru": "\u0130lk sat\u0131rda |BC ifadesinin kapan\u0131\u015f mutlak de\u011fer \u00e7izgisi g\u00f6r\u00fcnm\u00fcyor (yaln\u0131z nokta var).",
-   "okuma": "grup_08"
+   "kaynak_kusuru": "\u0130lk sat\u0131rda |BC ifadesinin kapan\u0131\u015f mutlak de\u011fer \u00e7izgisi g\u00f6r\u00fcnm\u00fcyor (yaln\u0131z nokta var).; ilk sat\u0131rdaki s\u0131n\u0131rlay\u0131c\u0131lar belirsiz: |AC| ya da [AC] (do\u011fru par\u00e7as\u0131)",
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): yalniz kusur notu eklendi",
+   "okuma": "duzeltme (grup_08 yerine)"
   },
   {
    "dosya": "MAT345AYT-T046_16",
@@ -10060,13 +10062,14 @@
     "A": "[\u22122, 2]",
     "B": "(\u22121, 2)",
     "C": "[0, 1)",
-    "D": "(0, 2]",
+    "D": "(0, 2)",
     "E": "[0, 2]"
    },
    "sekil_var": false,
    "etiket": null,
    "kaynak_kusuru": "f : R \u2192 R ifadesindeki okun g\u00f6vdesi \u00e7ok soluk (yaln\u0131z u\u00e7 g\u00f6r\u00fcn\u00fcyor); A \u015f\u0131kk\u0131nda k\u00f6\u015feli parantezler yaln\u0131z dikey \u00e7izgi olarak g\u00f6r\u00fcn\u00fcyor, sa\u011fdaki \u00e7ok soluk (en iyi okuma [\u22122, 2]); D \u015f\u0131kk\u0131nda sa\u011f parantez soluk (en iyi okuma ])",
-   "okuma": "grup_10"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): D: '(0, 2]' -> '(0, 2)'",
+   "okuma": "duzeltme (grup_10 yerine)"
   },
   {
    "dosya": "MAT345AYT-T054_03",
@@ -10887,7 +10890,7 @@
   {
    "dosya": "MAT345AYT-T058_02",
    "basili_no": 2,
-   "govde": "|AD| \u22a5 |CD|\n|AC| \u22a5 |BC|\n|BC| = 3|CD| = 4|AD|\noldu\u011funa g\u00f6re, sin(BAD) ka\u00e7t\u0131r?",
+   "govde": "[AD] \u22a5 [CD]\n[AC] \u22a5 [BC]\n|BC| = 3|CD| = 4|AD|\noldu\u011funa g\u00f6re, sin(BAD) ka\u00e7t\u0131r?",
    "sikler": {
     "A": "2/\u221a13",
     "B": "56/65",
@@ -10898,7 +10901,8 @@
    "sekil_var": true,
    "etiket": null,
    "kaynak_kusuru": "1. ve 2. sat\u0131rdaki \u22a5 i\u015faretleri k\u0131smen eksik bas\u0131lm\u0131\u015f (yaln\u0131z bir \u00e7izgisi g\u00f6r\u00fcn\u00fcyor)",
-   "okuma": "grup_11"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '|AD| \u22a5 |CD|\\n|AC| \u22a5 |BC|' -> '[AD] \u22a5 [CD]\\n[AC] \u22a5 [BC]'",
+   "okuma": "duzeltme (grup_11 yerine)"
   },
   {
    "dosya": "MAT345AYT-T058_03",
@@ -11335,7 +11339,7 @@
   {
    "dosya": "MAT345AYT-T060_01",
    "basili_no": 1,
-   "govde": "2sin^2 x \u00b7 (1/(1 \u2212 cos2x) \u2212 1) \u2212 cos2x \u2212 1\nifadesinin sade hali a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "govde": "2sin^2 x \u00b7 (1/(1 \u2212 cos2x) \u2212 1) \u2212 cos2x + 1\nifadesinin sade hali a\u015fa\u011f\u0131dakilerden hangisidir?",
    "sikler": {
     "A": "\u22121",
     "B": "0",
@@ -11346,7 +11350,8 @@
    "sekil_var": false,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_11"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: 'cos2x \u2212 1\\n' -> 'cos2x + 1\\n'",
+   "okuma": "duzeltme (grup_11 yerine)"
   },
   {
    "dosya": "MAT345AYT-T060_02",
@@ -11447,7 +11452,7 @@
   {
    "dosya": "MAT345AYT-T060_08",
    "basili_no": 8,
-   "govde": "\u221a3 cos x + sin x = 0\ndenklemini (0, 360\u00b0] aral\u0131\u011f\u0131nda sa\u011flayan ka\u00e7 k\u00f6k vard\u0131r?",
+   "govde": "\u221a3 cos x + sin x = 0\ndenklemini (0, 360\u00b0) aral\u0131\u011f\u0131nda sa\u011flayan ka\u00e7 k\u00f6k vard\u0131r?",
    "sikler": {
     "A": "2",
     "B": "1",
@@ -11458,7 +11463,8 @@
    "sekil_var": false,
    "etiket": null,
    "kaynak_kusuru": "aral\u0131\u011f\u0131n sol parantezi silik; ( m\u0131 [ m\u0131 oldu\u011fu net de\u011fil",
-   "okuma": "grup_11"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '(0, 360\u00b0]' -> '(0, 360\u00b0)'",
+   "okuma": "duzeltme (grup_11 yerine)"
   },
   {
    "dosya": "MAT345AYT-T060_09",
@@ -11783,7 +11789,7 @@
   {
    "dosya": "MAT345AYT-T062_03",
    "basili_no": 3,
-   "govde": "tan(\u03c0 \u2212 2x) = \u2212cot(\u03c0/3 + x)\ndenkleminin [0, 2\u03c0) aral\u0131\u011f\u0131ndaki en k\u00fc\u00e7\u00fck 2 k\u00f6k\u00fcn\u00fcn toplam\u0131 ka\u00e7t\u0131r?",
+   "govde": "tan(\u03c0 \u2212 2x) = \u2212cot(\u03c0/3 + x)\ndenkleminin (0, 2\u03c0) aral\u0131\u011f\u0131ndaki en k\u00fc\u00e7\u00fck 2 k\u00f6k\u00fcn\u00fcn toplam\u0131 ka\u00e7t\u0131r?",
    "sikler": {
     "A": "4\u03c0/9",
     "B": "\u03c0/3",
@@ -11794,12 +11800,13 @@
    "sekil_var": false,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_12"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '[0, 2\u03c0)' -> '(0, 2\u03c0)'",
+   "okuma": "duzeltme (grup_12 yerine)"
   },
   {
    "dosya": "MAT345AYT-T062_04",
    "basili_no": 4,
-   "govde": "1 \u2212 sin x \u2212 cos^2 x = cos^2 x\ndenkleminin [0, 2\u03c0) aral\u0131\u011f\u0131nda en k\u00fc\u00e7\u00fck 2 k\u00f6k\u00fcn\u00fcn toplam\u0131 ka\u00e7t\u0131r?",
+   "govde": "1 \u2212 sin x \u2212 cos^2 x = cos^2 x\ndenkleminin (0, 2\u03c0) aral\u0131\u011f\u0131nda en k\u00fc\u00e7\u00fck 2 k\u00f6k\u00fcn\u00fcn toplam\u0131 ka\u00e7t\u0131r?",
    "sikler": {
     "A": "5\u03c0/6",
     "B": "5\u03c0/3",
@@ -11810,7 +11817,8 @@
    "sekil_var": false,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_12"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '[0, 2\u03c0)' -> '(0, 2\u03c0)'",
+   "okuma": "duzeltme (grup_12 yerine)"
   },
   {
    "dosya": "MAT345AYT-T062_05",
@@ -11959,7 +11967,7 @@
   {
    "dosya": "MAT345AYT-T062_14",
    "basili_no": 14,
-   "govde": "cos 2x + 3cos x = 2/sec x\ndenkleminin [0, 2\u03c0] aral\u0131\u011f\u0131ndaki k\u00f6klerinin toplam\u0131 ka\u00e7t\u0131r?",
+   "govde": "cos 2x + 3cos x = 2/sec x\ndenkleminin (0, 2\u03c0] aral\u0131\u011f\u0131ndaki k\u00f6klerinin toplam\u0131 ka\u00e7t\u0131r?",
    "sikler": {
     "A": "4\u03c0",
     "B": "3\u03c0",
@@ -11970,7 +11978,8 @@
    "sekil_var": false,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_12"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '[0, 2\u03c0]' -> '(0, 2\u03c0]'",
+   "okuma": "duzeltme (grup_12 yerine)"
   },
   {
    "dosya": "MAT345AYT-T063_01",
@@ -12167,7 +12176,7 @@
   {
    "dosya": "MAT345AYT-T064_03",
    "basili_no": 3,
-   "govde": "A\u015fa\u011f\u0131da A, B, C ve D ki\u015filerinin birbirlerine payla\u015ft\u0131\u011f\u0131 mevcut konumlar\u0131 g\u00f6sterilmi\u015ftir.\nABCD dik yamuk\n|AD| // |BC|\n|AD| \u22a5 |AB|\nm(BCD) = x\nm(ADC) = x + y\n|AD| = 3 km\n|AB| = 6 km\n|BC| = 11 km\noldu\u011funa g\u00f6re, sin y ka\u00e7t\u0131r?",
+   "govde": "A\u015fa\u011f\u0131da A, B, C ve D ki\u015filerinin birbirlerine payla\u015ft\u0131\u011f\u0131 mevcut konumlar\u0131 g\u00f6sterilmi\u015ftir.\nABCD dik yamuk\n[AD] // [BC]\n[AD] \u22a5 [AB]\nm(BCD) = x\nm(ADC) = x + y\n|AD| = 3 km\n|AB| = 6 km\n|BC| = 11 km\noldu\u011funa g\u00f6re, sin y ka\u00e7t\u0131r?",
    "sikler": {
     "A": "12/25",
     "B": "3/5",
@@ -12178,7 +12187,8 @@
    "sekil_var": true,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_12"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): govde: '|AD| // |BC|\\n|AD| \u22a5 |AB|' -> '[AD] // [BC]\\n[AD] \u22a5 [AB]'",
+   "okuma": "duzeltme (grup_12 yerine)"
   },
   {
    "dosya": "MAT345AYT-T064_04",
@@ -13276,13 +13286,14 @@
     "A": "2/5",
     "B": "7/13",
     "C": "7/26",
-    "D": "36/65",
+    "D": "38/65",
     "E": "33/65"
    },
    "sekil_var": true,
    "etiket": null,
    "kaynak_kusuru": null,
-   "okuma": "grup_13"
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): D: '36/65' -> '38/65'",
+   "okuma": "duzeltme (grup_13 yerine)"
   },
   {
    "dosya": "MAT345AYT-T073_05",
@@ -18465,8 +18476,9 @@
    },
    "sekil_var": false,
    "etiket": null,
-   "kaynak_kusuru": "B \u015f\u0131kk\u0131nda sa\u011f kapan\u0131\u015f parantezi g\u00f6r\u00fcnm\u00fcyor (kesik/silik); ] olarak okundu",
-   "okuma": "grup_18"
+   "kaynak_kusuru": "B \u015f\u0131kk\u0131nda sa\u011f kapan\u0131\u015f parantezi g\u00f6r\u00fcnm\u00fcyor (kesik/silik); ] olarak okundu; D \u015f\u0131kk\u0131n\u0131n s\u0131n\u0131rlay\u0131c\u0131lar\u0131 belirsiz: [0, 1] ya da (0, 1)",
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): yalniz kusur notu eklendi",
+   "okuma": "duzeltme (grup_18 yerine)"
   },
   {
    "dosya": "MAT345AYT-T105_05",
@@ -24657,8 +24669,9 @@
    },
    "sekil_var": true,
    "etiket": null,
-   "kaynak_kusuru": null,
-   "okuma": "grup_24"
+   "kaynak_kusuru": "y ile f\u2032(x) aras\u0131ndaki e\u015fittir i\u015faretinin alt \u00e7izgisi bas\u0131mda g\u00f6r\u00fcnm\u00fcyor (tek \u00e7izgi); = olarak okundu",
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): yalniz kusur notu eklendi",
+   "okuma": "duzeltme (grup_24 yerine)"
   },
   {
    "dosya": "MAT345AYT-T143_05",
@@ -28017,8 +28030,9 @@
    },
    "sekil_var": true,
    "etiket": null,
-   "kaynak_kusuru": null,
-   "okuma": "grup_27"
+   "kaynak_kusuru": "|BD| ile 3 aras\u0131ndaki e\u015fittir i\u015faretinin alt \u00e7izgisi bas\u0131mda g\u00f6r\u00fcnm\u00fcyor (tek \u00e7izgi); = olarak okundu",
+   "hakem_notu": "ikinci okuma hakemi (8x zoom): yalniz kusur notu eklendi",
+   "okuma": "duzeltme (grup_27 yerine)"
   },
   {
    "dosya": "MAT345AYT-T162_06",

@@ -48,9 +48,18 @@ MUKERRER ADAYLARI ISARETLENIR, SILINMEZ
 Jaccard >= 0.75 VE bes sikkin >= 3'u birebir olan GUCLU adaylar
 `mukerrer_aday` bayragi alir.
 
+IKINCI OKUMA: HEDEFLI, ID SABIT
+-------------------------------
+On kayitli orneklem (210) ust siniri %3 esigini asti (2/210, %3.40) ve iki
+hata da grup_11 + sinirlayici ((, [, |) tabakasinda toplandi; o tabaka (362)
+ikinci kez okundu. 10 esasli hata + 4 kusur notu duzeltildi (0048).
+345_2025_ayt_matematik_ikinci_okuma.json bu satirlarin ilk hash'ini tasir;
+`ikinci_okuma_uygula` id'yi ilk hash'e sabitler ki tekrar kosu cift yazmasin.
+
 BILINEN BORC
 ------------
-  * TAM ikinci transkripsiyon yapilmadi.
+  * Tabaka disi (sinirlayicisiz) sorular TAM ikinci okunmadi; orneklemde
+    0/203 (ust sinir %1.80).
   * Cozumler kitapta soru sayfasinda YOK; `explanation` bos.
 
 Detay: veriseti/zkitap/cikti/MAT_345_AYT_YONTEM.md
@@ -93,6 +102,7 @@ VARSAYILAN_KUTULAR = f"{ONEK_DOSYA}_kirpim_kutulari.json"
 VARSAYILAN_ANAHTAR = f"{ONEK_DOSYA}_cevap_anahtari.json"
 VARSAYILAN_ORTME = f"{ONEK_DOSYA}_ortme_olcumu.json"
 VARSAYILAN_MUKERRER = f"{ONEK_DOSYA}_mukerrer_adaylari.json"
+VARSAYILAN_IKINCI = f"{ONEK_DOSYA}_ikinci_okuma.json"
 KAYNAK_ADI = "345 2025 AYT Matematik Soru Bankasi"
 ONEK = KAYNAK_KAYITLARI[KAYNAK_ADI]["onek"]
 MAT_KOK_KODU = "MAT"
@@ -390,6 +400,49 @@ def sekil_ikizleri(kayitlar: list[dict[str, Any]]) -> int:
     return n
 
 
+def ikinci_okuma_meta(tur: str) -> dict[str, object]:
+    """pipeline_metadata.ikinci_okuma degeri (0048 migration'i ayni degeri yazar)."""
+    return {
+        "tur": tur,
+        "kayit": f"{ONEK_DOSYA}_ikinci_okuma.json",
+        "yontem": "hedefli_ikinci_okuma_8x_zoom_hakem",
+        "soru_cozulmedi": True,
+    }
+
+
+def ikinci_okuma_uygula(kayitlar: list[dict[str, Any]], ikinci: dict) -> list[str]:
+    """Hedefli ikinci okumanin duzelttigi satirlarin kimligini SABITLER.
+
+    Bu satirlar DB'ye ilk okumanin metniyle girdi (id = uuid5(ilk hash)); 0048
+    metni ve soru_hash'i yerinde duzeltti. Ithal duzeltilmis metinden yeni
+    bir hash hesapladigi icin id'yi ilk hash'e sabitlemezse tekrar kosu ayni
+    soruyu IKINCI kez yazardi. Kayit hash'leri uuid5 bicimiyle tasir (`id` =
+    uuid5(ilk hash), `yeni_hash_id` = uuid5(duzeltilmis hash)); hesaplanan
+    hash'in uuid5'i `yeni_hash_id` tutmazsa (metin kayit disinda yine
+    degismis) sorun dondurulur ve ithal durur. Donen liste bos ise hepsi
+    uygulandi.
+    """
+    duz = {r["dosya"]: r for r in ikinci["duzeltmeler"]}
+    hata: list[str] = []
+    gorulen = set()
+    for k in kayitlar:
+        dosya = k["pipeline_metadata"]["kaynak_gorseli"].removesuffix(".png")
+        r = duz.get(dosya)
+        if r is None:
+            continue
+        gorulen.add(dosya)
+        if str(uuid.uuid5(uuid.NAMESPACE_OID, k["soru_hash"])) != r["yeni_hash_id"]:
+            hata.append(f"{dosya}: hash ikinci okuma kaydindaki metinle tutmuyor")
+            continue
+        k["id"] = r["id"]
+        k["pipeline_metadata"]["ikinci_okuma"] = ikinci_okuma_meta(r["tur"])
+    hata.extend(
+        f"{d}: ikinci okuma kaydinda var, veri setinde yok"
+        for d in sorted(set(duz) - gorulen)
+    )
+    return hata
+
+
 def _yapisal_kapilar(
     veri: dict, harita: dict, kutular: dict, anahtar: dict
 ) -> list[str]:
@@ -536,6 +589,16 @@ def _hazirla(yollar: dict[str, Path]) -> list[dict[str, Any]] | None:
     ikiz = sekil_ikizleri(kayitlar)
     if ikiz:
         print(f"sekil ikizi: {ikiz} grup (ayni metin + ayni sikler, farkli sekil)")
+    sabit = ikinci_okuma_uygula(kayitlar, oku["ikinci"])
+    if sabit:
+        print(f"DURDU: ikinci okuma kaydi {len(sabit)} sorun buldu; ilk 10:")
+        for h in sabit[:10]:
+            print("   ", h)
+        return None
+    print(
+        f"ikinci okuma: {len(oku['ikinci']['duzeltmeler'])} duzeltilmis satir, "
+        f"{len(oku['ikinci']['id_sabitleme'])} id ilk hash'e sabitlendi"
+    )
     hata = _on_kontrol(kayitlar)
     if hata:
         print(f"DURDU: on kontrol {len(hata)} sorun buldu; ilk 10:")
@@ -631,6 +694,7 @@ def main() -> int:
     p.add_argument("--anahtar", default=VARSAYILAN_ANAHTAR)
     p.add_argument("--ortme", default=VARSAYILAN_ORTME)
     p.add_argument("--mukerrer", default=VARSAYILAN_MUKERRER)
+    p.add_argument("--ikinci", default=VARSAYILAN_IKINCI)
     p.add_argument("--dsn", default=os.environ.get("KIRO2_DSN", VARSAYILAN_DSN))
     p.add_argument(
         "--yaz", action="store_true", help="gercekten yaz (varsayilan: plan)"
@@ -647,6 +711,7 @@ def main() -> int:
         "anahtar": Path(args.anahtar),
         "ortme": Path(args.ortme),
         "mukerrer": Path(args.mukerrer),
+        "ikinci": Path(args.ikinci),
     }
     if args.kuru:
         kayitlar = _hazirla(yollar)
