@@ -154,9 +154,71 @@ harf).
 
 Olculen capalar: sekilli 581, siklari gorsel 10 (ikisinde her sik cizim +
 cumle), 'OSYM KOSESI' etiketli 142 (AYT 122, LYS 19, YGS 1; yil 2010-2025),
-kaynak kusuru notu 135. Rastgele 5 soruluk orneklem (tohum 2026) gozle
-kirpimla karsilastirildi: 5/5 birebir. TAM ikinci transkripsiyon YAPILMADI
-(borc).
+kaynak kusuru notu 137 (135 + ikinci okumada eklenen 2; bolum 4a).
+Rastgele 5 soruluk orneklem (tohum 2026) gozle kirpimla karsilastirildi:
+5/5 birebir.
+
+## 4a. Ikinci okuma -- orneklemle karar, hedefli tabaka (0048)
+
+Soru: tam ikinci okuma gerekli mi? Kural OLCUMDEN ONCE yazildi
+(`345_2025_ayt_matematik_ikinci_okuma.json` -> `protokol`):
+
+* Orneklem: 30 okuma grubunun her birinden 7 soru (random.Random(20260924)),
+  210 soru. Ikinci okuyucular ilk okumayi GORMEDI; ayni talimat, ayni kirpim.
+* Esasli hata: matematigi/anlami degistiren fark (rakam, isaret, degisken,
+  us/kesir yapisi, aralik ucu, eksik ifade, yanlis sik). Yazim bicimi degil.
+* Karar: ilk okumanin esasli hata oraninin 95% Clopper-Pearson ust siniri
+  <= %3 -> tam ikinci okuma yok; > %3 ve hatalar bir tabakada -> yalniz o
+  tabaka; > %3 ve yayilmis -> tam ikinci okuma.
+
+Olcum:
+
+| | n | esasli hata | 95% ust sinir |
+|---|---|---|---|
+| orneklem | 210 | 2 (T058_02, T060_08) | %3.40 |
+| grup_11 | 7 | 2 | -- |
+| grup_11 disi | 203 | 0 | %1.80 |
+
+Iki hata da ayni grupta ve ayni ozellikte: sinirlayici gosterimi (aralik
+ucu `(`/`[`, dogru parcasi `[AB]` / uzunluk `|AB|`). Dusuk cozunurlukte
+kapanan parantez ucu kopuk piksel, koseli parantezin tirnagi cogu kez
+gorunmez; hata burada toplaniyor. Karar: **HEDEFLI ikinci okuma**. Tabaka =
+grup_11 tamami + kitaptaki tum sinirlayici ozellikli sorular = 362 (31'i
+orneklemde okunmustu, 331 yeni).
+
+Sonuc: 541 ikinci okumanin 77'sinde fark; her fark kirpima 8x en-yakin-komsu
+buyutmeyle bakilarak hukme baglandi (soru cozulmedi). 10 soruda ilk okuma
+esasli hatali, 4 soruda yalniz baski kusuru notu eklendi, kalan 63 farkta
+ilk okuma korundu (ikinci okuma hatasi ya da esdeger yazim).
+
+| soru | alan | ilk okuma | basili |
+|---|---|---|---|
+| T045_03 | govde | `2/x_((1)) + 1/1_((x))` | `2/x + 1/1` |
+| T054_02 | D | `(0, 2]` | `(0, 2)` |
+| T058_02 | govde | `\|AD\| U+22A5 \|CD\|`, `\|AC\| U+22A5 \|BC\|` | `[AD]`, `[CD]`, `[AC]`, `[BC]` |
+| T060_01 | govde | `... - cos2x - 1` | `... - cos2x + 1` |
+| T060_08 | govde | `(0, 360 U+00B0]` | `(0, 360 U+00B0)` |
+| T062_03 | govde | `[0, 2 U+03C0)` | `(0, 2 U+03C0)` |
+| T062_04 | govde | `[0, 2 U+03C0)` | `(0, 2 U+03C0)` |
+| T062_14 | govde | `[0, 2 U+03C0]` | `(0, 2 U+03C0]` |
+| T064_03 | govde | `\|AD\| // \|BC\|`, `\|AD\| U+22A5 \|AB\|` | `[AD] // [BC]`, `[AD] U+22A5 [AB]` |
+| T073_04 | D | `36/65` | `38/65` |
+
+Kusur notu (metin degismedi): T046_15 (`|AC|` ya da `[AC]` belirsiz), T105_04
+(D sinirlayicilari belirsiz), T143_04 ve T162_05 (esittir isaretinin alt
+cizgisi basimda yok, `=` olarak okundu).
+
+**DB.** Bu satirlar DB'ye ilk metinle girmisti ve id = uuid5(ilk hash).
+0048 metni/siki, soru_hash'i, kelime istatistiklerini ve kusur notunu
+yerinde duzeltir; guard id + eski hash + parcanin tam bir kez gecmesi.
+Ithal, kayittaki `id_sabitleme` ile bu 10 satirin id'sini ilk hash'e
+sabitler: tekrar kosu 0 satir yazar (sabitleme kaldirilinca 10 cift satir
+yazacagi olculdu). Migration sonrasi 14 satirin tum alanlari ithalin bugun
+urettigi kayitla birebir; yerel DB'de yukari/asagi/yukari gidis-donus
+42 tablo satirinda birebir.
+
+Kalan risk: tabaka disi sorularda orneklem 0/203 (ust sinir %1.80); bu
+sorular tam ikinci okunmadi.
 
 ## 5. Ortme
 
@@ -201,7 +263,7 @@ Yerel DB'de yukari/asagi/yukari gidis-donus olculdu (beta gorunumu sabit).
 
 | alan | kaynak |
 |---|---|
-| `question_text`, `a..e` | kirpimdan gorsel okuma (30 grup + 6 duzeltme) |
+| `question_text`, `a..e` | kirpimdan gorsel okuma (30 grup + 6 duzeltme + 14 ikinci okuma hakemi) |
 | `correct_answer` | sayfa alti cevap satiri, iki okuma + piksel + goz |
 | `explanation` | NULL -- kitapta cozum yok, uydurulmadi |
 | `question_image_url` | tam soru kirpimi `/static/crops/MAT345_AYT/` |
@@ -216,10 +278,11 @@ public 0, beta gorunumu 0, 15 konu dugumu, osym_year 142; ikinci kosum
 
 ## 9. Bilinen borc
 
-1. TAM ikinci transkripsiyon yapilmadi (orneklem 5/5).
+1. Ikinci okuma HEDEFLI yapildi (bolum 4a, 0048); tabaka disi sorular
+   tam ikinci okunmadi (orneklem 0/203, ust sinir %1.80).
 2. 175 soruda okuyucu diski ortme suphesi; 2024 baskisi kurtarma kanali
    kullanilmadi.
-3. 135 soruda okuyucu kaynak kusuru notu (7'si 'kucuk log tabani en iyi
+3. 137 soruda okuyucu kaynak kusuru notu (7'si 'kucuk log tabani en iyi
    tahmin', T084_03'te taban '?'); duzeltilmedi, bayrakli.
 4. 22 guclu mukerrer aday; birlestirme/eleme karari verilmedi (celisen 3
    eski hat satiri 0047 ile basili anahtara hizalandi).
