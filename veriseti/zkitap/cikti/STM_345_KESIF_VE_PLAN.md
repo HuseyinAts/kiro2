@@ -50,7 +50,7 @@ Her test sayfasi kendi unitesinin araliginda: 90/90.
 * KAPSAM ICI: 45 'Sinava Gecis' testinin tum sorulari (anahtar basili).
 * KAPSAM DISI: konu sayfalarindaki acik uclu alistirmalar (sik yok,
   anahtar yok) ve 'Isindirma Kosesi' coktan secmelileri (anahtar basili
-  DEGIL; soru cozmek yasak). Sayilari Faz 3'te (kutu taramasi) olculup belgeye yazilir.
+  DEGIL; soru cozmek yasak). Olculdu (Faz 3): Isindirma Kosesi 83 kutu; acik uclu alistirmalar sayilmadi.
 * RISK: kitap dosya 320'de (basili 319) U16 Test 3'un ikinci sayfasiyla
   bitiyor. Diger 3-testli unitelerle (U1, U7, U12, U13) tutarli; arka kapak /
   arka madde yakalanmamis olabilir. Test sorulari eksiksiz gorunuyor; Faz 1
@@ -89,7 +89,12 @@ adi kapisi. Kaynak adi DB'deki eski hat adiyla ayni ('345 2025 Start
 Matematik'); ASCII disi karakter yok -> ad migration'i gerekmez (Faz 1'de
 teyit edildi: DB'deki 3 eski satirin adi birebir bu).
 
-### Faz 3 -- Kirpim kutulari (`stm345_kutu.py`, `stm345_kirp.py`)
+### Faz 3 -- Kirpim kutulari (`stm345_kutu.py`, `stm345_kirp.py`) -- TAMAM 25 Eyl
+
+Sonuc (`STM_345_YONTEM.md` bolum 3): 371 kutu, kapi ihlali 0, 371 kirpim
+gozle; yanlis simge (s83 sekil) halka olcusuyle elendi; ortme 6 soru;
+Isindirma Kosesi 83 (kapsam disi).
+
 1. Capa: basili soru numarasi + okuyucu diski (iki kanal); anahtar
    seridindeki numaralar hangi capanin dogru oldugunu secer.
 2. Serit bandi ve sayfa numarasi kutunun disinda (sizinti kapisi:

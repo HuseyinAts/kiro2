@@ -1,0 +1,77 @@
+{
+"kaynak": "345 2025 Start Matematik",
+"arac": "scripts/kitap/stm345_kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada koyu kitap murekkebi (acil25_geo_kirp.ortme_halkalari). Kirpimin icine >= 4 halka pikseli dusen soru 'ortme suphesi' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"tam_kitap": true,
+"kenar_kapisi_ihlali": 0,
+"ortme_suphesi_soru": 6,
+"kenar": [],
+"ortme": [
+{
+"birim": "STM345-T010",
+"soru": 7,
+"dosya": 82,
+"sutun": "L",
+"simge": [
+619,
+372
+],
+"piksel": 5
+},
+{
+"birim": "STM345-T016",
+"soru": 2,
+"dosya": 117,
+"sutun": "L",
+"simge": [
+525,
+368
+],
+"piksel": 5
+},
+{
+"birim": "STM345-T027",
+"soru": 5,
+"dosya": 198,
+"sutun": "L",
+"simge": [
+149,
+371
+],
+"piksel": 6
+},
+{
+"birim": "STM345-T030",
+"soru": 7,
+"dosya": 216,
+"sutun": "R",
+"simge": [
+136,
+383
+],
+"piksel": 9
+},
+{
+"birim": "STM345-T037",
+"soru": 2,
+"dosya": 265,
+"sutun": "L",
+"simge": [
+718,
+368
+],
+"piksel": 6
+},
+{
+"birim": "STM345-T038",
+"soru": 5,
+"dosya": 268,
+"sutun": "L",
+"simge": [
+156,
+371
+],
+"piksel": 8
+}
+]
+}

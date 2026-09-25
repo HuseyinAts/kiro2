@@ -1,0 +1,6797 @@
+{
+ "kaynak": "345 2025 Start Matematik",
+ "arac": "scripts/kitap/stm345_kutu.py",
+ "kart": [
+  589,
+  43,
+  742,
+  977
+ ],
+ "capa": "sutun basina basili numara (sayisi == cevap seridi girdi sayisi); yedek simge",
+ "kural": "Kutu ustu: capadan yukari ilk 10 satirlik bos bandin alt ucu - 3 (tavan onceki capa / unite adi bandi + 4); alti sonraki kutunun ustu - 1, sutun sonunda 900.",
+ "sutun_kanali": {
+  "numara": 180
+ },
+ "ust_kurali_sayaci": {},
+ "kesim_metne_degen_kutu": [],
+ "ara_cizgi": {
+  "11": 369,
+  "12": 372,
+  "13": 369,
+  "14": 372,
+  "15": 369,
+  "16": 372,
+  "33": 369,
+  "34": 372,
+  "35": 369,
+  "36": 372,
+  "47": 369,
+  "48": 372,
+  "49": 369,
+  "50": 372,
+  "65": 369,
+  "66": 372,
+  "67": 369,
+  "68": 372,
+  "81": 369,
+  "82": 372,
+  "83": 369,
+  "84": 372,
+  "85": 369,
+  "86": 372,
+  "87": 369,
+  "88": 372,
+  "113": 369,
+  "114": 372,
+  "115": 369,
+  "116": 372,
+  "117": 369,
+  "118": 372,
+  "119": 369,
+  "120": 372,
+  "137": 369,
+  "138": 372,
+  "139": 369,
+  "140": 372,
+  "141": 369,
+  "142": 372,
+  "157": 369,
+  "158": 372,
+  "159": 369,
+  "160": 372,
+  "171": 369,
+  "172": 372,
+  "173": 369,
+  "174": 372,
+  "185": 369,
+  "186": 372,
+  "187": 369,
+  "188": 372,
+  "197": 369,
+  "198": 372,
+  "199": 369,
+  "200": 372,
+  "213": 369,
+  "214": 372,
+  "215": 369,
+  "216": 372,
+  "217": 369,
+  "218": 372,
+  "233": 369,
+  "234": 372,
+  "235": 369,
+  "236": 372,
+  "237": 369,
+  "238": 372,
+  "261": 369,
+  "262": 372,
+  "263": 369,
+  "264": 372,
+  "265": 369,
+  "266": 372,
+  "267": 369,
+  "268": 372,
+  "291": 369,
+  "292": 372,
+  "293": 369,
+  "294": 372,
+  "295": 369,
+  "296": 372,
+  "297": 369,
+  "298": 372,
+  "315": 369,
+  "316": 372,
+  "317": 369,
+  "318": 372,
+  "319": 369,
+  "320": 372
+ },
+ "kutu_sayisi": 371,
+ "kutusuz_soru": 0,
+ "yukseklik": {
+  "min": 129,
+  "medyan": 368,
+  "max": 755
+ },
+ "kutular": [
+  {
+   "birim": "STM345-T001",
+   "soru": 1,
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    466
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 2,
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    467,
+    367,
+    719
+   ],
+   "capa": [
+    470,
+    477
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 3,
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    720,
+    367,
+    900
+   ],
+   "capa": [
+    723,
+    730
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 4,
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    148,
+    738,
+    343
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 5,
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    344,
+    738,
+    542
+   ],
+   "capa": [
+    349,
+    356
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 6,
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 2,
+   "kutu": [
+    372,
+    543,
+    738,
+    900
+   ],
+   "capa": [
+    547,
+    554
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 7,
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    529
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 8,
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    530,
+    370,
+    768
+   ],
+   "capa": [
+    534,
+    541
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 9,
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    769,
+    370,
+    900
+   ],
+   "capa": [
+    778,
+    785
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 10,
+   "dosya": 12,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    576
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 11,
+   "dosya": 12,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    577,
+    738,
+    900
+   ],
+   "capa": [
+    581,
+    588
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 1,
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    378
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 2,
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    379,
+    367,
+    601
+   ],
+   "capa": [
+    383,
+    390
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 3,
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    602,
+    367,
+    900
+   ],
+   "capa": [
+    606,
+    613
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 4,
+   "dosya": 13,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    586
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 5,
+   "dosya": 13,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    587,
+    738,
+    900
+   ],
+   "capa": [
+    590,
+    597
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 6,
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    519
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 7,
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    520,
+    370,
+    770
+   ],
+   "capa": [
+    525,
+    533
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 8,
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    771,
+    370,
+    900
+   ],
+   "capa": [
+    774,
+    781
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 9,
+   "dosya": 14,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    148,
+    738,
+    567
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 10,
+   "dosya": 14,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    568,
+    738,
+    900
+   ],
+   "capa": [
+    571,
+    578
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 1,
+   "dosya": 15,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    627
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 2,
+   "dosya": 15,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    628,
+    367,
+    900
+   ],
+   "capa": [
+    631,
+    638
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 3,
+   "dosya": 15,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    506
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 4,
+   "dosya": 15,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    507,
+    738,
+    900
+   ],
+   "capa": [
+    511,
+    519
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 5,
+   "dosya": 16,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    144,
+    370,
+    615
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 6,
+   "dosya": 16,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    616,
+    370,
+    900
+   ],
+   "capa": [
+    619,
+    627
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 7,
+   "dosya": 16,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    148,
+    738,
+    544
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 8,
+   "dosya": 16,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    545,
+    738,
+    900
+   ],
+   "capa": [
+    548,
+    555
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 1,
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    402
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 2,
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    403,
+    367,
+    739
+   ],
+   "capa": [
+    406,
+    413
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 3,
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    740,
+    367,
+    900
+   ],
+   "capa": [
+    754,
+    761
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 4,
+   "dosya": 33,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    148,
+    738,
+    485
+   ],
+   "capa": [
+    153,
+    160
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 5,
+   "dosya": 33,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    486,
+    738,
+    900
+   ],
+   "capa": [
+    489,
+    496
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 6,
+   "dosya": 34,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    599
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 7,
+   "dosya": 34,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    600,
+    370,
+    900
+   ],
+   "capa": [
+    604,
+    611
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 8,
+   "dosya": 34,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    500
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 9,
+   "dosya": 34,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    501,
+    738,
+    900
+   ],
+   "capa": [
+    505,
+    512
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 1,
+   "dosya": 35,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    437
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 2,
+   "dosya": 35,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    438,
+    367,
+    900
+   ],
+   "capa": [
+    441,
+    448
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 3,
+   "dosya": 35,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    668
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 4,
+   "dosya": 35,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    669,
+    738,
+    900
+   ],
+   "capa": [
+    672,
+    679
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 5,
+   "dosya": 36,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    370,
+    535
+   ],
+   "capa": [
+    155,
+    162
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 6,
+   "dosya": 36,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    536,
+    370,
+    900
+   ],
+   "capa": [
+    540,
+    547
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 7,
+   "dosya": 36,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    531
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 8,
+   "dosya": 36,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    532,
+    738,
+    900
+   ],
+   "capa": [
+    536,
+    543
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 1,
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    363
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 2,
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    364,
+    367,
+    580
+   ],
+   "capa": [
+    367,
+    375
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 3,
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    581,
+    367,
+    900
+   ],
+   "capa": [
+    584,
+    591
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 4,
+   "dosya": 47,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    670
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 5,
+   "dosya": 47,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    671,
+    738,
+    900
+   ],
+   "capa": [
+    675,
+    682
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 6,
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    370,
+    341
+   ],
+   "capa": [
+    153,
+    160
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 7,
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    342,
+    370,
+    690
+   ],
+   "capa": [
+    345,
+    352
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 8,
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    691,
+    370,
+    900
+   ],
+   "capa": [
+    705,
+    712
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 9,
+   "dosya": 48,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    585
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 10,
+   "dosya": 48,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    586,
+    738,
+    900
+   ],
+   "capa": [
+    596,
+    603
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 1,
+   "dosya": 49,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    509
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 2,
+   "dosya": 49,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    510,
+    367,
+    900
+   ],
+   "capa": [
+    513,
+    520
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 3,
+   "dosya": 49,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    626
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 4,
+   "dosya": 49,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    627,
+    738,
+    900
+   ],
+   "capa": [
+    638,
+    645
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 5,
+   "dosya": 50,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    681
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 6,
+   "dosya": 50,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    682,
+    370,
+    900
+   ],
+   "capa": [
+    696,
+    703
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 7,
+   "dosya": 50,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    148,
+    738,
+    509
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 8,
+   "dosya": 50,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    510,
+    738,
+    900
+   ],
+   "capa": [
+    513,
+    520
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 1,
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    400
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 2,
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    401,
+    367,
+    649
+   ],
+   "capa": [
+    404,
+    412
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 3,
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    650,
+    367,
+    900
+   ],
+   "capa": [
+    658,
+    665
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 4,
+   "dosya": 65,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    615
+   ],
+   "capa": [
+    164,
+    171
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 5,
+   "dosya": 65,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    616,
+    738,
+    900
+   ],
+   "capa": [
+    619,
+    626
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 6,
+   "dosya": 66,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    526
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 7,
+   "dosya": 66,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    527,
+    370,
+    900
+   ],
+   "capa": [
+    530,
+    537
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 8,
+   "dosya": 66,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    518
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 9,
+   "dosya": 66,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    519,
+    738,
+    900
+   ],
+   "capa": [
+    522,
+    529
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 1,
+   "dosya": 67,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    463
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 2,
+   "dosya": 67,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    464,
+    367,
+    900
+   ],
+   "capa": [
+    467,
+    475
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 3,
+   "dosya": 67,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    742
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 4,
+   "dosya": 67,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    743,
+    738,
+    900
+   ],
+   "capa": [
+    754,
+    762
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 5,
+   "dosya": 68,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    467
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 6,
+   "dosya": 68,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    468,
+    370,
+    900
+   ],
+   "capa": [
+    472,
+    479
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 7,
+   "dosya": 68,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    575
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 8,
+   "dosya": 68,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    576,
+    738,
+    900
+   ],
+   "capa": [
+    579,
+    586
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 1,
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    415
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 2,
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    416,
+    367,
+    687
+   ],
+   "capa": [
+    421,
+    428
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 3,
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    688,
+    367,
+    900
+   ],
+   "capa": [
+    691,
+    698
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 4,
+   "dosya": 81,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    144,
+    738,
+    576
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 5,
+   "dosya": 81,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    577,
+    738,
+    900
+   ],
+   "capa": [
+    581,
+    588
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 6,
+   "dosya": 82,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    370,
+    607
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 7,
+   "dosya": 82,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    608,
+    370,
+    900
+   ],
+   "capa": [
+    620,
+    628
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 8,
+   "dosya": 82,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    616
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 9,
+   "dosya": 82,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    617,
+    738,
+    900
+   ],
+   "capa": [
+    620,
+    627
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 1,
+   "dosya": 83,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    576
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 2,
+   "dosya": 83,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    577,
+    367,
+    900
+   ],
+   "capa": [
+    581,
+    588
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 3,
+   "dosya": 83,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    573
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 4,
+   "dosya": 83,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    574,
+    738,
+    900
+   ],
+   "capa": [
+    577,
+    584
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 5,
+   "dosya": 84,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    586
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 6,
+   "dosya": 84,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    587,
+    370,
+    900
+   ],
+   "capa": [
+    592,
+    599
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 7,
+   "dosya": 84,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    586
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 8,
+   "dosya": 84,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    587,
+    738,
+    900
+   ],
+   "capa": [
+    591,
+    598
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 1,
+   "dosya": 85,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    527
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 2,
+   "dosya": 85,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    528,
+    367,
+    900
+   ],
+   "capa": [
+    531,
+    538
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 3,
+   "dosya": 85,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    636
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 4,
+   "dosya": 85,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    637,
+    738,
+    900
+   ],
+   "capa": [
+    642,
+    649
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 5,
+   "dosya": 86,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    531
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 6,
+   "dosya": 86,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    532,
+    370,
+    900
+   ],
+   "capa": [
+    536,
+    543
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 7,
+   "dosya": 86,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    148,
+    738,
+    588
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 8,
+   "dosya": 86,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    589,
+    738,
+    900
+   ],
+   "capa": [
+    592,
+    599
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 1,
+   "dosya": 87,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    517
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 2,
+   "dosya": 87,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    518,
+    367,
+    900
+   ],
+   "capa": [
+    521,
+    528
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 3,
+   "dosya": 87,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    686
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 4,
+   "dosya": 87,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    687,
+    738,
+    900
+   ],
+   "capa": [
+    690,
+    697
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 5,
+   "dosya": 88,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    663
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 6,
+   "dosya": 88,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    664,
+    370,
+    900
+   ],
+   "capa": [
+    672,
+    679
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 7,
+   "dosya": 88,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    144,
+    738,
+    549
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 8,
+   "dosya": 88,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    550,
+    738,
+    900
+   ],
+   "capa": [
+    554,
+    561
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 1,
+   "dosya": 113,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    555
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 2,
+   "dosya": 113,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    556,
+    367,
+    900
+   ],
+   "capa": [
+    560,
+    567
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 3,
+   "dosya": 113,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    559
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 4,
+   "dosya": 113,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    560,
+    738,
+    900
+   ],
+   "capa": [
+    563,
+    570
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 5,
+   "dosya": 114,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    595
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 6,
+   "dosya": 114,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    596,
+    370,
+    900
+   ],
+   "capa": [
+    607,
+    614
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 7,
+   "dosya": 114,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    147,
+    738,
+    479
+   ],
+   "capa": [
+    157,
+    164
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 8,
+   "dosya": 114,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    480,
+    738,
+    900
+   ],
+   "capa": [
+    485,
+    492
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 1,
+   "dosya": 115,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    586
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 2,
+   "dosya": 115,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    587,
+    367,
+    900
+   ],
+   "capa": [
+    591,
+    598
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 3,
+   "dosya": 115,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    144,
+    738,
+    649
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 4,
+   "dosya": 115,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    650,
+    738,
+    900
+   ],
+   "capa": [
+    661,
+    668
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 5,
+   "dosya": 116,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    530
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 6,
+   "dosya": 116,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    531,
+    370,
+    900
+   ],
+   "capa": [
+    534,
+    541
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 7,
+   "dosya": 116,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    900
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 1,
+   "dosya": 117,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    147,
+    367,
+    520
+   ],
+   "capa": [
+    158,
+    165
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 2,
+   "dosya": 117,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    521,
+    367,
+    900
+   ],
+   "capa": [
+    525,
+    532
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 3,
+   "dosya": 117,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    146,
+    738,
+    520
+   ],
+   "capa": [
+    157,
+    164
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 4,
+   "dosya": 117,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    521,
+    738,
+    900
+   ],
+   "capa": [
+    525,
+    532
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 5,
+   "dosya": 118,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    580
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 6,
+   "dosya": 118,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    581,
+    370,
+    900
+   ],
+   "capa": [
+    584,
+    591
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 7,
+   "dosya": 118,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    523
+   ],
+   "capa": [
+    157,
+    164
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 8,
+   "dosya": 118,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    524,
+    738,
+    900
+   ],
+   "capa": [
+    527,
+    534
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 1,
+   "dosya": 119,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    147,
+    367,
+    510
+   ],
+   "capa": [
+    158,
+    165
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 2,
+   "dosya": 119,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    511,
+    367,
+    900
+   ],
+   "capa": [
+    514,
+    521
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 3,
+   "dosya": 119,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    595
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 4,
+   "dosya": 119,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    596,
+    738,
+    900
+   ],
+   "capa": [
+    608,
+    615
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 5,
+   "dosya": 120,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    581
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 6,
+   "dosya": 120,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    582,
+    370,
+    900
+   ],
+   "capa": [
+    609,
+    616
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 7,
+   "dosya": 120,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    510
+   ],
+   "capa": [
+    159,
+    166
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 8,
+   "dosya": 120,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    511,
+    738,
+    900
+   ],
+   "capa": [
+    515,
+    522
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 1,
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    468
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 2,
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    469,
+    367,
+    721
+   ],
+   "capa": [
+    472,
+    480
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 3,
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    722,
+    367,
+    900
+   ],
+   "capa": [
+    725,
+    733
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 4,
+   "dosya": 137,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    493
+   ],
+   "capa": [
+    154,
+    161
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 5,
+   "dosya": 137,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    494,
+    738,
+    900
+   ],
+   "capa": [
+    498,
+    505
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 6,
+   "dosya": 138,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    572
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 7,
+   "dosya": 138,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    573,
+    370,
+    900
+   ],
+   "capa": [
+    577,
+    584
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 8,
+   "dosya": 138,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    550
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 9,
+   "dosya": 138,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    551,
+    738,
+    900
+   ],
+   "capa": [
+    555,
+    562
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 1,
+   "dosya": 139,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    521
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 2,
+   "dosya": 139,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    522,
+    367,
+    900
+   ],
+   "capa": [
+    525,
+    533
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 3,
+   "dosya": 139,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    522
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 4,
+   "dosya": 139,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    523,
+    738,
+    900
+   ],
+   "capa": [
+    526,
+    533
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 5,
+   "dosya": 140,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    370,
+    501
+   ],
+   "capa": [
+    160,
+    167
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 6,
+   "dosya": 140,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    502,
+    370,
+    900
+   ],
+   "capa": [
+    506,
+    513
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 7,
+   "dosya": 140,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    570
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 8,
+   "dosya": 140,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    571,
+    738,
+    900
+   ],
+   "capa": [
+    602,
+    609
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 1,
+   "dosya": 141,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    674
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 2,
+   "dosya": 141,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    675,
+    367,
+    900
+   ],
+   "capa": [
+    688,
+    695
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 3,
+   "dosya": 141,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    148,
+    738,
+    415
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 4,
+   "dosya": 141,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    416,
+    738,
+    900
+   ],
+   "capa": [
+    419,
+    426
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 5,
+   "dosya": 142,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    652
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 6,
+   "dosya": 142,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    653,
+    370,
+    900
+   ],
+   "capa": [
+    663,
+    671
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 7,
+   "dosya": 142,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    402
+   ],
+   "capa": [
+    159,
+    166
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 8,
+   "dosya": 142,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    403,
+    738,
+    900
+   ],
+   "capa": [
+    406,
+    414
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 1,
+   "dosya": 157,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    143,
+    367,
+    572
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 2,
+   "dosya": 157,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    573,
+    367,
+    900
+   ],
+   "capa": [
+    578,
+    585
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 3,
+   "dosya": 157,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    538
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 4,
+   "dosya": 157,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    539,
+    738,
+    900
+   ],
+   "capa": [
+    542,
+    549
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 5,
+   "dosya": 158,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    592
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 6,
+   "dosya": 158,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    593,
+    370,
+    900
+   ],
+   "capa": [
+    597,
+    604
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 7,
+   "dosya": 158,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    585
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 8,
+   "dosya": 158,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    586,
+    738,
+    900
+   ],
+   "capa": [
+    589,
+    596
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 1,
+   "dosya": 159,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    510
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 2,
+   "dosya": 159,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    511,
+    367,
+    900
+   ],
+   "capa": [
+    514,
+    521
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 3,
+   "dosya": 159,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    648
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 4,
+   "dosya": 159,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    649,
+    738,
+    900
+   ],
+   "capa": [
+    652,
+    659
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 5,
+   "dosya": 160,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    528
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 6,
+   "dosya": 160,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    529,
+    370,
+    900
+   ],
+   "capa": [
+    534,
+    541
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 7,
+   "dosya": 160,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    518
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 8,
+   "dosya": 160,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    519,
+    738,
+    900
+   ],
+   "capa": [
+    522,
+    530
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 1,
+   "dosya": 171,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    554
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 2,
+   "dosya": 171,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    555,
+    367,
+    900
+   ],
+   "capa": [
+    558,
+    565
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 3,
+   "dosya": 171,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    613
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 4,
+   "dosya": 171,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    614,
+    738,
+    900
+   ],
+   "capa": [
+    617,
+    624
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 5,
+   "dosya": 172,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    627
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 6,
+   "dosya": 172,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    628,
+    370,
+    900
+   ],
+   "capa": [
+    639,
+    646
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 7,
+   "dosya": 172,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    565
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 8,
+   "dosya": 172,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    566,
+    738,
+    900
+   ],
+   "capa": [
+    569,
+    576
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 1,
+   "dosya": 173,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    553
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 2,
+   "dosya": 173,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    554,
+    367,
+    900
+   ],
+   "capa": [
+    557,
+    564
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 3,
+   "dosya": 173,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    667
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 4,
+   "dosya": 173,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    668,
+    738,
+    900
+   ],
+   "capa": [
+    672,
+    679
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 5,
+   "dosya": 174,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    141,
+    370,
+    523
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 6,
+   "dosya": 174,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    524,
+    370,
+    900
+   ],
+   "capa": [
+    529,
+    536
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 7,
+   "dosya": 174,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    745
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 8,
+   "dosya": 174,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    746,
+    738,
+    900
+   ],
+   "capa": [
+    749,
+    756
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 1,
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    402
+   ],
+   "capa": [
+    157,
+    165
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 2,
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    403,
+    367,
+    726
+   ],
+   "capa": [
+    406,
+    413
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 3,
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    727,
+    367,
+    900
+   ],
+   "capa": [
+    737,
+    745
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 4,
+   "dosya": 185,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    146,
+    738,
+    463
+   ],
+   "capa": [
+    157,
+    164
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 5,
+   "dosya": 185,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    464,
+    738,
+    900
+   ],
+   "capa": [
+    467,
+    474
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 6,
+   "dosya": 186,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    682
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 7,
+   "dosya": 186,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    683,
+    370,
+    900
+   ],
+   "capa": [
+    708,
+    715
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 8,
+   "dosya": 186,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    147,
+    738,
+    565
+   ],
+   "capa": [
+    157,
+    165
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 9,
+   "dosya": 186,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    566,
+    738,
+    900
+   ],
+   "capa": [
+    569,
+    576
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 1,
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    420
+   ],
+   "capa": [
+    171,
+    178
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 2,
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    421,
+    367,
+    693
+   ],
+   "capa": [
+    432,
+    439
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 3,
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    694,
+    367,
+    900
+   ],
+   "capa": [
+    698,
+    705
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 4,
+   "dosya": 187,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    147,
+    738,
+    446
+   ],
+   "capa": [
+    171,
+    178
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 5,
+   "dosya": 187,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    447,
+    738,
+    900
+   ],
+   "capa": [
+    450,
+    457
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 6,
+   "dosya": 188,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    643
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 7,
+   "dosya": 188,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    644,
+    370,
+    900
+   ],
+   "capa": [
+    670,
+    677
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 8,
+   "dosya": 188,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    147,
+    738,
+    457
+   ],
+   "capa": [
+    159,
+    166
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 9,
+   "dosya": 188,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    458,
+    738,
+    900
+   ],
+   "capa": [
+    461,
+    469
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 1,
+   "dosya": 197,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    585
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 2,
+   "dosya": 197,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    586,
+    367,
+    900
+   ],
+   "capa": [
+    589,
+    596
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 3,
+   "dosya": 197,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    583
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 4,
+   "dosya": 197,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    584,
+    738,
+    900
+   ],
+   "capa": [
+    587,
+    595
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 5,
+   "dosya": 198,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    631
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 6,
+   "dosya": 198,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    632,
+    370,
+    900
+   ],
+   "capa": [
+    635,
+    642
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 7,
+   "dosya": 198,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    518
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 8,
+   "dosya": 198,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    519,
+    738,
+    900
+   ],
+   "capa": [
+    522,
+    529
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 1,
+   "dosya": 199,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    520
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 2,
+   "dosya": 199,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    521,
+    367,
+    900
+   ],
+   "capa": [
+    524,
+    531
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 3,
+   "dosya": 199,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    640
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 4,
+   "dosya": 199,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    641,
+    738,
+    900
+   ],
+   "capa": [
+    652,
+    659
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 5,
+   "dosya": 200,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    637
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 6,
+   "dosya": 200,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    638,
+    370,
+    900
+   ],
+   "capa": [
+    647,
+    654
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 7,
+   "dosya": 200,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    148,
+    738,
+    536
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 8,
+   "dosya": 200,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    537,
+    738,
+    900
+   ],
+   "capa": [
+    540,
+    547
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 1,
+   "dosya": 213,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    452
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 2,
+   "dosya": 213,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    453,
+    367,
+    900
+   ],
+   "capa": [
+    456,
+    463
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 3,
+   "dosya": 213,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    619
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 4,
+   "dosya": 213,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    620,
+    738,
+    900
+   ],
+   "capa": [
+    624,
+    631
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 5,
+   "dosya": 214,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    672
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 6,
+   "dosya": 214,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    673,
+    370,
+    900
+   ],
+   "capa": [
+    682,
+    689
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 7,
+   "dosya": 214,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    423
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 8,
+   "dosya": 214,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    424,
+    738,
+    900
+   ],
+   "capa": [
+    427,
+    435
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 1,
+   "dosya": 215,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    459
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 2,
+   "dosya": 215,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    460,
+    367,
+    900
+   ],
+   "capa": [
+    463,
+    471
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 3,
+   "dosya": 215,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    144,
+    738,
+    707
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 4,
+   "dosya": 215,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    708,
+    738,
+    900
+   ],
+   "capa": [
+    711,
+    719
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 5,
+   "dosya": 216,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    370,
+    388
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 6,
+   "dosya": 216,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    389,
+    370,
+    900
+   ],
+   "capa": [
+    392,
+    400
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 7,
+   "dosya": 216,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    900
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 1,
+   "dosya": 217,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    495
+   ],
+   "capa": [
+    157,
+    165
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 2,
+   "dosya": 217,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    496,
+    367,
+    900
+   ],
+   "capa": [
+    499,
+    506
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 3,
+   "dosya": 217,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    148,
+    738,
+    476
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 4,
+   "dosya": 217,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    477,
+    738,
+    900
+   ],
+   "capa": [
+    480,
+    487
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 5,
+   "dosya": 218,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    609
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 6,
+   "dosya": 218,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    610,
+    370,
+    900
+   ],
+   "capa": [
+    621,
+    628
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 7,
+   "dosya": 218,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    900
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 1,
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    388
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 2,
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    389,
+    367,
+    639
+   ],
+   "capa": [
+    393,
+    400
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 3,
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    640,
+    367,
+    900
+   ],
+   "capa": [
+    644,
+    651
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 4,
+   "dosya": 233,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    146,
+    738,
+    517
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 5,
+   "dosya": 233,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    518,
+    738,
+    900
+   ],
+   "capa": [
+    521,
+    528
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 6,
+   "dosya": 234,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    618
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 7,
+   "dosya": 234,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    619,
+    370,
+    900
+   ],
+   "capa": [
+    623,
+    630
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 8,
+   "dosya": 234,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    147,
+    738,
+    443
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 9,
+   "dosya": 234,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    444,
+    738,
+    900
+   ],
+   "capa": [
+    447,
+    454
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 1,
+   "dosya": 235,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    147,
+    367,
+    539
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 2,
+   "dosya": 235,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    540,
+    367,
+    900
+   ],
+   "capa": [
+    543,
+    550
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 3,
+   "dosya": 235,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    725
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 4,
+   "dosya": 235,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    726,
+    738,
+    900
+   ],
+   "capa": [
+    730,
+    737
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 5,
+   "dosya": 236,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    569
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 6,
+   "dosya": 236,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    570,
+    370,
+    900
+   ],
+   "capa": [
+    574,
+    581
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 7,
+   "dosya": 236,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    655
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 8,
+   "dosya": 236,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    656,
+    738,
+    900
+   ],
+   "capa": [
+    659,
+    667
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 1,
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    147,
+    367,
+    447
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 2,
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    448,
+    367,
+    708
+   ],
+   "capa": [
+    451,
+    458
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 3,
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    709,
+    367,
+    900
+   ],
+   "capa": [
+    713,
+    720
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 4,
+   "dosya": 237,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    577
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 5,
+   "dosya": 237,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    578,
+    738,
+    900
+   ],
+   "capa": [
+    581,
+    588
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 6,
+   "dosya": 238,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    657
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 7,
+   "dosya": 238,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    658,
+    370,
+    900
+   ],
+   "capa": [
+    661,
+    668
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 8,
+   "dosya": 238,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    147,
+    738,
+    639
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 9,
+   "dosya": 238,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    640,
+    738,
+    900
+   ],
+   "capa": [
+    644,
+    651
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 1,
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    144,
+    367,
+    419
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 2,
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    420,
+    367,
+    678
+   ],
+   "capa": [
+    434,
+    442
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 3,
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 2,
+   "kutu": [
+    4,
+    679,
+    367,
+    900
+   ],
+   "capa": [
+    687,
+    694
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 4,
+   "dosya": 261,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    686
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 5,
+   "dosya": 261,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    687,
+    738,
+    900
+   ],
+   "capa": [
+    704,
+    711
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 6,
+   "dosya": 262,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    606
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 7,
+   "dosya": 262,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    607,
+    370,
+    900
+   ],
+   "capa": [
+    611,
+    618
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 8,
+   "dosya": 262,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    557
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 9,
+   "dosya": 262,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    558,
+    738,
+    900
+   ],
+   "capa": [
+    561,
+    568
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 1,
+   "dosya": 263,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    540
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 2,
+   "dosya": 263,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    541,
+    367,
+    900
+   ],
+   "capa": [
+    544,
+    552
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 3,
+   "dosya": 263,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    629
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 4,
+   "dosya": 263,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    630,
+    738,
+    900
+   ],
+   "capa": [
+    638,
+    645
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 5,
+   "dosya": 264,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    370,
+    426
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 6,
+   "dosya": 264,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    427,
+    370,
+    900
+   ],
+   "capa": [
+    432,
+    439
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 7,
+   "dosya": 264,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    697
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 8,
+   "dosya": 264,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    698,
+    738,
+    900
+   ],
+   "capa": [
+    704,
+    711
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 1,
+   "dosya": 265,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    542
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 2,
+   "dosya": 265,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    543,
+    367,
+    900
+   ],
+   "capa": [
+    547,
+    554
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 3,
+   "dosya": 265,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    713
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 4,
+   "dosya": 265,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    714,
+    738,
+    900
+   ],
+   "capa": [
+    721,
+    728
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 5,
+   "dosya": 266,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    370,
+    534
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 6,
+   "dosya": 266,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    535,
+    370,
+    900
+   ],
+   "capa": [
+    538,
+    545
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 7,
+   "dosya": 266,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    900
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 1,
+   "dosya": 267,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    367,
+    672
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 2,
+   "dosya": 267,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    673,
+    367,
+    900
+   ],
+   "capa": [
+    680,
+    687
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 3,
+   "dosya": 267,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    146,
+    738,
+    564
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 4,
+   "dosya": 267,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    565,
+    738,
+    900
+   ],
+   "capa": [
+    569,
+    576
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 5,
+   "dosya": 268,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    699
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 6,
+   "dosya": 268,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    700,
+    370,
+    900
+   ],
+   "capa": [
+    715,
+    722
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 7,
+   "dosya": 268,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    147,
+    738,
+    381
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 8,
+   "dosya": 268,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    382,
+    738,
+    900
+   ],
+   "capa": [
+    385,
+    392
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 1,
+   "dosya": 291,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    428
+   ],
+   "capa": [
+    165,
+    172
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 2,
+   "dosya": 291,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    429,
+    367,
+    900
+   ],
+   "capa": [
+    432,
+    439
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 3,
+   "dosya": 291,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    661
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 4,
+   "dosya": 291,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    662,
+    738,
+    900
+   ],
+   "capa": [
+    670,
+    677
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 5,
+   "dosya": 292,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    530
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 6,
+   "dosya": 292,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    531,
+    370,
+    900
+   ],
+   "capa": [
+    538,
+    545
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 7,
+   "dosya": 292,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    517
+   ],
+   "capa": [
+    153,
+    160
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 8,
+   "dosya": 292,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    518,
+    738,
+    900
+   ],
+   "capa": [
+    521,
+    528
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 1,
+   "dosya": 293,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    143,
+    367,
+    664
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 2,
+   "dosya": 293,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    665,
+    367,
+    900
+   ],
+   "capa": [
+    670,
+    678
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 3,
+   "dosya": 293,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    146,
+    738,
+    564
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 4,
+   "dosya": 293,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    565,
+    738,
+    900
+   ],
+   "capa": [
+    569,
+    576
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 5,
+   "dosya": 294,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    619
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 6,
+   "dosya": 294,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    620,
+    370,
+    900
+   ],
+   "capa": [
+    639,
+    646
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 7,
+   "dosya": 294,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    506
+   ],
+   "capa": [
+    162,
+    169
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 8,
+   "dosya": 294,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    507,
+    738,
+    900
+   ],
+   "capa": [
+    510,
+    518
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 1,
+   "dosya": 295,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    512
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 2,
+   "dosya": 295,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    513,
+    367,
+    900
+   ],
+   "capa": [
+    516,
+    523
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 3,
+   "dosya": 295,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    690
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 4,
+   "dosya": 295,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    691,
+    738,
+    900
+   ],
+   "capa": [
+    696,
+    703
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 5,
+   "dosya": 296,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    697
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 6,
+   "dosya": 296,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    698,
+    370,
+    900
+   ],
+   "capa": [
+    704,
+    711
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 7,
+   "dosya": 296,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    143,
+    738,
+    583
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 8,
+   "dosya": 296,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    584,
+    738,
+    900
+   ],
+   "capa": [
+    587,
+    594
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 1,
+   "dosya": 297,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    483
+   ],
+   "capa": [
+    149,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 2,
+   "dosya": 297,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    484,
+    367,
+    900
+   ],
+   "capa": [
+    490,
+    497
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 3,
+   "dosya": 297,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    683
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 4,
+   "dosya": 297,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    684,
+    738,
+    900
+   ],
+   "capa": [
+    694,
+    702
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 5,
+   "dosya": 298,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    681
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 6,
+   "dosya": 298,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    682,
+    370,
+    900
+   ],
+   "capa": [
+    697,
+    704
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 7,
+   "dosya": 298,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    430
+   ],
+   "capa": [
+    162,
+    169
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 8,
+   "dosya": 298,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    431,
+    738,
+    900
+   ],
+   "capa": [
+    435,
+    442
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 1,
+   "dosya": 315,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    148,
+    367,
+    601
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 2,
+   "dosya": 315,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    602,
+    367,
+    900
+   ],
+   "capa": [
+    605,
+    612
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 3,
+   "dosya": 315,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    146,
+    738,
+    444
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 4,
+   "dosya": 315,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    445,
+    738,
+    900
+   ],
+   "capa": [
+    448,
+    455
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 5,
+   "dosya": 316,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    668
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 6,
+   "dosya": 316,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    669,
+    370,
+    900
+   ],
+   "capa": [
+    673,
+    680
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 7,
+   "dosya": 316,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    146,
+    738,
+    559
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 8,
+   "dosya": 316,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    560,
+    738,
+    900
+   ],
+   "capa": [
+    563,
+    570
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 1,
+   "dosya": 317,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    367,
+    536
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 2,
+   "dosya": 317,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    537,
+    367,
+    900
+   ],
+   "capa": [
+    540,
+    548
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 3,
+   "dosya": 317,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    145,
+    738,
+    682
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 4,
+   "dosya": 317,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    683,
+    738,
+    900
+   ],
+   "capa": [
+    697,
+    705
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 5,
+   "dosya": 318,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    146,
+    370,
+    501
+   ],
+   "capa": [
+    161,
+    168
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 6,
+   "dosya": 318,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    502,
+    370,
+    900
+   ],
+   "capa": [
+    506,
+    513
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 7,
+   "dosya": 318,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    145,
+    738,
+    900
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 1,
+   "dosya": 319,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    144,
+    367,
+    544
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 2,
+   "dosya": 319,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    545,
+    367,
+    900
+   ],
+   "capa": [
+    561,
+    568
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 3,
+   "dosya": 319,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    372,
+    141,
+    738,
+    640
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 4,
+   "dosya": 319,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    372,
+    641,
+    738,
+    900
+   ],
+   "capa": [
+    652,
+    659
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 5,
+   "dosya": 320,
+   "sutun": "L",
+   "serit_sira": 0,
+   "kutu": [
+    4,
+    145,
+    370,
+    686
+   ],
+   "capa": [
+    148,
+    156
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 6,
+   "dosya": 320,
+   "sutun": "L",
+   "serit_sira": 1,
+   "kutu": [
+    4,
+    687,
+    370,
+    900
+   ],
+   "capa": [
+    702,
+    709
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 7,
+   "dosya": 320,
+   "sutun": "R",
+   "serit_sira": 0,
+   "kutu": [
+    375,
+    144,
+    738,
+    413
+   ],
+   "capa": [
+    151,
+    158
+   ],
+   "capa_kanali": "numara"
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 8,
+   "dosya": 320,
+   "sutun": "R",
+   "serit_sira": 1,
+   "kutu": [
+    375,
+    414,
+    738,
+    900
+   ],
+   "capa": [
+    418,
+    426
+   ],
+   "capa_kanali": "numara"
+  }
+ ],
+ "kutusuz": []
+}

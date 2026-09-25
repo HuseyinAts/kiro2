@@ -275,3 +275,77 @@ def test_ayrac_sayfasi_kayarsa_durur() -> None:
     s[str(int(k) + 1)] = s.pop(k)
     with pytest.raises(SystemExit):
         ha.harita(bozuk, ANAHTAR)
+
+
+# ---------------------------------------------- 8. kirpim kutulari (Faz 3)
+
+from scripts.kitap import stm345_kutu as ku  # noqa: E402
+
+KUTU = json.loads(
+    (CIKTI / "345_2025_start_matematik_kirpim_kutulari.json").read_text("ascii")
+)
+ORTME = json.loads(
+    (CIKTI / "345_2025_start_matematik_ortme_olcumu.json").read_text("ascii")
+)
+
+
+def test_kutu_kapilari_temiz() -> None:
+    assert ku.kapilar(KUTU) == []
+    assert KUTU["kutu_sayisi"] == 371
+    assert KUTU["kutusuz_soru"] == 0
+
+
+def test_her_cevaba_bir_kutu() -> None:
+    a = {
+        (c["birim"], c["soru"], c["dosya"], c["sutun"], c["serit_sira"])
+        for c in ANAHTAR["cevaplar"]
+    }
+    k = {
+        (x["birim"], x["soru"], x["dosya"], x["sutun"], x["serit_sira"])
+        for x in KUTU["kutular"]
+    }
+    assert a == k
+
+
+def test_capa_basili_numara() -> None:
+    assert KUTU["sutun_kanali"] == {"numara": 180}
+    for x in KUTU["kutular"]:
+        n = TARAMA["sayfalar"][str(x["dosya"])]["numara"][x["sutun"]][x["serit_sira"]]
+        assert x["capa"] == [n[0], n[1]]
+
+
+def test_kutu_cevap_seridine_ve_bant_ustune_tasmaz() -> None:
+    for x in KUTU["kutular"]:
+        assert x["kutu"][3] <= ku.SAYFA_ALTI < ku.SERIT_UST
+        assert x["kutu"][1] >= 120  # unite adi bandinin alti (olculdu 120/123)
+
+
+def test_sutun_sinirlari_ara_cizgiden() -> None:
+    for x in KUTU["kutular"]:
+        c = KUTU["ara_cizgi"][str(x["dosya"])]
+        beklenen = ku.sutun_siniri(x["sutun"], c)
+        assert (x["kutu"][0], x["kutu"][2]) == beklenen
+
+
+def test_kutu_kapisi_mutasyonu_yakalar() -> None:
+    bozuk = copy.deepcopy(KUTU)
+    bozuk["kutular"][10]["kutu"][3] = ku.SERIT_UST + 2
+    bozuk["kutular"][20]["kutu"][1] = bozuk["kutular"][20]["capa"][0] + 1
+    hata = ku.kapilar(bozuk)
+    assert any("sizinti" in h for h in hata)
+    assert any("capa kutu disinda" in h for h in hata)
+
+
+def test_yanlis_simge_elendi() -> None:
+    """s83 sagdaki sandalye sekli simge sanilmamali (halka orani 0.32)."""
+    for s in TARAMA["sayfalar"]["83"]["simge"]:
+        assert not (s[2] == 271 and s[3] == 517)
+    assert TARAMA["simge_toplam"] == 371
+
+
+def test_ortme_raporu() -> None:
+    assert ORTME["tam_kitap"] is True
+    assert ORTME["kenar_kapisi_ihlali"] == 0
+    assert ORTME["ortme_suphesi_soru"] == len(
+        {(o["birim"], o["soru"]) for o in ORTME["ortme"]}
+    )

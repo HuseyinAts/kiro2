@@ -21,7 +21,11 @@ mat345tyt_tarama.py ile ayni tanim: glif (69,39,160) L1 < 150, 7-12 px kutu,
 22-55 piksel; cevresindeki 30x30 pencerenin >= %30'u lila disk
 (240,238,247) L1 < 30. Baslik bandi (y < 130) disarida: 'SINAVA GECIS'
 harfleri ve 'Simdi Sinava Isinalim' rozeti glif rengine yakin (s11 y 51,
-s12 y 51-70 yanlis simge verdi).
+s12 y 51-70 yanlis simge verdi). Gercek simge YUVARLAK lila disk ustundedir:
+merkezden 9-13 px halkanin >= HALKA_ESIK (0.6) kadari disk rengi olmali.
+Olculdu: gercek 371 simgede halka orani >= 0.79; s83 sagdaki sandalye
+sekli (koyu mavi kenar + gri zemin) 0.32 ile simge sanilmisti ve okuyucu
+maskesi seklin bir diskini beyazlatiyordu (T011_03).
 
 KANAL 2 -- BASILI SORU NUMARASI
 -------------------------------
@@ -74,6 +78,9 @@ SERIT_X = {"L": (55, 330), "R": (400, 700)}
 GIRDI_BOSLUK = 4
 SERIT_MUREKKEP = 225
 SIMGE_Y_MIN = 130  # baslik bandindaki mor harfler / rozet (olculdu: y 51-70)
+_YY, _XX = np.mgrid[-16:17, -16:17]
+HALKA = (np.sqrt(_YY**2 + _XX**2) >= 9) & (np.sqrt(_YY**2 + _XX**2) <= 13)
+HALKA_ESIK = 0.6
 BASLIK_KUTU = {"L": (51, 151), "R": (551, 651)}
 
 
@@ -118,6 +125,9 @@ def simgeler(a: np.ndarray) -> list[list[int]]:
         cy, cx = (sl[0].start + sl[0].stop) // 2, (sl[1].start + sl[1].stop) // 2
         pen = dm[max(0, cy - 14) : cy + 16, max(0, cx - 14) : cx + 16]
         if pen.mean() < 0.3 or cy < SIMGE_Y_MIN:
+            continue
+        w = dm[cy - 16 : cy + 17, cx - 16 : cx + 17]
+        if w.shape != HALKA.shape or w[HALKA].mean() < HALKA_ESIK:
             continue
         out.append([int(sl[0].start), int(sl[1].start), int(cy), int(cx)])
     return out
