@@ -1,0 +1,2635 @@
+{
+ "kaynak": "345 2025 AYT Kimya Soru Bankasi",
+ "nereden": "Unite ve konu adlari + baslangic sayfalari: kitabin KENDI icindekiler sayfalari (dosya 3-4). Test turu, sira, bolum no ve bant basligi: her testin ilk sayfasindaki baslik bandi (160 bant, goz ile okundu).",
+ "dogrulama": "Testlerin sayfa sinirlari cevap satiri numaralandirmasindan turetildi (345_2025_ayt_kimya_cevap_anahtari.json); 160 testin 160'i tek bir icindekiler araligina dustu. 100 Kazanim Odakli testin 100'unde bant bolum no == konunun unite ici sirasi ve bant basligi == icindekiler konu adi (katlanmis; 9 noktalama/on-ek farki acik eslemede). 48 OSYM Tadinda bandinin 48'i kendi unitesinin adini basar. K parca no her konuda, O ve R sirasi her unitede 1'den kesintisiz; 50 konunun 50'sinde en az bir K testi var.",
+ "bant_esleme": {
+  "COZUCU COZUNEN ETKILESIMLERI": "COZUCU - COZUNEN ETKILESIMLERI",
+  "ASIT BAZ": "ASIT - BAZ",
+  "INDIRGENME YUKSELTGENME TEPKIMELERI": "INDIRGENME - YUKSELTGENME TEPKIMELERI",
+  "ALKANLAR": "HIDROKARBONLAR / ALKANLAR",
+  "ALKENLER": "HIDROKARBONLAR / ALKENLER",
+  "ALKINLER": "HIDROKARBONLAR / ALKINLER",
+  "AROMATIK BILESIKLER ARENLER": "AROMATIK BILESIKLER (ARENLER)",
+  "ORGANIK BILESIKLER 1": "ORGANIK BILESIKLER - 1",
+  "ORGANIK BILESIKLER 2": "ORGANIK BILESIKLER - 2"
+ },
+ "unite_sayisi": 12,
+ "uniteler": [
+  {
+   "kod": "KIM-345A25-U01",
+   "no": 1,
+   "ad": "Modern Atom Teorisi",
+   "ad_ascii": "MODERN ATOM TEORISI",
+   "ayrac_sayfasi": 5
+  },
+  {
+   "kod": "KIM-345A25-U02",
+   "no": 2,
+   "ad": "Gazlar",
+   "ad_ascii": "GAZLAR",
+   "ayrac_sayfasi": 39
+  },
+  {
+   "kod": "KIM-345A25-U03",
+   "no": 3,
+   "ad": "S\u0131v\u0131 \u00c7\u00f6zeltiler ve \u00c7\u00f6z\u00fcn\u00fcrl\u00fck",
+   "ad_ascii": "SIVI COZELTILER VE COZUNURLUK",
+   "ayrac_sayfasi": 71
+  },
+  {
+   "kod": "KIM-345A25-U04",
+   "no": 4,
+   "ad": "Kimyasal Tepkimelerde Enerji",
+   "ad_ascii": "KIMYASAL TEPKIMELERDE ENERJI",
+   "ayrac_sayfasi": 107
+  },
+  {
+   "kod": "KIM-345A25-U05",
+   "no": 5,
+   "ad": "Kimyasal Tepkimelerde H\u0131z",
+   "ad_ascii": "KIMYASAL TEPKIMELERDE HIZ",
+   "ayrac_sayfasi": 127
+  },
+  {
+   "kod": "KIM-345A25-U06",
+   "no": 6,
+   "ad": "Kimyasal Tepkimelerde Denge",
+   "ad_ascii": "KIMYASAL TEPKIMELERDE DENGE",
+   "ayrac_sayfasi": 151
+  },
+  {
+   "kod": "KIM-345A25-U07",
+   "no": 7,
+   "ad": "Sulu \u00c7\u00f6zelti Dengeleri",
+   "ad_ascii": "SULU COZELTI DENGELERI",
+   "ayrac_sayfasi": 175
+  },
+  {
+   "kod": "KIM-345A25-U08",
+   "no": 8,
+   "ad": "Kimya ve Elektrik",
+   "ad_ascii": "KIMYA VE ELEKTRIK",
+   "ayrac_sayfasi": 205
+  },
+  {
+   "kod": "KIM-345A25-U09",
+   "no": 9,
+   "ad": "Karbon Kimyas\u0131na Giri\u015f",
+   "ad_ascii": "KARBON KIMYASINA GIRIS",
+   "ayrac_sayfasi": 243
+  },
+  {
+   "kod": "KIM-345A25-U10",
+   "no": 10,
+   "ad": "Organik Bile\u015fikler - 1",
+   "ad_ascii": "ORGANIK BILESIKLER - 1",
+   "ayrac_sayfasi": 265
+  },
+  {
+   "kod": "KIM-345A25-U11",
+   "no": 11,
+   "ad": "Organik Bile\u015fikler - 2",
+   "ad_ascii": "ORGANIK BILESIKLER - 2",
+   "ayrac_sayfasi": 295
+  },
+  {
+   "kod": "KIM-345A25-U12",
+   "no": 12,
+   "ad": "Enerji Kaynaklar\u0131 ve Bilimsel Geli\u015fmeler",
+   "ad_ascii": "ENERJI KAYNAKLARI VE BILIMSEL GELISMELER",
+   "ayrac_sayfasi": 325
+  }
+ ],
+ "konu_sayisi": 50,
+ "konular": [
+  {
+   "kod": "KIM-345A25-U01-01",
+   "unite": 1,
+   "sira": 1,
+   "ad": "Atomun Kuantum Modeli",
+   "ad_ascii": "ATOMUN KUANTUM MODELI",
+   "ilk_sayfa": 6,
+   "son_sayfa": 11
+  },
+  {
+   "kod": "KIM-345A25-U01-02",
+   "unite": 1,
+   "sira": 2,
+   "ad": "Elektron Dizilimleri",
+   "ad_ascii": "ELEKTRON DIZILIMLERI",
+   "ilk_sayfa": 12,
+   "son_sayfa": 15
+  },
+  {
+   "kod": "KIM-345A25-U01-03",
+   "unite": 1,
+   "sira": 3,
+   "ad": "Periyodik \u00d6zellikler",
+   "ad_ascii": "PERIYODIK OZELLIKLER",
+   "ilk_sayfa": 16,
+   "son_sayfa": 21
+  },
+  {
+   "kod": "KIM-345A25-U01-04",
+   "unite": 1,
+   "sira": 4,
+   "ad": "Elementleri Tan\u0131yal\u0131m",
+   "ad_ascii": "ELEMENTLERI TANIYALIM",
+   "ilk_sayfa": 22,
+   "son_sayfa": 25
+  },
+  {
+   "kod": "KIM-345A25-U01-05",
+   "unite": 1,
+   "sira": 5,
+   "ad": "Y\u00fckseltgenme Basamaklar\u0131",
+   "ad_ascii": "YUKSELTGENME BASAMAKLARI",
+   "ilk_sayfa": 26,
+   "son_sayfa": 38
+  },
+  {
+   "kod": "KIM-345A25-U02-01",
+   "unite": 2,
+   "sira": 1,
+   "ad": "Gazlar\u0131n \u00d6zellikleri",
+   "ad_ascii": "GAZLARIN OZELLIKLERI",
+   "ilk_sayfa": 40,
+   "son_sayfa": 41
+  },
+  {
+   "kod": "KIM-345A25-U02-02",
+   "unite": 2,
+   "sira": 2,
+   "ad": "Gaz Yasalar\u0131",
+   "ad_ascii": "GAZ YASALARI",
+   "ilk_sayfa": 42,
+   "son_sayfa": 45
+  },
+  {
+   "kod": "KIM-345A25-U02-03",
+   "unite": 2,
+   "sira": 3,
+   "ad": "\u0130deal Gaz Yasas\u0131",
+   "ad_ascii": "IDEAL GAZ YASASI",
+   "ilk_sayfa": 46,
+   "son_sayfa": 49
+  },
+  {
+   "kod": "KIM-345A25-U02-04",
+   "unite": 2,
+   "sira": 4,
+   "ad": "Gazlarda Kinetik Teori",
+   "ad_ascii": "GAZLARDA KINETIK TEORI",
+   "ilk_sayfa": 50,
+   "son_sayfa": 51
+  },
+  {
+   "kod": "KIM-345A25-U02-05",
+   "unite": 2,
+   "sira": 5,
+   "ad": "Gaz Kar\u0131\u015f\u0131mlar\u0131",
+   "ad_ascii": "GAZ KARISIMLARI",
+   "ilk_sayfa": 52,
+   "son_sayfa": 57
+  },
+  {
+   "kod": "KIM-345A25-U02-06",
+   "unite": 2,
+   "sira": 6,
+   "ad": "Ger\u00e7ek Gazlar",
+   "ad_ascii": "GERCEK GAZLAR",
+   "ilk_sayfa": 58,
+   "son_sayfa": 70
+  },
+  {
+   "kod": "KIM-345A25-U03-01",
+   "unite": 3,
+   "sira": 1,
+   "ad": "\u00c7\u00f6z\u00fcc\u00fc - \u00c7\u00f6z\u00fcnen Etkile\u015fimleri",
+   "ad_ascii": "COZUCU - COZUNEN ETKILESIMLERI",
+   "ilk_sayfa": 72,
+   "son_sayfa": 73
+  },
+  {
+   "kod": "KIM-345A25-U03-02",
+   "unite": 3,
+   "sira": 2,
+   "ad": "Deri\u015fim Birimleri",
+   "ad_ascii": "DERISIM BIRIMLERI",
+   "ilk_sayfa": 74,
+   "son_sayfa": 81
+  },
+  {
+   "kod": "KIM-345A25-U03-03",
+   "unite": 3,
+   "sira": 3,
+   "ad": "Koligatif \u00d6zellikler",
+   "ad_ascii": "KOLIGATIF OZELLIKLER",
+   "ilk_sayfa": 82,
+   "son_sayfa": 89
+  },
+  {
+   "kod": "KIM-345A25-U03-04",
+   "unite": 3,
+   "sira": 4,
+   "ad": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fck",
+   "ad_ascii": "COZUNURLUK",
+   "ilk_sayfa": 90,
+   "son_sayfa": 91
+  },
+  {
+   "kod": "KIM-345A25-U03-05",
+   "unite": 3,
+   "sira": 5,
+   "ad": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fc\u011fe Etki Eden Fakt\u00f6rler",
+   "ad_ascii": "COZUNURLUGE ETKI EDEN FAKTORLER",
+   "ilk_sayfa": 92,
+   "son_sayfa": 106
+  },
+  {
+   "kod": "KIM-345A25-U04-01",
+   "unite": 4,
+   "sira": 1,
+   "ad": "Tepkimelerde Is\u0131 De\u011fi\u015fimi",
+   "ad_ascii": "TEPKIMELERDE ISI DEGISIMI",
+   "ilk_sayfa": 108,
+   "son_sayfa": 111
+  },
+  {
+   "kod": "KIM-345A25-U04-02",
+   "unite": 4,
+   "sira": 2,
+   "ad": "Entalpi T\u00fcrleri",
+   "ad_ascii": "ENTALPI TURLERI",
+   "ilk_sayfa": 112,
+   "son_sayfa": 115
+  },
+  {
+   "kod": "KIM-345A25-U04-03",
+   "unite": 4,
+   "sira": 3,
+   "ad": "Ba\u011f Enerjileri",
+   "ad_ascii": "BAG ENERJILERI",
+   "ilk_sayfa": 116,
+   "son_sayfa": 117
+  },
+  {
+   "kod": "KIM-345A25-U04-04",
+   "unite": 4,
+   "sira": 4,
+   "ad": "Tepkime Is\u0131lar\u0131n\u0131n Toplanabilirli\u011fi",
+   "ad_ascii": "TEPKIME ISILARININ TOPLANABILIRLIGI",
+   "ilk_sayfa": 118,
+   "son_sayfa": 126
+  },
+  {
+   "kod": "KIM-345A25-U05-01",
+   "unite": 5,
+   "sira": 1,
+   "ad": "Kimyasal Tepkimeler ve \u00c7arp\u0131\u015fma Teorisi",
+   "ad_ascii": "KIMYASAL TEPKIMELER VE CARPISMA TEORISI",
+   "ilk_sayfa": 128,
+   "son_sayfa": 129
+  },
+  {
+   "kod": "KIM-345A25-U05-02",
+   "unite": 5,
+   "sira": 2,
+   "ad": "Tepkime H\u0131z\u0131",
+   "ad_ascii": "TEPKIME HIZI",
+   "ilk_sayfa": 130,
+   "son_sayfa": 133
+  },
+  {
+   "kod": "KIM-345A25-U05-03",
+   "unite": 5,
+   "sira": 3,
+   "ad": "Tepkime H\u0131z\u0131n\u0131 Etkileyen Fakt\u00f6rler",
+   "ad_ascii": "TEPKIME HIZINI ETKILEYEN FAKTORLER",
+   "ilk_sayfa": 134,
+   "son_sayfa": 150
+  },
+  {
+   "kod": "KIM-345A25-U06-01",
+   "unite": 6,
+   "sira": 1,
+   "ad": "Kimyasal Denge",
+   "ad_ascii": "KIMYASAL DENGE",
+   "ilk_sayfa": 152,
+   "son_sayfa": 159
+  },
+  {
+   "kod": "KIM-345A25-U06-02",
+   "unite": 6,
+   "sira": 2,
+   "ad": "Dengeyi Etkileyen Fakt\u00f6rler",
+   "ad_ascii": "DENGEYI ETKILEYEN FAKTORLER",
+   "ilk_sayfa": 160,
+   "son_sayfa": 174
+  },
+  {
+   "kod": "KIM-345A25-U07-01",
+   "unite": 7,
+   "sira": 1,
+   "ad": "Asit - Baz",
+   "ad_ascii": "ASIT - BAZ",
+   "ilk_sayfa": 176,
+   "son_sayfa": 187
+  },
+  {
+   "kod": "KIM-345A25-U07-02",
+   "unite": 7,
+   "sira": 2,
+   "ad": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fck Dengesi",
+   "ad_ascii": "COZUNURLUK DENGESI",
+   "ilk_sayfa": 188,
+   "son_sayfa": 204
+  },
+  {
+   "kod": "KIM-345A25-U08-01",
+   "unite": 8,
+   "sira": 1,
+   "ad": "\u0130ndirgenme - Y\u00fckseltgenme Tepkimeleri",
+   "ad_ascii": "INDIRGENME - YUKSELTGENME TEPKIMELERI",
+   "ilk_sayfa": 206,
+   "son_sayfa": 211
+  },
+  {
+   "kod": "KIM-345A25-U08-02",
+   "unite": 8,
+   "sira": 2,
+   "ad": "Metalik Aktiflik",
+   "ad_ascii": "METALIK AKTIFLIK",
+   "ilk_sayfa": 212,
+   "son_sayfa": 213
+  },
+  {
+   "kod": "KIM-345A25-U08-03",
+   "unite": 8,
+   "sira": 3,
+   "ad": "Elektrokimyasal H\u00fccreler ve Elektrot Potansiyelleri",
+   "ad_ascii": "ELEKTROKIMYASAL HUCRELER VE ELEKTROT POTANSIYELLERI",
+   "ilk_sayfa": 214,
+   "son_sayfa": 225
+  },
+  {
+   "kod": "KIM-345A25-U08-04",
+   "unite": 8,
+   "sira": 4,
+   "ad": "Elektroliz",
+   "ad_ascii": "ELEKTROLIZ",
+   "ilk_sayfa": 226,
+   "son_sayfa": 242
+  },
+  {
+   "kod": "KIM-345A25-U09-01",
+   "unite": 9,
+   "sira": 1,
+   "ad": "Organik ve Anorganik Bile\u015fikler",
+   "ad_ascii": "ORGANIK VE ANORGANIK BILESIKLER",
+   "ilk_sayfa": 244,
+   "son_sayfa": 245
+  },
+  {
+   "kod": "KIM-345A25-U09-02",
+   "unite": 9,
+   "sira": 2,
+   "ad": "Basit ve Molek\u00fcl Form\u00fcl",
+   "ad_ascii": "BASIT VE MOLEKUL FORMUL",
+   "ilk_sayfa": 246,
+   "son_sayfa": 247
+  },
+  {
+   "kod": "KIM-345A25-U09-03",
+   "unite": 9,
+   "sira": 3,
+   "ad": "Do\u011fada Karbon",
+   "ad_ascii": "DOGADA KARBON",
+   "ilk_sayfa": 248,
+   "son_sayfa": 249
+  },
+  {
+   "kod": "KIM-345A25-U09-04",
+   "unite": 9,
+   "sira": 4,
+   "ad": "Lewis Form\u00fclleri",
+   "ad_ascii": "LEWIS FORMULLERI",
+   "ilk_sayfa": 250,
+   "son_sayfa": 251
+  },
+  {
+   "kod": "KIM-345A25-U09-05",
+   "unite": 9,
+   "sira": 5,
+   "ad": "Hibritle\u015fme ve Molek\u00fcl Geometrisi",
+   "ad_ascii": "HIBRITLESME VE MOLEKUL GEOMETRISI",
+   "ilk_sayfa": 252,
+   "son_sayfa": 264
+  },
+  {
+   "kod": "KIM-345A25-U10-01",
+   "unite": 10,
+   "sira": 1,
+   "ad": "Hidrokarbonlar / Alkanlar",
+   "ad_ascii": "HIDROKARBONLAR / ALKANLAR",
+   "ilk_sayfa": 266,
+   "son_sayfa": 273
+  },
+  {
+   "kod": "KIM-345A25-U10-02",
+   "unite": 10,
+   "sira": 2,
+   "ad": "Hidrokarbonlar / Alkenler",
+   "ad_ascii": "HIDROKARBONLAR / ALKENLER",
+   "ilk_sayfa": 274,
+   "son_sayfa": 279
+  },
+  {
+   "kod": "KIM-345A25-U10-03",
+   "unite": 10,
+   "sira": 3,
+   "ad": "Hidrokarbonlar / Alkinler",
+   "ad_ascii": "HIDROKARBONLAR / ALKINLER",
+   "ilk_sayfa": 280,
+   "son_sayfa": 294
+  },
+  {
+   "kod": "KIM-345A25-U11-01",
+   "unite": 11,
+   "sira": 1,
+   "ad": "Aromatik Bile\u015fikler (Arenler)",
+   "ad_ascii": "AROMATIK BILESIKLER (ARENLER)",
+   "ilk_sayfa": 296,
+   "son_sayfa": 297
+  },
+  {
+   "kod": "KIM-345A25-U11-02",
+   "unite": 11,
+   "sira": 2,
+   "ad": "Fonksiyonel Gruplar",
+   "ad_ascii": "FONKSIYONEL GRUPLAR",
+   "ilk_sayfa": 298,
+   "son_sayfa": 299
+  },
+  {
+   "kod": "KIM-345A25-U11-03",
+   "unite": 11,
+   "sira": 3,
+   "ad": "Alkoller",
+   "ad_ascii": "ALKOLLER",
+   "ilk_sayfa": 300,
+   "son_sayfa": 303
+  },
+  {
+   "kod": "KIM-345A25-U11-04",
+   "unite": 11,
+   "sira": 4,
+   "ad": "Eterler",
+   "ad_ascii": "ETERLER",
+   "ilk_sayfa": 304,
+   "son_sayfa": 305
+  },
+  {
+   "kod": "KIM-345A25-U11-05",
+   "unite": 11,
+   "sira": 5,
+   "ad": "Karbonil Bile\u015fikleri",
+   "ad_ascii": "KARBONIL BILESIKLERI",
+   "ilk_sayfa": 306,
+   "son_sayfa": 309
+  },
+  {
+   "kod": "KIM-345A25-U11-06",
+   "unite": 11,
+   "sira": 6,
+   "ad": "Karboksilik Asitler",
+   "ad_ascii": "KARBOKSILIK ASITLER",
+   "ilk_sayfa": 310,
+   "son_sayfa": 313
+  },
+  {
+   "kod": "KIM-345A25-U11-07",
+   "unite": 11,
+   "sira": 7,
+   "ad": "Esterler",
+   "ad_ascii": "ESTERLER",
+   "ilk_sayfa": 314,
+   "son_sayfa": 324
+  },
+  {
+   "kod": "KIM-345A25-U12-01",
+   "unite": 12,
+   "sira": 1,
+   "ad": "Fosil Yak\u0131tlar",
+   "ad_ascii": "FOSIL YAKITLAR",
+   "ilk_sayfa": 326,
+   "son_sayfa": 327
+  },
+  {
+   "kod": "KIM-345A25-U12-02",
+   "unite": 12,
+   "sira": 2,
+   "ad": "Alternatif Enerji Kaynaklar\u0131",
+   "ad_ascii": "ALTERNATIF ENERJI KAYNAKLARI",
+   "ilk_sayfa": 328,
+   "son_sayfa": 329
+  },
+  {
+   "kod": "KIM-345A25-U12-03",
+   "unite": 12,
+   "sira": 3,
+   "ad": "S\u00fcrd\u00fcr\u00fclebilirlik",
+   "ad_ascii": "SURDURULEBILIRLIK",
+   "ilk_sayfa": 330,
+   "son_sayfa": 331
+  },
+  {
+   "kod": "KIM-345A25-U12-04",
+   "unite": 12,
+   "sira": 4,
+   "ad": "Nanoteknoloji",
+   "ad_ascii": "NANOTEKNOLOJI",
+   "ilk_sayfa": 332,
+   "son_sayfa": 336
+  }
+ ],
+ "test_sayisi": 160,
+ "testler": [
+  {
+   "birim": "KIM345AYT-T001",
+   "konu": "KIM-345A25-U01-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    7
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "KIM345AYT-T002",
+   "konu": "KIM-345A25-U01-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    8,
+    9
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T003",
+   "konu": "KIM-345A25-U01-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    10,
+    11
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T004",
+   "konu": "KIM-345A25-U01-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    12,
+    13
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T005",
+   "konu": "KIM-345A25-U01-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    14,
+    15
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T006",
+   "konu": "KIM-345A25-U01-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    16,
+    17
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T007",
+   "konu": "KIM-345A25-U01-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    18,
+    19
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T008",
+   "konu": "KIM-345A25-U01-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    20,
+    21
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T009",
+   "konu": "KIM-345A25-U01-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    22,
+    23
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T010",
+   "konu": "KIM-345A25-U01-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    24,
+    25
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T011",
+   "konu": "KIM-345A25-U01-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    26,
+    27
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T012",
+   "konu": "KIM-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    28,
+    29
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T013",
+   "konu": "KIM-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    30,
+    31
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T014",
+   "konu": "KIM-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    32,
+    33
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T015",
+   "konu": "KIM-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    34,
+    35
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T016",
+   "konu": "KIM-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "sayfalar": [
+    36,
+    37
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T017",
+   "konu": "KIM-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    38
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T018",
+   "konu": "KIM-345A25-U02-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    40,
+    41
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T019",
+   "konu": "KIM-345A25-U02-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    42,
+    43
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T020",
+   "konu": "KIM-345A25-U02-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    44,
+    45
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T021",
+   "konu": "KIM-345A25-U02-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    46,
+    47
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T022",
+   "konu": "KIM-345A25-U02-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    48,
+    49
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T023",
+   "konu": "KIM-345A25-U02-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    50,
+    51
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T024",
+   "konu": "KIM-345A25-U02-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    52,
+    53
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T025",
+   "konu": "KIM-345A25-U02-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    54,
+    55
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T026",
+   "konu": "KIM-345A25-U02-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    56,
+    57
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T027",
+   "konu": "KIM-345A25-U02-06",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    58,
+    59
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T028",
+   "konu": "KIM-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    60,
+    61
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T029",
+   "konu": "KIM-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    62,
+    63
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T030",
+   "konu": "KIM-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    64,
+    65
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T031",
+   "konu": "KIM-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    66,
+    67
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T032",
+   "konu": "KIM-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "sayfalar": [
+    68,
+    69
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T033",
+   "konu": "KIM-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    70
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T034",
+   "konu": "KIM-345A25-U03-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    72,
+    73
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T035",
+   "konu": "KIM-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    74,
+    75
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T036",
+   "konu": "KIM-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    76,
+    77
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T037",
+   "konu": "KIM-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    78,
+    79
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T038",
+   "konu": "KIM-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 4,
+   "sayfalar": [
+    80,
+    81
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "KIM345AYT-T039",
+   "konu": "KIM-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    82,
+    83
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T040",
+   "konu": "KIM-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    84,
+    85
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T041",
+   "konu": "KIM-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    86,
+    87
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T042",
+   "konu": "KIM-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 4,
+   "sayfalar": [
+    88,
+    89
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "KIM345AYT-T043",
+   "konu": "KIM-345A25-U03-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    90,
+    91
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T044",
+   "konu": "KIM-345A25-U03-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    92,
+    93
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T045",
+   "konu": "KIM-345A25-U03-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    94,
+    95
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T046",
+   "konu": "KIM-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    96,
+    97
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T047",
+   "konu": "KIM-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    98,
+    99
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T048",
+   "konu": "KIM-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    100,
+    101
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T049",
+   "konu": "KIM-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    102,
+    103
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T050",
+   "konu": "KIM-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "sayfalar": [
+    104,
+    105
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T051",
+   "konu": "KIM-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U03",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    106
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T052",
+   "konu": "KIM-345A25-U04-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    109,
+    110,
+    111
+   ],
+   "soru_sayisi": 16
+  },
+  {
+   "birim": "KIM345AYT-T053",
+   "konu": "KIM-345A25-U04-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    112,
+    113
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T054",
+   "konu": "KIM-345A25-U04-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    114,
+    115
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T055",
+   "konu": "KIM-345A25-U04-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    116,
+    117
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T056",
+   "konu": "KIM-345A25-U04-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    118,
+    119
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T057",
+   "konu": "KIM-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    120,
+    121
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T058",
+   "konu": "KIM-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    122,
+    123
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T059",
+   "konu": "KIM-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    124,
+    125
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T060",
+   "konu": "KIM-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U04",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    126
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T061",
+   "konu": "KIM-345A25-U05-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    128,
+    129
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T062",
+   "konu": "KIM-345A25-U05-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    130,
+    131
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T063",
+   "konu": "KIM-345A25-U05-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    132,
+    133
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T064",
+   "konu": "KIM-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    134,
+    135
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T065",
+   "konu": "KIM-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    136,
+    137
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T066",
+   "konu": "KIM-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    138,
+    139
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T067",
+   "konu": "KIM-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 4,
+   "sayfalar": [
+    140,
+    141
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T068",
+   "konu": "KIM-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 5,
+   "sayfalar": [
+    142,
+    143
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T069",
+   "konu": "KIM-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    144,
+    145
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T070",
+   "konu": "KIM-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    146,
+    147
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T071",
+   "konu": "KIM-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    148,
+    149
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T072",
+   "konu": "KIM-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U05",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    150
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T073",
+   "konu": "KIM-345A25-U06-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    152,
+    153
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T074",
+   "konu": "KIM-345A25-U06-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    154,
+    155
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T075",
+   "konu": "KIM-345A25-U06-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    156,
+    157
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T076",
+   "konu": "KIM-345A25-U06-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 4,
+   "sayfalar": [
+    158,
+    159
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T077",
+   "konu": "KIM-345A25-U06-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    160,
+    161
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T078",
+   "konu": "KIM-345A25-U06-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    162,
+    163
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T079",
+   "konu": "KIM-345A25-U06-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    164,
+    165
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T080",
+   "konu": "KIM-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    166,
+    167
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T081",
+   "konu": "KIM-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    168,
+    169
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T082",
+   "konu": "KIM-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    170,
+    171
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T083",
+   "konu": "KIM-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    172,
+    173
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T084",
+   "konu": "KIM-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U06",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    174
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "KIM345AYT-T085",
+   "konu": "KIM-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    176,
+    177
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T086",
+   "konu": "KIM-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    178,
+    179
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T087",
+   "konu": "KIM-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    180,
+    181
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T088",
+   "konu": "KIM-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 4,
+   "sayfalar": [
+    182,
+    183
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T089",
+   "konu": "KIM-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 5,
+   "sayfalar": [
+    184,
+    185
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T090",
+   "konu": "KIM-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 6,
+   "sayfalar": [
+    186,
+    187
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T091",
+   "konu": "KIM-345A25-U07-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    188,
+    189
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T092",
+   "konu": "KIM-345A25-U07-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    190,
+    191
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T093",
+   "konu": "KIM-345A25-U07-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    192,
+    193
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T094",
+   "konu": "KIM-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    194,
+    195
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T095",
+   "konu": "KIM-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    196,
+    197
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T096",
+   "konu": "KIM-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    198,
+    199
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T097",
+   "konu": "KIM-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    200,
+    201
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T098",
+   "konu": "KIM-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "sayfalar": [
+    202,
+    203
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T099",
+   "konu": "KIM-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U07",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    204
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "KIM345AYT-T100",
+   "konu": "KIM-345A25-U08-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    207,
+    208,
+    209
+   ],
+   "soru_sayisi": 18
+  },
+  {
+   "birim": "KIM345AYT-T101",
+   "konu": "KIM-345A25-U08-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    210,
+    211
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T102",
+   "konu": "KIM-345A25-U08-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    212,
+    213
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T103",
+   "konu": "KIM-345A25-U08-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    214,
+    215,
+    216,
+    217
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "KIM345AYT-T104",
+   "konu": "KIM-345A25-U08-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    218,
+    219
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T105",
+   "konu": "KIM-345A25-U08-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    220,
+    221,
+    222,
+    223
+   ],
+   "soru_sayisi": 13
+  },
+  {
+   "birim": "KIM345AYT-T106",
+   "konu": "KIM-345A25-U08-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 4,
+   "sayfalar": [
+    224,
+    225
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T107",
+   "konu": "KIM-345A25-U08-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    226,
+    227
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "KIM345AYT-T108",
+   "konu": "KIM-345A25-U08-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    228,
+    229
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T109",
+   "konu": "KIM-345A25-U08-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    230,
+    231
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T110",
+   "konu": "KIM-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    232,
+    233
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T111",
+   "konu": "KIM-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    234,
+    235
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T112",
+   "konu": "KIM-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    236,
+    237
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T113",
+   "konu": "KIM-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    238,
+    239
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T114",
+   "konu": "KIM-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 5,
+   "sayfalar": [
+    240,
+    241
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T115",
+   "konu": "KIM-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U08",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    242
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "KIM345AYT-T116",
+   "konu": "KIM-345A25-U09-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    244,
+    245
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T117",
+   "konu": "KIM-345A25-U09-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    246,
+    247
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T118",
+   "konu": "KIM-345A25-U09-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    248,
+    249
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T119",
+   "konu": "KIM-345A25-U09-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    250,
+    251
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T120",
+   "konu": "KIM-345A25-U09-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    253,
+    254,
+    255
+   ],
+   "soru_sayisi": 15
+  },
+  {
+   "birim": "KIM345AYT-T121",
+   "konu": "KIM-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "KIM345AYT-T122",
+   "konu": "KIM-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T123",
+   "konu": "KIM-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T124",
+   "konu": "KIM-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T125",
+   "konu": "KIM-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U09",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    264
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T126",
+   "konu": "KIM-345A25-U10-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T127",
+   "konu": "KIM-345A25-U10-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    268,
+    269,
+    270,
+    271
+   ],
+   "soru_sayisi": 17
+  },
+  {
+   "birim": "KIM345AYT-T128",
+   "konu": "KIM-345A25-U10-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    272,
+    273
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T129",
+   "konu": "KIM-345A25-U10-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    274,
+    275
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T130",
+   "konu": "KIM-345A25-U10-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T131",
+   "konu": "KIM-345A25-U10-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T132",
+   "konu": "KIM-345A25-U10-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    280,
+    281
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T133",
+   "konu": "KIM-345A25-U10-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    282,
+    283
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T134",
+   "konu": "KIM-345A25-U10-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U10",
+   "tur": "kazanim_odakli",
+   "tur_sira": 3,
+   "sayfalar": [
+    284,
+    285
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T135",
+   "konu": "KIM-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U10",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    286,
+    287
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T136",
+   "konu": "KIM-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U10",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T137",
+   "konu": "KIM-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U10",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T138",
+   "konu": "KIM-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U10",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "KIM345AYT-T139",
+   "konu": "KIM-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U10",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    294
+   ],
+   "soru_sayisi": 3
+  },
+  {
+   "birim": "KIM345AYT-T140",
+   "konu": "KIM-345A25-U11-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    296,
+    297
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T141",
+   "konu": "KIM-345A25-U11-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    298,
+    299
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T142",
+   "konu": "KIM-345A25-U11-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T143",
+   "konu": "KIM-345A25-U11-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T144",
+   "konu": "KIM-345A25-U11-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T145",
+   "konu": "KIM-345A25-U11-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    306,
+    307
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T146",
+   "konu": "KIM-345A25-U11-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    308,
+    309
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T147",
+   "konu": "KIM-345A25-U11-06",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    310,
+    311
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "KIM345AYT-T148",
+   "konu": "KIM-345A25-U11-06",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 2,
+   "sayfalar": [
+    312,
+    313
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T149",
+   "konu": "KIM-345A25-U11-07",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U11",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    314,
+    315
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T150",
+   "konu": "KIM-345A25-U11",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U11",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    316,
+    317
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "KIM345AYT-T151",
+   "konu": "KIM-345A25-U11",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U11",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    318,
+    319
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "KIM345AYT-T152",
+   "konu": "KIM-345A25-U11",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U11",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    320,
+    321
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T153",
+   "konu": "KIM-345A25-U11",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U11",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    322,
+    323
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T154",
+   "konu": "KIM-345A25-U11",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U11",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    324
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "KIM345AYT-T155",
+   "konu": "KIM-345A25-U12-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U12",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    326,
+    327
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "KIM345AYT-T156",
+   "konu": "KIM-345A25-U12-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U12",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    328,
+    329
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T157",
+   "konu": "KIM-345A25-U12-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U12",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    330,
+    331
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T158",
+   "konu": "KIM-345A25-U12-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "KIM-345A25-U12",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    332,
+    333
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "KIM345AYT-T159",
+   "konu": "KIM-345A25-U12",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U12",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    334,
+    335
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "KIM345AYT-T160",
+   "konu": "KIM-345A25-U12",
+   "eslesme_duzeyi": "unite",
+   "unite": "KIM-345A25-U12",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    336
+   ],
+   "soru_sayisi": 3
+  }
+ ]
+}
