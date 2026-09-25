@@ -156,7 +156,8 @@ def _mavi_dolu(sutun: np.ndarray) -> np.ndarray:
     ('2.' numarasi kutu disinda kaliyordu).
     """
     s = sutun.astype(np.int16)
-    return (s.min(axis=1) < 245) & (s[:, 2] - s[:, 0] >= 40)
+    dolu: np.ndarray = (s.min(axis=1) < 245) & (s[:, 2] - s[:, 0] >= 40)
+    return dolu
 
 
 def ayrac_bandi_sonu(a: np.ndarray, x0: int) -> int:
@@ -339,13 +340,14 @@ def _murekkep(b: np.ndarray) -> np.ndarray:
     ortak parcanin son iki satiri arasina dustu).
     """
     b16 = b.astype(np.int16)
-    return (b16.min(axis=2) < MUREKKEP) & (
+    m: np.ndarray = (b16.min(axis=2) < MUREKKEP) & (
         (b16.max(axis=2) - b16.min(axis=2)) < MUREKKEP_DOYGUNLUK
     )
+    return m
 
 
 def _sayfa(kaynak: Path, d: int, s: dict) -> np.ndarray:
-    a = kart(kaynak, d).astype(np.uint8)
+    a: np.ndarray = kart(kaynak, d).astype(np.uint8)
     a[okuyucu_maskesi(a, [[x[2], x[3]] for x in s["simge"]])] = 255
     a[cerceve_maskesi(a, d)] = 255
     # Simge kutusu (+SIMGE_PAY) tamamen beyaz: renk maskesinden kalabilecek
@@ -420,7 +422,7 @@ def kutulari_uret() -> dict[str, Any]:
             capa, kaynak_kanal = secim
             kanal[kaynak_kanal] += 1
             xg = max(x0, NUMARA_X0[t] - 3)
-            murekkep = _murekkep(a[:, xg:x1]).any(axis=1)
+            murekkep: np.ndarray = np.asarray(_murekkep(a[:, xg:x1]).any(axis=1))
             asim: list[int] = []
             ustler = _ustler(capa, tavan0, murekkep, asim)
             ek_ust += sum(
