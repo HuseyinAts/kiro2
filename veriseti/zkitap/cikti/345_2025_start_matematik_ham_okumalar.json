@@ -1,0 +1,865 @@
+{
+ "kaynak": "345 2025 Start Matematik",
+ "nereden": "Ham gorsel okumalar; cevap anahtari ve test -> unite eslemesi bunlardan turetilir (scripts/kitap/stm345_anahtar.py). Hicbir soru cozulmedi.",
+ "bicim": "serit[<dosya><L|R>] = '<no>.<harf> ...'; '?' okuyucu tereddudu",
+ "okumalar": {
+  "A": {
+   "yontem": "5x, 12 satirlik montaj, sayfa sirasinda; bagimsiz okuyucu; girdi sayisi soylenmedi",
+   "serit": {
+    "11L": "1.C 2.B 3.E",
+    "11R": "4.A 5.C 6.E",
+    "12L": "7.D 8.C 9.A",
+    "12R": "10.C 11.C",
+    "13L": "1.A 2.B 3.B",
+    "13R": "4.D 5.C",
+    "14L": "6.D 7.D 8.E",
+    "14R": "9.C 10.E",
+    "15L": "1.B 2.D",
+    "15R": "3.B 4.D",
+    "16L": "5.E 6.A",
+    "16R": "7.C 8.D",
+    "33L": "1.A 2.E 3.C",
+    "33R": "4.A 5.B",
+    "34L": "6.B 7.A",
+    "34R": "8.D 9.A",
+    "35L": "1.D 2.C",
+    "35R": "3.E 4.D",
+    "36L": "5.A 6.B",
+    "36R": "7.B 8.A",
+    "47L": "1.C 2.B 3.A",
+    "47R": "4.E 5.E",
+    "48L": "6.D 7.B 8.D",
+    "48R": "9.B 10.E",
+    "49L": "1.A 2.A",
+    "49R": "3.C 4.E",
+    "50L": "5.D 6.E",
+    "50R": "7.A 8.D",
+    "65L": "1.A 2.E 3.B",
+    "65R": "4.C 5.A",
+    "66L": "6.E 7.B",
+    "66R": "8.B 9.D",
+    "67L": "1.C 2.B",
+    "67R": "3.A 4.D",
+    "68L": "5.C 6.C",
+    "68R": "7.D 8.E",
+    "81L": "1.E 2.D 3.B",
+    "81R": "4.B 5.C",
+    "82L": "6.B 7.B",
+    "82R": "8.C 9.E",
+    "83L": "1.A 2.B",
+    "83R": "3.D 4.D",
+    "84L": "5.B 6.B",
+    "84R": "7.D 8.A",
+    "85L": "1.D 2.C",
+    "85R": "3.A 4.E",
+    "86L": "5.D 6.C",
+    "86R": "7.C 8.E",
+    "87L": "1.B 2.A",
+    "87R": "3.A 4.E",
+    "88L": "5.E 6.B",
+    "88R": "7.A 8.C",
+    "113L": "1.C 2.C",
+    "113R": "3.A 4.E",
+    "114L": "5.B 6.C",
+    "114R": "7.B 8.B",
+    "115L": "1.C 2.D",
+    "115R": "3.D 4.E",
+    "116L": "5.C 6.C",
+    "116R": "7.C",
+    "117L": "1.A 2.E",
+    "117R": "3.A 4.A",
+    "118L": "5.E 6.C",
+    "118R": "7.C 8.A",
+    "119L": "1.C 2.B",
+    "119R": "3.B 4.A",
+    "120L": "5.E 6.D",
+    "120R": "7.A 8.D",
+    "137L": "1.C 2.D 3.A",
+    "137R": "4.C 5.E",
+    "138L": "6.B 7.B",
+    "138R": "8.D 9.E",
+    "139L": "1.B 2.D",
+    "139R": "3.B 4.D",
+    "140L": "5.A 6.A",
+    "140R": "7.B 8.D",
+    "141L": "1.B 2.E",
+    "141R": "3.A 4.E",
+    "142L": "5.C 6.A",
+    "142R": "7.D 8.C",
+    "157L": "1.E 2.C",
+    "157R": "3.C 4.B",
+    "158L": "5.D 6.C",
+    "158R": "7.B 8.E",
+    "159L": "1.A 2.D",
+    "159R": "3.E 4.C",
+    "160L": "5.D 6.B",
+    "160R": "7.A 8.B",
+    "171L": "1.D 2.C",
+    "171R": "3.C 4.A",
+    "172L": "5.E 6.D",
+    "172R": "7.C 8.B",
+    "173L": "1.B 2.B",
+    "173R": "3.C 4.A",
+    "174L": "5.B 6.E",
+    "174R": "7.D 8.C",
+    "185L": "1.C 2.E 3.C",
+    "185R": "4.B 5.A",
+    "186L": "6.A 7.D",
+    "186R": "8.D 9.E",
+    "187L": "1.B 2.E 3.C",
+    "187R": "4.B 5.B",
+    "188L": "6.D 7.B",
+    "188R": "8.A 9.E",
+    "197L": "1.B 2.B",
+    "197R": "3.D 4.D",
+    "198L": "5.C 6.A",
+    "198R": "7.A 8.C",
+    "199L": "1.A 2.B",
+    "199R": "3.D 4.B",
+    "200L": "5.C 6.C",
+    "200R": "7.E 8.D",
+    "213L": "1.A 2.D",
+    "213R": "3.D 4.B",
+    "214L": "5.C 6.A",
+    "214R": "7.D 8.D",
+    "215L": "1.E 2.B",
+    "215R": "3.B 4.E",
+    "216L": "5.A 6.B",
+    "216R": "7.D",
+    "217L": "1.B 2.C",
+    "217R": "3.C 4.A",
+    "218L": "5.D 6.A",
+    "218R": "7.D",
+    "233L": "1.B 2.A 3.B",
+    "233R": "4.D 5.A",
+    "234L": "6.E 7.B",
+    "234R": "8.D 9.E",
+    "235L": "1.D 2.E",
+    "235R": "3.B 4.A",
+    "236L": "5.B 6.D",
+    "236R": "7.E 8.A",
+    "237L": "1.E 2.E 3.D",
+    "237R": "4.C 5.E",
+    "238L": "6.E 7.A",
+    "238R": "8.D 9.D",
+    "261L": "1.D 2.A 3.C",
+    "261R": "4.D 5.A",
+    "262L": "6.B 7.D",
+    "262R": "8.A 9.A",
+    "263L": "1.D 2.E",
+    "263R": "3.A 4.D",
+    "264L": "5.B 6.C",
+    "264R": "7.C 8.A",
+    "265L": "1.B 2.C",
+    "265R": "3.A 4.B",
+    "266L": "5.D 6.B",
+    "266R": "7.C",
+    "267L": "1.B 2.A",
+    "267R": "3.E 4.B",
+    "268L": "5.B 6.D",
+    "268R": "7.C 8.D",
+    "291L": "1.C 2.B",
+    "291R": "3.E 4.D",
+    "292L": "5.B 6.A",
+    "292R": "7.E 8.C",
+    "293L": "1.D 2.E",
+    "293R": "3.A 4.B",
+    "294L": "5.C 6.A",
+    "294R": "7.E 8.D",
+    "295L": "1.E 2.E",
+    "295R": "3.C 4.E",
+    "296L": "5.D 6.B",
+    "296R": "7.A 8.E",
+    "297L": "1.E 2.A",
+    "297R": "3.E 4.A",
+    "298L": "5.D 6.B",
+    "298R": "7.D 8.C",
+    "315L": "1.C 2.E",
+    "315R": "3.A 4.C",
+    "316L": "5.B 6.C",
+    "316R": "7.C 8.E",
+    "317L": "1.D 2.E",
+    "317R": "3.D 4.B",
+    "318L": "5.D 6.B",
+    "318R": "7.D",
+    "319L": "1.A 2.B",
+    "319R": "3.E 4.C",
+    "320L": "5.C 6.B",
+    "320R": "7.B 8.C"
+   }
+  },
+  "B": {
+   "yontem": "7x, 9 satirlik montaj, TERS sirada; bagimsiz okuyucu; girdi sayisi soylenmedi",
+   "serit": {
+    "11L": "1.C 2.B 3.E",
+    "11R": "4.A 5.C 6.E",
+    "12L": "7.D 8.C 9.A",
+    "12R": "10.C 11.C",
+    "13L": "1.A 2.B 3.B",
+    "13R": "4.D 5.C",
+    "14L": "6.D? 7.D 8.E",
+    "14R": "9.C 10.E",
+    "15L": "1.B 2.D",
+    "15R": "3.B 4.D",
+    "16L": "5.E 6.A",
+    "16R": "7.C 8.D",
+    "33L": "1.A 2.E 3.C",
+    "33R": "4.A 5.B",
+    "34L": "6.B? 7.A",
+    "34R": "8.D? 9.A",
+    "35L": "1.D 2.C",
+    "35R": "3.E 4.D",
+    "36L": "5.A 6.B",
+    "36R": "7.B 8.A",
+    "47L": "1.C 2.B 3.A",
+    "47R": "4.E 5.E",
+    "48L": "6.D? 7.B 8.D",
+    "48R": "9.B 10.E",
+    "49L": "1.A 2.A",
+    "49R": "3.C 4.E",
+    "50L": "5.D 6.E",
+    "50R": "7.A 8.D",
+    "65L": "1.A 2.E 3.B",
+    "65R": "4.C 5.A",
+    "66L": "6.E? 7.B",
+    "66R": "8.B 9.D",
+    "67L": "1.C 2.B",
+    "67R": "3.A 4.D",
+    "68L": "5.C 6.C",
+    "68R": "7.D 8.E",
+    "81L": "1.E 2.D 3.B",
+    "81R": "4.B 5.C",
+    "82L": "6.B? 7.B",
+    "82R": "8.C 9.E",
+    "83L": "1.A 2.B",
+    "83R": "3.D 4.D",
+    "84L": "5.B 6.B",
+    "84R": "7.D 8.A",
+    "85L": "1.D 2.C",
+    "85R": "3.A 4.E",
+    "86L": "5.D 6.C",
+    "86R": "7.C 8.E",
+    "87L": "1.B 2.A",
+    "87R": "3.A 4.E",
+    "88L": "5.E 6.B",
+    "88R": "7.A 8.C",
+    "113L": "1.C 2.C",
+    "113R": "3.A 4.E",
+    "114L": "5.B 6.C",
+    "114R": "7.B 8.B",
+    "115L": "1.C 2.D",
+    "115R": "3.D 4.E",
+    "116L": "5.C 6.C",
+    "116R": "7.C",
+    "117L": "1.A 2.E",
+    "117R": "3.A 4.A",
+    "118L": "5.E 6.C",
+    "118R": "7.C 8.A",
+    "119L": "1.C 2.B",
+    "119R": "3.B 4.A",
+    "120L": "5.E 6.D",
+    "120R": "7.A 8.D",
+    "137L": "1.C 2.D 3.A",
+    "137R": "4.C 5.E",
+    "138L": "6.B? 7.B",
+    "138R": "8.D 9.E",
+    "139L": "1.B 2.D",
+    "139R": "3.B 4.D",
+    "140L": "5.A 6.A",
+    "140R": "7.B 8.D",
+    "141L": "1.B 2.E",
+    "141R": "3.A 4.E",
+    "142L": "5.C 6.A",
+    "142R": "7.D 8.C",
+    "157L": "1.E 2.C",
+    "157R": "3.C 4.B",
+    "158L": "5.D 6.C",
+    "158R": "7.B 8.E",
+    "159L": "1.A 2.D",
+    "159R": "3.E 4.C",
+    "160L": "5.D 6.B",
+    "160R": "7.A 8.B",
+    "171L": "1.D 2.C",
+    "171R": "3.C 4.A",
+    "172L": "5.E 6.D",
+    "172R": "7.C 8.B",
+    "173L": "1.B 2.B",
+    "173R": "3.C 4.A",
+    "174L": "5.B 6.E",
+    "174R": "7.D 8.C",
+    "185L": "1.C 2.E 3.C",
+    "185R": "4.B 5.A",
+    "186L": "6.A? 7.D",
+    "186R": "8.D 9.E",
+    "187L": "1.B 2.E 3.C",
+    "187R": "4.B 5.B",
+    "188L": "6.D? 7.B",
+    "188R": "8.A 9.E",
+    "197L": "1.B 2.B",
+    "197R": "3.D 4.D",
+    "198L": "5.C 6.A",
+    "198R": "7.A 8.C",
+    "199L": "1.A 2.B",
+    "199R": "3.D 4.B",
+    "200L": "5.C 6.C",
+    "200R": "7.E 8.D",
+    "213L": "1.A 2.D",
+    "213R": "3.D 4.B",
+    "214L": "5.C 6.A",
+    "214R": "7.D 8.D",
+    "215L": "1.E 2.B",
+    "215R": "3.B 4.E",
+    "216L": "5.A 6.B",
+    "216R": "7.D",
+    "217L": "1.B 2.C",
+    "217R": "3.C 4.A",
+    "218L": "5.D 6.A",
+    "218R": "7.D",
+    "233L": "1.B 2.A 3.B",
+    "233R": "4.D 5.A",
+    "234L": "6.E? 7.B",
+    "234R": "8.D 9.E",
+    "235L": "1.D 2.E",
+    "235R": "3.B 4.A",
+    "236L": "5.B 6.D",
+    "236R": "7.E 8.A",
+    "237L": "1.E 2.E 3.D",
+    "237R": "4.C 5.E",
+    "238L": "6.E? 7.A",
+    "238R": "8.D 9.D",
+    "261L": "1.D 2.A 3.C",
+    "261R": "4.D 5.A",
+    "262L": "6.B? 7.D",
+    "262R": "8.A 9.A",
+    "263L": "1.D 2.E",
+    "263R": "3.A 4.D",
+    "264L": "5.B 6.C",
+    "264R": "7.C 8.A",
+    "265L": "1.B 2.C",
+    "265R": "3.A 4.B",
+    "266L": "5.D 6.B",
+    "266R": "7.C",
+    "267L": "1.B 2.A",
+    "267R": "3.E 4.B",
+    "268L": "5.B 6.D",
+    "268R": "7.C 8.D",
+    "291L": "1.C 2.B",
+    "291R": "3.E 4.D",
+    "292L": "5.B 6.A",
+    "292R": "7.E 8.C",
+    "293L": "1.D 2.E",
+    "293R": "3.A 4.B",
+    "294L": "5.C 6.A",
+    "294R": "7.E 8.D",
+    "295L": "1.E 2.E",
+    "295R": "3.C 4.E",
+    "296L": "5.D 6.B",
+    "296R": "7.A 8.E",
+    "297L": "1.E 2.A",
+    "297R": "3.E 4.A",
+    "298L": "5.D 6.B",
+    "298R": "7.D 8.C",
+    "315L": "1.C 2.E",
+    "315R": "3.A 4.C",
+    "316L": "5.B 6.C",
+    "316R": "7.C 8.E",
+    "317L": "1.D 2.E",
+    "317R": "3.D 4.B",
+    "318L": "5.D 6.B",
+    "318R": "7.D",
+    "319L": "1.A 2.B",
+    "319R": "3.E 4.C",
+    "320L": "5.C 6.B",
+    "320R": "7.B 8.C"
+   }
+  }
+ },
+ "bant_okumasi": {
+  "yontem": "Her test sayfasinin 'SINAVA GECIS n' kutusu + unite adi bandi, 2x, 15 satirlik montaj; bagimsiz okuyucu",
+  "bicim": "[unite ici test no, bantta basili unite adi (ASCII)]",
+  "sayfalar": {
+   "11": [
+    1,
+    "TOPLAMA VE CIKARMA ISLEMI"
+   ],
+   "12": [
+    1,
+    "TOPLAMA VE CIKARMA ISLEMI"
+   ],
+   "13": [
+    2,
+    "TOPLAMA VE CIKARMA ISLEMI"
+   ],
+   "14": [
+    2,
+    "TOPLAMA VE CIKARMA ISLEMI"
+   ],
+   "15": [
+    3,
+    "TOPLAMA VE CIKARMA ISLEMI"
+   ],
+   "16": [
+    3,
+    "TOPLAMA VE CIKARMA ISLEMI"
+   ],
+   "33": [
+    1,
+    "CARPMA VE BOLME ISLEMI"
+   ],
+   "34": [
+    1,
+    "CARPMA VE BOLME ISLEMI"
+   ],
+   "35": [
+    2,
+    "CARPMA VE BOLME ISLEMI"
+   ],
+   "36": [
+    2,
+    "CARPMA VE BOLME ISLEMI"
+   ],
+   "47": [
+    1,
+    "ISLEM ONCELIGI"
+   ],
+   "48": [
+    1,
+    "ISLEM ONCELIGI"
+   ],
+   "49": [
+    2,
+    "ISLEM ONCELIGI"
+   ],
+   "50": [
+    2,
+    "ISLEM ONCELIGI"
+   ],
+   "65": [
+    1,
+    "HARFLI IFADELER"
+   ],
+   "66": [
+    1,
+    "HARFLI IFADELER"
+   ],
+   "67": [
+    2,
+    "HARFLI IFADELER"
+   ],
+   "68": [
+    2,
+    "HARFLI IFADELER"
+   ],
+   "81": [
+    1,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "82": [
+    1,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "83": [
+    2,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "84": [
+    2,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "85": [
+    3,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "86": [
+    3,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "87": [
+    4,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "88": [
+    4,
+    "BASIT DENKLEM COZUMU"
+   ],
+   "113": [
+    1,
+    "RASYONEL SAYILAR"
+   ],
+   "114": [
+    1,
+    "RASYONEL SAYILAR"
+   ],
+   "115": [
+    2,
+    "RASYONEL SAYILAR"
+   ],
+   "116": [
+    2,
+    "RASYONEL SAYILAR"
+   ],
+   "117": [
+    3,
+    "RASYONEL SAYILAR"
+   ],
+   "118": [
+    3,
+    "RASYONEL SAYILAR"
+   ],
+   "119": [
+    4,
+    "RASYONEL SAYILAR"
+   ],
+   "120": [
+    4,
+    "RASYONEL SAYILAR"
+   ],
+   "137": [
+    1,
+    "ONDALIK GOSTERIM"
+   ],
+   "138": [
+    1,
+    "ONDALIK GOSTERIM"
+   ],
+   "139": [
+    2,
+    "ONDALIK GOSTERIM"
+   ],
+   "140": [
+    2,
+    "ONDALIK GOSTERIM"
+   ],
+   "141": [
+    3,
+    "ONDALIK GOSTERIM"
+   ],
+   "142": [
+    3,
+    "ONDALIK GOSTERIM"
+   ],
+   "157": [
+    1,
+    "SAYI KUMELERI"
+   ],
+   "158": [
+    1,
+    "SAYI KUMELERI"
+   ],
+   "159": [
+    2,
+    "SAYI KUMELERI"
+   ],
+   "160": [
+    2,
+    "SAYI KUMELERI"
+   ],
+   "171": [
+    1,
+    "ORAN VE ORANTI"
+   ],
+   "172": [
+    1,
+    "ORAN VE ORANTI"
+   ],
+   "173": [
+    2,
+    "ORAN VE ORANTI"
+   ],
+   "174": [
+    2,
+    "ORAN VE ORANTI"
+   ],
+   "185": [
+    1,
+    "RASYONEL DENKLEMLERIN COZUMU"
+   ],
+   "186": [
+    1,
+    "RASYONEL DENKLEMLERIN COZUMU"
+   ],
+   "187": [
+    2,
+    "RASYONEL DENKLEMLERIN COZUMU"
+   ],
+   "188": [
+    2,
+    "RASYONEL DENKLEMLERIN COZUMU"
+   ],
+   "197": [
+    1,
+    "IKI BILINMEYENLI DENKLEMLER"
+   ],
+   "198": [
+    1,
+    "IKI BILINMEYENLI DENKLEMLER"
+   ],
+   "199": [
+    2,
+    "IKI BILINMEYENLI DENKLEMLER"
+   ],
+   "200": [
+    2,
+    "IKI BILINMEYENLI DENKLEMLER"
+   ],
+   "213": [
+    1,
+    "BASIT ESITSIZLIKLER"
+   ],
+   "214": [
+    1,
+    "BASIT ESITSIZLIKLER"
+   ],
+   "215": [
+    2,
+    "BASIT ESITSIZLIKLER"
+   ],
+   "216": [
+    2,
+    "BASIT ESITSIZLIKLER"
+   ],
+   "217": [
+    3,
+    "BASIT ESITSIZLIKLER"
+   ],
+   "218": [
+    3,
+    "BASIT ESITSIZLIKLER"
+   ],
+   "233": [
+    1,
+    "MUTLAK DEGER"
+   ],
+   "234": [
+    1,
+    "MUTLAK DEGER"
+   ],
+   "235": [
+    2,
+    "MUTLAK DEGER"
+   ],
+   "236": [
+    2,
+    "MUTLAK DEGER"
+   ],
+   "237": [
+    3,
+    "MUTLAK DEGER"
+   ],
+   "238": [
+    3,
+    "MUTLAK DEGER"
+   ],
+   "261": [
+    1,
+    "USLU IFADELER"
+   ],
+   "262": [
+    1,
+    "USLU IFADELER"
+   ],
+   "263": [
+    2,
+    "USLU IFADELER"
+   ],
+   "264": [
+    2,
+    "USLU IFADELER"
+   ],
+   "265": [
+    3,
+    "USLU IFADELER"
+   ],
+   "266": [
+    3,
+    "USLU IFADELER"
+   ],
+   "267": [
+    4,
+    "USLU IFADELER"
+   ],
+   "268": [
+    4,
+    "USLU IFADELER"
+   ],
+   "291": [
+    1,
+    "KOKLU IFADELER"
+   ],
+   "292": [
+    1,
+    "KOKLU IFADELER"
+   ],
+   "293": [
+    2,
+    "KOKLU IFADELER"
+   ],
+   "294": [
+    2,
+    "KOKLU IFADELER"
+   ],
+   "295": [
+    3,
+    "KOKLU IFADELER"
+   ],
+   "296": [
+    3,
+    "KOKLU IFADELER"
+   ],
+   "297": [
+    4,
+    "KOKLU IFADELER"
+   ],
+   "298": [
+    4,
+    "KOKLU IFADELER"
+   ],
+   "315": [
+    1,
+    "CARPANLARA AYIRMA"
+   ],
+   "316": [
+    1,
+    "CARPANLARA AYIRMA"
+   ],
+   "317": [
+    2,
+    "CARPANLARA AYIRMA"
+   ],
+   "318": [
+    2,
+    "CARPANLARA AYIRMA"
+   ],
+   "319": [
+    3,
+    "CARPANLARA AYIRMA"
+   ],
+   "320": [
+    3,
+    "CARPANLARA AYIRMA"
+   ]
+  }
+ },
+ "icindekiler": {
+  "yontem": "dosya 3 'KITAP BITIRME PLANI', gozle; basili sayfa (dosya = basili + 1)",
+  "uniteler": [
+   [
+    1,
+    "TOPLAMA VE CIKARMA ISLEMI",
+    3
+   ],
+   [
+    2,
+    "CARPMA VE BOLME ISLEMI",
+    17
+   ],
+   [
+    3,
+    "ISLEM ONCELIGI",
+    37
+   ],
+   [
+    4,
+    "HARFLI IFADELER",
+    51
+   ],
+   [
+    5,
+    "BASIT DENKLEM COZUMU",
+    69
+   ],
+   [
+    6,
+    "RASYONEL SAYILAR",
+    89
+   ],
+   [
+    7,
+    "ONDALIK GOSTERIM",
+    121
+   ],
+   [
+    8,
+    "SAYI KUMELERI",
+    143
+   ],
+   [
+    9,
+    "ORAN VE ORANTI",
+    161
+   ],
+   [
+    10,
+    "RASYONEL DENKLEMLERIN COZUMU",
+    175
+   ],
+   [
+    11,
+    "IKI BILINMEYENLI DENKLEMLER",
+    189
+   ],
+   [
+    12,
+    "BASIT ESITSIZLIKLER",
+    201
+   ],
+   [
+    13,
+    "MUTLAK DEGER",
+    219
+   ],
+   [
+    14,
+    "USLU IFADELER",
+    239
+   ],
+   [
+    15,
+    "KOKLU IFADELER",
+    269
+   ],
+   [
+    16,
+    "CARPANLARA AYIRMA",
+    299
+   ]
+  ]
+ },
+ "goz_kararlari": {
+  "yontem": "10x en-yakin-komsu, otomatik kontrast; pikselde tutmayan girdiler",
+  "girdiler": {
+   "33L": [
+    "3.C"
+   ],
+   "34L": [
+    "6.B",
+    "7.A"
+   ],
+   "139L": [
+    "1.B",
+    "2.D"
+   ],
+   "141L": [
+    "1.B",
+    "2.E"
+   ],
+   "173L": [
+    "1.B",
+    "2.B"
+   ],
+   "197L": [
+    "1.B",
+    "2.B"
+   ],
+   "215L": [
+    "1.E",
+    "2.B"
+   ]
+  },
+  "notlar": {
+   "33L": "glif LOO E dedi; 3 rakami soluk basili, harf acik C",
+   "34L": "iki girdi bitisik basili; piksel tek girdi saydi",
+   "139L/141L/173L/197L/215L": "2 rakaminin soluk kenari pikselde ayri girdi sayildi; sutunun tum girdileri gozle"
+  }
+ }
+}
