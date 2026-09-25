@@ -10,14 +10,14 @@ Bu belge onceki envanteri (`ZKITAP_ENVANTER.md`, klasor ADINA gore eslestirilmis
 |---|---|
 | PNG iceren klasor | 278 |
 | tekil kitap (ayni icerikli klasorler birlestirildi) | 237 |
-| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 17 kitap (345 Geometri 2 cilt = 18 grup) |
+| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 18 kitap (345 Geometri 2 cilt = 19 grup) |
 | islenmis, ithal EDILMEMIS | 0 |
-| islenmemis | 219 |
+| islenmemis | 218 |
 | -- bunlardan DB'de HIC satiri olmayan | 99 |
-| -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 120 |
+| -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 119 |
 | kitap olmayan / kullanilamaz klasor | 6 |
 
-Modern ithal toplami (17 kitap): **26109 satir** (23 Eyl 2026 aksam olcumu: + Orijinal 2024 Geometri 2072, + ACIL 2025 KURS Geometri 1759; 24 Eyl 2026: + 345 2025 TYT Matematik 2063, `MAT_345_TYT_YONTEM.md`; + 345 2025 AYT Matematik 1942, `MAT_345_AYT_YONTEM.md`). Canli DB'deki toplam `source_book` satiri: 28161 (201 farkli ad).
+Modern ithal toplami (18 kitap): **27413 satir** (23 Eyl 2026 aksam olcumu: + Orijinal 2024 Geometri 2072, + ACIL 2025 KURS Geometri 1759; 24 Eyl 2026: + 345 2025 TYT Matematik 2063, `MAT_345_TYT_YONTEM.md`; + 345 2025 AYT Matematik 1942, `MAT_345_AYT_YONTEM.md`; 25 Eyl 2026: + 345 2025 AYT Kimya 1304, `KIM_345_AYT_YONTEM.md`). Canli DB'deki toplam `source_book` satiri: 28161 (201 farkli ad).
 
 ## 2. Onceki belgelerdeki hukumlerin DUZELTILMESI (olculdu + gozle dogrulandi)
 
@@ -49,7 +49,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 |---|---|---|---|---|---|---|---|---|
 | 345 2024 AYT Biyoloji Soru Bankasi | ISLENMEDI | `345 2024 Ayt Biyoloji Soru Bankasi` | 376 | - | yok | 345 2025 AYT Biyoloji SB %69 | - | SAHIP KARARI: 345 2025 AYT Biyoloji SB ile en az %69 ortak -> atla ya da yalniz farki isle |
 | 345 2025 AYT Fizik SB | **ISLENDI** | `345 2025 Ayt Fizik Soru Bankasi` | 392 | `345 2024 Ayt Fizik Soru Bankasi` | modern 1308 / aktif 1297 | - | - | TAMAM (modern ithal) |
-| 345 2024 AYT Kimya Soru Bankasi | ISLENMEDI | `345 2024 Ayt Kimya Soru Bankasi` | 336 | `345 2025 Ayt Kimya Soru Bankasi` | eski hat 202 / aktif 202 | - | - | ISLENEBILIR |
+| 345 2025 AYT Kimya SB | **ISLENDI** | `345 2025 Ayt Kimya Soru Bankasi` | 336 | `345 2024 Ayt Kimya Soru Bankasi` (onceki baski, ~13 soru farkli; kopya DEGIL) | modern 1304 / aktif 0 (+ eski hat 161 / aktif 161, 0050 ile ayni ada; 2024 eski hat 202 / aktif 202; 6 eski hat cevabi 0051 ile basili hale) | - | - | TAMAM (modern ithal) |
 | 345 2025 AYT Matematik SB | **ISLENDI** | `345 2025 Ayt Matematik Soru Bankasi` | 384 | `345 2024 Ayt Matematik Soru Bankasi` (onceki baski, OSYM kosesi sorulari farkli) | modern 1942 / aktif 0 (+ eski hat 11 / aktif 11, 0046 ile ayni ada; 2024 eski hat 10) | - | - | TAMAM (modern ithal) |
 | 345 2024 TYT Biyoloji SB | ISLENMEDI | `345 Tyt Biyoloji Soru Bankasi` | 232 | - | yok | 345 2025 TYT Biyoloji SB %72 | - | SAHIP KARARI: 345 2025 TYT Biyoloji SB ile en az %72 ortak -> atla ya da yalniz farki isle |
 | 345 2024 TYT-AYT Geometri SB | **ISLENDI** | `345 Tyt Ayt Geometri Soru Bankasi` | 440 | `345 2025 Tyt Ayt Geometri Soru Bankasi 1` | modern 2708 / aktif 2702 | - | - | TAMAM (modern ithal) |
@@ -442,12 +442,12 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 24 | `2024-ACIL TYT Matematik Geometri Kitap-1` | 208 | 2024 ACIL TYT Matematik Geometri Kitap-1 |  | ISLENMEDI |
 | 25 | `345 2024 Ayt Biyoloji Soru Bankasi` | 376 | 345 2024 AYT Biyoloji Soru Bankasi |  | ISLENMEDI |
 | 26 | `345 2024 Ayt Fizik Soru Bankasi` | 392 | 345 2024 AYT Fizik SB |  | islenmis kitabin kopyasi |
-| 27 | `345 2024 Ayt Kimya Soru Bankasi` | 336 | 345 2024 AYT Kimya Soru Bankasi |  | ISLENMEDI |
+| 27 | `345 2024 Ayt Kimya Soru Bankasi` | 336 | 345 2024 AYT Kimya Soru Bankasi |  | onceki baski -> `345 2025 Ayt Kimya Soru Bankasi` (ISLENDI) |
 | 28 | `345 2024 Ayt Matematik Soru Bankasi` | 399 | 345 2024 AYT Matematik SB |  | onceki baski -> `345 2025 Ayt Matematik Soru Bankasi` (ISLENDI) |
 | 29 | `345 2024 Tyt Matematik Soru Bankasi` | 421 | 345 2024 TYT Matematik SB |  | kopya -> `345 2025 Tyt Matematik Soru Bankasi` |
 | 30 | `345 2025 Ayt Biyoloji Soru Bankasi` | 374 | 345 2025 AYT Biyoloji SB |  | ISLENDI |
 | 31 | `345 2025 Ayt Fizik Soru Bankasi` | 392 | 345 2025 AYT Fizik SB |  | ISLENDI |
-| 32 | `345 2025 Ayt Kimya Soru Bankasi` | 336 | 345 2025 AYT Kimya SB |  | kopya -> `345 2024 Ayt Kimya Soru Bankasi` |
+| 32 | `345 2025 Ayt Kimya Soru Bankasi` | 336 | 345 2025 AYT Kimya SB |  | ISLENDI (`KIM_345_AYT_YONTEM.md`; 2024 ile kopya DEGIL, olculdu) |
 | 33 | `345 2025 Ayt Matematik Soru Bankasi` | 394 | 345 2025 AYT Matematik SB |  | ISLENDI (`MAT_345_AYT_YONTEM.md`; 384 sayfa PNG) |
 | 34 | `345 2025 Ayt Turk Edebiyati Soru Bankasi` | 348 | 345 2025 AYT Turk Edebiyati SB |  | ISLENMEDI |
 | 35 | `345 2025 Paragraf Sifir Risk Soru Bankasi` | 368 | 345 2025 Paragraf Sifir Risk SB |  | ISLENMEDI |

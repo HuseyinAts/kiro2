@@ -1,0 +1,1144 @@
+{
+ "kaynak": "345 2025 AYT Kimya Soru Bankasi",
+ "on_kayit": {
+  "amac": "345 2025 AYT Kimya transkripsiyonu icin TAM ikinci okuma gerekli mi -- orneklemle karar.",
+  "yazildi": "olcumden ONCE (on kayit)",
+  "orneklem": "21 okuma grubunun her birinden 10 soru, grup ici rastgele (random.Random(20260925)); toplam 210",
+  "ikinci_okuma": "ilk okumayi GORMEYEN ayri okuyucular, ayni talimat (k_metin_talimat.md, tum ek kurallar), ayni 2x kirpim; 6 okuyucu x 35 soru",
+  "karsilastirma": "govde + 5 sik, bicim normalize edilerek (bosluk, satir sonu, tire/eksi, carpma noktasi, kesme isareti, tirnak); her fark kirpima bakilarak GOZLE hukme baglanir: ilk_okuma_hatasi / ikinci_okuma_hatasi / esdeger_yazim / belgelenmis_belirsizlik",
+  "esasli_hata": "sorunun kimyasini ya da anlamini degistiren fark: rakam (katsayi, indis, us, atom no), isaret, element/formul, yuk, eksik/fazla ifade ya da cumle, yanlis sik icerigi. Yazim bicimi, noktalama, Turkce ek yazimi ESASLI DEGIL. Ilk okumanin kaynak_kusuru notunda AYNEN o karakter icin belgelenmis piksel belirsizligi (or. '6 mi 8 mi', yuk isareti ?) 'belgelenmis_belirsizlik' sayilir, esasli hata SAYILMAZ -- kaynak tavani, okuma hatasi degil.",
+  "karar_kurali": {
+   "olcu": "ilk okumada esasli hatali soru orani; 95% Clopper-Pearson ust siniri",
+   "TAM_IKINCI_OKUMA_YOK": "ust sinir <= %3 (210 soruda en cok 1 esasli hata)",
+   "HEDEFLI_IKINCI_OKUMA": "ust sinir > %3 ve hatalar tanimli bir tabakada toplanmis (grup, konu, ozellik) -- yalniz o tabaka tam okunur",
+   "TAM_IKINCI_OKUMA": "ust sinir > %3 ve hatalar tabakalara yayilmis",
+   "her_durumda": "bulunan her esasli hata kirpimdan duzeltilir"
+  },
+  "orneklem_listesi": [
+   "KIM345AYT-T002_03",
+   "KIM345AYT-T003_03",
+   "KIM345AYT-T004_05",
+   "KIM345AYT-T004_10",
+   "KIM345AYT-T005_04",
+   "KIM345AYT-T006_01",
+   "KIM345AYT-T006_06",
+   "KIM345AYT-T006_08",
+   "KIM345AYT-T007_01",
+   "KIM345AYT-T008_08",
+   "KIM345AYT-T009_01",
+   "KIM345AYT-T009_06",
+   "KIM345AYT-T011_02",
+   "KIM345AYT-T011_04",
+   "KIM345AYT-T012_02",
+   "KIM345AYT-T012_07",
+   "KIM345AYT-T012_08",
+   "KIM345AYT-T012_10",
+   "KIM345AYT-T013_03",
+   "KIM345AYT-T014_11",
+   "KIM345AYT-T016_02",
+   "KIM345AYT-T018_03",
+   "KIM345AYT-T018_04",
+   "KIM345AYT-T020_04",
+   "KIM345AYT-T021_05",
+   "KIM345AYT-T021_06",
+   "KIM345AYT-T021_07",
+   "KIM345AYT-T022_02",
+   "KIM345AYT-T022_03",
+   "KIM345AYT-T024_06",
+   "KIM345AYT-T025_01",
+   "KIM345AYT-T026_01",
+   "KIM345AYT-T026_06",
+   "KIM345AYT-T027_04",
+   "KIM345AYT-T028_08",
+   "KIM345AYT-T029_06",
+   "KIM345AYT-T030_02",
+   "KIM345AYT-T031_06",
+   "KIM345AYT-T032_01",
+   "KIM345AYT-T032_05",
+   "KIM345AYT-T035_01",
+   "KIM345AYT-T035_03",
+   "KIM345AYT-T036_06",
+   "KIM345AYT-T037_09",
+   "KIM345AYT-T038_01",
+   "KIM345AYT-T038_05",
+   "KIM345AYT-T038_09",
+   "KIM345AYT-T038_10",
+   "KIM345AYT-T039_03",
+   "KIM345AYT-T039_05",
+   "KIM345AYT-T040_02",
+   "KIM345AYT-T040_05",
+   "KIM345AYT-T040_06",
+   "KIM345AYT-T041_01",
+   "KIM345AYT-T042_01",
+   "KIM345AYT-T043_06",
+   "KIM345AYT-T043_07",
+   "KIM345AYT-T044_01",
+   "KIM345AYT-T046_06",
+   "KIM345AYT-T047_04",
+   "KIM345AYT-T049_01",
+   "KIM345AYT-T049_04",
+   "KIM345AYT-T050_03",
+   "KIM345AYT-T050_08",
+   "KIM345AYT-T051_03",
+   "KIM345AYT-T052_02",
+   "KIM345AYT-T052_15",
+   "KIM345AYT-T053_09",
+   "KIM345AYT-T054_01",
+   "KIM345AYT-T054_05",
+   "KIM345AYT-T055_04",
+   "KIM345AYT-T058_01",
+   "KIM345AYT-T058_03",
+   "KIM345AYT-T059_01",
+   "KIM345AYT-T059_04",
+   "KIM345AYT-T059_05",
+   "KIM345AYT-T061_04",
+   "KIM345AYT-T062_01",
+   "KIM345AYT-T062_07",
+   "KIM345AYT-T063_01",
+   "KIM345AYT-T064_03",
+   "KIM345AYT-T064_08",
+   "KIM345AYT-T065_01",
+   "KIM345AYT-T068_02",
+   "KIM345AYT-T068_03",
+   "KIM345AYT-T068_06",
+   "KIM345AYT-T069_02",
+   "KIM345AYT-T071_01",
+   "KIM345AYT-T071_04",
+   "KIM345AYT-T071_07",
+   "KIM345AYT-T073_05",
+   "KIM345AYT-T074_04",
+   "KIM345AYT-T075_01",
+   "KIM345AYT-T075_04",
+   "KIM345AYT-T076_02",
+   "KIM345AYT-T078_04",
+   "KIM345AYT-T078_05",
+   "KIM345AYT-T078_06",
+   "KIM345AYT-T080_01",
+   "KIM345AYT-T080_08",
+   "KIM345AYT-T081_05",
+   "KIM345AYT-T081_06",
+   "KIM345AYT-T082_07",
+   "KIM345AYT-T083_03",
+   "KIM345AYT-T085_01",
+   "KIM345AYT-T085_03",
+   "KIM345AYT-T085_05",
+   "KIM345AYT-T088_03",
+   "KIM345AYT-T088_04",
+   "KIM345AYT-T088_10",
+   "KIM345AYT-T090_03",
+   "KIM345AYT-T090_04",
+   "KIM345AYT-T091_04",
+   "KIM345AYT-T093_01",
+   "KIM345AYT-T093_03",
+   "KIM345AYT-T094_01",
+   "KIM345AYT-T094_03",
+   "KIM345AYT-T094_09",
+   "KIM345AYT-T095_07",
+   "KIM345AYT-T096_05",
+   "KIM345AYT-T097_04",
+   "KIM345AYT-T097_07",
+   "KIM345AYT-T097_08",
+   "KIM345AYT-T098_07",
+   "KIM345AYT-T099_03",
+   "KIM345AYT-T100_05",
+   "KIM345AYT-T101_07",
+   "KIM345AYT-T101_08",
+   "KIM345AYT-T101_09",
+   "KIM345AYT-T103_01",
+   "KIM345AYT-T105_03",
+   "KIM345AYT-T105_08",
+   "KIM345AYT-T105_10",
+   "KIM345AYT-T107_02",
+   "KIM345AYT-T108_03",
+   "KIM345AYT-T108_04",
+   "KIM345AYT-T109_02",
+   "KIM345AYT-T110_01",
+   "KIM345AYT-T110_02",
+   "KIM345AYT-T111_03",
+   "KIM345AYT-T112_08",
+   "KIM345AYT-T113_05",
+   "KIM345AYT-T114_06",
+   "KIM345AYT-T114_07",
+   "KIM345AYT-T115_03",
+   "KIM345AYT-T116_06",
+   "KIM345AYT-T117_08",
+   "KIM345AYT-T118_04",
+   "KIM345AYT-T119_05",
+   "KIM345AYT-T119_07",
+   "KIM345AYT-T120_04",
+   "KIM345AYT-T120_08",
+   "KIM345AYT-T120_10",
+   "KIM345AYT-T120_11",
+   "KIM345AYT-T121_07",
+   "KIM345AYT-T122_01",
+   "KIM345AYT-T123_03",
+   "KIM345AYT-T123_05",
+   "KIM345AYT-T124_09",
+   "KIM345AYT-T125_02",
+   "KIM345AYT-T126_04",
+   "KIM345AYT-T127_03",
+   "KIM345AYT-T127_07",
+   "KIM345AYT-T127_08",
+   "KIM345AYT-T128_01",
+   "KIM345AYT-T128_04",
+   "KIM345AYT-T128_05",
+   "KIM345AYT-T131_03",
+   "KIM345AYT-T131_04",
+   "KIM345AYT-T131_09",
+   "KIM345AYT-T133_03",
+   "KIM345AYT-T133_06",
+   "KIM345AYT-T133_08",
+   "KIM345AYT-T135_02",
+   "KIM345AYT-T136_01",
+   "KIM345AYT-T136_08",
+   "KIM345AYT-T137_05",
+   "KIM345AYT-T137_06",
+   "KIM345AYT-T138_09",
+   "KIM345AYT-T138_11",
+   "KIM345AYT-T140_04",
+   "KIM345AYT-T140_07",
+   "KIM345AYT-T140_09",
+   "KIM345AYT-T141_06",
+   "KIM345AYT-T142_04",
+   "KIM345AYT-T143_01",
+   "KIM345AYT-T143_03",
+   "KIM345AYT-T143_04",
+   "KIM345AYT-T145_05",
+   "KIM345AYT-T146_08",
+   "KIM345AYT-T147_06",
+   "KIM345AYT-T148_01",
+   "KIM345AYT-T149_07",
+   "KIM345AYT-T150_05",
+   "KIM345AYT-T151_05",
+   "KIM345AYT-T152_04",
+   "KIM345AYT-T152_09",
+   "KIM345AYT-T153_06",
+   "KIM345AYT-T153_07",
+   "KIM345AYT-T153_09",
+   "KIM345AYT-T154_01",
+   "KIM345AYT-T155_02",
+   "KIM345AYT-T157_03",
+   "KIM345AYT-T157_05",
+   "KIM345AYT-T157_07",
+   "KIM345AYT-T157_08",
+   "KIM345AYT-T158_03",
+   "KIM345AYT-T158_07",
+   "KIM345AYT-T159_03",
+   "KIM345AYT-T159_08"
+  ]
+ },
+ "orneklem_hukmu": {
+  "orneklem": 210,
+  "ayni": 162,
+  "farkli": 48,
+  "esasli_hata": 5,
+  "cp95_ust_sinir": 0.0547,
+  "karar": "HEDEFLI_IKINCI_OKUMA",
+  "tabaka": "iyon yuku isareti ('+' nin yatay cizgisi kaybolmus -> ' gibi); 5/5 esasli hata bu tabakada, hepsi ilk isaret hakemliginin (not tabanli secim) DISINDA",
+  "hedefli_okuma": "iyon yuku iceren ve hakemden gecmemis 124 soru, 4 hakem, ayni kural (k_isaret2); 68 soruda isaret ? oldu; 2 ana hakem ustune yazmasi (T099_02, T152_01)",
+  "hukumler": {
+   "ilk_okuma_hatasi": {
+    "T006_08": "A/E Na isareti yalniz dikey cizgi, B F ve O isaretleri gorunmuyor; ilk okuma +/- yazmis -> ?",
+    "T054_01": "B H isareti yalniz dikey cizgi; ilk okuma + -> ?",
+    "T094_09": "B/E H isareti yalniz dikey cizgi; ilk okuma + -> ?",
+    "T105_08": "Ni^(2') yalniz dikey; ilk okuma + -> ?",
+    "T105_10": "Pb^(2') yalniz dikey; ilk okuma + -> ?"
+   },
+   "belgelenmis_belirsizlik": {
+    "T012_10": "CH alt indisi 2/4, iki okumada da not",
+    "T064_08": "us 6/8, ilk okumada not",
+    "T093_03": "D us 8/9, ilk okumada not",
+    "T094_03": "B/C us 10/13, ilk okumada not",
+    "T097_07": "silik us eksisi, ilk okumada not",
+    "T098_07": "B/E us rakami, ilk okumada not",
+    "T105_03": "Cu isareti, ilk okumada ? + not",
+    "T111_03": "C Cd isareti ilk okumada ? + not; A Ag + hakemce net (ikinci okuma hatasi)",
+    "T120_08": "C atom no 6/8, ilk okumada not",
+    "T121_07": "O atom no 6/8, ilk okumada not; ek nokta farki noktalama"
+   },
+   "ikinci_okuma_hatasi": {
+    "T059_01": "basili alt indis 'oi' (olusum); ikinci 'ol'",
+    "T063_01": "ikinci okuma A sikkini karistirmis; ilk dogru",
+    "T127_03": "ikinci yapi formulunu atlamis",
+    "T128_04": "ikinci sik formullerini atlamis",
+    "T133_08": "urun formulu basili; ikinci atlamis",
+    "T135_02": "ikinci formulu atlamis",
+    "T136_01": "ikinci formulleri atlamis",
+    "T142_04": "ikinci formulleri atlamis",
+    "T143_04": "ikinci Cl'yi yanlis yere koymus",
+    "T145_05": "ikinci formulleri atlamis",
+    "T150_05": "ikinci dallanmalari atlamis"
+   },
+   "esdeger_yazim": {
+    "T012_08": "gorsel sik (harf tablolari) -- talimat bicimi",
+    "T021_07": "ondalik ayrac",
+    "T022_02": "ondalik ayrac",
+    "T036_06": "ondalik ayrac",
+    "T123_03": "ondalik ayrac",
+    "T133_03": "konum ayraci virgul/nokta",
+    "T081_05": "birim carpma noktasi / ayrac",
+    "T080_08": "carpma noktasi",
+    "T026_06": "noktalama",
+    "T040_02": "tire",
+    "T078_05": "noktalama",
+    "T149_07": "tire",
+    "T027_04": "Turkce yazim (esasli degil)",
+    "T101_08": "Turkce ek",
+    "T143_01": "Turkce ek",
+    "T140_04": "basili 'degistime' ve nokta ilk okumada dogru; ikinci farkli",
+    "T157_07": "basili 'polimelerden' ilk okumada dogru",
+    "T122_01": "Lewis gorseli / madde imleri bicimi",
+    "T131_04": "yapi formulu dizilimi",
+    "T147_06": "halka cizimi tarifi",
+    "T152_04": "ok ustu/alti gosterimi",
+    "T153_06": "ok ustu/alti gosterimi"
+   }
+  }
+ },
+ "hedefli_okuma": {
+  "tabaka": "govde/siklarda iyon yuku gecen ve ilk yuk isareti hakemliginden gecmemis sorular",
+  "soru": 124,
+  "metni_degisen": 68,
+  "kural": "k_isaret2/talimat.md (VeraFilm): iki cizgi -> +; tek temiz yatay ve ayni kirpimdaki acik '-' ile ayni -> '-'; diger her durum -> '?' + kaynak_kusuru notu",
+  "degisenler": [
+   {
+    "dosya": "KIM345AYT-T001_02",
+    "hakem_notu": "yuk isareti hakemligi: B sikki: _2He^+ -> _2He^?; C sikki: _3Li^(2+) -> _3Li^(2?); D sikki: _4Be^(2+) -> _4Be^(2?); E sikki: _5B^(4+) -> _5B^(4?)",
+    "fark": [
+     {
+      "alan": "B",
+      "once": "_2He^+",
+      "sonra": "_2He^?"
+     },
+     {
+      "alan": "C",
+      "once": "_3Li^(2+)",
+      "sonra": "_3Li^(2?)"
+     },
+     {
+      "alan": "D",
+      "once": "_4Be^(2+)",
+      "sonra": "_4Be^(2?)"
+     },
+     {
+      "alan": "E",
+      "once": "_5B^(4+)",
+      "sonra": "_5B^(4?)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T004_06",
+    "hakem_notu": "yuk isareti hakemligi: govde: _11Na^+ -> _11Na^?; govde: _19K^+ -> _19K^?",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Elektron say\u0131s\u0131 ve dizilimi ayn\u0131 olan tanecikler birbirinin izoelektroni\u011fidir.\nBuna g\u00f6re,\nI. _9F^\u2212 \u2013 _11Na^+\nII. _19K^+ \u2013 _16S^(2\u2212)\nIII. _20Ca \u2013 _21Sc^+\ntanecik \u00e7iftlerinden hangileri izoelektroniktir?",
+      "sonra": "Elektron say\u0131s\u0131 ve dizilimi ayn\u0131 olan tanecikler birbirinin izoelektroni\u011fidir.\nBuna g\u00f6re,\nI. _9F^\u2212 \u2013 _11Na^?\nII. _19K^? \u2013 _16S^(2\u2212)\nIII. _20Ca \u2013 _21Sc^+\ntanecik \u00e7iftlerinden hangileri izoelektroniktir?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T006_04",
+    "hakem_notu": "yuk isareti hakemligi: govde: II. X^(2+) ve -> II. X^(2?) ve; A sikki: X^(2+) -> X^(2?); C sikki: X^(2+) -> X^(2?); D sikki: X^(2+) -> X^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "A\u015fa\u011f\u0131da X ve Y elementlerinin elektron dizilimi verilmi\u015ftir.\nX: [_18Ar] 4s^2\nY: [_10Ne] 3s^2 3p^5\nBuna g\u00f6re,\nI. X ve Y atomlar\u0131n\u0131n\nII. X^(2+) ve Y^\u2212 iyonlar\u0131n\u0131n\n\u00e7aplar\u0131 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru olarak verilmi\u015ftir?\nI | II",
+      "sonra": "A\u015fa\u011f\u0131da X ve Y elementlerinin elektron dizilimi verilmi\u015ftir.\nX: [_18Ar] 4s^2\nY: [_10Ne] 3s^2 3p^5\nBuna g\u00f6re,\nI. X ve Y atomlar\u0131n\u0131n\nII. X^(2?) ve Y^\u2212 iyonlar\u0131n\u0131n\n\u00e7aplar\u0131 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru olarak verilmi\u015ftir?\nI | II"
+     },
+     {
+      "alan": "A",
+      "once": "X > Y | X^(2+) > Y^\u2212",
+      "sonra": "X > Y | X^(2?) > Y^\u2212"
+     },
+     {
+      "alan": "C",
+      "once": "X < Y | X^(2+) < Y^\u2212",
+      "sonra": "X < Y | X^(2?) < Y^\u2212"
+     },
+     {
+      "alan": "D",
+      "once": "X < Y | X^(2+) > Y^\u2212",
+      "sonra": "X < Y | X^(2?) > Y^\u2212"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T006_05",
+    "hakem_notu": "yuk isareti hakemligi: govde: X^+ iyonunun -> X^? iyonunun",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Yukar\u0131daki periyodik sistemde yerleri belirtilen elementler ile ilgili;\nI. Atom \u00e7ap\u0131 en b\u00fcy\u00fck olan X'tir.\nII. X^+ iyonunun yar\u0131\u00e7ap\u0131 Y^(2+) den k\u00fc\u00e7\u00fckt\u00fcr.\nIII. Atom \u00e7ap\u0131 en k\u00fc\u00e7\u00fck olan T'dir.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "Yukar\u0131daki periyodik sistemde yerleri belirtilen elementler ile ilgili;\nI. Atom \u00e7ap\u0131 en b\u00fcy\u00fck olan X'tir.\nII. X^? iyonunun yar\u0131\u00e7ap\u0131 Y^(2+) den k\u00fc\u00e7\u00fckt\u00fcr.\nIII. Atom \u00e7ap\u0131 en k\u00fc\u00e7\u00fck olan T'dir.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T006_08",
+    "hakem_notu": "yuk isareti hakemligi: A sikki: _11Na^+ -> _11Na^?; B sikki: _9F^\u2212 -> _9F^?; B sikki: _8O^(2\u2212) -> _8O^(2?); E sikki: _11Na^+ -> _11Na^?",
+    "fark": [
+     {
+      "alan": "A",
+      "once": "_11Na^+ < _9F^\u2212 < _8O^(2\u2212)",
+      "sonra": "_11Na^? < _9F^\u2212 < _8O^(2\u2212)"
+     },
+     {
+      "alan": "B",
+      "once": "_9F^\u2212 < _8O^(2\u2212) < _11Na^+",
+      "sonra": "_9F^? < _8O^(2?) < _11Na^+"
+     },
+     {
+      "alan": "E",
+      "once": "_9F^\u2212 < _11Na^+ < _8O^(2\u2212)",
+      "sonra": "_9F^\u2212 < _11Na^? < _8O^(2\u2212)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T007_05",
+    "hakem_notu": "yuk isareti hakemligi: govde: X^+ ve Y^\u2212 iyonlar -> X^? ve Y^? iyonlar; govde: koparmak X^+ iyonundan -> koparmak X^? iyonundan",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "X^+ ve Y^\u2212 iyonlar\u0131 ayn\u0131 soygaz elektron d\u00fczenine sahiptir.\nBuna g\u00f6re,\nI. N\u00f6tr X atomunun 1. iyonla\u015fma enerjisi Y atomununkinden b\u00fcy\u00fckt\u00fcr.\nII. Y^\u2212 iyonundan elektron koparmak X^+ iyonundan koparmaktan daha zordur.\nIII. X ve Y elementleri periyodik sistemin ayn\u0131 periyodunda bulunurlar.\nifadelerinden hangileri yanl\u0131\u015ft\u0131r?",
+      "sonra": "X^? ve Y^? iyonlar\u0131 ayn\u0131 soygaz elektron d\u00fczenine sahiptir.\nBuna g\u00f6re,\nI. N\u00f6tr X atomunun 1. iyonla\u015fma enerjisi Y atomununkinden b\u00fcy\u00fckt\u00fcr.\nII. Y^\u2212 iyonundan elektron koparmak X^? iyonundan koparmaktan daha zordur.\nIII. X ve Y elementleri periyodik sistemin ayn\u0131 periyodunda bulunurlar.\nifadelerinden hangileri yanl\u0131\u015ft\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T008_06",
+    "hakem_notu": "yuk isareti hakemligi: govde: X^+, Y^\u2212 -> X^?, Y^\u2212",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "X^+, Y^\u2212 ve Z^(2\u2212) iyonlar\u0131 ayn\u0131 soygaz elektron d\u00fczenine sahiptir.\nBuna g\u00f6re,\nI. Metal aktifli\u011fi en b\u00fcy\u00fck olan X'tir.\nII. Elektron ilgisi en b\u00fcy\u00fck olan Z'dir.\nIII. \u00c7aplar\u0131 aras\u0131nda X^+ < Y^\u2212 < Z^(2\u2212) ili\u015fkisi vard\u0131r.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "X^?, Y^\u2212 ve Z^(2\u2212) iyonlar\u0131 ayn\u0131 soygaz elektron d\u00fczenine sahiptir.\nBuna g\u00f6re,\nI. Metal aktifli\u011fi en b\u00fcy\u00fck olan X'tir.\nII. Elektron ilgisi en b\u00fcy\u00fck olan Z'dir.\nIII. \u00c7aplar\u0131 aras\u0131nda X^+ < Y^\u2212 < Z^(2\u2212) ili\u015fkisi vard\u0131r.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T014_06",
+    "hakem_notu": "yuk isareti hakemligi: govde: X^+ ve Y^\u2212 -> X^? ve Y^\u2212",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "X^+ ve Y^\u2212 iyonlar\u0131n\u0131n elektron dizlimi 3p^6 ile bitmektedir.\nBuna g\u00f6re, X ve Y elementleri ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?",
+      "sonra": "X^? ve Y^\u2212 iyonlar\u0131n\u0131n elektron dizlimi 3p^6 ile bitmektedir.\nBuna g\u00f6re, X ve Y elementleri ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T014_07",
+    "hakem_notu": "yuk isareti hakemligi: govde: ^(24)Y^(2\u2212) -> ^(24)Y^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "X^+ ve ^(24)Y^(2\u2212) taneciklerinin elektron ve n\u00f6tron say\u0131lar\u0131 e\u015fittir.\nN\u00f6tr Y atomunun elektron dizilimi 3s^2 ile sonland\u0131\u011f\u0131na g\u00f6re X'in k\u00fctle numaras\u0131 ka\u00e7t\u0131r?",
+      "sonra": "X^+ ve ^(24)Y^(2?) taneciklerinin elektron ve n\u00f6tron say\u0131lar\u0131 e\u015fittir.\nN\u00f6tr Y atomunun elektron dizilimi 3s^2 ile sonland\u0131\u011f\u0131na g\u00f6re X'in k\u00fctle numaras\u0131 ka\u00e7t\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T034_09",
+    "hakem_notu": "yuk isareti hakemligi: A sikki: Na^+ iyonlar -> Na^? iyonlar",
+    "fark": [
+     {
+      "alan": "A",
+      "once": "Na^+ iyonlar\u0131n\u0131n etraf\u0131 H_2O'nun pozitif ucu ile, Cl^\u2212 iyonlar\u0131n\u0131n etraf\u0131 H_2O'nun negatif ucu ile sar\u0131l\u0131r.",
+      "sonra": "Na^? iyonlar\u0131n\u0131n etraf\u0131 H_2O'nun pozitif ucu ile, Cl^\u2212 iyonlar\u0131n\u0131n etraf\u0131 H_2O'nun negatif ucu ile sar\u0131l\u0131r."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T038_11",
+    "hakem_notu": "yuk isareti hakemligi: govde: X^+ iyonlar -> X^? iyonlar",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "28,4 gram X_2SO_4 tuzunun 1 kg suda \u00e7\u00f6z\u00fcnmesi ile haz\u0131rlanan sulu \u00e7\u00f6zeltideki X^+ iyonlar\u0131n\u0131n molal deri\u015fimi 0,4't\u00fcr.\nBuna g\u00f6re, X elementinin mol k\u00fctlesi ka\u00e7t\u0131r?\n(O:16, S:32)",
+      "sonra": "28,4 gram X_2SO_4 tuzunun 1 kg suda \u00e7\u00f6z\u00fcnmesi ile haz\u0131rlanan sulu \u00e7\u00f6zeltideki X^? iyonlar\u0131n\u0131n molal deri\u015fimi 0,4't\u00fcr.\nBuna g\u00f6re, X elementinin mol k\u00fctlesi ka\u00e7t\u0131r?\n(O:16, S:32)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T046_01",
+    "hakem_notu": "yuk isareti hakemligi: govde: 2Ce^(3+)(suda) -> 2Ce^(3?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Ce_2(SO_4)_3 tuzunun suda \u00e7\u00f6z\u00fcnme denklemi a\u015fa\u011f\u0131daki gibidir.\nCe_2(SO_4)_3(k) \u2192 2Ce^(3+)(suda) + 3SO_4^(2\u2212)(suda) + \u0131s\u0131\nBuna g\u00f6re doymam\u0131\u015f Ce_2(SO_4)_3 sulu \u00e7\u00f6zeltisini doygun hale getirmek i\u00e7in,\nI. Sabit s\u0131cakl\u0131kta bir miktar su buharla\u015ft\u0131rmak\nII. \u00c7\u00f6zeltiyi \u0131s\u0131tmak\nIII. \u00c7\u00f6zeltiyi kar\u0131\u015ft\u0131rmak\ni\u015flemlerinden hangileri ayr\u0131 ayr\u0131 uygulanabilir?",
+      "sonra": "Ce_2(SO_4)_3 tuzunun suda \u00e7\u00f6z\u00fcnme denklemi a\u015fa\u011f\u0131daki gibidir.\nCe_2(SO_4)_3(k) \u2192 2Ce^(3?)(suda) + 3SO_4^(2\u2212)(suda) + \u0131s\u0131\nBuna g\u00f6re doymam\u0131\u015f Ce_2(SO_4)_3 sulu \u00e7\u00f6zeltisini doygun hale getirmek i\u00e7in,\nI. Sabit s\u0131cakl\u0131kta bir miktar su buharla\u015ft\u0131rmak\nII. \u00c7\u00f6zeltiyi \u0131s\u0131tmak\nIII. \u00c7\u00f6zeltiyi kar\u0131\u015ft\u0131rmak\ni\u015flemlerinden hangileri ayr\u0131 ayr\u0131 uygulanabilir?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T052_05",
+    "hakem_notu": "yuk isareti hakemligi: A: H^+(suda) -> H^?(suda)",
+    "fark": [
+     {
+      "alan": "A",
+      "once": "H^+(suda) + OH^\u2212(suda) \u2192 H_2O(s)",
+      "sonra": "H^?(suda) + OH^\u2212(suda) \u2192 H_2O(s)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T053_01",
+    "hakem_notu": "yuk isareti hakemligi: E: H^+(suda) -> H^?(suda)",
+    "fark": [
+     {
+      "alan": "E",
+      "once": "H^+(suda) + OH^\u2212(suda) \u2192 H_2O(s)",
+      "sonra": "H^?(suda) + OH^\u2212(suda) \u2192 H_2O(s)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T054_01",
+    "hakem_notu": "yuk isareti hakemligi: B: H^+(suda) -> H^?(suda)",
+    "fark": [
+     {
+      "alan": "B",
+      "once": "H^+(suda) + OH^\u2212(suda) \u2192 H_2O(s) | N\u00f6trle\u015fme",
+      "sonra": "H^?(suda) + OH^\u2212(suda) \u2192 H_2O(s) | N\u00f6trle\u015fme"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T063_05",
+    "hakem_notu": "yuk isareti hakemligi: govde: I. H^+(suda) -> I. H^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "I. H^+(suda) + OH^\u2212(suda) \u2192 H_2O(s)\nII. 2H_2(g) + O_2(g) \u2192 2H_2O(s)\nIII. 2Ag(k) + 1/2 O_2(g) \u2192 Ag_2O(k)\nAyn\u0131 ko\u015fullarda ger\u00e7ekle\u015fen yukar\u0131daki tepkimelerin h\u0131zlar\u0131 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+      "sonra": "I. H^?(suda) + OH^\u2212(suda) \u2192 H_2O(s)\nII. 2H_2(g) + O_2(g) \u2192 2H_2O(s)\nIII. 2Ag(k) + 1/2 O_2(g) \u2192 Ag_2O(k)\nAyn\u0131 ko\u015fullarda ger\u00e7ekle\u015fen yukar\u0131daki tepkimelerin h\u0131zlar\u0131 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_01",
+    "hakem_notu": "yuk isareti hakemligi: govde: H^+(suda) -> H^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "H_2O(s) + \u0131s\u0131 \u21cc H^+(suda) + OH^\u2212(suda)\nDenklemine g\u00f6re s\u0131cakl\u0131k bir miktar art\u0131r\u0131ld\u0131\u011f\u0131nda ar\u0131 suyun,\nI. \u0130yonla\u015fma sabiti (K_su)\nII. \u0130yonla\u015fma y\u00fczdesi\nIII. pH de\u011feri\nniceliklerinden hangileri artar?",
+      "sonra": "H_2O(s) + \u0131s\u0131 \u21cc H^?(suda) + OH^\u2212(suda)\nDenklemine g\u00f6re s\u0131cakl\u0131k bir miktar art\u0131r\u0131ld\u0131\u011f\u0131nda ar\u0131 suyun,\nI. \u0130yonla\u015fma sabiti (K_su)\nII. \u0130yonla\u015fma y\u00fczdesi\nIII. pH de\u011feri\nniceliklerinden hangileri artar?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_02",
+    "hakem_notu": "yuk isareti hakemligi: govde: H^+ iyonlar\u0131 -> H^? iyonlar\u0131",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "25 \u00b0C'deki bir sulu \u00e7\u00f6zeltideki H^+ iyonlar\u0131 deri\u015fimi 10^(\u22124) mol/L'dir.\nBuna g\u00f6re, bu \u00e7\u00f6zelti ile ilgili,\nI. Asidiktir.\nII. pH de\u011feri 4't\u00fcr.\nIII. OH^\u2212 iyonu deri\u015fimi 10^(\u221210) mol/L'dir.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "25 \u00b0C'deki bir sulu \u00e7\u00f6zeltideki H^? iyonlar\u0131 deri\u015fimi 10^(\u22124) mol/L'dir.\nBuna g\u00f6re, bu \u00e7\u00f6zelti ile ilgili,\nI. Asidiktir.\nII. pH de\u011feri 4't\u00fcr.\nIII. OH^\u2212 iyonu deri\u015fimi 10^(\u221210) mol/L'dir.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_03",
+    "hakem_notu": "yuk isareti hakemligi: A: [H^+] -> [H^?]; B: [OH^\u2212] -> [OH^?]; C: [OH^\u2212] -> [OH^?]; D: [H^+] -> [H^?]",
+    "fark": [
+     {
+      "alan": "A",
+      "once": "[H^+] = 10^(\u22123) M ise pH = 3't\u00fcr.",
+      "sonra": "[H^?] = 10^(\u22123) M ise pH = 3't\u00fcr."
+     },
+     {
+      "alan": "B",
+      "once": "[H^+] = 10^(\u22122) M ise [OH^\u2212] = 10^(\u221212) M'dir.",
+      "sonra": "[H^+] = 10^(\u22122) M ise [OH^?] = 10^(\u221212) M'dir."
+     },
+     {
+      "alan": "C",
+      "once": "[H^+] > [OH^\u2212] ise pH >pOH't\u0131r.",
+      "sonra": "[H^+] > [OH^?] ise pH >pOH't\u0131r."
+     },
+     {
+      "alan": "D",
+      "once": "[H^+] > 10^(\u22127) M ise pOH > 7'dir.",
+      "sonra": "[H^?] > 10^(\u22127) M ise pOH > 7'dir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_04",
+    "hakem_notu": "yuk isareti hakemligi: govde: H^+ ve -> H^? ve",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "25 \u00b0C'deki X, Y ve Z sulu \u00e7\u00f6zeltilerinde H^+ ve OH^\u2212 iyonlar\u0131n\u0131n deri\u015fimlerinin de\u011fi\u015fimi a\u015fa\u011f\u0131daki grafikte verilmi\u015ftir.\nBuna g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?",
+      "sonra": "25 \u00b0C'deki X, Y ve Z sulu \u00e7\u00f6zeltilerinde H^? ve OH^\u2212 iyonlar\u0131n\u0131n deri\u015fimlerinin de\u011fi\u015fimi a\u015fa\u011f\u0131daki grafikte verilmi\u015ftir.\nBuna g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_05",
+    "hakem_notu": "yuk isareti hakemligi: govde: H^+ iyonu -> H^? iyonu",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Arrhenius'a g\u00f6re sulu \u00e7\u00f6zeltilerine H^+ iyonu veren maddeler asit, OH^\u2212 iyonu veren maddeler bazd\u0131r.\nBuna g\u00f6re, Arrhenius asit - baz tan\u0131m\u0131na g\u00f6re a\u015fa\u011f\u0131daki maddelerden hangisinin asit ya da baz \u00f6zelli\u011fi g\u00f6stermesini a\u00e7\u0131klamakta yetersiz kal\u0131r?",
+      "sonra": "Arrhenius'a g\u00f6re sulu \u00e7\u00f6zeltilerine H^? iyonu veren maddeler asit, OH^\u2212 iyonu veren maddeler bazd\u0131r.\nBuna g\u00f6re, Arrhenius asit - baz tan\u0131m\u0131na g\u00f6re a\u015fa\u011f\u0131daki maddelerden hangisinin asit ya da baz \u00f6zelli\u011fi g\u00f6stermesini a\u00e7\u0131klamakta yetersiz kal\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_06",
+    "hakem_notu": "yuk isareti hakemligi: govde: NH_4^+(suda) -> NH_4^?(suda); govde: II. NH_4^+ iyonu -> II. NH_4^? iyonu",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "NH_3(suda) + H_2O(s) \u21cc NH_4^+(suda) + OH^\u2212(suda)\nDenklemine g\u00f6re,\nI. NH_3 proton alm\u0131\u015ft\u0131r.\nII. NH_4^+ iyonu NH_3'\u00fcn konjuge baz\u0131d\u0131r.\nIII. H_2O asit \u00f6zelli\u011fi g\u00f6stermi\u015ftir.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "NH_3(suda) + H_2O(s) \u21cc NH_4^?(suda) + OH^\u2212(suda)\nDenklemine g\u00f6re,\nI. NH_3 proton alm\u0131\u015ft\u0131r.\nII. NH_4^? iyonu NH_3'\u00fcn konjuge baz\u0131d\u0131r.\nIII. H_2O asit \u00f6zelli\u011fi g\u00f6stermi\u015ftir.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T085_07",
+    "hakem_notu": "yuk isareti hakemligi: govde: <u>CN^\u2212</u> \u21cc -> <u>CN^?</u> \u21cc; govde: HCN + F^\u2212 -> HCN + F^?",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Br\u00f8nsted - Lowry asit - baz tan\u0131m\u0131na g\u00f6re,\nI. <u>F^\u2212</u> + H_2O \u21cc HF + OH^\u2212\nII. HF + <u>CN^\u2212</u> \u21cc HCN + F^\u2212\nIII. HSO_4^\u2212 + H_2O \u21cc SO_4^(2\u2212) + <u>H_3O^+</u>\nyukar\u0131daki tepkimelerden hangilerinde alt\u0131 \u00e7izili tanecik asit olarak davranm\u0131\u015ft\u0131r?",
+      "sonra": "Br\u00f8nsted - Lowry asit - baz tan\u0131m\u0131na g\u00f6re,\nI. <u>F^\u2212</u> + H_2O \u21cc HF + OH^\u2212\nII. HF + <u>CN^?</u> \u21cc HCN + F^?\nIII. HSO_4^\u2212 + H_2O \u21cc SO_4^(2\u2212) + <u>H_3O^+</u>\nyukar\u0131daki tepkimelerden hangilerinde alt\u0131 \u00e7izili tanecik asit olarak davranm\u0131\u015ft\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T086_03",
+    "hakem_notu": "yuk isareti hakemligi: D: X^\u2212 iyonu -> X^? iyonu",
+    "fark": [
+     {
+      "alan": "D",
+      "once": "X^\u2212 iyonu su ile tepkimeye girdi\u011finde proton (H^+) al\u0131c\u0131s\u0131 olarak davran\u0131r.",
+      "sonra": "X^? iyonu su ile tepkimeye girdi\u011finde proton (H^+) al\u0131c\u0131s\u0131 olarak davran\u0131r."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T086_04",
+    "hakem_notu": "yuk isareti hakemligi: govde: F^\u2212(suda) + H_2O(s) -> F^?(suda) + H_2O(s); govde: HF(suda) + OH^\u2212(suda) -> HF(suda) + OH^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Oda ko\u015fullar\u0131nda\nI^\u2212(suda) + H_2O(s) \u21cc HI(suda) + OH^\u2212(suda)\ntepkimesi ger\u00e7ekle\u015fmezken\nF^\u2212(suda) + H_2O(s) \u21cc HF(suda) + OH^\u2212(suda)\ntepkimesi ger\u00e7ekle\u015febilir.\nBuna g\u00f6re,\nI. I^\u2212 iyonunun proton al\u0131c\u0131s\u0131 davranamamas\u0131n\u0131n sebebi HI'n\u0131n kuvvetli asit olmas\u0131ndan kaynaklan\u0131r.\nII. F^\u2212 iyonunun suya kar\u015f\u0131 baz davranmas\u0131n\u0131n sebebi HF'nin zay\u0131f asit olmas\u0131ndan kaynaklan\u0131r.\nIII. HF'nin asitlik sabiti (K_a) HI'n\u0131n asitlik sabitinden k\u00fc\u00e7\u00fckt\u00fcr.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "Oda ko\u015fullar\u0131nda\nI^\u2212(suda) + H_2O(s) \u21cc HI(suda) + OH^\u2212(suda)\ntepkimesi ger\u00e7ekle\u015fmezken\nF^?(suda) + H_2O(s) \u21cc HF(suda) + OH^?(suda)\ntepkimesi ger\u00e7ekle\u015febilir.\nBuna g\u00f6re,\nI. I^\u2212 iyonunun proton al\u0131c\u0131s\u0131 davranamamas\u0131n\u0131n sebebi HI'n\u0131n kuvvetli asit olmas\u0131ndan kaynaklan\u0131r.\nII. F^\u2212 iyonunun suya kar\u015f\u0131 baz davranmas\u0131n\u0131n sebebi HF'nin zay\u0131f asit olmas\u0131ndan kaynaklan\u0131r.\nIII. HF'nin asitlik sabiti (K_a) HI'n\u0131n asitlik sabitinden k\u00fc\u00e7\u00fckt\u00fcr.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T088_06",
+    "hakem_notu": "yuk isareti hakemligi: D: H^+ iyonu -> H^? iyonu",
+    "fark": [
+     {
+      "alan": "D",
+      "once": "HY \u00e7\u00f6zeltisine sabit s\u0131cakl\u0131kta 1L ar\u0131 su ilave edilirse H^+ iyonu deri\u015fimi yar\u0131ya iner.",
+      "sonra": "HY \u00e7\u00f6zeltisine sabit s\u0131cakl\u0131kta 1L ar\u0131 su ilave edilirse H^? iyonu deri\u015fimi yar\u0131ya iner."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T088_08",
+    "hakem_notu": "yuk isareti hakemligi: govde: B^+(suda) -> B^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Zay\u0131f bir baz olan BOH baz\u0131n\u0131n suda iyonla\u015fma denklemi\nBOH(suda) \u21cc B^+(suda) + OH^\u2212(suda)\n\u015feklindedir.\nBuna g\u00f6re, 25 \u00b0C'de haz\u0131rlanan BOH sulu \u00e7\u00f6zeltisine sabit s\u0131cakl\u0131kta,\nI. Ar\u0131 su ilave edilirse\nII. NaOH kat\u0131s\u0131 ilave edilirse\nIII. HCl sulu \u00e7\u00f6zeltisi ilave edilirse\ni\u015flemlerinden hangileri ayr\u0131 ayr\u0131 uygulan\u0131rsa BOH baz\u0131n\u0131n iyonla\u015fma y\u00fczdesi artar?",
+      "sonra": "Zay\u0131f bir baz olan BOH baz\u0131n\u0131n suda iyonla\u015fma denklemi\nBOH(suda) \u21cc B^?(suda) + OH^\u2212(suda)\n\u015feklindedir.\nBuna g\u00f6re, 25 \u00b0C'de haz\u0131rlanan BOH sulu \u00e7\u00f6zeltisine sabit s\u0131cakl\u0131kta,\nI. Ar\u0131 su ilave edilirse\nII. NaOH kat\u0131s\u0131 ilave edilirse\nIII. HCl sulu \u00e7\u00f6zeltisi ilave edilirse\ni\u015flemlerinden hangileri ayr\u0131 ayr\u0131 uygulan\u0131rsa BOH baz\u0131n\u0131n iyonla\u015fma y\u00fczdesi artar?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T091_02",
+    "hakem_notu": "yuk isareti hakemligi: C: Cl^\u2212 iyonlar\u0131n\u0131n -> Cl^? iyonlar\u0131n\u0131n; D: [Pb^(+2)] -> [Pb^(?2)]; D: [ Cl^\u2212] -> [ Cl^?]",
+    "fark": [
+     {
+      "alan": "C",
+      "once": "Pb^(2+) ve Cl^\u2212 iyonlar\u0131n\u0131n deri\u015fimleri sabittir.",
+      "sonra": "Pb^(2+) ve Cl^? iyonlar\u0131n\u0131n deri\u015fimleri sabittir."
+     },
+     {
+      "alan": "D",
+      "once": "Tepkimenin \u00e7\u00f6z\u00fcn\u00fcrl\u00fck \u00e7arp\u0131m\u0131 (K_\u00e7\u00e7) ifadesi K_\u00e7\u00e7 = [Pb^(+2)] [ Cl^\u2212]^2 \u015feklindedir.",
+      "sonra": "Tepkimenin \u00e7\u00f6z\u00fcn\u00fcrl\u00fck \u00e7arp\u0131m\u0131 (K_\u00e7\u00e7) ifadesi K_\u00e7\u00e7 = [Pb^(?2)] [ Cl^?]^2 \u015feklindedir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T091_03",
+    "hakem_notu": "yuk isareti hakemligi: govde: deri\u015fimi Ca^(2+) -> deri\u015fimi Ca^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "CaBr_2(k) \u21cc Ca^(2+)(suda) + 2Br^\u2212(suda)\nyukar\u0131daki denge sistemi ile ilgili,\nI. Heterojen bir dengedir.\nII. \u00c7\u00f6z\u00fcnme ve \u00e7\u00f6kelme olaylar\u0131 durmu\u015ftur.\nIII. Br^\u2212 iyonlar\u0131 deri\u015fimi Ca^(2+) iyon deri\u015fiminin 2 kat\u0131d\u0131r.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "CaBr_2(k) \u21cc Ca^(2+)(suda) + 2Br^\u2212(suda)\nyukar\u0131daki denge sistemi ile ilgili,\nI. Heterojen bir dengedir.\nII. \u00c7\u00f6z\u00fcnme ve \u00e7\u00f6kelme olaylar\u0131 durmu\u015ftur.\nIII. Br^\u2212 iyonlar\u0131 deri\u015fimi Ca^(2?) iyon deri\u015fiminin 2 kat\u0131d\u0131r.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T092_04",
+    "hakem_notu": "yuk isareti hakemligi: govde: X^(2+)(suda) -> X^(2?)(suda); D: X^(2+) ve -> X^(2?) ve",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "XY(k) \u21cc X^(2+)(suda) + Y^(2\u2212)(suda) \u0394H < 0\ntepkimesi dengede iken s\u0131cakl\u0131k azalt\u0131l\u0131rsa a\u015fa\u011f\u0131daki niceliklerden hangisi azal\u0131r?",
+      "sonra": "XY(k) \u21cc X^(2?)(suda) + Y^(2\u2212)(suda) \u0394H < 0\ntepkimesi dengede iken s\u0131cakl\u0131k azalt\u0131l\u0131rsa a\u015fa\u011f\u0131daki niceliklerden hangisi azal\u0131r?"
+     },
+     {
+      "alan": "D",
+      "once": "\u00c7\u00f6zeltideki X^(2+) ve Y^(2\u2212) iyon deri\u015fimi",
+      "sonra": "\u00c7\u00f6zeltideki X^(2?) ve Y^(2\u2212) iyon deri\u015fimi"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T093_01",
+    "hakem_notu": "yuk isareti hakemligi: govde: Zn^(2+) iyonlar\u0131 -> Zn^(2?) iyonlar\u0131",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Kat\u0131s\u0131 ile dengede bulunan yandaki ZnS sulu \u00e7\u00f6zeltisine sabit s\u0131cakl\u0131kta Zn(NO_3)_2 kat\u0131s\u0131 ilave ediliyor.\nBuna g\u00f6re,\nI. Bir miktar ZnS kat\u0131s\u0131 \u00e7\u00f6ker.\nII. ZnS kat\u0131s\u0131n\u0131n \u00e7\u00f6z\u00fcn\u00fcrl\u00fc\u011f\u00fc azal\u0131r.\nIII. \u00c7\u00f6zeltideki Zn^(2+) iyonlar\u0131 deri\u015fimi azal\u0131r.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "Kat\u0131s\u0131 ile dengede bulunan yandaki ZnS sulu \u00e7\u00f6zeltisine sabit s\u0131cakl\u0131kta Zn(NO_3)_2 kat\u0131s\u0131 ilave ediliyor.\nBuna g\u00f6re,\nI. Bir miktar ZnS kat\u0131s\u0131 \u00e7\u00f6ker.\nII. ZnS kat\u0131s\u0131n\u0131n \u00e7\u00f6z\u00fcn\u00fcrl\u00fc\u011f\u00fc azal\u0131r.\nIII. \u00c7\u00f6zeltideki Zn^(2?) iyonlar\u0131 deri\u015fimi azal\u0131r.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T094_02",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: HSO_4^\u2212 -> HSO_4^?; g\u00f6vde: SO_4^(2\u2212) -> SO_4^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "| Konjuge Asit | Konjuge Baz\nI. | HSO_4^\u2212 | SO_4^(2\u2212)\nII. | CN^\u2212 | HCN\nIII. | H_2PO_4^\u2212 | PO_4^(3\u2212)\nYukar\u0131da konjuge asit - baz \u00e7ifti i\u00e7in verilen \u00f6rneklerden hangileri do\u011frudur?",
+      "sonra": "| Konjuge Asit | Konjuge Baz\nI. | HSO_4^? | SO_4^(2?)\nII. | CN^\u2212 | HCN\nIII. | H_2PO_4^\u2212 | PO_4^(3\u2212)\nYukar\u0131da konjuge asit - baz \u00e7ifti i\u00e7in verilen \u00f6rneklerden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T094_09",
+    "hakem_notu": "yuk isareti hakemligi: B \u015f\u0131kk\u0131: H^+ -> H^?; E \u015f\u0131kk\u0131: H^+ -> H^?",
+    "fark": [
+     {
+      "alan": "B",
+      "once": "I y\u00f6n\u00fcnde, \u00e7\u00f6zeltideki H^+ iyon deri\u015fimi artar.",
+      "sonra": "I y\u00f6n\u00fcnde, \u00e7\u00f6zeltideki H^? iyon deri\u015fimi artar."
+     },
+     {
+      "alan": "E",
+      "once": "K noktas\u0131nda ortamdaki H^+ iyon say\u0131s\u0131, OH^\u2212 iyon say\u0131s\u0131na e\u015fittir.",
+      "sonra": "K noktas\u0131nda ortamdaki H^? iyon say\u0131s\u0131, OH^\u2212 iyon say\u0131s\u0131na e\u015fittir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T096_05",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: Cl^\u2212(suda) -> Cl^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Belirli bir s\u0131cakl\u0131kta, sudaki \u00e7\u00f6z\u00fcn\u00fcrl\u00fck \u00e7arp\u0131m\u0131 (K_\u00e7\u00e7) de\u011feri 1 \u00d7 10^(\u221210) olan AgCl'nin sudaki \u00e7\u00f6z\u00fcn\u00fcrl\u00fck dengesi a\u015fa\u011f\u0131da verilmi\u015ftir.\nAgCl(k) \u21cc Ag^+(suda) + Cl^\u2212(suda)\nBuna g\u00f6re, \u00e7al\u0131\u015f\u0131lan s\u0131cakl\u0131kta AgCl'nin sudaki \u00e7\u00f6z\u00fcn\u00fcrl\u00fc\u011f\u00fcyle ilgili\nI. 1 \u00d7 10^(\u221210) M'dir.\nII. Ortama AgCl(k) ilavesiyle de\u011fi\u015fmez.\nIII. Ortama NaCl(suda) ilavesiyle azal\u0131r.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "Belirli bir s\u0131cakl\u0131kta, sudaki \u00e7\u00f6z\u00fcn\u00fcrl\u00fck \u00e7arp\u0131m\u0131 (K_\u00e7\u00e7) de\u011feri 1 \u00d7 10^(\u221210) olan AgCl'nin sudaki \u00e7\u00f6z\u00fcn\u00fcrl\u00fck dengesi a\u015fa\u011f\u0131da verilmi\u015ftir.\nAgCl(k) \u21cc Ag^+(suda) + Cl^?(suda)\nBuna g\u00f6re, \u00e7al\u0131\u015f\u0131lan s\u0131cakl\u0131kta AgCl'nin sudaki \u00e7\u00f6z\u00fcn\u00fcrl\u00fc\u011f\u00fcyle ilgili\nI. 1 \u00d7 10^(\u221210) M'dir.\nII. Ortama AgCl(k) ilavesiyle de\u011fi\u015fmez.\nIII. Ortama NaCl(suda) ilavesiyle azal\u0131r.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T097_03",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: Ca^(2+) -> Ca^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "CaCO_3(k) + \u0131s\u0131 \u21cc Ca^(2+)(suda) + CO_3^(2\u2212)(suda)\ntepkimesi dengedeyken a\u015fa\u011f\u0131daki i\u015flemlerden hangisi uygulan\u0131rsa Ca^(2+) iyonu deri\u015fimi artar?",
+      "sonra": "CaCO_3(k) + \u0131s\u0131 \u21cc Ca^(2?)(suda) + CO_3^(2\u2212)(suda)\ntepkimesi dengedeyken a\u015fa\u011f\u0131daki i\u015flemlerden hangisi uygulan\u0131rsa Ca^(2+) iyonu deri\u015fimi artar?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T098_01",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: H_3O^+ -> H_3O^?; g\u00f6vde: NH_4^+ -> NH_4^?; B \u015f\u0131kk\u0131: NH_4^+ -> NH_4^?",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Br\u00f8nsted - Lowry asit - baz tan\u0131m\u0131na g\u00f6re \"proton (H^+) veren madde asit, proton (H^+) alan madde bazd\u0131r.\"\n\u2022 HF(suda) + H_2O(s) \u21cc F^\u2212(suda) + H_3O^+(suda)\n\u2022 NH_3(suda) + H_2O(s) \u21cc NH_4^+(suda) + OH^\u2212(suda)\nYukar\u0131daki denge tepkimeleri ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?",
+      "sonra": "Br\u00f8nsted - Lowry asit - baz tan\u0131m\u0131na g\u00f6re \"proton (H^+) veren madde asit, proton (H^+) alan madde bazd\u0131r.\"\n\u2022 HF(suda) + H_2O(s) \u21cc F^\u2212(suda) + H_3O^?(suda)\n\u2022 NH_3(suda) + H_2O(s) \u21cc NH_4^?(suda) + OH^\u2212(suda)\nYukar\u0131daki denge tepkimeleri ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?"
+     },
+     {
+      "alan": "B",
+      "once": "NH_4^+ iyonu, NH_3 \u00fcn konjuge baz\u0131d\u0131r.",
+      "sonra": "NH_4^? iyonu, NH_3 \u00fcn konjuge baz\u0131d\u0131r."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T098_08",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: Y^\u2212(suda) -> Y^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "XY kat\u0131s\u0131n\u0131n suda \u00e7\u00f6z\u00fcnme denklemi a\u015fa\u011f\u0131da verilmi\u015ftir.\nXY(k) \u21cc X^+(suda) + Y^\u2212(suda) + \u0131s\u0131\nBuna g\u00f6re, XY kat\u0131s\u0131n\u0131n,\nI. 25 \u00b0C'de saf sudaki\nII. 25 \u00b0C'de 0,1 M NaY sulu \u00e7\u00f6zeltisindeki\nIII. 50 \u00b0C'de 0,1 M NaY sulu \u00e7\u00f6zeltisindeki\n\u00e7\u00f6z\u00fcn\u00fcrl\u00fckleri aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+      "sonra": "XY kat\u0131s\u0131n\u0131n suda \u00e7\u00f6z\u00fcnme denklemi a\u015fa\u011f\u0131da verilmi\u015ftir.\nXY(k) \u21cc X^+(suda) + Y^?(suda) + \u0131s\u0131\nBuna g\u00f6re, XY kat\u0131s\u0131n\u0131n,\nI. 25 \u00b0C'de saf sudaki\nII. 25 \u00b0C'de 0,1 M NaY sulu \u00e7\u00f6zeltisindeki\nIII. 50 \u00b0C'de 0,1 M NaY sulu \u00e7\u00f6zeltisindeki\n\u00e7\u00f6z\u00fcn\u00fcrl\u00fckleri aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T098_09",
+    "hakem_notu": "yuk isareti hakemligi: B \u015f\u0131kk\u0131: H^+ -> H^?",
+    "fark": [
+     {
+      "alan": "B",
+      "once": "HX \u00e7\u00f6zeltisinde H^+ iyonu deri\u015fimi yar\u0131ya iner.",
+      "sonra": "HX \u00e7\u00f6zeltisinde H^? iyonu deri\u015fimi yar\u0131ya iner."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T099_02",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: H^+(suda) -> H^\u2212(suda); ana hakem: H^- -> H^? (cizgi X^- den acik)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "\u015eekildeki sistemde\nHX(g) \u21cc HX(suda)\nHX(suda) \u21cc H^+(suda) + X^\u2212(suda)\ntepkimeleri dengededir.\nBuna g\u00f6re, sabit s\u0131cakl\u0131kta piston bir miktar a\u015fa\u011f\u0131 itilip sabitlenirse a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015f olur?",
+      "sonra": "\u015eekildeki sistemde\nHX(g) \u21cc HX(suda)\nHX(suda) \u21cc H^?(suda) + X^\u2212(suda)\ntepkimeleri dengededir.\nBuna g\u00f6re, sabit s\u0131cakl\u0131kta piston bir miktar a\u015fa\u011f\u0131 itilip sabitlenirse a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015f olur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T100_04",
+    "hakem_notu": "yuk isareti hakemligi: A \u015f\u0131kk\u0131: HCO_3^\u2212 -> HCO_3^?",
+    "fark": [
+     {
+      "alan": "A",
+      "once": "CO_2 + 2H_2O \u2192 HCO_3^\u2212 + H_3O^+",
+      "sonra": "CO_2 + 2H_2O \u2192 HCO_3^? + H_3O^+"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T100_11",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: NO_2^\u2212 -> NO_2^?",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "I. HNO_3\nII. NO_2^\u2212\nIII. N_2O_5\nYukar\u0131da verilen kimyasal t\u00fcrlerdeki azot (N) elementlerinin y\u00fckseltgenme basamaklar\u0131 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+      "sonra": "I. HNO_3\nII. NO_2^?\nIII. N_2O_5\nYukar\u0131da verilen kimyasal t\u00fcrlerdeki azot (N) elementlerinin y\u00fckseltgenme basamaklar\u0131 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T100_14",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: PO_4^(3\u2212) -> PO_4^(3?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "P_4 \u2192 PH_3 + PO_4^(3\u2212)\ntepkimesi ile ilgili,\nI. P_4 indirgenmi\u015ftir.\nII. P_4 indirgendir.\nIII. PH_3 ve PO_4^(3\u2212) taneciklerindeki P'lerin y\u00fckseltgenme basamaklar\u0131 toplam\u0131 8'dir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+      "sonra": "P_4 \u2192 PH_3 + PO_4^(3\u2212)\ntepkimesi ile ilgili,\nI. P_4 indirgenmi\u015ftir.\nII. P_4 indirgendir.\nIII. PH_3 ve PO_4^(3?) taneciklerindeki P'lerin y\u00fckseltgenme basamaklar\u0131 toplam\u0131 8'dir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T102_02",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: Pb^(2+) -> Pb^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "A\u015fa\u011f\u0131da baz\u0131 elementlerin standart indirgenme potansiyelleri verilmi\u015ftir.\nCu^(2+)(suda) + 2e \u2192 Cu(k) E = +0,34V\nPb^(2+)(suda) + 2e \u2192 Pb(k) E = \u22120,13V\nCr^(3+)(suda) + 3e \u2192 Cr(k) E = \u22120,74V\nBuna g\u00f6re, g\u00f6rselde verilen sistemle ilgili,\nI. Aktiflikleri aras\u0131ndaki ili\u015fki Cr > Pb > Cu \u015feklindedir.\nII. Cu \u00e7ubukta bir s\u00fcre sonra a\u015f\u0131nma g\u00f6zlenir.\nIII. Cr metalinden yap\u0131lm\u0131\u015f kapta a\u015f\u0131nma g\u00f6zlenmez.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+      "sonra": "A\u015fa\u011f\u0131da baz\u0131 elementlerin standart indirgenme potansiyelleri verilmi\u015ftir.\nCu^(2+)(suda) + 2e \u2192 Cu(k) E = +0,34V\nPb^(2?)(suda) + 2e \u2192 Pb(k) E = \u22120,13V\nCr^(3+)(suda) + 3e \u2192 Cr(k) E = \u22120,74V\nBuna g\u00f6re, g\u00f6rselde verilen sistemle ilgili,\nI. Aktiflikleri aras\u0131ndaki ili\u015fki Cr > Pb > Cu \u015feklindedir.\nII. Cu \u00e7ubukta bir s\u00fcre sonra a\u015f\u0131nma g\u00f6zlenir.\nIII. Cr metalinden yap\u0131lm\u0131\u015f kapta a\u015f\u0131nma g\u00f6zlenmez.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T102_03",
+    "hakem_notu": "yuk isareti hakemligi: g\u00f6vde: Sn^(2+) -> Sn^(2?); g\u00f6vde: Zn^(2+) -> Zn^(2?)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "A\u015fa\u011f\u0131daki tepkimelerin kendili\u011finden ger\u00e7ekle\u015fti\u011fi bilinmektedir.\nZn(k) + Sn^(2+)(suda) \u2192 Zn^(2+)(suda) + Sn(k)\nSn(k) + Cu^(2+)(suda) \u2192 Sn^(2+)(suda) + Cu(k)\nBuna g\u00f6re; Zn, Sn ve Cu metallerinin y\u00fckseltgenme potansiyelleri aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+      "sonra": "A\u015fa\u011f\u0131daki tepkimelerin kendili\u011finden ger\u00e7ekle\u015fti\u011fi bilinmektedir.\nZn(k) + Sn^(2?)(suda) \u2192 Zn^(2?)(suda) + Sn(k)\nSn(k) + Cu^(2+)(suda) \u2192 Sn^(2+)(suda) + Cu(k)\nBuna g\u00f6re; Zn, Sn ve Cu metallerinin y\u00fckseltgenme potansiyelleri aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T103_04",
+    "hakem_notu": "yuk isareti hakemligi: C \u015f\u0131kk\u0131: 2X^+(suda) -> 2X^?(suda)",
+    "fark": [
+     {
+      "alan": "C",
+      "once": "Pil tepkimesi,\n2X(k) + Y^(2+)(suda) \u21cc 2X^+(suda) + Y(k) \u015feklindedir.",
+      "sonra": "Pil tepkimesi,\n2X(k) + Y^(2+)(suda) \u21cc 2X^?(suda) + Y(k) \u015feklindedir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T103_10",
+    "hakem_notu": "yuk isareti hakemligi: D \u015f\u0131kk\u0131: Sn^(2+) -> Sn^(2?)",
+    "fark": [
+     {
+      "alan": "D",
+      "once": "Al^(3+) n\u0131n standart indirgenme potansiyeli Sn^(2+) n\u0131nkinden b\u00fcy\u00fckt\u00fcr.",
+      "sonra": "Al^(3+) n\u0131n standart indirgenme potansiyeli Sn^(2?) n\u0131nkinden b\u00fcy\u00fckt\u00fcr."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T103_13",
+    "hakem_notu": "yuk isareti hakemligi: A \u015f\u0131kk\u0131: Ag^+ -> Ag^?",
+    "fark": [
+     {
+      "alan": "A",
+      "once": "B yar\u0131 h\u00fccresinde Ag^+ iyonlar\u0131n\u0131 i\u00e7eren \u00e7\u00f6zelti vard\u0131r.",
+      "sonra": "B yar\u0131 h\u00fccresinde Ag^? iyonlar\u0131n\u0131 i\u00e7eren \u00e7\u00f6zelti vard\u0131r."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T104_01",
+    "hakem_notu": "yuk isareti hakemligi: Zn^(2+)(suda) + 2e^ -> Zn^(2?)(suda) + 2e^; E \u015f\u0131kk\u0131: Zn^(2+)(suda) \u21cc Cu^(+2)(suda) -> Zn^(2?)(suda) \u21cc Cu^(?2)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Zn^(2+)(suda) + 2e^\u2212 \u2192 Zn(k)   E\u00b0 = \u22120,76V\nCu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\nYukar\u0131daki pil sistemi ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?",
+      "sonra": "Zn^(2?)(suda) + 2e^\u2212 \u2192 Zn(k)   E\u00b0 = \u22120,76V\nCu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\nYukar\u0131daki pil sistemi ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?"
+     },
+     {
+      "alan": "E",
+      "once": "Pil tepkimesi\nCu(k) + Zn^(2+)(suda) \u21cc Cu^(+2)(suda) + Zn(k)\n\u015feklindedir.",
+      "sonra": "Pil tepkimesi\nCu(k) + Zn^(2?)(suda) \u21cc Cu^(?2)(suda) + Zn(k)\n\u015feklindedir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T104_02",
+    "hakem_notu": "yuk isareti hakemligi: Cu^(2+)(suda) -> Cu^(2?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Fe^(2+)(suda) + 2e^\u2212 \u2192 Fe(k)   E\u00b0 = \u22120,44V\nCu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\nNi^(2+)(suda) + 2e^\u2212 \u2192 Ni(k)   E\u00b0 = \u22120,25V\nYukar\u0131da verilen yar\u0131 tepkimelere g\u00f6re,\nI. Fe\u2013Cu pilinde Fe anottur.\nII. Fe\u2013Ni pilinde standart pil gerilimi +0,69V'tur.\nIII. Ni\u2013Cu pilinde Ni y\u00fckseltgenir.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "Fe^(2+)(suda) + 2e^\u2212 \u2192 Fe(k)   E\u00b0 = \u22120,44V\nCu^(2?)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\nNi^(2+)(suda) + 2e^\u2212 \u2192 Ni(k)   E\u00b0 = \u22120,25V\nYukar\u0131da verilen yar\u0131 tepkimelere g\u00f6re,\nI. Fe\u2013Cu pilinde Fe anottur.\nII. Fe\u2013Ni pilinde standart pil gerilimi +0,69V'tur.\nIII. Ni\u2013Cu pilinde Ni y\u00fckseltgenir.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T104_04",
+    "hakem_notu": "yuk isareti hakemligi: Fe^(2+)(suda) \u2192 Fe^(3+) (suda) -> Fe^(2?)(suda) \u2192 Fe^(3?) (suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Bir galvanik h\u00fccre tepkimesi ve standart h\u00fccre potansiyeli a\u015fa\u011f\u0131da verilmi\u015ftir.\nCr(k) + 3Fe^(3+)(suda) \u21cc 3Fe^(2+)(suda) + Cr^(3+)(suda)\nE\u00b0(h\u00fccre) = 1.51V\nBuna g\u00f6re,\nFe^(2+)(suda) \u2192 Fe^(3+) (suda) + e^\u2212\ny\u00fckseltgenme yar\u0131 tepkimesinin standart potansiyeli ka\u00e7 volttur? (Cr(k) \u2192 Cr^(3+)(suda) + 3e^\u2212   E\u00b0 = 0,74V)",
+      "sonra": "Bir galvanik h\u00fccre tepkimesi ve standart h\u00fccre potansiyeli a\u015fa\u011f\u0131da verilmi\u015ftir.\nCr(k) + 3Fe^(3+)(suda) \u21cc 3Fe^(2+)(suda) + Cr^(3+)(suda)\nE\u00b0(h\u00fccre) = 1.51V\nBuna g\u00f6re,\nFe^(2?)(suda) \u2192 Fe^(3?) (suda) + e^\u2212\ny\u00fckseltgenme yar\u0131 tepkimesinin standart potansiyeli ka\u00e7 volttur? (Cr(k) \u2192 Cr^(3+)(suda) + 3e^\u2212   E\u00b0 = 0,74V)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T104_06",
+    "hakem_notu": "yuk isareti hakemligi: X^(2+)(suda) || Y^(2+)(suda) -> X^(2?)(suda) || Y^(2?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "\u0130stemli oldu\u011fu bilinen bir elektrokimyasal h\u00fccre tepkimesinin \u015fematik g\u00f6sterimi a\u015fa\u011f\u0131da verilmi\u015ftir.\nX(k) | X^(2+)(suda) || Y^(2+)(suda) | Y(k)\nBu elektrokimyasal h\u00fccrenin Cd ve Zn metallerinden haz\u0131rland\u0131\u011f\u0131 bilindi\u011fine g\u00f6re,\nI. X(k) metali Zn'dir.\nII. Cd(k) miktar\u0131 zamanla azal\u0131r.\nIII. Standart h\u00fccre potansiyeli +1,166 V'dir.\nifadelerinden hangileri do\u011frudur?\n(Cd^(2+)(suda) + 2e^\u2212 \u2192 Cd(k)   E\u00b0 = \u22120,403 V\nZn^(2+)(suda) + 2e^\u2212 \u2192 Zn(k)   E\u00b0 = \u22120,763 V)",
+      "sonra": "\u0130stemli oldu\u011fu bilinen bir elektrokimyasal h\u00fccre tepkimesinin \u015fematik g\u00f6sterimi a\u015fa\u011f\u0131da verilmi\u015ftir.\nX(k) | X^(2?)(suda) || Y^(2?)(suda) | Y(k)\nBu elektrokimyasal h\u00fccrenin Cd ve Zn metallerinden haz\u0131rland\u0131\u011f\u0131 bilindi\u011fine g\u00f6re,\nI. X(k) metali Zn'dir.\nII. Cd(k) miktar\u0131 zamanla azal\u0131r.\nIII. Standart h\u00fccre potansiyeli +1,166 V'dir.\nifadelerinden hangileri do\u011frudur?\n(Cd^(2+)(suda) + 2e^\u2212 \u2192 Cd(k)   E\u00b0 = \u22120,403 V\nZn^(2+)(suda) + 2e^\u2212 \u2192 Zn(k)   E\u00b0 = \u22120,763 V)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T105_07",
+    "hakem_notu": "yuk isareti hakemligi: Cu^(2+)(suda) + 2e^ -> Cu^(2?)(suda) + 2e^; [Fe^(3+)] = 0,2 M, [Cu^(2+)] -> [Fe^(3?)] = 0,2 M, [Cu^(2?)]; \u21cc Cu^(2+)(suda) -> \u21cc Cu^(2?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Cu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34 V\nFe^(3+)(suda) + e^\u2212 \u2192 Fe^(2+)(suda)   E\u00b0 = +0,77 V\nindirgenme yar\u0131 tepkimeleri ve standart potansiyelleri verilmi\u015ftir.\nBuna g\u00f6re 25\u00b0C'de,\n[Fe^(3+)] = 0,2 M, [Cu^(2+)] = 0,04 M, [Fe^(2+)] = 0,1 M\niyon deri\u015fimlerine sahip,\nCu(k) + 2Fe^(3+)(suda) \u21cc Cu^(2+)(suda) + 2Fe^(2+)(suda)\npilinin potansiyeli ka\u00e7 V'tur?\n( Nernst E\u015fitli\u011fi: E_pil = E\u00b0_pil \u2212 0,06/n \u00b7 logQ_c )",
+      "sonra": "Cu^(2?)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34 V\nFe^(3+)(suda) + e^\u2212 \u2192 Fe^(2+)(suda)   E\u00b0 = +0,77 V\nindirgenme yar\u0131 tepkimeleri ve standart potansiyelleri verilmi\u015ftir.\nBuna g\u00f6re 25\u00b0C'de,\n[Fe^(3?)] = 0,2 M, [Cu^(2?)] = 0,04 M, [Fe^(2+)] = 0,1 M\niyon deri\u015fimlerine sahip,\nCu(k) + 2Fe^(3+)(suda) \u21cc Cu^(2?)(suda) + 2Fe^(2+)(suda)\npilinin potansiyeli ka\u00e7 V'tur?\n( Nernst E\u015fitli\u011fi: E_pil = E\u00b0_pil \u2212 0,06/n \u00b7 logQ_c )"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T105_08",
+    "hakem_notu": "yuk isareti hakemligi: Ni^(2+)(suda) -> Ni^(2?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Al^(3+)(suda) + 3e^\u2212 \u2192 Al(k)   E\u00b0 = \u22121,66 V\nNi^(2+)(suda) + 2e^\u2212 \u2192 Ni(k)   E\u00b0 = \u22120,25 V\nYukar\u0131da verilen pil sistemi ile ilgili,\nI. Pil potansiyeli +1,41 V'tur.\nII. Pil \u00e7al\u0131\u015f\u0131rken 2 mol Al \u00e7\u00f6z\u00fcnd\u00fc\u011f\u00fcnde 3 mol Ni toplan\u0131r.\nIII. Anot kab\u0131na bir miktar su eklenirse pilin potansiyeli artar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+      "sonra": "Al^(3+)(suda) + 3e^\u2212 \u2192 Al(k)   E\u00b0 = \u22121,66 V\nNi^(2?)(suda) + 2e^\u2212 \u2192 Ni(k)   E\u00b0 = \u22120,25 V\nYukar\u0131da verilen pil sistemi ile ilgili,\nI. Pil potansiyeli +1,41 V'tur.\nII. Pil \u00e7al\u0131\u015f\u0131rken 2 mol Al \u00e7\u00f6z\u00fcnd\u00fc\u011f\u00fcnde 3 mol Ni toplan\u0131r.\nIII. Anot kab\u0131na bir miktar su eklenirse pilin potansiyeli artar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T105_09",
+    "hakem_notu": "yuk isareti hakemligi: Zn^(2+)(suda) + 2e^ -> Zn^(2?)(suda) + 2e^; D \u015f\u0131kk\u0131: Zn(k)+2H^+(suda) \u21cc Zn^(2+)(suda) -> Zn(k)+2H^?(suda) \u21cc Zn^(2?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Zn^(2+)(suda) + 2e^\u2212 \u2192 Zn(k)   E\u00b0 = \u22120,76V\nCu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\n2H^+(suda) + 2e^\u2212 \u2192 H_2(g)   E\u00b0 = 0,00V\nYukar\u0131daki pil sistemi ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r? (Nernst E\u015fitli\u011fi E_pil = E\u00b0_pil \u2212 0,06/n logQ_c)",
+      "sonra": "Zn^(2?)(suda) + 2e^\u2212 \u2192 Zn(k)   E\u00b0 = \u22120,76V\nCu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\n2H^+(suda) + 2e^\u2212 \u2192 H_2(g)   E\u00b0 = 0,00V\nYukar\u0131daki pil sistemi ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r? (Nernst E\u015fitli\u011fi E_pil = E\u00b0_pil \u2212 0,06/n logQ_c)"
+     },
+     {
+      "alan": "D",
+      "once": "Pil tepkimesi Zn(k)+2H^+(suda) \u21cc Zn^(2+)(suda)+H_2(g) \u015feklindedir.",
+      "sonra": "Pil tepkimesi Zn(k)+2H^?(suda) \u21cc Zn^(2?)(suda)+H_2(g) \u015feklindedir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T105_10",
+    "hakem_notu": "yuk isareti hakemligi: Pb^(2+)(suda) -> Pb^(2?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Al^(3+)(suda) + 3e^\u2212 \u2192 Al(k)   E\u00b0 = \u22121,66 V\nPb^(2+)(suda) + 2e^\u2212 \u2192 Pb(k)   E\u00b0 = \u22120,13 V\nBuna g\u00f6re, yukar\u0131da verilen pil sisteminin potansiyeli ka\u00e7 volttur?\n( Nernst E\u015fitli\u011fi: E_pil = E\u00b0_pil \u2212 0,06/n \u00b7 logQ_c )",
+      "sonra": "Al^(3+)(suda) + 3e^\u2212 \u2192 Al(k)   E\u00b0 = \u22121,66 V\nPb^(2?)(suda) + 2e^\u2212 \u2192 Pb(k)   E\u00b0 = \u22120,13 V\nBuna g\u00f6re, yukar\u0131da verilen pil sisteminin potansiyeli ka\u00e7 volttur?\n( Nernst E\u015fitli\u011fi: E_pil = E\u00b0_pil \u2212 0,06/n \u00b7 logQ_c )"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T105_11",
+    "hakem_notu": "yuk isareti hakemligi: Li^+(suda) -> Li^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "25 \u00b0C'de 0,1 M LiNO_3 \u00e7\u00f6zeltisine dald\u0131r\u0131lm\u0131\u015f Li elektrot ve 0,1 M Pb(NO_3)_2 \u00e7\u00f6zeltisine dald\u0131r\u0131lm\u0131\u015f Pb elektrottan olu\u015fan iki yar\u0131 h\u00fccre, tuz k\u00f6pr\u00fcs\u00fcyle birle\u015ftirilerek olu\u015fturulan elektrokimyasal h\u00fccrenin h\u00fccre potansiyeli E olarak \u00f6l\u00e7\u00fcl\u00fcyor.\nBuna g\u00f6re \u00f6l\u00e7\u00fclen h\u00fccre potansiyelinin (E), standart h\u00fccre potansiyeli (E\u00b0) cinsinden de\u011feri a\u015fa\u011f\u0131dakilerden hangisidir?\n(Li^+(suda) + e^\u2212 \u2192 Li(k)   E\u00b0 = \u22123,05 V\nPb^(2+)(suda) + 2e^\u2212 \u2192 Pb(k)   E\u00b0 = \u22120,13 V)\n25 \u00b0C'de Nernst e\u015fitli\u011finde logaritmik terimin katsay\u0131s\u0131 0,059/n olarak al\u0131nacakt\u0131r; burada n tepkimede aktar\u0131lan elektron say\u0131s\u0131d\u0131r.)",
+      "sonra": "25 \u00b0C'de 0,1 M LiNO_3 \u00e7\u00f6zeltisine dald\u0131r\u0131lm\u0131\u015f Li elektrot ve 0,1 M Pb(NO_3)_2 \u00e7\u00f6zeltisine dald\u0131r\u0131lm\u0131\u015f Pb elektrottan olu\u015fan iki yar\u0131 h\u00fccre, tuz k\u00f6pr\u00fcs\u00fcyle birle\u015ftirilerek olu\u015fturulan elektrokimyasal h\u00fccrenin h\u00fccre potansiyeli E olarak \u00f6l\u00e7\u00fcl\u00fcyor.\nBuna g\u00f6re \u00f6l\u00e7\u00fclen h\u00fccre potansiyelinin (E), standart h\u00fccre potansiyeli (E\u00b0) cinsinden de\u011feri a\u015fa\u011f\u0131dakilerden hangisidir?\n(Li^?(suda) + e^\u2212 \u2192 Li(k)   E\u00b0 = \u22123,05 V\nPb^(2+)(suda) + 2e^\u2212 \u2192 Pb(k)   E\u00b0 = \u22120,13 V)\n25 \u00b0C'de Nernst e\u015fitli\u011finde logaritmik terimin katsay\u0131s\u0131 0,059/n olarak al\u0131nacakt\u0131r; burada n tepkimede aktar\u0131lan elektron say\u0131s\u0131d\u0131r.)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T105_13",
+    "hakem_notu": "yuk isareti hakemligi: II. Cu^(2+) deri\u015fimi -> II. Cu^(2?) deri\u015fimi",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "25 \u00b0C'de Ag elektrot dald\u0131r\u0131lm\u0131\u015f 0.01 M Ag^+ sulu \u00e7\u00f6zeltisi ile Cu elektrot dald\u0131r\u0131lm\u0131\u015f 0.01 M Cu^(2+) \u00e7\u00f6zeltisinden olu\u015fan iki yar\u0131 h\u00fccre, tuz k\u00f6pr\u00fcs\u00fcyle birle\u015ftirilerek bir elektrokimyasal h\u00fccre olu\u015fturuluyor. Elektrokimyasal h\u00fccre \u00e7al\u0131\u015ft\u0131ktan sonra Cu elektrodun k\u00fctlesinin azald\u0131\u011f\u0131 ve h\u00fccre potansiyelinin \"P\" volt oldu\u011fu g\u00f6zleniyor.\nBu elektrokimyasal h\u00fccreyle ilgili,\nI. Cu elektrot anot olarak davranm\u0131\u015ft\u0131r.\nII. Cu^(2+) deri\u015fimi 1 M yap\u0131l\u0131rsa h\u00fccre potansiyeli (P \u2212 0,059) V olur.\nIII. Her iki katyon \u00e7\u00f6zeltisinin deri\u015fimi 10 kat art\u0131r\u0131l\u0131rsa h\u00fccre potansiyeli de\u011fi\u015fmez.\nifadelerinden hangileri do\u011frudur?\n(25 \u00b0C'de Nernst e\u015fitli\u011finde logaritmik terimin katsay\u0131s\u0131 0,059/n al\u0131nacakt\u0131r; n h\u00fccre tepkimesinde aktar\u0131lan elektron say\u0131s\u0131d\u0131r.)",
+      "sonra": "25 \u00b0C'de Ag elektrot dald\u0131r\u0131lm\u0131\u015f 0.01 M Ag^+ sulu \u00e7\u00f6zeltisi ile Cu elektrot dald\u0131r\u0131lm\u0131\u015f 0.01 M Cu^(2+) \u00e7\u00f6zeltisinden olu\u015fan iki yar\u0131 h\u00fccre, tuz k\u00f6pr\u00fcs\u00fcyle birle\u015ftirilerek bir elektrokimyasal h\u00fccre olu\u015fturuluyor. Elektrokimyasal h\u00fccre \u00e7al\u0131\u015ft\u0131ktan sonra Cu elektrodun k\u00fctlesinin azald\u0131\u011f\u0131 ve h\u00fccre potansiyelinin \"P\" volt oldu\u011fu g\u00f6zleniyor.\nBu elektrokimyasal h\u00fccreyle ilgili,\nI. Cu elektrot anot olarak davranm\u0131\u015ft\u0131r.\nII. Cu^(2?) deri\u015fimi 1 M yap\u0131l\u0131rsa h\u00fccre potansiyeli (P \u2212 0,059) V olur.\nIII. Her iki katyon \u00e7\u00f6zeltisinin deri\u015fimi 10 kat art\u0131r\u0131l\u0131rsa h\u00fccre potansiyeli de\u011fi\u015fmez.\nifadelerinden hangileri do\u011frudur?\n(25 \u00b0C'de Nernst e\u015fitli\u011finde logaritmik terimin katsay\u0131s\u0131 0,059/n al\u0131nacakt\u0131r; n h\u00fccre tepkimesinde aktar\u0131lan elektron say\u0131s\u0131d\u0131r.)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T106_03",
+    "hakem_notu": "yuk isareti hakemligi: Cu^(2+)(suda) + 2e^ -> Cu^(2?)(suda) + 2e^",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "A\u015fa\u011f\u0131da bir Cu \u2013 SHE pili ve bu pilin yar\u0131 tepkimelerinin indirgenme potansiyelleri verilmi\u015ftir.\nCu^(2+)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\n2H^+(suda) + 2e^\u2212 \u2192 H_2(g)   E\u00b0 = 0,00V\nBuna g\u00f6re, bu pil ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?",
+      "sonra": "A\u015fa\u011f\u0131da bir Cu \u2013 SHE pili ve bu pilin yar\u0131 tepkimelerinin indirgenme potansiyelleri verilmi\u015ftir.\nCu^(2?)(suda) + 2e^\u2212 \u2192 Cu(k)   E\u00b0 = +0,34V\n2H^+(suda) + 2e^\u2212 \u2192 H_2(g)   E\u00b0 = 0,00V\nBuna g\u00f6re, bu pil ile ilgili a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015ft\u0131r?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T106_06",
+    "hakem_notu": "yuk isareti hakemligi: (Fe^(2+) + 2e^ -> (Fe^(2?) + 2e^",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "1M Fe(NO_3)_2 ve 0,1M Fe(NO_3)_2 sulu \u00e7\u00f6zeltilerine Fe \u00e7ubuklar dald\u0131r\u0131larak olu\u015fturulan iki yar\u0131 h\u00fccre, iletken bir tel ve tuz k\u00f6pr\u00fcs\u00fc kullan\u0131larak bir deri\u015fim pili olu\u015fturuluyor.\nBuna g\u00f6re;\nI. D\u0131\u015f devrede elektron ak\u0131\u015f\u0131 deri\u015fimi fazla olan kaba do\u011frudur.\nII. Pil potansiyeli 0,03 V'tur.\nIII. 1M \u00e7\u00f6zeltinin hacmi ayn\u0131 s\u0131cakl\u0131kta saf su ile 10 kat\u0131na \u00e7\u0131kar\u0131l\u0131rsa pil \u00e7al\u0131\u015fmaz.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(Fe^(2+) + 2e^\u2212 \u2192 Fe(k)   E = \u22120,44V\nE_pil = E\u00b0_pil \u2212 0,06/n logQ_c)",
+      "sonra": "1M Fe(NO_3)_2 ve 0,1M Fe(NO_3)_2 sulu \u00e7\u00f6zeltilerine Fe \u00e7ubuklar dald\u0131r\u0131larak olu\u015fturulan iki yar\u0131 h\u00fccre, iletken bir tel ve tuz k\u00f6pr\u00fcs\u00fc kullan\u0131larak bir deri\u015fim pili olu\u015fturuluyor.\nBuna g\u00f6re;\nI. D\u0131\u015f devrede elektron ak\u0131\u015f\u0131 deri\u015fimi fazla olan kaba do\u011frudur.\nII. Pil potansiyeli 0,03 V'tur.\nIII. 1M \u00e7\u00f6zeltinin hacmi ayn\u0131 s\u0131cakl\u0131kta saf su ile 10 kat\u0131na \u00e7\u0131kar\u0131l\u0131rsa pil \u00e7al\u0131\u015fmaz.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(Fe^(2?) + 2e^\u2212 \u2192 Fe(k)   E = \u22120,44V\nE_pil = E\u00b0_pil \u2212 0,06/n logQ_c)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T107_01",
+    "hakem_notu": "yuk isareti hakemligi: Zn(k) \u2192 Zn^(2+)(suda) -> Zn(k) \u2192 Zn^(2?)(suda); D \u015f\u0131kk\u0131: Zn^(2+)(suda) + 2Ag(k) \u21cc 2Ag^+(suda) -> Zn^(2?)(suda) + 2Ag(k) \u21cc 2Ag^?(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Zn(k) \u2192 Zn^(2+)(suda) + 2e^\u2212   E\u00b0 = +0,76V\nAg(k) \u2192 Ag^+(suda) + e^\u2212   E\u00b0 = \u22120,80V\n\u015fekildeki d\u00fczene\u011fe 2V'luk bir gerilim uyguland\u0131\u011f\u0131nda a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015f olur?",
+      "sonra": "Zn(k) \u2192 Zn^(2?)(suda) + 2e^\u2212   E\u00b0 = +0,76V\nAg(k) \u2192 Ag^+(suda) + e^\u2212   E\u00b0 = \u22120,80V\n\u015fekildeki d\u00fczene\u011fe 2V'luk bir gerilim uyguland\u0131\u011f\u0131nda a\u015fa\u011f\u0131dakilerden hangisi yanl\u0131\u015f olur?"
+     },
+     {
+      "alan": "D",
+      "once": "Zn^(2+)(suda) + 2Ag(k) \u21cc 2Ag^+(suda) + Zn(k) tepkimesi ger\u00e7ekle\u015fir.",
+      "sonra": "Zn^(2?)(suda) + 2Ag(k) \u21cc 2Ag^?(suda) + Zn(k) tepkimesi ger\u00e7ekle\u015fir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T109_01",
+    "hakem_notu": "yuk isareti hakemligi: E\u00b0_(Fe^(2+)/Fe) = \u22120,44V, E\u00b0_(Ag^+/Ag) -> E\u00b0_(Fe^(2?)/Fe) = \u22120,44V, E\u00b0_(Ag^?/Ag)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Fe metalinden yap\u0131lan bir y\u00fcz\u00fck, g\u00fcm\u00fc\u015f metali ile kaplanmak isteniyor.\nBu i\u015flem i\u00e7in haz\u0131rlanan elektroliz d\u00fczene\u011fi ile ilgili;\nI. G\u00fcm\u00fc\u015f metali anota yerle\u015ftirilmelidir.\nII. Demir y\u00fcz\u00fck katota yerle\u015ftirilmelidir.\nIII. Sisteme 1,24 V'tan daha fazla gerilim uygulanmal\u0131d\u0131r.\nIV. \u00c7\u00f6zelti olarak Fe(NO_3)_2 tuzunun sulu \u00e7\u00f6zeltisi kullan\u0131lmal\u0131d\u0131r.\nyukar\u0131da verilenlerden hangilerinin uygulanmas\u0131 do\u011fru olur?\n(E\u00b0_(Fe^(2+)/Fe) = \u22120,44V, E\u00b0_(Ag^+/Ag) = +0,80V)",
+      "sonra": "Fe metalinden yap\u0131lan bir y\u00fcz\u00fck, g\u00fcm\u00fc\u015f metali ile kaplanmak isteniyor.\nBu i\u015flem i\u00e7in haz\u0131rlanan elektroliz d\u00fczene\u011fi ile ilgili;\nI. G\u00fcm\u00fc\u015f metali anota yerle\u015ftirilmelidir.\nII. Demir y\u00fcz\u00fck katota yerle\u015ftirilmelidir.\nIII. Sisteme 1,24 V'tan daha fazla gerilim uygulanmal\u0131d\u0131r.\nIV. \u00c7\u00f6zelti olarak Fe(NO_3)_2 tuzunun sulu \u00e7\u00f6zeltisi kullan\u0131lmal\u0131d\u0131r.\nyukar\u0131da verilenlerden hangilerinin uygulanmas\u0131 do\u011fru olur?\n(E\u00b0_(Fe^(2?)/Fe) = \u22120,44V, E\u00b0_(Ag^?/Ag) = +0,80V)"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T110_08",
+    "hakem_notu": "yuk isareti hakemligi: Pb(k) | Pb^(2+)(1M) -> Pb(k) | Pb^(2?)(1M); I. Pb^(2+) sulu -> I. Pb^(2?) sulu; katyonlar Cu^(2+) iyonlar\u0131 -> katyonlar Cu^(2?) iyonlar\u0131; III. Pb^(2+) iyonu -> III. Pb^(2?) iyonu",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Pb(k) | Pb^(2+)(1M) || Cu^(2+)(1M) | Cu(k)\nH\u00fccre \u015femas\u0131 yukar\u0131daki gibi olan elektrokimyasal pil i\u00e7in;\nI. Pb^(2+) sulu \u00e7\u00f6zeltisine 1M 200 mL Pb(NO_3)_2 \u00e7\u00f6zeltisi eklenirse pil potansiyeli de\u011fi\u015fmez.\nII. Tuz k\u00f6pr\u00fcs\u00fcndeki katyonlar Cu^(2+) iyonlar\u0131 i\u00e7eren \u00e7\u00f6zeltiye hareket eder.\nIII. Pb^(2+) iyonu i\u00e7eren yar\u0131 h\u00fccrede zamanla Pb^(2+) iyon say\u0131s\u0131 artar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+      "sonra": "Pb(k) | Pb^(2?)(1M) || Cu^(2+)(1M) | Cu(k)\nH\u00fccre \u015femas\u0131 yukar\u0131daki gibi olan elektrokimyasal pil i\u00e7in;\nI. Pb^(2?) sulu \u00e7\u00f6zeltisine 1M 200 mL Pb(NO_3)_2 \u00e7\u00f6zeltisi eklenirse pil potansiyeli de\u011fi\u015fmez.\nII. Tuz k\u00f6pr\u00fcs\u00fcndeki katyonlar Cu^(2?) iyonlar\u0131 i\u00e7eren \u00e7\u00f6zeltiye hareket eder.\nIII. Pb^(2?) iyonu i\u00e7eren yar\u0131 h\u00fccrede zamanla Pb^(2+) iyon say\u0131s\u0131 artar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T111_01",
+    "hakem_notu": "yuk isareti hakemligi: Al^(3+)(suda) -> Al^(3?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Al^(3+)(suda) + 3e^\u2212 \u2192 Al(k)   E\u00b0 = \u22121,66 V\nNi^(2+)(suda) + 2e^\u2212 \u2192 Ni(k)   E\u00b0 = \u22120,25 V\nYukar\u0131da verilen pil sistemi ile ilgili;\nI. Deri\u015fim pilidir.\nII. \u0130letken telden elektron ak\u0131\u015f\u0131 Ni elektrota do\u011fru olur.\nIII. Ba\u015flang\u0131\u00e7 pil potansiyeli 1,41 V'tur.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+      "sonra": "Al^(3?)(suda) + 3e^\u2212 \u2192 Al(k)   E\u00b0 = \u22121,66 V\nNi^(2+)(suda) + 2e^\u2212 \u2192 Ni(k)   E\u00b0 = \u22120,25 V\nYukar\u0131da verilen pil sistemi ile ilgili;\nI. Deri\u015fim pilidir.\nII. \u0130letken telden elektron ak\u0131\u015f\u0131 Ni elektrota do\u011fru olur.\nIII. Ba\u015flang\u0131\u00e7 pil potansiyeli 1,41 V'tur.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T111_06",
+    "hakem_notu": "yuk isareti hakemligi: C^(2+)(suda) + 2e^ -> C^(2?)(suda) + 2e^; II. C(k) + B^(3+)(suda) -> II. C(k) + B^(3?)(suda)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "A^(2+)(suda) + 2e^\u2212 \u2192 A(k)   E\u00b0 = \u22122,36 V\nB^(3+)(suda) + 3e^\u2212 \u2192 B(k)   E\u00b0 = \u22121,67 V\nC^(2+)(suda) + 2e^\u2212 \u2192 C(k)   E\u00b0 = +0.34 V\nYukar\u0131da verilen yar\u0131 tepkimeler ve h\u00fccre potansiyellerine g\u00f6re,\nI. A(k) + B^(3+)(suda) \u2192\nII. C(k) + B^(3+)(suda) \u2192\nIII. C(k) + A^(2+)(suda) \u2192\nredoks tepkimelerinden hangileri kendili\u011finden ger\u00e7ekle\u015fmez?",
+      "sonra": "A^(2+)(suda) + 2e^\u2212 \u2192 A(k)   E\u00b0 = \u22122,36 V\nB^(3+)(suda) + 3e^\u2212 \u2192 B(k)   E\u00b0 = \u22121,67 V\nC^(2?)(suda) + 2e^\u2212 \u2192 C(k)   E\u00b0 = +0.34 V\nYukar\u0131da verilen yar\u0131 tepkimeler ve h\u00fccre potansiyellerine g\u00f6re,\nI. A(k) + B^(3+)(suda) \u2192\nII. C(k) + B^(3?)(suda) \u2192\nIII. C(k) + A^(2+)(suda) \u2192\nredoks tepkimelerinden hangileri kendili\u011finden ger\u00e7ekle\u015fmez?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T111_07",
+    "hakem_notu": "yuk isareti hakemligi: X^(2+) iyonu -> X^(2?) iyonu",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "\u015eekildeki pil \u00e7al\u0131\u015f\u0131rken X^(2+) iyonu deri\u015fiminin artt\u0131\u011f\u0131, Y^(2+) iyonu deri\u015fiminin ise azald\u0131\u011f\u0131 g\u00f6zleniyor.\nBuna g\u00f6re,\nI. A kab\u0131nda indirgenme, B kab\u0131nda y\u00fckseltgenme olay\u0131 ger\u00e7ekle\u015fir.\nII. X metali, Y metalinden aktiftir.\nIII. X'in standart indirgenme potansiyeli Y'den b\u00fcy\u00fckt\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+      "sonra": "\u015eekildeki pil \u00e7al\u0131\u015f\u0131rken X^(2?) iyonu deri\u015fiminin artt\u0131\u011f\u0131, Y^(2+) iyonu deri\u015fiminin ise azald\u0131\u011f\u0131 g\u00f6zleniyor.\nBuna g\u00f6re,\nI. A kab\u0131nda indirgenme, B kab\u0131nda y\u00fckseltgenme olay\u0131 ger\u00e7ekle\u015fir.\nII. X metali, Y metalinden aktiftir.\nIII. X'in standart indirgenme potansiyeli Y'den b\u00fcy\u00fckt\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T114_03",
+    "hakem_notu": "yuk isareti hakemligi: Fe^(2+) iyonlar\u0131n\u0131n -> Fe^(2?) iyonlar\u0131n\u0131n",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Yap\u0131lan bir deneyde inert malzemeden \u00fcretilmi\u015f bir kap, s\u0131v\u0131 NaCl ile dolduruluyor. Daha sonra karbon elektrot ve demir elektrot, s\u0131v\u0131 NaCl'ye \u015fekildeki gibi dald\u0131r\u0131l\u0131yor ve d\u0131\u015f devrede ak\u00fcye ba\u011flan\u0131yor.\nAk\u00fcn\u00fcn sa\u011flad\u0131\u011f\u0131 gerilim ve ak\u0131m \u015fiddeti NaCl'nin elektrolizi i\u00e7in yeterli oldu\u011funa ve karbon elektrot anot oldu\u011funa g\u00f6re\nI. Karbon elektrotta Cl_2 gaz\u0131 olu\u015fur.\nII. Olu\u015fan Na metalinin k\u00fctlesi uygulanan ak\u0131m \u015fiddeti artt\u0131k\u00e7a artar.\nIII. Zamanla elektroliz h\u00fccresinde Fe^(2+) iyonlar\u0131n\u0131n deri\u015fimi artar.\nifadelerinden hangileri do\u011frudur?",
+      "sonra": "Yap\u0131lan bir deneyde inert malzemeden \u00fcretilmi\u015f bir kap, s\u0131v\u0131 NaCl ile dolduruluyor. Daha sonra karbon elektrot ve demir elektrot, s\u0131v\u0131 NaCl'ye \u015fekildeki gibi dald\u0131r\u0131l\u0131yor ve d\u0131\u015f devrede ak\u00fcye ba\u011flan\u0131yor.\nAk\u00fcn\u00fcn sa\u011flad\u0131\u011f\u0131 gerilim ve ak\u0131m \u015fiddeti NaCl'nin elektrolizi i\u00e7in yeterli oldu\u011funa ve karbon elektrot anot oldu\u011funa g\u00f6re\nI. Karbon elektrotta Cl_2 gaz\u0131 olu\u015fur.\nII. Olu\u015fan Na metalinin k\u00fctlesi uygulanan ak\u0131m \u015fiddeti artt\u0131k\u00e7a artar.\nIII. Zamanla elektroliz h\u00fccresinde Fe^(2?) iyonlar\u0131n\u0131n deri\u015fimi artar.\nifadelerinden hangileri do\u011frudur?"
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T149_06",
+    "hakem_notu": "yuk isareti hakemligi: C \u015f\u0131kk\u0131: suyun H^\u2212 iyonu -> suyun H^? iyonu",
+    "fark": [
+     {
+      "alan": "C",
+      "once": "A\u00e7\u0131\u011fa \u00e7\u0131kan suyun H^\u2212 iyonu karboksilik asitten, OH^\u2212 iyonu ise alkolden gelir.",
+      "sonra": "A\u00e7\u0131\u011fa \u00e7\u0131kan suyun H^? iyonu karboksilik asitten, OH^\u2212 iyonu ise alkolden gelir."
+     }
+    ]
+   },
+   {
+    "dosya": "KIM345AYT-T152_01",
+    "hakem_notu": "yuk isareti hakemligi: degisiklik yok; ana hakem: Cu^(2-) -> Cu^(2?) (karsilastirma yuku yok)",
+    "fark": [
+     {
+      "alan": "govde",
+      "once": "Sadece C_2H_5CHO ile C_2H_5COCH_3 karbonil bile\u015fiklerini i\u00e7eren 50 g'l\u0131k kar\u0131\u015f\u0131m yeterince Fehling \u00e7\u00f6zeltisi ile (Cu^(2\u2212) iyonlar\u0131 i\u00e7eren NH_3'l\u00fc sulu \u00e7\u00f6zelti) ile tepkimeye sokuluyor.\nTepkime tam verim ile ger\u00e7ekle\u015fti\u011finde 72 g Cu_2O kat\u0131s\u0131 olu\u015ftu\u011funa g\u00f6re,\nI. Fehling \u00e7\u00f6zeltisi ile C_2H_5CHO bile\u015fi\u011fi tepkime verir.\nII. Tepkime sonucu olu\u015fan bile\u015fik, metil etanoat ile fonksiyonel grup izomeridir.\nIII. Ba\u015flang\u0131\u00e7taki kar\u0131\u015f\u0131m\u0131n k\u00fctlece %42'si etil metil ketondur.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(C: 12, H: 1, O: 16, Cu: 64)",
+      "sonra": "Sadece C_2H_5CHO ile C_2H_5COCH_3 karbonil bile\u015fiklerini i\u00e7eren 50 g'l\u0131k kar\u0131\u015f\u0131m yeterince Fehling \u00e7\u00f6zeltisi ile (Cu^(2?) iyonlar\u0131 i\u00e7eren NH_3'l\u00fc sulu \u00e7\u00f6zelti) ile tepkimeye sokuluyor.\nTepkime tam verim ile ger\u00e7ekle\u015fti\u011finde 72 g Cu_2O kat\u0131s\u0131 olu\u015ftu\u011funa g\u00f6re,\nI. Fehling \u00e7\u00f6zeltisi ile C_2H_5CHO bile\u015fi\u011fi tepkime verir.\nII. Tepkime sonucu olu\u015fan bile\u015fik, metil etanoat ile fonksiyonel grup izomeridir.\nIII. Ba\u015flang\u0131\u00e7taki kar\u0131\u015f\u0131m\u0131n k\u00fctlece %42'si etil metil ketondur.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(C: 12, H: 1, O: 16, Cu: 64)"
+     }
+    ]
+   }
+  ]
+ }
+}
