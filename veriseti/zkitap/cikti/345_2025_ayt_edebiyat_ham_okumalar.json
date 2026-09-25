@@ -1,0 +1,4299 @@
+{
+ "kaynak": "345 2025 AYT Turk Edebiyati Soru Bankasi",
+ "nereden": "Okuyucu ciktilari aynen (duzeltme yok). okumalar.A: kitap sonu anahtar (dosya 321-328) 3 yatay dilim, 3x, sayfa sirasinda; okumalar.B: tam sayfa 2x, TERS sirada; '?' okuyucu tereddudu. bant_okumasi: her sayfanin ust bandi (tur K/O/R/M/G, tur ici sira, basili konu basligi), dosya 5-320, iki okuyucu (5-164, 165-320).",
+ "okumalar": {
+  "A": [
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GUZEL SANATLAR VE EDEBIYAT",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.E 4.A 5.B 6.B 7.D 8.A 9.E 10.D 11.D 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GUZEL SANATLAR VE EDEBIYAT",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.B 4.C 5.C 6.E 7.D 8.A"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "TARIH ICINDE TURK EDEBIYATI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.B 3.E 4.E 5.A 6.C 7.D 8.B 9.D 10.D 11.D 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "TARIH ICINDE TURK EDEBIYATI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.D 3.D 4.B 5.B 6.E 7.C 8.B"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "SOZLU ANLATIM TURLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.B 4.E 5.C 6.A 7.B 8.D 9.C 10.A 11.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "SOZLU ANLATIM TURLERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.A 3.C 4.B 5.D 6.C 7.E 8.B 9.D"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "KISISEL YASAMI KONU EDINEN METINLER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.A 4.E 5.D 6.E 7.B 8.A 9.E 10.A 11.C 12.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "KISISEL YASAMI KONU EDINEN METINLER",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.A 4.B 5.C 6.D 7.B 8.B 9.E 10.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "KISISEL YASAMI KONU EDINEN METINLER",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.B 3.A 4.A 5.E 6.C 7.B 8.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.D 4.E 5.E 6.B 7.A 8.A 9.E 10.E 11.B 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.A 3.B 4.A 5.E 6.C 7.A 8.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.B 3.C 4.D 5.D 6.C 7.A 8.B 9.B 10.B"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.E 4.B 5.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.D 4.E 5.A 6.D 7.B 8.B 9.B 10.C 11.D"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.A 2.A 3.B 4.A 5.A 6.E 7.A 8.E 9.D"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.D 2.C 3.C 4.B 5.C 6.A 7.E 8.D 9.A 10.A 11.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "02",
+    "konu": "SIIRDE YAPI VE AHENK UNSURLARI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.D 4.D 5.B 6.C 7.D 8.E 9.B 10.C 11.B 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "02",
+    "konu": "SIIRDE YAPI VE AHENK UNSURLARI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.A 4.A 5.B 6.A 7.B 8.A 9.B"
+   },
+   {
+    "sayfa": 321,
+    "unite": "02",
+    "konu": "SIIRDE YAPI VE AHENK UNSURLARI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.D 3.E 4.E 5.D 6.E 7.E 8.B 9.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "NAZIM BICIMLERI VE TURLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D? 2.A 3.B 4.E 5.E 6.C 7.B 8.C 9.B 10.A 11.B"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "NAZIM BICIMLERI VE TURLERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.D 4.B 5.C 6.A 7.B 8.C 9.E 10.A 11.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "NAZIM BICIMLERI VE TURLERI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.A 3.D 4.A 5.C 6.E 7.C 8.E 9.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SOZ SANATLARI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.E 4.A 5.B 6.D 7.C 8.B 9.E 10.A 11.D 12.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SOZ SANATLARI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.B 4.B 5.B 6.A 7.C 8.A 9.A 10.A 11.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SOZ SANATLARI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.C 2.A 3.D 4.D 5.A 6.A 7.D 8.D 9.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.D 4.D 5.D 6.D 7.B 8.A 9.E 10.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.A 4.A 5.C 6.A 7.D 8.B 9.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.B 2.A 3.E 4.E"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.A 2.A 3.C 4.E 5.D 6.B 7.E 8.B 9.C 10.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.D 3.C 4.D 5.A 6.B 7.E 8.D 9.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.A 2.E 3.E 4.E 5.C 6.B 7.A 8.E 9.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "ISLAMIYET ONCESI TURK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.B 4.A 5.E 6.A 7.C 8.D 9.A 10.D 11.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "ISLAMIYET ONCESI TURK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.B 4.C 5.C 6.E 7.E 8.E 9.C 10.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "GECIS DONEMI TURK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.E? 4.A 5.E? 6.B 7.E 8.B 9.D 10.D 11.D 12.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "GECIS DONEMI TURK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.E 4.C 5.C 6.D 7.D 8.A 9.C 10.B"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "GECIS DONEMI TURK SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.B 2.A 3.C 4.E 5.E 6.D 7.D 8.C 9.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.E 4.D 5.C 6.E 7.E 8.A 9.C 10.A 11.E 12.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.D 3.A 4.C 5.E? 6.A 7.E 8.B 9.E? 10.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.A 2.D 3.D 4.B 5.C 6.B 7.C 8.A 9.E 10.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.B 2.D 3.D 4.B 5.C 6.C 7.D 8.C 9.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.D 4.B 5.A 6.B 7.C 8.B 9.C 10.E 11.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.D 5.C 6.D 7.C 8.E 9.C 10.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.E 3.D 4.D 5.C 6.D 7.C 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.E? 2.D? 3.B 4.A 5.B 6.E? 7.A 8.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.E? 4.C 5.A 6.A 7.C 8.B 9.A 10.D? 11.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.D? 3.D 4.B 5.E? 6.B 7.A 8.D 9.A 10.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.A 4.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.C 4.D 5.D 6.C 7.A 8.D 9.D 10.B 11.D?"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.C 2.E 3.B 4.E 5.B 6.A 7.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.D 2.B 3.C 4.C 5.E 6.D 7.A 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 4,
+    "cevap": "1.E? 2.D? 3.E? 4.A 5.B 6.E? 7.B 8.C 9.A 10.B 11.B 12.D?"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "TANZIMAT SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.C 4.E 5.E 6.C 7.A 8.D 9.D 10.B 11.B 12.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "TANZIMAT SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.A 4.A 5.B? 6.D 7.B 8.A 9.A 10.E"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "TANZIMAT SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.B 3.D 4.A 5.D 6.B 7.E 8.E"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "SERVETIFUNUN VE FECRIATI SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.A 3.B? 4.A 5.A 6.D 7.B 8.B? 9.D 10.A 11.D"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "SERVETIFUNUN VE FECRIATI SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.E? 5.B? 6.C 7.B 8.A 9.A 10.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "SERVETIFUNUN VE FECRIATI SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.B 3.D 4.E 5.E 6.D 7.D 8.C 9.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "MILLI EDEBIYAT SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.E? 3.D? 4.B 5.B? 6.C 7.B 8.A 9.D 10.A 11.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "MILLI EDEBIYAT SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.D 4.B 5.C 6.D 7.E 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "MILLI EDEBIYAT SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.B 2.B 3.B 4.B 5.E 6.D 7.E 8.E 9.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.C 3.E 4.E 5.B 6.A 7.C 8.E 9.E 10.C"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.D 3.B 4.D 5.A 6.A 7.E 8.D 9.C 10.C"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.E 4.B 5.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.A 5.C 6.C 7.B 8.C 9.E? 10.E?"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.A 2.C 3.C 4.D 5.B 6.A 7.B"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.C 2.A 3.A 4.E 5.A 6.C 7.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 4,
+    "cevap": "1.B 2.B 3.E 4.B 5.C 6.C 7.B 8.B 9.B 10.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "OZ SIIR VE YEDI MESALECILER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.A 4.E 5.C 6.C 7.B 8.E 9.D 10.A 11.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "OZ SIIR VE YEDI MESALECILER",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.B 3.A 4.B 5.D 6.E 7.B 8.B 9.B"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.E 3.E 4.B 5.C 6.C 7.E 8.B 9.D"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.D 3.A 4.B 5.D 6.C 7.E 8.B 9.C 10.D"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "SERBEST NAZIM VE TOPLUMCU SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.A 4.A 5.D 6.C 7.C 8.E 9.B 10.D 11.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "SERBEST NAZIM VE TOPLUMCU SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.B 4.E 5.E 6.D 7.A 8.A 9.D 10.C"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIPCILER (I. YENI)",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.B 3.B 4.B 5.D 6.A 7.E 8.B 9.E 10.E 11.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIPCILER (I. YENI)",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.D 3.D 4.B 5.C 6.A 7.B 8.C 9.C 10.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.D 3.E 4.D 5.A 6.E 7.B 8.A 9.D 10.A 11.A 12.B"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.A 4.B 5.E 6.E 7.D 8.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "II. YENI SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.B 3.B 4.C 5.C 6.B 7.B 8.A 9.E 10.B 11.D?"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "II. YENI SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.D 4.E 5.C 6.E 7.A 8.C 9.D 10.A"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "1980 SONRASI TURK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.E 4.E 5.A 6.D 7.D 8.B 9.C 10.C 11.B"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "1980 SONRASI TURK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.D 5.E 6.C 7.C 8.C 9.E 10.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "CUMHURIYET DONEMI HALK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.D 4.C 5.D 6.E 7.A 8.E 9.E 10.D 11.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "CUMHURIYET DONEMI HALK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.B 3.C 4.D 5.D 6.E 7.D 8.D 9.A 10.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.B 4.B 5.C 6.C 7.B 8.A 9.C 10.D 11.A"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.B 4.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.A 4.D 5.C 6.B?"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.D? 3.B 4.B 5.B 6.E?"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.A 2.A 3.D 4.D 5.E 6.B 7.C 8.A"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.C 4.D 5.A 6.E 7.D 8.B 9.D 10.D"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.D? 3.C 4.B 5.A 6.D 7.C 8.B 9.B"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DESTAN - EFSANE - MASAL - FABL",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.E 4.D 5.D 6.A 7.B 8.B 9.A 10.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DESTAN - EFSANE - MASAL - FABL",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.A 5.D 6.C 7.B 8.C 9.E 10.D"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "HIKAYE TURUNUN GENEL OZELLIKLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.A 4.B 5.A 6.A 7.B 8.C 9.C 10.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.B 5.A 6.A 7.C 8.B 9.E 10.C 11.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.D 4.B 5.B 6.E 7.C 8.B 9.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.C 3.C 4.E 5.B 6.D 7.B 8.C 9.C 10.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.A 4.E 5.B 6.C 7.B 8.B 9.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.B 2.D 3.C 4.A 5.C 6.D 7.C 8.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.D? 2.A 3.D 4.E 5.C 6.B 7.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.B 4.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.A 4.E 5.C 6.D 7.D 8.C 9.D 10.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.E 2.E 3.C 4.D 5.A 6.D 7.E 8.C 9.E 10.B 11.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "ROMAN TURUNUN GENEL OZELLIKLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.D 3.D 4.E 5.B 6.A 7.D 8.C 9.A 10.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "TANZIMAT ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.C 4.B 5.A 6.B 7.D 8.D 9.C 10.B"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "TANZIMAT ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.C 4.C 5.A 6.D 7.A 8.E 9.B"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "SERVETIFUNUN ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.C 4.E 5.D 6.C 7.C 8.A 9.A 10.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "SERVETIFUNUN ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.E 3.C 4.C 5.A 6.C 7.B 8.C 9.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "MILLI EDEBIYAT ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.C 4.B? 5.A 6.C 7.D 8.E 9.B 10.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "MILLI EDEBIYAT ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.C 4.E 5.D 6.B 7.B 8.B 9.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.A 4.C 5.E 6.E 7.A 8.D 9.B 10.E 11.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.C 3.D 4.D 5.E 6.E 7.C 8.A 9.B"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D? 2.D 3.E 4.A 5.E 6.C 7.B 8.A"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.C 2.D 3.C 4.D 5.A 6.D 7.E 8.A 9.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 4,
+    "cevap": "1.C 2.C 3.B 4.B 5.C 6.C 7.A"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.C 2.B 3.D 4.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.D? 2.C 3.C 4.A 5.A 6.C 7.C 8.D 9.D 10.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.E 3.C 4.B 5.E 6.B 7.E 8.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.B 2.B 3.D 4.A 5.D 6.D 7.E 8.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "TIYATRO TURUNUN GENEL OZELLIKLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.D 3.C 4.D 5.C 6.D 7.C 8.C 9.E 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "GELENEKSEL TURK TIYATROSU",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.C 4.A 5.C 6.C 7.A 8.C 9.B 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.C 5.E 6.E 7.C 8.C 9.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.E 4.C 5.B 6.D 7.D 8.B 9.D 10.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.B 4.C 5.B? 6.E? 7.A 8.B 9.C 10.A"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.B 4.B 5.C 6.E 7.A 8.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.B 4.E"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.B 4.C 5.A 6.D 7.D 8.B 9.C 10.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.B 3.E 4.B 5.A 6.C 7.E 8.E 9.D 10.C 11.A 12.E 13.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "BATI EDEBIYATI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.A 4.A 5.A 6.E 7.B 8.B 9.E 10.C 11.E 12.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "BATI EDEBIYATI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.D 4.C 5.C 6.A 7.D 8.D 9.B 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "EDEBI AKIMLAR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.C 4.C 5.E? 6.B? 7.E? 8.C 9.C 10.B"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "EDEBI AKIMLAR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.A 3.B 4.E 5.B 6.E 7.C 8.E 9.B 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "EDEBI AKIMLAR",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.A 2.D 3.D 4.E 5.A 6.B 7.B 8.E 9.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "TURK EDEBIYATINDA ILKLER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.C 3.B 4.D 5.B 6.C 7.B 8.B 9.D 10.E 11.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "TURK EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.A 4.C 5.A 6.C 7.B 8.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "TURK EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E? 2.D 3.E? 4.B 5.A 6.A 7.D 8.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.B 4.A 5.D 6.C 7.C 8.C 9.A 10.C 11.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.C 4.E 5.C 6.B 7.A 8.E 9.D 10.B"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.A 2.A 3.B 4.C 5.A 6.E 7.C 8.C 9.B 10.E 11.A 12.D 13.E 14.E 15.A 16.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.A 4.E 5.B 6.D 7.B 8.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 2,
+    "cevap": "1.E 2.C 3.A 4.A 5.C 6.B 7.D 8.E"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 3,
+    "cevap": "1.B? 2.B 3.B 4.A 5.D 6.A 7.D"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 4,
+    "cevap": "1.E 2.C 3.B 4.A 5.B 6.D 7.A 8.C 9.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 5,
+    "cevap": "1.E 2.E 3.D 4.C 5.E 6.E 7.E"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 6,
+    "cevap": "1.B? 2.D 3.D 4.A 5.D 6.D 7.A 8.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 7,
+    "cevap": "1.A 2.B 3.A 4.C 5.D 6.C 7.C 8.E"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 8,
+    "cevap": "1.C 2.C 3.A 4.E 5.A 6.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 9,
+    "cevap": "1.D? 2.A 3.C 4.D 5.A 6.C 7.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 10,
+    "cevap": "1.D? 2.D 3.A 4.B 5.C 6.D 7.D 8.C 9.C"
+   }
+  ],
+  "B": [
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "TURK EDEBIYATINDA ILKLER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.C 3.B 4.D 5.B 6.C 7.B 8.B 9.D 10.E 11.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "TURK EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.A 4.C 5.A 6.C 7.B 8.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "TURK EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.D 3.E 4.B 5.A 6.A 7.D 8.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.B 4.A 5.D 6.C 7.C 8.C 9.A 10.C 11.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.C 4.E 5.C 6.B 7.A 8.E 9.D 10.B"
+   },
+   {
+    "sayfa": 328,
+    "unite": "09",
+    "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.A 2.A 3.B 4.C 5.A 6.E 7.C 8.C 9.B 10.E 11.A 12.D 13.E 14.E 15.A 16.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.A 4.E 5.B 6.D 7.B 8.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 2,
+    "cevap": "1.E 2.C 3.A 4.A 5.C 6.B 7.D 8.E"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 3,
+    "cevap": "1.B 2.B 3.B 4.A 5.D 6.A 7.D"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 4,
+    "cevap": "1.E 2.C 3.B 4.A 5.B 6.D 7.A 8.C 9.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 5,
+    "cevap": "1.E 2.E 3.D 4.C 5.E 6.E 7.E"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 6,
+    "cevap": "1.B 2.D 3.D 4.A 5.D 6.D 7.A 8.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 7,
+    "cevap": "1.A 2.B 3.A 4.C 5.D 6.C 7.C 8.E"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 8,
+    "cevap": "1.C 2.C 3.A 4.E 5.A 6.C"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 9,
+    "cevap": "1.D 2.A 3.C 4.D 5.A 6.C 7.A"
+   },
+   {
+    "sayfa": 328,
+    "unite": "10",
+    "konu": "-",
+    "tur": "G",
+    "sira": 10,
+    "cevap": "1.D 2.D 3.A 4.B 5.C 6.D 7.D 8.C 9.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "TIYATRO TURUNUN GENEL OZELLIKLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.D 3.C 4.D 5.C 6.D 7.C 8.C 9.E 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "GELENEKSEL TURK TIYATROSU",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.C 4.A 5.C 6.C 7.A 8.C 9.B 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.C 5.E 6.E 7.C 8.C 9.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.E 4.C 5.B 6.D 7.D 8.B 9.D 10.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.B 4.C 5.B? 6.E 7.A 8.B 9.C 10.A"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.B 4.B 5.C 6.E 7.A 8.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.B 4.E"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.B 4.C 5.A 6.D 7.D 8.B 9.C 10.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "08",
+    "konu": "CUMHURIYET TIYATROSU",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.B 3.E 4.B 5.A 6.C 7.E 8.E 9.D 10.C 11.A 12.E 13.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "BATI EDEBIYATI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.A 4.A 5.A 6.E 7.B 8.B 9.E 10.C 11.E 12.D"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "BATI EDEBIYATI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.D 4.C 5.C 6.A 7.D 8.D 9.B 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "EDEBI AKIMLAR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.C 4.C 5.E 6.B 7.E 8.C 9.C 10.B"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "EDEBI AKIMLAR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.A 3.B 4.E 5.B 6.E 7.C 8.E 9.B 10.C"
+   },
+   {
+    "sayfa": 327,
+    "unite": "09",
+    "konu": "EDEBI AKIMLAR",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.A 2.D 3.D 4.E 5.A 6.B 7.B 8.E 9.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.C 3.C 4.E 5.B 6.D 7.B 8.C 9.C 10.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.A 4.E 5.B 6.C 7.B 8.B 9.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.B 2.D 3.C 4.A 5.C 6.D 7.C 8.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.D 2.A 3.D 4.E 5.C 6.B? 7.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.B 4.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.A 4.E 5.C 6.D 7.D 8.C 9.D 10.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "06",
+    "konu": "CUMHURIYET DONEMI'NDE HIKAYE",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.E 2.E 3.C 4.D 5.A 6.D 7.E 8.C 9.E 10.B 11.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "ROMAN TURUNUN GENEL OZELLIKLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.D 3.D 4.E 5.B 6.A 7.D 8.C 9.A 10.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "TANZIMAT ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.C 4.B 5.A 6.B 7.D 8.D 9.C 10.B"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "TANZIMAT ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.C 4.C 5.A 6.D 7.A 8.E 9.B"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "SERVETIFUNUN ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.C 4.E 5.D 6.C 7.C 8.A 9.A 10.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "SERVETIFUNUN ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.E 3.C 4.C 5.A 6.C 7.B 8.C 9.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "MILLI EDEBIYAT ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.C 4.B 5.A 6.C 7.D 8.E 9.B 10.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "MILLI EDEBIYAT ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.C 4.E 5.D 6.B 7.B 8.B 9.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.A 4.C 5.E 6.E 7.A 8.D 9.B 10.E 11.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.C 3.D 4.D 5.E 6.E 7.C 8.A 9.B"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.D 3.E 4.A 5.E 6.C 7.B 8.A"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.C 2.D 3.C 4.D 5.A 6.D 7.E 8.A 9.E"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "O",
+    "sira": 4,
+    "cevap": "1.C 2.C 3.B 4.B 5.C 6.C 7.A"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.C 2.B 3.D 4.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.A 5.A 6.C 7.C 8.D 9.D 10.C"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.E 3.C 4.B 5.E 6.B 7.E 8.D"
+   },
+   {
+    "sayfa": 326,
+    "unite": "07",
+    "konu": "CUMHURIYET ROMANI",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.B 2.B 3.D 4.A 5.D 6.D 7.E 8.D"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "II. YENI SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.B 3.B 4.C 5.C 6.B 7.B 8.A 9.E 10.B 11.D"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "II. YENI SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.D 4.E 5.C 6.E 7.A 8.C 9.D 10.A"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "1980 SONRASI TURK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.E 4.E 5.A 6.D 7.D 8.B 9.C 10.C 11.B"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "1980 SONRASI TURK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.D 5.E 6.C 7.C 8.C 9.E 10.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "CUMHURIYET DONEMI HALK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.D 4.C 5.D 6.E 7.A 8.E 9.E 10.D 11.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "CUMHURIYET DONEMI HALK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.B 3.C 4.D 5.D 6.E 7.D 8.D 9.A 10.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.B 4.B 5.C 6.C 7.B 8.A 9.C 10.D 11.A"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.B 4.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.A 4.D 5.C 6.B"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.D? 3.B 4.B 5.B? 6.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "05",
+    "konu": "TURK DUNYASI SAIRLERI",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.A 2.A 3.D 4.D 5.E 6.B 7.C 8.A"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.C 4.D 5.A 6.E 7.D 8.B 9.D 10.D"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.C 4.B 5.A 6.D 7.C 8.B 9.B"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DESTAN - EFSANE - MASAL - FABL",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.E 4.D 5.D 6.A 7.B 8.B 9.A 10.C"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "DESTAN - EFSANE - MASAL - FABL",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.C 4.A 5.D 6.C 7.B 8.C 9.E 10.D"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "HIKAYE TURUNUN GENEL OZELLIKLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.A 4.B 5.A 6.A 7.B 8.C 9.C 10.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.B 5.A 6.A 7.C 8.B 9.E 10.C 11.E"
+   },
+   {
+    "sayfa": 325,
+    "unite": "06",
+    "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.D 4.B 5.B 6.E 7.C 8.B 9.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.C 3.E 4.E 5.B 6.A 7.C 8.E 9.E 10.C"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.D 3.B 4.D 5.A 6.A 7.E 8.D 9.C 10.C"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.A 3.E 4.B 5.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.A 5.C 6.C 7.B 8.C 9.E 10.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.A 2.C 3.C 4.D 5.B 6.A 7.B"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.C 2.A 3.A 4.E 5.A 6.C 7.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "04",
+    "konu": "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR",
+    "tur": "M",
+    "sira": 4,
+    "cevap": "1.B 2.B 3.E 4.B 5.C 6.C 7.B 8.B 9.B 10.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "OZ SIIR VE YEDI MESALECILER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.A 4.E 5.C 6.C 7.B 8.E 9.D 10.A 11.A"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "OZ SIIR VE YEDI MESALECILER",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.B 3.A 4.B 5.D 6.E 7.B 8.B 9.B"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.E 3.E 4.B 5.C 6.C 7.E 8.B 9.D"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.D 3.A 4.B 5.D 6.C 7.E 8.B 9.C 10.D"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "SERBEST NAZIM VE TOPLUMCU SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.A 4.A 5.D 6.C 7.C 8.E 9.B 10.D 11.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "SERBEST NAZIM VE TOPLUMCU SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.B 4.E 5.E 6.D 7.A 8.A 9.D 10.C"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIPCILER (I. YENI)",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.E 2.B 3.B 4.B 5.D 6.A 7.E 8.B 9.E 10.E 11.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIPCILER (I. YENI)",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.D 3.D 4.B 5.C 6.A 7.B 8.C 9.C 10.E"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.D 3.E 4.D 5.A 6.E 7.B 8.A 9.D 10.A 11.A 12.B"
+   },
+   {
+    "sayfa": 324,
+    "unite": "05",
+    "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.A 4.B 5.E 6.E 7.D 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.D 4.B 5.A 6.B 7.C 8.B 9.C 10.E 11.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.D 5.C 6.D 7.C 8.E 9.C 10.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.E 3.D 4.D 5.C 6.D 7.C 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN SIIRI",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.E 2.D? 3.B 4.A 5.B? 6.E 7.A 8.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.C 3.E 4.C 5.A 6.A 7.C 8.B 9.A 10.D? 11.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.D? 3.D 4.B 5.E 6.B 7.A 8.D 9.A 10.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.A 4.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.C 4.D 5.D 6.C 7.A 8.D 9.D 10.B 11.D?"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.C 2.E 3.B 4.E 5.B 6.A 7.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.D 2.B 3.C 4.C 5.E 6.D 7.A 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "03",
+    "konu": "DIVAN NESRI",
+    "tur": "M",
+    "sira": 4,
+    "cevap": "1.E 2.D? 3.E 4.A 5.B? 6.E 7.B 8.C 9.A 10.B 11.B 12.D?"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "TANZIMAT SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.C 4.E 5.E 6.C 7.A 8.D 9.D 10.B 11.B 12.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "TANZIMAT SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.A 4.A 5.D 6.D 7.B? 8.A 9.A 10.E"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "TANZIMAT SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.B 3.D 4.A 5.D 6.B 7.E 8.E"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "SERVETIFUNUN VE FECRIATI SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.A 3.B 4.A 5.A 6.D 7.B 8.B 9.D 10.A 11.D"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "SERVETIFUNUN VE FECRIATI SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.C 4.E 5.B? 6.C 7.B? 8.A 9.A 10.A"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "SERVETIFUNUN VE FECRIATI SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.B 3.D 4.E 5.E 6.D 7.D 8.C 9.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "MILLI EDEBIYAT SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.D 4.B 5.B? 6.C 7.B? 8.A 9.D 10.A 11.B"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "MILLI EDEBIYAT SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.D 4.B 5.C 6.D 7.E 8.C"
+   },
+   {
+    "sayfa": 323,
+    "unite": "04",
+    "konu": "MILLI EDEBIYAT SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.B 2.B 3.B 4.B 5.E 6.D 7.E 8.E 9.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "NAZIM BICIMLERI VE TURLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D? 2.A 3.B 4.E 5.E 6.C 7.B 8.C 9.B 10.A 11.B"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "NAZIM BICIMLERI VE TURLERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.E 3.D 4.B 5.C 6.A 7.B 8.C 9.E 10.A 11.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "NAZIM BICIMLERI VE TURLERI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.A 3.D 4.A 5.C 6.E 7.C 8.E 9.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SOZ SANATLARI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.E 4.A 5.B 6.D 7.C 8.B 9.E 10.A 11.D 12.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SOZ SANATLARI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.B 4.B 5.B 6.A 7.C 8.A 9.A 10.A 11.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SOZ SANATLARI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.C 2.A 3.D 4.D 5.A 6.A 7.D 8.D 9.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.D 4.D 5.D 6.D 7.B 8.A 9.E 10.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.B 3.A 4.A 5.C 6.A 7.D 8.B 9.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.B 2.A 3.E 4.E"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.A 2.A 3.C 4.E 5.D 6.B 7.E 8.B 9.C 10.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.D 2.D 3.C 4.D 5.A 6.B 7.E 8.D 9.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "02",
+    "konu": "SIIRDE KONU VE TEMA - GERCEKLIK",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.A 2.E 3.E 4.E 5.C 6.B 7.A 8.E 9.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "ISLAMIYET ONCESI TURK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.B 3.B 4.A 5.E 6.A 7.C 8.D 9.A 10.D 11.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "ISLAMIYET ONCESI TURK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.A 3.B 4.C 5.C 6.E 7.E 8.E 9.C 10.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "GECIS DONEMI TURK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.D 3.E 4.A 5.E 6.B? 7.E 8.B 9.D 10.D 11.D 12.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "GECIS DONEMI TURK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.E 4.C 5.C 6.D 7.D 8.A 9.C 10.B"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "GECIS DONEMI TURK SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.B 2.A 3.C 4.E 5.E 6.D 7.D 8.C 9.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.E 4.D 5.C 6.E 7.E 8.A 9.C 10.A 11.E 12.C"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.D 3.A 4.C 5.E 6.A 7.E 8.B 9.E 10.D"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.A 2.D 3.D 4.B 5.C 6.B 7.C 8.A 9.E 10.A"
+   },
+   {
+    "sayfa": 322,
+    "unite": "03",
+    "konu": "HALK SIIRI",
+    "tur": "O",
+    "sira": 3,
+    "cevap": "1.B 2.D 3.D 4.B 5.C 6.C 7.D 8.C 9.A"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GUZEL SANATLAR VE EDEBIYAT",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.E 4.A 5.B 6.B 7.D 8.A 9.E 10.D 11.D 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GUZEL SANATLAR VE EDEBIYAT",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.C 2.E 3.B 4.C 5.C 6.E 7.D 8.A"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "TARIH ICINDE TURK EDEBIYATI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.B 3.E 4.E 5.A 6.C 7.D 8.B 9.D 10.D 11.D 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "TARIH ICINDE TURK EDEBIYATI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.E 2.D 3.D 4.B 5.B 6.E 7.C 8.B"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "SOZLU ANLATIM TURLERI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.A 2.C 3.B 4.E 5.C 6.A 7.B 8.D 9.C 10.A 11.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "SOZLU ANLATIM TURLERI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.B 2.A 3.C 4.B 5.D 6.C 7.E 8.B 9.D"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "KISISEL YASAMI KONU EDINEN METINLER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.B 2.E 3.A 4.E 5.D 6.E 7.B 8.A 9.E 10.A 11.C 12.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "KISISEL YASAMI KONU EDINEN METINLER",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.A 4.B 5.C 6.D 7.B 8.B 9.E 10.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "KISISEL YASAMI KONU EDINEN METINLER",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.B 3.A 4.A 5.E 6.C 7.B 8.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.C 2.A 3.D 4.E 5.E 6.B 7.A 8.A 9.E 10.E 11.B 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.A 3.B 4.A 5.E 6.C 7.A 8.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.E 2.B 3.C 4.D 5.D 6.C 7.A 8.B 9.B 10.B"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "R",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.E 4.B 5.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "M",
+    "sira": 1,
+    "cevap": "1.D 2.C 3.D 4.E 5.A 6.D 7.B 8.B 9.B 10.C 11.D?"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "M",
+    "sira": 2,
+    "cevap": "1.A 2.A 3.B 4.A 5.A 6.E 7.A 8.E 9.D"
+   },
+   {
+    "sayfa": 321,
+    "unite": "01",
+    "konu": "GAZETE CEVRESINDE GELISEN METINLER",
+    "tur": "M",
+    "sira": 3,
+    "cevap": "1.D 2.C 3.C 4.B 5.C 6.A 7.E 8.D 9.A 10.A 11.C"
+   },
+   {
+    "sayfa": 321,
+    "unite": "02",
+    "konu": "SIIRDE YAPI VE AHENK UNSURLARI",
+    "tur": "K",
+    "sira": 1,
+    "cevap": "1.D 2.B 3.D 4.D 5.B? 6.C 7.D? 8.E 9.B 10.C 11.B 12.E"
+   },
+   {
+    "sayfa": 321,
+    "unite": "02",
+    "konu": "SIIRDE YAPI VE AHENK UNSURLARI",
+    "tur": "O",
+    "sira": 1,
+    "cevap": "1.A 2.E 3.A 4.A 5.B 6.A 7.B 8.A 9.B"
+   },
+   {
+    "sayfa": 321,
+    "unite": "02",
+    "konu": "SIIRDE YAPI VE AHENK UNSURLARI",
+    "tur": "O",
+    "sira": 2,
+    "cevap": "1.D 2.D 3.E 4.E 5.D 6.E 7.E 8.B 9.D"
+   }
+  ]
+ },
+ "bant_okumasi": [
+  {
+   "sayfa": 5,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "bant yok; UcDort Bes filigrani + mavi ucgen desen (ayrac/kapak)"
+  },
+  {
+   "sayfa": 6,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GUZEL SANATLAR VE EDEBIYAT"
+  },
+  {
+   "sayfa": 7,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GUZEL SANATLAR VE EDEBIYAT"
+  },
+  {
+   "sayfa": 8,
+   "tur": "O",
+   "sira": 1,
+   "konu": "GUZEL SANATLAR VE EDEBIYAT"
+  },
+  {
+   "sayfa": 9,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 10,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TARIH ICINDE TURK EDEBIYATI"
+  },
+  {
+   "sayfa": 11,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TARIH ICINDE TURK EDEBIYATI"
+  },
+  {
+   "sayfa": 12,
+   "tur": "O",
+   "sira": 1,
+   "konu": "TARIH ICINDE TURK EDEBIYATI"
+  },
+  {
+   "sayfa": 13,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 14,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SOZLU ANLATIM TURLERI"
+  },
+  {
+   "sayfa": 15,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SOZLU ANLATIM TURLERI"
+  },
+  {
+   "sayfa": 16,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SOZLU ANLATIM TURLERI"
+  },
+  {
+   "sayfa": 17,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 18,
+   "tur": "K",
+   "sira": 1,
+   "konu": "KISISEL YASAMI KONU EDINEN METINLER"
+  },
+  {
+   "sayfa": 19,
+   "tur": "K",
+   "sira": 1,
+   "konu": "KISISEL YASAMI KONU EDINEN METINLER"
+  },
+  {
+   "sayfa": 20,
+   "tur": "O",
+   "sira": 1,
+   "konu": "KISISEL YASAMI KONU EDINEN METINLER"
+  },
+  {
+   "sayfa": 21,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 22,
+   "tur": "O",
+   "sira": 2,
+   "konu": "KISISEL YASAMI KONU EDINEN METINLER"
+  },
+  {
+   "sayfa": 23,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 24,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GAZETE CEVRESINDE GELISEN METINLER"
+  },
+  {
+   "sayfa": 25,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GAZETE CEVRESINDE GELISEN METINLER"
+  },
+  {
+   "sayfa": 26,
+   "tur": "O",
+   "sira": 1,
+   "konu": "GAZETE CEVRESINDE GELISEN METINLER"
+  },
+  {
+   "sayfa": 27,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 28,
+   "tur": "O",
+   "sira": 2,
+   "konu": "GAZETE CEVRESINDE GELISEN METINLER"
+  },
+  {
+   "sayfa": 29,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 30,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 31,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 32,
+   "tur": "M",
+   "sira": 1,
+   "konu": "OGRETICI METINLER"
+  },
+  {
+   "sayfa": 33,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 34,
+   "tur": "M",
+   "sira": 2,
+   "konu": "OGRETICI METINLER"
+  },
+  {
+   "sayfa": 35,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 36,
+   "tur": "M",
+   "sira": 3,
+   "konu": "OGRETICI METINLER"
+  },
+  {
+   "sayfa": 37,
+   "tur": "M",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 38,
+   "tur": "M",
+   "sira": 3,
+   "konu": "OGRETICI METINLER",
+   "not": "Karma 3 ucuncu sayfa; logoda yine 3 basili (36-38)"
+  },
+  {
+   "sayfa": 39,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "bant yok; UcDort Bes filigrani + mavi ucgen desen (unite ayraci)"
+  },
+  {
+   "sayfa": 40,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SIIRDE YAPI VE AHENK UNSURLARI"
+  },
+  {
+   "sayfa": 41,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SIIRDE YAPI VE AHENK UNSURLARI"
+  },
+  {
+   "sayfa": 42,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SIIRDE YAPI VE AHENK UNSURLARI"
+  },
+  {
+   "sayfa": 43,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 44,
+   "tur": "O",
+   "sira": 2,
+   "konu": "SIIRDE YAPI VE AHENK UNSURLARI"
+  },
+  {
+   "sayfa": 45,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 46,
+   "tur": "K",
+   "sira": 1,
+   "konu": "NAZIM BICIMLERI VE TURLERI"
+  },
+  {
+   "sayfa": 47,
+   "tur": "K",
+   "sira": 1,
+   "konu": "NAZIM BICIMLERI VE TURLERI"
+  },
+  {
+   "sayfa": 48,
+   "tur": "O",
+   "sira": 1,
+   "konu": "NAZIM BICIMLERI VE TURLERI"
+  },
+  {
+   "sayfa": 49,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 50,
+   "tur": "O",
+   "sira": 2,
+   "konu": "NAZIM BICIMLERI VE TURLERI"
+  },
+  {
+   "sayfa": 51,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 52,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SOZ SANATLARI"
+  },
+  {
+   "sayfa": 53,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SOZ SANATLARI"
+  },
+  {
+   "sayfa": 54,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SOZ SANATLARI"
+  },
+  {
+   "sayfa": 55,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 56,
+   "tur": "O",
+   "sira": 2,
+   "konu": "SOZ SANATLARI"
+  },
+  {
+   "sayfa": 57,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 58,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SIIRDE KONU VE TEMA - GERCEKLIK"
+  },
+  {
+   "sayfa": 59,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SIIRDE KONU VE TEMA - GERCEKLIK"
+  },
+  {
+   "sayfa": 60,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SIIRDE KONU VE TEMA - GERCEKLIK"
+  },
+  {
+   "sayfa": 61,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 62,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 63,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 64,
+   "tur": "M",
+   "sira": 1,
+   "konu": "SIIR BILGISI"
+  },
+  {
+   "sayfa": 65,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 66,
+   "tur": "M",
+   "sira": 2,
+   "konu": "SIIR BILGISI"
+  },
+  {
+   "sayfa": 67,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 68,
+   "tur": "M",
+   "sira": 3,
+   "konu": "SIIR BILGISI"
+  },
+  {
+   "sayfa": 69,
+   "tur": "M",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 70,
+   "tur": "M",
+   "sira": 3,
+   "konu": "SIIR BILGISI",
+   "not": "Karma 3 ucuncu sayfa; logoda yine 3 basili (68-70)"
+  },
+  {
+   "sayfa": 71,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "bant yok; UcDort Bes filigrani + mavi ucgen desen (unite ayraci)"
+  },
+  {
+   "sayfa": 72,
+   "tur": "K",
+   "sira": 1,
+   "konu": "ISLAMIYET ONCESI TURK SIIRI"
+  },
+  {
+   "sayfa": 73,
+   "tur": "K",
+   "sira": 1,
+   "konu": "ISLAMIYET ONCESI TURK SIIRI"
+  },
+  {
+   "sayfa": 74,
+   "tur": "O",
+   "sira": 1,
+   "konu": "ISLAMIYET ONCESI TURK SIIRI"
+  },
+  {
+   "sayfa": 75,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 76,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GECIS DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 77,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GECIS DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 78,
+   "tur": "O",
+   "sira": 1,
+   "konu": "GECIS DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 79,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 80,
+   "tur": "O",
+   "sira": 2,
+   "konu": "GECIS DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 81,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 82,
+   "tur": "K",
+   "sira": 1,
+   "konu": "HALK SIIRI"
+  },
+  {
+   "sayfa": 83,
+   "tur": "K",
+   "sira": 1,
+   "konu": "HALK SIIRI"
+  },
+  {
+   "sayfa": 84,
+   "tur": "O",
+   "sira": 1,
+   "konu": "HALK SIIRI"
+  },
+  {
+   "sayfa": 85,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 86,
+   "tur": "O",
+   "sira": 2,
+   "konu": "HALK SIIRI"
+  },
+  {
+   "sayfa": 87,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 88,
+   "tur": "O",
+   "sira": 3,
+   "konu": "HALK SIIRI"
+  },
+  {
+   "sayfa": 89,
+   "tur": "O",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 90,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DIVAN SIIRI"
+  },
+  {
+   "sayfa": 91,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DIVAN SIIRI"
+  },
+  {
+   "sayfa": 92,
+   "tur": "O",
+   "sira": 1,
+   "konu": "DIVAN SIIRI"
+  },
+  {
+   "sayfa": 93,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 94,
+   "tur": "O",
+   "sira": 2,
+   "konu": "DIVAN SIIRI"
+  },
+  {
+   "sayfa": 95,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 96,
+   "tur": "O",
+   "sira": 3,
+   "konu": "DIVAN SIIRI"
+  },
+  {
+   "sayfa": 97,
+   "tur": "O",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 98,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DIVAN NESRI"
+  },
+  {
+   "sayfa": 99,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DIVAN NESRI"
+  },
+  {
+   "sayfa": 100,
+   "tur": "O",
+   "sira": 1,
+   "konu": "DIVAN NESRI"
+  },
+  {
+   "sayfa": 101,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 102,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 103,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 104,
+   "tur": "M",
+   "sira": 1,
+   "konu": "ISLAMIYET ONCESI VE ISLAMI DONEM TURK SIIRI"
+  },
+  {
+   "sayfa": 105,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 106,
+   "tur": "M",
+   "sira": 2,
+   "konu": "ISLAMIYET ONCESI VE ISLAMI DONEM TURK SIIRI"
+  },
+  {
+   "sayfa": 107,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 108,
+   "tur": "M",
+   "sira": 3,
+   "konu": "ISLAMIYET ONCESI VE ISLAMI DONEM TURK SIIRI"
+  },
+  {
+   "sayfa": 109,
+   "tur": "M",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 110,
+   "tur": "M",
+   "sira": 4,
+   "konu": "ISLAMIYET ONCESI VE ISLAMI DONEM TURK SIIRI"
+  },
+  {
+   "sayfa": 111,
+   "tur": "M",
+   "sira": 4,
+   "konu": "-"
+  },
+  {
+   "sayfa": 112,
+   "tur": "M",
+   "sira": 4,
+   "konu": "ISLAMIYET ONCESI VE ISLAMI DONEM TURK SIIRI",
+   "not": "Karma 4 ucuncu sayfa; logoda yine 4 basili (110-112)"
+  },
+  {
+   "sayfa": 113,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "bant yok; UcDort Bes filigrani + mavi ucgen desen (unite ayraci)"
+  },
+  {
+   "sayfa": 114,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT SIIRI"
+  },
+  {
+   "sayfa": 115,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT SIIRI"
+  },
+  {
+   "sayfa": 116,
+   "tur": "O",
+   "sira": 1,
+   "konu": "TANZIMAT SIIRI"
+  },
+  {
+   "sayfa": 117,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 118,
+   "tur": "O",
+   "sira": 2,
+   "konu": "TANZIMAT SIIRI"
+  },
+  {
+   "sayfa": 119,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 120,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SERVETIFUNUN VE FECRIATI SIIRI"
+  },
+  {
+   "sayfa": 121,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SERVETIFUNUN VE FECRIATI SIIRI"
+  },
+  {
+   "sayfa": 122,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SERVETIFUNUN VE FECRIATI SIIRI"
+  },
+  {
+   "sayfa": 123,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 124,
+   "tur": "O",
+   "sira": 2,
+   "konu": "SERVETIFUNUN VE FECRIATI SIIRI"
+  },
+  {
+   "sayfa": 125,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 126,
+   "tur": "K",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT SIIRI"
+  },
+  {
+   "sayfa": 127,
+   "tur": "K",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT SIIRI"
+  },
+  {
+   "sayfa": 128,
+   "tur": "O",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT SIIRI"
+  },
+  {
+   "sayfa": 129,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 130,
+   "tur": "O",
+   "sira": 2,
+   "konu": "MILLI EDEBIYAT SIIRI"
+  },
+  {
+   "sayfa": 131,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 132,
+   "tur": "K",
+   "sira": 1,
+   "konu": "BAGIMSIZ SAIRLER VE FIKIR AKIMLARI - MANZUM HIKAYE VE MENSUR SIIR",
+   "not": "konu iki satira bolunmus, birlestirildi"
+  },
+  {
+   "sayfa": 133,
+   "tur": "K",
+   "sira": 1,
+   "konu": "BAGIMSIZ SAIRLER VE FIKIR AKIMLARI - MANZUM HIKAYE VE MENSUR SIIR",
+   "not": "konu iki satira bolunmus, birlestirildi"
+  },
+  {
+   "sayfa": 134,
+   "tur": "O",
+   "sira": 1,
+   "konu": "BAGIMSIZ SAIRLER VE FIKIR AKIMLARI - MANZUM HIKAYE VE MENSUR SIIR",
+   "not": "konu iki satira bolunmus, birlestirildi"
+  },
+  {
+   "sayfa": 135,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 136,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 137,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 138,
+   "tur": "M",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A SIIR"
+  },
+  {
+   "sayfa": 139,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 140,
+   "tur": "M",
+   "sira": 2,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A SIIR"
+  },
+  {
+   "sayfa": 141,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 142,
+   "tur": "M",
+   "sira": 3,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A SIIR"
+  },
+  {
+   "sayfa": 143,
+   "tur": "M",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 144,
+   "tur": "M",
+   "sira": 4,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A SIIR"
+  },
+  {
+   "sayfa": 145,
+   "tur": "M",
+   "sira": 4,
+   "konu": "-"
+  },
+  {
+   "sayfa": 146,
+   "tur": "M",
+   "sira": 4,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A SIIR",
+   "not": "Karma 4 ucuncu sayfa; logoda yine 4 basili (144-146)"
+  },
+  {
+   "sayfa": 147,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "bant yok; UcDort Bes filigrani + mavi ucgen desen (unite ayraci)"
+  },
+  {
+   "sayfa": 148,
+   "tur": "K",
+   "sira": 1,
+   "konu": "OZ SIIR VE YEDI MESALECILER"
+  },
+  {
+   "sayfa": 149,
+   "tur": "K",
+   "sira": 1,
+   "konu": "OZ SIIR VE YEDI MESALECILER"
+  },
+  {
+   "sayfa": 150,
+   "tur": "O",
+   "sira": 1,
+   "konu": "OZ SIIR VE YEDI MESALECILER"
+  },
+  {
+   "sayfa": 151,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 152,
+   "tur": "K",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR"
+  },
+  {
+   "sayfa": 153,
+   "tur": "K",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR"
+  },
+  {
+   "sayfa": 154,
+   "tur": "O",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR"
+  },
+  {
+   "sayfa": 155,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 156,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SERBEST NAZIM VE TOPLUMCU SIIR"
+  },
+  {
+   "sayfa": 157,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SERBEST NAZIM VE TOPLUMCU SIIR"
+  },
+  {
+   "sayfa": 158,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SERBEST NAZIM VE TOPLUMCU SIIR"
+  },
+  {
+   "sayfa": 159,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 160,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GARIPCILER (I. YENI)"
+  },
+  {
+   "sayfa": 161,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GARIPCILER (I. YENI)"
+  },
+  {
+   "sayfa": 162,
+   "tur": "O",
+   "sira": 1,
+   "konu": "GARIPCILER (I. YENI)"
+  },
+  {
+   "sayfa": 163,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 164,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR"
+  },
+  {
+   "sayfa": 165,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR"
+  },
+  {
+   "sayfa": 166,
+   "tur": "O",
+   "sira": 1,
+   "konu": "GARIP DISINDA YENILIGI SURDUREN SIIR"
+  },
+  {
+   "sayfa": 167,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 168,
+   "tur": "K",
+   "sira": 1,
+   "konu": "II. YENI SIIRI"
+  },
+  {
+   "sayfa": 169,
+   "tur": "K",
+   "sira": 1,
+   "konu": "II. YENI SIIRI"
+  },
+  {
+   "sayfa": 170,
+   "tur": "O",
+   "sira": 1,
+   "konu": "II. YENI SIIRI"
+  },
+  {
+   "sayfa": 171,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 172,
+   "tur": "K",
+   "sira": 1,
+   "konu": "1980 SONRASI TURK SIIRI"
+  },
+  {
+   "sayfa": 173,
+   "tur": "K",
+   "sira": 1,
+   "konu": "1980 SONRASI TURK SIIRI"
+  },
+  {
+   "sayfa": 174,
+   "tur": "O",
+   "sira": 1,
+   "konu": "1980 SONRASI TURK SIIRI"
+  },
+  {
+   "sayfa": 175,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 176,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI HALK SIIRI"
+  },
+  {
+   "sayfa": 177,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI HALK SIIRI"
+  },
+  {
+   "sayfa": 178,
+   "tur": "O",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI HALK SIIRI"
+  },
+  {
+   "sayfa": 179,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 180,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TURK DUNYASI SAIRLERI"
+  },
+  {
+   "sayfa": 181,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TURK DUNYASI SAIRLERI"
+  },
+  {
+   "sayfa": 182,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 183,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 184,
+   "tur": "M",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 185,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 186,
+   "tur": "M",
+   "sira": 2,
+   "konu": "CUMHURIYET DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 187,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 188,
+   "tur": "M",
+   "sira": 3,
+   "konu": "CUMHURIYET DONEMI TURK SIIRI"
+  },
+  {
+   "sayfa": 189,
+   "tur": "M",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 190,
+   "tur": "M",
+   "sira": 3,
+   "konu": "CUMHURIYET DONEMI TURK SIIRI",
+   "not": "Karma 3'un ucuncu sayfasi (logo yine KARMA SORULAR 3)"
+  },
+  {
+   "sayfa": 191,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "unite ayraci (UcDort Bes filigranli, test bandi yok)"
+  },
+  {
+   "sayfa": 192,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI"
+  },
+  {
+   "sayfa": 193,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI"
+  },
+  {
+   "sayfa": 194,
+   "tur": "O",
+   "sira": 1,
+   "konu": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI"
+  },
+  {
+   "sayfa": 195,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 196,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DESTAN - EFSANE - MASAL - FABL"
+  },
+  {
+   "sayfa": 197,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DESTAN - EFSANE - MASAL - FABL"
+  },
+  {
+   "sayfa": 198,
+   "tur": "O",
+   "sira": 1,
+   "konu": "DESTAN - EFSANE - MASAL - FABL"
+  },
+  {
+   "sayfa": 199,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 200,
+   "tur": "K",
+   "sira": 1,
+   "konu": "HIKAYE TURUNUN GENEL OZELLIKLERI"
+  },
+  {
+   "sayfa": 201,
+   "tur": "K",
+   "sira": 1,
+   "konu": "HIKAYE TURUNUN GENEL OZELLIKLERI"
+  },
+  {
+   "sayfa": 202,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE"
+  },
+  {
+   "sayfa": 203,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE"
+  },
+  {
+   "sayfa": 204,
+   "tur": "O",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE"
+  },
+  {
+   "sayfa": 205,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 206,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI'NDE HIKAYE"
+  },
+  {
+   "sayfa": 207,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI'NDE HIKAYE"
+  },
+  {
+   "sayfa": 208,
+   "tur": "O",
+   "sira": 1,
+   "konu": "CUMHURIYET DONEMI'NDE HIKAYE"
+  },
+  {
+   "sayfa": 209,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 210,
+   "tur": "O",
+   "sira": 2,
+   "konu": "CUMHURIYET DONEMI'NDE HIKAYE"
+  },
+  {
+   "sayfa": 211,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 212,
+   "tur": "O",
+   "sira": 3,
+   "konu": "CUMHURIYET DONEMI'NDE HIKAYE"
+  },
+  {
+   "sayfa": 213,
+   "tur": "O",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 214,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 215,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 216,
+   "tur": "M",
+   "sira": 1,
+   "konu": "GELENEKSEL ANLATI TURLERI VE HIKAYE"
+  },
+  {
+   "sayfa": 217,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 218,
+   "tur": "M",
+   "sira": 2,
+   "konu": "GELENEKSEL ANLATI TURLERI VE HIKAYE"
+  },
+  {
+   "sayfa": 219,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 220,
+   "tur": "M",
+   "sira": 2,
+   "konu": "GELENEKSEL ANLATI TURLERI VE HIKAYE",
+   "not": "Karma 2'nin ucuncu sayfasi (logo yine KARMA SORULAR 2)"
+  },
+  {
+   "sayfa": 221,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "unite ayraci (UcDort Bes filigranli, test bandi yok)"
+  },
+  {
+   "sayfa": 222,
+   "tur": "K",
+   "sira": 1,
+   "konu": "ROMAN TURUNUN GENEL OZELLIKLERI"
+  },
+  {
+   "sayfa": 223,
+   "tur": "K",
+   "sira": 1,
+   "konu": "ROMAN TURUNUN GENEL OZELLIKLERI"
+  },
+  {
+   "sayfa": 224,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT ROMANI"
+  },
+  {
+   "sayfa": 225,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT ROMANI"
+  },
+  {
+   "sayfa": 226,
+   "tur": "O",
+   "sira": 1,
+   "konu": "TANZIMAT ROMANI"
+  },
+  {
+   "sayfa": 227,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 228,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SERVETIFUNUN ROMANI"
+  },
+  {
+   "sayfa": 229,
+   "tur": "K",
+   "sira": 1,
+   "konu": "SERVETIFUNUN ROMANI"
+  },
+  {
+   "sayfa": 230,
+   "tur": "O",
+   "sira": 1,
+   "konu": "SERVETIFUNUN ROMANI"
+  },
+  {
+   "sayfa": 231,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 232,
+   "tur": "K",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT ROMANI"
+  },
+  {
+   "sayfa": 233,
+   "tur": "K",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT ROMANI"
+  },
+  {
+   "sayfa": 234,
+   "tur": "O",
+   "sira": 1,
+   "konu": "MILLI EDEBIYAT ROMANI"
+  },
+  {
+   "sayfa": 235,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 236,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET ROMANI"
+  },
+  {
+   "sayfa": 237,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET ROMANI"
+  },
+  {
+   "sayfa": 238,
+   "tur": "O",
+   "sira": 1,
+   "konu": "CUMHURIYET ROMANI"
+  },
+  {
+   "sayfa": 239,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 240,
+   "tur": "O",
+   "sira": 2,
+   "konu": "CUMHURIYET ROMANI"
+  },
+  {
+   "sayfa": 241,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 242,
+   "tur": "O",
+   "sira": 3,
+   "konu": "CUMHURIYET ROMANI"
+  },
+  {
+   "sayfa": 243,
+   "tur": "O",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 244,
+   "tur": "O",
+   "sira": 4,
+   "konu": "CUMHURIYET ROMANI"
+  },
+  {
+   "sayfa": 245,
+   "tur": "O",
+   "sira": 4,
+   "konu": "-"
+  },
+  {
+   "sayfa": 246,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 247,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 248,
+   "tur": "M",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E ROMAN"
+  },
+  {
+   "sayfa": 249,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 250,
+   "tur": "M",
+   "sira": 2,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E ROMAN"
+  },
+  {
+   "sayfa": 251,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 252,
+   "tur": "M",
+   "sira": 3,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E ROMAN"
+  },
+  {
+   "sayfa": 253,
+   "tur": "M",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 254,
+   "tur": "M",
+   "sira": 3,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E ROMAN",
+   "not": "Karma 3'un ucuncu sayfasi (logo yine KARMA SORULAR 3)"
+  },
+  {
+   "sayfa": 255,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "unite ayraci (UcDort Bes filigranli, test bandi yok)"
+  },
+  {
+   "sayfa": 256,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TIYATRO TURUNUN GENEL OZELLIKLERI"
+  },
+  {
+   "sayfa": 257,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TIYATRO TURUNUN GENEL OZELLIKLERI"
+  },
+  {
+   "sayfa": 258,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GELENEKSEL TURK TIYATROSU"
+  },
+  {
+   "sayfa": 259,
+   "tur": "K",
+   "sira": 1,
+   "konu": "GELENEKSEL TURK TIYATROSU"
+  },
+  {
+   "sayfa": 260,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO"
+  },
+  {
+   "sayfa": 261,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO"
+  },
+  {
+   "sayfa": 262,
+   "tur": "O",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO"
+  },
+  {
+   "sayfa": 263,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 264,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET TIYATROSU"
+  },
+  {
+   "sayfa": 265,
+   "tur": "K",
+   "sira": 1,
+   "konu": "CUMHURIYET TIYATROSU"
+  },
+  {
+   "sayfa": 266,
+   "tur": "O",
+   "sira": 1,
+   "konu": "CUMHURIYET TIYATROSU"
+  },
+  {
+   "sayfa": 267,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 268,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 269,
+   "tur": "R",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 270,
+   "tur": "M",
+   "sira": 1,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E TIYATRO"
+  },
+  {
+   "sayfa": 271,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 272,
+   "tur": "M",
+   "sira": 2,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E TIYATRO"
+  },
+  {
+   "sayfa": 273,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 274,
+   "tur": "M",
+   "sira": 2,
+   "konu": "TANZIMAT'TAN CUMHURIYET'E TIYATRO",
+   "not": "Karma 2'nin ucuncu sayfasi (logo yine KARMA SORULAR 2)"
+  },
+  {
+   "sayfa": 275,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "unite ayraci (UcDort Bes filigranli, test bandi yok)"
+  },
+  {
+   "sayfa": 276,
+   "tur": "K",
+   "sira": 1,
+   "konu": "BATI EDEBIYATI"
+  },
+  {
+   "sayfa": 277,
+   "tur": "K",
+   "sira": 1,
+   "konu": "BATI EDEBIYATI"
+  },
+  {
+   "sayfa": 278,
+   "tur": "O",
+   "sira": 1,
+   "konu": "BATI EDEBIYATI"
+  },
+  {
+   "sayfa": 279,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 280,
+   "tur": "K",
+   "sira": 1,
+   "konu": "EDEBI AKIMLAR"
+  },
+  {
+   "sayfa": 281,
+   "tur": "K",
+   "sira": 1,
+   "konu": "EDEBI AKIMLAR"
+  },
+  {
+   "sayfa": 282,
+   "tur": "O",
+   "sira": 1,
+   "konu": "EDEBI AKIMLAR"
+  },
+  {
+   "sayfa": 283,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 284,
+   "tur": "O",
+   "sira": 2,
+   "konu": "EDEBI AKIMLAR"
+  },
+  {
+   "sayfa": 285,
+   "tur": "O",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 286,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TURK EDEBIYATINDA ILKLER"
+  },
+  {
+   "sayfa": 287,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TURK EDEBIYATINDA ILKLER"
+  },
+  {
+   "sayfa": 288,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TURK EDEBIYATINDA ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 289,
+   "tur": "K",
+   "sira": 1,
+   "konu": "TURK EDEBIYATINDA ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 290,
+   "tur": "O",
+   "sira": 1,
+   "konu": "TURK EDEBIYATINDA ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 291,
+   "tur": "O",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 292,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 293,
+   "tur": "K",
+   "sira": 1,
+   "konu": "DUNYA EDEBIYATINDA ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 294,
+   "tur": "M",
+   "sira": 1,
+   "konu": "BATI EDEBIYATI VE EDEBI AKIMLAR - ILKLER VE ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 295,
+   "tur": "M",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 296,
+   "tur": "M",
+   "sira": 2,
+   "konu": "BATI EDEBIYATI VE EDEBI AKIMLAR - ILKLER VE ROMAN OZETLERI"
+  },
+  {
+   "sayfa": 297,
+   "tur": "M",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 298,
+   "tur": "M",
+   "sira": 2,
+   "konu": "BATI EDEBIYATI VE EDEBI AKIMLAR - ILKLER VE ROMAN OZETLERI",
+   "not": "Karma 2'nin ucuncu sayfasi (logo yine KARMA SORULAR 2)"
+  },
+  {
+   "sayfa": 299,
+   "tur": "-",
+   "sira": null,
+   "konu": "-",
+   "not": "unite ayraci (UcDort Bes filigranli, test bandi yok)"
+  },
+  {
+   "sayfa": 300,
+   "tur": "G",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 301,
+   "tur": "G",
+   "sira": 1,
+   "konu": "-"
+  },
+  {
+   "sayfa": 302,
+   "tur": "G",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 303,
+   "tur": "G",
+   "sira": 2,
+   "konu": "-"
+  },
+  {
+   "sayfa": 304,
+   "tur": "G",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 305,
+   "tur": "G",
+   "sira": 3,
+   "konu": "-"
+  },
+  {
+   "sayfa": 306,
+   "tur": "G",
+   "sira": 4,
+   "konu": "-"
+  },
+  {
+   "sayfa": 307,
+   "tur": "G",
+   "sira": 4,
+   "konu": "-"
+  },
+  {
+   "sayfa": 308,
+   "tur": "G",
+   "sira": 5,
+   "konu": "-"
+  },
+  {
+   "sayfa": 309,
+   "tur": "G",
+   "sira": 5,
+   "konu": "-"
+  },
+  {
+   "sayfa": 310,
+   "tur": "G",
+   "sira": 6,
+   "konu": "-"
+  },
+  {
+   "sayfa": 311,
+   "tur": "G",
+   "sira": 6,
+   "konu": "-"
+  },
+  {
+   "sayfa": 312,
+   "tur": "G",
+   "sira": 7,
+   "konu": "-"
+  },
+  {
+   "sayfa": 313,
+   "tur": "G",
+   "sira": 7,
+   "konu": "-"
+  },
+  {
+   "sayfa": 314,
+   "tur": "G",
+   "sira": 8,
+   "konu": "-"
+  },
+  {
+   "sayfa": 315,
+   "tur": "G",
+   "sira": 8,
+   "konu": "-"
+  },
+  {
+   "sayfa": 316,
+   "tur": "G",
+   "sira": 9,
+   "konu": "-"
+  },
+  {
+   "sayfa": 317,
+   "tur": "G",
+   "sira": 9,
+   "konu": "-"
+  },
+  {
+   "sayfa": 318,
+   "tur": "G",
+   "sira": 10,
+   "konu": "-"
+  },
+  {
+   "sayfa": 319,
+   "tur": "G",
+   "sira": 10,
+   "konu": "-"
+  },
+  {
+   "sayfa": 320,
+   "tur": "G",
+   "sira": 10,
+   "konu": "-",
+   "not": "Genel Bakis Testleri 10'un ucuncu sayfasi (yine 10 yaziyor)"
+  }
+ ]
+}

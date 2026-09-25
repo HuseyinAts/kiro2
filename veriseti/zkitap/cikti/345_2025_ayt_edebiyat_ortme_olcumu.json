@@ -1,0 +1,1143 @@
+{
+"kaynak": "345 2025 AYT Turk Edebiyati Soru Bankasi",
+"arac": "scripts/kitap/edb345ayt_kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada koyu kitap murekkebi (acil25_geo_kirp.ortme_halkalari). Kirpimin icine >= 4 halka pikseli dusen soru 'ortme suphesi' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"tam_kitap": true,
+"kenar_kapisi_ihlali": 8,
+"ortme_suphesi_soru": 94,
+"kenar": [
+{
+"birim": "EDB345AYT-T068",
+"soru": 11,
+"dosya": 149,
+"sutun": "R",
+"sol": 25,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T141",
+"soru": 6,
+"dosya": 305,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T143",
+"soru": 6,
+"dosya": 309,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T144",
+"soru": 7,
+"dosya": 311,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T145",
+"soru": 6,
+"dosya": 313,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T146",
+"soru": 6,
+"dosya": 315,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T147",
+"soru": 7,
+"dosya": 317,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+},
+{
+"birim": "EDB345AYT-T148",
+"soru": 5,
+"dosya": 319,
+"sutun": "R",
+"sol": 14,
+"sag": 0
+}
+],
+"ortme": [
+{
+"birim": "EDB345AYT-T002",
+"soru": 1,
+"dosya": 8,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T002",
+"soru": 4,
+"dosya": 9,
+"sutun": "L",
+"simge": [
+148,
+371
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T004",
+"soru": 1,
+"dosya": 12,
+"sutun": "L",
+"simge": [
+151,
+45
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T005",
+"soru": 5,
+"dosya": 15,
+"sutun": "L",
+"simge": [
+149,
+371
+],
+"piksel": 5
+},
+{
+"birim": "EDB345AYT-T006",
+"soru": 1,
+"dosya": 16,
+"sutun": "L",
+"simge": [
+150,
+45
+],
+"piksel": 13
+},
+{
+"birim": "EDB345AYT-T008",
+"soru": 1,
+"dosya": 20,
+"sutun": "L",
+"simge": [
+150,
+45
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T009",
+"soru": 1,
+"dosya": 22,
+"sutun": "L",
+"simge": [
+149,
+45
+],
+"piksel": 16
+},
+{
+"birim": "EDB345AYT-T011",
+"soru": 1,
+"dosya": 26,
+"sutun": "L",
+"simge": [
+149,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T012",
+"soru": 1,
+"dosya": 28,
+"sutun": "L",
+"simge": [
+149,
+46
+],
+"piksel": 25
+},
+{
+"birim": "EDB345AYT-T013",
+"soru": 1,
+"dosya": 30,
+"sutun": "L",
+"simge": [
+146,
+45
+],
+"piksel": 6
+},
+{
+"birim": "EDB345AYT-T014",
+"soru": 6,
+"dosya": 33,
+"sutun": "L",
+"simge": [
+147,
+369
+],
+"piksel": 13
+},
+{
+"birim": "EDB345AYT-T015",
+"soru": 2,
+"dosya": 34,
+"sutun": "L",
+"simge": [
+701,
+366
+],
+"piksel": 4
+},
+{
+"birim": "EDB345AYT-T018",
+"soru": 1,
+"dosya": 42,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 17
+},
+{
+"birim": "EDB345AYT-T019",
+"soru": 1,
+"dosya": 44,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 17
+},
+{
+"birim": "EDB345AYT-T019",
+"soru": 6,
+"dosya": 45,
+"sutun": "L",
+"simge": [
+148,
+371
+],
+"piksel": 4
+},
+{
+"birim": "EDB345AYT-T021",
+"soru": 1,
+"dosya": 48,
+"sutun": "L",
+"simge": [
+150,
+46
+],
+"piksel": 25
+},
+{
+"birim": "EDB345AYT-T022",
+"soru": 1,
+"dosya": 50,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 17
+},
+{
+"birim": "EDB345AYT-T024",
+"soru": 1,
+"dosya": 54,
+"sutun": "L",
+"simge": [
+146,
+369
+],
+"piksel": 6
+},
+{
+"birim": "EDB345AYT-T024",
+"soru": 1,
+"dosya": 54,
+"sutun": "L",
+"simge": [
+149,
+44
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T025",
+"soru": 1,
+"dosya": 56,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 17
+},
+{
+"birim": "EDB345AYT-T027",
+"soru": 1,
+"dosya": 60,
+"sutun": "L",
+"simge": [
+149,
+45
+],
+"piksel": 16
+},
+{
+"birim": "EDB345AYT-T028",
+"soru": 1,
+"dosya": 62,
+"sutun": "L",
+"simge": [
+147,
+45
+],
+"piksel": 7
+},
+{
+"birim": "EDB345AYT-T032",
+"soru": 6,
+"dosya": 73,
+"sutun": "L",
+"simge": [
+147,
+371
+],
+"piksel": 4
+},
+{
+"birim": "EDB345AYT-T033",
+"soru": 1,
+"dosya": 74,
+"sutun": "L",
+"simge": [
+150,
+45
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T035",
+"soru": 1,
+"dosya": 78,
+"sutun": "L",
+"simge": [
+147,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T038",
+"soru": 1,
+"dosya": 84,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 17
+},
+{
+"birim": "EDB345AYT-T039",
+"soru": 1,
+"dosya": 86,
+"sutun": "L",
+"simge": [
+151,
+45
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T040",
+"soru": 1,
+"dosya": 88,
+"sutun": "L",
+"simge": [
+154,
+45
+],
+"piksel": 30
+},
+{
+"birim": "EDB345AYT-T040",
+"soru": 1,
+"dosya": 88,
+"sutun": "L",
+"simge": [
+491,
+362
+],
+"piksel": 24
+},
+{
+"birim": "EDB345AYT-T042",
+"soru": 1,
+"dosya": 92,
+"sutun": "L",
+"simge": [
+147,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T043",
+"soru": 1,
+"dosya": 94,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T044",
+"soru": 1,
+"dosya": 96,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 17
+},
+{
+"birim": "EDB345AYT-T046",
+"soru": 1,
+"dosya": 100,
+"sutun": "L",
+"simge": [
+148,
+44
+],
+"piksel": 15
+},
+{
+"birim": "EDB345AYT-T047",
+"soru": 1,
+"dosya": 102,
+"sutun": "L",
+"simge": [
+146,
+45
+],
+"piksel": 6
+},
+{
+"birim": "EDB345AYT-T048",
+"soru": 2,
+"dosya": 104,
+"sutun": "L",
+"simge": [
+452,
+368
+],
+"piksel": 19
+},
+{
+"birim": "EDB345AYT-T048",
+"soru": 8,
+"dosya": 105,
+"sutun": "L",
+"simge": [
+722,
+370
+],
+"piksel": 10
+},
+{
+"birim": "EDB345AYT-T049",
+"soru": 1,
+"dosya": 106,
+"sutun": "L",
+"simge": [
+148,
+36
+],
+"piksel": 6
+},
+{
+"birim": "EDB345AYT-T051",
+"soru": 8,
+"dosya": 112,
+"sutun": "L",
+"simge": [
+151,
+365
+],
+"piksel": 12
+},
+{
+"birim": "EDB345AYT-T053",
+"soru": 1,
+"dosya": 116,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 27
+},
+{
+"birim": "EDB345AYT-T054",
+"soru": 1,
+"dosya": 118,
+"sutun": "L",
+"simge": [
+148,
+44
+],
+"piksel": 15
+},
+{
+"birim": "EDB345AYT-T056",
+"soru": 1,
+"dosya": 122,
+"sutun": "L",
+"simge": [
+151,
+47
+],
+"piksel": 40
+},
+{
+"birim": "EDB345AYT-T057",
+"soru": 1,
+"dosya": 124,
+"sutun": "L",
+"simge": [
+148,
+46
+],
+"piksel": 27
+},
+{
+"birim": "EDB345AYT-T059",
+"soru": 1,
+"dosya": 128,
+"sutun": "L",
+"simge": [
+149,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T060",
+"soru": 1,
+"dosya": 130,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 28
+},
+{
+"birim": "EDB345AYT-T060",
+"soru": 2,
+"dosya": 130,
+"sutun": "L",
+"simge": [
+625,
+368
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T062",
+"soru": 1,
+"dosya": 134,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 27
+},
+{
+"birim": "EDB345AYT-T066",
+"soru": 5,
+"dosya": 143,
+"sutun": "L",
+"simge": [
+147,
+370
+],
+"piksel": 7
+},
+{
+"birim": "EDB345AYT-T067",
+"soru": 7,
+"dosya": 146,
+"sutun": "L",
+"simge": [
+147,
+366
+],
+"piksel": 11
+},
+{
+"birim": "EDB345AYT-T069",
+"soru": 1,
+"dosya": 150,
+"sutun": "L",
+"simge": [
+148,
+46
+],
+"piksel": 28
+},
+{
+"birim": "EDB345AYT-T071",
+"soru": 1,
+"dosya": 154,
+"sutun": "L",
+"simge": [
+149,
+47
+],
+"piksel": 35
+},
+{
+"birim": "EDB345AYT-T073",
+"soru": 1,
+"dosya": 158,
+"sutun": "L",
+"simge": [
+149,
+46
+],
+"piksel": 25
+},
+{
+"birim": "EDB345AYT-T075",
+"soru": 1,
+"dosya": 162,
+"sutun": "L",
+"simge": [
+149,
+44
+],
+"piksel": 13
+},
+{
+"birim": "EDB345AYT-T075",
+"soru": 6,
+"dosya": 163,
+"sutun": "L",
+"simge": [
+416,
+372
+],
+"piksel": 28
+},
+{
+"birim": "EDB345AYT-T076",
+"soru": 1,
+"dosya": 164,
+"sutun": "L",
+"simge": [
+148,
+367
+],
+"piksel": 7
+},
+{
+"birim": "EDB345AYT-T077",
+"soru": 1,
+"dosya": 166,
+"sutun": "L",
+"simge": [
+147,
+44
+],
+"piksel": 16
+},
+{
+"birim": "EDB345AYT-T079",
+"soru": 1,
+"dosya": 170,
+"sutun": "L",
+"simge": [
+147,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T083",
+"soru": 1,
+"dosya": 178,
+"sutun": "L",
+"simge": [
+148,
+46
+],
+"piksel": 27
+},
+{
+"birim": "EDB345AYT-T090",
+"soru": 1,
+"dosya": 194,
+"sutun": "L",
+"simge": [
+147,
+47
+],
+"piksel": 37
+},
+{
+"birim": "EDB345AYT-T090",
+"soru": 2,
+"dosya": 194,
+"sutun": "L",
+"simge": [
+654,
+368
+],
+"piksel": 7
+},
+{
+"birim": "EDB345AYT-T090",
+"soru": 6,
+"dosya": 195,
+"sutun": "L",
+"simge": [
+548,
+370
+],
+"piksel": 22
+},
+{
+"birim": "EDB345AYT-T091",
+"soru": 6,
+"dosya": 197,
+"sutun": "L",
+"simge": [
+153,
+369
+],
+"piksel": 13
+},
+{
+"birim": "EDB345AYT-T092",
+"soru": 1,
+"dosya": 198,
+"sutun": "L",
+"simge": [
+147,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T095",
+"soru": 1,
+"dosya": 204,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 28
+},
+{
+"birim": "EDB345AYT-T097",
+"soru": 1,
+"dosya": 208,
+"sutun": "L",
+"simge": [
+148,
+45
+],
+"piksel": 18
+},
+{
+"birim": "EDB345AYT-T098",
+"soru": 1,
+"dosya": 210,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T099",
+"soru": 1,
+"dosya": 212,
+"sutun": "L",
+"simge": [
+148,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T100",
+"soru": 1,
+"dosya": 214,
+"sutun": "L",
+"simge": [
+151,
+46
+],
+"piksel": 5
+},
+{
+"birim": "EDB345AYT-T101",
+"soru": 1,
+"dosya": 216,
+"sutun": "L",
+"simge": [
+148,
+366
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T102",
+"soru": 4,
+"dosya": 219,
+"sutun": "L",
+"simge": [
+146,
+369
+],
+"piksel": 5
+},
+{
+"birim": "EDB345AYT-T105",
+"soru": 1,
+"dosya": 226,
+"sutun": "L",
+"simge": [
+148,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T107",
+"soru": 1,
+"dosya": 230,
+"sutun": "L",
+"simge": [
+148,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T109",
+"soru": 1,
+"dosya": 234,
+"sutun": "L",
+"simge": [
+149,
+45
+],
+"piksel": 15
+},
+{
+"birim": "EDB345AYT-T109",
+"soru": 7,
+"dosya": 235,
+"sutun": "L",
+"simge": [
+527,
+366
+],
+"piksel": 25
+},
+{
+"birim": "EDB345AYT-T111",
+"soru": 1,
+"dosya": 238,
+"sutun": "L",
+"simge": [
+147,
+45
+],
+"piksel": 20
+},
+{
+"birim": "EDB345AYT-T111",
+"soru": 2,
+"dosya": 238,
+"sutun": "L",
+"simge": [
+622,
+368
+],
+"piksel": 4
+},
+{
+"birim": "EDB345AYT-T112",
+"soru": 1,
+"dosya": 240,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T113",
+"soru": 1,
+"dosya": 242,
+"sutun": "L",
+"simge": [
+147,
+46
+],
+"piksel": 28
+},
+{
+"birim": "EDB345AYT-T114",
+"soru": 1,
+"dosya": 244,
+"sutun": "L",
+"simge": [
+150,
+46
+],
+"piksel": 25
+},
+{
+"birim": "EDB345AYT-T115",
+"soru": 1,
+"dosya": 246,
+"sutun": "L",
+"simge": [
+149,
+46
+],
+"piksel": 5
+},
+{
+"birim": "EDB345AYT-T117",
+"soru": 1,
+"dosya": 250,
+"sutun": "L",
+"simge": [
+152,
+39
+],
+"piksel": 5
+},
+{
+"birim": "EDB345AYT-T118",
+"soru": 5,
+"dosya": 254,
+"sutun": "L",
+"simge": [
+148,
+365
+],
+"piksel": 12
+},
+{
+"birim": "EDB345AYT-T122",
+"soru": 1,
+"dosya": 262,
+"sutun": "L",
+"simge": [
+151,
+46
+],
+"piksel": 26
+},
+{
+"birim": "EDB345AYT-T124",
+"soru": 1,
+"dosya": 266,
+"sutun": "L",
+"simge": [
+152,
+45
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T124",
+"soru": 6,
+"dosya": 267,
+"sutun": "L",
+"simge": [
+641,
+368
+],
+"piksel": 44
+},
+{
+"birim": "EDB345AYT-T127",
+"soru": 4,
+"dosya": 273,
+"sutun": "L",
+"simge": [
+147,
+369
+],
+"piksel": 12
+},
+{
+"birim": "EDB345AYT-T129",
+"soru": 1,
+"dosya": 278,
+"sutun": "L",
+"simge": [
+150,
+45
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T131",
+"soru": 1,
+"dosya": 282,
+"sutun": "L",
+"simge": [
+156,
+43
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T131",
+"soru": 7,
+"dosya": 283,
+"sutun": "L",
+"simge": [
+697,
+373
+],
+"piksel": 30
+},
+{
+"birim": "EDB345AYT-T132",
+"soru": 1,
+"dosya": 284,
+"sutun": "L",
+"simge": [
+147,
+369
+],
+"piksel": 4
+},
+{
+"birim": "EDB345AYT-T132",
+"soru": 1,
+"dosya": 284,
+"sutun": "L",
+"simge": [
+148,
+44
+],
+"piksel": 15
+},
+{
+"birim": "EDB345AYT-T132",
+"soru": 5,
+"dosya": 285,
+"sutun": "L",
+"simge": [
+434,
+371
+],
+"piksel": 14
+},
+{
+"birim": "EDB345AYT-T135",
+"soru": 1,
+"dosya": 290,
+"sutun": "L",
+"simge": [
+149,
+44
+],
+"piksel": 13
+},
+{
+"birim": "EDB345AYT-T137",
+"soru": 2,
+"dosya": 294,
+"sutun": "L",
+"simge": [
+490,
+368
+],
+"piksel": 4
+},
+{
+"birim": "EDB345AYT-T139",
+"soru": 2,
+"dosya": 300,
+"sutun": "L",
+"simge": [
+634,
+364
+],
+"piksel": 9
+},
+{
+"birim": "EDB345AYT-T144",
+"soru": 1,
+"dosya": 310,
+"sutun": "L",
+"simge": [
+603,
+364
+],
+"piksel": 22
+},
+{
+"birim": "EDB345AYT-T145",
+"soru": 5,
+"dosya": 313,
+"sutun": "L",
+"simge": [
+147,
+369
+],
+"piksel": 6
+},
+{
+"birim": "EDB345AYT-T148",
+"soru": 7,
+"dosya": 320,
+"sutun": "L",
+"simge": [
+147,
+364
+],
+"piksel": 12
+}
+]
+}

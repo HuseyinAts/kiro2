@@ -1,0 +1,229 @@
+{
+ "kaynak": "345 2025 AYT Turk Edebiyati Soru Bankasi",
+ "olcu": "govde (ortak metinli soruda ortak metin + govde) kelime kumesi Jaccard >= 0.75, DB EDEBIYAT; GUCLU aday = ayrica bes sikkin >= 3'u bosluk/tire normalize birebir; isaret yalniz GUCLU adaylara konur.",
+ "db_satiri": 1621,
+ "aday_sayisi": 20,
+ "guclu_aday_sayisi": 6,
+ "adaylar": [
+  {
+   "dosya": "EDB345AYT-T003_09",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "D",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T010_08",
+   "jaccard": 0.75,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "A",
+   "cevap_ayni": true,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T027_06",
+   "jaccard": 1.0,
+   "db_id": "03eb6cfb-e66c-59c6-a934-45e4d8d7b98c",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "A",
+   "cevap_ayni": true,
+   "siklar_ayni": true,
+   "ayni_sik_sayisi": 5
+  },
+  {
+   "dosya": "EDB345AYT-T029_04",
+   "jaccard": 1.0,
+   "db_id": "a3a0aeb5-0d4f-54d6-8c51-63e8682acc15",
+   "db_kaynak": "OSYM 2025 AYT",
+   "db_cevap": "C",
+   "bizim_cevap": "E",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 3
+  },
+  {
+   "dosya": "EDB345AYT-T031_08",
+   "jaccard": 0.818,
+   "db_id": "9c72cf23-79fd-5de6-b9f5-f68b952ec970",
+   "db_kaynak": "OSYM 2025 AYT",
+   "db_cevap": "D",
+   "bizim_cevap": "E",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 3
+  },
+  {
+   "dosya": "EDB345AYT-T043_02",
+   "jaccard": 0.778,
+   "db_id": "860a52e0-267a-59b1-9542-157045c449e3",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "E",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T055_09",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "D",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T072_08",
+   "jaccard": 0.778,
+   "db_id": "860a52e0-267a-59b1-9542-157045c449e3",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "E",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T079_07",
+   "jaccard": 1.0,
+   "db_id": "c5cb99ca-690e-534e-8a7a-7491fbdb6cd7",
+   "db_kaynak": "OSYM 2025 AYT",
+   "db_cevap": "C",
+   "bizim_cevap": "A",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 2
+  },
+  {
+   "dosya": "EDB345AYT-T091_09",
+   "jaccard": 1.0,
+   "db_id": "db4bbf36-f160-5a60-9083-66c54b0093c4",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "A",
+   "cevap_ayni": true,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T102_05",
+   "jaccard": 0.938,
+   "db_id": "1287780d-152a-554e-b095-388cb2040c93",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "A",
+   "cevap_ayni": true,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 4
+  },
+  {
+   "dosya": "EDB345AYT-T102_09",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "E",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T104_03",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T119_03",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T121_02",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T127_07",
+   "jaccard": 0.909,
+   "db_id": "da117d06-f75d-5113-ba6f-f19aa5db093a",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "E",
+   "cevap_ayni": true,
+   "siklar_ayni": true,
+   "ayni_sik_sayisi": 5
+  },
+  {
+   "dosya": "EDB345AYT-T128_04",
+   "jaccard": 1.0,
+   "db_id": "36bf76ee-6d4c-52e0-86d6-6936a7d12ec7",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "A",
+   "cevap_ayni": true,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T132_05",
+   "jaccard": 1.0,
+   "db_id": "95e85eb2-adb9-56a0-9cd2-4aa637808ac8",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "A",
+   "cevap_ayni": true,
+   "siklar_ayni": true,
+   "ayni_sik_sayisi": 5
+  },
+  {
+   "dosya": "EDB345AYT-T139_05",
+   "jaccard": 0.833,
+   "db_id": "14a8c796-f069-509f-89e8-222c1132ebf9",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "B",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  },
+  {
+   "dosya": "EDB345AYT-T143_03",
+   "jaccard": 0.833,
+   "db_id": "14a8c796-f069-509f-89e8-222c1132ebf9",
+   "db_kaynak": "Bilgi Sarmal Ayt Edebiyat Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "D",
+   "cevap_ayni": false,
+   "siklar_ayni": false,
+   "ayni_sik_sayisi": 0
+  }
+ ]
+}

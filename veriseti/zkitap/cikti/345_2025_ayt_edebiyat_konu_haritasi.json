@@ -1,0 +1,2583 @@
+{
+ "kaynak": "345 2025 AYT Turk Edebiyati Soru Bankasi",
+ "nereden": "Unite ve konu adlari + baslangic sayfalari: kitabin KENDI icindekiler sayfalari (dosya 3-4). Test turu ve sirasi: her sayfanin ust bandi (316 bant, goz ile okundu). Test sirasi ve soru sayisi: kitap sonu cevap anahtari (s321-328, iki okuma).",
+ "dogrulama": "148 bant kosusunun 148'i anahtarin test sirasiyla (tur + sira) birebir; 46 konunun 46'sinda icindekiler baslangic sayfasi == konunun ilk testinin ilk sayfasi. Karma (M) ve Orijinal (R) testleri anahtarda unitenin son konusunun altinda listelenir ama bantlari UNITE adini basar; unite dugumune baglanir.",
+ "bant_esleme": {
+  "BAGIMSIZ SAIRLER - MANZUM HIKAYE VE MENSUR SIIR": "BAGIMSIZ SAIRLER VE FIKIR AKIMLARI - MANZUM HIKAYE VE MENSUR SIIR"
+ },
+ "unite_sayisi": 10,
+ "uniteler": [
+  {
+   "kod": "EDB-345A25-U01",
+   "no": 1,
+   "ad": "T\u00fcrk Edebiyat\u0131na Giri\u015f ve \u00d6\u011fretici Metinler",
+   "ad_ascii": "TURK EDEBIYATINA GIRIS VE OGRETICI METINLER",
+   "ayrac_sayfasi": 5
+  },
+  {
+   "kod": "EDB-345A25-U02",
+   "no": 2,
+   "ad": "Co\u015fku ve Heyecan\u0131 Dile Getiren Metinler (\u015eiir Bilgisi)",
+   "ad_ascii": "COSKU VE HEYECANI DILE GETIREN METINLER (SIIR BILGISI)",
+   "ayrac_sayfasi": 39
+  },
+  {
+   "kod": "EDB-345A25-U03",
+   "no": 3,
+   "ad": "\u0130slamiyet \u00d6ncesi ve \u0130slami D\u00f6nem T\u00fcrk \u015eiiri",
+   "ad_ascii": "ISLAMIYET ONCESI VE ISLAMI DONEM TURK SIIRI",
+   "ayrac_sayfasi": 71
+  },
+  {
+   "kod": "EDB-345A25-U04",
+   "no": 4,
+   "ad": "Tanzimat'tan Mill\u00ee Edebiyat'a T\u00fcrk \u015eiiri",
+   "ad_ascii": "TANZIMAT'TAN MILLI EDEBIYAT'A TURK SIIRI",
+   "ayrac_sayfasi": 113
+  },
+  {
+   "kod": "EDB-345A25-U05",
+   "no": 5,
+   "ad": "Cumhuriyet D\u00f6nemi T\u00fcrk \u015eiiri",
+   "ad_ascii": "CUMHURIYET DONEMI TURK SIIRI",
+   "ayrac_sayfasi": 147
+  },
+  {
+   "kod": "EDB-345A25-U06",
+   "no": 6,
+   "ad": "Geleneksel Anlat\u0131 T\u00fcrleri - Tanzimat'tan Cumhuriyet'e Hik\u00e2ye",
+   "ad_ascii": "GELENEKSEL ANLATI TURLERI - TANZIMAT'TAN CUMHURIYET'E HIKAYE",
+   "ayrac_sayfasi": 191
+  },
+  {
+   "kod": "EDB-345A25-U07",
+   "no": 7,
+   "ad": "Tanzimat'tan Cumhuriyet'e Roman",
+   "ad_ascii": "TANZIMAT'TAN CUMHURIYET'E ROMAN",
+   "ayrac_sayfasi": 221
+  },
+  {
+   "kod": "EDB-345A25-U08",
+   "no": 8,
+   "ad": "Tanzimat'tan Cumhuriyet'e Tiyatro",
+   "ad_ascii": "TANZIMAT'TAN CUMHURIYET'E TIYATRO",
+   "ayrac_sayfasi": 255
+  },
+  {
+   "kod": "EDB-345A25-U09",
+   "no": 9,
+   "ad": "Bat\u0131 Edebiyat\u0131 ve Edeb\u00ee Ak\u0131mlar - \u0130lkler ve Roman \u00d6zetleri",
+   "ad_ascii": "BATI EDEBIYATI VE EDEBI AKIMLAR - ILKLER VE ROMAN OZETLERI",
+   "ayrac_sayfasi": 275
+  },
+  {
+   "kod": "EDB-345A25-U10",
+   "no": 10,
+   "ad": "Genel Bak\u0131\u015f Testleri",
+   "ad_ascii": "GENEL BAKIS TESTLERI",
+   "ayrac_sayfasi": 299
+  }
+ ],
+ "konu_sayisi": 46,
+ "konular": [
+  {
+   "kod": "EDB-345A25-U01-01",
+   "unite": 1,
+   "sira": 1,
+   "ad": "G\u00fczel Sanatlar ve Edebiyat",
+   "ad_ascii": "GUZEL SANATLAR VE EDEBIYAT",
+   "ilk_sayfa": 6,
+   "son_sayfa": 9
+  },
+  {
+   "kod": "EDB-345A25-U01-02",
+   "unite": 1,
+   "sira": 2,
+   "ad": "Tarih \u0130\u00e7inde T\u00fcrk Edebiyat\u0131",
+   "ad_ascii": "TARIH ICINDE TURK EDEBIYATI",
+   "ilk_sayfa": 10,
+   "son_sayfa": 13
+  },
+  {
+   "kod": "EDB-345A25-U01-03",
+   "unite": 1,
+   "sira": 3,
+   "ad": "S\u00f6zl\u00fc Anlat\u0131m T\u00fcrleri",
+   "ad_ascii": "SOZLU ANLATIM TURLERI",
+   "ilk_sayfa": 14,
+   "son_sayfa": 17
+  },
+  {
+   "kod": "EDB-345A25-U01-04",
+   "unite": 1,
+   "sira": 4,
+   "ad": "Ki\u015fisel Ya\u015fam\u0131 Konu Edinen Metinler",
+   "ad_ascii": "KISISEL YASAMI KONU EDINEN METINLER",
+   "ilk_sayfa": 18,
+   "son_sayfa": 23
+  },
+  {
+   "kod": "EDB-345A25-U01-05",
+   "unite": 1,
+   "sira": 5,
+   "ad": "Gazete \u00c7evresinde Geli\u015fen Metinler",
+   "ad_ascii": "GAZETE CEVRESINDE GELISEN METINLER",
+   "ilk_sayfa": 24,
+   "son_sayfa": 38
+  },
+  {
+   "kod": "EDB-345A25-U02-01",
+   "unite": 2,
+   "sira": 1,
+   "ad": "\u015eiirde Yap\u0131 ve Ahenk Unsurlar\u0131",
+   "ad_ascii": "SIIRDE YAPI VE AHENK UNSURLARI",
+   "ilk_sayfa": 40,
+   "son_sayfa": 45
+  },
+  {
+   "kod": "EDB-345A25-U02-02",
+   "unite": 2,
+   "sira": 2,
+   "ad": "Naz\u0131m Bi\u00e7imleri ve T\u00fcrleri",
+   "ad_ascii": "NAZIM BICIMLERI VE TURLERI",
+   "ilk_sayfa": 46,
+   "son_sayfa": 51
+  },
+  {
+   "kod": "EDB-345A25-U02-03",
+   "unite": 2,
+   "sira": 3,
+   "ad": "S\u00f6z Sanatlar\u0131",
+   "ad_ascii": "SOZ SANATLARI",
+   "ilk_sayfa": 52,
+   "son_sayfa": 57
+  },
+  {
+   "kod": "EDB-345A25-U02-04",
+   "unite": 2,
+   "sira": 4,
+   "ad": "\u015eiirde Konu ve Tema - Ger\u00e7eklik",
+   "ad_ascii": "SIIRDE KONU VE TEMA - GERCEKLIK",
+   "ilk_sayfa": 58,
+   "son_sayfa": 70
+  },
+  {
+   "kod": "EDB-345A25-U03-01",
+   "unite": 3,
+   "sira": 1,
+   "ad": "\u0130slamiyet \u00d6ncesi T\u00fcrk \u015eiiri",
+   "ad_ascii": "ISLAMIYET ONCESI TURK SIIRI",
+   "ilk_sayfa": 72,
+   "son_sayfa": 75
+  },
+  {
+   "kod": "EDB-345A25-U03-02",
+   "unite": 3,
+   "sira": 2,
+   "ad": "Ge\u00e7i\u015f D\u00f6nemi T\u00fcrk \u015eiiri",
+   "ad_ascii": "GECIS DONEMI TURK SIIRI",
+   "ilk_sayfa": 76,
+   "son_sayfa": 81
+  },
+  {
+   "kod": "EDB-345A25-U03-03",
+   "unite": 3,
+   "sira": 3,
+   "ad": "Halk \u015eiiri",
+   "ad_ascii": "HALK SIIRI",
+   "ilk_sayfa": 82,
+   "son_sayfa": 89
+  },
+  {
+   "kod": "EDB-345A25-U03-04",
+   "unite": 3,
+   "sira": 4,
+   "ad": "Divan \u015eiiri",
+   "ad_ascii": "DIVAN SIIRI",
+   "ilk_sayfa": 90,
+   "son_sayfa": 97
+  },
+  {
+   "kod": "EDB-345A25-U03-05",
+   "unite": 3,
+   "sira": 5,
+   "ad": "Divan Nesri",
+   "ad_ascii": "DIVAN NESRI",
+   "ilk_sayfa": 98,
+   "son_sayfa": 112
+  },
+  {
+   "kod": "EDB-345A25-U04-01",
+   "unite": 4,
+   "sira": 1,
+   "ad": "Tanzimat \u015eiiri",
+   "ad_ascii": "TANZIMAT SIIRI",
+   "ilk_sayfa": 114,
+   "son_sayfa": 119
+  },
+  {
+   "kod": "EDB-345A25-U04-02",
+   "unite": 4,
+   "sira": 2,
+   "ad": "Servetif\u00fcnun ve Fecri\u00e2ti \u015eiiri",
+   "ad_ascii": "SERVETIFUNUN VE FECRIATI SIIRI",
+   "ilk_sayfa": 120,
+   "son_sayfa": 125
+  },
+  {
+   "kod": "EDB-345A25-U04-03",
+   "unite": 4,
+   "sira": 3,
+   "ad": "Mill\u00ee Edebiyat \u015eiiri",
+   "ad_ascii": "MILLI EDEBIYAT SIIRI",
+   "ilk_sayfa": 126,
+   "son_sayfa": 131
+  },
+  {
+   "kod": "EDB-345A25-U04-04",
+   "unite": 4,
+   "sira": 4,
+   "ad": "Ba\u011f\u0131ms\u0131z \u015eairler ve Fikir Ak\u0131mlar\u0131 - Manzum Hik\u00e2ye ve Mensur \u015eiir",
+   "ad_ascii": "BAGIMSIZ SAIRLER VE FIKIR AKIMLARI - MANZUM HIKAYE VE MENSUR SIIR",
+   "ilk_sayfa": 132,
+   "son_sayfa": 146
+  },
+  {
+   "kod": "EDB-345A25-U05-01",
+   "unite": 5,
+   "sira": 1,
+   "ad": "\u00d6z \u015eiir ve Yedi Me\u015faleciler",
+   "ad_ascii": "OZ SIIR VE YEDI MESALECILER",
+   "ilk_sayfa": 148,
+   "son_sayfa": 151
+  },
+  {
+   "kod": "EDB-345A25-U05-02",
+   "unite": 5,
+   "sira": 2,
+   "ad": "Mill\u00ee Edebiyat Zevk ve Anlay\u0131\u015f\u0131n\u0131 S\u00fcrd\u00fcren \u015eiir",
+   "ad_ascii": "MILLI EDEBIYAT ZEVK VE ANLAYISINI SURDUREN SIIR",
+   "ilk_sayfa": 152,
+   "son_sayfa": 155
+  },
+  {
+   "kod": "EDB-345A25-U05-03",
+   "unite": 5,
+   "sira": 3,
+   "ad": "Serbest Naz\u0131m ve Toplumcu \u015eiir",
+   "ad_ascii": "SERBEST NAZIM VE TOPLUMCU SIIR",
+   "ilk_sayfa": 156,
+   "son_sayfa": 159
+  },
+  {
+   "kod": "EDB-345A25-U05-04",
+   "unite": 5,
+   "sira": 4,
+   "ad": "Garip\u00e7iler (I. Yeni)",
+   "ad_ascii": "GARIPCILER (I. YENI)",
+   "ilk_sayfa": 160,
+   "son_sayfa": 163
+  },
+  {
+   "kod": "EDB-345A25-U05-05",
+   "unite": 5,
+   "sira": 5,
+   "ad": "Garip D\u0131\u015f\u0131nda Yenili\u011fi S\u00fcrd\u00fcren \u015eiir",
+   "ad_ascii": "GARIP DISINDA YENILIGI SURDUREN SIIR",
+   "ilk_sayfa": 164,
+   "son_sayfa": 167
+  },
+  {
+   "kod": "EDB-345A25-U05-06",
+   "unite": 5,
+   "sira": 6,
+   "ad": "II. Yeni \u015eiiri",
+   "ad_ascii": "II. YENI SIIRI",
+   "ilk_sayfa": 168,
+   "son_sayfa": 171
+  },
+  {
+   "kod": "EDB-345A25-U05-07",
+   "unite": 5,
+   "sira": 7,
+   "ad": "1980 Sonras\u0131 T\u00fcrk \u015eiiri",
+   "ad_ascii": "1980 SONRASI TURK SIIRI",
+   "ilk_sayfa": 172,
+   "son_sayfa": 175
+  },
+  {
+   "kod": "EDB-345A25-U05-08",
+   "unite": 5,
+   "sira": 8,
+   "ad": "Cumhuriyet D\u00f6nemi Halk \u015eiiri",
+   "ad_ascii": "CUMHURIYET DONEMI HALK SIIRI",
+   "ilk_sayfa": 176,
+   "son_sayfa": 179
+  },
+  {
+   "kod": "EDB-345A25-U05-09",
+   "unite": 5,
+   "sira": 9,
+   "ad": "T\u00fcrk D\u00fcnyas\u0131 \u015eairleri",
+   "ad_ascii": "TURK DUNYASI SAIRLERI",
+   "ilk_sayfa": 180,
+   "son_sayfa": 190
+  },
+  {
+   "kod": "EDB-345A25-U06-01",
+   "unite": 6,
+   "sira": 1,
+   "ad": "Dede Korkut Hik\u00e2yeleri - Mesnevi - Halk Hik\u00e2yeleri",
+   "ad_ascii": "DEDE KORKUT HIKAYELERI - MESNEVI - HALK HIKAYELERI",
+   "ilk_sayfa": 192,
+   "son_sayfa": 195
+  },
+  {
+   "kod": "EDB-345A25-U06-02",
+   "unite": 6,
+   "sira": 2,
+   "ad": "Destan - Efsane - Masal - Fabl",
+   "ad_ascii": "DESTAN - EFSANE - MASAL - FABL",
+   "ilk_sayfa": 196,
+   "son_sayfa": 199
+  },
+  {
+   "kod": "EDB-345A25-U06-03",
+   "unite": 6,
+   "sira": 3,
+   "ad": "Hik\u00e2ye T\u00fcr\u00fcn\u00fcn Genel \u00d6zellikleri",
+   "ad_ascii": "HIKAYE TURUNUN GENEL OZELLIKLERI",
+   "ilk_sayfa": 200,
+   "son_sayfa": 201
+  },
+  {
+   "kod": "EDB-345A25-U06-04",
+   "unite": 6,
+   "sira": 4,
+   "ad": "Tanzimat'tan Mill\u00ee Edebiyat'a Hik\u00e2ye",
+   "ad_ascii": "TANZIMAT'TAN MILLI EDEBIYAT'A HIKAYE",
+   "ilk_sayfa": 202,
+   "son_sayfa": 205
+  },
+  {
+   "kod": "EDB-345A25-U06-05",
+   "unite": 6,
+   "sira": 5,
+   "ad": "Cumhuriyet D\u00f6nemi'nde Hik\u00e2ye",
+   "ad_ascii": "CUMHURIYET DONEMI'NDE HIKAYE",
+   "ilk_sayfa": 206,
+   "son_sayfa": 220
+  },
+  {
+   "kod": "EDB-345A25-U07-01",
+   "unite": 7,
+   "sira": 1,
+   "ad": "Roman T\u00fcr\u00fcn\u00fcn Genel \u00d6zellikleri",
+   "ad_ascii": "ROMAN TURUNUN GENEL OZELLIKLERI",
+   "ilk_sayfa": 222,
+   "son_sayfa": 223
+  },
+  {
+   "kod": "EDB-345A25-U07-02",
+   "unite": 7,
+   "sira": 2,
+   "ad": "Tanzimat Roman\u0131",
+   "ad_ascii": "TANZIMAT ROMANI",
+   "ilk_sayfa": 224,
+   "son_sayfa": 227
+  },
+  {
+   "kod": "EDB-345A25-U07-03",
+   "unite": 7,
+   "sira": 3,
+   "ad": "Servetif\u00fcnun Roman\u0131",
+   "ad_ascii": "SERVETIFUNUN ROMANI",
+   "ilk_sayfa": 228,
+   "son_sayfa": 231
+  },
+  {
+   "kod": "EDB-345A25-U07-04",
+   "unite": 7,
+   "sira": 4,
+   "ad": "Mill\u00ee Edebiyat Roman\u0131",
+   "ad_ascii": "MILLI EDEBIYAT ROMANI",
+   "ilk_sayfa": 232,
+   "son_sayfa": 235
+  },
+  {
+   "kod": "EDB-345A25-U07-05",
+   "unite": 7,
+   "sira": 5,
+   "ad": "Cumhuriyet Roman\u0131",
+   "ad_ascii": "CUMHURIYET ROMANI",
+   "ilk_sayfa": 236,
+   "son_sayfa": 254
+  },
+  {
+   "kod": "EDB-345A25-U08-01",
+   "unite": 8,
+   "sira": 1,
+   "ad": "Tiyatro T\u00fcr\u00fcn\u00fcn Genel \u00d6zellikleri",
+   "ad_ascii": "TIYATRO TURUNUN GENEL OZELLIKLERI",
+   "ilk_sayfa": 256,
+   "son_sayfa": 257
+  },
+  {
+   "kod": "EDB-345A25-U08-02",
+   "unite": 8,
+   "sira": 2,
+   "ad": "Geleneksel T\u00fcrk Tiyatrosu",
+   "ad_ascii": "GELENEKSEL TURK TIYATROSU",
+   "ilk_sayfa": 258,
+   "son_sayfa": 259
+  },
+  {
+   "kod": "EDB-345A25-U08-03",
+   "unite": 8,
+   "sira": 3,
+   "ad": "Tanzimat'tan Mill\u00ee Edebiyat'a Tiyatro",
+   "ad_ascii": "TANZIMAT'TAN MILLI EDEBIYAT'A TIYATRO",
+   "ilk_sayfa": 260,
+   "son_sayfa": 263
+  },
+  {
+   "kod": "EDB-345A25-U08-04",
+   "unite": 8,
+   "sira": 4,
+   "ad": "Cumhuriyet Tiyatrosu",
+   "ad_ascii": "CUMHURIYET TIYATROSU",
+   "ilk_sayfa": 264,
+   "son_sayfa": 274
+  },
+  {
+   "kod": "EDB-345A25-U09-01",
+   "unite": 9,
+   "sira": 1,
+   "ad": "Bat\u0131 Edebiyat\u0131",
+   "ad_ascii": "BATI EDEBIYATI",
+   "ilk_sayfa": 276,
+   "son_sayfa": 279
+  },
+  {
+   "kod": "EDB-345A25-U09-02",
+   "unite": 9,
+   "sira": 2,
+   "ad": "Edeb\u00ee Ak\u0131mlar",
+   "ad_ascii": "EDEBI AKIMLAR",
+   "ilk_sayfa": 280,
+   "son_sayfa": 285
+  },
+  {
+   "kod": "EDB-345A25-U09-03",
+   "unite": 9,
+   "sira": 3,
+   "ad": "T\u00fcrk Edebiyat\u0131nda \u0130lkler",
+   "ad_ascii": "TURK EDEBIYATINDA ILKLER",
+   "ilk_sayfa": 286,
+   "son_sayfa": 287
+  },
+  {
+   "kod": "EDB-345A25-U09-04",
+   "unite": 9,
+   "sira": 4,
+   "ad": "T\u00fcrk Edebiyat\u0131nda Roman \u00d6zetleri",
+   "ad_ascii": "TURK EDEBIYATINDA ROMAN OZETLERI",
+   "ilk_sayfa": 288,
+   "son_sayfa": 291
+  },
+  {
+   "kod": "EDB-345A25-U09-05",
+   "unite": 9,
+   "sira": 5,
+   "ad": "D\u00fcnya Edebiyat\u0131nda Roman \u00d6zetleri",
+   "ad_ascii": "DUNYA EDEBIYATINDA ROMAN OZETLERI",
+   "ilk_sayfa": 292,
+   "son_sayfa": 298
+  }
+ ],
+ "test_sayisi": 148,
+ "testler": [
+  {
+   "birim": "EDB345AYT-T001",
+   "konu": "EDB-345A25-U01-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    6,
+    7
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T002",
+   "konu": "EDB-345A25-U01-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    8,
+    9
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T003",
+   "konu": "EDB-345A25-U01-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    10,
+    11
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T004",
+   "konu": "EDB-345A25-U01-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    12,
+    13
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T005",
+   "konu": "EDB-345A25-U01-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    14,
+    15
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T006",
+   "konu": "EDB-345A25-U01-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    16,
+    17
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T007",
+   "konu": "EDB-345A25-U01-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    18,
+    19
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T008",
+   "konu": "EDB-345A25-U01-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    20,
+    21
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T009",
+   "konu": "EDB-345A25-U01-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    22,
+    23
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T010",
+   "konu": "EDB-345A25-U01-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    24,
+    25
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T011",
+   "konu": "EDB-345A25-U01-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    26,
+    27
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T012",
+   "konu": "EDB-345A25-U01-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U01",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    28,
+    29
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T013",
+   "konu": "EDB-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U01",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    30,
+    31
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T014",
+   "konu": "EDB-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U01",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    32,
+    33
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T015",
+   "konu": "EDB-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U01",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    34,
+    35
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T016",
+   "konu": "EDB-345A25-U01",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U01",
+   "tur": "karma",
+   "tur_sira": 3,
+   "sayfalar": [
+    36,
+    37,
+    38
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T017",
+   "konu": "EDB-345A25-U02-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    40,
+    41
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T018",
+   "konu": "EDB-345A25-U02-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    42,
+    43
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T019",
+   "konu": "EDB-345A25-U02-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    44,
+    45
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 321
+  },
+  {
+   "birim": "EDB345AYT-T020",
+   "konu": "EDB-345A25-U02-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    46,
+    47
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T021",
+   "konu": "EDB-345A25-U02-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    48,
+    49
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T022",
+   "konu": "EDB-345A25-U02-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    50,
+    51
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T023",
+   "konu": "EDB-345A25-U02-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    52,
+    53
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T024",
+   "konu": "EDB-345A25-U02-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    54,
+    55
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T025",
+   "konu": "EDB-345A25-U02-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    56,
+    57
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T026",
+   "konu": "EDB-345A25-U02-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    58,
+    59
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T027",
+   "konu": "EDB-345A25-U02-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U02",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    60,
+    61
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T028",
+   "konu": "EDB-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U02",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    62,
+    63
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T029",
+   "konu": "EDB-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U02",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    64,
+    65
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T030",
+   "konu": "EDB-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U02",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    66,
+    67
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T031",
+   "konu": "EDB-345A25-U02",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U02",
+   "tur": "karma",
+   "tur_sira": 3,
+   "sayfalar": [
+    68,
+    69,
+    70
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T032",
+   "konu": "EDB-345A25-U03-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    72,
+    73
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T033",
+   "konu": "EDB-345A25-U03-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    74,
+    75
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T034",
+   "konu": "EDB-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    76,
+    77
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T035",
+   "konu": "EDB-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    78,
+    79
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T036",
+   "konu": "EDB-345A25-U03-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    80,
+    81
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T037",
+   "konu": "EDB-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    82,
+    83
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T038",
+   "konu": "EDB-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    84,
+    85
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T039",
+   "konu": "EDB-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    86,
+    87
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T040",
+   "konu": "EDB-345A25-U03-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    88,
+    89
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 322
+  },
+  {
+   "birim": "EDB345AYT-T041",
+   "konu": "EDB-345A25-U03-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    90,
+    91
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T042",
+   "konu": "EDB-345A25-U03-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    92,
+    93
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T043",
+   "konu": "EDB-345A25-U03-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    94,
+    95
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T044",
+   "konu": "EDB-345A25-U03-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    96,
+    97
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T045",
+   "konu": "EDB-345A25-U03-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    98,
+    99
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T046",
+   "konu": "EDB-345A25-U03-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U03",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    100,
+    101
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T047",
+   "konu": "EDB-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U03",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    102,
+    103
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T048",
+   "konu": "EDB-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U03",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    104,
+    105
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T049",
+   "konu": "EDB-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U03",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    106,
+    107
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T050",
+   "konu": "EDB-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U03",
+   "tur": "karma",
+   "tur_sira": 3,
+   "sayfalar": [
+    108,
+    109
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T051",
+   "konu": "EDB-345A25-U03",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U03",
+   "tur": "karma",
+   "tur_sira": 4,
+   "sayfalar": [
+    110,
+    111,
+    112
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T052",
+   "konu": "EDB-345A25-U04-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    114,
+    115
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T053",
+   "konu": "EDB-345A25-U04-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    116,
+    117
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T054",
+   "konu": "EDB-345A25-U04-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    118,
+    119
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T055",
+   "konu": "EDB-345A25-U04-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    120,
+    121
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T056",
+   "konu": "EDB-345A25-U04-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    122,
+    123
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T057",
+   "konu": "EDB-345A25-U04-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    124,
+    125
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T058",
+   "konu": "EDB-345A25-U04-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    126,
+    127
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T059",
+   "konu": "EDB-345A25-U04-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    128,
+    129
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T060",
+   "konu": "EDB-345A25-U04-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    130,
+    131
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 323
+  },
+  {
+   "birim": "EDB345AYT-T061",
+   "konu": "EDB-345A25-U04-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    132,
+    133
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T062",
+   "konu": "EDB-345A25-U04-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U04",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    134,
+    135
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T063",
+   "konu": "EDB-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U04",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    136,
+    137
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T064",
+   "konu": "EDB-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U04",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    138,
+    139
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T065",
+   "konu": "EDB-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U04",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    140,
+    141
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T066",
+   "konu": "EDB-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U04",
+   "tur": "karma",
+   "tur_sira": 3,
+   "sayfalar": [
+    142,
+    143
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T067",
+   "konu": "EDB-345A25-U04",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U04",
+   "tur": "karma",
+   "tur_sira": 4,
+   "sayfalar": [
+    144,
+    145,
+    146
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T068",
+   "konu": "EDB-345A25-U05-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    148,
+    149
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T069",
+   "konu": "EDB-345A25-U05-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    150,
+    151
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T070",
+   "konu": "EDB-345A25-U05-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    152,
+    153
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T071",
+   "konu": "EDB-345A25-U05-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    154,
+    155
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T072",
+   "konu": "EDB-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    156,
+    157
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T073",
+   "konu": "EDB-345A25-U05-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    158,
+    159
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T074",
+   "konu": "EDB-345A25-U05-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    160,
+    161
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T075",
+   "konu": "EDB-345A25-U05-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    162,
+    163
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T076",
+   "konu": "EDB-345A25-U05-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    164,
+    165
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T077",
+   "konu": "EDB-345A25-U05-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    166,
+    167
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 324
+  },
+  {
+   "birim": "EDB345AYT-T078",
+   "konu": "EDB-345A25-U05-06",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    168,
+    169
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T079",
+   "konu": "EDB-345A25-U05-06",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    170,
+    171
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T080",
+   "konu": "EDB-345A25-U05-07",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    172,
+    173
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T081",
+   "konu": "EDB-345A25-U05-07",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    174,
+    175
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T082",
+   "konu": "EDB-345A25-U05-08",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    176,
+    177
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T083",
+   "konu": "EDB-345A25-U05-08",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    178,
+    179
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T084",
+   "konu": "EDB-345A25-U05-09",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U05",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    180,
+    181
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T085",
+   "konu": "EDB-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U05",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    182,
+    183
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T086",
+   "konu": "EDB-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U05",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    184,
+    185
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T087",
+   "konu": "EDB-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U05",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    186,
+    187
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T088",
+   "konu": "EDB-345A25-U05",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U05",
+   "tur": "karma",
+   "tur_sira": 3,
+   "sayfalar": [
+    188,
+    189,
+    190
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T089",
+   "konu": "EDB-345A25-U06-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    192,
+    193
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T090",
+   "konu": "EDB-345A25-U06-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    194,
+    195
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T091",
+   "konu": "EDB-345A25-U06-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    196,
+    197
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T092",
+   "konu": "EDB-345A25-U06-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    198,
+    199
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T093",
+   "konu": "EDB-345A25-U06-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    200,
+    201
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T094",
+   "konu": "EDB-345A25-U06-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    202,
+    203
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T095",
+   "konu": "EDB-345A25-U06-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    204,
+    205
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 325
+  },
+  {
+   "birim": "EDB345AYT-T096",
+   "konu": "EDB-345A25-U06-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    206,
+    207
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T097",
+   "konu": "EDB-345A25-U06-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    208,
+    209
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T098",
+   "konu": "EDB-345A25-U06-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    210,
+    211
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T099",
+   "konu": "EDB-345A25-U06-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U06",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    212,
+    213
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T100",
+   "konu": "EDB-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U06",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    214,
+    215
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T101",
+   "konu": "EDB-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U06",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    216,
+    217
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T102",
+   "konu": "EDB-345A25-U06",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U06",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    218,
+    219,
+    220
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T103",
+   "konu": "EDB-345A25-U07-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    222,
+    223
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T104",
+   "konu": "EDB-345A25-U07-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    224,
+    225
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T105",
+   "konu": "EDB-345A25-U07-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    226,
+    227
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T106",
+   "konu": "EDB-345A25-U07-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    228,
+    229
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T107",
+   "konu": "EDB-345A25-U07-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    230,
+    231
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T108",
+   "konu": "EDB-345A25-U07-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    232,
+    233
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T109",
+   "konu": "EDB-345A25-U07-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    234,
+    235
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T110",
+   "konu": "EDB-345A25-U07-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    236,
+    237
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T111",
+   "konu": "EDB-345A25-U07-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    238,
+    239
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T112",
+   "konu": "EDB-345A25-U07-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    240,
+    241
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T113",
+   "konu": "EDB-345A25-U07-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 3,
+   "sayfalar": [
+    242,
+    243
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T114",
+   "konu": "EDB-345A25-U07-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U07",
+   "tur": "osym_tadinda",
+   "tur_sira": 4,
+   "sayfalar": [
+    244,
+    245
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T115",
+   "konu": "EDB-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U07",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    246,
+    247
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T116",
+   "konu": "EDB-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U07",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    248,
+    249
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T117",
+   "konu": "EDB-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U07",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    250,
+    251
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T118",
+   "konu": "EDB-345A25-U07",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U07",
+   "tur": "karma",
+   "tur_sira": 3,
+   "sayfalar": [
+    252,
+    253,
+    254
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 326
+  },
+  {
+   "birim": "EDB345AYT-T119",
+   "konu": "EDB-345A25-U08-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T120",
+   "konu": "EDB-345A25-U08-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T121",
+   "konu": "EDB-345A25-U08-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T122",
+   "konu": "EDB-345A25-U08-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T123",
+   "konu": "EDB-345A25-U08-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U08",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    264,
+    265
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T124",
+   "konu": "EDB-345A25-U08-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U08",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T125",
+   "konu": "EDB-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U08",
+   "tur": "orijinal",
+   "tur_sira": 1,
+   "sayfalar": [
+    268,
+    269
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T126",
+   "konu": "EDB-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U08",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    270,
+    271
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T127",
+   "konu": "EDB-345A25-U08",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U08",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    272,
+    273,
+    274
+   ],
+   "soru_sayisi": 13,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T128",
+   "konu": "EDB-345A25-U09-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 12,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T129",
+   "konu": "EDB-345A25-U09-01",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T130",
+   "konu": "EDB-345A25-U09-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    280,
+    281
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T131",
+   "konu": "EDB-345A25-U09-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    282,
+    283
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T132",
+   "konu": "EDB-345A25-U09-02",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 2,
+   "sayfalar": [
+    284,
+    285
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 327
+  },
+  {
+   "birim": "EDB345AYT-T133",
+   "konu": "EDB-345A25-U09-03",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    286,
+    287
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T134",
+   "konu": "EDB-345A25-U09-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T135",
+   "konu": "EDB-345A25-U09-04",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "osym_tadinda",
+   "tur_sira": 1,
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T136",
+   "konu": "EDB-345A25-U09-05",
+   "eslesme_duzeyi": "konu",
+   "unite": "EDB-345A25-U09",
+   "tur": "kazanim_odakli",
+   "tur_sira": 1,
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 11,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T137",
+   "konu": "EDB-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U09",
+   "tur": "karma",
+   "tur_sira": 1,
+   "sayfalar": [
+    294,
+    295
+   ],
+   "soru_sayisi": 10,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T138",
+   "konu": "EDB-345A25-U09",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U09",
+   "tur": "karma",
+   "tur_sira": 2,
+   "sayfalar": [
+    296,
+    297,
+    298
+   ],
+   "soru_sayisi": 16,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T139",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 1,
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T140",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 2,
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T141",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 3,
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T142",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 4,
+   "sayfalar": [
+    306,
+    307
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T143",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 5,
+   "sayfalar": [
+    308,
+    309
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T144",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 6,
+   "sayfalar": [
+    310,
+    311
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T145",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 7,
+   "sayfalar": [
+    312,
+    313
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T146",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 8,
+   "sayfalar": [
+    314,
+    315
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T147",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 9,
+   "sayfalar": [
+    316,
+    317
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 328
+  },
+  {
+   "birim": "EDB345AYT-T148",
+   "konu": "EDB-345A25-U10",
+   "eslesme_duzeyi": "unite",
+   "unite": "EDB-345A25-U10",
+   "tur": "genel_bakis",
+   "tur_sira": 10,
+   "sayfalar": [
+    318,
+    319,
+    320
+   ],
+   "soru_sayisi": 9,
+   "anahtar_sayfasi": 328
+  }
+ ]
+}
