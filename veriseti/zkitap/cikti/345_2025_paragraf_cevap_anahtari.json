@@ -1,0 +1,9127 @@
+{
+ "kaynak": "345 2025 Paragraf Sifir Risk Soru Bankasi",
+ "nereden": "Kitabin KENDI basili cevap anahtarindan (kitap sonu 'Cevaplar', dosya 356-368). Hicbir soru cozulmedi, hicbir cevap uretilmedi.",
+ "toplam_cevap": 1012,
+ "test_sayisi": 85,
+ "kaynak_dagilimi": {
+  "iki_okuma": 978,
+  "iki_okuma(biri_tereddutlu)+goz": 34
+ },
+ "harf_dagilimi": {
+  "A": 175,
+  "B": 173,
+  "C": 240,
+  "D": 232,
+  "E": 192
+ },
+ "cevaplar": [
+  {
+   "birim": "PRG345-T001",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 4,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 4,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 5,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 5,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 6,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 6,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 6,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 7,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 7,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 10,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 7,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 8,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 8,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 8,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 8,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 9,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 9,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 9,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 18,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 9,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 10,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T001",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 10,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 12,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 12,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 13,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 13,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 14,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 14,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 15,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 15,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 16,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 15,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 17,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 15,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 18,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 16,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 19,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 16,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T002",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 16,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 17,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 17,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 18,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 18,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 18,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 18,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 19,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 19,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 19,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 19,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 20,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 20,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 13,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 20,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 20,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 21,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 21,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 17,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 22,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 22,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 22,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T003",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 23,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 24,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 24,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 25,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 25,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 25,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 26,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 26,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 26,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 26,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 27,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 27,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 27,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 27,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 28,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 15,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 28,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 28,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 28,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 29,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 29,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T004",
+   "soru": 20,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 30,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 31,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 31,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 32,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 32,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 32,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 33,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 33,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 34,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 34,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 34,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 34,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 35,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 15,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 35,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 36,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 17,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 36,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 18,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 36,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 37,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T005",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 37,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 38,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 38,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 39,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 39,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 39,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 39,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 40,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 40,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 40,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 40,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 11,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 41,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 41,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 13,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 42,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 42,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 42,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 16,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 43,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 43,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 18,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 43,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 44,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T006",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 44,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 45,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 45,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 46,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 46,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 46,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 46,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 47,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 47,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 11,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 48,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 48,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 49,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 49,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 16,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 49,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 49,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 50,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 19,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 50,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T007",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 50,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 51,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 51,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 52,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 52,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 52,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 52,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 53,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 53,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 53,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 53,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 11,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 54,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 12,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 54,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 54,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 14,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 55,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 55,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 16,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 55,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 17,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 55,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 18,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 56,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 19,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 56,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T008",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 56,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 57,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 57,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 58,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 58,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 59,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 59,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 59,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 59,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 60,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 60,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 11,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 60,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 60,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 13,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 61,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 61,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 61,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 61,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 17,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 62,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 18,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 62,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 19,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 62,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T009",
+   "soru": 20,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 62,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 64,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 64,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 65,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 65,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 66,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 66,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 66,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 67,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 11,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 67,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 67,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 67,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 68,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 15,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 68,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 68,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 17,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 68,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 18,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 69,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 69,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T010",
+   "soru": 20,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 69,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 70,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 70,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 71,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 71,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 71,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 72,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 72,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 72,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 73,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 10,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 73,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 11,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 73,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 73,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 74,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 74,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 15,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 74,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 16,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 75,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 75,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 18,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 75,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 75,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T011",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 76,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 77,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 77,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 78,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 78,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 78,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 78,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 79,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 79,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 79,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 10,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 80,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 11,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 80,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 80,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 13,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 80,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 15,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 81,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 82,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 82,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 82,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 83,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T012",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 83,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 84,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 84,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 85,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 85,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 85,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 85,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 86,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 86,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 86,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 86,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 11,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 87,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 87,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 87,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 14,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 87,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 15,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 88,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 16,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 88,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 89,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 89,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 90,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T013",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 90,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 91,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 91,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 92,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 92,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 93,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 93,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 93,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 94,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 94,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 95,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 95,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 12,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 95,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 13,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 95,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 96,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 15,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 96,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 97,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 97,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 18,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 97,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 19,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 98,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T014",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 98,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 99,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 99,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 100,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 100,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 100,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 100,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 101,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 101,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 101,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 101,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 11,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 102,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 102,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 102,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 102,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 103,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 16,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 103,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 103,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 104,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 19,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 104,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T015",
+   "soru": 20,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 104,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 105,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 105,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 106,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 106,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 106,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 107,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 107,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 107,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 107,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 108,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 108,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 108,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 13,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 108,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 109,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 15,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 109,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 16,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 109,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 109,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 110,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 19,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 110,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T016",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 110,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 111,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 111,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 112,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 112,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 112,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 112,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 113,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 113,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 113,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 113,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 11,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 114,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 114,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 114,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 114,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 15,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 115,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 16,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 115,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 17,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 115,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 115,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 19,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 116,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T017",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 116,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 117,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 117,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 118,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 118,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 118,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 118,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 119,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 119,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 119,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 119,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 120,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 120,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 120,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 120,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 121,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 121,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 17,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 121,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 18,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 121,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 122,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T018",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 122,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 124,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 124,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 125,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 125,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 125,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 125,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 126,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 126,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 126,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 127,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 127,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 127,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 13,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 127,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 14,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 128,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 128,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 16,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 128,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 129,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 129,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 129,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T019",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 129,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 130,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 130,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 131,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 131,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 131,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 132,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 132,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 132,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 133,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 133,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 133,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 134,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 13,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 134,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 14,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 134,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 135,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 135,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 135,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 18,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 135,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 19,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 136,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T020",
+   "soru": 20,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 136,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 137,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 138,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 138,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 138,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 139,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 139,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 139,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 140,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 140,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 141,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 12,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 141,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 141,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 14,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 141,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 142,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 16,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 142,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 142,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 143,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 19,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 143,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T021",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 143,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 144,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 144,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 145,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 145,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 145,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 145,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 146,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 146,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 146,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 146,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 11,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 147,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 147,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 13,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 147,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 148,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 15,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 148,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 148,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 17,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 149,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 18,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 149,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 19,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 150,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T022",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 150,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 151,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 151,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 152,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 152,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 152,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 153,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 153,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 153,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 154,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 154,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 11,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 154,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 155,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 13,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 155,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 155,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 155,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 16,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 156,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 17,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 156,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 157,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 157,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T023",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 157,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 158,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 158,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 159,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 159,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 159,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 159,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 160,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 160,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 160,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 161,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 11,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 161,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 161,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 13,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 161,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 14,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 162,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 162,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 162,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 162,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 18,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 163,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 163,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T024",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 163,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 164,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 164,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 165,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 165,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 166,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 166,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 166,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 166,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 167,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 167,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 11,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 168,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 168,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 13,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 168,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 169,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 169,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 16,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 169,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 17,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 169,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 170,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 170,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T025",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 170,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 171,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 171,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 172,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 172,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 172,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 172,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 173,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 173,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 173,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 173,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 174,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 12,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 174,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 174,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 14,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 174,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 15,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 175,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 175,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 175,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 175,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 176,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T026",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 176,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 177,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 177,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 178,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 178,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 178,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 178,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 179,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 179,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 179,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 179,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 11,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 180,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 180,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 180,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 14,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 180,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 181,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 181,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 181,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 182,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 182,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T027",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 182,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 184,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 184,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 185,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 186,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 186,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T028",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 187,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 188,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 188,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 189,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 189,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 190,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 190,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 191,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T029",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 191,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 192,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 192,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 193,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 193,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 194,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 194,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 195,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T030",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 195,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 196,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 196,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 197,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 197,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 197,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 197,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 198,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 198,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 198,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 10,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 198,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 199,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 199,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 13,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 199,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 14,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 199,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 200,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 200,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 17,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 201,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 18,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 201,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 19,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 201,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T031",
+   "soru": 20,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 201,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 202,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 202,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 203,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 203,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 203,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 204,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 204,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 205,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 205,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 205,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 205,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 12,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 206,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 13,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 206,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 207,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 207,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 16,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 207,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 208,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 18,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 208,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 208,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T032",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 208,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 209,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 209,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 210,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 210,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 210,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 210,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 211,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 211,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 211,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 211,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 11,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 212,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 12,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 212,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 212,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 14,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 213,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 15,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 213,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 213,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 214,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 214,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 214,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T033",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 214,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 215,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 215,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 216,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 216,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 217,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 217,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 217,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 218,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 218,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 218,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 219,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 219,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 13,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 219,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 14,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 219,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 220,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 16,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 220,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 221,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 221,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 19,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 221,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T034",
+   "soru": 20,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 221,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 222,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 222,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 222,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 223,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 223,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 223,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 224,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 224,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 224,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 10,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 224,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 11,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 225,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 12,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 225,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 13,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 225,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 226,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 15,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 226,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 16,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 226,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 227,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 18,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 227,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 227,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T035",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 227,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 228,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 228,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 229,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 229,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 229,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 230,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 230,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 230,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 231,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 231,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 11,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 232,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 12,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 232,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 232,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 14,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 232,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 15,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 233,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 17,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 234,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 18,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 234,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 19,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 234,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T036",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 234,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 235,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 235,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 236,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 236,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 236,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 236,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 237,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 238,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 238,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 12,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 238,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 13,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 239,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 14,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 239,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 240,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 16,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 240,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 17,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 241,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 18,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 241,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 19,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 241,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T037",
+   "soru": 20,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 241,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 242,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 242,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 243,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 243,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 244,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 244,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 244,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 244,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 245,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 10,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 245,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 11,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 245,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 12,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 246,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 13,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 246,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 14,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 246,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 15,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 246,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 16,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 247,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 17,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 247,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 18,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 247,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 19,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 247,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 20,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 248,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 21,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 248,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 22,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 248,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 23,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 248,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 24,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 249,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 25,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 249,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 26,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 249,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 27,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 250,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 28,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 250,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 29,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 250,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T038",
+   "soru": 30,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 250,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T039",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 252,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T039",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 252,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T039",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 252,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T039",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 253,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T039",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 253,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T040",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 254,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T040",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 254,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T040",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 255,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T040",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 255,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T040",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 255,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T040",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 255,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T041",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 256,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T041",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 256,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T041",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 257,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T041",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 257,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T041",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 257,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T042",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 258,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T042",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 258,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T042",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 258,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T042",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 259,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T042",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 259,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T043",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 260,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T043",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 260,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T043",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T043",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T043",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 261,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T043",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 261,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T044",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 262,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T044",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 262,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T044",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 263,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T044",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 263,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T044",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 263,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T045",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 264,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T045",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 264,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T045",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 265,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T045",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 265,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T045",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 265,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T046",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 266,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T046",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 266,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T046",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 266,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T046",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 267,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T046",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 267,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T046",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 267,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T047",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 268,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T047",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 268,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T047",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 268,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T047",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 269,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T047",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 269,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T047",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 269,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T048",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 270,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T048",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 270,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T048",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 271,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T048",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 271,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T048",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 271,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 272,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 272,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 272,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 273,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 273,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 273,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T049",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 273,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T050",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 274,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T050",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 274,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T050",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 275,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T050",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 275,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T050",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 275,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T051",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 276,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T051",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 276,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T051",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 276,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T051",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 277,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T051",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 277,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T051",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 277,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 278,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 278,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 278,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 279,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 279,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 279,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T052",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 279,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 280,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 280,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 281,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 281,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 281,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 282,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 282,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T053",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 282,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T054",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 284,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T054",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 284,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T054",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 285,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T054",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 285,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T054",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 285,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T054",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 285,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 286,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 286,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 286,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 287,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 287,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 287,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T055",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 287,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 288,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 288,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 288,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 289,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 289,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 289,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T056",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 289,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 290,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 290,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 290,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 290,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 291,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 291,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T057",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 291,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T058",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 292,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T058",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 292,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T058",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 292,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T058",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 293,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T058",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 293,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T058",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 293,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T059",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 294,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T059",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 294,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T059",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 294,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T059",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 295,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T059",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 295,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T059",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 295,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 296,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 296,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 296,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 297,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 297,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 297,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T060",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 297,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T061",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 298,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T061",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 298,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T061",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 299,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T061",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 299,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T061",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 299,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T061",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 299,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T062",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 300,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T062",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 300,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T062",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 301,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T062",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 301,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T062",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 301,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 302,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 302,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 302,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 302,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 303,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 303,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T063",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 303,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T064",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 304,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T064",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 304,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T064",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 305,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T064",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 305,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T064",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 305,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 306,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 306,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 306,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 306,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 307,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 307,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T065",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 307,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T066",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 308,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T066",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 308,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T066",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 309,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T066",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 309,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T066",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 309,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T066",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 309,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T067",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 310,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T067",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 310,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T067",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 310,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T067",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 311,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T067",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 311,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T067",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 311,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T068",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 312,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T068",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 312,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T068",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 313,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T068",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 313,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T069",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 314,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T069",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 314,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T069",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 314,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T069",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 315,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T069",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 315,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T069",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 315,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T070",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 316,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T070",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 316,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T070",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 317,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T070",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 317,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T070",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 317,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T070",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 317,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T071",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 318,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T071",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 318,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T071",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 319,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T071",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 319,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T071",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 319,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T072",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 320,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T072",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 320,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T072",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 320,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T072",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 321,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T072",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 321,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T073",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 322,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T073",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 322,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T073",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 323,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T073",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 323,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T074",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 324,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T074",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 324,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T074",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 325,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T074",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 325,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T074",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 325,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T074",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 325,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T075",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 326,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T075",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 326,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T075",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 327,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T075",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 327,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T075",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 328,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T075",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 328,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 330,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 330,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 330,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 330,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 331,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 331,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 331,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T076",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 331,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 332,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 332,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 332,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 332,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 333,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 333,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 333,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T077",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 333,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 334,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 334,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 334,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 335,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 335,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 335,
+   "sutun": "L",
+   "serit_sira": 2
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 335,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T078",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 335,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T079",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 336,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T079",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 336,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T079",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 337,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T079",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 337,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T080",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 338,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T080",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 338,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T080",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 339,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T080",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 339,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 344,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 344,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 344,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 344,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 345,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 345,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 345,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T081",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 345,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 346,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 346,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 346,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 346,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 347,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 347,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 347,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T082",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 347,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T083",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 348,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T083",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 349,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T083",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 349,
+   "sutun": "L",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T083",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma",
+   "dosya": 349,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T083",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 349,
+   "sutun": "R",
+   "serit_sira": 1
+  },
+  {
+   "birim": "PRG345-T084",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 350,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T084",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 351,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T084",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma",
+   "dosya": 352,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T084",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma(biri_tereddutlu)+goz",
+   "dosya": 353,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T085",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 354,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T085",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma",
+   "dosya": 354,
+   "sutun": "R",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T085",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma",
+   "dosya": 355,
+   "sutun": "L",
+   "serit_sira": 0
+  },
+  {
+   "birim": "PRG345-T085",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma",
+   "dosya": 355,
+   "sutun": "L",
+   "serit_sira": 1
+  }
+ ]
+}

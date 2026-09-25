@@ -1,0 +1,3158 @@
+{
+ "kaynak": "345 2025 Paragraf Sifir Risk Soru Bankasi",
+ "nereden": "Kitap sonu cevap anahtarinin (dosya 356-368) iki bagimsiz gorsel okumasi -- A: 3x yatay dilimler, sayfa sirasinda; B: 3x tam sayfa, TERS sirada; okuyuculara girdi sayisi soylenmedi -- ve her icerik sayfasinin ust bandinin uc okuyuculu okumasi (bolum, test turu, tur ici sira). Ham metin; turetilmis anahtar 345_2025_paragraf_cevap_anahtari.json.",
+ "okumalar": {
+  "A": [
+   {
+    "sayfa": 356,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 1",
+    "cevap": "1.C 2.C 3.D 4.E 5.B 6.C 7.C 8.B 9.C 10.E 11.C 12.C 13.A 14.E 15.C 16.E 17.E 18.D 19.D 20.E"
+   },
+   {
+    "sayfa": 356,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 2",
+    "cevap": "1.C 2.E 3.D 4.D 5.A 6.C 7.D 8.E 9.C 10.A 11.E 12.D 13.A 14.E 15.C 16.A 17.B 18.D 19.C 20.E"
+   },
+   {
+    "sayfa": 356,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 3",
+    "cevap": "1.C 2.B 3.A 4.C 5.C 6.A 7.D 8.C 9.D 10.B 11.E 12.C 13.C 14.B 15.C 16.D 17.B 18.E 19.E 20.B"
+   },
+   {
+    "sayfa": 357,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 4",
+    "cevap": "1.B 2.D 3.A 4.D 5.A 6.D 7.B 8.D 9.B 10.C 11.C 12.C 13.D 14.B 15.D 16.D 17.C 18.E 19.D 20.A"
+   },
+   {
+    "sayfa": 357,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 5",
+    "cevap": "1.E 2.B 3.C 4.E 5.C 6.C 7.B 8.A 9.D 10.B 11.E 12.D 13.D 14.E 15.D 16.D 17.A 18.A 19.D 20.B"
+   },
+   {
+    "sayfa": 357,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 6",
+    "cevap": "1.C 2.C 3.E 4.D 5.C 6.C 7.C 8.E 9.A 10.C 11.A 12.D 13.E 14.B 15.C 16.C 17.D 18.A 19.D 20.C"
+   },
+   {
+    "sayfa": 358,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 7",
+    "cevap": "1.D 2.B 3.B 4.D 5.C 6.D 7.D 8.C 9.B 10.D 11.B 12.D 13.D 14.C 15.A 16.A 17.D 18.E 19.A 20.C"
+   },
+   {
+    "sayfa": 358,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 8",
+    "cevap": "1.B 2.B 3.D 4.A 5.D 6.A 7.E 8.C 9.B 10.C 11.A 12.A 13.D 14.D 15.C 16.C 17.A 18.A 19.C 20.B"
+   },
+   {
+    "sayfa": 358,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 9",
+    "cevap": "1.D 2.B 3.C 4.E 5.E 6.C 7.C 8.C 9.E 10.C 11.A 12.E 13.B 14.B 15.C 16.E 17.A 18.B 19.A 20.A"
+   },
+   {
+    "sayfa": 359,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 1",
+    "cevap": "1.A 2.C 3.D 4.B 5.B 6.B 7.C 8.C 9.E 10.A 11.D 12.D 13.D 14.C 15.D 16.E 17.A 18.B 19.E 20.A"
+   },
+   {
+    "sayfa": 359,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 2",
+    "cevap": "1.E 2.C 3.C 4.E 5.C 6.A 7.D 8.C 9.E 10.E 11.A 12.E 13.A 14.C 15.B 16.B 17.E 18.D 19.D 20.B"
+   },
+   {
+    "sayfa": 359,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 3",
+    "cevap": "1.C 2.B 3.D 4.E 5.D 6.A 7.A 8.C 9.E 10.E 11.D 12.E 13.C 14.C 15.B 16.D 17.D 18.E 19.D 20.C"
+   },
+   {
+    "sayfa": 360,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 4",
+    "cevap": "1.B 2.B 3.A 4.D 5.E 6.A 7.B 8.C 9.C 10.C 11.B 12.C 13.D 14.A 15.D 16.A 17.E 18.C 19.E 20.B"
+   },
+   {
+    "sayfa": 360,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 5",
+    "cevap": "1.C 2.A 3.D 4.A 5.A 6.C 7.C 8.A 9.C 10.D 11.C 12.B 13.C 14.B 15.B 16.D 17.E 18.A 19.A 20.D"
+   },
+   {
+    "sayfa": 360,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 6",
+    "cevap": "1.D 2.D 3.D 4.C 5.C 6.C 7.E 8.C 9.E 10.A 11.D 12.D 13.D 14.C 15.A 16.A 17.D 18.E 19.B 20.A"
+   },
+   {
+    "sayfa": 361,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 7",
+    "cevap": "1.E 2.A 3.D 4.B 5.E 6.B 7.D 8.D 9.D 10.B 11.C 12.E 13.E 14.B 15.B 16.C 17.E 18.C 19.B 20.D"
+   },
+   {
+    "sayfa": 361,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 8",
+    "cevap": "1.D 2.E 3.E 4.D 5.A 6.C 7.D 8.E 9.A 10.B 11.D 12.D 13.D 14.E 15.D 16.C 17.B 18.E 19.C 20.D"
+   },
+   {
+    "sayfa": 361,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 9",
+    "cevap": "1.D 2.C 3.D 4.B 5.A 6.C 7.C 8.E 9.B 10.B 11.C 12.E 13.D 14.B 15.A 16.D 17.B 18.D 19.E 20.E"
+   },
+   {
+    "sayfa": 362,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 1",
+    "cevap": "1.D 2.C 3.B 4.B 5.A 6.B 7.A 8.A 9.E 10.B 11.E 12.D 13.B 14.A 15.A 16.B 17.D 18.C 19.D 20.B"
+   },
+   {
+    "sayfa": 362,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 2",
+    "cevap": "1.D 2.C 3.C 4.B 5.B 6.B 7.C 8.A 9.C 10.D 11.E 12.E 13.B 14.D 15.C 16.E 17.D 18.B 19.C 20.B"
+   },
+   {
+    "sayfa": 362,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 3",
+    "cevap": "1.A 2.B 3.D 4.C 5.A 6.D 7.A 8.D 9.D 10.B 11.E 12.B 13.D 14.D 15.A 16.B 17.E 18.E 19.A 20.C"
+   },
+   {
+    "sayfa": 363,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 4",
+    "cevap": "1.A 2.D 3.A 4.C 5.C 6.A 7.B 8.E 9.C 10.D 11.D 12.D 13.C 14.B 15.E 16.E 17.B 18.A 19.B 20.D"
+   },
+   {
+    "sayfa": 363,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 5",
+    "cevap": "1.A 2.A 3.D 4.B 5.D 6.D 7.D 8.A 9.A 10.A 11.B 12.D 13.B 14.C 15.A 16.A 17.A 18.C 19.E 20.C"
+   },
+   {
+    "sayfa": 363,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 6",
+    "cevap": "1.B 2.E 3.A 4.D 5.B 6.C 7.E 8.C 9.A 10.C 11.A 12.C 13.C 14.A 15.A 16.E 17.C 18.D 19.D 20.C"
+   },
+   {
+    "sayfa": 364,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 7",
+    "cevap": "1.A 2.D 3.A 4.E 5.B 6.C 7.D 8.C 9.E 10.D 11.D 12.E 13.B 14.B 15.C 16.B 17.A 18.C 19.D 20.C"
+   },
+   {
+    "sayfa": 364,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 8",
+    "cevap": "1.D 2.D 3.E 4.A 5.B 6.A 7.E 8.D 9.B 10.A 11.E 12.D 13.A 14.A 15.E 16.D 17.D 18.C 19.D 20.D"
+   },
+   {
+    "sayfa": 364,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 9",
+    "cevap": "1.E 2.B 3.B 4.D 5.C 6.A 7.D 8.C 9.A 10.D 11.B 12.C 13.A 14.A 15.C 16.E 17.C 18.E 19.E 20.D"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "KONDISYON 1",
+    "cevap": "1.B 2.D? 3.E? 4.B 5.B 6.C 7.C 8.A"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "KONDISYON 2",
+    "cevap": "1.C 2.D 3.B 4.C 5.E 6.D 7.A 8.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "KONDISYON 3",
+    "cevap": "1.A 2.E 3.E 4.C 5.D 6.B 7.A 8.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 1",
+    "cevap": "1.A 2.D 3.E 4.D 5.C 6.D 7.E 8.E 9.D 10.D 11.C 12.E 13.C 14.D 15.A 16.D 17.B 18.D 19.B 20.D"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 2",
+    "cevap": "1.D 2.D 3.D 4.B 5.C 6.B 7.A 8.D 9.A 10.C 11.C 12.E 13.E 14.E 15.A 16.C 17.C 18.B 19.D 20.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 3",
+    "cevap": "1.D 2.E 3.B 4.C 5.B 6.E 7.D 8.D 9.E? 10.C 11.B 12.B 13.A 14.C 15.D 16.E 17.D 18.E 19.E 20.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 4",
+    "cevap": "1.C 2.D 3.E 4.A 5.B 6.E 7.D 8.E 9.D 10.A 11.C 12.C 13.B 14.D 15.A 16.E 17.C 18.C 19.E 20.A"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 5",
+    "cevap": "1.B 2.C 3.C 4.D 5.E 6.E 7.C 8.A 9.A 10.B 11.A 12.B 13.A 14.E 15.C 16.A 17.C 18.C 19.D 20.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 6",
+    "cevap": "1.D 2.E? 3.C 4.E? 5.D 6.A 7.C 8.B? 9.A 10.C 11.E 12.B 13.D 14.A 15.E 16.D 17.D 18.E 19.A 20.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 7",
+    "cevap": "1.D 2.C 3.E 4.B 5.C 6.D 7.B 8.D 9.C 10.C 11.C 12.A 13.E 14.E 15.A 16.D 17.E 18.B 19.D 20.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+    "cevap": "1.C 2.E 3.C 4.C 5.D 6.C 7.E 8.B 9.B 10.A 11.B 12.C 13.D 14.B 15.A 16.C 17.C 18.A 19.A 20.E 21.E 22.A 23.E 24.D 25.A 26.E 27.C 28.C 29.D 30.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "1. EGITIM TESTI",
+    "cevap": "1.E 2.B 3.A 4.E 5.A"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "2. SOSYOLOJI TESTI",
+    "cevap": "1.E 2.C 3.A 4.C 5.A 6.C"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "3. SPOR TESTI",
+    "cevap": "1.A 2.C 3.E 4.C 5.A"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "4. MATEMATIK TESTI",
+    "cevap": "1.B 2.B 3.D 4.E 5.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "5. TEKNOLOJI TESTI",
+    "cevap": "1.E 2.E 3.D 4.B 5.D 6.B"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "6. PSIKOLOJI TESTI",
+    "cevap": "1.D? 2.C 3.D? 4.E? 5.E?"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "7. TURIZM TESTI",
+    "cevap": "1.E 2.A 3.C 4.B 5.D?"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "8. ASTRONOMI TESTI",
+    "cevap": "1.C 2.B 3.A 4.C 5.B 6.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "9. HAYVANLAR ALEMI TESTI",
+    "cevap": "1.B 2.A 3.B 4.E 5.E 6.C"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "10. FELSEFE TESTI",
+    "cevap": "1.B 2.C 3.E 4.D 5.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "11. SAGLIK-TIP TESTI",
+    "cevap": "1.E 2.D 3.D 4.B 5.D 6.A 7.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "12. COGRAFYA TESTI",
+    "cevap": "1.C 2.B 3.E 4.B 5.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "13. ARKEOLOJI TESTI",
+    "cevap": "1.E 2.D 3.C 4.A 5.B 6.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "14. ILETISIM TESTI",
+    "cevap": "1.E 2.D 3.A 4.D 5.D 6.E 7.A"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "15. BIYOLOJI TESTI",
+    "cevap": "1.A 2.B 3.B 4.C 5.E 6.A 7.B 8.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 1",
+    "cevap": "1.E 2.A 3.A 4.D 5.B 6.D"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 2",
+    "cevap": "1.D 2.D 3.C 4.B 5.B 6.C 7.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 3",
+    "cevap": "1.D 2.C 3.E 4.D 5.C 6.E 7.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 4",
+    "cevap": "1.C 2.E 3.D 4.D 5.C 6.B 7.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 5",
+    "cevap": "1.E 2.D 3.D 4.A 5.B 6.B"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 6",
+    "cevap": "1.A 2.A 3.B? 4.B? 5.A 6.D"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 7",
+    "cevap": "1.D? 2.E 3.C 4.C 5.B 6.C 7.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 8",
+    "cevap": "1.C 2.E 3.E 4.C 5.B 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 9",
+    "cevap": "1.C 2.C 3.B? 4.D 5.B?"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 10",
+    "cevap": "1.B 2.B 3.E 4.E 5.D 6.C 7.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 11",
+    "cevap": "1.E 2.D 3.A 4.B 5.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 12",
+    "cevap": "1.C 2.C 3.E 4.D 5.C 6.D 7.B"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 13",
+    "cevap": "1.C 2.C 3.E 4.D 5.B 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 14",
+    "cevap": "1.B 2.D 3.C 4.E 5.C 6.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 15",
+    "cevap": "1.E 2.D 3.E 4.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 16",
+    "cevap": "1.A 2.A 3.C 4.E 5.C 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 17",
+    "cevap": "1.C 2.B 3.E 4.E 5.C 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 18",
+    "cevap": "1.E 2.B 3.E 4.A 5.D"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 19",
+    "cevap": "1.C 2.E? 3.B? 4.D 5.B?"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 20",
+    "cevap": "1.D 2.A 3.E 4.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 21",
+    "cevap": "1.E 2.C 3.B 4.A 5.D 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 22",
+    "cevap": "1.B 2.A 3.E 4.C 5.E 6.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "1. ENERJI DIZAYN TESTI-1",
+    "cevap": "1.B 2.C 3.D 4.C 5.D 6.A 7.E 8.A"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "2. ENERJI DIZAYN TESTI-2",
+    "cevap": "1.C 2.E 3.A 4.E 5.B 6.D 7.B 8.D"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "3. ENERJI DIZAYN TESTI-3",
+    "cevap": "1.C 2.C 3.D 4.D? 5.A 6.A 7.D 8.E?"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "4. PUZZLE ODAKLANMA TESTI-1",
+    "cevap": "1.D 2.D? 3.C 4.E"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "5. PUZZLE ODAKLANMA TESTI-2",
+    "cevap": "1.C 2.E 3.C 4.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "7. ALGISAL BUTUNLUK TESTI-1",
+    "cevap": "1.D 2.A 3.C 4.D 5.A 6.B 7.D 8.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "8. ALGISAL BUTUNLUK TESTI-2",
+    "cevap": "1.D 2.A 3.C 4.D 5.A 6.B 7.D 8.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "9. MANTIK MUHAKEME TESTI",
+    "cevap": "1.E 2.C 3.B 4.E 5.A"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "10. GRAFIK YORUMLAMA VE TABLO OKUMA TESTI",
+    "cevap": "1.E? 2.C 3.D 4.B?"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "11. GORSEL OKUMA TESTI",
+    "cevap": "1.C 2.A 3.B 4.C"
+   }
+  ],
+  "B": [
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "1. ENERJI DIZAYN TESTI-1",
+    "cevap": "1.B 2.C 3.D 4.C? 5.D 6.A 7.E 8.A"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "2. ENERJI DIZAYN TESTI-2",
+    "cevap": "1.C 2.E 3.A 4.E 5.B 6.D 7.B 8.D"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "3. ENERJI DIZAYN TESTI-3",
+    "cevap": "1.C 2.C 3.D 4.D 5.A 6.A 7.D 8.E"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "4. PUZZLE ODAKLANMA TESTI-1",
+    "cevap": "1.D 2.D 3.C 4.E"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "5. PUZZLE ODAKLANMA TESTI-2",
+    "cevap": "1.C 2.E 3.C 4.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "7. ALGISAL BUTUNLUK TESTI-1",
+    "cevap": "1.D 2.A 3.C 4.D 5.A 6.B 7.D 8.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "8. ALGISAL BUTUNLUK TESTI-2",
+    "cevap": "1.D 2.A 3.C 4.D? 5.A 6.B 7.D 8.C"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "9. MANTIK MUHAKEME TESTI",
+    "cevap": "1.E 2.C 3.B 4.E 5.A"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "10. GRAFIK YORUMLAMA VE TABLO OKUMA TESTI",
+    "cevap": "1.E 2.C 3.D 4.B"
+   },
+   {
+    "sayfa": 368,
+    "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+    "test": "11. GORSEL OKUMA TESTI",
+    "cevap": "1.C 2.A 3.B 4.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 1",
+    "cevap": "1.E 2.A 3.A 4.D 5.B 6.D"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 2",
+    "cevap": "1.D 2.D 3.C 4.B 5.B 6.C 7.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 3",
+    "cevap": "1.D 2.C 3.E 4.D 5.C 6.E 7.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 4",
+    "cevap": "1.C 2.E 3.D 4.D 5.C 6.B 7.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 5",
+    "cevap": "1.E 2.D 3.D 4.A 5.B 6.B"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 6",
+    "cevap": "1.A 2.A 3.B 4.B 5.A 6.D"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 7",
+    "cevap": "1.D? 2.E 3.C 4.C 5.B 6.C 7.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 8",
+    "cevap": "1.C 2.E 3.E 4.C 5.B 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 9",
+    "cevap": "1.C 2.C 3.B 4.D 5.B"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 10",
+    "cevap": "1.B 2.B 3.E 4.E 5.D 6.C 7.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 11",
+    "cevap": "1.E 2.D 3.A 4.B 5.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 12",
+    "cevap": "1.C 2.C 3.E 4.D 5.C 6.D 7.B"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 13",
+    "cevap": "1.C 2.C 3.E 4.D 5.B 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 14",
+    "cevap": "1.B 2.D 3.C 4.E 5.C 6.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 15",
+    "cevap": "1.E 2.D 3.E 4.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 16",
+    "cevap": "1.A 2.A 3.C 4.E 5.C 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 17",
+    "cevap": "1.C 2.B 3.E 4.E 5.C 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 18",
+    "cevap": "1.E 2.B 3.E 4.A 5.D"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 19",
+    "cevap": "1.C 2.E? 3.B 4.D 5.B"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 20",
+    "cevap": "1.D? 2.A 3.E 4.C"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 21",
+    "cevap": "1.E 2.C 3.B 4.A 5.D 6.A"
+   },
+   {
+    "sayfa": 367,
+    "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+    "test": "OSYM TADINDA SORULAR 22",
+    "cevap": "1.B 2.A 3.E 4.C 5.E 6.C"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "1. EGITIM TESTI",
+    "cevap": "1.E 2.B 3.A 4.E 5.A"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "2. SOSYOLOJI TESTI",
+    "cevap": "1.E 2.C 3.A 4.C 5.A 6.C"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "3. SPOR TESTI",
+    "cevap": "1.A 2.C 3.E 4.C 5.A"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "4. MATEMATIK TESTI",
+    "cevap": "1.B 2.B 3.D 4.E 5.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "5. TEKNOLOJI TESTI",
+    "cevap": "1.E 2.E 3.D 4.B 5.D 6.B"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "6. PSIKOLOJI TESTI",
+    "cevap": "1.D? 2.C 3.D? 4.E? 5.E?"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "7. TURIZM TESTI",
+    "cevap": "1.E 2.A 3.C 4.B 5.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "8. ASTRONOMI TESTI",
+    "cevap": "1.C 2.B 3.A 4.C 5.B 6.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "9. HAYVANLAR ALEMI TESTI",
+    "cevap": "1.B 2.A 3.B 4.E 5.E 6.C"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "10. FELSEFE TESTI",
+    "cevap": "1.B 2.C 3.E 4.D 5.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "11. SAGLIK-TIP TESTI",
+    "cevap": "1.E 2.D 3.D 4.B 5.D 6.A 7.D"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "12. COGRAFYA TESTI",
+    "cevap": "1.C 2.B 3.E 4.B 5.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "13. ARKEOLOJI TESTI",
+    "cevap": "1.E 2.D 3.C 4.A 5.B 6.E"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "14. ILETISIM TESTI",
+    "cevap": "1.E 2.D 3.A 4.D 5.D 6.E 7.A"
+   },
+   {
+    "sayfa": 366,
+    "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+    "test": "15. BIYOLOJI TESTI",
+    "cevap": "1.A 2.B 3.B 4.C 5.E 6.A 7.B 8.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "KONDISYON 1",
+    "cevap": "1.B? 2.D? 3.E? 4.B? 5.B? 6.C 7.C 8.A"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "KONDISYON 2",
+    "cevap": "1.C 2.D 3.B 4.C 5.E 6.D 7.A 8.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "KONDISYON 3",
+    "cevap": "1.A 2.E 3.E 4.C 5.D 6.B 7.A 8.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 1",
+    "cevap": "1.A 2.D 3.E 4.D 5.C 6.D 7.E 8.E 9.D 10.D 11.C 12.E 13.C 14.D 15.A 16.D 17.B 18.D 19.B 20.D"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 2",
+    "cevap": "1.D 2.D 3.D 4.B 5.C 6.B 7.A 8.D 9.A 10.C 11.C 12.E 13.E 14.E 15.A 16.C 17.C 18.B 19.D 20.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 3",
+    "cevap": "1.D 2.E 3.B 4.C 5.B 6.E 7.D 8.D 9.E? 10.C 11.B 12.B 13.A 14.C 15.D 16.E 17.D 18.E 19.E 20.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 4",
+    "cevap": "1.C 2.D 3.E 4.A 5.B 6.E 7.D 8.E 9.D 10.A 11.C 12.C 13.B 14.D 15.A 16.E 17.C 18.C 19.E 20.A"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 5",
+    "cevap": "1.B 2.C 3.C 4.D 5.E 6.E 7.C 8.A 9.A 10.B 11.A 12.B 13.A 14.E 15.C 16.A 17.C 18.C 19.D 20.E"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 6",
+    "cevap": "1.D 2.E? 3.C 4.E? 5.D 6.A 7.C 8.B? 9.A 10.C 11.E 12.B 13.D 14.A 15.E 16.D 17.D 18.E 19.A 20.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "ODAKLANMA 7",
+    "cevap": "1.D 2.C 3.E 4.B 5.C 6.D 7.B 8.D 9.C 10.C 11.C 12.A 13.E 14.E 15.A 16.D 17.E 18.B 19.D 20.C"
+   },
+   {
+    "sayfa": 365,
+    "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+    "test": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+    "cevap": "1.C 2.E 3.C 4.C 5.D 6.C 7.E 8.B 9.B 10.A 11.B 12.C 13.D 14.B 15.A 16.C 17.C 18.A 19.A 20.E 21.E 22.A 23.E 24.D? 25.A 26.E 27.C 28.C 29.D 30.E"
+   },
+   {
+    "sayfa": 364,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 7",
+    "cevap": "1.A 2.D 3.A 4.E 5.B 6.C 7.D 8.C 9.E 10.D 11.D 12.E 13.B 14.B 15.C 16.B 17.A 18.C 19.D 20.C"
+   },
+   {
+    "sayfa": 364,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 8",
+    "cevap": "1.D 2.D 3.E 4.A 5.B 6.A 7.E 8.D 9.B 10.A 11.E 12.D 13.A 14.A 15.E 16.D 17.D 18.C 19.D 20.D"
+   },
+   {
+    "sayfa": 364,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 9",
+    "cevap": "1.E 2.B 3.B 4.D 5.C 6.A 7.D 8.C 9.A 10.D 11.B 12.C 13.A 14.A 15.C 16.E 17.C 18.E 19.E 20.D"
+   },
+   {
+    "sayfa": 363,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 4",
+    "cevap": "1.A 2.D 3.A 4.C 5.C 6.A 7.B 8.E 9.C 10.D 11.D 12.D 13.C 14.B 15.E 16.E 17.B 18.A 19.B 20.D"
+   },
+   {
+    "sayfa": 363,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 5",
+    "cevap": "1.A 2.A 3.D 4.B 5.D 6.D 7.D 8.A 9.A 10.A 11.B 12.D 13.B 14.C 15.A 16.A 17.A 18.C 19.E 20.C"
+   },
+   {
+    "sayfa": 363,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 6",
+    "cevap": "1.B 2.E 3.A 4.D 5.B 6.C 7.E 8.C 9.A 10.C 11.A 12.C 13.C 14.A 15.A 16.E 17.C 18.D 19.D 20.C"
+   },
+   {
+    "sayfa": 362,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 1",
+    "cevap": "1.D 2.C 3.B 4.B 5.A 6.B 7.A 8.A 9.E 10.B 11.E 12.D 13.B 14.A 15.A 16.B 17.D 18.C 19.D 20.B"
+   },
+   {
+    "sayfa": 362,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 2",
+    "cevap": "1.D 2.C 3.C 4.B 5.B 6.B 7.C 8.A 9.C 10.D 11.E 12.E 13.B 14.D 15.C 16.E 17.D 18.B 19.C 20.B"
+   },
+   {
+    "sayfa": 362,
+    "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+    "test": "TEST 3",
+    "cevap": "1.A 2.B 3.D 4.C 5.A 6.D 7.A 8.D 9.D 10.B 11.E 12.B 13.D 14.D 15.A 16.B 17.E 18.E 19.A 20.C"
+   },
+   {
+    "sayfa": 361,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 7",
+    "cevap": "1.E 2.A 3.D 4.B 5.E 6.B 7.D 8.D 9.D 10.B 11.C 12.E 13.E 14.B 15.B 16.C 17.E 18.C 19.B 20.D"
+   },
+   {
+    "sayfa": 361,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 8",
+    "cevap": "1.D 2.E 3.E 4.D 5.A 6.C 7.D 8.E 9.A 10.B 11.D 12.D 13.D 14.E 15.D 16.C 17.B 18.E 19.C 20.D"
+   },
+   {
+    "sayfa": 361,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 9",
+    "cevap": "1.D 2.C 3.D 4.B 5.A 6.C 7.C 8.E 9.B 10.B 11.C 12.E 13.D 14.B 15.A 16.D 17.B 18.D 19.E 20.E"
+   },
+   {
+    "sayfa": 360,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 4",
+    "cevap": "1.B 2.B 3.A 4.D 5.E 6.A 7.B 8.C 9.C 10.C 11.B 12.C 13.D 14.A 15.D 16.A 17.E 18.C 19.E 20.B"
+   },
+   {
+    "sayfa": 360,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 5",
+    "cevap": "1.C 2.A 3.D 4.A 5.A 6.C 7.C 8.A 9.C 10.D 11.C 12.B 13.C 14.B 15.B 16.D 17.E 18.A 19.A 20.D"
+   },
+   {
+    "sayfa": 360,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 6",
+    "cevap": "1.D 2.D 3.D 4.C 5.C 6.C 7.E 8.C 9.E 10.A 11.D 12.D 13.D 14.C 15.A 16.A 17.D 18.E 19.B 20.A"
+   },
+   {
+    "sayfa": 359,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 1",
+    "cevap": "1.A 2.C 3.D 4.B 5.B 6.B 7.C 8.C 9.E 10.A 11.D 12.D 13.D 14.C 15.D 16.E 17.A 18.B 19.E 20.A"
+   },
+   {
+    "sayfa": 359,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 2",
+    "cevap": "1.E 2.C 3.C 4.E 5.C 6.A 7.D 8.C 9.E 10.E 11.A 12.E 13.A 14.C 15.B 16.B 17.E 18.D 19.D 20.B"
+   },
+   {
+    "sayfa": 359,
+    "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+    "test": "TEST 3",
+    "cevap": "1.C 2.B 3.D 4.E? 5.D 6.A 7.A 8.C 9.E 10.E 11.D 12.E 13.C 14.C 15.B 16.D 17.D 18.E 19.D 20.C"
+   },
+   {
+    "sayfa": 358,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 7",
+    "cevap": "1.D 2.B 3.B 4.D 5.C 6.D 7.D 8.C 9.B 10.D 11.B 12.D 13.D 14.C 15.A 16.A 17.D 18.E 19.A 20.C"
+   },
+   {
+    "sayfa": 358,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 8",
+    "cevap": "1.B 2.B 3.D 4.A 5.D 6.A 7.E 8.C 9.B 10.C 11.A 12.A 13.D 14.D 15.C 16.C 17.A 18.A 19.C 20.B"
+   },
+   {
+    "sayfa": 358,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 9",
+    "cevap": "1.D 2.B 3.C 4.E 5.E 6.C 7.C 8.C 9.E 10.C 11.A 12.E 13.B 14.B 15.C 16.E 17.A 18.B 19.A 20.A"
+   },
+   {
+    "sayfa": 357,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 4",
+    "cevap": "1.B 2.D 3.A 4.D 5.A 6.D 7.B 8.D 9.B 10.C 11.C 12.C 13.D 14.B 15.D 16.D 17.C 18.E 19.D 20.A"
+   },
+   {
+    "sayfa": 357,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 5",
+    "cevap": "1.E 2.B 3.C 4.E 5.C 6.C 7.B 8.A 9.D 10.B 11.E 12.D 13.D 14.E 15.D 16.D 17.A 18.A 19.D 20.B"
+   },
+   {
+    "sayfa": 357,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 6",
+    "cevap": "1.C 2.C 3.E? 4.D 5.C 6.C 7.C 8.E 9.A 10.C 11.A 12.D 13.E 14.B 15.C 16.C 17.D 18.A 19.D 20.C"
+   },
+   {
+    "sayfa": 356,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 1",
+    "cevap": "1.C 2.C 3.D 4.E 5.B 6.C 7.C 8.B 9.C 10.E? 11.C 12.C 13.A 14.E 15.C 16.E 17.E 18.D 19.D 20.E"
+   },
+   {
+    "sayfa": 356,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 2",
+    "cevap": "1.C 2.E 3.D 4.D 5.A 6.C 7.D 8.E 9.C 10.A 11.E 12.D 13.A 14.E 15.C 16.A 17.B 18.D 19.C 20.E"
+   },
+   {
+    "sayfa": 356,
+    "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+    "test": "TEST 3",
+    "cevap": "1.C 2.B 3.A 4.C 5.C 6.A 7.D 8.C 9.D 10.B 11.E 12.C 13.C 14.B 15.C 16.D 17.B 18.E 19.E 20.B"
+   }
+  ]
+ },
+ "bant_okumasi": [
+  {
+   "sayfa": 3,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null,
+   "not": "bolum kapagi; bantta yazi yok"
+  },
+  {
+   "sayfa": 4,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 5,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 6,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 7,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 8,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 9,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 10,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 11,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 12,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 13,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 14,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 15,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 16,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 17,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 18,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 19,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 20,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 21,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 22,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 23,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 24,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 25,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 26,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 27,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 28,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 29,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 30,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 31,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 32,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 33,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 34,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 35,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 36,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 37,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 38,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 39,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 40,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 41,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 42,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 43,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 44,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 45,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 46,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 47,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 48,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 49,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 50,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 51,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 52,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 53,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 54,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 55,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 56,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 57,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 58,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 59,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 60,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 61,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 62,
+   "bolum": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 63,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null,
+   "not": "bolum kapagi; bantta yazi yok"
+  },
+  {
+   "sayfa": 64,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 65,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 66,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 67,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 68,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 69,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 70,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 71,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 72,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 73,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 74,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 75,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 76,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 77,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 78,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 79,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 80,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 81,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 82,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 83,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 84,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 85,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 86,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 87,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 88,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 89,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 90,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 91,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 92,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 93,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 94,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 95,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 96,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 97,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 98,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 99,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 100,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 101,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 102,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 103,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 104,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 105,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 106,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 107,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 108,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 109,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 110,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 111,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 112,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 113,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 114,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 115,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 116,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 117,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 118,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 119,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 120,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 121,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 122,
+   "bolum": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 123,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null
+  },
+  {
+   "sayfa": 124,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 125,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 126,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 127,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 128,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 129,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 1
+  },
+  {
+   "sayfa": 130,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 131,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 132,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 133,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 134,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 135,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 136,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 2
+  },
+  {
+   "sayfa": 137,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 138,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 139,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 140,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 141,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 142,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 143,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 3
+  },
+  {
+   "sayfa": 144,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 145,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 146,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 147,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 148,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 149,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 150,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 4
+  },
+  {
+   "sayfa": 151,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 152,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 153,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 154,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 155,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 156,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 157,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 5
+  },
+  {
+   "sayfa": 158,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 159,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 160,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 161,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 162,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 163,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 6
+  },
+  {
+   "sayfa": 164,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 165,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 166,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 167,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 168,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 169,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 170,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 7
+  },
+  {
+   "sayfa": 171,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 172,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 173,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 174,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 175,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 176,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 8
+  },
+  {
+   "sayfa": 177,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 178,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 179,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 180,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 181,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 182,
+   "bolum": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "tur": "TEST",
+   "sira": 9
+  },
+  {
+   "sayfa": 183,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null
+  },
+  {
+   "sayfa": 184,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "KONDISYON",
+   "sira": 1
+  },
+  {
+   "sayfa": 185,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 186,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 187,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 188,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "KONDISYON",
+   "sira": 2
+  },
+  {
+   "sayfa": 189,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 190,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 191,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 192,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "KONDISYON",
+   "sira": 3
+  },
+  {
+   "sayfa": 193,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 194,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 195,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 196,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 1
+  },
+  {
+   "sayfa": 197,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 198,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 199,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 200,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 201,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 202,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 2
+  },
+  {
+   "sayfa": 203,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 204,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 205,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 206,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 207,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 208,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 209,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 3
+  },
+  {
+   "sayfa": 210,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 211,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 212,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 213,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 214,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 215,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 4
+  },
+  {
+   "sayfa": 216,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 217,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 218,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 219,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 220,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 221,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 222,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 5
+  },
+  {
+   "sayfa": 223,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 224,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 225,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 226,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 227,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 228,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 6
+  },
+  {
+   "sayfa": 229,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 230,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 231,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 232,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 233,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 234,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 235,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "ODAKLANMA",
+   "sira": 7
+  },
+  {
+   "sayfa": 236,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 237,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 238,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 239,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 240,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 241,
+   "bolum": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 242,
+   "bolum": "-",
+   "tur": "-",
+   "sira": 1,
+   "not": "yeni test baslangic kutusu (30 soru, OSYM KPSS/ALES/DGS/MSU/TYT/AYT sorulari, 30-40 dk); bantta bolum/tur etiketi gorunmuyor, yalniz 1 numarasi; tur muhtemelen asagida/kesilmis"
+  },
+  {
+   "sayfa": 243,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null,
+   "not": "bantta kirmizi bolum basligi yok; OSYM KOSESI logosu var"
+  },
+  {
+   "sayfa": 244,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 245,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 246,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 247,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 248,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 249,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 250,
+   "bolum": "-",
+   "tur": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "sira": null
+  },
+  {
+   "sayfa": 251,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null,
+   "not": "sari kapak, bantta yalniz buyuk sekil kismi gorunuyor"
+  },
+  {
+   "sayfa": 252,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "EGITIM TESTI",
+   "sira": 1
+  },
+  {
+   "sayfa": 253,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 254,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "SOSYOLOJI TESTI",
+   "sira": 2
+  },
+  {
+   "sayfa": 255,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 256,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "SPOR TESTI",
+   "sira": 3
+  },
+  {
+   "sayfa": 257,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 258,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "MATEMATIK TESTI",
+   "sira": 4
+  },
+  {
+   "sayfa": 259,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 260,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "TEKNOLOJI TESTI",
+   "sira": 5
+  },
+  {
+   "sayfa": 261,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 262,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "PSIKOLOJI TESTI",
+   "sira": 6
+  },
+  {
+   "sayfa": 263,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 264,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "TURIZM TESTI",
+   "sira": 7
+  },
+  {
+   "sayfa": 265,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 266,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "ASTRONOMI TESTI",
+   "sira": 8
+  },
+  {
+   "sayfa": 267,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 8
+  },
+  {
+   "sayfa": 268,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "HAYVANLAR ALEMI TESTI",
+   "sira": 9
+  },
+  {
+   "sayfa": 269,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 9
+  },
+  {
+   "sayfa": 270,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "FELSEFE TESTI",
+   "sira": 10
+  },
+  {
+   "sayfa": 271,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 10
+  },
+  {
+   "sayfa": 272,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "SAGLIK-TIP TESTI",
+   "sira": 11
+  },
+  {
+   "sayfa": 273,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 11
+  },
+  {
+   "sayfa": 274,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "COGRAFYA TESTI",
+   "sira": 12
+  },
+  {
+   "sayfa": 275,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 12
+  },
+  {
+   "sayfa": 276,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "ARKEOLOJI TESTI",
+   "sira": 13
+  },
+  {
+   "sayfa": 277,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 13
+  },
+  {
+   "sayfa": 278,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "ILETISIM TESTI",
+   "sira": 14
+  },
+  {
+   "sayfa": 279,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 14
+  },
+  {
+   "sayfa": 280,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "BIYOLOJI TESTI",
+   "sira": 15
+  },
+  {
+   "sayfa": 281,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 15
+  },
+  {
+   "sayfa": 282,
+   "bolum": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "tur": "-",
+   "sira": 15
+  },
+  {
+   "sayfa": 283,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null
+  },
+  {
+   "sayfa": 284,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 1
+  },
+  {
+   "sayfa": 285,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 1,
+   "not": "devam sayfasi ama sagda 'OSYM TADINDA SORULAR 1' logosu basili"
+  },
+  {
+   "sayfa": 286,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 2
+  },
+  {
+   "sayfa": 287,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 2
+  },
+  {
+   "sayfa": 288,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 3
+  },
+  {
+   "sayfa": 289,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 3
+  },
+  {
+   "sayfa": 290,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 4
+  },
+  {
+   "sayfa": 291,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 4
+  },
+  {
+   "sayfa": 292,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 5
+  },
+  {
+   "sayfa": 293,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 5
+  },
+  {
+   "sayfa": 294,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 6
+  },
+  {
+   "sayfa": 295,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 6
+  },
+  {
+   "sayfa": 296,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 7
+  },
+  {
+   "sayfa": 297,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 7
+  },
+  {
+   "sayfa": 298,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 8
+  },
+  {
+   "sayfa": 299,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 8
+  },
+  {
+   "sayfa": 300,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 9
+  },
+  {
+   "sayfa": 301,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 9
+  },
+  {
+   "sayfa": 302,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 10
+  },
+  {
+   "sayfa": 303,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 10
+  },
+  {
+   "sayfa": 304,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 11
+  },
+  {
+   "sayfa": 305,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 11
+  },
+  {
+   "sayfa": 306,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 12
+  },
+  {
+   "sayfa": 307,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 12
+  },
+  {
+   "sayfa": 308,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 13
+  },
+  {
+   "sayfa": 309,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 13
+  },
+  {
+   "sayfa": 310,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 14
+  },
+  {
+   "sayfa": 311,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 14
+  },
+  {
+   "sayfa": 312,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 15
+  },
+  {
+   "sayfa": 313,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 15
+  },
+  {
+   "sayfa": 314,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 16
+  },
+  {
+   "sayfa": 315,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 16
+  },
+  {
+   "sayfa": 316,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 17
+  },
+  {
+   "sayfa": 317,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 17
+  },
+  {
+   "sayfa": 318,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 18
+  },
+  {
+   "sayfa": 319,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 18
+  },
+  {
+   "sayfa": 320,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 19
+  },
+  {
+   "sayfa": 321,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 19
+  },
+  {
+   "sayfa": 322,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 20
+  },
+  {
+   "sayfa": 323,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 20
+  },
+  {
+   "sayfa": 324,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 21
+  },
+  {
+   "sayfa": 325,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 21
+  },
+  {
+   "sayfa": 326,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 22
+  },
+  {
+   "sayfa": 327,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 22
+  },
+  {
+   "sayfa": 328,
+   "bolum": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "tur": "OSYM TADINDA SORULAR",
+   "sira": 22,
+   "not": "logo solda (sol sayfa duzeni)"
+  },
+  {
+   "sayfa": 329,
+   "bolum": "-",
+   "tur": "KAPAK",
+   "sira": null
+  },
+  {
+   "sayfa": 330,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "ENERJI DIZAYN TESTI",
+   "sira": 1
+  },
+  {
+   "sayfa": 331,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 1
+  },
+  {
+   "sayfa": 332,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "ENERJI DIZAYN TESTI",
+   "sira": 2
+  },
+  {
+   "sayfa": 333,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 2
+  },
+  {
+   "sayfa": 334,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "ENERJI DIZAYN TESTI",
+   "sira": 3
+  },
+  {
+   "sayfa": 335,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 3
+  },
+  {
+   "sayfa": 336,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "PUZZLE ODAKLANMA TESTI-1",
+   "sira": 4
+  },
+  {
+   "sayfa": 337,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 4
+  },
+  {
+   "sayfa": 338,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "PUZZLE ODAKLANMA TESTI-2",
+   "sira": 5
+  },
+  {
+   "sayfa": 339,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 5
+  },
+  {
+   "sayfa": 340,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "NUANS TESTI",
+   "sira": 6
+  },
+  {
+   "sayfa": 341,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 342,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 343,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 6
+  },
+  {
+   "sayfa": 344,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "ALGISAL BUTUNLUK TESTI",
+   "sira": 7
+  },
+  {
+   "sayfa": 345,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 7
+  },
+  {
+   "sayfa": 346,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "ALGISAL BUTUNLUK TESTI",
+   "sira": 8
+  },
+  {
+   "sayfa": 347,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 8
+  },
+  {
+   "sayfa": 348,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "MANTIK MUHAKEME TESTI",
+   "sira": 9
+  },
+  {
+   "sayfa": 349,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 9,
+   "not": "icerikte bir soru kutusunda OSYM KOSESI logosu var (bant etiketi degil)"
+  },
+  {
+   "sayfa": 350,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "GRAFIK YORUMLAMA VE TABLO OKUMA TESTI",
+   "sira": 10
+  },
+  {
+   "sayfa": 351,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 10
+  },
+  {
+   "sayfa": 352,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 10
+  },
+  {
+   "sayfa": 353,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 10
+  },
+  {
+   "sayfa": 354,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "GORSEL OKUMA TESTI",
+   "sira": 11
+  },
+  {
+   "sayfa": 355,
+   "bolum": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "tur": "-",
+   "sira": 11
+  }
+ ]
+}
