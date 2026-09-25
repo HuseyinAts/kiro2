@@ -10,14 +10,14 @@ Bu belge onceki envanteri (`ZKITAP_ENVANTER.md`, klasor ADINA gore eslestirilmis
 |---|---|
 | PNG iceren klasor | 278 |
 | tekil kitap (ayni icerikli klasorler birlestirildi) | 237 |
-| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 19 kitap (345 Geometri 2 cilt = 20 grup) |
+| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 20 kitap (345 Geometri 2 cilt = 21 grup) |
 | islenmis, ithal EDILMEMIS | 0 |
-| islenmemis | 218 |
+| islenmemis | 217 |
 | -- bunlardan DB'de HIC satiri olmayan | 99 |
-| -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 119 |
+| -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 118 |
 | kitap olmayan / kullanilamaz klasor | 6 |
 
-Modern ithal toplami (19 kitap): **28797 satir** (23 Eyl 2026 aksam olcumu: + Orijinal 2024 Geometri 2072, + ACIL 2025 KURS Geometri 1759; 24 Eyl 2026: + 345 2025 TYT Matematik 2063, `MAT_345_TYT_YONTEM.md`; + 345 2025 AYT Matematik 1942, `MAT_345_AYT_YONTEM.md`; 25 Eyl 2026: + 345 2025 AYT Kimya 1304, `KIM_345_AYT_YONTEM.md`; + 345 2025 AYT Turk Edebiyati 1384, `EDB_345_AYT_YONTEM.md`). Canli DB'deki toplam `source_book` satiri: 28161 (201 farkli ad).
+Modern ithal toplami (20 kitap): **29808 satir** (23 Eyl 2026 aksam olcumu: + Orijinal 2024 Geometri 2072, + ACIL 2025 KURS Geometri 1759; 24 Eyl 2026: + 345 2025 TYT Matematik 2063, `MAT_345_TYT_YONTEM.md`; + 345 2025 AYT Matematik 1942, `MAT_345_AYT_YONTEM.md`; 25 Eyl 2026: + 345 2025 AYT Kimya 1304, `KIM_345_AYT_YONTEM.md`; + 345 2025 AYT Turk Edebiyati 1384, `EDB_345_AYT_YONTEM.md`; + 345 2025 Paragraf Sifir Risk 1011, `PRG_345_YONTEM.md`; kitabin 1012 sorusundan 1'i 345 AYT Edebiyat'ta ayni soru_hash ile zaten var). Canli DB'deki toplam `source_book` satiri: 28161 (201 farkli ad).
 
 ## 2. Onceki belgelerdeki hukumlerin DUZELTILMESI (olculdu + gozle dogrulandi)
 
@@ -55,7 +55,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 345 2024 TYT-AYT Geometri SB | **ISLENDI** | `345 Tyt Ayt Geometri Soru Bankasi` | 440 | `345 2025 Tyt Ayt Geometri Soru Bankasi 1` | modern 2708 / aktif 2702 | - | - | TAMAM (modern ithal) |
 | 345 2025 AYT Biyoloji SB | **ISLENDI** | `345 2025 Ayt Biyoloji Soru Bankasi` | 374 | - | modern 1315 / aktif 1315 | 345 2024 AYT Biyoloji Soru Bankasi %69 | - | TAMAM (modern ithal) |
 | 345 2025 AYT Turk Edebiyati SB | **ISLENDI** | `345 2025 Ayt Turk Edebiyati Soru Bankasi` | 348 | - | modern 1384 / aktif 0 | - | 329-348 s328'in kopyasi (okuyucu takili); icerik 1-328 | TAMAM (modern ithal) |
-| 345 2025 Paragraf Sifir Risk SB | ISLENMEDI | `345 2025 Paragraf Sifir Risk Soru Bankasi` | 368 | - | eski hat 8 / aktif 8 | - | - | ISLENEBILIR |
+| 345 2025 Paragraf Sifir Risk SB | **ISLENDI** | `345 2025 Paragraf Sifir Risk Soru Bankasi` | 368 | - | modern 1011 / aktif 0; eski hat 8 / aktif 8 (0054 ile ASCII ad) | - | icerik 3-355, anahtar 356-368; 6. NUANS TESTI acik uclu (kapsam disi) | TAMAM (modern ithal) |
 | 345 2025 Start Matematik | ISLENMEDI | `345 2025 Start Matematik` | 323 | - | eski hat 3 / aktif 3 | - | - | ISLENEBILIR |
 | 345 2025 TYT Biyoloji SB | **ISLENDI** | `345 2025 Tyt Biyoloji Soru Bankasi` | 235 | - | modern 1023 / aktif 1022 | 345 2024 TYT Biyoloji SB %72 | - | TAMAM (modern ithal) |
 | 345 2025 TYT Fizik SB | ISLENMEDI | `345 2025 Tyt Fizik Soru Bankasi` | 368 | `345 Tyt Fizik Soru Bankasi` | yok | - | - | ISLENEBILIR |

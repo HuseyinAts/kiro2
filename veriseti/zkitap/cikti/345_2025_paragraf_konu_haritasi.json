@@ -1,0 +1,1252 @@
+{
+ "kaynak": "345 2025 Paragraf Sifir Risk Soru Bankasi",
+ "nereden": "Bolum adlari + kapak sayfalari: kitabin KENDI icindekiler sayfasi (dosya 2). Test adi ve sirasi: her sayfanin ust bandi (353 bant, goz ile okundu). Soru sayisi: kitap sonu cevap anahtari (s356-368, iki okuma).",
+ "dogrulama": "85 bant kosusunun 85'i anahtarin test sirasiyla (bolum icinde test numarasi) birebir. NUANS TESTI (s340-343) acik uclu yazma alistirmasi; siksiz, anahtarda yok -> kapsam disi.",
+ "bolum_sayisi": 7,
+ "bolumler": [
+  {
+   "kod": "TUR-345P25-B01",
+   "no": 1,
+   "ad": "Ke\u015ffet: Farkl\u0131 Soru T\u00fcrleri \u0130le Tan\u0131\u015f!",
+   "ad_ascii": "KESFET: FARKLI SORU TURLERI ILE TANIS!",
+   "kapak_sayfasi": 3
+  },
+  {
+   "kod": "TUR-345P25-B02",
+   "no": 2,
+   "ad": "\u00d6l\u00e7: Sorular\u0131 Anla, Zaman\u0131 Yakala!",
+   "ad_ascii": "OLC: SORULARI ANLA, ZAMANI YAKALA!",
+   "kapak_sayfasi": 63
+  },
+  {
+   "kod": "TUR-345P25-B03",
+   "no": 3,
+   "ad": "Planla: Sorular\u0131 Anla, Zaman\u0131nda Tamamla!",
+   "ad_ascii": "PLANLA: SORULARI ANLA, ZAMANINDA TAMAMLA!",
+   "kapak_sayfasi": 123
+  },
+  {
+   "kod": "TUR-345P25-B04",
+   "no": 4,
+   "ad": "Odaklan: Sadece \u0130htiyac\u0131n Olana!",
+   "ad_ascii": "ODAKLAN: SADECE IHTIYACIN OLANA!",
+   "kapak_sayfasi": 183
+  },
+  {
+   "kod": "TUR-345P25-B05",
+   "no": 5,
+   "ad": "Zenginle\u015ftir: Farkl\u0131 Temalarla Kendini Geli\u015ftir!",
+   "ad_ascii": "ZENGINLESTIR: FARKLI TEMALARLA KENDINI GELISTIR!",
+   "kapak_sayfasi": 251
+  },
+  {
+   "kod": "TUR-345P25-B06",
+   "no": 6,
+   "ad": "Ba\u015far: Seviyeleri Ad\u0131m Ad\u0131m A\u015f!",
+   "ad_ascii": "BASAR: SEVIYELERI ADIM ADIM AS!",
+   "kapak_sayfasi": 283
+  },
+  {
+   "kod": "TUR-345P25-B07",
+   "no": 7,
+   "ad": "Riskleri S\u0131f\u0131rla: Sorularda Tak\u0131lma!",
+   "ad_ascii": "RISKLERI SIFIRLA: SORULARDA TAKILMA!",
+   "kapak_sayfasi": 329
+  }
+ ],
+ "test_sayisi": 85,
+ "testler": [
+  {
+   "birim": "PRG345-T001",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 1",
+   "tur": "test",
+   "sayfalar": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 356
+  },
+  {
+   "birim": "PRG345-T002",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 2",
+   "tur": "test",
+   "sayfalar": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 356
+  },
+  {
+   "birim": "PRG345-T003",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 3",
+   "tur": "test",
+   "sayfalar": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 356
+  },
+  {
+   "birim": "PRG345-T004",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 4",
+   "tur": "test",
+   "sayfalar": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 357
+  },
+  {
+   "birim": "PRG345-T005",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 5",
+   "tur": "test",
+   "sayfalar": [
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 357
+  },
+  {
+   "birim": "PRG345-T006",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 6",
+   "tur": "test",
+   "sayfalar": [
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 357
+  },
+  {
+   "birim": "PRG345-T007",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 7",
+   "tur": "test",
+   "sayfalar": [
+    45,
+    46,
+    47,
+    48,
+    49,
+    50
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 358
+  },
+  {
+   "birim": "PRG345-T008",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 8",
+   "tur": "test",
+   "sayfalar": [
+    51,
+    52,
+    53,
+    54,
+    55,
+    56
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 358
+  },
+  {
+   "birim": "PRG345-T009",
+   "bolum": "TUR-345P25-B01",
+   "test_adi": "TEST 9",
+   "tur": "test",
+   "sayfalar": [
+    57,
+    58,
+    59,
+    60,
+    61,
+    62
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 358
+  },
+  {
+   "birim": "PRG345-T010",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 1",
+   "tur": "test",
+   "sayfalar": [
+    64,
+    65,
+    66,
+    67,
+    68,
+    69
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 359
+  },
+  {
+   "birim": "PRG345-T011",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 2",
+   "tur": "test",
+   "sayfalar": [
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 359
+  },
+  {
+   "birim": "PRG345-T012",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 3",
+   "tur": "test",
+   "sayfalar": [
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 359
+  },
+  {
+   "birim": "PRG345-T013",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 4",
+   "tur": "test",
+   "sayfalar": [
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 360
+  },
+  {
+   "birim": "PRG345-T014",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 5",
+   "tur": "test",
+   "sayfalar": [
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 360
+  },
+  {
+   "birim": "PRG345-T015",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 6",
+   "tur": "test",
+   "sayfalar": [
+    99,
+    100,
+    101,
+    102,
+    103,
+    104
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 360
+  },
+  {
+   "birim": "PRG345-T016",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 7",
+   "tur": "test",
+   "sayfalar": [
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 361
+  },
+  {
+   "birim": "PRG345-T017",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 8",
+   "tur": "test",
+   "sayfalar": [
+    111,
+    112,
+    113,
+    114,
+    115,
+    116
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 361
+  },
+  {
+   "birim": "PRG345-T018",
+   "bolum": "TUR-345P25-B02",
+   "test_adi": "TEST 9",
+   "tur": "test",
+   "sayfalar": [
+    117,
+    118,
+    119,
+    120,
+    121,
+    122
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 361
+  },
+  {
+   "birim": "PRG345-T019",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 1",
+   "tur": "test",
+   "sayfalar": [
+    124,
+    125,
+    126,
+    127,
+    128,
+    129
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 362
+  },
+  {
+   "birim": "PRG345-T020",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 2",
+   "tur": "test",
+   "sayfalar": [
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 362
+  },
+  {
+   "birim": "PRG345-T021",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 3",
+   "tur": "test",
+   "sayfalar": [
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 362
+  },
+  {
+   "birim": "PRG345-T022",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 4",
+   "tur": "test",
+   "sayfalar": [
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 363
+  },
+  {
+   "birim": "PRG345-T023",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 5",
+   "tur": "test",
+   "sayfalar": [
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 363
+  },
+  {
+   "birim": "PRG345-T024",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 6",
+   "tur": "test",
+   "sayfalar": [
+    158,
+    159,
+    160,
+    161,
+    162,
+    163
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 363
+  },
+  {
+   "birim": "PRG345-T025",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 7",
+   "tur": "test",
+   "sayfalar": [
+    164,
+    165,
+    166,
+    167,
+    168,
+    169,
+    170
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 364
+  },
+  {
+   "birim": "PRG345-T026",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 8",
+   "tur": "test",
+   "sayfalar": [
+    171,
+    172,
+    173,
+    174,
+    175,
+    176
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 364
+  },
+  {
+   "birim": "PRG345-T027",
+   "bolum": "TUR-345P25-B03",
+   "test_adi": "TEST 9",
+   "tur": "test",
+   "sayfalar": [
+    177,
+    178,
+    179,
+    180,
+    181,
+    182
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 364
+  },
+  {
+   "birim": "PRG345-T028",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "KONDISYON 1",
+   "tur": "kondisyon",
+   "sayfalar": [
+    184,
+    185,
+    186,
+    187
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T029",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "KONDISYON 2",
+   "tur": "kondisyon",
+   "sayfalar": [
+    188,
+    189,
+    190,
+    191
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T030",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "KONDISYON 3",
+   "tur": "kondisyon",
+   "sayfalar": [
+    192,
+    193,
+    194,
+    195
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T031",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 1",
+   "tur": "odaklanma",
+   "sayfalar": [
+    196,
+    197,
+    198,
+    199,
+    200,
+    201
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T032",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 2",
+   "tur": "odaklanma",
+   "sayfalar": [
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T033",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 3",
+   "tur": "odaklanma",
+   "sayfalar": [
+    209,
+    210,
+    211,
+    212,
+    213,
+    214
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T034",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 4",
+   "tur": "odaklanma",
+   "sayfalar": [
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    221
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T035",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 5",
+   "tur": "odaklanma",
+   "sayfalar": [
+    222,
+    223,
+    224,
+    225,
+    226,
+    227
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T036",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 6",
+   "tur": "odaklanma",
+   "sayfalar": [
+    228,
+    229,
+    230,
+    231,
+    232,
+    233,
+    234
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T037",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "ODAKLANMA 7",
+   "tur": "odaklanma",
+   "sayfalar": [
+    235,
+    236,
+    237,
+    238,
+    239,
+    240,
+    241
+   ],
+   "soru_sayisi": 20,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T038",
+   "bolum": "TUR-345P25-B04",
+   "test_adi": "OSYM CIKMIS SORULAR OZEL DENEMESI",
+   "tur": "osym_cikmis_sorular_ozel_denemesi",
+   "sayfalar": [
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250
+   ],
+   "soru_sayisi": 30,
+   "anahtar_sayfasi": 365
+  },
+  {
+   "birim": "PRG345-T039",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "1. EGITIM TESTI",
+   "tur": "egitim_testi",
+   "sayfalar": [
+    252,
+    253
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T040",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "2. SOSYOLOJI TESTI",
+   "tur": "sosyoloji_testi",
+   "sayfalar": [
+    254,
+    255
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T041",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "3. SPOR TESTI",
+   "tur": "spor_testi",
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T042",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "4. MATEMATIK TESTI",
+   "tur": "matematik_testi",
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T043",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "5. TEKNOLOJI TESTI",
+   "tur": "teknoloji_testi",
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T044",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "6. PSIKOLOJI TESTI",
+   "tur": "psikoloji_testi",
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T045",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "7. TURIZM TESTI",
+   "tur": "turizm_testi",
+   "sayfalar": [
+    264,
+    265
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T046",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "8. ASTRONOMI TESTI",
+   "tur": "astronomi_testi",
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T047",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "9. HAYVANLAR ALEMI TESTI",
+   "tur": "hayvanlar_alemi_testi",
+   "sayfalar": [
+    268,
+    269
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T048",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "10. FELSEFE TESTI",
+   "tur": "felsefe_testi",
+   "sayfalar": [
+    270,
+    271
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T049",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "11. SAGLIK-TIP TESTI",
+   "tur": "saglik-tip_testi",
+   "sayfalar": [
+    272,
+    273
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T050",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "12. COGRAFYA TESTI",
+   "tur": "cografya_testi",
+   "sayfalar": [
+    274,
+    275
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T051",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "13. ARKEOLOJI TESTI",
+   "tur": "arkeoloji_testi",
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T052",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "14. ILETISIM TESTI",
+   "tur": "iletisim_testi",
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T053",
+   "bolum": "TUR-345P25-B05",
+   "test_adi": "15. BIYOLOJI TESTI",
+   "tur": "biyoloji_testi",
+   "sayfalar": [
+    280,
+    281,
+    282
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 366
+  },
+  {
+   "birim": "PRG345-T054",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 1",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    284,
+    285
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T055",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 2",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    286,
+    287
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T056",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 3",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T057",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 4",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T058",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 5",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T059",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 6",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    294,
+    295
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T060",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 7",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    296,
+    297
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T061",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 8",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    298,
+    299
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T062",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 9",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T063",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 10",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T064",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 11",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T065",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 12",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    306,
+    307
+   ],
+   "soru_sayisi": 7,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T066",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 13",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    308,
+    309
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T067",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 14",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    310,
+    311
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T068",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 15",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    312,
+    313
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T069",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 16",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    314,
+    315
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T070",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 17",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    316,
+    317
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T071",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 18",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    318,
+    319
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T072",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 19",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    320,
+    321
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T073",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 20",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    322,
+    323
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T074",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 21",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    324,
+    325
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T075",
+   "bolum": "TUR-345P25-B06",
+   "test_adi": "OSYM TADINDA SORULAR 22",
+   "tur": "osym_tadinda_sorular",
+   "sayfalar": [
+    326,
+    327,
+    328
+   ],
+   "soru_sayisi": 6,
+   "anahtar_sayfasi": 367
+  },
+  {
+   "birim": "PRG345-T076",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "1. ENERJI DIZAYN TESTI-1",
+   "tur": "enerji_dizayn_testi",
+   "sayfalar": [
+    330,
+    331
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T077",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "2. ENERJI DIZAYN TESTI-2",
+   "tur": "enerji_dizayn_testi",
+   "sayfalar": [
+    332,
+    333
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T078",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "3. ENERJI DIZAYN TESTI-3",
+   "tur": "enerji_dizayn_testi",
+   "sayfalar": [
+    334,
+    335
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T079",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "4. PUZZLE ODAKLANMA TESTI-1",
+   "tur": "puzzle_odaklanma_testi-1",
+   "sayfalar": [
+    336,
+    337
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T080",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "5. PUZZLE ODAKLANMA TESTI-2",
+   "tur": "puzzle_odaklanma_testi-2",
+   "sayfalar": [
+    338,
+    339
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T081",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "7. ALGISAL BUTUNLUK TESTI-1",
+   "tur": "algisal_butunluk_testi",
+   "sayfalar": [
+    344,
+    345
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T082",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "8. ALGISAL BUTUNLUK TESTI-2",
+   "tur": "algisal_butunluk_testi",
+   "sayfalar": [
+    346,
+    347
+   ],
+   "soru_sayisi": 8,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T083",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "9. MANTIK MUHAKEME TESTI",
+   "tur": "mantik_muhakeme_testi",
+   "sayfalar": [
+    348,
+    349
+   ],
+   "soru_sayisi": 5,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T084",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "10. GRAFIK YORUMLAMA VE TABLO OKUMA TESTI",
+   "tur": "grafik_yorumlama_ve_tablo_okuma_testi",
+   "sayfalar": [
+    350,
+    351,
+    352,
+    353
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 368
+  },
+  {
+   "birim": "PRG345-T085",
+   "bolum": "TUR-345P25-B07",
+   "test_adi": "11. GORSEL OKUMA TESTI",
+   "tur": "gorsel_okuma_testi",
+   "sayfalar": [
+    354,
+    355
+   ],
+   "soru_sayisi": 4,
+   "anahtar_sayfasi": 368
+  }
+ ]
+}
