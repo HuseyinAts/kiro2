@@ -16,6 +16,7 @@ Kaynak: `veriseti/zkitap/screenshots/345 2025 Ayt Kimya Soru Bankasi/`
 | `alembic 0049_kim345ayt_agac` | konu agaci (KIM-345A25: 12 unite + 50 konu) |
 | `alembic 0050_kim345ayt_kaynak_adi` | eski hat source_book yazim duzeltmesi (161 satir) |
 | `alembic 0051_kim345ayt_eski_cevap` | 6 eski hat satiri kitabin basili haline |
+| `alembic 0052_kim345ayt_eski_etiket` | eski hat TYT etiketi -> AYT (268), TYT konu dugumu -> kitabin dugumu (117), ikiz pasif (1) |
 
 Hicbir soru cozulmedi; hicbir cevap uretilmedi.
 
@@ -217,7 +218,7 @@ hat 108, 345 2025 AYT eski hat 90, OSYM 2025 AYT 6, diger 7). 211'in
 205'inde DB cevap harfi bizimle ayni; 6 harf celiskisi bolum 7'de. Bu
 kitabin 1304 sorusu hash duzeyinde birbirinden ve DB'den farkli.
 
-## 7. Eski hat satirlari (0050, 0051)
+## 7. Eski hat satirlari (0050, 0051, 0052)
 
 DB'de bu kitaptan eski hattan (kiro2_batch_v4.14e, gemini) 363 AKTIF +
 PUBLIC satir var: `345 2025 Ayt Kimya Soru Bankas<U+0131>` 161 (43 AYT,
@@ -225,8 +226,8 @@ PUBLIC satir var: `345 2025 Ayt Kimya Soru Bankas<U+0131>` 161 (43 AYT,
 
 **0050** -- 2025 yazimi yeni ASCII adla ayni anahtara cozuluyor; yalniz
 `source_book` duzeltilir (161 satir, geri alinabilir). 2024, '345 2025 Tyt
-Kimya' ve '345 Tyt Kimya' farkli anahtar, dokunulmadi. 118 satirin 'TYT'
-etiketi DEGISTIRILMEDI (ayri karar).
+Kimya' ve '345 Tyt Kimya' farkli anahtar, dokunulmadi. 'TYT' etiketi 0050'de
+degismedi; 0052'de duzeltildi.
 
 **0051** -- sahip karari (24 Eyl 2026): "kitabin basili cevabi baz alinir".
 Eski hattin 363 satirinin HER biri icin bu kitaptaki en iyi soru bulundu
@@ -254,10 +255,28 @@ bir kez + her sik beklenen eski degerde. Yerel DB'de 0048 -> 0051 -> 0048
 -> 0051 gidis-donus olculdu (62 dugum, 161 ad, 6 satir; downgrade hepsini
 geri koydu).
 
-**Dokunulmayan 7. celiski:** 0344bdd2 (2024 etiketi, s129 sag 6) 2e60703b'nin
-ikizi; sik D/E yanlis okunmus, dogru icerik siklarinda yok. Basiliya
-cekilirse 2e60703b ile ayni aktif hash'i alir (`uq_qb_soru_hash_active`).
-Ikizlerden birinin kapatilmasi sahip karari.
+**7. celiski -- ikiz pasif (0052):** 0344bdd2 (2024 etiketi, s129 sag 6)
+2e60703b'nin ikizi; sik D/E yanlis okunmus, dogru icerik siklarinda yok.
+Basiliya cekilirse 2e60703b ile ayni aktif hash'i alirdi
+(`uq_qb_soru_hash_active`). Sahip karari (25 Eyl): ikiz pasif; 0052
+`is_active = FALSE` yapar (silinmez, gunluklu). Ogrenciye 0051 ile basili
+cevaba cekilen 2e60703b kalir.
+
+**0052 -- TYT etiketi ve konu dugumu.** Sahip karari (25 Eyl): "COZ".
+Eski hattin bu kitaptan gelen 268 satiri `exam_type='TYT'` etiketliydi
+(2025 etiketi 118, ayni kitabin 2024 baskisi etiketi 150). Kanit: sayfalari
+kitabin 7-336 araliginda ve 12 unitenin 12'sinde; 244'u bu kitabin modern
+sorusuyla govde Jaccard >= 0.75 eslesiyor (263'u >= 0.5); grade_level
+hepsinde 12. -> `exam_type = 'AYT'`. Bu satirlarin 117'si TYT agacindaki bir
+dugume (TYT-KIM-*) bagliydi; AYT etiketiyle celisir. Yeni dugum KIM-345A25
+(0049) agacindan, yalniz guvenli kanitla: 104'unde bu kitaptaki en iyi soru
+(Jaccard >= 0.75) AYNI basili sayfada -> o sorunun testinin dugumu; 13'unde
+sayfadaki tum testler ayni dugumde. KIM / KIM.ASI/DEN/ORG/TER konulu
+satirlara dokunulmadi. Yerel DB'de 0051 -> 0052 -> 0051 -> 0052 gidis-donus:
+363 satirin (exam_type, dugum, aktiflik) parmak izi iki yonde birebir.
+Not: `v_safe_for_beta` is_active'i kendisi suzmez (0009 pasifleri de gorunur);
+`core/quality_gate.py` kurali geregi her ogrenci sorgusu is_active'i AYRICA
+uygular.
 
 Harf farkli ama icerik ayni: 096bab8a (s291 sol 8, 'I ve III'; eski hatta
 sik C/D yer degismis) -- cevap icerigi dogru, dokunulmadi.
@@ -289,7 +308,8 @@ beta gorunumu 0; ikinci kosum 0 satir yazar.
    (`sik_tekrar`; 11'i gorsel sik, 3'u belgelenmis rakam belirsizligi:
    T091_10, T096_08, T152_02).
 4. 211 guclu mukerrer aday; birlestirme/eleme karari verilmedi.
-5. Eski hat: 0344bdd2 ikizi (bolum 7); 118 satirin 'TYT' etiketi; eski
+5. Eski hat: ikiz 0344bdd2 pasif, TYT etiketi ve TYT dugumleri 0052 ile
+   duzeltildi (bolum 7); eski
    hattin 19 guclu eslesmesinde cevap harfi ya da sik icerigi bu kitabin
    okumasindan farkli; 7'si cevap celiskisi (bolum 7), kalanlarda cevap
    harfi ayni ama sik metni farkli (or. T070_01 E sikki: eski hat '0,6',
