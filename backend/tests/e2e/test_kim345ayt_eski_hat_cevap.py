@@ -28,7 +28,7 @@ KARSILIK = {
 # Mukerrer taramasinin (soru basina EN IYI satir) harf celiskileri arasinda olup
 # bu migration'in bilerek DOKUNMADIGI satirlar:
 DOKUNULMAYAN = {
-    # 2e60703b'nin 2024 etiketli ikizi; basiliya cekilirse ayni aktif hash -> sahip karari
+    # 2e60703b'nin 2024 etiketli ikizi; basiliya cekilirse ayni aktif hash -> 0052 ile pasif
     "0344bdd2-b463-5b43-9dd9-8cf1190e48c4",
     # harf farkli ama cevap ICERIGI ayni ('I ve III'; eski hatta sik C/D yer degismis)
     "096bab8a-dc45-57c6-84f6-8f8f4289f5ab",
