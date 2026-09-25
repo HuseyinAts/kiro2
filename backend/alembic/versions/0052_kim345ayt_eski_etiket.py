@@ -527,14 +527,16 @@ def upgrade() -> None:
 
     # 2) konu dugumu
     kodlar = sorted({k for _, e, y in KONU_TASIMA for k in (e, y)})
-    dugum = dict(
-        b.execute(
+    dugum: dict[str, str] = {
+        str(kod): str(did)
+        for kod, did in b.execute(
             sa.text("SELECT code, id FROM topic_hierarchy WHERE code = ANY(:k)"),
             {"k": kodlar},
         ).fetchall()
-    )
-    mevcut = dict(
-        b.execute(
+    }
+    mevcut: dict[str, str] = {
+        str(qid): str(kod)
+        for qid, kod in b.execute(
             sa.text(
                 "SELECT q.id, t.code FROM question_bank q "
                 "JOIN topic_hierarchy t ON t.id = q.primary_topic_id "
@@ -542,7 +544,7 @@ def upgrade() -> None:
             ),
             {"ids": [x[0] for x in KONU_TASIMA]},
         ).fetchall()
-    )
+    }
     tasinan = 0
     for sid, eski, yeni in KONU_TASIMA:
         if mevcut.get(sid) != eski or yeni not in dugum or eski not in dugum:
