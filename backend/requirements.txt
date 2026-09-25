@@ -15,7 +15,7 @@ python-dotenv==1.2.1
 # Database
 asyncpg>=0.29.0
 psycopg[binary]>=3.1.0
-sqlalchemy[asyncio]>=2.0.36
+sqlalchemy[asyncio]>=2.0.36,<2.1  # 2.1: sqlalchemy.ext.mypy plugin kaldirildi (pyproject mypy plugins)
 alembic==1.13.1
 sqlparse>=0.6.0
 
