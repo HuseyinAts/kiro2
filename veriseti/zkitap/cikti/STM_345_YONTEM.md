@@ -1,7 +1,7 @@
 # 345 2025 Start Matematik -- uretim yontemi ve olcumler
 
 Durum: Faz 1 (sayfa turu, capa taramasi, cevap anahtari, test -> unite)
-TAMAM. Sonraki fazlar `STM_345_KESIF_VE_PLAN.md` bolum 2'de.
+ve Faz 2 (unite agaci, 0057) TAMAM. Sonraki fazlar `STM_345_KESIF_VE_PLAN.md` bolum 2'de.
 
 ## 0. Kaynak ve tavani
 
@@ -87,9 +87,32 @@ Unite -> test (dosya no):
 | 15 | Koklu Ifadeler | 4 | 291-298 |
 | 16 | Carpanlara Ayirma | 3 | 315-320 |
 
+## 2. Unite agaci (0057)
+
+16 unite dugumu MAT kokunun altinda (kok+1), kodlar `MAT-345S25-U01..U16`,
+adlar Turkce (kaynakta `\u` kacisli), `subject_area = MATEMATIK`.
+`345_2025_start_matematik_konu_haritasi.json` `stm345_harita.py` ile ham
+okumalardan turer; migration dosyasi o JSON'dan URETILDI.
+
+| kaynak / kapi | sonuc |
+|---|---|
+| unite adi | ayrac sayfalari (dosya 4, 18, 38, 52, 70, 90, 122, 144, 162, 176, 190, 202, 220, 240, 270, 300), gozle; kesik gorunen U10/U12/U16 tam kirpimla |
+| ayrac adi ASCII-buyuk katlamasi == icindekiler (dosya 3) | 16/16 |
+| ayrac dosyasi == icindekiler basili sayfasi + 1 | 16/16 |
+| test bandindaki unite adi == unite | 90/90 sayfa |
+
+Kitap uniteyi alt konuya bolmuyor: test bandi yalniz unite adini basar
+('0'dan Basla' alt basliklari konu sayfalarinda, kapsam disi). Sorular
+unite dugumune baglanir (`konu_eslesme_duzeyi` = 'unite').
+
+Yerel DB: upgrade 16 dugum (hepsi level 2, tek ebeveyn = MAT koku, aktif);
+downgrade 16 dugum + gunluk silindi; tekrar upgrade ayni. `alembic heads`
+tek bas: 0057_stm345_agac.
+
 ## Testler
 
-`backend/tests/e2e/test_stm345_veri.py` (17): hamdan birebir turetme,
+`backend/tests/e2e/test_stm345_veri.py` (25; Faz 2 ile +8: harita hamdan
+turer, migration == harita, zincir, ASCII, ayrac adi / sayfasi mutasyonu): hamdan birebir turetme,
 A/B farki / eksik sutun / bicim disi girdi mutasyonlari, sureklilik, bant,
 kapsam, kanal durustlugu, ASCII. Mutasyonla dogrulandi: cevap harfi,
 bant adi, test sayfasi ve kaynak alani bozulunca ilgili test kirmizi;

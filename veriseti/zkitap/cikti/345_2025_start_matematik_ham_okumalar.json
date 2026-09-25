@@ -861,5 +861,75 @@
    "34L": "iki girdi bitisik basili; piksel tek girdi saydi",
    "139L/141L/173L/197L/215L": "2 rakaminin soluk kenari pikselde ayri girdi sayildi; sutunun tum girdileri gozle"
   }
+ },
+ "ayrac_okumasi": {
+  "yontem": "Unite ayraci sayfalari (dosya = icindekiler basili sayfa + 1), '<no>. <ad>' basligi gozle, 25 Eyl; kesik gorunen 10/12/16 tam kirpimla yeniden bakildi",
+  "bicim": "{dosya: [unite no, ad (Turkce, \\u kacisli)]}",
+  "sayfalar": {
+   "4": [
+    1,
+    "Toplama ve \u00c7\u0131karma \u0130\u015flemi"
+   ],
+   "18": [
+    2,
+    "\u00c7arpma ve B\u00f6lme \u0130\u015flemi"
+   ],
+   "38": [
+    3,
+    "\u0130\u015flem \u00d6nceli\u011fi"
+   ],
+   "52": [
+    4,
+    "Harfli \u0130fadeler"
+   ],
+   "70": [
+    5,
+    "Basit Denklem \u00c7\u00f6z\u00fcm\u00fc"
+   ],
+   "90": [
+    6,
+    "Rasyonel Say\u0131lar"
+   ],
+   "122": [
+    7,
+    "Ondal\u0131k G\u00f6sterim"
+   ],
+   "144": [
+    8,
+    "Say\u0131 K\u00fcmeleri"
+   ],
+   "162": [
+    9,
+    "Oran ve Orant\u0131"
+   ],
+   "176": [
+    10,
+    "Rasyonel Denklemlerin \u00c7\u00f6z\u00fcm\u00fc"
+   ],
+   "190": [
+    11,
+    "\u0130ki Bilinmeyenli Denklemler"
+   ],
+   "202": [
+    12,
+    "Basit E\u015fitsizlikler"
+   ],
+   "220": [
+    13,
+    "Mutlak De\u011fer"
+   ],
+   "240": [
+    14,
+    "\u00dcsl\u00fc \u0130fadeler"
+   ],
+   "270": [
+    15,
+    "K\u00f6kl\u00fc \u0130fadeler"
+   ],
+   "300": [
+    16,
+    "\u00c7arpanlara Ay\u0131rma"
+   ]
+  }
  }
 }

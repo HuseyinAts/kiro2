@@ -77,7 +77,11 @@ glif LOO 358/359, 13 girdi 10x gozle; butun kapilar yesil.
    'yeni test 1'; her sayfadaki serit numaralari == o sayfadaki disk sayisi.
 6. Cikti: `345_2025_start_matematik_{cevap_anahtari,ham_okumalar}.json`.
 
-### Faz 2 -- Konu agaci (migration 0057)
+### Faz 2 -- Konu agaci (migration 0057) -- TAMAM 25 Eyl
+
+Sonuc (`STM_345_YONTEM.md` bolum 2): 16 dugum MAT-345S25-U01..U16; ayrac
+== icindekiler 16/16, bant 90/90; round-trip temiz.
+
 16 unite dugumu, MAT kokunun altinda `MAT-345S25-U01..U16`, adlar
 icindekiler sayfasindan birebir (ASCII katlanmis); testler unite dugumune
 baglanir (`konu_eslesme_duzeyi` = 'unite'). Bandtaki konu adi == unite

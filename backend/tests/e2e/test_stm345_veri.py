@@ -198,3 +198,80 @@ def test_ascii() -> None:
     for ad in ("ham_okumalar", "cevap_anahtari", "capa_taramasi"):
         b = (CIKTI / f"345_2025_start_matematik_{ad}.json").read_bytes()
         assert all(c < 128 for c in b), ad
+
+
+# ------------------------------------------------- 7. unite agaci (Faz 2, 0057)
+
+from scripts.kitap import stm345_harita as ha  # noqa: E402
+
+HARITA = json.loads(
+    (CIKTI / "345_2025_start_matematik_konu_haritasi.json").read_text("ascii")
+)
+AGAC_YOLU = KOK / "backend" / "alembic" / "versions" / "0057_stm345_konu_agaci.py"
+
+
+def _agac():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("agac0057", AGAC_YOLU)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_harita_hamdan_birebir_turer() -> None:
+    assert ha.harita(HAM, ANAHTAR) == HARITA
+
+
+def test_migration_uniteleri_harita_ile_ayni() -> None:
+    agac = _agac()
+    assert list(agac.UNITELER) == [(u["kod"], u["ad"]) for u in HARITA["uniteler"]]
+    assert agac.KOD_ONEKI == ha.KOD_ONEKI == "MAT-345S25"
+    assert agac.MAT_KOK_KODU == "MAT"
+
+
+def test_migration_kimlik_ve_zincir() -> None:
+    agac = _agac()
+    assert agac.revision == "0057_stm345_agac"
+    assert agac.down_revision == "0056_prg345_beta_onay"
+    assert len(agac.revision) <= 32
+    assert "'MATEMATIK'" in AGAC_YOLU.read_text("ascii")
+
+
+def test_migration_ascii() -> None:
+    b = AGAC_YOLU.read_bytes()
+    assert all(c < 128 for c in b)
+
+
+def test_unite_kodlari_ve_sayisi() -> None:
+    assert [u["kod"] for u in HARITA["uniteler"]] == [
+        f"MAT-345S25-U{i:02d}" for i in range(1, 17)
+    ]
+    assert HARITA["test_sayisi"] == 45
+    assert {t["unite"] for t in HARITA["testler"]} == {
+        u["kod"] for u in HARITA["uniteler"]
+    }
+
+
+def test_ayrac_adi_icindekiler_ile_katlanir() -> None:
+    for u in HARITA["uniteler"]:
+        assert ha.ascii_buyuk(u["ad"]) == u["ad_ascii"]
+        assert u["ayrac_sayfasi"] == u["basili_baslangic"] + 1
+
+
+def test_ayrac_adi_bozulursa_durur() -> None:
+    bozuk = copy.deepcopy(HAM)
+    k = next(iter(bozuk["ayrac_okumasi"]["sayfalar"]))
+    bozuk["ayrac_okumasi"]["sayfalar"][k][1] = "Uydurma Unite"
+    with pytest.raises(SystemExit):
+        ha.harita(bozuk, ANAHTAR)
+
+
+def test_ayrac_sayfasi_kayarsa_durur() -> None:
+    bozuk = copy.deepcopy(HAM)
+    s = bozuk["ayrac_okumasi"]["sayfalar"]
+    k = sorted(s, key=int)[3]
+    s[str(int(k) + 1)] = s.pop(k)
+    with pytest.raises(SystemExit):
+        ha.harita(bozuk, ANAHTAR)
