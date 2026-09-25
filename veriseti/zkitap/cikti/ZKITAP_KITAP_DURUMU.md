@@ -55,7 +55,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 345 2024 TYT-AYT Geometri SB | **ISLENDI** | `345 Tyt Ayt Geometri Soru Bankasi` | 440 | `345 2025 Tyt Ayt Geometri Soru Bankasi 1` | modern 2708 / aktif 2702 | - | - | TAMAM (modern ithal) |
 | 345 2025 AYT Biyoloji SB | **ISLENDI** | `345 2025 Ayt Biyoloji Soru Bankasi` | 374 | - | modern 1315 / aktif 1315 | 345 2024 AYT Biyoloji Soru Bankasi %69 | - | TAMAM (modern ithal) |
 | 345 2025 AYT Turk Edebiyati SB | **ISLENDI** | `345 2025 Ayt Turk Edebiyati Soru Bankasi` | 348 | - | modern 1384 / aktif 0 | - | 329-348 s328'in kopyasi (okuyucu takili); icerik 1-328 | TAMAM (modern ithal) |
-| 345 2025 Paragraf Sifir Risk SB | **ISLENDI** | `345 2025 Paragraf Sifir Risk Soru Bankasi` | 368 | - | modern 1011 / aktif 0; eski hat 8 / aktif 8 (0054 ile ASCII ad) | - | icerik 3-355, anahtar 356-368; 6. NUANS TESTI acik uclu (kapsam disi) | TAMAM (modern ithal) |
+| 345 2025 Paragraf Sifir Risk SB | **ISLENDI** | `345 2025 Paragraf Sifir Risk Soru Bankasi` | 368 | - | modern 1011 / aktif 1010 (0056 toplu beta onayi; kitap ici tekrar T038_13 pasif); eski hat 8 / aktif 0 (0056 ile pasif; 0054 ile ASCII ad) | - | icerik 3-355, anahtar 356-368; 6. NUANS TESTI acik uclu (kapsam disi) | TAMAM (modern ithal) |
 | 345 2025 Start Matematik | ISLENMEDI | `345 2025 Start Matematik` | 323 | - | eski hat 3 / aktif 3 | - | - | ISLENEBILIR |
 | 345 2025 TYT Biyoloji SB | **ISLENDI** | `345 2025 Tyt Biyoloji Soru Bankasi` | 235 | - | modern 1023 / aktif 1022 | 345 2024 TYT Biyoloji SB %72 | - | TAMAM (modern ithal) |
 | 345 2025 TYT Fizik SB | ISLENMEDI | `345 2025 Tyt Fizik Soru Bankasi` | 368 | `345 Tyt Fizik Soru Bankasi` | yok | - | - | ISLENEBILIR |

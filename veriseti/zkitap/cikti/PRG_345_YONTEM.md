@@ -200,10 +200,15 @@ EDB ile ayni; farklar: `konu_eslesme_duzeyi = bolum`, `test_adi`,
 
 ## 8. Bilinen borc / sahip karari bekleyen
 
-* Eski hat 8 satir AKTIF ve metinleri OCR hatali; yeni satirlar PASIF.
-  Eski satirlarin kapatilmasi ve 58044c42'nin `subject_area = SOSYAL`
-  etiketi (paragraf sorusu) ayri (sahip) karari; bu PR dokunmaz.
+* SAHIP KARARI UYGULANDI (25 Eyl, 0056): eski hat 8 satir PASIF
+  (silinmedi; 58044c42'nin `subject_area = SOSYAL` etiketi pasif satirda
+  kaldi). Yeni ithalin 1010 satiri toplu beta onayiyla AKTIF
+  (`auto_judged_high`, `human_verified` degil; `bireysel_denetim_yapildi`
+  false). T038_13 (T022_20 ile ayni soru_hash) aktif benzersizlik kisiti
+  geregi PASIF kaldi. Kapi yuku olculdu: sik_bos 0, gorunen `[??]` 0,
+  aktif satirlarla hash cakismasi 0. Geri alma: gunluk tablosu
+  `prg345_beta_onay_gunlugu_0056`; downgrade/upgrade yerel DB'de denendi.
 * Cozumler kitapta yok; `explanation` bos.
 * Ortak metinli sorularin gorseli yalniz soru kirpimi (parca gorselde yok).
 * Cozunurluk: iki adayli t~l / rn~m okumalari `kaynak_kusuru` notunda.
-* Ithal PASIF; aktiflestirme ayri (sahip) karari.
+* Ithal PASIF yapildi; aktiflestirme 0056 ile (yukarida).
