@@ -12,7 +12,7 @@ pydantic[email]
 python-multipart>=0.0.6
 
 # Database
-sqlalchemy[asyncio]>=2.0.0
+sqlalchemy[asyncio]>=2.0.0,<2.1
 asyncpg>=0.29.0
 # 2 Eylul 2026: psycopg2-binary (psycopg v2) -> psycopg[binary] (psycopg v3).
 # database/connection.py:51 async engine URL'ini KASITLI olarak
