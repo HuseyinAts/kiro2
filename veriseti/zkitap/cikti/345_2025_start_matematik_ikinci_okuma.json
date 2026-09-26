@@ -1,0 +1,350 @@
+{
+ "kaynak": "345 2025 Start Matematik",
+ "on_kayit": {
+  "tarih": "2026-09-26",
+  "yazildigi_an": "ilk okuma toplandiktan sonra, ikinci okuma ve karsilastirmadan ONCE",
+  "karar": "TAM ikinci okuma (371 soru)",
+  "gerekce": "Onceki kitaplarin kurali: esasli hata oraninin tek yanli %95 Clopper-Pearson ust siniri <= %3 ise tam ikinci okuma yok. 371 soruluk kitapta sifir hatali bir orneklemin bile bu siniri gecmesi icin n >= 99 gerekir (0/99 -> %2.98); tek hata icin n >= 157. Kitabin %27-42'sini okumak yerine tamami okunur; orneklem karari gereksiz ve daha zayif.",
+  "okuyucular": "ilk okumayi gormeyen 10 ayri okuyucu, ayni talimat ve ayni gruplar",
+  "karsilastirma": "govde + bes sik + basili_no + sekil_var + sikler_gorsel alan alan; bosluk normalize; her fark kirpimdan buyutulmus kesitle gozle hukme baglanir"
+ },
+ "sonuc": {
+  "karsilastirma": "371 soru; bosluk ve eksi/tire normalize; 317 soru tam ayni, 54 soruda 95 farkli parca",
+  "hukum_yontemi": "her fark kirpimdan (1x, kaynak cozunurlugu) piksel dokumu (#<150 +<200 o<235 .<250) ya da 6x en-yakin-komsu yakinlastirma ile karara baglandi",
+  "hukum_sinifi": {
+   "bicim_kesme_isareti": "38 parca: ' / \u2019 karisik -> kesme ASCII \"'\" (harness topla, tum metin)",
+   "bicim_diger": "T015_03 kivrik tirnak (ikinci okuma), T016_07 virgul oncesi bosluk, T005_04 / T008_04 / T038_04 gosterim",
+   "ilk_okuma_dogru": [
+    "T005_02 baskullerin",
+    "T018_03 0,111",
+    "T018_09 A/E virgul",
+    "T019_03 C/D virgul",
+    "T020_03 D virgul",
+    "T020_07 E virgul",
+    "T042_07 virgul",
+    "T019_08 8,1 (ust halka kapali)",
+    "T024_06 2. kagidi sapkali",
+    "T025_02 cubuklari",
+    "T034_04 gore (o, u degil; kalin punto noktalari)",
+    "T022_05 / T032_05 / T037_02 / T037_07 / T039_02 sekil ici yazi govdede (talimat: soru ona dayaniyor)"
+   ],
+   "ikinci_okuma_dogru": [
+    "T002_07 Isleminin (noktasiz I basili)",
+    "T009_08 D +",
+    "T040_06 +",
+    "T043_03 +",
+    "T044_01 +",
+    "T029_06 <= (soluk alt cizgi)",
+    "T025_02 olan (x2)",
+    "T021_04 tahta sayilari",
+    "T015_03 tirnak"
+   ],
+   "iki_okuma_da_yanlis": [
+    "T008_09 B: 3a + 4b (ikisi de '-')",
+    "T021_07 III: c + b (ikisi de '-')",
+    "T024_06 kalin satir: kagidi (ikisi de sapkasiz)"
+   ],
+   "okunamaz_isaretlendi": [
+    "T005_05 C",
+    "T011_07 (3 isaret)",
+    "T012_02 III (4 isaret)",
+    "T035_08 2^[??]",
+    "T036_02 4^[??]",
+    "T038_04 3^([??]2)"
+   ]
+  },
+  "esasli_ilk_okuma_hatasi": {
+   "soru": 11,
+   "liste": [
+    "T002_07",
+    "T008_09",
+    "T009_08",
+    "T021_07",
+    "T024_06",
+    "T025_02",
+    "T029_06",
+    "T040_06",
+    "T043_03",
+    "T044_01",
+    "T021_04"
+   ],
+   "not": "T021_04 eksik sekil yazisi; digerleri isaret/harf. 371 sorunun %3.0'u."
+  },
+  "soluk_arti_taramasi": {
+   "neden": "ekran goruntusunde '+' isaretinin dikey cubugu cogu yerde 200-245 griye soluyor; okuyucu '-' okuyabiliyor",
+   "yontem": "kirpimda izole ince yatay cubuk (6-10 px, koyu < 200, iki yani bos); ortasindan gecen serit ust 2-5 ve alt 2-5 satirda simetrik soluk iz (200-248) ve yanlari beyaz ise 'soluk +' adayi",
+   "aday": 40,
+   "sonuc": "40 adayin 40'i gozle '+'; 34'unde iki okuma da '+', 4'unde yalniz ikinci okuma '+' (T009_08, T040_06, T043_03, T044_01), 2'sinde IKI OKUMA DA '-' (T008_09, T021_07) -> duzeltildi. Ikinci tarama (yerel arka plan, soluk yatay cubuklar dahil) 63 aday daha verdi: metin icindeki adaylarin bulundugu 31 soru son metinle tek tek karsilastirildi, celiski yok; kalan adaylar kirpim sag kenari (x 360, sutun cizgisi), sekil ve cerceve gurultusu.",
+   "sinir": "yalniz izole yatay cubuklar; gri kutu icinde ve sekil ustunde tamamen kaybolmus isaretler bu olcuyle bulunamaz (T011_07 / T012_02 gibi) -> okuyucu bildirimiyle [??]"
+  },
+  "duzeltme_kaydi": 21
+ },
+ "duzeltmeler": [
+  {
+   "dosya": "STM345-T002_07",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "\u0130\u015fleminin",
+     "yeni": "I\u015fleminin",
+     "kanit": "piksel_dokumu",
+     "not": "I ustunde nokta pikseli yok (satir 27-29 bos)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T005_04",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "\u2b20(\u22123) + \u25b3(4)",
+     "yeni": "\u2b20[\u22123] + \u25b3[4]",
+     "kanit": "talimat",
+     "not": "kutu/cokgen icindeki sayi [n] bicimi (ornek satirindaki [6] ile tutarli)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T005_05",
+   "hukum": [
+    {
+     "alan": "sik_C",
+     "eski": " | \u00d7",
+     "yeni": "[??] | \u00d7",
+     "kanit": "piksel_dokumu",
+     "not": "C satiri o sutununda yalniz y163'te 6 px 245-253 yatay iz; dikey bilinemez, '+'/'-' ayrilamaz"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T008_04",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "[x ; y] = x + y    [x | y] = x \u2212 y\ne\u015fitlikleri veriliyor.\nBuna g\u00f6re,\n[2x ; 3y] \u2212 [4x | 5y]\nifadesinin e\u015fiti a\u015fa\u011f\u0131dakilerden hangisidir?",
+     "yeni": "(dikey kutu: \u00fcstte x, altta y) = x + y   (yatay kutu: solda x, sa\u011fda y) = x \u2212 y\ne\u015fitlikleri veriliyor.\nBuna g\u00f6re,\n(dikey kutu: \u00fcstte 2x, altta 3y) \u2212 (yatay kutu: solda 4x, sa\u011fda 5y)\nifadesinin e\u015fiti a\u015fa\u011f\u0131dakilerden hangisidir?",
+     "kanit": "okuma_B",
+     "not": "kutu gosterimi aciklamali (ikinci okuma); ilk okumanin [x ; y] / [x | y] bicimi T017_03'teki [a|b] ile karisiyordu"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T008_09",
+   "hukum": [
+    {
+     "alan": "sik_B",
+     "eski": "2 \u00b7 (3a \u2212 4b)",
+     "yeni": "2 \u00b7 (3a + 4b)",
+     "kanit": "piksel_dokumu",
+     "not": "isaretin ortasindan y296-306 simetrik soluk dikey (235-250); IKI OKUMA DA '-' demisti"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T009_08",
+   "hukum": [
+    {
+     "alan": "sik_D",
+     "eski": "6x \u2212 5y",
+     "yeni": "6x + 5y",
+     "kanit": "piksel_dokumu",
+     "not": "dikey cubuk y236-242 'o' (200-235) iz"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T011_07",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "3x + 2 = \u221222\n1\n3 \u00b7 (8   x)   \u25a1 = 18\n2\nYukar\u0131daki 1 ve 2 numaral\u0131 denklemleri ayn\u0131 x de\u011feri sa\u011flad\u0131\u011f\u0131na g\u00f6re, \u25a1 sembol\u00fc yerine a\u015fa\u011f\u0131daki say\u0131lardan hangisi yaz\u0131lmal\u0131d\u0131r?",
+     "yeni": "3x + 2 = \u221222 (1)\n3 \u00b7 (8 [??] x) [??] \u25a1 [??] 18 (2)\nYukar\u0131daki 1 ve 2 numaral\u0131 denklemleri ayn\u0131 x de\u011feri sa\u011flad\u0131\u011f\u0131na g\u00f6re, \u25a1 sembol\u00fc yerine a\u015fa\u011f\u0131daki say\u0131lardan hangisi yaz\u0131lmal\u0131d\u0131r?",
+     "kanit": "piksel_dokumu",
+     "not": "2 numarali gri kutuda 3 isaretin hicbiri render edilmemis (arka plan 235-250 disinda piksel yok)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T012_02",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "III. \u2212x   1 =   3x   17",
+     "yeni": "III. [??]x [??] 1 [??] 3x [??] 17",
+     "kanit": "piksel_dokumu",
+     "not": "III kutusunda isaretler render edilmemis (yalniz y128-129'da arka plandan acik iz)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T015_03",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "Filiz \u00d6\u011fretmen s\u0131n\u0131fa i\u00e7inde bal\u0131k olan \u00fc\u00e7 k\u00fc\u00e7\u00fck akvaryum ile bo\u015f bir b\u00fcy\u00fck akvaryum getiriyor.\nFiliz \u00d6\u011fretmen, Emin'e \"K\u0131rm\u0131z\u0131 bal\u0131k oran\u0131 en fazla olan iki k\u00fc\u00e7\u00fck akvaryumu se\u00e7, bunlar\u0131 bo\u015f olan b\u00fcy\u00fck akvaryuma bo\u015falt.\" diyor.\nBuna g\u00f6re; Emin, \u00f6\u011fretmeninin iste\u011fine uygun iki akvaryumu se\u00e7ip b\u00fcy\u00fck akvaryuma bo\u015faltt\u0131\u011f\u0131nda b\u00fcy\u00fck akvaryumdaki k\u0131rm\u0131z\u0131 bal\u0131k say\u0131s\u0131 ka\u00e7 olur?",
+     "yeni": "Filiz \u00d6\u011fretmen s\u0131n\u0131fa i\u00e7inde bal\u0131k olan \u00fc\u00e7 k\u00fc\u00e7\u00fck akvaryum ile bo\u015f bir b\u00fcy\u00fck akvaryum getiriyor.\nFiliz \u00d6\u011fretmen, Emin'e \u201cK\u0131rm\u0131z\u0131 bal\u0131k oran\u0131 en fazla olan iki k\u00fc\u00e7\u00fck akvaryumu se\u00e7, bunlar\u0131 bo\u015f olan b\u00fcy\u00fck akvaryuma bo\u015falt.\u201d diyor.\nBuna g\u00f6re; Emin, \u00f6\u011fretmeninin iste\u011fine uygun iki akvaryumu se\u00e7ip b\u00fcy\u00fck akvaryuma bo\u015faltt\u0131\u011f\u0131nda b\u00fcy\u00fck akvaryumdaki k\u0131rm\u0131z\u0131 bal\u0131k say\u0131s\u0131 ka\u00e7 olur?",
+     "kanit": "yakinlastirma_6x",
+     "not": "tirnaklar kivrik basili"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T016_07",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "2/3 , b",
+     "yeni": "2/3, b",
+     "kanit": "bicim",
+     "not": "virgul oncesi bosluk basili degil"
+    },
+    {
+     "alan": "govde",
+     "eski": "5/8 , c",
+     "yeni": "5/8, c",
+     "kanit": "bicim",
+     "not": "virgul oncesi bosluk basili degil"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T021_04",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "Tahtaya 1'den 18'e kadar ard\u0131\u015f\u0131k say\u0131lar\u0131 yazan bir \u00f6\u011fretmen, \u00f6\u011frencilerine bir oyun oynat\u0131yor.\nOyundaki komutlar \u015fu \u015fekildedir.\n\u2022 15 ile aralar\u0131nda asal olan say\u0131lar\u0131 sil\n\u2022 Asal say\u0131lar\u0131 sil\n\u2022 Geriye kalan say\u0131lar\u0131 topla\nBuna g\u00f6re, ad\u0131mlar\u0131 do\u011fru \u015fekilde yapan bir \u00f6\u011frenci sonucu ka\u00e7 bulmu\u015ftur?",
+     "yeni": "Tahtaya 1'den 18'e kadar ard\u0131\u015f\u0131k say\u0131lar\u0131 yazan bir \u00f6\u011fretmen, \u00f6\u011frencilerine bir oyun oynat\u0131yor.\n1 2 3 4 5 6 7 8 9\n10 11 12 13 14 15 16 17 18\nOyundaki komutlar \u015fu \u015fekildedir.\n\u2022 15 ile aralar\u0131nda asal olan say\u0131lar\u0131 sil\n\u2022 Asal say\u0131lar\u0131 sil\n\u2022 Geriye kalan say\u0131lar\u0131 topla\nBuna g\u00f6re, ad\u0131mlar\u0131 do\u011fru \u015fekilde yapan bir \u00f6\u011frenci sonucu ka\u00e7 bulmu\u015ftur?",
+     "kanit": "okuma_B",
+     "not": "tahtadaki 1-18 sayilari gorunur ve soru onlara dayaniyor"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T021_07",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "III. c \u2212 b",
+     "yeni": "III. c + b",
+     "kanit": "piksel_dokumu",
+     "not": "isaretin ortasindan y146-154 simetrik soluk dikey; IKI OKUMA DA '-' demisti"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T024_06",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "Notluk A k\u00f6\u015fesine kadar dolu iken bu notluktan ka\u00e7 adet not ka\u011f\u0131d\u0131",
+     "yeni": "Notluk A k\u00f6\u015fesine kadar dolu iken bu notluktan ka\u00e7 adet not k\u00e2\u011f\u0131d\u0131",
+     "kanit": "yakinlastirma_6x",
+     "not": "kalin satirda a uzerinde sapka izi; IKI OKUMA DA 'kagidi' demisti"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T025_02",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "renkli olan\u0131 5 e\u015fit par\u00e7aya, mavi olan\u0131 10",
+     "yeni": "renkli olan 5 e\u015fit par\u00e7aya, mavi olan 10",
+     "kanit": "yakinlastirma_6x",
+     "not": "'olan' sonrasinda ek dikey (\u0131) yok; 'cubuklar\u0131' 'l' ile (t capraz cizgisi yok)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T029_06",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": " < 8",
+     "yeni": " \u2264 8",
+     "kanit": "piksel_dokumu",
+     "not": "'<' altinda y16'da 6 px soluk yatay (240-250)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T035_08",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "2^3 | 2^11 | 2^x",
+     "yeni": "2^3 | 2^[??] | 2^x",
+     "kanit": "piksel_dokumu",
+     "not": "7 segment ussu: ust + iki dikey, 11 / 9 ayrilamaz"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T036_02",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "4^\u2026 G",
+     "yeni": "4^[??] G",
+     "kanit": "piksel_dokumu",
+     "not": "us 3x3 piksel, okunamaz"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T038_04",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "3^2 |  | 3 |",
+     "yeni": "3^([??]2) | (bo\u015f) | 3 |",
+     "kanit": "piksel_dokumu",
+     "not": "3 ile 2 arasinda y98'de iki soluk nokta (silinmis isaret izi)"
+    },
+    {
+     "alan": "govde",
+     "eski": "\n |  | (boyal\u0131)",
+     "yeni": "\n(bo\u015f) | (bo\u015f) | (boyal\u0131)",
+     "kanit": "bicim",
+     "not": "bos hucre '(bos)' (ikinci okuma bicimi)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T040_06",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "\u221b((\u22125)^3) \u2212 [4]",
+     "yeni": "\u221b((\u22125)^3) + [4]",
+     "kanit": "piksel_dokumu",
+     "not": "paydadaki isarette y32-38 'o' dikey iz"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T043_03",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "(x^2 \u2212 6x",
+     "yeni": "(x^2 + 6x",
+     "kanit": "piksel_dokumu",
+     "not": "ilk isarette y7-14 'o' dikey iz; ikinci isarette iz yok (-)"
+    }
+   ]
+  },
+  {
+   "dosya": "STM345-T044_01",
+   "hukum": [
+    {
+     "alan": "govde",
+     "eski": "2ab \u2212 b^2",
+     "yeni": "2ab + b^2",
+     "kanit": "piksel_dokumu",
+     "not": "isarette simetrik soluk dikey (y56-62, 237-238)"
+    }
+   ]
+  }
+ ]
+}

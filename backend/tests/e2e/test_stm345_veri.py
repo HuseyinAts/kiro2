@@ -349,3 +349,77 @@ def test_ortme_raporu() -> None:
     assert ORTME["ortme_suphesi_soru"] == len(
         {(o["birim"], o["soru"]) for o in ORTME["ortme"]}
     )
+
+
+# ------------------------------------------------ 9. transkripsiyon (Faz 4)
+
+from scripts.kitap import stm345_metin_harness as mh  # noqa: E402
+
+METIN = json.loads((CIKTI / "345_2025_start_matematik_metin.json").read_text("ascii"))
+IKINCI = json.loads(
+    (CIKTI / "345_2025_start_matematik_ikinci_okuma.json").read_text("ascii")
+)
+
+
+def test_metin_kapilari_yesil() -> None:
+    assert mh.kapi(METIN["sorular"]) == []
+    assert METIN["soru_sayisi"] == 371
+
+
+def test_metin_kapisi_mutasyonu_yakalar() -> None:
+    bozuk = copy.deepcopy(METIN["sorular"])
+    bozuk[3]["basili_no"] = 99
+    bozuk[5]["sikler"]["C"] = " "
+    del bozuk[7]
+    hata = mh.kapi(bozuk)
+    assert any(h.startswith("KAPI2") for h in hata)
+    assert any(h.startswith("KAPI3") for h in hata)
+    assert any(h.startswith("KAPI1") for h in hata)
+    assert any(h.startswith("KAPI4") for h in hata)
+
+
+def test_metin_kutularla_ayni_dosyalar() -> None:
+    k = {f"{x['birim']}_{x['soru']:02d}" for x in KUTU["kutular"]}
+    assert {s["dosya"] for s in METIN["sorular"]} == k
+
+
+def test_kivrik_kesme_kalmadi() -> None:
+    for s in METIN["sorular"]:
+        assert "\u2019" not in s["govde"]
+        assert all("\u2019" not in str(v) for v in s["sikler"].values())
+
+
+def test_ikinci_okuma_on_kaydi_tam_okuma() -> None:
+    assert IKINCI["on_kayit"]["karar"].startswith("TAM ikinci okuma")
+    assert "ONCE" in IKINCI["on_kayit"]["yazildigi_an"]
+
+
+def test_duzeltmeler_son_metinde_uygulanmis() -> None:
+    m = {s["dosya"]: s for s in METIN["sorular"]}
+    for d in IKINCI["duzeltmeler"]:
+        s = m[d["dosya"]]
+        for h in d["hukum"]:
+            hedef = s["govde"] if h["alan"] == "govde" else s["sikler"][h["alan"][-1]]
+            assert h["yeni"].replace("\u2019", "'") in hedef, (d["dosya"], h["alan"])
+
+
+def test_okunamaz_isaretler_gorunur() -> None:
+    """Render edilmemis isaretler tahmin edilmedi: [??] ile isaretli ve kusur notlu."""
+    m = {s["dosya"]: s for s in METIN["sorular"]}
+    for d in ("T005_05", "T011_07", "T012_02", "T035_08", "T036_02", "T038_04"):
+        s = m[f"STM345-{d}"]
+        metin = s["govde"] + " ".join(s["sikler"].values())
+        assert "[??]" in metin, d
+        assert s.get("kaynak_kusuru"), d
+    isaretli = {
+        s["dosya"]
+        for s in m.values()
+        if "[??]" in s["govde"] + " ".join(s["sikler"].values())
+    }
+    assert len(isaretli) == 6
+
+
+def test_iki_okumanin_da_kacirdigi_arti_isaretleri() -> None:
+    m = {s["dosya"]: s for s in METIN["sorular"]}
+    assert m["STM345-T008_09"]["sikler"]["B"] == "2 \u00b7 (3a + 4b)"
+    assert "III. c + b" in m["STM345-T021_07"]["govde"]

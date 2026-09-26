@@ -106,7 +106,12 @@ Isindirma Kosesi 83 (kapsam disi).
    `sikler_gorsel` (dosya 320'de kesirli siklar, ussel ifadeler).
 6. Kirpimlar `d-dataset/output/crops/STM345/` (gitignored).
 
-### Faz 4 -- Transkripsiyon (`stm345_metin_harness.py`)
+### Faz 4 -- Transkripsiyon (`stm345_metin_harness.py`) -- TAMAM 26 Eyl
+
+Sonuc (`STM_345_YONTEM.md` bolum 4): 371 soru, kapilar yesil; TAM ikinci
+okuma (on kayitli); 54 fark piksel/6x ile hukum; soluk '+' taramasi iki
+okumanin ortak 2 hatasini buldu; 6 soru [??].
+
 1. Talimat: 'kitap ne yaziyorsa o'; matematik icin tutarli duz metin
    gosterimi (MAT345TYT talimatiyla ayni: us '^', kesir 'a/b', kok
    'sqrt()', mutlak '|x|'); anahtar gosterilmez; soru cozulmez.

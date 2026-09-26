@@ -1,7 +1,8 @@
 # 345 2025 Start Matematik -- uretim yontemi ve olcumler
 
 Durum: Faz 1 (sayfa turu, capa taramasi, cevap anahtari, test -> unite)
-Faz 2 (unite agaci, 0057) ve Faz 3 (kirpim kutulari) TAMAM. Sonraki fazlar `STM_345_KESIF_VE_PLAN.md` bolum 2'de.
+Faz 2 (unite agaci, 0057), Faz 3 (kirpim kutulari) ve Faz 4
+(transkripsiyon + tam ikinci okuma) TAMAM. Sonraki fazlar `STM_345_KESIF_VE_PLAN.md` bolum 2'de.
 
 ## 0. Kaynak ve tavani
 
@@ -159,9 +160,75 @@ Konu sayfalarinda 'ISINDIRMA KOSESI' basligi (turuncu ~(247,145,48)):
 baska renkte basilmis kutuyu kacirabilir). Acik uclu alistirmalar siksiz
 oldugu icin sayilmadi.
 
+## 4. Transkripsiyon (`stm345_metin_harness.py`)
+
+`345_2025_start_matematik_metin.json` (371 soru). Kirpimlar 2x Lanczos;
+10 grup (test sinirina hizali, ~40 soru), 10 ayri okuyucu. Talimat
+`VeraFilm/s_metin_talimat.md`: 'kitap ne yaziyorsa o', soru cozme yok,
+anahtar gosterilmedi; matematik yazim sozlesmesi (eksi U+2212, `a/b`,
+`x^2`, kok, mutlak deger, kutu `\u25a1` ve cokgen sembolleri, `[n]` kutu
+icinde sayi); ortme listesindeki sorularda satir sonu bildirimi.
+
+Kapilar (harness `kapi`, okuyucuya soylenmeyen yapidan): KAPI1 her kirpim
+bir kez; KAPI2 basili no == test ici sira; KAPI3 bes sik dolu; KAPI4
+toplam 371. **TUM KAPILAR YESIL.** Ortme listesindeki 5 soruda okuyucular
+satir sonlarini tam gordu (disk altinda harf yok).
+
+### 4a. Ikinci okuma -- on kayitli TAM okuma
+
+On kayit (`345_2025_start_matematik_ikinci_okuma.json`, karsilastirmadan
+ONCE): onceki kitaplarin kurali (esasli hata CP95 ust siniri <= %3)
+371 soruluk kitapta sifir hatali orneklemde bile n >= 99 ister; bu yuzden
+dogrudan TAM ikinci okuma: ilk okumayi gormeyen 10 ayri okuyucu, ayni
+talimat ve gruplar.
+
+* 317 soru tam ayni; 54 soruda 95 farkli parca. Her fark kirpimdan (1x)
+  piksel dokumu ya da 6x yakinlastirmayla karara baglandi (hukumler
+  `ikinci_okuma.json` -> `sonuc`, `duzeltmeler`).
+* Esasli ilk okuma hatasi 11 soru (%3.0): ikisi harf/imla (I noktasi,
+  'olan'), biri eksik sekil yazisi, sekizi isaret (soluk '+' -> '-',
+  '<=' -> '<', sapka).
+* Kesme isareti ' / \u2019 karisikligi (38 parca) bicimdir: harness
+  topla tum metinde ASCII "'" yapar.
+* Ondalik ayirici: ikinci okuma 6 soruda nokta okudu; piksel dokumunde
+  hepsinde virgul kuyrugu (taban cizgisi alti soluk iz) var -> virgul.
+
+### 4b. Soluk '+' taramasi (iki okumanin ortak kor noktasi)
+
+Ekran goruntusunde '+' isaretinin dikey cubugu cogu yerde 200-245 griye
+soluyor; iki okuyucu ayni isareti '-' okuyabilir ve karsilastirma bunu
+yakalamaz. Piksel olcusu: izole ince yatay cubuk (6-10 px, koyu < 200,
+iki yani bos) + ortasindan gecen seritte ust ve altta simetrik soluk iz
+(200-248). 40 aday; 40'i gozle '+'. 34'unde iki okuma da '+', 4'unde
+yalniz ikinci okuma; **2'sinde iki okuma da '-' yazmisti** (T008_09 B
+`2 * (3a + 4b)`, T021_07 III `c + b`) -> duzeltildi. Ayrica T024_06'nin
+kalin satirinda sapka iki okumada da kacmisti (6x). Ikinci, yerel arka
+plana gore tarama 63 aday daha verdi; metin icindeki adaylarin 31
+sorusu son metinle karsilastirildi, celiski yok.
+
+Sinir: tamamen kaybolmus isaretler (gri kutu icinde) bu olcuyle
+bulunamaz; okuyucu bildirimi + piksel dokumuyle `[??]` yapildi.
+
+### 4c. Okunamaz -> `[??]` (tahmin yok)
+
+| soru | ne |
+|---|---|
+| T005_05 | C sikki o sutununda isaret render edilmemis |
+| T011_07 | 2 numarali gri kutuda uc isaret render edilmemis |
+| T012_02 | III. denklemde isaretler render edilmemis |
+| T035_08 | 2. tarti ekranindaki 7-segment us (11 / 9 ayrilamaz) |
+| T036_02 | Sekil 1 kutle ekranindaki us (3x3 piksel) |
+| T038_04 | tablo hucresinde 3 ile 2 arasinda silinmis isaret izi |
+
+Bu 6 soru gorunen alanda `[??]` tasir; 0039/0056 dislama kurali geregi
+aktiflestirmede disarida kalir. Goruntunun kendisi de ayni kaybi tasir;
+sorular bu cozunurlukte cozulemeyebilir.
+
 ## Testler
 
-`backend/tests/e2e/test_stm345_veri.py` (33; Faz 3 ile +8: kutu kapilari,
+`backend/tests/e2e/test_stm345_veri.py` (41; Faz 4 ile +8: metin kapilari
+ve mutasyonu, kutu <-> metin birebir, kesme, on kayit, duzeltmelerin
+uygulandigi, [??] listesi, soluk '+' duzeltmeleri. Faz 3 ile +8: kutu kapilari,
 cevap <-> kutu birebir, capa == basili numara, serit/bant siniri, yatay
 sinir, kapi mutasyonu, yanlis simge elendi, ortme raporu. Faz 2 ile +8: harita hamdan
 turer, migration == harita, zincir, ASCII, ayrac adi / sayfasi mutasyonu): hamdan birebir turetme,
