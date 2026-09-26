@@ -140,7 +140,11 @@ Plan (ilk hali):
    gozle aranir. Kitapta YOKSA ikiz degil, uydurma satirdir -> pasif onerisi
    (SAHIP KARARI).
 
-### Faz 6 -- Ithal (`stm345_ithal.py`) + kaynak sozlesmesi
+### Faz 6 -- Ithal (`stm345_ithal.py`) + kaynak sozlesmesi -- TAMAM 26 Eyl
+
+Sonuc (`STM_345_YONTEM.md` bolum 6): yerel DB'ye 371 satir PASIF (aktif 0,
+beta kapisi 0); ikinci kosu 0 yazim; kirpimlar crops/STM345.
+
 PASIF ithal; TYT / MATEMATIK; sinif 12 (ev sozlesmesi); `ithal_araci`,
 `telif`, bayraklar, `cozum_dogrulamasi` = 'yapilmadi_urun_karari'.
 `kaynak_sozlesmesi.py` girdisi. Kirpimlar `/static/crops/STM345/`.

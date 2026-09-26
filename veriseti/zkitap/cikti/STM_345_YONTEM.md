@@ -275,7 +275,33 @@ SAHIP KARARI (26 Eyl): "Bu 3 eski satir pasife alinsin" -> migration
 onceki is_active GUNLUK'te, silme yok. Yerel DB'de upgrade -> downgrade ->
 upgrade temiz (3 -> 3 aktif geri -> 3 pasif).
 
+## 6. Ithal (`stm345_ithal.py`) -- PASIF
+
+Kaynak adi `345 2025 Start Matematik` (kaynak_sozlesmesi girdisi; onek
+STM345). TYT / MATEMATIK, sinif 12; sorular unite dugumune
+(MAT-345S25-Unn, `konu_eslesme_duzeyi` = 'unite'). `source_page` BASILI
+sayfa (dosya - 1; eski hat satirlari da basili sayfa tasiyor).
+Kirpimlar `/static/crops/STM345/<STM345-Tddd_nn>.png` (yerelde
+`d-dataset/output/crops/STM345/`, 371 dosya; git'e girmez,
+`stm345_kirp.py` yeniden uretir).
+
+Kapilar: yapisal (371 soru, 45 test, 16 unite, 371 anahtar, 371 kutu,
+metinde cevap alani yok, cikmis etiketi yok) + baglama (basili no == test
+ici sira; kutu ile anahtar ayni dosya/sutun/serit sirasi; kutu testin
+sayfasinda) + on kontrol (5 sik, A-E, dolu anahtar sikki, unite kodu,
+bilinen cevap kanali, kutu, basili sayfa == dosya - 1, benzersiz id).
+
+Yerel DB (26 Eyl): 371 yeni satir, is_active 0, beta kapisindan gecen 0;
+ikinci kosu 'zaten var 371, yazilacak 0'. Bayraklar: kaynak_kusuru 23,
+okunamaz_isaret 6, okuyucu_diski_ortme 6, sikler_gorsel 3 (+ sik_tekrar 3,
+ayni uc soru). Cozum yok; `cozum_dogrulamasi` = 'yapilmadi_urun_karari'.
+
 ## Testler
+
+`backend/tests/e2e/test_stm345_ithal.py` (47: butunluk, yapisal kapi,
+unite baglantisi, kaynak sozlesmesi, eski hattan ayri kimlik, pasif ithal,
+bayrak capalari, 8 yapisal + 10 kayit/baglama mutasyonu; kod mutasyonlari
+-- etiket kapisi, okunamaz bayragi, basili sayfa, kanal kapisi -- kirmizi).
 
 `backend/tests/e2e/test_stm345_veri.py` (50; 0058 ile +3: kimlik/zincir/ASCII, pasif kume == kitapta yok
 olculen kume, guard ve gunluk. Faz 5 ile +6: 371 farkli
