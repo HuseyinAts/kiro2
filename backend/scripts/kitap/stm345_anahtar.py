@@ -140,7 +140,7 @@ def glif_kanali(
         img = Image.open(KAYNAK_DIZIN / f"sayfa_{s:04d}.png").convert("L").crop(KART)
         x0, x1 = SERIT_X[t]
         b = np.asarray(img).astype(float)[SERIT_Y[0] : SERIT_Y[1], x0:x1]
-        grup = _gruplar(_kosular((b < MUREKKEP).any(axis=0)))
+        grup = _gruplar(_kosular(np.asarray((b < MUREKKEP).any(axis=0))))
         for i in range(len(gir)):
             durum[(k, i)] = "kapsam_disi"
         if len(grup) != len(gir):
