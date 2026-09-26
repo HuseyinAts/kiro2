@@ -296,3 +296,136 @@ def test_ortme_raporu() -> None:
     assert ORTME["ortme_suphesi_soru"] == len(
         {(o["birim"], o["soru"]) for o in ORTME["ortme"]}
     )
+
+
+# ------------------------------------------------ 7. transkripsiyon (Faz 4)
+
+from scripts.kitap import fiz345tyt_metin_harness as mh  # noqa: E402
+
+METIN = json.loads((CIKTI / "345_2025_tyt_fizik_metin.json").read_text("ascii"))
+IKINCI = json.loads((CIKTI / "345_2025_tyt_fizik_ikinci_okuma.json").read_text("ascii"))
+NUMARA_GOZ = json.loads(
+    (CIKTI / "345_2025_tyt_fizik_numara_goz.json").read_text("ascii")
+)
+
+
+def test_metin_kapilari_yesil() -> None:
+    assert mh.kapi(METIN["sorular"]) == []
+    assert METIN["soru_sayisi"] == 1397
+
+
+def test_metin_kapisi_mutasyonu_yakalar() -> None:
+    bozuk = copy.deepcopy(METIN["sorular"])
+    bozuk[3]["basili_no"] = 99
+    bozuk[5]["sikler"]["C"] = " "
+    del bozuk[7]
+    hata = mh.kapi(bozuk)
+    assert any(h.startswith("KAPI2") for h in hata)
+    assert any(h.startswith("KAPI3") for h in hata)
+    assert any(h.startswith("KAPI1") for h in hata)
+    assert any(h.startswith("KAPI4") for h in hata)
+
+
+def test_null_numara_yalniz_ortulu_sorularda() -> None:
+    """Null basili_no yalniz simge kanali, ortme olcumu ya da gozle listelenen
+    tam ortmede; listeden cikan bir soru KAPI2'ye takilir."""
+    ortulu = mh.numarasi_ortulu() | mh.ortme_listesi() | mh.numara_goz_listesi()
+    nuller = {s["dosya"] for s in METIN["sorular"] if s.get("basili_no") is None}
+    assert nuller <= ortulu
+    goz = set(NUMARA_GOZ["dosyalar"])
+    assert len(goz) == 53 and goz <= nuller
+    assert not goz & (mh.numarasi_ortulu() | mh.ortme_listesi())
+
+
+def test_numara_goz_listesi_disinda_null_durur(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(mh, "numara_goz_listesi", set)
+    hata = mh.kapi(METIN["sorular"])
+    assert len([h for h in hata if h.startswith("KAPI2")]) == 53
+
+
+def test_metin_kutularla_ayni_dosyalar() -> None:
+    k = {f"{x['birim']}_{x['soru']:02d}" for x in KUTULAR["kutular"]}
+    assert {s["dosya"] for s in METIN["sorular"]} == k
+
+
+def test_kivrik_kesme_ve_numara_notu_kalmadi() -> None:
+    for s in METIN["sorular"]:
+        assert "\u2019" not in s["govde"]
+        assert all("\u2019" not in str(v) for v in s["sikler"].values())
+        if s.get("kaynak_kusuru"):
+            assert not mh.NUMARA_NOTU.search(s["kaynak_kusuru"]), s["dosya"]
+
+
+def test_numara_notu_ayiklama() -> None:
+    f = mh.numara_notu_ayikla
+    assert f("soru numaras\u0131 beyaz daireyle kesik") is None
+    assert f("bas\u0131l\u0131 no k\u0131smen kesik: 8 veya 3") is None
+    assert (
+        f(
+            "g\xf6r\xfcnen k\u0131s\u0131m '3' ya da '8' olabilir; soru k\xf6k\xfcnde ayra\xe7 belirsiz"
+        )
+        == "soru k\xf6k\xfcnde ayra\xe7 belirsiz"
+    )
+    # tirnak icindeki ';' bozulmaz, numara disi not aynen kalir
+    s = "C \u015f\u0131kk\u0131nda T_L sonras\u0131 ayra\xe7 belirsiz: ';' veya ','"
+    assert f(s) == s
+    t = "tablo: ortadaki rakam 9 mu 8 mi (9,798 / 9,788)"
+    assert f(t) == t
+
+
+def test_ikinci_okuma_on_kayitli_tam_okuma() -> None:
+    assert "TAM ikinci okuma" in IKINCI["kural"]
+    assert "SONRA" in IKINCI["tasarim"]
+    s = IKINCI["sonuc"]
+    assert s["soru"] == 1397
+    assert s["ayni_soru_normalize"] + s["farkli_soru"] == 1397
+    assert len(IKINCI["hukumler"]) == s["farkli_soru"] == 69
+    say = Counter(h["esasli_hata"] for h in IKINCI["hukumler"])
+    assert dict(say) == s["hukum_dagilimi"]
+    assert s["ilk_okuma_esasli_hata"] == say["okuma_1"] + say["ikisi"] == 14
+
+
+def test_duzeltmeler_son_metinde_uygulanmis() -> None:
+    m = {s["dosya"]: s for s in METIN["sorular"]}
+    for d in IKINCI["duzeltmeler"]:
+        s = m[d["dosya"]]
+        assert s["govde"] == d["govde"].replace("\u2019", "'"), d["dosya"]
+        for h, v in d["sikler"].items():
+            assert s["sikler"][h] == str(v).replace("\u2019", "'"), (d["dosya"], h)
+        for a in ("sekil_var", "sikler_gorsel", "etiket"):
+            assert s[a] == d[a], (d["dosya"], a)
+
+
+def test_okunamaz_tahmin_edilmedi() -> None:
+    isaretli = [
+        s["dosya"]
+        for s in METIN["sorular"]
+        if "[??]" in s["govde"] + " ".join(map(str, s["sikler"].values()))
+    ]
+    assert isaretli == ["FZT345-T118_07"]
+    s = {x["dosya"]: x for x in METIN["sorular"]}["FZT345-T118_07"]
+    assert s["kaynak_kusuru"] and s["govde"].count("[??]") == 3
+
+
+def test_iki_okumanin_farki_goruntuden_cozuldu() -> None:
+    """Ornek hukumler: ilk okumanin esasli hatalari son metinde duzelmis."""
+    m = {s["dosya"]: s for s in METIN["sorular"]}
+    assert "montelenmesi" in m["FZT345-T074_05"]["govde"]
+    assert "\u03b1 > \u03b8" in m["FZT345-T082_07"]["govde"]
+    assert "1. rota: 19 km, 26 dk" in m["FZT345-T027_03"]["govde"]
+    assert "duyurabilmesi" in m["FZT345-T149_05"]["govde"]
+    # kitabin baski hatasi korunur (duzeltme yok)
+    assert (
+        "kar\u015f\u0131la\u015ft\u0131malar\u0131ndan" in m["FZT345-T011_07"]["govde"]
+    )
+
+
+def test_etiketler_iki_okumada_ayni() -> None:
+    et = [s["etiket"] for s in METIN["sorular"] if s.get("etiket")]
+    assert len(et) == 40
+    assert all(e.split(" - ")[0] in ("TYT", "MS\xdc") for e in et)
+
+
+def test_soluk_arti_taramasi_kaydi() -> None:
+    t = IKINCI["soluk_isaret_taramasi"]
+    assert t["aday"] == 11 and "gizli '+' yok" in t["goz_sonucu"]

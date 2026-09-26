@@ -81,12 +81,91 @@ olculmus farklar:
   ortulmuyor. Bayrak olarak tasinir.
 * Kenar kapisi ihlali 0.
 
+## 4. Transkripsiyon (`fiz345tyt_metin_harness.py`)
+
+`345_2025_tyt_fizik_metin.json` (1397 soru). Kirpimlar 2x Lanczos;
+33 grup (test sinirina hizali, ~40 soru), 33 ayri okuyucu. Talimat
+`VeraFilm/f_metin_talimat.md`: 'kitap ne yaziyorsa o', soru cozme yok,
+anahtar gosterilmedi, fizik yazim sozlesmesi (alt indis `h_K`, `F_(net)`;
+us `10^(-3)`; eksi U+2212; vektor U+20D7; Yunan harfleri; birimler;
+tablo ` | `, bos hucre `-`; alti cizili `<u>`; sekil yazisi yalniz soru
+ona dayaniyorsa).
+
+Kapilar (harness `kapi`, okuyucuya soylenmeyen yapidan): KAPI1 her kirpim
+bir kez; KAPI2 basili no == test ici sira; KAPI3 bes sik dolu; KAPI4
+toplam 1397. **TUM KAPILAR YESIL.**
+
+### 4a. Numara ortmesi (KAPI2)
+
+Okuyucu diski cogu yerde numaranin sol yarisini kesiyor; kalan parca iki
+rakama uyuyor (8 -> '3', 4 -> '1', 9 -> ')'). Okuyucu null yazabilir;
+yalniz capa simgeden alinan (131 sutun) ya da ortme olcumundeki (161)
+sorularda. Ilk kosu 53 KAPI2 verdi: hepsi null, hicbiri yanlis rakam
+degil. 53'unun sol-ust 200x110 bolgesi izgarada gozle incelendi: disk
+numarayi tamamen kesiyor, halkada murekkep kalmadigi icin ortme olcumu
+kacirmis. Liste `345_2025_tyt_fizik_numara_goz.json`; KAPI2 onu da
+ortulu sayar (liste bosaltilinca 53 ihlal geri gelir -- test). Null
+numara toplam 134; numara test ici siradan alinir.
+
+Okuyucularin numara kesigi notlari kaynak kusuru degildir (talimat 'bunu
+YAZMA'); harness `topla` bunlari ';' parcasi bazinda ayiklar (tirnak
+icindeki ';' bozulmaz). Kalan gercek kusur notu 63 soru.
+
+### 4b. Ikinci okuma -- on kayitli TAM okuma
+
+On kayit (`345_2025_tyt_fizik_ikinci_okuma.json`, karsilastirmadan
+ONCE): STM345 ilk okumasinda esasli hata %3.0 idi; bu oranda orneklem
+CP95 <= %3 kapisini gecemez -> dogrudan TAM ikinci okuma: ilk okumayi
+gormeyen 33 ayri okuyucu, ayni talimat (teslim dizini `f_metin_parca2`),
+ayni gruplar.
+
+* Normalizasyon (NFC, kesme/tirnak tipi, eksi/tire tipi, carpma noktasi,
+  bosluk) sonrasi 1328 soru ayni, 69 soru farkli (govde 64, sik 19,
+  sekil_var 1, vurgu 1).
+* 69 farkin hepsi kirpimdan gozle (3-16x) karara baglandi (3 hakem
+  partisi; hukumler `ikinci_okuma.json` -> `hukumler`, nihai alanlar
+  `duzeltmeler`): 35 yalniz bicim (tablo '-' hucresi, coklu alt indis
+  parantezi, bilesik kesir parantezi, noktalama), 13 ilk okuma, 20 ikinci
+  okuma, 1 ikisi hatali.
+* **Ilk okuma esasli hata 14 / 1397 (%1.0)**; ikinci okuma 21. Ornekler:
+  'montelenmesi' -> 'monte edilmesi' (ikinci), 'alpha > 0' -> 'alpha > theta'
+  (ilk), sekildeki rota bilgisi eksik (ilk), tabela / ekran yazisi eksik.
+  Kitabin baski hatalari ('karsilastimalarindan', 'gimistir',
+  'filitreleri') korunur; duzelten okuma hatali sayildi.
+* Okuyucular ayni model ailesinden; ortak kor nokta riski icin 4c.
+
+### 4c. Soluk isaret taramasi ve yakinlastirma
+
+STM345 4b deseni ('+' nin dikey cubugu soluk -> iki okuyucu da '-'
+okuyabilir): koyu kisa yatay cubuk + ortasindan gecen simetrik soluk
+dikey iz. 9 soruda 11 aday; 11'i de sekil ogesi (izgara kesisimi, olcek
+cizgisi, sekil etiketi). Metinde gizli '+' yok.
+
+Okuyucu bildirimleriyle soluk eksiler: T095_04 Bakir ussu (piksel
+dokumunde 233-247 gri yatay iz: var), T078_09 sik tablosunda uc soluk
+eksi (var). Cozume dogrudan giren belirsiz karakterler 8x yakinlastirildi:
+T008_07 usleri (I. 5, III. yatay cubugu eksik 4), T042_06 '9,798'.
+
+### 4d. Okunamaz -> `[??]` (tahmin yok)
+
+| soru | ne |
+|---|---|
+| T118_07 | tabela rakamlari: BANDIRMA ve GOKSUN nufusunun son haneleri, GOKSUN rakiminin son hanesi |
+
+Tek soru gorunen alanda `[??]` tasir; 0039/0056 dislama kurali geregi
+aktiflestirmede disarida kalir.
+
 ## Testler
 
-`backend/tests/e2e/test_fiz345tyt_veri.py` (26): hamdan birebir anahtar
+`backend/tests/e2e/test_fiz345tyt_veri.py` (39): hamdan birebir anahtar
 turetme, tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari, kanal durustlugu, ASCII; Faz 2 ile +7: harita hamdan turer,
 migration == harita, zincir, kodlar, bant adi / rozet mutasyonu, 've' kurali;
 Faz 3 ile +5: kutu kapilari, kutu <-> cevap birebir, capa kanali, kapi
-mutasyonu (sizinti / cakisma), ortme raporu.
+mutasyonu (sizinti / cakisma), ortme raporu; Faz 4 ile +13: metin
+kapilari, kapi mutasyonu (KAPI1-4), null numara yalniz ortulu sorularda,
+numara_goz listesi bosalinca 53 KAPI2, kutularla ayni dosyalar, kivrik
+kesme / numara notu kalmadi, numara notu ayiklama, on kayitli tam ikinci
+okuma sayilari, duzeltmeler son metinde, `[??]` yalniz T118_07, ornek
+hukumler, etiketler, soluk '+' kaydi.

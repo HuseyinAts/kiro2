@@ -54,7 +54,10 @@ Sonuc: 1397 kutu (numara 583 / simge 131 sutun), kapi ihlali 0, kenar 0, ortme s
 Capa = okuyucu simgesi (1397); tavan/taban stm345_kutu kurallari;
 cikmis soru kutusu, pembe sayfa zemini ayrica olculur.
 
-### Faz 4 -- Transkripsiyon
+### Faz 4 -- Transkripsiyon -- TAMAM 26 Eyl
+Sonuc: 1397 soru, 33 okuyucu + 33 bagimsiz ikinci okuyucu; kapilar yesil;
+69 fark gozle cozuldu (ilk okuma esasli hata 14, %1.0); numara ortmesi 53
+gozle listelendi; soluk '+' taramasi 0 gizli isaret; `[??]` 1 soru (T118_07).
 ~40 soruluk gruplar, ayri okuyucular; on kayitli ikinci okuma; soluk
 isaret taramasi; okunamaz -> `[??]`.
 
