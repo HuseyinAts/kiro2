@@ -68,6 +68,8 @@ seritle dogrulandi (D).
 Formulu koruyan 3-gram (stm345_mukerrer) x DB FIZIK; OSYM cikmis
 sorulari ile ozellikle.
 
-### Faz 6 -- Ithal (PASIF) + kaynak sozlesmesi
+### Faz 6 -- Ithal (PASIF) + kaynak sozlesmesi -- TAMAM 26 Eyl
+Sonuc: pasif ithal 1395 satir (2 soru baska kaynakta ayni hash ile var,
+dokunulmadi); ikinci kosu 0 yazim; kapilar temiz; test_fiz345tyt_ithal.py 49.
 ### Faz 7 -- Testler, belge, PR
 ### Faz 8 -- Aktiflestirme (AYRI sahip karari)

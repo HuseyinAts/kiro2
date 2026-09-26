@@ -185,7 +185,46 @@ sag sutun '8.A 9.D'): bizim cevap kitabin basili anahtari, degismez.
 T118_08 ve T022_08 zayif adaylarda farkli cevap (farkli soru / farkli
 kaynak kaydi).
 
+## 6. Ithal (`fiz345tyt_ithal.py`) -- PASIF
+
+Kaynak adi `345 2025 TYT Fizik Soru Bankasi` (kaynak_sozlesmesi girdisi;
+onek FZT345). TYT / FIZIK, sinif 12; sorular unite dugumune
+(FIZ-345T25-Unn, `konu_eslesme_duzeyi` = 'unite'). `source_page` BASILI
+sayfa = dosya. Kirpimlar `/static/crops/FZT345/<FZT345-Tddd_nn>.png`
+(yerelde `d-dataset/output/crops/FZT345/`, 1397 dosya; git'e girmez,
+`fiz345tyt_kirp.py` yeniden uretir).
+
+Cikmis sorular: basili etiket -> `sinav` + `sinav_yili` (mat345tyt
+`etiket_ayristir` deseni); 40 soruda `osym_year` ve
+`osym_format_compliant`. Null numara (134): `soru_no_kaynagi` =
+'test_ici_sira_numara_ortulu', bayrak `numara_ortulu`; baglama null'u
+yalniz simge capali / ortme olcumlu / numara_goz listesindeki soruda
+kabul eder.
+
+Kapilar: yapisal (1397 soru, 176 test, 19 unite, 1397 anahtar, 1397 kutu,
+40 ayrisan etiket, metinde cevap alani yok) + baglama (basili no == test
+ici sira ya da ortulu null; kutu ile anahtar ayni dosya/sutun/serit
+sirasi; kutu testin sayfasinda) + on kontrol (5 sik, A-E, dolu anahtar
+sikki, unite kodu, bilinen cevap kanali, kutu, basili sayfa == dosya,
+cikmis == yil dolu, benzersiz id).
+
+Yerel DB (26 Eyl): 1395 yeni satir, is_active 0, beta kapisindan gecen 0;
+ikinci kosu 'zaten var 1397, yazilacak 0'. 2 soru (T014_02, T016_04)
+Mikro Orijinal TYT Fizik'te ayni soru_hash ile zaten var (ayni OSYM
+sorusu; `id = uuid5(hash)` ayni): kaynak sozlesmesi geregi yabanci satira
+dokunulmaz, bu kitap icin satir yazilmaz. Bayraklar (1397 uzerinden):
+okuyucu_diski_ortme 161, numara_ortulu 134, kaynak_kusuru 63, cikmis_soru
+40, sikler_gorsel 32 (+ sik_tekrar 32), mukerrer_aday 30,
+db_hash_carpismasi 2, okunamaz_isaret 1, diger_kaynak_cevap_farki 1.
+Cozum yok; `cozum_dogrulamasi` = 'yapilmadi_urun_karari'.
+
 ## Testler
+
+`backend/tests/e2e/test_fiz345tyt_ithal.py` (49: butunluk, yapisal kapi,
+null numara yalniz ortulu soruda, unite baglantisi, kaynak sozlesmesi,
+ASCII, pasif ithal, cozum yok, cikmis soru / etiket ayristirma, kutu,
+bayrak capalari, `[??]` yalniz T118_07, mukerrer bayraklari yalniz cikmis
+sorularda, 9 yapisal + 11 kayit/baglama mutasyonu).
 
 `backend/tests/e2e/test_fiz345tyt_veri.py` (45): hamdan birebir anahtar
 turetme, tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi /
