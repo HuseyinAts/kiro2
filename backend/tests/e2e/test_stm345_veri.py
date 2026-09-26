@@ -12,6 +12,7 @@ NE KORUR
 6. DURUSTLUK   -- her cevabin kaynagi iki okuma; piksel ya da goz kanali.
 10. MUKERRER   -- hash/3-gram olcusu yeniden uretilir; kopya yakalanir; eski hat kitapta yok.
 11. ESKI HAT   -- 0058 yalniz kitapta olmayan 3 satiri, guard'li ve gunluklu pasife alir.
+12. BETA       -- 0059 dislama kurali, 365 hedef, durustluk (human_verified yok).
 """
 
 from __future__ import annotations
@@ -534,3 +535,68 @@ def test_0058_guard_ve_geri_alinabilir() -> None:
     kaynak = PASIF_YOLU.read_text("ascii")
     assert "DELETE" not in kaynak.upper().replace("DELETED", "")
     assert "onceki_is_active" in kaynak
+
+
+# ------------------------------------------------- 12. beta onay (0059)
+
+BETA_YOLU = KOK / "backend" / "alembic" / "versions" / "0059_stm345_beta_onay.py"
+
+
+def _beta():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("beta0059", BETA_YOLU)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_0059_kimlik_zincir_ascii() -> None:
+    m = _beta()
+    assert m.revision == "0059_stm345_beta_onay"
+    assert m.down_revision == "0058_stm345_eski_hat_pasif"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in BETA_YOLU.read_bytes())
+    assert m.ITHAL_ARACI == "scripts/kitap/stm345_ithal.py"
+
+
+def test_0059_dislama_kurali() -> None:
+    """Servis disi uc bayrak + gorunen alti alanda [??] disarida kalir."""
+    m = _beta()
+    sql = " ".join(m._HEDEF_SQL.split())
+    for bayrak in m.SERVIS_DISI_BAYRAKLAR:
+        assert f"? '{bayrak}')" in sql, bayrak
+    for alan in (
+        "question_text",
+        "option_a",
+        "option_b",
+        "option_c",
+        "option_d",
+        "option_e",
+    ):
+        assert f"qc.{alan} NOT LIKE :isaret" in sql, alan
+    assert m.ORTME_ISARETI == "%[??]%"
+    assert "qb.is_active IS NOT TRUE" in sql
+
+
+def test_0059_hedef_olculen_365() -> None:
+    """Metinden: [??] tasiyan 6 soru disinda 371 - 6 = 365 acilir."""
+    isaretli = [
+        s["dosya"]
+        for s in METIN["sorular"]
+        if "[??]" in s["govde"] + "".join(s["sikler"].values())
+    ]
+    assert len(METIN["sorular"]) - len(isaretli) == 365
+    assert "365/371" in BETA_YOLU.read_text("ascii").splitlines()[0]
+
+
+def test_0059_durustluk() -> None:
+    kaynak = BETA_YOLU.read_text("ascii")
+    kod = kaynak.split('"""', 2)[2]
+    assert "'human_verified'" not in kod
+    assert "is_ai_generated" not in kod and "is_public" not in kod
+    assert "'bireysel_denetim_yapildi', false" in kod
+    assert "DELETE" not in kod.upper()
+    m = _beta()
+    assert len(m.SINYALLER) == 5 and len(set(m.SINYALLER)) == 5

@@ -149,13 +149,16 @@ PASIF ithal; TYT / MATEMATIK; sinif 12 (ev sozlesmesi); `ithal_araci`,
 `telif`, bayraklar, `cozum_dogrulamasi` = 'yapilmadi_urun_karari'.
 `kaynak_sozlesmesi.py` girdisi. Kirpimlar `/static/crops/STM345/`.
 
-### Faz 7 -- Testler, belge, PR
+### Faz 7 -- Testler, belge, PR -- TAMAM 26 Eyl
 `test_stm345_veri.py` (ham okumadan yeniden turetme, kapilar,
 mutasyonla dogrulanmis) + `test_stm345_ithal.py`; `STM_345_YONTEM.md`;
 durum raporu satiri. Git akisi: dal -> adla ekleme -> PR -> CI kirmizi
 kumesi == miras kume -> squash.
 
-### Faz 8 -- Aktiflestirme (AYRI sahip karari)
+### Faz 8 -- Aktiflestirme (AYRI sahip karari) -- TAMAM 26 Eyl
+
+Sahip karari 26 Eyl ('FAZ 7 VE FAZ 8 I TAMAMLA'): 0059_stm345_beta_onay,
+365/371 acildi; [??] tasiyan 6 soru pasif.
 0056 deseni: kapi yuku olculur, uc kilit acilir, gunluklu geri alinabilir.
 
 ## 3. Sahip kararlari (bu plan varsayilanla ilerler)
@@ -163,4 +166,4 @@ kumesi == miras kume -> squash.
 1. KARAR VERILDI (25 Eyl): Isindirma Kosesi / acik uclu alistirmalar kapsam disi.
 2. KARAR VERILDI (26 Eyl): eski hat 3 satir (kitapta yok) pasif --
    migration 0058_stm345_eski_hat_pasif.
-3. Aktiflestirme (Faz 8).
+3. KARAR VERILDI (26 Eyl): aktiflestirme -- 0059, 365/371.

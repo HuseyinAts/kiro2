@@ -296,6 +296,22 @@ ikinci kosu 'zaten var 371, yazilacak 0'. Bayraklar: kaynak_kusuru 23,
 okunamaz_isaret 6, okuyucu_diski_ortme 6, sikler_gorsel 3 (+ sik_tekrar 3,
 ayni uc soru). Cozum yok; `cozum_dogrulamasi` = 'yapilmadi_urun_karari'.
 
+## 7. Aktiflestirme (0059, Faz 8 -- sahip karari 26 Eyl)
+
+Kapi yuku yerel DB'de olculdu (0059 docstring): 371 satirda uc kilit
+(quality 'pending', uyum sinyali yok, ai + review 'PENDING'); servis disi
+bayrak 0, gorunen alanda `[??]` 6, bos sik/cevap 0, gorselsiz 0, aktif
+satirlarla hash cakismasi 0. Dislama kurali 0039/0056 ile ayni -> 365
+satir acilir ('auto_judged_high', 'APPROVED', bes konsensus sinyali,
+onay_turu 'toplu_beta_sahibi', bireysel_denetim_yapildi false); `[??]`
+tasiyan 6 soru pasif kalir. Unite sayaclari toplami 365. Yerel DB'de
+upgrade -> downgrade -> upgrade temiz (365 -> 0 -> 365).
+
+Not: `v_safe_for_beta` is_active suzmez; 0058 ile pasife alinan eski hat
+satirlarindan 2'si onceki `auto_judged_high` durumlari nedeniyle gorunumde
+kalir (DB genelinde 14 pasif satir ayni durumda; bu PR'in degistirdigi bir
+davranis degil).
+
 ## Testler
 
 `backend/tests/e2e/test_stm345_ithal.py` (47: butunluk, yapisal kapi,
@@ -303,7 +319,9 @@ unite baglantisi, kaynak sozlesmesi, eski hattan ayri kimlik, pasif ithal,
 bayrak capalari, 8 yapisal + 10 kayit/baglama mutasyonu; kod mutasyonlari
 -- etiket kapisi, okunamaz bayragi, basili sayfa, kanal kapisi -- kirmizi).
 
-`backend/tests/e2e/test_stm345_veri.py` (50; 0058 ile +3: kimlik/zincir/ASCII, pasif kume == kitapta yok
+`backend/tests/e2e/test_stm345_veri.py` (54; 0059 ile +4: kimlik/zincir,
+dislama kurali, 365 hedef metinden, durustluk -- isaret alani / bayrak
+silme ve human_verified mutasyonlari kirmizi. Onceki 50; 0058 ile +3: kimlik/zincir/ASCII, pasif kume == kitapta yok
 olculen kume, guard ve gunluk. Faz 5 ile +6: 371 farkli
 soru_hash, kitap ici yeniden uretilir, LaTeX kopya yakalanir, formul
 normal bicimi, guclu aday yok, eski hat kitapta yok -- eksi kaybi, kesir
