@@ -155,9 +155,39 @@ T008_07 usleri (I. 5, III. yatay cubugu eksik 4), T042_06 '9,798'.
 Tek soru gorunen alanda `[??]` tasir; 0039/0056 dislama kurali geregi
 aktiflestirmede disarida kalir.
 
+## 5. Mukerrer (`fiz345tyt_mukerrer.py`)
+
+Cikti: `345_2025_tyt_fizik_mukerrer_adaylari.json` (ithal ONCESI olcum).
+Olcu STM345 5a (formulu koruyan govde 3-gram Jaccard; GUCLU = 3-gram
+>= 0.9 VE >= 3 sik birebir); fizik icin normal bicimden alt indis '_',
+us '^' ve vektor oku da silinir. 1397 x 4764 cift 3-gram ters indeksiyle
+(test: dogrudan hesapla esit). Pozitif kontrol: kesirli + eksili 12
+govdenin LaTeX'lesmis hali kendi sorusuna 3-gram 1.0.
+
+| olcum | sonuc |
+|---|---|
+| `soru_hash` x tum question_bank | 2 carpisma (T014_02, T016_04; Mikro Orijinal TYT Fizik'teki ayni OSYM sorusu) |
+| kitap ici ayni hash / yakin cift | 0 / 0 (en yuksek 0.687) |
+| DB FIZIK (4764 satir, OSYM dahil), 3-gram >= 0.75 | 61 aday, GUCLU 37 (30 soru) |
+| cikmis soru etiketi | 40 soru |
+
+GUCLU adaylarin hepsi etiketli cikmis soru (Neofizik TYT 27, Mikro
+Orijinal TYT 7, OSYM 2025 TYT 3): ayni OSYM sorusu baska kitaplarda da
+basili. Etiketsiz GUCLU aday yok. Zayif 24 adaydan 23'u de etiketli;
+tek etiketsiz T022_08 (345 AYT Fizik, 0.819, ortak sik 0): ayni kalip,
+farkli soru. Isaret konmaz; ithalde GUCLU adaylar `mukerrer_aday`
+bayragi tasir (silme yok), hash carpisan 2 soru aktiflestirmede aktif
+satirla ayni hash kurali geregi pasif kalir.
+
+Cevap farki (bilgi kaydi `cevap_farki`): T120_09 (TYT - 2024) bizde D,
+Neofizik TYT satirinda E. Basili serit gozle yeniden okundu (dosya 253,
+sag sutun '8.A 9.D'): bizim cevap kitabin basili anahtari, degismez.
+T118_08 ve T022_08 zayif adaylarda farkli cevap (farkli soru / farkli
+kaynak kaydi).
+
 ## Testler
 
-`backend/tests/e2e/test_fiz345tyt_veri.py` (39): hamdan birebir anahtar
+`backend/tests/e2e/test_fiz345tyt_veri.py` (45): hamdan birebir anahtar
 turetme, tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari, kanal durustlugu, ASCII; Faz 2 ile +7: harita hamdan turer,
@@ -168,4 +198,7 @@ kapilari, kapi mutasyonu (KAPI1-4), null numara yalniz ortulu sorularda,
 numara_goz listesi bosalinca 53 KAPI2, kutularla ayni dosyalar, kivrik
 kesme / numara notu kalmadi, numara notu ayiklama, on kayitli tam ikinci
 okuma sayilari, duzeltmeler son metinde, `[??]` yalniz T118_07, ornek
-hukumler, etiketler, soluk '+' kaydi.
+hukumler, etiketler, soluk '+' kaydi; Faz 5 ile +6: mukerrer ozeti,
+GUCLU adaylar yalniz cikmis soru, hash degeri yazilmadi, cevap farki
+basili anahtari degistirmez, pozitif kontrol / isaret korunur, indeksli
+Jaccard == dogrudan.

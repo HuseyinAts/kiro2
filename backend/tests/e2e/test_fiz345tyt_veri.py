@@ -429,3 +429,71 @@ def test_etiketler_iki_okumada_ayni() -> None:
 def test_soluk_arti_taramasi_kaydi() -> None:
     t = IKINCI["soluk_isaret_taramasi"]
     assert t["aday"] == 11 and "gizli '+' yok" in t["goz_sonucu"]
+
+
+# ------------------------------------------------ 8. mukerrer (Faz 5)
+
+import re  # noqa: E402
+
+
+def _mk():  # type: ignore[no-untyped-def]
+    """Gec ice aktarma (stm345 deseni): betik psycopg ister."""
+    from scripts.kitap import fiz345tyt_mukerrer
+
+    return fiz345tyt_mukerrer
+
+
+MUK_METNI = (CIKTI / "345_2025_tyt_fizik_mukerrer_adaylari.json").read_text("ascii")
+MUK = json.loads(MUK_METNI)
+
+
+def test_mukerrer_ozet() -> None:
+    assert MUK["soru_sayisi"] == 1397
+    assert MUK["db_satiri"] > 4000
+    assert MUK["kitap_ici_ayni_hash"] == [] and MUK["kitap_ici_yakin"] == []
+    assert MUK["eski_hat"] == []
+    assert MUK["osym_etiketli_soru"] == 40
+
+
+def test_guclu_adaylar_yalniz_cikmis_sorular() -> None:
+    """Baska kitaplarda da basilan OSYM sorulari; etiketsiz guclu aday yok."""
+    guclu = [a for a in MUK["adaylar"] if a["guclu"]]
+    assert guclu and all(a["etiketli"] for a in guclu)
+    assert {a["dosya"] for a in guclu} == set(MUK["osym_etiketli_guclu_aday"])
+    carpisan = {c["dosya"] for c in MUK["db_tam_hash_carpismasi"]}
+    assert carpisan == {"FZT345-T014_02", "FZT345-T016_04"}
+    assert carpisan <= {a["dosya"] for a in guclu}
+
+
+def test_hash_degeri_yazilmadi() -> None:
+    assert not re.search(r"[0-9a-f]{32}", MUK_METNI)
+    assert MUK["farkli_soru_hash"] == 1397
+
+
+def test_cevap_farki_kaydi_basili_anahtari_degistirmez() -> None:
+    farklar = {c["dosya"]: c for c in MUK["cevap_farki"]}
+    assert farklar["FZT345-T120_09"]["bizim_cevap"] == "D"
+    cev = {f"{c['birim']}_{c['soru']:02d}": c["cevap"] for c in ANAHTAR["cevaplar"]}
+    assert all(cev[d] == c["bizim_cevap"] for d, c in farklar.items())
+
+
+def test_pozitif_kontrol_ve_isaret_korunur() -> None:
+    mk = _mk()
+    assert len(MUK["pozitif_kontrol"]) >= 5
+    assert min(k["latex_3gram"] for k in MUK["pozitif_kontrol"]) >= mk.GUCLU_ESIK
+    assert mk.nm("F_K \u2212 F_L") == mk.nm("$F_{K} - F_{L}$")
+    assert mk.nm("a \u2212 b") != mk.nm("a + b")
+
+
+def test_indeksli_jaccard_dogrudanla_ayni() -> None:
+    mk = _mk()
+    biz = mk.bizim_sorular()
+    ind = mk.indeks(biz)
+    for a in biz[::35]:
+        j, i = mk.en_yakin(a["tg"], biz, ind)
+        dogrudan = max(mk.jaccard(a["tg"], b["tg"]) for b in biz)
+        assert j == pytest.approx(dogrudan)
+        assert j == pytest.approx(1.0) and biz[i]["tg"] == a["tg"]
+    tg = mk.trigram(mk.nm("tamamen alakasiz bir metin parcasi xyzq"))
+    j, _ = mk.en_yakin(tg, biz, ind)
+    assert j == pytest.approx(max(mk.jaccard(tg, b["tg"]) for b in biz))

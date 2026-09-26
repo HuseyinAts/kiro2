@@ -61,7 +61,10 @@ gozle listelendi; soluk '+' taramasi 0 gizli isaret; `[??]` 1 soru (T118_07).
 ~40 soruluk gruplar, ayri okuyucular; on kayitli ikinci okuma; soluk
 isaret taramasi; okunamaz -> `[??]`.
 
-### Faz 5 -- Mukerrer
+### Faz 5 -- Mukerrer -- TAMAM 26 Eyl
+Sonuc: hash carpismasi 2 (OSYM sorusu, Mikro Orijinal), kitap ici 0, DB 61
+aday / GUCLU 37 -- hepsi etiketli cikmis soru; cevap farki T120_09 basili
+seritle dogrulandi (D).
 Formulu koruyan 3-gram (stm345_mukerrer) x DB FIZIK; OSYM cikmis
 sorulari ile ozellikle.
 
