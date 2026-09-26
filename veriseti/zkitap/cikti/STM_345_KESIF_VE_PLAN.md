@@ -157,6 +157,6 @@ kumesi == miras kume -> squash.
 ## 3. Sahip kararlari (bu plan varsayilanla ilerler)
 
 1. KARAR VERILDI (25 Eyl): Isindirma Kosesi / acik uclu alistirmalar kapsam disi.
-2. Eski hat 3 satirin akibeti: OLCULDU (Faz 5) -- uc satir da kitapta
-   yok; pasif onerisi SAHIP KARARI bekliyor.
+2. KARAR VERILDI (26 Eyl): eski hat 3 satir (kitapta yok) pasif --
+   migration 0058_stm345_eski_hat_pasif.
 3. Aktiflestirme (Faz 8).

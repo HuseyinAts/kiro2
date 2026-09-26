@@ -270,9 +270,15 @@ Kaynak adini tasiyan 3 eski satir, basili sayfalari gozle incelendi:
 Uc soru da sayfada yok; 371 soruluk metne en yakin 3-gram 0.13-0.26.
 Uc satir da aktif. Oneri: pasif (SAHIP KARARI; 0056 deseni, gunluklu geri alinabilir).
 
+SAHIP KARARI (26 Eyl): "Bu 3 eski satir pasife alinsin" -> migration
+`0058_stm345_eski_hat_pasif`: guard (kaynak adi, ithal_araci yok, hala aktif),
+onceki is_active GUNLUK'te, silme yok. Yerel DB'de upgrade -> downgrade ->
+upgrade temiz (3 -> 3 aktif geri -> 3 pasif).
+
 ## Testler
 
-`backend/tests/e2e/test_stm345_veri.py` (47; Faz 5 ile +6: 371 farkli
+`backend/tests/e2e/test_stm345_veri.py` (50; 0058 ile +3: kimlik/zincir/ASCII, pasif kume == kitapta yok
+olculen kume, guard ve gunluk. Faz 5 ile +6: 371 farkli
 soru_hash, kitap ici yeniden uretilir, LaTeX kopya yakalanir, formul
 normal bicimi, guclu aday yok, eski hat kitapta yok -- eksi kaybi, kesir
 donusumu ve esik mutasyonlari kirmizi. Faz 4 ile +8: metin kapilari

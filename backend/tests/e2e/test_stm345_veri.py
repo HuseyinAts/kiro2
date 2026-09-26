@@ -11,6 +11,7 @@ NE KORUR
 5. KAPSAM      -- yalniz test sayfalari; sutun girdi sayisi == basili numara.
 6. DURUSTLUK   -- her cevabin kaynagi iki okuma; piksel ya da goz kanali.
 10. MUKERRER   -- hash/3-gram olcusu yeniden uretilir; kopya yakalanir; eski hat kitapta yok.
+11. ESKI HAT   -- 0058 yalniz kitapta olmayan 3 satiri, guard'li ve gunluklu pasife alir.
 """
 
 from __future__ import annotations
@@ -490,3 +491,46 @@ def test_eski_hat_kitapta_yok() -> None:
         assert e["kitapta_var"] is False
         assert e["en_yakin_3gram"] < 0.5
         assert e["oneri"] == "pasif (sahip karari)"
+
+
+# ------------------------------------------------- 11. eski hat pasif (0058)
+
+PASIF_YOLU = KOK / "backend" / "alembic" / "versions" / "0058_stm345_eski_hat_pasif.py"
+
+
+def _pasif():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("pasif0058", PASIF_YOLU)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_0058_kimlik_zincir_ascii() -> None:
+    m = _pasif()
+    assert m.revision == "0058_stm345_eski_hat_pasif"
+    assert m.down_revision == "0057_stm345_agac"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in PASIF_YOLU.read_bytes())
+
+
+def test_0058_yalniz_kitapta_olmayan_eski_hat() -> None:
+    """Pasife alinan kume == Faz 5'te kitapta YOK olculen eski hat satirlari."""
+    m = _pasif()
+    olculen = {e["db_id"] for e in MUK["eski_hat"] if e["kitapta_var"] is False}
+    assert set(m.ESKI_HAT_PASIF) == olculen
+    assert len(m.ESKI_HAT_PASIF) == 3
+    assert MUK["kaynak"] == m.KAYNAK
+
+
+def test_0058_guard_ve_geri_alinabilir() -> None:
+    m = _pasif()
+    sql = " ".join(m._ESKI_SQL.split())
+    assert "qm.source_book = :kaynak" in sql
+    assert "->> 'ithal_araci') IS NULL" in sql
+    assert "qb.is_active IS TRUE" in sql
+    kaynak = PASIF_YOLU.read_text("ascii")
+    assert "DELETE" not in kaynak.upper().replace("DELETED", "")
+    assert "onceki_is_active" in kaynak
