@@ -138,9 +138,42 @@ Kimya riski: '+'nin dikey cubugu soluk basilinca okuyucu '-' yazar.
 Hicbir soruda gercekten okunamayan karakter kalmadi; belirsiz tek
 karakterler en iyi okuma + iki aday olarak `kaynak_kusuru`nda.
 
+## 5. Mukerrer (`kim345tyt_mukerrer.py`)
+
+`345_2025_tyt_kimya_mukerrer_adaylari.json` (ithal ONCESI olcum). Olcu
+FZT345 ile ayni: formulu koruyan normal bicim (NFKC, kucuk, eksi tek '-',
+bosluk / parantez / LaTeX / indis '_' / us '^' silinmis) karakter 3-gram
+Jaccard, ters indeksle; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u
+birebir. Pozitif kontrol: kesirli + eksili 33 govdenin LaTeX'lesmis hali
+kendine 1.0.
+
+* DB havuzu: KIMYA 4855 satir (OSYM dahil) + eski hat adlari.
+* Kitap ici: ayni hash 0, yakin cift 0. Genel govdeler ('Asagidakilerden
+  hangisi yanlistir?' 13 soru, vb.) 3-gram 1.0 verir ama siklar farkli.
+* DB tam hash carpismasi 36 soru: 28'i eski hat 2025, 7'si eski hat 2024,
+  1'i 345 AYT Kimya. Ithal bunlara satir yazmaz (FZT345 kurali: aktif
+  ayni hash varken ikinci satir yok).
+* Kayit esigi (0.75) ustu 553 aday, GUCLU 346 (266 farkli soru): eski hat
+  330, Esen Aps 7, Bilgi Sarmal 2024 7, 345 AYT 1, OSYM 2025 TYT 1. OSYM
+  etiketli 100 sorunun 39'u baska kaynakta da var.
+* Cevap farki 59 kayit (bilgi): bizim cevap BASILI anahtardir,
+  degistirilmez. GUCLU eski hat eslesmelerinde 19 farkli cevap.
+
+### 5a. Eski hat (iki eski aktarim)
+
+| kaynak adi (DB) | satir | aktif | modern karsiligi (GUCLU) |
+|---|---|---|---|
+| 345 2025 Tyt Kimya Soru Bankasi (Turkce i) | 294 | 294 | 211 |
+| 345 Tyt Kimya Soru Bankasi (2024 baskisi) | 213 | 213 | 119 |
+
+Eski satirlarin en yakin modern soruya 3-gram dagilimi: 1.0'a yuvarlanan
+272, 0.9 164, 0.8 53, <= 0.7 18. GUCLU eslesen 330 eski satirin 311'inde
+cevap bizimkiyle ayni. Ayni modern soruya iki baskidan birer eski satir
+baglanan 55 soru var (ayni soru her iki baskida).
+
 ## Testler
 
-`backend/tests/e2e/test_kim345tyt_veri.py` (38): hamdan birebir anahtar
+`backend/tests/e2e/test_kim345tyt_veri.py` (45): hamdan birebir anahtar
 turetme, A/B birebir, A/B farki / gereksiz fark karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari (ayractan hemen sonra), kanal durustlugu, ASCII; harita hamdan
@@ -150,4 +183,7 @@ ust bant simgesi reddi, kapi mutasyonu, ortme raporu; metin kapilari ve
 kapi mutasyonu, null numara kumesi, metin == kutular, kivrik kesme / numara
 notu yok, on kayitli ikinci okuma sayilari (192 / 62 / 46), duzeltmeler son
 metinde, `[??]` yok, Lewis cizimi metne dokulmedi, soluk isaret kararlari
-(NH_4^+, Na^+, basili eksiler korunur), etiketler (100: TYT 51, MSU 49).
+(NH_4^+, Na^+, basili eksiler korunur), etiketler (100: TYT 51, MSU 49);
+mukerrer ozeti, eski hat iki baski sayilari ve GUCLU tanimi, 36 hash
+carpismasi, hash degeri yazilmadi, cevap farki basili anahtari degistirmez,
+pozitif kontrol ve isaret korunur, indeksli Jaccard == dogrudan.
