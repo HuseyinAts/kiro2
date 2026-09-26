@@ -122,7 +122,16 @@ okumanin ortak 2 hatasini buldu; 6 soru [??].
    CP95 ust siniri <= %3 degilse TAM ikinci okuma; farklar kirpimdan 3x
    gozle.
 
-### Faz 5 -- Mukerrer ve eski hat
+### Faz 5 -- Mukerrer ve eski hat (`stm345_mukerrer.py`) -- TAMAM 26 Eyl
+
+Sonuc (`STM_345_YONTEM.md` bolum 5): DB tam hash carpismasi 0; kitap ici
+tekrar 0; 16235 MATEMATIK/GEOMETRI satirina karsi GUCLU aday 0 (en yuksek
+govde 3-gram 0.847, 15 aday >= 0.75 gozle hepsi farkli formul); cikmis
+soru etiketi 0. Eski hat 3 satir kitapta YOK -> pasif onerisi.
+Olcu degisti: kelime Jaccard matematikte bos cikti (369 aday / 111
+'guclu', hepsi yanlis pozitif); formulu koruyan 3-gram kullanildi.
+
+Plan (ilk hali):
 1. `soru_hash` ile DB geneli kesin cakisma; govde Jaccard >= 0.75 VE >= 3
    sik birebir -> `mukerrer_aday` (ozellikle 'Simdi Sinava Isinalim'
    rozetli sorular cikmis soru olabilir -> OSYM satirlariyla).
@@ -148,5 +157,6 @@ kumesi == miras kume -> squash.
 ## 3. Sahip kararlari (bu plan varsayilanla ilerler)
 
 1. KARAR VERILDI (25 Eyl): Isindirma Kosesi / acik uclu alistirmalar kapsam disi.
-2. Eski hat 3 satirin akibeti (Faz 5 olcumunden sonra).
+2. Eski hat 3 satirin akibeti: OLCULDU (Faz 5) -- uc satir da kitapta
+   yok; pasif onerisi SAHIP KARARI bekliyor.
 3. Aktiflestirme (Faz 8).

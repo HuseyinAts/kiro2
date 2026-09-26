@@ -224,9 +224,58 @@ Bu 6 soru gorunen alanda `[??]` tasir; 0039/0056 dislama kurali geregi
 aktiflestirmede disarida kalir. Goruntunun kendisi de ayni kaybi tasir;
 sorular bu cozunurlukte cozulemeyebilir.
 
+## 5. Mukerrer ve eski hat (`stm345_mukerrer.py`)
+
+Cikti: `345_2025_start_matematik_mukerrer_adaylari.json` (ithal ONCESI
+olcum).
+
+| olcum | sonuc |
+|---|---|
+| `soru_hash` x tum question_bank | 0 carpisma |
+| kitap ici ayni hash | 0 |
+| kitap ici yakin cift (3-gram >= 0.9 VE >= 3 ayni sik) | 0 (en yuksek 0.78) |
+| DB MATEMATIK + GEOMETRI (16235 satir), 3-gram >= 0.75 | 15 aday, GUCLU 0 (en yuksek 0.847) |
+| cikmis soru etiketi (OSYM) | 0 soru |
+
+### 5a. Olcu neden degisti
+
+Onceki kitaplarin olcusu (govde kelime kumesi Jaccard >= 0.75 VE bes
+sikkin >= 3'u birebir) burada once denendi: 369 aday, 111 'guclu'. Gozle
+hepsi farkli soru: govde kelimeleri kalip cumle ('islemin sonucu
+kactir?'), formul kelime kumesine girmiyor; sik normalizasyonu eksiyi
+bosluga cevirdigi icin '-2' == '2' ve 1..5 gibi siklar her yerde
+ortusuyor. Yeni olcu formulu korur: bosluksuz, eksi tek '-', `\frac{a}{b}`
+-> `a/b`, LaTeX komutu/parantez/dolar silinmis govdenin karakter 3-gram
+Jaccard'i. GUCLU = 3-gram >= 0.9 VE >= 3 sik birebir.
+
+Pozitif kontrol (betik kapisi): kesirli ve eksili 52 govdenin LaTeX'e
+cevrilmis, bosluklari bozulmus hali kendi sorusuna 3-gram 1.0 ile
+baglaniyor; biri 0.9'un altina duserse betik durur. Ilk kosuda bu kapi
+bir aciga yakaladi (`\frac` ile '/' kayboluyordu, T009_04 0.759); kesir
+donusumu eklendi.
+
+15 adayin hepsi (0.75-0.847) gozle incelendi: ayni kalip, farkli formul
+(or. T034_02 '|x + 1| + 2 = 0' <-> '|2x + 1| + 3 = 0'). Isaret konmaz.
+
+### 5b. Eski hat
+
+Kaynak adini tasiyan 3 eski satir, basili sayfalari gozle incelendi:
+
+| db_id | basili s. | eski satir | sayfada ne var |
+|---|---|---|---|
+| fc2fc6b8 | 194 | dortgen alani formulu | Iki Bilinmeyenli Denklemler, denklem sistemi alistirmalari |
+| 0bd78e59 | 203 | 'serinin ortalamasi' formulu | Basit Esitsizlikler, sayi dogrusu araliklari |
+| be4bf295 | 209 | 'a + b = 10 ve a - b = 2 ise a ve b'nin toplami' | Basit Esitsizlikler, aralik alistirmalari |
+
+Uc soru da sayfada yok; 371 soruluk metne en yakin 3-gram 0.13-0.26.
+Uc satir da aktif. Oneri: pasif (SAHIP KARARI; 0056 deseni, gunluklu geri alinabilir).
+
 ## Testler
 
-`backend/tests/e2e/test_stm345_veri.py` (41; Faz 4 ile +8: metin kapilari
+`backend/tests/e2e/test_stm345_veri.py` (47; Faz 5 ile +6: 371 farkli
+soru_hash, kitap ici yeniden uretilir, LaTeX kopya yakalanir, formul
+normal bicimi, guclu aday yok, eski hat kitapta yok -- eksi kaybi, kesir
+donusumu ve esik mutasyonlari kirmizi. Faz 4 ile +8: metin kapilari
 ve mutasyonu, kutu <-> metin birebir, kesme, on kayit, duzeltmelerin
 uygulandigi, [??] listesi, soluk '+' duzeltmeleri. Faz 3 ile +8: kutu kapilari,
 cevap <-> kutu birebir, capa == basili numara, serit/bant siniri, yatay

@@ -1,0 +1,434 @@
+{
+ "kaynak": "345 2025 Start Matematik",
+ "arac": "backend/scripts/kitap/stm345_mukerrer.py",
+ "olcu": "govde normal bicimi (bosluksuz, eksi tek '-', LaTeX/parantez/dolar yok) karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: MATEMATIK + GEOMETRI + bu kitabin eski hat satirlari. Kelime Jaccard olcusu matematikte bos oldugu icin kullanilmadi (docstring).",
+ "soru_sayisi": 371,
+ "osym_etiketli_soru": 0,
+ "pozitif_kontrol": [
+  {
+   "dosya": "STM345-T004_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T006_08",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T007_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T008_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T009_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T009_05",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T012_08",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T014_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T016_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T016_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T016_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T017_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T017_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T017_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T019_05",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T020_02",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T020_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T022_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T025_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T025_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T025_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T025_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T025_08",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T026_02",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T026_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T026_08",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T028_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T029_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T030_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T030_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T030_05",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T031_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T031_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T032_08",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T034_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T035_02",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T035_05",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T036_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T037_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T038_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T038_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T039_01",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T040_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T042_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T042_06",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T043_03",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T043_07",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T044_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T044_05",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T045_02",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T045_04",
+   "latex_3gram": 1.0
+  },
+  {
+   "dosya": "STM345-T045_06",
+   "latex_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 0.78,
+ "db_satiri": 16235,
+ "db_en_yuksek_3gram": 0.847,
+ "aday_sayisi": 15,
+ "guclu_aday_sayisi": 0,
+ "adaylar": [
+  {
+   "dosya": "STM345-T034_02",
+   "govde_3gram": 0.847,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "9de5b6be-e3a6-5e29-9778-a5f0eacfec7c",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "C",
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "STM345-T043_06",
+   "govde_3gram": 0.84,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "9fac346e-2115-55d2-9047-ba07d938bdc3",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "C",
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "STM345-T008_01",
+   "govde_3gram": 0.82,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "fb595406-9f6b-57bb-b281-4b81673471d0",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "D",
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "STM345-T043_06",
+   "govde_3gram": 0.82,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "6aebc8ab-795d-563e-bc23-03779460eb81",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "C",
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "STM345-T034_02",
+   "govde_3gram": 0.81,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "3e6cb751-6ced-54ad-bb1f-f1dde200c391",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Polinom",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "E",
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "STM345-T008_01",
+   "govde_3gram": 0.796,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "70788685-ab49-58e4-834c-eafea32aed55",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "B",
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "STM345-T034_02",
+   "govde_3gram": 0.783,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "a7aba8e9-3e4c-5834-8805-4ff208d90b08",
+   "db_kaynak": "Mikro Orijinal-2024-matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "A",
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "STM345-T008_01",
+   "govde_3gram": 0.78,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "79f0fbca-aad5-52f1-9736-9de06d65d84a",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "E",
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "STM345-T008_01",
+   "govde_3gram": 0.769,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "80f9e0bb-94dc-538b-9b58-a22173268d09",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "D",
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "STM345-T036_04",
+   "govde_3gram": 0.767,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "f3e9d334-06aa-561e-bbdf-ebce6dd6f0fe",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Say\u0131lar-2",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "A",
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "STM345-T035_03",
+   "govde_3gram": 0.758,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "79228d6b-7e5c-5866-8443-40d0d43d1f8f",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "E",
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "STM345-T008_01",
+   "govde_3gram": 0.755,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "de29eb7c-436a-569d-aa9b-6f85c7e85c30",
+   "db_kaynak": "Mikro Orijinal-2024-matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "D",
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "STM345-T034_02",
+   "govde_3gram": 0.754,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "e655f38a-6d0c-5fe3-b139-f3be958de467",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "E",
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "STM345-T008_01",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "156bc50a-b231-556f-b2d4-92632b71dfa8",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "D",
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "STM345-T035_03",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "8ea03ff2-9f96-5217-b3ab-3a3ee6ec2b92",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Polinom",
+   "db_ders": "MATEMATIK",
+   "db_cevap": "E",
+   "bizim_cevap": "C"
+  }
+ ],
+ "eski_hat": [
+  {
+   "db_id": "fc2fc6b8-f93a-5490-93f5-8462af9c66b8",
+   "basili_sayfa": 194,
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_govde": "D\u00f6rtgenin alan\u0131n\u0131 bulmak i\u00e7in hangi form\u00fcl kullan\u0131l\u0131r?",
+   "sayfada_goz": "Dosya 195: '0'dan Basla 3 -- Iki Bilinmeyenli Denklemler'; ogretici ornek + 1-6 denklem sistemi alistirmasi ve bir Isindirma Kosesi (terazi) sorusu. Dortgen alani / formul sorusu YOK.",
+   "kitapta_var": false,
+   "en_yakin_bizim": "STM345-T035_07",
+   "en_yakin_3gram": 0.134,
+   "oneri": "pasif (sahip karari)"
+  },
+  {
+   "db_id": "0bd78e59-0201-5544-9780-0bb6682a514e",
+   "basili_sayfa": 203,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_govde": "A\u015fa\u011f\u0131daki ifadelerden hangisi tam say\u0131lardan olu\u015fan bir serinin ortalamas\u0131n\u0131 ifade eder?",
+   "sayfada_goz": "Dosya 204: '0'dan Basla 1 -- Basit Esitsizlikler'; 9-16 sayi dogrusu aralik alistirmalari, ogretici ornekler, cevap anahtari. Ortalama / seri sorusu YOK.",
+   "kitapta_var": false,
+   "en_yakin_bizim": "STM345-T045_07",
+   "en_yakin_3gram": 0.264,
+   "oneri": "pasif (sahip karari)"
+  },
+  {
+   "db_id": "be4bf295-3df4-52da-9872-5ef8770fa0d4",
+   "basili_sayfa": 209,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_govde": "a ve b birer tam say\u0131 olmak \u00fczere, a + b = 10 ve a - b = 2 ise a ve b'nin toplam\u0131 ka\u00e7t\u0131r?",
+   "sayfada_goz": "Dosya 210: '0'dan Basla 4 -- Basit Esitsizlikler'; 7-11 aralik alistirmalari, Isindirma Kosesi 12 (ok tablosu), cevap anahtari. 'a + b = 10 ve a - b = 2' sorusu YOK.",
+   "kitapta_var": false,
+   "en_yakin_bizim": "STM345-T030_01",
+   "en_yakin_3gram": 0.259,
+   "oneri": "pasif (sahip karari)"
+  }
+ ],
+ "farkli_soru_hash": 371
+}

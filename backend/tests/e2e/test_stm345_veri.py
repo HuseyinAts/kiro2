@@ -10,6 +10,7 @@ NE KORUR
 4. BANT        -- bant test no'su unite icinde 1'den; bant adi == icindekiler.
 5. KAPSAM      -- yalniz test sayfalari; sutun girdi sayisi == basili numara.
 6. DURUSTLUK   -- her cevabin kaynagi iki okuma; piksel ya da goz kanali.
+10. MUKERRER   -- hash/3-gram olcusu yeniden uretilir; kopya yakalanir; eski hat kitapta yok.
 """
 
 from __future__ import annotations
@@ -423,3 +424,69 @@ def test_iki_okumanin_da_kacirdigi_arti_isaretleri() -> None:
     m = {s["dosya"]: s for s in METIN["sorular"]}
     assert m["STM345-T008_09"]["sikler"]["B"] == "2 \u00b7 (3a + 4b)"
     assert "III. c + b" in m["STM345-T021_07"]["govde"]
+
+
+# ---------------------------------------------------------------- 10. mukerrer ve eski hat
+
+MUK = json.loads(
+    (CIKTI / "345_2025_start_matematik_mukerrer_adaylari.json").read_text("ascii")
+)
+
+
+def test_soru_hashleri_farkli() -> None:
+    from scripts.kitap.metin_olcum import soru_hash
+
+    hashler = {soru_hash(s["govde"], s["sikler"]) for s in METIN["sorular"]}
+    assert MUK["farkli_soru_hash"] == len(hashler) == MUK["soru_sayisi"] == 371
+
+
+def test_kitap_ici_tekrar_yok_ve_yeniden_uretilir() -> None:
+    from scripts.kitap import stm345_mukerrer as mk
+
+    tekrar, yakin, en = mk.kitap_ici(mk.bizim_sorular())
+    assert tekrar == MUK["kitap_ici_ayni_hash"] == []
+    assert yakin == MUK["kitap_ici_yakin"] == []
+    assert en == MUK["kitap_ici_en_yuksek_3gram"] < mk.GUCLU_ESIK
+
+
+def test_olcu_mutasyonu_kopya_yakalanir() -> None:
+    """Bir sorunun kopyasi (LaTeX + bosluk bozulmus) kitap ici GUCLU cift olmali."""
+    from scripts.kitap import stm345_mukerrer as mk
+
+    biz = mk.bizim_sorular()
+    kopya = dict(biz[40])
+    kopya["dosya"] = "KOPYA"
+    kopya["tg"] = mk.trigram(mk.nm(mk.latekse(biz[40]["govde"])))
+    _, yakin, _ = mk.kitap_ici([*biz, kopya])
+    assert [(y["a"], y["b"]) for y in yakin] == [(biz[40]["dosya"], "KOPYA")]
+
+
+def test_nm_formulu_korur() -> None:
+    from scripts.kitap import stm345_mukerrer as mk
+
+    assert mk.nm("$\\frac{\\frac{1}{2}}{x} \u2212 2$") == "1/2/x-2"
+    assert mk.nm("\u22122") != mk.nm("2")  # eksi kaybolmaz
+    assert mk.nm("|x + 1| + 2 = 0") != mk.nm("|2x + 1| + 3 = 0")
+
+
+def test_db_adaylari_guclu_yok() -> None:
+    assert MUK["db_tam_hash_carpismasi"] == []
+    assert MUK["guclu_aday_sayisi"] == 0
+    assert MUK["aday_sayisi"] == len(MUK["adaylar"])
+    assert not any(a["guclu"] for a in MUK["adaylar"])
+    assert all(0.75 <= a["govde_3gram"] < 0.9 for a in MUK["adaylar"])
+    assert MUK["osym_etiketli_soru"] == 0
+    assert len(MUK["pozitif_kontrol"]) >= 5
+    assert min(k["latex_3gram"] for k in MUK["pozitif_kontrol"]) >= 0.9
+
+
+def test_eski_hat_kitapta_yok() -> None:
+    from scripts.kitap import stm345_mukerrer as mk
+
+    eski = MUK["eski_hat"]
+    assert sorted(e["basili_sayfa"] for e in eski) == [194, 203, 209]
+    for e in eski:
+        assert e["sayfada_goz"] == mk.ESKI_HAT_GOZ[e["basili_sayfa"]]
+        assert e["kitapta_var"] is False
+        assert e["en_yakin_3gram"] < 0.5
+        assert e["oneri"] == "pasif (sahip karari)"
