@@ -1837,5 +1837,86 @@
     "6.B"
    ]
   }
+ },
+ "bant_okumasi": {
+  "nasil": "Kart y 20-145 ust bandi, unite sinirinin iki yaninda (onceki unitenin son soru sayfasi + icindekilerdeki baslangic sayfasi), gozle. Baslangic sayfalarinin 19/19'unda '1. bolum' rozeti + 'KAZANIM ODAKLI SORULAR' + orta bantta unite adi; onceki sayfalar unite sonu bolumleri (Orijinal Sorular, Karma Sorular, Gunluk Hayat Uygulamalari).",
+  "baslangic": {
+   "6": {
+    "rozet": "1. bolum",
+    "unite_adi": "FIZIK BILIMINE GIRIS"
+   },
+   "20": {
+    "rozet": "1. bolum",
+    "unite_adi": "MADDE VE OZELLIKLERI"
+   },
+   "44": {
+    "rozet": "1. bolum",
+    "unite_adi": "HAREKET"
+   },
+   "70": {
+    "rozet": "1. bolum",
+    "unite_adi": "KUVVET"
+   },
+   "100": {
+    "rozet": "1. bolum",
+    "unite_adi": "ENERJI"
+   },
+   "130": {
+    "rozet": "1. bolum",
+    "unite_adi": "ISI VE SICAKLIK"
+   },
+   "162": {
+    "rozet": "1. bolum",
+    "unite_adi": "ELEKTROSTATIK"
+   },
+   "184": {
+    "rozet": "1. bolum",
+    "unite_adi": "ELEKTRIK AKIMI"
+   },
+   "212": {
+    "rozet": "1. bolum",
+    "unite_adi": "MANYETIZMA"
+   },
+   "226": {
+    "rozet": "1. bolum",
+    "unite_adi": "BASINC"
+   },
+   "252": {
+    "rozet": "1. bolum",
+    "unite_adi": "KALDIRMA KUVVETI"
+   },
+   "274": {
+    "rozet": "1. bolum",
+    "unite_adi": "YAY DALGALARI"
+   },
+   "286": {
+    "rozet": "1. bolum",
+    "unite_adi": "SU DALGALARI"
+   },
+   "302": {
+    "rozet": "1. bolum",
+    "unite_adi": "SES VE DEPREM DALGASI"
+   },
+   "316": {
+    "rozet": "1. bolum",
+    "unite_adi": "ISIK AKISI VE AYDINLANMA"
+   },
+   "324": {
+    "rozet": "1. bolum",
+    "unite_adi": "YANSIMA VE DUZLEM AYNALAR"
+   },
+   "332": {
+    "rozet": "1. bolum",
+    "unite_adi": "YANSIMA VE KURESEL AYNALAR"
+   },
+   "346": {
+    "rozet": "1. bolum",
+    "unite_adi": "ISIGIN KIRILMASI"
+   },
+   "356": {
+    "rozet": "1. bolum",
+    "unite_adi": "MERCEKLER"
+   }
+  }
  }
 }

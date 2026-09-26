@@ -1,0 +1,1753 @@
+{
+ "kaynak": "345 2025 TYT Fizik Soru Bankasi",
+ "arac": "scripts/kitap/fiz345tyt_harita.py",
+ "nereden": "Unite adlari ve baslangic sayfalari: icindekiler (dosya 3-4, gozle). Dogrulama: baslangic sayfasinin ust bandi ('1. bolum' + unite adi, gozle).",
+ "dogrulama": "19/19 baslangic sayfasi '1. bolum' + bant adi == icindekiler adi",
+ "unite_sayisi": 19,
+ "uniteler": [
+  {
+   "kod": "FIZ-345T25-U01",
+   "no": 1,
+   "ad": "Fizik Bilimine Giri\u015f",
+   "ad_ascii": "FIZIK BILIMINE GIRIS",
+   "basili_baslangic": 6,
+   "bant_adi": "FIZIK BILIMINE GIRIS"
+  },
+  {
+   "kod": "FIZ-345T25-U02",
+   "no": 2,
+   "ad": "Madde ve \u00d6zellikleri",
+   "ad_ascii": "MADDE VE OZELLIKLERI",
+   "basili_baslangic": 20,
+   "bant_adi": "MADDE VE OZELLIKLERI"
+  },
+  {
+   "kod": "FIZ-345T25-U03",
+   "no": 3,
+   "ad": "Hareket",
+   "ad_ascii": "HAREKET",
+   "basili_baslangic": 44,
+   "bant_adi": "HAREKET"
+  },
+  {
+   "kod": "FIZ-345T25-U04",
+   "no": 4,
+   "ad": "Kuvvet",
+   "ad_ascii": "KUVVET",
+   "basili_baslangic": 70,
+   "bant_adi": "KUVVET"
+  },
+  {
+   "kod": "FIZ-345T25-U05",
+   "no": 5,
+   "ad": "Enerji",
+   "ad_ascii": "ENERJI",
+   "basili_baslangic": 100,
+   "bant_adi": "ENERJI"
+  },
+  {
+   "kod": "FIZ-345T25-U06",
+   "no": 6,
+   "ad": "Is\u0131 ve S\u0131cakl\u0131k",
+   "ad_ascii": "ISI VE SICAKLIK",
+   "basili_baslangic": 130,
+   "bant_adi": "ISI VE SICAKLIK"
+  },
+  {
+   "kod": "FIZ-345T25-U07",
+   "no": 7,
+   "ad": "Elektrostatik",
+   "ad_ascii": "ELEKTROSTATIK",
+   "basili_baslangic": 162,
+   "bant_adi": "ELEKTROSTATIK"
+  },
+  {
+   "kod": "FIZ-345T25-U08",
+   "no": 8,
+   "ad": "Elektrik Ak\u0131m\u0131",
+   "ad_ascii": "ELEKTRIK AKIMI",
+   "basili_baslangic": 184,
+   "bant_adi": "ELEKTRIK AKIMI"
+  },
+  {
+   "kod": "FIZ-345T25-U09",
+   "no": 9,
+   "ad": "Manyetizma",
+   "ad_ascii": "MANYETIZMA",
+   "basili_baslangic": 212,
+   "bant_adi": "MANYETIZMA"
+  },
+  {
+   "kod": "FIZ-345T25-U10",
+   "no": 10,
+   "ad": "Bas\u0131n\u00e7",
+   "ad_ascii": "BASINC",
+   "basili_baslangic": 226,
+   "bant_adi": "BASINC"
+  },
+  {
+   "kod": "FIZ-345T25-U11",
+   "no": 11,
+   "ad": "Kald\u0131rma Kuvveti",
+   "ad_ascii": "KALDIRMA KUVVETI",
+   "basili_baslangic": 252,
+   "bant_adi": "KALDIRMA KUVVETI"
+  },
+  {
+   "kod": "FIZ-345T25-U12",
+   "no": 12,
+   "ad": "Yay Dalgalar\u0131",
+   "ad_ascii": "YAY DALGALARI",
+   "basili_baslangic": 274,
+   "bant_adi": "YAY DALGALARI"
+  },
+  {
+   "kod": "FIZ-345T25-U13",
+   "no": 13,
+   "ad": "Su Dalgalar\u0131",
+   "ad_ascii": "SU DALGALARI",
+   "basili_baslangic": 286,
+   "bant_adi": "SU DALGALARI"
+  },
+  {
+   "kod": "FIZ-345T25-U14",
+   "no": 14,
+   "ad": "Ses ve Deprem Dalgas\u0131",
+   "ad_ascii": "SES VE DEPREM DALGASI",
+   "basili_baslangic": 302,
+   "bant_adi": "SES VE DEPREM DALGASI"
+  },
+  {
+   "kod": "FIZ-345T25-U15",
+   "no": 15,
+   "ad": "I\u015f\u0131k Ak\u0131s\u0131 - Ayd\u0131nlanma - G\u00f6lge Olaylar\u0131",
+   "ad_ascii": "ISIK AKISI AYDINLANMA GOLGE OLAYLARI",
+   "basili_baslangic": 316,
+   "bant_adi": "ISIK AKISI VE AYDINLANMA"
+  },
+  {
+   "kod": "FIZ-345T25-U16",
+   "no": 16,
+   "ad": "Yans\u0131ma ve D\u00fczlem Aynalar",
+   "ad_ascii": "YANSIMA VE DUZLEM AYNALAR",
+   "basili_baslangic": 324,
+   "bant_adi": "YANSIMA VE DUZLEM AYNALAR"
+  },
+  {
+   "kod": "FIZ-345T25-U17",
+   "no": 17,
+   "ad": "Yans\u0131ma ve K\u00fcresel Aynalar",
+   "ad_ascii": "YANSIMA VE KURESEL AYNALAR",
+   "basili_baslangic": 332,
+   "bant_adi": "YANSIMA VE KURESEL AYNALAR"
+  },
+  {
+   "kod": "FIZ-345T25-U18",
+   "no": 18,
+   "ad": "I\u015f\u0131\u011f\u0131n K\u0131r\u0131lmas\u0131",
+   "ad_ascii": "ISIGIN KIRILMASI",
+   "basili_baslangic": 346,
+   "bant_adi": "ISIGIN KIRILMASI"
+  },
+  {
+   "kod": "FIZ-345T25-U19",
+   "no": 19,
+   "ad": "Mercekler",
+   "ad_ascii": "MERCEKLER",
+   "basili_baslangic": 356,
+   "bant_adi": "MERCEKLER"
+  }
+ ],
+ "test_sayisi": 176,
+ "testler": [
+  {
+   "birim": "FZT345-T001",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    6,
+    7
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "FZT345-T002",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    8,
+    9
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "FZT345-T003",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    10,
+    11
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "FZT345-T004",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    12,
+    13
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "FZT345-T005",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    14,
+    15
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T006",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    16,
+    17
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T007",
+   "unite": "FIZ-345T25-U01",
+   "sayfalar": [
+    18,
+    19
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T008",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    20,
+    21
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "FZT345-T009",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    22,
+    23
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T010",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    24,
+    25
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T011",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    26,
+    27
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T012",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    28,
+    29
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T013",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    30,
+    31
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T014",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    32,
+    33
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T015",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    34,
+    35
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T016",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    36,
+    37
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T017",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    38,
+    39
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T018",
+   "unite": "FIZ-345T25-U02",
+   "sayfalar": [
+    40,
+    41,
+    42
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "FZT345-T019",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    44,
+    45
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T020",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    46,
+    47
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T021",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    48,
+    49
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T022",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    50,
+    51
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T023",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    52,
+    53
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T024",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    54,
+    55
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T025",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    56,
+    57
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T026",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    58,
+    59
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T027",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    60,
+    61
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T028",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    62,
+    63
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T029",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    64,
+    65
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T030",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    66,
+    67
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T031",
+   "unite": "FIZ-345T25-U03",
+   "sayfalar": [
+    68,
+    69
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "FZT345-T032",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    70,
+    71
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T033",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    72,
+    73
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T034",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    74,
+    75
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T035",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    76,
+    77
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T036",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    78,
+    79
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T037",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    80,
+    81
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T038",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    82,
+    83
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T039",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    84,
+    85
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T040",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    86,
+    87
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T041",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    88,
+    89
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T042",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    90,
+    91
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T043",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    92,
+    93
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T044",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    94,
+    95
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "FZT345-T045",
+   "unite": "FIZ-345T25-U04",
+   "sayfalar": [
+    96,
+    97,
+    98
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T046",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    100,
+    101
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T047",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    102,
+    103
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T048",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    104,
+    105
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T049",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    106,
+    107
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T050",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    108,
+    109
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T051",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    110,
+    111
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T052",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    112,
+    113
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T053",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    114,
+    115
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T054",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    116,
+    117
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T055",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    118,
+    119
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T056",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    120,
+    121
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T057",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    122,
+    123
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T058",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    124,
+    125
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T059",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    126,
+    127
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T060",
+   "unite": "FIZ-345T25-U05",
+   "sayfalar": [
+    128,
+    129
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "FZT345-T061",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    130,
+    131
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T062",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    132,
+    133
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T063",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    134,
+    135
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T064",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    136,
+    137
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T065",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    138,
+    139
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T066",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    140,
+    141
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T067",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    142,
+    143
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T068",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    144,
+    145
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T069",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    146,
+    147
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T070",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    148,
+    149
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T071",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    150,
+    151
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T072",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    152,
+    153
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T073",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    154,
+    155
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T074",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    156,
+    157
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T075",
+   "unite": "FIZ-345T25-U06",
+   "sayfalar": [
+    158,
+    159,
+    160
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "FZT345-T076",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    162,
+    163
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T077",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    164,
+    165
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T078",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    166,
+    167
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T079",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    168,
+    169
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T080",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    170,
+    171
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T081",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    172,
+    173
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T082",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    174,
+    175
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T083",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    176,
+    177
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T084",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    178,
+    179
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T085",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    180,
+    181
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T086",
+   "unite": "FIZ-345T25-U07",
+   "sayfalar": [
+    182,
+    183
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "FZT345-T087",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    184,
+    185
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T088",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    186,
+    187
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T089",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    188,
+    189
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T090",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    190,
+    191
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "FZT345-T091",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    192,
+    193
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T092",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    194,
+    195
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T093",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    196,
+    197
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T094",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    198,
+    199
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T095",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    200,
+    201
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T096",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    202,
+    203
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T097",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    204,
+    205
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T098",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    206,
+    207
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T099",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    208,
+    209
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T100",
+   "unite": "FIZ-345T25-U08",
+   "sayfalar": [
+    210,
+    211
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T101",
+   "unite": "FIZ-345T25-U09",
+   "sayfalar": [
+    212,
+    213
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T102",
+   "unite": "FIZ-345T25-U09",
+   "sayfalar": [
+    214,
+    215
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T103",
+   "unite": "FIZ-345T25-U09",
+   "sayfalar": [
+    216,
+    217
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T104",
+   "unite": "FIZ-345T25-U09",
+   "sayfalar": [
+    218,
+    219
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T105",
+   "unite": "FIZ-345T25-U09",
+   "sayfalar": [
+    220,
+    221
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T106",
+   "unite": "FIZ-345T25-U09",
+   "sayfalar": [
+    222,
+    223,
+    224
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "FZT345-T107",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    226,
+    227
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T108",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    228,
+    229
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T109",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    230,
+    231
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T110",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    232,
+    233
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T111",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    234,
+    235
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T112",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    236,
+    237
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T113",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    238,
+    239
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T114",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    240,
+    241
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T115",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    242,
+    243
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T116",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    244,
+    245
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T117",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    246,
+    247
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T118",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    248,
+    249
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T119",
+   "unite": "FIZ-345T25-U10",
+   "sayfalar": [
+    250,
+    251
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T120",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    252,
+    253
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T121",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    254,
+    255
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T122",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T123",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T124",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T125",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T126",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    264,
+    265
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T127",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T128",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    268,
+    269
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T129",
+   "unite": "FIZ-345T25-U11",
+   "sayfalar": [
+    270,
+    271,
+    272
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "FZT345-T130",
+   "unite": "FIZ-345T25-U12",
+   "sayfalar": [
+    274,
+    275
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T131",
+   "unite": "FIZ-345T25-U12",
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "FZT345-T132",
+   "unite": "FIZ-345T25-U12",
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T133",
+   "unite": "FIZ-345T25-U12",
+   "sayfalar": [
+    280,
+    281
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T134",
+   "unite": "FIZ-345T25-U12",
+   "sayfalar": [
+    282,
+    283
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T135",
+   "unite": "FIZ-345T25-U12",
+   "sayfalar": [
+    284,
+    285
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T136",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    286,
+    287
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T137",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T138",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T139",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T140",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    294,
+    295
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T141",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    296,
+    297
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T142",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    298,
+    299
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T143",
+   "unite": "FIZ-345T25-U13",
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 4
+  },
+  {
+   "birim": "FZT345-T144",
+   "unite": "FIZ-345T25-U14",
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T145",
+   "unite": "FIZ-345T25-U14",
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "FZT345-T146",
+   "unite": "FIZ-345T25-U14",
+   "sayfalar": [
+    306,
+    307
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T147",
+   "unite": "FIZ-345T25-U14",
+   "sayfalar": [
+    308,
+    309
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T148",
+   "unite": "FIZ-345T25-U14",
+   "sayfalar": [
+    310,
+    311
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T149",
+   "unite": "FIZ-345T25-U14",
+   "sayfalar": [
+    312,
+    313,
+    314
+   ],
+   "soru_sayisi": 6
+  },
+  {
+   "birim": "FZT345-T150",
+   "unite": "FIZ-345T25-U15",
+   "sayfalar": [
+    316,
+    317
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T151",
+   "unite": "FIZ-345T25-U15",
+   "sayfalar": [
+    318,
+    319
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T152",
+   "unite": "FIZ-345T25-U15",
+   "sayfalar": [
+    320,
+    321
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T153",
+   "unite": "FIZ-345T25-U15",
+   "sayfalar": [
+    322,
+    323
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T154",
+   "unite": "FIZ-345T25-U16",
+   "sayfalar": [
+    324,
+    325
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T155",
+   "unite": "FIZ-345T25-U16",
+   "sayfalar": [
+    326,
+    327
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T156",
+   "unite": "FIZ-345T25-U16",
+   "sayfalar": [
+    328,
+    329
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T157",
+   "unite": "FIZ-345T25-U16",
+   "sayfalar": [
+    330,
+    331
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T158",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    332,
+    333
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T159",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    334,
+    335
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T160",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    336,
+    337
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T161",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    338,
+    339
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T162",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    340,
+    341
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "FZT345-T163",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    342,
+    343
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T164",
+   "unite": "FIZ-345T25-U17",
+   "sayfalar": [
+    344,
+    345
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "FZT345-T165",
+   "unite": "FIZ-345T25-U18",
+   "sayfalar": [
+    346,
+    347
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T166",
+   "unite": "FIZ-345T25-U18",
+   "sayfalar": [
+    348,
+    349
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T167",
+   "unite": "FIZ-345T25-U18",
+   "sayfalar": [
+    350,
+    351
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "FZT345-T168",
+   "unite": "FIZ-345T25-U18",
+   "sayfalar": [
+    352,
+    353
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T169",
+   "unite": "FIZ-345T25-U18",
+   "sayfalar": [
+    354,
+    355
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T170",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    356,
+    357
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T171",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    358,
+    359
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T172",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    360,
+    361
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T173",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    362,
+    363
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T174",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    364,
+    365
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T175",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    366,
+    367
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "FZT345-T176",
+   "unite": "FIZ-345T25-U19",
+   "sayfalar": [
+    368
+   ],
+   "soru_sayisi": 3
+  }
+ ]
+}

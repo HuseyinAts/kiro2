@@ -42,9 +42,28 @@ Ham: `345_2025_tyt_fizik_ham_okumalar.json`. Tarama:
 Kanal dagilimi: iki_okuma+piksel 1252, +goz(10x) 88, +goz+tereddut 56,
 farkli+goz+sureklilik 1. Harf: A 177, B 234, C 329, D 306, E 351.
 
+## 2. Unite agaci (0060)
+
+Cikti: `345_2025_tyt_fizik_konu_haritasi.json` (`fiz345tyt_harita.py`),
+migration `0060_fzt345_konu_agaci.py` (o JSON'dan uretildi).
+
+* 19 unite: icindekiler (dosya 3-4, gozle), basili baslangic sayfasi.
+* Bagimsiz dogrulama: her baslangic sayfasinin ust bandi (kart y 20-145,
+  gozle): 19/19 '1. bolum' rozeti + 'KAZANIM ODAKLI SORULAR' + orta bantta
+  unite adi. Bant adi icindekiler adinin kelimeleriyle sirayla ortusur;
+  tek fark s316 bandi 'ISIK AKISI VE AYDINLANMA' (icindekiler 'Isik Akisi -
+  Aydinlanma - Golge Olaylari'): 've' baglaci yalniz bantta atlanir.
+* Unite sonu sayfalari (sinirin oncesi) 'Orijinal Sorular', 'Karma
+  Sorular', 'Gunluk Hayat Uygulamalari' bolumleridir; ayni unitenin
+  parcasi.
+* Her test tek unitenin sayfa araliginda (176/176).
+* FIZ kokunun altinda `FIZ-345T25-Unn`, kok+1, subject_area 'FIZIK'.
+  Yerel DB'de upgrade -> downgrade -> upgrade temiz (19 -> 0 -> 19).
+
 ## Testler
 
-`backend/tests/e2e/test_fiz345tyt_veri.py` (14): hamdan birebir turetme,
-tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi / numara
-kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
-araliklari, kanal durustlugu, ASCII.
+`backend/tests/e2e/test_fiz345tyt_veri.py` (21): hamdan birebir anahtar
+turetme, tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi /
+numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
+araliklari, kanal durustlugu, ASCII; Faz 2 ile +7: harita hamdan turer,
+migration == harita, zincir, kodlar, bant adi / rozet mutasyonu, 've' kurali.

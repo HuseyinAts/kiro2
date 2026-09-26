@@ -171,3 +171,74 @@ def test_ascii() -> None:
         assert all(
             x < 128 for x in (KOK / "backend" / "scripts" / "kitap" / p).read_bytes()
         )
+
+
+# ------------------------------------------------- 5. unite agaci (Faz 2, 0060)
+
+from scripts.kitap import fiz345tyt_harita as ha  # noqa: E402
+
+HARITA = json.loads(
+    (CIKTI / "345_2025_tyt_fizik_konu_haritasi.json").read_text("ascii")
+)
+AGAC_YOLU = KOK / "backend" / "alembic" / "versions" / "0060_fzt345_konu_agaci.py"
+
+
+def _agac():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("agac0060", AGAC_YOLU)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_harita_hamdan_birebir_turer() -> None:
+    assert ha.harita(HAM, ANAHTAR) == HARITA
+
+
+def test_migration_uniteleri_harita_ile_ayni() -> None:
+    agac = _agac()
+    assert list(agac.UNITELER) == [(u["kod"], u["ad"]) for u in HARITA["uniteler"]]
+    assert agac.KOD_ONEKI == ha.KOD_ONEKI == "FIZ-345T25"
+    assert agac.FIZ_KOK_KODU == "FIZ"
+
+
+def test_migration_kimlik_ve_zincir() -> None:
+    agac = _agac()
+    assert agac.revision == "0060_fzt345_agac"
+    assert agac.down_revision == "0059_stm345_beta_onay"
+    assert len(agac.revision) <= 32
+    assert "'FIZIK'" in AGAC_YOLU.read_text("ascii")
+    assert all(c < 128 for c in AGAC_YOLU.read_bytes())
+
+
+def test_unite_kodlari_ve_test_baglantisi() -> None:
+    kod = [u["kod"] for u in HARITA["uniteler"]]
+    assert kod == [f"FIZ-345T25-U{i:02d}" for i in range(1, 20)]
+    assert {t["unite"] for t in HARITA["testler"]} == set(kod)
+    assert sum(t["soru_sayisi"] for t in HARITA["testler"]) == 1397
+
+
+def test_bant_adi_mutasyonu_durur() -> None:
+    h = copy.deepcopy(HAM)
+    h["bant_okumasi"]["baslangic"]["100"]["unite_adi"] = "KUVVET"
+    with pytest.raises(SystemExit, match="U5: bant"):
+        ha.harita(h, ANAHTAR)
+
+
+def test_rozet_mutasyonu_durur() -> None:
+    h = copy.deepcopy(HAM)
+    h["bant_okumasi"]["baslangic"]["44"]["rozet"] = "2. bolum"
+    with pytest.raises(SystemExit, match="rozet"):
+        ha.harita(h, ANAHTAR)
+
+
+def test_ve_baglaci_yalniz_bantta_atlanir() -> None:
+    assert ha.bant_uyar(
+        "ISIK AKISI VE AYDINLANMA",
+        "I\u015f\u0131k Ak\u0131s\u0131 - Ayd\u0131nlanma - G\u00f6lge",
+    )
+    assert not ha.bant_uyar(
+        "ISIK AKISI VE GOLGE X", "I\u015f\u0131k Ak\u0131s\u0131 - G\u00f6lge"
+    )

@@ -44,7 +44,8 @@ surekliligiyle '6.D'. Girdi sayisi == simge sayisi 714/714; numara
 surekliligi 1397/1397; glif LOO 1380/1397 (tutmayan 17'si okuyucu
 simgesinin seride bindigi sutunlar); tereddutlu/tutmayan 70 sutun 10x gozle.
 
-### Faz 2 -- Konu agaci (migration)
+### Faz 2 -- Konu agaci (migration) -- TAMAM 26 Eyl
+Sonuc: 19 unite, 19/19 baslangic bandi dogrulandi; migration 0060 (FIZ-345T25-U01..U19), yerel round-trip temiz.
 19 unite (icindekiler) + sayfa ustu 'N. bolum' rozeti ile capraz kontrol;
 MAT deseninde FIZ kokunun altinda `FIZ-345T25-Unn`.
 
