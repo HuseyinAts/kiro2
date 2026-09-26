@@ -497,3 +497,72 @@ def test_indeksli_jaccard_dogrudanla_ayni() -> None:
     tg = mk.trigram(mk.nm("tamamen alakasiz bir metin parcasi xyzq"))
     j, _ = mk.en_yakin(tg, biz, ind)
     assert j == pytest.approx(max(mk.jaccard(tg, b["tg"]) for b in biz))
+
+
+# ------------------------------------------------- 9. beta onay (0061)
+
+BETA_YOLU = KOK / "backend" / "alembic" / "versions" / "0061_fzt345_beta_onay.py"
+
+
+def _beta():  # type: ignore[no-untyped-def]
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("beta0061", BETA_YOLU)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_0061_kimlik_zincir_ascii() -> None:
+    m = _beta()
+    assert m.revision == "0061_fzt345_beta_onay"
+    assert m.down_revision == "0060_fzt345_agac"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in BETA_YOLU.read_bytes())
+    assert m.ITHAL_ARACI == "scripts/kitap/fiz345tyt_ithal.py"
+    assert m.KAYNAK == "345 2025 TYT Fizik Soru Bankasi"
+
+
+def test_0061_dislama_kurali() -> None:
+    """Servis disi uc bayrak + gorunen alti alanda [??] + aktif hash ikizi disarida."""
+    m = _beta()
+    sql = " ".join(m._HEDEF_SQL.split())
+    for bayrak in m.SERVIS_DISI_BAYRAKLAR:
+        assert f"? '{bayrak}')" in sql, bayrak
+    for alan in (
+        "question_text",
+        "option_a",
+        "option_b",
+        "option_c",
+        "option_d",
+        "option_e",
+    ):
+        assert f"qc.{alan} NOT LIKE :isaret" in sql, alan
+    assert m.ORTME_ISARETI == "%[??]%"
+    assert "qb.is_active IS NOT TRUE" in sql
+    assert "o.soru_hash = qb.soru_hash AND o.is_active IS TRUE" in sql
+
+
+def test_0061_hedef_olculen_1394() -> None:
+    """1397 - 2 (baska kaynakta ayni hash, yazilmadi) - 1 ([??]) = 1394."""
+    isaretli = [
+        s["dosya"]
+        for s in METIN["sorular"]
+        if "[??]" in s["govde"] + "".join(map(str, s["sikler"].values()))
+    ]
+    yazilmayan = {c["dosya"] for c in MUK["db_tam_hash_carpismasi"]}
+    assert not yazilmayan & set(isaretli)
+    assert len(METIN["sorular"]) - len(yazilmayan) - len(isaretli) == 1394
+    assert "1394/1395" in BETA_YOLU.read_text("ascii").splitlines()[0]
+
+
+def test_0061_durustluk() -> None:
+    kaynak = BETA_YOLU.read_text("ascii")
+    kod = kaynak.split('"""', 2)[2]
+    assert "'human_verified'" not in kod
+    assert "is_ai_generated" not in kod and "is_public" not in kod
+    assert "'bireysel_denetim_yapildi', false" in kod
+    assert "DELETE" not in kod.upper()
+    m = _beta()
+    assert len(m.SINYALLER) == 5 and len(set(m.SINYALLER)) == 5

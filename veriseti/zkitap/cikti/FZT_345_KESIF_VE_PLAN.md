@@ -71,5 +71,7 @@ sorulari ile ozellikle.
 ### Faz 6 -- Ithal (PASIF) + kaynak sozlesmesi -- TAMAM 26 Eyl
 Sonuc: pasif ithal 1395 satir (2 soru baska kaynakta ayni hash ile var,
 dokunulmadi); ikinci kosu 0 yazim; kapilar temiz; test_fiz345tyt_ithal.py 49.
-### Faz 7 -- Testler, belge, PR
-### Faz 8 -- Aktiflestirme (AYRI sahip karari)
+### Faz 7 -- Testler, belge, PR -- TAMAM 26 Eyl (PR)
+### Faz 8 -- Aktiflestirme (AYRI sahip karari) -- TAMAM 26 Eyl
+Sonuc: 0061_fzt345_beta_onay -- 1394/1395 acildi (T118_07 [??] pasif);
+round-trip temiz.

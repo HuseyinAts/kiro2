@@ -218,6 +218,20 @@ okuyucu_diski_ortme 161, numara_ortulu 134, kaynak_kusuru 63, cikmis_soru
 db_hash_carpismasi 2, okunamaz_isaret 1, diger_kaynak_cevap_farki 1.
 Cozum yok; `cozum_dogrulamasi` = 'yapilmadi_urun_karari'.
 
+## 7. Aktiflestirme (0061, Faz 8 -- sahip karari 26 Eyl)
+
+Sahip talimati: "sirayla tum fazlari onay istemeden soru sormadan
+kesintisiz devam et". Kapi yuku yerel DB'de olculdu (0061 docstring):
+1395 satirda uc kilit (quality 'pending', uyum sinyali yok, ai + review
+'PENDING'); servis disi bayrak 0, gorunen alanda `[??]` 1, bos sik /
+cevap 0, gorselsiz 0, '[okunamadi]' 0, aktif satirlarla hash cakismasi 0.
+Dislama kurali 0039/0056/0059 ile ayni (+ aktif hash ikizi korumasi) ->
+1394 satir acilir ('auto_judged_high', 'APPROVED', bes konsensus sinyali,
+onay_turu 'toplu_beta_sahibi', bireysel_denetim_yapildi false); `[??]`
+tasiyan T118_07 pasif kalir. Unite sayaclari toplami 1394; beta
+gorunumunde 1394. Yerel DB'de upgrade -> downgrade -> upgrade temiz
+(1394 acildi -> 1394 geri -> 1394).
+
 ## Testler
 
 `backend/tests/e2e/test_fiz345tyt_ithal.py` (49: butunluk, yapisal kapi,
@@ -226,7 +240,7 @@ ASCII, pasif ithal, cozum yok, cikmis soru / etiket ayristirma, kutu,
 bayrak capalari, `[??]` yalniz T118_07, mukerrer bayraklari yalniz cikmis
 sorularda, 9 yapisal + 11 kayit/baglama mutasyonu).
 
-`backend/tests/e2e/test_fiz345tyt_veri.py` (45): hamdan birebir anahtar
+`backend/tests/e2e/test_fiz345tyt_veri.py` (49): hamdan birebir anahtar
 turetme, tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari, kanal durustlugu, ASCII; Faz 2 ile +7: harita hamdan turer,
@@ -240,4 +254,5 @@ okuma sayilari, duzeltmeler son metinde, `[??]` yalniz T118_07, ornek
 hukumler, etiketler, soluk '+' kaydi; Faz 5 ile +6: mukerrer ozeti,
 GUCLU adaylar yalniz cikmis soru, hash degeri yazilmadi, cevap farki
 basili anahtari degistirmez, pozitif kontrol / isaret korunur, indeksli
-Jaccard == dogrudan.
+Jaccard == dogrudan; Faz 8 ile +4: 0061 kimlik / zincir / ASCII, dislama
+kurali, hedef 1394, durustluk.
