@@ -1,0 +1,590 @@
+{
+ "kaynak": "345 2025 Start Matematik",
+ "arac": "scripts/kitap/stm345_harita.py",
+ "nereden": "Unite adlari: unite ayraci sayfalari (gozle). Dogrulama: icindekiler (dosya 3) ASCII adi ve basili sayfasi; test bandindaki unite adi.",
+ "dogrulama": "16/16 ayrac adi == icindekiler; 16/16 ayrac dosyasi == basili + 1; 90/90 test sayfasi bandi == unite.",
+ "unite_sayisi": 16,
+ "uniteler": [
+  {
+   "kod": "MAT-345S25-U01",
+   "no": 1,
+   "ad": "Toplama ve \u00c7\u0131karma \u0130\u015flemi",
+   "ad_ascii": "TOPLAMA VE CIKARMA ISLEMI",
+   "ayrac_sayfasi": 4,
+   "basili_baslangic": 3
+  },
+  {
+   "kod": "MAT-345S25-U02",
+   "no": 2,
+   "ad": "\u00c7arpma ve B\u00f6lme \u0130\u015flemi",
+   "ad_ascii": "CARPMA VE BOLME ISLEMI",
+   "ayrac_sayfasi": 18,
+   "basili_baslangic": 17
+  },
+  {
+   "kod": "MAT-345S25-U03",
+   "no": 3,
+   "ad": "\u0130\u015flem \u00d6nceli\u011fi",
+   "ad_ascii": "ISLEM ONCELIGI",
+   "ayrac_sayfasi": 38,
+   "basili_baslangic": 37
+  },
+  {
+   "kod": "MAT-345S25-U04",
+   "no": 4,
+   "ad": "Harfli \u0130fadeler",
+   "ad_ascii": "HARFLI IFADELER",
+   "ayrac_sayfasi": 52,
+   "basili_baslangic": 51
+  },
+  {
+   "kod": "MAT-345S25-U05",
+   "no": 5,
+   "ad": "Basit Denklem \u00c7\u00f6z\u00fcm\u00fc",
+   "ad_ascii": "BASIT DENKLEM COZUMU",
+   "ayrac_sayfasi": 70,
+   "basili_baslangic": 69
+  },
+  {
+   "kod": "MAT-345S25-U06",
+   "no": 6,
+   "ad": "Rasyonel Say\u0131lar",
+   "ad_ascii": "RASYONEL SAYILAR",
+   "ayrac_sayfasi": 90,
+   "basili_baslangic": 89
+  },
+  {
+   "kod": "MAT-345S25-U07",
+   "no": 7,
+   "ad": "Ondal\u0131k G\u00f6sterim",
+   "ad_ascii": "ONDALIK GOSTERIM",
+   "ayrac_sayfasi": 122,
+   "basili_baslangic": 121
+  },
+  {
+   "kod": "MAT-345S25-U08",
+   "no": 8,
+   "ad": "Say\u0131 K\u00fcmeleri",
+   "ad_ascii": "SAYI KUMELERI",
+   "ayrac_sayfasi": 144,
+   "basili_baslangic": 143
+  },
+  {
+   "kod": "MAT-345S25-U09",
+   "no": 9,
+   "ad": "Oran ve Orant\u0131",
+   "ad_ascii": "ORAN VE ORANTI",
+   "ayrac_sayfasi": 162,
+   "basili_baslangic": 161
+  },
+  {
+   "kod": "MAT-345S25-U10",
+   "no": 10,
+   "ad": "Rasyonel Denklemlerin \u00c7\u00f6z\u00fcm\u00fc",
+   "ad_ascii": "RASYONEL DENKLEMLERIN COZUMU",
+   "ayrac_sayfasi": 176,
+   "basili_baslangic": 175
+  },
+  {
+   "kod": "MAT-345S25-U11",
+   "no": 11,
+   "ad": "\u0130ki Bilinmeyenli Denklemler",
+   "ad_ascii": "IKI BILINMEYENLI DENKLEMLER",
+   "ayrac_sayfasi": 190,
+   "basili_baslangic": 189
+  },
+  {
+   "kod": "MAT-345S25-U12",
+   "no": 12,
+   "ad": "Basit E\u015fitsizlikler",
+   "ad_ascii": "BASIT ESITSIZLIKLER",
+   "ayrac_sayfasi": 202,
+   "basili_baslangic": 201
+  },
+  {
+   "kod": "MAT-345S25-U13",
+   "no": 13,
+   "ad": "Mutlak De\u011fer",
+   "ad_ascii": "MUTLAK DEGER",
+   "ayrac_sayfasi": 220,
+   "basili_baslangic": 219
+  },
+  {
+   "kod": "MAT-345S25-U14",
+   "no": 14,
+   "ad": "\u00dcsl\u00fc \u0130fadeler",
+   "ad_ascii": "USLU IFADELER",
+   "ayrac_sayfasi": 240,
+   "basili_baslangic": 239
+  },
+  {
+   "kod": "MAT-345S25-U15",
+   "no": 15,
+   "ad": "K\u00f6kl\u00fc \u0130fadeler",
+   "ad_ascii": "KOKLU IFADELER",
+   "ayrac_sayfasi": 270,
+   "basili_baslangic": 269
+  },
+  {
+   "kod": "MAT-345S25-U16",
+   "no": 16,
+   "ad": "\u00c7arpanlara Ay\u0131rma",
+   "ad_ascii": "CARPANLARA AYIRMA",
+   "ayrac_sayfasi": 300,
+   "basili_baslangic": 299
+  }
+ ],
+ "test_sayisi": 45,
+ "testler": [
+  {
+   "birim": "STM345-T001",
+   "unite": "MAT-345S25-U01",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    11,
+    12
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "STM345-T002",
+   "unite": "MAT-345S25-U01",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    13,
+    14
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "STM345-T003",
+   "unite": "MAT-345S25-U01",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    15,
+    16
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T004",
+   "unite": "MAT-345S25-U02",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    33,
+    34
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T005",
+   "unite": "MAT-345S25-U02",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    35,
+    36
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T006",
+   "unite": "MAT-345S25-U03",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    47,
+    48
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "STM345-T007",
+   "unite": "MAT-345S25-U03",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    49,
+    50
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T008",
+   "unite": "MAT-345S25-U04",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    65,
+    66
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T009",
+   "unite": "MAT-345S25-U04",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    67,
+    68
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T010",
+   "unite": "MAT-345S25-U05",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    81,
+    82
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T011",
+   "unite": "MAT-345S25-U05",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    83,
+    84
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T012",
+   "unite": "MAT-345S25-U05",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    85,
+    86
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T013",
+   "unite": "MAT-345S25-U05",
+   "test_adi": "SINAVA GECIS 4",
+   "sayfalar": [
+    87,
+    88
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T014",
+   "unite": "MAT-345S25-U06",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    113,
+    114
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T015",
+   "unite": "MAT-345S25-U06",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    115,
+    116
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T016",
+   "unite": "MAT-345S25-U06",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    117,
+    118
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T017",
+   "unite": "MAT-345S25-U06",
+   "test_adi": "SINAVA GECIS 4",
+   "sayfalar": [
+    119,
+    120
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T018",
+   "unite": "MAT-345S25-U07",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    137,
+    138
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T019",
+   "unite": "MAT-345S25-U07",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    139,
+    140
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T020",
+   "unite": "MAT-345S25-U07",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    141,
+    142
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "unite": "MAT-345S25-U08",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    157,
+    158
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "unite": "MAT-345S25-U08",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    159,
+    160
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T023",
+   "unite": "MAT-345S25-U09",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    171,
+    172
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T024",
+   "unite": "MAT-345S25-U09",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    173,
+    174
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T025",
+   "unite": "MAT-345S25-U10",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    185,
+    186
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T026",
+   "unite": "MAT-345S25-U10",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    187,
+    188
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T027",
+   "unite": "MAT-345S25-U11",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    197,
+    198
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T028",
+   "unite": "MAT-345S25-U11",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    199,
+    200
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T029",
+   "unite": "MAT-345S25-U12",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    213,
+    214
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T030",
+   "unite": "MAT-345S25-U12",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    215,
+    216
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T031",
+   "unite": "MAT-345S25-U12",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    217,
+    218
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T032",
+   "unite": "MAT-345S25-U13",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    233,
+    234
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T033",
+   "unite": "MAT-345S25-U13",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    235,
+    236
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T034",
+   "unite": "MAT-345S25-U13",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    237,
+    238
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T035",
+   "unite": "MAT-345S25-U14",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    261,
+    262
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T036",
+   "unite": "MAT-345S25-U14",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    263,
+    264
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T037",
+   "unite": "MAT-345S25-U14",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    265,
+    266
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T038",
+   "unite": "MAT-345S25-U14",
+   "test_adi": "SINAVA GECIS 4",
+   "sayfalar": [
+    267,
+    268
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T039",
+   "unite": "MAT-345S25-U15",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    291,
+    292
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T040",
+   "unite": "MAT-345S25-U15",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    293,
+    294
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T041",
+   "unite": "MAT-345S25-U15",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    295,
+    296
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T042",
+   "unite": "MAT-345S25-U15",
+   "test_adi": "SINAVA GECIS 4",
+   "sayfalar": [
+    297,
+    298
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T043",
+   "unite": "MAT-345S25-U16",
+   "test_adi": "SINAVA GECIS 1",
+   "sayfalar": [
+    315,
+    316
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T044",
+   "unite": "MAT-345S25-U16",
+   "test_adi": "SINAVA GECIS 2",
+   "sayfalar": [
+    317,
+    318
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T045",
+   "unite": "MAT-345S25-U16",
+   "test_adi": "SINAVA GECIS 3",
+   "sayfalar": [
+    319,
+    320
+   ],
+   "soru_sayisi": 8
+  }
+ ]
+}

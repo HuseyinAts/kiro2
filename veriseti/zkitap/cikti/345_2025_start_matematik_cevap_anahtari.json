@@ -1,0 +1,4211 @@
+{
+ "kaynak": "345 2025 Start Matematik",
+ "arac": "scripts/kitap/stm345_anahtar.py",
+ "nereden": "Kitabin KENDI basili cevap seridinden (her 'Sinava Gecis' test sayfasinin altinda, sutun basina ayri satir; kart y 905-930). Hicbir soru cozulmedi, hicbir cevap uretilmedi.",
+ "nasil": "Iki bagimsiz gorsel okuma: A (5x, sayfa sirasi) ve B (7x, TERS sira); okuyuculara girdi sayisi soylenmedi. A == B girdi girdi. Ucuncu kanal: serit harf glifi en-yakin-komsu LOO; tutmayan / kapsamayan girdiler 10x gozle.",
+ "dogrulama": {
+  "a_esittir_b": true,
+  "girdi_sayisi_esittir_basili_numara": true,
+  "numara_surekliligi": "ya oncekinin +1'i ya da 1",
+  "test_iki_ardisik_sayfa": true,
+  "bant_unite_ve_test_no": true,
+  "glif_loo_uyum": 358,
+  "glif_loo_uyumsuz": [
+   "33L#2"
+  ],
+  "glif_kapsam_disi": 12,
+  "tereddutlu_girdi": [
+   "14L 6.D",
+   "34L 6.B",
+   "34R 8.D",
+   "48L 6.D",
+   "66L 6.E",
+   "82L 6.B",
+   "138L 6.B",
+   "186L 6.A",
+   "188L 6.D",
+   "234L 6.E",
+   "238L 6.E",
+   "262L 6.B"
+  ]
+ },
+ "toplam_cevap": 371,
+ "test_sayisi": 45,
+ "kaynak_dagilimi": {
+  "iki_okuma+goz(10x)": 12,
+  "iki_okuma+goz(10x)+tereddut(numara_surekliligi)": 1,
+  "iki_okuma+piksel": 347,
+  "iki_okuma+piksel+tereddut(numara_surekliligi)": 11
+ },
+ "harf_dagilimi": {
+  "A": 71,
+  "B": 82,
+  "C": 74,
+  "D": 78,
+  "E": 66
+ },
+ "testler": [
+  {
+   "birim": "STM345-T001",
+   "unite": 1,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    11,
+    12
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "STM345-T002",
+   "unite": 1,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    13,
+    14
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "STM345-T003",
+   "unite": 1,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    15,
+    16
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T004",
+   "unite": 2,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    33,
+    34
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T005",
+   "unite": 2,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    35,
+    36
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T006",
+   "unite": 3,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    47,
+    48
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "STM345-T007",
+   "unite": 3,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    49,
+    50
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T008",
+   "unite": 4,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    65,
+    66
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T009",
+   "unite": 4,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    67,
+    68
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T010",
+   "unite": 5,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    81,
+    82
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T011",
+   "unite": 5,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    83,
+    84
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T012",
+   "unite": 5,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    85,
+    86
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T013",
+   "unite": 5,
+   "unite_ici_test": 4,
+   "sayfalar": [
+    87,
+    88
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T014",
+   "unite": 6,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    113,
+    114
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T015",
+   "unite": 6,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    115,
+    116
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T016",
+   "unite": 6,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    117,
+    118
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T017",
+   "unite": 6,
+   "unite_ici_test": 4,
+   "sayfalar": [
+    119,
+    120
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T018",
+   "unite": 7,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    137,
+    138
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T019",
+   "unite": 7,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    139,
+    140
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T020",
+   "unite": 7,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    141,
+    142
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "unite": 8,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    157,
+    158
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "unite": 8,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    159,
+    160
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T023",
+   "unite": 9,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    171,
+    172
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T024",
+   "unite": 9,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    173,
+    174
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T025",
+   "unite": 10,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    185,
+    186
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T026",
+   "unite": 10,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    187,
+    188
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T027",
+   "unite": 11,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    197,
+    198
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T028",
+   "unite": 11,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    199,
+    200
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T029",
+   "unite": 12,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    213,
+    214
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T030",
+   "unite": 12,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    215,
+    216
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T031",
+   "unite": 12,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    217,
+    218
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T032",
+   "unite": 13,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    233,
+    234
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T033",
+   "unite": 13,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    235,
+    236
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T034",
+   "unite": 13,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    237,
+    238
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T035",
+   "unite": 14,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    261,
+    262
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "STM345-T036",
+   "unite": 14,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    263,
+    264
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T037",
+   "unite": 14,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    265,
+    266
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T038",
+   "unite": 14,
+   "unite_ici_test": 4,
+   "sayfalar": [
+    267,
+    268
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T039",
+   "unite": 15,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    291,
+    292
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T040",
+   "unite": 15,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    293,
+    294
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T041",
+   "unite": 15,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    295,
+    296
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T042",
+   "unite": 15,
+   "unite_ici_test": 4,
+   "sayfalar": [
+    297,
+    298
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T043",
+   "unite": 16,
+   "unite_ici_test": 1,
+   "sayfalar": [
+    315,
+    316
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "STM345-T044",
+   "unite": 16,
+   "unite_ici_test": 2,
+   "sayfalar": [
+    317,
+    318
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "STM345-T045",
+   "unite": 16,
+   "unite_ici_test": 3,
+   "sayfalar": [
+    319,
+    320
+   ],
+   "soru_sayisi": 8
+  }
+ ],
+ "cevaplar": [
+  {
+   "birim": "STM345-T001",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 11,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 11,
+   "sutun": "R",
+   "serit_sira": 2,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 12,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 10,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 12,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T001",
+   "soru": 11,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 12,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 13,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 13,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 13,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 14,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 9,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 14,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T002",
+   "soru": 10,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 14,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 15,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 15,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 15,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 15,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 16,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 16,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 16,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T003",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 16,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 1
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 33,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 33,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 33,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)+tereddut(numara_surekliligi)",
+   "dosya": 34,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 34,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 34,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T004",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 34,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 35,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 35,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 35,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 35,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 36,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 36,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 36,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T005",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 36,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 2
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 47,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 47,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 47,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 48,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 9,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 48,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T006",
+   "soru": 10,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 48,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 49,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 49,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 49,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 49,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 50,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 50,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 50,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T007",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 50,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 3
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 65,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 65,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 65,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 66,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 66,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 66,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T008",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 66,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 67,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 67,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 67,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 67,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 68,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 68,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 68,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T009",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 68,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 4
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 81,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 81,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 81,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 82,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 82,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 82,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T010",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 82,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 83,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 83,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 83,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 83,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 84,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 84,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 84,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T011",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 84,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 85,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 85,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 85,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 85,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 86,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 86,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 86,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T012",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 86,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 87,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 87,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 87,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 87,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 88,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 88,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 88,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T013",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 88,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 5
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 113,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 113,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 113,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 113,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 114,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 114,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 114,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T014",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 114,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 115,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 115,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 115,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 115,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 116,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 116,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T015",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 116,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 117,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 117,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 117,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 117,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 118,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 118,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 118,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T016",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 118,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 119,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 119,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 119,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 119,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 120,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 120,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 120,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T017",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 120,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 6
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 137,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 137,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 137,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 138,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 138,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 138,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T018",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 138,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 139,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 139,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 139,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 139,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 140,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 140,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 140,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T019",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 140,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 141,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 141,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 141,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 141,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 142,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 142,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 142,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T020",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 142,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 7
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 157,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 157,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 157,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 157,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 158,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 158,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 158,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T021",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 158,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 159,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 159,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 159,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 159,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 160,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 160,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 160,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T022",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 160,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 8
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 171,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 171,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 171,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 171,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 172,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 172,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 172,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T023",
+   "soru": 8,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 172,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 173,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 173,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 173,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 173,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 174,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 174,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 174,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T024",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 174,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 9
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 185,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 185,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 185,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 186,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 186,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 186,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T025",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 186,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 187,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 187,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 187,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 188,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 188,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 188,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T026",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 188,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 10
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 197,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 197,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 197,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 197,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 198,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 198,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 198,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T027",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 198,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 199,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 199,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 199,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 199,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 200,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 200,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 200,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T028",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 200,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 11
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 213,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 2,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 213,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 213,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 213,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 214,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 214,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 214,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T029",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 214,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 215,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+goz(10x)",
+   "dosya": 215,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 215,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 215,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 216,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 216,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T030",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 216,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 217,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 217,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 217,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 217,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 218,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 218,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T031",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 218,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 12
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 233,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 233,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 233,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 234,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 234,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 234,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T032",
+   "soru": 9,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 234,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 235,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 235,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 3,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 235,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 235,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 236,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 236,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 236,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T033",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 236,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 237,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 237,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 5,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 237,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 6,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 238,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 238,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 238,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T034",
+   "soru": 9,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 238,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 13
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 261,
+   "sutun": "L",
+   "serit_sira": 2,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 261,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 5,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 261,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel+tereddut(numara_surekliligi)",
+   "dosya": 262,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 262,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 262,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T035",
+   "soru": 9,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 262,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 263,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 263,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 263,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 263,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 264,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 264,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 264,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T036",
+   "soru": 8,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 264,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 265,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 2,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 265,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 265,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 265,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 266,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 266,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T037",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 266,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 1,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 267,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 267,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 267,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 267,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 268,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 6,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 268,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 268,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T038",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 268,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 14
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 291,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 291,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 291,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 4,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 291,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 292,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 292,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 292,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T039",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 292,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 293,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 293,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 293,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 293,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 294,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 6,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 294,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 7,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 294,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T040",
+   "soru": 8,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 294,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 295,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 295,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 3,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 295,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 4,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 295,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 296,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 296,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 7,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 296,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T041",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 296,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 1,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 297,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 2,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 297,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 297,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 4,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 297,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 298,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 298,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 298,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T042",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 298,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 15
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 1,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 315,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 315,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 3,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 315,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 315,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 5,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 316,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 6,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 316,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 7,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 316,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T043",
+   "soru": 8,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 316,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 1,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 317,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 2,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 317,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 3,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 317,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 4,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 317,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 5,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 318,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 318,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T044",
+   "soru": 7,
+   "cevap": "D",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 318,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 1,
+   "cevap": "A",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 319,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 2,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 319,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 3,
+   "cevap": "E",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 319,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 4,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 319,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 5,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 320,
+   "sutun": "L",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 6,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 320,
+   "sutun": "L",
+   "serit_sira": 1,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 7,
+   "cevap": "B",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 320,
+   "sutun": "R",
+   "serit_sira": 0,
+   "unite": 16
+  },
+  {
+   "birim": "STM345-T045",
+   "soru": 8,
+   "cevap": "C",
+   "kaynak": "iki_okuma+piksel",
+   "dosya": 320,
+   "sutun": "R",
+   "serit_sira": 1,
+   "unite": 16
+  }
+ ]
+}
