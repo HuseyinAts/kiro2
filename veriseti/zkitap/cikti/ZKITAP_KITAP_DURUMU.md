@@ -10,10 +10,10 @@ Bu belge onceki envanteri (`ZKITAP_ENVANTER.md`, klasor ADINA gore eslestirilmis
 |---|---|
 | PNG iceren klasor | 278 |
 | tekil kitap (ayni icerikli klasorler birlestirildi) | 237 |
-| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 21 kitap (345 Geometri 2 cilt = 22 grup) |
+| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 22 kitap (345 Geometri 2 cilt = 23 grup) |
 | islenmis, ithal EDILMEMIS | 0 |
-| islenmemis | 216 |
-| -- bunlardan DB'de HIC satiri olmayan | 99 |
+| islenmemis | 215 |
+| -- bunlardan DB'de HIC satiri olmayan | 98 |
 | -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 118 |
 | kitap olmayan / kullanilamaz klasor | 6 |
 
@@ -58,7 +58,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 345 2025 Paragraf Sifir Risk SB | **ISLENDI** | `345 2025 Paragraf Sifir Risk Soru Bankasi` | 368 | - | modern 1011 / aktif 1010 (0056 toplu beta onayi; kitap ici tekrar T038_13 pasif); eski hat 8 / aktif 0 (0056 ile pasif; 0054 ile ASCII ad) | - | icerik 3-355, anahtar 356-368; 6. NUANS TESTI acik uclu (kapsam disi) | TAMAM (modern ithal) |
 | 345 2025 Start Matematik | **ISLENDI** | `345 2025 Start Matematik` | 323 | - | modern 371 / aktif 365 (0059 toplu beta onayi; [??] tasiyan 6 pasif); eski hat 3 / aktif 0 (kitapta yok, 0058 ile pasif) | - | yalniz 45 'Sinava Gecis' testi; Isindirma Kosesi ve acik uclu alistirmalar kapsam disi | TAMAM (modern ithal) |
 | 345 2025 TYT Biyoloji SB | **ISLENDI** | `345 2025 Tyt Biyoloji Soru Bankasi` | 235 | - | modern 1023 / aktif 1022 | 345 2024 TYT Biyoloji SB %72 | - | TAMAM (modern ithal) |
-| 345 2025 TYT Fizik SB | ISLENMEDI | `345 2025 Tyt Fizik Soru Bankasi` | 368 | `345 Tyt Fizik Soru Bankasi` | yok | - | - | ISLENEBILIR |
+| 345 2025 TYT Fizik SB | **ISLENDI** | `345 2025 Tyt Fizik Soru Bankasi` | 368 | `345 Tyt Fizik Soru Bankasi` | modern 1395 / aktif 1394 (0061 toplu beta onayi; [??] tasiyan T118_07 pasif); 2 OSYM sorusu Mikro Orijinal TYT Fizik'te ayni hash ile zaten var | - | 357 soru sayfasi, 176 test; okuyucu diski 134 sorunun numarasini kesiyor (numara test ici siradan) | TAMAM (modern ithal) |
 | 345 2025 TYT Kimya SB | ISLENMEDI | `345 2025 Tyt Kimya Soru Bankasi` | 280 | `345 Tyt Kimya Soru Bankasi` | eski hat 294 / aktif 294 | - | - | ISLENEBILIR |
 | 345 2025 TYT Matematik SB | **ISLENDI** | `345 2025 Tyt Matematik Soru Bankasi` | 422 | `345 2024 Tyt Matematik Soru Bankasi` | modern 2063 / aktif 0 (+ eski hat 12 / aktif 12, 0043 ile ayni ada) | - | - | TAMAM (modern ithal) |
 | 345 2025 TYT Sosyal Bilgiler SB | ISLENMEDI | `345 2025 Tyt Sosyal Bilgiler Soru Bankasi` | 312 | `345 Tyt Sosyal Bilgiler Soru Bankasi` | eski hat 26 / aktif 26 | - | - | ISLENEBILIR |

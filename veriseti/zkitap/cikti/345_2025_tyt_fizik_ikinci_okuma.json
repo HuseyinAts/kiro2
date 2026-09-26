@@ -1,0 +1,1359 @@
+{
+ "kitap": "345 2025 TYT Fizik Soru Bankasi",
+ "on_kayit_tarihi": "2026-09-26",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3. STM345 ilk okumasinda esasli hata %3.0 idi; bu oranda orneklem kapiyi gecemez. Bu yuzden dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 33 ayri okuyucu; ayni talimat (yalniz teslim dizini f_metin_parca2), ayni gruplar ve kirpimlar. Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (kesme isareti, bosluk, satir sonu) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret, harf/indis, birim, eksik/fazla kelime veya satir, yanlis sik, eksik etiket.",
+ "sonuc": {
+  "soru": 1397,
+  "ayni_soru_normalize": 1328,
+  "farkli_soru": 69,
+  "hukum_dagilimi": {
+   "okuma_2": 20,
+   "okuma_1": 13,
+   "yok": 35,
+   "ikisi": 1
+  },
+  "ilk_okuma_esasli_hata": 14,
+  "ikinci_okuma_esasli_hata": 21,
+  "not": "Normalizasyon: NFC, kesme/tirnak tipi, eksi/tire tipi (U+2212/2013/2014 -> -), carpma noktasi, bosluk. Her fark kirpimdan gozle (3-16x) karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer."
+ },
+ "hukumler": [
+  {
+   "dosya": "FZT345-T005_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru ekrandaki/tart\u0131daki yaz\u0131lara dayan\u0131yor (hatal\u0131 kavram kullan\u0131m\u0131): ISI: 20\u00b0C, Ay'daki : 12,00 kg, D\u00fcnya'daki: 70,00 kg, 53 km/h bas\u0131l\u0131; okuma_2 bunlar\u0131 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "FZT345-T009_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "II. satir 'k\u00fctle miktar\u0131' basili (7 harf, -lar\u0131 eki yok); okuma_2 fazladan 'lar\u0131' eklemis."
+  },
+  {
+   "dosya": "FZT345-T009_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Basili 'yuksekligine' (g breve yok, kitap hatasi; okuma_2 'y\u00fcksekli\u011fine' diye duzeltmis); D sikki basili '0.03' noktali (okuma_2 dogru, bicim)."
+  },
+  {
+   "dosya": "FZT345-T011_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kitapta \"kar\u015f\u0131la\u015ft\u0131malar\u0131ndan\" (r eksik) bas\u0131l\u0131; okuma_2 d\u00fczeltmi\u015f."
+  },
+  {
+   "dosya": "FZT345-T014_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kalin satirin ilk harfi ayni satirdaki 'verilen' i'siyle ayni glif, kucuk 'ile' basili; okuma_2 '\u0130le' yazmis."
+  },
+  {
+   "dosya": "FZT345-T015_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "I. maddede basili 'K ninkinden' (noktali i); okuma_2 'n\u0131nkinden' (noktasiz \u0131) yazmis (farkli kelime)."
+  },
+  {
+   "dosya": "FZT345-T015_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kitapta \"gimi\u015ftir\" bas\u0131l\u0131; okuma_1 \"girmi\u015ftir\" diye d\u00fczeltmi\u015f."
+  },
+  {
+   "dosya": "FZT345-T015_08",
+   "esasli_hata": "yok",
+   "gerekce": "Bilgi kutusunda dikey 4/3 kesri + \u03c0r^3; bilesik kesir sozlesmesi (4/3)\u03c0r^3 -> okuma_1. Salt bicim."
+  },
+  {
+   "dosya": "FZT345-T026_05",
+   "esasli_hata": "yok",
+   "gerekce": "Buyutmede theta_2'den sonra iki parcali isaret (;) goruluyor; yalniz noktalama."
+  },
+  {
+   "dosya": "FZT345-T027_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Soru rota uzunluk/s\u00fcre verisine dayan\u0131yor; harita ba\u015fl\u0131klar\u0131 \"1. rota\"/\"2. rota\" ve altlar\u0131nda \"19 km, 26 dk\"/\"23 km, 23 dk\" bas\u0131l\u0131; okuma_1 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "FZT345-T029_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kitapta 'e\u015fle\u015ftimme' (baski hatasi) basili; okuma_2 'e\u015fle\u015ftirme' diye duzeltmis."
+  },
+  {
+   "dosya": "FZT345-T030_05",
+   "esasli_hata": "yok",
+   "gerekce": "Hiz sutununda B ve D '1.5' noktali basili (A '3,7' virgullu); ondalik isareti bicim farki."
+  },
+  {
+   "dosya": "FZT345-T030_07",
+   "esasli_hata": "yok",
+   "gerekce": "Harf \u00fcst\u00fcnde vekt\u00f6r \u00e7izgisi (II'de net \u00fcst \u00e7izgi, 1. sat\u0131rda bozuk bas\u0131lm\u0131\u015f i\u015faret); s\u00f6zle\u015fme gere\u011fi A\u20d7. Her iki okuma da vekt\u00f6r A."
+  },
+  {
+   "dosya": "FZT345-T040_03",
+   "esasli_hata": "yok",
+   "gerekce": "Tirnaklar tek glifli (\u2019 \u2018) gorunuyor, cift tirnak degil -> okuma_2; salt tirnak tipi."
+  },
+  {
+   "dosya": "FZT345-T055_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Ilk satirda basili 'ruzgarin' (sapka yok); okuma_1 'ruzg\u00e2rin' diye duzeltmis."
+  },
+  {
+   "dosya": "FZT345-T059_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "K\u0131rp\u0131mda hi\u00e7 \u015fekil yok, yaln\u0131z metin ve \u015f\u0131klar; sekil_var false."
+  },
+  {
+   "dosya": "FZT345-T062_04",
+   "esasli_hata": "yok",
+   "gerekce": "'37 \u00b0C' ve '38 \u00b0C' rakam ile derece arasinda bosluk gorunuyor -> okuma_1; salt bosluk."
+  },
+  {
+   "dosya": "FZT345-T066_07",
+   "esasli_hata": "yok",
+   "gerekce": "E_K'dan sonra iki parcali isaret (;) basili; yalniz noktalama."
+  },
+  {
+   "dosya": "FZT345-T069_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Bas\u0131l\u0131 \"\u00e7ubuklar\u0131n\u0131n\"; okuma_1 \"\u00e7ubuklar\u0131n\" yazm\u0131\u015f."
+  },
+  {
+   "dosya": "FZT345-T069_05",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo roma rakami sutununun basligi bos -> '-' hucreli okuma_2; salt tablo bicimi."
+  },
+  {
+   "dosya": "FZT345-T069_06",
+   "esasli_hata": "yok",
+   "gerekce": "L_K'dan sonra iki parcali isaret (;) basili; yalniz noktalama."
+  },
+  {
+   "dosya": "FZT345-T070_05",
+   "esasli_hata": "yok",
+   "gerekce": "Tablonun sol \u00fcst h\u00fccresi bo\u015f (\"-\"), sat\u0131r numaras\u0131 ayr\u0131 h\u00fccre; salt tablo bi\u00e7imi."
+  },
+  {
+   "dosya": "FZT345-T072_06",
+   "esasli_hata": "yok",
+   "gerekce": "III. satirda '0 \u201316' (tireden sonra bosluk yok) basili -> okuma_2; salt bosluk."
+  },
+  {
+   "dosya": "FZT345-T074_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "I. maddede basili 'montelenmesi'; okuma_2 'monte edilmesi' yazmis (farkli kelime)."
+  },
+  {
+   "dosya": "FZT345-T074_06",
+   "esasli_hata": "yok",
+   "gerekce": "Ba\u015fl\u0131k sat\u0131r\u0131n\u0131n ilk h\u00fccresi bo\u015f, \"-\" olmal\u0131; salt bi\u00e7im."
+  },
+  {
+   "dosya": "FZT345-T076_05",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo basliginda roma sutunu bos -> '- | X | Y | Z' (okuma_2); salt tablo bicimi."
+  },
+  {
+   "dosya": "FZT345-T077_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Basili 'sirasiysa' ve 'alfa_L dir' (kitap hatalari); okuma_2 ikisini de duzeltmis."
+  },
+  {
+   "dosya": "FZT345-T081_01",
+   "esasli_hata": "yok",
+   "gerekce": "Bas\u0131l\u0131 \"+q_K, +q_L; \u2212q_M\": q_L sonras\u0131nda noktal\u0131 virg\u00fcl var; salt noktalama."
+  },
+  {
+   "dosya": "FZT345-T082_04",
+   "esasli_hata": "yok",
+   "gerekce": "'\u015fekil \u2013 I. II ve III' : I'dan sonra nokta basili (virgul degil) -> okuma_2; salt noktalama."
+  },
+  {
+   "dosya": "FZT345-T082_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'alfa > ?' isareti ust/altta acik iki yay, kalin metin degil sembol fontu; sekildeki sag aci etiketi (theta) ile ayni cizim, kapali '0' degil -> theta."
+  },
+  {
+   "dosya": "FZT345-T084_02",
+   "esasli_hata": "yok",
+   "gerekce": "A\u00e7\u0131klamada \u25a0 ve \u25a1 sonras\u0131 noktal\u0131 virg\u00fcl (;) bas\u0131l\u0131; salt noktalama."
+  },
+  {
+   "dosya": "FZT345-T085_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "II. satirda 'filitreleri' basili; okuma_2 'filtreleri' diye duzeltmis."
+  },
+  {
+   "dosya": "FZT345-T086_03",
+   "esasli_hata": "yok",
+   "gerekce": "III. satirda L hucresi ust-alt kesir (3e^-/2): bilesik kesir parantezli (3e^\u2212)/2; bicim."
+  },
+  {
+   "dosya": "FZT345-T088_08",
+   "esasli_hata": "yok",
+   "gerekce": "Tabloda sol \u00fcst bo\u015f h\u00fccre ve sat\u0131r numaras\u0131 ayr\u0131 s\u00fctun; salt tablo bi\u00e7imi."
+  },
+  {
+   "dosya": "FZT345-T094_06",
+   "esasli_hata": "ikisi",
+   "gerekce": "I.'de 'devresininkinden' basili (okuma_1 fazladan 'in'); III.'te 'b\u00fcy\u00fckl\u00fcr' basili, k'dan sonraki harf capraz cizgisiz l (II.'deki 'b\u00fcy\u00fckt\u00fcr' t'si ile farkli) -> okuma_2 duzeltmis."
+  },
+  {
+   "dosya": "FZT345-T098_01",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo baslik satirinin ilk hucresi bos -> '-'; bicim."
+  },
+  {
+   "dosya": "FZT345-T099_01",
+   "esasli_hata": "yok",
+   "gerekce": "E_II/E_III \u00e7ok karakterli alt indis; s\u00f6zle\u015fme gere\u011fi parantezli E_(II), E_(III). Salt bi\u00e7im."
+  },
+  {
+   "dosya": "FZT345-T100_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Tablo hucreleri pil cizimi; I-MN'de '\u2212 | +', II/III-KL'de '+ | \u2212' kutup etiketleri basili ve satirlari ayiriyor, okuma_2 bunlari '(\u00fcrete\u00e7 \u00e7izimi)' diye silmis; baslik '-' hucresi okuma_2'den alindi. Hucre ici | ayiriciyla karismasin diye kutuplar soldan saga bosluklu yazildi."
+  },
+  {
+   "dosya": "FZT345-T104_01",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo baslik satirinin ilk hucresi bos -> '-'; bicim."
+  },
+  {
+   "dosya": "FZT345-T104_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Bas\u0131l\u0131 \"K ninkinden\"; okuma_1 \"n\u0131nkinden\" yazm\u0131\u015f."
+  },
+  {
+   "dosya": "FZT345-T104_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Tarik satirinda 'K ninkinden' (noktali i) basili; okuma_1 'n\u0131nkinden' yazmis."
+  },
+  {
+   "dosya": "FZT345-T106_01",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo baslik satirinin ilk hucresi bos -> '-'; bicim."
+  },
+  {
+   "dosya": "FZT345-T107_04",
+   "esasli_hata": "yok",
+   "gerekce": "\"kuvveti\" sonras\u0131 i\u015faret, ayn\u0131 sayfadaki \"X, Y\" virg\u00fcl\u00fcyle ayn\u0131 g\u00f6r\u00fcn\u00fc\u015fte: virg\u00fcl. Salt noktalama."
+  },
+  {
+   "dosya": "FZT345-T107_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'K\u2019ninkinden' noktali i ile basili; okuma_1 'K'n\u0131nkinden' yazmis."
+  },
+  {
+   "dosya": "FZT345-T110_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "2. satirda basili 'yukseklikle'; okuma_1 'yukseklikte' (farkli kelime); d_(su) cok harfli indis parantezli (bicim)."
+  },
+  {
+   "dosya": "FZT345-T114_03",
+   "esasli_hata": "yok",
+   "gerekce": "Yaln\u0131z alt indis sonras\u0131 virg\u00fcl \u00f6n\u00fcndeki bo\u015fluk fark\u0131; salt bi\u00e7im."
+  },
+  {
+   "dosya": "FZT345-T118_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Soru tabeladaki rakima dayaniyor; 3 tabela yazisi (BOZ\u00dcY\u00dcK 72187/740, BANDIRMA/2, G\u00d6KSUN 51800/1350) govdeye girmeli, okuma_1 atlamis. Bandirma nufusunun 3-6. haneleri ayni glif (0) gorunuyor: 150000 (dusuk cozunurluk)."
+  },
+  {
+   "dosya": "FZT345-T122_03",
+   "esasli_hata": "yok",
+   "gerekce": "C sikkinda T_L'den sonra iki parcali isaret (;) basili; yalniz noktalama."
+  },
+  {
+   "dosya": "FZT345-T122_04",
+   "esasli_hata": "yok",
+   "gerekce": "Bas\u0131l\u0131 \"oldu\u011funa g\u00f6re;\" (noktal\u0131 virg\u00fcl); salt noktalama."
+  },
+  {
+   "dosya": "FZT345-T124_02",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo basliklari 'Atmosfer' ve 'Balon' alti cizili basili -> <u> ile okuma_1; salt vurgu."
+  },
+  {
+   "dosya": "FZT345-T126_06",
+   "esasli_hata": "yok",
+   "gerekce": "II. maddede h_S'den sonra virgul basili; yalniz noktalama."
+  },
+  {
+   "dosya": "FZT345-T128_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Bas\u0131l\u0131 \"F_K dir.\"; okuma_2 \"d\u0131r\" yazm\u0131\u015f."
+  },
+  {
+   "dosya": "FZT345-T135_01",
+   "esasli_hata": "yok",
+   "gerekce": "'g\u00f6r\u00fcn\u00fcm\u00fc' sonrasinda satir sonunda asagi kuyruklu bir isaret var (virgul gorunumlu); okuma_2 hic yazmamis, okuma_1 nokta yazmis. Salt noktalama."
+  },
+  {
+   "dosya": "FZT345-T136_06",
+   "esasli_hata": "yok",
+   "gerekce": "'dalgalarinin' sonrasinda X'ten sonraki virgulle ayni sekilde isaret var (virgul); yalniz noktalama."
+  },
+  {
+   "dosya": "FZT345-T139_07",
+   "esasli_hata": "yok",
+   "gerekce": "t_AB/t_CD/t_EF \u00e7ok karakterli alt indis; s\u00f6zle\u015fme gere\u011fi t_(AB) vb. Salt bi\u00e7im."
+  },
+  {
+   "dosya": "FZT345-T141_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'ortam\u0131n\u0131n' basili; okuma_2 'ortam\u0131n' diye kisaltmis/duzeltmis."
+  },
+  {
+   "dosya": "FZT345-T142_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru ekrandaki yaziya dayaniyor ('adinin altinda MHz cinsinden yazan sayilar'); ekranda 'Sevgi FM \u2665' ve '94.5 MHz' basili; okuma_2 bunlari atlamis."
+  },
+  {
+   "dosya": "FZT345-T149_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Bas\u0131l\u0131 \"duyurabilmesi\"; okuma_1 \"duyabilmesi\" yazm\u0131\u015f (farkl\u0131 kelime)."
+  },
+  {
+   "dosya": "FZT345-T152_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Yari golge anahtari gri DOLU daire (bos daire degil) ve iki noktadan once bosluk var -> okuma_1 (\u25cd : ). okuma_2 bos daire \u25ef yazmis."
+  },
+  {
+   "dosya": "FZT345-T156_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "I'nin ustundeki isaret serifsiz tek ince cizgi (uslu I degil, ussu/prime) -> I\u2032; okuma_1 'I^I' farkli gosterim."
+  },
+  {
+   "dosya": "FZT345-T157_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "P \u00fcst\u00fcndeki i\u015faret \u00fcs konumunda tek dik \u00e7izgi: \u00fcss\u00fc (\u2032), roma I de\u011fil; okuma_1 P^I yazm\u0131\u015f."
+  },
+  {
+   "dosya": "FZT345-T158_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Siklarda alt indis T ile ayni yukseklikte buyuk \u00c7 (govde 1. satirdaki kucuk \u00e7'den farkli) -> f_\u00c7; okuma_2 f_\u00e7 yazmis."
+  },
+  {
+   "dosya": "FZT345-T160_01",
+   "esasli_hata": "yok",
+   "gerekce": "Baslik satirinin ilk hucresi bos ('-') ve I./II./III. ayri hucre; tablo bicimi."
+  },
+  {
+   "dosya": "FZT345-T163_02",
+   "esasli_hata": "yok",
+   "gerekce": "Tablonun sol \u00fcst h\u00fccresi bo\u015f, sat\u0131r numaras\u0131 ayr\u0131 h\u00fccre; salt tablo bi\u00e7imi."
+  },
+  {
+   "dosya": "FZT345-T168_08",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo basliginda roma sutunu bos -> '- | X | Y | Z' (okuma_1); salt tablo bicimi."
+  },
+  {
+   "dosya": "FZT345-T170_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "2. satirda basili 'mercekle'; okuma_2 'mercekte' (farkli kelime)."
+  },
+  {
+   "dosya": "FZT345-T170_06",
+   "esasli_hata": "yok",
+   "gerekce": "Ba\u015fl\u0131k sat\u0131r\u0131n\u0131n bo\u015f ilk h\u00fccresi \"-\" olmal\u0131; salt bi\u00e7im."
+  },
+  {
+   "dosya": "FZT345-T171_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kalin satirda 'nerededir?' basili; okuma_2 'neredecir' yazmis."
+  },
+  {
+   "dosya": "FZT345-T173_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Basili 'nerededir?'; okuma_2 'neredecir' (farkli kelime)."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "FZT345-T005_01",
+   "govde": "G\u00fcnl\u00fck hayatta kulland\u0131\u011f\u0131m\u0131z \u00f6l\u00e7\u00fcm ara\u00e7lar\u0131nda bazen fiziksel kavramlar\u0131n hatal\u0131 kullan\u0131m\u0131na rastlanabilir. Duvarda as\u0131l\u0131 bir termometre, bir bask\u00fcl sim\u00fclat\u00f6r\u00fc ve bir otomobilin s\u00fcrat g\u00f6stergesinde g\u00f6r\u00fcnen \u00f6l\u00e7\u00fcmler \u015fekildeki gibidir.\nISI: 20\u00b0C\nAy'daki : 12,00 kg\nD\u00fcnya'daki: 70,00 kg\n53 km/h\nBu \u00f6l\u00e7\u00fcm ara\u00e7lar\u0131n\u0131n hangileri fiziksel kavramlar\u0131n <u>hatal\u0131</u> kullan\u0131m\u0131na \u00f6rnek olarak g\u00f6sterilebilir?",
+   "sikler": {
+    "A": "Yaln\u0131z termometre",
+    "B": "Yaln\u0131z bask\u00fcl",
+    "C": "Yaln\u0131z s\u00fcrat g\u00f6stergesi",
+    "D": "Termometre ve bask\u00fcl",
+    "E": "Bask\u00fcl ve s\u00fcrat g\u00f6stergesi"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "MS\u00dc - 2020"
+  },
+  {
+   "dosya": "FZT345-T009_01",
+   "govde": "Ayn\u0131 s\u0131cakl\u0131ktaki bir bardak su ile bir bardak zeytinya\u011f\u0131 ile ilgili,\nI. Tanecikli yap\u0131da olma\nII. Birim hacimdeki k\u00fctle miktar\u0131\nIII. Eylemsizlik yasas\u0131na uyma\n\u00f6zelliklerinden hangileri, her ikisi i\u00e7in de ortak \u00f6zelliktir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T009_03",
+   "govde": "Taban yar\u0131\u00e7ap\u0131 3 cm olan silindir \u015feklindeki bo\u015f bir kab\u0131, 6 cm y\u00fcksekligine kadar su ile doldurabilmek i\u00e7in, 540 damla su gerekmektedir.\nBuna g\u00f6re, 1 damlan\u0131n hacmi ka\u00e7 cm^3 t\u00fcr?\n(\u03c0 = 3 al\u0131n\u0131z.)",
+   "sikler": {
+    "A": "0,0003",
+    "B": "0,0002",
+    "C": "0,001",
+    "D": "0.03",
+    "E": "0,3"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T011_07",
+   "govde": "Ayn\u0131 maddeden yap\u0131lm\u0131\u015f X, Y ve Z silindirleri, bir zemin \u00fczerine \u015fekildeki gibi konulmu\u015ftur.\nSilindirlerin kendi a\u011f\u0131rl\u0131klar\u0131na kar\u015f\u0131 dayan\u0131kl\u0131l\u0131klar\u0131 D_X, D_Y, D_Z oldu\u011funa g\u00f6re,\nI. D_X > D_Z\nII. D_Y > D_Z\nIII. D_Y > D_X\nkar\u015f\u0131la\u015ft\u0131malar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T014_01",
+   "govde": "Aysun, bir alt\u0131n y\u00fcz\u00fc\u011f\u00fcn sahte olup olmad\u0131\u011f\u0131n\u0131 ispatlamak i\u00e7in deneysel bir \u00e7al\u0131\u015fma yap\u0131yor.\nBuna g\u00f6re, Aysun\u2019un yapt\u0131\u011f\u0131 \u00e7al\u0131\u015fmada,\nI. e\u015fit kollu terazi\nII. kalorimetre kab\u0131\nIII. i\u00e7inde su bulunan dereceli silindir kap\nIV. dinamometre\nile verilen \u00f6l\u00e7\u00fcm ara\u00e7lar\u0131ndan hangilerini kullanmas\u0131 gerekir?\n(Aysun, alt\u0131n y\u00fcz\u00fc\u011f\u00fcn ger\u00e7ek \u00f6zk\u00fctle de\u011ferini bilmektedir.)",
+   "sikler": {
+    "A": "I ve III",
+    "B": "III ve IV",
+    "C": "II ve IV",
+    "D": "I, II ve III",
+    "E": "I ve II"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T015_01",
+   "govde": "D\u00fc\u015fey kesiti verilen silindirik bir kapta, h y\u00fcksekli\u011finde, k\u00fctlesi m olan K s\u0131v\u0131s\u0131 vard\u0131r. Kaba 3h y\u00fcksekli\u011finde L s\u0131v\u0131s\u0131 eklendi\u011finde, kab\u0131n k\u00fctlesi 3m kadar art\u0131yor. Geriye kalan b\u00f6l\u00fcme de M s\u0131v\u0131s\u0131 eklendi\u011finde kab\u0131n k\u00fctlesi 2m kadar daha art\u0131yor.\nBuna g\u00f6re,\nI. L s\u0131v\u0131s\u0131n\u0131n \u00f6zk\u00fctlesi K ninkinden b\u00fcy\u00fckt\u00fcr.\nII. M s\u0131v\u0131s\u0131n\u0131n \u00f6zk\u00fctlesi L ninkinden b\u00fcy\u00fckt\u00fcr.\nIII. M s\u0131v\u0131s\u0131n\u0131n \u00f6zk\u00fctlesi K ninkinden b\u00fcy\u00fckt\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T015_04",
+   "govde": "D\u00fc\u015fey kesiti verilen \u015eekil 1'deki kab\u0131n i\u00e7inde 60 cm^3 su vard\u0131r. Kaba \u00f6zde\u015f ve i\u00e7leri dolu \u00fc\u00e7 demir k\u00fcp b\u0131rak\u0131l\u0131nca, kaptaki su seviyesi \u015eekil 2'deki gibi 75 cm^3 \u00e7izgisine \u00e7\u0131k\u0131yor.\nBir demir k\u00fcb\u00fcn \u00f6zk\u00fctlesi 4 g/cm^3 oldu\u011funa g\u00f6re, \u015fekil II deki kapta meydana gelen k\u00fctle art\u0131\u015f\u0131 ka\u00e7 g d\u0131r? (En \u00fcstteki k\u00fcp, yar\u0131s\u0131na kadar suyun i\u00e7ine gimi\u015ftir. d_(su) = 1 g/cm^3)",
+   "sikler": {
+    "A": "48",
+    "B": "60",
+    "C": "72",
+    "D": "80",
+    "E": "96"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T015_08",
+   "govde": "Bilgi: K\u00fcrenin hacmi V = (4/3)\u03c0r^3 ba\u011f\u0131nt\u0131s\u0131 ile hesaplan\u0131r.\nD\u0131\u015f yar\u0131\u00e7ap\u0131 1 cm, \u00f6zk\u00fctlesi 4 g/cm^3 olan metal bir k\u00fcrenin, i\u00e7indeki bo\u015fluk ile beraber ortalama \u00f6zk\u00fctlesi 1 g/cm^3 t\u00fcr.\nBuna g\u00f6re, k\u00fcrenin i\u00e7indeki bo\u015flu\u011fun hacmi ka\u00e7 cm^3 t\u00fcr? (\u03c0 = 3 al\u0131n\u0131z.)",
+   "sikler": {
+    "A": "6",
+    "B": "5",
+    "C": "4",
+    "D": "3",
+    "E": "2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T026_05",
+   "govde": "Do\u011frusal bir yolda hareket eden bir arac\u0131n h\u0131z \u2013 zaman grafi\u011fi \u015fekildeki gibidir. Arac\u0131n 0 \u2013 t zaman aral\u0131\u011f\u0131nda ortalama h\u0131z\u0131 \u03d1_1, t \u2013 2t zaman aral\u0131\u011f\u0131nda \u03d1_2; 2t \u2013 4t zaman aral\u0131\u011f\u0131nda \u03d1_3 t\u00fcr.\nBuna g\u00f6re, ortalama h\u0131zlar\u0131n\u0131n b\u00fcy\u00fckl\u00fckleri aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "\u03d1_2 > \u03d1_1 > \u03d1_3",
+    "B": "\u03d1_3 > \u03d1_1 > \u03d1_2",
+    "C": "\u03d1_2 > \u03d1_1 = \u03d1_3",
+    "D": "\u03d1_1 = \u03d1_3 > \u03d1_2",
+    "E": "\u03d1_2 > \u03d1_3 > \u03d1_1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T027_03",
+   "govde": "Ferhat, \u0130stanbul\u2019un Kartal il\u00e7esindeki bir noktadan Kad\u0131k\u00f6y il\u00e7esindeki bir noktaya gitmek i\u00e7in otomobilinin navigasyon sistemini \u00e7al\u0131\u015ft\u0131rd\u0131\u011f\u0131nda sistem yolculuk i\u00e7in iki rota \u00f6nermektedir. \u00d6nerilen bu iki rota ile rotalar\u0131n uzunlu\u011funu ve s\u00fcresini g\u00f6steren \u015fekiller a\u015fa\u011f\u0131daki gibidir.\n1. rota: 19 km, 26 dk\n2. rota: 23 km, 23 dk\nFerhat, yolculuk i\u00e7in 1. rotay\u0131 tercih etti\u011fine g\u00f6re, yolculu\u011fa ait;\nI. yer de\u011fi\u015ftirme,\nII. ortalama h\u0131z,\nIII. ortalama s\u00fcrat\nniceliklerinden hangilerinin b\u00fcy\u00fckl\u00fc\u011f\u00fc 2. rotan\u0131nkine g\u00f6re daha k\u00fc\u00e7\u00fckt\u00fcr?",
+   "sikler": {
+    "A": "II ve III",
+    "B": "Yaln\u0131z III",
+    "C": "I ve III",
+    "D": "Yaln\u0131z II",
+    "E": "I ve II"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T029_05",
+   "govde": "Ahmet, hareket t\u00fcrleri ile ilgili a\u015fa\u011f\u0131da verilen g\u00f6zlemleri yap\u0131yor.\nI. Seyretti\u011fim bir belgeselde, D\u00fcnya\u2019n\u0131n kendi ekseni etraf\u0131nda <u>d\u00f6nme hareketi</u> yapt\u0131\u011f\u0131n\u0131 g\u00f6rd\u00fcm.\nII. Y\u00fcksek h\u0131zl\u0131 trenin, raylar \u00fczerinde <u>\u00f6teleme hareketi</u> yapt\u0131\u011f\u0131n\u0131 g\u00f6rd\u00fcm.\nIII. Bowling topunun lobutlara do\u011fru ilerlerken <u>d\u00f6nme ve \u00f6teleme hareketi</u> yapt\u0131\u011f\u0131n\u0131 g\u00f6rd\u00fcm.\nBuna g\u00f6re, Ahmet\u2019in g\u00f6zlemledi\u011fi olaylar ile e\u015fle\u015ftirdi\u011fi hareket t\u00fcrlerine bak\u0131ld\u0131\u011f\u0131nda, hangilerinde do\u011fru bir e\u015fle\u015ftimme yapm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T030_05",
+   "govde": "Be\u015fikta\u015fl\u0131 O\u011fuzhan bir futbol ma\u00e7\u0131nda, bulundu\u011fu noktadan \u00f6nce kuzeye 8 metre, sonra do\u011fuya 9 metre, daha sonra da g\u00fcneye 20 metre ko\u015fuyor.\nO\u011fuzhan t\u00fcm hareketini 10 saniyede tamamlad\u0131\u011f\u0131na g\u00f6re, bu s\u00fcre i\u00e7erisinde ortalama s\u00fcratinin ve ortalama h\u0131z\u0131n\u0131n b\u00fcy\u00fckl\u00fc\u011f\u00fc ka\u00e7 m/s dir?\nOrtalama S\u00fcrat | Ortalama H\u0131z",
+   "sikler": {
+    "A": "1,5 | 3,7",
+    "B": "3,5 | 1.5",
+    "C": "1,5 | 3",
+    "D": "3,7 | 1.5",
+    "E": "3,7 | 3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T030_07",
+   "govde": "t = 0 an\u0131nda Bilecik otogar\u0131nda bulunan bir otob\u00fcs hareket ederek t s\u00fcre sonra Konya otogar\u0131na ula\u015f\u0131yor. Otob\u00fcs\u00fcn Bilecik otogar\u0131na g\u00f6re bulundu\u011fu yeri g\u00f6steren A\u20d7 vekt\u00f6r\u00fc \u015fekildeki gibidir.\nBuna g\u00f6re, otob\u00fcs\u00fcn iki otogar aras\u0131ndaki haraketi ile ilgili\nI. Bilecik otogar\u0131 referans noktas\u0131d\u0131r.\nII. Otob\u00fcs\u00fcn h\u0131z\u0131, A\u20d7 vekt\u00f6r\u00fc y\u00f6n\u00fcndedir.\nIII. Otob\u00fcs\u00fcn ald\u0131\u011f\u0131 yol, yer de\u011fi\u015ftirme b\u00fcy\u00fckl\u00fc\u011f\u00fcne e\u015fittir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T040_03",
+   "govde": "Bir Fizik \u00f6\u011fretmeni, 's\u00fcrt\u00fcnme kuvveti' konusunu \u00f6\u011frencilerine anlatt\u0131ktan sonra, onlardan s\u00fcrt\u00fcnme kuvvetinin sebep oldu\u011fu sonu\u00e7lara \u00f6rnekler vermesini ister. \u00d6\u011frenciler de:\nYaren: Atmosfere giren g\u00f6kta\u015flar\u0131n\u0131n ate\u015f topuna d\u00f6n\u00fc\u015fmesi\nAli: Ellerimizi birbirine s\u00fcrtt\u00fc\u011f\u00fcm\u00fczde, bir s\u00fcre sonra \u0131s\u0131nmas\u0131\nAleyna: Ayakkab\u0131lar\u0131n s\u00fcnger kullan\u0131larak temizlenmesi\ngibi \u00f6rnekler verirler.\nBuna g\u00f6re, \u00f6\u011frencilerin verdi\u011fi \u00f6rneklerden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z Aleyna",
+    "B": "Yaren ve Ali",
+    "C": "Yaren ve Aleyna",
+    "D": "Ali ve Aleyna",
+    "E": "Yaren, Ali ve Aleyna"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T055_02",
+   "govde": "Bir yolcu u\u00e7a\u011f\u0131, r\u00fczgar\u0131n do\u011fudan bat\u0131ya do\u011fru esti\u011fi bir g\u00fcnde, K noktas\u0131ndan L noktas\u0131na do\u011fru sabit h\u0131z b\u00fcy\u00fckl\u00fc\u011f\u00fc ile u\u00e7maktad\u0131r.\nU\u00e7ak hareketi boyunca y\u00f6n de\u011fi\u015ftirmedi\u011fine g\u00f6re,\nI. Havan\u0131n u\u00e7a\u011fa uygulad\u0131\u011f\u0131 kald\u0131rma kuvveti, u\u00e7ak \u00fczerinde i\u015f yapmaz.\nII. R\u00fczgar u\u00e7ak \u00fczerinde i\u015f yapar.\nIII. Yer\u00e7ekimi kuvveti u\u00e7ak \u00fczerinde i\u015f yapmaz.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T059_05",
+   "govde": "S\u00fcrt\u00fcnmeli bir ortamda, yerden h kadar y\u00fckseklikten serbest b\u0131rak\u0131lan bir top, su dolu kab\u0131n i\u00e7ine d\u00fc\u015ferek suyun \u00e7evreye s\u0131\u00e7ramas\u0131na neden oluyor.\nBuna g\u00f6re,\nI. Yer\u00e7ekimi kuvveti, top \u00fczerinde i\u015f yapm\u0131\u015ft\u0131r.\nII. Top, kaptaki su \u00fczerinde i\u015f yapm\u0131\u015ft\u0131r.\nIII. Ayn\u0131 olay s\u00fcrt\u00fcnmesiz bir ortamda tekrarlansayd\u0131, kaptan daha fazla su s\u0131\u00e7rard\u0131.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z III",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T062_04",
+   "govde": "Is\u0131ca yal\u0131t\u0131lm\u0131\u015f bir ortamda bulunan Mehmet, v\u00fccut s\u0131cakl\u0131\u011f\u0131n\u0131 37 \u00b0C \u00f6l\u00e7t\u00fckten sonra i\u00e7inde bulunan suyun s\u0131cakl\u0131\u011f\u0131 38 \u00b0C olan bir havuza giriyor.\nBuna g\u00f6re, Mehmet ve havuzdaki sudan olu\u015fan sistem \u0131s\u0131l dengeye gelene kadar ge\u00e7en s\u00fcrede,\nI. Havuzdaki suyun \u00f6z \u0131s\u0131s\u0131 de\u011fi\u015fmez.\nII. Havuzdaki suyun s\u0131cakl\u0131\u011f\u0131 azal\u0131r.\nIII. Mehmet'in v\u00fccut \u0131s\u0131s\u0131 artar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(Is\u0131 al\u0131\u015fveri\u015fi yaln\u0131z Mehmet ve su aras\u0131nda olmaktad\u0131r.)",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T066_07",
+   "govde": "U\u00e7lar\u0131 aras\u0131ndaki \u0131s\u0131 ak\u0131\u015f\u0131n\u0131n ok y\u00f6n\u00fcnde oldu\u011fu \u015fekildeki metalin, K, L ve M b\u00f6lgelerinde bulunan molek\u00fcllerin ortalama kinetik enerjileri s\u0131ras\u0131yla E_K; E_L ve E_M dir.\nBuna g\u00f6re, E_K, E_L, E_M nicelikleri aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "E_K > E_L > E_M",
+    "B": "E_M > E_L > E_K",
+    "C": "E_K = E_L = E_M",
+    "D": "E_L > E_K = E_M",
+    "E": "E_K = E_M > E_L"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T069_01",
+   "govde": "Is\u0131ca yal\u0131t\u0131lm\u0131\u015f bir ortamda bulunan e\u015fit k\u00fctleli ve ilk s\u0131cakl\u0131klar\u0131 bilinmeyen kur\u015fun, demir ve al\u00fcminyumdan yap\u0131lm\u0131\u015f \u00e7ubuklar, \u00f6zde\u015f \u0131s\u0131t\u0131c\u0131larla e\u015fit s\u00fcre \u0131s\u0131t\u0131ld\u0131klar\u0131nda son s\u0131cakl\u0131klar\u0131 ayn\u0131 olmaktad\u0131r.\nAl\u00fcminyumun \u00f6z \u0131s\u0131s\u0131 en b\u00fcy\u00fck, kur\u015funun \u00f6z \u0131s\u0131s\u0131 da en k\u00fc\u00e7\u00fck oldu\u011funa g\u00f6re, kur\u015fun, demir ve al\u00fcminyum \u00e7ubuklar\u0131n\u0131n \u0131s\u0131t\u0131lmadan \u00f6nceki s\u0131cakl\u0131klar\u0131; T_K, T_D ve T_A aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?\n(H\u00e2l de\u011fi\u015fimi olmamaktad\u0131r.)",
+   "sikler": {
+    "A": "T_A > T_D > T_K",
+    "B": "T_D > T_K > T_A",
+    "C": "T_K = T_A = T_D",
+    "D": "T_A > T_K > T_D",
+    "E": "T_D > T_A > T_K"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T069_05",
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan kapal\u0131 bir kapta, s\u0131cakl\u0131klar\u0131 s\u0131ras\u0131yla 50 \u00b0C ve 20 \u00b0C olan K ve L s\u0131v\u0131lar\u0131, metal bir \u015feritle birbirinden ayr\u0131lm\u0131\u015ft\u0131r. Metal \u015ferit, s\u0131v\u0131lar aras\u0131ndaki \u0131s\u0131 transferini kolayca ger\u00e7ekle\u015ftiren bir maddeden yap\u0131lm\u0131\u015ft\u0131r.\nBuna g\u00f6re, s\u0131v\u0131lar aras\u0131 \u0131s\u0131l denge sa\u011flanana kadar ge\u00e7en s\u00fcrede, K ve L de,\n- | K | L\nI. | Kat\u0131la\u015fma | Is\u0131nma\nII. | Is\u0131nma | Buharla\u015fma\nIII. | So\u011fuma | Buharla\u015fma\nolaylar\u0131ndan hangileri ger\u00e7ekle\u015febilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T069_06",
+   "govde": "K\u00fctleleri e\u015fit ve erime s\u0131cakl\u0131\u011f\u0131nda bulunan K, L ve M kat\u0131 maddeleri, \u0131s\u0131ca yal\u0131t\u0131lm\u0131\u015f bo\u015f kaplara konulup \u00f6zde\u015f \u0131s\u0131t\u0131c\u0131larla e\u015fit s\u00fcrelerde \u0131s\u0131t\u0131ld\u0131klar\u0131nda, en \u00e7ok K maddesinin, en az M maddesinin eridi\u011fi g\u00f6zlemleniyor.\nBuna g\u00f6re, K, L ve M maddelerinin erime \u0131s\u0131lar\u0131 L_K; L_L ve L_M aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "L_K = L_L = L_M",
+    "B": "L_K > L_M > L_L",
+    "C": "L_M > L_L > L_K",
+    "D": "L_K > L_L > L_M",
+    "E": "L_M > L_K > L_L"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T070_05",
+   "govde": "Bilgi: Is\u0131 al\u0131\u015fveri\u015fi yapan iki saf maddeden birisi hal de\u011fi\u015ftiriyorsa, s\u0131cakl\u0131\u011f\u0131, hal de\u011fi\u015fimi s\u00fcresince sabit kal\u0131r.\nIs\u0131ca yal\u0131t\u0131lm\u0131\u015f kapal\u0131 bir kaba konulan K kat\u0131 maddesi ile L s\u0131v\u0131s\u0131 yaln\u0131z birbiriyle \u0131s\u0131 al\u0131\u015fveri\u015fi yap\u0131yor.\nBa\u015flang\u0131\u00e7ta K nin s\u0131cakl\u0131\u011f\u0131 L ninkinden b\u00fcy\u00fck oldu\u011funa g\u00f6re, \u0131s\u0131l denge sa\u011flanana kadar ge\u00e7en s\u00fcrede K ve L maddelerinin s\u0131cakl\u0131klar\u0131 i\u00e7in,\n- | K nin s\u0131cakl\u0131\u011f\u0131 | L nin s\u0131cakl\u0131\u011f\u0131\nI. | Azal\u0131r | De\u011fi\u015fmez\nII. | Azal\u0131r | Artar\nIII. | De\u011fi\u015fmez | Azal\u0131r\nile verilenlerden hangilerinin ger\u00e7ekle\u015fmesi <u>m\u00fcmk\u00fcn de\u011fildir</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T072_06",
+   "govde": "Berk, deniz seviyesinde bulunan \u0131s\u0131ca yal\u0131t\u0131lm\u0131\u015f bir kaptaki suyun i\u00e7ine, bir miktar buz par\u00e7as\u0131 att\u0131ktan sonra kronometre kullanarak ge\u00e7en s\u00fcreyi ve bu s\u00fcreler i\u00e7inde kapta bulunan buzun k\u00fctlesini \u00f6l\u00e7erek a\u015fa\u011f\u0131da verilen tabloyu haz\u0131rlam\u0131\u015ft\u0131r.\nBuz k\u00fctlesi (gram) | 20 | 20 | 14 | 12 | 12\nS\u00fcre (dak) | 0 | 4 | 8 | 12 | 16\nBuna g\u00f6re Berk'in haz\u0131rlad\u0131\u011f\u0131 tablodaki say\u0131sal verilere bakarak deney ile ilgili,\nI. Ba\u015flang\u0131\u00e7ta suyun s\u0131cakl\u0131\u011f\u0131 0\u00b0C nin \u00fcst\u00fcndedir.\nII. 0 \u2013 4 dakika aral\u0131\u011f\u0131nda buzun s\u0131cakl\u0131\u011f\u0131 0\u00b0C nin alt\u0131ndad\u0131r.\nIII. 0 \u201316 dakika aral\u0131\u011f\u0131nda kaptaki suyun k\u00fctlesi 8 gram artm\u0131\u015ft\u0131r.\nsonu\u00e7lar\u0131ndan hangilerine ula\u015f\u0131labilir?",
+   "sikler": {
+    "A": "Yaln\u0131z III",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T074_05",
+   "govde": "A\u015fa\u011f\u0131da, baz\u0131 uygulamalar ve insanlar\u0131n tercihleri ile ilgili \u00f6rnekler verilmi\u015ftir.\nI. Evlerde kalorifer peteklerinin zemine yak\u0131n bir yere montelenmesi\nII. Kiral\u0131k ev arayan bir ki\u015finin, g\u00fcne\u015f g\u00f6ren evleri tercih etmesi\nIII. Elektrikli \u0131s\u0131t\u0131c\u0131larda rezistans\u0131n makinenin alt\u0131nda olmas\u0131\nBuna g\u00f6re, bu \u00f6rneklerin hangisinde \u0131s\u0131n\u0131n konveksiyon ile yay\u0131lmas\u0131ndan yararlan\u0131lmak istenmektedir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T074_06",
+   "govde": "Bilgi: Termoslar i\u00e7 i\u00e7e ge\u00e7mi\u015f ve aras\u0131ndaki hava bo\u015falt\u0131lm\u0131\u015f cam kaplardan yap\u0131l\u0131rlar. Ayr\u0131ca termoslar\u0131n i\u00e7 ve d\u0131\u015f y\u00fczeyleri yans\u0131t\u0131c\u0131 madde ile kaplanarak \u0131s\u0131n\u0131n \u0131\u015f\u0131ma yolu ile ge\u00e7i\u015fi engellenmi\u015f olur.\n\u015eekil 1'deki X termosunun d\u0131\u015f y\u00fczeyi \u015eekil 2'deki Y termosunun i\u00e7 y\u00fczeyi, \u015eekil 3'teki Z termosunun hem i\u00e7 hem de d\u0131\u015f y\u00fczeyi ayna ile kaplanm\u0131\u015ft\u0131r.\nBuna g\u00f6re bu termoslara konulacak s\u0131cak \u00e7ay\u0131n s\u0131cakl\u0131\u011f\u0131n\u0131 korumas\u0131, so\u011fuk limonatan\u0131n da so\u011fuklu\u011funu korumas\u0131 i\u00e7in,\n- | \u00c7ay i\u00e7in | Limonata i\u00e7in\nI. | Y | X\nII. | Z | X\nIII. | X | Z\nile verilen ikililerden hangileri kullan\u0131labilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T076_05",
+   "govde": "\u0130letken ve n\u00f6tr X, Y, Z metal cisimleri, \u015fekildeki gibi birbirine dokunmakta iken negatif y\u00fckl\u00fc iletken bir k\u00fcre yal\u0131tkan sap\u0131ndan tutularak X cismine de\u011fmeyecek \u015fekilde yakla\u015ft\u0131r\u0131l\u0131yor.\nY\u00fck dengesi sa\u011fland\u0131ktan sonra X, Y ve Z cisimleri yal\u0131tkan ayaklar\u0131ndan tutularak birbirinden ayr\u0131ld\u0131\u011f\u0131na g\u00f6re, cisimlerin son durumdaki y\u00fckleri,\n- | X | Y | Z\nI. | +q | 0 | \u2212q\nII. | \u22122q | 0 | +2q\nIII. | \u2212q | \u22122q | +3q\nile verilenlerden hangileri gibi olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T077_07",
+   "govde": "\u015eekil 1 \u2013 2'deki \u00f6zde\u015f K ve L elektroskoplar\u0131n\u0131n y\u00fck miktarlar\u0131 s\u0131ras\u0131ysa +4q ve \u22122q; yapraklar\u0131 aras\u0131ndaki a\u00e7\u0131lar \u03b1_K ve \u03b1_L d\u0131r. Elektroskoplar\u0131n topuzlar\u0131n\u0131 birle\u015ftiren iletken tel \u00fczerindeki S anahtar\u0131 kapal\u0131 duruma getirildi\u011finde her iki elektroskobunda yapraklar\u0131 aras\u0131ndaki a\u00e7\u0131 \u03b1 oluyor.\nBuna g\u00f6re, \u03b1_K, \u03b1_L ve \u03b1 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru olarak verilmi\u015ftir?",
+   "sikler": {
+    "A": "\u03b1_K = \u03b1_L = \u03b1",
+    "B": "\u03b1_K > \u03b1_L > \u03b1",
+    "C": "\u03b1_K > \u03b1 > \u03b1_L",
+    "D": "\u03b1_K > \u03b1_L = \u03b1",
+    "E": "\u03b1 > \u03b1_K > \u03b1_L"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T081_01",
+   "govde": "S\u00fcrt\u00fcnmesiz yal\u0131tkan zeminde \u015fekildeki konumlarda tutulmakta olan \u00f6zde\u015f K, L ve M iletken cisimlerin birbirine dokundurulmadan \u00f6nceki y\u00fck miktar\u0131 +q_K, +q_L; \u2212q_M dir.\nBuna g\u00f6re; cisimler, y\u00fck dengesi sa\u011fland\u0131ktan sonra ayn\u0131 anda serbest b\u0131rak\u0131l\u0131rsa,\n- | K | L | M\nI | \u2212x | Hareket etmez | +x\nII | Hareket etmez | Hareket etmez | Hareket etmez\nIII | \u2212x | +x | +x\nile verilen y\u00f6nlerden hangilerine do\u011fru harekete ge\u00e7ebilirler?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T082_04",
+   "govde": "Elektrikle y\u00fckl\u00fc iletken X, Y ve Z cisimlerinin topra\u011fa ve birbirine iletken teller ile ba\u011flanm\u0131\u015f hali \u015fekil \u2013 I. II ve III teki gibidir.\nBuna g\u00f6re, 1, 2, 3 nolu anahtarlardan hangileri kapat\u0131l\u0131rsa, iletken teller \u00fczerinde y\u00fck ak\u0131\u015f\u0131 olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I, II ve III",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T082_07",
+   "govde": "Y\u00fckl\u00fc, iletken ve <u>yar\u0131\u00e7aplar\u0131 ayn\u0131 olan</u> A, B k\u00fcreleri birbirine dokundurulduktan sonra e\u015fit uzunluktaki yal\u0131tkan iplerle tavana as\u0131ld\u0131\u011f\u0131nda \u015fekildeki gibi dengede kal\u0131yor.\n\u03b1 > \u03b8 oldu\u011funa g\u00f6re, A ve B k\u00fcrelerine ait,\nI. Y\u00fck miktar\u0131\nII. K\u00fctle\nIII. Birbirlerine uygulad\u0131klar\u0131 elektriksel kuvvet\nniceliklerinden hangilerinin b\u00fcy\u00fckl\u00fc\u011f\u00fc her ikisi i\u00e7in de e\u015fittir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T084_02",
+   "govde": "Birbirine dokunmakta olan \u00f6zde\u015f ve n\u00f6tr K_1, K_2, K_3 iletken k\u00fcrelerine pozitif elektrikle y\u00fckl\u00fc ve y\u00fck miktarlar\u0131 farkl\u0131 iki metal \u00e7ubuk \u015fekildeki gibi yakla\u015ft\u0131r\u0131l\u0131yor.\nBuna g\u00f6re, y\u00fck dengesi sa\u011fland\u0131ktan sonra, K_1, K_2, K_3 k\u00fcrelerinin y\u00fck miktarlar\u0131na ait s\u00fctun grafikleri\n1, 2, 3 ile g\u00f6sterilenlerden hangileri gibi olabilir?\n(\u25a0; \u2212 y\u00fck miktar\u0131, \u25a1; + y\u00fck miktar\u0131)",
+   "sikler": {
+    "A": "Yaln\u0131z 2",
+    "B": "Yaln\u0131z 3",
+    "C": "1 ve 2",
+    "D": "1 ve 3",
+    "E": "2 ve 3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T085_01",
+   "govde": "Elektrik y\u00fcklerinin birbirine etkisi dikkate al\u0131narak g\u00fcn\u00fcm\u00fczde kullan\u0131lan \u00e7ok \u00f6nemli bulu\u015flar yap\u0131lm\u0131\u015ft\u0131r.\nBuna g\u00f6re,\nI. Fotokopi makinesi\nII. Baca duman\u0131 filitreleri\nIII. Elektrostatik toz boyama tabancalar\u0131\naletlerinden hangileri bu bulu\u015flara \u00f6rnek verilebilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T086_03",
+   "govde": "Y\u00fck miktar\u0131 bir elektronun y\u00fck\u00fcn\u00fcn d\u00f6rt kat\u0131 olan iletken K k\u00fcresi, ba\u015flang\u0131\u00e7ta n\u00f6tr olan L ve M iletken k\u00fcrelerine \u015fekildeki gibi ayn\u0131 anda dokunduruluyor.\nY\u00fck dengesi sa\u011fland\u0131ktan sonra k\u00fcreler birbirinden ayr\u0131ld\u0131\u011f\u0131na g\u00f6re, K, L, M k\u00fcrelerinin son y\u00fck miktarlar\u0131,\n- | K | L | M\nI. | 2e^\u2212 | e^\u2212 | e^\u2212\nII. | 3e^\u2212 | e^\u2212 | 0\nIII. | 2e^\u2212 | (3e^\u2212)/2 | e^\u2212/2\nile verilenlerden hangisi gibi <u>olamaz</u>?\n(e^\u2212: elektronun y\u00fck miktar\u0131)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T088_08",
+   "govde": "Bir \u00f6\u011frenci \u015fekildeki elektrik devresinde yaln\u0131z bir tane diren\u00e7ten ak\u0131m ge\u00e7mesini istiyor.\nBuna g\u00f6re, \u00f6\u011frenci 1, 2, 3 numaral\u0131 yerlere,\n- | 1 | 2 | 3\nI. | Ampermetre | Voltmetre | Ampermetre\nII. | Voltmetre | Ampermetre | Voltmetre\nIII. | Voltmetre | Voltmetre | Ampermetre\nile verilen \u00f6l\u00e7\u00fcm aletlerinden hangilerini ba\u011flayabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T094_06",
+   "govde": "\u0130letken bir telin direnci, boyu ile do\u011fru, kesit alan\u0131 ile ters orant\u0131l\u0131d\u0131r. Pilin t\u00fckenme s\u00fcresi ise \u00fczerinden \u00e7ekilen ak\u0131m ile ters orant\u0131l\u0131d\u0131r.\n\u00dczerinde boy ve kesit alanlar\u0131 yazan bak\u0131rdan yap\u0131lm\u0131\u015f teller ile \u00f6zde\u015f pillerden olu\u015fturulan X ve Y elektrik devreleri \u015fekildeki gibidir.\nBuna g\u00f6re,\nI. X devresinin e\u015fde\u011fer direnci, Y devresininkinden k\u00fc\u00e7\u00fckt\u00fcr.\nII. X devresindeki pilden \u00e7ekilen ak\u0131m, Y devresindeki pilden \u00e7ekilen ak\u0131mdan b\u00fcy\u00fckt\u00fcr.\nIII. X devresindeki pilin t\u00fckenme s\u00fcresi, Y devresindeki pilin t\u00fckenme s\u00fcresinden b\u00fcy\u00fckl\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T098_01",
+   "govde": "Bir kalorifer pete\u011finde suyun yapt\u0131\u011f\u0131 dolan\u0131m olay\u0131 \u015fekilde g\u00f6sterilmi\u015ftir.\nBuna g\u00f6re, dolan\u0131m olay\u0131 basit bir elektrik devresine benzetilirse su ak\u0131\u015f\u0131 (K), petek (L), pompa (M),\n- | K | L | M\nI. | Elektron | Lamba | \u00dcrete\u00e7\nII. | Elektron | Lamba | Diren\u00e7\nIII. | Ak\u0131m | Diren\u00e7 | Ak\u00fc\nile verilen devre elemanlar\u0131ndan ve par\u00e7ac\u0131klardan hangilerine denk gelebilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T099_01",
+   "govde": "Bir odadaki \u00e7al\u0131\u015fma masas\u0131n\u0131n y\u00fczeyinde ortalama 750 candela\u2019l\u0131k ayd\u0131nlanma \u015fiddeti;\nI. 75 watt\u2019l\u0131k akkor filamanl\u0131,\nII. 13 watt\u2019l\u0131k LED,\nIII. 40 watt\u2019l\u0131k floresan\nampullerinden herhangi biri ile tek ba\u015f\u0131na sa\u011flanabilmektedir.\nBu ampuller e\u015fit s\u00fcre \u00e7al\u0131\u015ft\u0131r\u0131ld\u0131klar\u0131nda akkor filamanl\u0131, LED ve floresan ampullerin harcad\u0131klar\u0131 elektrik enerjileri s\u0131ras\u0131yla E_I, E_(II) ve E_(III) ise bunlar aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerin hangisinde do\u011frudur?",
+   "sikler": {
+    "A": "E_I = E_(II) = E_(III)",
+    "B": "E_I > E_(III) > E_(II)",
+    "C": "E_I > E_(II) = E_(III)",
+    "D": "E_I = E_(III) > E_(II)",
+    "E": "E_(III) > E_(II) > E_I"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": "TYT - 2023"
+  },
+  {
+   "dosya": "FZT345-T100_06",
+   "govde": "Bir \u00f6\u011frenci, bir \u00fct\u00fc ve bir \u00fcrete\u00e7 ile haz\u0131rlad\u0131\u011f\u0131 bir elektrik devresinde, iletken tellerin KL ve MN u\u00e7lar\u0131n\u0131 \u015fekildeki gibi bo\u015fta b\u0131rak\u0131yor.\nBuna g\u00f6re, \u00f6\u011frenci \u00fct\u00fcn\u00fcn \u00e7al\u0131\u015fmas\u0131n\u0131 isterse, devrenin KL ve MN k\u0131s\u0131mlar\u0131na,\n- | KL k\u0131sm\u0131 | MN k\u0131sm\u0131\nI. | Ebonit \u00e7ubuk | (\u00fcrete\u00e7 \u00e7izimi: \u2212 +)\nII. | (\u00fcrete\u00e7 \u00e7izimi: + \u2212) | Cam \u00e7ubuk\nIII. | (\u00fcrete\u00e7 \u00e7izimi: + \u2212) | G\u00fcm\u00fc\u015f tel\nile verilen elemanlardan hangilerini ba\u011flayabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T104_01",
+   "govde": "S\u00fcrt\u00fcnmesiz yatay d\u00fczlemde esnek yaylarla duvara ba\u011flanm\u0131\u015f K ve L m\u0131knat\u0131slar\u0131 ve yere sabitlenmi\u015f M m\u0131knat\u0131s\u0131 \u015fekildeki gibi dengededir. M m\u0131knat\u0131s\u0131 yere sabitlenmi\u015ftir.\nBu durumda 1. yayda s\u0131k\u0131\u015fma, 2. yayda gerilme kuvveti olu\u015ftu\u011funa g\u00f6re, m\u0131knat\u0131slar\u0131n X, Y ve Z kutuplar\u0131n\u0131n cinsleri i\u00e7in,\n- | X | Y | Z\nI. | N | S | S\nII. | S | N | N\nIII. | S | S | N\nile verilenlerden hangileri do\u011fru olabilir?\n(M\u0131knat\u0131slar \u00f6zde\u015fdir)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T104_03",
+   "govde": "Sabit tutulan K ve L m\u0131knat\u0131slar\u0131n\u0131n aras\u0131na, iplerle tavana as\u0131l\u0131 bir M m\u0131knat\u0131s\u0131 b\u0131rak\u0131l\u0131nca, \u015fekildeki gibi dengede kal\u0131yor.\nBuna g\u00f6re,\nI. L m\u0131knat\u0131s\u0131n\u0131n kutup \u015fiddeti K ninkinden fazlad\u0131r.\nII. P ve T kutuplar\u0131 ayn\u0131 cins ise Y ve R kutuplar\u0131 da ayn\u0131 cinstir.\nIII. X ve Z z\u0131t kutupludur.\nyarg\u0131lar\u0131ndan hangileri <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T104_04",
+   "govde": "Bir s\u0131n\u0131ftaki \u00fc\u00e7 \u00f6\u011frenciden Meryem, Tar\u0131k ve \u015eebnem fizik dersinden ald\u0131klar\u0131 proje \u00f6devini yaparken e\u015fit uzunluktaki iplerle tavana ast\u0131klar\u0131 K ve L m\u0131knat\u0131slar\u0131n\u0131n \u015fekildeki gibi dengede kald\u0131\u011f\u0131n\u0131 ve iplerin tavan\u0131n d\u00fc\u015feyi ile yapt\u0131\u011f\u0131 a\u00e7\u0131lar aras\u0131ndaki ili\u015fkinin \u03b1 > \u03b8 oldu\u011funu g\u00f6zlemlemi\u015flerdir.\nBu deney ile ilgili \u00f6\u011frenciler \u015fu yorumlar\u0131 yapm\u0131\u015ft\u0131r:\nMeryem: K ve L m\u0131knat\u0131slar\u0131n\u0131n kutup \u015fiddetleri e\u015fittir.\nTar\u0131k: L m\u0131knat\u0131s\u0131n\u0131n k\u00fctlesi K ninkinden b\u00fcy\u00fckt\u00fcr.\n\u015eebnem : M\u0131knat\u0131slar\u0131n 1 ve 2 kutuplar\u0131 z\u0131tt\u0131r.\nBuna g\u00f6re, hangi \u00f6\u011frencilerin yapt\u0131\u011f\u0131 yorumlar <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z Meryem",
+    "B": "Yaln\u0131z Tar\u0131k",
+    "C": "Yaln\u0131z \u015eebnem",
+    "D": "Meryem ve Tar\u0131k",
+    "E": "Tar\u0131k ve \u015eebnem"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T106_01",
+   "govde": "S\u00fcrt\u00fcnmelerin ihmal edildi\u011fi bir ortamda etraf\u0131na iletken tel sar\u0131lm\u0131\u015f bir \u00e7ivi, demir \u00e7ubuk ve \u00e7ubuk m\u0131knat\u0131s \u015fekildeki konumlar\u0131nda dengededir.\nBuna g\u00f6re, A anahtar\u0131 kapat\u0131l\u0131rsa X ve Y iplerinde olu\u015fan gerilme kuvvetleri i\u00e7in,\n- | X ipi | Y ipi\nI. | S\u0131f\u0131rd\u0131r | S\u0131f\u0131rdan farkl\u0131d\u0131r\nII. | S\u0131f\u0131rd\u0131r | S\u0131f\u0131rd\u0131r\nIII. | S\u0131f\u0131rdan farkl\u0131d\u0131r | S\u0131f\u0131rdan farkl\u0131d\u0131r\nse\u00e7eneklerden hangileri do\u011fru olabilir?\n(T\u00fcm cisimler birbirinin manyetik alan\u0131 i\u00e7indedir. \u00c7ivi bulundu\u011fu konumda sabitlenmi\u015ftir.)",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T107_04",
+   "govde": "A\u011f\u0131rl\u0131klar\u0131 e\u015fit olan X, Y ve Z cisimlerinin taban alanlar\u0131 s\u0131ras\u0131yla 2A, 3A ve A d\u0131r.\nBuna g\u00f6re,\nI. X cisminin yere uygulad\u0131\u011f\u0131 bas\u0131n\u00e7 kuvveti, Y ninkinden b\u00fcy\u00fckt\u00fcr.\nII. Y ve Z cisimlerinin yere uygulad\u0131klar\u0131 bas\u0131n\u00e7lar e\u015fittir.\nIII. X ve Z cisimlerinin yere uygulad\u0131klar\u0131 bas\u0131n\u00e7 kuvvetleri e\u015fittir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T107_07",
+   "govde": "Ayn\u0131 maddeden yap\u0131lm\u0131\u015f kat\u0131 K ve L silindirleri ile M prizmas\u0131 \u015fekildeki gibidir. L ve M cisimlerinin y\u00fckseklikleri ayn\u0131 olup K'ninkinden daha azd\u0131r.\nCisimlerin yere temas eden y\u00fczeyleri s\u0131ras\u0131yla A, A, 2A oldu\u011funa g\u00f6re, cisimlerin zemine uygulad\u0131klar\u0131 bas\u0131n\u00e7lar P_K, P_L, P_M aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "P_L = P_M > P_K",
+    "B": "P_K = P_L > P_M",
+    "C": "P_K > P_L = P_M",
+    "D": "P_K > P_L > P_M",
+    "E": "P_L > P_M > P_K"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T110_04",
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan bir U borusunun i\u00e7inde e\u015fit y\u00fckseklikle su bulunmaktad\u0131r. Daha sonra kab\u0131n X koluna bir miktar zeytinya\u011f\u0131 konuluyor.\nBuna g\u00f6re, s\u0131v\u0131lar\u0131n bile\u015fik kaptaki denge durumlar\u0131 a\u015fa\u011f\u0131dakilerden hangisi gibi olabilir? (d_(su) > d_(zeytinya\u011f\u0131))",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T114_03",
+   "govde": "D\u00fcnya, \u00f6zk\u00fctlesi sabit, yar\u0131\u00e7ap\u0131 r olan bir k\u00fcre olarak kabul edilmektedir. D\u00fcnya'n\u0131n y\u00fczeyinden merkezine do\u011fru a\u00e7\u0131lan \u015eekil 1'deki t\u00fcnelin K ve L konumlar\u0131nda, i\u00e7inde su bulunan \u015eekil 2'deki kab\u0131n taban\u0131na yap\u0131lan s\u0131v\u0131 bas\u0131n\u00e7lar\u0131 P_K, P_L; kaplar\u0131n zemine yapt\u0131klar\u0131 bas\u0131n\u00e7lar P_K', P_L' olarak \u00f6l\u00e7\u00fcl\u00fcyor.\nBuna g\u00f6re, P_K, P_L ve P_K', P_L' nicelikleri aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "P_K = P_L , P_K' = P_L'",
+    "B": "P_L > P_K , P_K' = P_L'",
+    "C": "P_K > P_L , P_K' > P_L'",
+    "D": "P_L > P_K , P_L' > P_K'",
+    "E": "P_K = P_L , P_L' > P_K'"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T118_07",
+   "govde": "Bilgi: Rak\u0131m, bir yerin deniz seviyesine g\u00f6re y\u00fcksekli\u011fini g\u00f6steren bir de\u011ferdir.\nA\u015fa\u011f\u0131da, baz\u0131 il\u00e7e merkezlerinin \u015fehir giri\u015flerinde bulunan tabelalar, 1, 2, 3 numaral\u0131 \u015fekillerde g\u00f6sterilmi\u015ftir.\n1: BOZ\u00dcY\u00dcK | N\u00dcFUS: 72187 | RAKIM: 740\n2: BANDIRMA | N\u00dcFUS: 150[??] | RAKIM: 2\n3: G\u00d6KSUN | N\u00dcFUS: 51[??] | RAKIM: 135[??]\n\u00d6zde\u015f buzlar\u0131n bu il\u00e7elerdeki erime s\u0131cakl\u0131klar\u0131 s\u0131ras\u0131yla T_1, T_2, T_3 oldu\u011funa g\u00f6re, bu s\u0131cakl\u0131klar aras\u0131ndaki ili\u015fki, a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "T_2 > T_1 > T_3",
+    "B": "T_1 = T_2 = T_3",
+    "C": "T_3 > T_1 > T_2",
+    "D": "T_3 > T_2 > T_1",
+    "E": "T_2 > T_3 > T_1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T122_03",
+   "govde": "Hacimleri e\u015fit, \u00f6zk\u00fctleleri s\u0131ras\u0131yla 2d ve 3d olan t\u00fcrde\u015f K, L cisimleri, d \u00f6zk\u00fctleli s\u0131v\u0131da \u015fekildeki gibi dengede iken iplerde olu\u015fan gerilme kuvvetlerinin b\u00fcy\u00fckl\u00fckleri T_K ve T_L, s\u0131v\u0131n\u0131n cisimlere uygulad\u0131\u011f\u0131 kald\u0131rma kuvvetlerinin b\u00fcy\u00fckl\u00fckleri F_K ve F_L dir.\nBuna g\u00f6re, T_K, T_L ve F_K, F_L nicelikleri aras\u0131ndaki ili\u015fki, a\u015fa\u011f\u0131daki se\u00e7eneklerin hangisinde do\u011fru olarak verilmi\u015ftir?",
+   "sikler": {
+    "A": "T_K = T_L, F_K = F_L",
+    "B": "T_L > T_K, F_K = F_L",
+    "C": "T_K > T_L; F_L > F_K",
+    "D": "T_K > T_L, F_K = F_L",
+    "E": "T_L > T_K, F_K > F_L"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T122_04",
+   "govde": "A\u011fz\u0131na kadar \u00f6zk\u00fctlesi d olan s\u0131v\u0131yla doldurulmu\u015f bir kaba k\u00fctlesi m olan t\u00fcrde\u015f bir cisim at\u0131l\u0131yor.\nTa\u015fan s\u0131v\u0131n\u0131n k\u00fctlesi m ye e\u015fit oldu\u011funa g\u00f6re;\nI. Ta\u015fan s\u0131v\u0131n\u0131n hacmi, cismin hacmine e\u015fittir.\nII. Cismin \u00f6zk\u00fctlesi, s\u0131v\u0131n\u0131n \u00f6zk\u00fctlesinden b\u00fcy\u00fckt\u00fcr.\nIII. Cisme etki eden kald\u0131rma kuvvetinin b\u00fcy\u00fckl\u00fc\u011f\u00fc, cismin a\u011f\u0131rl\u0131\u011f\u0131na e\u015fittir.\nyarg\u0131lar\u0131ndan hangileri do\u011fru olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T124_02",
+   "govde": "Yeni ke\u015ffedilmi\u015f bir gezegende \u015fekildeki gibi bir balonla yerden y\u00fcksekte atmosferik \u00f6l\u00e7\u00fcmler yap\u0131lmas\u0131 planlan\u0131yor. Atmosfer s\u0131cakl\u0131\u011f\u0131n\u0131n sabit oldu\u011fu kabul edilen bu gezegende bulunan A, B, C ve D gazlar\u0131n\u0131n sabit s\u0131cakl\u0131k ve bas\u0131n\u00e7taki k\u00fctle-hacim grafi\u011fi a\u015fa\u011f\u0131daki gibidir. Bu gezegenin atmosferi A, B, C veya D gazlar\u0131ndan olu\u015fabilece\u011fi gibi balon da bu gazlarla doldurulabilir.\nBalonun ve \u00fczerindeki \u00f6l\u00e7\u00fcm cihazlar\u0131n\u0131n a\u011f\u0131rl\u0131\u011f\u0131 ihmal edildi\u011fine g\u00f6re;\n- | <u>Atmosfer</u> | <u>Balon</u>\nI. | A | B ve D kar\u0131\u015f\u0131m\u0131\nII. | B | A\nIII. | C ve D kar\u0131\u015f\u0131m\u0131 | C\ndurumlar\u0131ndan hangilerinde balon yerden havalanarak atmosferik \u00f6l\u00e7\u00fcmler yapabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "TYT - 2023"
+  },
+  {
+   "dosya": "FZT345-T126_06",
+   "govde": "Tahta \u00fczerinde konulmu\u015f demir bir bilye \u015eekil 1'deki gibi dengede iken, tahtan\u0131n suya batan k\u0131sm\u0131n\u0131n y\u00fcksekli\u011fi h_T kaptaki su y\u00fcksekli\u011fi h_S dir. Bilye tahta \u00fczerinden al\u0131n\u0131p \u015eekil 2'deki gibi esnek bir yay yard\u0131m\u0131yla tahtan\u0131n alt\u0131na ba\u011flan\u0131yor.\nBuna g\u00f6re, ula\u015f\u0131lan son denge durumunda,\nI. h_T azalm\u0131\u015ft\u0131r.\nII. h_S, artm\u0131\u015ft\u0131r.\nIII. Yayda olu\u015fan gerilme kuvveti s\u0131f\u0131rdan farkl\u0131d\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(Yay\u0131n hacmi ve a\u011f\u0131rl\u0131\u011f\u0131 \u00f6nemsizdir.)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T128_03",
+   "govde": "\u0130\u00e7inde durgun su bulunan bir havuzda i\u00e7inde bir \u00e7ocu\u011fun bulundu\u011fu bir bot durmaktad\u0131r. Bu durumda havuzdaki su y\u00fcksekli\u011fi h, suyun bota uygulad\u0131\u011f\u0131 kald\u0131rma kuvvetinin b\u00fcy\u00fckl\u00fc\u011f\u00fc F_K dir.\n\u00c7ocuk botun \u00fczerinden suya inip y\u00fczerek bottan uzakla\u015f\u0131rsa, h ve F_K niceliklerinin de\u011fi\u015fimi i\u00e7in ne s\u00f6ylenebilir?\n(\u00c7ocu\u011fun suya inmesi s\u0131ras\u0131nda havuzdan su ta\u015fm\u0131yor ve \u00e7ocu\u011fun ortalama \u00f6zk\u00fctlesi sudan k\u00fc\u00e7\u00fck kabul edilecek.)\nh | F_K",
+   "sikler": {
+    "A": "Artar | Artar",
+    "B": "Artar | Azal\u0131r",
+    "C": "De\u011fi\u015fmez | Azal\u0131r",
+    "D": "De\u011fi\u015fmez | De\u011fi\u015fmez",
+    "E": "Azal\u0131r | Azal\u0131r"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T135_01",
+   "govde": "K dalga kayna\u011f\u0131ndan \u00fcretilen yay dalgalar\u0131n\u0131n g\u00f6r\u00fcn\u00fcm\u00fc, \u015fekildeki gibi olmaktad\u0131r.\nYay\u0131n kal\u0131nl\u0131\u011f\u0131 her yerinde ayn\u0131 oldu\u011funa g\u00f6re, kayna\u011f\u0131n \u00fcretti\u011fi ilk dalgalara ait;\nI. Frekans\nII. Dalga boyu\nIII. Genlik\nniceliklerinden hangileri, kayna\u011f\u0131n \u00fcretti\u011fi son dalgalar\u0131n\u0131nkinden daha b\u00fcy\u00fckt\u00fcr?\n(B\u00f6lmeler e\u015fit aral\u0131kl\u0131d\u0131r.)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T136_06",
+   "govde": "Bir dalga le\u011feninin X, Y, Z b\u00f6lgelerinin taban\u0131na farkl\u0131 y\u00fcksekliklerde kat\u0131 maddeler konularak farkl\u0131 derinliklerde ortamlar olu\u015fturuluyor. Sabit frekansl\u0131 dalga kayna\u011f\u0131ndan \u00fcretilen su dalgalar\u0131n\u0131n, X, Y, Z b\u00f6lgelerinden ge\u00e7erkenki h\u0131zlar\u0131n\u0131n b\u00fcy\u00fckl\u00fckleri s\u0131ras\u0131yla \u03d1_X, \u03d1_Y, \u03d1_Z dir.\nBuna g\u00f6re, \u03d1_X, \u03d1_Y, \u03d1_Z aras\u0131ndaki ili\u015fki hangisidir?",
+   "sikler": {
+    "A": "\u03d1_Z > \u03d1_X > \u03d1_Y",
+    "B": "\u03d1_X > \u03d1_Z > \u03d1_Y",
+    "C": "\u03d1_Y > \u03d1_X > \u03d1_Z",
+    "D": "\u03d1_X = \u03d1_Z > \u03d1_Y",
+    "E": "\u03d1_X = \u03d1_Y = \u03d1_Z"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T139_07",
+   "govde": "Bir \u00f6\u011frencinin, kronometre, dalga le\u011feni, sabit periyotlu bir dalga kayna\u011f\u0131 ve kat\u0131 bir madde kullanarak haz\u0131rlad\u0131\u011f\u0131 d\u00fczene\u011fin d\u00fc\u015fey kesiti \u015fekildeki gibidir.\n\u00d6\u011frenci, O noktas\u0131ndaki kaynaktan \u00fcretilen do\u011frusal su dalgalar\u0131n\u0131n e\u015fit uzunluktaki AB, CD ve EF b\u00f6l\u00fcmlerini ge\u00e7me s\u00fcrelerini kronometre yard\u0131m\u0131yla t_(AB), t_(CD), t_(EF) kadar \u00f6l\u00e7t\u00fc\u011f\u00fcne g\u00f6re, bu nicelikler aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "t_(AB) = t_(CD) = t_(EF)",
+    "B": "t_(AB) > t_(CD) > t_(EF)",
+    "C": "t_(EF) > t_(AB) > t_(CD)",
+    "D": "t_(AB) > t_(EF) > t_(CD)",
+    "E": "t_(EF) > t_(CD) > t_(AB)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T141_06",
+   "govde": "X ortam\u0131nda olu\u015fturulan periyodik su dalgalar\u0131n\u0131n Y, Z ve T ortamlar\u0131nda ilerleyi\u015fi \u015fekildeki gibidir.\nBu \u015fekle g\u00f6re, hangi iki ortam\u0131n\u0131n derinliklerinin aras\u0131ndaki ili\u015fki <u>bilinemez</u>?",
+   "sikler": {
+    "A": "X ve Z",
+    "B": "Y ve Z",
+    "C": "Z ve T",
+    "D": "X ve T",
+    "E": "X ve Y"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T142_01",
+   "govde": "Tamer Bey otomobili ile seyahat ederken radyoyu a\u00e7t\u0131\u011f\u0131nda, ekranda \u015fekilde verilen logoyu g\u00f6r\u00fcyor.\nSevgi FM \u2665\n94.5 MHz\nBuna g\u00f6re, radyo kanal\u0131n\u0131n ad\u0131n\u0131n alt\u0131nda MHz cinsinden yazan say\u0131lar, radyo kanal\u0131n\u0131n kulland\u0131\u011f\u0131 elektromanyetik dalgalar\u0131n hangi niceli\u011fini ifade eder?",
+   "sikler": {
+    "A": "H\u0131z",
+    "B": "Frekans",
+    "C": "Dalga boyu",
+    "D": "Genlik",
+    "E": "Geni\u015flik"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T149_05",
+   "govde": "Bilgi: Bir insan\u0131n kula\u011f\u0131, \u00e7\u0131kard\u0131\u011f\u0131 sesin bir engelden yans\u0131y\u0131p geri d\u00f6neni ile, kula\u011fa do\u011frudan geleni aras\u0131ndaki s\u00fcre fark\u0131 en az 0,1 saniye oldu\u011funda, sesin yank\u0131s\u0131n\u0131 ger\u00e7e\u011finden ay\u0131rt edebilmektedir.\n\u00d6zelli\u011fi her yerinde ayn\u0131 olan bir hava ortam\u0131nda bulunan G\u00fclseren, \u015fekildeki gibi bir yama\u00e7tan d kadar uzakta iken ba\u011f\u0131rmaktad\u0131r.\nHava ortam\u0131nda sesin yay\u0131lma h\u0131z\u0131n\u0131n b\u00fcy\u00fckl\u00fc\u011f\u00fc 340 m/s oldu\u011funa g\u00f6re, G\u00fclseren'in sesinin yank\u0131s\u0131n\u0131 duyurabilmesi i\u00e7in d uzakl\u0131\u011f\u0131 <u>en az</u> ka\u00e7 metre olmal\u0131d\u0131r?",
+   "sikler": {
+    "A": "15",
+    "B": "17",
+    "C": "20",
+    "D": "30",
+    "E": "34"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T152_09",
+   "govde": "Noktasal K ve L \u0131\u015f\u0131k kaynaklar\u0131 ve k\u00fcresel bir engel, perde \u00f6n\u00fcne \u015fekildeki gibi yerle\u015ftirilmi\u015ftir.\nBuna g\u00f6re, engelin perdede olu\u015fan g\u00f6lgesi a\u015fa\u011f\u0131dakilerden hangisi gibidir?\n(\u25cd : Yar\u0131 G\u00f6lge, \u25cf : Tam G\u00f6lge)",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T156_01",
+   "govde": "P kutusu i\u00e7inde bulunan d\u00fczlem aynaya g\u00f6nderilen I \u0131\u015f\u0131n\u0131, aynadan I' olarak yans\u0131yor.\nBuna g\u00f6re, I \u0131\u015f\u0131n\u0131n\u0131n aynaya gelme a\u00e7\u0131s\u0131 ka\u00e7 derecedir?",
+   "sikler": {
+    "A": "15",
+    "B": "30",
+    "C": "45",
+    "D": "60",
+    "E": "75"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T157_07",
+   "govde": "Birim kareler \u00fczerine yerle\u015ftirilen d\u00fczlem aynada P cisminin g\u00f6r\u00fcnt\u00fcs\u00fc P' olarak olu\u015fuyor.\nBuna g\u00f6re, aynan\u0131n \u00f6n\u00fcne konulan R cisminin g\u00f6r\u00fcnt\u00fcs\u00fc nerede olu\u015fur?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T158_09",
+   "govde": "Odak uzakl\u0131klar\u0131 f_\u00e7 ve f_T olan \u00e7ukur ve t\u00fcmsek aynalarla olu\u015fturulmu\u015f optik d\u00fczenekte, K noktas\u0131ndaki \u0131\u015f\u0131k kayna\u011f\u0131ndan \u00e7ukur aynaya, asal eksene paralel olarak g\u00f6nderilen I \u0131\u015f\u0131n\u0131, aynalardan \u015fekildeki gibi yans\u0131yarak kendi \u00fczerinden geri d\u00f6n\u00fcyor.\nBuna g\u00f6re, |T_1T_2| uzakl\u0131\u011f\u0131, f_\u00c7 ve f_T cinsinden nas\u0131l ifade edilir?",
+   "sikler": {
+    "A": "f_\u00c7 + f_T",
+    "B": "f_\u00c7 \u2212 f_T",
+    "C": "2f_\u00c7 \u2212 f_T",
+    "D": "f_\u00c7 \u2212 2f_T",
+    "E": "f_\u00c7 + 2f_T"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T160_01",
+   "govde": "\u0130\u00e7inde ayna bulunan K ve L kutular\u0131ndan K kutusuna g\u00f6nderilen bir I \u0131\u015f\u0131n\u0131, \u015fekilde verilen yolu izliyor.\nBuna g\u00f6re, K ve L kutular\u0131 i\u00e7inde,\n- | K kutusu | L kutusu\nI. | D\u00fczlem | T\u00fcmsek\nII. | \u00c7ukur | \u00c7ukur\nIII. | T\u00fcmsek | \u00c7ukur\naynalar\u0131ndan hangileri bulunabilir?\n(Kutu i\u00e7indeki k\u00fcresel aynalar\u0131n tepe noktalar\u0131 O \u00e7izgisi \u00fczerindedir.)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T163_02",
+   "govde": "Berk, g\u00fcne\u015fli bir havada yapt\u0131\u011f\u0131 deneyde, \u00e7ukur aynay\u0131 g\u00fcne\u015fe do\u011fru tutup, aynan\u0131n oda\u011f\u0131na beyaz ka\u011f\u0131t par\u00e7as\u0131 yerle\u015ftirdi\u011finde, yerle\u015ftirdi\u011fi ka\u011f\u0131t par\u00e7alar\u0131n\u0131n 10 dk sonra tutu\u015ftu\u011funu g\u00f6zlemliyor. Daha sonra deneyde kullan\u0131lan niceliklerden baz\u0131lar\u0131n\u0131 de\u011fi\u015ftirip, deneyi birka\u00e7 kez tekrarl\u0131yor.\nBuna g\u00f6re, Berk'in yapt\u0131\u011f\u0131 deneyler ile ilgili,\n- | Nicelik de\u011fi\u015fimi | S\u00fcre \u00f6l\u00e7\u00fcm\u00fc (dak.)\nI. | \u00c7ukur aynan\u0131n y\u00fczey alan\u0131n\u0131 yar\u0131ya indirerek deneyi tekrarlama | 20\nII. | Y\u00fczey alan\u0131 daha b\u00fcy\u00fck \u00e7ukur ayna kullanma | 6\nIII. | Ayn\u0131 y\u00fczey alan\u0131na sahip fakat e\u011frilik yar\u0131\u00e7ap\u0131 daha b\u00fcy\u00fck \u00e7ukur ayna kullanmak | 8\n\u00f6nc\u00fclleri ile verilen de\u011fi\u015fimlerden sonra \u00f6l\u00e7\u00fclen s\u00fcrelerden hangileri do\u011fru olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T168_08",
+   "govde": "K ve L \u0131\u015f\u0131k kaynaklar\u0131ndan \u00e7\u0131kan \u0131\u015f\u0131nlar beyaz bir zemine \u015fekildeki gibi d\u00fc\u015f\u00fcr\u00fcl\u00fcyor.\nBuna g\u00f6re, X, Y ve Z b\u00f6lgelerinin renkleri,\n- | X | Y | Z\nI. | Mavi | Beyaz | Sar\u0131\nII. | K\u0131rm\u0131z\u0131 | Sar\u0131 | Ye\u015fil\nIII. | Cyan | Beyaz | K\u0131rm\u0131z\u0131\nile verilenlerden hangileri olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T170_01",
+   "govde": "Asal eksene paralel g\u00f6nderilen I \u0131\u015f\u0131n\u0131n\u0131n ince kenarl\u0131 mercekle izledi\u011fi yol \u015fekildeki gibidir.\nBuna g\u00f6re, d uzakl\u0131\u011f\u0131 a\u015fa\u011f\u0131da verilen niceliklerden hangisine ba\u011fl\u0131 <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "Ortam\u0131n k\u0131r\u0131c\u0131l\u0131k indisi",
+    "B": "Merce\u011fin k\u0131r\u0131c\u0131l\u0131k indisi",
+    "C": "I\u015f\u0131\u011f\u0131n \u015fiddeti",
+    "D": "I\u015f\u0131\u011f\u0131n rengi",
+    "E": "Merce\u011fin e\u011frilik yar\u0131\u00e7ap\u0131"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T170_06",
+   "govde": "Asal eksenleri \u00e7ak\u0131\u015f\u0131k mercekler ve aynadan olu\u015fan optik d\u00fczenekte I \u0131\u015f\u0131n\u0131n\u0131n izledi\u011fi yol \u015fekildeki gibidir.\nBuna g\u00f6re, K, L ve M kutular\u0131n\u0131n i\u00e7indeki optik ara\u00e7lar ile ilgili,\n- | K | L | M\nI. | Iraksak mercek | Yak\u0131nsak mercek | \u00c7ukur ayna\nII. | Yak\u0131nsak mercek | Iraksak mercek | T\u00fcmsek ayna\nIII. | Iraksak mercek | Yak\u0131nsak mercek | D\u00fczlem ayna\nile verilen se\u00e7eneklerden hangileri do\u011fru olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T171_04",
+   "govde": "Asal eksenleri \u00e7ak\u0131\u015f\u0131k olan ince ve kal\u0131n kenarl\u0131 merceklerin odak uzakl\u0131klar\u0131 e\u015fit ve f dir.\nBuna g\u00f6re, A noktas\u0131na yerle\u015ftirilen cismin sistemdeki son g\u00f6r\u00fcnt\u00fcs\u00fc nerededir?\n(Noktalar aras\u0131 uzakl\u0131klar e\u015fit ve f kadard\u0131r.)",
+   "sikler": {
+    "A": "K de",
+    "B": "K \u2013 L aras\u0131nda",
+    "C": "L de",
+    "D": "L \u2013 M aras\u0131nda",
+    "E": "N de"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T173_02",
+   "govde": "Odaklar\u0131ndan biri F olan ince kenarl\u0131 bir mercek, birim karelerden olu\u015fan d\u00fczleme \u015fekildeki gibi yerle\u015ftirilmi\u015ftir.\nBuna g\u00f6re, K noktasal cisminin mercekte olu\u015fan g\u00f6r\u00fcnt\u00fcs\u00fc nerededir?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "FZT345-T095_04",
+   "govde": "Uzunluklar\u0131 ve kal\u0131nl\u0131klar\u0131 e\u015fit olan bak\u0131r, g\u00fcm\u00fc\u015f ve demir tellerinin \u00f6z diren\u00e7lerini g\u00f6steren tablo \u015eekil 1'deki gibi, i\u00e7 direnci \u00f6nemsiz bir \u00fcrete\u00e7 ve lambadan olu\u015fan elektrik devresi ise \u015eekil 2'deki gibidir.\nTel | \u00d6zdiren\u00e7 (\u03a9 \u00b7 m)\nBak\u0131r | 1,70 \u00b7 10^(\u22128)\nG\u00fcm\u00fc\u015f | 1,59 \u00b7 10^(\u22128)\nDemir | 1 \u00b7 10^(\u22127)\n\u015eekil 2'deki lamban\u0131n parlakl\u0131\u011f\u0131 K \u2013 L u\u00e7lar\u0131 aras\u0131na yaln\u0131z bak\u0131r tel ba\u011fland\u0131\u011f\u0131nda P_1, yaln\u0131z g\u00fcm\u00fc\u015f tel ba\u011fland\u0131\u011f\u0131nda P_2, yaln\u0131z demir tel ba\u011fland\u0131\u011f\u0131nda P_3 oldu\u011funa g\u00f6re, P_1, P_2 ve P_3 aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru olarak verilmi\u015ftir?",
+   "sikler": {
+    "A": "P_1 = P_2 = P_3",
+    "B": "P_1 > P_2 > P_3",
+    "C": "P_3 > P_2 > P_1",
+    "D": "P_2 > P_1 > P_3",
+    "E": "P_2 > P_3 > P_1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  }
+ ],
+ "soluk_isaret_taramasi": {
+  "yontem": "STM345 4b deseni: koyu kisa yatay cubuk (h<=3, w 5-11) + ortasindan gecen, ust ve altta simetrik soluk dikey iz; iki yani bos (backend/_p345_gecici/tf_arti_tara.py).",
+  "aday": 11,
+  "soru": 9,
+  "goz_sonucu": "11 adayin 11'i sekil ogesi (izgara kesisimi, olcek cizgisi, sekil etiketi); metinde gizli '+' yok",
+  "soluk_eksi": "Okuyucu bildirimleri: T095_04 Bakir ussundeki eksi (piksel dokumu 233-247 gri iz, var), T078_09 sik tablosundaki uc soluk eksi (gozle var); iki okuma da eksi yazdi.",
+  "yakinlastirma": "T008_07 usleri 8x: I. 5, III. 4 (yatay cubugu eksik 4); T042_06 8x: 9,798; T118_07 tabela rakamlari ayirt edilemiyor -> [??]"
+ }
+}
