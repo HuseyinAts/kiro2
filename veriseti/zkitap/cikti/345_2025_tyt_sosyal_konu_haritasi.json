@@ -1,0 +1,2380 @@
+{
+ "kaynak": "345 2025 TYT Sosyal Bilgiler Soru Bankasi",
+ "arac": "scripts/kitap/sos345tyt_harita.py",
+ "nereden": "sayfa ust bandi (ders, konu, test, gun) iki bagimsiz okuma",
+ "dogrulama": {
+  "bant_a_esittir_b": true,
+  "bant_esittir_anahtar_gun_test": true,
+  "test_basina_sayfa": 2
+ },
+ "unite_sayisi": 69,
+ "uniteler": [
+  {
+   "kod": "TAR-345T25-U01",
+   "ders": "TARIH",
+   "ad": "TAR\u0130H VE ZAMAN / \u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+   "ad_ascii": "TARIH VE ZAMAN / INSANLIGIN ILK DONEMLERI"
+  },
+  {
+   "kod": "TAR-345T25-U02",
+   "ders": "TARIH",
+   "ad": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+   "ad_ascii": "INSANLIGIN ILK DONEMLERI"
+  },
+  {
+   "kod": "COG-345T25-U01",
+   "ders": "COGRAFYA",
+   "ad": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA",
+   "ad_ascii": "DOGA, INSAN VE COGRAFYA"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U01",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEY\u0130 TANIMA",
+   "ad_ascii": "FELSEFEYI TANIMA"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U01",
+   "ders": "DIN",
+   "ad": "B\u0130LG\u0130 VE \u0130NAN\u00c7",
+   "ad_ascii": "BILGI VE INANC"
+  },
+  {
+   "kod": "TAR-345T25-U03",
+   "ders": "TARIH",
+   "ad": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130 - / ORTA \u00c7A\u011e'DA D\u00dcNYA",
+   "ad_ascii": "INSANLIGIN ILK DONEMLERI - / ORTA CAG'DA DUNYA"
+  },
+  {
+   "kod": "TAR-345T25-U04",
+   "ders": "TARIH",
+   "ad": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI",
+   "ad_ascii": "ILK VE ORTA CAGLARDA / TURK DUNYASI"
+  },
+  {
+   "kod": "COG-345T25-U02",
+   "ders": "COGRAFYA",
+   "ad": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130",
+   "ad_ascii": "DUNYA'NIN SEKLI VE HAREKETLERI"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U02",
+   "ders": "FELSEFE",
+   "ad": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME",
+   "ad_ascii": "FELSEFE ILE DUSUNME"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U02",
+   "ders": "DIN",
+   "ad": "\u0130SLAM'DA \u0130NAN\u00c7 ESASLARI",
+   "ad_ascii": "ISLAM'DA INANC ESASLARI"
+  },
+  {
+   "kod": "TAR-345T25-U05",
+   "ders": "TARIH",
+   "ad": "\u0130SLAM MEDEN\u0130YET\u0130N\u0130N DO\u011eU\u015eU",
+   "ad_ascii": "ISLAM MEDENIYETININ DOGUSU"
+  },
+  {
+   "kod": "TAR-345T25-U06",
+   "ders": "TARIH",
+   "ad": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE / \u0130LK T\u00dcRK \u0130SLAM DEVLETLER\u0130",
+   "ad_ascii": "TURKLERIN ISLAMIYET'I KABULU VE / ILK TURK ISLAM DEVLETLERI"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U03",
+   "ders": "DIN",
+   "ad": "\u0130SLAM'DA \u0130BADETLER",
+   "ad_ascii": "ISLAM'DA IBADETLER"
+  },
+  {
+   "kod": "TAR-345T25-U07",
+   "ders": "TARIH",
+   "ad": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE \u0130LK T\u00dcRK / \u0130SLAM DEVLETLER\u0130 - DEVLETLE\u015eME VE / YERLE\u015eME S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+   "ad_ascii": "TURKLERIN ISLAMIYET'I KABULU VE ILK TURK / ISLAM DEVLETLERI - DEVLETLESME VE / YERLESME SURECINDE SELCUKLU TURKIYESI"
+  },
+  {
+   "kod": "TAR-345T25-U08",
+   "ders": "TARIH",
+   "ad": "DEVLETLE\u015eME VE YERLE\u015eME / S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+   "ad_ascii": "DEVLETLESME VE YERLESME / SURECINDE SELCUKLU TURKIYESI"
+  },
+  {
+   "kod": "COG-345T25-U03",
+   "ders": "COGRAFYA",
+   "ad": "CO\u011eRAF\u0130 KONUM",
+   "ad_ascii": "COGRAFI KONUM"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U03",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (VARLIK FELSEFESI)"
+  },
+  {
+   "kod": "TAR-345T25-U09",
+   "ders": "TARIH",
+   "ad": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453)",
+   "ad_ascii": "BEYLIKTEN DEVLETE OSMANLI / SIYASETI (1302 - 1453)"
+  },
+  {
+   "kod": "COG-345T25-U04",
+   "ders": "COGRAFYA",
+   "ad": "HAR\u0130TA B\u0130LG\u0130S\u0130",
+   "ad_ascii": "HARITA BILGISI"
+  },
+  {
+   "kod": "TAR-345T25-U10",
+   "ders": "TARIH",
+   "ad": "DEVLETLE\u015eME S\u00dcREC\u0130NDE / SAVA\u015e\u00c7ILAR VE ASKERLER",
+   "ad_ascii": "DEVLETLESME SURECINDE / SAVASCILAR VE ASKERLER"
+  },
+  {
+   "kod": "TAR-345T25-U11",
+   "ders": "TARIH",
+   "ad": "BEYL\u0130KTEN DEVLETE OSMANLI / MEDEN\u0130YET\u0130",
+   "ad_ascii": "BEYLIKTEN DEVLETE OSMANLI / MEDENIYETI"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U04",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130LG\u0130 FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (BILGI FELSEFESI)"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U04",
+   "ders": "DIN",
+   "ad": "GEN\u00c7L\u0130K VE DE\u011eERLER",
+   "ad_ascii": "GENCLIK VE DEGERLER"
+  },
+  {
+   "kod": "TAR-345T25-U12",
+   "ders": "TARIH",
+   "ad": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595)",
+   "ad_ascii": "DUNYA GUCU OSMANLI / (1453 - 1595)"
+  },
+  {
+   "kod": "COG-345T25-U05",
+   "ders": "COGRAFYA",
+   "ad": "\u0130KL\u0130M B\u0130LG\u0130S\u0130",
+   "ad_ascii": "IKLIM BILGISI"
+  },
+  {
+   "kod": "TAR-345T25-U13",
+   "ders": "TARIH",
+   "ad": "SULTAN VE OSMANLI MERKEZ TE\u015eK\u0130LATI",
+   "ad_ascii": "SULTAN VE OSMANLI MERKEZ TESKILATI"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U05",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130L\u0130M FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (BILIM FELSEFESI)"
+  },
+  {
+   "kod": "TAR-345T25-U14",
+   "ders": "TARIH",
+   "ad": "KLAS\u0130K \u00c7A\u011e'DA OSMANLI / TOPLUM D\u00dcZEN\u0130",
+   "ad_ascii": "KLASIK CAG'DA OSMANLI / TOPLUM DUZENI"
+  },
+  {
+   "kod": "TAR-345T25-U15",
+   "ders": "TARIH",
+   "ad": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774)",
+   "ad_ascii": "DEGISEN DUNYA DENGELERI / KARSISINDA OSMANLI SIYASETI / (1595-1774)"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U06",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (AHLAK FELSEFESI)"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U05",
+   "ders": "DIN",
+   "ad": "G\u00d6N\u00dcL CO\u011eRAFYAMIZ",
+   "ad_ascii": "GONUL COGRAFYAMIZ"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U06",
+   "ders": "DIN",
+   "ad": "ALLAH VE \u0130NSAN \u0130L\u0130\u015eK\u0130LER\u0130",
+   "ad_ascii": "ALLAH VE INSAN ILISKILERI"
+  },
+  {
+   "kod": "TAR-345T25-U16",
+   "ders": "TARIH",
+   "ad": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI",
+   "ad_ascii": "DEGISIM CAGINDA AVRUPA / VE OSMANLI"
+  },
+  {
+   "kod": "COG-345T25-U06",
+   "ders": "COGRAFYA",
+   "ad": "\u0130\u00c7 VE DI\u015e KUVVETLER",
+   "ad_ascii": "IC VE DIS KUVVETLER"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U07",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (D\u0130N FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (DIN FELSEFESI)"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U07",
+   "ders": "DIN",
+   "ad": "HZ MUHAMMET (SAV) VE GEN\u00c7L\u0130K",
+   "ad_ascii": "HZ MUHAMMET (SAV) VE GENCLIK"
+  },
+  {
+   "kod": "TAR-345T25-U17",
+   "ders": "TARIH",
+   "ad": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130",
+   "ad_ascii": "DEVRIMLER CAGINDA DEGISEN / DEVLET - TOPLUM ILISKILERI"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U08",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (S\u0130YASET FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (SIYASET FELSEFESI)"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U08",
+   "ders": "DIN",
+   "ad": "D\u0130N VE HAYAT",
+   "ad_ascii": "DIN VE HAYAT"
+  },
+  {
+   "kod": "TAR-345T25-U18",
+   "ders": "TARIH",
+   "ad": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914)",
+   "ad_ascii": "ULUSLARARASI ILISKILERDE / DENGE STRATEJISI (1774-1914)"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U09",
+   "ders": "FELSEFE",
+   "ad": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130)",
+   "ad_ascii": "FELSEFENIN TEMEL KONULARI VE / PROBLEMLERI (SANAT FELSEFESI)"
+  },
+  {
+   "kod": "COG-345T25-U07",
+   "ders": "COGRAFYA",
+   "ad": "SU - TOPRAK - B\u0130TK\u0130",
+   "ad_ascii": "SU - TOPRAK - BITKI"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U09",
+   "ders": "DIN",
+   "ad": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR",
+   "ad_ascii": "AHLAKI TUTUM VE DAVRANISLAR"
+  },
+  {
+   "kod": "TAR-345T25-U19",
+   "ders": "TARIH",
+   "ad": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE DENGE / STRATEJ\u0130S\u0130 (1774-1914) - IV / XIX VE XX. / Y\u00dcZYILDA DE\u011e\u0130\u015eEN SOSYOEKONOM\u0130K HAYAT",
+   "ad_ascii": "ULUSLARARASI ILISKILERDE DENGE / STRATEJISI (1774-1914) - IV / XIX VE XX. / YUZYILDA DEGISEN SOSYOEKONOMIK HAYAT"
+  },
+  {
+   "kod": "TAR-345T25-U20",
+   "ders": "TARIH",
+   "ad": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA",
+   "ad_ascii": "XX. YUZYIL BASLARINDA / OSMANLI DEVLETI VE DUNYA"
+  },
+  {
+   "kod": "COG-345T25-U08",
+   "ders": "COGRAFYA",
+   "ad": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7",
+   "ad_ascii": "NUFUS, YERLESME VE GOC"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U10",
+   "ders": "FELSEFE",
+   "ad": "FELSEF\u0130 OKUMA VE YAZMA",
+   "ad_ascii": "FELSEFI OKUMA VE YAZMA"
+  },
+  {
+   "kod": "TAR-345T25-U21",
+   "ders": "TARIH",
+   "ad": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130",
+   "ad_ascii": "MILLI MUCADELE - HAZIRLIK DONEMI"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U11",
+   "ders": "FELSEFE",
+   "ad": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130",
+   "ad_ascii": "MO 6. YUZYIL / MS 2. YUZYIL FELSEFESI"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U10",
+   "ders": "DIN",
+   "ad": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE \u0130T\u0130KAD\u0130, S\u0130YAS\u0130 / VE FIKH\u0130 YORUMLAR",
+   "ad_ascii": "ISLAM DUSUNCESINDE ITIKADI, SIYASI / VE FIKHI YORUMLAR"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U11",
+   "ders": "DIN",
+   "ad": "D\u00dcNYA VE AH\u0130RET",
+   "ad_ascii": "DUNYA VE AHIRET"
+  },
+  {
+   "kod": "COG-345T25-U09",
+   "ders": "COGRAFYA",
+   "ad": "EKONOM\u0130K FAAL\u0130YETLER",
+   "ad_ascii": "EKONOMIK FAALIYETLER"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U12",
+   "ders": "FELSEFE",
+   "ad": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130",
+   "ad_ascii": "MS 2. YUZYIL / 15. YUZYIL FELSEFESI"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U12",
+   "ders": "DIN",
+   "ad": "KUR'AN'A G\u00d6RE HZ MUHAMMED",
+   "ad_ascii": "KUR'AN'A GORE HZ MUHAMMED"
+  },
+  {
+   "kod": "TAR-345T25-U22",
+   "ders": "TARIH",
+   "ad": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER",
+   "ad_ascii": "MILLI MUCADELE - CEPHELER"
+  },
+  {
+   "kod": "COG-345T25-U10",
+   "ders": "COGRAFYA",
+   "ad": "B\u00d6LGE KAVRAMI",
+   "ad_ascii": "BOLGE KAVRAMI"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U13",
+   "ders": "FELSEFE",
+   "ad": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130",
+   "ad_ascii": "15. YUZYIL / 17. YUZYIL FELSEFESI"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U13",
+   "ders": "DIN",
+   "ad": "KUR'AN'DA BAZI KAVRAMLAR",
+   "ad_ascii": "KUR'AN'DA BAZI KAVRAMLAR"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U14",
+   "ders": "DIN",
+   "ad": "\u0130SLAM VE B\u0130L\u0130M",
+   "ad_ascii": "ISLAM VE BILIM"
+  },
+  {
+   "kod": "TAR-345T25-U23",
+   "ders": "TARIH",
+   "ad": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI",
+   "ad_ascii": "ATATURKCULUK VE TURK INKILABI"
+  },
+  {
+   "kod": "COG-345T25-U11",
+   "ders": "COGRAFYA",
+   "ad": "B\u00d6LGELER VE \u00dcLKELER",
+   "ad_ascii": "BOLGELER VE ULKELER"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U14",
+   "ders": "FELSEFE",
+   "ad": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130",
+   "ad_ascii": "18. YUZYIL / 19. YUZYIL FELSEFESI"
+  },
+  {
+   "kod": "COG-345T25-U12",
+   "ders": "COGRAFYA",
+   "ad": "\u00c7EVRE VE TOPLUM",
+   "ad_ascii": "CEVRE VE TOPLUM"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U15",
+   "ders": "DIN",
+   "ad": "ANADOLU'DA \u0130SLAM",
+   "ad_ascii": "ANADOLU'DA ISLAM"
+  },
+  {
+   "kod": "SOS-345T25-FEL-U15",
+   "ders": "FELSEFE",
+   "ad": "20. Y\u00dcZYIL FELSEFES\u0130",
+   "ad_ascii": "20. YUZYIL FELSEFESI"
+  },
+  {
+   "kod": "TAR-345T25-U24",
+   "ders": "TARIH",
+   "ad": "\u0130K\u0130 SAVA\u015e ARASINDAK\u0130 D\u00d6NEMDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI S\u00dcREC\u0130NDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI SONRASINDA / T\u00dcRK\u0130YE VE D\u00dcNYA",
+   "ad_ascii": "IKI SAVAS ARASINDAKI DONEMDE / TURKIYE VE DUNYA- II. DUNYA SAVASI SURECINDE / TURKIYE VE DUNYA- II. DUNYA SAVASI SONRASINDA / TURKIYE VE DUNYA"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U16",
+   "ders": "DIN",
+   "ad": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE TASAVVUF\u0130 / YORUMLAR",
+   "ad_ascii": "ISLAM DUSUNCESINDE TASAVVUFI / YORUMLAR"
+  },
+  {
+   "kod": "TAR-345T25-U25",
+   "ders": "TARIH",
+   "ad": "II. D\u00dcNYA SAVA\u015eI SONRASINDA T\u00dcRK\u0130YE VE D\u00dcNYA- / TOPLUMSAL DEVR\u0130M \u00c7A\u011eINDA D\u00dcNYA VE T\u00dcRK\u0130YE- / Y\u00dcZYILIN E\u015e\u0130\u011e\u0130NDE T\u00dcRK\u0130YE VE D\u00dcNYA",
+   "ad_ascii": "II. DUNYA SAVASI SONRASINDA TURKIYE VE DUNYA- / TOPLUMSAL DEVRIM CAGINDA DUNYA VE TURKIYE- / YUZYILIN ESIGINDE TURKIYE VE DUNYA"
+  },
+  {
+   "kod": "SOS-345T25-DIN-U17",
+   "ders": "DIN",
+   "ad": "G\u00dcNCEL D\u0130N\u00ce MESELELER",
+   "ad_ascii": "GUNCEL DINI MESELELER"
+  }
+ ],
+ "test_sayisi": 150,
+ "testler": [
+  {
+   "birim": "SOS345-T001",
+   "gun": 1,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "TAR\u0130H VE ZAMAN / \u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+   "unite": "TAR-345T25-U01",
+   "sayfalar": [
+    6,
+    7
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T002",
+   "gun": 1,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+   "unite": "TAR-345T25-U02",
+   "sayfalar": [
+    8,
+    9
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T003",
+   "gun": 1,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - I",
+   "unite": "COG-345T25-U01",
+   "sayfalar": [
+    10,
+    11
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T004",
+   "gun": 1,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - II",
+   "unite": "COG-345T25-U01",
+   "sayfalar": [
+    12,
+    13
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T005",
+   "gun": 1,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEY\u0130 TANIMA - I",
+   "unite": "SOS-345T25-FEL-U01",
+   "sayfalar": [
+    14,
+    15
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T006",
+   "gun": 1,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - I",
+   "unite": "SOS-345T25-DIN-U01",
+   "sayfalar": [
+    16,
+    17
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T007",
+   "gun": 2,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130 - / ORTA \u00c7A\u011e'DA D\u00dcNYA",
+   "unite": "TAR-345T25-U03",
+   "sayfalar": [
+    18,
+    19
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T008",
+   "gun": 2,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - I",
+   "unite": "TAR-345T25-U04",
+   "sayfalar": [
+    20,
+    21
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T009",
+   "gun": 2,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - III",
+   "unite": "COG-345T25-U01",
+   "sayfalar": [
+    22,
+    23
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T010",
+   "gun": 2,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - IV",
+   "unite": "COG-345T25-U01",
+   "sayfalar": [
+    24,
+    25
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T011",
+   "gun": 2,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEY\u0130 TANIMA - II",
+   "unite": "SOS-345T25-FEL-U01",
+   "sayfalar": [
+    26,
+    27
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T012",
+   "gun": 2,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - II",
+   "unite": "SOS-345T25-DIN-U01",
+   "sayfalar": [
+    28,
+    29
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T013",
+   "gun": 3,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - II",
+   "unite": "TAR-345T25-U04",
+   "sayfalar": [
+    30,
+    31
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T014",
+   "gun": 3,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - III",
+   "unite": "TAR-345T25-U04",
+   "sayfalar": [
+    32,
+    33
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T015",
+   "gun": 3,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - I",
+   "unite": "COG-345T25-U02",
+   "sayfalar": [
+    34,
+    35
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T016",
+   "gun": 3,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - II",
+   "unite": "COG-345T25-U02",
+   "sayfalar": [
+    36,
+    37
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T017",
+   "gun": 3,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - I",
+   "unite": "SOS-345T25-FEL-U02",
+   "sayfalar": [
+    38,
+    39
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T018",
+   "gun": 3,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "\u0130SLAM'DA \u0130NAN\u00c7 ESASLARI",
+   "unite": "SOS-345T25-DIN-U02",
+   "sayfalar": [
+    40,
+    41
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T019",
+   "gun": 4,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "\u0130SLAM MEDEN\u0130YET\u0130N\u0130N DO\u011eU\u015eU",
+   "unite": "TAR-345T25-U05",
+   "sayfalar": [
+    42,
+    43
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T020",
+   "gun": 4,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE / \u0130LK T\u00dcRK \u0130SLAM DEVLETLER\u0130",
+   "unite": "TAR-345T25-U06",
+   "sayfalar": [
+    44,
+    45
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T021",
+   "gun": 4,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - III",
+   "unite": "COG-345T25-U02",
+   "sayfalar": [
+    46,
+    47
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T022",
+   "gun": 4,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - IV",
+   "unite": "COG-345T25-U02",
+   "sayfalar": [
+    48,
+    49
+   ],
+   "soru_sayisi": 5
+  },
+  {
+   "birim": "SOS345-T023",
+   "gun": 4,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - II",
+   "unite": "SOS-345T25-FEL-U02",
+   "sayfalar": [
+    50,
+    51
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T024",
+   "gun": 4,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "\u0130SLAM'DA \u0130BADETLER - I",
+   "unite": "SOS-345T25-DIN-U03",
+   "sayfalar": [
+    52,
+    53
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T025",
+   "gun": 5,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE \u0130LK T\u00dcRK / \u0130SLAM DEVLETLER\u0130 - DEVLETLE\u015eME VE / YERLE\u015eME S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+   "unite": "TAR-345T25-U07",
+   "sayfalar": [
+    54,
+    55
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T026",
+   "gun": 5,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "DEVLETLE\u015eME VE YERLE\u015eME / S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+   "unite": "TAR-345T25-U08",
+   "sayfalar": [
+    56,
+    57
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T027",
+   "gun": 5,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "CO\u011eRAF\u0130 KONUM - I",
+   "unite": "COG-345T25-U03",
+   "sayfalar": [
+    58,
+    59
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T028",
+   "gun": 5,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "CO\u011eRAF\u0130 KONUM - II",
+   "unite": "COG-345T25-U03",
+   "sayfalar": [
+    60,
+    61
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T029",
+   "gun": 5,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - I",
+   "unite": "SOS-345T25-FEL-U03",
+   "sayfalar": [
+    62,
+    63
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T030",
+   "gun": 5,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "\u0130SLAM'DA \u0130BADETLER - II",
+   "unite": "SOS-345T25-DIN-U03",
+   "sayfalar": [
+    64,
+    65
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T031",
+   "gun": 6,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - I",
+   "unite": "TAR-345T25-U09",
+   "sayfalar": [
+    66,
+    67
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T032",
+   "gun": 6,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - II",
+   "unite": "TAR-345T25-U09",
+   "sayfalar": [
+    68,
+    69
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T033",
+   "gun": 6,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "CO\u011eRAF\u0130 KONUM - III",
+   "unite": "COG-345T25-U03",
+   "sayfalar": [
+    70,
+    71
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T034",
+   "gun": 6,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - I",
+   "unite": "COG-345T25-U04",
+   "sayfalar": [
+    72,
+    73
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T035",
+   "gun": 7,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "DEVLETLE\u015eME S\u00dcREC\u0130NDE / SAVA\u015e\u00c7ILAR VE ASKERLER",
+   "unite": "TAR-345T25-U10",
+   "sayfalar": [
+    74,
+    75
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T036",
+   "gun": 7,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - II",
+   "unite": "COG-345T25-U04",
+   "sayfalar": [
+    76,
+    77
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T037",
+   "gun": 7,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - II",
+   "unite": "SOS-345T25-FEL-U03",
+   "sayfalar": [
+    78,
+    79
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T038",
+   "gun": 7,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "\u0130SLAM'DA \u0130BADETLER - III",
+   "unite": "SOS-345T25-DIN-U03",
+   "sayfalar": [
+    80,
+    81
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T039",
+   "gun": 8,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / MEDEN\u0130YET\u0130",
+   "unite": "TAR-345T25-U11",
+   "sayfalar": [
+    82,
+    83
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T040",
+   "gun": 8,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - III",
+   "unite": "COG-345T25-U04",
+   "sayfalar": [
+    84,
+    85
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T041",
+   "gun": 8,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130LG\u0130 FELSEFES\u0130) - III",
+   "unite": "SOS-345T25-FEL-U04",
+   "sayfalar": [
+    86,
+    87
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T042",
+   "gun": 8,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - I",
+   "unite": "SOS-345T25-DIN-U04",
+   "sayfalar": [
+    88,
+    89
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T043",
+   "gun": 9,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - I",
+   "unite": "TAR-345T25-U12",
+   "sayfalar": [
+    90,
+    91
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T044",
+   "gun": 9,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - II",
+   "unite": "TAR-345T25-U12",
+   "sayfalar": [
+    92,
+    93
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T045",
+   "gun": 9,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - IV",
+   "unite": "COG-345T25-U04",
+   "sayfalar": [
+    94,
+    95
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T046",
+   "gun": 9,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - I",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    96,
+    97
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T047",
+   "gun": 10,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - III",
+   "unite": "TAR-345T25-U12",
+   "sayfalar": [
+    98,
+    99
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T048",
+   "gun": 10,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "SULTAN VE OSMANLI MERKEZ TE\u015eK\u0130LATI",
+   "unite": "TAR-345T25-U13",
+   "sayfalar": [
+    100,
+    101
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "SOS345-T049",
+   "gun": 10,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - II",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    102,
+    103
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T050",
+   "gun": 10,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - III",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    104,
+    105
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T051",
+   "gun": 10,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130L\u0130M FELSEFES\u0130) - IV",
+   "unite": "SOS-345T25-FEL-U05",
+   "sayfalar": [
+    106,
+    107
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T052",
+   "gun": 10,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - II",
+   "unite": "SOS-345T25-DIN-U04",
+   "sayfalar": [
+    108,
+    109
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T053",
+   "gun": 11,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "KLAS\u0130K \u00c7A\u011e'DA OSMANLI / TOPLUM D\u00dcZEN\u0130",
+   "unite": "TAR-345T25-U14",
+   "sayfalar": [
+    110,
+    111
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T054",
+   "gun": 11,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - I",
+   "unite": "TAR-345T25-U15",
+   "sayfalar": [
+    112,
+    113
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T055",
+   "gun": 11,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - IV",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    114,
+    115
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T056",
+   "gun": 11,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - V",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    116,
+    117
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T057",
+   "gun": 11,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - V",
+   "unite": "SOS-345T25-FEL-U06",
+   "sayfalar": [
+    118,
+    119
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T058",
+   "gun": 11,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "G\u00d6N\u00dcL CO\u011eRAFYAMIZ",
+   "unite": "SOS-345T25-DIN-U05",
+   "sayfalar": [
+    120,
+    121
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T059",
+   "gun": 12,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - II",
+   "unite": "TAR-345T25-U15",
+   "sayfalar": [
+    122,
+    123
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T060",
+   "gun": 12,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VI",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    124,
+    125
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T061",
+   "gun": 12,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - VI",
+   "unite": "SOS-345T25-FEL-U06",
+   "sayfalar": [
+    126,
+    127
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T062",
+   "gun": 12,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "ALLAH VE \u0130NSAN \u0130L\u0130\u015eK\u0130LER\u0130",
+   "unite": "SOS-345T25-DIN-U06",
+   "sayfalar": [
+    128,
+    129
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T063",
+   "gun": 13,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - III",
+   "unite": "TAR-345T25-U15",
+   "sayfalar": [
+    130,
+    131
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T064",
+   "gun": 13,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - I",
+   "unite": "TAR-345T25-U16",
+   "sayfalar": [
+    132,
+    133
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "SOS345-T065",
+   "gun": 13,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VII",
+   "unite": "COG-345T25-U05",
+   "sayfalar": [
+    134,
+    135
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T066",
+   "gun": 13,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - I",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    136,
+    137
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T067",
+   "gun": 14,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - II",
+   "unite": "TAR-345T25-U16",
+   "sayfalar": [
+    138,
+    139
+   ],
+   "soru_sayisi": 12
+  },
+  {
+   "birim": "SOS345-T068",
+   "gun": 14,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - III",
+   "unite": "TAR-345T25-U16",
+   "sayfalar": [
+    140,
+    141
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "SOS345-T069",
+   "gun": 14,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - II",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    142,
+    143
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T070",
+   "gun": 14,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - III",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    144,
+    145
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T071",
+   "gun": 14,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (D\u0130N FELSEFES\u0130) - VII",
+   "unite": "SOS-345T25-FEL-U07",
+   "sayfalar": [
+    146,
+    147
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T072",
+   "gun": 14,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "HZ MUHAMMET (SAV) VE GEN\u00c7L\u0130K",
+   "unite": "SOS-345T25-DIN-U07",
+   "sayfalar": [
+    148,
+    149
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T073",
+   "gun": 15,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - I",
+   "unite": "TAR-345T25-U17",
+   "sayfalar": [
+    150,
+    151
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "SOS345-T074",
+   "gun": 15,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - II",
+   "unite": "TAR-345T25-U17",
+   "sayfalar": [
+    152,
+    153
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T075",
+   "gun": 15,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - IV",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    154,
+    155
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T076",
+   "gun": 15,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - V",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    156,
+    157
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T077",
+   "gun": 15,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (S\u0130YASET FELSEFES\u0130) - VIII",
+   "unite": "SOS-345T25-FEL-U08",
+   "sayfalar": [
+    158,
+    159
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T078",
+   "gun": 15,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "D\u0130N VE HAYAT - I",
+   "unite": "SOS-345T25-DIN-U08",
+   "sayfalar": [
+    160,
+    161
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T079",
+   "gun": 16,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - III",
+   "unite": "TAR-345T25-U17",
+   "sayfalar": [
+    162,
+    163
+   ],
+   "soru_sayisi": 11
+  },
+  {
+   "birim": "SOS345-T080",
+   "gun": 16,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - I",
+   "unite": "TAR-345T25-U18",
+   "sayfalar": [
+    164,
+    165
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T081",
+   "gun": 16,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VI",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    166,
+    167
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T082",
+   "gun": 16,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VII",
+   "unite": "COG-345T25-U06",
+   "sayfalar": [
+    168,
+    169
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T083",
+   "gun": 16,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - IX",
+   "unite": "SOS-345T25-FEL-U09",
+   "sayfalar": [
+    170,
+    171
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T084",
+   "gun": 16,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "D\u0130N VE HAYAT - II",
+   "unite": "SOS-345T25-DIN-U08",
+   "sayfalar": [
+    172,
+    173
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T085",
+   "gun": 17,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - II",
+   "unite": "TAR-345T25-U18",
+   "sayfalar": [
+    174,
+    175
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T086",
+   "gun": 17,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "SU - TOPRAK - B\u0130TK\u0130 - I",
+   "unite": "COG-345T25-U07",
+   "sayfalar": [
+    176,
+    177
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T087",
+   "gun": 17,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - X",
+   "unite": "SOS-345T25-FEL-U09",
+   "sayfalar": [
+    178,
+    179
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T088",
+   "gun": 17,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - I",
+   "unite": "SOS-345T25-DIN-U09",
+   "sayfalar": [
+    180,
+    181
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T089",
+   "gun": 18,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - III",
+   "unite": "TAR-345T25-U18",
+   "sayfalar": [
+    182,
+    183
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T090",
+   "gun": 18,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE DENGE / STRATEJ\u0130S\u0130 (1774-1914) - IV / XIX VE XX. / Y\u00dcZYILDA DE\u011e\u0130\u015eEN SOSYOEKONOM\u0130K HAYAT",
+   "unite": "TAR-345T25-U19",
+   "sayfalar": [
+    184,
+    185
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T091",
+   "gun": 18,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "SU - TOPRAK - B\u0130TK\u0130 - II",
+   "unite": "COG-345T25-U07",
+   "sayfalar": [
+    186,
+    187
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T092",
+   "gun": 18,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "SU - TOPRAK - B\u0130TK\u0130 - III",
+   "unite": "COG-345T25-U07",
+   "sayfalar": [
+    188,
+    189
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T093",
+   "gun": 19,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - I",
+   "unite": "TAR-345T25-U20",
+   "sayfalar": [
+    190,
+    191
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "SOS345-T094",
+   "gun": 19,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - II",
+   "unite": "TAR-345T25-U20",
+   "sayfalar": [
+    192,
+    193
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T095",
+   "gun": 19,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - I",
+   "unite": "COG-345T25-U08",
+   "sayfalar": [
+    194,
+    195
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T096",
+   "gun": 19,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - II",
+   "unite": "COG-345T25-U08",
+   "sayfalar": [
+    196,
+    197
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T097",
+   "gun": 19,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "FELSEF\u0130 OKUMA VE YAZMA",
+   "unite": "SOS-345T25-FEL-U10",
+   "sayfalar": [
+    198,
+    199
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T098",
+   "gun": 19,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - II",
+   "unite": "SOS-345T25-DIN-U09",
+   "sayfalar": [
+    200,
+    201
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T099",
+   "gun": 20,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - III",
+   "unite": "TAR-345T25-U20",
+   "sayfalar": [
+    202,
+    203
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T100",
+   "gun": 20,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - I",
+   "unite": "TAR-345T25-U21",
+   "sayfalar": [
+    204,
+    205
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T101",
+   "gun": 20,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - III",
+   "unite": "COG-345T25-U08",
+   "sayfalar": [
+    206,
+    207
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T102",
+   "gun": 20,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - IV",
+   "unite": "COG-345T25-U08",
+   "sayfalar": [
+    208,
+    209
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T103",
+   "gun": 20,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - I",
+   "unite": "SOS-345T25-FEL-U11",
+   "sayfalar": [
+    210,
+    211
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T104",
+   "gun": 20,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE \u0130T\u0130KAD\u0130, S\u0130YAS\u0130 / VE FIKH\u0130 YORUMLAR",
+   "unite": "SOS-345T25-DIN-U10",
+   "sayfalar": [
+    212,
+    213
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T105",
+   "gun": 21,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - II",
+   "unite": "TAR-345T25-U21",
+   "sayfalar": [
+    214,
+    215
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T106",
+   "gun": 21,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - III",
+   "unite": "TAR-345T25-U21",
+   "sayfalar": [
+    216,
+    217
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T107",
+   "gun": 21,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - V",
+   "unite": "COG-345T25-U08",
+   "sayfalar": [
+    218,
+    219
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T108",
+   "gun": 21,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - VI",
+   "unite": "COG-345T25-U08",
+   "sayfalar": [
+    220,
+    221
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T109",
+   "gun": 21,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - II",
+   "unite": "SOS-345T25-FEL-U11",
+   "sayfalar": [
+    222,
+    223
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T110",
+   "gun": 21,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "D\u00dcNYA VE AH\u0130RET",
+   "unite": "SOS-345T25-DIN-U11",
+   "sayfalar": [
+    224,
+    225
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T111",
+   "gun": 22,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - IV",
+   "unite": "TAR-345T25-U21",
+   "sayfalar": [
+    226,
+    227
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T112",
+   "gun": 22,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "EKONOM\u0130K FAAL\u0130YETLER - I",
+   "unite": "COG-345T25-U09",
+   "sayfalar": [
+    228,
+    229
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T113",
+   "gun": 22,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - I",
+   "unite": "SOS-345T25-FEL-U12",
+   "sayfalar": [
+    230,
+    231
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T114",
+   "gun": 22,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - I",
+   "unite": "SOS-345T25-DIN-U12",
+   "sayfalar": [
+    232,
+    233
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T115",
+   "gun": 23,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - V",
+   "unite": "TAR-345T25-U21",
+   "sayfalar": [
+    234,
+    235
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T116",
+   "gun": 23,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - I",
+   "unite": "TAR-345T25-U22",
+   "sayfalar": [
+    236,
+    237
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T117",
+   "gun": 23,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "EKONOM\u0130K FAAL\u0130YETLER - II",
+   "unite": "COG-345T25-U09",
+   "sayfalar": [
+    238,
+    239
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T118",
+   "gun": 23,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "B\u00d6LGE KAVRAMI - I",
+   "unite": "COG-345T25-U10",
+   "sayfalar": [
+    240,
+    241
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T119",
+   "gun": 23,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - II",
+   "unite": "SOS-345T25-FEL-U12",
+   "sayfalar": [
+    242,
+    243
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T120",
+   "gun": 23,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - II",
+   "unite": "SOS-345T25-DIN-U12",
+   "sayfalar": [
+    244,
+    245
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T121",
+   "gun": 24,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - II",
+   "unite": "TAR-345T25-U22",
+   "sayfalar": [
+    246,
+    247
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T122",
+   "gun": 24,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - III",
+   "unite": "TAR-345T25-U22",
+   "sayfalar": [
+    248,
+    249
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T123",
+   "gun": 24,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "B\u00d6LGE KAVRAMI - II",
+   "unite": "COG-345T25-U10",
+   "sayfalar": [
+    250,
+    251
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T124",
+   "gun": 24,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "B\u00d6LGE KAVRAMI - III",
+   "unite": "COG-345T25-U10",
+   "sayfalar": [
+    252,
+    253
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T125",
+   "gun": 24,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - I",
+   "unite": "SOS-345T25-FEL-U13",
+   "sayfalar": [
+    254,
+    255
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T126",
+   "gun": 24,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "KUR'AN'DA BAZI KAVRAMLAR",
+   "unite": "SOS-345T25-DIN-U13",
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T127",
+   "gun": 25,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - IV",
+   "unite": "TAR-345T25-U22",
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "SOS345-T128",
+   "gun": 25,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "B\u00d6LGE KAVRAMI - IV",
+   "unite": "COG-345T25-U10",
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T129",
+   "gun": 25,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - II",
+   "unite": "SOS-345T25-FEL-U13",
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T130",
+   "gun": 25,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "\u0130SLAM VE B\u0130L\u0130M - I",
+   "unite": "SOS-345T25-DIN-U14",
+   "sayfalar": [
+    264,
+    265
+   ],
+   "soru_sayisi": 7
+  },
+  {
+   "birim": "SOS345-T131",
+   "gun": 26,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - I",
+   "unite": "TAR-345T25-U23",
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "SOS345-T132",
+   "gun": 26,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "B\u00d6LGELER VE \u00dcLKELER - I",
+   "unite": "COG-345T25-U11",
+   "sayfalar": [
+    268,
+    269
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T133",
+   "gun": 26,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - I",
+   "unite": "SOS-345T25-FEL-U14",
+   "sayfalar": [
+    270,
+    271
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T134",
+   "gun": 26,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "\u0130SLAM VE B\u0130L\u0130M - II",
+   "unite": "SOS-345T25-DIN-U14",
+   "sayfalar": [
+    272,
+    273
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T135",
+   "gun": 27,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - II",
+   "unite": "TAR-345T25-U23",
+   "sayfalar": [
+    274,
+    275
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T136",
+   "gun": 27,
+   "test": 2,
+   "ders": "TARIH",
+   "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - III",
+   "unite": "TAR-345T25-U23",
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "SOS345-T137",
+   "gun": 27,
+   "test": 3,
+   "ders": "COGRAFYA",
+   "konu": "B\u00d6LGELER VE \u00dcLKELER - II",
+   "unite": "COG-345T25-U11",
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T138",
+   "gun": 27,
+   "test": 4,
+   "ders": "COGRAFYA",
+   "konu": "\u00c7EVRE VE TOPLUM - I",
+   "unite": "COG-345T25-U12",
+   "sayfalar": [
+    280,
+    281
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T139",
+   "gun": 27,
+   "test": 5,
+   "ders": "FELSEFE",
+   "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - II",
+   "unite": "SOS-345T25-FEL-U14",
+   "sayfalar": [
+    282,
+    283
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T140",
+   "gun": 27,
+   "test": 6,
+   "ders": "DIN",
+   "konu": "ANADOLU'DA \u0130SLAM",
+   "unite": "SOS-345T25-DIN-U15",
+   "sayfalar": [
+    284,
+    285
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T141",
+   "gun": 28,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - IV",
+   "unite": "TAR-345T25-U23",
+   "sayfalar": [
+    286,
+    287
+   ],
+   "soru_sayisi": 10
+  },
+  {
+   "birim": "SOS345-T142",
+   "gun": 28,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "\u00c7EVRE VE TOPLUM - II",
+   "unite": "COG-345T25-U12",
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T143",
+   "gun": 28,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - I",
+   "unite": "SOS-345T25-FEL-U15",
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 9
+  },
+  {
+   "birim": "SOS345-T144",
+   "gun": 29,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "\u0130K\u0130 SAVA\u015e ARASINDAK\u0130 D\u00d6NEMDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI S\u00dcREC\u0130NDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI SONRASINDA / T\u00dcRK\u0130YE VE D\u00dcNYA",
+   "unite": "TAR-345T25-U24",
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T145",
+   "gun": 29,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "\u00c7EVRE VE TOPLUM - III",
+   "unite": "COG-345T25-U12",
+   "sayfalar": [
+    294,
+    295
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T146",
+   "gun": 29,
+   "test": 3,
+   "ders": "DIN",
+   "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE TASAVVUF\u0130 / YORUMLAR",
+   "unite": "SOS-345T25-DIN-U16",
+   "sayfalar": [
+    296,
+    297
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T147",
+   "gun": 30,
+   "test": 1,
+   "ders": "TARIH",
+   "konu": "II. D\u00dcNYA SAVA\u015eI SONRASINDA T\u00dcRK\u0130YE VE D\u00dcNYA- / TOPLUMSAL DEVR\u0130M \u00c7A\u011eINDA D\u00dcNYA VE T\u00dcRK\u0130YE- / Y\u00dcZYILIN E\u015e\u0130\u011e\u0130NDE T\u00dcRK\u0130YE VE D\u00dcNYA",
+   "unite": "TAR-345T25-U25",
+   "sayfalar": [
+    298,
+    299
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T148",
+   "gun": 30,
+   "test": 2,
+   "ders": "COGRAFYA",
+   "konu": "\u00c7EVRE VE TOPLUM - IV",
+   "unite": "COG-345T25-U12",
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T149",
+   "gun": 30,
+   "test": 3,
+   "ders": "FELSEFE",
+   "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - II",
+   "unite": "SOS-345T25-FEL-U15",
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 8
+  },
+  {
+   "birim": "SOS345-T150",
+   "gun": 30,
+   "test": 4,
+   "ders": "DIN",
+   "konu": "G\u00dcNCEL D\u0130N\u00ce MESELELER",
+   "unite": "SOS-345T25-DIN-U17",
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 8
+  }
+ ]
+}

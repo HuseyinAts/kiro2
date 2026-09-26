@@ -1,0 +1,6034 @@
+{
+ "kaynak": "345 2025 TYT Sosyal Bilgiler Soru Bankasi",
+ "nereden": "FERNUS ekran goruntuleri; anahtar s306-312 tablo, ust bant s6-305",
+ "anahtar_okumalari": {
+  "A": [
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 1,
+    "cevaplar": "CBDAEADC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 2,
+    "cevaplar": "ECBBDEAE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 3,
+    "cevaplar": "BDCABADD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 4,
+    "cevaplar": "CCDDDBDB"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 5,
+    "cevaplar": "AEBCDBAC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 6,
+    "cevaplar": "ACCEBCC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 1,
+    "cevaplar": "BECDEBCD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 2,
+    "cevaplar": "CBDEDECE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 3,
+    "cevaplar": "EBACBECB"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 4,
+    "cevaplar": "AEBCDEAA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 5,
+    "cevaplar": "CCEAEBDE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 6,
+    "cevaplar": "AAEEBACA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 1,
+    "cevaplar": "ECEBCEDBA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 2,
+    "cevaplar": "DBDDCCDBE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 3,
+    "cevaplar": "EEDAEEDE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 4,
+    "cevaplar": "EBDCACD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 5,
+    "cevaplar": "CDCEDDAC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 6,
+    "cevaplar": "EAEBCDAA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 1,
+    "cevaplar": "DBECBECA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 2,
+    "cevaplar": "BCAECEAD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 3,
+    "cevaplar": "ACECCEE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 4,
+    "cevaplar": "EACDE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 5,
+    "cevaplar": "DCEBBAEA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 6,
+    "cevaplar": "BAEDAEEB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 1,
+    "cevaplar": "DCCDBCDE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 2,
+    "cevaplar": "EEBDEDAB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 3,
+    "cevaplar": "CEAACDCB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 4,
+    "cevaplar": "DEEDEBEA"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 5,
+    "cevaplar": "CDBECADE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 6,
+    "cevaplar": "BBCEBDDB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 1,
+    "cevaplar": "BDEABCADC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 2,
+    "cevaplar": "BECADDDDC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 3,
+    "cevaplar": "CEAADBDEE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 4,
+    "cevaplar": "EADBBADD"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 1,
+    "cevaplar": "CDADDCAEB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 2,
+    "cevaplar": "BEDDCBAA"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 3,
+    "cevaplar": "AEBCDDAE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 4,
+    "cevaplar": "BAEDBDCC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 1,
+    "cevaplar": "CDBCBCDBD"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 2,
+    "cevaplar": "BDEDBBBBC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 3,
+    "cevaplar": "ABCDBEDC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 4,
+    "cevaplar": "ADDCBCEA"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 1,
+    "cevaplar": "BEBCACAB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 2,
+    "cevaplar": "CECADEACB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 3,
+    "cevaplar": "ADBCEBDB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 4,
+    "cevaplar": "EBCEBBBB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 1,
+    "cevaplar": "CDECBACCD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 2,
+    "cevaplar": "DBDDACBADCE"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 3,
+    "cevaplar": "EDCECCCB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 4,
+    "cevaplar": "DECADDAA"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 5,
+    "cevaplar": "BDEECADB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 6,
+    "cevaplar": "CACACABB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 1,
+    "cevaplar": "CEBBCBAC"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 2,
+    "cevaplar": "CEDBBECD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 3,
+    "cevaplar": "EECBBDA"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 4,
+    "cevaplar": "DCDEBCE"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 5,
+    "cevaplar": "DECAABCE"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 6,
+    "cevaplar": "BAEACBAB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 1,
+    "cevaplar": "ECDEECAD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 2,
+    "cevaplar": "BBBDDBCC"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 3,
+    "cevaplar": "DAECCEDB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 4,
+    "cevaplar": "AECEACD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 1,
+    "cevaplar": "DACBEABD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 2,
+    "cevaplar": "ADBCCECABED"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 3,
+    "cevaplar": "EBBACDC"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 4,
+    "cevaplar": "BEADEBBC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 1,
+    "cevaplar": "ABBCDEBCCDEE"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 2,
+    "cevaplar": "CEBBADEACDA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 3,
+    "cevaplar": "EBABCBCD"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 4,
+    "cevaplar": "EDDADDBA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 5,
+    "cevaplar": "BDEBAAEA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 6,
+    "cevaplar": "CDCDBDED"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 1,
+    "cevaplar": "CDBECBDAEC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 2,
+    "cevaplar": "CCEDEACBE"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 3,
+    "cevaplar": "EDBABEAD"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 4,
+    "cevaplar": "EADECDBB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 5,
+    "cevaplar": "DDACBBEC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 6,
+    "cevaplar": "ECEDCDAB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 1,
+    "cevaplar": "AEBCDCEEABD"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 2,
+    "cevaplar": "CCAEABDB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 3,
+    "cevaplar": "ABCEEBAB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 4,
+    "cevaplar": "CDADDEAB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 5,
+    "cevaplar": "EADECBDBA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 6,
+    "cevaplar": "EBDEDDC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 1,
+    "cevaplar": "BEDCCCEB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 2,
+    "cevaplar": "BCACCECE"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 3,
+    "cevaplar": "AEBDCDBA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 4,
+    "cevaplar": "EAAEEADC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 1,
+    "cevaplar": "BCAEBAECD"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 2,
+    "cevaplar": "ACEDDADB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 3,
+    "cevaplar": "EDEAEAAAB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 4,
+    "cevaplar": "CCBBCCA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 1,
+    "cevaplar": "DECCBAADCB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 2,
+    "cevaplar": "ECBACAEBE"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 3,
+    "cevaplar": "DDDAECAD"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 4,
+    "cevaplar": "EEADEEC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 5,
+    "cevaplar": "ADCBBECE"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 6,
+    "cevaplar": "CCCACDEC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 1,
+    "cevaplar": "CCBDEDEB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 2,
+    "cevaplar": "BBACABCC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 3,
+    "cevaplar": "BAEBBDEA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 4,
+    "cevaplar": "DEBBDAEEC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 5,
+    "cevaplar": "ABDBEACE"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 6,
+    "cevaplar": "CEADBBEA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 1,
+    "cevaplar": "DACBDCEB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 2,
+    "cevaplar": "DCDCBCDC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 3,
+    "cevaplar": "BBBDAEEA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 4,
+    "cevaplar": "BCEAEAAC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 5,
+    "cevaplar": "BEDEABDA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 6,
+    "cevaplar": "EDBEADCB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 1,
+    "cevaplar": "DACEABCB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 2,
+    "cevaplar": "CCCEDBED"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 3,
+    "cevaplar": "EDDEAACD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 4,
+    "cevaplar": "BAADBBA"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 1,
+    "cevaplar": "AACEDEAC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 2,
+    "cevaplar": "CBEECACBB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 3,
+    "cevaplar": "CDECEDEA"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 4,
+    "cevaplar": "ADEEDDDC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 5,
+    "cevaplar": "AAEBCCDB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 6,
+    "cevaplar": "BBDAECCE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 1,
+    "cevaplar": "BBECCADD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 2,
+    "cevaplar": "BECACACE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 3,
+    "cevaplar": "BCBDCBAD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 4,
+    "cevaplar": "EACCDCDE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 5,
+    "cevaplar": "CEBCABAD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 6,
+    "cevaplar": "EAADAEBC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 1,
+    "cevaplar": "BCEAABCAED"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 2,
+    "cevaplar": "ACECCCCC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 3,
+    "cevaplar": "BABACEDE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 4,
+    "cevaplar": "EEDDABD"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 1,
+    "cevaplar": "DBAEDCDCBA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 2,
+    "cevaplar": "ABEADEEC"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 3,
+    "cevaplar": "BACCBEDC"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 4,
+    "cevaplar": "DBBDEADE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 1,
+    "cevaplar": "ECCAEDCDB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 2,
+    "cevaplar": "CCADBEBAEE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 3,
+    "cevaplar": "BBCADCEAE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 4,
+    "cevaplar": "BAEBACEA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 5,
+    "cevaplar": "AAEBECDB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 6,
+    "cevaplar": "DECCEEBA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 28,
+    "test": 1,
+    "cevaplar": "DBCEBDBECA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 28,
+    "test": 2,
+    "cevaplar": "EEEDCEED"
+   },
+   {
+    "sayfa": 312,
+    "gun": 28,
+    "test": 3,
+    "cevaplar": "BCDDECEAA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 29,
+    "test": 1,
+    "cevaplar": "ECBDEACB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 29,
+    "test": 2,
+    "cevaplar": "CBEBCBEE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 29,
+    "test": 3,
+    "cevaplar": "EDCCBCBD"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 1,
+    "cevaplar": "DCBAAEDB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 2,
+    "cevaplar": "ECBDAAAE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 3,
+    "cevaplar": "CBDADBAE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 4,
+    "cevaplar": "DECCCAAE"
+   }
+  ],
+  "B": [
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 1,
+    "cevaplar": "CBDAEADC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 2,
+    "cevaplar": "ECBBDEAE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 3,
+    "cevaplar": "BDCABADD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 4,
+    "cevaplar": "CCDDDBDB"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 5,
+    "cevaplar": "AEBCDBAC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 1,
+    "test": 6,
+    "cevaplar": "ACCEBCC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 1,
+    "cevaplar": "BECDEBCD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 2,
+    "cevaplar": "CBDEDECE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 3,
+    "cevaplar": "EBACBECB"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 4,
+    "cevaplar": "AEBCDEAA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 5,
+    "cevaplar": "CCEAEBDE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 2,
+    "test": 6,
+    "cevaplar": "AAEEBACA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 1,
+    "cevaplar": "ECEBCEDBA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 2,
+    "cevaplar": "DBDDCCDBE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 3,
+    "cevaplar": "EEDAEEDE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 4,
+    "cevaplar": "EBDCACD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 5,
+    "cevaplar": "CDCEDDAC"
+   },
+   {
+    "sayfa": 306,
+    "gun": 3,
+    "test": 6,
+    "cevaplar": "EABCDDAA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 1,
+    "cevaplar": "DBECBECA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 2,
+    "cevaplar": "BCAECEAD"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 3,
+    "cevaplar": "ACECCEE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 4,
+    "cevaplar": "EACDE"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 5,
+    "cevaplar": "DCEBBAEA"
+   },
+   {
+    "sayfa": 306,
+    "gun": 4,
+    "test": 6,
+    "cevaplar": "BAEDAEEB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 1,
+    "cevaplar": "DCCDBCDE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 2,
+    "cevaplar": "EEBDEDAB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 3,
+    "cevaplar": "CEAACDCB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 4,
+    "cevaplar": "DEEDEBEA"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 5,
+    "cevaplar": "CDBECADE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 5,
+    "test": 6,
+    "cevaplar": "BBCEBDDB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 1,
+    "cevaplar": "BDEABCADC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 2,
+    "cevaplar": "BECADDDDC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 3,
+    "cevaplar": "CEAADBDEE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 6,
+    "test": 4,
+    "cevaplar": "EADBBADD"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 1,
+    "cevaplar": "CDADDCAEB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 2,
+    "cevaplar": "BEDDCBAA"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 3,
+    "cevaplar": "AEBCDDAE"
+   },
+   {
+    "sayfa": 307,
+    "gun": 7,
+    "test": 4,
+    "cevaplar": "BAEDBDCC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 1,
+    "cevaplar": "CDBCBCDBD"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 2,
+    "cevaplar": "BDEDBBBBC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 3,
+    "cevaplar": "ABCDBEDC"
+   },
+   {
+    "sayfa": 307,
+    "gun": 8,
+    "test": 4,
+    "cevaplar": "ADDCBCEA"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 1,
+    "cevaplar": "BEBCACAB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 2,
+    "cevaplar": "CECADEACB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 3,
+    "cevaplar": "ADBCEBDB"
+   },
+   {
+    "sayfa": 307,
+    "gun": 9,
+    "test": 4,
+    "cevaplar": "EBCEBBBB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 1,
+    "cevaplar": "CDECBACCD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 2,
+    "cevaplar": "DBDDACBADCE"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 3,
+    "cevaplar": "EDCECCCB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 4,
+    "cevaplar": "DECADDAA"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 5,
+    "cevaplar": "BDEECADB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 10,
+    "test": 6,
+    "cevaplar": "CACACABB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 1,
+    "cevaplar": "CEBBCBAC"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 2,
+    "cevaplar": "CEDBBECD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 3,
+    "cevaplar": "EECBBDA"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 4,
+    "cevaplar": "DCDEBCE"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 5,
+    "cevaplar": "DECAABCE"
+   },
+   {
+    "sayfa": 308,
+    "gun": 11,
+    "test": 6,
+    "cevaplar": "BAEACBAB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 1,
+    "cevaplar": "ECDEECAD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 2,
+    "cevaplar": "BBBDDBCC"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 3,
+    "cevaplar": "DAECCEDB"
+   },
+   {
+    "sayfa": 308,
+    "gun": 12,
+    "test": 4,
+    "cevaplar": "AECEACD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 1,
+    "cevaplar": "DACBEABD"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 2,
+    "cevaplar": "ADBCCECABED"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 3,
+    "cevaplar": "EBBACDC"
+   },
+   {
+    "sayfa": 308,
+    "gun": 13,
+    "test": 4,
+    "cevaplar": "BEADEBBC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 1,
+    "cevaplar": "ABBCDEBCCDEE"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 2,
+    "cevaplar": "CEBBADEACDA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 3,
+    "cevaplar": "EBABCBCD"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 4,
+    "cevaplar": "EDDADDBA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 5,
+    "cevaplar": "BDEBAAEA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 14,
+    "test": 6,
+    "cevaplar": "CDCDBDED"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 1,
+    "cevaplar": "CDBECBDAEC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 2,
+    "cevaplar": "CCEDEACBE"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 3,
+    "cevaplar": "EDBABEAD"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 4,
+    "cevaplar": "EADECDBB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 5,
+    "cevaplar": "DDACBBEC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 15,
+    "test": 6,
+    "cevaplar": "ECEDCDAB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 1,
+    "cevaplar": "AEBCDCEEABD"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 2,
+    "cevaplar": "CCAEABDB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 3,
+    "cevaplar": "ABCEEBAB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 4,
+    "cevaplar": "CDADDEAB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 5,
+    "cevaplar": "EADECBDBA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 16,
+    "test": 6,
+    "cevaplar": "EBDEDDC"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 1,
+    "cevaplar": "BEDCCCEB"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 2,
+    "cevaplar": "BCACCECE"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 3,
+    "cevaplar": "AEBDCDBA"
+   },
+   {
+    "sayfa": 309,
+    "gun": 17,
+    "test": 4,
+    "cevaplar": "EAAEEADC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 1,
+    "cevaplar": "BCAEBAECD"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 2,
+    "cevaplar": "ACEDDADB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 3,
+    "cevaplar": "EDEAEAAAB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 18,
+    "test": 4,
+    "cevaplar": "CCBBCCA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 1,
+    "cevaplar": "DECCBAADCB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 2,
+    "cevaplar": "ECBACAEBE"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 3,
+    "cevaplar": "DDDAECAD"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 4,
+    "cevaplar": "EEADEEC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 5,
+    "cevaplar": "ADCBBECE"
+   },
+   {
+    "sayfa": 310,
+    "gun": 19,
+    "test": 6,
+    "cevaplar": "CCCACDEC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 1,
+    "cevaplar": "CCBDEDEB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 2,
+    "cevaplar": "BBACABCC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 3,
+    "cevaplar": "BAEBBDEA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 4,
+    "cevaplar": "DEBBDAEEC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 5,
+    "cevaplar": "ABDBEACE"
+   },
+   {
+    "sayfa": 310,
+    "gun": 20,
+    "test": 6,
+    "cevaplar": "CEADBBEA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 1,
+    "cevaplar": "DACBDCEB"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 2,
+    "cevaplar": "DCDCBCDC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 3,
+    "cevaplar": "BBBDAEEA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 4,
+    "cevaplar": "BCEAEAAC"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 5,
+    "cevaplar": "BEDEABDA"
+   },
+   {
+    "sayfa": 310,
+    "gun": 21,
+    "test": 6,
+    "cevaplar": "EDBEADCB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 1,
+    "cevaplar": "DACEABCB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 2,
+    "cevaplar": "CCCEDBED"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 3,
+    "cevaplar": "EDDEAACD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 22,
+    "test": 4,
+    "cevaplar": "BAADBBA"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 1,
+    "cevaplar": "AACEDEAC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 2,
+    "cevaplar": "CBEECACBB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 3,
+    "cevaplar": "CDECEDEA"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 4,
+    "cevaplar": "ADEEDDDC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 5,
+    "cevaplar": "AAEBCCDB"
+   },
+   {
+    "sayfa": 311,
+    "gun": 23,
+    "test": 6,
+    "cevaplar": "BBDAECCE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 1,
+    "cevaplar": "BBECCADD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 2,
+    "cevaplar": "BECACACE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 3,
+    "cevaplar": "BCBDCBAD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 4,
+    "cevaplar": "EACCDCDE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 5,
+    "cevaplar": "CEBCABAD"
+   },
+   {
+    "sayfa": 311,
+    "gun": 24,
+    "test": 6,
+    "cevaplar": "EAADAEBC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 1,
+    "cevaplar": "BCEAABCAED"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 2,
+    "cevaplar": "ACECCCCC"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 3,
+    "cevaplar": "BABACEDE"
+   },
+   {
+    "sayfa": 311,
+    "gun": 25,
+    "test": 4,
+    "cevaplar": "EEDDABD"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 1,
+    "cevaplar": "DBAEDCDCBA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 2,
+    "cevaplar": "ABEADEEC"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 3,
+    "cevaplar": "BACCBEDC"
+   },
+   {
+    "sayfa": 312,
+    "gun": 26,
+    "test": 4,
+    "cevaplar": "DBBDEADE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 1,
+    "cevaplar": "ECCAEDCDB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 2,
+    "cevaplar": "CCADBEBAEE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 3,
+    "cevaplar": "BBCADCEAE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 4,
+    "cevaplar": "BAEBACEA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 5,
+    "cevaplar": "AAEBECDB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 27,
+    "test": 6,
+    "cevaplar": "DECCEEBA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 28,
+    "test": 1,
+    "cevaplar": "DBCEBDBECA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 28,
+    "test": 2,
+    "cevaplar": "EEEDCEED"
+   },
+   {
+    "sayfa": 312,
+    "gun": 28,
+    "test": 3,
+    "cevaplar": "BCDDECEAA"
+   },
+   {
+    "sayfa": 312,
+    "gun": 29,
+    "test": 1,
+    "cevaplar": "ECBDEACB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 29,
+    "test": 2,
+    "cevaplar": "CBEBCBEE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 29,
+    "test": 3,
+    "cevaplar": "EDCCBCBD"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 1,
+    "cevaplar": "DCBAAEDB"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 2,
+    "cevaplar": "ECBDAAAE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 3,
+    "cevaplar": "CBDADBAE"
+   },
+   {
+    "sayfa": 312,
+    "gun": 30,
+    "test": 4,
+    "cevaplar": "DECCCAAE"
+   }
+  ],
+  "yontem": "Iki bagimsiz okuyucu grubu (sayfa basina bir okuyucu), 2.5x parcalar; A sayfa sirasiyla, B parcalar alttan uste ve satirlar sagdan sola."
+ },
+ "goz_kararlari": {
+  "farklar": {
+   "G03T6#3": "E",
+   "G03T6#4": "B",
+   "G03T6#5": "C"
+  },
+  "gerekce": {
+   "G03T6": "s306 GUN 3 test 6 satiri 5x gozle: '1.E 2.A 3.E 4.B 5.C 6.D 7.A 8.A'; B okumasi 3-5. hucreleri kaydirmis. Glif kanali da A ile ayni."
+  }
+ },
+ "glif": {
+  "yontem": "Kart gri goruntusu; yatay cizgilerle satir, murekkep bilesen kumeleri ('N.L') ile hucre; en sag uzun bilesen harf, 12x12 gri vektor; en-yakin-komsu LOO (backend/_p345_gecici/ts_glif.py).",
+  "hucre": 1233,
+  "uyum": 1233,
+  "uyumsuz": []
+ },
+ "baslik_okumalari": {
+  "A": [
+   {
+    "sayfa": 6,
+    "ders": "TAR\u0130H",
+    "konu": "TAR\u0130H VE ZAMAN / \u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 7,
+    "ders": "TAR\u0130H",
+    "konu": "TAR\u0130H VE ZAMAN / \u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 1,
+    "gun": 1
+   },
+   {
+    "sayfa": 8,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 9,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 2,
+    "gun": 1
+   },
+   {
+    "sayfa": 10,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 11,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - I",
+    "test": 3,
+    "gun": 1
+   },
+   {
+    "sayfa": 12,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 13,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - II",
+    "test": 4,
+    "gun": 1
+   },
+   {
+    "sayfa": 14,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 15,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - I",
+    "test": 5,
+    "gun": 1
+   },
+   {
+    "sayfa": 16,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - I",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 17,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - I",
+    "test": 6,
+    "gun": 1
+   },
+   {
+    "sayfa": 18,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130 - / ORTA \u00c7A\u011e'DA D\u00dcNYA",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 19,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130 - / ORTA \u00c7A\u011e'DA D\u00dcNYA",
+    "test": 1,
+    "gun": 2
+   },
+   {
+    "sayfa": 20,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 21,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - I",
+    "test": 2,
+    "gun": 2
+   },
+   {
+    "sayfa": 22,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 23,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - III",
+    "test": 3,
+    "gun": 2
+   },
+   {
+    "sayfa": 24,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - IV",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 25,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - IV",
+    "test": 4,
+    "gun": 2
+   },
+   {
+    "sayfa": 26,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 27,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - II",
+    "test": 5,
+    "gun": 2
+   },
+   {
+    "sayfa": 28,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 29,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - II",
+    "test": 6,
+    "gun": 2
+   },
+   {
+    "sayfa": 30,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 31,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - II",
+    "test": 1,
+    "gun": 3
+   },
+   {
+    "sayfa": 32,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 33,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - III",
+    "test": 2,
+    "gun": 3
+   },
+   {
+    "sayfa": 34,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 35,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - I",
+    "test": 3,
+    "gun": 3
+   },
+   {
+    "sayfa": 36,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 37,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - II",
+    "test": 4,
+    "gun": 3
+   },
+   {
+    "sayfa": 38,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 39,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - I",
+    "test": 5,
+    "gun": 3
+   },
+   {
+    "sayfa": 40,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130NAN\u00c7 ESASLARI",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 41,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130NAN\u00c7 ESASLARI",
+    "test": 6,
+    "gun": 3
+   },
+   {
+    "sayfa": 42,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130SLAM MEDEN\u0130YET\u0130N\u0130N DO\u011eU\u015eU",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 43,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130SLAM MEDEN\u0130YET\u0130N\u0130N DO\u011eU\u015eU",
+    "test": 1,
+    "gun": 4
+   },
+   {
+    "sayfa": 44,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE / \u0130LK T\u00dcRK \u0130SLAM DEVLETLER\u0130",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 45,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE / \u0130LK T\u00dcRK \u0130SLAM DEVLETLER\u0130",
+    "test": 2,
+    "gun": 4
+   },
+   {
+    "sayfa": 46,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 47,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - III",
+    "test": 3,
+    "gun": 4
+   },
+   {
+    "sayfa": 48,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - IV",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 49,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - IV",
+    "test": 4,
+    "gun": 4
+   },
+   {
+    "sayfa": 50,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 51,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - II",
+    "test": 5,
+    "gun": 4
+   },
+   {
+    "sayfa": 52,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - I",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 53,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - I",
+    "test": 6,
+    "gun": 4
+   },
+   {
+    "sayfa": 54,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE \u0130LK T\u00dcRK / \u0130SLAM DEVLETLER\u0130 - DEVLETLE\u015eME VE / YERLE\u015eME S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 55,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE \u0130LK T\u00dcRK / \u0130SLAM DEVLETLER\u0130 - DEVLETLE\u015eME VE / YERLE\u015eME S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 1,
+    "gun": 5
+   },
+   {
+    "sayfa": 56,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME VE YERLE\u015eME / S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 57,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME VE YERLE\u015eME / S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 2,
+    "gun": 5
+   },
+   {
+    "sayfa": 58,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 59,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - I",
+    "test": 3,
+    "gun": 5
+   },
+   {
+    "sayfa": 60,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 61,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - II",
+    "test": 4,
+    "gun": 5
+   },
+   {
+    "sayfa": 62,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 63,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - I",
+    "test": 5,
+    "gun": 5
+   },
+   {
+    "sayfa": 64,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 65,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - II",
+    "test": 6,
+    "gun": 5
+   },
+   {
+    "sayfa": 66,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 67,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - I",
+    "test": 1,
+    "gun": 6
+   },
+   {
+    "sayfa": 68,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 69,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - II",
+    "test": 2,
+    "gun": 6
+   },
+   {
+    "sayfa": 70,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 71,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - III",
+    "test": 3,
+    "gun": 6
+   },
+   {
+    "sayfa": 72,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 73,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": 6
+   },
+   {
+    "sayfa": 74,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME S\u00dcREC\u0130NDE / SAVA\u015e\u00c7ILAR VE ASKERLER",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 75,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME S\u00dcREC\u0130NDE / SAVA\u015e\u00c7ILAR VE ASKERLER",
+    "test": 1,
+    "gun": 7
+   },
+   {
+    "sayfa": 76,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 77,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - II",
+    "test": 2,
+    "gun": 7
+   },
+   {
+    "sayfa": 78,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 79,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - II",
+    "test": 3,
+    "gun": 7
+   },
+   {
+    "sayfa": 80,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 81,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - III",
+    "test": 4,
+    "gun": 7
+   },
+   {
+    "sayfa": 82,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / MEDEN\u0130YET\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 83,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / MEDEN\u0130YET\u0130",
+    "test": 1,
+    "gun": 8
+   },
+   {
+    "sayfa": 84,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 85,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - III",
+    "test": 2,
+    "gun": 8
+   },
+   {
+    "sayfa": 86,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130LG\u0130 FELSEFES\u0130) - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 87,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130LG\u0130 FELSEFES\u0130) - III",
+    "test": 3,
+    "gun": 8
+   },
+   {
+    "sayfa": 88,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 89,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - I",
+    "test": 4,
+    "gun": 8
+   },
+   {
+    "sayfa": 90,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 91,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - I",
+    "test": 1,
+    "gun": 9
+   },
+   {
+    "sayfa": 92,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 93,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - II",
+    "test": 2,
+    "gun": 9
+   },
+   {
+    "sayfa": 94,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 95,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": 9
+   },
+   {
+    "sayfa": 96,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 97,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": 9
+   },
+   {
+    "sayfa": 98,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 99,
+    "ders": "TAR\u0130H",
+    "konu": null,
+    "test": 1,
+    "gun": 10
+   },
+   {
+    "sayfa": 100,
+    "ders": "TAR\u0130H",
+    "konu": "SULTAN VE OSMANLI MERKEZ TE\u015eK\u0130LATI",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 101,
+    "ders": "TAR\u0130H",
+    "konu": "SULTAN VE OSMANLI MERKEZ TE\u015eK\u0130LATI",
+    "test": 2,
+    "gun": 10
+   },
+   {
+    "sayfa": 102,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 103,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - II",
+    "test": 3,
+    "gun": 10
+   },
+   {
+    "sayfa": 104,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 105,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - III",
+    "test": 4,
+    "gun": 10
+   },
+   {
+    "sayfa": 106,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130L\u0130M FELSEFES\u0130) - IV",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 107,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130L\u0130M FELSEFES\u0130) - IV",
+    "test": 5,
+    "gun": 10
+   },
+   {
+    "sayfa": 108,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 109,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - II",
+    "test": 6,
+    "gun": 10
+   },
+   {
+    "sayfa": 110,
+    "ders": "TAR\u0130H",
+    "konu": "KLAS\u0130K \u00c7A\u011e'DA OSMANLI / TOPLUM D\u00dcZEN\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 111,
+    "ders": "TAR\u0130H",
+    "konu": "KLAS\u0130K \u00c7A\u011e'DA OSMANLI / TOPLUM D\u00dcZEN\u0130",
+    "test": 1,
+    "gun": 11
+   },
+   {
+    "sayfa": 112,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 113,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - I",
+    "test": 2,
+    "gun": 11
+   },
+   {
+    "sayfa": 114,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 115,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": 11
+   },
+   {
+    "sayfa": 116,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - V",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 117,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - V",
+    "test": 4,
+    "gun": 11
+   },
+   {
+    "sayfa": 118,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - V",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 119,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - V",
+    "test": 5,
+    "gun": 11
+   },
+   {
+    "sayfa": 120,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00d6N\u00dcL CO\u011eRAFYAMIZ",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 121,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00d6N\u00dcL CO\u011eRAFYAMIZ",
+    "test": 6,
+    "gun": 11
+   },
+   {
+    "sayfa": 122,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 123,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - II",
+    "test": 1,
+    "gun": 12
+   },
+   {
+    "sayfa": 124,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VI",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 125,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VI",
+    "test": 2,
+    "gun": 12
+   },
+   {
+    "sayfa": 126,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - VI",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 127,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - VI",
+    "test": 3,
+    "gun": 12
+   },
+   {
+    "sayfa": 128,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ALLAH VE \u0130NSAN \u0130L\u0130\u015eK\u0130LER\u0130",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 129,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ALLAH VE \u0130NSAN \u0130L\u0130\u015eK\u0130LER\u0130",
+    "test": 4,
+    "gun": 12
+   },
+   {
+    "sayfa": 130,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 131,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - III",
+    "test": 1,
+    "gun": 13
+   },
+   {
+    "sayfa": 132,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 133,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - I",
+    "test": 2,
+    "gun": 13
+   },
+   {
+    "sayfa": 134,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VII",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 135,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VII",
+    "test": 3,
+    "gun": 13
+   },
+   {
+    "sayfa": 136,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 137,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - I",
+    "test": 4,
+    "gun": 13
+   },
+   {
+    "sayfa": 138,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 139,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - II",
+    "test": 1,
+    "gun": 14
+   },
+   {
+    "sayfa": 140,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 141,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - III",
+    "test": 2,
+    "gun": 14
+   },
+   {
+    "sayfa": 142,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 143,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - II",
+    "test": 3,
+    "gun": 14
+   },
+   {
+    "sayfa": 144,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 145,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - III",
+    "test": 4,
+    "gun": 14
+   },
+   {
+    "sayfa": 146,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (D\u0130N FELSEFES\u0130) - VII",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 147,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (D\u0130N FELSEFES\u0130) - VII",
+    "test": 5,
+    "gun": 14
+   },
+   {
+    "sayfa": 148,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "HZ MUHAMMET (SAV) VE GEN\u00c7L\u0130K",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 149,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "HZ MUHAMMET (SAV) VE GEN\u00c7L\u0130K",
+    "test": 6,
+    "gun": 14
+   },
+   {
+    "sayfa": 150,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 151,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - I",
+    "test": 1,
+    "gun": 15
+   },
+   {
+    "sayfa": 152,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 153,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - II",
+    "test": 2,
+    "gun": 15
+   },
+   {
+    "sayfa": 154,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - IV",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 155,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - IV",
+    "test": 3,
+    "gun": 15
+   },
+   {
+    "sayfa": 156,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - V",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 157,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - V",
+    "test": 4,
+    "gun": 15
+   },
+   {
+    "sayfa": 158,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (S\u0130YASET FELSEFES\u0130) - VIII",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 159,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (S\u0130YASET FELSEFES\u0130) - VIII",
+    "test": 5,
+    "gun": 15
+   },
+   {
+    "sayfa": 160,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - I",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 161,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - I",
+    "test": 6,
+    "gun": 15
+   },
+   {
+    "sayfa": 162,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 163,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - III",
+    "test": 1,
+    "gun": 16
+   },
+   {
+    "sayfa": 164,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 165,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - I",
+    "test": 2,
+    "gun": 16
+   },
+   {
+    "sayfa": 166,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VI",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 167,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VI",
+    "test": 3,
+    "gun": 16
+   },
+   {
+    "sayfa": 168,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VII",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 169,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VII",
+    "test": 4,
+    "gun": 16
+   },
+   {
+    "sayfa": 170,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - IX",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 171,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - IX",
+    "test": 5,
+    "gun": 16
+   },
+   {
+    "sayfa": 172,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 173,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - II",
+    "test": 6,
+    "gun": 16
+   },
+   {
+    "sayfa": 174,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 175,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - II",
+    "test": 1,
+    "gun": 17
+   },
+   {
+    "sayfa": 176,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 177,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - I",
+    "test": 2,
+    "gun": 17
+   },
+   {
+    "sayfa": 178,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - X",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 179,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - X",
+    "test": 3,
+    "gun": 17
+   },
+   {
+    "sayfa": 180,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 181,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - I",
+    "test": 4,
+    "gun": 17
+   },
+   {
+    "sayfa": 182,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 183,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - III",
+    "test": 1,
+    "gun": 18
+   },
+   {
+    "sayfa": 184,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE DENGE / STRATEJ\u0130S\u0130 (1774-1914) - IV / XIX VE XX. / Y\u00dcZYILDA DE\u011e\u0130\u015eEN SOSYOEKONOM\u0130K HAYAT",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 185,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE DENGE / STRATEJ\u0130S\u0130 (1774-1914) - IV / XIX VE XX. / Y\u00dcZYILDA DE\u011e\u0130\u015eEN SOSYOEKONOM\u0130K HAYAT",
+    "test": 2,
+    "gun": 18
+   },
+   {
+    "sayfa": 186,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 187,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - II",
+    "test": 3,
+    "gun": 18
+   },
+   {
+    "sayfa": 188,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 189,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - III",
+    "test": 4,
+    "gun": 18
+   },
+   {
+    "sayfa": 190,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 191,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - I",
+    "test": 1,
+    "gun": 19
+   },
+   {
+    "sayfa": 192,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 193,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - II",
+    "test": 2,
+    "gun": 19
+   },
+   {
+    "sayfa": 194,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 195,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - I",
+    "test": 3,
+    "gun": 19
+   },
+   {
+    "sayfa": 196,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 197,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - II",
+    "test": 4,
+    "gun": 19
+   },
+   {
+    "sayfa": 198,
+    "ders": "FELSEFE",
+    "konu": "FELSEF\u0130 OKUMA VE YAZMA",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 199,
+    "ders": "FELSEFE",
+    "konu": "FELSEF\u0130 OKUMA VE YAZMA",
+    "test": 5,
+    "gun": 19
+   },
+   {
+    "sayfa": 200,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 201,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - II",
+    "test": 6,
+    "gun": 19
+   },
+   {
+    "sayfa": 202,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 203,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - III",
+    "test": 1,
+    "gun": 20
+   },
+   {
+    "sayfa": 204,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 205,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - I",
+    "test": 2,
+    "gun": 20
+   },
+   {
+    "sayfa": 206,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 207,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - III",
+    "test": 3,
+    "gun": 20
+   },
+   {
+    "sayfa": 208,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - IV",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 209,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - IV",
+    "test": 4,
+    "gun": 20
+   },
+   {
+    "sayfa": 210,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 211,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": 20
+   },
+   {
+    "sayfa": 212,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE \u0130T\u0130KAD\u0130, S\u0130YAS\u0130 / VE FIKH\u0130 YORUMLAR",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 213,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE \u0130T\u0130KAD\u0130, S\u0130YAS\u0130 / VE FIKH\u0130 YORUMLAR",
+    "test": 6,
+    "gun": 20
+   },
+   {
+    "sayfa": 214,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 215,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - II",
+    "test": 1,
+    "gun": 21
+   },
+   {
+    "sayfa": 216,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 217,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - III",
+    "test": 2,
+    "gun": 21
+   },
+   {
+    "sayfa": 218,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - V",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 219,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - V",
+    "test": 3,
+    "gun": 21
+   },
+   {
+    "sayfa": 220,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - VI",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 221,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - VI",
+    "test": 4,
+    "gun": 21
+   },
+   {
+    "sayfa": 222,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 223,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": 21
+   },
+   {
+    "sayfa": 224,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u00dcNYA VE AH\u0130RET",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 225,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u00dcNYA VE AH\u0130RET",
+    "test": 6,
+    "gun": 21
+   },
+   {
+    "sayfa": 226,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - IV",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 227,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - IV",
+    "test": 1,
+    "gun": 22
+   },
+   {
+    "sayfa": 228,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 229,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - I",
+    "test": 2,
+    "gun": 22
+   },
+   {
+    "sayfa": 230,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 231,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": 22
+   },
+   {
+    "sayfa": 232,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 233,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - I",
+    "test": 4,
+    "gun": 22
+   },
+   {
+    "sayfa": 234,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - V",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 235,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - V",
+    "test": 1,
+    "gun": 23
+   },
+   {
+    "sayfa": 236,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 237,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - I",
+    "test": 2,
+    "gun": 23
+   },
+   {
+    "sayfa": 238,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 239,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - II",
+    "test": 3,
+    "gun": 23
+   },
+   {
+    "sayfa": 240,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 241,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - I",
+    "test": 4,
+    "gun": 23
+   },
+   {
+    "sayfa": 242,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 243,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": 23
+   },
+   {
+    "sayfa": 244,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 245,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - II",
+    "test": 6,
+    "gun": 23
+   },
+   {
+    "sayfa": 246,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 247,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - II",
+    "test": 1,
+    "gun": 24
+   },
+   {
+    "sayfa": 248,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 249,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - III",
+    "test": 2,
+    "gun": 24
+   },
+   {
+    "sayfa": 250,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 251,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - II",
+    "test": 3,
+    "gun": 24
+   },
+   {
+    "sayfa": 252,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 253,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - III",
+    "test": 4,
+    "gun": 24
+   },
+   {
+    "sayfa": 254,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 255,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": 24
+   },
+   {
+    "sayfa": 256,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'DA BAZI KAVRAMLAR",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 257,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'DA BAZI KAVRAMLAR",
+    "test": 6,
+    "gun": 24
+   },
+   {
+    "sayfa": 258,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - IV",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 259,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - IV",
+    "test": 1,
+    "gun": 25
+   },
+   {
+    "sayfa": 260,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - IV",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 261,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - IV",
+    "test": 2,
+    "gun": 25
+   },
+   {
+    "sayfa": 262,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 263,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": 25
+   },
+   {
+    "sayfa": 264,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 265,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - I",
+    "test": 4,
+    "gun": 25
+   },
+   {
+    "sayfa": 266,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 267,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - I",
+    "test": 1,
+    "gun": 26
+   },
+   {
+    "sayfa": 268,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 269,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - I",
+    "test": 2,
+    "gun": 26
+   },
+   {
+    "sayfa": 270,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 271,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": 26
+   },
+   {
+    "sayfa": 272,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 273,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - II",
+    "test": 4,
+    "gun": 26
+   },
+   {
+    "sayfa": 274,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 275,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - II",
+    "test": 1,
+    "gun": 27
+   },
+   {
+    "sayfa": 276,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 277,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - III",
+    "test": 2,
+    "gun": 27
+   },
+   {
+    "sayfa": 278,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 279,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - II",
+    "test": 3,
+    "gun": 27
+   },
+   {
+    "sayfa": 280,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 281,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - I",
+    "test": 4,
+    "gun": 27
+   },
+   {
+    "sayfa": 282,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 283,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": 27
+   },
+   {
+    "sayfa": 284,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ANADOLU'DA \u0130SLAM",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 285,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ANADOLU'DA \u0130SLAM",
+    "test": 6,
+    "gun": 27
+   },
+   {
+    "sayfa": 286,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - IV",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 287,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - IV",
+    "test": 1,
+    "gun": 28
+   },
+   {
+    "sayfa": 288,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 289,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - II",
+    "test": 2,
+    "gun": 28
+   },
+   {
+    "sayfa": 290,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 291,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": 28
+   },
+   {
+    "sayfa": 292,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130K\u0130 SAVA\u015e ARASINDAK\u0130 D\u00d6NEMDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI S\u00dcREC\u0130NDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI SONRASINDA / T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 293,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130K\u0130 SAVA\u015e ARASINDAK\u0130 D\u00d6NEMDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI S\u00dcREC\u0130NDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI SONRASINDA / T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": 29
+   },
+   {
+    "sayfa": 294,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 295,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - III",
+    "test": 2,
+    "gun": 29
+   },
+   {
+    "sayfa": 296,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE TASAVVUF\u0130 / YORUMLAR",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 297,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE TASAVVUF\u0130 / YORUMLAR",
+    "test": 3,
+    "gun": 29
+   },
+   {
+    "sayfa": 298,
+    "ders": "TAR\u0130H",
+    "konu": "II. D\u00dcNYA SAVA\u015eI SONRASINDA T\u00dcRK\u0130YE VE D\u00dcNYA- / TOPLUMSAL DEVR\u0130M \u00c7A\u011eINDA D\u00dcNYA VE T\u00dcRK\u0130YE- / Y\u00dcZYILIN E\u015e\u0130\u011e\u0130NDE T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 299,
+    "ders": "TAR\u0130H",
+    "konu": "II. D\u00dcNYA SAVA\u015eI SONRASINDA T\u00dcRK\u0130YE VE D\u00dcNYA- / TOPLUMSAL DEVR\u0130M \u00c7A\u011eINDA D\u00dcNYA VE T\u00dcRK\u0130YE- / Y\u00dcZYILIN E\u015e\u0130\u011e\u0130NDE T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": 30
+   },
+   {
+    "sayfa": 300,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - IV",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 301,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - IV",
+    "test": 2,
+    "gun": 30
+   },
+   {
+    "sayfa": 302,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 303,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": 30
+   },
+   {
+    "sayfa": 304,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00dcNCEL D\u0130N\u00ce MESELELER",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 305,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00dcNCEL D\u0130N\u00ce MESELELER",
+    "test": 4,
+    "gun": 30
+   }
+  ],
+  "B": [
+   {
+    "sayfa": 6,
+    "ders": "TAR\u0130H",
+    "konu": "TAR\u0130H VE ZAMAN / \u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 7,
+    "ders": "TAR\u0130H",
+    "konu": "TAR\u0130H VE ZAMAN / \u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 1,
+    "gun": 1
+   },
+   {
+    "sayfa": 8,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 9,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130",
+    "test": 2,
+    "gun": 1
+   },
+   {
+    "sayfa": 10,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 11,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - I",
+    "test": 3,
+    "gun": 1
+   },
+   {
+    "sayfa": 12,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 13,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - II",
+    "test": 4,
+    "gun": 1
+   },
+   {
+    "sayfa": 14,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 15,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - I",
+    "test": 5,
+    "gun": 1
+   },
+   {
+    "sayfa": 16,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - I",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 17,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - I",
+    "test": 6,
+    "gun": 1
+   },
+   {
+    "sayfa": 18,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130 - / ORTA \u00c7A\u011e'DA D\u00dcNYA",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 19,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130NSANLI\u011eIN \u0130LK D\u00d6NEMLER\u0130 - / ORTA \u00c7A\u011e'DA D\u00dcNYA",
+    "test": 1,
+    "gun": 2
+   },
+   {
+    "sayfa": 20,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 21,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - I",
+    "test": 2,
+    "gun": 2
+   },
+   {
+    "sayfa": 22,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 23,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - III",
+    "test": 3,
+    "gun": 2
+   },
+   {
+    "sayfa": 24,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - IV",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 25,
+    "ders": "CO\u011eRAFYA",
+    "konu": "DO\u011eA, \u0130NSAN VE CO\u011eRAFYA - IV",
+    "test": 4,
+    "gun": 2
+   },
+   {
+    "sayfa": 26,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 27,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEY\u0130 TANIMA - II",
+    "test": 5,
+    "gun": 2
+   },
+   {
+    "sayfa": 28,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 29,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "B\u0130LG\u0130 VE \u0130NAN\u00c7 - II",
+    "test": 6,
+    "gun": 2
+   },
+   {
+    "sayfa": 30,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 31,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - II",
+    "test": 1,
+    "gun": 3
+   },
+   {
+    "sayfa": 32,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 33,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130LK VE ORTA \u00c7A\u011eLARDA / T\u00dcRK D\u00dcNYASI - III",
+    "test": 2,
+    "gun": 3
+   },
+   {
+    "sayfa": 34,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 35,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - I",
+    "test": 3,
+    "gun": 3
+   },
+   {
+    "sayfa": 36,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 37,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - II",
+    "test": 4,
+    "gun": 3
+   },
+   {
+    "sayfa": 38,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 39,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - I",
+    "test": 5,
+    "gun": 3
+   },
+   {
+    "sayfa": 40,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130NAN\u00c7 ESASLARI",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 41,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130NAN\u00c7 ESASLARI",
+    "test": 6,
+    "gun": 3
+   },
+   {
+    "sayfa": 42,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130SLAM MEDEN\u0130YET\u0130N\u0130N DO\u011eU\u015eU",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 43,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130SLAM MEDEN\u0130YET\u0130N\u0130N DO\u011eU\u015eU",
+    "test": 1,
+    "gun": 4
+   },
+   {
+    "sayfa": 44,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE / \u0130LK T\u00dcRK \u0130SLAM DEVLETLER\u0130",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 45,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE / \u0130LK T\u00dcRK \u0130SLAM DEVLETLER\u0130",
+    "test": 2,
+    "gun": 4
+   },
+   {
+    "sayfa": 46,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 47,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - III",
+    "test": 3,
+    "gun": 4
+   },
+   {
+    "sayfa": 48,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - IV",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 49,
+    "ders": "CO\u011eRAFYA",
+    "konu": "D\u00dcNYA'NIN \u015eEKL\u0130 VE HAREKETLER\u0130 - IV",
+    "test": 4,
+    "gun": 4
+   },
+   {
+    "sayfa": 50,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 51,
+    "ders": "FELSEFE",
+    "konu": "FELSEFE \u0130LE D\u00dc\u015e\u00dcNME - II",
+    "test": 5,
+    "gun": 4
+   },
+   {
+    "sayfa": 52,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - I",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 53,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - I",
+    "test": 6,
+    "gun": 4
+   },
+   {
+    "sayfa": 54,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE \u0130LK T\u00dcRK / \u0130SLAM DEVLETLER\u0130 - DEVLETLE\u015eME VE / YERLE\u015eME S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 55,
+    "ders": "TAR\u0130H",
+    "konu": "T\u00dcRKLER\u0130N \u0130SLAM\u0130YET'\u0130 KABUL\u00dc VE \u0130LK T\u00dcRK / \u0130SLAM DEVLETLER\u0130 - DEVLETLE\u015eME VE / YERLE\u015eME S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 1,
+    "gun": 5
+   },
+   {
+    "sayfa": 56,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME VE YERLE\u015eME / S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 57,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME VE YERLE\u015eME / S\u00dcREC\u0130NDE SEL\u00c7UKLU T\u00dcRK\u0130YES\u0130",
+    "test": 2,
+    "gun": 5
+   },
+   {
+    "sayfa": 58,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 59,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - I",
+    "test": 3,
+    "gun": 5
+   },
+   {
+    "sayfa": 60,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 61,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - II",
+    "test": 4,
+    "gun": 5
+   },
+   {
+    "sayfa": 62,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 63,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - I",
+    "test": 5,
+    "gun": 5
+   },
+   {
+    "sayfa": 64,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 65,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - II",
+    "test": 6,
+    "gun": 5
+   },
+   {
+    "sayfa": 66,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 67,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - I",
+    "test": 1,
+    "gun": 6
+   },
+   {
+    "sayfa": 68,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 69,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / S\u0130YASET\u0130 (1302 - 1453) - II",
+    "test": 2,
+    "gun": 6
+   },
+   {
+    "sayfa": 70,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 71,
+    "ders": "CO\u011eRAFYA",
+    "konu": "CO\u011eRAF\u0130 KONUM - III",
+    "test": 3,
+    "gun": 6
+   },
+   {
+    "sayfa": 72,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 73,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": 6
+   },
+   {
+    "sayfa": 74,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME S\u00dcREC\u0130NDE / SAVA\u015e\u00c7ILAR VE ASKERLER",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 75,
+    "ders": "TAR\u0130H",
+    "konu": "DEVLETLE\u015eME S\u00dcREC\u0130NDE / SAVA\u015e\u00c7ILAR VE ASKERLER",
+    "test": 1,
+    "gun": 7
+   },
+   {
+    "sayfa": 76,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 77,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - II",
+    "test": 2,
+    "gun": 7
+   },
+   {
+    "sayfa": 78,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 79,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (VARLIK FELSEFES\u0130) - II",
+    "test": 3,
+    "gun": 7
+   },
+   {
+    "sayfa": 80,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 81,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM'DA \u0130BADETLER - III",
+    "test": 4,
+    "gun": 7
+   },
+   {
+    "sayfa": 82,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / MEDEN\u0130YET\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 83,
+    "ders": "TAR\u0130H",
+    "konu": "BEYL\u0130KTEN DEVLETE OSMANLI / MEDEN\u0130YET\u0130",
+    "test": 1,
+    "gun": 8
+   },
+   {
+    "sayfa": 84,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 85,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - III",
+    "test": 2,
+    "gun": 8
+   },
+   {
+    "sayfa": 86,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130LG\u0130 FELSEFES\u0130) - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 87,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130LG\u0130 FELSEFES\u0130) - III",
+    "test": 3,
+    "gun": 8
+   },
+   {
+    "sayfa": 88,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 89,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - I",
+    "test": 4,
+    "gun": 8
+   },
+   {
+    "sayfa": 90,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 91,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - I",
+    "test": 1,
+    "gun": 9
+   },
+   {
+    "sayfa": 92,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 93,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - II",
+    "test": 2,
+    "gun": 9
+   },
+   {
+    "sayfa": 94,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 95,
+    "ders": "CO\u011eRAFYA",
+    "konu": "HAR\u0130TA B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": 9
+   },
+   {
+    "sayfa": 96,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 97,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - I",
+    "test": 4,
+    "gun": 9
+   },
+   {
+    "sayfa": 98,
+    "ders": "TAR\u0130H",
+    "konu": "D\u00dcNYA G\u00dcC\u00dc OSMANLI / (1453 - 1595) - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 99,
+    "ders": "TAR\u0130H",
+    "konu": null,
+    "test": 1,
+    "gun": 10
+   },
+   {
+    "sayfa": 100,
+    "ders": "TAR\u0130H",
+    "konu": "SULTAN VE OSMANLI MERKEZ TE\u015eK\u0130LATI",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 101,
+    "ders": "TAR\u0130H",
+    "konu": "SULTAN VE OSMANLI MERKEZ TE\u015eK\u0130LATI",
+    "test": 2,
+    "gun": 10
+   },
+   {
+    "sayfa": 102,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 103,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - II",
+    "test": 3,
+    "gun": 10
+   },
+   {
+    "sayfa": 104,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 105,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - III",
+    "test": 4,
+    "gun": 10
+   },
+   {
+    "sayfa": 106,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130L\u0130M FELSEFES\u0130) - IV",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 107,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (B\u0130L\u0130M FELSEFES\u0130) - IV",
+    "test": 5,
+    "gun": 10
+   },
+   {
+    "sayfa": 108,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 109,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "GEN\u00c7L\u0130K VE DE\u011eERLER - II",
+    "test": 6,
+    "gun": 10
+   },
+   {
+    "sayfa": 110,
+    "ders": "TAR\u0130H",
+    "konu": "KLAS\u0130K \u00c7A\u011e\u2019DA OSMANLI / TOPLUM D\u00dcZEN\u0130",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 111,
+    "ders": "TAR\u0130H",
+    "konu": "KLAS\u0130K \u00c7A\u011e\u2019DA OSMANLI / TOPLUM D\u00dcZEN\u0130",
+    "test": 1,
+    "gun": 11
+   },
+   {
+    "sayfa": 112,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 113,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - I",
+    "test": 2,
+    "gun": 11
+   },
+   {
+    "sayfa": 114,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 115,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - IV",
+    "test": 3,
+    "gun": 11
+   },
+   {
+    "sayfa": 116,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - V",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 117,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - V",
+    "test": 4,
+    "gun": 11
+   },
+   {
+    "sayfa": 118,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - V",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 119,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - V",
+    "test": 5,
+    "gun": 11
+   },
+   {
+    "sayfa": 120,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00d6N\u00dcL CO\u011eRAFYAMIZ",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 121,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00d6N\u00dcL CO\u011eRAFYAMIZ",
+    "test": 6,
+    "gun": 11
+   },
+   {
+    "sayfa": 122,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 123,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - II",
+    "test": 1,
+    "gun": 12
+   },
+   {
+    "sayfa": 124,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VI",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 125,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VI",
+    "test": 2,
+    "gun": 12
+   },
+   {
+    "sayfa": 126,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - VI",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 127,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (AHLAK FELSEFES\u0130) - VI",
+    "test": 3,
+    "gun": 12
+   },
+   {
+    "sayfa": 128,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ALLAH VE \u0130NSAN \u0130L\u0130\u015eK\u0130LER\u0130",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 129,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ALLAH VE \u0130NSAN \u0130L\u0130\u015eK\u0130LER\u0130",
+    "test": 4,
+    "gun": 12
+   },
+   {
+    "sayfa": 130,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 131,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015eEN D\u00dcNYA DENGELER\u0130 / KAR\u015eISINDA OSMANLI S\u0130YASET\u0130 / (1595-1774) - III",
+    "test": 1,
+    "gun": 13
+   },
+   {
+    "sayfa": 132,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 133,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - I",
+    "test": 2,
+    "gun": 13
+   },
+   {
+    "sayfa": 134,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VII",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 135,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130KL\u0130M B\u0130LG\u0130S\u0130 - VII",
+    "test": 3,
+    "gun": 13
+   },
+   {
+    "sayfa": 136,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 137,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - I",
+    "test": 4,
+    "gun": 13
+   },
+   {
+    "sayfa": 138,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 139,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - II",
+    "test": 1,
+    "gun": 14
+   },
+   {
+    "sayfa": 140,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 141,
+    "ders": "TAR\u0130H",
+    "konu": "DE\u011e\u0130\u015e\u0130M \u00c7A\u011eINDA AVRUPA / VE OSMANLI - III",
+    "test": 2,
+    "gun": 14
+   },
+   {
+    "sayfa": 142,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 143,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - II",
+    "test": 3,
+    "gun": 14
+   },
+   {
+    "sayfa": 144,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 145,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - III",
+    "test": 4,
+    "gun": 14
+   },
+   {
+    "sayfa": 146,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (D\u0130N FELSEFES\u0130) - VII",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 147,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (D\u0130N FELSEFES\u0130) - VII",
+    "test": 5,
+    "gun": 14
+   },
+   {
+    "sayfa": 148,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "HZ MUHAMMET (SAV) VE GEN\u00c7L\u0130K",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 149,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "HZ MUHAMMET (SAV) VE GEN\u00c7L\u0130K",
+    "test": 6,
+    "gun": 14
+   },
+   {
+    "sayfa": 150,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 151,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - I",
+    "test": 1,
+    "gun": 15
+   },
+   {
+    "sayfa": 152,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 153,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - II",
+    "test": 2,
+    "gun": 15
+   },
+   {
+    "sayfa": 154,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - IV",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 155,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - IV",
+    "test": 3,
+    "gun": 15
+   },
+   {
+    "sayfa": 156,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - V",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 157,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - V",
+    "test": 4,
+    "gun": 15
+   },
+   {
+    "sayfa": 158,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (S\u0130YASET FELSEFES\u0130) - VIII",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 159,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (S\u0130YASET FELSEFES\u0130) - VIII",
+    "test": 5,
+    "gun": 15
+   },
+   {
+    "sayfa": 160,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - I",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 161,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - I",
+    "test": 6,
+    "gun": 15
+   },
+   {
+    "sayfa": 162,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 163,
+    "ders": "TAR\u0130H",
+    "konu": "DEVR\u0130MLER \u00c7A\u011eINDA DE\u011e\u0130\u015eEN / DEVLET - TOPLUM \u0130L\u0130\u015eK\u0130LER\u0130 - III",
+    "test": 1,
+    "gun": 16
+   },
+   {
+    "sayfa": 164,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 165,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - I",
+    "test": 2,
+    "gun": 16
+   },
+   {
+    "sayfa": 166,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VI",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 167,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VI",
+    "test": 3,
+    "gun": 16
+   },
+   {
+    "sayfa": 168,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VII",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 169,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u0130\u00c7 VE DI\u015e KUVVETLER - VII",
+    "test": 4,
+    "gun": 16
+   },
+   {
+    "sayfa": 170,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - IX",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 171,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - IX",
+    "test": 5,
+    "gun": 16
+   },
+   {
+    "sayfa": 172,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 173,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u0130N VE HAYAT - II",
+    "test": 6,
+    "gun": 16
+   },
+   {
+    "sayfa": 174,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 175,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - II",
+    "test": 1,
+    "gun": 17
+   },
+   {
+    "sayfa": 176,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 177,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - I",
+    "test": 2,
+    "gun": 17
+   },
+   {
+    "sayfa": 178,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - X",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 179,
+    "ders": "FELSEFE",
+    "konu": "FELSEFEN\u0130N TEMEL KONULARI VE / PROBLEMLER\u0130 (SANAT FELSEFES\u0130) - X",
+    "test": 3,
+    "gun": 17
+   },
+   {
+    "sayfa": 180,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 181,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - I",
+    "test": 4,
+    "gun": 17
+   },
+   {
+    "sayfa": 182,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 183,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE / DENGE STRATEJ\u0130S\u0130 (1774-1914) - III",
+    "test": 1,
+    "gun": 18
+   },
+   {
+    "sayfa": 184,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE DENGE / STRATEJ\u0130S\u0130 (1774-1914) - IV / XIX VE XX. / Y\u00dcZYILDA DE\u011e\u0130\u015eEN SOSYOEKONOM\u0130K HAYAT",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 185,
+    "ders": "TAR\u0130H",
+    "konu": "ULUSLARARASI \u0130L\u0130\u015eK\u0130LERDE DENGE / STRATEJ\u0130S\u0130 (1774-1914) - IV / XIX VE XX. / Y\u00dcZYILDA DE\u011e\u0130\u015eEN SOSYOEKONOM\u0130K HAYAT",
+    "test": 2,
+    "gun": 18
+   },
+   {
+    "sayfa": 186,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 187,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - II",
+    "test": 3,
+    "gun": 18
+   },
+   {
+    "sayfa": 188,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 189,
+    "ders": "CO\u011eRAFYA",
+    "konu": "SU - TOPRAK - B\u0130TK\u0130 - III",
+    "test": 4,
+    "gun": 18
+   },
+   {
+    "sayfa": 190,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 191,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - I",
+    "test": 1,
+    "gun": 19
+   },
+   {
+    "sayfa": 192,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 193,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - II",
+    "test": 2,
+    "gun": 19
+   },
+   {
+    "sayfa": 194,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 195,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - I",
+    "test": 3,
+    "gun": 19
+   },
+   {
+    "sayfa": 196,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 197,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - II",
+    "test": 4,
+    "gun": 19
+   },
+   {
+    "sayfa": 198,
+    "ders": "FELSEFE",
+    "konu": "FELSEF\u0130 OKUMA VE YAZMA",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 199,
+    "ders": "FELSEFE",
+    "konu": "FELSEF\u0130 OKUMA VE YAZMA",
+    "test": 5,
+    "gun": 19
+   },
+   {
+    "sayfa": 200,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 201,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "AHLAK\u0130 TUTUM VE DAVRANI\u015eLAR - II",
+    "test": 6,
+    "gun": 19
+   },
+   {
+    "sayfa": 202,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - III",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 203,
+    "ders": "TAR\u0130H",
+    "konu": "XX. Y\u00dcZYIL BA\u015eLARINDA / OSMANLI DEVLET\u0130 VE D\u00dcNYA - III",
+    "test": 1,
+    "gun": 20
+   },
+   {
+    "sayfa": 204,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 205,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - I",
+    "test": 2,
+    "gun": 20
+   },
+   {
+    "sayfa": 206,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - III",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 207,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - III",
+    "test": 3,
+    "gun": 20
+   },
+   {
+    "sayfa": 208,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - IV",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 209,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - IV",
+    "test": 4,
+    "gun": 20
+   },
+   {
+    "sayfa": 210,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 211,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": 20
+   },
+   {
+    "sayfa": 212,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE \u0130T\u0130KAD\u0130, S\u0130YAS\u0130 / VE FIKH\u0130 YORUMLAR",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 213,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE \u0130T\u0130KAD\u0130, S\u0130YAS\u0130 / VE FIKH\u0130 YORUMLAR",
+    "test": 6,
+    "gun": 20
+   },
+   {
+    "sayfa": 214,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 215,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - II",
+    "test": 1,
+    "gun": 21
+   },
+   {
+    "sayfa": 216,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 217,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - III",
+    "test": 2,
+    "gun": 21
+   },
+   {
+    "sayfa": 218,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - V",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 219,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - V",
+    "test": 3,
+    "gun": 21
+   },
+   {
+    "sayfa": 220,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - VI",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 221,
+    "ders": "CO\u011eRAFYA",
+    "konu": "N\u00dcFUS, YERLE\u015eME VE G\u00d6\u00c7 - VI",
+    "test": 4,
+    "gun": 21
+   },
+   {
+    "sayfa": 222,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 223,
+    "ders": "FELSEFE",
+    "konu": "M\u00d6 6. Y\u00dcZYIL / MS 2. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": 21
+   },
+   {
+    "sayfa": 224,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u00dcNYA VE AH\u0130RET",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 225,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "D\u00dcNYA VE AH\u0130RET",
+    "test": 6,
+    "gun": 21
+   },
+   {
+    "sayfa": 226,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - IV",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 227,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - IV",
+    "test": 1,
+    "gun": 22
+   },
+   {
+    "sayfa": 228,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 229,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - I",
+    "test": 2,
+    "gun": 22
+   },
+   {
+    "sayfa": 230,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 231,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": 22
+   },
+   {
+    "sayfa": 232,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 233,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - I",
+    "test": 4,
+    "gun": 22
+   },
+   {
+    "sayfa": 234,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - V",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 235,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - HAZIRLIK D\u00d6NEM\u0130 - V",
+    "test": 1,
+    "gun": 23
+   },
+   {
+    "sayfa": 236,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 237,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - I",
+    "test": 2,
+    "gun": 23
+   },
+   {
+    "sayfa": 238,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 239,
+    "ders": "CO\u011eRAFYA",
+    "konu": "EKONOM\u0130K FAAL\u0130YETLER - II",
+    "test": 3,
+    "gun": 23
+   },
+   {
+    "sayfa": 240,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 241,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - I",
+    "test": 4,
+    "gun": 23
+   },
+   {
+    "sayfa": 242,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 243,
+    "ders": "FELSEFE",
+    "konu": "MS 2. Y\u00dcZYIL / 15. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": 23
+   },
+   {
+    "sayfa": 244,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - II",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 245,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'A G\u00d6RE HZ MUHAMMED - II",
+    "test": 6,
+    "gun": 23
+   },
+   {
+    "sayfa": 246,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 247,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - II",
+    "test": 1,
+    "gun": 24
+   },
+   {
+    "sayfa": 248,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 249,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - III",
+    "test": 2,
+    "gun": 24
+   },
+   {
+    "sayfa": 250,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 251,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - II",
+    "test": 3,
+    "gun": 24
+   },
+   {
+    "sayfa": 252,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - III",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 253,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - III",
+    "test": 4,
+    "gun": 24
+   },
+   {
+    "sayfa": 254,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 255,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 5,
+    "gun": 24
+   },
+   {
+    "sayfa": 256,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'DA BAZI KAVRAMLAR",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 257,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "KUR'AN'DA BAZI KAVRAMLAR",
+    "test": 6,
+    "gun": 24
+   },
+   {
+    "sayfa": 258,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - IV",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 259,
+    "ders": "TAR\u0130H",
+    "konu": "M\u0130LL\u00ce M\u00dcCADELE - CEPHELER - IV",
+    "test": 1,
+    "gun": 25
+   },
+   {
+    "sayfa": 260,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - IV",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 261,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGE KAVRAMI - IV",
+    "test": 2,
+    "gun": 25
+   },
+   {
+    "sayfa": 262,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 263,
+    "ders": "FELSEFE",
+    "konu": "15. Y\u00dcZYIL / 17. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": 25
+   },
+   {
+    "sayfa": 264,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 265,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - I",
+    "test": 4,
+    "gun": 25
+   },
+   {
+    "sayfa": 266,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - I",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 267,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - I",
+    "test": 1,
+    "gun": 26
+   },
+   {
+    "sayfa": 268,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - I",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 269,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - I",
+    "test": 2,
+    "gun": 26
+   },
+   {
+    "sayfa": 270,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 271,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": 26
+   },
+   {
+    "sayfa": 272,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - II",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 273,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM VE B\u0130L\u0130M - II",
+    "test": 4,
+    "gun": 26
+   },
+   {
+    "sayfa": 274,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - II",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 275,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - II",
+    "test": 1,
+    "gun": 27
+   },
+   {
+    "sayfa": 276,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 277,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - III",
+    "test": 2,
+    "gun": 27
+   },
+   {
+    "sayfa": 278,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 279,
+    "ders": "CO\u011eRAFYA",
+    "konu": "B\u00d6LGELER VE \u00dcLKELER - II",
+    "test": 3,
+    "gun": 27
+   },
+   {
+    "sayfa": 280,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - I",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 281,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - I",
+    "test": 4,
+    "gun": 27
+   },
+   {
+    "sayfa": 282,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": null
+   },
+   {
+    "sayfa": 283,
+    "ders": "FELSEFE",
+    "konu": "18. Y\u00dcZYIL / 19. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 5,
+    "gun": 27
+   },
+   {
+    "sayfa": 284,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ANADOLU'DA \u0130SLAM",
+    "test": 6,
+    "gun": null
+   },
+   {
+    "sayfa": 285,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "ANADOLU'DA \u0130SLAM",
+    "test": 6,
+    "gun": 27
+   },
+   {
+    "sayfa": 286,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - IV",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 287,
+    "ders": "TAR\u0130H",
+    "konu": "ATAT\u00dcRK\u00c7\u00dcL\u00dcK VE T\u00dcRK \u0130NKILABI - IV",
+    "test": 1,
+    "gun": 28
+   },
+   {
+    "sayfa": 288,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - II",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 289,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - II",
+    "test": 2,
+    "gun": 28
+   },
+   {
+    "sayfa": 290,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 291,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - I",
+    "test": 3,
+    "gun": 28
+   },
+   {
+    "sayfa": 292,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130K\u0130 SAVA\u015e ARASINDAK\u0130 D\u00d6NEMDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI S\u00dcREC\u0130NDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI SONRASINDA / T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 293,
+    "ders": "TAR\u0130H",
+    "konu": "\u0130K\u0130 SAVA\u015e ARASINDAK\u0130 D\u00d6NEMDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI S\u00dcREC\u0130NDE / T\u00dcRK\u0130YE VE D\u00dcNYA- II. D\u00dcNYA SAVA\u015eI SONRASINDA / T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": 29
+   },
+   {
+    "sayfa": 294,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - III",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 295,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - III",
+    "test": 2,
+    "gun": 29
+   },
+   {
+    "sayfa": 296,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE TASAVVUF\u0130 / YORUMLAR",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 297,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "\u0130SLAM D\u00dc\u015e\u00dcNCES\u0130NDE TASAVVUF\u0130 / YORUMLAR",
+    "test": 3,
+    "gun": 29
+   },
+   {
+    "sayfa": 298,
+    "ders": "TAR\u0130H",
+    "konu": "II. D\u00dcNYA SAVA\u015eI SONRASINDA T\u00dcRK\u0130YE VE D\u00dcNYA- / TOPLUMSAL DEVR\u0130M \u00c7A\u011eINDA D\u00dcNYA VE T\u00dcRK\u0130YE- / Y\u00dcZYILIN E\u015e\u0130\u011e\u0130NDE T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": null
+   },
+   {
+    "sayfa": 299,
+    "ders": "TAR\u0130H",
+    "konu": "II. D\u00dcNYA SAVA\u015eI SONRASINDA T\u00dcRK\u0130YE VE D\u00dcNYA- / TOPLUMSAL DEVR\u0130M \u00c7A\u011eINDA D\u00dcNYA VE T\u00dcRK\u0130YE- / Y\u00dcZYILIN E\u015e\u0130\u011e\u0130NDE T\u00dcRK\u0130YE VE D\u00dcNYA",
+    "test": 1,
+    "gun": 30
+   },
+   {
+    "sayfa": 300,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - IV",
+    "test": 2,
+    "gun": null
+   },
+   {
+    "sayfa": 301,
+    "ders": "CO\u011eRAFYA",
+    "konu": "\u00c7EVRE VE TOPLUM - IV",
+    "test": 2,
+    "gun": 30
+   },
+   {
+    "sayfa": 302,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": null
+   },
+   {
+    "sayfa": 303,
+    "ders": "FELSEFE",
+    "konu": "20. Y\u00dcZYIL FELSEFES\u0130 - II",
+    "test": 3,
+    "gun": 30
+   },
+   {
+    "sayfa": 304,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00dcNCEL D\u0130N\u00ce MESELELER",
+    "test": 4,
+    "gun": null
+   },
+   {
+    "sayfa": 305,
+    "ders": "D\u0130N K\u00dcLT\u00dcR\u00dc VE AHLAK B\u0130LG\u0130S\u0130",
+    "konu": "G\u00dcNCEL D\u0130N\u00ce MESELELER",
+    "test": 4,
+    "gun": 30
+   }
+  ],
+  "yontem": "Iki bagimsiz okuma (B goruntuleri sondan basa); 300 sayfa, normalize fark 0."
+ }
+}
