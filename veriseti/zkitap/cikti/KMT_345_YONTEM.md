@@ -171,6 +171,28 @@ Eski satirlarin en yakin modern soruya 3-gram dagilimi: 1.0'a yuvarlanan
 cevap bizimkiyle ayni. Ayni modern soruya iki baskidan birer eski satir
 baglanan 55 soru var (ayni soru her iki baskida).
 
+## 6. Ithal (`kim345tyt_ithal.py`) -- PASIF
+
+`fiz345tyt_ithal.py` deseni; kaynak adi `345 2025 TYT Kimya Soru Bankasi`
+(`kaynak_sozlesmesi`: onek KMT345). Kirpimlar
+`d-dataset/output/crops/KMT345/` (1307 PNG, git disi).
+
+* Yapisal kapi: 1307 soru + 138 test + 9 unite + 1307 anahtar + 1307 kutu
+  + 100 etiket, cevap sizintisi yok. On kontrol temiz.
+* Soru UNITE dugumune baglanir (`konu_eslesme_duzeyi` = 'unite'; 0062).
+* Cevap kanali: iki_okuma+piksel 1032, iki_okuma+goz(5x) 208,
+  iki_okuma+goz(5x)+tereddut 67.
+* Bayraklar: mukerrer_aday 266, cikmis_soru 100, okuyucu_diski_ortme 117,
+  kaynak_kusuru 125, db_hash_carpismasi 36, sik_tekrar 13, sikler_gorsel
+  30, diger_kaynak_cevap_farki 18, numara_ortulu 2; okunamaz_isaret 0.
+* Yerel DB'ye yazim (26 Eyl): **1306 yeni satir, hepsi is_active=FALSE,
+  kapidan gecen 0.** 1 soru (T025_01) 345 2025 AYT Kimya'da (T008_07,
+  pasif) ayni id ile zaten var -> `ayristir` dokunmaz, bu kitap icin
+  satir yazilmaz. Eski hatla ayni soru_hash
+  tasiyan 35 soru (eski satirlarin id'si farkli sema) PASIF yazildi;
+  aktiflestirmede tekil aktif hash kurali geregi eski satir once pasife
+  alinmadikca acilamaz (bolum 7).
+
 ## Testler
 
 `backend/tests/e2e/test_kim345tyt_veri.py` (45): hamdan birebir anahtar
@@ -187,3 +209,10 @@ metinde, `[??]` yok, Lewis cizimi metne dokulmedi, soluk isaret kararlari
 mukerrer ozeti, eski hat iki baski sayilari ve GUCLU tanimi, 36 hash
 carpismasi, hash degeri yazilmadi, cevap farki basili anahtari degistirmez,
 pozitif kontrol ve isaret korunur, indeksli Jaccard == dogrudan.
+
+`backend/tests/e2e/test_kim345tyt_ithal.py` (49): veri seti butunlugu,
+yapisal kapilar, test ici sira / null numara, cevap kanali dagilimi, unite
+baglantisi == 0062, kaynak sozlesmesi, arac dosyalari ASCII, pasif ithal
+sozlesmesi, cozum uydurulmuyor, cikmis etiketleri, kutu / gorsel, olculen
+bayrak capalari, mukerrer bayraklari == olcum; 9 yapisal + 12 on kontrol /
+baglama mutasyonu.
