@@ -242,3 +242,57 @@ def test_ve_baglaci_yalniz_bantta_atlanir() -> None:
     assert not ha.bant_uyar(
         "ISIK AKISI VE GOLGE X", "I\u015f\u0131k Ak\u0131s\u0131 - G\u00f6lge"
     )
+
+
+# ------------------------------------------------- 6. kirpim kutulari (Faz 3)
+
+sys.path.insert(0, str(KOK / "backend" / "scripts" / "kitap"))
+from scripts.kitap import fiz345tyt_kutu as ku  # noqa: E402
+
+KUTULAR = json.loads(
+    (CIKTI / "345_2025_tyt_fizik_kirpim_kutulari.json").read_text("ascii")
+)
+ORTME = json.loads((CIKTI / "345_2025_tyt_fizik_ortme_olcumu.json").read_text("ascii"))
+
+
+def test_kutu_kapilari_temiz() -> None:
+    assert ku.kapilar(KUTULAR) == []
+    assert KUTULAR["kutu_sayisi"] == 1397 and KUTULAR["kutusuz_soru"] == 0
+
+
+def test_kutu_ile_cevap_birebir() -> None:
+    k = {(x["birim"], x["soru"]): x for x in KUTULAR["kutular"]}
+    for c in ANAHTAR["cevaplar"]:
+        x = k[(c["birim"], c["soru"])]
+        assert (x["dosya"], x["sutun"], x["serit_sira"]) == (
+            c["dosya"],
+            c["sutun"],
+            c["serit_sira"],
+        )
+
+
+def test_capa_kanali_simge_sayisiyla_tutarli() -> None:
+    for x in KUTULAR["kutular"]:
+        sim = TARAMA["sayfalar"][str(x["dosya"])]["simge"][x["sutun"]]
+        if x["capa_kanali"] == "simge":
+            assert [x["capa"][0] + 6, x["capa"][1] - 6] in [[m[0], m[0]] for m in sim]
+    assert set(KUTULAR["sutun_kanali"]) <= {"numara", "simge"}
+    assert sum(KUTULAR["sutun_kanali"].values()) == 714
+
+
+def test_kutu_kapisi_mutasyonu() -> None:
+    v = copy.deepcopy(KUTULAR)
+    v["kutular"][0]["kutu"][3] = 900
+    assert any("sizinti" in h for h in ku.kapilar(v))
+    v = copy.deepcopy(KUTULAR)
+    a = [x for x in v["kutular"] if (x["dosya"], x["sutun"]) == (7, "L")]
+    a[0]["kutu"][3] = a[1]["kutu"][1] + 5
+    assert any("cakisma" in h for h in ku.kapilar(v))
+
+
+def test_ortme_raporu() -> None:
+    assert ORTME["tam_kitap"] is True
+    assert ORTME["kenar_kapisi_ihlali"] == 0
+    assert ORTME["ortme_suphesi_soru"] == len(
+        {(o["birim"], o["soru"]) for o in ORTME["ortme"]}
+    )

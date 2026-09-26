@@ -49,7 +49,8 @@ Sonuc: 19 unite, 19/19 baslangic bandi dogrulandi; migration 0060 (FIZ-345T25-U0
 19 unite (icindekiler) + sayfa ustu 'N. bolum' rozeti ile capraz kontrol;
 MAT deseninde FIZ kokunun altinda `FIZ-345T25-Unn`.
 
-### Faz 3 -- Kirpim kutulari
+### Faz 3 -- Kirpim kutulari -- TAMAM 26 Eyl
+Sonuc: 1397 kutu (numara 583 / simge 131 sutun), kapi ihlali 0, kenar 0, ortme suphesi 161; gorsel QA 68 kirpim temiz.
 Capa = okuyucu simgesi (1397); tavan/taban stm345_kutu kurallari;
 cikmis soru kutusu, pembe sayfa zemini ayrica olculur.
 

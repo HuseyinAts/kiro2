@@ -60,10 +60,33 @@ migration `0060_fzt345_konu_agaci.py` (o JSON'dan uretildi).
 * FIZ kokunun altinda `FIZ-345T25-Unn`, kok+1, subject_area 'FIZIK'.
   Yerel DB'de upgrade -> downgrade -> upgrade temiz (19 -> 0 -> 19).
 
+## 3. Kirpim kutulari (`fiz345tyt_kutu.py`, `fiz345tyt_kirp.py`)
+
+Cikti: `345_2025_tyt_fizik_kirpim_kutulari.json` (1397 kutu, kapi ihlali 0),
+`345_2025_tyt_fizik_ortme_olcumu.json`. Kurallar stm345_kutu deseni;
+olculmus farklar:
+
+* Kart 742x979; cevap seridi y 899 -> kutu alti en cok 893, kapi 897.
+* Capa: basili numara sayisi seritle tutan 583 sutunda numara, tutmayan
+  131 sutunda (cikmis soru kutusu, pembe 'Orijinal Sorular' sayfalari)
+  okuyucu simgesi (Faz 1: simge == girdi 714/714). Kutusuz soru 0.
+* Tavan: kirmizi unite bandi yoksa kart y 60. Kisa bant kurali 71 kez.
+* Beyazlatma: soru simgeleri + sutun disi 7 + serit ustu 17 simge.
+* Gorsel QA (gozle, tohum 345): simge kanalli 16, en kisa 12, en uzun 8,
+  rastgele 32 kirpim -- hepsi tek soru, numara ustte, siklar icinde.
+  Ust kesimi notr metne degen tek kutu T022_01: cikmis soru kutusunun
+  cerceve ustu, soru metni tam.
+* Ortme suphesi 161 soru (170 halka): gozle ornekte disk, numaranin sol
+  kenarini ve sayfa susunu (mavi/yesil dikey cubuk) ortuyor; soru metni
+  ortulmuyor. Bayrak olarak tasinir.
+* Kenar kapisi ihlali 0.
+
 ## Testler
 
-`backend/tests/e2e/test_fiz345tyt_veri.py` (21): hamdan birebir anahtar
+`backend/tests/e2e/test_fiz345tyt_veri.py` (26): hamdan birebir anahtar
 turetme, tek farkin kaydi, A/B farki / gecersiz goz karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari, kanal durustlugu, ASCII; Faz 2 ile +7: harita hamdan turer,
-migration == harita, zincir, kodlar, bant adi / rozet mutasyonu, 've' kurali.
+migration == harita, zincir, kodlar, bant adi / rozet mutasyonu, 've' kurali;
+Faz 3 ile +5: kutu kapilari, kutu <-> cevap birebir, capa kanali, kapi
+mutasyonu (sizinti / cakisma), ortme raporu.
