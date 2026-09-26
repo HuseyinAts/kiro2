@@ -9,6 +9,10 @@ NE KORUR
                   kopmasi, simge sayisi farki SystemExit verir.
 3. KAPSAM      -- soru sayfalari x {L, R}; sutun girdi sayisi == simge sayisi.
 4. DURUSTLUK   -- her cevabin kaynagi iki okuma; piksel ya da goz kanali.
+5. UNITE AGACI -- 0062 migration'i harita ile ayni.
+6. KUTULAR     -- 1307 kirpim kutusu anahtarla birebir.
+7. METIN       -- kapilar yesil; on kayitli tam ikinci okuma, 192 fark hakemle
+                  cozuldu; soluk isaretler pikselden; Lewis cizimi metne dokulmez.
 """
 
 from __future__ import annotations
@@ -303,3 +307,102 @@ def test_ortme_raporu() -> None:
     assert ORTME["ortme_suphesi_soru"] == len(
         {(o["birim"], o["soru"]) for o in ORTME["ortme"]}
     )
+
+
+# ------------------------------------------------ 7. transkripsiyon (Faz 4)
+
+from scripts.kitap import kim345tyt_metin_harness as mh  # noqa: E402
+
+METIN = json.loads((CIKTI / f"{ON}metin.json").read_text("ascii"))
+IKINCI = json.loads((CIKTI / f"{ON}ikinci_okuma.json").read_text("ascii"))
+M = {s["dosya"]: s for s in METIN["sorular"]}
+
+
+def _yazi(s: dict) -> str:
+    return s["govde"] + " " + " ".join(map(str, s["sikler"].values()))
+
+
+def test_metin_kapilari_yesil() -> None:
+    assert mh.kapi(METIN["sorular"]) == []
+    assert METIN["soru_sayisi"] == 1307 and METIN["parca_sayisi"] == 30
+
+
+def test_metin_kapisi_mutasyonu_yakalar() -> None:
+    bozuk = copy.deepcopy(METIN["sorular"])
+    bozuk[3]["basili_no"] = 99
+    bozuk[5]["sikler"]["C"] = " "
+    del bozuk[7]
+    hata = mh.kapi(bozuk)
+    for k in ("KAPI1", "KAPI2", "KAPI3", "KAPI4"):
+        assert any(h.startswith(k) for h in hata), k
+
+
+def test_null_numara_yalniz_ortulu_sorularda() -> None:
+    nuller = {s["dosya"] for s in METIN["sorular"] if s.get("basili_no") is None}
+    assert nuller == {"KMT345-T073_09", "KMT345-T094_04"}
+    assert nuller <= mh.numarasi_ortulu() | mh.ortme_listesi()
+    assert mh.numara_goz_listesi() == set()
+
+
+def test_metin_kutularla_ayni_dosyalar() -> None:
+    k = {f"{x['birim']}_{x['soru']:02d}" for x in KUTULAR["kutular"]}
+    assert set(M) == k
+
+
+def test_kivrik_kesme_ve_numara_notu_kalmadi() -> None:
+    for s in METIN["sorular"]:
+        assert "\u2019" not in _yazi(s), s["dosya"]
+        if s.get("kaynak_kusuru"):
+            assert not mh.NUMARA_NOTU.search(s["kaynak_kusuru"]), s["dosya"]
+
+
+def test_ikinci_okuma_on_kayitli_tam_okuma() -> None:
+    assert "TAM" in IKINCI["kural"]
+    assert "SONRA" in IKINCI["tasarim"]
+    s = IKINCI["sonuc"]
+    assert s["soru"] == 1307
+    assert s["ayni_soru_normalize"] + s["farkli_soru"] == 1307
+    assert len(IKINCI["hukumler"]) == s["farkli_soru"] == 192
+    say = Counter(h["esasli_hata"] for h in IKINCI["hukumler"])
+    assert dict(say) == s["hukum_dagilimi"]
+    assert s["ilk_okuma_esasli_hata"] == say["okuma_1"] + say["ikisi"] == 62
+    assert s["ikinci_okuma_esasli_hata"] == say["okuma_2"] + say["ikisi"] == 46
+
+
+def test_duzeltmeler_son_metinde_uygulanmis() -> None:
+    for d in IKINCI["duzeltmeler"]:
+        s = M[d["dosya"]]
+        assert s["govde"] == d["govde"].replace("\u2019", "'"), d["dosya"]
+        for h, v in d["sikler"].items():
+            assert s["sikler"][h] == str(v).replace("\u2019", "'"), (d["dosya"], h)
+        for a in ("sekil_var", "sikler_gorsel", "etiket"):
+            assert s[a] == d[a], (d["dosya"], a)
+    assert len(IKINCI["duzeltmeler"]) == 195  # 192 hukum + 3 Lewis sozlesmesi
+
+
+def test_okunamaz_tahmin_edilmedi() -> None:
+    assert [s["dosya"] for s in METIN["sorular"] if "[??]" in _yazi(s)] == []
+
+
+def test_lewis_cizimi_metne_dokulmedi() -> None:
+    for s in METIN["sorular"]:
+        t = _yazi(s)
+        assert "[Lewis" not in t and "O::C::O" not in t and "[:" not in t, s["dosya"]
+    assert "(\u015fekil)" in M["KMT345-T048_09"]["govde"]
+
+
+def test_soluk_isaret_pikselden_karara_baglandi() -> None:
+    """Soluk '+' (dikey cubugu silik) pikselde varsa '+', yoksa basildigi gibi '-'."""
+    assert "NH_4^+" in M["KMT345-T039_01"]["sikler"]["D"]
+    assert "_(11)Na^+" in M["KMT345-T018_07"]["govde"]
+    # dikey iz olmayan eksi basildigi gibi korunur (cozum yapilmaz)
+    assert "Na^\u2212" in M["KMT345-T034_05"]["govde"]
+    assert "Mg^(2\u2212) ile" in M["KMT345-T042_04"]["govde"]
+    t = IKINCI["soluk_isaret_taramasi"]
+    assert t["aday"] == 41 and t["katyon_eksi"]["liste"] == 9
+
+
+def test_etiketler_iki_okumada_ayni() -> None:
+    et = [s["etiket"] for s in METIN["sorular"] if s.get("etiket")]
+    assert len(et) == 100
+    assert Counter(e.split(" - ")[0] for e in et) == {"TYT": 51, "MS\xdc": 49}

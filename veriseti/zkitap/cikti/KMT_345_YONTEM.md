@@ -71,12 +71,83 @@ Cikti: `345_2025_tyt_kimya_kirpim_kutulari.json` (1307 kutu, kapi ihlali 0),
   rastgele 12 kirpim -- hepsi tek soru, numara ustte, siklar icinde.
 * Ortme suphesi 117 soru (118 halka); kenar kapisi ihlali 0.
 
+## 4. Transkripsiyon (`kim345tyt_metin_harness.py`)
+
+`345_2025_tyt_kimya_metin.json` (1307 soru). Kirpimlar 2x Lanczos;
+30 grup (test sinirina hizali, ~44 soru), 30 ayri okuyucu. Talimat
+`VeraFilm/k_metin_talimat.md`: 'kitap ne yaziyorsa o', soru cozme yok,
+KIMYA BILGISIYLE KARAR VERME (kitap celdirici / yanlis deger basmis
+olabilir), anahtar gosterilmedi, kimya yazim sozlesmesi (alt indis
+`H_2O`, `C_6H_(12)O_6`; iyon yuku `Ca^(2+)`, `Cl^-`; izotop
+`^(235)_(92)U`; fiziksel hal; tepkime oklari; eksi U+2212; tablo ` | `;
+alti cizili `<u>`; sekil yazisi yalniz soru ona dayaniyorsa).
+
+Kapilar (harness `kapi`): KAPI1 her kirpim bir kez; KAPI2 basili no ==
+test ici sira; KAPI3 bes sik dolu; KAPI4 toplam 1307. **TUM KAPILAR
+YESIL.** Null numara 2 (T073_09, T094_04: disk numarayi tamamen
+kesiyor; ikisi de simge kanalinda). Numara-kesigi notlari `topla`da
+ayiklanir; kalan gercek kusur notu 125 soru.
+
+### 4a. Ikinci okuma -- on kayitli TAM okuma
+
+On kayit (`345_2025_tyt_kimya_ikinci_okuma.json`, karsilastirmadan
+ONCE): ilk okumayi gormeyen 30 ayri okuyucu, ayni talimat (teslim dizini
+`k_metin_parca2`), ayni gruplar. Karsilastirma
+`_p345_gecici/tk_metin_karsilastir.py`.
+
+* Normalizasyon (NFC, kesme/tirnak tipi, eksi/tire tipi, carpma noktasi,
+  tek karakterli indis parantezi `_(9)F == _9F`, `(gorsel)`/`(sekil)` yer
+  tutucusu, tire cevresi bosluk) sonrasi 1115 soru ayni, 192 soru farkli
+  (govde 155, sik 103, sekil_var 3, sikler_gorsel 1).
+* 192 farkin hepsi 5 hakem partisinde kirpimdan gozle (4-20x, gri deger
+  dokumu) karara baglandi (hakem talimati `VeraFilm/k_hakem_talimat.md`;
+  hukumler `hukumler`, nihai alanlar `duzeltmeler`): 88 yalniz bicim,
+  58 ilk okuma, 42 ikinci okuma, 4 ikisi hatali.
+* **Ilk okuma esasli hata 62 / 1307 (%4.7)**; ikinci okuma 46. Fizik'in
+  (%1.0) ustunde: hatalarin onemli bir kismi soru metninin dayandigi sekil yazisinin
+  (beher / sise etiketi, kavram haritasi kutusu, kesit harfleri) atlanmasi;
+  kalanlar tek karakter (alt indis 6/8, 1/4, 3/8; atom numarasi; virgul /
+  nokta; iyon yuku isareti). Kitabin baski hatalari ('(suca)',
+  '^(58)_(28)Fe', 'C_8H_6', '10^(25)', '+3'lur') korunur; duzelten okuma
+  hatali sayildi.
+* Lewis / yapi formulu cizimleri metne DOKULMEZ, `(sekil)` yer tutucusu
+  (okuyucular noktali cizimi farkli sozcuklerle tarif ediyordu). Iki
+  okumanin ayni bicimde metne doktugu 3 soru (T040_05 B, T048_04 D,
+  T048_09) de ayni sozlesmeye cekildi (`tk/ek_duzeltme.json`); duzeltme
+  kaydi 195.
+
+### 4b. Soluk isaret taramasi (iyon yuku)
+
+Kimya riski: '+'nin dikey cubugu soluk basilinca okuyucu '-' yazar.
+
+* STM345 4b deseni (koyu kisa yatay cubuk + ortasindan gecen simetrik
+  SOLUK dikey iz) 1x kirpimlarda: 20 soruda 41 aday; 36'si sekil ogesi
+  (beher cizgisi, bag cizgisi, tepkime oku, elektron katman yayi, Lewis
+  noktasi). Metindeki 5 aday (T018_07 Na^+, T028_02 X^-, T116_10 OH^-,
+  T059_08 -60 / -39 C) buyutmede dogru.
+* Metinde eksi yuklu yazilmis tipik katyonlar (9 kayit, 8 soru: T034_05
+  Na, T042_04 Mg, T048_01 Mg, T083_08 H, T116_05 H, T117_07 H, T127_06 H,
+  T130_10 Ca/Mg) gri deger dokumuyle incelendi: hepsinde cubugun ortasinda
+  ust/alt dikey iz yok -> basildigi gibi eksi (kitabin baskisi; cozum
+  yapilmaz). Karsi ornek: T039_01 NH_4 yukunde ustte 3 satir soluk dikey
+  iz var -> '+' (ilk okuma '-' yazmisti; hakem karari dogrulandi), T045_02
+  Ca^(2+) ayni desen.
+
+### 4c. Okunamaz -> `[??]`
+
+Hicbir soruda gercekten okunamayan karakter kalmadi; belirsiz tek
+karakterler en iyi okuma + iki aday olarak `kaynak_kusuru`nda.
+
 ## Testler
 
-`backend/tests/e2e/test_kim345tyt_veri.py` (27): hamdan birebir anahtar
+`backend/tests/e2e/test_kim345tyt_veri.py` (38): hamdan birebir anahtar
 turetme, A/B birebir, A/B farki / gereksiz fark karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari (ayractan hemen sonra), kanal durustlugu, ASCII; harita hamdan
 turer, migration == harita, zincir, kodlar, bant / rozet mutasyonu, sapka
 katlamasi; kutu kapilari, kutu <-> cevap birebir, simge birincil capa,
-ust bant simgesi reddi, kapi mutasyonu, ortme raporu.
+ust bant simgesi reddi, kapi mutasyonu, ortme raporu; metin kapilari ve
+kapi mutasyonu, null numara kumesi, metin == kutular, kivrik kesme / numara
+notu yok, on kayitli ikinci okuma sayilari (192 / 62 / 46), duzeltmeler son
+metinde, `[??]` yok, Lewis cizimi metne dokulmedi, soluk isaret kararlari
+(NH_4^+, Na^+, basili eksiler korunur), etiketler (100: TYT 51, MSU 49).
