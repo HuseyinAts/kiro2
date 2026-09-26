@@ -481,3 +481,112 @@ def test_indeksli_jaccard_dogrudanla_ayni() -> None:
     tg = mk.trigram(mk.nm("tamamen alakasiz bir metin parcasi xyzq"))
     j, _ = mk.en_yakin(tg, biz, ind)
     assert j == pytest.approx(max(mk.jaccard(tg, b["tg"]) for b in biz))
+
+
+# ------------------------------- 9. eski hat pasif (0063) + beta onay (0064)
+
+VERSIYON = KOK / "backend" / "alembic" / "versions"
+ESKI_YOLU = VERSIYON / "0063_kmt345_eski_hat_pasif.py"
+BETA_YOLU = VERSIYON / "0064_kmt345_beta_onay.py"
+
+
+def _yukle(ad: str, yol: Path):  # type: ignore[no-untyped-def]
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(ad, yol)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_0063_kimlik_zincir_ascii() -> None:
+    m = _yukle("eski0063", ESKI_YOLU)
+    assert m.revision == "0063_kmt345_eski_hat_pasif"
+    assert m.down_revision == "0062_kmt345_agac"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in ESKI_YOLU.read_bytes())
+    assert m.ESKI_KAYNAKLAR == (ESKI_2025, ESKI_2024)
+    assert m.ITHAL_ARACI == "scripts/kitap/kim345tyt_ithal.py"
+
+
+def test_0063_ciftler_olcumden_turer() -> None:
+    """Liste == mukerrer olcumunde modern_karsilik=true olan eski satirlar."""
+    m = _yukle("eski0063", ESKI_YOLU)
+    olcum = {
+        (e["db_id"], e["en_yakin_bizim"].removeprefix("KMT345-"))
+        for e in MUK["eski_hat"]
+        if e["modern_karsilik"]
+    }
+    assert set(m.ESKI_MODERN) == olcum and len(m.ESKI_MODERN) == 330
+    assert len({e for e, _ in m.ESKI_MODERN}) == 330
+    # ayni hash'li 35 eski satirin hepsi listede (aktiflestirme icin sart)
+    carp = {c["db_id"] for c in MUK["db_tam_hash_carpismasi"]}
+    eski = {e["db_id"] for e in MUK["eski_hat"]}
+    assert carp & eski <= {e for e, _ in m.ESKI_MODERN} and len(carp & eski) == 35
+
+
+def test_0063_guard_modern_yoksa_dokunmaz() -> None:
+    m = _yukle("eski0063", ESKI_YOLU)
+    assert m.hedef_idler(set()) == []
+    tum = {f"KMT345-{d}.png" for _, d in m.ESKI_MODERN}
+    assert len(m.hedef_idler(tum)) == 330
+    # T025_01 bu kitap icin yazilmadi (345 AYT Kimya'da ayni id): eski satiri kalir
+    yazilan = tum - {"KMT345-T025_01.png"}
+    assert len(m.hedef_idler(yazilan)) == 329
+
+
+def test_0063_durustluk() -> None:
+    kod = ESKI_YOLU.read_text("ascii").split('"""', 2)[2]
+    assert "DELETE" not in kod.upper()
+    assert "SET is_active = FALSE" in kod
+    sql = " ".join(_yukle("eski0063", ESKI_YOLU)._ESKI_SQL.split())
+    assert "'ithal_araci') IS NULL" in sql and "qb.is_active IS TRUE" in sql
+
+
+def test_0064_kimlik_zincir_ascii() -> None:
+    m = _yukle("beta0064", BETA_YOLU)
+    assert m.revision == "0064_kmt345_beta_onay"
+    assert m.down_revision == "0063_kmt345_eski_hat_pasif"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in BETA_YOLU.read_bytes())
+    assert m.ITHAL_ARACI == "scripts/kitap/kim345tyt_ithal.py"
+    assert m.KAYNAK == "345 2025 TYT Kimya Soru Bankasi"
+
+
+def test_0064_dislama_kurali() -> None:
+    """Servis disi uc bayrak + gorunen alti alanda [??] + aktif hash ikizi disarida."""
+    m = _yukle("beta0064", BETA_YOLU)
+    sql = " ".join(m._HEDEF_SQL.split())
+    for bayrak in m.SERVIS_DISI_BAYRAKLAR:
+        assert f"? '{bayrak}')" in sql, bayrak
+    for alan in (
+        "question_text",
+        "option_a",
+        "option_b",
+        "option_c",
+        "option_d",
+        "option_e",
+    ):
+        assert f"qc.{alan} NOT LIKE :isaret" in sql, alan
+    assert m.ORTME_ISARETI == "%[??]%"
+    assert "qb.is_active IS NOT TRUE" in sql
+    assert "o.soru_hash = qb.soru_hash AND o.is_active IS TRUE" in sql
+
+
+def test_0064_hedef_olculen_1306() -> None:
+    """1307 - 1 (345 AYT Kimya'da ayni id, yazilmadi) - 0 ([??]) = 1306."""
+    isaretli = [s["dosya"] for s in METIN["sorular"] if "[??]" in _yazi(s)]
+    assert isaretli == []
+    assert "1306/1306" in BETA_YOLU.read_text("ascii").splitlines()[0]
+
+
+def test_0064_durustluk() -> None:
+    kod = BETA_YOLU.read_text("ascii").split('"""', 2)[2]
+    assert "'human_verified'" not in kod
+    assert "is_ai_generated" not in kod and "is_public" not in kod
+    assert "'bireysel_denetim_yapildi', false" in kod
+    assert "DELETE" not in kod.upper()
+    m = _yukle("beta0064", BETA_YOLU)
+    assert len(m.SINYALLER) == 5 and len(set(m.SINYALLER)) == 5
+    assert "anahtar_iki_bagimsiz_okuma_534_534_sutun" in m.SINYALLER

@@ -193,9 +193,32 @@ baglanan 55 soru var (ayni soru her iki baskida).
   aktiflestirmede tekil aktif hash kurali geregi eski satir once pasife
   alinmadikca acilamaz (bolum 7).
 
+## 7. Eski hat pasif (0063) ve aktiflestirme (0064) -- Faz 8
+
+Sahip talimati (26 Eyl): "ucunu de sirayla onay istemeden kesintisiz tam
+otonom isle". Emsaller 0058 (eski hat pasif) ve 0061 (toplu beta onayi).
+
+* **0063_kmt345_eski_hat_pasif**: modern karsiligi GUCLU olan 330 eski
+  satir (liste mukerrer olcumunden birebir; test) is_active=FALSE, SILINMEZ;
+  onceki deger gunluge, downgrade geri yukler. Guard: modern karsiligi bu
+  kitabin ithal satiri olarak DB'de yoksa eski satira dokunulmaz (taze/CI
+  DB; T025_01 -> 1 eski satir aktif kalir). Yerel olcum: 329 pasif; eski
+  hatta aktif kalan 83 + 95 = 178 (GUCLU eslesmeyen 177 + T025_01'in
+  karsiligi). GUCLU eslesmeyen eski satirlar (3-gram < 0.9 ya da < 3 ayni
+  sik; 2024 baskisinin farkli sorulari dahil) bilincli olarak AKTIF
+  birakildi.
+* **0064_kmt345_beta_onay**: 0061 ile ayni dislama kurali (servis disi
+  bayrak, gorunen alanda `[??]`, aktif hash ikizi). Kapi yuku olculdu:
+  1306/1306 pending, servis disi 0, `[??]` 0, bos sik 0, gorselsiz 0,
+  aktif hash ikizi 0 (0063 sonrasi). **1306 satir acildi**
+  (auto_judged_high, APPROVED; 'human_verified' yazilmaz; is_ai_generated /
+  is_public dokunulmaz).
+* Yerel tur: upgrade head -> downgrade 0062 (1306 kapandi, 329 eski geri
+  aktif) -> upgrade head; tekrarli aktif hash 0.
+
 ## Testler
 
-`backend/tests/e2e/test_kim345tyt_veri.py` (45): hamdan birebir anahtar
+`backend/tests/e2e/test_kim345tyt_veri.py` (53): hamdan birebir anahtar
 turetme, A/B birebir, A/B farki / gereksiz fark karari / bicim disi /
 numara kopmasi / simge farki / goz celiskisi mutasyonlari, kapsam, unite
 araliklari (ayractan hemen sonra), kanal durustlugu, ASCII; harita hamdan
@@ -208,7 +231,10 @@ metinde, `[??]` yok, Lewis cizimi metne dokulmedi, soluk isaret kararlari
 (NH_4^+, Na^+, basili eksiler korunur), etiketler (100: TYT 51, MSU 49);
 mukerrer ozeti, eski hat iki baski sayilari ve GUCLU tanimi, 36 hash
 carpismasi, hash degeri yazilmadi, cevap farki basili anahtari degistirmez,
-pozitif kontrol ve isaret korunur, indeksli Jaccard == dogrudan.
+pozitif kontrol ve isaret korunur, indeksli Jaccard == dogrudan; 0063
+kimlik / zincir / ASCII, ciftler olcumden turer (330, ayni hash'li 35 dahil),
+guard (modern yoksa dokunmaz, T025_01 -> 329), durustluk (DELETE yok);
+0064 kimlik / zincir / ASCII, dislama kurali, hedef 1306, durustluk.
 
 `backend/tests/e2e/test_kim345tyt_ithal.py` (49): veri seti butunlugu,
 yapisal kapilar, test ici sira / null numara, cevap kanali dagilimi, unite

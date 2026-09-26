@@ -10,11 +10,11 @@ Bu belge onceki envanteri (`ZKITAP_ENVANTER.md`, klasor ADINA gore eslestirilmis
 |---|---|
 | PNG iceren klasor | 278 |
 | tekil kitap (ayni icerikli klasorler birlestirildi) | 237 |
-| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 22 kitap (345 Geometri 2 cilt = 23 grup) |
+| modern hatla islenmis ve DB'ye PASIF ithal edilmis | 23 kitap (345 Geometri 2 cilt = 24 grup) |
 | islenmis, ithal EDILMEMIS | 0 |
-| islenmemis | 215 |
+| islenmemis | 214 |
 | -- bunlardan DB'de HIC satiri olmayan | 98 |
-| -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 118 |
+| -- bunlardan eski hattan deneme satiri olan (klasor adiyla `source_book`) | 117 |
 | kitap olmayan / kullanilamaz klasor | 6 |
 
 Modern ithal toplami (20 kitap): **29808 satir** (23 Eyl 2026 aksam olcumu: + Orijinal 2024 Geometri 2072, + ACIL 2025 KURS Geometri 1759; 24 Eyl 2026: + 345 2025 TYT Matematik 2063, `MAT_345_TYT_YONTEM.md`; + 345 2025 AYT Matematik 1942, `MAT_345_AYT_YONTEM.md`; 25 Eyl 2026: + 345 2025 AYT Kimya 1304, `KIM_345_AYT_YONTEM.md`; + 345 2025 AYT Turk Edebiyati 1384, `EDB_345_AYT_YONTEM.md`; + 345 2025 Paragraf Sifir Risk 1011, `PRG_345_YONTEM.md`; kitabin 1012 sorusundan 1'i 345 AYT Edebiyat'ta ayni soru_hash ile zaten var). Canli DB'deki toplam `source_book` satiri: 28161 (201 farkli ad).
@@ -59,7 +59,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 345 2025 Start Matematik | **ISLENDI** | `345 2025 Start Matematik` | 323 | - | modern 371 / aktif 365 (0059 toplu beta onayi; [??] tasiyan 6 pasif); eski hat 3 / aktif 0 (kitapta yok, 0058 ile pasif) | - | yalniz 45 'Sinava Gecis' testi; Isindirma Kosesi ve acik uclu alistirmalar kapsam disi | TAMAM (modern ithal) |
 | 345 2025 TYT Biyoloji SB | **ISLENDI** | `345 2025 Tyt Biyoloji Soru Bankasi` | 235 | - | modern 1023 / aktif 1022 | 345 2024 TYT Biyoloji SB %72 | - | TAMAM (modern ithal) |
 | 345 2025 TYT Fizik SB | **ISLENDI** | `345 2025 Tyt Fizik Soru Bankasi` | 368 | `345 Tyt Fizik Soru Bankasi` | modern 1395 / aktif 1394 (0061 toplu beta onayi; [??] tasiyan T118_07 pasif); 2 OSYM sorusu Mikro Orijinal TYT Fizik'te ayni hash ile zaten var | - | 357 soru sayfasi, 176 test; okuyucu diski 134 sorunun numarasini kesiyor (numara test ici siradan) | TAMAM (modern ithal) |
-| 345 2025 TYT Kimya SB | ISLENMEDI | `345 2025 Tyt Kimya Soru Bankasi` | 280 | `345 Tyt Kimya Soru Bankasi` | eski hat 294 / aktif 294 | - | - | ISLENEBILIR |
+| 345 2025 TYT Kimya SB | **ISLENDI** | `345 2025 Tyt Kimya Soru Bankasi` | 280 | `345 Tyt Kimya Soru Bankasi` | modern 1306 / aktif 1306 (0064 toplu beta onayi); eski hat 294 + 2024 baskisi 213: modern karsiligi olan 329 satir 0063 ile pasif, kalan 178 aktif; T025_01 345 AYT Kimya'da ayni id ile zaten var | - | 267 soru sayfasi, 138 test, 9 unite; 'OSYM TADINDA' testleri uniteyi kapsar (unite duzeyi) | TAMAM (modern ithal) |
 | 345 2025 TYT Matematik SB | **ISLENDI** | `345 2025 Tyt Matematik Soru Bankasi` | 422 | `345 2024 Tyt Matematik Soru Bankasi` | modern 2063 / aktif 0 (+ eski hat 12 / aktif 12, 0043 ile ayni ada) | - | - | TAMAM (modern ithal) |
 | 345 2025 TYT Sosyal Bilgiler SB | ISLENMEDI | `345 2025 Tyt Sosyal Bilgiler Soru Bankasi` | 312 | `345 Tyt Sosyal Bilgiler Soru Bankasi` | eski hat 26 / aktif 26 | - | - | ISLENEBILIR |
 | 345 2025 TYT Turkce SB | ISLENMEDI | `345 2025 Tyt Turkce Soru Bankasi` | 440 | `345 Tyt Turkce Soru Bankasi` | eski hat 18 / aktif 18 | - | - | ISLENEBILIR |
