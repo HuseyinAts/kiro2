@@ -189,6 +189,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "TRT345",
         "ithal_araci": "scripts/kitap/tur345tyt_ithal.py",
     },
+    "2019-2020 ACIL TYT Matematik Soru Bankasi": {
+        "onek": "ACL20T",
+        "ithal_araci": "scripts/kitap/acil1920tyt_ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",
