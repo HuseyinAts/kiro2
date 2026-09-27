@@ -71,14 +71,70 @@ Sorular k' (KO), 'OSYM Tadinda Sorular k' (OT), 'Orijinal Sorular k' (OR),
 * Ortak parca: 10 grup ('a - b. sorulari asagidaki parcaya gore'; 9 kirmizi
   cerceveli baslik tarandi, 1 kose kutusu icinde gozle). Ilk sorunun
   kirpimi parcayi icerir; sonraki soruya parca ustten eklenir (kirp).
+* Sutun ayraci: olculen dikey cizgi parite varsayilanindan (372 / 369)
+  CIZGI_SAPMA = 6 px'ten fazla saparsa varsayilan kullanilir. s104 ve
+  s138'de 'OSYM KOSESI' cercevesinin dikey kenari (x 388) ayrac sanilmis,
+  sag sutun kirpimi soldan kesilmisti (T050_03/04, T067_03 numarasiz
+  okundu); duzeltme sonrasi 7 kirpim yeniden kesildi ve yeniden okundu.
 * 2070 kutu, kapi ihlali 0; ortme suphesi 260 soru; kenar kapisi 0.
 * Gorsel QA: ortak parca, kose, oncullu ve rastgele kirpimlar gozle.
 
+## 4. Transkripsiyon (`tur345tyt_metin_harness.py`)
+
+`345_2025_tyt_turkce_metin.json` (2070 soru). Kirpimlar 2x Lanczos; 43
+grup (test sinirina hizali, ~48 soru), 43 ayri okuyucu. Talimat
+`VeraFilm/to_metin_talimat.md`: 'kitap ne yaziyorsa o', soru cozme yok,
+dil bilgisi / yazim kuraliyla karar VERME (yazim ve noktalama sorularinin
+siklarindaki kasitli yanlislar ve dizgi hatalari basildigi gibi), anahtar
+gosterilmedi; alti cizili `<u>`; tablo ` | `; ortak parcali sorularda
+`ortak_baslik` ('1 - 2').
+
+Kapilar (harness `kapi`): KAPI1 her kirpim bir kez; KAPI2 basili no ==
+test ici sira; KAPI3 bes sik dolu; KAPI4 toplam 2070. **TUM KAPILAR
+YESIL.** Null numara 0 (sutun ayraci duzeltmesinden sonra). Kaynak kusuru
+notu 371 soru (cogu dusuk cozunurlukte iki adayli isaret). Etiket 71
+(TYT 56, MSU 15); ortak_baslik 20 soru = 10 grup, kutu asamasiyla ayni.
+
+### 4a. Ikinci okuma -- on kayitli TAM okuma
+
+On kayit (`345_2025_tyt_turkce_ikinci_okuma.json`, karsilastirmadan
+ONCE): ilk okumayi gormeyen 43 ayri okuyucu, ayni gruplar (teslim dizini
+`to_metin_parca2`). Karsilastirma `_p345_gecici/tt_metin_karsilastir.py`.
+
+* Normalizasyon (NFC, kesme / tirnak tipi, eksi / tire tipi, orta nokta,
+  uc nokta, bosluk dolduran tire dizisinin uzunlugu, tire cevresi bosluk,
+  bosluk) sonrasi 1906 soru ayni, 164 soru farkli (govde 118, sik 65,
+  alti cizili kapsam 4; basili_no / sekil_var / etiket / ortak_baslik
+  farki 0).
+* 164 farkin hepsi 6 hakem partisinde kirpimdan gozle (4-16x NEAREST,
+  piksel dokumu, ayni sayfadaki kesin virgul / nokta / tirnak ornegiyle
+  yogunluk karsilastirmasi) karara baglandi (talimat
+  `VeraFilm/to_hakem_talimat.md`): 5 yalniz bicim, 65 ilk okuma, 76
+  ikinci okuma, 18 ikisi hatali.
+* **Ilk okuma esasli hata 83 / 2070 (%4.0)**; ikinci okuma 94. Hata
+  turleri: tek / cift tirnak; virgul / nokta, noktali virgul / iki nokta;
+  sapka (edebi / milli (sapkali)); alti cizili kapsamin siniri; ekteki tek harf
+  (tuttumaya, vermekte / vermekle); madde isareti. Kitabin dizgi hatalari
+  ('tuttumaya', 'Sacima' vb., iki 'B)' sikki) korunur.
+* Sinir: sayfa goruntusu ~742 px genislikte. Tek / cift tirnak ve
+  virgul / nokta kararlarinin bir kismi (hakem gerekcelerinde 'orta
+  guven') piksel yogunluguna dayanir; bu isaretler soru anlamini
+  degistirmez, noktalama sorularinin siklari ise hakemce tek tek buyutuldu.
+
+### 4c. Okunamaz -> `[??]`
+
+Hicbir soruda gercekten okunamayan karakter kalmadi; belirsiz tek
+karakterler en iyi okuma + aday olarak `kaynak_kusuru`nda.
+
 ## Testler
 
-`backend/tests/e2e/test_tur345tyt_veri.py` (26): anahtar hamdan birebir,
+`backend/tests/e2e/test_tur345tyt_veri.py` (37): anahtar hamdan birebir,
 toplamlar, farklar goz + glif, test turleri; A/B / gereksiz / yabanci /
 '?' goz / bicim disi / kimlik / hucre-numara / teyitsiz glif mutasyonlari;
 harita hamdan birebir, sayilar, bant (tur, no) / konu / icindekiler / A-B
 mutasyonlari; migration == harita, kimlik; kutu kapilari, kutu <-> cevap,
-blok ustu, kose yan satir, ortak parca, tavan.
+blok ustu, kose yan satir, ortak parca, tavan, sutun ayraci sapmasi
+(mutasyon: CIZGI_SAPMA=99 -> 388 doner); metin kapilari + kapi
+mutasyonu, null numara yok, metin == kutular, kivrik kesme / numara notu
+yok, ikinci okuma on kaydi + sonuc sayilari, duzeltmeler uygulanmis,
+[??] yok, etiketler, ortak baslik == kutu gruplari.

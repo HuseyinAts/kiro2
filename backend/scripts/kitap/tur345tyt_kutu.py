@@ -88,6 +88,7 @@ SIMGE_YARI = 7  # simge merkezinden ust kenarina
 CIZGI_ARALIK = (355, 390)
 CIZGI_DOLULUK = 0.6
 VARSAYILAN_CIZGI = {0: 372, 1: 369}
+CIZGI_SAPMA = 6
 KENAR = (4, 738)
 
 
@@ -96,7 +97,12 @@ def ara_cizgi(a: np.ndarray, d: int) -> int:
     x0, x1 = CIZGI_ARALIK
     dolu = (a[150:880, x0:x1].min(axis=2) < 245).mean(axis=0)
     x = int(np.argmax(dolu))
-    return x0 + x if dolu[x] >= CIZGI_DOLULUK else VARSAYILAN_CIZGI[d % 2]
+    # 'OSYM KOSESI' kutusunun dikey kenari ayracla karisabilir (s104, s138: 388):
+    # olcum parite varsayilanindan CIZGI_SAPMA'dan fazla saparsa varsayilan.
+    v = VARSAYILAN_CIZGI[d % 2]
+    if dolu[x] >= CIZGI_DOLULUK and abs(x0 + x - v) <= CIZGI_SAPMA:
+        return x0 + x
+    return v
 
 
 def bant_tavani(a: np.ndarray) -> int:

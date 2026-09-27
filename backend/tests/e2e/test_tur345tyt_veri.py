@@ -302,3 +302,110 @@ def test_ortak_parca() -> None:
 
 def test_tavan_ust_bant() -> None:
     assert min(k["kutu"][1] for k in KUTULAR["kutular"]) >= ku.TAVAN == 112
+
+
+def test_ara_cizgi_kose_cercevesini_almaz() -> None:
+    """Kose cercevesi sutun cizgisi sanilmaz: varsayilandan CIZGI_SAPMA'dan uzak aday reddedilir."""
+    import numpy as np
+
+    a = np.full((1022, 742, 3), 255, np.uint8)
+    a[:, 388] = 150  # varsayilandan uzak dikey cerceve (s104, s138)
+    assert ku.ara_cizgi(a, 0) == ku.VARSAYILAN_CIZGI[0] == 372
+    b = np.full((1022, 742, 3), 255, np.uint8)
+    b[:, 374] = 150  # gercek ayrac: sapma icinde, olculen kullanilir
+    assert ku.ara_cizgi(b, 0) == 374
+    assert ku.ara_cizgi(b, 1) == 374
+
+
+# ------------------------------------------------ 5. transkripsiyon (Faz 4)
+
+from scripts.kitap import tur345tyt_metin_harness as mh  # noqa: E402
+
+METIN = json.loads((CIKTI / f"{ON}metin.json").read_text("ascii"))
+IKINCI = json.loads((CIKTI / f"{ON}ikinci_okuma.json").read_text("ascii"))
+M = {s["dosya"]: s for s in METIN["sorular"]}
+
+
+def _yazi(s: dict) -> str:
+    return s["govde"] + " " + " ".join(map(str, s["sikler"].values()))
+
+
+def test_metin_kapilari_yesil() -> None:
+    assert mh.kapi(METIN["sorular"]) == []
+    assert METIN["soru_sayisi"] == 2070 and METIN["parca_sayisi"] == 43
+
+
+def test_metin_kapisi_mutasyonu_yakalar() -> None:
+    bozuk = copy.deepcopy(METIN["sorular"])
+    bozuk[3]["basili_no"] = 99
+    bozuk[5]["sikler"]["C"] = " "
+    del bozuk[7]
+    hata = mh.kapi(bozuk)
+    for k in ("KAPI1", "KAPI2", "KAPI3", "KAPI4"):
+        assert any(h.startswith(k) for h in hata), k
+
+
+def test_numara_null_yok() -> None:
+    assert [s["dosya"] for s in METIN["sorular"] if s.get("basili_no") is None] == []
+
+
+def test_metin_kutularla_ayni_dosyalar() -> None:
+    k = {f"{x['birim']}_{x['soru']:02d}" for x in KUTULAR["kutular"]}
+    assert set(M) == k
+
+
+def test_kivrik_kesme_ve_numara_notu_kalmadi() -> None:
+    for s in METIN["sorular"]:
+        assert "\u2019" not in _yazi(s), s["dosya"]
+        if s.get("kaynak_kusuru"):
+            assert not mh.NUMARA_NOTU.search(s["kaynak_kusuru"]), s["dosya"]
+
+
+def test_ikinci_okuma_on_kayitli_tam_okuma() -> None:
+    assert "TAM" in IKINCI["kural"]
+    assert "SONRA" in IKINCI["tasarim"]
+    s = IKINCI["sonuc"]
+    assert s["soru"] == 2070
+    assert s["ayni_soru_normalize"] + s["farkli_soru"] == 2070
+    assert len(IKINCI["hukumler"]) == s["farkli_soru"] == 164
+    say = Counter(h["esasli_hata"] for h in IKINCI["hukumler"])
+    assert dict(say) == s["hukum_dagilimi"]
+    assert s["ilk_okuma_esasli_hata"] == say["okuma_1"] + say["ikisi"] == 83
+    assert s["ikinci_okuma_esasli_hata"] == say["okuma_2"] + say["ikisi"] == 94
+
+
+def test_duzeltmeler_son_metinde_uygulanmis() -> None:
+    for d in IKINCI["duzeltmeler"]:
+        s = M[d["dosya"]]
+        assert s["okuma"].startswith("duzeltme"), d["dosya"]
+        assert s["govde"] == d["govde"].replace("\u2019", "'"), d["dosya"]
+        for h, v in d["sikler"].items():
+            assert s["sikler"][h] == str(v).replace("\u2019", "'"), (d["dosya"], h)
+        for a in ("basili_no", "sekil_var", "sikler_gorsel", "etiket", "ortak_baslik"):
+            assert s[a] == d[a], (d["dosya"], a)
+    assert len(IKINCI["duzeltmeler"]) == 164
+
+
+def test_okunamaz_tahmin_edilmedi() -> None:
+    assert [s["dosya"] for s in METIN["sorular"] if "[??]" in _yazi(s)] == []
+
+
+def test_etiketler() -> None:
+    et = [s["etiket"] for s in METIN["sorular"] if s.get("etiket")]
+    assert len(et) == 71
+    assert Counter(e.split(" - ")[0] for e in et) == {"TYT": 56, "MS\xdc": 15}
+
+
+def test_ortak_baslik_kutularla_ayni() -> None:
+    """Okuyucunun gordugu ortak baslik, kutu asamasindaki ortak parca gruplariyla birebir."""
+    ob = {d for d, s in M.items() if s.get("ortak_baslik")}
+    assert len(ob) == 20
+    takip = {
+        f"{k['birim']}_{k['soru']:02d}"
+        for k in KUTULAR["kutular"]
+        if k.get("ortak_parca")
+    }
+    assert takip <= ob
+    for d in ob:
+        a, b = (int(x) for x in M[d]["ortak_baslik"].split(" - "))
+        assert M[d]["basili_no"] in (a, b), d
