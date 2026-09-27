@@ -151,9 +151,29 @@ ithalin satirlari is_active 0, kapidan gecen 0.
   sikler_gorsel 6, db_hash_carpismasi 1.
 * Kirpimlar `d-dataset/output/crops/SOS345/` (1233 PNG; boyut == kutu).
 
+## 7. Eski hat pasif (0066_sos345_eski_hat_pasif)
+
+Faz 5'te modern karsiligi GUCLU olan 33 eski satir (2025 baskisi 25, 2024
+baskisi 8) `is_active=FALSE`; SILINMEZ. Guard: eski kaynak adi, ithal_araci
+yok, aktif, VE modern karsilik bu kitabin ithal satiri olarak DB'de var.
+Ayni hash'li 1 satir ve cevabi basili anahtardan farkli 5 satir bunlarin
+icinde. Karsiliksiz 5 eski satir aktif kalir. Yerel: 33 aday, 33 pasif.
+
+## 8. Beta onayi (0067_sos345_beta_onay)
+
+Kapi yuku olculdu (0066 sonrasi): pending 1233/1233, servis disi bayrak 0,
+gorunen alanda `[??]` 0, bos sik / cevap 0, gorselsiz 0, aktif hash
+cakismasi 0 (0066 oncesi 1). Hedef 1233; toplu beta sahibi onayi
+(auto_judged_high, APPROVED; human_verified yazilmaz; is_ai_generated /
+is_public dokunulmaz). 5 konsensus sinyali.
+
+Yerel tur (0065 -> head -> 0065 -> head): head'de 1233 aktif / 1233 onay /
+1233 kapida; eski hat 1 + 4 aktif; tabanda 0 aktif, eski hat 26 + 12
+aktif; aktif tekrar hash 0 her adimda.
+
 ## Testler
 
-`backend/tests/e2e/test_sos345tyt_veri.py` (35): anahtar hamdan birebir,
+`backend/tests/e2e/test_sos345tyt_veri.py` (43): anahtar hamdan birebir,
 toplamlar, tek fark goz + glif, A/B / gereksiz / yabanci goz / bicim disi /
 hucre-simge / glif mutasyonlari; harita hamdan birebir, sayilar, bant
 (gun, test) ve A/B mutasyonu, konu tabani; migration == harita, kimlik;
@@ -169,3 +189,6 @@ yapisal kapilar, test ici sira, cevap kanali, unite == migration ve ders
 == unite dersi, sozlesme, ASCII, pasif sozlesme, cikmis, bayrak capalari,
 mukerrer bayraklari (icerik / sik sirasi ayrimi), mutasyonlar (yapisal 9,
 on kontrol 8, baglama 6).
+Migration (veri bolum 7, +8): 0066 kimlik / zincir / ASCII, ciftler
+olcumden turer, guard, durustluk; 0067 kimlik, dislama kurali, hedef
+1233, durustluk.
