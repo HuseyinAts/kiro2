@@ -409,3 +409,217 @@ def test_ortak_baslik_kutularla_ayni() -> None:
     for d in ob:
         a, b = (int(x) for x in M[d]["ortak_baslik"].split(" - "))
         assert M[d]["basili_no"] in (a, b), d
+
+
+# ------------------------------------------------ 6. mukerrer (Faz 5)
+
+import re  # noqa: E402
+
+
+def _mk():  # type: ignore[no-untyped-def]
+    """Gec ice aktarma (stm345 deseni): betik psycopg ister."""
+    from scripts.kitap import tur345tyt_mukerrer
+
+    return tur345tyt_mukerrer
+
+
+MUK_METNI = (CIKTI / f"{ON}mukerrer_adaylari.json").read_text("ascii")
+MUK = json.loads(MUK_METNI)
+ESKI_2025 = "345 2025 Tyt T\u00fcrk\u00e7e Soru Bankas\u0131"
+ESKI_2024 = "345 Tyt T\u00fcrk\u00e7e Soru Bankas\u0131"
+ESKI_YAYINEVI = "345 Yayinevi TYT Turkce Soru Bankasi 2025"
+PARAGRAF = "345 2025 Paragraf Sifir Risk Soru Bankasi"
+
+
+def test_mukerrer_ozet() -> None:
+    assert MUK["soru_sayisi"] == 2070
+    assert MUK["db_satiri"] > 5000
+    assert MUK["kitap_ici_ayni_hash"] == []
+    # ortak parcali ciftler ayni govdeyi tasir ama siklari farkli: yakin cift degil
+    assert MUK["kitap_ici_yakin"] == []
+    assert MUK["osym_etiketli_soru"] == 71
+
+
+def test_eski_hat_uc_aktarim() -> None:
+    oz = MUK["eski_hat_ozet"]
+    assert oz[ESKI_2025] == {"satir": 18, "aktif": 18, "modern_karsilik": 10}
+    assert oz[ESKI_2024] == {"satir": 11, "aktif": 11, "modern_karsilik": 5}
+    assert oz[ESKI_YAYINEVI] == {"satir": 2, "aktif": 2, "modern_karsilik": 2}
+    for e in MUK["eski_hat"]:
+        guclu = e["en_yakin_3gram"] >= _mk().GUCLU_ESIK and e["ayni_sik_sayisi"] >= 3
+        assert e["modern_karsilik"] == guclu, e["db_id"]
+
+
+def test_hash_carpismasi_paragraf_kitabi() -> None:
+    """Ayni yayinevinin Paragraf kitabi ayni 4 cikmis soruyu basmis (ayni hash)."""
+    assert sorted(c["dosya"] for c in MUK["db_tam_hash_carpismasi"]) == [
+        "TRT345-T041_07",
+        "TRT345-T044_07",
+        "TRT345-T045_08",
+        "TRT345-T069_06",
+    ]
+    eski = {e["db_id"] for e in MUK["eski_hat"]}
+    assert not {c["db_id"] for c in MUK["db_tam_hash_carpismasi"]} & eski
+    guclu = {a["db_id"]: a["db_kaynak"] for a in MUK["adaylar"] if a["guclu"]}
+    for c in MUK["db_tam_hash_carpismasi"]:
+        assert guclu[c["db_id"]] == PARAGRAF
+
+
+def test_hash_degeri_yazilmadi() -> None:
+    assert not re.search(r"[0-9a-f]{32}", MUK_METNI)
+    assert MUK["farkli_soru_hash"] == 2070
+
+
+def test_cevap_farki_sik_sirasi_ve_icerik() -> None:
+    cev = {f"{c['birim']}_{c['soru']:02d}": c["cevap"] for c in ANAHTAR["cevaplar"]}
+    assert len(MUK["cevap_farki"]) == 95
+    assert all(cev[c["dosya"]] == c["bizim_cevap"] for c in MUK["cevap_farki"])
+    # GUCLU OSYM satirlarinda kitap siklari yeniden siralamis; dogru sikkin
+    # METNI basili anahtarin harfinde.
+    osym = [
+        c
+        for c in MUK["cevap_farki"]
+        if c["db_kaynak"] == "OSYM 2025 TYT" and c["guclu"]
+    ]
+    assert len(osym) == 3
+    for c in osym:
+        assert not c["sik_sirasi_ayni"] and c["db_dogrusu_bizde"] == c["bizim_cevap"]
+    assert MUK["cevap_farki_sik_sirasi"] == 6
+    kaynak = {c["db_id"]: c for c in MUK["cevap_farki"]}
+    guclu_icerik = [i for _, i in MUK["cevap_farki_icerik"] if kaynak[i]["guclu"]]
+    assert len(guclu_icerik) == 4
+    assert all(kaynak[i]["db_kaynak"] in (ESKI_2025, ESKI_2024) for i in guclu_icerik)
+
+
+def test_pozitif_kontrol_ve_normal_bicim() -> None:
+    mk = _mk()
+    assert len(MUK["pozitif_kontrol"]) >= 5
+    assert min(k["bozuk_3gram"] for k in MUK["pozitif_kontrol"]) >= mk.GUCLU_ESIK
+    assert mk.nm("Yunus\u2019un \u201cs\u00f6z\u00fc\u201d") == mk.nm(
+        'Yunus\'un "s\u00f6z\u00fc"'
+    )
+    assert mk.nm("<u>kitap</u>") == mk.nm("kitap")
+    assert mk.nm("edeb\u00ee") != mk.nm("edebi")
+    assert mk.DERSLER == ("TURKCE", "EDEBIYAT")
+
+
+def test_indeksli_jaccard_dogrudanla_ayni() -> None:
+    mk = _mk()
+    biz = mk.bizim_sorular()
+    ind = mk.indeks(biz)
+    for a in biz[::60]:
+        j, i = mk.en_yakin(a["tg"], biz, ind)
+        dogrudan = max(mk.jaccard(a["tg"], b["tg"]) for b in biz)
+        assert j == pytest.approx(dogrudan)
+        assert j == pytest.approx(1.0) and biz[i]["tg"] == a["tg"]
+    tg = mk.trigram(mk.nm("tamamen alakasiz bir metin parcasi xyzq"))
+    j, _ = mk.en_yakin(tg, biz, ind)
+    assert j == pytest.approx(max(mk.jaccard(tg, b["tg"]) for b in biz))
+
+
+# ------------------------------- 7. eski hat pasif (0069) + beta onay (0070)
+
+VERSIYON = KOK / "backend" / "alembic" / "versions"
+ESKI_YOLU = VERSIYON / "0069_trt345_eski_hat_pasif.py"
+BETA_YOLU = VERSIYON / "0070_trt345_beta_onay.py"
+
+
+def _yukle(ad: str, yol: Path):  # type: ignore[no-untyped-def]
+    spec = importlib.util.spec_from_file_location(ad, yol)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_0069_kimlik_zincir_ascii() -> None:
+    m = _yukle("eski0069", ESKI_YOLU)
+    assert m.revision == "0069_trt345_eski_hat_pasif"
+    assert m.down_revision == "0068_trt345_agac"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in ESKI_YOLU.read_bytes())
+    assert m.ESKI_KAYNAKLAR == (ESKI_2025, ESKI_2024, ESKI_YAYINEVI)
+    assert m.ITHAL_ARACI == "scripts/kitap/tur345tyt_ithal.py"
+
+
+def test_0069_ciftler_olcumden_turer() -> None:
+    """Liste == mukerrer olcumunde modern_karsilik=true olan eski satirlar."""
+    m = _yukle("eski0069", ESKI_YOLU)
+    olcum = {
+        (e["db_id"], e["en_yakin_bizim"].removeprefix("TRT345-"))
+        for e in MUK["eski_hat"]
+        if e["modern_karsilik"]
+    }
+    assert set(m.ESKI_MODERN) == olcum and len(m.ESKI_MODERN) == 17
+    assert len({e for e, _ in m.ESKI_MODERN}) == 17
+    # bu kitapta eski hatla ayni hash yok (carpisma Paragraf kitabiyla)
+    carp = {c["db_id"] for c in MUK["db_tam_hash_carpismasi"]}
+    assert not carp & {e for e, _ in m.ESKI_MODERN}
+
+
+def test_0069_guard_modern_yoksa_dokunmaz() -> None:
+    m = _yukle("eski0069", ESKI_YOLU)
+    assert m.hedef_idler(set()) == []
+    tum = {f"TRT345-{d}.png" for _, d in m.ESKI_MODERN}
+    assert len(m.hedef_idler(tum)) == 17
+    # ayni moderne iki eski satir baglanabilir: ikisi de duser
+    ikili = Counter(d for _, d in m.ESKI_MODERN)
+    d, n = ikili.most_common(1)[0]
+    assert len(m.hedef_idler(tum - {f"TRT345-{d}.png"})) == 17 - n
+
+
+def test_0069_durustluk() -> None:
+    kod = ESKI_YOLU.read_text("ascii").split('"""', 2)[2]
+    assert "DELETE" not in kod.upper()
+    assert "SET is_active = FALSE" in kod
+    sql = " ".join(_yukle("eski0069", ESKI_YOLU)._ESKI_SQL.split())
+    assert "'ithal_araci') IS NULL" in sql and "qb.is_active IS TRUE" in sql
+
+
+def test_0070_kimlik_zincir_ascii() -> None:
+    m = _yukle("beta0070", BETA_YOLU)
+    assert m.revision == "0070_trt345_beta_onay"
+    assert m.down_revision == "0069_trt345_eski_hat_pasif"
+    assert len(m.revision) <= 32
+    assert all(c < 128 for c in BETA_YOLU.read_bytes())
+    assert m.ITHAL_ARACI == "scripts/kitap/tur345tyt_ithal.py"
+    assert m.KAYNAK == "345 2025 TYT Turkce Soru Bankasi"
+
+
+def test_0070_dislama_kurali() -> None:
+    """Servis disi uc bayrak + gorunen alti alanda [??] + aktif hash ikizi disarida."""
+    m = _yukle("beta0070", BETA_YOLU)
+    sql = " ".join(m._HEDEF_SQL.split())
+    for bayrak in m.SERVIS_DISI_BAYRAKLAR:
+        assert f"? '{bayrak}')" in sql, bayrak
+    for alan in (
+        "question_text",
+        "option_a",
+        "option_b",
+        "option_c",
+        "option_d",
+        "option_e",
+    ):
+        assert f"qc.{alan} NOT LIKE :isaret" in sql, alan
+    assert m.ORTME_ISARETI == "%[??]%"
+    assert "qb.is_active IS NOT TRUE" in sql
+    assert "o.soru_hash = qb.soru_hash AND o.is_active IS TRUE" in sql
+
+
+def test_0070_hedef_olculen_2066() -> None:
+    isaretli = [s["dosya"] for s in METIN["sorular"] if "[??]" in _yazi(s)]
+    assert isaretli == []
+    # 2070 - Paragraf kitabinda ayni hash ile duran 4 soru
+    assert len(MUK["db_tam_hash_carpismasi"]) == 4
+    assert "2066/2066" in BETA_YOLU.read_text("ascii").splitlines()[0]
+
+
+def test_0070_durustluk() -> None:
+    kod = BETA_YOLU.read_text("ascii").split('"""', 2)[2]
+    assert "'human_verified'" not in kod
+    assert "is_ai_generated" not in kod and "is_public" not in kod
+    assert "'bireysel_denetim_yapildi', false" in kod
+    assert "DELETE" not in kod.upper()
+    m = _yukle("beta0070", BETA_YOLU)
+    assert len(m.SINYALLER) == 5 and len(set(m.SINYALLER)) == 5
+    assert "anahtar_iki_bagimsiz_okuma_2067_2070_hucre" in m.SINYALLER

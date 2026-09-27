@@ -126,9 +126,78 @@ ONCE): ilk okumayi gormeyen 43 ayri okuyucu, ayni gruplar (teslim dizini
 Hicbir soruda gercekten okunamayan karakter kalmadi; belirsiz tek
 karakterler en iyi okuma + aday olarak `kaynak_kusuru`nda.
 
+## 5. Mukerrer olcumu (`tur345tyt_mukerrer.py`)
+
+`345_2025_tyt_turkce_mukerrer_adaylari.json` (ithalden ONCE). KMT345
+normal bicimi + kesme / tirnak tipi tek bicim + `<u>` silinir; govde
+karakter 3-gram Jaccard (ters indeks). GUCLU = 3-gram >= 0.9 VE >= 3 ayni
+sik. DB: TURKCE / EDEBIYAT (OSYM ve Paragraf kitabi dahil) + bu kaynak ve
+eski hat adlari: 7121 satir.
+
+* Pozitif kontrol: her 50. govdenin tirnak tipi degismis, bosluklari
+  bozulmus, `<u>` sarili hali kendi sorusuna 1.0.
+* Tam hash carpismasi 4: T041_07, T044_07, T045_08, T069_06 == '345 2025
+  Paragraf Sifir Risk' satirlari (ayni yayinevi ayni cikmis sorulari
+  basmis). Eski hatla ayni hash yok.
+* Kitap ici: ayni hash yok, yakin cift yok (ortak parcali ciftler ayni
+  govdeyi tasir ama siklari farkli).
+* Eski hat uc aktarim: '345 2025 Tyt Turkce' 18 satir (10 modern
+  karsilik), '345 Tyt Turkce' 11 (5), '345 Yayinevi TYT Turkce ... 2025'
+  2 (2). Karsiliksiz 14 (esik alti ya da sik metni farkli).
+* GUCLU aday 30 (eski hat 17, Paragraf 7, OSYM 2025 TYT 3, Aktif Ogrenme
+  Dilbilgisi 3).
+* Cevap harfi farki 95 (cogu zayif, 3-gram < 0.9); GUCLU olanlarin 3'unde
+  DB'nin dogru sikkinin METNI bizde basili anahtarin harfinde (OSYM
+  satirlari; kitap siklari yeniden siralamis), 4'unde icerik farki
+  (hepsi eski hat: T020_09, T043_01, T080_04, T199_01; 0069 ile pasif).
+  Bizim cevap her zaman basili anahtar; degistirilmez.
+
+## 6. Ithal (`tur345tyt_ithal.py`)
+
+PASIF ithal (is_active FALSE, is_public FALSE, review PENDING); kaynak
+sozlesmesi `TRT345`. 2070 kayit uretildi; 4'u (yukaridaki hash
+carpismasi) ayni id ile Paragraf kitabinda var -> `ayristir` YABANCI,
+dokunulmadi; 2066 yeni satir. DB'de bu ithalin satirlari is_active 0,
+kapidan gecen 0.
+
+* `subject_area` TURKCE; konu testi (KO / OT / OR) konu dugumune, Karma
+  testi (KA) unite dugumune (`konu_eslesme_duzeyi`); tur ile duzey
+  baglamada kapi.
+* Cevap kanali: `iki_okuma+glif` 2064, `iki_okuma_farki+goz(5-6x)+glif` 3
+  (T071#4, T086#7, T173#4), `iki_okuma+glif_uyumsuz+goz_teyidi(5x)` 3
+  (T120#3, T143#10, T180#8).
+* Ortak parca: 10 takip sorusunun gorseli parca + 8 px + soru
+  (`gorsel_boyu`, `ortak_parca_basligi`, `ortak_parca_ilk_soru`).
+* Bayraklar (2070 kayit): kaynak_kusuru 371, okuyucu_diski_ortme 260,
+  cikmis_soru 71 (TYT / MSU), mukerrer_aday 28, sik_tekrar 4, sikler_gorsel
+  3, diger_kaynak_cevap_farki 4, diger_kaynak_sik_sirasi_farkli 3,
+  db_hash_carpismasi 4.
+* Kirpimlar `d-dataset/output/crops/TRT345/` (2070 PNG; boyut == kutu,
+  ortak parcalilarda + parca + 8; olculdu, hata 0).
+
+## 7. Eski hat pasif (0069_trt345_eski_hat_pasif)
+
+Faz 5'te modern karsiligi GUCLU olan 17 eski satir (10 + 5 + 2)
+`is_active=FALSE`; SILINMEZ. Guard: eski kaynak adi, ithal_araci yok,
+aktif, VE modern karsilik bu kitabin ithal satiri olarak DB'de var.
+Cevabi basili anahtardan farkli 4 satir bunlarin icinde. Karsiliksiz 14
+eski satir aktif kalir. Yerel: 17 aday, 17 pasif.
+
+## 8. Beta onayi (0070_trt345_beta_onay)
+
+Kapi yuku olculdu (0069 sonrasi): pending 2066/2066, servis disi bayrak 0,
+gorunen alanda `[??]` 0, bos sik / cevap 0, gorselsiz 0, konu bos 0,
+aktif hash cakismasi 0. Hedef 2066; toplu beta sahibi onayi
+(auto_judged_high, APPROVED; human_verified yazilmaz; is_ai_generated /
+is_public dokunulmaz). 5 konsensus sinyali.
+
+Yerel tur (0068 -> head -> 0068 -> head): head'de 2066 aktif / 2066 onay /
+2066 kapida, eski hat 14 aktif; tabanda 0 aktif, eski hat 31 aktif; aktif
+tekrar hash 0 her adimda.
+
 ## Testler
 
-`backend/tests/e2e/test_tur345tyt_veri.py` (37): anahtar hamdan birebir,
+`backend/tests/e2e/test_tur345tyt_veri.py` (52): anahtar hamdan birebir,
 toplamlar, farklar goz + glif, test turleri; A/B / gereksiz / yabanci /
 '?' goz / bicim disi / kimlik / hucre-numara / teyitsiz glif mutasyonlari;
 harita hamdan birebir, sayilar, bant (tur, no) / konu / icindekiler / A-B
@@ -138,3 +207,14 @@ blok ustu, kose yan satir, ortak parca, tavan, sutun ayraci sapmasi
 mutasyonu, null numara yok, metin == kutular, kivrik kesme / numara notu
 yok, ikinci okuma on kaydi + sonuc sayilari, duzeltmeler uygulanmis,
 [??] yok, etiketler, ortak baslik == kutu gruplari.
+Mukerrer (bolum 6, +7): ozet, eski hat uc aktarim, hash carpismasi
+(Paragraf), hash degeri yazilmadi, cevap farki sik sirasi / icerik,
+pozitif kontrol ve normal bicim, indeksli Jaccard == dogrudan.
+Migration (bolum 7, +8): 0069 kimlik / zincir / ASCII, ciftler olcumden
+turer, guard, durustluk; 0070 kimlik, dislama kurali, hedef 2066,
+durustluk.
+`backend/tests/e2e/test_tur345tyt_ithal.py` (56): veri seti butunlugu,
+yapisal kapilar, test ici sira, cevap kanali, konu / unite dugumu ==
+migration, ortak parca gorsel boyu, Paragraf hash ikizi ayni id,
+sozlesme, ASCII, pasif sozlesme, cikmis, bayrak capalari, mukerrer
+bayraklari, mutasyonlar (yapisal 9, on kontrol 8, baglama 9).
