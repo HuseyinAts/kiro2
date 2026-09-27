@@ -1,0 +1,3226 @@
+{
+ "kaynak": "345 2025 TYT Turkce Soru Bankasi",
+ "arac": "scripts/kitap/tur345tyt_harita.py",
+ "nereden": "icindekiler (unite + konu baslangic sayfasi) + sayfa ust bandi (tur, no, konu) iki okuma",
+ "dogrulama": {
+  "bant_a_esittir_b": true,
+  "bant_esittir_anahtar_tur_no": true,
+  "bant_konu_esittir_anahtar_konu": true,
+  "konu_ilk_sayfa_esittir_icindekiler": true
+ },
+ "unite_sayisi": 8,
+ "uniteler": [
+  {
+   "kod": "TUR-345T25-U01",
+   "ad": "ANLAM B\u0130LG\u0130S\u0130",
+   "ad_ascii": "ANLAM BILGISI",
+   "sayfalar": [
+    6,
+    148
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U02",
+   "ad": "SES - YAZIM - NOKTALAMA",
+   "ad_ascii": "SES - YAZIM - NOKTALAMA",
+   "sayfalar": [
+    150,
+    196
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U03",
+   "ad": "S\u00d6ZC\u00dcK YAPISI",
+   "ad_ascii": "SOZCUK YAPISI",
+   "sayfalar": [
+    198,
+    214
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U04",
+   "ad": "\u0130S\u0130M SOYLU S\u00d6ZC\u00dcKLER",
+   "ad_ascii": "ISIM SOYLU SOZCUKLER",
+   "sayfalar": [
+    216,
+    286
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U05",
+   "ad": "F\u0130\u0130LLER (EYLEMLER)",
+   "ad_ascii": "FIILLER (EYLEMLER)",
+   "sayfalar": [
+    288,
+    340
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U06",
+   "ad": "C\u00dcMLE B\u0130LG\u0130S\u0130",
+   "ad_ascii": "CUMLE BILGISI",
+   "sayfalar": [
+    342,
+    386
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U07",
+   "ad": "ANLATIM BOZUKLU\u011eU",
+   "ad_ascii": "ANLATIM BOZUKLUGU",
+   "sayfalar": [
+    388,
+    419
+   ]
+  },
+  {
+   "kod": "TUR-345T25-U08",
+   "ad": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "ad_ascii": "KARMA DIL BILGISI",
+   "sayfalar": [
+    420,
+    431
+   ]
+  }
+ ],
+ "konu_sayisi": 27,
+ "konular": [
+  {
+   "kod": "TUR-345T25-U01-K01",
+   "unite": "TUR-345T25-U01",
+   "ad": "S\u00d6ZC\u00dcKTE ANLAM",
+   "ad_ascii": "SOZCUKTE ANLAM",
+   "ilk_sayfa": 6
+  },
+  {
+   "kod": "TUR-345T25-U01-K02",
+   "unite": "TUR-345T25-U01",
+   "ad": "DEY\u0130M VE ATAS\u00d6Z\u00dc",
+   "ad_ascii": "DEYIM VE ATASOZU",
+   "ilk_sayfa": 28
+  },
+  {
+   "kod": "TUR-345T25-U01-K03",
+   "unite": "TUR-345T25-U01",
+   "ad": "C\u00dcMLEDE KAVRAMLAR",
+   "ad_ascii": "CUMLEDE KAVRAMLAR",
+   "ilk_sayfa": 32
+  },
+  {
+   "kod": "TUR-345T25-U01-K04",
+   "unite": "TUR-345T25-U01",
+   "ad": "C\u00dcMLE YORUMU",
+   "ad_ascii": "CUMLE YORUMU",
+   "ilk_sayfa": 42
+  },
+  {
+   "kod": "TUR-345T25-U01-K05",
+   "unite": "TUR-345T25-U01",
+   "ad": "ANLATIM TEKN\u0130KLER\u0130",
+   "ad_ascii": "ANLATIM TEKNIKLERI",
+   "ilk_sayfa": 68
+  },
+  {
+   "kod": "TUR-345T25-U01-K06",
+   "unite": "TUR-345T25-U01",
+   "ad": "PARAGRAF YORUMU",
+   "ad_ascii": "PARAGRAF YORUMU",
+   "ilk_sayfa": 84
+  },
+  {
+   "kod": "TUR-345T25-U01-K07",
+   "unite": "TUR-345T25-U01",
+   "ad": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "ad_ascii": "PARAGRAFTA YARDIMCI DUSUNCE",
+   "ilk_sayfa": 100
+  },
+  {
+   "kod": "TUR-345T25-U01-K08",
+   "unite": "TUR-345T25-U01",
+   "ad": "PARAGRAF YAPISI",
+   "ad_ascii": "PARAGRAF YAPISI",
+   "ilk_sayfa": 116
+  },
+  {
+   "kod": "TUR-345T25-U02-K01",
+   "unite": "TUR-345T25-U02",
+   "ad": "SES B\u0130LG\u0130S\u0130",
+   "ad_ascii": "SES BILGISI",
+   "ilk_sayfa": 150
+  },
+  {
+   "kod": "TUR-345T25-U02-K02",
+   "unite": "TUR-345T25-U02",
+   "ad": "YAZIM KURALLARI",
+   "ad_ascii": "YAZIM KURALLARI",
+   "ilk_sayfa": 162
+  },
+  {
+   "kod": "TUR-345T25-U02-K03",
+   "unite": "TUR-345T25-U02",
+   "ad": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "ad_ascii": "NOKTALAMA ISARETLERI",
+   "ilk_sayfa": 174
+  },
+  {
+   "kod": "TUR-345T25-U03-K01",
+   "unite": "TUR-345T25-U03",
+   "ad": "S\u00d6ZC\u00dcK YAPISI",
+   "ad_ascii": "SOZCUK YAPISI",
+   "ilk_sayfa": 198
+  },
+  {
+   "kod": "TUR-345T25-U04-K01",
+   "unite": "TUR-345T25-U04",
+   "ad": "\u0130S\u0130M (AD)",
+   "ad_ascii": "ISIM (AD)",
+   "ilk_sayfa": 216
+  },
+  {
+   "kod": "TUR-345T25-U04-K02",
+   "unite": "TUR-345T25-U04",
+   "ad": "SIFAT (\u00d6N AD)",
+   "ad_ascii": "SIFAT (ON AD)",
+   "ilk_sayfa": 228
+  },
+  {
+   "kod": "TUR-345T25-U04-K03",
+   "unite": "TUR-345T25-U04",
+   "ad": "ZAM\u0130R (ADIL)",
+   "ad_ascii": "ZAMIR (ADIL)",
+   "ilk_sayfa": 240
+  },
+  {
+   "kod": "TUR-345T25-U04-K04",
+   "unite": "TUR-345T25-U04",
+   "ad": "ZARF (BEL\u0130RTE\u00c7)",
+   "ad_ascii": "ZARF (BELIRTEC)",
+   "ilk_sayfa": 252
+  },
+  {
+   "kod": "TUR-345T25-U04-K05",
+   "unite": "TUR-345T25-U04",
+   "ad": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "ad_ascii": "EDAT (ILGEC) - BAGLAC - UNLEM",
+   "ilk_sayfa": 264
+  },
+  {
+   "kod": "TUR-345T25-U05-K01",
+   "unite": "TUR-345T25-U05",
+   "ad": "F\u0130\u0130L - F\u0130\u0130L \u00c7EK\u0130M\u0130",
+   "ad_ascii": "FIIL - FIIL CEKIMI",
+   "ilk_sayfa": 288
+  },
+  {
+   "kod": "TUR-345T25-U05-K02",
+   "unite": "TUR-345T25-U05",
+   "ad": "F\u0130\u0130L - EK F\u0130\u0130L",
+   "ad_ascii": "FIIL - EK FIIL",
+   "ilk_sayfa": 296
+  },
+  {
+   "kod": "TUR-345T25-U05-K03",
+   "unite": "TUR-345T25-U05",
+   "ad": "F\u0130\u0130L - F\u0130\u0130LDE YAPI",
+   "ad_ascii": "FIIL - FIILDE YAPI",
+   "ilk_sayfa": 304
+  },
+  {
+   "kod": "TUR-345T25-U05-K04",
+   "unite": "TUR-345T25-U05",
+   "ad": "F\u0130\u0130L - F\u0130\u0130L\u0130MS\u0130LER",
+   "ad_ascii": "FIIL - FIILIMSILER",
+   "ilk_sayfa": 312
+  },
+  {
+   "kod": "TUR-345T25-U05-K05",
+   "unite": "TUR-345T25-U05",
+   "ad": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "ad_ascii": "FIIL - FIILDE CATI",
+   "ilk_sayfa": 320
+  },
+  {
+   "kod": "TUR-345T25-U06-K01",
+   "unite": "TUR-345T25-U06",
+   "ad": "S\u00d6Z \u00d6BEKLER\u0130",
+   "ad_ascii": "SOZ OBEKLERI",
+   "ilk_sayfa": 342
+  },
+  {
+   "kod": "TUR-345T25-U06-K02",
+   "unite": "TUR-345T25-U06",
+   "ad": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "ad_ascii": "CUMLENIN OGELERI",
+   "ilk_sayfa": 350
+  },
+  {
+   "kod": "TUR-345T25-U06-K03",
+   "unite": "TUR-345T25-U06",
+   "ad": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "ad_ascii": "CUMLE CESITLERI",
+   "ilk_sayfa": 362
+  },
+  {
+   "kod": "TUR-345T25-U07-K01",
+   "unite": "TUR-345T25-U07",
+   "ad": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "ad_ascii": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "ilk_sayfa": 388
+  },
+  {
+   "kod": "TUR-345T25-U07-K02",
+   "unite": "TUR-345T25-U07",
+   "ad": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "ad_ascii": "DIL BILGISINE DAYALI ANLATIM BOZUKLUKLARI",
+   "ilk_sayfa": 398
+  }
+ ],
+ "test_sayisi": 207,
+ "testler": [
+  {
+   "birim": "TRT345-T001",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    6,
+    7
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T002",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    8,
+    9
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T003",
+   "tur": "KO",
+   "no": 3,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    10,
+    11
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T004",
+   "tur": "KO",
+   "no": 4,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    12,
+    13
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T005",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    14,
+    15
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T006",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    16,
+    17
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T007",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    18,
+    19
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T008",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    20,
+    21
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T009",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    22,
+    23
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T010",
+   "tur": "OT",
+   "no": 6,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    24,
+    25
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T011",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "S\u00d6ZC\u00dcKTE ANLAM",
+   "sayfalar": [
+    26,
+    27
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K01"
+  },
+  {
+   "birim": "TRT345-T012",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "DEY\u0130M VE ATAS\u00d6Z\u00dc",
+   "sayfalar": [
+    28,
+    29
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K02"
+  },
+  {
+   "birim": "TRT345-T013",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "DEY\u0130M VE ATAS\u00d6Z\u00dc",
+   "sayfalar": [
+    30,
+    31
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K02"
+  },
+  {
+   "birim": "TRT345-T014",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLEDE KAVRAMLAR",
+   "sayfalar": [
+    32,
+    33
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K03"
+  },
+  {
+   "birim": "TRT345-T015",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLEDE KAVRAMLAR",
+   "sayfalar": [
+    34,
+    35
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K03"
+  },
+  {
+   "birim": "TRT345-T016",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLEDE KAVRAMLAR",
+   "sayfalar": [
+    36,
+    37
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K03"
+  },
+  {
+   "birim": "TRT345-T017",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLEDE KAVRAMLAR",
+   "sayfalar": [
+    38,
+    39
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K03"
+  },
+  {
+   "birim": "TRT345-T018",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "C\u00dcMLEDE KAVRAMLAR",
+   "sayfalar": [
+    40,
+    41
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K03"
+  },
+  {
+   "birim": "TRT345-T019",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    42,
+    43
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T020",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    44,
+    45
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T021",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    46,
+    47
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T022",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    48,
+    49
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T023",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    50,
+    51
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T024",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    52,
+    53
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T025",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    54,
+    55
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T026",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    56,
+    57
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K04"
+  },
+  {
+   "birim": "TRT345-T027",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    58,
+    59
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "S\u00d6ZC\u00dcK VE C\u00dcMLE ANLAMI",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T028",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    60,
+    61
+   ],
+   "soru_sayisi": 9,
+   "karma_konu": "S\u00d6ZC\u00dcK VE C\u00dcMLE ANLAMI",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T029",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    62,
+    63
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "S\u00d6ZC\u00dcK VE C\u00dcMLE ANLAMI",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T030",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    64,
+    65
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "S\u00d6ZC\u00dcK VE C\u00dcMLE ANLAMI",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T031",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "C\u00dcMLE YORUMU",
+   "sayfalar": [
+    66,
+    67
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "S\u00d6ZC\u00dcK VE C\u00dcMLE ANLAMI",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T032",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    68,
+    69
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T033",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    70,
+    71
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T034",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    72,
+    73
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T035",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    74,
+    75
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T036",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    76,
+    77
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T037",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    78,
+    79
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T038",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    80,
+    81
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T039",
+   "tur": "OT",
+   "no": 6,
+   "anahtar_konu": "ANLATIM TEKN\u0130KLER\u0130",
+   "sayfalar": [
+    82,
+    83
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K05"
+  },
+  {
+   "birim": "TRT345-T040",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    84,
+    85
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T041",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    86,
+    87
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T042",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    88,
+    89
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T043",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    90,
+    91
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T044",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    92,
+    93
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T045",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    94,
+    95
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T046",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    96,
+    97
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T047",
+   "tur": "OT",
+   "no": 6,
+   "anahtar_konu": "PARAGRAF YORUMU",
+   "sayfalar": [
+    98,
+    99
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K06"
+  },
+  {
+   "birim": "TRT345-T048",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    100,
+    101
+   ],
+   "soru_sayisi": 5,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T049",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    102,
+    103
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T050",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    104,
+    105
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T051",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    106,
+    107
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T052",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    108,
+    109
+   ],
+   "soru_sayisi": 6,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T053",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    110,
+    111
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T054",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    112,
+    113
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T055",
+   "tur": "OT",
+   "no": 6,
+   "anahtar_konu": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+   "sayfalar": [
+    114,
+    115
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K07"
+  },
+  {
+   "birim": "TRT345-T056",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    116,
+    117
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T057",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    118,
+    119
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T058",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    120,
+    121
+   ],
+   "soru_sayisi": 6,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T059",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    122,
+    123
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T060",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    124,
+    125
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T061",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    126,
+    127
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T062",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    128,
+    129
+   ],
+   "soru_sayisi": 5,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T063",
+   "tur": "OT",
+   "no": 6,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    130,
+    131
+   ],
+   "soru_sayisi": 6,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T064",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    132,
+    133
+   ],
+   "soru_sayisi": 4,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T065",
+   "tur": "OR",
+   "no": 2,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    134,
+    135
+   ],
+   "soru_sayisi": 4,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T066",
+   "tur": "OR",
+   "no": 3,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    136,
+    137
+   ],
+   "soru_sayisi": 4,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U01",
+   "dugum": "TUR-345T25-U01-K08"
+  },
+  {
+   "birim": "TRT345-T067",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    138,
+    139
+   ],
+   "soru_sayisi": 7,
+   "karma_konu": "PARAGRAF",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T068",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    140,
+    141
+   ],
+   "soru_sayisi": 8,
+   "karma_konu": "PARAGRAF",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T069",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    142,
+    143
+   ],
+   "soru_sayisi": 8,
+   "karma_konu": "PARAGRAF",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T070",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    144,
+    145
+   ],
+   "soru_sayisi": 8,
+   "karma_konu": "PARAGRAF",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T071",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "PARAGRAF YAPISI",
+   "sayfalar": [
+    146,
+    147,
+    148
+   ],
+   "soru_sayisi": 10,
+   "karma_konu": "PARAGRAF",
+   "dugum": "TUR-345T25-U01",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U01"
+  },
+  {
+   "birim": "TRT345-T072",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "SES B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    150,
+    151
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K01"
+  },
+  {
+   "birim": "TRT345-T073",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "SES B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    152,
+    153
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K01"
+  },
+  {
+   "birim": "TRT345-T074",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "SES B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    154,
+    155
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K01"
+  },
+  {
+   "birim": "TRT345-T075",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "SES B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    156,
+    157
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K01"
+  },
+  {
+   "birim": "TRT345-T076",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "SES B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    158,
+    159
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K01"
+  },
+  {
+   "birim": "TRT345-T077",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "SES B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    160,
+    161
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K01"
+  },
+  {
+   "birim": "TRT345-T078",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "YAZIM KURALLARI",
+   "sayfalar": [
+    162,
+    163
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K02"
+  },
+  {
+   "birim": "TRT345-T079",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "YAZIM KURALLARI",
+   "sayfalar": [
+    164,
+    165
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K02"
+  },
+  {
+   "birim": "TRT345-T080",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "YAZIM KURALLARI",
+   "sayfalar": [
+    166,
+    167
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K02"
+  },
+  {
+   "birim": "TRT345-T081",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "YAZIM KURALLARI",
+   "sayfalar": [
+    168,
+    169
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K02"
+  },
+  {
+   "birim": "TRT345-T082",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "YAZIM KURALLARI",
+   "sayfalar": [
+    170,
+    171
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K02"
+  },
+  {
+   "birim": "TRT345-T083",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "YAZIM KURALLARI",
+   "sayfalar": [
+    172,
+    173
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K02"
+  },
+  {
+   "birim": "TRT345-T084",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    174,
+    175
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K03"
+  },
+  {
+   "birim": "TRT345-T085",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    176,
+    177
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K03"
+  },
+  {
+   "birim": "TRT345-T086",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    178,
+    179
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K03"
+  },
+  {
+   "birim": "TRT345-T087",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    180,
+    181
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K03"
+  },
+  {
+   "birim": "TRT345-T088",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    182,
+    183
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K03"
+  },
+  {
+   "birim": "TRT345-T089",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    184,
+    185
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U02",
+   "dugum": "TUR-345T25-U02-K03"
+  },
+  {
+   "birim": "TRT345-T090",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    186,
+    187
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "SES - YAZIM - NOKTALAMA",
+   "dugum": "TUR-345T25-U02",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U02"
+  },
+  {
+   "birim": "TRT345-T091",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    188,
+    189
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "SES - YAZIM - NOKTALAMA",
+   "dugum": "TUR-345T25-U02",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U02"
+  },
+  {
+   "birim": "TRT345-T092",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    190,
+    191
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "SES - YAZIM - NOKTALAMA",
+   "dugum": "TUR-345T25-U02",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U02"
+  },
+  {
+   "birim": "TRT345-T093",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    192,
+    193
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "SES - YAZIM - NOKTALAMA",
+   "dugum": "TUR-345T25-U02",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U02"
+  },
+  {
+   "birim": "TRT345-T094",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "NOKTALAMA \u0130\u015eARETLER\u0130",
+   "sayfalar": [
+    194,
+    195,
+    196
+   ],
+   "soru_sayisi": 16,
+   "karma_konu": "SES - YAZIM - NOKTALAMA",
+   "dugum": "TUR-345T25-U02",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U02"
+  },
+  {
+   "birim": "TRT345-T095",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    198,
+    199
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T096",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    200,
+    201
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T097",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    202,
+    203
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T098",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    204,
+    205
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T099",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    206,
+    207
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T100",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    208,
+    209
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T101",
+   "tur": "OT",
+   "no": 5,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    210,
+    211
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T102",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "S\u00d6ZC\u00dcK YAPISI",
+   "sayfalar": [
+    212,
+    213,
+    214
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U03",
+   "dugum": "TUR-345T25-U03-K01"
+  },
+  {
+   "birim": "TRT345-T103",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "\u0130S\u0130M (AD)",
+   "sayfalar": [
+    216,
+    217
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K01"
+  },
+  {
+   "birim": "TRT345-T104",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "\u0130S\u0130M (AD)",
+   "sayfalar": [
+    218,
+    219
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K01"
+  },
+  {
+   "birim": "TRT345-T105",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "\u0130S\u0130M (AD)",
+   "sayfalar": [
+    220,
+    221
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K01"
+  },
+  {
+   "birim": "TRT345-T106",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "\u0130S\u0130M (AD)",
+   "sayfalar": [
+    222,
+    223
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K01"
+  },
+  {
+   "birim": "TRT345-T107",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "\u0130S\u0130M (AD)",
+   "sayfalar": [
+    224,
+    225
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K01"
+  },
+  {
+   "birim": "TRT345-T108",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "\u0130S\u0130M (AD)",
+   "sayfalar": [
+    226,
+    227
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K01"
+  },
+  {
+   "birim": "TRT345-T109",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "SIFAT (\u00d6N AD)",
+   "sayfalar": [
+    228,
+    229
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K02"
+  },
+  {
+   "birim": "TRT345-T110",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "SIFAT (\u00d6N AD)",
+   "sayfalar": [
+    230,
+    231
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K02"
+  },
+  {
+   "birim": "TRT345-T111",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "SIFAT (\u00d6N AD)",
+   "sayfalar": [
+    232,
+    233
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K02"
+  },
+  {
+   "birim": "TRT345-T112",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "SIFAT (\u00d6N AD)",
+   "sayfalar": [
+    234,
+    235
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K02"
+  },
+  {
+   "birim": "TRT345-T113",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "SIFAT (\u00d6N AD)",
+   "sayfalar": [
+    236,
+    237
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K02"
+  },
+  {
+   "birim": "TRT345-T114",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "SIFAT (\u00d6N AD)",
+   "sayfalar": [
+    238,
+    239
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K02"
+  },
+  {
+   "birim": "TRT345-T115",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "ZAM\u0130R (ADIL)",
+   "sayfalar": [
+    240,
+    241
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K03"
+  },
+  {
+   "birim": "TRT345-T116",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "ZAM\u0130R (ADIL)",
+   "sayfalar": [
+    242,
+    243
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K03"
+  },
+  {
+   "birim": "TRT345-T117",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "ZAM\u0130R (ADIL)",
+   "sayfalar": [
+    244,
+    245
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K03"
+  },
+  {
+   "birim": "TRT345-T118",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "ZAM\u0130R (ADIL)",
+   "sayfalar": [
+    246,
+    247
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K03"
+  },
+  {
+   "birim": "TRT345-T119",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "ZAM\u0130R (ADIL)",
+   "sayfalar": [
+    248,
+    249
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K03"
+  },
+  {
+   "birim": "TRT345-T120",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "ZAM\u0130R (ADIL)",
+   "sayfalar": [
+    250,
+    251
+   ],
+   "soru_sayisi": 9,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K03"
+  },
+  {
+   "birim": "TRT345-T121",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "ZARF (BEL\u0130RTE\u00c7)",
+   "sayfalar": [
+    252,
+    253
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K04"
+  },
+  {
+   "birim": "TRT345-T122",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "ZARF (BEL\u0130RTE\u00c7)",
+   "sayfalar": [
+    254,
+    255
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K04"
+  },
+  {
+   "birim": "TRT345-T123",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "ZARF (BEL\u0130RTE\u00c7)",
+   "sayfalar": [
+    256,
+    257
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K04"
+  },
+  {
+   "birim": "TRT345-T124",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "ZARF (BEL\u0130RTE\u00c7)",
+   "sayfalar": [
+    258,
+    259
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K04"
+  },
+  {
+   "birim": "TRT345-T125",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "ZARF (BEL\u0130RTE\u00c7)",
+   "sayfalar": [
+    260,
+    261
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K04"
+  },
+  {
+   "birim": "TRT345-T126",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "ZARF (BEL\u0130RTE\u00c7)",
+   "sayfalar": [
+    262,
+    263
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K04"
+  },
+  {
+   "birim": "TRT345-T127",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    264,
+    265
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K05"
+  },
+  {
+   "birim": "TRT345-T128",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    266,
+    267
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K05"
+  },
+  {
+   "birim": "TRT345-T129",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    268,
+    269
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K05"
+  },
+  {
+   "birim": "TRT345-T130",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    270,
+    271
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K05"
+  },
+  {
+   "birim": "TRT345-T131",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    272,
+    273
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K05"
+  },
+  {
+   "birim": "TRT345-T132",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    274,
+    275
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U04",
+   "dugum": "TUR-345T25-U04-K05"
+  },
+  {
+   "birim": "TRT345-T133",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    276,
+    277
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "\u0130S\u0130M SOYLU S\u00d6ZC\u00dcKLER",
+   "dugum": "TUR-345T25-U04",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U04"
+  },
+  {
+   "birim": "TRT345-T134",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    278,
+    279
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "\u0130S\u0130M SOYLU S\u00d6ZC\u00dcKLER",
+   "dugum": "TUR-345T25-U04",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U04"
+  },
+  {
+   "birim": "TRT345-T135",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    280,
+    281
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "\u0130S\u0130M SOYLU S\u00d6ZC\u00dcKLER",
+   "dugum": "TUR-345T25-U04",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U04"
+  },
+  {
+   "birim": "TRT345-T136",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    282,
+    283
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "\u0130S\u0130M SOYLU S\u00d6ZC\u00dcKLER",
+   "dugum": "TUR-345T25-U04",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U04"
+  },
+  {
+   "birim": "TRT345-T137",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "EDAT (\u0130LGE\u00c7) - BA\u011eLA\u00c7 - \u00dcNLEM",
+   "sayfalar": [
+    284,
+    285,
+    286
+   ],
+   "soru_sayisi": 15,
+   "karma_konu": "\u0130S\u0130M SOYLU S\u00d6ZC\u00dcKLER",
+   "dugum": "TUR-345T25-U04",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U04"
+  },
+  {
+   "birim": "TRT345-T138",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L \u00c7EK\u0130M\u0130",
+   "sayfalar": [
+    288,
+    289
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K01"
+  },
+  {
+   "birim": "TRT345-T139",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L \u00c7EK\u0130M\u0130",
+   "sayfalar": [
+    290,
+    291
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K01"
+  },
+  {
+   "birim": "TRT345-T140",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L \u00c7EK\u0130M\u0130",
+   "sayfalar": [
+    292,
+    293
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K01"
+  },
+  {
+   "birim": "TRT345-T141",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L \u00c7EK\u0130M\u0130",
+   "sayfalar": [
+    294,
+    295
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K01"
+  },
+  {
+   "birim": "TRT345-T142",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - EK F\u0130\u0130L",
+   "sayfalar": [
+    296,
+    297
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K02"
+  },
+  {
+   "birim": "TRT345-T143",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - EK F\u0130\u0130L",
+   "sayfalar": [
+    298,
+    299
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K02"
+  },
+  {
+   "birim": "TRT345-T144",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "F\u0130\u0130L - EK F\u0130\u0130L",
+   "sayfalar": [
+    300,
+    301
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K02"
+  },
+  {
+   "birim": "TRT345-T145",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "F\u0130\u0130L - EK F\u0130\u0130L",
+   "sayfalar": [
+    302,
+    303
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K02"
+  },
+  {
+   "birim": "TRT345-T146",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE YAPI",
+   "sayfalar": [
+    304,
+    305
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K03"
+  },
+  {
+   "birim": "TRT345-T147",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE YAPI",
+   "sayfalar": [
+    306,
+    307
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K03"
+  },
+  {
+   "birim": "TRT345-T148",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE YAPI",
+   "sayfalar": [
+    308,
+    309
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K03"
+  },
+  {
+   "birim": "TRT345-T149",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE YAPI",
+   "sayfalar": [
+    310,
+    311
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K03"
+  },
+  {
+   "birim": "TRT345-T150",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L\u0130MS\u0130LER",
+   "sayfalar": [
+    312,
+    313
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K04"
+  },
+  {
+   "birim": "TRT345-T151",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L\u0130MS\u0130LER",
+   "sayfalar": [
+    314,
+    315
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K04"
+  },
+  {
+   "birim": "TRT345-T152",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L\u0130MS\u0130LER",
+   "sayfalar": [
+    316,
+    317
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K04"
+  },
+  {
+   "birim": "TRT345-T153",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130L\u0130MS\u0130LER",
+   "sayfalar": [
+    318,
+    319
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K04"
+  },
+  {
+   "birim": "TRT345-T154",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    320,
+    321
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K05"
+  },
+  {
+   "birim": "TRT345-T155",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    322,
+    323
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K05"
+  },
+  {
+   "birim": "TRT345-T156",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    324,
+    325
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K05"
+  },
+  {
+   "birim": "TRT345-T157",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    326,
+    327
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K05"
+  },
+  {
+   "birim": "TRT345-T158",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    328,
+    329
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U05",
+   "dugum": "TUR-345T25-U05-K05"
+  },
+  {
+   "birim": "TRT345-T159",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    330,
+    331
+   ],
+   "soru_sayisi": 10,
+   "karma_konu": "F\u0130\u0130LLER",
+   "dugum": "TUR-345T25-U05",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U05"
+  },
+  {
+   "birim": "TRT345-T160",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    332,
+    333
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "F\u0130\u0130LLER",
+   "dugum": "TUR-345T25-U05",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U05"
+  },
+  {
+   "birim": "TRT345-T161",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    334,
+    335
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "F\u0130\u0130LLER",
+   "dugum": "TUR-345T25-U05",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U05"
+  },
+  {
+   "birim": "TRT345-T162",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    336,
+    337
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "F\u0130\u0130LLER",
+   "dugum": "TUR-345T25-U05",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U05"
+  },
+  {
+   "birim": "TRT345-T163",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "F\u0130\u0130L - F\u0130\u0130LDE \u00c7ATI",
+   "sayfalar": [
+    338,
+    339,
+    340
+   ],
+   "soru_sayisi": 16,
+   "karma_konu": "F\u0130\u0130LLER",
+   "dugum": "TUR-345T25-U05",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U05"
+  },
+  {
+   "birim": "TRT345-T164",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "S\u00d6Z \u00d6BEKLER\u0130",
+   "sayfalar": [
+    342,
+    343
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K01"
+  },
+  {
+   "birim": "TRT345-T165",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "S\u00d6Z \u00d6BEKLER\u0130",
+   "sayfalar": [
+    344,
+    345
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K01"
+  },
+  {
+   "birim": "TRT345-T166",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "S\u00d6Z \u00d6BEKLER\u0130",
+   "sayfalar": [
+    346,
+    347
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K01"
+  },
+  {
+   "birim": "TRT345-T167",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "S\u00d6Z \u00d6BEKLER\u0130",
+   "sayfalar": [
+    348,
+    349
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K01"
+  },
+  {
+   "birim": "TRT345-T168",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "sayfalar": [
+    350,
+    351
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K02"
+  },
+  {
+   "birim": "TRT345-T169",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "sayfalar": [
+    352,
+    353
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K02"
+  },
+  {
+   "birim": "TRT345-T170",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "sayfalar": [
+    354,
+    355
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K02"
+  },
+  {
+   "birim": "TRT345-T171",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "sayfalar": [
+    356,
+    357
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K02"
+  },
+  {
+   "birim": "TRT345-T172",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "sayfalar": [
+    358,
+    359
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K02"
+  },
+  {
+   "birim": "TRT345-T173",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "C\u00dcMLEN\u0130N \u00d6GELER\u0130",
+   "sayfalar": [
+    360,
+    361
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K02"
+  },
+  {
+   "birim": "TRT345-T174",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    362,
+    363
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T175",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    364,
+    365
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T176",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    366,
+    367
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T177",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    368,
+    369
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T178",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    370,
+    371
+   ],
+   "soru_sayisi": 10,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T179",
+   "tur": "OT",
+   "no": 4,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    372,
+    373
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T180",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    374,
+    375
+   ],
+   "soru_sayisi": 8,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U06",
+   "dugum": "TUR-345T25-U06-K03"
+  },
+  {
+   "birim": "TRT345-T181",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    376,
+    377
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "C\u00dcMLE B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U06",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U06"
+  },
+  {
+   "birim": "TRT345-T182",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    378,
+    379
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "C\u00dcMLE B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U06",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U06"
+  },
+  {
+   "birim": "TRT345-T183",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    380,
+    381
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "C\u00dcMLE B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U06",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U06"
+  },
+  {
+   "birim": "TRT345-T184",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    382,
+    383
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "C\u00dcMLE B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U06",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U06"
+  },
+  {
+   "birim": "TRT345-T185",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "C\u00dcMLE \u00c7E\u015e\u0130TLER\u0130",
+   "sayfalar": [
+    384,
+    385,
+    386
+   ],
+   "soru_sayisi": 18,
+   "karma_konu": "C\u00dcMLE B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U06",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U06"
+  },
+  {
+   "birim": "TRT345-T186",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    388,
+    389
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K01"
+  },
+  {
+   "birim": "TRT345-T187",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    390,
+    391
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K01"
+  },
+  {
+   "birim": "TRT345-T188",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    392,
+    393
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K01"
+  },
+  {
+   "birim": "TRT345-T189",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    394,
+    395
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K01"
+  },
+  {
+   "birim": "TRT345-T190",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "ANLAMA DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    396,
+    397
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K01"
+  },
+  {
+   "birim": "TRT345-T191",
+   "tur": "KO",
+   "no": 1,
+   "anahtar_konu": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    398,
+    399
+   ],
+   "soru_sayisi": 11,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K02"
+  },
+  {
+   "birim": "TRT345-T192",
+   "tur": "KO",
+   "no": 2,
+   "anahtar_konu": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    400,
+    401
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K02"
+  },
+  {
+   "birim": "TRT345-T193",
+   "tur": "OT",
+   "no": 1,
+   "anahtar_konu": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    402,
+    403
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K02"
+  },
+  {
+   "birim": "TRT345-T194",
+   "tur": "OT",
+   "no": 2,
+   "anahtar_konu": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    404,
+    405
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K02"
+  },
+  {
+   "birim": "TRT345-T195",
+   "tur": "OT",
+   "no": 3,
+   "anahtar_konu": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    406,
+    407
+   ],
+   "soru_sayisi": 12,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K02"
+  },
+  {
+   "birim": "TRT345-T196",
+   "tur": "OR",
+   "no": 1,
+   "anahtar_konu": "D\u0130L B\u0130LG\u0130S\u0130NE DAYALI ANLATIM BOZUKLUKLARI",
+   "sayfalar": [
+    408,
+    409
+   ],
+   "soru_sayisi": 7,
+   "duzey": "konu",
+   "unite": "TUR-345T25-U07",
+   "dugum": "TUR-345T25-U07-K02"
+  },
+  {
+   "birim": "TRT345-T197",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "ANLATIM BOZUKLUKLARI KARMA",
+   "sayfalar": [
+    410,
+    411
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "ANLATIM BOZUKLUKLARI",
+   "dugum": "TUR-345T25-U07",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U07"
+  },
+  {
+   "birim": "TRT345-T198",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "ANLATIM BOZUKLUKLARI KARMA",
+   "sayfalar": [
+    412,
+    413
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "ANLATIM BOZUKLUKLARI",
+   "dugum": "TUR-345T25-U07",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U07"
+  },
+  {
+   "birim": "TRT345-T199",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "ANLATIM BOZUKLUKLARI KARMA",
+   "sayfalar": [
+    414,
+    415
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "ANLATIM BOZUKLUKLARI",
+   "dugum": "TUR-345T25-U07",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U07"
+  },
+  {
+   "birim": "TRT345-T200",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "ANLATIM BOZUKLUKLARI KARMA",
+   "sayfalar": [
+    416,
+    417
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "ANLATIM BOZUKLUKLARI",
+   "dugum": "TUR-345T25-U07",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U07"
+  },
+  {
+   "birim": "TRT345-T201",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "ANLATIM BOZUKLUKLARI KARMA",
+   "sayfalar": [
+    418,
+    419
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "ANLATIM BOZUKLUKLARI",
+   "dugum": "TUR-345T25-U07",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U07"
+  },
+  {
+   "birim": "TRT345-T202",
+   "tur": "KA",
+   "no": 1,
+   "anahtar_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    420,
+    421
+   ],
+   "soru_sayisi": 9,
+   "karma_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U08",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U08"
+  },
+  {
+   "birim": "TRT345-T203",
+   "tur": "KA",
+   "no": 2,
+   "anahtar_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    422,
+    423
+   ],
+   "soru_sayisi": 8,
+   "karma_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U08",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U08"
+  },
+  {
+   "birim": "TRT345-T204",
+   "tur": "KA",
+   "no": 3,
+   "anahtar_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    424,
+    425
+   ],
+   "soru_sayisi": 8,
+   "karma_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U08",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U08"
+  },
+  {
+   "birim": "TRT345-T205",
+   "tur": "KA",
+   "no": 4,
+   "anahtar_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    426,
+    427
+   ],
+   "soru_sayisi": 11,
+   "karma_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U08",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U08"
+  },
+  {
+   "birim": "TRT345-T206",
+   "tur": "KA",
+   "no": 5,
+   "anahtar_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    428,
+    429
+   ],
+   "soru_sayisi": 12,
+   "karma_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U08",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U08"
+  },
+  {
+   "birim": "TRT345-T207",
+   "tur": "KA",
+   "no": 6,
+   "anahtar_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "sayfalar": [
+    430,
+    431
+   ],
+   "soru_sayisi": 8,
+   "karma_konu": "KARMA D\u0130L B\u0130LG\u0130S\u0130",
+   "dugum": "TUR-345T25-U08",
+   "duzey": "unite",
+   "unite": "TUR-345T25-U08"
+  }
+ ]
+}
