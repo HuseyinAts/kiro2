@@ -1,0 +1,1632 @@
+{
+"kaynak": "2019-2020 ACIL TYT Matematik Soru Bankasi",
+"arac": "scripts/kitap/acil1920tyt_harita.py",
+"nereden": "icindekiler (dosya 3) + test ilk sayfasi ust bandi (iki okuma)",
+"bolumler": [
+{
+"kod": "MAT-ACL20T-B01",
+"no": 1,
+"ad": "YEN\u0130 NES\u0130L \u0130\u015eLEM YETENE\u011e\u0130"
+},
+{
+"kod": "MAT-ACL20T-B02",
+"no": 2,
+"ad": "SAYILAR"
+},
+{
+"kod": "MAT-ACL20T-B03",
+"no": 3,
+"ad": "RASYONEL VE ONDALIKLI SAYILAR"
+},
+{
+"kod": "MAT-ACL20T-B04",
+"no": 4,
+"ad": "BAS\u0130T E\u015e\u0130TS\u0130ZL\u0130K-MUTLAK DE\u011eER"
+},
+{
+"kod": "MAT-ACL20T-B05",
+"no": 5,
+"ad": "\u00dcSL\u00dc-K\u00d6KL\u00dc SAYILAR"
+},
+{
+"kod": "MAT-ACL20T-B06",
+"no": 6,
+"ad": "SAYISAL MANTIK"
+},
+{
+"kod": "MAT-ACL20T-B07",
+"no": 7,
+"ad": "\u00c7ARPANLARA AYIRMA"
+},
+{
+"kod": "MAT-ACL20T-B08",
+"no": 8,
+"ad": "ORAN-ORANTI"
+},
+{
+"kod": "MAT-ACL20T-B09",
+"no": 9,
+"ad": "B\u0130R\u0130NC\u0130 DERECEDEN DENKLEMLER"
+},
+{
+"kod": "MAT-ACL20T-B10",
+"no": 10,
+"ad": "PROBLEMLER"
+},
+{
+"kod": "MAT-ACL20T-B11",
+"no": 11,
+"ad": "SEMBOL\u0130K MANTIK"
+},
+{
+"kod": "MAT-ACL20T-B12",
+"no": 12,
+"ad": "K\u00dcMELER-KARTEZYEN \u00c7ARPIM"
+},
+{
+"kod": "MAT-ACL20T-B13",
+"no": 13,
+"ad": "FONKS\u0130YONLAR"
+},
+{
+"kod": "MAT-ACL20T-B14",
+"no": 14,
+"ad": "POL\u0130NOMLAR"
+},
+{
+"kod": "MAT-ACL20T-B15",
+"no": 15,
+"ad": "\u0130K\u0130NC\u0130 DERECEDEN DENKLEMLER"
+},
+{
+"kod": "MAT-ACL20T-B16",
+"no": 16,
+"ad": "SAYMA-OLASILIK"
+},
+{
+"kod": "MAT-ACL20T-B17",
+"no": 17,
+"ad": "\u0130STAT\u0130ST\u0130K-GRAF\u0130K"
+}
+],
+"konular": [
+{
+"kod": "MAT-ACL20T-B01-K01",
+"bolum": "MAT-ACL20T-B01",
+"ad": "Yeni Nesil \u0130\u015flem Yetene\u011fi",
+"icindekiler_adi": "Yeni Nesil \u0130\u015flem Yetene\u011fi",
+"sayfalar": [
+5,
+17
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K01",
+"bolum": "MAT-ACL20T-B02",
+"ad": "Temel Kavramlar",
+"icindekiler_adi": "Temel Kavramlar",
+"sayfalar": [
+18,
+35
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K02",
+"bolum": "MAT-ACL20T-B02",
+"ad": "Basamak Kavram\u0131",
+"icindekiler_adi": "Basamak Kavram\u0131",
+"sayfalar": [
+36,
+43
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K03",
+"bolum": "MAT-ACL20T-B02",
+"ad": "B\u00f6lme",
+"icindekiler_adi": "B\u00f6lme",
+"sayfalar": [
+44,
+48
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K04",
+"bolum": "MAT-ACL20T-B02",
+"ad": "B\u00f6l\u00fcnebilme",
+"icindekiler_adi": "B\u00f6l\u00fcnebilme",
+"sayfalar": [
+49,
+58
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K05",
+"bolum": "MAT-ACL20T-B02",
+"ad": "Fakt\u00f6riyel",
+"icindekiler_adi": "Fakt\u00f6riyel",
+"sayfalar": [
+59,
+62
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K06",
+"bolum": "MAT-ACL20T-B02",
+"ad": "Asal Say\u0131lar-Asal \u00c7arpanlara Ay\u0131rma",
+"icindekiler_adi": "Asal Say\u0131lar-Asal \u00c7arpanlara Ay\u0131rma",
+"sayfalar": [
+63,
+71
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K07",
+"bolum": "MAT-ACL20T-B02",
+"ad": "Sihirli Say\u0131lar",
+"icindekiler_adi": "Sihirli Say\u0131lar",
+"sayfalar": [
+72,
+73
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K08",
+"bolum": "MAT-ACL20T-B02",
+"ad": "EBOB-EKOK",
+"icindekiler_adi": "EBOK-EKOK",
+"sayfalar": [
+74,
+84
+]
+},
+{
+"kod": "MAT-ACL20T-B02-K09",
+"bolum": "MAT-ACL20T-B02",
+"ad": "Periyodik Problemler",
+"icindekiler_adi": "Periyodik Problemler",
+"sayfalar": [
+85,
+90
+]
+},
+{
+"kod": "MAT-ACL20T-B03-K01",
+"bolum": "MAT-ACL20T-B03",
+"ad": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"icindekiler_adi": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"sayfalar": [
+91,
+109
+]
+},
+{
+"kod": "MAT-ACL20T-B04-K01",
+"bolum": "MAT-ACL20T-B04",
+"ad": "Basit E\u015fitsizlik",
+"icindekiler_adi": "Basit E\u015fitsizlik",
+"sayfalar": [
+110,
+127
+]
+},
+{
+"kod": "MAT-ACL20T-B04-K02",
+"bolum": "MAT-ACL20T-B04",
+"ad": "Mutlak De\u011fer",
+"icindekiler_adi": "Mutlak De\u011fer",
+"sayfalar": [
+128,
+143
+]
+},
+{
+"kod": "MAT-ACL20T-B05-K01",
+"bolum": "MAT-ACL20T-B05",
+"ad": "\u00dcsl\u00fc Say\u0131lar",
+"icindekiler_adi": "\u00dcsl\u00fc Say\u0131lar",
+"sayfalar": [
+144,
+161
+]
+},
+{
+"kod": "MAT-ACL20T-B05-K02",
+"bolum": "MAT-ACL20T-B05",
+"ad": "K\u00f6kl\u00fc Say\u0131lar",
+"icindekiler_adi": "K\u00f6kl\u00fc Say\u0131lar",
+"sayfalar": [
+162,
+179
+]
+},
+{
+"kod": "MAT-ACL20T-B05-K03",
+"bolum": "MAT-ACL20T-B05",
+"ad": "Reel Say\u0131lar",
+"icindekiler_adi": "Reel Say\u0131lar",
+"sayfalar": [
+180,
+183
+]
+},
+{
+"kod": "MAT-ACL20T-B06-K01",
+"bolum": "MAT-ACL20T-B06",
+"ad": "Say\u0131sal Mant\u0131k",
+"icindekiler_adi": "Say\u0131sal Mant\u0131k",
+"sayfalar": [
+184,
+189
+]
+},
+{
+"kod": "MAT-ACL20T-B07-K01",
+"bolum": "MAT-ACL20T-B07",
+"ad": "\u00c7arpanlara Ay\u0131rma",
+"icindekiler_adi": "\u00c7arpanlara Ay\u0131rma",
+"sayfalar": [
+190,
+208
+]
+},
+{
+"kod": "MAT-ACL20T-B08-K01",
+"bolum": "MAT-ACL20T-B08",
+"ad": "Oran-Orant\u0131",
+"icindekiler_adi": "Oran-Orant\u0131",
+"sayfalar": [
+209,
+227
+]
+},
+{
+"kod": "MAT-ACL20T-B08-K02",
+"bolum": "MAT-ACL20T-B08",
+"ad": "Bilin\u00e7li T\u00fcketim Aritmeti\u011fi",
+"icindekiler_adi": "Bilin\u00e7li T\u00fcketim Aritmeti\u011fi",
+"sayfalar": [
+228,
+229
+]
+},
+{
+"kod": "MAT-ACL20T-B09-K01",
+"bolum": "MAT-ACL20T-B09",
+"ad": "Birinci Dereceden Denklemler",
+"icindekiler_adi": "Birinci Dereceden Denklemler",
+"sayfalar": [
+230,
+244
+]
+},
+{
+"kod": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"ad": "Problemler",
+"icindekiler_adi": "Problemler",
+"sayfalar": [
+245,
+292
+]
+},
+{
+"kod": "MAT-ACL20T-B11-K01",
+"bolum": "MAT-ACL20T-B11",
+"ad": "Sembolik Mant\u0131k",
+"icindekiler_adi": "Sembolik Mant\u0131k",
+"sayfalar": [
+293,
+306
+]
+},
+{
+"kod": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"ad": "K\u00fcmeler-Kartezyen \u00c7arp\u0131m",
+"icindekiler_adi": "K\u00fcmeler-Kartezyen \u00c7arp\u0131m",
+"sayfalar": [
+307,
+331
+]
+},
+{
+"kod": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"ad": "Fonksiyonlar",
+"icindekiler_adi": "Fonksiyonlar",
+"sayfalar": [
+332,
+361
+]
+},
+{
+"kod": "MAT-ACL20T-B14-K01",
+"bolum": "MAT-ACL20T-B14",
+"ad": "Polinomlar",
+"icindekiler_adi": "Polinomlar",
+"sayfalar": [
+362,
+374
+]
+},
+{
+"kod": "MAT-ACL20T-B15-K01",
+"bolum": "MAT-ACL20T-B15",
+"ad": "\u0130kinci Dereceden Denklemler",
+"icindekiler_adi": "\u0130kinci Dereceden Denklemler",
+"sayfalar": [
+375,
+378
+]
+},
+{
+"kod": "MAT-ACL20T-B16-K01",
+"bolum": "MAT-ACL20T-B16",
+"ad": "Perm\u00fctasyon",
+"icindekiler_adi": "Perm\u00fctasyon",
+"sayfalar": [
+379,
+391
+]
+},
+{
+"kod": "MAT-ACL20T-B16-K02",
+"bolum": "MAT-ACL20T-B16",
+"ad": "Kombinasyon",
+"icindekiler_adi": "Kombinasyon",
+"sayfalar": [
+392,
+404
+]
+},
+{
+"kod": "MAT-ACL20T-B16-K03",
+"bolum": "MAT-ACL20T-B16",
+"ad": "Olas\u0131l\u0131k",
+"icindekiler_adi": "Olas\u0131l\u0131k",
+"sayfalar": [
+405,
+416
+]
+},
+{
+"kod": "MAT-ACL20T-B17-K01",
+"bolum": "MAT-ACL20T-B17",
+"ad": "\u0130statistik",
+"icindekiler_adi": "\u0130statistik",
+"sayfalar": [
+417,
+424
+]
+},
+{
+"kod": "MAT-ACL20T-B17-K02",
+"bolum": "MAT-ACL20T-B17",
+"ad": "Grafik",
+"icindekiler_adi": "Grafik",
+"sayfalar": [
+425,
+431
+]
+}
+],
+"test_sayisi": 95,
+"testler": [
+{
+"birim": "ACL20T-T001",
+"test": 1,
+"sayfalar": [
+6,
+7
+],
+"bant": "YEN\u0130 NES\u0130L \u0130\u015eLEM YETENE\u011e\u0130",
+"konu": "MAT-ACL20T-B01-K01",
+"bolum": "MAT-ACL20T-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T002",
+"test": 2,
+"sayfalar": [
+8,
+9,
+10
+],
+"bant": "YEN\u0130 NES\u0130L \u0130\u015eLEM YETENE\u011e\u0130",
+"konu": "MAT-ACL20T-B01-K01",
+"bolum": "MAT-ACL20T-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T003",
+"test": 3,
+"sayfalar": [
+11,
+12,
+13
+],
+"bant": "YEN\u0130 NES\u0130L \u0130\u015eLEM YETENE\u011e\u0130",
+"konu": "MAT-ACL20T-B01-K01",
+"bolum": "MAT-ACL20T-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T004",
+"test": 4,
+"sayfalar": [
+14,
+15,
+16,
+17
+],
+"bant": "YEN\u0130 NES\u0130L \u0130\u015eLEM YETENE\u011e\u0130",
+"konu": "MAT-ACL20T-B01-K01",
+"bolum": "MAT-ACL20T-B01",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T005",
+"test": 5,
+"sayfalar": [
+28,
+29,
+30
+],
+"bant": "KARMA",
+"konu": "MAT-ACL20T-B02-K01",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 17
+},
+{
+"birim": "ACL20T-T006",
+"test": 6,
+"sayfalar": [
+31,
+32
+],
+"bant": "KARMA",
+"konu": "MAT-ACL20T-B02-K01",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T007",
+"test": 7,
+"sayfalar": [
+33,
+34,
+35
+],
+"bant": "KARMA",
+"konu": "MAT-ACL20T-B02-K01",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL20T-T008",
+"test": 8,
+"sayfalar": [
+39,
+40,
+41
+],
+"bant": "BASAMAK KAVRAMI",
+"konu": "MAT-ACL20T-B02-K02",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T009",
+"test": 9,
+"sayfalar": [
+42,
+43
+],
+"bant": "BASAMAK KAVRAMI",
+"konu": "MAT-ACL20T-B02-K02",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T010",
+"test": 10,
+"sayfalar": [
+46,
+47,
+48
+],
+"bant": "B\u00d6LME",
+"konu": "MAT-ACL20T-B02-K03",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T011",
+"test": 11,
+"sayfalar": [
+52,
+53,
+54
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME",
+"konu": "MAT-ACL20T-B02-K04",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T012",
+"test": 12,
+"sayfalar": [
+55,
+56,
+57,
+58
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME",
+"konu": "MAT-ACL20T-B02-K04",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T013",
+"test": 13,
+"sayfalar": [
+61,
+62
+],
+"bant": "FAKT\u00d6R\u0130YEL",
+"konu": "MAT-ACL20T-B02-K05",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL20T-T014",
+"test": 14,
+"sayfalar": [
+67,
+68,
+69
+],
+"bant": "ASAL SAYILAR - ASAL \u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL20T-B02-K06",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T015",
+"test": 15,
+"sayfalar": [
+70,
+71
+],
+"bant": "ASAL SAYILAR - ASAL \u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL20T-B02-K06",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL20T-T016",
+"test": 16,
+"sayfalar": [
+72,
+73
+],
+"bant": "S\u0130H\u0130RL\u0130 SAYILAR",
+"konu": "MAT-ACL20T-B02-K07",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL20T-T017",
+"test": 17,
+"sayfalar": [
+78,
+79,
+80,
+81
+],
+"bant": "EBOB - EKOK",
+"konu": "MAT-ACL20T-B02-K08",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T018",
+"test": 18,
+"sayfalar": [
+82,
+83,
+84
+],
+"bant": "EBOB - EKOK",
+"konu": "MAT-ACL20T-B02-K08",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T019",
+"test": 19,
+"sayfalar": [
+85,
+86,
+87
+],
+"bant": "PER\u0130YOD\u0130K PROBLEMLER",
+"konu": "MAT-ACL20T-B02-K09",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T020",
+"test": 20,
+"sayfalar": [
+88,
+89,
+90
+],
+"bant": "PER\u0130YOD\u0130K PROBLEMLER",
+"konu": "MAT-ACL20T-B02-K09",
+"bolum": "MAT-ACL20T-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T021",
+"test": 21,
+"sayfalar": [
+98,
+99,
+100
+],
+"bant": "RASYONEL VE ONDALIKLI SAYILAR",
+"konu": "MAT-ACL20T-B03-K01",
+"bolum": "MAT-ACL20T-B03",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T022",
+"test": 22,
+"sayfalar": [
+101,
+102,
+103
+],
+"bant": "RASYONEL VE ONDALIKLI SAYILAR",
+"konu": "MAT-ACL20T-B03-K01",
+"bolum": "MAT-ACL20T-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T023",
+"test": 23,
+"sayfalar": [
+104,
+105,
+106
+],
+"bant": "RASYONEL VE ONDALIKLI SAYILAR",
+"konu": "MAT-ACL20T-B03-K01",
+"bolum": "MAT-ACL20T-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T024",
+"test": 24,
+"sayfalar": [
+107,
+108,
+109
+],
+"bant": "RASYONEL VE ONDALIKLI SAYILAR",
+"konu": "MAT-ACL20T-B03-K01",
+"bolum": "MAT-ACL20T-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T025",
+"test": 25,
+"sayfalar": [
+117,
+118,
+119
+],
+"bant": "BAS\u0130T E\u015e\u0130TS\u0130ZL\u0130K",
+"konu": "MAT-ACL20T-B04-K01",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T026",
+"test": 26,
+"sayfalar": [
+120,
+121
+],
+"bant": "BAS\u0130T E\u015e\u0130TS\u0130ZL\u0130K",
+"konu": "MAT-ACL20T-B04-K01",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T027",
+"test": 27,
+"sayfalar": [
+122,
+123,
+124
+],
+"bant": "BAS\u0130T E\u015e\u0130TS\u0130ZL\u0130K",
+"konu": "MAT-ACL20T-B04-K01",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T028",
+"test": 28,
+"sayfalar": [
+125,
+126,
+127
+],
+"bant": "BAS\u0130T E\u015e\u0130TS\u0130ZL\u0130K",
+"konu": "MAT-ACL20T-B04-K01",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T029",
+"test": 29,
+"sayfalar": [
+135,
+136
+],
+"bant": "MUTLAK DE\u011eER",
+"konu": "MAT-ACL20T-B04-K02",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T030",
+"test": 30,
+"sayfalar": [
+137,
+138,
+139
+],
+"bant": "MUTLAK DE\u011eER",
+"konu": "MAT-ACL20T-B04-K02",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T031",
+"test": 31,
+"sayfalar": [
+140,
+141
+],
+"bant": "MUTLAK DE\u011eER",
+"konu": "MAT-ACL20T-B04-K02",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T032",
+"test": 32,
+"sayfalar": [
+142,
+143
+],
+"bant": "MUTLAK DE\u011eER",
+"konu": "MAT-ACL20T-B04-K02",
+"bolum": "MAT-ACL20T-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL20T-T033",
+"test": 33,
+"sayfalar": [
+151,
+152,
+153
+],
+"bant": "\u00dcSL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K01",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T034",
+"test": 34,
+"sayfalar": [
+154,
+155,
+156
+],
+"bant": "\u00dcSL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K01",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T035",
+"test": 35,
+"sayfalar": [
+157,
+158,
+159
+],
+"bant": "\u00dcSL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K01",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T036",
+"test": 36,
+"sayfalar": [
+160,
+161
+],
+"bant": "\u00dcSL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K01",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL20T-T037",
+"test": 37,
+"sayfalar": [
+168,
+169,
+170
+],
+"bant": "K\u00d6KL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K02",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T038",
+"test": 38,
+"sayfalar": [
+171,
+172,
+173
+],
+"bant": "K\u00d6KL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K02",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T039",
+"test": 39,
+"sayfalar": [
+174,
+175,
+176
+],
+"bant": "K\u00d6KL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K02",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T040",
+"test": 40,
+"sayfalar": [
+177,
+178,
+179
+],
+"bant": "K\u00d6KL\u00dc SAYILAR",
+"konu": "MAT-ACL20T-B05-K02",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T041",
+"test": 41,
+"sayfalar": [
+182,
+183
+],
+"bant": "REEL SAYILAR",
+"konu": "MAT-ACL20T-B05-K03",
+"bolum": "MAT-ACL20T-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T042",
+"test": 42,
+"sayfalar": [
+185,
+186
+],
+"bant": "SAYISAL MANTIK",
+"konu": "MAT-ACL20T-B06-K01",
+"bolum": "MAT-ACL20T-B06",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL20T-T043",
+"test": 43,
+"sayfalar": [
+187,
+188,
+189
+],
+"bant": "SAYISAL MANTIK",
+"konu": "MAT-ACL20T-B06-K01",
+"bolum": "MAT-ACL20T-B06",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T044",
+"test": 44,
+"sayfalar": [
+197,
+198,
+199
+],
+"bant": "\u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL20T-B07-K01",
+"bolum": "MAT-ACL20T-B07",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T045",
+"test": 45,
+"sayfalar": [
+200,
+201,
+202
+],
+"bant": "\u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL20T-B07-K01",
+"bolum": "MAT-ACL20T-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T046",
+"test": 46,
+"sayfalar": [
+203,
+204,
+205
+],
+"bant": "\u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL20T-B07-K01",
+"bolum": "MAT-ACL20T-B07",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T047",
+"test": 47,
+"sayfalar": [
+206,
+207,
+208
+],
+"bant": "\u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL20T-B07-K01",
+"bolum": "MAT-ACL20T-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T048",
+"test": 48,
+"sayfalar": [
+216,
+217,
+218
+],
+"bant": "ORAN - ORANTI",
+"konu": "MAT-ACL20T-B08-K01",
+"bolum": "MAT-ACL20T-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T049",
+"test": 49,
+"sayfalar": [
+219,
+220,
+221
+],
+"bant": "ORAN - ORANTI",
+"konu": "MAT-ACL20T-B08-K01",
+"bolum": "MAT-ACL20T-B08",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T050",
+"test": 50,
+"sayfalar": [
+222,
+223,
+224
+],
+"bant": "ORAN - ORANTI",
+"konu": "MAT-ACL20T-B08-K01",
+"bolum": "MAT-ACL20T-B08",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T051",
+"test": 51,
+"sayfalar": [
+225,
+226,
+227
+],
+"bant": "ORAN - ORANTI",
+"konu": "MAT-ACL20T-B08-K01",
+"bolum": "MAT-ACL20T-B08",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T052",
+"test": 52,
+"sayfalar": [
+228,
+229
+],
+"bant": "B\u0130L\u0130N\u00c7L\u0130 T\u00dcKET\u0130M AR\u0130TMET\u0130\u011e\u0130",
+"konu": "MAT-ACL20T-B08-K02",
+"bolum": "MAT-ACL20T-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL20T-T053",
+"test": 53,
+"sayfalar": [
+236,
+237,
+238
+],
+"bant": "B\u0130R\u0130NC\u0130 DERECEDEN DENKLEMLER",
+"konu": "MAT-ACL20T-B09-K01",
+"bolum": "MAT-ACL20T-B09",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T054",
+"test": 54,
+"sayfalar": [
+239,
+240,
+241
+],
+"bant": "B\u0130R\u0130NC\u0130 DERECEDEN DENKLEMLER",
+"konu": "MAT-ACL20T-B09-K01",
+"bolum": "MAT-ACL20T-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T055",
+"test": 55,
+"sayfalar": [
+242,
+243,
+244
+],
+"bant": "B\u0130R\u0130NC\u0130 DERECEDEN DENKLEMLER",
+"konu": "MAT-ACL20T-B09-K01",
+"bolum": "MAT-ACL20T-B09",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T056",
+"test": 56,
+"sayfalar": [
+263,
+264,
+265
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T057",
+"test": 57,
+"sayfalar": [
+266,
+267,
+268
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL20T-T058",
+"test": 58,
+"sayfalar": [
+269,
+270,
+271
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL20T-T059",
+"test": 59,
+"sayfalar": [
+272,
+273,
+274
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T060",
+"test": 60,
+"sayfalar": [
+275,
+276,
+277
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T061",
+"test": 61,
+"sayfalar": [
+278,
+279,
+280
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T062",
+"test": 62,
+"sayfalar": [
+281,
+282,
+283,
+284
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T063",
+"test": 63,
+"sayfalar": [
+285,
+286,
+287
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T064",
+"test": 64,
+"sayfalar": [
+288,
+289,
+290
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL20T-T065",
+"test": 65,
+"sayfalar": [
+291,
+292
+],
+"bant": "PROBLEMLER",
+"konu": "MAT-ACL20T-B10-K01",
+"bolum": "MAT-ACL20T-B10",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T066",
+"test": 66,
+"sayfalar": [
+300,
+301
+],
+"bant": "SEMBOL\u0130K MANTIK",
+"konu": "MAT-ACL20T-B11-K01",
+"bolum": "MAT-ACL20T-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T067",
+"test": 67,
+"sayfalar": [
+302,
+303
+],
+"bant": "SEMBOL\u0130K MANTIK",
+"konu": "MAT-ACL20T-B11-K01",
+"bolum": "MAT-ACL20T-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T068",
+"test": 68,
+"sayfalar": [
+304,
+305,
+306
+],
+"bant": "SEMBOL\u0130K MANTIK",
+"konu": "MAT-ACL20T-B11-K01",
+"bolum": "MAT-ACL20T-B11",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL20T-T069",
+"test": 69,
+"sayfalar": [
+314,
+315,
+316
+],
+"bant": "K\u00dcMELER",
+"konu": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T070",
+"test": 70,
+"sayfalar": [
+317,
+318,
+319
+],
+"bant": "K\u00dcMELER",
+"konu": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T071",
+"test": 71,
+"sayfalar": [
+320,
+321,
+322
+],
+"bant": "K\u00dcMELER",
+"konu": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T072",
+"test": 72,
+"sayfalar": [
+323,
+324,
+325
+],
+"bant": "K\u00dcMELER",
+"konu": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T073",
+"test": 73,
+"sayfalar": [
+326,
+327,
+328
+],
+"bant": "K\u00dcMELER",
+"konu": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T074",
+"test": 74,
+"sayfalar": [
+331
+],
+"bant": "KARTEZYEN \u00c7ARPIM",
+"konu": "MAT-ACL20T-B12-K01",
+"bolum": "MAT-ACL20T-B12",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL20T-T075",
+"test": 75,
+"sayfalar": [
+347,
+348
+],
+"bant": "FONKS\u0130YONLAR",
+"konu": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T076",
+"test": 76,
+"sayfalar": [
+349,
+350
+],
+"bant": "FONKS\u0130YONLAR",
+"konu": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL20T-T077",
+"test": 77,
+"sayfalar": [
+351,
+352,
+353
+],
+"bant": "FONKS\u0130YONLAR",
+"konu": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T078",
+"test": 78,
+"sayfalar": [
+354,
+355
+],
+"bant": "FONKS\u0130YONLAR",
+"konu": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T079",
+"test": 79,
+"sayfalar": [
+356,
+357,
+358
+],
+"bant": "FONKS\u0130YONLAR",
+"konu": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T080",
+"test": 80,
+"sayfalar": [
+359,
+360,
+361
+],
+"bant": "FONKS\u0130YONLAR",
+"konu": "MAT-ACL20T-B13-K01",
+"bolum": "MAT-ACL20T-B13",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T081",
+"test": 81,
+"sayfalar": [
+367,
+368,
+369
+],
+"bant": "POL\u0130NOMLAR",
+"konu": "MAT-ACL20T-B14-K01",
+"bolum": "MAT-ACL20T-B14",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL20T-T082",
+"test": 82,
+"sayfalar": [
+370,
+371
+],
+"bant": "POL\u0130NOMLAR",
+"konu": "MAT-ACL20T-B14-K01",
+"bolum": "MAT-ACL20T-B14",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T083",
+"test": 83,
+"sayfalar": [
+372,
+373,
+374
+],
+"bant": "POL\u0130NOMLAR",
+"konu": "MAT-ACL20T-B14-K01",
+"bolum": "MAT-ACL20T-B14",
+"soru_sayisi": 17
+},
+{
+"birim": "ACL20T-T084",
+"test": 84,
+"sayfalar": [
+376,
+377,
+378
+],
+"bant": "\u0130K\u0130NC\u0130 DERECEDEN DENKLEMLER",
+"konu": "MAT-ACL20T-B15-K01",
+"bolum": "MAT-ACL20T-B15",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL20T-T085",
+"test": 85,
+"sayfalar": [
+385,
+386,
+387,
+388
+],
+"bant": "PERM\u00dcTASYON",
+"konu": "MAT-ACL20T-B16-K01",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 18
+},
+{
+"birim": "ACL20T-T086",
+"test": 86,
+"sayfalar": [
+389,
+390,
+391
+],
+"bant": "PERM\u00dcTASYON",
+"konu": "MAT-ACL20T-B16-K01",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL20T-T087",
+"test": 87,
+"sayfalar": [
+400,
+401
+],
+"bant": "KOMB\u0130NASYON",
+"konu": "MAT-ACL20T-B16-K02",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T088",
+"test": 88,
+"sayfalar": [
+402,
+403,
+404
+],
+"bant": "KOMB\u0130NASYON",
+"konu": "MAT-ACL20T-B16-K02",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL20T-T089",
+"test": 89,
+"sayfalar": [
+409,
+410,
+411
+],
+"bant": "OLASILIK",
+"konu": "MAT-ACL20T-B16-K03",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T090",
+"test": 90,
+"sayfalar": [
+412,
+413,
+414
+],
+"bant": "OLASILIK",
+"konu": "MAT-ACL20T-B16-K03",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL20T-T091",
+"test": 91,
+"sayfalar": [
+415,
+416
+],
+"bant": "OLASILIK",
+"konu": "MAT-ACL20T-B16-K03",
+"bolum": "MAT-ACL20T-B16",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL20T-T092",
+"test": 92,
+"sayfalar": [
+420,
+421,
+422
+],
+"bant": "\u0130STAT\u0130ST\u0130K",
+"konu": "MAT-ACL20T-B17-K01",
+"bolum": "MAT-ACL20T-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T093",
+"test": 93,
+"sayfalar": [
+423,
+424
+],
+"bant": "\u0130STAT\u0130ST\u0130K",
+"konu": "MAT-ACL20T-B17-K01",
+"bolum": "MAT-ACL20T-B17",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL20T-T094",
+"test": 94,
+"sayfalar": [
+425,
+426,
+427
+],
+"bant": "GRAF\u0130KLER",
+"konu": "MAT-ACL20T-B17-K02",
+"bolum": "MAT-ACL20T-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL20T-T095",
+"test": 95,
+"sayfalar": [
+428,
+429,
+430,
+431
+],
+"bant": "GRAF\u0130KLER",
+"konu": "MAT-ACL20T-B17-K02",
+"bolum": "MAT-ACL20T-B17",
+"soru_sayisi": 13
+}
+]
+}

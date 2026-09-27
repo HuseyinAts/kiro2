@@ -1,0 +1,3226 @@
+{
+ "kitap": "2019-2020 ACIL TYT Matematik Soru Bankasi",
+ "on_kayit_tarihi": "2026-09-27",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3. KMT345'te %4.7, SOS345'te %5.9, TRT345'te %4.0 idi; matematikte tek rakam / isaret sorunun anlamini degistirir. Bu yuzden dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 29 ayri okuyucu; ayni talimat (yalniz teslim dizini ak_metin_parca2), ayni gruplar ve kirpimlar. Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (bosluk, satir sonu, eksi/tire tipi, carpma noktasi tipi) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret (+, -, carpma, bolme, esitsizlik), us / kok / kesir kapsami, parantez, harf / degisken, eksik/fazla kelime veya satir, yanlis sik, alti cizili kapsam, eksik etiket.",
+ "sonuc": {
+  "soru": 1203,
+  "ayni_soru_normalize": 1043,
+  "farkli_soru": 160,
+  "hukum_dagilimi": {
+   "okuma_2": 50,
+   "yok": 51,
+   "okuma_1": 50,
+   "ikisi": 9
+  },
+  "ilk_okuma_esasli_hata": 59,
+  "ikinci_okuma_esasli_hata": 59,
+  "not": "Normalizasyon: NFC, kesme/tirnak tipi, eksi/tire tipi (U+2212/2013/2014 -> -), U+22C5 -> orta nokta, uc nokta, tek karakterli us/indis parantezi (x^(2) = x^2), (gorsel)/(sekil) yer tutucusu ve TUM bosluk/satir kirilimi (yalniz bosluk farki olan 67 soru ayni sayildi). Her fark 6 hakem tarafindan kirpimdan gozle (4-14x, piksel dokumu) karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer. Rakam, isaret, us/indis, parantez, noktalama, eksik/fazla ifade, sorunun dayandigi sekil/tablo verisi ve gereksiz/eksik [??] esasli sayildi; kitabin dizgi yanlislari basildigi gibi korundu. Iki okumanin AYNI bicimde atladigi sekil verisi karsilastirmada gorunmez; bu sinir YONTEM belgesinde yazilidir."
+ },
+ "hukumler": [
+  {
+   "dosya": "ACL20T-T001_11",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kirpimda 3. kutu (eksiden sonraki) ici pembe DOLU, digerleri bos cerceveli; soru 'boyali kutu'yu soruyor, okuma_2 bunu bos \u25a1 yazmis. Kutular yer tutucu sembol, ayri sekil/cizim yok -> sekil_var false."
+  },
+  {
+   "dosya": "ACL20T-T001_12",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo k\u00f6\u015fe glifi 1x piksel d\u00f6k\u00fcm\u00fcnde 11 sat\u0131r y\u00fcksek, alt kenar\u0131 rakam '4' ile ayn\u0131 taban \u00e7izgisinde (y\u224898), eksen ortas\u0131nda de\u011fil: harf 'x' bi\u00e7imi. x/\u00d7 yaln\u0131z g\u00f6sterim varyant\u0131, i\u00e7erik ayn\u0131."
+  },
+  {
+   "dosya": "ACL20T-T002_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kirpim 3x: m n/p kirmizi kutu icinde, 2m+n-p ve b mavi ust cizgi+sag dikey cerceveli; alttaki -2 -2/-2 ic ice ikinci kirmizi kutuda. Soru bu kutu/cerceve islemlerine dayaniyor; okuma_2 kutu/cerceve yapisini (ic ice kutu, b'nin cercevesi) tamamen dusurmus, 'b = 3b - 1' anlamsizlasmis."
+  },
+  {
+   "dosya": "ACL20T-T002_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Hesap makinesi ekranindaki '456' sorunun dayandigi sonuc (sekildeki sonuc) -> govdeye girer; okuma_2 atlamis. C sikki 8x NEAREST: glif taban cizgisine oturan x-yuksekliginde harf 'x' (tus uzerindeki 'x' ile ayni), carpi isareti degil."
+  },
+  {
+   "dosya": "ACL20T-T002_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST: x, 10, 40, 200 ustunde yatay ust cizgi var (x'te soluk ama gorunur); sembol sagda noktali ters kok kancasi. okuma_2 ust cizgiyi (basamak gosterimi (x)) dusurmus; okuma_1 sozlesmeye uygun."
+  },
+  {
+   "dosya": "ACL20T-T003_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kirpimda ok semasinin ustunde '(6 ile carp) (5 cikar) (2 ile carp) (7 ile bol)', solda 'x', sagda '14' basili; govde 'yukaridaki islemler' diyerek bu veriye dayaniyor. okuma_1 sema yazisini atlamis (eksik veri); okuma_2 dogru."
+  },
+  {
+   "dosya": "ACL20T-T003_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Iki tartinin ekraninda 'kg 72.0' ve 'kg 62.0' basili; soru bu iki degere dayaniyor (a, b). okuma_2 bu veriyi govdeye yazmamis."
+  },
+  {
+   "dosya": "ACL20T-T003_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "\u015eekilde toplar aras\u0131 i\u015flemler (+ \u00d7 \u00f7) ve top say\u0131lar\u0131 (6 k 3 5) soru kural\u0131n\u0131n dayand\u0131\u011f\u0131 veri; okuma_1 bunlar\u0131 atlam\u0131\u015f. 'Toplar\u0131' sonras\u0131 8x b\u00fcy\u00fctmede kesik harf par\u00e7as\u0131 (x\u2248598 gri iz) + beyaz daire: [??] korunur."
+  },
+  {
+   "dosya": "ACL20T-T004_16",
+   "esasli_hata": "okuma_2",
+   "gerekce": "D ussu 12x/8x: sol dikey govde ustten kapali alt halkaya kesintisiz iniyor, A sikkindaki 10^6'nin 6'si ile ayni sekil; 5'in duz ust cizgisi/sol boslu\u011fu yok. 6."
+  },
+  {
+   "dosya": "ACL20T-T005_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 2 sonu 8x + piksel dokumu: 'ogrenci' x=607'de, diger iki yana yasli satirlarla ayni sag marjda bitiyor; daire marjin disinda (x>=610, yalniz soluk golge), sonraki satir yeni kelime 'katilmistir' -> [??] gereksiz."
+  },
+  {
+   "dosya": "ACL20T-T005_09",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda A kutucugu isaretli (onay imi) gorunuyor; okuma_1 \u2611 ile vermis. Isaretli oldugu bilgisi govdede ('Onur'un isaretledigi A bolumu') zaten var; salt bicim farki."
+  },
+  {
+   "dosya": "ACL20T-T005_17",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde ustte 'a, b, c, d, e' virgullu harfler, oklarla altta '1 4 0 3 2'. Iki okuma da ayni icerigi tasiyor; fark yalniz ust satirin ' | ' ya da ', ' ile ayrilmasi (bicim). Sozlesmedeki ' | ' satir bicimi (okuma_1) korundu."
+  },
+  {
+   "dosya": "ACL20T-T006_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "C sikki piksel dokumu: 'II' cubuklari x600-607, ucuncu I cubugunun gelecegi x610-612 bembeyaz; x614-621'deki iz <245 acik gri, daire kenari. Yazi dairenin onunde tamam -> [??] gereksiz."
+  },
+  {
+   "dosya": "ACL20T-T008_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x + piksel d\u00f6k\u00fcm\u00fc: '12' tam, '2' sa\u011f\u0131nda kesik m\u00fcrekkep par\u00e7as\u0131 yok; sa\u011fdaki gri '\u203e' izi T003'te bo\u015f alanda da g\u00f6r\u00fclen daire kal\u0131nt\u0131s\u0131yla ayn\u0131 bi\u00e7imde. Daire x\u2265608'de, metin s\u00fctunu sa\u011f s\u0131n\u0131r\u0131 \u2248607 (T012 'E) 10' da ayn\u0131 yerde bitiyor). Gereksiz [??]."
+  },
+  {
+   "dosya": "ACL20T-T009_06",
+   "esasli_hata": "yok",
+   "gerekce": "Sembol 8x: mavi, ici acik cizgili yildiz; sozlesmedeki yildiz yer tutucu '\u2606'. \u2606/\u2605 yalniz bicim varyanti."
+  },
+  {
+   "dosya": "ACL20T-T010_02",
+   "esasli_hata": "yok",
+   "gerekce": "'1. Klavye' / '2. Klavye' sekil altinda ayri etiket satiri olarak basili, iki nokta yok; okuma_1'in ':' ile birlestirmesi bicim varyanti. Nihai basili duzen (okuma_2)."
+  },
+  {
+   "dosya": "ACL20T-T011_13",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel dokumu: B, 3, 3, 7 ustundeki kucuk simge kapali daire degil, sagi acik egri (ust ve alt uc sagda, orta-sag bosluk) = 'c' bicimi. \u25cb (kapali) okumasi pikselle uyusmuyor. Simge cok kucuk; en iyi okuma c."
+  },
+  {
+   "dosya": "ACL20T-T011_14",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'toplayinca x' sonrasi isaret piksel dokumunde satir 381-384'te tek kompakt leke, taban cizgisinin altina inen kuyruk yok (385 tamamen beyaz); ayni kirpimdaki 'Asuman,' virgulu 356-357'de asagi-sola kuyruk yapiyor. Basili isaret nokta: 'x.' (dizgi hatasi basildigi gibi). okuma_1 virgul yazmis."
+  },
+  {
+   "dosya": "ACL20T-T012_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Islem sembolu 4 yerde de ici DOLU pembe ucgen (\u25b2); okuma_1 bos ucgen \u25b3 yazmis."
+  },
+  {
+   "dosya": "ACL20T-T012_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "4x b\u00fcy\u00fctme: bas\u0131l\u0131 'd\u00f6n\u00fc\u015ft\u00fcr\u00fcrerek' (dizgi hatas\u0131, korunur); okuma_1 'd\u00f6n\u00fc\u015ft\u00fcrerek' d\u00fczeltmi\u015f. 'g\u00f6r\u00fcnt' sonras\u0131 1x d\u00f6k\u00fcmde \u00fc'n\u00fcn sol sap\u0131 + noktas\u0131 g\u00f6r\u00fcn\u00fcyor, gerisi daire alt\u0131nda: 'g\u00f6r\u00fcnt[??]s\u00fc' (kelime i\u00e7i, bo\u015fluksuz)."
+  },
+  {
+   "dosya": "ACL20T-T015_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "\u221a111 ile 10 arasi piksel dokumu: rakam yuksekligi y110-125, yalniz y122-123'te 11 px DUZ yatay cizgi (= isaretinin alt cubugu hizasinda; dalga yok). Ust cubuk basilmamis/soluk; \u2248 dalgasi hic gorulmuyor. En iyi okuma '='; guven orta."
+  },
+  {
+   "dosya": "ACL20T-T015_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Ikinci tablo (kaydirma ornegi, kesisim bolgesi kodu 1 1 1 0 2 0 2 0) soru metninin 'Sekildeki mavi renkli bolge' diye dayandigi veri; kirpimda okuma_1'deki hucreler birebir dogrulandi (ust satir 2 bos + 1..10, alt satir 11..20 + 2 bos). okuma_2 tabloyu atlamis."
+  },
+  {
+   "dosya": "ACL20T-T016_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel dokumu (x575-616,y8-30): 'Sophi' sonrasinda e'nin sol yarisi ve yatay ara cizgisi (satir 18-19) gorunuyor, sag yarisi beyaz dairede kesik. Gorunen kisim 'Sophie' + harf kesik -> [??]. okuma_2 gorunen e'yi dusurmus."
+  },
+  {
+   "dosya": "ACL20T-T016_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "4x buyutmede yalniz 'en az' altinda cizgi var; 'yazilabilir' kelimesinin altinda (y~400-406) murekkep yok. okuma_2 fazladan <u>yazilabilir</u> vurgusu eklemis."
+  },
+  {
+   "dosya": "ACL20T-T018_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu piksel dokumu: 've' sonrasi x592-601'de yalniz yuvarlak bir harfin SOL yayi, x602'de keskin kesiliyor (beyaz daire). Tam 'C' (satir basindaki C x110-125) sag uclari x603-607'de olmaliydi, gorunmuyor; sol yay C/G/O icin ayni -> harf belirlenemez, 'C' yazmak tamamlamadir. Nihai 've [??]'."
+  },
+  {
+   "dosya": "ACL20T-T021_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Tablo \u00fcst\u00fc s\u00fctun say\u0131lar\u0131 (3 2 3 3 1), sol sat\u0131r say\u0131lar\u0131 (4 3 2 3) ve taral\u0131 kareler (1.sat\u0131r 2.s\u00fctun, 2.sat\u0131r 5.s\u00fctun, 3.sat\u0131r 2.s\u00fctun) sorunun dayand\u0131\u011f\u0131 veri; g\u00f6r\u00fcnt\u00fcyle okuma_1 tablosu uyumlu, okuma_2 tamamen atlam\u0131\u015f."
+  },
+  {
+   "dosya": "ACL20T-T021_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Ilk isaret 8x: yatay cubugu kesen ince, soluk ama surekli dikey cizgi; ust/alt uzanimi ikinci '+' ile ayni (y25-35). \u00f7'nin ayri yuvarlak noktalari yok. '+'."
+  },
+  {
+   "dosya": "ACL20T-T021_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 2 sonu 8x + piksel dokumu: 'kena' sonrasi x=602-605'te yalniz soluk bir dikey sap (x-yuksekliginde, kol gorunmuyor), ardindan daire golgesi. Harf kimligi (r/n/m/i) pikselden kesinlesmiyor; 'r' yazmak tamamlama -> 'kena[??]'."
+  },
+  {
+   "dosya": "ACL20T-T022_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel dokumu: 'ayr\u0131lm' sonrasinda noktasiz ince dikey govde (\u0131, x~590) ve sagda kesik iz; sonra beyaz daire. Alt satir 't\u0131r.' ile basliyor, tireleme yok. Gorunen 'ayr\u0131lm\u0131' + [??]; okuma_2 \u0131'yi dusurmus."
+  },
+  {
+   "dosya": "ACL20T-T023_02",
+   "esasli_hata": "ikisi",
+   "gerekce": "Soru tamamen sekle dayaniyor: tanim dairesinde ustte 'a', altta 'b'; istenen ifadede buyuk dairenin ust yarisindaki kucuk dairede '3' / '9', alt yarisindakinde '5' / '9' basili. okuma_1 sekil yazisini ve yer tutucuyu tamamen atlamis; okuma_2 '(\u015fekil)' yer tutucusu koyup sayilari yazmamis. Talimat geregi sekil ici veri kisa satirlarla govdeye alindi."
+  },
+  {
+   "dosya": "ACL20T-T023_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu piksel: 'b' (x585-596) sonrasi x597-600'de i noktasi (y9-11, deger 73) ve kesik govde (y14-17) -> gorunen 'bi', sonra daire. okuma_2 'i'yi atlamis."
+  },
+  {
+   "dosya": "ACL20T-T023_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x + d\u00f6k\u00fcm: devir \u00e7izgisi x\u224896-109, '8' x\u224885-97, '9' x\u224898-109: \u00e7izgi yaln\u0131z 9'un \u00fcst\u00fcnde (8'e 1-2 px ta\u015f\u0131yor). Virg\u00fclden sonra bo\u015fluk bas\u0131l\u0131. Do\u011frusu '1, 8(9)'."
+  },
+  {
+   "dosya": "ACL20T-T024_03",
+   "esasli_hata": "ikisi",
+   "gerekce": "36 ile 345/11 arasi ham piksel: x210-223, y428-429'da 14 px'lik cok soluk (251/255) yatay iz, matematik ekseni hizasinda; ayni yogunlukta dikey (+) ya da nokta (\u00f7) izi yok -> '\u2212'. okuma_1 isareti tamamen atlamis, okuma_2 gorunen izi [??] yapmis. Uzun bolme semasi sekil -> sekil_var true (okuma_2 false yanlis)."
+  },
+  {
+   "dosya": "ACL20T-T024_11",
+   "esasli_hata": "yok",
+   "gerekce": "10x NEAREST: yildizlar ici dolu mavi -> '\u2605' basildigi gibi; ayni simge, bicim varyanti."
+  },
+  {
+   "dosya": "ACL20T-T025_07",
+   "esasli_hata": "ikisi",
+   "gerekce": "Piksel dokumu (x555-616,y6-30): 'sor' sonrasinda son harfin sol govdesi ve alt sag kavisi var (u), sag govdesi beyaz dairede silinmis -> harf kesik, [??] gerekli. okuma_1 gorunen yarim u'yu yazmamis; okuma_2 kelimeyi tamamlayip [??]'i atmis."
+  },
+  {
+   "dosya": "ACL20T-T025_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir basinda metin icinde alti simge basili: kirmizi ucgen, turuncu besgen, yesil ucgen, mor daire, kisa sari cubuk, uzun mavi cubuk. okuma_1 bunlari sozlesmedeki yer tutucu simgelerle yazmis; okuma_2 '(\u015fekiller)' ile icerigi atlamis."
+  },
+  {
+   "dosya": "ACL20T-T026_04",
+   "esasli_hata": "yok",
+   "gerekce": "Tabloda 'Varis Noktasi' ustte, 'Kalkis Noktasi' solda dikey basili; iki okuma ayni yazilari ve hucreleri veriyor, yalniz baslik yerlesimi farkli (bicim)."
+  },
+  {
+   "dosya": "ACL20T-T027_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x: 1. madde 'kat\u0131,' i\u015fareti taban \u00e7izgisi alt\u0131na iniyor (virg\u00fcl); 2. maddede 'kat\u0131.' i\u015fareti taban \u00e7izgisinde bitiyor, kuyruk yok: nokta (dizgi hatas\u0131, korunur)."
+  },
+  {
+   "dosya": "ACL20T-T027_08",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo basliklari (Konuk Takim ustte, Ev Sahibi Takim solda dikey) iki okumada da var; yalniz yerlestirme bicimi farki. Hucre verileri ayni."
+  },
+  {
+   "dosya": "ACL20T-T027_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "III. oncul ussu 12x NEAREST + LANCZOS + piksel dokumu: ust halka iki yandan kapali (y218-221 sag kenarda murekkep), alt halkadan dar, ortada capraz gecis -> '8'; '6'nin ust sag acikligi yok. Glif bozuk basili, en iyi okuma 8."
+  },
+  {
+   "dosya": "ACL20T-T027_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "5-6x: alt cizgi 'olmam\u0131\u015f-' altinda ve alt satirda 't\u0131r' altinda da (soluk ama gorunur) devam ediyor; kapsam tum kelime 'olmam\u0131\u015ft\u0131r'. okuma_1 kapsami 'olmam\u0131\u015f' ile sinirlamis."
+  },
+  {
+   "dosya": "ACL20T-T028_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Siklar sayi dogrusu cizimi ve altinda yazi: A/B/C '-12' ve '15', D/E '0' ve '15' basili. Sozlesme 'Cizim + yazi ise (g\u00f6rsel \u015f\u0131k) <yaz\u0131>' diyor; okuma_2 yazilari atlamis."
+  },
+  {
+   "dosya": "ACL20T-T029_05",
+   "esasli_hata": "ikisi",
+   "gerekce": "Islem satiri (4x + sutun min dokumu): c-a, a-d, b-d bosluklarinda ve \u221ac^2 onunde ayni uzunlukta (~14px) y=428'de soluk yatay cizgi (deger ~250) = eksi; '+' yalniz dikey cubugu koyu, yatayi ayni soluk tonda -> isaretler okunuyor, [??] gereksiz (okuma_1 hatasi). 'birinci' sonrasi isaret x250-253 y252-256, taban cizgisinin altina inmiyor (metindeki virguller 3px iner) -> nokta; okuma_2 virgul yazmis."
+  },
+  {
+   "dosya": "ACL20T-T029_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x + d\u00f6k\u00fcm: '2.4' sonras\u0131 i\u015faret ondal\u0131k noktalardan (3-4 sat\u0131r) uzun, taban \u00e7izgisinin alt\u0131na iniyor; '2.33,' virg\u00fcl\u00fcyle ayn\u0131 tip: virg\u00fcl. 'a TL' / 'b TL' etiketleri |ax \u2212 bx| ifadesindeki a, b'yi tan\u0131ml\u0131yor (veri); okuma_2 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "ACL20T-T030_07",
+   "esasli_hata": "yok",
+   "gerekce": "Kutucuklar x y z / 2 1; iki okuma ayni icerik, ' | ' ayirici yalniz bicim."
+  },
+  {
+   "dosya": "ACL20T-T030_11",
+   "esasli_hata": "yok",
+   "gerekce": "Tus dizilimi tablo sozlesmesine gore ' | ' ile (okuma_1). Ek: alt cizgi piksel dokumu 'en' ve 'fazla' altinda iki ayri cizgi (bosluk alti cizili degil) -> '<u>en</u> <u>fazla</u>'."
+  },
+  {
+   "dosya": "ACL20T-T031_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kirpimda 8 kutu: bos, 8, pembe taral\u0131, bos, bos, 6, bos, pembe taral\u0131. Soru 'taral\u0131 kutulara' dayaniyor; okuma_2 tabloda taralilik bilgisini vermemis (yalniz kaynak_kusuru'nda), okuma_1 veriyor."
+  },
+  {
+   "dosya": "ACL20T-T032_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "3. kutudaki isaret 8x buyutme + piksel dokumu: '|' sonrasinda tek yatay bant (satir 269-274, merkez 270-272, en koyu 181), iki bant arasi bosluk yok. Ayni semadaki 'a = 2' esittiri iki ayri bant (156-157 ve 160-161, arada 158 aydinlik) veriyor. Basili isaret '\u2212'. okuma_2 '=' yazmis. Karar kutulari icin okuma_1'in 'Hay\u0131r:/Evet:' dal eslemesi sekildeki oklarla uyumlu; okuma_2 ayni kelimeleri dalsiz sirada vermis (bicim)."
+  },
+  {
+   "dosya": "ACL20T-T033_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu piksel: 'pizza' sonrasi x586-589'da y9-25 tam boy ust uzantili 'l', ardindan kesik bir harfin sol parcasi ve daire -> gorunen 'pizzal'. okuma_2 'l'yi atlamis."
+  },
+  {
+   "dosya": "ACL20T-T034_03",
+   "esasli_hata": "yok",
+   "gerekce": "Alt ayra\u00e7 alt\u0131nda '29 tane 0' bas\u0131l\u0131; iki okuma ayn\u0131 veriyi farkl\u0131 g\u00f6sterimle veriyor ('alt\u0131nda:' ifadesi bas\u0131l\u0131 de\u011fil). Yaln\u0131z bi\u00e7im."
+  },
+  {
+   "dosya": "ACL20T-T034_05",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda yalniz cerceveli metin kutusu (birim tanimlari, govdeye yazilmis); resim/grafik/tablo yok. Meta alan farki, icerik ayni."
+  },
+  {
+   "dosya": "ACL20T-T034_10",
+   "esasli_hata": "yok",
+   "gerekce": "Kesir 3^10 / 2^5 basili; parantezli/parantezsiz yazim bicim varyanti, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL20T-T034_11",
+   "esasli_hata": "yok",
+   "gerekce": "5x: sembol argumani cevreleyen kirmizi noktali cati; 1/3 cevresinde 2 ic ice sembol (iki okuma da 2). Parantezler basili degil, sembolun kapsamini gosteren bicim tercihi; icerik ayni."
+  },
+  {
+   "dosya": "ACL20T-T035_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru tum terimlerin buyukluklerinin carpimini istiyor; veri sekildeki etiketlerde: '250 nm', '10^-1 nm', '2 nm', '10^-6 nm', '10 nm' ve adlar. Sac Teli ussu 10x buyutme+piksel: ust kivrim, kesintisiz sol kenar, yalniz alt yarida sag kenar ve kapali alt halka = '6'. okuma_2 tum sekil verisini atlamis."
+  },
+  {
+   "dosya": "ACL20T-T035_02",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde ilk kiside 'Bastan 1. kisi' etiketi basili; okuma_2 atlamis. Soru verisi (151 kisi, Bastan 3^n., Sondan 5^n.) bu etikete dayanmiyor, kuyrugun basini gosteren etiket; tamlik icin okuma_1 korundu, esasli hata sayilmadi."
+  },
+  {
+   "dosya": "ACL20T-T035_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x: 've 2' sonras\u0131 '2'nin sa\u011f \u00fcst\u00fcnde (\u00fcs konumunda) kesik koyu par\u00e7a, sonra beyaz daire: \u00fcs var ama okunam\u0131yor, '2^[??]'. okuma_2 \u00fcs konumunu kaybetmi\u015f."
+  },
+  {
+   "dosya": "ACL20T-T035_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 8x + piksel: 'd' + sagi kesik 'c' gorunumlu harf, sag kapanis yok, sonra beyaz daire; alt satir '\u011fal'. Kesik harf o/c belirsiz; okuma_2 'o' yazarak tamamlama yapmis. 'd[??]' dogru."
+  },
+  {
+   "dosya": "ACL20T-T036_02",
+   "esasli_hata": "yok",
+   "gerekce": "Plakalar kutu icinde basili: sozlesmedeki 'kutu icinde sayi [5]' bicimi (okuma_2); oklar altinda iki ayri ifade. Icerik ayni, bicim varyanti."
+  },
+  {
+   "dosya": "ACL20T-T036_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel dokumu: usteki ayirici 2x2 piksellik taban cizgisi noktasi, asagi kuyrugu yok -> nokta (2.7, 3.01, 3.32, 3.63). Sozlesme 'basildigi gibi'; okuma_2 virgul yazmis."
+  },
+  {
+   "dosya": "ACL20T-T037_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde '90 cm' / '12. g\u00fcn sonu' ve '96 cm' / '15. g\u00fcn sonu' basili (8x buyutme; '96'nin 6'si ok cizgisine biniyor ama 6 formunda). Soru bu veriye dayaniyor; okuma_2 atlamis."
+  },
+  {
+   "dosya": "ACL20T-T037_05",
+   "esasli_hata": "yok",
+   "gerekce": "E sikki 6. dereceden kok pi; iki yazim ayni icerik, sozlesme bicimi [n]\u221a(x) (okuma_1)."
+  },
+  {
+   "dosya": "ACL20T-T037_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "C: 8x + d\u00f6k\u00fcm: devir \u00e7izgisi (15 px) '8' \u00fczerinde, '6'n\u0131n yaln\u0131z sa\u011f kenar\u0131na 3-4 px ta\u015f\u0131yor; tek rakam: '7, 6(8)'. D: k\u00f6k \u00e7izgisi yok, radikand yaln\u0131z 0,5; '\u221a0,5' / '\u221a(0,5)' g\u00f6sterim varyant\u0131."
+  },
+  {
+   "dosya": "ACL20T-T037_08",
+   "esasli_hata": "yok",
+   "gerekce": "C: dorduncu dereceden kok 99; parantezli/parantezsiz yazim bicim farki."
+  },
+  {
+   "dosya": "ACL20T-T037_09",
+   "esasli_hata": "yok",
+   "gerekce": "n. dereceden kok sozlesmede '[n]\u221a(x)' (parantezli) -> okuma_1; icerik ayni."
+  },
+  {
+   "dosya": "ACL20T-T037_11",
+   "esasli_hata": "ikisi",
+   "gerekce": "8x + piksel: daireler ve kareler DOLU (\u25cf/\u25a0), okuma_1 \u25cb/\u25a1 yazmis; gri daire ussu: sol ust ilmek soluk ama var -> 9 (\u22129), okuma_1 \u22123. Arka yuz 3. hucre: koyu yatay cubuk + ayni eksende on yuzdeki '+' dikeyi ile ayni boyda (4 satir) soluk dikey iz; kompakt nokta degil -> '+', okuma_2 \u00f7 yazmis. 'soldan sa\u011fa' basili degil (Sol/Sag etiketli oklar)."
+  },
+  {
+   "dosya": "ACL20T-T038_02",
+   "esasli_hata": "ikisi",
+   "gerekce": "Sekil 1/Sekil 2 basliklari ve 'tane' etiketleri soru verisi; okuma_1 hepsini atlamis. Sekil 2 kok indisi 8x NEAREST + 12x bicubic ve piksel dokumu: ~6 px yukseklikte, ust orta nokta, iki yan, orta, iki yan deseni (8/3 benzeri), kok isaretinin kancasiyla birlesik; '4' formu (capraz + yatay cubuk + sag sap) gorulmuyor. Indis okunamadi: nihaide [[??]]; okuma_2'nin '4'u pikselde dogrulanamadi."
+  },
+  {
+   "dosya": "ACL20T-T038_10",
+   "esasli_hata": "yok",
+   "gerekce": "Isaret piksel dokumu: ustte tek dalgali cizgi (y282-284), altta TEK duz cubuk (y289-291) -> basili glif \u2243 benzeri; \u2245'nin iki alt cizgisi yok. Anlam 'yaklasik'; sozlesme tablosu yaklasik icin \u2248 -> okuma_1. Isaret varyanti, icerik farki degil."
+  },
+  {
+   "dosya": "ACL20T-T038_12",
+   "esasli_hata": "yok",
+   "gerekce": "\u00dcs \u00fc\u00e7gen-i\u00e7i-4; '^(\u25b3(4))' / '^\u25b3(4)' yaln\u0131z paranteze alma bi\u00e7imi, i\u00e7erik ayn\u0131."
+  },
+  {
+   "dosya": "ACL20T-T039_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde masa yukseklikleri '\u221ax cm' ve '2^y cm' (6x, us y); x ve y yalniz bu etiketlerde tanimli, soru bunlara dayaniyor. okuma_1 bu veriyi atlamis."
+  },
+  {
+   "dosya": "ACL20T-T039_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 8x + piksel dokumu: 'o'dan sonra 4 sap (x=568, 574, 582, 588): r (tek sap + ust kol) + m (3 sap) -> 'norma'; 'noma' bir harf eksik. Daire sonrasi [??] korunur."
+  },
+  {
+   "dosya": "ACL20T-T039_07",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpim: makine gorseli; harfler daire icinde, sayi ayri hucrede. Farklar yalniz ' | ' ve (A) bicimi; icerik ayni."
+  },
+  {
+   "dosya": "ACL20T-T039_10",
+   "esasli_hata": "yok",
+   "gerekce": "Isaret piksel dokumunde ustte tilde (471-476), altta iki yatay cubuk (478-479, 482-483): basili glif \u2245. Sozlesme 'yakla\u015f\u0131k' icin \u2248 yazimini sabitliyor; iki okuma ayni anlami farkli kod noktasiyla yazmis (bicim). okuma_1 \u2248 korundu."
+  },
+  {
+   "dosya": "ACL20T-T040_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde yukseklik etiketi '\u221ab/\u221ba metre', 'b = 288 cm', 'a = 432 cm' basili; soru bunlara dayaniyor, okuma_1 atlamis. Paydadaki kok derecesi 8x ve piksel dokumunde cok kucuk/soluk: ust kisimda genis yatay koyu leke (x122-125 y221-224) + sol altta soluk nokta -> 3 ile uyumlu, 4'un tepe noktasi/yatay cubugu gorunmuyor; en iyi okuma \u221b (kesin degil). 'a = 432'deki isaret 6 satir kalinliginda bulanik bant, tek eksi cubugundan kalin -> '='."
+  },
+  {
+   "dosya": "ACL20T-T040_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kamyon kasalar\u0131ndaki '\u221bx ton' ve '\u221ay ton' y\u00fckleri soru verisi (ba\u015fka yerde yok); okuma_1 atlam\u0131\u015f. G\u00f6r\u00fcnt\u00fcde \u221bx ve \u221ay a\u00e7\u0131k."
+  },
+  {
+   "dosya": "ACL20T-T040_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekil alti yazilar 3x: sol 'Alan = a birimkare / Cevre = b birim', sag 'Alan = b birimkare'. a ve b bu etiketlerle tanimli, soru dayaniyor; okuma_1 atlamis."
+  },
+  {
+   "dosya": "ACL20T-T040_08",
+   "esasli_hata": "yok",
+   "gerekce": "Kup kok sozlesmede '\u221b(x)' -> okuma_1; icerik ayni."
+  },
+  {
+   "dosya": "ACL20T-T040_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kirpim: A kare-2, B ucgen-4, C altigen-4, D kare icinde ucgen-2, E ucgen icinde kare-2. Sekil tipi kok derecesi verisini tasiyor; okuma_1 yalniz sayilari yazip sekil bilgisini dusurmus."
+  },
+  {
+   "dosya": "ACL20T-T040_10",
+   "esasli_hata": "yok",
+   "gerekce": "Tum yaklasik isaretleri 10x buyutmede tilde + iki cubuk (\u2245 glifi; kok satirindaki soluk). Sozlesme yazimi \u2248; fark yalniz kod noktasi (bicim). Not: farklar disinda, kokteki '3^9' ussu 14x bicubicte 8/9 arasi belirsiz gorunuyor; iki okuma 9 dedigi icin degistirilmedi."
+  },
+  {
+   "dosya": "ACL20T-T040_11",
+   "esasli_hata": "yok",
+   "gerekce": "Tus '2 ussu kok X'; [2]\u221aX / [2]\u221a(X) yalniz yazim bicimi, okuma_1 korundu."
+  },
+  {
+   "dosya": "ACL20T-T042_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "1x d\u00f6k\u00fcm: D'de 8'den sonraki i\u015faret taban \u00e7izgisinde bitiyor (sat\u0131r 16-20), kuyruk yok; E'deki virg\u00fcl 2 sat\u0131r a\u015fa\u011f\u0131 iniyor. D'de nokta bas\u0131l\u0131 (dizgi hatas\u0131, korunur)."
+  },
+  {
+   "dosya": "ACL20T-T042_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 8x + piksel: '3 ve' x~590'da bitiyor, iki yana yasli paragrafin diger satirlari ~605'e uzaniyor (~15 px eksik) ve sagda beyaz daire artigi var; alt satir 'katli' ile basliyor. Daire altinda murekkep kaybi var; '4' gorunmuyor. okuma_2 '4' ile tamamlamis; [??] korunur."
+  },
+  {
+   "dosya": "ACL20T-T042_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "C sikki 8x NEAREST: kok isaretinin sag ustunde ayri basili yatay cizgi var; listedeki 3. sembolde yok (dizgi farki basildigi gibi kalir) -> '\u221a\u203e'."
+  },
+  {
+   "dosya": "ACL20T-T043_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x: 'en az' altinda soluk ama surekli alt cizgi var; okuma_1 vurguyu atlamis."
+  },
+  {
+   "dosya": "ACL20T-T043_09",
+   "esasli_hata": "yok",
+   "gerekce": "Metin icinde bosluk tusu gorseli (koyu tus uzerinde \u23b5 bicimli cizgi) basili. '(bo\u015fluk tu\u015fu g\u00f6rseli)' ile '\u23b5' ayni ogeyi temsil ediyor; bicim farki. Tus yuzundeki glife yakin olan \u23b5 secildi."
+  },
+  {
+   "dosya": "ACL20T-T044_06",
+   "esasli_hata": "ikisi",
+   "gerekce": "(I)/(II)/(III) toplamalarinin yerlesimi iki okumada ayni icerik (bicim farki, okuma_1 bicimi korundu). ANCAK iki okuma da capraz cizimlerin yazilarini atlamis: ust cizim 5x, 3y, 2 / 3x, y, 7; alt cizim ax, by, 7 / x, \u22122y, c. Soru a\u00b7b + c'yi soruyor, a, b, c yalniz alt cizimde tanimli -> soru bu yaziya dayaniyor, govdeye eklendi."
+  },
+  {
+   "dosya": "ACL20T-T044_07",
+   "esasli_hata": "yok",
+   "gerekce": "Bile\u015fik kesirlerin d\u0131\u015f parantezleri yaln\u0131z g\u00f6sterim; i\u015faretler ve terimler iki okumada ayn\u0131."
+  },
+  {
+   "dosya": "ACL20T-T045_01",
+   "esasli_hata": "yok",
+   "gerekce": "Kare/daire yer tutucu semboller (turuncu 3B ikonlar) govdede sembol olarak yazili; ayrica resim/sekil yok. Meta alan farki."
+  },
+  {
+   "dosya": "ACL20T-T045_03",
+   "esasli_hata": "yok",
+   "gerekce": "6x NEAREST: carpma noktasi taban cizgisinde nokta olarak basili; sozlesmede carpma noktasi '\u00b7' -> okuma_1 bicimi, icerik ayni."
+  },
+  {
+   "dosya": "ACL20T-T045_06",
+   "esasli_hata": "yok",
+   "gerekce": "Piksel dokumu: sol ust hucrede x-yuksekliginde carpi/x glifi; x ile \u00d7 bu cozunurlukte ayirt edilemiyor, bicim farki; okuma_1 korundu."
+  },
+  {
+   "dosya": "ACL20T-T046_12",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde ustte '1 3 5  7 9 11  13 15 17  ...  a b c ...', alti suslu parantezlerle '2  4  6  ...  34 ...'. Iki okuma ayni ogeleri veriyor; okuma_2'nin '\u2192' eslemesi yalniz yerlesim bicimi. okuma_1 (basili iki satir duzeni) korundu."
+  },
+  {
+   "dosya": "ACL20T-T047_04",
+   "esasli_hata": "yok",
+   "gerekce": "Ilk cumlede carpi glifi harf boyunda (x203-212, y46-55; n ile ayni x-yuksekligi) duz 'x'; koyu soru cumlesinde kucuk yukseltilmis '\u00d7'. Sozlesme 'basildigi gibi' -> ilk cumle 'x', soru cumlesi '\u00d7'. Anlam ayni, isaret glifi varyanti."
+  },
+  {
+   "dosya": "ACL20T-T047_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: 'konulmu\u015ftu' sonras\u0131 x=596-597 sap + x=598-599 k\u0131sa \u00fcst \u00e7\u0131k\u0131nt\u0131, x=601'de daire kenar\u0131 (249-251 d\u00fc\u015fey s\u0131n\u0131r). Par\u00e7a 'r' ile 'n' ba\u015flang\u0131c\u0131 aras\u0131nda ay\u0131rt edilemiyor; harf tamamlanmaz: 'konulmu\u015ftu[??]'."
+  },
+  {
+   "dosya": "ACL20T-T048_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Ciftler arasi ayraclar piksel: 1. ve 3. ayrac bas y198-201 + kuyruk y202-203 (virgul); 2. ayrac bas y197-199 + ayrik alt parca y202-204, ustunde (x-yuksekliginde) nokta YOK -> kuyrugu kopuk virgul, noktali virgul degil."
+  },
+  {
+   "dosya": "ACL20T-T049_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 1 sonu 7x + piksel dokumu: 'ora' sonrasi x=590-597'de sap + ust kol ('r' gorunumu), sag bacak gorunmuyor (x=596 y17-25 beyaz), satir marjdan once (x=597) kesiliyor. 'n' yazmak tamamlama -> 'ora[??]'."
+  },
+  {
+   "dosya": "ACL20T-T049_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel degerleri (x286-302,y78-96): koyu yatay cubugun ustunde ve altinda ayni eksende 6'sar satir soluk dikey iz (217-248) var; duz eksi degil, dikeyi soluk basilmis '+' (ayni kitapta T058 '+' isaretleri de boyle soluk). okuma_1 '\u2212' yazmis."
+  },
+  {
+   "dosya": "ACL20T-T051_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: C ayiricilari 559-565 satirlarinda 6-7 satir boyunda, taban cizgisinin altina iniyor (A'daki virgullerle ayni boy/konum); D'deki noktalar yalniz 601-604, taban cizgisinde 3-4 satir. C'de virgul basili; okuma_1 nokta yazmis. D ('24.18.18') iki okumada ayni."
+  },
+  {
+   "dosya": "ACL20T-T053_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde 'Yere paralel', 'Ornekler:', 'B yonu 1 cm alcak', 'A yonu 0,5 cm alcak' (5x: virgul) basili; baloncuk konumunun cm karsiligini veren bu yazilara soru dayaniyor, okuma_1 atlamis."
+  },
+  {
+   "dosya": "ACL20T-T054_01",
+   "esasli_hata": "yok",
+   "gerekce": "Mavi/pembe k\u00f6\u015feli i\u015flem sembolleri; iki okuma ayn\u0131 yap\u0131y\u0131 farkl\u0131 etiketle yazm\u0131\u015f. okuma_2 g\u00f6sterimi tutarl\u0131. Yaln\u0131z bi\u00e7im."
+  },
+  {
+   "dosya": "ACL20T-T054_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "B harfi 8x + piksel: iki kol y670-675'te birlesip taban cizgisinde (y679-680) bitiyor, alt uzanti/halka yok; paydaki \u03bd' ile ayni yapi. Tablodaki \u03b3' ise capraz + taban alti halkali (y184-197). Sag ustte tirnak var, altta M. \u03bd'_M."
+  },
+  {
+   "dosya": "ACL20T-T054_11",
+   "esasli_hata": "yok",
+   "gerekce": "Katsayi kesirleri 2/5 y, 1/3 x, 2/9 y basili; '(2/5)y' ile '2/5 y' ayni icerik, belirsizligi olmayan parantezli bicim secildi."
+  },
+  {
+   "dosya": "ACL20T-T055_03",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpim: X'in solunda ust ve alt yazilar; iki okuma ayni ust/alt degerleri farkli sirayla (_a^b / ^b_a) yaziyor, tum terimlerde degerler ayni. Salt bicim; okuma_1 korundu."
+  },
+  {
+   "dosya": "ACL20T-T055_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru dikdortgenlerin uzun kenar olculerine dayaniyor: sekilde '6 cm' ve '10 cm'. Ilk rakam piksel dokumu: ust yay sagda 78'de bitiyor, 79'da sag kenar bos, sol kenar kesintisiz, alt halka kapali = '6'. okuma_2 iki olcuyu atlamis."
+  },
+  {
+   "dosya": "ACL20T-T056_11",
+   "esasli_hata": "yok",
+   "gerekce": "Tabaklarin altinda 'Bundan 1/2/3/4 lokma' basili; ayni veri govdede de yaziliyor (ilk tabaktan 1 lokma...), eksikligi veri kaybi degil. okuma_1 (tam) korundu."
+  },
+  {
+   "dosya": "ACL20T-T057_12",
+   "esasli_hata": "okuma_2",
+   "gerekce": "1x d\u00f6k\u00fcm + 8x: payda sol \u00fcst u\u00e7 (\u00e7apraz), ortada sa\u011fa yasl\u0131 orta \u00e7izgi, alt kapal\u0131 olmayan sol u\u00e7: '3' (5'te sol dikey + sola ba\u011fl\u0131 kar\u0131n, 8'de kapal\u0131 sol yan olurdu). Pay rakam\u0131 kesir \u00e7izgisi \u00fczerinde ortal\u0131, tek rakam. Gereksiz [??]."
+  },
+  {
+   "dosya": "ACL20T-T058_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Tabelalarda 'Istanbul 120', 'Istanbul 2x', 'Istanbul x + 15'; soru bu mesafelere dayaniyor. okuma_2 tabela yazilarini atlamis."
+  },
+  {
+   "dosya": "ACL20T-T058_11",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 8x + piksel dokumu: 'o' sonrasi x=597-600'de 'd' ust ucuyla ayni yukseklikte (y9) baslayan, asagi dogru yumusak solan dikey iz = daire kenarinin kestigi harf ustu (apostrof degil). Apostrof fazla; sonraki satir 'sun' devam -> 'o[??]sun'."
+  },
+  {
+   "dosya": "ACL20T-T058_13",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda yalniz cerceveli madde isaretli metin kutusu var; resim/grafik/tablo yok -> sekil_var false. Metin ayni."
+  },
+  {
+   "dosya": "ACL20T-T059_03",
+   "esasli_hata": "yok",
+   "gerekce": "8x buyutme: pay icinde carpma isareti x-yuksekliginde 'x' glifi. Sozlesme carpiyi '\u00d7' ile yaziyor; 'x' / '\u00d7' ayni basili isaretin yazimi (bicim). '\u00d7' korundu."
+  },
+  {
+   "dosya": "ACL20T-T061_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 1 sonu piksel: 'su' sonrasi x585-592'de sol kol + sola kivrilan alt uzanti (y27-29) = 'y', sag kolu kesik, sonra daire -> gorunen 'suy'. okuma_1 'y'yi atlamis."
+  },
+  {
+   "dosya": "ACL20T-T061_14",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: O sonras\u0131 3 sap; orta sap \u00fcstte ilk kemerle birle\u015fiyor (sat\u0131r 72-73), x-y\u00fcksekli\u011finde ba\u011f\u0131ms\u0131z ba\u015flam\u0131yor: 'm'. Bas\u0131l\u0131 '\u00d6me\u011fin' (dizgi hatas\u0131, korunur)."
+  },
+  {
+   "dosya": "ACL20T-T062_13",
+   "esasli_hata": "okuma_2",
+   "gerekce": "E sonu 8x + piksel: '6'dan sonra 0'in sol, ust ve sag kenari tam (y787-799), yalniz sag alt kesik; ardindan beyaz daire. Gorunen '60', devami bilinmez -> '60[??]'. okuma_2 gorunen 0'i dusurmus."
+  },
+  {
+   "dosya": "ACL20T-T063_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 1 sonu piksel dokumu: 'elde' sonrasi x=594-595'te ust uzantili sap ve y17-20'de saga cikintili kol birlesimi -> kismen gorunen 'k' (kimligi belirgin); gorunen kisim yazilir -> 'eldek[??]'."
+  },
+  {
+   "dosya": "ACL20T-T063_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: 'e\u011fitimleri' sonrasinda genis ust kavis (8 sutun) ve sol govde, sagda asagi inen kavis baslangici -> n; sag govdesi beyaz dairede kesik. Gorunen 'e\u011fitimlerin' + [??]; okuma_1 gorunen n'yi yazmamis."
+  },
+  {
+   "dosya": "ACL20T-T063_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru sekildeki sayfa verisine dayaniyor: sol sayfada '99 B\u00f6l\u00fcm 7', '17.', '18.'; sagda '? B\u00f6l\u00fcm 9', '25.', '26.', '27.'. okuma_1 bunlari yazmis; okuma_2 tumunu atlamis (eksik veri)."
+  },
+  {
+   "dosya": "ACL20T-T064_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x: 'tuta' sonrasi iki govdeli kemerli 'n' -> basili 'tutanin' (dizgi hatasi basildigi gibi kalir); okuma_1 'tutarin' diye duzeltmis."
+  },
+  {
+   "dosya": "ACL20T-T064_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + d\u00f6k\u00fcm: 'ya\u015f\u0131n' sonras\u0131 c-bi\u00e7imli kase + sa\u011fda x-y\u00fcksekli\u011fi \u00fcst\u00fcne \u00e7\u0131kan sap: 'd' tan\u0131nabilir; sa\u011f alt k\u0131sm\u0131 daire alt\u0131nda. 'ya\u015f\u0131nd[??]'."
+  },
+  {
+   "dosya": "ACL20T-T066_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Ok piksel: tek govde cizgisi (y20-21) + ok basi; cift cizgi yok -> '\u2192', '\u21d2' degil."
+  },
+  {
+   "dosya": "ACL20T-T066_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "q satiri kume simgesi 12x: solda dikey sap YOK (r satirindaki \u211d'de belirgin sap var), ust-alt yatay cizgi + capraz -> \u2124. C sikki piksel dokumu: govde cizgisi ok uclarinin merkezinin (y300-301) 2 px altinda (y302-303) + soluk ust cizgi (y298) -> cift cizgili '\u21d4' (D'deki \u21d4 ile ayni)."
+  },
+  {
+   "dosya": "ACL20T-T067_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "10x + piksel: govdedeki isaret ustte dikey kisa govde + altta iki bacak (yildiz bicimi), soru kokundeki \u2217 ile ayni tip; siklardaki \u2227 ise tepeden hemen ayrilan ince ters V. -> \u2217. okuma_1 \u2227 yazmis."
+  },
+  {
+   "dosya": "ACL20T-T068_07",
+   "esasli_hata": "yok",
+   "gerekce": "Piksel: 'a' ile 'b' arasindaki isaret taban cizgisinde nokta (240-243). Sozlesme carpma noktasini '\u00b7' ile yazdiriyor; '.' / '\u00b7' ayni basili carpma noktasinin yazimi (bicim). '\u00b7' secildi."
+  },
+  {
+   "dosya": "ACL20T-T068_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "III. oncul '1' ile 'p' arasi piksel: tek koyu cubuk y105-108 (merkez taban-4.5); I. oncul '=' iki cubuk y17-18 ve y23-25, arada 4 satir bosluk. III'te ikinci cubuk yok -> '\u2212'."
+  },
+  {
+   "dosya": "ACL20T-T068_14",
+   "esasli_hata": "ikisi",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: g\u00f6vdedeki okta iki g\u00f6vde \u00e7izgisi (sat\u0131r 562-563 ve 566-567, ok ucu ucu 565'te ortada): '\u21d2'; \u015f\u0131klardaki oklar tek \u00e7izgi. okuma_1 '\u2192' yazm\u0131\u015f. Tart\u0131 ekranlar\u0131ndaki 60.2 / 60.15 p/q'nun dayand\u0131\u011f\u0131 veri; okuma_2 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "ACL20T-T069_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "3x3 tablo; satir sagi 1, a, b; sutun alti 1 3 1. a ve b yalniz tabloda, soru dayaniyor; okuma_1 tabloyu atlamis."
+  },
+  {
+   "dosya": "ACL20T-T069_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST + piksel dokumu: A_i'ler arasindaki bozuk simgede yatay cizgi uzerinden gecen belirgin egik cizgi (y52-67) var; '\u2282'da bu cizgi olmaz -> '\u228a' (yay kismi solmus, en iyi okuma)."
+  },
+  {
+   "dosya": "ACL20T-T069_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel dokumu: soru kokundeki sembolde ust cubuk, sol govde, ust sag kapanan ilmek ve ortadan sag alta inen bacak var, alt yatay cubuk YOK; satir 2'deki \u2124'de ise kalin alt cubuk var. -> \u211d^+. okuma_2 \u2124 yazmis."
+  },
+  {
+   "dosya": "ACL20T-T069_13",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Govdedeki isaret piksel: sag capraz kenar + kopuk sol kenar + alt yatay cubuk = \u0394 (\u0394/\u2206 yalniz kod noktasi, okuma_1 bicimi korundu). A sikkindaki isaret: sol ustten sag alta inen tek kopuk capraz (313-330), alt cubuk ve sol kenar yok = '\\' (fark). okuma_1 A sikkinda \u0394 yazmis."
+  },
+  {
+   "dosya": "ACL20T-T070_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Alt cizgi piksel: 'kesinlikle' altinda x138-232, bosluk alti x234-240 beyaz, 'yanlistir' altinda yeniden basliyor -> iki ayri alti cizili kelime."
+  },
+  {
+   "dosya": "ACL20T-T070_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: E/B s\u00fctunu glifinde i\u00e7 k\u0131s\u0131m 224-240 (neredeyse beyaz), C \u015f\u0131kk\u0131ndaki \u03b8'da koyu yatay \u00e7izgi var. Bas\u0131l\u0131 '0' (dizgi hatas\u0131, korunur)."
+  },
+  {
+   "dosya": "ACL20T-T071_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 2 sonu 8x + piksel: 'gibi' tam (son i'nin noktasi soluk), hemen sagda x-yuksekligi ortasinda tire parcasi (y46-49) ve silik devami; satir sonu tirelemesi gorunuyor, alt satir 'dir.' -> 'gibidir'. Harf kaybi yok, [??] gereksiz."
+  },
+  {
+   "dosya": "ACL20T-T072_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 2 sonu 8x + piksel dokumu: 've' x=607'de sag marjda tam bitiyor, daire golgesi marjin disinda (x>=612); sonraki satir yeni kelime 'voleybol' -> [??] gereksiz."
+  },
+  {
+   "dosya": "ACL20T-T072_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel dokumu: satir 2 'say\u0131larla' tam, ancak ardindan x-yuksekligi ortasinda sag kenara kadar uzanan soluk yatay iz var (daire altinda murekkep kalintisi, tire olabilir) -> belirsiz, [??] korunur. SONUC satirinin bos hucresi sozlesmeye gore '-' (bicim)."
+  },
+  {
+   "dosya": "ACL20T-T074_02",
+   "esasli_hata": "yok",
+   "gerekce": "Kartezyen carpim isareti x-yuksekliginde 'x' glifi; sozlesme carpiyi '\u00d7' ile yaziyor. Yalniz yazim farki."
+  },
+  {
+   "dosya": "ACL20T-T074_03",
+   "esasli_hata": "yok",
+   "gerekce": "'A x B' carpi glifi koyu harf boyunda 'x' (x-yuksekligi '\u00fc' ile ayni, y105-116); basildigi gibi 'x' -> okuma_1. Isaret glifi varyanti."
+  },
+  {
+   "dosya": "ACL20T-T074_04",
+   "esasli_hata": "yok",
+   "gerekce": "1x d\u00f6k\u00fcm: kal\u0131n 'x' x-y\u00fcksekli\u011finde ve A ile ayn\u0131 taban \u00e7izgisinde: harf 'x' bi\u00e7imi. x/\u00d7 g\u00f6sterim varyant\u0131, i\u00e7erik ayn\u0131."
+  },
+  {
+   "dosya": "ACL20T-T074_05",
+   "esasli_hata": "yok",
+   "gerekce": "8x: kartezyen carpim isareti taban cizgisinde, x-yuksekliginde kucuk harf 'x' biciminde basili; x/\u00d7 ayni isaret, bicim farki (basildigi gibi 'x' korundu)."
+  },
+  {
+   "dosya": "ACL20T-T074_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "10x piksel dokumu: A ile B arasindaki glif taban cizgisine oturan (y105-117), x-yuksekliginde kalin harf 'x'; carpi isareti degil -> 'A x B'."
+  },
+  {
+   "dosya": "ACL20T-T074_07",
+   "esasli_hata": "yok",
+   "gerekce": "8x: isaret kalin, x-yuksekliginde, harf x gorunumlu; x / \u00d7 ayrimi bicim; okuma_1 korundu."
+  },
+  {
+   "dosya": "ACL20T-T075_03",
+   "esasli_hata": "yok",
+   "gerekce": "Bileske isareti kucuk yuvarlak 'o' glifi; '\u2218' / 'o' ayni isaretin yazimi (bicim). okuma_1 '\u2218' korundu."
+  },
+  {
+   "dosya": "ACL20T-T075_08",
+   "esasli_hata": "yok",
+   "gerekce": "Parcali fonksiyon iki ayri basili satir; iki okuma ayni icerik, yalniz yazim bicimi farkli (okuma_1 satir satir korundu)."
+  },
+  {
+   "dosya": "ACL20T-T075_10",
+   "esasli_hata": "yok",
+   "gerekce": "Bile\u015fke i\u015fareti k\u00fc\u00e7\u00fck daire (g'nin kasesinden k\u00fc\u00e7\u00fck); '\u2218' / 'o' g\u00f6sterim varyant\u0131, i\u00e7erik ayn\u0131."
+  },
+  {
+   "dosya": "ACL20T-T077_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 2 piksel: 'l','m' (x341-356) ardindan dogrudan '\u015f' (x358-368), 't','i','r'; m ile \u015f arasinda i yok. Kitap dizgi hatasi 'g\u00f6sterilm\u015ftir' basildigi gibi kalir; okuma_2 duzeltmis."
+  },
+  {
+   "dosya": "ACL20T-T077_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x + piksel dokumu: '(2' sonrasi isaretin taban cizgisi altina inen soluk kuyrugu var (y109-112), '(-3, 2)' virgulu ile ayni profil -> virgul '(2,1)'."
+  },
+  {
+   "dosya": "ACL20T-T078_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel degerleri (x356-378,y562-578): 60000 ile 5n arasinda eksi konumunda 2 satir x 14 sutun yatay cubuk izi (250-251/255) var; cok soluk ama bicimi eksi. [??] gereksiz."
+  },
+  {
+   "dosya": "ACL20T-T080_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel: '\u00fc\u00e7geninde' sonundaki isaret 305-308 satirlarinda, taban cizgisinin altina inmiyor; 2. satirdaki 'br,' virgulu 354-360'ta 2 satir asagi iniyor. Basili isaret nokta; okuma_1 virgul yazmis."
+  },
+  {
+   "dosya": "ACL20T-T081_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'uzere' sonrasi isaret x315-319 y65-68 ve kuyrugu y69-71'e (taban alti) iniyor -> virgul; okuma_2 nokta yazmis."
+  },
+  {
+   "dosya": "ACL20T-T081_10",
+   "esasli_hata": "ikisi",
+   "gerekce": "\u015eekil etiketleri g\u00f6sterimin kural\u0131 ve sorulan polinomun katsay\u0131lar\u0131: \u00fc\u00e7gen a(\u00fcst), b, c; kare a(\u00fcst), b, c, d; alt\u0131gen \u00fcstten ba\u015flay\u0131p bas\u0131l\u0131 saat y\u00f6n\u00fc okuyla \u22121, 0, 1, 0, \u22121, 2. \u0130ki okuma da alt\u0131gen verisini ve k\u00f6\u015fe etiketlerini atlam\u0131\u015f (okuma_1 yaln\u0131z \u00e7\u0131plak '\u2192'). 8x: bx \u00fcss\u00fc '2'."
+  },
+  {
+   "dosya": "ACL20T-T083_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x: '\u00e7arp\u0131m\u0131ylada' acikca basili (dizgi hatasi korunur); okuma_1 'da'yi dusurmus."
+  },
+  {
+   "dosya": "ACL20T-T084_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 2 sonu 8x: 'bicimde' sonrasi yalniz yuvarlak bir buyuk harfin sol yarisi gorunuyor (C/O/G ayirt edilemez), sag yarisi daire altinda; harfi 'C' diye yazmak tamamlama -> '[??]'."
+  },
+  {
+   "dosya": "ACL20T-T084_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: 's\u00fbre' u'sunun ustunde tek, ortalanmis sapka lekesi var; ayni satirdaki 'g\u00fcn\u00fc' u'larinda iki ayri nokta. -> \u00fb basili; okuma_1 's\u00fcre' diye duzeltmis."
+  },
+  {
+   "dosya": "ACL20T-T084_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru dilimlerdeki kosullara dayaniyor: I bolgesinde 'K\u00c7' / '\u22121', II'de 'KT' / '1', III'te '\u00c7K' / '{1}'. Parantez piksel: sag ayracta ortada saga cikinti (272-275), ust/alt uclar sola kivrik = '}'. okuma_2 sekil verisini atlamis."
+  },
+  {
+   "dosya": "ACL20T-T085_16",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'2' sonrasi isaret x564-568 y277-280 kare leke, taban altina inmiyor; ayni satirdaki virguller ('1,' ve '3,') y282'ye kadar kuyruklu -> nokta: '1,2. 3, 4'. okuma_2 virgul yazmis."
+  },
+  {
+   "dosya": "ACL20T-T088_08",
+   "esasli_hata": "yok",
+   "gerekce": "Do\u011fru/Yanl\u0131\u015f 8 | 2 tablosu soru metninde ('8 do\u011fru 2 yanl\u0131\u015f') aynen verilmi\u015f; veri ta\u015f\u0131m\u0131yor, g\u00f6vdeye girmez. Eksiklik esasl\u0131 de\u011fil."
+  },
+  {
+   "dosya": "ACL20T-T088_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'...' oncesi isaret 5x + piksel: yalniz y31-34 yatay cubuk, dikey hicbir iz yok (ilk isaretteki soluk '+'da dikey iz goruluyor). Basili olan '\u2212'."
+  },
+  {
+   "dosya": "ACL20T-T089_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: '(9 2)' ile '(9 9)' arasinda 5 isaret (x=200,207,213,219,225); 1. ve 5.'nin altinda virgul kuyrugu (y110-111), ortadaki 3'u nokta -> '(9 2), ..., (9 9)'."
+  },
+  {
+   "dosya": "ACL20T-T089_15",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kirpim: 1-20 numarali 5x4 kutu izgarasi; soru 'yan yana' komsuluga dayandigi icin tablo govdeye girer. okuma_2 tabloyu tamamen dusurmus."
+  },
+  {
+   "dosya": "ACL20T-T090_07",
+   "esasli_hata": "yok",
+   "gerekce": "Kartlardaki icerik iki okumada ayni (B\u0130RLER..ONLAR, 1..3 ve 10. satirlar, \u22ee); fark yerlesim (tablo / kart kart) ve 'x' / '\u00d7' yazimi. Carpi sozlesme geregi '\u00d7'; okuma_1 tablo bicimi korundu. Kartlardaki '=' isaretleri soluk (iki okuma da '=' yazmis)."
+  },
+  {
+   "dosya": "ACL20T-T092_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 1 sonu piksel: 'sirala' sonrasi harf x590-593 govde + yalniz ustte kisa omuz (y13-17), sag govde bolgesi x596-599 y18-26 bos ve daire disinda (daire kenari ~x610) -> 'r'. Alt satir 'diginda' tiresiz devam -> [??] korunur: 'siralar[??]'."
+  },
+  {
+   "dosya": "ACL20T-T092_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "1x d\u00f6k\u00fcm: 'gr' sonras\u0131 yaln\u0131z x-y\u00fcksekli\u011finde tek d\u00fcz sap, sa\u011f\u0131 daire alt\u0131nda; u / n / \u0131 ay\u0131rt edilemiyor. Harf tamamlanmaz: 'gr[??]bunda'."
+  },
+  {
+   "dosya": "ACL20T-T093_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "10x + piksel: ikinci kosul isareti yalniz '>' kollari (y195-205), altinda esitlik cubugu yok -> '>'. 5x: 'Okul Bitime Puan\u0131' basili (dizgi hatasi korunur). okuma_2 iki yerde de yanlis."
+  },
+  {
+   "dosya": "ACL20T-T095_07",
+   "esasli_hata": "yok",
+   "gerekce": "Sutun grafigi lejandi ('En fazla 20 dk' vb.) salt sekil etiketi; kategoriler soru metninde zaten yazili, grafik degerleri metin degil -> govdeye girmez (okuma_1)."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "ACL20T-T001_11",
+   "basili_no": 11,
+   "govde": "{[(\u25a1 + \u25a1) \u2212 \u25a0] \u00d7 \u25a1} \u00f7 \u25a1 = 16\ni\u015fleminde 3'den 7'ye kadar (7 dahil) rakamlar kullan\u0131larak i\u015flemin sonucu 16 olarak bulunmu\u015ftur.\nBuna g\u00f6re, boyal\u0131 olan kutuda hangi rakam bulunmal\u0131d\u0131r?",
+   "sikler": {
+    "A": "3",
+    "B": "4",
+    "C": "5",
+    "D": "6",
+    "E": "7"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T001_12",
+   "basili_no": 12,
+   "govde": "A\u015fa\u011f\u0131daki tablolar\u0131n renkli k\u0131s\u0131mlar\u0131nda, pozitif tam say\u0131larla yap\u0131lan \u00e7arpma i\u015flemlerinin sonu\u00e7lar\u0131 g\u00f6sterilmi\u015ftir.\nx | 4 | 3\n5 | 20 | 15\n7 | 28 | 21\nx | - | -\n- | 35 | 63\n- | 30 | A\nBuna g\u00f6re, A say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "21",
+    "B": "28",
+    "C": "36",
+    "D": "45",
+    "E": "54"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T002_01",
+   "basili_no": 1,
+   "govde": "[k\u0131rm\u0131z\u0131 kutu: m n / p] = [mavi \u00e7er\u00e7eve: 2m + n \u2212 p] ve\n[mavi \u00e7er\u00e7eve: b] = 3b \u2212 1\noldu\u011funa g\u00f6re,\n[k\u0131rm\u0131z\u0131 kutu: 2 \u22121 / [k\u0131rm\u0131z\u0131 kutu: \u22122 \u22122 / \u22122]]\nifadesinin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "35",
+    "B": "39",
+    "C": "41",
+    "D": "44",
+    "E": "47"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T002_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131daki hesap makinesinde t\u00fcm tu\u015flar en alt sat\u0131rdan ba\u015flanarak soldan sa\u011fa do\u011fru 1, 2, 3, ..., 16 bi\u00e7iminde kodlanm\u0131\u015ft\u0131r.\n456\nBu hesap makinesinde arka arkaya\n10, 11, 12, ?, 3, 14, 4\nkodlu tu\u015flara bas\u0131l\u0131nca \u015fekildeki sonu\u00e7 elde edilmi\u015ftir.\nYukar\u0131da kodu ? olarak verilen tu\u015fta yazan ifade a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "+",
+    "B": "\u2212",
+    "C": "x",
+    "D": "8",
+    "E": "9"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T002_08",
+   "basili_no": 8,
+   "govde": "(x)\\/^y ifadesi, x ile ba\u015flayan ve 1'er azalt\u0131larak elde edilen y tane say\u0131n\u0131n toplam\u0131 demektir.\n\u00d6rnek: (10)\\/^2 = 10 + 9\n\u00d6rnek: (40)\\/^3 = 40 + 39 + 38\nBuna g\u00f6re, (200)\\/^400 ifadesinin de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "\u2212200",
+    "B": "\u2212199",
+    "C": "0",
+    "D": "199",
+    "E": "200"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T003_02",
+   "basili_no": 2,
+   "govde": "(6 ile \u00e7arp) (5 \u00e7\u0131kar) (2 ile \u00e7arp) (7 ile b\u00f6l)\nx\n14\nx say\u0131s\u0131na oklar y\u00f6n\u00fcnde ad\u0131m ad\u0131m yukar\u0131daki i\u015flemler uyguland\u0131\u011f\u0131nda 14 sonucuna ula\u015f\u0131l\u0131yor.\nBuna g\u00f6re, x i\u00e7in a\u015fa\u011f\u0131dakilerden hangisi do\u011frudur?",
+   "sikler": {
+    "A": "Asal say\u0131d\u0131r.",
+    "B": "6 ile tam b\u00f6l\u00fcnebilen say\u0131d\u0131r.",
+    "C": "Tam kare say\u0131d\u0131r.",
+    "D": "Tam say\u0131 olmayan rasyonel say\u0131d\u0131r.",
+    "E": "4'\u00fcn kat\u0131 olan tam say\u0131d\u0131r."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T003_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131da bir ay arayla iki kez tart\u0131lan Tu\u011frul'un bu tart\u0131 de\u011ferleri g\u00f6sterilmi\u015ftir.\nkg 72.0\nkg 62.0\nTu\u011frul, kilosunu soran bir arkada\u015f\u0131na bu iki tart\u0131mdan s\u00f6z ederek, \"Birinde a kg di\u011ferinde b kg geldim.\" demi\u015ftir.\nBuna g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisi <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "a = 72",
+    "B": "a > b",
+    "C": "a \u2212 b = 10",
+    "D": "(a \u2212 b)^2 = 10",
+    "E": "|a \u2212 b| = 10"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T003_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131da iplerle \u00e7ubu\u011fa as\u0131l\u0131 olan toplar verilmi\u015ftir. Toplar\u0131[??] \u00fczerinde \u015fekildeki say\u0131lar yazmaktad\u0131r.\n+ \u00d7 \u00f7\n6 k 3 5\nA B C D\nBir top bir topa \u00e7arpt\u0131\u011f\u0131nda, \u00fczerlerinde yazan say\u0131lara o toplar\u0131n aras\u0131ndaki i\u015flem uygulan\u0131r ve bu i\u015flemin sonucu \u00e7arp\u0131lan topa yaz\u0131l\u0131r. \u00d6rne\u011fin, B topu C topuna \u00e7arparsa k3 elde edilir ve C topundaki 3 say\u0131s\u0131n\u0131n yerine k3 yaz\u0131l\u0131r. B\u00f6yle olmay\u0131p C topu B topuna \u00e7arparsa 3k elde edilir ve B topundaki k say\u0131s\u0131n\u0131n yerine 3k yaz\u0131l\u0131r.\nA topu sola \u00e7ekilip b\u0131rak\u0131ld\u0131\u011f\u0131nda A, B'ye; B, C'ye; C, D'ye \u00e7arpmakta ve sonra toplar durgun hale gelmektedir. D topu sa\u011fa \u00e7ekilip b\u0131rak\u0131ld\u0131\u011f\u0131nda D, C'ye; C, B'ye; B, A'ya \u00e7arpmakta ve sonra toplar durgun hale gelmektedir.\nBa\u015flang\u0131\u00e7ta A topu sola \u00e7ekilip b\u0131rak\u0131ld\u0131\u011f\u0131nda son topa 9 yaz\u0131ld\u0131\u011f\u0131na g\u00f6re, ba\u015flang\u0131\u00e7ta D topu sa\u011fa \u00e7ekilip b\u0131rak\u0131ld\u0131\u011f\u0131nda son topa ka\u00e7 yaz\u0131l\u0131r?",
+   "sikler": {
+    "A": "18",
+    "B": "21",
+    "C": "24",
+    "D": "27",
+    "E": "30"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T004_16",
+   "basili_no": 16,
+   "govde": "Ortalama bir insan sa\u00e7\u0131, 100.000 sa\u00e7 teline sahiptir. Bir sa\u00e7 teli kopmadan \u00f6nce ortalama olarak 100 gram a\u011f\u0131rl\u0131\u011fa dayanabilmektedir.\nYukar\u0131da sa\u00e7lar\u0131n\u0131n d\u00f6rtte biri d\u00f6k\u00fclm\u00fc\u015f olan bir kad\u0131n g\u00f6rseli verilmi\u015ftir.\nBuna g\u00f6re, kad\u0131n\u0131n kalan sa\u00e7lar\u0131 ka\u00e7 kilogram a\u011f\u0131rl\u0131\u011fa dayanabilir?",
+   "sikler": {
+    "A": "7,5.10^6",
+    "B": "75.10^2",
+    "C": "125.10^2",
+    "D": "12,5.10^6",
+    "E": "750"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T005_03",
+   "basili_no": 3,
+   "govde": "Bir okulda d\u00fczenlenen bir etkinli\u011fe be\u015f farkl\u0131 s\u0131n\u0131ftan far[??] say\u0131da \u00f6\u011frenciler kat\u0131lm\u0131\u015ft\u0131r. Etkinli\u011fe toplam 26 \u00f6\u011frenci kat\u0131lm\u0131\u015ft\u0131r.\nBuna g\u00f6re, etkinli\u011fe kat\u0131lan \u00f6\u011frenciler i\u00e7inde ayn\u0131 s\u0131n\u0131fta okuyan <u>en \u00e7ok</u> ka\u00e7 \u00f6\u011frenci olabilir?",
+   "sikler": {
+    "A": "10",
+    "B": "12",
+    "C": "14",
+    "D": "16",
+    "E": "18"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T005_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131daki bilgisayar komutu, say\u0131 dizileri olu\u015fturmaktad\u0131r. Onur ilk kullan\u0131m\u0131nda bu komutu \u015fekilde verildi\u011fi gibi kullanm\u0131\u015ft\u0131r. Onur\u2019un i\u015faretledi\u011fi A b\u00f6l\u00fcm\u00fc i\u015faretlenmek zorunda de\u011fildir.\nSay\u0131 Dizisi\nBa\u015flang\u0131\u00e7 say\u0131s\u0131n\u0131 giriniz. 2\nArt\u0131\u015f miktar\u0131n\u0131 giriniz. 6\nTerim say\u0131s\u0131 giriniz. 7\n\u2611 Ba\u015flang\u0131\u00e7 say\u0131s\u0131n\u0131n 5 kat\u0131n\u0131 ge\u00e7tikten sonra tekrara d\u00fc\u015f.\nSonu\u00e7: 2, 8, 14, 2, 8, 14, 2\nOnur ikinci bir sefer bu komuta, A b\u00f6l\u00fcm\u00fcn\u00fc i\u015faretlemeden, \u00fcstten alta do\u011fru s\u0131ras\u0131yla 5, 3, a de\u011ferlerini girince sonu\u00e7 k\u0131sm\u0131ndaki son say\u0131n\u0131n 65 oldu\u011funu g\u00f6rm\u00fc\u015ft\u00fcr.\nBuna g\u00f6re, Onur e\u011fer A b\u00f6l\u00fcm\u00fcn\u00fc i\u015faretleseydi sonu\u00e7 k\u0131sm\u0131nda elde edece\u011fi son say\u0131 a\u015fa\u011f\u0131dakilerden hangisi olurdu?",
+   "sikler": {
+    "A": "14",
+    "B": "17",
+    "C": "20",
+    "D": "23",
+    "E": "26"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T005_17",
+   "basili_no": 17,
+   "govde": "Erhan yazd\u0131\u011f\u0131 be\u015f pozitif tam say\u0131y\u0131 ve bu say\u0131lardan her birinin di\u011fer say\u0131lar\u0131n ka\u00e7 tanesinden k\u00fc\u00e7\u00fck oldu\u011funu a\u015fa\u011f\u0131daki gibi belirtmi\u015ftir.\na | b | c | d | e\n1 | 4 | 0 | 3 | 2\n\u00d6rne\u011fin; yazd\u0131\u011f\u0131 say\u0131lardan biri olan d say\u0131s\u0131 di\u011fer yazd\u0131\u011f\u0131 say\u0131lar\u0131n 3 tanesinden k\u00fc\u00e7\u00fckt\u00fcr.\nd + e = 12\noldu\u011funa g\u00f6re, a \u00b7 b \u00b7 c \u00e7arp\u0131m\u0131 <u>en az</u> ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "60",
+    "B": "68",
+    "C": "72",
+    "D": "84",
+    "E": "90"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T006_02",
+   "basili_no": 2,
+   "govde": "x^2 \u00e7ift bir say\u0131d\u0131r.\nBuna g\u00f6re,\nI. x \u00e7ift say\u0131d\u0131r.\nII. x + 3 bir tek say\u0131d\u0131r.\nIII. x^2 + 5 bir tek say\u0131d\u0131r.\nifadelerinden hangileri daima do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "Yaln\u0131z II",
+    "D": "II ve III",
+    "E": "Yaln\u0131z III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T008_07",
+   "basili_no": 7,
+   "govde": "ABC8 ve 1ABC d\u00f6rt basamakl\u0131 iki say\u0131d\u0131r.\nABC8 = 2 (1ABC)\noldu\u011funa g\u00f6re, A + B + C toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "18",
+    "B": "17",
+    "C": "15",
+    "D": "14",
+    "E": "12"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T009_06",
+   "basili_no": 6,
+   "govde": "\u2606 sembol\u00fc n \u2265 1 olmak \u00fczere, n basamakl\u0131 bir say\u0131n\u0131n baz\u0131 rakamlar\u0131n\u0131 a\u015fa\u011f\u0131daki s\u0131rayla silmektedir.\n\u2606_1: Say\u0131n\u0131n birler basama\u011f\u0131n\u0131\n\u2606_2: Say\u0131n\u0131n birler ve onlar basama\u011f\u0131n\u0131 silmektedir.\n\u00d6rne\u011fin; \u2606_1(352) = 35 olmaktad\u0131r.\nA d\u00f6rt basamakl\u0131 bir say\u0131 olmak \u00fczere,\n\u2606_1(A) + \u2606_2(A) + \u2606_3(A) = 134\noldu\u011funa g\u00f6re, A say\u0131s\u0131n\u0131n rakamlar\u0131 toplam\u0131 en \u00e7ok ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "15",
+    "B": "14",
+    "C": "13",
+    "D": "12",
+    "E": "11"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T010_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131da iki klavyenin, \u00fczerlerinde 1, 2, 3, ..., 9 rakamlar\u0131 bulunan tu\u015flar\u0131 g\u00f6sterilmi\u015ftir. \u0130ki klavyede de her bir tu\u015fla bir tane rakam vard\u0131r.\n1. Klavye\nKlavyedeki her sat\u0131rda rakamlar soldan sa\u011fa do\u011fru birer birer art\u0131yor. Her s\u00fctunda rakamlar yukar\u0131dan a\u015fa\u011f\u0131ya do\u011fru art\u0131yor.\n2. Klavye\nKlavyedeki her sat\u0131rda rakamlar soldan sa\u011fa do\u011fru birer birer art\u0131yor. Her s\u00fctunda rakamlar a\u015fa\u011f\u0131dan yukar\u0131ya do\u011fru art\u0131yor.\nMelisa 1. klavyenin pembe renkli tu\u015flar\u0131na yukar\u0131dan a\u015fa\u011f\u0131ya do\u011fru s\u0131rayla birer kez bas\u0131yor. Dilara 2. klavyenin mavi renkli tu\u015flar\u0131na a\u015fa\u011f\u0131dan yukar\u0131ya do\u011fru s\u0131rayla birer kez bast\u0131ktan sonra ayn\u0131 hareketi bir kez daha tekrar ediyor.\nBuna g\u00f6re, Dilara\u2019n\u0131n yazd\u0131\u011f\u0131 alt\u0131 basamakl\u0131 say\u0131 Melisa\u2019n\u0131n yazd\u0131\u011f\u0131 \u00fc\u00e7 basamakl\u0131 say\u0131n\u0131n ka\u00e7 kat\u0131na e\u015fittir?",
+   "sikler": {
+    "A": "11",
+    "B": "100",
+    "C": "101",
+    "D": "1000",
+    "E": "1001"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T011_13",
+   "basili_no": 13,
+   "govde": "Bir A say\u0131s\u0131n\u0131n B ile b\u00f6l\u00fcm\u00fcnden kalan C ifadesi,\nA = B^c + C ile g\u00f6sterilsin.\nK = 3^c + 1\nL = 3^c + 2\noldu\u011funa g\u00f6re,\n(2^K + 2^(2L) + 2^3) = 7^c + x\ne\u015fitli\u011findeki x ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T011_14",
+   "basili_no": 14,
+   "govde": "Asuman, ard\u0131\u015f\u0131k tek do\u011fal say\u0131lar\u0131 a\u015fa\u011f\u0131daki d\u00fczende yazm\u0131\u015ft\u0131r.\nAsuman, sol tarafta olu\u015fan say\u0131lardan herhangi 7 tanesini toplay\u0131nca x. sa\u011f tarafta olu\u015fan say\u0131lardan herhangi 9 tanesini toplay\u0131nca y bulmu\u015ftur.\nBuna g\u00f6re, x + y toplam\u0131 a\u015fa\u011f\u0131dakilerden hangisi olabilir?",
+   "sikler": {
+    "A": "1000",
+    "B": "1111",
+    "C": "1208",
+    "D": "1310",
+    "E": "1500"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T012_04",
+   "basili_no": 4,
+   "govde": "En az iki basamakl\u0131 ve rakamlar\u0131 farkl\u0131 do\u011fal say\u0131lar aras\u0131nda uygulanan \u25b2 i\u015flemi,\nx \u25b2 y = \u201cx\u2019in en k\u00fc\u00e7\u00fck rakam\u0131 ile y\u2019nin en b\u00fcy\u00fck rakam\u0131n\u0131n fark\u0131n\u0131n mutlak de\u011feri\u201d\nbi\u00e7iminde tan\u0131ml\u0131d\u0131r.\n\u00d6rnek: 34 \u25b2 18 = |3 \u2212 8| = 5\n\u0130ki basamakl\u0131 a7 do\u011fal say\u0131s\u0131 3\u2019e, \u00fc\u00e7 basamakl\u0131 2b6 do\u011fal say\u0131s\u0131 11\u2019e tam b\u00f6l\u00fcnd\u00fc\u011f\u00fcne g\u00f6re,\na7 \u25b2 2b6\ni\u015fleminin sonucu <u>en \u00e7ok</u> ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "7",
+    "B": "6",
+    "C": "5",
+    "D": "4",
+    "E": "3"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T012_06",
+   "basili_no": 6,
+   "govde": "Sat\u0131lmakta olan \u00fcr\u00fcnlerin ambalajlar\u0131n\u0131n \u00fcst\u00fcnde, g\u00f6r\u00fcnt[??]s\u00fc siyah ve beyaz \u00e7ubuklardan ibaret olan dikd\u00f6rtgen bi\u00e7iminde bir etiket bulunur. Bu etikete \u00fcr\u00fcn\u00fcn barkodu denir ve elektronik taray\u0131c\u0131larla okununca \u00fcr\u00fcn\u00fcn stok ve fiyat bilgilerini belirtir. Taray\u0131c\u0131 barkoddaki beyaz \u00e7ubuklar\u0131 0\u2019a, siyah \u00e7ubuklar\u0131 1\u2019e d\u00f6n\u00fc\u015ft\u00fcr\u00fcrerek 0 ile 1 rakamlar\u0131ndan olu\u015fan bir say\u0131 elde eder. Bu say\u0131ya barkod kodu denir. A\u015fa\u011f\u0131daki <u>\u00f6rnekte</u> bir barkod ve kodu verilmi\u015ftir.\nBarkot kodu\n0110101010\nAlt\u0131 \u00e7ubuklu ba\u015fka bir barkodda sadece \u00fc\u00e7 tane siyah \u00e7ubuk vard\u0131r. Herhangi iki siyah \u00e7ubuk yan yana de\u011fildir.\nBuna g\u00f6re, bu barkodun kodunun <u>en b\u00fcy\u00fck</u> de\u011ferinin 11\u2019e b\u00f6l\u00fcm\u00fcnden kalan ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "0",
+    "B": "1",
+    "C": "5",
+    "D": "8",
+    "E": "10"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T015_02",
+   "basili_no": 2,
+   "govde": "Bir say\u0131n\u0131n asal olabilmesi i\u00e7in, kendisinin karek\u00f6k\u00fcnden k\u00fc\u00e7\u00fck veya karek\u00f6k\u00fcne e\u015fit olan asal say\u0131lardan hi\u00e7birine b\u00f6l\u00fcnmedi\u011fini g\u00f6stermek gerekir.\n\u00d6rnek: 111 say\u0131s\u0131 i\u00e7in, \u221a111 = 10,... ve 10'dan k\u00fc\u00e7\u00fck asal say\u0131lar 7, 5, 3, 2'dir.\n111 say\u0131s\u0131 3 ile b\u00f6l\u00fcnd\u00fc\u011f\u00fcnden asal de\u011fildir.\nYukar\u0131daki asall\u0131k testine g\u00f6re, asal bir say\u0131 i\u00e7in 7 ke[??] b\u00f6lme i\u015flemi uyguland\u0131ysa bu say\u0131 a\u015fa\u011f\u0131dakilerden hangisi olabilir?",
+   "sikler": {
+    "A": "401",
+    "B": "373",
+    "C": "331",
+    "D": "327",
+    "E": "277"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T015_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131daki birim karelerden olu\u015fan tabloya 1'den 20'ye kadar olan sayma say\u0131lar\u0131 yaz\u0131lm\u0131\u015ft\u0131r.\n1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10\n11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20\nBu tablonun birinci sat\u0131r\u0131 a birim sa\u011fa ve ikinci sat\u0131r\u0131 b birim sola kayd\u0131r\u0131lacakt\u0131r.\n\u00d6rne\u011fin, a = 1 ve b = 1 i\u00e7in bu kayd\u0131rma i\u015flemi,\n- | - | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10\n11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | - | -\n- | - | 1 | 1 | 1 | 0 | 2 | 0 | 2 | 0 | - | -\nbi\u00e7iminde olur. \u015eekildeki mavi renkli b\u00f6lgeye kesi\u015fim b\u00f6lgesi denir. Bu b\u00f6lgedeki her s\u00fctunda ka\u00e7 asal say\u0131 oldu\u011funu her s\u00fctunun alt\u0131na not edince olu\u015fan 11102020 say\u0131s\u0131na a = 1 ve b = 1 i\u00e7in yap\u0131lan kayd\u0131rma i\u015fleminin kodu denir.\na ile b, 1'den b\u00fcy\u00fck ve aralar\u0131nda asal iki tam say\u0131 olmak \u00fczere, verilen ilk tabloda yap\u0131lan bir kayd\u0131rma i\u015fleminin kodunda 2 rakam\u0131 yoktur.\nBuna g\u00f6re, a + b toplam\u0131 <u>en az</u> ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "5",
+    "B": "6",
+    "C": "7",
+    "D": "8",
+    "E": "9"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T016_01",
+   "basili_no": 1,
+   "govde": "p bir asal say\u0131 iken 2p + 1 say\u0131s\u0131 da asal ise p ye Sophie[??] German asal\u0131 denir.\nBuna g\u00f6re, iki basamakl\u0131 iki farkl\u0131 Sophie German asal\u0131n\u0131n toplam\u0131 <u>en az</u> ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "24",
+    "B": "30",
+    "C": "34",
+    "D": "40",
+    "E": "42"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T016_03",
+   "basili_no": 3,
+   "govde": "Bir do\u011fal say\u0131n\u0131n, d\u00f6rt i\u015flemden istenilenler kullan\u0131larak i\u015flem bi\u00e7iminde yaz\u0131l\u0131\u015f\u0131na Say\u0131n\u0131n \u0130\u015flemsel Yaz\u0131l\u0131\u015f\u0131 denir.\n\u00d6rnek: 45 say\u0131s\u0131n\u0131n i\u015flemsel yaz\u0131l\u0131\u015flar\u0131ndan biri, 34 + 7 + 2 + 1 + 1 yaz\u0131l\u0131\u015f\u0131d\u0131r. Bu yaz\u0131l\u0131\u015fta 3, 4, 7, 2 ve 1 olmak \u00fczere toplam be\u015f farkl\u0131 rakam kullan\u0131lm\u0131\u015ft\u0131r.\n\u00d6rnek: 498 say\u0131s\u0131, 499 \u2212 5/5 olarak i\u015flemsel bi\u00e7imde yaz\u0131labilir. Bu yaz\u0131l\u0131\u015fta 4, 9 ve 5 olmak \u00fczere toplam \u00fc\u00e7 farkl\u0131 rakam kullan\u0131lm\u0131\u015ft\u0131r.\nBuna g\u00f6re, 340 say\u0131s\u0131 <u>en az</u> ka\u00e7 farkl\u0131 rakam kullanarak i\u015flemsel bi\u00e7imde yaz\u0131labilir?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T018_05",
+   "basili_no": 5,
+   "govde": "A, B, C, E pozitif d\u00f6rt do\u011fal say\u0131d\u0131r. \u0130\u00e7leri s\u0131rayla A, B ve [??] litre sirkeyle dolu olan \u00fc\u00e7 ayr\u0131 kaptaki sirkeler e\u015fit hacimli \u015fi\u015felere hi\u00e7 bo\u015fluk kalmayacak \u015fekilde dolduruluyor.\nA | B | C | E\n14 | 16 | 22 | -\nYukar\u0131daki bilgi de dikkate al\u0131nd\u0131\u011f\u0131nda <u>en az</u> ka\u00e7 \u015fi\u015fe gerekir?",
+   "sikler": {
+    "A": "20",
+    "B": "22",
+    "C": "26",
+    "D": "52",
+    "E": "104"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T021_06",
+   "basili_no": 6,
+   "govde": "- | 3 | 2 | 3 | 3 | 1\n4 | - | \u25a0 | - | - | -\n3 | - | - | - | - | \u25a0\n2 | - | \u25a0 | - | - | -\n3 | - | - | - | - | -\nYukar\u0131da verilen 4x5'lik bir tablonun solunda yazan rakamlar o sat\u0131rda ka\u00e7 karenin taral\u0131 oldu\u011fu, yukar\u0131s\u0131nda yazan rakamlar ise o s\u00fctunda ka\u00e7 tane karenin taral\u0131 oldu\u011funu g\u00f6stermektedir.\nBuna g\u00f6re, tablo tamamland\u0131\u011f\u0131nda taral\u0131 olan kareler t\u00fcm karelerin ka\u00e7ta ka\u00e7\u0131 olur?",
+   "sikler": {
+    "A": "3/4",
+    "B": "7/10",
+    "C": "13/20",
+    "D": "3/5",
+    "E": "1/2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T021_07",
+   "basili_no": 7,
+   "govde": "A/B + 4/3 + 9/2 = A/B \u00b7 4/3 \u00b7 9/2\noldu\u011funa g\u00f6re, A/B oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "11/6",
+    "B": "5/3",
+    "C": "7/6",
+    "D": "5/6",
+    "E": "2/3"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T021_11",
+   "basili_no": 11,
+   "govde": "A\u015fa\u011f\u0131da i\u00e7 i\u00e7e d\u00f6rt kare verilmi\u015ftir. En i\u00e7teki karenin bir k[??]nar\u0131 8 cm'dir. \u0130\u00e7ten d\u0131\u015fa do\u011fru gidildi\u011finde karelerin kena[??] uzunluklar\u0131 3/2 kat\u0131na \u00e7\u0131kmaktad\u0131r.\n\u00d6rne\u011fin; \u015eekildeki ye\u015fil renkli karenin bir kenar\u0131, i\u00e7indeki siyah renkli karenin bir kenar\u0131n\u0131n 3/2 kat\u0131d\u0131r.\nBuna g\u00f6re, \u015fekilde en d\u0131\u015ftaki karenin bir kenar\u0131 ka\u00e7 cm'dir?",
+   "sikler": {
+    "A": "18",
+    "B": "24",
+    "C": "27",
+    "D": "30",
+    "E": "36"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T022_05",
+   "basili_no": 5,
+   "govde": "Daire bi\u00e7imindeki bir pasta a\u015fa\u011f\u0131daki gibi dilimlere ayr\u0131lm\u0131[??]t\u0131r. \u00dczerinde ayn\u0131 harf bulunan dilimler e\u015f k\u00fctlededir.\nAlev bu pastadan 2 adet A, 1 adet B ve 1 adet C olmak \u00fczere toplam d\u00f6rt dilim alm\u0131\u015ft\u0131r. Ta\u015fk\u0131n ise sadece D harfinin oldu\u011fu dilimi alm\u0131\u015ft\u0131r.\nAlev'in ald\u0131\u011f\u0131 dilimlerin toplam k\u00fctlesi t\u00fcm pastan\u0131n 23/48'i oldu\u011funa g\u00f6re, Ta\u015fk\u0131n pastan\u0131n ka\u00e7ta ka\u00e7\u0131n\u0131 alm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "1/48",
+    "B": "1/36",
+    "C": "1/24",
+    "D": "1/20",
+    "E": "1/16"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T023_02",
+   "basili_no": 2,
+   "govde": "a\nb\n= a,(b) \u015feklinde tan\u0131mlan\u0131yor.\nBuna g\u00f6re,\n3\n9\n5\n9\nifadesinin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "6",
+    "B": "16/3",
+    "C": "5",
+    "D": "14/3",
+    "E": "13/3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T023_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131da silindir bi\u00e7imindeki borular\u0131n d\u0131\u015f \u00e7aplar\u0131n\u0131 \u00f6l\u00e7en bi[??] aletle yap\u0131lan uygulama g\u00f6sterilmi\u015ftir.\n11,01 mm\nUygulamada kullan\u0131lan demir borunun d\u0131\u015f \u00e7evresi x milimetredir.\nBuna g\u00f6re, x ondal\u0131k say\u0131s\u0131nda virg\u00fcl\u00fcn sa\u011f\u0131ndaki son iki rakam\u0131n toplam\u0131 ka\u00e7t\u0131r?\n(\u03c0 say\u0131s\u0131n\u0131 3,14 olarak al\u0131n\u0131z.)",
+   "sikler": {
+    "A": "3",
+    "B": "4",
+    "C": "5",
+    "D": "6",
+    "E": "7"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T023_08",
+   "basili_no": 8,
+   "govde": "1, 8(9) say\u0131s\u0131n\u0131n de\u011ferini hesaplamak isteyen Derin a\u015fa\u011f\u0131daki i\u015flemleri yap\u0131yor.\nI. 1,8999 ...... = A\nII. 18,999 ...... = 10A\nIII. 189,99 ...... = 100A\nIV. 100A \u2212 10A = 171\nV. A = 171/90 = 1,9\nBuna g\u00f6re, yukar\u0131da verilen i\u015flem basamaklar\u0131yla ilgili a\u015fa\u011f\u0131dakilerden hangisi do\u011frudur?",
+   "sikler": {
+    "A": "I. ad\u0131mda hata yap\u0131lm\u0131\u015ft\u0131r.",
+    "B": "II. ad\u0131mda hata yap\u0131lm\u0131\u015ft\u0131r.",
+    "C": "III. ad\u0131mda hata yap\u0131lm\u0131\u015ft\u0131r.",
+    "D": "IV. ad\u0131mda hata yap\u0131lm\u0131\u015ft\u0131r.",
+    "E": "Yap\u0131lan i\u015flemler do\u011frudur."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T024_03",
+   "basili_no": 3,
+   "govde": "Nuri 345 say\u0131s\u0131n\u0131 11 say\u0131s\u0131n\u0131 b\u00f6lmek istemi\u015f ve a\u015fa\u011f\u0131daki noktaya kadar gelmi\u015ftir.\n345 | 11\n\u221233 | 31,36\n15\n\u221211\n40\n\u221233\n70\n\u221266\n4\nBuna g\u00f6re,\n\u221a(8131,(36) \u2212 345/11)\ni\u015fleminin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "30",
+    "B": "39",
+    "C": "81",
+    "D": "90",
+    "E": "99"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T024_11",
+   "basili_no": 11,
+   "govde": "Paydas\u0131 herhangi bir pozitif tam say\u0131 olan pozitif kesirler her defas\u0131nda pay 1 art\u0131r\u0131larak s\u0131rayla yaz\u0131lacakt\u0131r. Yaz\u0131lma s\u0131ras\u0131 gelen kesir, bir devirli ondal\u0131kl\u0131 say\u0131 belirtiyor ise bu kesre bir y\u0131ld\u0131z i\u015fareti konulacakt\u0131r.\n\u00d6rnek: paydas\u0131 6 olan pozitif kesirler,\n\u26051/6, \u26052/6, 3/6, \u26054/6, \u26055/6, 6/6, \u26057/6, ...\nbi\u00e7iminde yaz\u0131lmaktad\u0131r. Pervin isimli bir \u00f6\u011frenci paydas\u0131 12 olan pozitif kesirleri yukar\u0131da belirtildi\u011fi gibi yazacakt\u0131r.\nPervin, de\u011feri 1\u2019den b\u00fcy\u00fck olan kesir yazmad\u0131\u011f\u0131na g\u00f6re, <u>en \u00e7ok</u> ka\u00e7 tane y\u0131ld\u0131z i\u015fareti kullanm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "5",
+    "B": "6",
+    "C": "7",
+    "D": "8",
+    "E": "9"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T025_07",
+   "basili_no": 7,
+   "govde": "Bir s\u0131navda Alp, Bet\u00fcl ve Cezmi\u2019nin \u00e7\u00f6zd\u00fc\u011f\u00fc toplam soru[??] say\u0131s\u0131 13\u2019ten fazlad\u0131r. E\u011fer Alp, 3 soru daha \u00e7\u00f6zseydi Bet\u00fcl ve Cezmi\u2019nin \u00e7\u00f6zd\u00fc\u011f\u00fc toplam soru say\u0131s\u0131ndan daha fazla soru \u00e7\u00f6zm\u00fc\u015f olacakt\u0131. Alp, Cezmi\u2019den daha az soru \u00e7\u00f6zm\u00fc\u015f ve her ikisi de 8\u2019den az soru \u00e7\u00f6zm\u00fc\u015flerdir.\nBuna g\u00f6re, Bet\u00fcl ka\u00e7 soru \u00e7\u00f6zm\u00fc\u015ft\u00fcr?",
+   "sikler": {
+    "A": "0",
+    "B": "1",
+    "C": "2",
+    "D": "3",
+    "E": "4"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T025_10",
+   "basili_no": 10,
+   "govde": "\u25b3 \u2b20 \u25b3 \u25cb | | \u015fekilleri yukar\u0131da verilen terazilere konuldu\u011funda sadece I ve III nolu teraziler dengede kalm\u0131\u015ft\u0131r.\nBuna g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisi do\u011frudur?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T026_04",
+   "basili_no": 4,
+   "govde": "A, B ve C kentleri ayn\u0131 hat \u00fczerinde \u00fc\u00e7 \u015fehirdir. A\u015fa\u011f\u0131da verilen tabloda A, B ve C kentleri aras\u0131nda yap\u0131lan yolculuklardaki \u00fccretlendirme g\u00f6sterilmi\u015ftir.\n\u00d6rne\u011fin; B kentinden C kentine gitmek isteyen bir ki\u015fi 6 TL \u00f6demektedir.\nVar\u0131\u015f Noktas\u0131\nKalk\u0131\u015f Noktas\u0131 | A | B | C\nA | - | x | 3x\nB | 6 | - | 6\nC | 8 | 4 | -\nI. Durum: Bir ki\u015fi do\u011frusal bir yolda A kentinden yolculu\u011fa ba\u015flayarak A ve C kentleri aras\u0131ndaki B kentine u\u011frayarak C kentine ula\u015facakt\u0131r. D\u00f6n\u00fc\u015fte yine ayn\u0131 yollar\u0131 kullanarak A kentine geri d\u00f6necektir.\nII. Durum: A kentinden yola \u00e7\u0131k\u0131p A ve C kentleri aras\u0131ndaki B kentine u\u011framadan do\u011frudan C kentine var\u0131p, d\u00f6n\u00fc\u015fte yine ayn\u0131 yolu kullanarak A kentine geri d\u00f6necektir.\nBu ki\u015finin I. durumda \u00f6dedi\u011fi \u00fccret, II. durumda \u00f6dedi\u011fi \u00fccretten fazla oldu\u011funa g\u00f6re, x'in alabilece\u011fi en b\u00fcy\u00fck tam say\u0131 de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "7",
+    "B": "6",
+    "C": "5",
+    "D": "4",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T027_02",
+   "basili_no": 2,
+   "govde": "Ayla ile Berk'in ya\u015flar\u0131 tam say\u0131d\u0131r ve toplamlar\u0131 36 d\u0131r. Ya\u015flar\u0131 ile ilgili a\u015fa\u011f\u0131daki \u00f6nermeler verilmi\u015ftir.\n\u2022 Ayla'n\u0131n ya\u015f\u0131n\u0131n 5 kat\u0131, Berk'in ya\u015f\u0131n\u0131n 8 kat\u0131ndan b\u00fcy\u00fckt\u00fcr.\n\u2022 Ayla'n\u0131n ya\u015f\u0131n\u0131n 2 kat\u0131. Berk'in ya\u015f\u0131n\u0131n 3 kat\u0131ndan b\u00fcy\u00fckt\u00fcr.\nBu \u00f6nermelerden sadece biri do\u011fru oldu\u011funa g\u00f6re, Ayla ile Berk'in ya\u015flar\u0131n\u0131n fark\u0131n\u0131n mutlak de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "4",
+    "B": "6",
+    "C": "7",
+    "D": "8",
+    "E": "10"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T027_08",
+   "basili_no": 8,
+   "govde": "Bir ma\u00e7ta ev sahibi tak\u0131m M, konuk tak\u0131m N ise oynanan ma\u00e7 M-N dir. Bir R-S ma\u00e7\u0131n\u0131n sonucu x-y ise x say\u0131s\u0131 R'nin, y say\u0131s\u0131 ise S'nin att\u0131\u011f\u0131 gol say\u0131s\u0131d\u0131r.\nKonuk Tak\u0131m\nEv Sahibi Tak\u0131m | A | B | C\nA | - | 4-0 | 1-3\nB | 2-3 | - | a-5\nC | a-3 | b-a | -\nYukar\u0131daki tabloda \u00fc\u00e7 tak\u0131m\u0131n birbirleriyle oynad\u0131klar\u0131 ma\u00e7lar\u0131n skorlar\u0131 g\u00f6sterilmi\u015ftir. C tak\u0131m\u0131 her ma\u00e7\u0131 kazanm\u0131\u015f, B tak\u0131m\u0131 hi\u00e7 ma\u00e7 kazanamam\u0131\u015ft\u0131r.\nBuna g\u00f6re, a + b toplam\u0131 <u>en az</u> ka\u00e7 olabilir?",
+   "sikler": {
+    "A": "6",
+    "B": "7",
+    "C": "8",
+    "D": "9",
+    "E": "10"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T027_10",
+   "basili_no": 10,
+   "govde": "Bir \u00f6\u011frenci yukar\u0131da bulunan say\u0131 do\u011frusundaki taral\u0131 k\u0131s\u0131mlardaki say\u0131lar\u0131n (s\u0131f\u0131r hari\u00e7) \u00e7arpma i\u015flemine g\u00f6re terslerini alacak olursa a\u015fa\u011f\u0131daki say\u0131lardan ka\u00e7 tanesini kesinlikle <u>bulamaz</u>?\nI. 330\nII. 1/2\nIII. 10^8\nIV. \u22121/2\nV. 300",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T027_11",
+   "basili_no": 11,
+   "govde": "Sekiz \u00f6\u011frenci iki\u015fer ki\u015filik d\u00f6rt gruba ayr\u0131l\u0131yor ve her gruptaki iki \u00f6\u011frenci kendi aras\u0131nda \u201cb\u00fcy\u00fck say\u0131 yazma\u201d oyunu oynuyor. Bu oyunda ki\u015filer, x reel say\u0131 olmak \u00fczere, x'e ba\u011fl\u0131 ya da x'e ba\u011fl\u0131 olmayan birer say\u0131 yaz\u0131yorlar. Hangi \u00f6\u011frencinin yazd\u0131\u011f\u0131 say\u0131 rakibinin yazd\u0131\u011f\u0131ndan <u>kesinlikle</u> b\u00fcy\u00fckse oyunu kazan\u0131yor. Oyunda \u201c\u015fu say\u0131 kesinlikle b\u00fcy\u00fckt\u00fcr.\u201d denilememi\u015fse iki oyuncu da diskalifiye oluyor.\n1. oyun ve yaz\u0131lan say\u0131lar:\nEda : x + 3\nSeda : 2x\n2. oyun ve yaz\u0131lan say\u0131lar:\nOya : x\nP\u0131nar : x^2\n3. oyun ve yaz\u0131lan say\u0131lar:\nCan : 10^10\nHakan : \u2212x\n4. oyun ve yaz\u0131lan say\u0131lar:\nBerk : 3(2x + 5)\nElif : 2(3x + 7)\nA\u015fa\u011f\u0131daki \u00f6\u011frencilerden hangisi diskalifiye <u>olmam\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Eda",
+    "B": "P\u0131nar",
+    "C": "Hakan",
+    "D": "Berk",
+    "E": "Can"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T028_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131daki ger\u00e7el say\u0131 do\u011frular\u0131nda a ve b say\u0131lar\u0131n\u0131n bu[??]lunduklar\u0131 aral\u0131klar g\u00f6sterilmi\u015ftir.\nBuna g\u00f6re, a\u00b7b say\u0131lar\u0131n\u0131n bulunduklar\u0131 aral\u0131k a\u015fa\u011f\u0131daki say\u0131 do\u011frular\u0131n\u0131n hangisinde do\u011fru ifade edilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) \u221212, 15",
+    "B": "(g\u00f6rsel \u015f\u0131k) \u221212, 15",
+    "C": "(g\u00f6rsel \u015f\u0131k) \u221212, 15",
+    "D": "(g\u00f6rsel \u015f\u0131k) 0, 15",
+    "E": "(g\u00f6rsel \u015f\u0131k) 0, 15"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T029_05",
+   "basili_no": 5,
+   "govde": "Ay\u015fe | a\nYe\u015fim | b\nEce | c\nEmre | d\n4 yanl\u0131\u015f\u0131n 1 do\u011fruyu g\u00f6t\u00fcrd\u00fc\u011f\u00fc 20 soruluk bir deneme s\u0131nav\u0131nda Ay\u015fe birinci. Ece sonuncu olmu\u015ftur. Emre'nin do\u011fru say\u0131s\u0131 yanl\u0131\u015f say\u0131s\u0131ndan fazla olup, Ye\u015fim'in yanl\u0131\u015f say\u0131s\u0131 t\u00fcm do\u011frular\u0131n\u0131 g\u00f6t\u00fcrm\u00fc\u015ft\u00fcr. \u00d6\u011frencilerin netleri a, b, c ve d dir.\nBuna g\u00f6re,\n\u221a((c \u2212 a \u2212 d)^2) + \u221a((b \u2212 d)^2) \u2212 \u221a(c^2)\ni\u015fleminin sonucu a\u015fa\u011f\u0131dakilerden hangsidir?",
+   "sikler": {
+    "A": "2d + a \u2212 b",
+    "B": "2d \u2212 2c + a",
+    "C": "a \u2212 b + d",
+    "D": "a + 2b + 2d",
+    "E": "a \u2212 2c + b"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T029_09",
+   "basili_no": 9,
+   "govde": "Market reyonlar\u0131nda \u00fcr\u00fcnlerin etiket fiyatlar\u0131 genellikle 2.25, 2.4, 2.33, 3.05, ... vb bi\u00e7imde oldu\u011fundan pek \u00e7ok kimse kafa kar\u0131\u015f\u0131kl\u0131\u011f\u0131 ya\u015far ve \u00fcr\u00fcnlerin fiyatlar\u0131n\u0131 k\u0131yaslayamaz.\nA\u015fa\u011f\u0131da iki farkl\u0131 s\u00fct markas\u0131n\u0131n sat\u0131\u015f fiyat\u0131 g\u00f6sterilmi\u015ftir.\na TL\nb TL\nBu etiket fiyatlar\u0131n\u0131 g\u00f6ren Hayriye Teyze arada ka\u00e7 TL fark oldu\u011funu anlayamam\u0131\u015f ve bir g\u00f6revliye fiyat fark\u0131n\u0131 sormu\u015ftur. G\u00f6revli hangisinin daha pahal\u0131 oldu\u011funu belirtmeden aralar\u0131nda 2 TL fark oldu\u011funu s\u00f6ylemi\u015ftir.\nBuna g\u00f6re, |ax \u2212 bx| = 6 denkleminin k\u00f6kleri \u00e7arp\u0131m\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "\u221218",
+    "B": "\u22129",
+    "C": "0",
+    "D": "9",
+    "E": "18"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T030_07",
+   "basili_no": 7,
+   "govde": "x | y | z\n2 | 1\nx, y ve z say\u0131lar\u0131n\u0131n farklar\u0131n\u0131n mutlak de\u011ferleri bir alt kutucukta g\u00f6sterilmi\u015ftir.\nBuna g\u00f6re, bu say\u0131lar\u0131n say\u0131 do\u011frusundaki s\u0131ralan\u0131\u015f\u0131 a\u015fa\u011f\u0131dakilerden hangisi olamaz?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) x z y",
+    "B": "(g\u00f6rsel \u015f\u0131k) z y x",
+    "C": "(g\u00f6rsel \u015f\u0131k) y z x",
+    "D": "(g\u00f6rsel \u015f\u0131k) z x y",
+    "E": "(g\u00f6rsel \u015f\u0131k) x y z"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T030_11",
+   "basili_no": 11,
+   "govde": "A\u015fa\u011f\u0131da bir g\u00f6kdelenin asans\u00f6rlerinden birindeki tu\u015flar g\u00f6sterilmi\u015ftir. Tu\u015flarda bulunan say\u0131lar, \u015fekildeki d\u00fczende yerle\u015ftirilmi\u015ftir ve bu say\u0131lar g\u00f6kdelenin katlar\u0131d\u0131r.\n54 | 55 | 56 | 57\n\u22ee\n2 | 3 | 4 | 5\n\u22122 | \u22121 | 0 | 1\n\u22126 | \u22125 | \u22124 | \u22123\nBu g\u00f6kdelende birer ofisi olan B\u00fclent ve Can bu asans\u00f6re binmi\u015ftir. B\u00fclent ofisine gitmek i\u00e7in \u00fczerinde x yazan tu\u015fa, Can ise y yazan tu\u015fa basm\u0131\u015ft\u0131r.\n|x \u2212 1| < 6\n|y + 1| < 40\noldu\u011funa g\u00f6re, Can'\u0131n ofisi B\u00fclent'in ofisinden <u>en</u> <u>fazla</u> ka\u00e7 kat yukar\u0131da olabilir?",
+   "sikler": {
+    "A": "40",
+    "B": "41",
+    "C": "42",
+    "D": "43",
+    "E": "44"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T031_08",
+   "basili_no": 8,
+   "govde": "- | 8 | (taral\u0131) | - | - | 6 | - | (taral\u0131)\nYukar\u0131da verilen \u015fekildeki rakam yaz\u0131lmam\u0131\u015f her kutuya 1, 2, 3, 4, 5 ve 7 rakamlar\u0131ndan farkl\u0131 biri yaz\u0131lacakt\u0131r. Herhangi ard\u0131\u015f\u0131k iki kutuya yaz\u0131lacak rakamlar p ve q olmak \u00fczere,\n|p \u2212 q| \u2265 4 t\u00fcr.\nBuna g\u00f6re, taral\u0131 kutulara yaz\u0131lacak olan rakamlar\u0131n \u00e7arp\u0131m\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "24",
+    "B": "20",
+    "C": "18",
+    "D": "15",
+    "E": "1[??]"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T032_06",
+   "basili_no": 6,
+   "govde": "BA\u015eLA\na ve b rakam\u0131\na = 2\nb = 3\n|a^2 \u2212 b^2| \u2212 c\nc < 15 veya asal say\u0131\nHay\u0131r: c \u2265 15 ve asal say\u0131\nEvet: a say\u0131s\u0131na 1 ekle\nb say\u0131s\u0131na 1 ekle\nHay\u0131r: a say\u0131s\u0131na 2 ekle\nEvet: c say\u0131s\u0131n\u0131 ekrana yazd\u0131r\nB\u0130T\u0130\u015e\nYukar\u0131da bir bilgisayar algoritmas\u0131n\u0131n i\u015fleyi\u015fi verilmi\u015ftir.\nBu algoritmaya ba\u015flang\u0131\u00e7ta girilen a ve b de\u011ferleri i\u00e7in ekrana d\u00f6ng\u00fc sonunda yazd\u0131r\u0131lan c say\u0131s\u0131n\u0131n rakamlar\u0131 toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "6",
+    "B": "7",
+    "C": "8",
+    "D": "9",
+    "E": "10"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T033_06",
+   "basili_no": 6,
+   "govde": "Bir pizzac\u0131da, s\u0131cakl\u0131\u011f\u0131 185 \u00b0C olan f\u0131r\u0131ndan al\u0131nan pizzal[??] m\u00fc\u015fterilere servis edilmek \u00fczere taba\u011fa konulmu\u015ftur. Pizzan\u0131n s\u0131cakl\u0131\u011f\u0131 ancak 65 \u00b0C'ye d\u00fc\u015ft\u00fc\u011f\u00fcnde \u00e7atal ka\u015f\u0131k kullanmadan elle yenilebilmektedir.\nPizzan\u0131n s\u0131cakl\u0131\u011f\u0131n\u0131n (\u00b0C) zamana (dakika) ba\u011fl\u0131 fonksiyonu,\nf(t) = 160 \u00b7 2^(\u22120,8t) + 25\noldu\u011funa g\u00f6re, m\u00fc\u015fteriler f\u0131r\u0131ndan yeni \u00e7\u0131kan pizzay\u0131 <u>en az</u> ka\u00e7 dakika sonra elle yiyebilir?",
+   "sikler": {
+    "A": "2",
+    "B": "2,5",
+    "C": "4",
+    "D": "4,5",
+    "E": "7,5"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T034_03",
+   "basili_no": 3,
+   "govde": "x@y i\u015flemi, x + y toplam\u0131yla elde edilen say\u0131n\u0131n sa\u011f\u0131na x + y tane s\u0131f\u0131r rakam\u0131 yaz\u0131larak sonu\u00e7land\u0131r\u0131l\u0131r.\n\u00d6rnek 1: 2@3 = 500000\n\u00d6rnek 2: 7@22 = 29000...000 (29 tane 0)\nBuna g\u00f6re,\n(1@0) \u00b7 (1@1) \u00b7 (1@2) \u00b7 (1@3) \u00b7 (1@4)\ni\u015fleminin sonucu ka\u00e7 basamakl\u0131d\u0131r?",
+   "sikler": {
+    "A": "10",
+    "B": "14",
+    "C": "16",
+    "D": "17",
+    "E": "18"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T034_05",
+   "basili_no": 5,
+   "govde": "Elektrik ve bilgisayar biliminde veri saklama birimine \"Bayt (b)\" denir.\n1 Kilobayt (Kb) = 1024 Bayt\n1 Megabayt (Mb) = 1024 Kilobayt\n1 Gigabayt (Gb) = 1024 Megabayt\n1Terabayt (Tb) = 1024 Gigabayt\nYukar\u0131da baz\u0131 bellek \u00f6l\u00e7\u00fc birimleri verilmi\u015ftir.\nBuna g\u00f6re,\n(2000 b \u00b7 5 Tb)/(2^31 Kb)\ni\u015fleminin sonucu ka\u00e7 b'dir?",
+   "sikler": {
+    "A": "2^10\u00b710",
+    "B": "125\u00b710^2",
+    "C": "5\u00b710^3",
+    "D": "10^4",
+    "E": "25\u00b710^2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T034_10",
+   "basili_no": 10,
+   "govde": "Buzdan olu\u015fan bir k\u00fcp her saniye hacminin 1/3'\u00fcn\u00fc kaybetmektedir.\nBirinci saniye sonunda k\u00fcp\u00fcn hacmi (3^10)/(2^5) cm^3 oldu\u011funa g\u00f6re, ilk 10 saniye sonunda hacmi ka\u00e7 cm^3 olur?",
+   "sikler": {
+    "A": "96",
+    "B": "81",
+    "C": "64",
+    "D": "54",
+    "E": "48"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T034_11",
+   "basili_no": 11,
+   "govde": "\u25b3(a) = (a/3)^3\ne\u015fitli\u011fi veriliyor.\nBuna g\u00f6re,\n\u25b3(3) : \u25b3(\u25b3(1/3))\ni\u015fleminin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "3^(\u221218)",
+    "B": "3^(\u221212)",
+    "C": "3^12",
+    "D": "3^18",
+    "E": "3^21"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T035_01",
+   "basili_no": 1,
+   "govde": "Nanometre g\u00f6zle g\u00f6r\u00fclemeyen maddelerin b\u00fcy\u00fckl\u00fc\u011f\u00fcn\u00fc \u00f6l\u00e7mek i\u00e7in kullan\u0131lan bir \u00f6l\u00e7\u00fc birimidir.\nNanometre; metrenin milyarda biri kadard\u0131r.\n250 nm | 10^(\u22121) nm | 2 nm | 10^(\u22126) nm | 10 nm\nVir\u00fcs | Su Molek\u00fcl\u00fc | DNA Zinciri | Sa\u00e7 Teli | Protein\nYukar\u0131da baz\u0131 biyolojik terimlerin nanometre cinsinden b\u00fcy\u00fckl\u00fckleri verilmi\u015ftir.\nBuna g\u00f6re, Yukar\u0131da verilen biyolojik terimlerin t\u00fcm\u00fcn\u00fcn b\u00fcy\u00fckl\u00fckleri \u00e7arp\u0131m\u0131 ka\u00e7 metredir?",
+   "sikler": {
+    "A": "0,005",
+    "B": "0,002",
+    "C": "0,05",
+    "D": "0,02",
+    "E": "0,5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T035_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131da tek ki\u015filik bir kuyrukta \u0130lker'in konumu g\u00f6sterilmi\u015ftir.\nBa\u015ftan 1. ki\u015fi\n\u0130lker\nBa\u015ftan 3^n. ki\u015fi\nSondan 5^n. ki\u015fi\nn tam say\u0131 ve kuyrukta 151 ki\u015fi oldu\u011funa g\u00f6re, n^2 say\u0131s\u0131n\u0131n 5'e b\u00f6l\u00fcm\u00fcnden kalan ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "0",
+    "B": "1",
+    "C": "2",
+    "D": "3",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T035_07",
+   "basili_no": 7,
+   "govde": "A\u015fa\u011f\u0131daki zar\u0131n her bir y\u00fczeyine 2^7, 2^8, 2^9, 2^10, 2^11 ve 2^[??] say\u0131lar\u0131ndan farkl\u0131 biri yaz\u0131lm\u0131\u015ft\u0131r.\nBu zar\u0131n kar\u015f\u0131l\u0131kl\u0131 iki y\u00fczeyindeki say\u0131lar\u0131 \u00e7arpan biri, hangi kar\u015f\u0131l\u0131kl\u0131 iki y\u00fczeyi se\u00e7erse se\u00e7sin hep ayn\u0131 \u00e7arp\u0131m sonucunu bulmu\u015ftur.\nBuna g\u00f6re, A k\u00f6\u015fesinde kesi\u015fen y\u00fczeylerdeki say\u0131lar toplam\u0131n\u0131n, B k\u00f6\u015fesinde kesi\u015fen y\u00fczeylerdeki say\u0131lar toplam\u0131na oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "2^(\u22121)",
+    "B": "2",
+    "C": "2^4",
+    "D": "2^6",
+    "E": "2^8"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T035_10",
+   "basili_no": 10,
+   "govde": "B\u0130LG\u0130: m basamakl\u0131 bir do\u011fal say\u0131 ile n basamakl\u0131 bir d[??]\u011fal say\u0131 \u00e7arp\u0131ld\u0131\u011f\u0131nda m + n ya da m + n \u2212 1 basamakl\u0131 say\u0131 elde edilir.\nBora, biri 7, biri 8 ve biri 9 basamakl\u0131 \u00fc\u00e7 do\u011fal say\u0131y\u0131 \u00e7arpm\u0131\u015f ve n basamakl\u0131 bir do\u011fal say\u0131 bulmu\u015ftur.\nBuna g\u00f6re, n'nin de\u011ferler toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "47",
+    "B": "56",
+    "C": "65",
+    "D": "69",
+    "E": "72"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T036_02",
+   "basili_no": 2,
+   "govde": "Bir yerle\u015fim b\u00f6lgesinde otomobil plakalar\u0131na tam kare say\u0131lar yaz\u0131lmaktad\u0131r. Bu b\u00f6lgedeki baz\u0131 plakalar a\u015fa\u011f\u0131daki gibidir.\n[4] [9] [121] [2^10] [9^7]\n2^10 \u2192 (2^5)^2\n9^7 \u2192 (3^7)^2\nA\u015fa\u011f\u0131da bu b\u00f6lgede ya\u015fayan Cemil'in iki otomobili g\u00f6sterilmi\u015ftir.\nx > 5^12 oldu\u011funa g\u00f6re, x'in <u>en k\u00fc\u00e7\u00fck</u> de\u011feri a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "5^12 + 1",
+    "B": "5^12 + 4",
+    "C": "(5^6 + 1)^2",
+    "D": "6^12",
+    "E": "5^14"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T036_06",
+   "basili_no": 6,
+   "govde": "x | 2^x\n9 | 10^(2.7)\n10 | 10^(3.01)\n11 | 10^(3.32)\n12 | 10^(3.63)\nDikd\u00f6rtgen \u015feklindeki bir ka\u011f\u0131t \u015fekilde g\u00f6sterildi\u011fi gibi ortadan ikiye katlan\u0131yor. B\u00f6ylece ba\u015flang\u0131\u00e7taki alan\u0131n yar\u0131s\u0131na e\u015fit olan iki par\u00e7a elde ediliyor. Bu katlama i\u015flemi n kez tekrarland\u0131\u011f\u0131nda her par\u00e7a t\u00fcm ka\u011f\u0131d\u0131n 1/10^6's\u0131ndan daha k\u00fc\u00e7\u00fck par\u00e7alara ayr\u0131labiliyor.\nBuna g\u00f6re, n'nin en k\u00fc\u00e7\u00fck de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "16",
+    "B": "18",
+    "C": "19",
+    "D": "20",
+    "E": "21"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T037_03",
+   "basili_no": 3,
+   "govde": "A\u015fa\u011f\u0131da her g\u00fcn \u221ax cm uzayan bir bitkiye ait bilgiler verilmi\u015ftir.\n90 cm\n12. g\u00fcn sonu\n96 cm\n15. g\u00fcn sonu\nBuna g\u00f6re, x^2 + x toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "2",
+    "B": "6",
+    "C": "12",
+    "D": "20",
+    "E": "30"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T037_05",
+   "basili_no": 5,
+   "govde": "\u03c0^(0,(3)) \u00b7 \u221a(\u03c0\u221b\u03c0)\ni\u015fleminin sonucu a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "\u03c0",
+    "B": "\u221a\u03c0",
+    "C": "\u221b\u03c0",
+    "D": "\u03c0\u221a\u03c0",
+    "E": "[6]\u221a(\u03c0)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T037_07",
+   "basili_no": 7,
+   "govde": "Bir matematik \u00f6\u011fretmeni tahtaya \u015fekildeki say\u0131 do\u011frusun[??] \u00e7izdikten sonra \u00f6\u011frencilere, \"Okla g\u00f6sterdi\u011fim pembe renkli b\u00f6lgede olan bir irrasyonel say\u0131 yaz\u0131n.\" demi\u015ftir.\n\u00d6\u011fretmenin say\u0131 do\u011frusu \u00e7iziminde 7 ve 8 aras\u0131ndaki aral\u0131klar e\u015f oldu\u011funa g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisi \u00f6\u011frencilerin verebilece\u011fi bir do\u011fru cevap olabilir?\n(\u221a2 = 1,4 al\u0131n\u0131z.)",
+   "sikler": {
+    "A": "4 + \u03c0",
+    "B": "10 \u2212 \u03c0",
+    "C": "7, 6(8)",
+    "D": "7 + \u221a(0,5)",
+    "E": "\u03c0 + \u221a32"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T037_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131da bir otomobilin bir duvara do\u011fru geri geri geli\u015fi g\u00f6sterilmi\u015ftir. Otomobil duvara dik bir \u015fekilde geri gelmekte ve duvara \u00e7arpmas\u0131na \u221a10 metre mesafe kalm\u0131\u015ft\u0131r.\nBuna g\u00f6re, otomobil a\u015fa\u011f\u0131dakilerden hangisi kadar daha geri gelirse duvara \u00e7arpar?",
+   "sikler": {
+    "A": "3 metre",
+    "B": "(\u221a2 + 1)metre",
+    "C": "[4]\u221a(99) metre",
+    "D": "\u221b65",
+    "E": "\u03c0 \u2212 1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T037_09",
+   "basili_no": 9,
+   "govde": "A bir pozitif tam say\u0131 olmak \u00fczere,\n[<]\u221a(A): A'n\u0131n karek\u00f6k\u00fcnden k\u00fc\u00e7\u00fck en b\u00fcy\u00fck tam say\u0131.\n[>]\u221a(A): A'n\u0131n karek\u00f6k\u00fcnden b\u00fcy\u00fck en k\u00fc\u00e7\u00fck tam say\u0131.\nBuna g\u00f6re,\n[>]\u221a([>]\u221a(123)) \u2212 [<]\u221a(3)\ni\u015fleminin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "3",
+    "B": "4",
+    "C": "5",
+    "D": "6",
+    "E": "8"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T037_11",
+   "basili_no": 11,
+   "govde": "Ka\u011f\u0131d\u0131n \u00f6n y\u00fcz\u00fc: \u25cf (mavi) | x | \u25cf (k\u0131rm\u0131z\u0131) | + | \u25cf (gri) | =\nKa\u011f\u0131d\u0131n arka y\u00fcz\u00fc: : | \u25a0 (mavi) | + | \u25a0 (k\u0131rm\u0131z\u0131) | = | \u25a0 (gri)\n\u25cf (mavi) = 5\u221a2\n\u25cf (k\u0131rm\u0131z\u0131) = 4\n\u25cf (gri) = 10^(\u22129)\n\u25a0 (mavi) = 10^(\u22127)\n\u25a0 (k\u0131rm\u0131z\u0131) = \u221a2\n\u25a0 (gri) = \u221a8\nYukar\u0131da e\u015f karelerden olu\u015fmu\u015f bir ka\u011f\u0131d\u0131n \u00f6n ve arka y\u00fczleri verilmi\u015ftir.\n\u00d6rne\u011fin; \u0130\u015flemi yazan karenin arkas\u0131nda \u25cf (mavi) sembol\u00fc vard\u0131r. \u00d6\u011frenci ka\u011f\u0131d\u0131n \u00f6n y\u00fcz\u00fcn\u00fc sa\u011f taraftan ka\u011f\u0131d\u0131n alan\u0131n\u0131n 2/3'\u00fc kalacak \u015fekilde katl\u0131yor. Daha sonra sol taraftan ka\u011f\u0131d\u0131n ilk haliyle alan\u0131n\u0131n 2/3'\u00fc kalacak \u015fekilde katlan\u0131yor.\nBuna g\u00f6re, \u00f6\u011frencinin kar\u015f\u0131s\u0131na \u00e7\u0131kan i\u015flemlerin sonucunun fark\u0131n\u0131n mutlak de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "92",
+    "B": "84",
+    "C": "80",
+    "D": "76",
+    "E": "72"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T038_02",
+   "basili_no": 2,
+   "govde": "Bir miktar bilye 2 ki\u015fi ya da 4 ki\u015fi aras\u0131nda payla\u015ft\u0131r\u0131ld\u0131\u011f\u0131nda ki\u015filer a\u015fa\u011f\u0131daki iki \u015fekilde g\u00f6sterildi\u011fi kadar bilye alm\u0131\u015ft\u0131r.\n\u015eekil 1 (Bilyeleri 2 ki\u015fi payla\u015f\u0131rsa)\n\u221ax tane\n\u221ax tane\n\u015eekil 2 (Ayn\u0131 bilyeleri 4 ki\u015fi payla\u015f\u0131rsa)\n[[??]]\u221a(x) tane\n[[??]]\u221a(x) tane\n[[??]]\u221a(x) tane\n[[??]]\u221a(x) tane\n\u0130ki payla\u015f\u0131mda da hi\u00e7 bilye artmad\u0131\u011f\u0131na g\u00f6re, payla\u015ft\u0131r\u0131lan bilye say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "8",
+    "B": "16",
+    "C": "27",
+    "D": "36",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T038_10",
+   "basili_no": 10,
+   "govde": "Bir A say\u0131s\u0131n\u0131n karek\u00f6k\u00fc (\u221aA) yakla\u015f\u0131k de\u011feri \u015f\u00f6yle bulunur.\nA say\u0131s\u0131na en yak\u0131n tam kare say\u0131 B olmak \u00fczere,\n\u221aA \u2248 (A + B)/(2\u221aB) dir.\n\u00d6rne\u011fin; \u221a17 say\u0131s\u0131n\u0131n yakla\u015f\u0131k de\u011feri,\n\u221a17 \u2248 (17 + 16)/(2\u221a16) \u2248 33/8 \u2248 4,125 dir.\nBuna g\u00f6re,\n\u221ax \u2248 69/y \u2248 5,75\ni\u015flemi i\u00e7in x + y toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "42",
+    "B": "45",
+    "C": "48",
+    "D": "54",
+    "E": "56"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T038_12",
+   "basili_no": 12,
+   "govde": "\u25b3(x) = \u221a(1 + \u25b3(x \u2212 1))\n\u25b3(1) = 63\ne\u015fitlikleri veriliyor.\nBuna g\u00f6re,\n\u25b3(2008) \u2212 \u25b3(2009)^(\u25b3(4))\ni\u015fleminin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "\u22122",
+    "B": "\u22121/2",
+    "C": "\u22121",
+    "D": "1/2",
+    "E": "2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T039_03",
+   "basili_no": 3,
+   "govde": "A\u015fa\u011f\u0131da yerden y\u00fckseklikleri verilen iki masan\u0131n \u00fczerinden d\u00fc\u015fen iki ayn\u0131 oyunca\u011f\u0131n durumu g\u00f6sterilmi\u015ftir.\n\u221ax cm\n2^y cm\nOyunca\u011f\u0131n kullan\u0131m k\u0131lavuzunda \u201cEn \u00e7ok 80 cm y\u00fcksekten d\u00fc\u015fmeye kar\u015f\u0131 dayan\u0131kl\u0131d\u0131r.\u201d yazmaktad\u0131r.\nx ve y birer pozitif tam say\u0131 oldu\u011funa g\u00f6re,\nx \u2212 y fark\u0131n\u0131n <u>en b\u00fcy\u00fck</u> de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "6391",
+    "B": "6392",
+    "C": "6393",
+    "D": "6394",
+    "E": "6395"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T039_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131daki alt k\u0131sm\u0131 cm birimine g\u00f6re \u00f6l\u00e7\u00fcm yapan norma[??] bir cetvel verilmi\u015ftir. Bu cetvelin \u00fcst k\u0131sm\u0131na, ard\u0131\u015f\u0131k do\u011fal say\u0131lar\u0131n karek\u00f6kleri de\u011ferlerine g\u00f6re yerle\u015ftirilmi\u015ftir. Alt k\u0131s\u0131mda her kom\u015fu iki say\u0131n\u0131n aras\u0131 on e\u015f par\u00e7aya, \u00fcst k\u0131s\u0131mda her kom\u015fu iki say\u0131n\u0131n aras\u0131 d\u00f6rt e\u015f par\u00e7aya b\u00f6l\u00fcnm\u00fc\u015ft\u00fcr.\nTunahan bu cetvelle a\u015fa\u011f\u0131daki \u00f6l\u00e7\u00fcm\u00fc yapm\u0131\u015ft\u0131r.\nBuna g\u00f6re, Tunahan kalemin boyunu ka\u00e7 cm bulmu\u015ftur?",
+   "sikler": {
+    "A": "1,5",
+    "B": "3\u221a2/4",
+    "C": "(\u221a2 + 1)/4",
+    "D": "(\u221a2 + 2)/4",
+    "E": "(\u221a2 + 3)/4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T039_07",
+   "basili_no": 7,
+   "govde": "\u0130\u015fleme al\u0131nan say\u0131 25\nA Karek\u00f6k al\nC 1 ekle\nB K\u00fcpk\u00f6k al\nD %8 art\u0131r\nBa\u015flat\nSonu\u00e7 2\nYukar\u0131da bir i\u015flem makinesi g\u00f6sterilmi\u015ftir. Bu makineyi kullanmak isteyen biri, \u00f6nce yapmak istedi\u011fi i\u015flemleri t\u0131klayarak se\u00e7mekte sonra ba\u015flat tu\u015funa basmaktad\u0131r. Makine, se\u00e7ilen i\u015flemleri se\u00e7ilme s\u0131ras\u0131na g\u00f6re yapmaktad\u0131r.\n\u00d6rne\u011fin; Kullan\u0131c\u0131 \u00f6nce A sonra B i\u015flemini t\u0131klay\u0131p ba\u015flat tu\u015funa basm\u0131\u015f ise, makine i\u015fleme al\u0131nan say\u0131ya \u00f6nce A i\u015flemini uygulamakta, sonra da buldu\u011fu sonuca B i\u015flemini uygulamaktad\u0131r.\n\u00d6zhan \u015fekilde de g\u00f6r\u00fcld\u00fc\u011f\u00fc gibi bu makinenin i\u015fleme al\u0131nan say\u0131 b\u00f6l\u00fcm\u00fcne 25 say\u0131s\u0131n\u0131 girmi\u015ftir. Sonra \u00d6zhan makinedeki t\u00fcm i\u015flemleri belli bir s\u0131rada t\u0131klayarak se\u00e7mi\u015f ve ba\u015flata basm\u0131\u015ft\u0131r. Makine se\u00e7ilen i\u015flemleri yap\u0131nca sonu\u00e7 g\u00f6stergesindeki de\u011feri bulmu\u015ftur.\nBuna g\u00f6re, \u00d6zhan'\u0131n se\u00e7ti\u011fi i\u015flem s\u0131ras\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "D-B-C-A",
+    "B": "D-C-A-B",
+    "C": "B-D-C-A",
+    "D": "B-D-A-C",
+    "E": "D-A-C-B"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T039_10",
+   "basili_no": 10,
+   "govde": "Alt\u0131n Oran; Matematik ve sanatta bir b\u00fct\u00fcn\u00fcn par\u00e7alar\u0131 aras\u0131nda g\u00f6zlemlenen uyum a\u00e7\u0131s\u0131ndan en yetkin boyutlar\u0131 verdi\u011fi san\u0131lan geometrik ve say\u0131sal bir oran ba\u011f\u0131nt\u0131s\u0131d\u0131r.\n\u03a6 = (1 + \u221a5)/2 \u2248 1,618\nolarak kabul edilir.\nT\u00fcrk liras\u0131 sembol\u00fc tasarlan\u0131rken alt\u0131n oran kullan\u0131lm\u0131\u015ft\u0131r.\nBurada, a/b = c/d = \u03a6 dir.\nBuna g\u00f6re,\nb = (22 \u00b7 (\u221a5 \u2212 1))/25\nbirim oldu\u011funda, a ka\u00e7 birim olmal\u0131d\u0131r?",
+   "sikler": {
+    "A": "1,97",
+    "B": "1,86",
+    "C": "1,76",
+    "D": "1,67",
+    "E": "1,55"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131da bir panelvan\u0131n tekerleklerinin yere de\u011fme noktalar\u0131 aras\u0131ndaki uzakl\u0131klar ve panelvan\u0131n en \u00fcst noktas\u0131 ile yer aras\u0131ndaki mesafe g\u00f6sterilmi\u015ftir.\n\u221ab/\u221ba metre\nb = 288 cm\na = 432 cm\n[6]\u221a2 = 1,1 kabul edilirse panelvan\u0131n en \u00fcst noktas\u0131n\u0131n yere uzakl\u0131\u011f\u0131 ka\u00e7 metre olur?",
+   "sikler": {
+    "A": "1,98",
+    "B": "2",
+    "C": "2,2",
+    "D": "2,21",
+    "E": "2,32"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_05",
+   "basili_no": 5,
+   "govde": "Bir kamyonun arka k\u0131sm\u0131n\u0131n sa\u011f ve sol yan\u0131nda iki\u015fer adet tekerlek vard\u0131r. Kamyonun ta\u015f\u0131d\u0131\u011f\u0131 y\u00fck x/2 tondan fazla olursa en arkadaki tekerlekler yere temas etmekte, aksi halde bu tekerlekler yere belli bir mesafe olacak bi\u00e7imde havada kalmaktad\u0131r.\n\u015eekil 1\n\u221bx ton\n\u015eekil 2\n\u221ay ton\nYukar\u0131daki iki \u015fekilde, bu kamyonun farkl\u0131 zamanlarda ta\u015f\u0131d\u0131\u011f\u0131 y\u00fck miktarlar\u0131 ve arka tekerleklerinin durumu g\u00f6sterilmi\u015ftir.\nx > 0 ve y > 0 oldu\u011funa g\u00f6re, y'nin <u>en k\u00fc\u00e7\u00fck</u> tam say\u0131 de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_07",
+   "basili_no": 7,
+   "govde": "Yar\u0131\u00e7ap\u0131 r birim olan bir dairenin \u00e7evresi, \"\u00c7 = 2\u03c0r\" ve alan\u0131 \"A = \u03c0r^2\" form\u00fclleriyle bulunur.\nA\u015fa\u011f\u0131da daire bi\u00e7iminde iki hal\u0131 g\u00f6sterilmi\u015ftir.\nAlan = a birimkare\n\u00c7evre = b birim\nAlan = b birimkare\nHal\u0131lar\u0131n alan ve \u00e7evre uzunluklar\u0131 \u015fekilde verildi\u011fi gibidir.\nBuna g\u00f6re, sa\u011fdaki hal\u0131n\u0131n \u00e7evre uzunlu\u011funun a t\u00fcr\u00fcnden e\u015fiti a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "\u221a(8\u03c0a)",
+    "B": "\u221b(8\u03c0a)",
+    "C": "[4]\u221a(8\u03c0a)",
+    "D": "\u221b(64\u03c0^2 a)",
+    "E": "[4]\u221a(64\u03c0^3 a)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_08",
+   "basili_no": 8,
+   "govde": "Bir stadyumun A kap\u0131s\u0131ndan giri\u015f yapacak ki\u015filer tek s\u0131ra halinde arka arkaya dizilerek bir kuyruk olu\u015fturmu\u015ftur.\nx, ki\u015filerin bu kuyruktaki s\u0131ras\u0131n\u0131 belirten say\u0131d\u0131r.\n\u00d6rne\u011fin; x = 10 ise ki\u015fi kuyrukta ba\u015ftan 10. s\u0131radad\u0131r.\n\u221b(x) < 9 ko\u015fulunu sa\u011flayan t\u00fcm ki\u015filer s\u0131ras\u0131na g\u00f6re birer birer A kap\u0131s\u0131ndan i\u00e7eri al\u0131nm\u0131\u015ft\u0131r.\nBuna g\u00f6re, A kap\u0131s\u0131ndan i\u00e7eri al\u0131nan ki\u015fi say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "728",
+    "B": "729",
+    "C": "730",
+    "D": "731",
+    "E": "732"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_09",
+   "basili_no": 9,
+   "govde": "\u25b3(2) \u25a1(4) \u2b21(2)\nYukar\u0131da verilen d\u00fczg\u00fcn \u00e7okgenlerin kenar say\u0131lar\u0131 i\u00e7lerine yaz\u0131lan say\u0131lar\u0131n k\u00f6k derecelerini g\u00f6stermek \u00fczere,\n(\u25b3(2) \u00b7 \u25a1(4))/\u2b21(2)\ni\u015fleminin sonucu a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) \u25a1(2)",
+    "B": "(g\u00f6rsel \u015f\u0131k) \u25b3(4)",
+    "C": "(g\u00f6rsel \u015f\u0131k) \u2b21(4)",
+    "D": "(g\u00f6rsel \u015f\u0131k) \u25a1 i\u00e7inde \u25b3(2)",
+    "E": "(g\u00f6rsel \u015f\u0131k) \u25b3 i\u00e7inde \u25a1(2)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_10",
+   "basili_no": 10,
+   "govde": "x > 1 olmak \u00fczere,\n10^x = 2 denkleminde x'in yakla\u015f\u0131k de\u011feri,\n10^1 = 10\n2^3 = 8\n10^2 = 100\n2^8 = 256\n10^3 = 1000\n2^10 = 1024\n1000 \u2248 1024 oldu\u011fundan, 10^3 \u2248 2^10 dur.\n\u21d2 10^(3/10) \u2248 2^(10/10)\n\u21d2 10^(0,3) \u2248 2\n\u21d2 x \u2248 0,3 t\u00fcr.\nBuna g\u00f6re, 10^x = 3 denklemi i\u00e7in 3^9 \u2248 20.000 verildi\u011fine g\u00f6re, x'in yakla\u015f\u0131k de\u011feri a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "0,4(7)",
+    "B": "0,24",
+    "C": "0,18",
+    "D": "0,12",
+    "E": "0,3(4)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T040_11",
+   "basili_no": 11,
+   "govde": "\u0130brahim \u00d6\u011fretmen, \u00f6\u011frencisi Aylin'e \u201c750.000.000 (yedi y\u00fcz elli milyon) say\u0131s\u0131n\u0131 hesap makinesine yaz\u0131p ka\u00e7 kez [2]\u221aX tu\u015funa basarsan tam k\u0131sm\u0131 bir basamakl\u0131 bir say\u0131 elde edersin?\u201d diye sorar. Aylin'e ipucu olarak, n ve A bir pozitif tam say\u0131 olmak \u00fczere,\n10^n < A < 10^(n + 1)\noldu\u011funu s\u00f6yler.\nBuna g\u00f6re, Aylin'in verece\u011fi do\u011fru cevap ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "3",
+    "B": "4",
+    "C": "5",
+    "D": "6",
+    "E": "8"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T042_02",
+   "basili_no": 2,
+   "govde": "30 tane A4 ka\u011f\u0131d\u0131 dergi yap\u0131lmak i\u00e7in \u00fcst \u00fcste konulup \u015fekildeki gibi tam ortadan ikiye katlan\u0131yor. Sayfalar 1'den ba\u015flamak \u00fczere numaraland\u0131r\u0131l\u0131yor.\nBuna g\u00f6re, 7. sayfan\u0131n oldu\u011fu yaprak i\u00e7inden \u00e7ekilirse, dergide ba\u015fka hangi numaral\u0131 sayfalar da eksik olur?",
+   "sikler": {
+    "A": "8, 9 ve 10",
+    "B": "8, 52 ve 53",
+    "C": "8, 53 ve 54",
+    "D": "8. 112 ve 113",
+    "E": "8, 113 ve 114"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T042_05",
+   "basili_no": 5,
+   "govde": "\u201cApartman oyunu\u201d her sat\u0131r ve her s\u00fctununda; 1, 2, 3 ve [??] katl\u0131 apartmanlar\u0131n sadece birer kez bulundu\u011fu 4\u00d74'l\u00fck bir tablo \u00fczerinde oynanan bir oyundur.\nBu oyunda oyuncu, tablonun herhangi bir sat\u0131r\u0131ndaki ya da herhangi bir s\u00fctunundaki d\u00f6rt apartmana bakacak \u015fekilde konum al\u0131r ve bu konumdan g\u00f6rebilece\u011fi apartman say\u0131s\u0131n\u0131 bulur.\n\u00d6rnek:\nBu oyunun tablosundaki baz\u0131 apartmanlar yukar\u0131daki g\u0131[??] olsun. Oyuncu A konumundan bak\u0131nca g\u00f6r\u00fc\u015f alan\u0131nda 1, 3, 2, 4 katl\u0131 apartmanlar olur ve 2 katl\u0131 apartman 3 katl\u0131n\u0131n arkas\u0131nda kald\u0131\u011f\u0131 i\u00e7in g\u00f6r\u00fclemez. Bu nedenle oyuncu A konumundan 1 katl\u0131, 3 katl\u0131 ve 4 katl\u0131 olmak \u00fczere 3 tane apartman g\u00f6r\u00fcr.\nSoru:\nAykut bu oyunu a\u015fa\u011f\u0131daki tabloda oynayacakt\u0131r. Tablodaki say\u0131lar apartmanlar\u0131n kat say\u0131lar\u0131d\u0131r.\na | b | c | 1\n4 | d | e | 3\nf | 3 | g | h\nj | 2 | k | m\nBuna g\u00f6re, Aykut \u015fekilde belirtilen konumlar\u0131n hangisinden bakarsa g\u00f6r\u00fclecek apartman say\u0131s\u0131 <u>en az</u> olur?",
+   "sikler": {
+    "A": "A",
+    "B": "B",
+    "C": "C",
+    "D": "D",
+    "E": "E"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T042_08",
+   "basili_no": 8,
+   "govde": "21 harfi olan bir alfabede ba\u015ftan 8, 9, 10, 11 ve 12. harfler s\u0131ras\u0131yla,\n\u00a3, \u03a9, \u221a, \u0178, \u2021\noldu\u011funa g\u00f6re, bu alfabede sondan 12. harf a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "\u00a3",
+    "B": "\u03a9",
+    "C": "\u221a\u203e",
+    "D": "\u0178",
+    "E": "\u2021"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T043_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131da yan yana duran d\u00f6rt e\u015f karenin k\u00f6\u015feleri verilmi\u015ftir. Her kom\u015fu iki karenin iki k\u00f6\u015fesi ortakt\u0131r. \u015eekildeki her bir say\u0131, i\u00e7inde bulundu\u011fu karenin ka\u00e7 kenar\u0131n\u0131n \u00e7izilece\u011fini g\u00f6stermektedir.\nBuna g\u00f6re, verilen say\u0131lara uygun \u00e7izim yap\u0131ld\u0131\u011f\u0131nda <u>en az</u> ka\u00e7 kenar \u00e7izilir?",
+   "sikler": {
+    "A": "5",
+    "B": "6",
+    "C": "7",
+    "D": "8",
+    "E": "9"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T043_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131da mini bir klavye verilmi\u015ftir.\nCapsLk | . | -\nabc | \u00e7de | fg\u011f | h\u0131i\njkl | mn | o\u00f6 | pqr\ns\u015f | tu\u00fc | vw | xyz\n\u2022 Herhangi bir harf tu\u015funa; bir kez bas\u0131nca o tu\u015ftaki ilk harf, art arda iki kez bas\u0131nca ikinci harf, art arda \u00fc\u00e7 kez bas\u0131nca \u00fc\u00e7\u00fcnc\u00fc harf yaz\u0131lmaktad\u0131r.\n\u2022 CapsLk tu\u015funa bir kez bas\u0131nca b\u00fcy\u00fck harf yazma moduna ge\u00e7ilmi\u015f olmakta ve yukar\u0131da anlat\u0131lanlar\u0131n t\u00fcm\u00fc b\u00fcy\u00fck harf yazmak i\u00e7in ge\u00e7erli olmaktad\u0131r.\n\u2022 B\u00fcy\u00fck harf yazma modunu devreden \u00e7\u0131kar\u0131p k\u00fc\u00e7\u00fck harf yazmak istenirse CapsLk tu\u015funa bir kez daha bas\u0131lmal\u0131d\u0131r.\n\u2022 Bo\u015fluk b\u0131rakmak istenirse, her bir bo\u015fluk i\u00e7in \u23b5 tu\u015funa bir kez bas\u0131lmal\u0131d\u0131r.\nA\u015fa\u011f\u0131da \u00fc\u00e7 ayr\u0131 ifadenin bu klavyede tu\u015flara en az ka\u00e7 kez bas\u0131larak yaz\u0131ld\u0131\u011f\u0131 verilmi\u015ftir. Bu ifadelerden her biri yaz\u0131lmaya ba\u015flanmadan \u00f6nce klavye k\u00fc\u00e7\u00fck harf yazma modundad\u0131r.\np kez: acil matematik\nq kez: AC\u0130LMATEMAT\u0130K\nr kez: AcilMatematik\n\u0130lk ifadede bir bo\u015fluk oldu\u011funa g\u00f6re, p, q, r a\u015fa\u011f\u0131dakilerden hangisindeki gibi s\u0131ralanabilir?",
+   "sikler": {
+    "A": "r < q < p",
+    "B": "r < p < q",
+    "C": "p < q < r",
+    "D": "p = q < r",
+    "E": "p = q = r"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T044_06",
+   "basili_no": 6,
+   "govde": "15x^2 + 14xy + 3y^2 + 23y + 41x + 14\nifadesini \u00e7arpanlara ay\u0131rma y\u00f6ntemlerinden biri \u015f\u00f6yledir.\n15x^2 + 14xy + 3y^2 + 23y + 41x + 14\n5x | 3y | 2\n3x | y | 7\n(I) 5xy\n+ 9xy\n14xy\n(II) 21y\n+ 2y\n23y\n(III) 35x\n+ 6x\n41x\n(5x + 3y + 2)\u00b7(3x + y + 7) \u015feklinde \u00e7arpanlara ayr\u0131l\u0131r.\n3x^2 \u2212 2xy \u2212 8y^2 + 22x + 6y + 35 ifadesinin \u00e7arpanlara ayr\u0131lm\u0131\u015f \u015fekli,\nax | by | 7\nx | \u22122y | c\noldu\u011funa g\u00f6re, a\u00b7b + c i\u015fleminin sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "14",
+    "B": "15",
+    "C": "17",
+    "D": "18",
+    "E": "20"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T044_07",
+   "basili_no": 7,
+   "govde": "((1/x \u2212 1/y)/(1 \u2212 x/y)) : ((x + 1/y)/(y + 1/x))\ni\u015fleminin sonucu x^m \u00b7 y^n oldu\u011funa g\u00f6re, n \u2212 m fark\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "\u22123",
+    "B": "\u22121",
+    "C": "1",
+    "D": "3",
+    "E": "9"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T045_01",
+   "basili_no": 1,
+   "govde": "\u273b \u2208 \u211d olmak \u00fczere,\n[\u273b] = \u273b^2 \u2212 4\n\u25cb(\u273b) = \u273b + 3\ne\u015fitlikleri veriliyor.\nBuna g\u00f6re,\n\u25cb([\u273b]) / [\u25cb(\u273b)]\nifadesinin en sade \u015fekli a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "1",
+    "B": "\u22121",
+    "C": "(\u273b + 1)/(\u273b + 5)",
+    "D": "(\u273b \u2212 1)/(\u273b + 5)",
+    "E": "(\u273b + 1)/(\u273b \u2212 5)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T045_03",
+   "basili_no": 3,
+   "govde": "x = 105 i\u00e7in,\n2x^3 \u2212 20x^2 + 50x\nifadesinin sonucu a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "1,05\u00b710^7",
+    "B": "2,1\u00b710^7",
+    "C": "2,1\u00b710^6",
+    "D": "1,05\u00b710^6",
+    "E": "2,05\u00b710^7"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T045_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131da bir \u00e7arp\u0131m tablosu verilmi\u015ftir.\n\u00d7 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10\n1 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10\n2 | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20\n3 | 3 | 6 | 9 | 12 | 15 | 18 | 21 | 24 | 27 | 30\n4 | 4 | 8 | 12 | 16 | 20 | 24 | 28 | 32 | 36 | 40\n5 | 5 | 10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50\n6 | 6 | 12 | 18 | 24 | 30 | 36 | 42 | 48 | 54 | 60\n7 | 7 | 14 | 21 | 28 | 35 | 42 | 49 | 56 | 63 | 70\n8 | 8 | 16 | 24 | 32 | 40 | 48 | 56 | 64 | 72 | 80\n9 | 9 | 18 | 27 | 36 | 45 | 54 | 63 | 72 | 81 | 90\n10 | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100\n\u015eekildeki <u>b\u00fct\u00fcn say\u0131lar\u0131n</u> toplam\u0131n\u0131n 1 fazlas\u0131 ka\u00e7t\u0131r?\n(Sadece sonu\u00e7 k\u0131sm\u0131ndaki say\u0131lar de\u011fil, tablodaki t\u00fcm say\u0131lar toplanacakt\u0131r.)",
+   "sikler": {
+    "A": "55^2",
+    "B": "56^2",
+    "C": "57^2",
+    "D": "58^2",
+    "E": "60^2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T046_12",
+   "basili_no": 12,
+   "govde": "Kevser tek do\u011fal say\u0131lar\u0131 k\u00fc\u00e7\u00fckten b\u00fcy\u00fc\u011fe do\u011fru yazd\u0131ktan sonra, a\u015fa\u011f\u0131daki gibi \u00fc\u00e7er \u00fc\u00e7er ard\u0131\u015f\u0131k \u00e7ift sayma say\u0131lar\u0131yla e\u015fle\u015ftirmi\u015ftir.\n1 3 5   7 9 11   13 15 17   ...   a b c ...\n2   4   6   ...   34 ...\nBuna g\u00f6re, c^2 \u2212 b^2 fark\u0131n\u0131n sonucu ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "400",
+    "B": "408",
+    "C": "416",
+    "D": "424",
+    "E": "432"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T047_04",
+   "basili_no": 4,
+   "govde": "A\u015fa\u011f\u0131da birim karelerin yan yana ve \u00fcst \u00fcste dizilmesiyle olu\u015fturulmu\u015f n x n boyutlar\u0131ndaki bir karenin (n + 2) x (n + 2) boyutlar\u0131ndaki bir kareye d\u00f6n\u00fc\u015ft\u00fcr\u00fclmesi g\u00f6sterilmi\u015ftir. Bu i\u015flemde mavi renkle g\u00f6sterilen b\u00f6lgeye 104 yeni birim kare eklenmi\u015ftir.\nBuna g\u00f6re, \u015fekildeki n\u00d7n'lik kare (n + 3)\u00d7(n + 3) boyutlu bir kareye d\u00f6n\u00fc\u015ft\u00fcr\u00fclmek istenseydi eklenecek birim kare say\u0131s\u0131 ka\u00e7 olurdu?",
+   "sikler": {
+    "A": "164",
+    "B": "163",
+    "C": "161",
+    "D": "159",
+    "E": "157"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T047_06",
+   "basili_no": 6,
+   "govde": "\u00d6zde\u015f sandalyeler a\u015fa\u011f\u0131daki gibi yan yana konulmu\u015ftu[??] Sandalyelerin \u00f6n ayaklar\u0131n\u0131n yere bast\u0131\u011f\u0131 noktalar do\u011frusald\u0131r.\n\u0130lk sandalye ile duvar aras\u0131nda 3 birim uzakl\u0131k, kom\u015fu her iki sandalye aras\u0131nda 2 birim uzakl\u0131k vard\u0131r.\nSezgin bir sandalyenin \u00f6n ayaklar\u0131 aras\u0131ndaki mesafeyi \u00f6l\u00e7\u00fcnce x cm bulmu\u015f. Belgin'de sandalyeleri say\u0131nca x tane sandalye oldu\u011funu bulmu\u015ftur.\nBuna g\u00f6re, son sandalyenin duvara uzak olan \u00f6n aya\u011f\u0131 \u015fekildeki duvardan ka\u00e7 birim uzaktad\u0131r?",
+   "sikler": {
+    "A": "x^2 + 3",
+    "B": "x^2 + 6",
+    "C": "(x + 1)^2",
+    "D": "x^2 + x + 4",
+    "E": "x^3 + 3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T048_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131daki her kesir \u00e7iftindeki ilk kesir bir s\u0131n\u0131ftaki erkek \u00f6\u011f[??]renci say\u0131s\u0131n\u0131n k\u0131z \u00f6\u011frenci say\u0131s\u0131na oran\u0131, ikinci kesir o s\u0131n\u0131f\u0131n mevcudunun okuldaki \u00f6\u011frenci say\u0131s\u0131na oran\u0131d\u0131r. Verilen kesir \u00e7iftleri ayn\u0131 okuldaki s\u0131ras\u0131yla, A, B, C, D s\u0131n\u0131flar\u0131na aittir.\n(1/2, 1/20), (1/3, 1/15), (2/3, 1/12), (1, 1/60)\nD s\u0131n\u0131f\u0131nda 6 k\u0131z \u00f6\u011frenci oldu\u011funa g\u00f6re, A, B, C s\u0131n\u0131flar\u0131ndaki toplam erkek \u00f6\u011frenci say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "64",
+    "B": "56",
+    "C": "52",
+    "D": "48",
+    "E": "42"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T049_01",
+   "basili_no": 1,
+   "govde": "x, y, z tam say\u0131lar\u0131 s\u0131ras\u0131yla 3, 4 ve 5 say\u0131lar\u0131yla do\u011fru ora[??]t\u0131l\u0131d\u0131r.\ny < 17\noldu\u011funa g\u00f6re, x + y + z toplam\u0131n\u0131n <u>en b\u00fcy\u00fck</u> de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "40",
+    "B": "42",
+    "C": "44",
+    "D": "48",
+    "E": "50"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T049_10",
+   "basili_no": 10,
+   "govde": "A\u015fa\u011f\u0131daki tabloda iki otob\u00fcs\u00fcn erkek ve bayan yolcu say\u0131[??]lar\u0131 verilmi\u015ftir. Erkek yolcu say\u0131s\u0131n\u0131n bayan yolcu say\u0131s\u0131na oran\u0131 iki otob\u00fcste de \u221a(k + 1) say\u0131s\u0131na e\u015fittir.\nOtob\u00fcs | Erkek | Bayan\nA | x | y\nB | z | t\nA otob\u00fcs\u00fcnde bayan yolcu say\u0131s\u0131na e\u015fit say\u0131da erkek yolcu otob\u00fcsten iniyor, B otob\u00fcs\u00fcnde bayan yolcu say\u0131s\u0131na e\u015fit say\u0131da erkek yolcu otob\u00fcse biniyor.\nSon durumda, erkek yolcu say\u0131s\u0131n\u0131n bayan yolcu say\u0131s\u0131na oran\u0131n\u0131n her iki otob\u00fcsteki de\u011ferleri \u00e7arp\u0131l\u0131rsa sonu\u00e7 k t\u00fcr\u00fcnden ne olur?",
+   "sikler": {
+    "A": "k^2",
+    "B": "k",
+    "C": "\u221ak",
+    "D": "k + 1",
+    "E": "k^2 + k"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T051_11",
+   "basili_no": 11,
+   "govde": "Yukar\u0131da \u00fcst\u00fc a\u00e7\u0131k birbirine e\u015fit hacimde olan 3 adet tank vard\u0131r. Bu tanklar suyun ge\u00e7i\u015fini sa\u011flayan T \u015feklindeki vanalar ile birbirine ba\u011flanm\u0131\u015ft\u0131r. Vanalar kapal\u0131 iken her kab\u0131n i\u00e7inde bulunan s\u0131v\u0131 miktarlar\u0131 \u015fekilde g\u00f6sterilmi\u015ftir. Vanalardan sadece bir tanesi a\u00e7\u0131lmakta ve hangisi a\u00e7\u0131l\u0131rsa a\u00e7\u0131ls\u0131n kaplar aras\u0131nda ba\u015flayan s\u0131v\u0131 ak\u0131\u015f\u0131 kaplarda bulunan s\u0131v\u0131 miktarlar\u0131n\u0131n e\u015fitlenmesine neden olmaktad\u0131r.\nBuna g\u00f6re, \u00f6nce T_2 vanas\u0131 a\u00e7\u0131l\u0131p kapan\u0131r ve sonra T_1 vanas\u0131 a\u00e7\u0131l\u0131p kapan\u0131rsa son durumda kaplardaki su miktar\u0131 s\u0131ras\u0131yla hangi say\u0131lar olur?",
+   "sikler": {
+    "A": "24,24,16",
+    "B": "16,16,24",
+    "C": "28,18,18",
+    "D": "24.18.18",
+    "E": "18,24,16"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T053_07",
+   "basili_no": 7,
+   "govde": "A\u015fa\u011f\u0131da Alper'in geli\u015ftirdi\u011fi su terazisi ve iki kullan\u0131m \u00f6rne\u011fi g\u00f6sterilmi\u015ftir. Su terazisi y\u00fczeylerin yer d\u00fczlemine paralel olup olmad\u0131\u011f\u0131n\u0131 belirlemek i\u00e7in kullan\u0131l\u0131r. \u00d6zellikle in\u015faat sekt\u00f6r\u00fcnde en \u00e7ok kullan\u0131lan ara\u00e7lardan biridir.\nYere paralel\n\u00d6rnekler:\nB y\u00f6n\u00fc 1 cm al\u00e7ak\nA y\u00f6n\u00fc 0,5 cm al\u00e7ak\nBir \u00e7\u0131tan\u0131n y\u00fczeyinde bu teraziyi kullanan Alper \u015fekil 1'deki sonucu al\u0131nca \u00e7\u0131tan\u0131n A ile ayn\u0131 y\u00f6nde olan k\u0131sm\u0131n\u0131 2x \u2212 4 cm y\u00fckseltmi\u015f ve tekrar teraziyi kullanm\u0131\u015ft\u0131r. \u0130kinci kullan\u0131mda \u015fekil 2'deki sonucu alm\u0131\u015ft\u0131r.\nBuna g\u00f6re, x ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "5",
+    "B": "9/2",
+    "C": "17/4",
+    "D": "4",
+    "E": "15/4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T054_01",
+   "basili_no": 1,
+   "govde": "a \u27e8mavi\u27e9 b = 2a + b ve\na \u27e8pembe\u27e9 b = 2b \u2212 a\nbi\u00e7imde bir tan\u0131mlama yap\u0131l\u0131yor.\n(4 \u27e8mavi\u27e9 3) \u27e8pembe\u27e9 (2 \u27e8pembe\u27e9 m) = 5\noldu\u011funa g\u00f6re, m ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "8",
+    "B": "7",
+    "C": "6",
+    "D": "5",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T054_05",
+   "basili_no": 5,
+   "govde": "Eski Yunan say\u0131lar\u0131n\u0131n bir k\u0131sm\u0131n\u0131n g\u00f6sterim \u015fekli a\u015fa\u011f\u0131d[??] verilmi\u015ftir.\nHarf | Say\u0131 | Harf | Say\u0131\n\u03b1' | 1 | \u03b9' | 10\n\u03b2' | 2 | \u03ba' | 20\n\u03b3' | 3 | \u03bb' | 30\n\u03b4' | 4 | \u03bc' | 40\n\u03b5' | 5 | \u03bd' | 50\nAyr\u0131ca harfin sol alt\u0131ndaki \u00e7entik i\u015faret o say\u0131y\u0131 1000 ile \u00e7arpar. M harfi de hangi say\u0131n\u0131n alt\u0131na yaz\u0131l\u0131rsa o say\u0131y\u0131 10.000 ile \u00e7arpar.\n\u00d6rne\u011fin; \u0375\u03b5 = 5000 ve \u03bb'_M = 300.000\nBuna g\u00f6re,\n(\u03bd'_M \u2212 x)/\u03b4' = x + \u03b9'_M\ndenklemini sa\u011flayan x de\u011feri a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "\u0375\u03ba",
+    "B": "\u03bd'_M",
+    "C": "\u0375\u03b2",
+    "D": "\u03b1_M",
+    "E": "\u03ba'_M"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T054_11",
+   "basili_no": 11,
+   "govde": "x ve y'nin de\u011ferinin 7'den farkl\u0131 bir tam say\u0131 oldu\u011funu s\u00f6yleyen Erhan \u00f6\u011fretmen tahtaya 5 denklem yaz\u0131yor.\n\u2022 \u22123x \u2212 2y = \u22129\n\u2022 x \u2212 y = 1\n\u2022 2x \u2212 4y = \u221210\n\u2022 (2/5)y \u2212 x/5 = 1\n\u2022 (1/3)x + (2/9)y = 1\n\u00d6\u011frenciler bu denklemlerden sadece ikisini kullanarak x ve y'yi bulduklar\u0131na g\u00f6re, x + y toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "13",
+    "B": "11",
+    "C": "6",
+    "D": "4",
+    "E": "2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T055_03",
+   "basili_no": 3,
+   "govde": "a, b, x \u2208 \u211d i\u00e7in,\n_a^bX: ax + b\nbi\u00e7iminde bir tan\u0131mlama yap\u0131l\u0131yor.\nBuna g\u00f6re k \u2208 \u211d i\u00e7in,\n_(a+k)^(a\u2212k)X + _(a\u2212k)^(a+k)X\ntoplam\u0131 a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "_k^aX",
+    "B": "_k^(2k)X",
+    "C": "_a^kX",
+    "D": "_(2k)^(2k)X",
+    "E": "_(2a)^(2a)X"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T055_10",
+   "basili_no": 10,
+   "govde": "A\u015fa\u011f\u0131da iki dikd\u00f6rtgenin uzun kenarlar\u0131n\u0131n \u00f6l\u00e7\u00fcleri ile \u00e7evre ve alanlar\u0131na ili\u015fkin bilgiler verilmi\u015ftir.\n6 cm\n\u00c7evre = a cm\nAlan = b cm^2\n10 cm\n\u00c7evre = b cm\nAlan = a cm^2\nBuna g\u00f6re, a + b toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "42",
+    "B": "44",
+    "C": "46",
+    "D": "48",
+    "E": "50"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T056_11",
+   "basili_no": 11,
+   "govde": "Murat bir ekme\u011fi d\u00f6rt e\u015f dilime b\u00f6lerek her dilimi a\u015fa\u011f\u0131daki gibi birer taba\u011fa koymu\u015ftur.\nBundan 1 lokma\nBundan 2 lokma\nBundan 3 lokma\nBundan 4 lokma\nSonra, ilk tabaktan 1 lokma, ikinci tabaktan 2 lokma, \u00fc\u00e7\u00fcnc\u00fc tabaktan \u00fc\u00e7 lokma, d\u00f6rd\u00fcnc\u00fc tabaktan 4 lokma ekmek yemi\u015ftir. Murat her bir lokmada \u00f6zde\u015f ekmek par\u00e7alar\u0131 yemektedir.\nTabaklardan birinde ekmek kalmad\u0131\u011f\u0131na g\u00f6re, Murat t\u00fcm ekme\u011fin ka\u00e7ta ka\u00e7\u0131n\u0131 yemi\u015ftir?",
+   "sikler": {
+    "A": "1/2",
+    "B": "5/8",
+    "C": "3/4",
+    "D": "5/12",
+    "E": "11/16"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T057_12",
+   "basili_no": 12,
+   "govde": "Bir grubun 1/4'\u00fc kad\u0131n, gruptaki kad\u0131nlar\u0131n 3/4'\u00fc evlidir. Evli kad\u0131nlar\u0131n e\u015fleri de bu grupta bulunmaktad\u0131r.\nBuna g\u00f6re, evli olmayan erkekler bu grubun ka\u00e7ta ka\u00e7\u0131d\u0131r?",
+   "sikler": {
+    "A": "1/2",
+    "B": "9/16",
+    "C": "5/8",
+    "D": "11/16",
+    "E": "3/4"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T058_08",
+   "basili_no": 8,
+   "govde": "Nurettin bir ara\u00e7la \u0130stanbul'a do\u011fru giderken 1. tabelan\u0131n oldu\u011fu yerde ara\u00e7tan inmi\u015ftir. Kalan yolu bisikletiyle gidecektir.\n1. \u0130stanbul 120\n2. \u0130stanbul 2x\n3. \u0130stanbul x + 15\n1. tabeladan sonra kalan yolun %50'sini gidince\n2. tabelan\u0131n oldu\u011fu noktaya gelmi\u015ftir.\nBuna g\u00f6re, 2. tabeladan sonra kalan yolun y\u00fczde ka\u00e7\u0131n\u0131 gidince 3. tabelan\u0131n oldu\u011fu noktaya gelir?",
+   "sikler": {
+    "A": "10",
+    "B": "20",
+    "C": "25",
+    "D": "30",
+    "E": "40"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T058_11",
+   "basili_no": 11,
+   "govde": "B\u0130R KARI\u015eIMA \u0130S\u0130M VERMEK: p \u00e7ok de\u011ferli bir madde o[??]sun ve az bir miktarda bile olsa i\u00e7inde p bulunan kar\u0131\u015f\u0131mlara \"p\" denilsin. \u00d6rne\u011fin, 1 gram p maddesi ile 999 gram ba\u015fka bir maddeden olu\u015fan bir kar\u0131\u015f\u0131ma \"p\" diyece\u011fiz. Tabi kar\u0131\u015f\u0131mda 999 gram p maddesi ile 1 gram ba\u015fka bir madde olursa bu kar\u0131\u015f\u0131ma yine \"p\" diyece\u011fiz. E\u011fer kar\u0131\u015f\u0131mda sadece p maddesi olursa o zaman \"saf p\" diyece\u011fiz. Ayr\u0131ca kar\u0131\u015f\u0131m\u0131 adland\u0131r\u0131rken, kar\u0131\u015f\u0131mda p maddesinin hangi oranda bulundu\u011funu da \u00f6nemseyece\u011fiz. 20 say\u0131s\u0131 sabit bir say\u0131 olmak \u00fczere, \u00f6rne\u011fin bir kar\u0131\u015f\u0131mda p maddesi 7/20 oran\u0131nda varsa bu kar\u0131\u015f\u0131ma \"7 ayar p\" diyece\u011fiz. Bir kar\u0131\u015f\u0131m\u0131n 13/20'si p maddesi ise kar\u0131\u015f\u0131ma \"13 ayar p\" diyece\u011fiz.\nYukar\u0131daki a\u00e7\u0131klamaya g\u00f6re,\n2 gram p, 7 gram q, 1 gram r\nmaddesinden olu\u015fan bir kar\u0131\u015f\u0131m\u0131n ad\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "2 ayar \"p, q, r\"",
+    "B": "2 ayar p",
+    "C": "4 ayar p",
+    "D": "10 ayar p",
+    "E": "Saf p"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T058_13",
+   "basili_no": 13,
+   "govde": "Bir deney laboratuvar\u0131nda deney yapacak \u00f6\u011frenciler A ve B maddelerini a\u015fa\u011f\u0131da verilen oranlarda kar\u0131\u015ft\u0131rarak C ve D maddelerini, C ve D maddelerini de verilen oranlarda kar\u0131\u015ft\u0131rarak E maddesini elde edip bir t\u00fcpe koyacaklard\u0131r.\n\u2022 30 ml A + 15 ml B = C\n\u2022 45 ml A + 10 ml B = D\n\u2022 C + 2D = E\nBuna g\u00f6re, laboratuvarda 850 ml A ve 300 ml B maddesi varsa deney sonunda E maddesinden en fazla ka\u00e7 t\u00fcp olur?",
+   "sikler": {
+    "A": "9",
+    "B": "8",
+    "C": "7",
+    "D": "6",
+    "E": "5"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T059_03",
+   "basili_no": 3,
+   "govde": "SPF yani g\u00fcne\u015f koruma fakt\u00f6r\u00fc g\u00fcne\u015fe maruz kal\u0131nan s\u00fcre i\u00e7erisinde tenin g\u00fcne\u015f \u0131\u015f\u0131nlar\u0131na kar\u015f\u0131 ne \u00f6l\u00e7\u00fcde korundu\u011funu belirten say\u0131sal bir de\u011ferdir. Bu y\u00fczden g\u00fcne\u015f kremi alacak olan bir ki\u015fi kendi SPF de\u011ferine en yak\u0131n olan g\u00fcne\u015f kremini almas\u0131 gerekir.\nSPF = (G\u00fcne\u015fte Kal\u0131nan S\u00fcre \u00d7 1,33)/(Korunmas\u0131z Olarak G\u00fcne\u015fte Kal\u0131nan S\u00fcre (dakika))\n\u015feklinde hesaplan\u0131r.\nBuna g\u00f6re, en fazla 10 dk g\u00fcne\u015fte kalabilen hassas cilde sahip olan bir kimse g\u00fcne\u015fte 3 saat kalacaksa a\u015fa\u011f\u0131da SPF de\u011ferleri verilen g\u00fcne\u015f kremlerinden hangisini kullanmas\u0131 uygundur?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) SPF 50",
+    "B": "(g\u00f6rsel \u015f\u0131k) SPF 30",
+    "C": "(g\u00f6rsel \u015f\u0131k) SPF 25",
+    "D": "(g\u00f6rsel \u015f\u0131k) SPF 20",
+    "E": "(g\u00f6rsel \u015f\u0131k) SPF 15"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T061_12",
+   "basili_no": 12,
+   "govde": "A\u015fa\u011f\u0131daki tabloda k\u00fctlesi 100 gram olan bir s\u00fcngerin suy[??] ya da ya\u011fa bat\u0131r\u0131ld\u0131ktan sonraki k\u00fctlesi verilmi\u015ftir.\nS\u0131v\u0131 | K\u00fctle (g)\nSu | 165\nYa\u011f | 140\n12 tane s\u00fcngerin bir k\u0131sm\u0131 i\u00e7inde a gram ya\u011f olan bir kovaya di\u011fer k\u0131sm\u0131 i\u00e7inde b gram su olan bir kovaya bat\u0131r\u0131lm\u0131\u015ft\u0131r. Bu bat\u0131rma i\u015fleminden sonra her s\u00fcnger tabloda belirtilen k\u00fctlelerine ula\u015fm\u0131\u015f ve ya\u011f kovas\u0131nda ya\u011f su kovas\u0131nda su kalmam\u0131\u015ft\u0131r.\na + b = 680 oldu\u011funa g\u00f6re, a ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "120",
+    "B": "160",
+    "C": "180",
+    "D": "200",
+    "E": "220"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T061_14",
+   "basili_no": 14,
+   "govde": "\u0130ki top ayn\u0131 y\u00fckseklikteki iki farkl\u0131 noktadan yere b\u0131rak\u0131l\u0131yor. Ayn\u0131 numaral\u0131 her bir z\u0131plamada, bu toplardan biri di\u011ferinin 2 kat\u0131 kadar y\u00fckse\u011fe \u00e7\u0131k\u0131yor. \u00d6me\u011fin, bir top 5. z\u0131play\u0131\u015f\u0131nda 3 cm y\u00fckse\u011fe \u00e7\u0131kt\u0131ysa di\u011fer top 5. z\u0131play\u0131\u015f\u0131nda 6 cm y\u00fckse\u011fe \u00e7\u0131k\u0131yor.\nToplar 10. kez yere \u00e7arpt\u0131\u011f\u0131 anda ilk b\u0131rak\u0131ld\u0131\u011f\u0131 andan itibaren biri toplam 5 m yol, di\u011feri toplam 8 metre yol ald\u0131\u011f\u0131na g\u00f6re, toplar\u0131n yere b\u0131rak\u0131ld\u0131\u011f\u0131 ilk y\u00fckseklik ka\u00e7 metredir?",
+   "sikler": {
+    "A": "1",
+    "B": "1,2",
+    "C": "1,5",
+    "D": "1,8",
+    "E": "2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T062_13",
+   "basili_no": 13,
+   "govde": "A\u015fa\u011f\u0131da bir otomobilin yak\u0131t g\u00f6stergesi verilmi\u015ftir.\n1 nolu \u00e7izgi deponun bo\u015f, 5 nolu \u00e7izgi deponun dolu, 2, 3 ve 4 nolu \u00e7izgiler ise depoda s\u0131ras\u0131yla 1/4, 2/4 ve 3/4 oran\u0131nda yak\u0131t oldu\u011funu g\u00f6stermektedir. K\u0131rm\u0131z\u0131 yaylarla g\u00f6sterilen k\u0131s\u0131m rezerv b\u00f6lgesidir ve yak\u0131t izleme \u00e7ubu\u011fu buray\u0131 g\u00f6sterdi\u011fi anda depoda 10 litre yak\u0131t bulunmaktad\u0131r. Ayr\u0131ca bu duruma gelindi\u011finde, acil yak\u0131t al\u0131m\u0131n\u0131 hat\u0131rlatmak i\u00e7in g\u00f6stergedeki k\u0131rm\u0131z\u0131 \u0131\u015f\u0131k yanmaktad\u0131r.\nBu arac\u0131n deposunda 4 nolu \u00e7izginin belirtti\u011fi kadar yak\u0131t varken, otomobil 700 km kullan\u0131ld\u0131\u011f\u0131nda yak\u0131t g\u00f6stergesinin k\u0131rm\u0131z\u0131 \u0131\u015f\u0131\u011f\u0131 yanm\u0131\u015ft\u0131r. Otomobil ayn\u0131 ko\u015fullarda 200 km daha kullan\u0131ld\u0131\u011f\u0131nda da yak\u0131t bitmi\u015ftir.\nBuna g\u00f6re, otomobilin deposu ka\u00e7 litre yak\u0131t almaktad\u0131r?",
+   "sikler": {
+    "A": "30",
+    "B": "36",
+    "C": "40",
+    "D": "48",
+    "E": "60[??]"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T063_01",
+   "basili_no": 1,
+   "govde": "Bir misket oyununda yerde yan yana dizili bilyelere eldek[??] bilyeyle belli bir mesafeden at\u0131\u015f yap\u0131l\u0131r. E\u011fer at\u0131lan bilye, dizili bilyelerden herhangi birine vurursa, bilyeyi atan ki\u015fi hem vurulan bilyeyi hem de onun sa\u011f\u0131ndaki t\u00fcm bilyeleri kazan\u0131r ve onlar\u0131 al\u0131r.\n3 mavi, 3 pembe, 3 ye\u015fil, 3 siyah ve 3 k\u0131rm\u0131z\u0131 renk bilye soldan sa\u011fa do\u011fru a\u015fa\u011f\u0131daki gibi yan yana dizilmi\u015ftir.\n\u00dc\u00e7 ki\u015fi bu bilyelere birer at\u0131\u015f yapacakt\u0131r. \u00d6nce 1. ki\u015fi at\u0131\u015f\u0131n\u0131 yap\u0131nca iki farkl\u0131 renkte bilyeler kazanm\u0131\u015f, sonra 2. ki\u015fi at\u0131\u015f\u0131n\u0131 yap\u0131nca \u00fc\u00e7 farkl\u0131 rente bilyeler kazanm\u0131\u015ft\u0131r.\nBuna g\u00f6re, en son s\u0131rada 3. ki\u015fi at\u0131\u015f\u0131n\u0131 yap\u0131nca <u>en \u00e7ok</u> ka\u00e7 tane bilye kazanabilir?",
+   "sikler": {
+    "A": "2",
+    "B": "3",
+    "C": "4",
+    "D": "5",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T063_05",
+   "basili_no": 5,
+   "govde": "7 ya\u015f\u0131nda okula ba\u015flayan Cansu ve Merve'nin e\u011fitimlerin[??] harcad\u0131klar\u0131 zaman\u0131 g\u00f6steren tablo a\u015fa\u011f\u0131da verilmi\u015ftir.\n- | \u0130lkokul | Ortaokul | Lise | \u00dcniversite\nCansu | 5 y\u0131l | 3 y\u0131l | 4 y\u0131l | 6 y\u0131l\nMerve | 4 y\u0131l | 4 y\u0131l | 4 y\u0131l | 4 y\u0131l\nCansu'nun bug\u00fcnk\u00fc ya\u015f\u0131 Merve'nin bug\u00fcnk\u00fc ya\u015f\u0131n\u0131n 2 kat\u0131ndan 3 fazlad\u0131r.\nMerve, Cansu'nun ya\u015f\u0131na geldi\u011finde \u00fcniversite son s\u0131n\u0131f d\u00fczeyinde bir \u00f6\u011frenci oldu\u011funa g\u00f6re, Cansu Merve'nin ya\u015f\u0131nda iken lise d\u00fczeyine ge\u00e7mesine ka\u00e7 y\u0131l vard\u0131r?",
+   "sikler": {
+    "A": "5",
+    "B": "6",
+    "C": "7",
+    "D": "8",
+    "E": "9"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T063_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131da bir soru bankas\u0131 kitab\u0131n\u0131n 99. ve daha sonraki bir sayfas\u0131 ile sayfalardaki ilk bir ka\u00e7 soru g\u00f6sterilmi\u015ftir.\n99 B\u00f6l\u00fcm 7\n17. a < 0 v\n18. x\n? B\u00f6l\u00fcm 9\n25. a bir do\u011fal\n26. m, n iki reel\n27. Pozitif iki reel\nKitapta 20 b\u00f6l\u00fcm ve her b\u00f6l\u00fcmde de 120 soru vard\u0131r. Kitab\u0131n her sayfas\u0131nda 8 tane soru oldu\u011funa g\u00f6re, verilen \u015fekilde sa\u011fdaki sayfan\u0131n numaras\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "128",
+    "B": "129",
+    "C": "130",
+    "D": "131",
+    "E": "132"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T064_05",
+   "basili_no": 5,
+   "govde": "Bir k\u00f6pr\u00fcden ge\u00e7i\u015f \u00fccreti tarifesi a\u015fa\u011f\u0131daki gibidir.\nOtomobil: 5 TL\nKamyonet: 8 TL\nAra\u00e7lar\u0131n k\u00f6pr\u00fcden ka\u00e7ak ge\u00e7i\u015f yapmas\u0131 h\u00e2linde ise ara\u00e7lara normal \u00fccret tarifesinin 10 kat\u0131 ceza kesilmektedir. Herhangi bir g\u00fcn incelenmi\u015f ve bu g\u00fcn\u00fcn sonunda yap\u0131lan incelemelerde, ka\u00e7ak kamyonet ge\u00e7i\u015fi olmad\u0131\u011f\u0131 ve otomobillere kesilen toplam ceza ile otomobillerden ge\u00e7i\u015f i\u00e7in toplanan paran\u0131n ayn\u0131 oldu\u011fu g\u00f6r\u00fclm\u00fc\u015ft\u00fcr. K\u00f6pr\u00fcden ge\u00e7en toplam ara\u00e7 say\u0131s\u0131 455, bu ara\u00e7lardan tahsil edilen toplam tutan\u0131n ise 4120 TL oldu\u011fu g\u00f6r\u00fclm\u00fc\u015ft\u00fcr.\nBuna g\u00f6re, k\u00f6pr\u00fcden ka\u00e7ak ge\u00e7i\u015f yapan otomobil say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "36",
+    "B": "38",
+    "C": "40",
+    "D": "42",
+    "E": "44"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T064_11",
+   "basili_no": 11,
+   "govde": "A\u015fa\u011f\u0131daki tabloda Mina ve Yi\u011fit\u2019in hangi y\u0131lda ka\u00e7 ya\u015f\u0131nd[??] olduklar\u0131 ile ilgili bilgiler verilmi\u015ftir.\nY\u0131l | Yi\u011fit | Mina\n2001 | a | a \u2212 3\n20xy | 2a + 3 | 3a \u2212 16\nBuna g\u00f6re, x + y toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "2",
+    "B": "4",
+    "C": "6",
+    "D": "8",
+    "E": "12"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T066_02",
+   "basili_no": 2,
+   "govde": "(p \u2192 q') \u2228 (p \u2227 q)\n\u00f6nermesi a\u015fa\u011f\u0131dakilerden hangisine denktir?",
+   "sikler": {
+    "A": "p \u2228 q",
+    "B": "p \u2228 q'",
+    "C": "p \u2228 p'",
+    "D": "p \u2227 p'",
+    "E": "p' \u2227 q'"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T066_04",
+   "basili_no": 4,
+   "govde": "p : \u2203x \u2208 \u2124, 2x^2 \u2212 x \u2212 1 = 0\nq : \u2200x \u2208 \u2124, |x|/x = \u00b1 1\nr : \u2200x \u2208 \u211d, x \u2212 1 < x\n\u00f6nermeleri veriliyor.\nBuna g\u00f6re, a\u015fa\u011f\u0131daki \u00f6nermelerden hangisinin do\u011fruluk de\u011feri \u201c1\u201d dir?",
+   "sikler": {
+    "A": "p \u21d2 q",
+    "B": "r \u21d2 q",
+    "C": "q \u21d4 r",
+    "D": "p' \u21d4 q",
+    "E": "p \u21d4 r'"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T067_04",
+   "basili_no": 4,
+   "govde": "p | q | p \u2217 q\n1 | 1 | 0\n1 | 0 | 0\n0 | 1 | 0\n0 | 0 | 1\nYukar\u0131da p ve q \u00f6nermeleri i\u00e7in p \u2217 q bile\u015fik \u00f6nermesinin tablodaki de\u011ferleri verilmi\u015ftir.\nBuna g\u00f6re, p \u2217 (p \u2217 q) \u00f6nermesi a\u015fa\u011f\u0131dakilerden hangisine denktir?",
+   "sikler": {
+    "A": "p \u2228 q",
+    "B": "p \u2227 q",
+    "C": "p' \u2227 q",
+    "D": "p \u2227 q'",
+    "E": "p' \u2228 q"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T068_07",
+   "basili_no": 7,
+   "govde": "p : a \u2260 0\nq : b = 0\n\u2200a, b \u2208 \u211d i\u00e7in,\nI. a + b = 0\nII. a^2 + b^2 = 0\nIII. a \u00b7 b = 0\n\u00f6nermelerinden hangileri p \u21d2 q \u00f6nermesine denktir?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T068_09",
+   "basili_no": 9,
+   "govde": "I. p \u22bb q = (p \u21d4 q)'\nII. (p \u2227 q) \u2192 r = [p \u2192 (q \u2192 r)]\nIII. p \u21d4 1 \u2212 p\n\u00f6nermelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T068_14",
+   "basili_no": 14,
+   "govde": "A\u015fa\u011f\u0131da O\u011fuz'un iki farkl\u0131 zamanda tart\u0131l\u0131\u015f\u0131 g\u00f6sterilmi\u015ftir. O\u011fuz ayn\u0131 tart\u0131 aletiyle tart\u0131lm\u0131\u015ft\u0131r.\n60.2\n60.15\n1 Ocak 2019'dan 1 \u015eubat 2019'a kadar ge\u00e7en s\u00fcrede,\np: O\u011fuz kilo vermi\u015ftir.\nq: O\u011fuz kilo alm\u0131\u015ft\u0131r.\nr: O\u011fuz'un boy uzunlu\u011fu 168 cm'dir.\nBuna g\u00f6re, q \u21d2 r \u00f6nermesi a\u015fa\u011f\u0131dakilerden hangisine <u>kesinlikle</u> denktir?",
+   "sikler": {
+    "A": "p'",
+    "B": "q",
+    "C": "p \u22bb r",
+    "D": "p \u2192 r",
+    "E": "r \u2192 p"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T069_01",
+   "basili_no": 1,
+   "govde": "A\u015fa\u011f\u0131daki tablonun her karesinde bir tane say\u0131 vard\u0131r.\n- | - | - | 1\n- | - | - | a\n- | - | - | b\n1 | 3 | 1 | -\nSat\u0131rlar\u0131n sa\u011f\u0131nda yazan say\u0131lar o sat\u0131rdaki karelerde bulunan say\u0131lar\u0131n k\u00fcmesinin eleman say\u0131s\u0131n\u0131, s\u00fctunlar\u0131n alt\u0131nda yazan say\u0131lar o s\u00fctundaki karelerde bulunan say\u0131lar\u0131n k\u00fcmesinin eleman say\u0131s\u0131n\u0131 belirtmektedir.\nBuna g\u00f6re, a + b toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "6",
+    "B": "5",
+    "C": "4",
+    "D": "3",
+    "E": "2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T069_06",
+   "basili_no": 6,
+   "govde": "A_1 = {1, 2}\nA_1 \u228a A_2 \u228a A_3 \u228a ... \u228a A_10\nBuna g\u00f6re,\ns(A_1) + s(A_2) + s(A_3)+ ... + s(A_10)\ntoplam\u0131 <u>en az</u> ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "84",
+    "B": "78",
+    "C": "72",
+    "D": "66",
+    "E": "65"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T069_08",
+   "basili_no": 8,
+   "govde": "A = {x \u2208 \u211d | 2x \u2212 3 < x + 2}\nB = {2x \u2208 \u2124 | 3x \u2212 2 \u2208 A}\noldu\u011funa g\u00f6re, s(B \u2229 \u211d^+) ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "3",
+    "B": "4",
+    "C": "5",
+    "D": "6",
+    "E": "7"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T069_13",
+   "basili_no": 13,
+   "govde": "A ve B; E evrensel k\u00fcmesinin iki alt k\u00fcmesi olmak \u00fczere, A ve B k\u00fcmelerinin simetrik fark\u0131\nA \u0394 B = (A \u2212 B) \u222a (B \u2212 A)\nile g\u00f6sterilmektedir.\nBuna g\u00f6re,\n(A \u0394 B)' \u2212 (A \u2212 B')\nifadesinin sonucu a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "A \\ B",
+    "B": "B \u2229 A",
+    "C": "(A \u2229 B)'",
+    "D": "E \u2212 (A \u222a B)",
+    "E": "B'"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T070_01",
+   "basili_no": 1,
+   "govde": "K\u00fcmeler liste ve \u015fema g\u00f6steriminin d\u0131\u015f\u0131nda bir de do\u011frusa[??] diyagramla g\u00f6sterilirler. Bu g\u00f6sterimde aralar\u0131nda do\u011frusal[??] diyagram bulunan k\u00fcmelerden \u00fcstte olanlar alttakileri kapsarlar.\n\u00d6rne\u011fin A, B, C, D k\u00fcmeleri i\u00e7in verilen yandaki diyagram g\u00f6steriminde A k\u00fcmesi B'yi kapsar. A k\u00fcmesi C'yi kapsar. B k\u00fcmesi D'yi kapsar. Ancak \u201cC k\u00fcmesi D'yi kapsar.\u201d denilemez.\nA\u015fa\u011f\u0131da biyoloji kitab\u0131ndaki bir do\u011frusal diyagram\u0131n bir k\u0131sm\u0131 verilmi\u015ftir.\nBuna g\u00f6re, a\u015fa\u011f\u0131da \u00e7izilmi\u015f olan Venn \u015femalar\u0131ndan hangisi <u>kesinlikle</u> <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T070_07",
+   "basili_no": 7,
+   "govde": "A, B ve C birer k\u00fcme olmak \u00fczere,\nA \u2286 (B \u222a C) ise (A \u2286 B veya A \u2286 C)\n\u00f6nermesi veriliyor.\nA\u015fa\u011f\u0131dakilerden hangisi bu \u00f6nermenin <u>yanl\u0131\u015f</u> oldu\u011funu g\u00f6steren bir \u00f6rnektir?\nA | B | C",
+   "sikler": {
+    "A": "\u2205 | {\u03b2} | {\u03b2}",
+    "B": "{\u03b1} | {\u03b1} | {\u03b2}",
+    "C": "{\u03b1, \u03b2} | {\u03b1} | {\u03b2, \u03b8}",
+    "D": "{\u03b1} | {\u03b1} | {\u03b1, \u03b2}",
+    "E": "{\u03b1, \u03b2} | {\u03b1, 0} | {\u03b1, \u03b2}"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T071_01",
+   "basili_no": 1,
+   "govde": "Bir okulun 12-A s\u0131n\u0131f\u0131nda Ankara, Bursa ve \u0130stanbul'u g[??]ren \u00f6\u011frencilerin \u015fema y\u00f6ntemiyle g\u00f6sterimi a\u015fa\u011f\u0131daki gibidir. A, B ve \u0130 k\u00fcmeleri s\u0131ras\u0131yla Ankara, Bursa ve \u0130stanbul'u g\u00f6ren \u00f6\u011frencilerin k\u00fcmesidir.\n12-A s\u0131n\u0131f\u0131ndaki her \u00f6\u011frenci, bu \u00fc\u00e7 \u015fehirden en az birini g\u00f6rm\u00fc\u015ft\u00fcr. A\u015fa\u011f\u0131daki tabloda okuldan se\u00e7ilen be\u015f \u00f6\u011frencinin bu \u00fc\u00e7 \u015fehirden hangilerini g\u00f6rd\u00fc\u011f\u00fc belirtilmi\u015ftir.\nTabloda + sembol\u00fc o \u015fehri g\u00f6rd\u00fc, \u2212 sembol\u00fc o \u015fehri g\u00f6rmedi demektir.\n- | Ankara | Bursa | \u0130stanbul\nAli | + | \u2212 | +\nVeli | + | + | +\nSelami | + | + | \u2212\nHami | \u2212 | + | \u2212\nSami | \u2212 | \u2212 | \u2212\nBuna g\u00f6re, tablodaki \u00f6\u011frencilerden hangileri 12-A s\u0131n\u0131f\u0131nda olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z Ali",
+    "B": "Yaln\u0131z Veli",
+    "C": "Ali ve Veli",
+    "D": "Ali, Veli ve Selami",
+    "E": "Ali, Veli ve Sami"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T072_01",
+   "basili_no": 1,
+   "govde": "Bir s\u0131n\u0131fta futbol, basketbol ve voleybol oynayanlar\u0131n \u015fem[??] g\u00f6sterimi a\u015fa\u011f\u0131daki gibidir. Bu s\u0131n\u0131fta futbol, basketbol ve voleybol oynayanlar\u0131n k\u00fcmesi s\u0131ras\u0131yla, F, B ve V'dir.\nBu s\u0131n\u0131ftaki her \u00f6\u011frenci, bu \u00fc\u00e7 spordan en az birini oynamaktad\u0131r. Bu s\u0131n\u0131ftaki t\u00fcm \u00f6\u011frencilere, \u201cFutbol, basketbol ve voleyboldan oynad\u0131klar\u0131n\u0131za tik at\u0131n\u0131z.\u201d denildi\u011finde, \u00f6\u011frencilerin yan\u0131tlar\u0131 ile a\u015fa\u011f\u0131daki tablo olu\u015fmu\u015ftur. \u00d6rne\u011fin 4 \u00f6\u011frenci sar\u0131 renkli sat\u0131rdaki gibi tikleme yapm\u0131\u015ft\u0131r.\nFutbol | Basketbol | Voleybol | \u00d6\u011frenci Say\u0131s\u0131\n\u2713 | - | - | 4\n- | \u2713 | - | 8\n- | - | \u2713 | 1\n\u2713 | \u2713 | - | 2\n- | \u2713 | \u2713 | x\nBu s\u0131n\u0131fta basketbol oynayanlar\u0131n say\u0131s\u0131, bu \u00fc\u00e7 spordan sadece birini oynayanlar\u0131n say\u0131s\u0131n\u0131n 2 kat\u0131na e\u015fit oldu\u011funa g\u00f6re, x ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "12",
+    "B": "14",
+    "C": "16",
+    "D": "18",
+    "E": "20"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T072_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131da k\u00fcme i\u015flemleri yapan hesap makinesi verilmi\u015fti[??] Makinenin tu\u015flar\u0131 1'den 20'ye kadar ard\u0131\u015f\u0131k do\u011fal say\u0131larla[??] numaraland\u0131r\u0131lm\u0131\u015ft\u0131r. 10 numaral\u0131 tu\u015f olan \u201c,\u201d ifadesi k\u00fcmenin elemanlar\u0131n\u0131 birbirinden ay\u0131rmak i\u00e7in, 8 ve 9 numaral\u0131 tu\u015flardaki \u201c[\u201d ve \u201c]\u201d ifadeleri ayn\u0131 anda birka\u00e7 k\u00fcme i\u015flemi i\u00e7eren durumlarda i\u015flem \u00f6nceli\u011fini belirtmek i\u00e7in kullan\u0131lmaktad\u0131r.\nSONU\u00c7 | -\nBirle\u015fim \u222a 1 | Kesi\u015fim \u2229 2 | Fark \u2212 3 | T\u00fcmleme A' 4 | = 5\n{ 6 | } 7 | [ 8 | ] 9 | , 10\n0 11 | 1 12 | 2 13 | 3 14 | 4 15\n5 16 | 6 17 | 7 18 | 8 19 | 9 20\nEda ve Seda bu hesap makinesinde,\nEda: 6-12-7-3-6-12-15-7-5\nSeda: 6-12-7-2-6-12-15-7-a-5\ntu\u015flar\u0131na bast\u0131\u011f\u0131nda ayn\u0131 sonucu elde etti\u011fine g\u00f6re, a ile g\u00f6sterilen tu\u015fta a\u015fa\u011f\u0131dakilerden hangisi vard\u0131r?",
+   "sikler": {
+    "A": "Birle\u015fim",
+    "B": "Kesi\u015fim",
+    "C": "Fark",
+    "D": "T\u00fcmleme",
+    "E": "Bilinemez"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T074_02",
+   "basili_no": 2,
+   "govde": "A ve B k\u00fcmeleri i\u00e7in,\ns(A \u2229 B) = 6\ns(B \u2229 A') = 3\ns[A \u00d7 (A \u222a B)] = 88\noldu\u011funa g\u00f6re, A k\u00fcmesinin eleman say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "6",
+    "B": "7",
+    "C": "8",
+    "D": "9",
+    "E": "10"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T074_03",
+   "basili_no": 3,
+   "govde": "A = {x : 0 \u2264 x \u2264 4, x \u2208 \u2124}\nB = {y : \u22122 < y < 3, y \u2208 \u2115}\noldu\u011funa g\u00f6re, A x B ve B x A k\u00fcmelerinin elemanlar\u0131ndan ka\u00e7 tanesi ayn\u0131d\u0131r?",
+   "sikler": {
+    "A": "2",
+    "B": "4",
+    "C": "8",
+    "D": "9",
+    "E": "12"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T074_04",
+   "basili_no": 4,
+   "govde": "A = {1, 2, 3, 4, 5}\noldu\u011funa g\u00f6re, A x A kartezyen \u00e7arp\u0131m\u0131n\u0131n ka\u00e7 eleman\u0131n\u0131n her iki bile\u015feni de \u00e7ift say\u0131d\u0131r?",
+   "sikler": {
+    "A": "4",
+    "B": "6",
+    "C": "8",
+    "D": "10",
+    "E": "12"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T074_05",
+   "basili_no": 5,
+   "govde": "I. (\u2124 x \u2124) \u2212 (\u2115 x \u2115)\nk\u00fcmesinin bir eleman\u0131 (\u22122, \u22123) olabilir.\nII. {(1, 1), (1, 2), (2, 3), (1, 4)} \u2282 A x B\noldu\u011funa g\u00f6re, A x B k\u00fcmesinin eleman say\u0131s\u0131 en az 8'dir.\nIII. K ve L k\u00fcmeleri i\u00e7in,\ns(K x L) = 24 oldu\u011funa g\u00f6re,\ns(K \u2229 L) en \u00e7ok 4't\u00fcr.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T074_06",
+   "basili_no": 6,
+   "govde": "A = {1, 2, 3, 6}\nB = {6, 1}\noldu\u011funa g\u00f6re, A x B k\u00fcmesinin alt k\u00fcmelerinin ka\u00e7 tanesinde (2, 6) ikilisi vard\u0131r?",
+   "sikler": {
+    "A": "256",
+    "B": "128",
+    "C": "96",
+    "D": "64",
+    "E": "32"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T074_07",
+   "basili_no": 7,
+   "govde": "A\u015fa\u011f\u0131da A, B ve C k\u00fcmelerinin eleman say\u0131lar\u0131 Venn \u015femas\u0131 ile verilmi\u015ftir.\nBuna g\u00f6re, s[(C \u2212 B) x (A \u2212 C)] ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "15",
+    "B": "21",
+    "C": "32",
+    "D": "56",
+    "E": "40"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T075_03",
+   "basili_no": 3,
+   "govde": "f(x) = 3^x ve g(x) = x^2 olmak \u00fczere,\n((f \u2218 g)(x))/((g \u2218 f)(x))\noran\u0131 a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "1",
+    "B": "3^(2x \u2212 x^2)",
+    "C": "3^(x^2 \u2212 x)",
+    "D": "3^(x^2 \u2212 2x)",
+    "E": "3^(x^2 \u2212 x)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T075_08",
+   "basili_no": 8,
+   "govde": "f : \u211d \u2212 {0} \u2192 \u211d\nf(x) = { 0, x > 0\n\u22122x, x < 0\nfonksiyonunun e\u015fiti a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "f(x) = |x| + x",
+    "B": "f(x) = x^2/|x|",
+    "C": "f(x) = x^2/|x| + x",
+    "D": "f(x) = x^2/|x| \u2212 x",
+    "E": "f(x) = x^2/|x| \u2212 2x"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T075_10",
+   "basili_no": 10,
+   "govde": "Reel say\u0131larda tan\u0131ml\u0131 f ve g fonksiyonlar\u0131 i\u00e7in,\nf^(\u22121)(x) = 2x + 4\ng(x) = 2x \u2212 1\noldu\u011funa g\u00f6re,\n(f \u2218 g^(\u22121))(3)\nifadesinin de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "\u22122",
+    "B": "\u22121",
+    "C": "0",
+    "D": "1",
+    "E": "2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T077_01",
+   "basili_no": 1,
+   "govde": "A\u015fa\u011f\u0131da bir paral\u0131 otoyol \u00fczerindeki 20 farkl\u0131 noktada bulu[??]nan dinlenme tesisleri g\u00f6sterilm\u015ftir.\nHer 0 < n < 20 do\u011fal say\u0131s\u0131 i\u00e7in, T_n ile T_(n + 1) tesisleri aras\u0131ndaki mesafe f fonksiyonu ile,\nf(n + 1) \u2212 f(n)\nbi\u00e7iminde tan\u0131ml\u0131d\u0131r.\nBuna g\u00f6re, otoyolun uzunlu\u011fu a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "f(1)",
+    "B": "f(20)",
+    "C": "f(20) \u2212 f(1)",
+    "D": "f(1) + f(20)",
+    "E": "20f(1)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T077_09",
+   "basili_no": 9,
+   "govde": "f = {(t, (t \u2212 2)/(t \u2212 3)) : t \u2260 3}\ng^(\u22121) = {(2,1), (\u22123, 2), (4, 5)}\nfonksiyonlar\u0131 veriliyor.\n(g \u2218 f^(\u22121))(a) = 4\noldu\u011funa g\u00f6re, (f + f^(\u22121))(a) de\u011feri ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "5",
+    "B": "10/3",
+    "C": "16/3",
+    "D": "15/2",
+    "E": "13/3"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T078_01",
+   "basili_no": 1,
+   "govde": "100 da\u011fc\u0131 birlikte bir da\u011f\u0131n zirvesine t\u0131rmanmaktad\u0131r. 2000 rak\u0131m y\u00fckseklikte kurulan kampta 100 da\u011fc\u0131 vard\u0131r. Da\u011fc\u0131lar bundan sonraki her 300 metre t\u0131rman\u0131\u015fta yeni bir kamp kurup bir s\u00fcre dinlenmeye karar vermi\u015ftir. Kararla\u015ft\u0131r\u0131ld\u0131\u011f\u0131 gibi kurulan her kampta da\u011fc\u0131 say\u0131s\u0131n\u0131n 5 eksildi\u011fi g\u00f6r\u00fclm\u00fc\u015ft\u00fcr.\n\u00d6rne\u011fin, 2300 metre rak\u0131mdaki kampta 95 da\u011fc\u0131, 2600 metre rak\u0131mdaki kampta 90 da\u011fc\u0131 vard\u0131r.\nn > 2000 olmak \u00fczere, n metre rak\u0131mda kurulan kampta da\u011fc\u0131 say\u0131s\u0131n\u0131n rak\u0131ma ba\u011fl\u0131 fonksiyonu f'dir.\nBuna g\u00f6re, f(n) a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "(20000 \u2212 5n)/100",
+    "B": "(30000 \u2212 5n)/200",
+    "C": "(40000 \u2212 5n)/300",
+    "D": "(45000 \u2212 5n)/350",
+    "E": "(60000 \u2212 5n)/500"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T080_04",
+   "basili_no": 4,
+   "govde": "ABC dik \u00fc\u00e7geninde.\n[DE] // [BC], |AB| = 10 br,\n|BC| = 8 br, |AD| = x br\nYukar\u0131daki \u015fekle ba\u011fl\u0131 olarak\nf : x \u2192 \u201cTaral\u0131 alan\u201d\nbi\u00e7iminde bir fonksiyon tan\u0131mlan\u0131yor.\nBuna g\u00f6re, 0 \u2264 x \u2264 5 aral\u0131\u011f\u0131nda y = f(x)\u2019in grafi\u011fi a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T081_03",
+   "basili_no": 3,
+   "govde": "P(x) = a \u00b7 x^b + b \u00b7 x^c + c \u00b7 x^a polinomu veriliyor.\n\u2022 a < b < c olmak \u00fczere,\na, b ve c ard\u0131\u015f\u0131k do\u011fal say\u0131lard\u0131r.\n\u2022 P(x) polinomunun x \u2212 1 ile b\u00f6l\u00fcm\u00fcnden kalan 9'dur.\nBuna g\u00f6re, P(x) polinomunun x + 1 ile b\u00f6l\u00fcm\u00fcnden kalan ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T081_10",
+   "basili_no": 10,
+   "govde": "n \u2265 2 olmak \u00fczere, derecesi n olan polinomlar (n + 1) kenarl\u0131 \u00e7okgenler ile a\u015fa\u011f\u0131daki gibi g\u00f6sterilmektedir.\na, b, c \u2192 ax^2 + bx + c\na, b, c, d \u2192 ax^3 + bx^2 + cx + d\nBuna g\u00f6re,\n\u22121, 0, 1, 0, \u22121, 2\npolinomunun x + 1 ile b\u00f6l\u00fcm\u00fcnden kalan ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "\u22121",
+    "B": "0",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T083_04",
+   "basili_no": 4,
+   "govde": "Dorukalp: (x \u2212 1), (x \u2212 2), (x \u2212 3) ve (x + 1) polinomlar\u0131n\u0131n her birini ayr\u0131 ayr\u0131 d\u00f6rt ka\u011f\u0131da yazarak bir torbaya at\u0131yor.\n\u2022 Torbadan bir ka\u011f\u0131t se\u00e7erek buna Q(x) diyor.\n\u2022 Kalan ka\u011f\u0131tlardaki ifadelerin \u00e7arp\u0131m\u0131ylada P(x) elde ediyor.\n\u2022 Elde etti\u011fi P(x) polinomunu Q(x) polinomuna b\u00f6l\u00fcyor.\nBuna g\u00f6re, Dorukalp'in elde etti\u011fi kalan a\u015fa\u011f\u0131dakilerden hangisi olamaz?",
+   "sikler": {
+    "A": "\u221224",
+    "B": "\u22123",
+    "C": "3",
+    "D": "4",
+    "E": "8"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T084_01",
+   "basili_no": 1,
+   "govde": "A\u015fa\u011f\u0131da do\u011frusal bir pistin AC b\u00f6l\u00fcm\u00fc verilmi\u015ftir. Havad[??]ki D noktas\u0131nda bulunan bir helikopter d\u00fc\u015fey bir bi\u00e7imde [??] noktas\u0131na ini\u015f yapt\u0131\u011f\u0131nda AB yolunun 1 km eksi\u011fi kadar mesafe inmi\u015ftir. Helikopterin ini\u015finin ard\u0131ndan, \u015fekildeki u\u00e7ak pistin A noktas\u0131ndan hareket etmi\u015f ve B noktas\u0131na kadar pistte gittikten sonra B'de kalk\u0131\u015fa ge\u00e7erek sabit bir e\u011fim a\u00e7\u0131s\u0131yla pistte ald\u0131\u011f\u0131 kadar yol alarak D noktas\u0131na ula\u015fm\u0131\u015ft\u0131r.\nC noktas\u0131nda helikopterden inenler burada bindikleri bir ara\u00e7la DC mesafesinin 2 km eksi\u011fi kadar giderek B noktas\u0131na ula\u015fm\u0131\u015flard\u0131r.\nBuna g\u00f6re, AB mesafesi ka\u00e7 km'dir?",
+   "sikler": {
+    "A": "4 \u2212 \u221a6",
+    "B": "3 \u2212 \u221a6",
+    "C": "\u221a6",
+    "D": "3 + \u221a6",
+    "E": "4 + \u221a6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T084_05",
+   "basili_no": 5,
+   "govde": "Bilgin, a\u015fa\u011f\u0131daki duvar saatinin alt\u0131na elektronik bir g\u00f6ste[??]ge yapm\u0131\u015ft\u0131r. Bu g\u00f6stergede, duvar saatinin belirtti\u011fi s\u00fcredeki saat ve dakikay\u0131 k\u00f6k kabul eden ikinci dereceden denklem yazmaktad\u0131r. S\u00fcre de\u011fi\u015fti\u011finde g\u00f6stergedeki denklem de s\u00fcreye uygun bi\u00e7imde de\u011fi\u015fmektedir.\n\u00d6rne\u011fin; \u015eekilde s\u00fcre 1.20'dir ve Bilgin'in yapt\u0131\u011f\u0131 g\u00f6stergede k\u00f6kleri 1 ile 20 olan ikinci dereceden denklem yazmaktad\u0131r.\nx^2 \u2212 21x + 20 = 0\nBilgin bir sal\u0131 g\u00fcn\u00fc evden okula gitmi\u015f, okulda bir s\u00fbre kald\u0131ktan sonra ayn\u0131 g\u00fcn okuldan eve d\u00f6nm\u00fc\u015ft\u00fcr. A\u015fa\u011f\u0131da bu saatin g\u00f6sterdi\u011fi denklemler verilmi\u015ftir.\nEvden \u00e7\u0131kt\u0131\u011f\u0131 an: x^2 \u2212 20x + 100 = 0\nOkula vard\u0131\u011f\u0131 an: x^2 \u2212 11x = 0\nOkuldan \u00e7\u0131kt\u0131\u011f\u0131 an: x^2 \u2212 3x = 0\nBilgin okula giderken ve eve d\u00f6nerken sabit bir h\u0131zla y\u00fcr\u00fcd\u00fc\u011f\u00fcne g\u00f6re, eve vard\u0131\u011f\u0131 an saatin g\u00f6sterdi\u011fi ikinci dereceden denklem a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "x^2 \u2212 4x = 0",
+    "B": "x^2 \u2212 5x = 0",
+    "C": "x^2 \u2212 5x + 4 = 0",
+    "D": "x^2 \u2212 53x + 150 = 0",
+    "E": "x^2 \u2212 55x + 250 = 0"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T084_08",
+   "basili_no": 8,
+   "govde": "a, b, c birer reel say\u0131 olmak \u00fczere,\nI K\u00c7 \u22121\nII KT 1\nIII \u00c7K {1}\n\u015eekildeki I, II, III ile g\u00f6sterilen \u00fc\u00e7 b\u00f6lgeye,\nx^2 \u2212 2x + a = 0\nx^2 + x + b = 0\nx^2 \u2212 cx = 0\ndenklemlerinden sadece biri yaz\u0131lacakt\u0131r. Yaz\u0131m i\u015flemi tamamland\u0131\u011f\u0131nda her dilimdeki ko\u015ful sa\u011flanacakt\u0131r.\n\u00d6rne\u011fin; Mavi renkli dilimin ko\u015fulu k\u00f6kler \u00e7arp\u0131m\u0131n\u0131n \u22121 olmas\u0131d\u0131r.\nK\u00c7: k\u00f6kler \u00e7arp\u0131m\u0131,\nKT: k\u00f6kler toplam\u0131,\n\u00c7K: \u00e7\u00f6z\u00fcm k\u00fcmesi\noldu\u011funa g\u00f6re, a + b + c toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T085_16",
+   "basili_no": 16,
+   "govde": "Yukar\u0131daki \u015fekilde iki t\u00fcpten birinin i\u00e7ine, \u00fczerinde 1,2. 3, 4 di\u011ferinin i\u00e7erisinde 5, 6, 7 say\u0131lar\u0131 yazan 7 top \u015fekildeki gibi yerle\u015ftirilmi\u015ftir. Alp iki t\u00fcpten herhangi birinin alt kapa\u011f\u0131n\u0131 a\u00e7arak toplar bitinceye kadar alttan birer birer top almaktad\u0131r. Her defas\u0131nda ald\u0131\u011f\u0131 topu, bir \u00f6nceki ald\u0131\u011f\u0131 topun sa\u011f\u0131na koyarak 7 basamakl\u0131 bir say\u0131 elde ediliyor.\nBuna g\u00f6re, ka\u00e7 farkl\u0131 7 basamakl\u0131 say\u0131 elde edilebilir?",
+   "sikler": {
+    "A": "70",
+    "B": "64",
+    "C": "48",
+    "D": "36",
+    "E": "35"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T088_08",
+   "basili_no": 8,
+   "govde": "Yap\u0131lan 10 soruluk bir s\u0131nav i\u00e7in \u00f6\u011frencilere optik form verilmi\u015ftir.\nBuna g\u00f6re, bu s\u0131navda 8 do\u011fru 2 yanl\u0131\u015f yap\u0131lm\u0131\u015f olan birbirinden farkl\u0131 en fazla ka\u00e7 tane optik form olabilir?",
+   "sikler": {
+    "A": "1020",
+    "B": "960",
+    "C": "750",
+    "D": "720",
+    "E": "540"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T088_11",
+   "basili_no": 11,
+   "govde": "(10 0)^2 + (10 1)^2 + (10 2)^2 \u2212 ... + (10 10)^2 = ?\nSorusunu \u00e7\u00f6zmeye \u00e7al\u0131\u015fan bir \u00f6\u011frenci, 10\u2019u k\u0131z 10\u2019u erkek olan bir s\u0131n\u0131f d\u00fc\u015f\u00fcn\u00fcp bu s\u0131n\u0131ftan;\n10 erkek \u2013 0 k\u0131z\n9 erkek \u2013 1 k\u0131z\n8 erkek \u2013 2 k\u0131z\n\u22ee \u22ee\n0 erkek \u2013 10 k\u0131z\ndurumlar\u0131n\u0131n tamam\u0131n\u0131 d\u00fc\u015f\u00fcn\u00fcp\n(10 0) \u00b7 (10 10) + (10 1) \u00b7 (10 9) + ... + (10 10) \u00b7 (10 0) = (20 10)\ne\u015fitli\u011fine ula\u015f\u0131yor.\nBuna g\u00f6re \u00f6\u011frenci ayn\u0131 mant\u0131kla;\n(5 0) \u00b7 (6 4) + (5 1) \u00b7 (6 3) + (5 2) \u00b7 (6 2) + (5 3) \u00b7 (6 1) + (5 4) \u00b7 (6 0)\nsorusunun cevab\u0131n\u0131 ka\u00e7 olarak bulacakt\u0131r?",
+   "sikler": {
+    "A": "(12 4)",
+    "B": "(11 4)",
+    "C": "(11 5)",
+    "D": "(12 6)",
+    "E": "(10 5)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T089_12",
+   "basili_no": 12,
+   "govde": "(n r) ifadesi n'in r'li kombinasyonunu g\u00f6stermektedir.\n(9 0), (9 1), (9 2), ..., (9 9) say\u0131lar\u0131ndan rastgele iki tanesi se\u00e7iliyor.\nSe\u00e7ilen bu say\u0131lar\u0131n e\u015fit olma olas\u0131l\u0131\u011f\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/10",
+    "B": "1/9",
+    "C": "2/9",
+    "D": "3/8",
+    "E": "1/6"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T089_15",
+   "basili_no": 15,
+   "govde": "1 | 2 | 3 | 4\n5 | 6 | 7 | 8\n9 | 10 | 11 | 12\n13 | 14 | 15 | 16\n17 | 18 | 19 | 20\nYukar\u0131da 1'den 20'ye kadar numaraland\u0131r\u0131lm\u0131\u015f olan 20 kutu vard\u0131r. \u0130ki yar\u0131\u015fmac\u0131 kutu a\u00e7t\u0131rma oyununda birer kutu a\u00e7t\u0131racaklard\u0131r.\nBuna g\u00f6re, yar\u0131\u015fmac\u0131lar\u0131n kutular\u0131 yan yana a\u00e7t\u0131rma olas\u0131l\u0131\u011f\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "7/38",
+    "B": "3/19",
+    "C": "3/38",
+    "D": "2/19",
+    "E": "5/38"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T090_07",
+   "basili_no": 7,
+   "govde": "B\u0130RLER | \u0130K\u0130LER | \u00dc\u00c7LER | ... | ONLAR\n1 \u00d7 1 = 1 | 2 \u00d7 1 = 2 | 3 \u00d7 1 = 3 | ... | 10 \u00d7 1 = 10\n1 \u00d7 2 = 2 | 2 \u00d7 2 = 4 | 3 \u00d7 2 = 6 | ... | 10 \u00d7 2 = 20\n1 \u00d7 3 = 3 | 2 \u00d7 3 = 6 | 3 \u00d7 3 = 9 | ... | 10 \u00d7 3 = 30\n\u22ee | \u22ee | \u22ee | ... | \u22ee\n1 \u00d7 10 = 10 | 2 \u00d7 10 = 20 | 3 \u00d7 10 = 30 | ... | 10 \u00d7 10 = 100\n\u00c7arpman\u0131n de\u011fi\u015fme \u00f6zelli\u011fi ile \u00e7arp\u0131m tablosunu YED\u0130LERE kadar (YED\u0130LER dahil de\u011fil) bilen bir \u00f6\u011frenciye, yukar\u0131daki tablodan bir \u00e7arpma i\u015flemi soruldu\u011funda, \u00f6\u011frencinin do\u011fru yan\u0131t verme olas\u0131l\u0131\u011f\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/2",
+    "B": "3/5",
+    "C": "9/11",
+    "D": "15/16",
+    "E": "21/25"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T092_05",
+   "basili_no": 5,
+   "govde": "Bir veri grubundaki say\u0131lar k\u00fc\u00e7\u00fckten b\u00fcy\u00fc\u011fe do\u011fru s\u0131ralar[??]d\u0131\u011f\u0131nda gruptaki terim say\u0131s\u0131 tek ise ortadaki say\u0131ya, \u00e7ift ise ortadaki iki say\u0131n\u0131n aritmetik ortalamas\u0131na o veri grubunun medyan\u0131 (ortanca) denir.\n7, 5, x, 2, 10\nveri grubunun medyan\u0131 ile aritmetik ortalamas\u0131 e\u015fit oldu\u011funa g\u00f6re, x'in alabilece\u011fi de\u011ferlerin toplam\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "12",
+    "B": "14",
+    "C": "15",
+    "D": "18",
+    "E": "21"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T092_09",
+   "basili_no": 9,
+   "govde": "Terimleri k\u00fc\u00e7\u00fckten b\u00fcy\u00fc\u011fe do\u011fru s\u0131ralanm\u0131\u015f bir veri gr[??]bunda, tek say\u0131da terim varsa ortadaki terime, \u00e7ift say\u0131da terim varsa ortadaki iki teriminin aritmetik ortalamas\u0131na o veri grubunun medyan\u0131 (ortanca) denir.\nA\u015fa\u011f\u0131da terimleri k\u00fc\u00e7\u00fckten b\u00fcy\u00fc\u011fe do\u011fru dizili bir veri grubu verilmi\u015ftir.\na_1, a_2, a_3, a_4, a_5, a_6, a_7\nBu veri grubunun medyan\u0131 11, a_5 ve a_7 d\u0131\u015f\u0131ndaki terimlerin medyan\u0131 3't\u00fcr.\nBuna g\u00f6re, a_7 d\u0131\u015f\u0131ndaki terimlerin medyan\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "3",
+    "B": "4,5",
+    "C": "5",
+    "D": "6,5",
+    "E": "7"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T093_05",
+   "basili_no": 5,
+   "govde": "SP\nNP | OBP\nMatematik | 4 Puan\nT\u00fcrk\u00e7e | 4 Puan\nFen | 2 Puan\nSosyal | 2 Puan\nOP < 50 ise | OP > 50 ise\nOBP = 3(OP) | OBP = 5(OP)\nSP = 100 + NP + OBP \u00b7 %12\nSP : S\u0131nav Puan\u0131\nNP : Net Puan\u0131\nOP : Okul Puan\u0131\nOBP : Okul Bitime Puan\u0131\nYukar\u0131daki algoritmada bir s\u0131nava giren \u00d6\u011frencinin s\u0131nav puan\u0131n\u0131n (SP) nas\u0131l hesapland\u0131\u011f\u0131yla ilgili bilgiler verilmektedir.\nBuna g\u00f6re, OP 80, matematik neti 35, fen neti 12, T\u00fcrk\u00e7e neti 35.25 ve sosyal neti 17.50 olan bir \u00f6\u011frencinin s\u0131nav puan\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "468",
+    "B": "478",
+    "C": "488",
+    "D": "498",
+    "E": "508"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL20T-T095_07",
+   "basili_no": 7,
+   "govde": "Bir okuldaki \u00f6\u011frencilerin g\u00fcnl\u00fck kitap okuma s\u00fcreleri a\u015f[??]\u011f\u0131daki s\u00fctun grafi\u011finde g\u00f6sterilmi\u015ftir.\nG\u00fcnde en fazla 20 dakika kitap okuyan \u00f6\u011frenciler ile g\u00fcnde 20 dakikadan fazla kitap okuyan \u00f6\u011frencilerin da\u011f\u0131l\u0131m\u0131n\u0131 g\u00f6steren bir daire grafi\u011fi \u00e7izilmek istenirse, bu grafik a\u015fa\u011f\u0131dakilerden hangisi olur?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  }
+ ]
+}

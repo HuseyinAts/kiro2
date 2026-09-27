@@ -1,0 +1,2450 @@
+{
+"kaynak": "2019-2020 ACIL TYT Matematik Soru Bankasi",
+"arac": "scripts/kitap/acil1920tyt_kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 17-21, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"kenar_kapisi_ihlali": 0,
+"ortme_soru": 234,
+"kenar": [],
+"ortme": [
+{
+"birim": "ACL20T-T002",
+"soru": 5,
+"dosya": 9,
+"simge": [
+96,
+357
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T002",
+"soru": 6,
+"dosya": 9,
+"simge": [
+582,
+357
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T002",
+"soru": 9,
+"dosya": 10,
+"simge": [
+96,
+371
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T003",
+"soru": 1,
+"dosya": 11,
+"simge": [
+96,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T003",
+"soru": 5,
+"dosya": 12,
+"simge": [
+96,
+371
+],
+"piksel": 30
+},
+{
+"birim": "ACL20T-T003",
+"soru": 6,
+"dosya": 12,
+"simge": [
+652,
+371
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T003",
+"soru": 9,
+"dosya": 13,
+"simge": [
+96,
+357
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T004",
+"soru": 1,
+"dosya": 14,
+"simge": [
+96,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T004",
+"soru": 2,
+"dosya": 14,
+"simge": [
+491,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T004",
+"soru": 5,
+"dosya": 15,
+"simge": [
+96,
+357
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T004",
+"soru": 13,
+"dosya": 17,
+"simge": [
+96,
+357
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T005",
+"soru": 1,
+"dosya": 28,
+"simge": [
+93,
+371
+],
+"piksel": 27
+},
+{
+"birim": "ACL20T-T005",
+"soru": 3,
+"dosya": 28,
+"simge": [
+734,
+371
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T005",
+"soru": 7,
+"dosya": 29,
+"simge": [
+96,
+357
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T005",
+"soru": 13,
+"dosya": 30,
+"simge": [
+96,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T006",
+"soru": 2,
+"dosya": 31,
+"simge": [
+454,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T006",
+"soru": 7,
+"dosya": 32,
+"simge": [
+96,
+371
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T007",
+"soru": 2,
+"dosya": 33,
+"simge": [
+454,
+357
+],
+"piksel": 17
+},
+{
+"birim": "ACL20T-T007",
+"soru": 12,
+"dosya": 35,
+"simge": [
+96,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T007",
+"soru": 13,
+"dosya": 35,
+"simge": [
+570,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T008",
+"soru": 1,
+"dosya": 39,
+"simge": [
+96,
+357
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T008",
+"soru": 6,
+"dosya": 40,
+"simge": [
+96,
+371
+],
+"piksel": 19
+},
+{
+"birim": "ACL20T-T008",
+"soru": 7,
+"dosya": 40,
+"simge": [
+394,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T008",
+"soru": 12,
+"dosya": 41,
+"simge": [
+96,
+357
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T009",
+"soru": 1,
+"dosya": 42,
+"simge": [
+96,
+371
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T009",
+"soru": 7,
+"dosya": 43,
+"simge": [
+94,
+357
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T010",
+"soru": 2,
+"dosya": 46,
+"simge": [
+683,
+371
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T010",
+"soru": 5,
+"dosya": 47,
+"simge": [
+96,
+357
+],
+"piksel": 19
+},
+{
+"birim": "ACL20T-T010",
+"soru": 6,
+"dosya": 47,
+"simge": [
+553,
+357
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T011",
+"soru": 1,
+"dosya": 52,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T011",
+"soru": 7,
+"dosya": 53,
+"simge": [
+703,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T011",
+"soru": 11,
+"dosya": 54,
+"simge": [
+418,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T012",
+"soru": 1,
+"dosya": 55,
+"simge": [
+96,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T012",
+"soru": 5,
+"dosya": 56,
+"simge": [
+96,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T012",
+"soru": 6,
+"dosya": 56,
+"simge": [
+608,
+371
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T012",
+"soru": 10,
+"dosya": 57,
+"simge": [
+610,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T012",
+"soru": 13,
+"dosya": 58,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T013",
+"soru": 6,
+"dosya": 62,
+"simge": [
+94,
+371
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T013",
+"soru": 7,
+"dosya": 62,
+"simge": [
+599,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T014",
+"soru": 2,
+"dosya": 67,
+"simge": [
+491,
+357
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T014",
+"soru": 6,
+"dosya": 68,
+"simge": [
+756,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T014",
+"soru": 9,
+"dosya": 69,
+"simge": [
+96,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T015",
+"soru": 1,
+"dosya": 70,
+"simge": [
+96,
+371
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T015",
+"soru": 2,
+"dosya": 70,
+"simge": [
+491,
+371
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T015",
+"soru": 6,
+"dosya": 71,
+"simge": [
+96,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T016",
+"soru": 1,
+"dosya": 72,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T016",
+"soru": 2,
+"dosya": 72,
+"simge": [
+358,
+371
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T016",
+"soru": 7,
+"dosya": 73,
+"simge": [
+96,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T017",
+"soru": 1,
+"dosya": 78,
+"simge": [
+96,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T017",
+"soru": 6,
+"dosya": 79,
+"simge": [
+624,
+357
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T018",
+"soru": 1,
+"dosya": 82,
+"simge": [
+96,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T018",
+"soru": 2,
+"dosya": 82,
+"simge": [
+490,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T018",
+"soru": 5,
+"dosya": 83,
+"simge": [
+96,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T018",
+"soru": 9,
+"dosya": 84,
+"simge": [
+96,
+371
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T019",
+"soru": 3,
+"dosya": 85,
+"simge": [
+769,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T019",
+"soru": 9,
+"dosya": 87,
+"simge": [
+96,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T021",
+"soru": 11,
+"dosya": 100,
+"simge": [
+96,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T022",
+"soru": 5,
+"dosya": 102,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T022",
+"soru": 6,
+"dosya": 102,
+"simge": [
+593,
+371
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T022",
+"soru": 9,
+"dosya": 103,
+"simge": [
+96,
+357
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T022",
+"soru": 9,
+"dosya": 103,
+"simge": [
+411,
+357
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T023",
+"soru": 1,
+"dosya": 104,
+"simge": [
+96,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T023",
+"soru": 5,
+"dosya": 105,
+"simge": [
+96,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T023",
+"soru": 6,
+"dosya": 105,
+"simge": [
+568,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T023",
+"soru": 9,
+"dosya": 106,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T024",
+"soru": 1,
+"dosya": 107,
+"simge": [
+96,
+357
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T024",
+"soru": 5,
+"dosya": 108,
+"simge": [
+94,
+371
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T024",
+"soru": 8,
+"dosya": 109,
+"simge": [
+96,
+357
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T024",
+"soru": 8,
+"dosya": 109,
+"simge": [
+346,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T025",
+"soru": 7,
+"dosya": 118,
+"simge": [
+658,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T025",
+"soru": 10,
+"dosya": 119,
+"simge": [
+447,
+357
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T026",
+"soru": 7,
+"dosya": 121,
+"simge": [
+380,
+357
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T027",
+"soru": 1,
+"dosya": 122,
+"simge": [
+96,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T027",
+"soru": 6,
+"dosya": 123,
+"simge": [
+558,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T027",
+"soru": 9,
+"dosya": 124,
+"simge": [
+96,
+371
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T028",
+"soru": 1,
+"dosya": 125,
+"simge": [
+96,
+357
+],
+"piksel": 17
+},
+{
+"birim": "ACL20T-T028",
+"soru": 9,
+"dosya": 127,
+"simge": [
+96,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T029",
+"soru": 7,
+"dosya": 136,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T030",
+"soru": 5,
+"dosya": 138,
+"simge": [
+96,
+371
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T030",
+"soru": 10,
+"dosya": 139,
+"simge": [
+622,
+357
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T031",
+"soru": 1,
+"dosya": 140,
+"simge": [
+96,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T031",
+"soru": 3,
+"dosya": 140,
+"simge": [
+837,
+371
+],
+"piksel": 4
+},
+{
+"birim": "ACL20T-T031",
+"soru": 7,
+"dosya": 141,
+"simge": [
+96,
+357
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T032",
+"soru": 6,
+"dosya": 143,
+"simge": [
+348,
+357
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T033",
+"soru": 6,
+"dosya": 152,
+"simge": [
+96,
+371
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T034",
+"soru": 1,
+"dosya": 154,
+"simge": [
+96,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T034",
+"soru": 9,
+"dosya": 156,
+"simge": [
+96,
+371
+],
+"piksel": 28
+},
+{
+"birim": "ACL20T-T034",
+"soru": 10,
+"dosya": 156,
+"simge": [
+592,
+371
+],
+"piksel": 5
+},
+{
+"birim": "ACL20T-T035",
+"soru": 1,
+"dosya": 157,
+"simge": [
+96,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T035",
+"soru": 6,
+"dosya": 158,
+"simge": [
+96,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T035",
+"soru": 7,
+"dosya": 158,
+"simge": [
+491,
+371
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T035",
+"soru": 10,
+"dosya": 159,
+"simge": [
+96,
+357
+],
+"piksel": 27
+},
+{
+"birim": "ACL20T-T036",
+"soru": 1,
+"dosya": 160,
+"simge": [
+96,
+371
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T037",
+"soru": 6,
+"dosya": 169,
+"simge": [
+96,
+357
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T037",
+"soru": 7,
+"dosya": 169,
+"simge": [
+616,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T038",
+"soru": 5,
+"dosya": 172,
+"simge": [
+96,
+371
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T039",
+"soru": 1,
+"dosya": 174,
+"simge": [
+96,
+371
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T039",
+"soru": 2,
+"dosya": 174,
+"simge": [
+622,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T039",
+"soru": 5,
+"dosya": 175,
+"simge": [
+96,
+357
+],
+"piksel": 19
+},
+{
+"birim": "ACL20T-T039",
+"soru": 9,
+"dosya": 176,
+"simge": [
+94,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T040",
+"soru": 6,
+"dosya": 178,
+"simge": [
+96,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T041",
+"soru": 6,
+"dosya": 183,
+"simge": [
+97,
+357
+],
+"piksel": 18
+},
+{
+"birim": "ACL20T-T041",
+"soru": 7,
+"dosya": 183,
+"simge": [
+501,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T042",
+"soru": 5,
+"dosya": 186,
+"simge": [
+96,
+371
+],
+"piksel": 27
+},
+{
+"birim": "ACL20T-T042",
+"soru": 5,
+"dosya": 186,
+"simge": [
+420,
+371
+],
+"piksel": 29
+},
+{
+"birim": "ACL20T-T043",
+"soru": 1,
+"dosya": 187,
+"simge": [
+96,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T043",
+"soru": 2,
+"dosya": 187,
+"simge": [
+546,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T043",
+"soru": 5,
+"dosya": 188,
+"simge": [
+96,
+371
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T043",
+"soru": 5,
+"dosya": 188,
+"simge": [
+581,
+371
+],
+"piksel": 31
+},
+{
+"birim": "ACL20T-T044",
+"soru": 10,
+"dosya": 199,
+"simge": [
+96,
+357
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T045",
+"soru": 9,
+"dosya": 202,
+"simge": [
+96,
+371
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T045",
+"soru": 9,
+"dosya": 202,
+"simge": [
+398,
+371
+],
+"piksel": 17
+},
+{
+"birim": "ACL20T-T046",
+"soru": 1,
+"dosya": 203,
+"simge": [
+96,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T046",
+"soru": 2,
+"dosya": 203,
+"simge": [
+557,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T046",
+"soru": 2,
+"dosya": 203,
+"simge": [
+792,
+357
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T046",
+"soru": 6,
+"dosya": 204,
+"simge": [
+97,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T047",
+"soru": 5,
+"dosya": 207,
+"simge": [
+96,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T047",
+"soru": 6,
+"dosya": 207,
+"simge": [
+525,
+357
+],
+"piksel": 16
+},
+{
+"birim": "ACL20T-T047",
+"soru": 9,
+"dosya": 208,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T048",
+"soru": 6,
+"dosya": 217,
+"simge": [
+655,
+357
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T048",
+"soru": 9,
+"dosya": 218,
+"simge": [
+96,
+371
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T049",
+"soru": 1,
+"dosya": 219,
+"simge": [
+96,
+357
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T049",
+"soru": 2,
+"dosya": 219,
+"simge": [
+587,
+357
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T049",
+"soru": 10,
+"dosya": 221,
+"simge": [
+94,
+357
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T049",
+"soru": 11,
+"dosya": 221,
+"simge": [
+558,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T050",
+"soru": 11,
+"dosya": 224,
+"simge": [
+670,
+371
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T051",
+"soru": 1,
+"dosya": 225,
+"simge": [
+96,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T051",
+"soru": 6,
+"dosya": 226,
+"simge": [
+96,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T051",
+"soru": 12,
+"dosya": 227,
+"simge": [
+625,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T052",
+"soru": 1,
+"dosya": 228,
+"simge": [
+96,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T053",
+"soru": 10,
+"dosya": 238,
+"simge": [
+454,
+371
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T054",
+"soru": 5,
+"dosya": 240,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T054",
+"soru": 9,
+"dosya": 241,
+"simge": [
+96,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T055",
+"soru": 8,
+"dosya": 244,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T056",
+"soru": 1,
+"dosya": 263,
+"simge": [
+96,
+357
+],
+"piksel": 18
+},
+{
+"birim": "ACL20T-T056",
+"soru": 2,
+"dosya": 263,
+"simge": [
+566,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T056",
+"soru": 10,
+"dosya": 265,
+"simge": [
+96,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T057",
+"soru": 1,
+"dosya": 266,
+"simge": [
+94,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T057",
+"soru": 3,
+"dosya": 266,
+"simge": [
+818,
+371
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T057",
+"soru": 6,
+"dosya": 267,
+"simge": [
+96,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T057",
+"soru": 12,
+"dosya": 268,
+"simge": [
+625,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T058",
+"soru": 1,
+"dosya": 269,
+"simge": [
+96,
+357
+],
+"piksel": 18
+},
+{
+"birim": "ACL20T-T058",
+"soru": 2,
+"dosya": 269,
+"simge": [
+757,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T058",
+"soru": 6,
+"dosya": 270,
+"simge": [
+96,
+371
+],
+"piksel": 18
+},
+{
+"birim": "ACL20T-T058",
+"soru": 7,
+"dosya": 270,
+"simge": [
+733,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T058",
+"soru": 11,
+"dosya": 271,
+"simge": [
+96,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T058",
+"soru": 12,
+"dosya": 271,
+"simge": [
+655,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T059",
+"soru": 1,
+"dosya": 272,
+"simge": [
+96,
+371
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T059",
+"soru": 2,
+"dosya": 272,
+"simge": [
+747,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T059",
+"soru": 6,
+"dosya": 273,
+"simge": [
+96,
+357
+],
+"piksel": 27
+},
+{
+"birim": "ACL20T-T059",
+"soru": 7,
+"dosya": 273,
+"simge": [
+608,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T059",
+"soru": 10,
+"dosya": 274,
+"simge": [
+388,
+371
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T059",
+"soru": 11,
+"dosya": 274,
+"simge": [
+655,
+371
+],
+"piksel": 23
+},
+{
+"birim": "ACL20T-T060",
+"soru": 7,
+"dosya": 276,
+"simge": [
+605,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T060",
+"soru": 11,
+"dosya": 277,
+"simge": [
+96,
+357
+],
+"piksel": 27
+},
+{
+"birim": "ACL20T-T060",
+"soru": 12,
+"dosya": 277,
+"simge": [
+503,
+357
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T061",
+"soru": 1,
+"dosya": 278,
+"simge": [
+94,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T061",
+"soru": 6,
+"dosya": 279,
+"simge": [
+96,
+357
+],
+"piksel": 31
+},
+{
+"birim": "ACL20T-T061",
+"soru": 6,
+"dosya": 279,
+"simge": [
+637,
+357
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T061",
+"soru": 10,
+"dosya": 280,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T061",
+"soru": 12,
+"dosya": 280,
+"simge": [
+661,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T062",
+"soru": 5,
+"dosya": 282,
+"simge": [
+96,
+371
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T062",
+"soru": 6,
+"dosya": 282,
+"simge": [
+581,
+371
+],
+"piksel": 31
+},
+{
+"birim": "ACL20T-T062",
+"soru": 9,
+"dosya": 283,
+"simge": [
+96,
+357
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T062",
+"soru": 13,
+"dosya": 284,
+"simge": [
+496,
+371
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T063",
+"soru": 1,
+"dosya": 285,
+"simge": [
+93,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T063",
+"soru": 5,
+"dosya": 286,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T063",
+"soru": 6,
+"dosya": 286,
+"simge": [
+531,
+371
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T063",
+"soru": 7,
+"dosya": 286,
+"simge": [
+752,
+371
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T063",
+"soru": 12,
+"dosya": 287,
+"simge": [
+570,
+357
+],
+"piksel": 16
+},
+{
+"birim": "ACL20T-T064",
+"soru": 1,
+"dosya": 288,
+"simge": [
+96,
+371
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T064",
+"soru": 2,
+"dosya": 288,
+"simge": [
+613,
+371
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T064",
+"soru": 11,
+"dosya": 290,
+"simge": [
+96,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T065",
+"soru": 1,
+"dosya": 291,
+"simge": [
+96,
+357
+],
+"piksel": 4
+},
+{
+"birim": "ACL20T-T065",
+"soru": 2,
+"dosya": 291,
+"simge": [
+649,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T065",
+"soru": 7,
+"dosya": 292,
+"simge": [
+94,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T065",
+"soru": 8,
+"dosya": 292,
+"simge": [
+432,
+371
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T065",
+"soru": 8,
+"dosya": 292,
+"simge": [
+601,
+371
+],
+"piksel": 5
+},
+{
+"birim": "ACL20T-T066",
+"soru": 3,
+"dosya": 300,
+"simge": [
+731,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T066",
+"soru": 8,
+"dosya": 301,
+"simge": [
+411,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T067",
+"soru": 7,
+"dosya": 303,
+"simge": [
+96,
+357
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T067",
+"soru": 8,
+"dosya": 303,
+"simge": [
+423,
+357
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T068",
+"soru": 12,
+"dosya": 306,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T068",
+"soru": 13,
+"dosya": 306,
+"simge": [
+533,
+371
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T069",
+"soru": 5,
+"dosya": 315,
+"simge": [
+96,
+357
+],
+"piksel": 4
+},
+{
+"birim": "ACL20T-T069",
+"soru": 10,
+"dosya": 316,
+"simge": [
+523,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T070",
+"soru": 1,
+"dosya": 317,
+"simge": [
+96,
+357
+],
+"piksel": 22
+},
+{
+"birim": "ACL20T-T070",
+"soru": 4,
+"dosya": 318,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T070",
+"soru": 9,
+"dosya": 319,
+"simge": [
+96,
+357
+],
+"piksel": 16
+},
+{
+"birim": "ACL20T-T071",
+"soru": 1,
+"dosya": 320,
+"simge": [
+96,
+371
+],
+"piksel": 36
+},
+{
+"birim": "ACL20T-T072",
+"soru": 1,
+"dosya": 323,
+"simge": [
+96,
+357
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T072",
+"soru": 6,
+"dosya": 324,
+"simge": [
+96,
+371
+],
+"piksel": 27
+},
+{
+"birim": "ACL20T-T072",
+"soru": 11,
+"dosya": 325,
+"simge": [
+94,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T073",
+"soru": 1,
+"dosya": 326,
+"simge": [
+96,
+371
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T073",
+"soru": 2,
+"dosya": 326,
+"simge": [
+702,
+371
+],
+"piksel": 17
+},
+{
+"birim": "ACL20T-T073",
+"soru": 6,
+"dosya": 327,
+"simge": [
+426,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T073",
+"soru": 10,
+"dosya": 328,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T074",
+"soru": 3,
+"dosya": 331,
+"simge": [
+631,
+357
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T075",
+"soru": 1,
+"dosya": 347,
+"simge": [
+96,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T076",
+"soru": 8,
+"dosya": 350,
+"simge": [
+570,
+371
+],
+"piksel": 5
+},
+{
+"birim": "ACL20T-T077",
+"soru": 1,
+"dosya": 351,
+"simge": [
+96,
+357
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T078",
+"soru": 1,
+"dosya": 354,
+"simge": [
+96,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T079",
+"soru": 10,
+"dosya": 358,
+"simge": [
+94,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T081",
+"soru": 2,
+"dosya": 367,
+"simge": [
+357,
+284
+],
+"piksel": 169
+},
+{
+"birim": "ACL20T-T081",
+"soru": 3,
+"dosya": 367,
+"simge": [
+756,
+357
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T081",
+"soru": 7,
+"dosya": 368,
+"simge": [
+96,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL20T-T082",
+"soru": 2,
+"dosya": 370,
+"simge": [
+451,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T083",
+"soru": 2,
+"dosya": 372,
+"simge": [
+345,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T084",
+"soru": 1,
+"dosya": 376,
+"simge": [
+96,
+371
+],
+"piksel": 20
+},
+{
+"birim": "ACL20T-T084",
+"soru": 5,
+"dosya": 377,
+"simge": [
+94,
+357
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T084",
+"soru": 9,
+"dosya": 378,
+"simge": [
+96,
+371
+],
+"piksel": 26
+},
+{
+"birim": "ACL20T-T085",
+"soru": 2,
+"dosya": 385,
+"simge": [
+660,
+357
+],
+"piksel": 12
+},
+{
+"birim": "ACL20T-T085",
+"soru": 11,
+"dosya": 387,
+"simge": [
+734,
+357
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T086",
+"soru": 5,
+"dosya": 390,
+"simge": [
+94,
+371
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T086",
+"soru": 10,
+"dosya": 391,
+"simge": [
+96,
+357
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T086",
+"soru": 10,
+"dosya": 391,
+"simge": [
+412,
+357
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T087",
+"soru": 1,
+"dosya": 400,
+"simge": [
+96,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T087",
+"soru": 7,
+"dosya": 401,
+"simge": [
+96,
+357
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T087",
+"soru": 8,
+"dosya": 401,
+"simge": [
+511,
+357
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T088",
+"soru": 1,
+"dosya": 402,
+"simge": [
+94,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T088",
+"soru": 10,
+"dosya": 404,
+"simge": [
+94,
+371
+],
+"piksel": 6
+},
+{
+"birim": "ACL20T-T089",
+"soru": 1,
+"dosya": 409,
+"simge": [
+96,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T089",
+"soru": 8,
+"dosya": 410,
+"simge": [
+533,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T090",
+"soru": 1,
+"dosya": 412,
+"simge": [
+96,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T090",
+"soru": 2,
+"dosya": 412,
+"simge": [
+269,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL20T-T090",
+"soru": 3,
+"dosya": 412,
+"simge": [
+503,
+371
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T090",
+"soru": 4,
+"dosya": 412,
+"simge": [
+800,
+371
+],
+"piksel": 13
+},
+{
+"birim": "ACL20T-T090",
+"soru": 13,
+"dosya": 414,
+"simge": [
+96,
+371
+],
+"piksel": 21
+},
+{
+"birim": "ACL20T-T090",
+"soru": 13,
+"dosya": 414,
+"simge": [
+492,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL20T-T091",
+"soru": 2,
+"dosya": 415,
+"simge": [
+679,
+357
+],
+"piksel": 9
+},
+{
+"birim": "ACL20T-T091",
+"soru": 5,
+"dosya": 416,
+"simge": [
+259,
+371
+],
+"piksel": 18
+},
+{
+"birim": "ACL20T-T092",
+"soru": 1,
+"dosya": 420,
+"simge": [
+96,
+371
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T092",
+"soru": 2,
+"dosya": 420,
+"simge": [
+491,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL20T-T092",
+"soru": 5,
+"dosya": 421,
+"simge": [
+96,
+357
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T092",
+"soru": 6,
+"dosya": 421,
+"simge": [
+491,
+357
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T092",
+"soru": 9,
+"dosya": 422,
+"simge": [
+96,
+371
+],
+"piksel": 29
+},
+{
+"birim": "ACL20T-T092",
+"soru": 10,
+"dosya": 422,
+"simge": [
+431,
+371
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T094",
+"soru": 6,
+"dosya": 426,
+"simge": [
+491,
+371
+],
+"piksel": 25
+},
+{
+"birim": "ACL20T-T094",
+"soru": 9,
+"dosya": 427,
+"simge": [
+96,
+357
+],
+"piksel": 24
+},
+{
+"birim": "ACL20T-T094",
+"soru": 10,
+"dosya": 427,
+"simge": [
+469,
+357
+],
+"piksel": 30
+},
+{
+"birim": "ACL20T-T095",
+"soru": 3,
+"dosya": 429,
+"simge": [
+96,
+357
+],
+"piksel": 15
+},
+{
+"birim": "ACL20T-T095",
+"soru": 4,
+"dosya": 429,
+"simge": [
+601,
+357
+],
+"piksel": 33
+},
+{
+"birim": "ACL20T-T095",
+"soru": 7,
+"dosya": 430,
+"simge": [
+96,
+371
+],
+"piksel": 14
+},
+{
+"birim": "ACL20T-T095",
+"soru": 11,
+"dosya": 431,
+"simge": [
+96,
+357
+],
+"piksel": 22
+}
+]
+}

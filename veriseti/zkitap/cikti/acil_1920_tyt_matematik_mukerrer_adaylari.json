@@ -1,0 +1,606 @@
+{
+ "kaynak": "2019-2020 ACIL TYT Matematik Soru Bankasi",
+ "arac": "backend/scripts/kitap/acil1920tyt_mukerrer.py",
+ "olcu": "govde normal bicimi (bosluksuz, eksi tek '-', kesme/tirnak tek bicim, LaTeX/parantez/dolar/indis/us yok) karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: MATEMATIK/GEOMETRI (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar. 3-gram ters indeksiyle (docstring).",
+ "soru_sayisi": 1203,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "ACL20T-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T004_15",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T008_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T012_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T016_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T020_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T024_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T028_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T032_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T036_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T041_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T045_07",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T049_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T053_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T057_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T061_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T064_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T068_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T072_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T076_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T080_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T084_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T087_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T091_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL20T-T095_11",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [
+  {
+   "dosya": "ACL20T-T093_06",
+   "db_id": "5060d955-3bfd-5643-b4ba-5cc3f1ae4468"
+  },
+  {
+   "dosya": "ACL20T-T092_04",
+   "db_id": "da63b738-97b5-5553-a02b-f767b12129e2"
+  }
+ ],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 0.712,
+ "db_satiri": 16606,
+ "db_en_yuksek_3gram": 1.0,
+ "aday_sayisi": 21,
+ "guclu_aday_sayisi": 14,
+ "adaylar": [
+  {
+   "dosya": "ACL20T-T082_07",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "f12e73be-e04f-59a9-bf3d-14e99fd2b4d0",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T087_06",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "73b16b61-a468-5dc1-a94a-3efa82b94a20",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL20T-T090_05",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "05279ff6-9773-55ae-b806-99a3b6af9bb3",
+   "db_kaynak": "2023-2024-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL20T-T091_09",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "0f52e908-c0b9-55fe-961c-3f0f1840d1d8",
+   "db_kaynak": "AC\u0130L-2025-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL20T-T092_04",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "da63b738-97b5-5553-a02b-f767b12129e2",
+   "db_kaynak": "2023-2024-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T093_06",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "5060d955-3bfd-5643-b4ba-5cc3f1ae4468",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T088_10",
+   "govde_3gram": 0.963,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "4f7d6e20-fd59-58b5-95dc-1638d1b4d99e",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T089_03",
+   "govde_3gram": 0.952,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "a0224307-d413-5998-8b8a-3d8a9c7696f1",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T031_11",
+   "govde_3gram": 0.949,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "7cc7c7e0-c392-592d-8fea-c0f9c85d7f79",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T082_01",
+   "govde_3gram": 0.94,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "de68cadf-baa1-5e4d-b065-b119d174fb02",
+   "db_kaynak": "2023-2024 AC\u0130L- AYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL20T-T077_11",
+   "govde_3gram": 0.938,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "fe5cd755-c514-58e8-b12c-38f9acc880d8",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL20T-T006_06",
+   "govde_3gram": 0.924,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "9a8a5c36-1e3d-5311-9391-6378f054151d",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL20T-T087_06",
+   "govde_3gram": 0.92,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "73fb0957-9306-5c52-a749-2bd34c0a6277",
+   "db_kaynak": "AC\u0130L-2025-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL20T-T088_01",
+   "govde_3gram": 0.903,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "09e54d48-4f40-5b04-9a62-7b5ae360137a",
+   "db_kaynak": "AC\u0130L-2025-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL20T-T046_13",
+   "govde_3gram": 0.885,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "01cd81d6-6b93-5697-b3c3-38563980e624",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL20T-T016_06",
+   "govde_3gram": 0.874,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "fc78ce25-b855-58a9-970e-592ef2019abc",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T088_04",
+   "govde_3gram": 0.841,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "d8be7c79-1b8a-5137-b5ee-5252042fef0f",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL20T-T087_05",
+   "govde_3gram": 0.826,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "b1946e62-6646-59f2-a541-a1a043e66108",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL20T-T067_03",
+   "govde_3gram": 0.8,
+   "ayni_sik_sayisi": 2,
+   "guclu": false,
+   "db_id": "9ad96de4-8333-5595-8785-566976727f52",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL20T-T075_06",
+   "govde_3gram": 0.76,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "2f132f7c-bb08-5c37-9075-c73f528d1be8",
+   "db_kaynak": "2023-2024-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL20T-T089_12",
+   "govde_3gram": 0.757,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "67f006c8-0712-5d8f-9749-942c693a2998",
+   "db_kaynak": "2020-2021-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  }
+ ],
+ "cevap_farki": [
+  {
+   "dosya": "ACL20T-T067_03",
+   "db_id": "9ad96de4-8333-5595-8785-566976727f52",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "B",
+   "govde_3gram": 0.8,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL20T-T075_06",
+   "db_id": "2f132f7c-bb08-5c37-9075-c73f528d1be8",
+   "db_kaynak": "2023-2024-AC\u0130L-TYT Matematik Soru Bankas\u0131",
+   "db_cevap": "B",
+   "bizim_cevap": "E",
+   "govde_3gram": 0.76,
+   "guclu": false,
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true
+  }
+ ],
+ "cevap_farki_sik_sirasi": 0,
+ "cevap_farki_icerik": [
+  [
+   "ACL20T-T067_03",
+   "9ad96de4-8333-5595-8785-566976727f52"
+  ],
+  [
+   "ACL20T-T075_06",
+   "2f132f7c-bb08-5c37-9075-c73f528d1be8"
+  ]
+ ],
+ "eski_hat_ozet": {
+  "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131": {
+   "satir": 9,
+   "aktif": 9,
+   "modern_karsilik": 5
+  }
+ },
+ "eski_hat": [
+  {
+   "db_id": "9a8a5c36-1e3d-5311-9391-6378f054151d",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 31,
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "en_yakin_bizim": "ACL20T-T006_06",
+   "en_yakin_3gram": 0.924,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "A"
+  },
+  {
+   "db_id": "7cc7c7e0-c392-592d-8fea-c0f9c85d7f79",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 141,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL20T-T031_11",
+   "en_yakin_3gram": 0.949,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "C"
+  },
+  {
+   "db_id": "01cd81d6-6b93-5697-b3c3-38563980e624",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 205,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "ACL20T-T046_13",
+   "en_yakin_3gram": 0.885,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "f12e73be-e04f-59a9-bf3d-14e99fd2b4d0",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 371,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL20T-T082_07",
+   "en_yakin_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "C"
+  },
+  {
+   "db_id": "8414fe07-d794-5ef0-90c3-b1c9c6258096",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 394,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "en_yakin_bizim": "ACL20T-T090_14",
+   "en_yakin_3gram": 0.183,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "db_id": "4f7d6e20-fd59-58b5-95dc-1638d1b4d99e",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 404,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL20T-T088_10",
+   "en_yakin_3gram": 0.963,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "C"
+  },
+  {
+   "db_id": "99b0bea5-303d-57fa-8882-db0286c6f9f0",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 404,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "ACL20T-T088_11",
+   "en_yakin_3gram": 0.596,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "1958f159-f81f-5b4a-a0b0-c33269d78ba4",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 408,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL20T-T090_03",
+   "en_yakin_3gram": 0.263,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "5060d955-3bfd-5643-b4ba-5cc3f1ae4468",
+   "db_kaynak": "2019-2020-AC\u0130L-TYT-Soru Bankas\u0131",
+   "basili_sayfa": 424,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL20T-T093_06",
+   "en_yakin_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "C"
+  }
+ ],
+ "farkli_soru_hash": 1203
+}
