@@ -324,3 +324,95 @@ def test_etiketler() -> None:
     et = [s["etiket"] for s in METIN["sorular"] if s.get("etiket")]
     assert len(et) == 100
     assert Counter(e.split(" - ")[0] for e in et) == {"TYT": 83, "MS\xdc": 14, "AYT": 3}
+
+
+# ------------------------------------------------ 6. mukerrer (Faz 5)
+
+import re  # noqa: E402
+
+
+def _mk():  # type: ignore[no-untyped-def]
+    """Gec ice aktarma (stm345 deseni): betik psycopg ister."""
+    from scripts.kitap import sos345tyt_mukerrer
+
+    return sos345tyt_mukerrer
+
+
+MUK_METNI = (CIKTI / f"{ON}mukerrer_adaylari.json").read_text("ascii")
+MUK = json.loads(MUK_METNI)
+ESKI_2025 = "345 2025 Tyt Sosyal Bilgiler Soru Bankas\u0131"
+ESKI_2024 = "345 Tyt Sosyal Bilgiler Soru Bankas\u0131"
+
+
+def test_mukerrer_ozet() -> None:
+    assert MUK["soru_sayisi"] == 1233
+    assert MUK["db_satiri"] > 500
+    assert MUK["kitap_ici_ayni_hash"] == []
+    # kitap kendi sorusunu 30. gunde tekrar basmis (C sikki bir kelime farkli)
+    assert MUK["kitap_ici_yakin"] == [
+        {"a": "SOS345-T010_02", "b": "SOS345-T148_01", "govde_3gram": 1.0}
+    ]
+    assert MUK["osym_etiketli_soru"] == 100
+
+
+def test_eski_hat_iki_baski() -> None:
+    oz = MUK["eski_hat_ozet"]
+    assert oz[ESKI_2025] == {"satir": 26, "aktif": 26, "modern_karsilik": 25}
+    assert oz[ESKI_2024] == {"satir": 12, "aktif": 12, "modern_karsilik": 8}
+    for e in MUK["eski_hat"]:
+        guclu = e["en_yakin_3gram"] >= _mk().GUCLU_ESIK and e["ayni_sik_sayisi"] >= 3
+        assert e["modern_karsilik"] == guclu, e["db_id"]
+
+
+def test_hash_carpismasi_eski_hat() -> None:
+    assert [c["dosya"] for c in MUK["db_tam_hash_carpismasi"]] == ["SOS345-T095_06"]
+    eski = {e["db_id"] for e in MUK["eski_hat"]}
+    assert MUK["db_tam_hash_carpismasi"][0]["db_id"] in eski
+
+
+def test_hash_degeri_yazilmadi() -> None:
+    assert not re.search(r"[0-9a-f]{32}", MUK_METNI)
+    assert MUK["farkli_soru_hash"] == 1233
+
+
+def test_cevap_farki_sik_sirasi_ve_icerik() -> None:
+    cev = {f"{c['birim']}_{c['soru']:02d}": c["cevap"] for c in ANAHTAR["cevaplar"]}
+    assert len(MUK["cevap_farki"]) == 20
+    assert all(cev[c["dosya"]] == c["bizim_cevap"] for c in MUK["cevap_farki"])
+    # OSYM satirlarinin hepsinde kitap siklari yeniden siralamis; dogru sikkin
+    # METNI basili anahtarin harfinde.
+    for c in MUK["cevap_farki"]:
+        if c["db_kaynak"] == "OSYM 2025 TYT":
+            assert (
+                not c["sik_sirasi_ayni"] and c["db_dogrusu_bizde"] == c["bizim_cevap"]
+            )
+    assert MUK["cevap_farki_sik_sirasi"] == 14
+    icerik = MUK["cevap_farki_icerik"]
+    assert len(icerik) == 6
+    kaynak = {c["db_id"]: c["db_kaynak"] for c in MUK["cevap_farki"]}
+    assert sum(kaynak[i] in (ESKI_2025, ESKI_2024) for _, i in icerik) == 5
+
+
+def test_pozitif_kontrol_ve_normal_bicim() -> None:
+    mk = _mk()
+    assert len(MUK["pozitif_kontrol"]) >= 5
+    assert min(k["bozuk_3gram"] for k in MUK["pozitif_kontrol"]) >= mk.GUCLU_ESIK
+    assert mk.nm("Atat\u00fcrk\u2019\u00fcn \u201cs\u00f6z\u00fc\u201d") == mk.nm(
+        'Atat\u00fcrk\'\u00fcn "s\u00f6z\u00fc"'
+    )
+    assert mk.nm("<u>millet</u>") == mk.nm("millet")
+    assert mk.nm("mill\u00ee") != mk.nm("milli")
+
+
+def test_indeksli_jaccard_dogrudanla_ayni() -> None:
+    mk = _mk()
+    biz = mk.bizim_sorular()
+    ind = mk.indeks(biz)
+    for a in biz[::35]:
+        j, i = mk.en_yakin(a["tg"], biz, ind)
+        dogrudan = max(mk.jaccard(a["tg"], b["tg"]) for b in biz)
+        assert j == pytest.approx(dogrudan)
+        assert j == pytest.approx(1.0) and biz[i]["tg"] == a["tg"]
+    tg = mk.trigram(mk.nm("tamamen alakasiz bir metin parcasi xyzq"))
+    j, _ = mk.en_yakin(tg, biz, ind)
+    assert j == pytest.approx(max(mk.jaccard(tg, b["tg"]) for b in biz))

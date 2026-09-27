@@ -110,9 +110,34 @@ ONCE): ilk okumayi gormeyen 29 ayri okuyucu, ayni talimat (teslim dizini
 Hicbir soruda gercekten okunamayan karakter kalmadi; belirsiz tek
 karakterler en iyi okuma + aday olarak `kaynak_kusuru`nda.
 
+## 5. Mukerrer olcumu (`sos345tyt_mukerrer.py`)
+
+`345_2025_tyt_sosyal_mukerrer_adaylari.json` (ithalden ONCE). KMT345
+normal bicimi + kesme / tirnak tipi tek bicim + `<u>` silinir; govde
+karakter 3-gram Jaccard (ters indeks). GUCLU = 3-gram >= 0.9 VE >= 3 ayni
+sik. DB: TARIH / COGRAFYA / SOSYAL / FELSEFE / DIN (OSYM dahil) + bu kaynak
+ve eski hat adlari: 533 satir.
+
+* Pozitif kontrol: her 50. govdenin tirnak tipi degismis, bosluklari
+  bozulmus, `<u>` sarili hali kendi sorusuna 1.0.
+* Tam hash carpismasi 1: T095_06 == eski hat (2024 baskisi) satiri.
+* Kitap ici: ayni hash yok; yakin cift 1 -- T010_02 / T148_01 (kitap
+  soruyu 30. gunde tekrar basmis; C sikki 'suni gubre' / 'gubre'; iki
+  basili cevap da E).
+* Eski hat: 2025 baskisi 26 satir (25 modern karsilik), 2024 baskisi 12
+  (8). Karsiliksiz 5: T050_07 (0.974, sik metni farkli), T062_04 (0.897,
+  esigin alti), 3 satir 3-gram < 0.3.
+* GUCLU aday 49 (eski hat 33, OSYM 2025 TYT 16).
+* Cevap harfi farki 20: 14'unde DB'nin dogru sikkinin METNI bizde basili
+  anahtarin harfinde (kitap OSYM siklarini yeniden siralamis; celiski
+  yok). Icerik farki 6: eski hat 5 satir (T010_05 x2, T116_08, T136_09,
+  T142_05; sik sirasi ayni, eski satirin cevabi basili anahtardan farkli)
+  + Bilgi Sarmal T090_01 (0.828, zayif). Bizim cevap her zaman basili
+  anahtar; degistirilmez.
+
 ## Testler
 
-`backend/tests/e2e/test_sos345tyt_veri.py` (28): anahtar hamdan birebir,
+`backend/tests/e2e/test_sos345tyt_veri.py` (35): anahtar hamdan birebir,
 toplamlar, tek fark goz + glif, A/B / gereksiz / yabanci goz / bicim disi /
 hucre-simge / glif mutasyonlari; harita hamdan birebir, sayilar, bant
 (gun, test) ve A/B mutasyonu, konu tabani; migration == harita, kimlik;
@@ -120,3 +145,6 @@ kutu kapilari, kutu <-> cevap, kose etiketi duzeltmesi.
 Transkripsiyon (bolum 5, +9): metin kapilari ve KAPI1-4 mutasyonu,
 null numara yok, metin == kutular, kivrik kesme / numara notu yok,
 ikinci okuma sayilari, duzeltmeler son metinde, `[??]` yok, etiketler.
+Mukerrer (bolum 6, +7): ozet, eski hat iki baski, hash carpismasi,
+hash degeri yazilmadi, cevap farki sik sirasi / icerik, pozitif kontrol
+ve normal bicim, indeksli Jaccard == dogrudan.
