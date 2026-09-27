@@ -245,3 +245,82 @@ def test_kose_etiketi_duzeltmesi() -> None:
         b, 0, 100, capa=[[10, 22], [203, 215]], ustler=[5, 190], sayac=Counter()
     ) == [5, 190]
     assert KUTULAR["ust_kurali_sayaci"]["kose_etiketi"] == 65
+
+
+# ------------------------------------------------ 5. transkripsiyon (Faz 4)
+
+from scripts.kitap import sos345tyt_metin_harness as mh  # noqa: E402
+
+METIN = json.loads((CIKTI / f"{ON}metin.json").read_text("ascii"))
+IKINCI = json.loads((CIKTI / f"{ON}ikinci_okuma.json").read_text("ascii"))
+M = {s["dosya"]: s for s in METIN["sorular"]}
+
+
+def _yazi(s: dict) -> str:
+    return s["govde"] + " " + " ".join(map(str, s["sikler"].values()))
+
+
+def test_metin_kapilari_yesil() -> None:
+    assert mh.kapi(METIN["sorular"]) == []
+    assert METIN["soru_sayisi"] == 1233 and METIN["parca_sayisi"] == 29
+
+
+def test_metin_kapisi_mutasyonu_yakalar() -> None:
+    bozuk = copy.deepcopy(METIN["sorular"])
+    bozuk[3]["basili_no"] = 99
+    bozuk[5]["sikler"]["C"] = " "
+    del bozuk[7]
+    hata = mh.kapi(bozuk)
+    for k in ("KAPI1", "KAPI2", "KAPI3", "KAPI4"):
+        assert any(h.startswith(k) for h in hata), k
+
+
+def test_numara_null_yok() -> None:
+    assert [s["dosya"] for s in METIN["sorular"] if s.get("basili_no") is None] == []
+
+
+def test_metin_kutularla_ayni_dosyalar() -> None:
+    k = {f"{x['birim']}_{x['soru']:02d}" for x in KUTULAR["kutular"]}
+    assert set(M) == k
+
+
+def test_kivrik_kesme_ve_numara_notu_kalmadi() -> None:
+    for s in METIN["sorular"]:
+        assert "\u2019" not in _yazi(s), s["dosya"]
+        if s.get("kaynak_kusuru"):
+            assert not mh.NUMARA_NOTU.search(s["kaynak_kusuru"]), s["dosya"]
+
+
+def test_ikinci_okuma_on_kayitli_tam_okuma() -> None:
+    assert "TAM" in IKINCI["kural"]
+    assert "SONRA" in IKINCI["tasarim"]
+    s = IKINCI["sonuc"]
+    assert s["soru"] == 1233
+    assert s["ayni_soru_normalize"] + s["farkli_soru"] == 1233
+    assert len(IKINCI["hukumler"]) == s["farkli_soru"] == 194
+    say = Counter(h["esasli_hata"] for h in IKINCI["hukumler"])
+    assert dict(say) == s["hukum_dagilimi"]
+    assert s["ilk_okuma_esasli_hata"] == say["okuma_1"] + say["ikisi"] == 73
+    assert s["ikinci_okuma_esasli_hata"] == say["okuma_2"] + say["ikisi"] == 88
+
+
+def test_duzeltmeler_son_metinde_uygulanmis() -> None:
+    for d in IKINCI["duzeltmeler"]:
+        s = M[d["dosya"]]
+        assert s["okuma"].startswith("duzeltme"), d["dosya"]
+        assert s["govde"] == d["govde"].replace("\u2019", "'"), d["dosya"]
+        for h, v in d["sikler"].items():
+            assert s["sikler"][h] == str(v).replace("\u2019", "'"), (d["dosya"], h)
+        for a in ("basili_no", "sekil_var", "sikler_gorsel", "etiket"):
+            assert s[a] == d[a], (d["dosya"], a)
+    assert len(IKINCI["duzeltmeler"]) == 194
+
+
+def test_okunamaz_tahmin_edilmedi() -> None:
+    assert [s["dosya"] for s in METIN["sorular"] if "[??]" in _yazi(s)] == []
+
+
+def test_etiketler() -> None:
+    et = [s["etiket"] for s in METIN["sorular"] if s.get("etiket")]
+    assert len(et) == 100
+    assert Counter(e.split(" - ")[0] for e in et) == {"TYT": 83, "MS\xdc": 14, "AYT": 3}

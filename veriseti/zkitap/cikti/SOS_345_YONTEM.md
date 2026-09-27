@@ -56,16 +56,67 @@ Tablo: GUN basina satirlar 'OSYM TADINDA SORULAR k', hucreler '1.C 2.B ...'.
   sorunun son sik(lar)i sonraki kirpima dustu (ilk okumada okuyucular
   bildirdi: bos sik + komsu_not). Kural: onceki capanin altinda, capanin
   ustunde ya da yaninda turuncu kose etiketi dairesi (22-40 px) varsa kutu
-  ustu = min(etiket, capa) - 1 (yalniz asagi). 65 kutu (60'i 2 px).
+  ustu = min(etiket, capa) - 1 (yalniz asagi); ardindan bu sinirla
+  etiket arasinda notr murekkep (min < 200) tasiyan son satirin bir alti
+  (T046: onceki sorunun E satiri capanin 1-2 px altina iniyordu). 65 kutu.
+  Capa kapisi capa MERKEZINE bakar (kose kutusunda ust sinir capa
+  ustunden 1-3 px asagida olabilir).
   Duzeltme sonrasi 10 kirpim yeniden okundu.
 * 1233 kutu, kapi ihlali 0; ortme suphesi 169 soru; kenar kapisi 1 (T120_01
   sol kenar tablo cercevesi).
 * Gorsel QA: rastgele 12 + kose / kesim bayrakli 8 kirpim gozle.
 
+## 4. Transkripsiyon (`sos345tyt_metin_harness.py`)
+
+`345_2025_tyt_sosyal_metin.json` (1233 soru). Kirpimlar 2x Lanczos;
+29 grup (test sinirina hizali, ~43 soru), 29 ayri okuyucu. Talimat
+`VeraFilm/so_metin_talimat.md`: 'kitap ne yaziyorsa o', soru cozme yok,
+ALAN BILGISIYLE KARAR VERME, anahtar gosterilmedi; sapkali harf pikselde
+neyse; tablo ` | `; alti cizili `<u>`; sekil / harita / grafik yazisi
+yalniz soru ona dayaniyorsa (K, L, M; I-V; lejant; tablo hucresi).
+
+Kapilar (harness `kapi`): KAPI1 her kirpim bir kez; KAPI2 basili no ==
+test ici sira; KAPI3 bes sik dolu; KAPI4 toplam 1233. **TUM KAPILAR
+YESIL.** Null numara 0. Kose duzeltmesinden sonra 10 kirpim yeniden
+okundu (ilgili gruplara islendi). Kaynak kusuru notu 117 soru.
+
+### 4a. Ikinci okuma -- on kayitli TAM okuma
+
+On kayit (`345_2025_tyt_sosyal_ikinci_okuma.json`, karsilastirmadan
+ONCE): ilk okumayi gormeyen 29 ayri okuyucu, ayni talimat (teslim dizini
+`so_metin_parca2`), ayni gruplar. Karsilastirma
+`_p345_gecici/ts_metin_karsilastir.py`.
+
+* Normalizasyon (NFC, kesme/tirnak tipi, eksi/tire tipi, orta nokta,
+  `(gorsel)`/`(sekil)` yer tutucusu, tire cevresi bosluk) sonrasi 1039 soru
+  ayni, 194 soru farkli (govde 170, sik 27; basili_no / sekil_var /
+  sikler_gorsel / etiket farki 0).
+* 194 farkin hepsi 5 hakem partisinde kirpimdan gozle (4-20x, piksel
+  genisligi / profil) karara baglandi (hakem talimati
+  `VeraFilm/so_hakem_talimat.md`; hukumler `hukumler`, nihai alanlar
+  `duzeltmeler`): 40 yalniz bicim / sira, 66 ilk okuma, 81 ikinci okuma,
+  7 ikisi hatali.
+* **Ilk okuma esasli hata 73 / 1233 (%5.9)**; ikinci okuma 88. Hata
+  turleri: soru metninin dayandigi sekil yazisinin (harita K/L/M, I-V
+  numaralari, grafik ekseni / lejanti) atlanmasi; sapka (milli / Hukumet / askeri;
+  sapka 4-6 px, i noktasi 2-3 px); noktalama (nokta / virgul /
+  iki nokta / noktali virgul; virgul kuyrugu taban cizgisinin 1-3 px
+  altina iner); tek / cift tirnak; rn / m. Kitabin baski hatalari
+  ('faliyetleri', 'kalkida', 'getimek', 'dogru' (g), ters kesme `) korunur;
+  duzelten okuma hatali sayildi.
+
+### 4c. Okunamaz -> `[??]`
+
+Hicbir soruda gercekten okunamayan karakter kalmadi; belirsiz tek
+karakterler en iyi okuma + aday olarak `kaynak_kusuru`nda.
+
 ## Testler
 
-`backend/tests/e2e/test_sos345tyt_veri.py` (19): anahtar hamdan birebir,
+`backend/tests/e2e/test_sos345tyt_veri.py` (28): anahtar hamdan birebir,
 toplamlar, tek fark goz + glif, A/B / gereksiz / yabanci goz / bicim disi /
 hucre-simge / glif mutasyonlari; harita hamdan birebir, sayilar, bant
 (gun, test) ve A/B mutasyonu, konu tabani; migration == harita, kimlik;
 kutu kapilari, kutu <-> cevap, kose etiketi duzeltmesi.
+Transkripsiyon (bolum 5, +9): metin kapilari ve KAPI1-4 mutasyonu,
+null numara yok, metin == kutular, kivrik kesme / numara notu yok,
+ikinci okuma sayilari, duzeltmeler son metinde, `[??]` yok, etiketler.

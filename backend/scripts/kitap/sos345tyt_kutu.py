@@ -195,6 +195,16 @@ def _kose_duzelt(
         # sinir min(etiket, capa) - 1 (gozle: T046 E satiri capanin ~2 px
         # ustunde biter; - 3 satirin alt kenarini kesiyordu).
         ust = min([*adaylar, capa[i][0]]) - 1 if adaylar else None
+        if ust is not None:
+            # Onceki sorunun son satiri etiketin hemen ustune kadar inebilir
+            # (T046: satir alti capa ustunden 1-2 px asagida): etiket ustune
+            # kadar notr murekkep tasiyan son satirin bir alti.
+            et = min(adaylar)
+            # harf alt kenari kenar yumusatmasiyla acik gri: esik 200
+            notr = ((b.max(axis=2) - b.min(axis=2)) < 50) & (b.min(axis=2) < 200)
+            satir = np.where(notr[ust:et].any(axis=1))[0]
+            if len(satir):
+                ust = ust + int(satir.max()) + 1
         if ust is not None and ust > out[i]:
             out[i] = ust
             sayac["kose_etiketi"] += 1
@@ -325,7 +335,9 @@ def kapilar(veri: dict[str, Any]) -> list[str]:
             hata.append(f"cok kisa: {ad} {y1 - y0}px")
         if y1 >= SAYFA_NO_UST:
             hata.append(f"sayfa numarasi sizintisi: {ad} {y1} >= {SAYFA_NO_UST}")
-        if not y0 <= k["capa"][0] < y1:
+        # capa merkezi kutuda (kose kutusunda ust sinir capanin ustunden 1-3 px
+        # asagida olabilir; disk beyazlatilir)
+        if not y0 <= (k["capa"][0] + k["capa"][1]) // 2 < y1:
             hata.append(f"capa kutu disinda: {ad}")
     grup = defaultdict(list)
     for k in veri["kutular"]:
