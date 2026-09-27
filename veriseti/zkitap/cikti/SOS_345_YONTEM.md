@@ -135,6 +135,22 @@ ve eski hat adlari: 533 satir.
   + Bilgi Sarmal T090_01 (0.828, zayif). Bizim cevap her zaman basili
   anahtar; degistirilmez.
 
+## 6. Ithal (`sos345tyt_ithal.py`)
+
+PASIF ithal (is_active FALSE, is_public FALSE, review PENDING); kaynak
+sozlesmesi `SOS345`. 1233 yeni satir (zaten var 0, yabanci 0); DB'de bu
+ithalin satirlari is_active 0, kapidan gecen 0.
+
+* `subject_area` testin dersi (sayfa ust bandi): TARIH 441, COGRAFYA 395,
+  FELSEFE 202, DIN 195; ders == unite dersi (0065) baglamada kapi.
+* Cevap kanali: `iki_okuma+glif` 1230, `iki_okuma_farki+goz(5x)+glif` 3
+  (GUN 3 test 6, soru 3-5).
+* Bayraklar: okuyucu_diski_ortme 169, kaynak_kusuru 117, cikmis_soru 100
+  (TYT / MSU / AYT etiketi), mukerrer_aday 44, diger_kaynak_sik_sirasi_farkli
+  12, diger_kaynak_cevap_farki 4, sik_tekrar 5 (bes sik da gorsel),
+  sikler_gorsel 6, db_hash_carpismasi 1.
+* Kirpimlar `d-dataset/output/crops/SOS345/` (1233 PNG; boyut == kutu).
+
 ## Testler
 
 `backend/tests/e2e/test_sos345tyt_veri.py` (35): anahtar hamdan birebir,
@@ -148,3 +164,8 @@ ikinci okuma sayilari, duzeltmeler son metinde, `[??]` yok, etiketler.
 Mukerrer (bolum 6, +7): ozet, eski hat iki baski, hash carpismasi,
 hash degeri yazilmadi, cevap farki sik sirasi / icerik, pozitif kontrol
 ve normal bicim, indeksli Jaccard == dogrudan.
+`backend/tests/e2e/test_sos345tyt_ithal.py` (52): veri seti butunlugu,
+yapisal kapilar, test ici sira, cevap kanali, unite == migration ve ders
+== unite dersi, sozlesme, ASCII, pasif sozlesme, cikmis, bayrak capalari,
+mukerrer bayraklari (icerik / sik sirasi ayrimi), mutasyonlar (yapisal 9,
+on kontrol 8, baglama 6).
