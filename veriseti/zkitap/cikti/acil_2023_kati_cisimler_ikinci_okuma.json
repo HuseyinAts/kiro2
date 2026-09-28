@@ -1,0 +1,726 @@
+{
+ "kitap": "2022-2023 ACIL Kati Cisimler",
+ "on_kayit_tarihi": "2026-09-28",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3 saglanmadi (KMT345 %4.7, SOS345 %5.9, TRT345 %4.0, ACL20T %4.9, ACL21T %3.7). Dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 10 ayri okuyucu; ayni talimat (yalniz teslim dizini b2_metin_parca2), ayni gruplar ve kirpimlar. Okuma 1 ve okuma 2 okuyuculari TEK toplu dagitimda birlikte kosulur (bagimsizlik dizin ayrimiyla saglanir). Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (bosluk, satir sonu, eksi/tire tipi, carpma noktasi tipi) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret (+, -, carpma, bolme, esitsizlik), us / kok / kesir kapsami, parantez, harf / degisken, eksik/fazla kelime veya satir, yanlis sik, alti cizili kapsam, eksik etiket.",
+ "sonuc": {
+  "soru": 339,
+  "ayni_soru_normalize": 304,
+  "farkli_soru": 35,
+  "hukum_dagilimi": {
+   "yok": 12,
+   "okuma_2": 9,
+   "okuma_1": 10,
+   "ikisi": 4
+  },
+  "ilk_okuma_esasli_hata": 14,
+  "ikinci_okuma_esasli_hata": 13,
+  "not": "Normalizasyon (metin_iki_okuma.norm): NFC, kesme/tirnak tipi, eksi/tire tipi, birlesik ust/alt cizgi, Unicode ust simge -> ^n, bileske halkasi U+2218 -> o, nokta operatoru, uc nokta, kok+ust cizgi -> kok, tek karakterli us/indis parantezi, kokte tek atom parantezi, '/' oncesi tek atom parantezi, ciftlenmis parantez, tablo ayraci+ok, (gorsel)/(sekil), C(n, r) = (n r) ve TUM bosluk. Anlam tasiyan parantez esitlenmez. Her kalan fark hakem tarafindan kirpimdan gozle karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer. Iki okumanin AYNI bicimde atladigi sekil verisi karsilastirmada gorunmez."
+ },
+ "hukumler": [
+  {
+   "dosya": "ACL23KC-T002_01",
+   "esasli_hata": "yok",
+   "gerekce": "K\u0131rp\u0131mda m(BAE) \u00fcst\u00fcnde a\u00e7\u0131 \u015fapkas\u0131 bas\u0131l\u0131; m(...) \u00f6l\u00e7\u00fc g\u00f6sterimi a\u00e7\u0131y\u0131 zaten belirtiyor, \u015fapkan\u0131n yaz\u0131l\u0131p yaz\u0131lmamas\u0131 bi\u00e7im fark\u0131. okuma_1 bi\u00e7imi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T005_08",
+   "esasli_hata": "yok",
+   "gerekce": "5x NEAREST: m(CAB) ustunde noktali aci sapkasi basili; okuma_2 sapkayi atlamis ama m(...) zaten aciyi belirtiyor, anlam degismiyor -> bicim; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T008_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "C \u015f\u0131kk\u0131 \u00fcss\u00fc piksel d\u00f6k\u00fcm\u00fcnde (x612-632,y518-530): \u00fcst yatay \u00e7ubuk + sol \u00fcst dikey (y520 sol '##') + orta \u00e7ubuk + sa\u011f alt kavis = 5; B'deki 3'te y520'de sa\u011f taraf dolu, sol bo\u015f. \u00dcs 5, okuma_2 '3' yanl\u0131\u015f."
+  },
+  {
+   "dosya": "ACL23KC-T011_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "5x NEAREST: 'Alan(EOC)' uzerinde uc harfi kapsayan aci sapkasi basili; okuma_1 'E\u00d4C' ile gostermis (bicim), okuma_2 sapkayi tamamen atlamis (aci gosterimi anlam tasir)."
+  },
+  {
+   "dosya": "ACL23KC-T011_09",
+   "esasli_hata": "yok",
+   "gerekce": "EG \u00fcst\u00fcnde yay i\u015fareti bas\u0131l\u0131; iki okuma da yay\u0131 yazm\u0131\u015f, yaln\u0131z yay karakteri (\u2322/\u2312) farkl\u0131: bi\u00e7im. Piksel d\u00f6k\u00fcm\u00fcnde i\u015faret ortas\u0131 \u00e7ubuklu \u2208 (\u2282 de\u011fil). okuma_1 bi\u00e7imi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T012_03",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda Alan(KFB) ustunde sapka basili; okuma_2 atlamis ama Alan(...) ucgen alanini zaten belirtiyor -> bicim; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T012_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x NEAREST: 'Alan(AKC)' \u00fczerinde \u00fc\u00e7 harfi kapsayan \u015fapka bas\u0131l\u0131 (\u00fc\u00e7gen g\u00f6sterimi). okuma_1 \u015fapkay\u0131 AK\u0302C bi\u00e7iminde vermi\u015f (bi\u00e7im); okuma_2 \u015fapkay\u0131 tamamen atlam\u0131\u015f -> esasl\u0131."
+  },
+  {
+   "dosya": "ACL23KC-T014_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kirpimda 'm(AMF)' uzerinde aci sapkasi acikca basili; okuma_1 'AM\u0302F' (bicim), okuma_2 sapkayi atlamis -> aci olcusu gosterimi kaybolmus."
+  },
+  {
+   "dosya": "ACL23KC-T014_05",
+   "esasli_hata": "yok",
+   "gerekce": "m(ABC) \u00fcst\u00fcnde a\u00e7\u0131 \u015fapkas\u0131 bas\u0131l\u0131; m(...) a\u00e7\u0131 \u00f6l\u00e7\u00fcs\u00fc anlam\u0131n\u0131 zaten ta\u015f\u0131yor, \u015fapkan\u0131n atlanmas\u0131 bi\u00e7im fark\u0131. okuma_1 bi\u00e7imi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T016_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kirpimda AC, AB ve BC ustlerinde yay isareti basili; 2|AB\u2312| = |BC\u2312| yay uzunluklarini veriyor, yay atlanirsa dogru parcasi uzunlugu anlamina doner -> okuma_1 anlam tasiyan yaylari atlamis (esasli)."
+  },
+  {
+   "dosya": "ACL23KC-T019_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc (x92-135,y360-374): \u00fcst ve alt yatay kollar + sol kavis var; orta sat\u0131rlarda (y366-368) sa\u011fa uzanan yatay \u00e7ubuk YOK -> '\u2282'. okuma_1 '\u2208' yanl\u0131\u015f."
+  },
+  {
+   "dosya": "ACL23KC-T020_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST + piksel dokumu: 'silind' tam; d'den sonra ~6px bosluk, arada yalniz ust yarisi olan soluk kalinti (tam harf degil, nokta yok), sonra noktasiz tek dikey cizgi (r govdesi olabilir). 'i' kesin gorunmuyor -> tamamlama yok, 'silind[??]'; okuma_1 'i' harfini tahminle eklemis."
+  },
+  {
+   "dosya": "ACL23KC-T021_02",
+   "esasli_hata": "ikisi",
+   "gerekce": "E \u015f\u0131kk\u0131 b\u00f6lgesi 8x NEAREST: k\u0131vr\u0131k \u00fcst + dikey sap + ayr\u0131k alt nokta, a\u00e7\u0131k\u00e7a '?' bas\u0131l\u0131 (kitap dizgi hatas\u0131, bas\u0131ld\u0131\u011f\u0131 gibi kal\u0131r). Sa\u011f kenarda beyaz daire yok, karakter tam; okuma_1 '2[??]' ve okuma_2 '2' ikisi de yanl\u0131\u015f."
+  },
+  {
+   "dosya": "ACL23KC-T021_07",
+   "esasli_hata": "yok",
+   "gerekce": "'Sekil 1' / 'Sekil 2' altyazilari sekil etiketi; aciklama satirlarini sekille eslestiriyor ve metin 'Sekil 1'deki' diye atif yapiyor, okuma_2 bicimi tercih edildi; siralama veriyi zaten tasidigindan okuma_1 eksigi esasli sayilmadi."
+  },
+  {
+   "dosya": "ACL23KC-T023_02",
+   "esasli_hata": "yok",
+   "gerekce": "AC, CB, AD \u00fczerinde yay i\u015faretleri bas\u0131l\u0131; iki okuma da yay\u0131 vermi\u015f, yaln\u0131z konum g\u00f6sterimi farkl\u0131 (\u2312AC / AC\u2322) -> bi\u00e7im fark\u0131."
+  },
+  {
+   "dosya": "ACL23KC-T023_04",
+   "esasli_hata": "yok",
+   "gerekce": "DK ve KC uzerinde yay isareti basili; iki okuma da yayi yazmis, yalniz konum bicimi farki (|\u2312DK| / |DK\u2322|). okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T024_04",
+   "esasli_hata": "yok",
+   "gerekce": "ACE \u00fcst\u00fcnde \u015fapka bas\u0131l\u0131; 'Alan(...)' zaten \u00fc\u00e7gen alan\u0131 anlam\u0131n\u0131 ta\u015f\u0131yor, \u015fapka g\u00f6sterimi s\u00f6zle\u015fmede yok: bi\u00e7im fark\u0131. okuma_1 bi\u00e7imi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T024_09",
+   "esasli_hata": "yok",
+   "gerekce": "5x NEAREST: m(BTC) ustunde noktali aci sapkasi basili; okuma_2 atlamis ama m(...) aciyi belirtiyor -> bicim; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T025_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "K\u0131rp\u0131mda 'm(ADT)' \u00fczerinde a\u00e7\u0131 \u015fapkas\u0131 a\u00e7\u0131k\u00e7a bas\u0131l\u0131; okuma_1 '^ADT' ile vermi\u015f, okuma_2 \u015fapkay\u0131 tamamen atlam\u0131\u015f (a\u00e7\u0131 anlam\u0131 ta\u015f\u0131yor) -> esasl\u0131."
+  },
+  {
+   "dosya": "ACL23KC-T026_08",
+   "esasli_hata": "yok",
+   "gerekce": "C sikki pay 3\u221a3, payda 2 basili; '3\u221a3/2' ile '(3\u221a3)/2' ayni ifade, bicim farki. okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T027_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: P ile K aras\u0131ndaki i\u015faret taban \u00e7izgisinde nokta + alt\u0131na inen kuyruk; ayn\u0131 sat\u0131rdaki 'g\u00f6re,' virg\u00fcl\u00fcyle piksel piksel ayn\u0131 bi\u00e7im. Virg\u00fcl: (P,KLMN)."
+  },
+  {
+   "dosya": "ACL23KC-T027_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST: T ile A arasinda taban cizgisinin altina inen kuyruklu isaret = virgul; '(T,ABCD)'. okuma_1 nokta okumus."
+  },
+  {
+   "dosya": "ACL23KC-T027_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc (x260-300,y380-402): T'den sonraki i\u015faret y396-399, harf taban\u0131 y397 -> taban \u00e7izgisinin 2 sat\u0131r alt\u0131na inen kuyruk = virg\u00fcl ('birim,' virg\u00fcl\u00fcyle ayn\u0131); nokta ('verilmi\u015ftir.') tabanda kal\u0131yor. (T,ABCD); okuma_1 nokta yanl\u0131\u015f."
+  },
+  {
+   "dosya": "ACL23KC-T027_09",
+   "esasli_hata": "ikisi",
+   "gerekce": "5x NEAREST: parantez icinde T ile A arasinda alta sarkan kuyruklu VIRGUL -> '(T,ABCD)' (okuma_1 nokta yazmis, hata). Ayrica 5-6x buyutmede 'm(AA'D')' ve 'm(BC'C)' ustunde aci sapkasi basili; iki okuma da sapkayi tamamen atlamis (anlam tasir) -> nihaide orta harfe sapka eklendi."
+  },
+  {
+   "dosya": "ACL23KC-T028_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x NEAREST + piksel d\u00f6k\u00fcm\u00fc: T ile A aras\u0131ndaki i\u015faret taban \u00e7izgisinde 2x3 piksel nokta, alt kuyruk yok (T027_05'teki virg\u00fclden farkl\u0131). Nokta: (T.ABC)."
+  },
+  {
+   "dosya": "ACL23KC-T028_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST: T ile A arasinda asagi kuyruklu virgul acikca goruluyor; '(T,ABCD)'. okuma_1 nokta okumus."
+  },
+  {
+   "dosya": "ACL23KC-T028_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc (x496-522,y318-340): T'den sonraki i\u015faret y333-335 + taban alt\u0131nda y338-339 kuyruk -> virg\u00fcl. (T,ABC); okuma_1 nokta yanl\u0131\u015f."
+  },
+  {
+   "dosya": "ACL23KC-T031_01",
+   "esasli_hata": "yok",
+   "gerekce": "Siklar kesir (pay 7\u221a15 / 8\u221a15 / 10\u221a15, payda 2/3/3) yaninda \u03c0; iki yazim ayni ifadeyi veriyor, bicim farki. okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "ACL23KC-T031_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "\u015e\u0131klar d\u00fcz metin (2\u221a5 ... 3\u221a5), g\u00f6rsel de\u011fil: sikler_gorsel false. okuma_2 bu alana kaynak_kusuru notunu yanl\u0131\u015f alana yazm\u0131\u015f. 6x b\u00fcy\u00fctmede '120\u00b0 lik' aras\u0131nda kesme i\u015fareti yok; iki okuman\u0131n g\u00f6vdesi de '120\u00b0 lik' ve do\u011fru."
+  },
+  {
+   "dosya": "ACL23KC-T031_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST: her iki gecisde 'ka\u011f\u0131t' \u2014 a ustunde sapka yok (yalniz g ustunde breve). okuma_1 'k\u00e2\u011f\u0131t' yazmis (harf hatasi)."
+  },
+  {
+   "dosya": "ACL23KC-T032_03",
+   "esasli_hata": "ikisi",
+   "gerekce": "Gri de\u011fer d\u00f6k\u00fcm\u00fc: '[A_1A_2]' sonras\u0131 (x208-211) ve '|BA_2|' sonras\u0131 (x345-348) i\u015faretler y407-410'da simetrik 2x2 nokta, harf taban\u0131 y409, kuyruk yok; ayn\u0131 sorudaki 'birim,' virg\u00fcl\u00fc taban\u0131n 2 sat\u0131r alt\u0131na iniyor, 'verilmi\u015ftir.' noktas\u0131 bu i\u015faretlerle ayn\u0131. \u0130kisi de nokta: okuma_2 ikinciyi virg\u00fcl, iki okuma da birinciyi virg\u00fcl yazm\u0131\u015f."
+  },
+  {
+   "dosya": "ACL23KC-T032_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Siklar duz metin (sayi + \u03c0), gorsel sik yok -> sikler_gorsel false. okuma_2 kusur notunu sikler_gorsel alanina yazmis (alan yanlis). 6x buyutmede A'da '+' dikey cizgisi soluk ama var; C '80 + 1' sonrasi kesik glif, iki okumada ayni '[??]'."
+  },
+  {
+   "dosya": "ACL23KC-T035_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "\u015eekil 1/\u015eekil 2 alt\u0131nda 'm(AO1B) = 72\u00b0' ve 'm(CO2D) = 144\u00b0' sat\u0131rlar\u0131 bas\u0131l\u0131; dilim a\u00e7\u0131lar\u0131 metinde ba\u015fka yerde verilmiyor, soru bu veriye dayan\u0131yor -> g\u00f6vdeye girer. okuma_2 bu iki sat\u0131r\u0131 atlam\u0131\u015f. '\u015eekil 1/2' salt etiket, girmez. A\u00e7\u0131 \u015fapkas\u0131 bi\u00e7im."
+  },
+  {
+   "dosya": "ACL23KC-T037_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "16x NEAREST + piksel dokumu: B sikkinin ikinci rakaminda ust halka iki yandan kapali, ortada daralma var -> '8'; B) 18. okuma_1 '16' okumus."
+  },
+  {
+   "dosya": "ACL23KC-T039_11",
+   "esasli_hata": "ikisi",
+   "gerekce": "8x NEAREST + piksel d\u00f6k\u00fcm\u00fc: 'd\u00f6nd\u00fcr\u00fcl\u00fcrek' (l'den sonra noktal\u0131 \u00fc, sonra r, sonra sa\u011f \u00fcst kolu olan e) -> okuma_1 'd\u00f6nd\u00fcr\u00fclerek' yanl\u0131\u015f. Ayr\u0131ca '(AEB)' \u00fczerinde \u00fc\u00e7 harfi kapsayan \u015fapka bas\u0131l\u0131; iki okuma da atlam\u0131\u015f -> ikisi."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "ACL23KC-T002_01",
+   "basili_no": 1,
+   "govde": "\u015eekilde bir deponun giri\u015fine yap\u0131lacak olan, dik \u00fc\u00e7gen dik prizma bi\u00e7imindeki rampa verilmi\u015ftir. Rampan\u0131n AEFD y\u00fczeyi \u00e7evresi 32 birim olan bir kare ve m(B\u00c2E) = 15\u00b0 olarak \u00f6l\u00e7\u00fcl\u00fcyor.\nBuna g\u00f6re, rampan\u0131n hacmi ka\u00e7 birimk\u00fcpt\u00fcr?",
+   "sikler": {
+    "A": "32",
+    "B": "40",
+    "C": "48",
+    "D": "56",
+    "E": "64"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T005_08",
+   "basili_no": 8,
+   "govde": "\u015eekilde ACFD y\u00fczeyi kare olan \u00fc\u00e7gen dik prizma verilmi\u015ftir.\nm(C\u00c2B) = 60\u00b0\n|AC| = 5 birim\n|AB| = 8 birim\nYukar\u0131daki verilere g\u00f6re, M \u2208 [CF] u\u011framak \u015fart\u0131 ile B noktas\u0131ndan D noktas\u0131na yan y\u00fczeyler \u00fczerinden giden kar\u0131ncan\u0131n alaca\u011f\u0131 yol <u>en az</u> ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "10",
+    "B": "12",
+    "C": "13",
+    "D": "14",
+    "E": "15"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T008_01",
+   "basili_no": 1,
+   "govde": "Mehmet, dikd\u00f6rtgenler prizmas\u0131 bi\u00e7imindeki bir kutunun y\u00fczeylerini kenar uzunluklar\u0131 40 cm ve 130 cm olan dikd\u00f6rtgen \u015feklindeki renkli k\u00e2\u011f\u0131tla kaplamak istiyor. Bunun i\u00e7in k\u00e2\u011f\u0131d\u0131 \u015fekildeki gibi i\u015faretli noktalardan kesiyor.\nMehmet, elde etti\u011fi b\u00fcy\u00fck par\u00e7a ile prizman\u0131n yanal y\u00fczeyini, k\u00fc\u00e7\u00fck par\u00e7alar ile taban y\u00fczeylerini hi\u00e7 k\u00e2\u011f\u0131t artmadan tam olarak kaplayabildi\u011fine g\u00f6re, bu prizman\u0131n hacmi ka\u00e7 cm^3 t\u00fcr?",
+   "sikler": {
+    "A": "2 \u00b7 10^4",
+    "B": "24 \u00b7 10^3",
+    "C": "36 \u00b7 10^5",
+    "D": "48 \u00b7 10^3",
+    "E": "5 \u00b7 10^4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T011_04",
+   "basili_no": 4,
+   "govde": "\u015eekilde taban y\u00fczeyinin a\u011f\u0131rl\u0131k merkezi O noktas\u0131 olan bir k\u00fcp verilmi\u015ftir.\nAlan(E\u00d4C) = 4\u221a2 birimkare\nBuna g\u00f6re, k\u00fcp\u00fcn y\u00fczey alan\u0131 ka\u00e7 birimkaredir?",
+   "sikler": {
+    "A": "36",
+    "B": "48",
+    "C": "72",
+    "D": "96",
+    "E": "108"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T011_09",
+   "basili_no": 9,
+   "govde": "\u015eekilde verilen birim k\u00fcpte, \u00fcst y\u00fczey \u00fczerinde D merkezli \u00e7eyrek \u00e7ember yay\u0131 al\u0131nm\u0131\u015ft\u0131r.\nK \u2208 \u2322EG olmak \u00fczere, k\u00fcp y\u00fczeyi \u00fczerinde A noktas\u0131ndan K noktas\u0131na gitmek isteyen kar\u0131ncan\u0131n alaca\u011f\u0131 <u>en k\u0131sa</u> yol ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "\u221a3 \u2212 1",
+    "B": "1",
+    "C": "\u221a5 \u2212 1",
+    "D": "\u221a3",
+    "E": "\u221a6 \u2212 1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T012_03",
+   "basili_no": 3,
+   "govde": "\u015eekilde bir ayr\u0131t\u0131 8 cm olan k\u00fcp verilmi\u015ftir.\n[HB] \u2229 [DF] = {K}\nBuna g\u00f6re, Alan(KF\u0302B) ka\u00e7 cm^2 dir?",
+   "sikler": {
+    "A": "4\u221a2",
+    "B": "8\u221a2",
+    "C": "16\u221a2",
+    "D": "32\u221a2",
+    "E": "64\u221a2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T012_05",
+   "basili_no": 5,
+   "govde": "\u015eekilde bir ayr\u0131t\u0131 4 birim olan k\u00fcp verilmi\u015ftir.\n|HK| = |KD|\nBuna g\u00f6re, Alan(AK\u0302C) ka\u00e7 birimkaredir?",
+   "sikler": {
+    "A": "6",
+    "B": "4\u221a3",
+    "C": "8",
+    "D": "4\u221a5",
+    "E": "4\u221a6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T014_01",
+   "basili_no": 1,
+   "govde": "\u015eekil 1'de \u00fc\u00e7gen dik prizma \u015feklindeki kapa\u011f\u0131 [MF] \u00fczerinden a\u00e7\u0131l\u0131p kapanabilen k\u00fcp \u015feklindeki hediye kutusu verilmi\u015ftir.\nKutunun kapa\u011f\u0131 BCGF ve FGHE y\u00fczeyleri d\u00fczlemsel olacak \u015fekilde a\u00e7\u0131ld\u0131\u011f\u0131nda \u015eekil 2'deki g\u00f6r\u00fcn\u00fcm olu\u015fmaktad\u0131r.\nm(AM\u0302F) = 120\u00b0, |M_1M_2| = 4\u221a6 birim\nBuna g\u00f6re, kutunun hacmi ka\u00e7 birimk\u00fcpt\u00fcr?",
+   "sikler": {
+    "A": "36\u221a3",
+    "B": "72\u221a3",
+    "C": "64",
+    "D": "108\u221a3",
+    "E": "216"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T014_05",
+   "basili_no": 5,
+   "govde": "\u015eekilde verilen k\u00fcp \u00fczerinde bulunan A, B ve C noktalar\u0131 \u00fczerinde bulunduklar\u0131 ayr\u0131tlar\u0131n orta noktalar\u0131d\u0131r.\nBuna g\u00f6re, m(AB\u0302C) = \u03b1 ka\u00e7 derecedir?",
+   "sikler": {
+    "A": "22,5",
+    "B": "30",
+    "C": "45",
+    "D": "60",
+    "E": "75"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T016_10",
+   "basili_no": 10,
+   "govde": "\u015eekil 1'de bir ayr\u0131t\u0131 8 birim olan k\u00fcpten taban ayr\u0131t\u0131 6 birim olan kare dik prizma \u00e7\u0131kar\u0131larak \u015eekil 2'deki cisim elde edilmi\u015ftir. \u015eekil 2'de O merkezli AC\u2312 yay\u0131 al\u0131nm\u0131\u015ft\u0131r.\n2|AB\u2312| = |BC\u2312|\nYukar\u0131daki verilere g\u00f6re, |BD| = x ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "6\u221a2",
+    "B": "4\u221a5",
+    "C": "4\u221a6",
+    "D": "10",
+    "E": "2\u221a30"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T019_04",
+   "basili_no": 4,
+   "govde": "Taban dairesinin merkezi O noktas\u0131 olan dik silindirde,\nE \u2282 [AD], [CO] \u22a5 [OE]\n|AE| = 2 birim, |DE| = 6 birim\nBuna g\u00f6re, silindirin yanal alan\u0131 ka\u00e7 \u03c0 birimkaredir?",
+   "sikler": {
+    "A": "32",
+    "B": "40",
+    "C": "48",
+    "D": "52",
+    "E": "64"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T020_07",
+   "basili_no": 7,
+   "govde": "\u015eekilde yar\u0131\u00e7ap\u0131 6 cm ve y\u00fcksekli\u011fi 10 cm olan dik silind[??] g\u00f6sterilmi\u015ftir.\nSilindir merkezinden 3 cm uzakl\u0131kta olan CD do\u011frusu boyunca zemine dik d\u00fczlemsel olarak kesiliyor ve a\u015fa\u011f\u0131daki cisim olu\u015fuyor.\nBuna g\u00f6re, olu\u015fan cismin y\u00fczey alan\u0131 ka\u00e7 cm^2 dir?",
+   "sikler": {
+    "A": "64\u03c0 \u2212 12\u221a3",
+    "B": "64\u03c0 + 18\u221a3",
+    "C": "72\u03c0 \u2212 18\u221a3",
+    "D": "72\u03c0 + 24\u221a3",
+    "E": "64\u03c0 + 42\u221a3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T021_02",
+   "basili_no": 2,
+   "govde": "Ba\u015flang\u0131\u00e7ta tamamen su ile dolu olan ve y\u00fckseklikleri e\u015fit dik silindir \u015feklindeki iki farkl\u0131 depo, birim zamanda e\u015fit miktarda su ak\u0131tan iki musluk ile tamamen bo\u015falt\u0131lmaktad\u0131r.\nBirinci deponun muslu\u011fu a\u00e7\u0131ld\u0131ktan 6 dakika sonra ikinci deponun muslu\u011fu a\u00e7\u0131l\u0131yor ve ikinci musluk a\u00e7\u0131ld\u0131ktan 18 dakika sonra iki depodaki su y\u00fckseklikleri e\u015fitleniyor.\nBuna g\u00f6re, depolar\u0131n taban yar\u0131\u00e7aplar\u0131n\u0131n oran\u0131 a\u015fa\u011f\u0131dakilerden hangisi olabilir?",
+   "sikler": {
+    "A": "1/2",
+    "B": "\u221a2/2",
+    "C": "\u221a3/2",
+    "D": "3/2",
+    "E": "?"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T021_07",
+   "basili_no": 7,
+   "govde": "\u0130n\u015faatlarda kullan\u0131lmak i\u00e7in tel \u00fcreten bir firma, telleri nakil edebilmek i\u00e7in a\u015fa\u011f\u0131daki gibi bir makara \u00fcretiyor.\n\u015eekil 1\nTaban yar\u0131\u00e7ap\u0131 10 cm\ny\u00fcksekli\u011fi 2 cm olan silindir.\n\u015eekil 2\nTaban yar\u0131\u00e7ap\u0131 4 cm\ny\u00fcksekli\u011fi 10 cm olan\nsilindir.\n\u015eekil 1'deki silindirden 2 adet, \u015eekil 2'deki silindirden bir adet al\u0131narak, silindirlerin taban merkezleri \u00e7ak\u0131\u015facak \u015fekilde yandaki gibi yerle\u015ftirilip makara elde ediliyor.\nBuna g\u00f6re, \u00fcretilen makaran\u0131n y\u00fczey alan\u0131 ka\u00e7 cm^2 dir?",
+   "sikler": {
+    "A": "528\u03c0",
+    "B": "604\u03c0",
+    "C": "608\u03c0",
+    "D": "612\u03c0",
+    "E": "614\u03c0"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T023_02",
+   "basili_no": 2,
+   "govde": "\u015eekilde yar\u0131\u00e7ap\u0131 r birim olan dik silindir verilmi\u015ftir.\nm(\u2312AC) = m(\u2312CB), m(\u2312AD) = 120\u00b0\n|EC| = x, |ED| = y\nC ve D noktalar\u0131 taban \u00e7emberi \u00fczerindedir.\nBuna g\u00f6re, \u221a(y^2 \u2212 x^2) ifadesinin r t\u00fcr\u00fcnden e\u015fiti a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "r/2",
+    "B": "r/3",
+    "C": "r",
+    "D": "2r",
+    "E": "3r"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T023_04",
+   "basili_no": 4,
+   "govde": "\u015eekilde taban dairesinin merkezi O noktas\u0131 olan dik silindirin i\u00e7ine alt tabanlar\u0131 \u00e7ak\u0131\u015facak \u015fekilde taban dairesinin \u00e7ap\u0131 [AO] olan dik silindir yerle\u015ftirilmi\u015ftir.\n|OB| = |AE| = |ED| = 4 birim, |\u2312DK| = |\u2312KC|\nBuna g\u00f6re, k\u00fc\u00e7\u00fck silindirin \u00fcst taban dairesinin merkezi M ile K noktas\u0131 aras\u0131ndaki uzakl\u0131k ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "5",
+    "B": "6",
+    "C": "3\u221a5",
+    "D": "8",
+    "E": "4\u221a5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T024_04",
+   "basili_no": 4,
+   "govde": "\u015eekilde t\u00fcm ayr\u0131t uzunluklar\u0131 6 birim olan d\u00fczg\u00fcn kare dik piramit verilmi\u015ftir.\n|TE| = |ED|\nBuna g\u00f6re, Alan(^ACE) ka\u00e7 birimkaredir?",
+   "sikler": {
+    "A": "6\u221a2",
+    "B": "9",
+    "C": "6\u221a3",
+    "D": "9\u221a2",
+    "E": "9\u221a3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T024_09",
+   "basili_no": 9,
+   "govde": "\u015eekilde (T, ABCDE) d\u00fczg\u00fcn be\u015fgen dik piramit verilmi\u015ftir.\nm(^BTC) = 18\u00b0\n|TE| = 6 cm\nPiramidin A noktas\u0131nda bulunan bir kar\u0131nca yan y\u00fczeyler \u00fczerinden \u015fekildeki yolu izleyerek tekrar A noktas\u0131na d\u00f6n\u00fcyor.\nBuna g\u00f6re, kar\u0131ncan\u0131n alaca\u011f\u0131 <u>en k\u0131sa</u> yol ka\u00e7 cm'dir?",
+   "sikler": {
+    "A": "6",
+    "B": "6\u221a2",
+    "C": "6\u221a3",
+    "D": "8",
+    "E": "12"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T025_04",
+   "basili_no": 4,
+   "govde": "\u015eekilde taban\u0131 ABC e\u015fkenar \u00fc\u00e7geni olan (T,ABC) \u00fc\u00e7gen dik piramit verilmi\u015ftir.\n|BD| = |DC|, m(^ADT) = 60\u00b0\nBuna g\u00f6re, piramitin yan y\u00fczey alan\u0131, taban alan\u0131n\u0131n ka\u00e7 kat\u0131d\u0131r?",
+   "sikler": {
+    "A": "\u221a3",
+    "B": "3/2",
+    "C": "2",
+    "D": "3",
+    "E": "2\u221a3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T026_08",
+   "basili_no": 8,
+   "govde": "\u015eekildeki kesik d\u00fczg\u00fcn alt\u0131gen piramitte, taban alanlar\u0131n\u0131n toplam\u0131 yan y\u00fczey alan\u0131na e\u015fittir.\n|A_2A_3| = 6 birim, |B_2B_3| = 2 birim\nBune g\u00f6re, kesik piramidin y\u00fcksekli\u011fi ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "\u221a3/2",
+    "B": "3",
+    "C": "3\u221a3/2",
+    "D": "2\u221a3",
+    "E": "3\u221a3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T027_05",
+   "basili_no": 5,
+   "govde": "\u015eekildeki k\u00fcpte P noktas\u0131 EFGH y\u00fczeyinin bir eleman\u0131d\u0131r.\n|KB| = 6 cm, |AK| = |AN| = 4 cm\n|MC| = |LC| = 2 cm\nBuna g\u00f6re, (P,KLMN) d\u00f6rtgen dik piramidin hacmi ka\u00e7 cm^3 t\u00fcr?",
+   "sikler": {
+    "A": "110",
+    "B": "120",
+    "C": "130",
+    "D": "140",
+    "E": "150"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T027_06",
+   "basili_no": 6,
+   "govde": "(T,ABCD) d\u00fczg\u00fcn kare piramit olmak \u00fczere verilen piramidin t\u00fcm ayr\u0131t uzunluklar\u0131 birbirine e\u015fittir.\nAlan(TAC) = 9 birimkare\nBuna g\u00f6re, piramidin hacmi ka\u00e7 birimk\u00fcpt\u00fcr?",
+   "sikler": {
+    "A": "9",
+    "B": "12",
+    "C": "15",
+    "D": "18",
+    "E": "27"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T027_08",
+   "basili_no": 8,
+   "govde": "\u015eekilde, hacimleri e\u015fit (T,ABCD) d\u00fczg\u00fcn kare piramidi ile ABCD ve EFGH kare tabanl\u0131 kesik dik piramidin birle\u015ftirilmesi ile elde edilen bir biblo verilmi\u015ftir.\n|AB| = 3 birim, |EF| = 6 birim\nBiblonun y\u00fcksekli\u011fi 16 birim oldu\u011funa g\u00f6re, kesik piramidin y\u00fcksekli\u011fi ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "1",
+    "B": "3/2",
+    "C": "2",
+    "D": "3",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T027_09",
+   "basili_no": 9,
+   "govde": "\u015eekilde (T,ABCD) d\u00fczg\u00fcn kare piramidin d\u00fczlemsel a\u00e7\u0131n\u0131m\u0131 verilmi\u015ftir.\nVerilen a\u00e7\u0131n\u0131m \u00fczerinde,\nm(A\u00c2'D') = 60\u00b0\nBuna g\u00f6re, m(B\u0108'C) = \u03b1 ka\u00e7 derecedir?",
+   "sikler": {
+    "A": "10",
+    "B": "15",
+    "C": "20",
+    "D": "25",
+    "E": "30"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T028_03",
+   "basili_no": 3,
+   "govde": "(T.ABC) dik piramitte,\n[BA] \u22a5 [AC], |AD| = |DT|\n|DG| = 5 birim, |TG| = 8 birim\nG noktas\u0131 taban d\u00fczleminin a\u011f\u0131rl\u0131k merkezi oldu\u011funa g\u00f6re, |BC| ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "10",
+    "B": "12",
+    "C": "15",
+    "D": "17",
+    "E": "18"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T028_04",
+   "basili_no": 4,
+   "govde": "(T,ABCD) kare dik piramit,\n|TE| = |ED| = |TF| = |FB| = \u221a3 birim\n|AB| = 4 birim\nBuna g\u00f6re, Alan(AEF) ka\u00e7 birimkaredir?",
+   "sikler": {
+    "A": "2\u221a3",
+    "B": "4",
+    "C": "3\u221a2",
+    "D": "2\u221a6",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T028_06",
+   "basili_no": 6,
+   "govde": "\u015eekilde yan y\u00fczeyleri ikizkenar dik \u00fc\u00e7gen olan (T,ABC) \u00fc\u00e7gen dik piramit verilmi\u015ftir.\n|TA| = |TB| = |TC| = 6 birim\nYukar\u0131daki verilere g\u00f6re, piramidin hacmi ka\u00e7 birimk\u00fcpt\u00fcr?",
+   "sikler": {
+    "A": "24",
+    "B": "18\u221a3",
+    "C": "24\u221a3",
+    "D": "36",
+    "E": "36\u221a3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T031_01",
+   "basili_no": 1,
+   "govde": "Dik dairesel bir koninin ana do\u011fru uzunlu\u011fu 8 cm ve y\u00fczey alan\u0131 20\u03c0 cm^2 oldu\u011funa g\u00f6re, hacmi ka\u00e7 cm^3 t\u00fcr?",
+   "sikler": {
+    "A": "(7\u221a15)/2 \u03c0",
+    "B": "(8\u221a15)/3 \u03c0",
+    "C": "3\u221a15\u03c0",
+    "D": "5\u221a15\u03c0",
+    "E": "(10\u221a15)/3 \u03c0"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T031_05",
+   "basili_no": 5,
+   "govde": "Yar\u0131\u00e7ap\u0131 9 birim olan daire bi\u00e7imindeki bir k\u00e2\u011f\u0131ttan 120\u00b0 lik bir dilim kesilerek \u00e7\u0131kart\u0131l\u0131yor. Kalan k\u0131s\u0131m, pembe \u00e7izgiler \u00e7ak\u0131\u015facak bi\u00e7imde \u015fekilde g\u00f6sterildi\u011fi gibi birle\u015ftirilerek bir dik dairesel koni olu\u015fturuluyor.\nBuna g\u00f6re, olu\u015fturulan koninin y\u00fcksekli\u011fi ka\u00e7 birimdir?",
+   "sikler": {
+    "A": "2\u221a5",
+    "B": "2\u221a7",
+    "C": "4\u221a2",
+    "D": "6",
+    "E": "3\u221a5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T031_08",
+   "basili_no": 8,
+   "govde": "\u015eekilde T merkezli, AB yayl\u0131 daire dilimi \u015feklindeki ka\u011f\u0131t par\u00e7as\u0131 \u00fczerinde TMK e\u015fkenar \u00fc\u00e7geni al\u0131nm\u0131\u015ft\u0131r.\nm(ATB) = 120\u00b0, |AT| = 12 birim\nVerilen ka\u011f\u0131t par\u00e7as\u0131 [TA] ve [TB] \u00e7ak\u0131\u015facak \u015fekilde birle\u015ftirilerek bir dik koni elde ediliyor.\nBuna g\u00f6re, elde edilen konide M ve K noktalar\u0131 aras\u0131ndaki uzakl\u0131k ka\u00e7 birim olur?",
+   "sikler": {
+    "A": "4",
+    "B": "6",
+    "C": "4\u221a3",
+    "D": "8",
+    "E": "6\u221a3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T032_03",
+   "basili_no": 3,
+   "govde": "\u015eekilde taban dairesinin merkezi O noktas\u0131 olan bir dik koninin a\u00e7\u0131n\u0131m\u0131 verilmi\u015ftir.\nB \u2208 [A_1A_2]. |A_1B| = |BA_2|.\n|TA_1| = 12 birim, |OC| = 4 birim\n\u015eekildeki a\u00e7\u0131n\u0131m [TA_1] ve [TA_2] \u00fcst \u00fcste gelecek \u015fekilde koni <u>olu\u015fturuldu\u011funda</u>, B noktas\u0131n\u0131n taban dairesinin merkezine uzakl\u0131\u011f\u0131 ka\u00e7 birim olur?",
+   "sikler": {
+    "A": "3",
+    "B": "4",
+    "C": "2\u221a5",
+    "D": "5",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T032_06",
+   "basili_no": 6,
+   "govde": "\u015eekilde taban \u00e7ap\u0131 18 cm, y\u00fcksekli\u011fi 12 cm olan koni bi\u00e7iminde bir ku\u015f kafesi g\u00f6sterilmi\u015ftir.\nT noktas\u0131ndan \u00e7\u0131kan teller O merkezli \u00e7ember \u00fczerinde 3\u03c0 cm aral\u0131klarla kaynak yap\u0131lm\u0131\u015ft\u0131r. N, M, K ve L noktalar\u0131ndan kaynak yap\u0131lan \u00e7emberler zemine paraleldir.\n|TM| = |ML| = |LB|\nBuna g\u00f6re, kafes yap\u0131m\u0131nda toplam ka\u00e7 cm uzunlu\u011funda tel kullan\u0131lm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "90 + 18\u03c0",
+    "B": "90 + 20\u03c0",
+    "C": "80 + 1[??]",
+    "D": "80 + 20\u03c0",
+    "E": "100 + 18\u03c0"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T035_04",
+   "basili_no": 4,
+   "govde": "m(AO_1B) = 72\u00b0\nm(CO_2D) = 144\u00b0\n\u015eekilde O_1 ve O_2 noktalar\u0131 merkez ve yar\u0131\u00e7aplar\u0131 5 cm ve 10 cm verilen iki daire dilimi verilmi\u015ftir.\nBu daire dilimlerinden koni yap\u0131l\u0131p yandaki \u015fekildeki gibi tepe noktalar\u0131 \u00e7ak\u0131\u015facak ve tabanlar\u0131 birbirine paralel olacak \u015fekilde konuluyor.\nBuna g\u00f6re, taban d\u00fczlemleri \u00fczerinde al\u0131nan iki nokta aras\u0131 uzakl\u0131k <u>en \u00e7ok</u> ka\u00e7 cm'dir?",
+   "sikler": {
+    "A": "5\u221a5",
+    "B": "6\u221a5",
+    "C": "7\u221a5",
+    "D": "8\u221a5",
+    "E": "9\u221a5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T037_02",
+   "basili_no": 2,
+   "govde": "Yar\u0131\u00e7ap uzunlu\u011fu 4 birim olan bir k\u00fcrenin, merkezinden 2 birim uzakl\u0131ktaki kesit y\u00fczeyini taban kabul eden ve tepe noktas\u0131 k\u00fcre y\u00fczeyi \u00fczerinde al\u0131nan <u>en b\u00fcy\u00fck</u> hacimli koninin hacmi ka\u00e7 \u03c0 birimk\u00fcpt\u00fcr?",
+   "sikler": {
+    "A": "12",
+    "B": "18",
+    "C": "24",
+    "D": "36",
+    "E": "48"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "ACL23KC-T039_11",
+   "basili_no": 11,
+   "govde": "\u015eekilde, [AB] \u00e7apl\u0131 yar\u0131m daire \u015feklinde levha verilmi\u015ftir.\n[DC] \u22a5 [AB], |DE| = |EC|\n|BC| = 1 birim, |AC| = 4 birim\nVerilen levhadan (A\u00caB) b\u00f6lgesi \u00e7\u0131kar\u0131l\u0131p, kalan levha par\u00e7as\u0131 [AB] etraf\u0131nda 360\u00b0 d\u00f6nd\u00fcr\u00fcl\u00fcrek bir d\u00f6nel cisim elde ediliyor.\nBuna g\u00f6re, olu\u015fan cismin hacmi ka\u00e7 birimk\u00fcpt\u00fcr?",
+   "sikler": {
+    "A": "115\u03c0/6",
+    "B": "96\u03c0/5",
+    "C": "50\u03c0/3",
+    "D": "90\u03c0/4",
+    "E": "110\u03c0/3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  }
+ ]
+}

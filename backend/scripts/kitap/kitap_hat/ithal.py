@@ -150,7 +150,7 @@ def kayit_uret(p: ModuleType, r: dict[str, Any], ham: dict) -> dict[str, Any]:
     n, u, ort = kelime_istatistik(r["govde"])
     bloom, bloom_ad, bloom_kaynak = bloom_belirle(r["govde"], sec)
     kutu = r["kirpim_kutusu"]
-    basili_sayfa = int(r["sayfa"])
+    basili_sayfa = int(r["sayfa"]) + int(getattr(p, "SAYFA_OFSETI", 0))
     cikmis = r.get("sinav_yili") is not None
     return {
         "id": str(uuid.uuid5(uuid.NAMESPACE_OID, h)),
@@ -461,6 +461,7 @@ def on_kontrol(p: ModuleType, kayitlar: list[dict[str, Any]]) -> list[str]:
     hata = []
     gorulen: set[str] = set()
     kod_imi = f"{p.KOD_ONEKI}-"
+    ofset = int(getattr(p, "SAYFA_OFSETI", 0))
     for k in kayitlar:
         sec = k["secenekler"]
         if len(sec) != 5 or any(h not in sec for h in "ABCDE"):
@@ -484,8 +485,8 @@ def on_kontrol(p: ModuleType, kayitlar: list[dict[str, Any]]) -> list[str]:
             pm["soru_no_basili"] is None and "numara_basilmamis" in pm["bayraklar"]
         ):
             hata.append(f"{k['id']}: basili numara test ici siraya esit degil")
-        if pm["basili_sayfa"] != pm["sayfa_dosya_no"]:
-            hata.append(f"{k['id']}: basili sayfa != dosya")
+        if pm["basili_sayfa"] != pm["sayfa_dosya_no"] + ofset:
+            hata.append(f"{k['id']}: basili sayfa != dosya + ofset {ofset}")
         if pm["cikmis_soru"] != (k["osym_year"] is not None):
             hata.append(f"{k['id']}: cikmis bayragi ile osym_year tutarsiz")
         if k["id"] in gorulen:
