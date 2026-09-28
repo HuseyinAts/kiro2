@@ -1,0 +1,999 @@
+{
+"kaynak": "AKTIF 2025 TYT Fizik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s6) 13 unite; unite baslangici icindekiler sayfa no (dosya = basili: 7, 19, 41, 69, 89, 109, 127, 147, 173, 201, 233, 247, 327); konu = test bandindaki unite adi (iki bagimsiz okuma)",
+"bolumler": [
+{
+"kod": "FIZ-AKT25FZ-B01",
+"no": 1,
+"ad": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e"
+},
+{
+"kod": "FIZ-AKT25FZ-B02",
+"no": 2,
+"ad": "MADDE VE \u00d6ZELL\u0130KLER\u0130"
+},
+{
+"kod": "FIZ-AKT25FZ-B03",
+"no": 3,
+"ad": "BASIN\u00c7"
+},
+{
+"kod": "FIZ-AKT25FZ-B04",
+"no": 4,
+"ad": "KALDIRMA KUVVET\u0130"
+},
+{
+"kod": "FIZ-AKT25FZ-B05",
+"no": 5,
+"ad": "ISI - SICAKLIK VE GENLE\u015eME"
+},
+{
+"kod": "FIZ-AKT25FZ-B06",
+"no": 6,
+"ad": "HAREKET"
+},
+{
+"kod": "FIZ-AKT25FZ-B07",
+"no": 7,
+"ad": "KUVVET VE NEWTON'UN HAREKET KANUNLARI"
+},
+{
+"kod": "FIZ-AKT25FZ-B08",
+"no": 8,
+"ad": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130"
+},
+{
+"kod": "FIZ-AKT25FZ-B09",
+"no": 9,
+"ad": "ELEKTROSTAT\u0130K"
+},
+{
+"kod": "FIZ-AKT25FZ-B10",
+"no": 10,
+"ad": "ELEKTR\u0130K AKIMI"
+},
+{
+"kod": "FIZ-AKT25FZ-B11",
+"no": 11,
+"ad": "MANYET\u0130ZMA"
+},
+{
+"kod": "FIZ-AKT25FZ-B12",
+"no": 12,
+"ad": "OPT\u0130K"
+},
+{
+"kod": "FIZ-AKT25FZ-B13",
+"no": 13,
+"ad": "DALGALAR"
+}
+],
+"konular": [
+{
+"kod": "FIZ-AKT25FZ-B01-K01",
+"bolum": "FIZ-AKT25FZ-B01",
+"ad": "Fizik Bilimine Giri\u015f",
+"icindekiler_adi": "Fizik Bilimine Giri\u015f",
+"sayfalar": [
+7,
+18
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B02-K01",
+"bolum": "FIZ-AKT25FZ-B02",
+"ad": "Madde ve \u00d6zellikleri",
+"icindekiler_adi": "Madde ve \u00d6zellikleri",
+"sayfalar": [
+19,
+40
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"ad": "Bas\u0131n\u00e7",
+"icindekiler_adi": "Bas\u0131n\u00e7",
+"sayfalar": [
+41,
+68
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B04-K01",
+"bolum": "FIZ-AKT25FZ-B04",
+"ad": "Kald\u0131rma Kuvveti",
+"icindekiler_adi": "Kald\u0131rma Kuvveti",
+"sayfalar": [
+69,
+88
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B05-K01",
+"bolum": "FIZ-AKT25FZ-B05",
+"ad": "Is\u0131 - S\u0131cakl\u0131k ve Genle\u015fme",
+"icindekiler_adi": "Is\u0131 - S\u0131cakl\u0131k ve Genle\u015fme",
+"sayfalar": [
+89,
+108
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B06-K01",
+"bolum": "FIZ-AKT25FZ-B06",
+"ad": "Hareket",
+"icindekiler_adi": "Hareket",
+"sayfalar": [
+109,
+126
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B07-K01",
+"bolum": "FIZ-AKT25FZ-B07",
+"ad": "Kuvvet ve Newton'un Hareket Kanunlar\u0131",
+"icindekiler_adi": "Kuvvet ve Newton'un Hareket Kanunlar\u0131",
+"sayfalar": [
+127,
+146
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"ad": "\u0130\u015f - G\u00fc\u00e7 - Enerji",
+"icindekiler_adi": "\u0130\u015f - G\u00fc\u00e7 - Enerji",
+"sayfalar": [
+147,
+172
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"ad": "Elektrostatik",
+"icindekiler_adi": "Elektrostatik",
+"sayfalar": [
+173,
+200
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"ad": "Elektrik Ak\u0131m\u0131",
+"icindekiler_adi": "Elektrik Ak\u0131m\u0131",
+"sayfalar": [
+201,
+232
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B11-K01",
+"bolum": "FIZ-AKT25FZ-B11",
+"ad": "Manyetizma",
+"icindekiler_adi": "Manyetizma",
+"sayfalar": [
+233,
+246
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"ad": "Optik",
+"icindekiler_adi": "Optik",
+"sayfalar": [
+247,
+326
+]
+},
+{
+"kod": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"ad": "Dalgalar",
+"icindekiler_adi": "Dalgalar",
+"sayfalar": [
+327,
+352
+]
+}
+],
+"test_sayisi": 66,
+"testler": [
+{
+"birim": "AKT25FZ-T001",
+"test": 1,
+"sayfalar": [
+13,
+14
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-AKT25FZ-B01-K01",
+"bolum": "FIZ-AKT25FZ-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT25FZ-T002",
+"test": 2,
+"sayfalar": [
+15,
+16
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-AKT25FZ-B01-K01",
+"bolum": "FIZ-AKT25FZ-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT25FZ-T003",
+"test": 3,
+"sayfalar": [
+17,
+18
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-AKT25FZ-B01-K01",
+"bolum": "FIZ-AKT25FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25FZ-T004",
+"test": 4,
+"sayfalar": [
+33,
+34
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-AKT25FZ-B02-K01",
+"bolum": "FIZ-AKT25FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T005",
+"test": 5,
+"sayfalar": [
+35,
+36
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-AKT25FZ-B02-K01",
+"bolum": "FIZ-AKT25FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T006",
+"test": 6,
+"sayfalar": [
+37,
+38
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-AKT25FZ-B02-K01",
+"bolum": "FIZ-AKT25FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25FZ-T007",
+"test": 7,
+"sayfalar": [
+39,
+40
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-AKT25FZ-B02-K01",
+"bolum": "FIZ-AKT25FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T008",
+"test": 8,
+"sayfalar": [
+57,
+58
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T009",
+"test": 9,
+"sayfalar": [
+59,
+60
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T010",
+"test": 10,
+"sayfalar": [
+61,
+62
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T011",
+"test": 11,
+"sayfalar": [
+63,
+64
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T012",
+"test": 12,
+"sayfalar": [
+65,
+66
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "AKT25FZ-T013",
+"test": 13,
+"sayfalar": [
+67,
+68
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-AKT25FZ-B03-K01",
+"bolum": "FIZ-AKT25FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T014",
+"test": 14,
+"sayfalar": [
+79,
+80
+],
+"bant": "KALDIRMA KUVVET\u0130",
+"konu": "FIZ-AKT25FZ-B04-K01",
+"bolum": "FIZ-AKT25FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T015",
+"test": 15,
+"sayfalar": [
+81,
+82
+],
+"bant": "KALDIRMA KUVVET\u0130",
+"konu": "FIZ-AKT25FZ-B04-K01",
+"bolum": "FIZ-AKT25FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T016",
+"test": 16,
+"sayfalar": [
+83,
+84
+],
+"bant": "KALDIRMA KUVVET\u0130",
+"konu": "FIZ-AKT25FZ-B04-K01",
+"bolum": "FIZ-AKT25FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T017",
+"test": 17,
+"sayfalar": [
+85,
+86
+],
+"bant": "KALDIRMA KUVVET\u0130",
+"konu": "FIZ-AKT25FZ-B04-K01",
+"bolum": "FIZ-AKT25FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T018",
+"test": 18,
+"sayfalar": [
+87,
+88
+],
+"bant": "KALDIRMA KUVVET\u0130",
+"konu": "FIZ-AKT25FZ-B04-K01",
+"bolum": "FIZ-AKT25FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T019",
+"test": 19,
+"sayfalar": [
+103,
+104
+],
+"bant": "ISI - SICAKLIK - GENLE\u015eME",
+"konu": "FIZ-AKT25FZ-B05-K01",
+"bolum": "FIZ-AKT25FZ-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25FZ-T020",
+"test": 20,
+"sayfalar": [
+105,
+106
+],
+"bant": "ISI - SICAKLIK - GENLE\u015eME",
+"konu": "FIZ-AKT25FZ-B05-K01",
+"bolum": "FIZ-AKT25FZ-B05",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T021",
+"test": 21,
+"sayfalar": [
+107,
+108
+],
+"bant": "ISI - SICAKLIK - GENLE\u015eME",
+"konu": "FIZ-AKT25FZ-B05-K01",
+"bolum": "FIZ-AKT25FZ-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25FZ-T022",
+"test": 22,
+"sayfalar": [
+121,
+122
+],
+"bant": "HAREKET",
+"konu": "FIZ-AKT25FZ-B06-K01",
+"bolum": "FIZ-AKT25FZ-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T023",
+"test": 23,
+"sayfalar": [
+123,
+124
+],
+"bant": "HAREKET",
+"konu": "FIZ-AKT25FZ-B06-K01",
+"bolum": "FIZ-AKT25FZ-B06",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T024",
+"test": 24,
+"sayfalar": [
+125,
+126
+],
+"bant": "HAREKET",
+"konu": "FIZ-AKT25FZ-B06-K01",
+"bolum": "FIZ-AKT25FZ-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T025",
+"test": 25,
+"sayfalar": [
+141,
+142
+],
+"bant": "KUVVET VE NEWTON\u2019UN HAREKET KANUNLARI",
+"konu": "FIZ-AKT25FZ-B07-K01",
+"bolum": "FIZ-AKT25FZ-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T026",
+"test": 26,
+"sayfalar": [
+143,
+144
+],
+"bant": "KUVVET VE NEWTON\u2019UN HAREKET KANUNLARI",
+"konu": "FIZ-AKT25FZ-B07-K01",
+"bolum": "FIZ-AKT25FZ-B07",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T027",
+"test": 27,
+"sayfalar": [
+145,
+146
+],
+"bant": "KUVVET VE NEWTON\u2019UN HAREKET KANUNLARI",
+"konu": "FIZ-AKT25FZ-B07-K01",
+"bolum": "FIZ-AKT25FZ-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T028",
+"test": 28,
+"sayfalar": [
+161,
+162
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T029",
+"test": 29,
+"sayfalar": [
+163,
+164
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T030",
+"test": 30,
+"sayfalar": [
+165,
+166
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T031",
+"test": 31,
+"sayfalar": [
+167,
+168
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T032",
+"test": 32,
+"sayfalar": [
+169,
+170
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T033",
+"test": 33,
+"sayfalar": [
+171,
+172
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-AKT25FZ-B08-K01",
+"bolum": "FIZ-AKT25FZ-B08",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T034",
+"test": 34,
+"sayfalar": [
+189,
+190
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T035",
+"test": 35,
+"sayfalar": [
+191,
+192
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T036",
+"test": 36,
+"sayfalar": [
+193,
+194
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T037",
+"test": 37,
+"sayfalar": [
+195,
+196
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T038",
+"test": 38,
+"sayfalar": [
+197,
+198
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T039",
+"test": 39,
+"sayfalar": [
+199,
+200
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-AKT25FZ-B09-K01",
+"bolum": "FIZ-AKT25FZ-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T040",
+"test": 40,
+"sayfalar": [
+219,
+220
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25FZ-T041",
+"test": 41,
+"sayfalar": [
+221,
+222
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T042",
+"test": 42,
+"sayfalar": [
+223,
+224
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T043",
+"test": 43,
+"sayfalar": [
+225,
+226
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T044",
+"test": 44,
+"sayfalar": [
+227,
+228
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T045",
+"test": 45,
+"sayfalar": [
+229,
+230
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T046",
+"test": 46,
+"sayfalar": [
+231,
+232
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-AKT25FZ-B10-K01",
+"bolum": "FIZ-AKT25FZ-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T047",
+"test": 47,
+"sayfalar": [
+243,
+244
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-AKT25FZ-B11-K01",
+"bolum": "FIZ-AKT25FZ-B11",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T048",
+"test": 48,
+"sayfalar": [
+245,
+246
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-AKT25FZ-B11-K01",
+"bolum": "FIZ-AKT25FZ-B11",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T049",
+"test": 49,
+"sayfalar": [
+303,
+304
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T050",
+"test": 50,
+"sayfalar": [
+305,
+306
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T051",
+"test": 51,
+"sayfalar": [
+307,
+308
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T052",
+"test": 52,
+"sayfalar": [
+309,
+310
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T053",
+"test": 53,
+"sayfalar": [
+311,
+312
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T054",
+"test": 54,
+"sayfalar": [
+313,
+314
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T055",
+"test": 55,
+"sayfalar": [
+315,
+316
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T056",
+"test": 56,
+"sayfalar": [
+317,
+318
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25FZ-T057",
+"test": 57,
+"sayfalar": [
+319,
+320
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T058",
+"test": 58,
+"sayfalar": [
+321,
+322
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T059",
+"test": 59,
+"sayfalar": [
+323,
+324
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25FZ-T060",
+"test": 60,
+"sayfalar": [
+325,
+326
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-AKT25FZ-B12-K01",
+"bolum": "FIZ-AKT25FZ-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT25FZ-T061",
+"test": 61,
+"sayfalar": [
+341,
+342
+],
+"bant": "DALGALAR",
+"konu": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T062",
+"test": 62,
+"sayfalar": [
+343,
+344
+],
+"bant": "DALGALAR",
+"konu": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T063",
+"test": 63,
+"sayfalar": [
+345,
+346
+],
+"bant": "DALGALAR",
+"konu": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T064",
+"test": 64,
+"sayfalar": [
+347,
+348
+],
+"bant": "DALGALAR",
+"konu": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T065",
+"test": 65,
+"sayfalar": [
+349,
+350
+],
+"bant": "DALGALAR",
+"konu": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT25FZ-T066",
+"test": 66,
+"sayfalar": [
+351,
+352
+],
+"bant": "DALGALAR",
+"konu": "FIZ-AKT25FZ-B13-K01",
+"bolum": "FIZ-AKT25FZ-B13",
+"soru_sayisi": 11
+}
+]
+}

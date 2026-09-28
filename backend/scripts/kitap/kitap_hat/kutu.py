@@ -63,7 +63,10 @@ def _satirlar(a: np.ndarray, x0: int, x1: int) -> np.ndarray:
     return m
 
 
-def _ust(y: int, tavan: int, murekkep: np.ndarray) -> int:
+def _ust(y: int, tavan: int, murekkep: np.ndarray, bosluk: int = BOSLUK) -> int:
+    """bosluk: profil BOSLUK (sik satirlari arasi bosluk sorular arasi bosluktan
+    buyuk olan sikisik dizgide kucuk tutulur; yoksa ust sinir onceki sorunun
+    son sik satirinin ustune cikar)."""
     bos = 0
     r = y - 1
     while r >= tavan:
@@ -71,8 +74,8 @@ def _ust(y: int, tavan: int, murekkep: np.ndarray) -> int:
             bos = 0
         else:
             bos += 1
-            if bos >= BOSLUK:
-                return max(tavan, r + BOSLUK - UST_PAY)
+            if bos >= bosluk:
+                return max(tavan, r + bosluk - UST_PAY)
         r -= 1
     return tavan
 
@@ -183,7 +186,8 @@ def _ustler(
         ust_cizgi = [y for y in cizgi if tavan <= y < c["y"]]
         if ust_cizgi:
             tavan = max(ust_cizgi) + getattr(p, "AYRAC_PAY", 2)
-        ustler.append(min(_ust(c["y"], tavan, mur), c["y"] - UST_PAY))
+        bosluk = int(getattr(p, "BOSLUK", BOSLUK))
+        ustler.append(min(_ust(c["y"], tavan, mur, bosluk), c["y"] - UST_PAY))
     return ustler
 
 
@@ -194,6 +198,12 @@ def _kutu_ust(p: ModuleType, d: int, s: str, ustler: list[int]) -> list[int]:
     for (kd, ks, ki), ky in getattr(p, "KUTU_UST", {}).items():
         if (kd, ks) == (d, s):
             ustler[ki] = min(ustler[ki], int(ky))
+    # KUTU_UST_KESIN: iki soru arasindaki bos bant BOSLUK'tan dar oldugu icin
+    # ust sinir onceki numaraya kadar cikiyorsa (kutu 'cok kisa' kapisi), sinir
+    # gozle olculen y'ye sabitlenir (asagi da inebilir).
+    for (kd, ks, ki), ky in getattr(p, "KUTU_UST_KESIN", {}).items():
+        if (kd, ks) == (d, s):
+            ustler[ki] = int(ky)
     return ustler
 
 

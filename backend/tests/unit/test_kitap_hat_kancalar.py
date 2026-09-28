@@ -124,3 +124,37 @@ def test_parite_ters_kumesi_yerlesim_paritesini_cevirir() -> None:
     assert ortak.parite(p, 251) == 0
     assert ortak.parite(p, 252) == 1
     assert ortak.parite(SimpleNamespace(), 251) == 1
+
+
+def test_profil_boslugu_dar_bantta_ust_siniri_numaraya_yakin_tutar() -> None:
+    """AKT25FZ: sorular arasi bos bant sik satirlari arasindan dar. Varsayilan
+    BOSLUK onceki sorunun sik satirlarinin ustune cikar; profil BOSLUK=5 bandi yakalar."""
+    m = np.zeros(40, bool)
+    m[5:10] = True  # onceki sorunun son sik satiri
+    m[16:18] = True  # ayni sorunun bir onceki sik satiri
+    # 18-23 bos (6 satir), numara y=24; 10-15 bos (6 satir)
+    assert kutu._ust(24, 0, m, 5) == 19 + 5 - kutu.UST_PAY
+    assert kutu._ust(24, 0, m, 7) == 0  # 6 satirlik bantlar yetmez -> tavan
+    assert kutu._ust(24, 0, m) == kutu._ust(24, 0, m, kutu.BOSLUK)
+
+
+def test_kutu_ust_kesin_asagi_da_iner_kutu_ust_yalniz_yukari() -> None:
+    p = SimpleNamespace(
+        KUTU_UST={(7, "R", 0): 90, (7, "R", 1): 400},
+        KUTU_UST_KESIN={(7, "R", 2): 623, (8, "R", 2): 1},
+    )
+    assert kutu._kutu_ust(p, 7, "R", [100, 300, 600]) == [90, 300, 623]
+    assert kutu._kutu_ust(SimpleNamespace(), 7, "R", [100, 300]) == [100, 300]
+
+
+def test_kesik_goz_onayi_kapidan_ayirir_ve_bayat_onayi_bildirir() -> None:
+    kesik = [
+        {"birim": "X-T063", "soru": 10, "alt": 9},
+        {"birim": "X-T065", "soru": 4, "alt": 45},
+    ]
+    p = SimpleNamespace(KESIK_GOZ_ONAY=("X-T063_10", "X-T001_01"))
+    kalan, onayli, bayat = kirp.goz_onayi_ayir(p, kesik)
+    assert [x["soru"] for x in kalan] == [4]
+    assert [x["soru"] for x in onayli] == [10]
+    assert bayat == ["X-T001_01"]
+    assert kirp.goz_onayi_ayir(SimpleNamespace(), kesik) == (kesik, [], [])

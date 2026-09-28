@@ -1,0 +1,371 @@
+{
+"kaynak": "AKTIF 2025 TYT Fizik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
+"kenar_kapisi_ihlali": 0,
+"kesik_kapisi_ihlali": 0,
+"ortme_soru": 32,
+"kenar": [],
+"kesik": [],
+"kesik_goz_onayli": [
+{
+"birim": "AKT25FZ-T063",
+"soru": 10,
+"dosya": 346,
+"sol": 0,
+"sag": 0,
+"ust": 0,
+"alt": 9
+},
+{
+"birim": "AKT25FZ-T065",
+"soru": 4,
+"dosya": 349,
+"sol": 0,
+"sag": 0,
+"ust": 1,
+"alt": 45
+},
+{
+"birim": "AKT25FZ-T065",
+"soru": 5,
+"dosya": 349,
+"sol": 0,
+"sag": 0,
+"ust": 0,
+"alt": 33
+}
+],
+"ortme": [
+{
+"birim": "AKT25FZ-T001",
+"soru": 2,
+"dosya": 13,
+"simge": [
+519,
+365
+],
+"piksel": 6
+},
+{
+"birim": "AKT25FZ-T002",
+"soru": 11,
+"dosya": 16,
+"simge": [
+122,
+461
+],
+"piksel": 178
+},
+{
+"birim": "AKT25FZ-T006",
+"soru": 2,
+"dosya": 37,
+"simge": [
+608,
+367
+],
+"piksel": 12
+},
+{
+"birim": "AKT25FZ-T006",
+"soru": 9,
+"dosya": 38,
+"simge": [
+749,
+379
+],
+"piksel": 4
+},
+{
+"birim": "AKT25FZ-T016",
+"soru": 1,
+"dosya": 83,
+"simge": [
+464,
+366
+],
+"piksel": 6
+},
+{
+"birim": "AKT25FZ-T019",
+"soru": 8,
+"dosya": 104,
+"simge": [
+729,
+374
+],
+"piksel": 4
+},
+{
+"birim": "AKT25FZ-T022",
+"soru": 2,
+"dosya": 121,
+"simge": [
+410,
+365
+],
+"piksel": 6
+},
+{
+"birim": "AKT25FZ-T022",
+"soru": 8,
+"dosya": 122,
+"simge": [
+742,
+377
+],
+"piksel": 13
+},
+{
+"birim": "AKT25FZ-T027",
+"soru": 7,
+"dosya": 146,
+"simge": [
+650,
+376
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T028",
+"soru": 2,
+"dosya": 161,
+"simge": [
+598,
+367
+],
+"piksel": 8
+},
+{
+"birim": "AKT25FZ-T029",
+"soru": 8,
+"dosya": 164,
+"simge": [
+650,
+378
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T031",
+"soru": 2,
+"dosya": 167,
+"simge": [
+711,
+367
+],
+"piksel": 12
+},
+{
+"birim": "AKT25FZ-T035",
+"soru": 5,
+"dosya": 192,
+"simge": [
+375,
+376
+],
+"piksel": 16
+},
+{
+"birim": "AKT25FZ-T039",
+"soru": 6,
+"dosya": 200,
+"simge": [
+555,
+376
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T042",
+"soru": 2,
+"dosya": 223,
+"simge": [
+443,
+366
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T043",
+"soru": 8,
+"dosya": 226,
+"simge": [
+543,
+376
+],
+"piksel": 6
+},
+{
+"birim": "AKT25FZ-T046",
+"soru": 6,
+"dosya": 232,
+"simge": [
+321,
+377
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T047",
+"soru": 7,
+"dosya": 244,
+"simge": [
+688,
+377
+],
+"piksel": 4
+},
+{
+"birim": "AKT25FZ-T049",
+"soru": 3,
+"dosya": 303,
+"simge": [
+589,
+367
+],
+"piksel": 5
+},
+{
+"birim": "AKT25FZ-T051",
+"soru": 3,
+"dosya": 307,
+"simge": [
+695,
+366
+],
+"piksel": 12
+},
+{
+"birim": "AKT25FZ-T051",
+"soru": 8,
+"dosya": 308,
+"simge": [
+579,
+377
+],
+"piksel": 11
+},
+{
+"birim": "AKT25FZ-T053",
+"soru": 6,
+"dosya": 312,
+"simge": [
+593,
+376
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T054",
+"soru": 2,
+"dosya": 313,
+"simge": [
+524,
+366
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T055",
+"soru": 2,
+"dosya": 315,
+"simge": [
+624,
+367
+],
+"piksel": 15
+},
+{
+"birim": "AKT25FZ-T058",
+"soru": 2,
+"dosya": 321,
+"simge": [
+567,
+366
+],
+"piksel": 8
+},
+{
+"birim": "AKT25FZ-T061",
+"soru": 8,
+"dosya": 342,
+"simge": [
+556,
+377
+],
+"piksel": 13
+},
+{
+"birim": "AKT25FZ-T062",
+"soru": 2,
+"dosya": 343,
+"simge": [
+530,
+365
+],
+"piksel": 13
+},
+{
+"birim": "AKT25FZ-T062",
+"soru": 8,
+"dosya": 344,
+"simge": [
+701,
+377
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T063",
+"soru": 8,
+"dosya": 346,
+"simge": [
+608,
+376
+],
+"piksel": 7
+},
+{
+"birim": "AKT25FZ-T064",
+"soru": 1,
+"dosya": 347,
+"simge": [
+339,
+366
+],
+"piksel": 15
+},
+{
+"birim": "AKT25FZ-T064",
+"soru": 8,
+"dosya": 348,
+"simge": [
+592,
+377
+],
+"piksel": 11
+},
+{
+"birim": "AKT25FZ-T066",
+"soru": 11,
+"dosya": 352,
+"simge": [
+710,
+558
+],
+"piksel": 13
+},
+{
+"birim": "AKT25FZ-T066",
+"soru": 11,
+"dosya": 352,
+"simge": [
+746,
+574
+],
+"piksel": 41
+}
+]
+}
