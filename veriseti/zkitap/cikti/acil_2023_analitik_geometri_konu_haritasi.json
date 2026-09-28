@@ -1,0 +1,483 @@
+{
+"kaynak": "2022-2023 ACIL Analitik Geometri",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s3) + bolum kapaklari + test ilk sayfasi ust bandi (iki okuma)",
+"bolumler": [
+{
+"kod": "GEO-ACL23AG-B01",
+"no": 1,
+"ad": "NOKTA ANAL\u0130T\u0130\u011e\u0130"
+},
+{
+"kod": "GEO-ACL23AG-B02",
+"no": 2,
+"ad": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130"
+},
+{
+"kod": "GEO-ACL23AG-B03",
+"no": 3,
+"ad": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130"
+},
+{
+"kod": "GEO-ACL23AG-B04",
+"no": 4,
+"ad": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130"
+}
+],
+"konular": [
+{
+"kod": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"ad": "Nokta Analiti\u011fi Testler",
+"icindekiler_adi": "Nokta Analiti\u011fi Testler",
+"sayfalar": [
+22,
+71
+]
+},
+{
+"kod": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"ad": "Do\u011fru Analiti\u011fi Testler",
+"icindekiler_adi": "Do\u011fru Analiti\u011fi Testler",
+"sayfalar": [
+72,
+118
+]
+},
+{
+"kod": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"ad": "D\u00f6n\u00fc\u015f\u00fcm Geometrisi Testler",
+"icindekiler_adi": "D\u00f6n\u00fc\u015f\u00fcm Geometrisi Testler",
+"sayfalar": [
+119,
+154
+]
+},
+{
+"kod": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"ad": "\u00c7ember Analiti\u011fi Testler",
+"icindekiler_adi": "\u00c7ember Analiti\u011fi Testler",
+"sayfalar": [
+155,
+175
+]
+}
+],
+"test_sayisi": 33,
+"testler": [
+{
+"birim": "ACL23AG-T001",
+"test": 1,
+"sayfalar": [
+22,
+23
+],
+"bant": "NOKTA ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23AG-T002",
+"test": 2,
+"sayfalar": [
+24,
+25
+],
+"bant": "NOKTA ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23AG-T003",
+"test": 3,
+"sayfalar": [
+26,
+27
+],
+"bant": "NOKTA ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23AG-T004",
+"test": 4,
+"sayfalar": [
+28,
+29,
+30
+],
+"bant": "NOKTA ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T005",
+"test": 5,
+"sayfalar": [
+31,
+32,
+33
+],
+"bant": "NOKTA ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T006",
+"test": 6,
+"sayfalar": [
+34,
+35
+],
+"bant": "NOKTA ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B01-K01",
+"bolum": "GEO-ACL23AG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23AG-T007",
+"test": 7,
+"sayfalar": [
+72,
+73
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T008",
+"test": 8,
+"sayfalar": [
+74,
+75
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T009",
+"test": 9,
+"sayfalar": [
+76,
+77
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T010",
+"test": 10,
+"sayfalar": [
+78,
+79,
+80
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T011",
+"test": 11,
+"sayfalar": [
+81,
+82,
+83
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T012",
+"test": 12,
+"sayfalar": [
+84,
+85,
+86
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T013",
+"test": 13,
+"sayfalar": [
+87,
+88
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T014",
+"test": 14,
+"sayfalar": [
+89,
+90,
+91
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T015",
+"test": 15,
+"sayfalar": [
+92,
+93,
+94
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T016",
+"test": 16,
+"sayfalar": [
+95,
+96,
+97
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T017",
+"test": 17,
+"sayfalar": [
+98,
+99
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23AG-T018",
+"test": 18,
+"sayfalar": [
+100,
+101
+],
+"bant": "DO\u011eRU ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B02-K01",
+"bolum": "GEO-ACL23AG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23AG-T019",
+"test": 19,
+"sayfalar": [
+119,
+120
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL23AG-T020",
+"test": 20,
+"sayfalar": [
+121,
+122,
+123
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T021",
+"test": 21,
+"sayfalar": [
+124,
+125
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T022",
+"test": 22,
+"sayfalar": [
+126,
+127
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T023",
+"test": 23,
+"sayfalar": [
+128,
+129
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL23AG-T024",
+"test": 24,
+"sayfalar": [
+130,
+131
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL23AG-T025",
+"test": 25,
+"sayfalar": [
+132,
+133,
+134
+],
+"bant": "D\u00d6N\u00dc\u015e\u00dcM GEOMETR\u0130S\u0130",
+"konu": "GEO-ACL23AG-B03-K01",
+"bolum": "GEO-ACL23AG-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T026",
+"test": 26,
+"sayfalar": [
+155,
+156,
+157
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T027",
+"test": 27,
+"sayfalar": [
+158,
+159,
+160
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T028",
+"test": 28,
+"sayfalar": [
+161,
+162,
+163
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T029",
+"test": 29,
+"sayfalar": [
+164,
+165,
+166
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T030",
+"test": 30,
+"sayfalar": [
+167,
+168
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL23AG-T031",
+"test": 31,
+"sayfalar": [
+169,
+170,
+171
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23AG-T032",
+"test": 32,
+"sayfalar": [
+172,
+173
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL23AG-T033",
+"test": 33,
+"sayfalar": [
+174,
+175
+],
+"bant": "\u00c7EMBER ANAL\u0130T\u0130\u011e\u0130",
+"konu": "GEO-ACL23AG-B04-K01",
+"bolum": "GEO-ACL23AG-B04",
+"soru_sayisi": 8
+}
+]
+}

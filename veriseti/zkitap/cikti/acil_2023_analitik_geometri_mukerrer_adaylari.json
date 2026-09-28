@@ -1,0 +1,640 @@
+{
+ "kaynak": "2022-2023 ACIL Analitik Geometri",
+ "arac": "backend/scripts/kitap/kitap_hat/mukerrer.py",
+ "olcu": "govde normal bicimi karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: MATEMATIK/GEOMETRI (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar.",
+ "soru_sayisi": 361,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "ACL23AG-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T006_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T010_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T014_11",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T019_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T024_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T028_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL23AG-T032_08",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [
+  {
+   "dosya": "ACL23AG-T022_10",
+   "db_id": "afb8e164-eea5-5311-921b-951899b435b7"
+  }
+ ],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 0.805,
+ "db_satiri": 19464,
+ "db_en_yuksek_3gram": 1.0,
+ "aday_sayisi": 28,
+ "guclu_aday_sayisi": 6,
+ "adaylar": [
+  {
+   "dosya": "ACL23AG-T022_10",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "afb8e164-eea5-5311-921b-951899b435b7",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL23AG-T022_10",
+   "govde_3gram": 0.981,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "2414d42e-5ff2-560f-8355-9bd80d37ecea",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL23AG-T021_08",
+   "govde_3gram": 0.963,
+   "ayni_sik_sayisi": 4,
+   "guclu": true,
+   "db_id": "e00908e4-b5eb-5a10-a16a-7106b893bb32",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL23AG-T028_04",
+   "govde_3gram": 0.955,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "ba6344a2-9c43-5b49-bc19-b24f255830f8",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL23AG-T023_04",
+   "govde_3gram": 0.945,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "8fd3bfbd-af5b-590d-a58a-be51ef2e1903",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL23AG-T016_12",
+   "govde_3gram": 0.942,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "2d05bc86-0ebe-50e4-8a20-2acdcc343b88",
+   "db_kaynak": "2022-2023-AC\u0130L-Analitik Geometri",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL23AG-T021_08",
+   "govde_3gram": 0.934,
+   "ayni_sik_sayisi": 4,
+   "guclu": true,
+   "db_id": "23ca393a-27e2-5547-9b2c-d715451a278e",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL23AG-T023_04",
+   "govde_3gram": 0.897,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "7c0a6f9a-cd12-5d2c-afff-3578e0b90d52",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL23AG-T014_06",
+   "govde_3gram": 0.892,
+   "ayni_sik_sayisi": 2,
+   "guclu": false,
+   "db_id": "4e6c7a7a-9842-5e5c-a04e-7128d5c0d306",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL23AG-T029_01",
+   "govde_3gram": 0.888,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "a02f7aed-a53e-573c-b4e4-034b5e641de3",
+   "db_kaynak": "345 2025 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL23AG-T027_12",
+   "govde_3gram": 0.863,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "8fff2423-1e6e-55c0-9f2f-dedbdaa9bdcf",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL23AG-T020_07",
+   "govde_3gram": 0.861,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "dff2ee13-3530-51eb-973d-863c8bd43333",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL23AG-T029_01",
+   "govde_3gram": 0.848,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "53a55df0-fedf-5123-be51-ee4d1fe802c1",
+   "db_kaynak": "Orijinal 2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL23AG-T021_12",
+   "govde_3gram": 0.842,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "392e6624-f919-5c1c-b3d7-8e9e81ab0955",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL23AG-T021_12",
+   "govde_3gram": 0.842,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "7995a463-3801-599c-8045-fb31c1c09e79",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL23AG-T023_01",
+   "govde_3gram": 0.835,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "f3310834-3706-5ef0-937c-d907ea848d0f",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL23AG-T020_11",
+   "govde_3gram": 0.821,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "7df94db9-21dc-5537-840b-5422a9b017f8",
+   "db_kaynak": "Mikro Orijinal 2025 AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL23AG-T031_02",
+   "govde_3gram": 0.819,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "d264f8f7-82b9-57cf-b7c9-9f83d4331c5a",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "ACL23AG-T028_06",
+   "govde_3gram": 0.815,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "5068484c-b8dc-5e7a-bbdc-02d40ab2346a",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL23AG-T005_01",
+   "govde_3gram": 0.809,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "479ed810-e3a3-50b4-8b2d-f5714f288dcc",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL23AG-T005_01",
+   "govde_3gram": 0.809,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "99b96a0d-2082-5f3b-a602-ee06fd1b1e47",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL23AG-T030_10",
+   "govde_3gram": 0.795,
+   "ayni_sik_sayisi": 2,
+   "guclu": false,
+   "db_id": "07787506-65ed-569e-8633-cdf057a15cc2",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL23AG-T032_10",
+   "govde_3gram": 0.768,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "7ca91e56-726a-5684-87b1-79a17d0185eb",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL23AG-T011_06",
+   "govde_3gram": 0.766,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "093965eb-f05d-5fd1-9036-b3d6950ba32b",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL23AG-T011_06",
+   "govde_3gram": 0.766,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "487437e2-3d4d-50c3-9f2e-39baee3754b0",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "ACL23AG-T013_05",
+   "govde_3gram": 0.755,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "64e0632d-15cf-5811-a6d7-6ed8efcda3d4",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL23AG-T013_05",
+   "govde_3gram": 0.755,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "c00cc4f3-923e-5985-9820-04a4d0b1ecaf",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": false,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL23AG-T028_04",
+   "govde_3gram": 0.752,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "d8798ad3-c4d9-561c-a96c-2b4841e19a0b",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  }
+ ],
+ "cevap_farki": [
+  {
+   "dosya": "ACL23AG-T023_04",
+   "db_id": "8fd3bfbd-af5b-590d-a58a-be51ef2e1903",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.945,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T023_04",
+   "db_id": "7c0a6f9a-cd12-5d2c-afff-3578e0b90d52",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.897,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T029_01",
+   "db_id": "a02f7aed-a53e-573c-b4e4-034b5e641de3",
+   "db_kaynak": "345 2025 TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "B",
+   "govde_3gram": 0.888,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T029_01",
+   "db_id": "53a55df0-fedf-5123-be51-ee4d1fe802c1",
+   "db_kaynak": "Orijinal 2024 TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "B",
+   "govde_3gram": 0.848,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T021_12",
+   "db_id": "392e6624-f919-5c1c-b3d7-8e9e81ab0955",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "E",
+   "govde_3gram": 0.842,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T021_12",
+   "db_id": "7995a463-3801-599c-8045-fb31c1c09e79",
+   "db_kaynak": "ACIL 2025 KURS TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "E",
+   "govde_3gram": 0.842,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T020_11",
+   "db_id": "7df94db9-21dc-5537-840b-5422a9b017f8",
+   "db_kaynak": "Mikro Orijinal 2025 AYT Geometri Soru Bankasi",
+   "db_cevap": "C",
+   "bizim_cevap": "E",
+   "govde_3gram": 0.821,
+   "guclu": false,
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true
+  },
+  {
+   "dosya": "ACL23AG-T031_02",
+   "db_id": "d264f8f7-82b9-57cf-b7c9-9f83d4331c5a",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "E",
+   "govde_3gram": 0.819,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL23AG-T028_04",
+   "db_id": "d8798ad3-c4d9-561c-a96c-2b4841e19a0b",
+   "db_kaynak": "ACIL 2023-2024 TYT-AYT Geometri Soru Bankasi",
+   "db_cevap": "D",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.752,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  }
+ ],
+ "cevap_farki_sik_sirasi": 0,
+ "cevap_farki_icerik": [
+  [
+   "ACL23AG-T020_11",
+   "7df94db9-21dc-5537-840b-5422a9b017f8"
+  ],
+  [
+   "ACL23AG-T021_12",
+   "392e6624-f919-5c1c-b3d7-8e9e81ab0955"
+  ],
+  [
+   "ACL23AG-T021_12",
+   "7995a463-3801-599c-8045-fb31c1c09e79"
+  ],
+  [
+   "ACL23AG-T023_04",
+   "7c0a6f9a-cd12-5d2c-afff-3578e0b90d52"
+  ],
+  [
+   "ACL23AG-T023_04",
+   "8fd3bfbd-af5b-590d-a58a-be51ef2e1903"
+  ],
+  [
+   "ACL23AG-T028_04",
+   "d8798ad3-c4d9-561c-a96c-2b4841e19a0b"
+  ],
+  [
+   "ACL23AG-T029_01",
+   "53a55df0-fedf-5123-be51-ee4d1fe802c1"
+  ],
+  [
+   "ACL23AG-T029_01",
+   "a02f7aed-a53e-573c-b4e4-034b5e641de3"
+  ],
+  [
+   "ACL23AG-T031_02",
+   "d264f8f7-82b9-57cf-b7c9-9f83d4331c5a"
+  ]
+ ],
+ "eski_hat_ozet": {
+  "2022-2023-AC\u0130L-Analitik Geometri": {
+   "satir": 1,
+   "aktif": 1,
+   "modern_karsilik": 1
+  }
+ },
+ "eski_hat": [
+  {
+   "db_id": "2d05bc86-0ebe-50e4-8a20-2acdcc343b88",
+   "db_kaynak": "2022-2023-AC\u0130L-Analitik Geometri",
+   "basili_sayfa": 97,
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "ACL23AG-T016_12",
+   "en_yakin_3gram": 0.942,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "B"
+  }
+ ],
+ "farkli_soru_hash": 361
+}
