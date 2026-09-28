@@ -318,6 +318,9 @@ SERIT_PAY = 4
 ARTIK_ILK_KUTUDAN = True
 # Ilk sorunun tavani: ustteki ayrac cizgisi ('ACIL MATEMATIK' yatay cizgi).
 AYRAC_TAVAN = True
+# Cizginin hemen altinda kose logosu / etiket kuyrugu (3 satir, 12-17 px; s22,
+# 25, 77, 128, 137, 231): tavan cizgi + 7 (kesik kapisi ust seridi temiz).
+AYRAC_PAY = 7
 BEKLENEN_SORU = 1424
 DISK_MERKEZ = (10, 8)
 BEYAZ_YARICAP = 17

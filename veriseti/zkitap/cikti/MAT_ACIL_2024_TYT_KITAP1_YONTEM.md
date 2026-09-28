@@ -65,3 +65,21 @@ basili sayfa = dosya. Icerik TYT matematik (sayilar .. oran-oranti).
   0085 toplu beta onayi 495/498 (2 gorunen `[??]`, 1 sik okunamadi
   disarida). Round-trip (0082 <-> 0085) temiz.
 * exam_type TYT, subject MATEMATIK.
+
+## 7. Kesik kirpim duzeltmesi (28 Eyl 2026, 0089)
+
+* `kitap_hat/kirp.py`'ye eklenen KESIK kapisi (beyazlatilmis kutunun ust/alt
+  2 px seridinde koyu piksel) birlesmis kitaplarda yeniden kosuldu: bu kitapta
+  3 kirpim alt kenarda kesik (T012_03 alt 57 px, T048_04 46, T053_03 36);
+  `kutu.py` alt-sinir-alti taramasi 4. sayfayi ekledi (s183L y889, 22 px).
+* Neden: SAYFA_ALTI 885; sol sutun (seritle ortusmez) metni serit hizasina
+  iniyor -- en alt murekkep s29 889, s104 886, s183 895; diger sayfalarda
+  <= 885. Serit alt cizgisi 905. SAYFA_ALTI 898; kutu 0 ihlal, kirp kenar 0
+  kesik 0; kirpim kutulari ve ortme olcumu yeniden yazildi.
+* Gozle (yeni kirpim): T012_03 D/E, T048_04 E, T053_03 D/E onceki okumayla
+  AYNI (ust yarilari dogru okunmustu; kesik notu kalkti). T081_02'de siklar
+  kirpimda hic yoktu, bes sik `[okunamadi]` idi (beta DISI): A) 7  B) 8  C) 9
+  D) 10  E) 11. Sik metni degisince soru_hash / id degisir -> 0089 yeni satir
+  ekler (ithal formulu, konu eski satirdan), eski satir pasif kalir ve
+  `kesik_duzeltme_yerine` ile yeni id'yi tasir; yeni satir 0085 kapisindan
+  gecer (beta 496/499). Round-trip (0088 <-> 0089) temiz. Soru cozulmedi.

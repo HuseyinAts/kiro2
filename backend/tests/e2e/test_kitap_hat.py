@@ -211,6 +211,11 @@ def test_capa_mutasyonu_yakalanir(k: Kitap) -> None:
 
 def test_kutu_kapilari_ve_anahtar_birebir(k: Kitap) -> None:
     assert ku.kapilar(k.p, k.kirpim_kutulari, k.capa_taramasi) == []
+    # kirp.py kenar / kesik kapisi (beyazlatilmis kutunun dort kenarinda murekkep
+    # yok): kesik kirpim okumaya gitmez -- metin.hazirla da ayni sayilara bakar.
+    assert k.ortme_olcumu["kenar_kapisi_ihlali"] == 0
+    assert k.ortme_olcumu["kesik_kapisi_ihlali"] == 0
+    assert mh.kirpim_kapisi(k.ortme_olcumu) == []
     kutu = {(x["birim"], x["soru"]): x for x in k.kirpim_kutulari["kutular"]}
     assert len(kutu) == k.p.BEKLENEN_SORU
     for c in k.cevap_anahtari["cevaplar"]:

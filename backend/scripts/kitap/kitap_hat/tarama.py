@@ -27,6 +27,7 @@ KULLANIM (backend dizininden)
 from __future__ import annotations
 
 import argparse
+import re
 from types import ModuleType
 from typing import Any
 
@@ -96,25 +97,29 @@ def capalar(
     n: int,
     glif: list[list[int]],
     anahtar: list[int] | None = None,
-) -> tuple[list[dict], list[list[int]]]:
-    """Sayfanin soru capalari (sutun, y, x) ve capa olmayan glifler."""
+) -> tuple[list[dict], list[tuple[list[int], str]]]:
+    """Sayfanin soru capalari (sutun, y, x) ve capa olmayan glifler
+    ([y, x], neden). Neden, elenme noktasini ve olculen degeri tasir
+    (serit_ustu / sutun_disi / blob_yok / dx_disi / gecerli_red) -- profil
+    kalibrasyonunda hangi sabitin oynayacagini soyler."""
     # Basili numara rengi profile gore (varsayilan kirmizi; MOZ duzeni mavi).
     kir = getattr(p, "numara_maskesi", ortak.kirmizi)(a)
     out: list[dict] = []
-    disari = []
+    disari: list[tuple[list[int], str]] = []
     py0, py1, px0, px1 = p.PENCERE
     dx0, dx1 = p.NUMARA_DX
     numarasiz = set(getattr(p, "NUMARASIZ_CAPA", ()))
     for gy, gx in glif:
         if anahtar and gy >= anahtar[0] - p.SERIT_SIMGE_PAY:
-            disari.append([gy, gx])
+            disari.append(([gy, gx], "serit_ustu"))
             continue
         sut = next(
             (s for s, v in p.SIMGE_X[n % 2].items() if abs(gx - v) <= p.SIMGE_TOLERANS),
             None,
         )
         if sut is None:
-            disari.append([gy, gx])
+            en_yakin = min(p.SIMGE_X[n % 2].values(), key=lambda v: abs(gx - v))
+            disari.append(([gy, gx], f"sutun_disi gx={gx} en_yakin_simge_x={en_yakin}"))
             continue
         if (n, gy, gx) in numarasiz:
             # Kitapta numara BASILMAMIS soru (gozle dogrulandi, profilde listeli):
@@ -139,7 +144,15 @@ def capalar(
             and s[1].stop - s[1].start <= p.NUMARA_W_EN_COK
         ]
         if not bl:
-            disari.append([gy, gx])
+            # Pencerede numara boyunda blob yok: maske rengi mi, pencere mi,
+            # NUMARA_H mi? Tum bloblarin boyu (h, w) ve maske piksel sayisi verilir.
+            tum = [
+                (s[0].stop - s[0].start, s[1].stop - s[1].start)
+                for s in ndimage.find_objects(lab)
+            ]
+            disari.append(
+                ([gy, gx], f"blob_yok maske_px={int(w.sum())} bloblar_hw={tum[:6]}")
+            )
             continue
         ny = min(s[0].start for s in bl) + y0
         ilk = min(
@@ -147,11 +160,13 @@ def capalar(
         )
         nx = ilk[1].start + x0
         if not dx0 <= nx - gx <= dx1:
-            disari.append([gy, gx])
+            disari.append(
+                ([gy, gx], f"dx_disi dx={nx - gx} dy={ny - gy} aralik={dx0}-{dx1}")
+            )
             continue
         gecerli = getattr(p, "capa_gecerli", None)
         if gecerli is not None and not gecerli(a, int(ny), int(nx)):
-            disari.append([gy, gx])
+            disari.append(([gy, gx], f"gecerli_red ny={ny} nx={nx}"))
             continue
         if any(c["sutun"] == sut and abs(c["y"] - ny) < 20 for c in out):
             continue
@@ -188,7 +203,7 @@ def tara(p: ModuleType) -> dict[str, Any]:
     for f in sorted(d.glob("sayfa_*.png")):
         n = int(f.stem[-4:])
         sayfalar[n] = sayfa_olc(p, ortak.kart(p, d, n), n)
-    sayfa_capa: dict[int, tuple[list[dict], list[list[int]]]] = {}
+    sayfa_capa: dict[int, tuple[list[dict], list[tuple[list[int], str]]]] = {}
     for n, v in sayfalar.items():
         if v["tur"] == "test":
             sayfa_capa[n] = capalar(p, ortak.kart(p, d, n), n, v["glif"], v["anahtar"])
@@ -207,7 +222,9 @@ def tara(p: ModuleType) -> dict[str, Any]:
         for n in g:
             c, dis = sayfa_capa[n]
             capa += [{"dosya": n, **x} for x in c]
-            disari_top += [{"test": i, "dosya": n, "glif": x} for x in dis]
+            disari_top += [
+                {"test": i, "dosya": n, "glif": x, "neden": r} for x, r in dis
+            ]
         cikti.append({"test": i, "sayfalar": g, "capalar": capa})
     turler: dict[str, int] = {}
     for v in sayfalar.values():
@@ -287,10 +304,21 @@ def main() -> None:
         f"capa {veri['capa_toplam']}, capa olmayan glif {len(veri['capa_olmayan_glif'])}"
     )
     print("test basina capa:", [len(t["capalar"]) for t in veri["testler"]])
+    nedenler: dict[str, int] = {}
+    for x in veri["capa_olmayan_glif"]:
+        ad = x["neden"].split(" ")[0]
+        nedenler[ad] = nedenler.get(ad, 0) + 1
+    if nedenler:
+        print("capa olmayan glif nedenleri:", dict(sorted(nedenler.items())))
     print(f"kapi ihlali: {len(hata)}")
     for h in hata[:20]:
         print("   ", h)
     if hata:
+        # Capa != hucre olan testlerin elenen glifleri, nedeniyle: hangi sabit
+        # (SIMGE_X / PENCERE / NUMARA_H / NUMARA_DX / maske) oynayacak, buradan.
+        kotu = {int(m.group(1)) for h in hata if (m := re.match(r"test (\d+):", h))}
+        for x in [x for x in veri["capa_olmayan_glif"] if x["test"] in kotu][:30]:
+            print(f"    T{x['test']:03d} s{x['dosya']} glif {x['glif']}: {x['neden']}")
         raise SystemExit(1)
     if args.yaz:
         ortak.yaz(p, "capa_taramasi", veri, girinti=None)

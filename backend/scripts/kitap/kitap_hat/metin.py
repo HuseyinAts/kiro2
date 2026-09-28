@@ -94,6 +94,16 @@ def ortme_listesi(p: ModuleType) -> set[str]:
     }
 
 
+def kirpim_kapisi(olcum: dict) -> list[str]:
+    """kirp.py olcumunde kenar / kesik ihlali varsa okumaya cikilmaz."""
+    hata = []
+    for ad in ("kenar_kapisi_ihlali", "kesik_kapisi_ihlali"):
+        n = int(olcum.get(ad, 0))
+        if n:
+            hata.append(f"{ad} {n}: once kutu/kirp duzelt (kirp.py cikti listesi)")
+    return hata
+
+
 def talimat(p: ModuleType) -> str:
     s = SABLON.read_text("utf-8")
     s = s.replace(SABLON_KITAP, p.KITAP_BASLIGI).replace("a2_", f"{p.VERAF}_")
@@ -105,11 +115,17 @@ def talimat(p: ModuleType) -> str:
 def hazirla(p: ModuleType) -> None:
     from PIL import Image
 
+    olcum = ortak.oku(p, "ortme_olcumu")
+    kapi_hata = kirpim_kapisi(olcum)
+    if kapi_hata:
+        for h in kapi_hata:
+            print("   ", h)
+        raise SystemExit(1)
     ok, pd = okuma_koku(p), parca_dizini(p)
     ok.mkdir(parents=True, exist_ok=True)
     pd.mkdir(parents=True, exist_ok=True)
     g = gruplar(p)
-    ortme = ortme_listesi(p)
+    ortme = {ortak.dosya_adi(o["birim"], o["soru"]) for o in olcum["ortme"]}
     n = 0
     for x in g:
         for ad in x["dosyalar"]:

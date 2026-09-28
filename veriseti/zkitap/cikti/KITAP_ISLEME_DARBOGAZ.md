@@ -52,12 +52,13 @@ saran parantez, ust cizgi, kok cizgisi, tablo ayraci.
 |---|---|---|---|---|
 | 1 | Okuma 2'nin okuma 1'den sonra baslamasi | ~36-40 dk | iki okumayi TEK dagitimda baslat | **COZULDU** (protokol + `metin_iki_okuma.py hazirla`) |
 | 2 | 15'lik dalga bariyeri (6 dalga) | ~20 dk | tum gruplari tek partide dagit; arac siniri varsa en buyuk parti, bariyer yok | **COZULDU** (protokol) |
-| 3 | CI beklemesi (API Security Testing / ZAP ~42 dk) | ~49 dk | kitap/* veri PR'larinda ZAP'i beklememe ya da bu PR'lar icin kapiyi kaldirma | **SAHIP KARARI** (asagida) |
+| 3 | CI beklemesi (API Security Testing / ZAP ~42 dk) | ~49 dk | kitap/* veri PR'larinda ZAP'i beklememe ya da bu PR'lar icin kapiyi kaldirma | **COZULDU** (sahip karari 28 Eyl: kitap PR'larinda ZAP beklenmez, deterministik kontroller yesilse `--admin` merge; ZAP master'da kosmaya devam eder) |
 | 4 | Hakeme giden bicim farklari | ~4-5 dk + hakem gurultusu | `norm()` genisletildi (halka, ust simge, ust cizgi, kok cizgisi, tek atom parantezi, tablo ayraci) | **COZULDU**: 249 -> 208 fark (%16); tek tarafli esasli hata gizlenmedi (gercek veriyle dogrulandi) |
 | 5 | Kitap basina 4 gecici script (talimat2/karsilastir/hakem/duzeltme) yeniden yazimi | ~5 dk + kirilganlik | `backend/scripts/kitap/metin_iki_okuma.py` (kitap parametreli, 27 birim testi) | **COZULDU** |
-| 6 | Faz 0 yerlesim kalibrasyonu yinelemeleri | ~10-15 dk | ayni seri/yayinevi icin yerlesim profili (SIMGE_X, NUMARA_X, bant) yeniden kullanimi | ACIK (sonraki ayni-seri kitapta olculecek) |
-| 7 | Kitap basina 8 script + 3 migration + 2 test = ~4.8k satir kopya kod (14 harness kopyasi var) | ~10 dk uretim + CI/mypy/pre-push buyumesi | tek parametreli hat (kitap profili JSON) | ACIK -- buyuk yeniden yapilandirma, ayri is |
+| 6 | Faz 0 yerlesim kalibrasyonu yinelemeleri | ~10-15 dk (ayni seri); yeni seride ~1-1,5 sa | ayni seri: profil sabitlerini komsu profilden import (acl25s1 <- acl25pl, acl24am <- acl24mg). Yeni seri: `kitap_hat/kesif.py` profilsiz olcum + profil taslagi; `tarama` elenen glife NEDEN yazar; `kirp` kenar ihlalinde murekkep x araligini verir; iki gecisli test siniri `kitap_hat/bas_listesi.py` | **COZULDU** (28 Eyl; bolum 6) -- sure ilk yeni-seri kitabinda olculecek |
+| 7 | Kitap basina 8 script + 3 migration + 2 test = ~4.8k satir kopya kod (14 harness kopyasi var) | ~10 dk uretim + CI/mypy/pre-push buyumesi | ortak profil gudumlu hat `scripts/kitap/kitap_hat/` (PR #349) | **COZULDU** |
 | 8 | Cihaz koprusu 60 sn siniri -> her uzun adim Start-Process + log yoklama | ~1-2 dk x ~10 adim | (arac siniri) | KABUL |
+| 9 | Kirpim kesigi gec yakalaniyor: yanlis SAYFA_ALTI / serit ortusmesi soruyu kesiyor, ancak metin okumasinda fark ediliyor (acl25s1: 10 soru yeniden kirpildi + okundu, ~25 dk; T042_06 D/E) | ~20-30 dk + veri hatasi riski (acl24mg'de 4 kesik soru DB'ye girmisti) | `kirp.py` dort kenar olcumu + KESIK kapisi (exit 1), `kutu.py` alt-sinir-alti taramasi, `metin hazirla` kapi zinciri | **COZULDU** (28 Eyl; bolum 7) |
 
 Beklenen kazanc (1+2+4+5): metin fazi 98 dk -> ~40-45 dk; is suresi
 ~158 -> ~100 dk; CI dahil uctan uca ~207 -> ~150 dk (**%27**). 3 ile
@@ -96,3 +97,62 @@ b. Workflow'da `kitap/**` dallari / yalniz `scripts/kitap`, `alembic`,
 c. Oldugu gibi birak (~49 dk / kitap).
 
 Karar verilene kadar mevcut kural (bekle) uygulanir.
+
+Karar (28 Eyl 2026): kitap PR'larinda ZAP beklenmez (madde 3 COZULDU).
+Olcum: #350 48 dk, #351 44 dk, #352 2 sa 23 dk (yeni seri, iki gecisli
+test siniri) -- onceki merge'den merge'e; ayni seride ~5-6 kat kisalma.
+
+## 6. Yeni seri akisi (28 Eyl 2026; madde 6)
+
+Yeni bir yayin serisinin ilk kitabinda kalibrasyon her olcum icin elle yazilan
+gecici betiklerle (`_a21_gecici/m3_*`, `p4_*`, `a_olc_glif`, `numara_ara`,
+`alt_tara`, `p5_dis` ... 60+ dosya, git disi) yapiliyordu; `tarama` elenen
+glifin nedenini soylemiyor, `kutu` kenar ihlalinde olculen siniri vermiyordu.
+
+1. `python -m scripts.kitap.kitap_hat.kesif --klasor "<glob>" [--ornek 60] [--goz 3]`
+   -- profil ISTEMEZ. Olcer: glif x histogrami -> SIMGE_X; dort numara
+   maskesi (`ortak.NUMARA_MASKELERI`: kirmizi / mavi / camgobegi / siyah)
+   isabeti -> numara_maskesi; blob dy/dx/h -> PENCERE, NUMARA_H, NUMARA_DX;
+   x projeksiyonu + orta ayrac -> SUTUNLAR; yatay cizgiler / duz metin serit /
+   en alt murekkep -> UST_BANT, SAYFA_ALTI, anahtar_bolgesi on ayari; sayfa
+   ozeti -> TEST_SAYFALARI adayi. Konsola profil TASLAGI basar (`# GOZ:`
+   isaretli satirlar gozle kesinlesir), `_kesif_<ad>.json/.txt`, `--goz` ile
+   montaj PNG. Dogrulama (60 sayfa): acl25pl SIMGE_X 25/356/43/374 (profil
+   27/357/42/372), maske camgobegi, ayrac 362/379; acl24mg 28/353/45/376
+   (27/353/43/369), maske mavi, serit cizgileri 890/905, serit x0 376/392;
+   acl23ag 16/350/35/365 (13/347/32/363), maske kirmizi, ayrac 362/379.
+2. Taslak -> `profiller/<kod>.py` (ayni seri varsa komsu profilden import).
+3. `tarama --profil K`: elenen her glif `neden` tasir (serit_ustu, sutun_disi
+   gx=.., blob_yok maske_px=.. bloblar_hw=.., dx_disi dx=.. dy=.., gecerli_red)
+   ve kapi ihlalinde ilgili testlerin glifleri nedenleriyle basilir -> hangi
+   sabitin oynayacagi belli.
+4. 'Ilaci' duzeni (sayfa basina serit, numara sayfalar boyunca): `bas_listesi
+   --profil K gecis1 | yaz | grupla` (eski p4_gecis1 / p4_bas_yaz).
+5. `kutu` -> `kirp` (kenar ihlalinde `murekkep_x` = gercek murekkep araligi ->
+   SUTUNLAR tek adimda) -> `metin hazirla`.
+Sure hedefi: ilk yeni-seri kitabinda Faz 0 <= 30 dk (zaman damgalariyla olculecek).
+
+## 7. Kirpim kesik kapisi (28 Eyl 2026; madde 9)
+
+* `kirp.py kenar_olc`: beyazlatilmis kutunun dort kenarindaki 2 px seritte koyu
+  piksel (ust/alt seridinde koselerden 6 px iceri: sayfa susu sayilmaz).
+  sol/sag > 3 -> `kenar`; ust/alt > 3 -> `kesik`. Ikisinden biri varsa exit 1;
+  `ortme_olcumu.json`'a `kesik`, `kesik_kapisi_ihlali`. `metin hazirla` bu
+  sayilara bakar (`kirpim_kapisi`), e2e test her profilde 0 ister.
+* `kutu.py alt_sinir_alti`: sutun alt sinirinin altinda, serit sutunla
+  ortusmuyorsa serit hizasi dahil, ilk tam genislik satira kadar koyu satir ->
+  kapi (kirpimdan da once).
+* Gercek veri (6 kitap): acl23ag 0 / acl23kc 0 / acl25s1 0 / acl25s2 0;
+  acl25pl 7 'ust' ihlali = konu sayfasi ayrac cizgisi altindaki logo kuyrugu
+  (AYRAC_PAY 7 ile 0; kirpim ustu 5 px asagi kaydi, metin degismedi);
+  **acl24mg 4 GERCEK kesik** (T012_03, T048_04, T053_03 sik satiri yarim;
+  T081_02 siklar hic yok, `[okunamadi]`, beta disi). SAYFA_ALTI 885 -> 898,
+  yeniden kirpim, gozle okuma, 0089 duzeltme migration'i (yeni satir + beta;
+  496/499). Yani kapi, DB'ye girmis bir veri hatasini buldu.
+* Mutasyon kaniti (acl25s1, profil gecici degistirilip geri alindi):
+  SAYFA_ALTI 922 -> 878 (ilk hatali deger) -> `kutu` 9 sayfada "alt sinir
+  altinda murekkep" (s32/39/40/76/77/80/142/143/169 L; 7-126 px), exit 1.
+  SERIT_ORTUSME_EN_AZ 60 -> 19 (serit s80 sol sutuna 20 px giriyor) -> `kutu`
+  gecer (serit satirlari atlanir), `kirp` KESIK 1: ACL25S1-T042_06 alt 57 px,
+  exit 1 -- metin okumasinda bulunan D/E kesigi artik kirpimda duruyor.
+  Dogru profille 6 kitapta kenar 0 / kesik 0 (yanlis alarm yok).
