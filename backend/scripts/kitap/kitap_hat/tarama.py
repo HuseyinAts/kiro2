@@ -113,12 +113,13 @@ def capalar(
         if anahtar and gy >= anahtar[0] - p.SERIT_SIMGE_PAY:
             disari.append(([gy, gx], "serit_ustu"))
             continue
+        simge_x = p.SIMGE_X[ortak.parite(p, n)]
         sut = next(
-            (s for s, v in p.SIMGE_X[n % 2].items() if abs(gx - v) <= p.SIMGE_TOLERANS),
+            (s for s, v in simge_x.items() if abs(gx - v) <= p.SIMGE_TOLERANS),
             None,
         )
         if sut is None:
-            en_yakin = min(p.SIMGE_X[n % 2].values(), key=lambda v: abs(gx - v))
+            en_yakin = min(simge_x.values(), key=lambda v: abs(gx - v))
             disari.append(([gy, gx], f"sutun_disi gx={gx} en_yakin_simge_x={en_yakin}"))
             continue
         if (n, gy, gx) in numarasiz:

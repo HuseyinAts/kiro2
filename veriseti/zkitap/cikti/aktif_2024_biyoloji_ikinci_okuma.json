@@ -1,0 +1,1386 @@
+{
+ "kitap": "2023-2024 Aktif Ogrenme Biyoloji",
+ "on_kayit_tarihi": "2026-09-28",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3 saglanmadi (KMT345 %4.7, SOS345 %5.9, TRT345 %4.0, ACL20T %4.9, ACL21T %3.7). Dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 11 ayri okuyucu; ayni talimat (yalniz teslim dizini c1_metin_parca2), ayni gruplar ve kirpimlar. Okuma 1 ve okuma 2 okuyuculari TEK toplu dagitimda birlikte kosulur (bagimsizlik dizin ayrimiyla saglanir). Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (bosluk, satir sonu, eksi/tire tipi, carpma noktasi tipi) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret (+, -, carpma, bolme, esitsizlik), us / kok / kesir kapsami, parantez, harf / degisken, eksik/fazla kelime veya satir, yanlis sik, alti cizili kapsam, eksik etiket.",
+ "sonuc": {
+  "soru": 528,
+  "ayni_soru_normalize": 460,
+  "farkli_soru": 68,
+  "hukum_dagilimi": {
+   "okuma_2": 28,
+   "yok": 20,
+   "okuma_1": 18,
+   "ikisi": 2
+  },
+  "ilk_okuma_esasli_hata": 20,
+  "ikinci_okuma_esasli_hata": 30,
+  "not": "Normalizasyon (metin_iki_okuma.norm): NFC, kesme/tirnak tipi, eksi/tire tipi, birlesik ust/alt cizgi, Unicode ust simge -> ^n, bileske halkasi U+2218 -> o, nokta operatoru, uc nokta, kok+ust cizgi -> kok, tek karakterli us/indis parantezi, kokte tek atom parantezi, '/' oncesi tek atom parantezi, ciftlenmis parantez, tablo ayraci+ok, (gorsel)/(sekil), C(n, r) = (n r) ve TUM bosluk. Anlam tasiyan parantez esitlenmez. Her kalan fark hakem tarafindan kirpimdan gozle karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer. Iki okumanin AYNI bicimde atladigi sekil verisi karsilastirmada gorunmez."
+ },
+ "hukumler": [
+  {
+   "dosya": "AKT24BY-T002_14",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST + piksel dokumu: '+' kucuk, satir 18-23'te, alt ucu taban cizgisinde (H 10-24); ust konumda degil -> ussu degil, 'H+' duz; okuma_2'nin H^+ ussu isaretlemesi yanlis."
+  },
+  {
+   "dosya": "AKT24BY-T002_17",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 'mineral-' tirelemesi, satir 2 'ler ile e\u015fle\u015ftirilmi\u015ftir.' -> 'mineraller ile'; okuma_2 'minerallerle' (eksik kelime 'ile')."
+  },
+  {
+   "dosya": "AKT24BY-T003_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 6x NEAREST: 'hangisi' tam (son i noktali, tam), dairenin onunde bosluk, daire yaziya degmiyor; alt satir yeni kelime 'do\u011fru' -> [??] gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T004_02",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda resim/grafik/tablo yok; yalniz turuncu cerceveli kutu icinde tepkime denklemi (metin). Cerceveli metin sekil sayilmadi -> sekil_var false (okuma_1). Metin farki yok, yalniz meta alan."
+  },
+  {
+   "dosya": "AKT24BY-T004_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST: 'bulu' sonrasinda x-yuksekligi ortasinda kisa koyu tire parcasi ve altinda alt cizginin devam parcasi gorunuyor (beyaz daire kenarinda); satir sonu tirelemesi gorunur, alt satir 'namaz' -> 'bulunamaz', [??] gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T004_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Son satirin ilk harfi 8x NEAREST + piksel dokumu: govde tek parca, ayni kelimedeki kucuk 'i' (r'den sonra) ile ayni sekil/yukseklik; buyuk harf yuksekliginin ustunde nokta YOK -> '\u0130' desteklenmiyor, 'ifadelerinden' (kucuk i). okuma_1 '\u0130' harf hatasi."
+  },
+  {
+   "dosya": "AKT24BY-T005_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x NEAREST + piksel dokumu: 'c' altinda (x~475-479, y25-29) soluk ama cengel seklinde murekkep var -> 'i\u00e7in'; 'icin' yanlis."
+  },
+  {
+   "dosya": "AKT24BY-T007_01",
+   "esasli_hata": "ikisi",
+   "gerekce": "6x NEAREST: sat\u0131r 1 sonunda 'maddel' tam + kesik bir harf (e) + beyaz daire; okuma_1 g\u00f6r\u00fcnen 'l'yi atlam\u0131\u015f ('madde[??]'), okuma_2 'maddele[??]' do\u011fru. T\u00fcplerin alt\u0131ndaki I/II/III - S\u00fct/Yumurta ak\u0131/Un (suland\u0131r\u0131lm\u0131\u015f) etiketleri sorunun dayand\u0131\u011f\u0131 veri (hangi t\u00fcpte hangi madde); okuma_2 bu tabloyu atlam\u0131\u015f. Nihai: okuma_1 tablosu + 'maddele[??]'."
+  },
+  {
+   "dosya": "AKT24BY-T007_13",
+   "esasli_hata": "yok",
+   "gerekce": "Farklar yalniz ok karakteri (\u27f6 / \u2192); bicim varyanti, okuma_1 bicimi korundu. (n \u2212 1) eksi 6x'te soluk ama gorunuyor; iki okuma ayni."
+  },
+  {
+   "dosya": "AKT24BY-T008_11",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kutuda yalniz ok etiketleri '1' (ustte, saga ok) ve '2' (altta, sola ok) basili; okuma_1 bunlari yerinde satir olarak yaziyor. okuma_2 basili olmayan '(1: \u00fcstteki ileri ok, 2: alttaki geri ok)' aciklamasini eklemis (fazla ifade)."
+  },
+  {
+   "dosya": "AKT24BY-T009_07",
+   "esasli_hata": "yok",
+   "gerekce": "Semada A -Enzim 1-> B -Enzim 2-> C -Enzim 3-> D; iki okuma ayni icerik, yalniz ok gosterimi bicimi farkli; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T009_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'ilgili' sonrasi isaret piksel dokumunde (x~590, y485-505): ustte nokta + altta kuyruklu nokta = noktali virgul ';' (okuma_1). okuma_2 ':' yanlis. Ok gosterimi (\u2192(Katalaz) / \u2014Katalaz\u2192) bicim varyanti, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T010_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST: 'calismakta' son 'a'dan sonra tire gorunmuyor, hemen ardindan beyaz daire basliyor; alt satir 'dir.' kelimenin devami. Tireleme dairenin altinda kalmis olabilir -> belirsiz, [??] korunur."
+  },
+  {
+   "dosya": "AKT24BY-T010_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kutuda denge oklarinin ustunde basili '1', altinda '2'; soru '1 yonunde/2 yonunde' diye bu etiketlere dayanir. okuma_1 basili etiketleri yazmis; okuma_2 basilmamis '(1: usteki ileri ok, 2: alttaki geri ok)' aciklamasi uydurmus (fazla ifade)."
+  },
+  {
+   "dosya": "AKT24BY-T011_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x: satir 2 sonunda 'ka' + gorunen satir sonu tiresi (x~650-655, dairenin onunde), alt satir 'rar' -> 'karar' tirelemesi tam; murekkep kaybi yok, [??] gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T012_08",
+   "esasli_hata": "yok",
+   "gerekce": "Fark yaln\u0131z bo\u015fluk doldurma noktalar\u0131n\u0131n say\u0131s\u0131/karakteri (\u2026 vs .); i\u00e7erik fark\u0131 de\u011fil, okuma_1 bi\u00e7imi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T014_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST: D sikkinda 'I' sonrasi isaret taban cizgisinin altina inen kuyruklu virgul; nokta degil."
+  },
+  {
+   "dosya": "AKT24BY-T015_11",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Hucre Yogunlugu sutunu 4x NEAREST buyutme: A ve E'de govdesiz asagi sapka (\u2304), B ve C'de govdesiz yukari sapka (^); ok govdesi yok. Dizgi basildigi gibi kalir; okuma_2 tam oka (\u2193/\u2191) tamamlamis."
+  },
+  {
+   "dosya": "AKT24BY-T015_13",
+   "esasli_hata": "yok",
+   "gerekce": "Bosluk noktalari (dotted leader) iki okumada da var; nokta sayisi/karakteri bicim farki; okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT24BY-T016_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "A ve B satirlarinda rakamlar arasinda piksel degeri 253 (zemin 255) olan, C satirindaki tire ile ayni yukseklik/genislikte (y285-288, ~12 px) yatay silik izler var: tireler basili ama cok soluk. okuma_2 tireleri atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T017_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x NEAREST: 'hangisini' sonrasindaki son harf sag kenarda kesik (sol sap + kavis, sag sap yok/soluk; r/n adayi), yaninda beyaz daire. Harf kesik -> gorunen kisim + [??]; okuma_2 kelimeyi 'hangisinin' diye tamamlamis."
+  },
+  {
+   "dosya": "AKT24BY-T017_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'dayanarak' sonrasi isaret 8x + piksel dokumu: tek isaret, taban cizgisinden asagi iner, x-yuksekliginde ust nokta yok -> virgul ','. okuma_1 ';' noktalama hatasi."
+  },
+  {
+   "dosya": "AKT24BY-T017_13",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel dokumu: D (x190-199,y235-238) ve E (x204-213,y271-274) arasinda C'deki tireyle ayni konum/boyutta cok soluk dikdortgen tire izi var (C tiresi ~22/255, D/E ~2/255); tire basili, okuma_2 isareti atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T018_12",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: g\u00f6vde 've' sonras\u0131 (x\u2248210-219, y\u224847-50) ve D \u015f\u0131kk\u0131 1./3. i\u015faret ile E ortas\u0131 yerinde 10 px geni\u015flik, 2-4 sat\u0131r y\u00fcksekli\u011finde \u00e7ok soluk (255-252/253) yatay \u00e7ubuk var, dikey \u00e7izgi yok; bi\u00e7im g\u00f6r\u00fcn\u00fcr '\u2212' ile ayn\u0131 -> eksi. okuma_2'nin [??]'leri gereksiz; okuma_1 do\u011fru."
+  },
+  {
+   "dosya": "AKT24BY-T019_03",
+   "esasli_hata": "yok",
+   "gerekce": "Ok gosterimi (\u2192(Katalaz) / \u2014Katalaz\u2192) bicim varyanti, okuma_1 bicimi korundu. Pembe cerceveli kutu yalniz tepkime metni iceriyor (resim/tablo/sema yok) -> sekil_var false; bicim karari."
+  },
+  {
+   "dosya": "AKT24BY-T019_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "16x buyutme + piksel dokumu: 're' sonrasi x-yuksekliginde baslayan r (ascender/capraz cizgi yok, t degil), ardindan noktali soluk i, sonra k -> basili 'rerikulum' (dizgi hatasi). okuma_1 'retikulum' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT24BY-T020_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekil altinda '\u0130nsan kolu' ve 'K\u00f6pe\u011fin \u00f6n aya\u011f\u0131' basili (\u0130 noktali); soru 'Yanda g\u00f6rseli verilen iki organ' bu organlarin kimligine dayaniyor, etiketler govdeye girer; okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T020_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 'surdure' + son harfin sol govdesi ve ust kolu gorunuyor; kol x651-656'da sutun bazli duzgun gradyanla (88->240) beyaz daire maskesine giriyor (onceki 'r' kolu keskin bitiyor), x653'te y19-23 cok silik (245-250) iz var: son harf kesik, r/n belirsiz. Gorunen tam kisim 'surdure' + [??] (okuma_1); okuma_2 kesik harfi 'r' diye tamamlamis."
+  },
+  {
+   "dosya": "AKT24BY-T021_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: son satirin ilk glifi y247-264 duz sap, ustunde (y240-246) nokta yok; satir 1 'Insan'daki buyuk I'nin ayri noktasi (y5-8) var. Ayni kalin puntodaki kucuk 'i'ler ('isimlendirme') noktasi birlesik tek sap olarak ayni gorunuyor -> 'ifadelerinden'; okuma_1'in noktali buyuk 'I' (U+0130) pikselle celisiyor."
+  },
+  {
+   "dosya": "AKT24BY-T021_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde A kumesi icinde (K) ve (L M N), B kumesi icinde (P R) alt kumeleri basili; soru (en uzak akraba) tamamen bu uyelige dayanir -> govdeye girmeli. okuma_1 bu veriyi atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T021_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x + piksel: 's\u0131n\u0131fland\u0131rma' son 'a' kismen daireye degiyor ama harf tanimlanabilir, kelime dairenin onunde bitiyor ve alt satir yeni kelime 'kategorileri' ile basliyor -> icerik kaybi yok, [??] gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T021_08",
+   "esasli_hata": "yok",
+   "gerekce": "6x: '1' ve '2' sonras\u0131 virg\u00fclden \u00f6nce 5 nokta bas\u0131l\u0131 (okuma_1 ile uyumlu); fark yaln\u0131z bo\u015fluk doldurma nokta say\u0131s\u0131, i\u00e7erik de\u011fil. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT24BY-T021_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST: Kurt sutunu Takim hucresi 'Camivora' basili (m tek harf, Kedi sutunundaki 'Carnivora' r+n ayri gorunuyor); dizgi hatasi basildigi gibi kalir."
+  },
+  {
+   "dosya": "AKT24BY-T022_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x buyutme + piksel dokumu: 'b' sonrasi govde ascender yuksekliginden basliyor, 'hangi'nin i'siyle ayni profil (nokta bulasik) -> 'i'; ardindan x-yuksekliginde kesik bir govde ve beyaz daire -> 'bi[??]'. okuma_2 'b\u0131' (harf hatasi)."
+  },
+  {
+   "dosya": "AKT24BY-T024_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Semada ust ok M'den N'ye 'Besin + O_2', alt ok N'den M'ye 'CO_2 + H_2O' (alt indisler goruldu); soru 'Yukaridaki semada' bu veriye dayaniyor; okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T026_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "C ve D satirlarinda rakamlar arasi y409-412'de 253-254 degerli ~10-12 px yatay tire izleri (A/B/E'deki tirelerle ayni konumda) piksel dokumunde goruldu: tireler basili, cok soluk. okuma_2 tireleri atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T027_02",
+   "esasli_hata": "yok",
+   "gerekce": "Uc ayri elips etiket (1. OMURGALILAR, 2. SURUNGENLER ust sirada, 3. HAYVANLAR altta); tablo degil. Icerik iki okumada ayni; ' | ' ile birlestirme yalniz bicim farki, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T027_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 5 sonu 'hangisini' 6x + piksel dokumu: son 'i' tam, sagda ~24 px bos beyaz, kesik harf/daire temasi yok; alt satir yeni kelime 'haritaya'. [??] gereksiz -> okuma_1 fazla [??]. (grubun[??], b[??] iki okumada ortak, fark disi.)"
+  },
+  {
+   "dosya": "AKT24BY-T028_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x + piksel: C sikki 'Yaln\u0131z II' ikinci I (x627-630) sonrasinda x633-634'te yalniz soluk hale var, ucuncu bir I'nin gelecegi konum orijinal beyaz; daire (x~645+) yaziya degmiyor. Basili metin 'Yaln\u0131z II' (dizgi hatasi korunur), [??] gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T028_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x: C \u015f\u0131kk\u0131nda 'At' tam, 't' \u00e7izgisi ve g\u00f6vdesi kesiksiz; bu sat\u0131rda beyaz daire yok (daire daha yukar\u0131da, sa\u011f kenarda). okuma_1'in [??]'si gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T028_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST: 'bir' r harfi tam, beyaz daire yaziya degmiyor; alt satir yeni kelime 'canl\u0131n\u0131n' ile basliyor -> [??] gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T029_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x buyutme: 'Anafaz' z harfi ust/capraz/alt cizgileriyle tam; beyaz daire harften sonra, sonraki satir 'D) Telofaz' yeni sik -> [??] konmaz. okuma_1 gereksiz [??]."
+  },
+  {
+   "dosya": "AKT24BY-T030_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 6x NEAREST: 'a\u015fa\u011f\u0131da'nin son 'a' harfinin sag yarisi daire kenarinda kesik (murekkep kaybi var) -> gorunen kisim + [??] korunur; okuma_2 [??] koymamis."
+  },
+  {
+   "dosya": "AKT24BY-T030_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sema: Kralice ari -> iki Yumurta; Erkek ari -> Sperm; bir Yumurta -> Erkek ari; diger Yumurta + Sperm -> ZIGOT. Soru (partenogenez, mitoz vb. yorumlar) bu semaya dayaniyor; okuma_2 sema metnini tamamen atlamis (dayanilan veri eksik)."
+  },
+  {
+   "dosya": "AKT24BY-T033_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "3x NEAREST: B sikkinin ilk harfi buyuk 'K' (A ve C'deki kucuk 'k'den belirgin buyuk, D'deki 'K' ile ayni); okuma_1 'k' yazmis. ' | ' / ', ' ayraci bicim farki, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T034_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'imka-' 6x + piksel dokumu: 'a' harfinin ustunde (satir 308-310) murekkep yok, sapka basilmamis -> 'imkan\u0131'. okuma_2 '\u00e2' eklemis."
+  },
+  {
+   "dosya": "AKT24BY-T035_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x + piksel: 'b\u00f6l\u00fcnme' 'e' sonrasinda (x634+) tire murekkebi yok, yalniz hale; beyaz daire hemen yaninda, alt satir 'si s\u0131ras\u0131nda' kelimenin devami -> talimata gore 'b\u00f6l\u00fcnme[??]si'; okuma_1 [??] atlamis."
+  },
+  {
+   "dosya": "AKT24BY-T036_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: A, B, C'de say\u0131lar aras\u0131nda (y\u2248186-187) 9-10 px geni\u015flikte soluk yatay \u00e7ubuk var; D/E'deki '\u2013' ile ayn\u0131 konum/bi\u00e7im. okuma_1 tireleri atlam\u0131\u015f, okuma_2 do\u011fru."
+  },
+  {
+   "dosya": "AKT24BY-T036_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST: C sikkinda romen rakamlari arasinda soluk ama gorunen iki yatay tire var; diger siklarla ayni '\u2013' bicimi."
+  },
+  {
+   "dosya": "AKT24BY-T036_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x buyutme + piksel dokumu: 'b\u00f6l\u00fcn' sonrasi x-ortasinda satir sonu tiresinin baslangici gorunuyor (daire tarafindan kisaltilmis), alt satir 'me' ile sur\u00fcyor -> 'b\u00f6l\u00fcnme', murekkep kaybi yok. okuma_2 gereksiz [??]."
+  },
+  {
+   "dosya": "AKT24BY-T037_08",
+   "esasli_hata": "ikisi",
+   "gerekce": "Son satir ilk harf piksel dokumu: buyuk harf yuksekliginde (y536-551) dik cubuk, ustunde y524-535 tamamen beyaz (min 249+), nokta YOK -> basili 'Ifadelerinden' (dizgi hatasi, basildigi gibi). okuma_1 '\u0130' (nokta eklemis), okuma_2 kucuk 'i' (yukseklik yanlis)."
+  },
+  {
+   "dosya": "AKT24BY-T037_10",
+   "esasli_hata": "yok",
+   "gerekce": "8x piksel dokumunde carpi isareti y93-104: taban cizgisine oturan, kucuk harf yuksekliginde (a ile ayni) duz 'x' harfi; ortalanmis \u00d7 degil. Basildigi gibi 'x' (okuma_2). Anlam ayni, glif varyanti -> yok."
+  },
+  {
+   "dosya": "AKT24BY-T038_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: 'AO x BO' isareti y115-126, taban cizgisinde oturuyor, yuksekligi kucuk harf x-yuksekligi (ayni fontta 've' y279-291 / buyukler y275-291) ile ayni; ortalanmis carpi isareti degil, kucuk harf 'x' basili. Uc satirda da ayni."
+  },
+  {
+   "dosya": "AKT24BY-T038_04",
+   "esasli_hata": "yok",
+   "gerekce": "Capraz isareti 6x + piksel dokumu: x-yuksekliginde carpi seklinde isaret (8-10 px). Sozlesme 'carpi -> \u00d7'; iki okuma ayni isareti farkli glifle yazmis, bicim varyanti. Nihai okuma_1 '\u00d7'."
+  },
+  {
+   "dosya": "AKT24BY-T038_15",
+   "esasli_hata": "yok",
+   "gerekce": "5x: capraz isareti x-yuksekliginde carpi; sozlesme carpi icin '\u00d7' der; 'x'/'\u00d7' yalniz bicim varyanti, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T039_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x: 'hangileri' tam, hemen ard\u0131ndan sat\u0131r sonu tiresinin par\u00e7as\u0131 g\u00f6r\u00fcn\u00fcyor, alt sat\u0131r 'nin' ile s\u00fcr\u00fcyor -> tirelemeli 'hangilerinin'; m\u00fcrekkep kayb\u0131 yok. okuma_2'nin [??]'si gereksiz."
+  },
+  {
+   "dosya": "AKT24BY-T039_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST: satir sonu 'hasta'nin son 'a' harfinin sag yarisi beyaz dairenin kenarinda kesik (murekkep kaybi) -> gorunen kisim + [??] korunur."
+  },
+  {
+   "dosya": "AKT24BY-T040_07",
+   "esasli_hata": "yok",
+   "gerekce": "Sema: A -Mitoz-> B -Mayoz-> C -D\u00f6llenme-> D; iki okuma ayni icerigi farkli ok gosterimiyle yazmis (bicim varyanti), okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T041_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 6x: '\u00e7e\u015fi' sonrasi satir sonu tiresi gorunmuyor (satir 2'deki '\u00e7e-' tiresi harfe bitisik gorunurken burada yok), sag kenarda beyaz daire, alt satir 'di' kelimenin devami -> talimata gore '\u00e7e\u015fi[??]di'; okuma_2 [??] koymamis."
+  },
+  {
+   "dosya": "AKT24BY-T041_02",
+   "esasli_hata": "yok",
+   "gerekce": "Iki fare resmi arasinda tek basina 'x' glifi (y210-226, kalin capraz, harf x bicimi). Sekil etiketleri soruya dayanak oldugu icin govdede; iki okuma icerikce ayni, fark yalniz satir duzeni ve x/\u00d7/X glifi -> okuma_1 duzeni korundu, glif basildigi gibi 'x'."
+  },
+  {
+   "dosya": "AKT24BY-T041_05",
+   "esasli_hata": "yok",
+   "gerekce": "3x NEAREST: tablo 'Disi (\u2640)' / 'Erkek( \u2642)' baslikli iki sutun, satir etiketleri I.-IV. solda; tum genotipler iki okumada ayni. Fark yalniz tablo bicimi (satir etiketi ayri sutun mu). okuma_1 bicimi korundu, bos baslik hucresi sozlesmeye gore '-'. III disi 'GgRrnn': r kancasi n'ye bitisik, glif genisligi (18px) tek m'den genis -> rn."
+  },
+  {
+   "dosya": "AKT24BY-T041_06",
+   "esasli_hata": "yok",
+   "gerekce": "Soy agacinda 1 numarali daire icinde 'AB', 2 numarali kare icinde 'O' basili; iki okuma ayni veriyi vermis, yalniz satir/' | ' bicimi farkli -> okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T041_08",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki 'Tek yumurta'->F,H ve '\u00c7ift yumurta'->R,Y oklarla semada; ne '\u2192' ne ':' metin olarak basili degil, iki okuma ayni veriyi farkli bicimde aktarmis -> bicim varyanti, okuma_1 bicimi korundu. Satir 1 sonu [??] iki okumada ortak, dokunulmadi."
+  },
+  {
+   "dosya": "AKT24BY-T041_09",
+   "esasli_hata": "yok",
+   "gerekce": "5x: \u00e7aprazlama i\u015fareti k\u00fc\u00e7\u00fck \u00e7arp\u0131; s\u00f6zle\u015fmede \u00e7arp\u0131 '\u00d7'. 'x' / '\u00d7' bi\u00e7im varyant\u0131, okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT24BY-T041_10",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo basliginda yazi yok, kadin ve erkek cizimleri var; soru sutunlarin kadin/erkek oldugunu tasiyan bu basliga dayandigi icin okuma_1'in '(kad\u0131n g\u00f6rseli) | (erkek g\u00f6rseli)' satiri korundu. Eksik olan yazi degil gorsel oldugu icin bicim farki sayildi."
+  },
+  {
+   "dosya": "AKT24BY-T041_13",
+   "esasli_hata": "yok",
+   "gerekce": "Piksel dokumu: capraz isareti metin x-yuksekliginde 'x' glifi; anlam ayni carpi/caprazlama isareti -> bicim varyanti. Sozlesmedeki carpi yazimi (\u00d7) ile okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T042_04",
+   "esasli_hata": "yok",
+   "gerekce": "Punnet karesi (ERKEK ust, D\u0130\u015e\u0130 sol basili): iki okuma ayni alelleri veriyor (erkek X^(rH), Y; disi X^(RH), X^(Rh)); fark yalniz tablo bicimi, sozlesmedeki tablo/bilesik us kuralina uyan okuma_2 bicimi alindi, basli etiketler buyuk harf. Piksel dokumu: ust simgeler 2-3 px, disi 1. alelin 2. harfi tek dik cubuk gibi (H soluk), disi 2. alel R/r buyukluk ayrimi dusuk cozunurlukte zayif; okuyucularin ortak okumasi korundu."
+  },
+  {
+   "dosya": "AKT24BY-T042_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soy agacindaki Rh isaretleri (+ / \u2212) tum bireylerde ust simge olarak basili (Rh harflerinin ust hizasinda, kucuk). Sozlesme geregi Rh^+ / Rh^\u2212 (okuma_1); okuma_2 us isaretlemesini dusurmus (Rh+ / Rh\u2212). Birey sirasi ve degerler iki okumada ayni ve kirpimla uyumlu."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "AKT24BY-T002_14",
+   "basili_no": 14,
+   "govde": "Ortam\u0131n pH\u2019\u0131n\u0131 ayarlamak i\u00e7in ortama H+ verip alabilen bile\u015fiklere ne ad verilir?",
+   "sikler": {
+    "A": "Asit",
+    "B": "Baz",
+    "C": "Tuz",
+    "D": "Tampon",
+    "E": "Kofakt\u00f6r"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T002_17",
+   "basili_no": 17,
+   "govde": "A\u015fa\u011f\u0131da baz\u0131 dokular, \u00e7al\u0131\u015fmalar\u0131 i\u00e7in gerekli mineraller ile e\u015fle\u015ftirilmi\u015ftir.\nBu e\u015fle\u015ftirmelerden hangisi do\u011fru <u>de\u011fildir</u>?\nDoku | Mineral",
+   "sikler": {
+    "A": "Kan | Demir",
+    "B": "Kemik | Kalsiyum",
+    "C": "Kas | Magnezyum",
+    "D": "Tiroit | \u0130yot",
+    "E": "Di\u015f | Klor"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T003_02",
+   "basili_no": 2,
+   "govde": "Minerallerle ilgili a\u015fa\u011f\u0131da verilen ifadelerden hangisi do\u011fru <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "Minerallere duyulan ihtiya\u00e7, ya\u015fa g\u00f6re de\u011fi\u015febilir.",
+    "B": "Mineraller gerekti\u011fi kadar al\u0131nmad\u0131\u011f\u0131 zaman v\u00fccutta sorunlar ortaya \u00e7\u0131kar.",
+    "C": "Bir mineralin eksikli\u011fi di\u011fer mineralin fazla al\u0131nmas\u0131yla telafi edilebilir.",
+    "D": "Sadece hayvanlar de\u011fil bitkiler de minerallere ihtiya\u00e7 duyar.",
+    "E": "Mineraller, do\u011fadan haz\u0131r al\u0131nan elementlerdir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T004_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131da fotosentez tepkimesi g\u00f6sterilmi\u015ftir.\nKarbondioksit + Su \u2014\u0131\u015f\u0131k\u2192 Z + Oksijen\nBuna g\u00f6re;\nI. Tepkimede Z harfiyle g\u00f6sterilen molek\u00fcl, bitkiler taraf\u0131ndan en yayg\u0131n olarak \u00fcretilen glikozdur.\nII. Su harcand\u0131\u011f\u0131 i\u00e7in bu bir hidroliz tepkimesidir.\nIII. \u00dcretilen monosakkaritler daha b\u00fcy\u00fck karbonhidratlar\u0131n sentezinde kullan\u0131labilir.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T004_03",
+   "basili_no": 3,
+   "govde": "A\u015fa\u011f\u0131daki molek\u00fcllerden hangisi insan\u0131n sindirim kanal\u0131nda bulunabildi\u011fi halde h\u00fccrelerinde <u>bulunamaz</u>?",
+   "sikler": {
+    "A": "Glikoz",
+    "B": "Ni\u015fasta",
+    "C": "Galaktoz",
+    "D": "Laktoz",
+    "E": "Fruktoz"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T004_07",
+   "basili_no": 7,
+   "govde": "Yukar\u0131da baz\u0131 karbonhidratlar\u0131n birbirine d\u00f6n\u00fc\u015f\u00fcm\u00fc g\u00f6sterilmi\u015ftir.\nBuna g\u00f6re;\nI. 4 numaral\u0131 tepkime bitki ve alglerde g\u00f6r\u00fcl\u00fcr.\nII. 2 ve 3 numaral\u0131 tepkimeler, farkl\u0131 canl\u0131 t\u00fcrlerinde depo maddelerinin \u00fcretilmesini sa\u011flar.\nIII. Bu tepkimelerden 1, 5 ve 6 katabolizma; 2, 3 ve 4 anabolizma grubuna girer.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T005_09",
+   "basili_no": 9,
+   "govde": "Sa\u00e7 ve t\u0131rnaklar\u0131m\u0131z\u0131n uzamas\u0131 i\u00e7in ihtiya\u00e7 duydu\u011fumuz protein a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Hemoglobin",
+    "B": "Aktin",
+    "C": "Kollajen",
+    "D": "Keratin",
+    "E": "Antikor"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T007_01",
+   "basili_no": 1,
+   "govde": "A\u015fa\u011f\u0131daki deney t\u00fcplerine altlar\u0131nda yazan maddele[??] konmu\u015f ve \u00fczerine bi\u00fcret \u00e7\u00f6zeltisi damlat\u0131lm\u0131\u015ft\u0131r.\nI | II | III\nS\u00fct | Yumurta ak\u0131 | Un (suland\u0131r\u0131lm\u0131\u015f)\nBu t\u00fcplerden hangilerinde renk de\u011fi\u015fimi g\u00f6zlenir?\n(Bi\u00fcret \u00e7\u00f6zeltisi, proteinle kar\u015f\u0131la\u015ft\u0131\u011f\u0131nda pembe-mor renk verir.)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T007_13",
+   "basili_no": 13,
+   "govde": "I. (n) Amino asit \u27f6 Protein + (n \u2212 1) Su\nII. Ya\u011f + 3 su \u27f6 3 Ya\u011f asidi + Gliserol\nIII. Glikoz + Galaktoz \u27f6 Laktoz + Su\nYukar\u0131da verilen tepkimelerle ilgili hangisi <u>s\u00f6ylenemez</u>?",
+   "sikler": {
+    "A": "III. tepkime hayvanlara \u00f6zg\u00fcd\u00fcr.",
+    "B": "Tepkimelerin ikisi anabolizma, biri katabolizmad\u0131r.",
+    "C": "Bitki \u00f6z\u00fct\u00fcnde bu molek\u00fcllerin tamam\u0131na rastlan\u0131r.",
+    "D": "Amino asit, ya\u011f asidi, gliserol, glikoz ve galaktoz monomerdir.",
+    "E": "Laktozun atom say\u0131s\u0131, glikoz ve galaktozun atom say\u0131lar\u0131 toplam\u0131ndan daha azd\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T008_11",
+   "basili_no": 11,
+   "govde": "1\nATP + Su \u21c4 ADP + P_i + Enerji\n2\nYukar\u0131daki reaksiyonla ilgili olarak,\nI. 2 y\u00f6n\u00fcnde fosforilasyon ad\u0131n\u0131 al\u0131r.\nII. 1 y\u00f6n\u00fcnde endergoniktir.\nIII. \u00dcretilen ATP'ler ileride kullan\u0131lmak \u00fczere depolan\u0131r.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T009_07",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131da, h\u00fccrelerde ger\u00e7ekle\u015fen baz\u0131 reaksiyonlar g\u00f6sterilmi\u015ftir.\nA \u2192(Enzim 1) B \u2192(Enzim 2) C \u2192(Enzim 3) D\nBuna g\u00f6re, a\u015fa\u011f\u0131daki yorumlardan hangisi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Enzimler tak\u0131m halinde \u00e7al\u0131\u015fmaktad\u0131r.",
+    "B": "C maddesi enzim 2'nin \u00fcr\u00fcn\u00fc iken, enzim 3'\u00fcn substrat\u0131d\u0131r.",
+    "C": "A ilk substrat, B ve C ara \u00fcr\u00fcnler, D son \u00fcr\u00fcnd\u00fcr.",
+    "D": "D maddesinin \u00fcretilebilmesi i\u00e7in \u00fc\u00e7 enzime ihtiya\u00e7 vard\u0131r.",
+    "E": "\u00dc\u00e7 enzim de ayn\u0131 genden \u00fcretilmi\u015ftir."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T009_09",
+   "basili_no": 10,
+   "govde": "A\u015fa\u011f\u0131daki deney t\u00fcplerine e\u015fit miktarda karaci\u011fer farkl\u0131 \u015fekillerde (birincisine b\u00fct\u00fcn halinde, ikincisine do\u011franm\u0131\u015f halde, \u00fc\u00e7\u00fcnc\u00fcs\u00fcne k\u0131yma halinde) konmu\u015ftur. \u00dczerlerine H_2O_2 ilave edilerek a\u015fa\u011f\u0131daki tepkime g\u00f6zlenmeye ba\u015flam\u0131\u015ft\u0131r.\nH_2O_2 \u2192(Katalaz) H_2O + 1/2 O_2\nT\u00fcplerde ger\u00e7ekle\u015fen de\u011fi\u015fimlerle ilgili;\nI. Reaksiyon h\u0131z\u0131 I > II > III \u015feklindedir.\nII. T\u00fcplerden O_2 gaz\u0131 \u00e7\u0131kma h\u0131z\u0131 III > II > I \u015feklindedir.\nIII. Her \u00fc\u00e7 t\u00fcpte reaksiyon tamamland\u0131\u011f\u0131nda kalan katalaz miktar\u0131 e\u015fit olur.\nIV. Reaksiyonun tamamlanma s\u00fcresi en uzun olan t\u00fcp, i\u00e7ine b\u00fct\u00fcn karaci\u011fer konulan t\u00fcpt\u00fcr.\nyorumlar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "I ve II",
+    "B": "II ve III",
+    "C": "III ve IV",
+    "D": "II, III ve IV",
+    "E": "I, II, III ve IV"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T010_03",
+   "basili_no": 3,
+   "govde": "Bir tepkimenin \u00fcr\u00fcn miktar\u0131n\u0131n zamana ba\u011fl\u0131 de\u011fi\u015fimi yukar\u0131daki grafikte g\u00f6sterilmi\u015ftir.\nGrafi\u011fe g\u00f6re;\nI. 3. zamanda ortamdaki t\u00fcm enzimler \u00e7al\u0131\u015fmakta[??]d\u0131r.\nII. Tepkime h\u0131z\u0131 2 > 1 > 3 \u015feklindedir.\nIII. 2. zamandaki enzim-substrat kompleksi miktar\u0131, 3. zamandakinden fazlad\u0131r.\nifadelerinden hangileri <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T010_07",
+   "basili_no": 7,
+   "govde": "1\nn(Glikoz) \u21c4 Glikojen + (n \u2212 1)H_2O\n2\nYukar\u0131da verilen tepkimelerle ilgili,\nI. \u0130nsan karaci\u011fer h\u00fccrelerinde meydana gelir.\nII. 1 y\u00f6n\u00fcnde ester ba\u011flar\u0131 kurulur.\nIII. 2 y\u00f6n\u00fcnde hidroliz ger\u00e7ekle\u015fir.\nifadelerinden hangileri <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T011_09",
+   "basili_no": 9,
+   "govde": "Bir \u00f6\u011frenci, a\u015fa\u011f\u0131dakilerden hangisinin varl\u0131\u011f\u0131na bakarak bir h\u00fccrenin \u00f6karyot oldu\u011funa karar <u>veremez</u>?",
+   "sikler": {
+    "A": "Golgi",
+    "B": "H\u00fccre duvar\u0131",
+    "C": "ER",
+    "D": "Sentrozom",
+    "E": "Koful"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T012_08",
+   "basili_no": 8,
+   "govde": "\u201cMantarlar\u0131n h\u00fccre duvar\u0131 \u2026\u2026\u2026\u2026\u2026\u2026\u2026dan yap\u0131lm\u0131\u015ft\u0131r\u201d ifadesinde bo\u015f b\u0131rak\u0131lan yere a\u015fa\u011f\u0131dakilerden hangisi gelmelidir?",
+   "sikler": {
+    "A": "Kitin",
+    "B": "Protein",
+    "C": "Timin",
+    "D": "Sel\u00fcloz",
+    "E": "Glikoz"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T014_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131daki madde ta\u015f\u0131nma y\u00f6ntemlerinden hangilerinde ATP enerjisi harcan\u0131r?\nI. Aktif ta\u015f\u0131ma\nII. Fagositoz\nIII. Dif\u00fczyon\nIV. Ekzositoz",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve III",
+    "D": "I, II ve IV",
+    "E": "III ve IV"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T015_11",
+   "basili_no": 11,
+   "govde": "Tuzlu su i\u00e7inde bekletilen bir h\u00fccrenin a\u015fa\u011f\u0131daki \u00f6zellikleri nas\u0131l de\u011fi\u015fir?\nOsmotik Bas\u0131nc\u0131 | Emme Kuvveti | H\u00fccre Yo\u011funlu\u011fu",
+   "sikler": {
+    "A": "\u2191 | \u2193 | \u2304",
+    "B": "\u2191 | \u2191 | ^",
+    "C": "De\u011fi\u015fmez | De\u011fi\u015fmez | ^",
+    "D": "\u2193 | \u2191 | De\u011fi\u015fmez",
+    "E": "\u2193 | \u2193 | \u2304"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T015_13",
+   "basili_no": 13,
+   "govde": "\u201cBir h\u00fccre bir minerali i\u00e7inde bulundu\u011fu ortamdan 100 kat fazla bulunduruyorsa bu ancak \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026 olay\u0131 ile ger\u00e7ekle\u015fmi\u015ftir.\u201d ifadesinde bo\u015f b\u0131rak\u0131lan yere hangi madde al\u0131\u015fveri\u015f y\u00f6ntemi yaz\u0131lmal\u0131d\u0131r?",
+   "sikler": {
+    "A": "Endositoz",
+    "B": "Osmoz",
+    "C": "Dif\u00fczyon",
+    "D": "Aktif ta\u015f\u0131ma",
+    "E": "Ekzositoz"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T016_03",
+   "basili_no": 3,
+   "govde": "A\u015fa\u011f\u0131da verilen \u00e7al\u0131\u015fmalar hangi s\u0131ra ile yap\u0131l\u0131rsa bilimsel \u00e7al\u0131\u015fma mant\u0131\u011f\u0131na uygun hareket edilmi\u015f olur?\nI. Hipotez kurma\nII. Deney d\u00fczenleme\nIII. Tahmin y\u00fcr\u00fctme\nIV. Problemi belirleme",
+   "sikler": {
+    "A": "I \u2013 II \u2013 III \u2013 IV",
+    "B": "IV \u2013 I \u2013 III \u2013 II",
+    "C": "III \u2013 I \u2013 IV \u2013 II",
+    "D": "II \u2013 IV \u2013 III \u2013 I",
+    "E": "IV \u2013 III \u2013 II \u2013 I"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T017_07",
+   "basili_no": 7,
+   "govde": "Bir h\u00fccrede a\u015fa\u011f\u0131daki organellerden hangisini[??] bulunmas\u0131 h\u00fccrenin ait oldu\u011fu canl\u0131n\u0131n beslenme \u015fekliyle ilgili kesin bilgi verir?",
+   "sikler": {
+    "A": "Mitokondri",
+    "B": "L\u00f6koplast",
+    "C": "Ribozom",
+    "D": "H\u00fccre \u00e7eperi",
+    "E": "Koful"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T017_08",
+   "basili_no": 8,
+   "govde": "\"Organel \u00e7e\u015fitlerinin tamam\u0131, her h\u00fccrede bulunmak zorunda de\u011fildir.\"\nBu bilgiye dayanarak,\na. Ribozom\nb. Kloroplast\nc. Sentrozom\nd. \u00c7ekirdek\norganellerinin hi\u00e7 birini bulundurmayan h\u00fccre \u00e7e\u015fidi a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Bakteri",
+    "B": "Bitki",
+    "C": "Mantar",
+    "D": "Akyuvar",
+    "E": "Alyuvar (olgun)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T017_13",
+   "basili_no": 13,
+   "govde": "Hayvan h\u00fccrelerinde bulunan, zehirli maddeleri etkisiz hale getiren iki organel a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Gran\u00fcll\u00fc ER - Gran\u00fcls\u00fcz ER",
+    "B": "Peroksizom \u2013 Gran\u00fcls\u00fcz ER",
+    "C": "Golgi \u2013 Lizozom",
+    "D": "Ribozom \u2013 Sentrozom",
+    "E": "Mitokondri \u2013 Kloroplast"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T018_12",
+   "basili_no": 12,
+   "govde": "A\u015fa\u011f\u0131daki tabloda organellerin bulunup bulunmama durumlar\u0131 + ve \u2212 ile i\u015faretlenmi\u015ftir.\n- | Bitki | Hayvan | Bakteri\nRibozom | + | + | (1)\nMitokondri | (2) | + | \u2212\nPlastit | + | (3) | \u2212\nBuna 1, 2 ve 3 numaral\u0131 bo\u015fluklara s\u0131ras\u0131yla hangi i\u015faretler gelmelidir?",
+   "sikler": {
+    "A": "+ + \u2212",
+    "B": "+ + +",
+    "C": "\u2212 \u2212 \u2212",
+    "D": "\u2212 + \u2212",
+    "E": "+ \u2212 +"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T019_03",
+   "basili_no": 3,
+   "govde": "H_2O_2 \u2192(Katalaz) H_2O + 1/2 O_2\nYukar\u0131da verilen tepkimenin ger\u00e7ekle\u015fmesini sa\u011flayan katalaz enzimi a\u015fa\u011f\u0131daki organellerden hangisinde bulunur?",
+   "sikler": {
+    "A": "Koful",
+    "B": "Sentrozom",
+    "C": "Peroksizom",
+    "D": "Golgi",
+    "E": "Mitokondri"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T019_07",
+   "basili_no": 7,
+   "govde": "\u2013 Endoplazmik rerikulum\n\u2013 Kloroplast\n\u2013 Golgi\n\u2013 H\u00fccre iskeleti\n\u2013 Mitokondri\nA\u015fa\u011f\u0131da verilen \u00f6zelliklerden hangisi, yukar\u0131daki organellerden biri ile ilgili <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "\u00dczerinde ribozomlar bulunan, kanall\u0131 bir yap\u0131s\u0131 vard\u0131r.",
+    "B": "\u00c7i\u00e7eklerin ho\u015f kokulu veya yap\u0131\u015fkan maddeler \u00fcretmesini sa\u011flar.",
+    "C": "\u00c7ift zarl\u0131 olup, i\u00e7 zar\u0131na krista ad\u0131 verilir.",
+    "D": "H\u00fccreye \u015fekil verir, organellerin hareketinde g\u00f6rev al\u0131r.",
+    "E": "Bitkilerin, sentezledi\u011fi besin maddelerini depolar."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T020_06",
+   "basili_no": 6,
+   "govde": "\u0130nsan kolu\nK\u00f6pe\u011fin \u00f6n aya\u011f\u0131\nYanda g\u00f6rseli verilen iki organ i\u00e7in a\u015fa\u011f\u0131daki yarg\u0131lardan hangisi do\u011fru <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "Homologdur.",
+    "B": "Analogdur.",
+    "C": "K\u00f6kenleri ayn\u0131d\u0131r.",
+    "D": "G\u00f6revleri farkl\u0131d\u0131r.",
+    "E": "Yap\u0131lar\u0131 benzerdir."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T020_07",
+   "basili_no": 7,
+   "govde": "<u>Biri suda</u>, <u>biri karada</u>, <u>biri havada</u> hayat\u0131n\u0131 s\u00fcrd\u00fcre[??] \u00fc\u00e7 canl\u0131 t\u00fcr\u00fcn\u00fcn akraba oldu\u011fu tespit edilmi\u015ftir.\nBuna g\u00f6re bu \u00fc\u00e7 canl\u0131 hangi s\u0131n\u0131fland\u0131rma kriterlerine g\u00f6re de\u011ferlendirilmi\u015ftir?",
+   "sikler": {
+    "A": "Aristo\u2019ya g\u00f6re",
+    "B": "Yapay s\u0131n\u0131fland\u0131rmaya g\u00f6re",
+    "C": "Do\u011fal s\u0131n\u0131fland\u0131rmaya g\u00f6re",
+    "D": "Suni s\u0131n\u0131fland\u0131rmaya g\u00f6re",
+    "E": "Ampirik s\u0131n\u0131fland\u0131rmaya g\u00f6re"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T021_01",
+   "basili_no": 1,
+   "govde": "\u0130nsan t\u00fcr\u00fcn\u00fcn s\u0131n\u0131fland\u0131rmadaki ad\u0131 \u201cHomo sapiens\u201d tir.\nBu isimlendirme ile ilgili olarak;\nI. Homo kelimesi cins ad\u0131d\u0131r.\nII. sapiens kelimesi tek ba\u015f\u0131na bir \u015fey ifade etmez.\nIII. Homo sapiens kelimeleri yan yana t\u00fcr ad\u0131n\u0131 temsil etti\u011fi i\u00e7in bu \u015fekliyle ba\u015fka canl\u0131larda kullan\u0131lamaz.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T021_04",
+   "basili_no": 4,
+   "govde": "A\u015fa\u011f\u0131daki \u015fekilde yer alan A ve B k\u00fcmeleri iki farkl\u0131 aileyi ifade etmektedir. \u0130\u00e7teki k\u00fcmeler ise K, L, M, N, P ve R canl\u0131lar\u0131n\u0131n ait oldu\u011fu cinsleri ifade etmektedir.\nA: (K) (L M N)\nB: (P R)\nBuna g\u00f6re birbirine en uzak akraba olan canl\u0131lar a\u015fa\u011f\u0131dakilerin hangisinde verilmi\u015ftir?",
+   "sikler": {
+    "A": "L ve M",
+    "B": "M ve N",
+    "C": "N ve P",
+    "D": "P ve R",
+    "E": "K ve L"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T021_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131daki tabloda ku\u015fburnu bitkisinin s\u0131n\u0131fland\u0131rma kategorileri verilmi\u015ftir.\nKategori | Takson\nAlem | Plantae Bitkiler alemi\n\u015eube | Angiospermae Kapal\u0131 tohumlular\nS\u0131n\u0131f | Magnoliopsida \u00c7ift \u00e7enekliler\nTak\u0131m | Rosales G\u00fcller\nAile | Rosaceae G\u00fclgiller\nCins | Rosa G\u00fcl\nT\u00fcr | Rosa canina Ku\u015fburnu\nBuna g\u00f6re;\nI. Ku\u015fburnu bitkisi g\u00fclgiller ailesi i\u00e7inde yer al\u0131r.\nII. Ku\u015fburnunun g\u00fcle benzerli\u011fi, \u00e7ift \u00e7eneklilere benzerli\u011finden daha fazlad\u0131r.\nIII. G\u00fcller tak\u0131m\u0131nda yer alan iki canl\u0131n\u0131n ortak \u00f6zelli\u011fi, kapal\u0131 tohumlu \u015fubesindeki iki canl\u0131dan daha azd\u0131r.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T021_08",
+   "basili_no": 8,
+   "govde": "Canl\u0131lar s\u0131n\u0131fland\u0131r\u0131l\u0131rken ilk \u00f6nce \u2026\u20261\u2026.., en son \u2026\u20262\u2026.., \u00f6zellikleri tespit edilir.\nBu c\u00fcmlede 1 ve 2 numaral\u0131 yerlere gelmesi gereken s\u0131n\u0131fland\u0131rma kategorileri a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Alem - T\u00fcr",
+    "B": "Alem \u2013 \u015eube",
+    "C": "Cins \u2013 T\u00fcr",
+    "D": "S\u0131n\u0131f \u2013 Tak\u0131m",
+    "E": "Tak\u0131m \u2013 Aile"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T021_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131daki tabloda kedi ve kurt t\u00fcrlerinin s\u0131n\u0131fland\u0131rma kategorileri verilmi\u015ftir.\n- | Kedi | Kurt\nAlem | Animalia | Animalia\n\u015eube | Chordata | Chordata\nS\u0131n\u0131f | Mammalia | Mammalia\nTak\u0131m | Carnivora | Camivora\nAile | Felidae | Canidae\nCins | Felis | Canis\nT\u00fcr | Felis catus | Canis lupus\nBuna g\u00f6re;\nI. Kedi ve kurt bilimsel olarak belli bir d\u00fczeyde akrabad\u0131r.\nII. Kedi ve kurt ayn\u0131 tak\u0131m\u0131n farkl\u0131 aileleri i\u00e7inde yer al\u0131r.\nIII. Felidae ailesi i\u00e7indeki DNA benzerli\u011fi, Canidae ailesi i\u00e7indeki DNA benzerli\u011finden fazlad\u0131r.\nyorumlar\u0131ndan hangileri yap\u0131labilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T022_01",
+   "basili_no": 1,
+   "govde": "A\u015fa\u011f\u0131da verilen yap\u0131lardan hangisi, herhangi bi[??] bakteride <u>kesin</u> olarak bulunur?",
+   "sikler": {
+    "A": "Kaps\u00fcl",
+    "B": "Klorofil",
+    "C": "Kam\u00e7\u0131",
+    "D": "Plazmit",
+    "E": "Halkasal DNA"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T024_10",
+   "basili_no": 10,
+   "govde": "M \u2192 N: Besin + O_2\nN \u2192 M: CO_2 + H_2O\nYukar\u0131daki \u015femada M ve N canl\u0131lar\u0131 aras\u0131nda kurulan birlikte ya\u015fam ili\u015fkisi g\u00f6sterilmi\u015ftir.\n\u015eemadaki M ve N canl\u0131lar\u0131 ile aralar\u0131ndaki ili\u015fkinin ad\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?\nM | N | \u0130li\u015fki",
+   "sikler": {
+    "A": "Bitki | Mantar | Parazit",
+    "B": "Hayvan | Bitki | Av-avc\u0131",
+    "C": "Alg | Mantar | Liken",
+    "D": "Bakteri | Hayvan | Parazit",
+    "E": "Mantar | Bitki | Liken"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T026_02",
+   "basili_no": 2,
+   "govde": "I. Tozla\u015fma\nII. Tohum olu\u015fumu\nIII. \u00c7i\u00e7ek a\u00e7ma\nIV. D\u00f6llenme\nBiyoloji \u00f6\u011fretmeni tahtaya bitkilerin ya\u015fam\u0131nda g\u00f6r\u00fclen yukar\u0131daki olaylar\u0131 yazarak \u00f6\u011frencilerinden, bu olaylar\u0131n ger\u00e7ekle\u015fme s\u0131ras\u0131n\u0131 defterlerine yazmalar\u0131n\u0131 istemi\u015ftir.\n\u00d6\u011fretmenin \u00f6\u011frencilerinden bekledi\u011fi do\u011fru s\u0131ralama a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "I \u2013 II \u2013 III \u2013 IV",
+    "B": "IV \u2013 III \u2013 II \u2013 I",
+    "C": "I \u2013 III \u2013 IV \u2013 II",
+    "D": "III \u2013 I \u2013 IV \u2013 II",
+    "E": "II \u2013 IV \u2013 III \u2013 I"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T027_02",
+   "basili_no": 2,
+   "govde": "1. OMURGALILAR\n2. S\u00dcR\u00dcNGENLER\n3. HAYVANLAR\nFilogenetik s\u0131n\u0131fland\u0131rmada yukar\u0131daki basamaklarda yer alan bir hayvan t\u00fcr\u00fc, bu basamaklara hangi s\u0131ra ile dahil olur?",
+   "sikler": {
+    "A": "1 ------> 2 ------> 3",
+    "B": "1 ------> 3 ------> 2",
+    "C": "2 ------> 1 ------> 3",
+    "D": "3 ------> 1 ------> 2",
+    "E": "2 ------> 3 ------> 1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T027_08",
+   "basili_no": 8,
+   "govde": "Hayvanlar aleminde en \u00e7ok t\u00fcr bulunduran grubun[??] eklem bacakl\u0131lar oldu\u011funu \u00f6\u011frenen bir \u00f6\u011frenci, b[??] bilgiyi g\u00f6rselle\u015ftirmek i\u00e7in yukar\u0131daki zihin haritas\u0131n\u0131 haz\u0131rlam\u0131\u015ft\u0131r.\nBu \u00f6\u011frencinin, a\u015fa\u011f\u0131daki hayvanlardan hangisini haritaya yazmas\u0131 <u>hatal\u0131d\u0131r</u>?",
+   "sikler": {
+    "A": "K\u0131rkayak",
+    "B": "Kar\u0131nca",
+    "C": "Yenge\u00e7",
+    "D": "Midye",
+    "E": "Bit"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T028_03",
+   "basili_no": 3,
+   "govde": "A\u015fa\u011f\u0131da verilen canl\u0131 \u2013 solunum organ\u0131 e\u015fle\u015ftirmelerinden hangileri do\u011frudur?\nI. \u00c7ekirge \u2192 trake\nII. \u0130stakoz \u2192 solunga\u00e7\nIII. Kelebek \u2192 akci\u011fer",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z II",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T028_04",
+   "basili_no": 4,
+   "govde": "Bir canl\u0131n\u0131n v\u00fccudunda, sinir \u015feridinin bulundu\u011fu taraf \u015fekil \u00fczerinde g\u00f6sterilmi\u015ftir:\nBu canl\u0131 t\u00fcr\u00fc a\u015fa\u011f\u0131dakilerden hangisi <u>olamaz</u>?",
+   "sikler": {
+    "A": "Ar\u0131",
+    "B": "Ay\u0131",
+    "C": "At",
+    "D": "Fok",
+    "E": "\u0130nsan"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T028_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131daki \u00f6zelliklerden hangisinin bilinmesi, bir canl\u0131n\u0131n ku\u015f <u>olmad\u0131\u011f\u0131n\u0131</u> ispatlar?",
+   "sikler": {
+    "A": "D\u0131\u015f y\u00fczeyini t\u00fcyler kaplar.",
+    "B": "Di\u015f olmad\u0131\u011f\u0131 i\u00e7in \u00e7i\u011fneme yapamaz.",
+    "C": "Kol ve bacak yerine kanat bulundurur.",
+    "D": "\u0130\u00e7 d\u00f6llenme ve i\u00e7 geli\u015fme yapar.",
+    "E": "Yumurtlama ve yavru bak\u0131m\u0131 vard\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T029_03",
+   "basili_no": 3,
+   "govde": "Mitoz b\u00f6l\u00fcnmede,\nI. Kromatin ipliklerin k\u0131sal\u0131p kal\u0131nla\u015ft\u0131\u011f\u0131\nII. \u0130\u011f ipliklerinin uzamaya ba\u015flad\u0131\u011f\u0131\nIII. \u00c7ekirdek zar\u0131n\u0131n erimeye ba\u015flad\u0131\u011f\u0131\nevre a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Profaz",
+    "B": "Metafaz",
+    "C": "Anafaz",
+    "D": "Telofaz",
+    "E": "\u0130nterfaz"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T030_08",
+   "basili_no": 8,
+   "govde": "Bir bakteri h\u00fccresinde ikiye b\u00f6l\u00fcnme olay\u0131, a\u015fa\u011f\u0131da[??] g\u00f6sterilmi\u015ftir.\nBu olayla ilgili a\u015fa\u011f\u0131dakilerden hangisi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "K\u0131sa s\u00fcrede tamamlanabilir.",
+    "B": "Profaz, metafaz, anafaz, telofaz evreleri g\u00f6r\u00fcl\u00fcr.",
+    "C": "DNA\u2019n\u0131n kopyas\u0131 yeni h\u00fccrelere g\u00f6nderilir.",
+    "D": "H\u00fccrede b\u00fcy\u00fcme ve bo\u011fumlanma g\u00f6r\u00fcl\u00fcr.",
+    "E": "Prokaryot oldu\u011fu i\u00e7in \u00e7ekirdek b\u00f6l\u00fcnmesi g\u00f6r\u00fclmez."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T030_10",
+   "basili_no": 10,
+   "govde": "Bir ar\u0131 kovan\u0131nda ger\u00e7ekle\u015fen baz\u0131 olaylar a\u015fa\u011f\u0131da \u015fematize edilmi\u015ftir.\nKrali\u00e7e ar\u0131 \u2192 Yumurta, Yumurta\nErkek ar\u0131 \u2192 Sperm\nYumurta \u2192 Erkek ar\u0131\nYumurta + Sperm \u2192 Z\u0130GOT\nBuna g\u00f6re a\u015fa\u011f\u0131daki yorumlardan hangisi <u>yap\u0131lamaz</u>?",
+   "sikler": {
+    "A": "Erkek ar\u0131lar, yumurtadan partenogenezle geli\u015fir.",
+    "B": "Spermler, mitoz b\u00f6l\u00fcnme ile meydana gelir.",
+    "C": "Zigotun kromozom tak\u0131m say\u0131s\u0131 2n\u2019dir.",
+    "D": "Kovanda mayoz b\u00f6l\u00fcnme ge\u00e7iren tek ar\u0131 krali\u00e7edir.",
+    "E": "Kovandaki b\u00fct\u00fcn yumurtalar\u0131n genetik yap\u0131s\u0131 ayn\u0131d\u0131r."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T033_06",
+   "basili_no": 6,
+   "govde": "Yukar\u0131da g\u00f6sterilen gen da\u011f\u0131l\u0131m\u0131na sahip \u00fcreme ana h\u00fccresinden, a\u015fa\u011f\u0131daki kromozomlara sahip h\u00fccrelerden hangisinin olu\u015fmas\u0131 i\u00e7in iki defa krossing over olmas\u0131 gerekir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) k L | R | m n",
+    "B": "(g\u00f6rsel \u015f\u0131k) K L | R | M N",
+    "C": "(g\u00f6rsel \u015f\u0131k) k L | r | M n",
+    "D": "(g\u00f6rsel \u015f\u0131k) K l | R | m N",
+    "E": "(g\u00f6rsel \u015f\u0131k) k l | r | m N"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T034_07",
+   "basili_no": 7,
+   "govde": "Yukar\u0131daki g\u00f6rselde yer alan k\u00f6k h\u00fccreler, ara\u015ft\u0131rmac\u0131lar taraf\u0131ndan laboratuvarda \u00fcretilerek pek \u00e7ok h\u00fccre tipine d\u00f6n\u00fc\u015ft\u00fcr\u00fclmeye \u00e7al\u0131\u015f\u0131lmaktad\u0131r. Geli\u015fen bu teknoloji, \u00e7\u00f6z\u00fcms\u00fcz hastal\u0131klara tedavi imkan\u0131 sa\u011flayacakt\u0131r.\nK\u00f6k h\u00fccrelerden dokular elde edilirken;\nI. Mitoz b\u00f6l\u00fcnme\nII. Mayoz b\u00f6l\u00fcnme\nIII. H\u00fccre farkl\u0131la\u015fmas\u0131\nolaylar\u0131ndan hangileri ger\u00e7ekle\u015fir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T035_01",
+   "basili_no": 1,
+   "govde": "2n = 8 kromozomlu bir h\u00fccrenin mayoz b\u00f6l\u00fcnme[??]si s\u0131ras\u0131nda;\nI. Olu\u015fan tetrat say\u0131s\u0131\nII. Anafaz I evresindeki kromatit say\u0131s\u0131\nIII. Metafaz II evresindeki kromozom say\u0131s\u0131\ni\u00e7in a\u015fa\u011f\u0131da verilen e\u015fitliklerden hangisi do\u011frudur?",
+   "sikler": {
+    "A": "I > II > III",
+    "B": "I < II = III",
+    "C": "III > II > I",
+    "D": "II > I = III",
+    "E": "I= II = III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T036_01",
+   "basili_no": 1,
+   "govde": "Mayoz b\u00f6l\u00fcnme sonucu olu\u015fmu\u015f bir gamette 30 kromozom varsa; bu h\u00fccreyi olu\u015fturan ana h\u00fccredeki kromozom say\u0131s\u0131 ile profaz I evresindeki kromatit say\u0131s\u0131 s\u0131ras\u0131yla a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "30 \u2013 30",
+    "B": "30 \u2013 15",
+    "C": "15 \u2013 30",
+    "D": "30 \u2013 60",
+    "E": "60 \u2013 120"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T036_06",
+   "basili_no": 6,
+   "govde": "I. Kopan baca\u011f\u0131n olu\u015fmas\u0131\nII. K\u0131r\u0131lan kemi\u011fin iyile\u015fmesi\nIII. \u00dc\u00e7 par\u00e7aya b\u00f6l\u00fcnen v\u00fccudun tamamlanmas\u0131\nYukar\u0131da verilen \u00f6rneklerin, rejenerasyonun kapsam\u0131 bak\u0131m\u0131ndan k\u00fc\u00e7\u00fckten b\u00fcy\u00fc\u011fe do\u011fru s\u0131ralamas\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "I \u2013 II \u2013 III",
+    "B": "I \u2013 III \u2013 II",
+    "C": "II \u2013 I \u2013 III",
+    "D": "II \u2013 III \u2013 I",
+    "E": "III \u2013 II \u2013 I"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T036_08",
+   "basili_no": 8,
+   "govde": "Bir h\u00fccre \u00fcst \u00fcste 3 kez mitoz b\u00f6l\u00fcnme ge\u00e7irdikten sonra olu\u015fan h\u00fccrelerin tamam\u0131 mayoz b\u00f6l\u00fcnme ge\u00e7irirse toplam ka\u00e7 h\u00fccre olu\u015fur?",
+   "sikler": {
+    "A": "64",
+    "B": "32",
+    "C": "16",
+    "D": "8",
+    "E": "4"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T037_08",
+   "basili_no": 8,
+   "govde": "Yukar\u0131daki soy a\u011fac\u0131nda numaraland\u0131r\u0131lm\u0131\u015f bireyler ile ilgili;\nI. 4 numaral\u0131 birey, 1 numaral\u0131 bireyin torunudur.\nII. 2 numaral\u0131 birey, 5 numaral\u0131 bireyin halas\u0131d\u0131r.\nIII. 4 numaral\u0131 bireyin bir amcas\u0131 bir teyzesi vard\u0131r.\nIV. 3 numaral\u0131 birey, 2 numaral\u0131 bireyle genetik olarak akrabad\u0131r.\nIfadelerinden hangileri <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I, II ve III",
+    "E": "I, II, III ve IV"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T037_10",
+   "basili_no": 10,
+   "govde": "A\u015fa\u011f\u0131da verilen \u00e7aprazlamalardan hangisinden en fazla genotip \u00e7e\u015fidi ortaya \u00e7\u0131kar?",
+   "sikler": {
+    "A": "AA x AA",
+    "B": "AA x aa",
+    "C": "AA x Aa",
+    "D": "Aa x Aa",
+    "E": "Aa x aa"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T038_01",
+   "basili_no": 1,
+   "govde": "Bir ailenin kan gruplar\u0131 A, B ve O olan \u00fc\u00e7 \u00e7ocu\u011fu vard\u0131r\nAnne ve baban\u0131n kan grubu i\u00e7in a\u015fa\u011f\u0131daki durumlardan hangisi m\u00fcmk\u00fcnd\u00fcr?\nI. AO x BO\nII. AB x OO\nIII. BO x AA",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T038_04",
+   "basili_no": 4,
+   "govde": "A\u015fa\u011f\u0131daki \u00e7aprazlamalardan hangisinin sonucunda hibrit birey olu\u015fma ihtimali vard\u0131r?\nI. AA \u00d7 aa\nII. AB \u00d7 AB\nIII. MM \u00d7 NN\nIV. OO \u00d7 OO",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I, II ve III",
+    "E": "I, II, III ve IV"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T038_15",
+   "basili_no": 15,
+   "govde": "A\u015fa\u011f\u0131daki \u00e7aprazlamalardan hangilerinde olu\u015fabilecek genotip ve fenotip oranlar\u0131 birbirine e\u015fit olur?\nI. AB \u00d7 AB\nII. Aa \u00d7 Aa\nIII. MN \u00d7 MN",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T039_01",
+   "basili_no": 1,
+   "govde": "A\u015fa\u011f\u0131da genotipleri verilen bireylerden hangilerinin cinsiyeti erkektir?\nI. 45 + XX\nII. 44 + XY\nIII. 44 + XXY",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T039_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131daki \u00e7aprazlamalardan hangisinden hasta[??] \u00e7ocuk meydana gelme ihtimali vard\u0131r?\nI. X^H X^h - X^h Y\nII. X^R X^R - X^r Y\nIII. X^r X^r - X^R Y",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T040_07",
+   "basili_no": 7,
+   "govde": "A \u2192 (Mitoz) \u2192 B \u2192 (Mayoz) \u2192 C \u2192 (D\u00f6llenme) \u2192 D\nE\u015feyli \u00fcreyen canl\u0131larda t\u00fcr\u00fcn neslinin devam\u0131 i\u00e7in ger\u00e7ekle\u015fen olaylar yukar\u0131daki \u015femada g\u00f6sterilmi\u015ftir.\n2n=10 kromozomlu bir canl\u0131n\u0131n, yukar\u0131daki olaylar ger\u00e7ekle\u015firken otozom say\u0131s\u0131nda meydana gelen de\u011fi\u015fim a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "A: 10 \u2192 B: 10 \u2192 C: 5 \u2192 D: 10",
+    "B": "A: 10 \u2192 B: 10 \u2192 C: 10 \u2192 D: 5",
+    "C": "A: 5 \u2192 B: 5 \u2192 C: 5 \u2192 D: 10",
+    "D": "A: 8 \u2192 B: 8 \u2192 C: 4 \u2192 D: 8",
+    "E": "A: 5 \u2192 B: 10 \u2192 C: 5 \u2192 D: 10"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_01",
+   "basili_no": 1,
+   "govde": "Bir canl\u0131 t\u00fcr\u00fcnde t\u00fcy rengine etki eden be\u015f alel \u00e7e\u015fi[??]di bulunmaktad\u0131r. Bu aleller aras\u0131ndaki bask\u0131nl\u0131k-\u00e7ekiniklik ili\u015fkisi: A > A_1 > A_2 > A_3 > A_4 \u015feklindedir.\nBu canl\u0131 toplulu\u011funda bu \u00f6zellikle ilgili ka\u00e7 farkl\u0131 fenotip ve genotip g\u00f6r\u00fclebilir?\nFenotip | Genotip",
+   "sikler": {
+    "A": "5 | 5",
+    "B": "5 | 10",
+    "C": "10 | 10",
+    "D": "10 | 15",
+    "E": "5 | 15"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_02",
+   "basili_no": 2,
+   "govde": "A\u015fa\u011f\u0131da genotipleri verilen fareler birbiriyle \u00e7aprazlan\u0131yor.\nHomozigot siyah k\u0131sa k\u0131ll\u0131 \u2640 KKUU x Homozigot kahverengi uzun k\u0131ll\u0131 \u2642 kkuu\nBu \u00e7aprazlama ve sonu\u00e7lar\u0131yla ilgili;\nI. F_1 d\u00f6l\u00fcndeki t\u00fcm yavrular bask\u0131n fenotipli olur.\nII. Hem anne hem babada tek tip gamet olu\u015fur.\nIII. Uzun k\u0131ll\u0131 olma \u00f6zelli\u011fi, k\u0131sa k\u0131ll\u0131 olmaya bask\u0131nd\u0131r.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131daki \u00e7aprazlamalardan hangisinin sonucunda \u00fc\u00e7 \u00f6zellik bak\u0131m\u0131ndan \u00e7ekinik fenotipte birey olu\u015fma olas\u0131l\u0131\u011f\u0131 vard\u0131r?\n- | Di\u015fi (\u2640) | Erkek(\u2642)\nI. | GgRRNN | ggrrnn\nII. | ggrrNn | GGrrNN\nIII. | GgRrnn | ggRrNn\nIV. | GgRrNn | GgRrNn",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "III ve IV"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131daki soy a\u011fac\u0131nda baz\u0131 bireylerin kan gruplar\u0131 verilmi\u015ftir.\n1: AB | 2: O\nBu ailenin kan grubu \u00f6zellikleriyle ilgili a\u015fa\u011f\u0131daki ifadelerden hangisi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "B\u00fct\u00fcn \u00e7ocuklar heterozigottur.",
+    "B": "Plazmas\u0131nda antikor bulunmayan \u00e7ocuk vard\u0131r.",
+    "C": "2 numaral\u0131 bireyin alyuvarlar\u0131nda antijen yoktur.",
+    "D": "6 numaral\u0131 bireyde tek \u00e7e\u015fit antijen vard\u0131r.",
+    "E": "3 numaral\u0131 birey A veya B grubundan olabilir."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131da, iki farkl\u0131 ikizlik olu\u015fum s\u00fcreci g\u00f6sterilmi\u015ftir[??]\nTek yumurta \u2192 F, H\n\u00c7ift yumurta \u2192 R, Y\nBu s\u00fcre\u00e7le ilgili olarak;\nI. F ve H'nin t\u00fcm genetik yap\u0131s\u0131 ayn\u0131d\u0131r.\nII. R ve Y'de ayn\u0131 genler bulunabilir.\nIII. H ve R'de ayn\u0131 genler bulunabilir.\nyorumlar\u0131ndan hangileri yap\u0131labilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_09",
+   "basili_no": 9,
+   "govde": "A\u015fa\u011f\u0131da verilen \u00e7aprazlamalar, olu\u015fturabilecekleri genotip \u00e7e\u015fidi bak\u0131m\u0131ndan nas\u0131l s\u0131ralan\u0131r?\nI. VL \u00d7 VL\nII. dd \u00d7 DD\nIII. NN \u00d7 Nn",
+   "sikler": {
+    "A": "I > III > II",
+    "B": "II > III > I",
+    "C": "III > II > I",
+    "D": "I > II > III",
+    "E": "II > I > III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_10",
+   "basili_no": 10,
+   "govde": "A\u015fa\u011f\u0131daki tabloda, kad\u0131n ve erkeklerde g\u00f6r\u00fclen baz\u0131 karakterler verilmi\u015ftir.\n(kad\u0131n g\u00f6rseli) | (erkek g\u00f6rseli)\n1. Hemofili | 4. Yap\u0131\u015f\u0131k kulak memesi\n2. Azospermi | 5. D\u00fcz sa\u00e7\n3. Dil yuvarlama | 6. Renk k\u00f6rl\u00fc\u011f\u00fc\nTabloda ka\u00e7 numaral\u0131 karakterler <u>yanl\u0131\u015f</u> verilmi\u015ftir?",
+   "sikler": {
+    "A": "Yaln\u0131z 2",
+    "B": "Yaln\u0131z 4",
+    "C": "Yaln\u0131z 5",
+    "D": "2 ve 4",
+    "E": "5 ve 6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T041_13",
+   "basili_no": 13,
+   "govde": "aaDdGg \u00d7 AAddGG \u00e7aprazlamas\u0131ndan olu\u015fabilecek genotip ve fenotip \u00e7e\u015fidi say\u0131s\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?\nGenotip | Fenotip",
+   "sikler": {
+    "A": "2 | 2",
+    "B": "4 | 2",
+    "C": "6 | 3",
+    "D": "3 | 4",
+    "E": "4 | 8"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T042_04",
+   "basili_no": 4,
+   "govde": "D\u0130\u015e\u0130 \\ ERKEK | X^(rH) | Y\nX^(RH) | - | -\nX^(Rh) | - | -\nRenk k\u00f6rl\u00fc\u011f\u00fc ve hemofili bak\u0131m\u0131ndan di\u015fi ve erkek bireyin \u00e7aprazlanmas\u0131 yukar\u0131daki punnet karesinde g\u00f6sterilmi\u015ftir.\nBu \u00e7aprazlama sonucunda olu\u015fabilecek bireyler aras\u0131nda a\u015fa\u011f\u0131dakilerden hangisi <u>bulunmaz</u>?",
+   "sikler": {
+    "A": "Hem renk k\u00f6rl\u00fc\u011f\u00fc hem hemofili ta\u015f\u0131y\u0131c\u0131s\u0131 k\u0131z",
+    "B": "Hemofili ve normal g\u00f6ren erkek",
+    "C": "Renk k\u00f6rl\u00fc\u011f\u00fc ta\u015f\u0131y\u0131c\u0131s\u0131 ve hemofili olmayan k\u0131z",
+    "D": "Hem renk k\u00f6r\u00fc hem hemofili olmayan erkek",
+    "E": "Hemofili ta\u015f\u0131y\u0131c\u0131s\u0131 ve renk k\u00f6r\u00fc k\u0131z"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT24BY-T042_05",
+   "basili_no": 5,
+   "govde": "Bir \u00f6\u011frenci, ailesindeki bireylerin AB0 ve Rh kan gruplar\u0131n\u0131 \u00f6\u011frenerek a\u015fa\u011f\u0131daki soy a\u011fac\u0131na yazm\u0131\u015ft\u0131r.\n0 Rh^+ | A Rh^\u2212\n0 Rh^+ | A Rh^\u2212 | A Rh^\u2212 | B Rh^+\nA Rh^\u2212 | B Rh^\u2212\nBu soy a\u011fac\u0131ndaki bireylerin genotiplerini soy a\u011fac\u0131na ekledi\u011finde a\u015fa\u011f\u0131da verilenlerden hangisini soy a\u011fac\u0131na <u>yazamaz</u>?",
+   "sikler": {
+    "A": "00Rr",
+    "B": "A0rr",
+    "C": "B0Rr",
+    "D": "AARr",
+    "E": "B0rr"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  }
+ ]
+}

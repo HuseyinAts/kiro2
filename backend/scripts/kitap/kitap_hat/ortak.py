@@ -58,6 +58,13 @@ def kart(p: ModuleType, d: Path, n: int) -> np.ndarray:
     return np.asarray(img.crop(p.KART)).astype(int)
 
 
+def parite(p: ModuleType, n: int) -> int:
+    """Yerlesim paritesi (SIMGE_X / SUTUNLAR anahtari): dosya n % 2; profilin
+    PARITE_TERS kumesindeki dosyalarda ters (yakalama boslugundan sonra dosya
+    ile basili sayfa paritesi kayan kitaplar)."""
+    return (n + (n in getattr(p, "PARITE_TERS", ()))) % 2
+
+
 def birim_kodu(p: ModuleType, test: int) -> str:
     return f"{p.KOD}-T{test:03d}"
 

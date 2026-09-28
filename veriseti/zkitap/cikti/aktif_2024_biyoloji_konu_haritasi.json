@@ -1,0 +1,590 @@
+{
+"kaynak": "2023-2024 Aktif Ogrenme Biyoloji",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s7) 6 unite; unite baslangici acilis sayfasi (dosya = basili + 1: 8, 64, 106, 152, 190; 6. unite Ekoloji yakalamada yok); konu = test bandindaki unite adi (iki bagimsiz okuma)",
+"bolumler": [
+{
+"kod": "BIO-AKT24BY-B01",
+"no": 1,
+"ad": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130"
+},
+{
+"kod": "BIO-AKT24BY-B02",
+"no": 2,
+"ad": "H\u00dcCRE"
+},
+{
+"kod": "BIO-AKT24BY-B03",
+"no": 3,
+"ad": "CANLILAR D\u00dcNYASI"
+},
+{
+"kod": "BIO-AKT24BY-B04",
+"no": 4,
+"ad": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130"
+},
+{
+"kod": "BIO-AKT24BY-B05",
+"no": 5,
+"ad": "KALITIMIN GENEL \u0130LKELER\u0130"
+}
+],
+"konular": [
+{
+"kod": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"ad": "Ya\u015fam Bilimi Biyoloji",
+"icindekiler_adi": "Ya\u015fam Bilimi Biyoloji",
+"sayfalar": [
+8,
+63
+]
+},
+{
+"kod": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"ad": "H\u00fccre",
+"icindekiler_adi": "H\u00fccre",
+"sayfalar": [
+64,
+105
+]
+},
+{
+"kod": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"ad": "Canl\u0131lar D\u00fcnyas\u0131",
+"icindekiler_adi": "Canl\u0131lar D\u00fcnyas\u0131",
+"sayfalar": [
+106,
+151
+]
+},
+{
+"kod": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"ad": "H\u00fccre B\u00f6l\u00fcnmeleri",
+"icindekiler_adi": "H\u00fccre B\u00f6l\u00fcnmeleri",
+"sayfalar": [
+152,
+189
+]
+},
+{
+"kod": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"ad": "Kal\u0131t\u0131m\u0131n Genel \u0130lkeleri",
+"icindekiler_adi": "Kal\u0131t\u0131m\u0131n Genel \u0130lkeleri",
+"sayfalar": [
+190,
+272
+]
+}
+],
+"test_sayisi": 42,
+"testler": [
+{
+"birim": "AKT24BY-T001",
+"test": 1,
+"sayfalar": [
+44,
+45
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT24BY-T002",
+"test": 2,
+"sayfalar": [
+46,
+47
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 17
+},
+{
+"birim": "AKT24BY-T003",
+"test": 3,
+"sayfalar": [
+48,
+49
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT24BY-T004",
+"test": 4,
+"sayfalar": [
+50,
+51
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T005",
+"test": 5,
+"sayfalar": [
+52,
+53
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT24BY-T006",
+"test": 6,
+"sayfalar": [
+54,
+55
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T007",
+"test": 7,
+"sayfalar": [
+56,
+57
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T008",
+"test": 8,
+"sayfalar": [
+58,
+59
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T009",
+"test": 9,
+"sayfalar": [
+60,
+61
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T010",
+"test": 10,
+"sayfalar": [
+62,
+63
+],
+"bant": "YA\u015eAM B\u0130L\u0130M\u0130 B\u0130YOLOJ\u0130",
+"konu": "BIO-AKT24BY-B01-K01",
+"bolum": "BIO-AKT24BY-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT24BY-T011",
+"test": 11,
+"sayfalar": [
+88,
+89
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T012",
+"test": 12,
+"sayfalar": [
+90,
+91
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT24BY-T013",
+"test": 13,
+"sayfalar": [
+92,
+93
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT24BY-T014",
+"test": 14,
+"sayfalar": [
+94,
+95
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT24BY-T015",
+"test": 15,
+"sayfalar": [
+96,
+97
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT24BY-T016",
+"test": 16,
+"sayfalar": [
+98,
+99
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT24BY-T017",
+"test": 17,
+"sayfalar": [
+100,
+101
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T018",
+"test": 18,
+"sayfalar": [
+102,
+103
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T019",
+"test": 19,
+"sayfalar": [
+104,
+105
+],
+"bant": "H\u00dcCRE",
+"konu": "BIO-AKT24BY-B02-K01",
+"bolum": "BIO-AKT24BY-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T020",
+"test": 20,
+"sayfalar": [
+134,
+135
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T021",
+"test": 21,
+"sayfalar": [
+136,
+137
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT24BY-T022",
+"test": 22,
+"sayfalar": [
+138,
+139
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T023",
+"test": 23,
+"sayfalar": [
+140,
+141
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T024",
+"test": 24,
+"sayfalar": [
+142,
+143
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT24BY-T025",
+"test": 25,
+"sayfalar": [
+144,
+145
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T026",
+"test": 26,
+"sayfalar": [
+146,
+147
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T027",
+"test": 27,
+"sayfalar": [
+148,
+149
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT24BY-T028",
+"test": 28,
+"sayfalar": [
+150,
+151
+],
+"bant": "CANLILAR D\u00dcNYASI",
+"konu": "BIO-AKT24BY-B03-K01",
+"bolum": "BIO-AKT24BY-B03",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT24BY-T029",
+"test": 29,
+"sayfalar": [
+174,
+175
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T030",
+"test": 30,
+"sayfalar": [
+176,
+177
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T031",
+"test": 31,
+"sayfalar": [
+178,
+179
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT24BY-T032",
+"test": 32,
+"sayfalar": [
+180,
+181
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T033",
+"test": 33,
+"sayfalar": [
+182,
+183
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT24BY-T034",
+"test": 34,
+"sayfalar": [
+184,
+185
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T035",
+"test": 35,
+"sayfalar": [
+186,
+187
+],
+"bant": "H\u00dcCE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T036",
+"test": 36,
+"sayfalar": [
+188,
+189
+],
+"bant": "H\u00dcCRE B\u00d6L\u00dcNMELER\u0130",
+"konu": "BIO-AKT24BY-B04-K01",
+"bolum": "BIO-AKT24BY-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T037",
+"test": 37,
+"sayfalar": [
+210,
+211
+],
+"bant": "KALITIMIN GENEL \u0130LKELER\u0130",
+"konu": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT24BY-T038",
+"test": 38,
+"sayfalar": [
+212,
+213
+],
+"bant": "KALITIMIN GENEL \u0130LKELER\u0130",
+"konu": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT24BY-T039",
+"test": 39,
+"sayfalar": [
+214,
+215
+],
+"bant": "KALITIMIN GENEL \u0130LKELER\u0130",
+"konu": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT24BY-T040",
+"test": 40,
+"sayfalar": [
+216,
+217
+],
+"bant": "KALITIMIN GENEL \u0130LKELER\u0130",
+"konu": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT24BY-T041",
+"test": 41,
+"sayfalar": [
+251,
+252
+],
+"bant": "KALITIMIN GENEL \u0130LKELER\u0130",
+"konu": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT24BY-T042",
+"test": 42,
+"sayfalar": [
+253
+],
+"bant": "KALITIMIN GENEL \u0130LKELER\u0130",
+"konu": "BIO-AKT24BY-B05-K01",
+"bolum": "BIO-AKT24BY-B05",
+"soru_sayisi": 5
+}
+]
+}
