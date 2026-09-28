@@ -91,7 +91,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | ACIL 2025 Problemlerin Ilaci | ISLENMEDI | `ACIL-2025-Problemin Ilaci` | 196 | - | eski hat 5 / aktif 5 | 2020-2021 Acil Problemlerin Ilaci %82 | - | AILE: yalniz biri islenmeli (2020-2021 Acil Problemlerin Ilaci %82) |
 | ACIL 2025 TYT Soru Bankasi | ISLENMEDI | `ACIL-2025-TYT-Soru Bankasi` | 400 | - | eski hat 22 / aktif 22 | 2023-2024 ACIL TYT Matematik Soru Bankasi %33 | - | AILE: yalniz biri islenmeli (2023-2024 ACIL TYT Matematik Soru Bankasi %33) |
 | ACIL 2025 TYT-AYT Geometri Soru Bankasi | **ISLENDI** | `ACIL-TYT-AYT-Geometri Soru Bankasi` | 400 | - | modern 1759 / aktif 0 | 2023-2024 ACIL TYT-AYT Geometri SB 189 soru (ayni hash + ayni anahtar) | - | TAMAM (modern ithal) |
-| Acil 2024 AYT Matematik Kitap-1 | ISLENMEDI | `Acil-2024-AYT Matematik Kitap-1` | 224 | - | eski hat 7 / aktif 7 | - | - | ISLENEBILIR |
+| Acil 2024 AYT Matematik Kitap-1 | **ISLENDI** | `Acil-2024-AYT Matematik Kitap-1` | 224 | - | modern 340 soru (`MAT_ACIL_2024_AYT_KITAP1_YONTEM.md`, ortak kitap_hat): 340 yeni satir / aktif 334 (0098 toplu beta onayi; 6 gorunen `[??]` disarida); eski hat 7: modern karsiligi olan 3 satir 0097 ile pasif, 4 aktif | - | 67 test sayfasi (MOZ Akademi duzeni, her test tek sayfa, 7 bolum / 13 konu); konu anlatimi ORNEK kapsam disi; anahtar sayfa alti serit (x araligi en uzun kosu); numara mavi; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 
 ### AKTIF / ALTYAPI (Kartlarla) (12 kitap)
 

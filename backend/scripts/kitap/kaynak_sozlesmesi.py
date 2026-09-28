@@ -221,6 +221,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "ACL25S2",
         "ithal_araci": "scripts/kitap/kitap_hat/ithal.py",
     },
+    "Acil 2024 AYT Matematik Kitap-1": {
+        "onek": "ACL24AM",
+        "ithal_araci": "scripts/kitap/kitap_hat/ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",

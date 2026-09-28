@@ -46,6 +46,8 @@ EN_KISA = 40
 MUREKKEP = 200
 ARTIK_ESIK = 6
 ALTLIK_GENISLIK = 250  # sayfa cizgisi / serit cercevesi: tam genislik satir
+SERIT_DISI_EN_AZ = 40  # serit sutun icinde basliyorsa seritten onceki kisim taranir
+SUTUN_KENAR_PAY = 12  # o dar taramada sutunun sol kenar payi (sayfa susu)
 
 
 def _satirlar(a: np.ndarray, x0: int, x1: int) -> np.ndarray:
@@ -120,22 +122,37 @@ def alt_sinir_alti(
     ilk GENIS satirda (> ALTLIK_GENISLIK px: sayfa cizgisi) durur. Aradaki
     > ARTIK_ESIK piksellik ilk satir kesik icerik. Sayilar-1'de SAYFA_ALTI 878
     sol sutunun son sorusunu 10 sayfada kesmisti; bu olcum onu kutu asamasinda
-    yakalar."""
+    yakalar.
+
+    Serit sutunla ortusuyor ama sutunun ICINDE basliyorsa (serit[2] > x0 +
+    2 * SERIT_DISI_EN_AZ) serit satirlarinda sutunun seritten ONCEKI kismi
+    (seride SERIT_DISI_EN_AZ px kalana kadar) yine taranir: acl24am s114'te
+    serit x araligi sol sutuna kadar (x0 300) olculdu, sol sutun siniri serit
+    ustune cekildi ve D/E siklari (y 889-900) kesildi; satir atlamak bunu
+    gizliyordu. Bu dar taramada sutunun sol kenarindan SUTUN_KENAR_PAY px
+    atlanir: acl25pl sag sutun (x0 390) serit hizasinda x 387-401 capraz
+    sayfa susu tasir."""
     son = a.shape[0]
-    atla_y = son  # serit sutunla ortusuyorsa bu satirdan itibaren atlanir
+    atla_y = son  # serit sutunla ortusuyorsa bu satirdan itibaren dar tarama
+    dar_x1 = x1
     if serit:
         son = min(son, serit[1] + 3)
         if min(x1, serit[3]) > max(x0, serit[2]):
             atla_y = serit[0] - serit_pay
-    koyu = (a[alt:son, x0:x1].min(axis=2) < 160).sum(axis=1)
-    for i, px in enumerate(koyu.tolist()):
+            # seridin solunda SERIT_DISI_EN_AZ px pay: seridi saran cerceve
+            # (acl23kc s53/s139 mavi kutu, serit x 432, cerceve x 392) sayilmaz
+            dar_x1 = serit[2] - SERIT_DISI_EN_AZ
+            if dar_x1 - x0 <= SERIT_DISI_EN_AZ:
+                dar_x1 = x0
+    g = a[alt:son].min(axis=2) < 160
+    for i in range(g.shape[0]):
         y = alt + i
-        if y >= atla_y:
-            continue
+        xa, xb = (x0 + SUTUN_KENAR_PAY, dar_x1) if y >= atla_y else (x0, x1)
+        px = int(g[i, xa:xb].sum()) if xb > xa else 0
         if px > ALTLIK_GENISLIK:
             break
         if px > ARTIK_ESIK:
-            return y, int(px)
+            return y, px
     return None
 
 

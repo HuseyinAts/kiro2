@@ -38,7 +38,15 @@ from scripts.kitap.kitap_hat import migration_uret as mu  # noqa: E402
 from scripts.kitap.kitap_hat import ortak  # noqa: E402
 from scripts.kitap.kitap_hat import tarama as ta  # noqa: E402
 
-PROFILLER = ["acl23ag", "acl23kc", "acl24mg", "acl25pl", "acl25s1", "acl25s2"]
+PROFILLER = [
+    "acl23ag",
+    "acl23kc",
+    "acl24mg",
+    "acl25pl",
+    "acl25s1",
+    "acl25s2",
+    "acl24am",
+]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 
 

@@ -1,0 +1,914 @@
+{
+"kaynak": "Acil 2024 AYT Matematik Kitap-1",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "bolum adlari konu anlatim sayfalarinin sekmesinden (renk bolumu, gozle), konu adlari test bandindan (iki bagimsiz okuma, fark 0); Trigonometri testleri bantta 'I. BOLUM' .. 'VII. BOLUM'; konu araligi ilk test sayfasindan bir sonrakine",
+"bolumler": [
+{
+"kod": "MAT-ACL24AM-B01",
+"no": 1,
+"ad": "POL\u0130NOM"
+},
+{
+"kod": "MAT-ACL24AM-B02",
+"no": 2,
+"ad": "\u0130K\u0130NC\u0130 DERECEDEN DENKLEM"
+},
+{
+"kod": "MAT-ACL24AM-B03",
+"no": 3,
+"ad": "KARMA\u015eIK SAYILAR"
+},
+{
+"kod": "MAT-ACL24AM-B04",
+"no": 4,
+"ad": "PARABOL"
+},
+{
+"kod": "MAT-ACL24AM-B05",
+"no": 5,
+"ad": "FONKS\u0130YON UYGULAMALARI"
+},
+{
+"kod": "MAT-ACL24AM-B06",
+"no": 6,
+"ad": "E\u015e\u0130TS\u0130ZL\u0130KLER"
+},
+{
+"kod": "MAT-ACL24AM-B07",
+"no": 7,
+"ad": "TR\u0130GONOMETR\u0130"
+}
+],
+"konular": [
+{
+"kod": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"ad": "Polinomlar",
+"icindekiler_adi": "Polinomlar",
+"sayfalar": [
+29,
+52
+]
+},
+{
+"kod": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"ad": "\u0130kinci Dereceden Denklemler",
+"icindekiler_adi": "\u0130kinci Dereceden Denklemler",
+"sayfalar": [
+53,
+66
+]
+},
+{
+"kod": "MAT-ACL24AM-B03-K01",
+"bolum": "MAT-ACL24AM-B03",
+"ad": "Karma\u015f\u0131k Say\u0131lar",
+"icindekiler_adi": "Karma\u015f\u0131k Say\u0131lar",
+"sayfalar": [
+67,
+87
+]
+},
+{
+"kod": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"ad": "Parabol",
+"icindekiler_adi": "Parabol",
+"sayfalar": [
+88,
+112
+]
+},
+{
+"kod": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"ad": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"icindekiler_adi": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"sayfalar": [
+113,
+129
+]
+},
+{
+"kod": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"ad": "E\u015fitsizlikler",
+"icindekiler_adi": "E\u015fitsizlikler",
+"sayfalar": [
+130,
+160
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K01",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri I. B\u00f6l\u00fcm",
+"icindekiler_adi": "I. B\u00d6L\u00dcM",
+"sayfalar": [
+161,
+171
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K02",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri II. B\u00f6l\u00fcm",
+"icindekiler_adi": "II. B\u00d6L\u00dcM",
+"sayfalar": [
+172,
+180
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K03",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri III. B\u00f6l\u00fcm",
+"icindekiler_adi": "III. B\u00d6L\u00dcM",
+"sayfalar": [
+181,
+189
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K04",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri IV. B\u00f6l\u00fcm",
+"icindekiler_adi": "IV. B\u00d6L\u00dcM",
+"sayfalar": [
+190,
+199
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K05",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri V. B\u00f6l\u00fcm",
+"icindekiler_adi": "V. B\u00d6L\u00dcM",
+"sayfalar": [
+200,
+208
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K06",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri VI. B\u00f6l\u00fcm",
+"icindekiler_adi": "VI. B\u00d6L\u00dcM",
+"sayfalar": [
+209,
+217
+]
+},
+{
+"kod": "MAT-ACL24AM-B07-K07",
+"bolum": "MAT-ACL24AM-B07",
+"ad": "Trigonometri VII. B\u00f6l\u00fcm",
+"icindekiler_adi": "VII. B\u00d6L\u00dcM",
+"sayfalar": [
+218,
+221
+]
+}
+],
+"test_sayisi": 67,
+"testler": [
+{
+"birim": "ACL24AM-T001",
+"test": 1,
+"sayfalar": [
+29
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T002",
+"test": 2,
+"sayfalar": [
+30
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T003",
+"test": 3,
+"sayfalar": [
+31
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T004",
+"test": 4,
+"sayfalar": [
+32
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T005",
+"test": 5,
+"sayfalar": [
+33
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T006",
+"test": 6,
+"sayfalar": [
+34
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T007",
+"test": 7,
+"sayfalar": [
+35
+],
+"bant": "Polinomlar",
+"konu": "MAT-ACL24AM-B01-K01",
+"bolum": "MAT-ACL24AM-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T008",
+"test": 8,
+"sayfalar": [
+53
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T009",
+"test": 9,
+"sayfalar": [
+54
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T010",
+"test": 10,
+"sayfalar": [
+55
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T011",
+"test": 11,
+"sayfalar": [
+56
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T012",
+"test": 12,
+"sayfalar": [
+57
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T013",
+"test": 13,
+"sayfalar": [
+58
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T014",
+"test": 14,
+"sayfalar": [
+59
+],
+"bant": "\u0130kinci Dereceden Denklemler",
+"konu": "MAT-ACL24AM-B02-K01",
+"bolum": "MAT-ACL24AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T015",
+"test": 15,
+"sayfalar": [
+67
+],
+"bant": "Karma\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24AM-B03-K01",
+"bolum": "MAT-ACL24AM-B03",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T016",
+"test": 16,
+"sayfalar": [
+68
+],
+"bant": "Karma\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24AM-B03-K01",
+"bolum": "MAT-ACL24AM-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL24AM-T017",
+"test": 17,
+"sayfalar": [
+69
+],
+"bant": "Karma\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24AM-B03-K01",
+"bolum": "MAT-ACL24AM-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL24AM-T018",
+"test": 18,
+"sayfalar": [
+88
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T019",
+"test": 19,
+"sayfalar": [
+89
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T020",
+"test": 20,
+"sayfalar": [
+90
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T021",
+"test": 21,
+"sayfalar": [
+91
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T022",
+"test": 22,
+"sayfalar": [
+92
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T023",
+"test": 23,
+"sayfalar": [
+93
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T024",
+"test": 24,
+"sayfalar": [
+94
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T025",
+"test": 25,
+"sayfalar": [
+95
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T026",
+"test": 26,
+"sayfalar": [
+96
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T027",
+"test": 27,
+"sayfalar": [
+97
+],
+"bant": "Parabol",
+"konu": "MAT-ACL24AM-B04-K01",
+"bolum": "MAT-ACL24AM-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T028",
+"test": 28,
+"sayfalar": [
+113
+],
+"bant": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"konu": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T029",
+"test": 29,
+"sayfalar": [
+114
+],
+"bant": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"konu": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"soru_sayisi": 3
+},
+{
+"birim": "ACL24AM-T030",
+"test": 30,
+"sayfalar": [
+115
+],
+"bant": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"konu": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T031",
+"test": 31,
+"sayfalar": [
+116
+],
+"bant": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"konu": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T032",
+"test": 32,
+"sayfalar": [
+117
+],
+"bant": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"konu": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T033",
+"test": 33,
+"sayfalar": [
+118
+],
+"bant": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+"konu": "MAT-ACL24AM-B05-K01",
+"bolum": "MAT-ACL24AM-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T034",
+"test": 34,
+"sayfalar": [
+130
+],
+"bant": "E\u015fitsizlikler",
+"konu": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T035",
+"test": 35,
+"sayfalar": [
+131
+],
+"bant": "E\u015fitsizlikler",
+"konu": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"soru_sayisi": 3
+},
+{
+"birim": "ACL24AM-T036",
+"test": 36,
+"sayfalar": [
+132
+],
+"bant": "E\u015fitsizlikler",
+"konu": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T037",
+"test": 37,
+"sayfalar": [
+133
+],
+"bant": "E\u015fitsizlikler",
+"konu": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T038",
+"test": 38,
+"sayfalar": [
+134
+],
+"bant": "E\u015fitsizlikler",
+"konu": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T039",
+"test": 39,
+"sayfalar": [
+135
+],
+"bant": "E\u015fitsizlikler",
+"konu": "MAT-ACL24AM-B06-K01",
+"bolum": "MAT-ACL24AM-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T040",
+"test": 40,
+"sayfalar": [
+161
+],
+"bant": "I. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K01",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T041",
+"test": 41,
+"sayfalar": [
+162
+],
+"bant": "I. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K01",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T042",
+"test": 42,
+"sayfalar": [
+163
+],
+"bant": "I. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K01",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T043",
+"test": 43,
+"sayfalar": [
+164
+],
+"bant": "I. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K01",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T044",
+"test": 44,
+"sayfalar": [
+165
+],
+"bant": "I. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K01",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T045",
+"test": 45,
+"sayfalar": [
+172
+],
+"bant": "II. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K02",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T046",
+"test": 46,
+"sayfalar": [
+173
+],
+"bant": "II. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K02",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T047",
+"test": 47,
+"sayfalar": [
+174
+],
+"bant": "II. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K02",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T048",
+"test": 48,
+"sayfalar": [
+175
+],
+"bant": "II. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K02",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T049",
+"test": 49,
+"sayfalar": [
+176
+],
+"bant": "II. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K02",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T050",
+"test": 50,
+"sayfalar": [
+181
+],
+"bant": "III. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K03",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T051",
+"test": 51,
+"sayfalar": [
+182
+],
+"bant": "III. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K03",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T052",
+"test": 52,
+"sayfalar": [
+183
+],
+"bant": "III. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K03",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T053",
+"test": 53,
+"sayfalar": [
+190
+],
+"bant": "IV. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K04",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T054",
+"test": 54,
+"sayfalar": [
+191
+],
+"bant": "IV. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K04",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T055",
+"test": 55,
+"sayfalar": [
+192
+],
+"bant": "IV. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K04",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24AM-T056",
+"test": 56,
+"sayfalar": [
+200
+],
+"bant": "V. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K05",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T057",
+"test": 57,
+"sayfalar": [
+201
+],
+"bant": "V. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K05",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T058",
+"test": 58,
+"sayfalar": [
+202
+],
+"bant": "V. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K05",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T059",
+"test": 59,
+"sayfalar": [
+203
+],
+"bant": "V. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K05",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T060",
+"test": 60,
+"sayfalar": [
+209
+],
+"bant": "VI. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K06",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T061",
+"test": 61,
+"sayfalar": [
+210
+],
+"bant": "VI. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K06",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T062",
+"test": 62,
+"sayfalar": [
+211
+],
+"bant": "VI. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K06",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T063",
+"test": 63,
+"sayfalar": [
+212
+],
+"bant": "VI. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K06",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T064",
+"test": 64,
+"sayfalar": [
+218
+],
+"bant": "VII. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K07",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24AM-T065",
+"test": 65,
+"sayfalar": [
+219
+],
+"bant": "VII. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K07",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T066",
+"test": 66,
+"sayfalar": [
+220
+],
+"bant": "VII. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K07",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24AM-T067",
+"test": 67,
+"sayfalar": [
+221
+],
+"bant": "VII. B\u00d6L\u00dcM",
+"konu": "MAT-ACL24AM-B07-K07",
+"bolum": "MAT-ACL24AM-B07",
+"soru_sayisi": 4
+}
+]
+}
