@@ -1,10 +1,12 @@
 {
 "kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
 "arac": "scripts/kitap/kitap_hat/kirp.py",
-"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
 "kenar_kapisi_ihlali": 0,
+"kesik_kapisi_ihlali": 0,
 "ortme_soru": 34,
 "kenar": [],
+"kesik": [],
 "ortme": [
 {
 "birim": "ACL24MG-T005",

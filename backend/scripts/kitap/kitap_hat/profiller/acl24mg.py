@@ -182,7 +182,11 @@ BANT_ESLER: dict[str, str] = {}
 # ayracin saginda (cift 392, tek 376).
 SUTUNLAR = {0: {"L": (40, 368), "R": (390, 700)}, 1: {"L": (24, 352), "R": (372, 684)}}
 UST_BANT = 67
-SAYFA_ALTI = 885
+# Sol sutun (seritle ortusmez) metni serit hizasina kadar iner: en alt
+# murekkep s29 889, s104 886, s183 895 (sik satiri tamamen serit hizasinda),
+# digerleri <= 885; serit alt cizgisi 905. Ilk deger 885 dort soruda sik
+# satirini kesmisti (kesik kapisi, 28 Eyl 2026) -> 898.
+SAYFA_ALTI = 898
 SERIT_PAY = 4
 BEKLENEN_SORU = 505
 DISK_MERKEZ = (10, 8)
@@ -223,4 +227,7 @@ SONUC = {
     "eski_modern": 7,
     "migration_no": 83,
     "onceki": "0082_acl23kc_beta_onay",
+    # 28 Eyl 2026 kesik duzeltmesi (YONTEM 7): SAYFA_ALTI 885 -> 898; T081_02
+    # siklari yeniden kirpimdan; 0089 yeni satir + beta (496/499).
+    "kesik_duzeltme": {"migration_no": 89, "yeni_satir": 1, "beta_sonrasi": "496/499"},
 }

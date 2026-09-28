@@ -1,10 +1,12 @@
 {
 "kaynak": "ACIL 2025 Matematigin Ilaci Polinom",
 "arac": "scripts/kitap/kitap_hat/kirp.py",
-"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
 "kenar_kapisi_ihlali": 0,
-"ortme_soru": 13,
+"kesik_kapisi_ihlali": 0,
+"ortme_soru": 9,
 "kenar": [],
+"kesik": [],
 "ortme": [
 {
 "birim": "ACL25PL-T001",
@@ -17,26 +19,6 @@
 "piksel": 6
 },
 {
-"birim": "ACL25PL-T011",
-"soru": 1,
-"dosya": 22,
-"simge": [
-561,
-382
-],
-"piksel": 7
-},
-{
-"birim": "ACL25PL-T043",
-"soru": 1,
-"dosya": 77,
-"simge": [
-540,
-363
-],
-"piksel": 5
-},
-{
 "birim": "ACL25PL-T068",
 "soru": 2,
 "dosya": 122,
@@ -45,16 +27,6 @@
 379
 ],
 "piksel": 4
-},
-{
-"birim": "ACL25PL-T071",
-"soru": 1,
-"dosya": 128,
-"simge": [
-653,
-382
-],
-"piksel": 6
 },
 {
 "birim": "ACL25PL-T075",
@@ -105,16 +77,6 @@
 361
 ],
 "piksel": 5
-},
-{
-"birim": "ACL25PL-T131",
-"soru": 1,
-"dosya": 231,
-"simge": [
-659,
-364
-],
-"piksel": 6
 },
 {
 "birim": "ACL25PL-T153",

@@ -1,6 +1,6 @@
 {
  "kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
- "nereden": "Soru kirpimlarindan okundu (kitap_hat/kirp.py, 2x Lanczos). Sorular cozulmedi, cevap anahtari okuyucuya gosterilmedi.",
+ "nereden": "Soru kirpimlarindan okundu (kitap_hat/kirp.py, 2x Lanczos). Sorular cozulmedi, cevap anahtari okuyucuya gosterilmedi. 28 Eyl 2026 kesik duzeltmesi: SAYFA_ALTI 885 -> 898 (kirp.py kesik kapisi); T081_02 siklari yeniden kirpimdan gozle okundu (A 7, B 8, C 9, D 10, E 11); T012_03 / T048_04 kesik notu kalkti (onceki okuma yeni kirpimla ayni).",
  "parca_sayisi": 10,
  "soru_sayisi": 505,
  "sorular": [
@@ -1004,7 +1004,7 @@
    "sekil_var": false,
    "sikler_gorsel": false,
    "etiket": null,
-   "kaynak_kusuru": "D ve E \u015f\u0131klar\u0131 k\u0131rp\u0131m\u0131n alt kenar\u0131nda kesik; yaln\u0131z \u00fcst yar\u0131lar\u0131 g\u00f6r\u00fcn\u00fcyor",
+   "kaynak_kusuru": null,
    "okuma": "grup_02"
   },
   {
@@ -4404,7 +4404,7 @@
    "sekil_var": false,
    "sikler_gorsel": false,
    "etiket": null,
-   "kaynak_kusuru": "E \u015f\u0131kk\u0131 sat\u0131r\u0131 k\u0131rp\u0131m\u0131n alt kenar\u0131nda kesik; 'n \u2260 \u22124' k\u0131sm\u0131 yar\u0131m g\u00f6r\u00fcn\u00fcyor",
+   "kaynak_kusuru": null,
    "okuma": "grup_05"
   },
   {
@@ -7591,17 +7591,17 @@
    "basili_no": 2,
    "govde": "\u015eekil 1'de bir kenar uzunlu\u011fu x birim olan bir kare g\u00f6sterilmi\u015ftir. Karenin bir kenar\u0131 a birim k\u00fc\u00e7\u00fclt\u00fcl\u00fcp di\u011fer kenar\u0131 b birim b\u00fcy\u00fct\u00fclerek \u015eekil 2'de g\u00f6sterilen mavi renkli dikd\u00f6rtgen olu\u015fturuluyor.\nOlu\u015fan EBFK dikd\u00f6rtgeninin alan\u0131 x^2 \u2212 4x \u2212 21 birimkare oldu\u011funa g\u00f6re, a + b toplam\u0131 ka\u00e7t\u0131r?",
    "sikler": {
-    "A": "[okunamad\u0131]",
-    "B": "[okunamad\u0131]",
-    "C": "[okunamad\u0131]",
-    "D": "[okunamad\u0131]",
-    "E": "[okunamad\u0131]"
+    "A": "7",
+    "B": "8",
+    "C": "9",
+    "D": "10",
+    "E": "11"
    },
    "sekil_var": true,
    "sikler_gorsel": false,
    "etiket": null,
-   "kaynak_kusuru": "\u015f\u0131klar k\u0131rp\u0131mda yok (k\u0131rp\u0131m soru c\u00fcmlesinden sonra bitiyor)",
-   "okuma": "grup_09"
+   "kaynak_kusuru": null,
+   "okuma": "duzeltme kesik goz (grup_09 yerine)"
   },
   {
    "dosya": "ACL24MG-T081_03",

@@ -90,3 +90,33 @@ def kirmizi(a: np.ndarray) -> np.ndarray:
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
     m: np.ndarray = (r > 170) & (g < 100) & (b < 110)
     return m
+
+
+def mavi(a: np.ndarray) -> np.ndarray:
+    """MOZ duzeni mavi numara (64,96,160); okuyucu glifi (69,39,160) g < r -> disarida."""
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    m: np.ndarray = (b > 130) & (b - r > 50) & (g > r + 10)
+    return m
+
+
+def camgobegi(a: np.ndarray) -> np.ndarray:
+    """'Matematigin Ilaci' camgobegi numara (0,160,224)."""
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    m: np.ndarray = (b > 180) & (b - r > 80) & (g > r + 60)
+    return m
+
+
+def siyah(a: np.ndarray) -> np.ndarray:
+    """Siyah kalin numara (Sayilar-1): koyu ve notr."""
+    m: np.ndarray = (a.max(axis=2) < 100) & (a.max(axis=2) - a.min(axis=2) < 40)
+    return m
+
+
+# Basili numara rengi on ayarlari: profil `numara_maskesi = ortak.NUMARA_MASKELERI["mavi"]`
+# diyebilir; kesif.py yeni kitapta hangisinin tuttugunu olcer.
+NUMARA_MASKELERI = {
+    "kirmizi": kirmizi,
+    "mavi": mavi,
+    "camgobegi": camgobegi,
+    "siyah": siyah,
+}

@@ -17,7 +17,10 @@ KAPILAR
 kutu sayisi == BEKLENEN_SORU == anahtar; kart ici; >= EN_KISA; ayni sutunda
 cakisma yok; numara kutunun icinde; kutu anahtara girmiyor; SUTUN ICI ARTIK
 MUREKKEP: sutun sinirlari icinde UST_BANT..alt sinir arasinda hicbir kutunun
-kapsamadigi koyu murekkep satiri (> ARTIK_ESIK piksel) yok.
+kapsamadigi koyu murekkep satiri (> ARTIK_ESIK piksel) yok; ALT SINIR ALTI:
+alt sinir ile sayfa altligi (ilk tam genislik satir) arasinda, serit satirlari
+haric, koyu satir yok (`alt_sinir_alti`; SAYFA_ALTI yanlis olculmusse kesik
+soru burada, kirpim ve okumadan ONCE yakalanir).
 
 KULLANIM (backend dizininden)
 -----------------------------
@@ -42,6 +45,7 @@ BOSLUK = 10
 EN_KISA = 40
 MUREKKEP = 200
 ARTIK_ESIK = 6
+ALTLIK_GENISLIK = 250  # sayfa cizgisi / serit cercevesi: tam genislik satir
 
 
 def _satirlar(a: np.ndarray, x0: int, x1: int) -> np.ndarray:
@@ -79,11 +83,106 @@ def _yatay_cizgiler(a: np.ndarray, x0: int, x1: int) -> list[int]:
     return out
 
 
-def _alt_sinir(p: ModuleType, sayfa: dict, x0: int, x1: int) -> int:
+def _alt_sinir(p: ModuleType, sayfa: dict, x0: int, x1: int) -> tuple[int, str | None]:
+    """Sutunun alt siniri ve (varsa) uyari: serit sutunla ortusuyor ama
+    SERIT_ORTUSME_EN_AZ'in altinda -> sinir SAYFA_ALTI alindi; serit
+    sutunun altina kadar iniyorsa son soru seridin yanina uzayabilir."""
     s = sayfa.get("anahtar")
-    if s and min(x1, s[3]) - max(x0, s[2]) > 20:
-        return int(s[0]) - int(p.SERIT_PAY)
-    return int(p.SAYFA_ALTI)
+    if not s:
+        return int(p.SAYFA_ALTI), None
+    ortusme = min(x1, s[3]) - max(x0, s[2])
+    if ortusme > getattr(p, "SERIT_ORTUSME_EN_AZ", 20):
+        return int(s[0]) - int(p.SERIT_PAY), None
+    if ortusme > 0:
+        return int(
+            p.SAYFA_ALTI
+        ), f"serit sutunla {ortusme} px ortusuyor, sinir SAYFA_ALTI"
+    return int(p.SAYFA_ALTI), None
+
+
+def alt_sinir_alti(
+    a: np.ndarray,
+    x0: int,
+    x1: int,
+    alt: int,
+    *,
+    serit: list[int] | None,
+    serit_pay: int,
+) -> tuple[int, int] | None:
+    """Sutunun alt sinirinin ALTINDA kutu icine girmemis koyu satir: (y, px).
+
+    Tarama alt'tan asagi iner. Sayfada serit varsa seridin altinda (serit[1]+2)
+    durur: orasi sayfa altligi. Serit sutunla yatayda ORTUSUYORSA serit
+    satirlari (serit[0]-serit_pay ..) atlanir; ortusmuyorsa atlanmaz -- serit
+    pikselleri zaten sutun disindadir, sutunun serit hizasina inen metni ise
+    tam bu satirlarda kesilir (acl24mg s29/104/113: SAYFA_ALTI 885, metin
+    889'a kadar; D/E siklari kesik, okuyucu 'kesik' notu dusmustu). Serit yoksa
+    ilk GENIS satirda (> ALTLIK_GENISLIK px: sayfa cizgisi) durur. Aradaki
+    > ARTIK_ESIK piksellik ilk satir kesik icerik. Sayilar-1'de SAYFA_ALTI 878
+    sol sutunun son sorusunu 10 sayfada kesmisti; bu olcum onu kutu asamasinda
+    yakalar."""
+    son = a.shape[0]
+    atla_y = son  # serit sutunla ortusuyorsa bu satirdan itibaren atlanir
+    if serit:
+        son = min(son, serit[1] + 3)
+        if min(x1, serit[3]) > max(x0, serit[2]):
+            atla_y = serit[0] - serit_pay
+    koyu = (a[alt:son, x0:x1].min(axis=2) < 160).sum(axis=1)
+    for i, px in enumerate(koyu.tolist()):
+        y = alt + i
+        if y >= atla_y:
+            continue
+        if px > ALTLIK_GENISLIK:
+            break
+        if px > ARTIK_ESIK:
+            return y, int(px)
+    return None
+
+
+def _ustler(
+    p: ModuleType,
+    a: np.ndarray,
+    sinir: tuple[int, int],
+    capa: list[dict],
+    mur: np.ndarray,
+) -> list[int]:
+    """Sutundaki her capanin kutu ust siniri (numaradan yukari bos bant; tavan
+    onceki numara / UST_BANT / konu sayfasi ayrac cizgisi)."""
+    x0, x1 = sinir
+    cizgi = _yatay_cizgiler(a, x0, x1) if getattr(p, "AYRAC_TAVAN", False) else []
+    ustler = []
+    for i, c in enumerate(capa):
+        tavan = capa[i - 1]["y"] + 12 if i else p.UST_BANT
+        # Konu sayfasi ayrac cizgisi (ORNEK bolumu ile sorular arasi):
+        # numaranin ustundeki en yakin sutun-genisligi yatay cizgi tavandir.
+        ust_cizgi = [y for y in cizgi if tavan <= y < c["y"]]
+        if ust_cizgi:
+            tavan = max(ust_cizgi) + getattr(p, "AYRAC_PAY", 2)
+        ustler.append(min(_ust(c["y"], tavan, mur), c["y"] - UST_PAY))
+    return ustler
+
+
+def _sutun_alt_siniri(
+    p: ModuleType,
+    sayfa: dict,
+    a: np.ndarray,
+    yer: tuple[int, str, int, int],
+    *,
+    artik: list[str],
+    uyarilar: list[str],
+) -> int:
+    """Sutunun alt siniri; kismi serit ortusmesi uyarisi ve alt sinir altinda
+    kalan murekkep (kesik) kaydi yan etki olarak listelere eklenir."""
+    d, s, x0, x1 = yer
+    alt_sinir, uyari = _alt_sinir(p, sayfa, x0, x1)
+    if uyari:
+        uyarilar.append(f"s{d}{s}: {uyari}")
+    kesik = alt_sinir_alti(
+        a, x0, x1, alt_sinir, serit=sayfa.get("anahtar"), serit_pay=int(p.SERIT_PAY)
+    )
+    if kesik:
+        artik.append(f"alt sinir altinda murekkep s{d}{s} y{kesik[0]} ({kesik[1]} px)")
+    return alt_sinir
 
 
 def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
@@ -95,7 +194,9 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
     for t in tarama["testler"]:
         for c in t["capalar"]:
             sutun[(c["dosya"], c["sutun"])].append(c)
-    kutular, artik = [], []
+    kutular: list[dict[str, Any]] = []
+    artik: list[str] = []
+    uyarilar: list[str] = []
     cache: dict[int, np.ndarray] = {}
     for (d, s), sutun_capa in sorted(sutun.items()):
         if d not in cache:
@@ -105,17 +206,15 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
         x0, x1 = p.SUTUNLAR[d % 2][s]
         mur = _satirlar(a, x0, x1)
         capa = sorted(sutun_capa, key=lambda c: c["y"])
-        alt_sinir = _alt_sinir(p, tarama["sayfalar"][str(d)], x0, x1)
-        ustler = []
-        cizgi = _yatay_cizgiler(a, x0, x1) if getattr(p, "AYRAC_TAVAN", False) else []
-        for i, c in enumerate(capa):
-            tavan = capa[i - 1]["y"] + 12 if i else p.UST_BANT
-            # Konu sayfasi ayrac cizgisi (ORNEK bolumu ile sorular arasi):
-            # numaranin ustundeki en yakin sutun-genisligi yatay cizgi tavandir.
-            ust_cizgi = [y for y in cizgi if tavan <= y < c["y"]]
-            if ust_cizgi:
-                tavan = max(ust_cizgi) + 2
-            ustler.append(min(_ust(c["y"], tavan, mur), c["y"] - UST_PAY))
+        alt_sinir = _sutun_alt_siniri(
+            p,
+            tarama["sayfalar"][str(d)],
+            a,
+            (d, s, x0, x1),
+            artik=artik,
+            uyarilar=uyarilar,
+        )
+        ustler = _ustler(p, a, (x0, x1), capa, mur)
         for i, c in enumerate(capa):
             alt = ustler[i + 1] - 1 if i + 1 < len(capa) else alt_sinir
             cv = cevap[(d, s, i)]
@@ -142,6 +241,10 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
                 artik.append(f"artik murekkep s{d}{s} y{y} ({int(koyu[y])} px)")
                 break
     kutular.sort(key=lambda k: (k["birim"], k["soru"]))
+    if uyarilar:
+        print(f"uyari {len(uyarilar)} (serit-sutun kismi ortusme; kapi degil):")
+        for u in uyarilar[:20]:
+            print("   ", u)
     yuk = sorted(k["kutu"][3] - k["kutu"][1] for k in kutular)
     veri = {
         "kaynak": p.KAYNAK_ADI,
@@ -169,7 +272,8 @@ def kapilar(p: ModuleType, veri: dict[str, Any], tarama: dict[str, Any]) -> list
         if not y0 <= k["capa"][0] < y1:
             hata.append(f"numara kutu disinda: {k['birim']}_{k['soru']}")
         s = tarama["sayfalar"][str(k["dosya"])].get("anahtar")
-        if s and min(x1, s[3]) - max(x0, s[2]) > 20 and y1 > s[0]:
+        ortusme = min(x1, s[3]) - max(x0, s[2]) if s else 0
+        if s and ortusme > getattr(p, "SERIT_ORTUSME_EN_AZ", 20) and y1 > s[0]:
             hata.append(f"anahtara giriyor: {k['birim']}_{k['soru']}")
     grup = defaultdict(list)
     for k in veri["kutular"]:
