@@ -1,0 +1,22 @@
+_SAYAC_SQL = """
+UPDATE topic_hierarchy t
+   SET total_questions = COALESCE(g.adet, 0), updated_at = now()
+  FROM (SELECT th.id, count(qb.id) AS adet
+          FROM topic_hierarchy th
+          LEFT JOIN question_bank qb
+                 ON qb.primary_topic_id = th.id AND qb.is_active IS TRUE
+         GROUP BY th.id) g
+ WHERE g.id = t.id
+   AND t.total_questions IS DISTINCT FROM COALESCE(g.adet, 0)
+"""
+
+
+def _refresh_safe_for_beta(b) -> None:
+    var = b.execute(
+        sa.text("SELECT to_regprocedure('public.refresh_safe_for_beta()')")
+    ).scalar()
+    if var is None:
+        _log.info("[@@NO@@] refresh_safe_for_beta() yok -- atlandi (taze/CI DB)")
+        return
+    b.execute(sa.text("SELECT refresh_safe_for_beta()"))
+    _log.info("[@@NO@@] mv_safe_for_beta yenilendi")

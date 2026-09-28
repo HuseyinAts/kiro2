@@ -1,0 +1,420 @@
+{
+"kaynak": "2022-2023 ACIL Analitik Geometri",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"kenar_kapisi_ihlali": 0,
+"ortme_soru": 40,
+"kenar": [],
+"ortme": [
+{
+"birim": "ACL23AG-T002",
+"soru": 5,
+"dosya": 25,
+"simge": [
+88,
+360
+],
+"piksel": 8
+},
+{
+"birim": "ACL23AG-T003",
+"soru": 1,
+"dosya": 26,
+"simge": [
+92,
+371
+],
+"piksel": 9
+},
+{
+"birim": "ACL23AG-T003",
+"soru": 2,
+"dosya": 26,
+"simge": [
+651,
+378
+],
+"piksel": 11
+},
+{
+"birim": "ACL23AG-T003",
+"soru": 5,
+"dosya": 27,
+"simge": [
+93,
+358
+],
+"piksel": 10
+},
+{
+"birim": "ACL23AG-T004",
+"soru": 1,
+"dosya": 28,
+"simge": [
+93,
+371
+],
+"piksel": 19
+},
+{
+"birim": "ACL23AG-T007",
+"soru": 7,
+"dosya": 73,
+"simge": [
+558,
+365
+],
+"piksel": 19
+},
+{
+"birim": "ACL23AG-T010",
+"soru": 8,
+"dosya": 80,
+"simge": [
+92,
+375
+],
+"piksel": 29
+},
+{
+"birim": "ACL23AG-T010",
+"soru": 10,
+"dosya": 80,
+"simge": [
+721,
+371
+],
+"piksel": 15
+},
+{
+"birim": "ACL23AG-T011",
+"soru": 1,
+"dosya": 81,
+"simge": [
+93,
+355
+],
+"piksel": 5
+},
+{
+"birim": "ACL23AG-T011",
+"soru": 5,
+"dosya": 82,
+"simge": [
+93,
+376
+],
+"piksel": 6
+},
+{
+"birim": "ACL23AG-T011",
+"soru": 6,
+"dosya": 82,
+"simge": [
+651,
+375
+],
+"piksel": 6
+},
+{
+"birim": "ACL23AG-T011",
+"soru": 9,
+"dosya": 83,
+"simge": [
+92,
+355
+],
+"piksel": 5
+},
+{
+"birim": "ACL23AG-T012",
+"soru": 1,
+"dosya": 84,
+"simge": [
+89,
+371
+],
+"piksel": 17
+},
+{
+"birim": "ACL23AG-T012",
+"soru": 2,
+"dosya": 84,
+"simge": [
+458,
+377
+],
+"piksel": 9
+},
+{
+"birim": "ACL23AG-T013",
+"soru": 1,
+"dosya": 87,
+"simge": [
+92,
+356
+],
+"piksel": 9
+},
+{
+"birim": "ACL23AG-T013",
+"soru": 1,
+"dosya": 87,
+"simge": [
+302,
+362
+],
+"piksel": 13
+},
+{
+"birim": "ACL23AG-T015",
+"soru": 5,
+"dosya": 93,
+"simge": [
+90,
+355
+],
+"piksel": 13
+},
+{
+"birim": "ACL23AG-T016",
+"soru": 9,
+"dosya": 97,
+"simge": [
+90,
+355
+],
+"piksel": 12
+},
+{
+"birim": "ACL23AG-T017",
+"soru": 5,
+"dosya": 99,
+"simge": [
+93,
+355
+],
+"piksel": 13
+},
+{
+"birim": "ACL23AG-T019",
+"soru": 1,
+"dosya": 119,
+"simge": [
+92,
+358
+],
+"piksel": 10
+},
+{
+"birim": "ACL23AG-T019",
+"soru": 6,
+"dosya": 120,
+"simge": [
+89,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL23AG-T019",
+"soru": 7,
+"dosya": 120,
+"simge": [
+336,
+376
+],
+"piksel": 9
+},
+{
+"birim": "ACL23AG-T019",
+"soru": 8,
+"dosya": 120,
+"simge": [
+684,
+371
+],
+"piksel": 4
+},
+{
+"birim": "ACL23AG-T020",
+"soru": 1,
+"dosya": 121,
+"simge": [
+89,
+355
+],
+"piksel": 7
+},
+{
+"birim": "ACL23AG-T020",
+"soru": 5,
+"dosya": 122,
+"simge": [
+92,
+371
+],
+"piksel": 8
+},
+{
+"birim": "ACL23AG-T022",
+"soru": 2,
+"dosya": 126,
+"simge": [
+309,
+371
+],
+"piksel": 6
+},
+{
+"birim": "ACL23AG-T022",
+"soru": 8,
+"dosya": 127,
+"simge": [
+380,
+355
+],
+"piksel": 15
+},
+{
+"birim": "ACL23AG-T023",
+"soru": 1,
+"dosya": 128,
+"simge": [
+93,
+371
+],
+"piksel": 13
+},
+{
+"birim": "ACL23AG-T024",
+"soru": 3,
+"dosya": 130,
+"simge": [
+787,
+371
+],
+"piksel": 10
+},
+{
+"birim": "ACL23AG-T025",
+"soru": 1,
+"dosya": 132,
+"simge": [
+94,
+371
+],
+"piksel": 11
+},
+{
+"birim": "ACL23AG-T025",
+"soru": 5,
+"dosya": 133,
+"simge": [
+93,
+355
+],
+"piksel": 10
+},
+{
+"birim": "ACL23AG-T026",
+"soru": 9,
+"dosya": 157,
+"simge": [
+92,
+355
+],
+"piksel": 12
+},
+{
+"birim": "ACL23AG-T027",
+"soru": 1,
+"dosya": 158,
+"simge": [
+90,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL23AG-T027",
+"soru": 5,
+"dosya": 159,
+"simge": [
+93,
+358
+],
+"piksel": 8
+},
+{
+"birim": "ACL23AG-T028",
+"soru": 1,
+"dosya": 161,
+"simge": [
+93,
+355
+],
+"piksel": 22
+},
+{
+"birim": "ACL23AG-T028",
+"soru": 6,
+"dosya": 162,
+"simge": [
+585,
+371
+],
+"piksel": 7
+},
+{
+"birim": "ACL23AG-T028",
+"soru": 10,
+"dosya": 163,
+"simge": [
+447,
+356
+],
+"piksel": 11
+},
+{
+"birim": "ACL23AG-T029",
+"soru": 5,
+"dosya": 165,
+"simge": [
+89,
+355
+],
+"piksel": 8
+},
+{
+"birim": "ACL23AG-T029",
+"soru": 9,
+"dosya": 166,
+"simge": [
+92,
+371
+],
+"piksel": 13
+},
+{
+"birim": "ACL23AG-T030",
+"soru": 1,
+"dosya": 167,
+"simge": [
+93,
+355
+],
+"piksel": 11
+},
+{
+"birim": "ACL23AG-T032",
+"soru": 2,
+"dosya": 172,
+"simge": [
+724,
+371
+],
+"piksel": 7
+}
+]
+}
