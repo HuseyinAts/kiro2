@@ -69,3 +69,11 @@ Kesif: `kesif` araci (120 sayfa) + `_a21_gecici/ak_*.py` olcumleri.
   0100 eski hat 187 pasif, 0101 toplu beta 753/868 (115 gorunen `[??]`
   disarida). Round-trip temiz.
 * exam_type TYT, subject KIMYA.
+
+## 7. Sonradan duzeltme: ortak oncul (AKT20AY'de bulunan sinif, 28 Eyl 2026)
+
+* s196 sag sutun numarasiz ortak tablo + '8., 9., 10., ve 11. sorulari tabloya
+  gore cevaplayiniz': tablo yalniz 8. sorunun kirpiminda (EK_CAPA ile), 9-11
+  (T032_09 .. T032_11) tablo olmadan cevaplanamaz ama 0101 ile aktif olmustu.
+* `ORTAK_ONCUL_YOK` + 0105: bayrak `ortak_oncul_kirpimda_yok`, is_active FALSE
+  (gunluklu, geri alinabilir). Aktif 753 -> 750.
