@@ -1,0 +1,547 @@
+{
+"kaynak": "2022-2023 ACIL Kati Cisimler",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler yakalamada yok (yakalama basili s10'dan basliyor); konu adlari test ust bandindan (iki bagimsiz okuma, fark 0), konu araligi o konunun ilk test sayfasindan (dosya no) bir sonraki konunun ilk test sayfasina",
+"bolumler": [
+{
+"kod": "GEO-ACL23KC-B01",
+"no": 1,
+"ad": "KATI C\u0130S\u0130MLER"
+}
+],
+"konular": [
+{
+"kod": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"ad": "Dik Prizmalar",
+"icindekiler_adi": "Dik Prizmalar",
+"sayfalar": [
+10,
+40
+]
+},
+{
+"kod": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"ad": "K\u00fcp",
+"icindekiler_adi": "K\u00fcp",
+"sayfalar": [
+41,
+62
+]
+},
+{
+"kod": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"ad": "Silindir",
+"icindekiler_adi": "Silindir",
+"sayfalar": [
+63,
+86
+]
+},
+{
+"kod": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"ad": "Piramit",
+"icindekiler_adi": "Piramit",
+"sayfalar": [
+87,
+111
+]
+},
+{
+"kod": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"ad": "Koni",
+"icindekiler_adi": "Koni",
+"sayfalar": [
+112,
+130
+]
+},
+{
+"kod": "GEO-ACL23KC-B01-K06",
+"bolum": "GEO-ACL23KC-B01",
+"ad": "K\u00fcre",
+"icindekiler_adi": "K\u00fcre",
+"sayfalar": [
+131,
+139
+]
+}
+],
+"test_sayisi": 39,
+"testler": [
+{
+"birim": "ACL23KC-T001",
+"test": 1,
+"sayfalar": [
+10,
+11
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T002",
+"test": 2,
+"sayfalar": [
+12,
+13
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T003",
+"test": 3,
+"sayfalar": [
+14,
+15
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T004",
+"test": 4,
+"sayfalar": [
+16,
+17
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T005",
+"test": 5,
+"sayfalar": [
+18,
+19
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T006",
+"test": 6,
+"sayfalar": [
+20,
+21
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T007",
+"test": 7,
+"sayfalar": [
+22,
+23
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T008",
+"test": 8,
+"sayfalar": [
+24,
+25
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T009",
+"test": 9,
+"sayfalar": [
+26,
+27
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T010",
+"test": 10,
+"sayfalar": [
+28,
+29
+],
+"bant": "Dik Prizmalar",
+"konu": "GEO-ACL23KC-B01-K01",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T011",
+"test": 11,
+"sayfalar": [
+41,
+42
+],
+"bant": "K\u00fcp",
+"konu": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T012",
+"test": 12,
+"sayfalar": [
+43,
+44
+],
+"bant": "K\u00fcp",
+"konu": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T013",
+"test": 13,
+"sayfalar": [
+45,
+46
+],
+"bant": "K\u00fcp",
+"konu": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T014",
+"test": 14,
+"sayfalar": [
+47,
+48
+],
+"bant": "K\u00fcp",
+"konu": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T015",
+"test": 15,
+"sayfalar": [
+49,
+50
+],
+"bant": "K\u00fcp",
+"konu": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T016",
+"test": 16,
+"sayfalar": [
+51,
+52,
+53
+],
+"bant": "K\u00fcp",
+"konu": "GEO-ACL23KC-B01-K02",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL23KC-T017",
+"test": 17,
+"sayfalar": [
+63,
+64
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T018",
+"test": 18,
+"sayfalar": [
+65,
+66
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T019",
+"test": 19,
+"sayfalar": [
+67,
+68
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T020",
+"test": 20,
+"sayfalar": [
+69,
+70
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T021",
+"test": 21,
+"sayfalar": [
+71,
+72
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T022",
+"test": 22,
+"sayfalar": [
+73,
+74
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T023",
+"test": 23,
+"sayfalar": [
+75,
+76
+],
+"bant": "Silindir",
+"konu": "GEO-ACL23KC-B01-K03",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T024",
+"test": 24,
+"sayfalar": [
+87,
+88
+],
+"bant": "Piramit",
+"konu": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T025",
+"test": 25,
+"sayfalar": [
+89,
+90
+],
+"bant": "Piramit",
+"konu": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T026",
+"test": 26,
+"sayfalar": [
+91,
+92
+],
+"bant": "Piramit",
+"konu": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T027",
+"test": 27,
+"sayfalar": [
+93,
+94
+],
+"bant": "Piramit",
+"konu": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T028",
+"test": 28,
+"sayfalar": [
+95,
+96
+],
+"bant": "Piramit",
+"konu": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T029",
+"test": 29,
+"sayfalar": [
+97,
+98
+],
+"bant": "Piramit",
+"konu": "GEO-ACL23KC-B01-K04",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T030",
+"test": 30,
+"sayfalar": [
+112,
+113
+],
+"bant": "Koni",
+"konu": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T031",
+"test": 31,
+"sayfalar": [
+114,
+115
+],
+"bant": "Koni",
+"konu": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T032",
+"test": 32,
+"sayfalar": [
+116,
+117
+],
+"bant": "Koni",
+"konu": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T033",
+"test": 33,
+"sayfalar": [
+118,
+119
+],
+"bant": "Koni",
+"konu": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T034",
+"test": 34,
+"sayfalar": [
+120,
+121
+],
+"bant": "Koni",
+"konu": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T035",
+"test": 35,
+"sayfalar": [
+122,
+123
+],
+"bant": "Koni",
+"konu": "GEO-ACL23KC-B01-K05",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T036",
+"test": 36,
+"sayfalar": [
+131,
+132
+],
+"bant": "K\u00fcre",
+"konu": "GEO-ACL23KC-B01-K06",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T037",
+"test": 37,
+"sayfalar": [
+133,
+134
+],
+"bant": "K\u00fcre",
+"konu": "GEO-ACL23KC-B01-K06",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL23KC-T038",
+"test": 38,
+"sayfalar": [
+135,
+136
+],
+"bant": "K\u00fcre",
+"konu": "GEO-ACL23KC-B01-K06",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL23KC-T039",
+"test": 39,
+"sayfalar": [
+137,
+138,
+139
+],
+"bant": "K\u00fcre",
+"konu": "GEO-ACL23KC-B01-K06",
+"bolum": "GEO-ACL23KC-B01",
+"soru_sayisi": 12
+}
+]
+}
