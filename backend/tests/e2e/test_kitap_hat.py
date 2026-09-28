@@ -38,7 +38,7 @@ from scripts.kitap.kitap_hat import migration_uret as mu  # noqa: E402
 from scripts.kitap.kitap_hat import ortak  # noqa: E402
 from scripts.kitap.kitap_hat import tarama as ta  # noqa: E402
 
-PROFILLER = ["acl23ag", "acl23kc", "acl24mg", "acl25pl", "acl25s1"]
+PROFILLER = ["acl23ag", "acl23kc", "acl24mg", "acl25pl", "acl25s1", "acl25s2"]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 
 
@@ -131,6 +131,10 @@ def test_glif_teyit_ve_goz_c_mutasyonlari_durur(k: Kitap) -> None:
         assert any("glif uyumsuz" in x for x in an.dogrula(k.p, h))
         h = _boz(k.ham_okumalar, lambda h: h["glif"]["goz_teyit"].update({ilk: "Z"}))
         assert any("goz teyidi" in x for x in an.dogrula(k.p, h))
+    if not k.s["glif_disi"]:
+        # Her test glifle bolutlendi (acl25s2): goz_c kaydi yok.
+        assert ilk is not None
+        return
     t = str(k.s["glif_disi"][0])
 
     def f(h: dict) -> None:

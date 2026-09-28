@@ -1,0 +1,132 @@
+{
+"kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
+"kenar_kapisi_ihlali": 0,
+"kesik_kapisi_ihlali": 0,
+"ortme_soru": 12,
+"kenar": [],
+"kesik": [],
+"ortme": [
+{
+"birim": "ACL25S2-T006",
+"soru": 9,
+"dosya": 15,
+"simge": [
+650,
+364
+],
+"piksel": 4
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 1,
+"dosya": 35,
+"simge": [
+102,
+362
+],
+"piksel": 6
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 2,
+"dosya": 35,
+"simge": [
+501,
+362
+],
+"piksel": 15
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 1,
+"dosya": 41,
+"simge": [
+102,
+361
+],
+"piksel": 9
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 6,
+"dosya": 44,
+"simge": [
+536,
+378
+],
+"piksel": 58
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 9,
+"dosya": 66,
+"simge": [
+641,
+380
+],
+"piksel": 5
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 1,
+"dosya": 79,
+"simge": [
+103,
+361
+],
+"piksel": 42
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 1,
+"dosya": 115,
+"simge": [
+102,
+354
+],
+"piksel": 13
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 6,
+"dosya": 118,
+"simge": [
+473,
+378
+],
+"piksel": 12
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 2,
+"dosya": 182,
+"simge": [
+432,
+378
+],
+"piksel": 12
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 9,
+"dosya": 183,
+"simge": [
+721,
+365
+],
+"piksel": 10
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 5,
+"dosya": 189,
+"simge": [
+366,
+363
+],
+"piksel": 7
+}
+]
+}
