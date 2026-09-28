@@ -19,7 +19,7 @@ downgrade tam geri alir. Taze/CI DB'de satir yoksa dokunulmaz.
 
 import logging
 from collections.abc import Sequence
-from typing import Union
+from typing import Any, Union
 
 import sqlalchemy as sa
 
@@ -115,7 +115,7 @@ def upgrade() -> None:
         sa.Column("bayrak_vardi", sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    satirlar = []
+    satirlar: list[Any] = []
     for birim, sira in HEDEF:
         satirlar += b.execute(
             sa.text(_HEDEF_SQL),
