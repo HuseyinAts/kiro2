@@ -259,6 +259,21 @@ YONTEM_BELGESI = "MAT_ACIL_2025_ILAC_SAYILAR2_YONTEM.md"
 # iniyor (s49 T024_01 kenar): tavan = cizgi + 7.
 AYRAC_PAY = 7
 
+# Numarasiz ortak oncul sutun tepesinde, HICBIR kirpimda yok (gozle, s112 / s113
+# sol sutun; ust_oncul_tara.py ile tum kitap_hat kitaplarinda tek iki aday):
+#   s112: '5. ve 6. sorulari asagidaki bilgilere gore cevaplayiniz.' + olcum
+#         tablosu (Grup / 1.olcum / 2.olcum) + m = |1.olcum - 2.olcum| bilgisi;
+#   s113: '1. ve 2. sorulari asagidaki bilgilere gore cevaplayiniz.' +
+#         f(t) = 30 . |18 - 2t| + 400 kupon fonksiyonu.
+# Okuyucular 'ortak bilgi kutusu kirpimda yok' notu dusmustu; sorular oncul
+# olmadan cevaplanamaz -> bayrak 'ortak_oncul_kirpimda_yok', beta disi.
+ORTAK_ONCUL_YOK: tuple[str, ...] = (
+    "ACL25S2-T065_05",
+    "ACL25S2-T065_06",
+    "ACL25S2-T066_01",
+    "ACL25S2-T066_02",
+)
+
 SONUC = {
     "sayfa_turu": {"kapak": 4, "konu": 9, "test": 179},
     "harf": {"A": 151, "B": 176, "C": 253, "D": 207, "E": 151},
@@ -287,4 +302,10 @@ SONUC = {
     "eski_modern": 43,
     "migration_no": 93,
     "onceki": "0092_acl25s1_beta_onay",
+    # T065_05/06 ve T066_01/02 0106 ile servis disi (ORTAK_ONCUL_YOK), aktif 929/938.
+    "ortak_oncul_duzeltme": {
+        "migration_no": 106,
+        "servis_disi": 4,
+        "beta_sonrasi": "929/938",
+    },
 }
