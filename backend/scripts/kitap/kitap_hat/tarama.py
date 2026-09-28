@@ -48,21 +48,45 @@ def beklenen_test_sayfalari(p: ModuleType) -> set[int]:
     return {n for a, b in p.TEST_SAYFALARI for n in range(a, b + 1)}
 
 
-def testleri_bul(sayfalar: dict[int, dict]) -> list[list[int]]:
+def testleri_bul(
+    sayfalar: dict[int, dict], bas: set[int] | None = None
+) -> list[list[int]]:
+    """Test = ardisik test sayfalari.
+
+    bas None (varsayilan, ANAHTAR_KAPSAMI 'test'): test anahtarli sayfada biter.
+    bas verilirse (TEST_SINIRI 'bas_listesi': her sayfanin kendi cevap seridi
+    var, numaralar sayfalar boyunca surer): test, bas kumesindeki sayfada ya da
+    test disi sayfadan sonra baslar; HER sayfasi anahtarli olmali.
+    """
     testler: list[list[int]] = []
     cur: list[int] = []
     for n in sorted(sayfalar):
         v = sayfalar[n]
         if v["tur"] != "test":
             if cur:
-                raise SystemExit(f"anahtarsiz biten test sayfalari: {cur}")
+                if bas is not None:
+                    testler.append(cur)
+                    cur = []
+                else:
+                    raise SystemExit(f"anahtarsiz biten test sayfalari: {cur}")
+            continue
+        if bas is not None:
+            if not v["anahtar"]:
+                raise SystemExit(f"seritsiz test sayfasi: {n}")
+            if cur and n in bas:
+                testler.append(cur)
+                cur = []
+            cur.append(n)
             continue
         cur.append(n)
         if v["anahtar"]:
             testler.append(cur)
             cur = []
     if cur:
-        raise SystemExit(f"sonda anahtarsiz test: {cur}")
+        if bas is not None:
+            testler.append(cur)
+        else:
+            raise SystemExit(f"sonda anahtarsiz test: {cur}")
     return testler
 
 
@@ -74,7 +98,8 @@ def capalar(
     anahtar: list[int] | None = None,
 ) -> tuple[list[dict], list[list[int]]]:
     """Sayfanin soru capalari (sutun, y, x) ve capa olmayan glifler."""
-    kir = ortak.kirmizi(a)
+    # Basili numara rengi profile gore (varsayilan kirmizi; MOZ duzeni mavi).
+    kir = getattr(p, "numara_maskesi", ortak.kirmizi)(a)
     out: list[dict] = []
     disari = []
     py0, py1, px0, px1 = p.PENCERE
@@ -117,13 +142,28 @@ def capalar(
             disari.append([gy, gx])
             continue
         ny = min(s[0].start for s in bl) + y0
-        nx = min(s[1].start for s in bl if s[0].start + y0 - ny <= 4) + x0
+        ilk = min(
+            (s for s in bl if s[0].start + y0 - ny <= 4), key=lambda s: s[1].start
+        )
+        nx = ilk[1].start + x0
         if not dx0 <= nx - gx <= dx1:
+            disari.append([gy, gx])
+            continue
+        gecerli = getattr(p, "capa_gecerli", None)
+        if gecerli is not None and not gecerli(a, int(ny), int(nx)):
             disari.append([gy, gx])
             continue
         if any(c["sutun"] == sut and abs(c["y"] - ny) < 20 for c in out):
             continue
-        out.append({"sutun": sut, "y": int(ny), "x": int(nx), "simge": [gy, gx]})
+        out.append(
+            {
+                "sutun": sut,
+                "y": int(ny),
+                "x": int(nx),
+                "simge": [gy, gx],
+                "numara_w": int(ilk[1].stop - ilk[1].start),
+            }
+        )
     out.sort(key=lambda c: (c["sutun"], c["y"]))
     return out, disari
 
@@ -134,15 +174,24 @@ def tara(p: ModuleType) -> dict[str, Any]:
     for f in sorted(d.glob("sayfa_*.png")):
         n = int(f.stem[-4:])
         sayfalar[n] = sayfa_olc(p, ortak.kart(p, d, n), n)
-    testler = testleri_bul(sayfalar)
+    sayfa_capa: dict[int, tuple[list[dict], list[list[int]]]] = {}
+    for n, v in sayfalar.items():
+        if v["tur"] == "test":
+            sayfa_capa[n] = capalar(p, ortak.kart(p, d, n), n, v["glif"], v["anahtar"])
+    bas = None
+    if getattr(p, "TEST_SINIRI", "anahtar") == "bas_listesi":
+        # Her sayfanin kendi seridi var, numara sayfalar boyunca surer: test
+        # baslangic sayfalari profilde (sayfa basina serit okumasindan: seridi
+        # '1.' ile baslayan sayfalar; iki okuma ayni). Dogrulama: anahtar
+        # numaralari her testte 1..N.
+        bas = set(p.BAS_SAYFALARI)
+    testler = testleri_bul(sayfalar, bas)
     cikti: list[dict[str, Any]] = []
     disari_top = []
     for i, g in enumerate(testler, 1):
         capa = []
         for n in g:
-            c, dis = capalar(
-                p, ortak.kart(p, d, n), n, sayfalar[n]["glif"], sayfalar[n]["anahtar"]
-            )
+            c, dis = sayfa_capa[n]
             capa += [{"dosya": n, **x} for x in c]
             disari_top += [{"test": i, "dosya": n, "glif": x} for x in dis]
         cikti.append({"test": i, "sayfalar": g, "capalar": capa})

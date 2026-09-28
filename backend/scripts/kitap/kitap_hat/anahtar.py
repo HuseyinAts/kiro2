@@ -49,13 +49,27 @@ def hazirla(p: ModuleType) -> None:
     o.mkdir(parents=True, exist_ok=True)
     for t in tar["testler"]:
         i = t["test"]
-        son, ilk = t["sayfalar"][-1], t["sayfalar"][0]
-        y0, y1, x0, x1 = tar["sayfalar"][str(son)]["anahtar"]
-        k = Image.open(d / f"sayfa_{son:04d}.png").convert("RGB").crop(p.KART)
-        s = k.crop((max(0, x0 - 6), y0 - 6, min(k.width, x1 + 8), y1 + 6))
-        s.resize((s.width * 3, s.height * 3), Image.Resampling.LANCZOS).save(
-            o / f"serit_{i:03d}.png"
+        ilk = t["sayfalar"][0]
+        # Anahtarli her sayfanin seridi (cogu kitapta yalniz son sayfa);
+        # birden cok ise sayfa sirasiyla alt alta.
+        parca = []
+        for n in anahtarli_sayfalar(tar, t):
+            y0, y1, x0, x1 = tar["sayfalar"][str(n)]["anahtar"]
+            k = Image.open(d / f"sayfa_{n:04d}.png").convert("RGB").crop(p.KART)
+            s = k.crop((max(0, x0 - 6), y0 - 6, min(k.width, x1 + 8), y1 + 6))
+            parca.append(
+                s.resize((s.width * 3, s.height * 3), Image.Resampling.LANCZOS)
+            )
+        m = Image.new(
+            "RGB",
+            (max(s.width for s in parca), sum(s.height + 12 for s in parca) - 12),
+            (255, 255, 255),
         )
+        yy = 0
+        for s in parca:
+            m.paste(s, (0, yy))
+            yy += s.height + 12
+        m.save(o / f"serit_{i:03d}.png")
         b = Image.open(d / f"sayfa_{ilk:04d}.png").convert("RGB").crop(p.KART)
         b = b.crop((0, 0, k.width, p.BANT_Y_ALT))
         b.resize((b.width * 2, b.height * 2), Image.Resampling.LANCZOS).save(
@@ -63,6 +77,10 @@ def hazirla(p: ModuleType) -> None:
         )
     (o / "talimat.md").write_text(talimat(p, len(tar["testler"])), "utf-8")
     print(len(tar["testler"]), "test ->", o)
+
+
+def anahtarli_sayfalar(tar: dict[str, Any], t: dict[str, Any]) -> list[int]:
+    return [int(n) for n in t["sayfalar"] if tar["sayfalar"][str(n)]["anahtar"]]
 
 
 def talimat(p: ModuleType, n: int) -> str:
@@ -106,9 +124,31 @@ def _harf_bloblari(p: ModuleType, s: np.ndarray) -> list[tuple[slice, slice]]:
     siyah = (mn < p.GLIF_HARF_ESIK) & (mx - mn < 45)
     siyah = ndimage.binary_dilation(siyah, np.ones((2, 1), bool))
     lab, _ = ndimage.label(siyah)
+    tum = list(ndimage.find_objects(lab))
+    if getattr(p, "HARF_NOKTA_SONRASI", False):
+        # Numara da harfle ayni renkte ('1.C 2.B'): harf = satirda NOKTADAN
+        # (en fazla 3x3 blob) hemen sonraki blob.
+        def nokta(o: tuple[slice, slice]) -> bool:
+            return bool(o[0].stop - o[0].start <= 4 and o[1].stop - o[1].start <= 3)
+
+        tum.sort(key=lambda o: (o[0].stop, o[1].start))
+        sec = []
+        for o in tum:
+            if nokta(o):
+                continue
+            onceki = [
+                q
+                for q in tum
+                if q[1].stop <= o[1].start
+                and o[1].start - q[1].stop <= 4
+                and abs(q[0].stop - o[0].stop) <= 3
+            ]
+            if onceki and nokta(max(onceki, key=lambda q: q[1].stop)):
+                sec.append(o)
+        tum = sec
     bl = [
         o
-        for o in ndimage.find_objects(lab)
+        for o in tum
         if p.GLIF_HARF_H[0] <= o[0].stop - o[0].start <= p.GLIF_HARF_H[1]
         and o[1].stop - o[1].start <= p.GLIF_HARF_W_EN_COK
     ]
@@ -130,18 +170,21 @@ def glif(p: ModuleType) -> dict[str, Any]:
     A = {x["test"]: x for x in a_oku["testler"]}
     vek, etiket, yer, kapsam_disi = [], [], [], []
     for t in tar["testler"]:
-        son = t["sayfalar"][-1]
-        y0, y1, x0, x1 = tar["sayfalar"][str(son)]["anahtar"]
-        a = ortak.kart(p, d, son)
-        s = a[y0 + 1 : y1, x0 + 1 : x1]
-        harf = _harf_bloblari(p, s)
+        harf, siyahlar = [], []
+        for n in anahtarli_sayfalar(tar, t):
+            y0, y1, x0, x1 = tar["sayfalar"][str(n)]["anahtar"]
+            a = ortak.kart(p, d, n)
+            s = a[y0 + 1 : y1, x0 + 1 : x1]
+            mx, mn = s.max(axis=2), s.min(axis=2)
+            siyah = (mn < p.GLIF_HARF_ESIK) & (mx - mn < 45)
+            for o in _harf_bloblari(p, s):
+                harf.append(o)
+                siyahlar.append(siyah)
         cells = A[t["test"]]["hucreler"]
         if len(harf) != len(cells):
             kapsam_disi.append([t["test"], len(harf), len(cells)])
             continue
-        mx, mn = s.max(axis=2), s.min(axis=2)
-        siyah = (mn < p.GLIF_HARF_ESIK) & (mx - mn < 45)
-        for o, (no, h) in zip(harf, cells, strict=True):
+        for o, siyah, (no, h) in zip(harf, siyahlar, cells, strict=True):
             g = siyah[o].astype(np.uint8) * 255
             v = (
                 np.asarray(

@@ -1,0 +1,4063 @@
+{
+"kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+"arac": "scripts/kitap/kitap_hat/anahtar.py",
+"nereden": "her test sayfasinin altindaki tek satir cevap seridi (1) C | 2) D ...) + ayni sayfanin ust bandi (konu adi, 'Test - N')",
+"dogrulama": {
+"a_esittir_b_hucre": 505,
+"glif_loo_uyum": 430,
+"glif_goz_teyit": 1,
+"goz_c_hucre": 74,
+"hucre_sayisi_esittir_capa": true
+},
+"toplam_cevap": 505,
+"test_sayisi": 92,
+"harf_dagilimi": {
+"A": 60,
+"B": 99,
+"C": 139,
+"D": 134,
+"E": 73
+},
+"cevaplar": [
+{
+"birim": "ACL24MG-T001",
+"soru": 1,
+"cevap": "C",
+"dosya": 10,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T001",
+"soru": 2,
+"cevap": "D",
+"dosya": 10,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T001",
+"soru": 3,
+"cevap": "C",
+"dosya": 10,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T001",
+"soru": 4,
+"cevap": "E",
+"dosya": 10,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T001",
+"soru": 5,
+"cevap": "C",
+"dosya": 10,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 1,
+"cevap": "C",
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 2,
+"cevap": "D",
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 3,
+"cevap": "E",
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 4,
+"cevap": "B",
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 5,
+"cevap": "A",
+"dosya": 11,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 6,
+"cevap": "D",
+"dosya": 11,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T002",
+"soru": 7,
+"cevap": "C",
+"dosya": 11,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T003",
+"soru": 1,
+"cevap": "D",
+"dosya": 12,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T003",
+"soru": 2,
+"cevap": "C",
+"dosya": 12,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T003",
+"soru": 3,
+"cevap": "B",
+"dosya": 12,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T003",
+"soru": 4,
+"cevap": "A",
+"dosya": 12,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T003",
+"soru": 5,
+"cevap": "E",
+"dosya": 12,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T004",
+"soru": 1,
+"cevap": "D",
+"dosya": 21,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T004",
+"soru": 2,
+"cevap": "B",
+"dosya": 21,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T004",
+"soru": 3,
+"cevap": "C",
+"dosya": 21,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T004",
+"soru": 4,
+"cevap": "B",
+"dosya": 21,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T004",
+"soru": 5,
+"cevap": "E",
+"dosya": 21,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T004",
+"soru": 6,
+"cevap": "D",
+"dosya": 21,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T005",
+"soru": 1,
+"cevap": "C",
+"dosya": 22,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T005",
+"soru": 2,
+"cevap": "B",
+"dosya": 22,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T005",
+"soru": 3,
+"cevap": "C",
+"dosya": 22,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T005",
+"soru": 4,
+"cevap": "D",
+"dosya": 22,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T006",
+"soru": 1,
+"cevap": "A",
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T006",
+"soru": 2,
+"cevap": "C",
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T006",
+"soru": 3,
+"cevap": "A",
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T006",
+"soru": 4,
+"cevap": "D",
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T007",
+"soru": 1,
+"cevap": "D",
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T007",
+"soru": 2,
+"cevap": "C",
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T007",
+"soru": 3,
+"cevap": "D",
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T007",
+"soru": 4,
+"cevap": "D",
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T008",
+"soru": 1,
+"cevap": "A",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T008",
+"soru": 2,
+"cevap": "D",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T008",
+"soru": 3,
+"cevap": "B",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T008",
+"soru": 4,
+"cevap": "E",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T008",
+"soru": 5,
+"cevap": "D",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T008",
+"soru": 6,
+"cevap": "A",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T009",
+"soru": 1,
+"cevap": "A",
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T009",
+"soru": 2,
+"cevap": "A",
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T009",
+"soru": 3,
+"cevap": "B",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T009",
+"soru": 4,
+"cevap": "D",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T009",
+"soru": 5,
+"cevap": "B",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T010",
+"soru": 1,
+"cevap": "D",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T010",
+"soru": 2,
+"cevap": "A",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T010",
+"soru": 3,
+"cevap": "C",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T010",
+"soru": 4,
+"cevap": "B",
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T010",
+"soru": 5,
+"cevap": "E",
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T011",
+"soru": 1,
+"cevap": "E",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T011",
+"soru": 2,
+"cevap": "C",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T011",
+"soru": 3,
+"cevap": "C",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T011",
+"soru": 4,
+"cevap": "A",
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T011",
+"soru": 5,
+"cevap": "D",
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T012",
+"soru": 1,
+"cevap": "D",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T012",
+"soru": 2,
+"cevap": "C",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T012",
+"soru": 3,
+"cevap": "C",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T012",
+"soru": 4,
+"cevap": "B",
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T012",
+"soru": 5,
+"cevap": "B",
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 1,
+"cevap": "C",
+"dosya": 33,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 2,
+"cevap": "D",
+"dosya": 33,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 3,
+"cevap": "D",
+"dosya": 33,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 4,
+"cevap": "D",
+"dosya": 33,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 5,
+"cevap": "B",
+"dosya": 33,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 6,
+"cevap": "A",
+"dosya": 33,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T014",
+"soru": 1,
+"cevap": "D",
+"dosya": 34,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T014",
+"soru": 2,
+"cevap": "E",
+"dosya": 34,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T014",
+"soru": 3,
+"cevap": "C",
+"dosya": 34,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T014",
+"soru": 4,
+"cevap": "E",
+"dosya": 34,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T014",
+"soru": 5,
+"cevap": "C",
+"dosya": 34,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T014",
+"soru": 6,
+"cevap": "D",
+"dosya": 34,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 1,
+"cevap": "D",
+"dosya": 35,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 2,
+"cevap": "A",
+"dosya": 35,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 3,
+"cevap": "B",
+"dosya": 35,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 4,
+"cevap": "B",
+"dosya": 35,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 5,
+"cevap": "D",
+"dosya": 35,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 6,
+"cevap": "C",
+"dosya": 35,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T016",
+"soru": 1,
+"cevap": "E",
+"dosya": 36,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T016",
+"soru": 2,
+"cevap": "D",
+"dosya": 36,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T016",
+"soru": 3,
+"cevap": "D",
+"dosya": 36,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T016",
+"soru": 4,
+"cevap": "E",
+"dosya": 36,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T016",
+"soru": 5,
+"cevap": "D",
+"dosya": 36,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 1,
+"cevap": "A",
+"dosya": 37,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 2,
+"cevap": "B",
+"dosya": 37,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 3,
+"cevap": "C",
+"dosya": 37,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 4,
+"cevap": "D",
+"dosya": 37,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 5,
+"cevap": "C",
+"dosya": 37,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 6,
+"cevap": "C",
+"dosya": 37,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T018",
+"soru": 1,
+"cevap": "C",
+"dosya": 40,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T018",
+"soru": 2,
+"cevap": "A",
+"dosya": 40,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T018",
+"soru": 3,
+"cevap": "D",
+"dosya": 40,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T018",
+"soru": 4,
+"cevap": "D",
+"dosya": 40,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T018",
+"soru": 5,
+"cevap": "B",
+"dosya": 40,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T018",
+"soru": 6,
+"cevap": "D",
+"dosya": 40,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 1,
+"cevap": "C",
+"dosya": 41,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 2,
+"cevap": "E",
+"dosya": 41,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 3,
+"cevap": "C",
+"dosya": 41,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 4,
+"cevap": "B",
+"dosya": 41,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 5,
+"cevap": "D",
+"dosya": 41,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 6,
+"cevap": "C",
+"dosya": 41,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T020",
+"soru": 1,
+"cevap": "A",
+"dosya": 44,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T020",
+"soru": 2,
+"cevap": "A",
+"dosya": 44,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T020",
+"soru": 3,
+"cevap": "D",
+"dosya": 44,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T020",
+"soru": 4,
+"cevap": "C",
+"dosya": 44,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T020",
+"soru": 5,
+"cevap": "E",
+"dosya": 44,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T020",
+"soru": 6,
+"cevap": "A",
+"dosya": 44,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T021",
+"soru": 1,
+"cevap": "E",
+"dosya": 45,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T021",
+"soru": 2,
+"cevap": "D",
+"dosya": 45,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T021",
+"soru": 3,
+"cevap": "A",
+"dosya": 45,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T021",
+"soru": 4,
+"cevap": "C",
+"dosya": 45,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T021",
+"soru": 5,
+"cevap": "C",
+"dosya": 45,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T021",
+"soru": 6,
+"cevap": "E",
+"dosya": 45,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 1,
+"cevap": "C",
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 2,
+"cevap": "D",
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 3,
+"cevap": "C",
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 4,
+"cevap": "E",
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 5,
+"cevap": "A",
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 6,
+"cevap": "C",
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 1,
+"cevap": "D",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 2,
+"cevap": "B",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 3,
+"cevap": "D",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 4,
+"cevap": "C",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 5,
+"cevap": "C",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 6,
+"cevap": "C",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T024",
+"soru": 1,
+"cevap": "D",
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T024",
+"soru": 2,
+"cevap": "D",
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T024",
+"soru": 3,
+"cevap": "E",
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T024",
+"soru": 4,
+"cevap": "A",
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T024",
+"soru": 5,
+"cevap": "A",
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T024",
+"soru": 6,
+"cevap": "D",
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T025",
+"soru": 1,
+"cevap": "B",
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T025",
+"soru": 2,
+"cevap": "A",
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T025",
+"soru": 3,
+"cevap": "D",
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T025",
+"soru": 4,
+"cevap": "D",
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T025",
+"soru": 5,
+"cevap": "C",
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T025",
+"soru": 6,
+"cevap": "C",
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T026",
+"soru": 1,
+"cevap": "A",
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T026",
+"soru": 2,
+"cevap": "D",
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T026",
+"soru": 3,
+"cevap": "D",
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T026",
+"soru": 4,
+"cevap": "E",
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T026",
+"soru": 5,
+"cevap": "E",
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T027",
+"soru": 1,
+"cevap": "B",
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T027",
+"soru": 2,
+"cevap": "D",
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T027",
+"soru": 3,
+"cevap": "D",
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T027",
+"soru": 4,
+"cevap": "C",
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T028",
+"soru": 1,
+"cevap": "B",
+"dosya": 57,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T028",
+"soru": 2,
+"cevap": "D",
+"dosya": 57,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T028",
+"soru": 3,
+"cevap": "C",
+"dosya": 57,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T028",
+"soru": 4,
+"cevap": "C",
+"dosya": 57,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T028",
+"soru": 5,
+"cevap": "A",
+"dosya": 57,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T028",
+"soru": 6,
+"cevap": "C",
+"dosya": 57,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 1,
+"cevap": "D",
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 2,
+"cevap": "D",
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 3,
+"cevap": "B",
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 4,
+"cevap": "B",
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 5,
+"cevap": "C",
+"dosya": 58,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 6,
+"cevap": "C",
+"dosya": 58,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T030",
+"soru": 1,
+"cevap": "B",
+"dosya": 59,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T030",
+"soru": 2,
+"cevap": "B",
+"dosya": 59,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T030",
+"soru": 3,
+"cevap": "C",
+"dosya": 59,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T030",
+"soru": 4,
+"cevap": "C",
+"dosya": 59,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T030",
+"soru": 5,
+"cevap": "B",
+"dosya": 59,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T030",
+"soru": 6,
+"cevap": "B",
+"dosya": 59,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T031",
+"soru": 1,
+"cevap": "D",
+"dosya": 65,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T031",
+"soru": 2,
+"cevap": "D",
+"dosya": 65,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T031",
+"soru": 3,
+"cevap": "B",
+"dosya": 65,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T031",
+"soru": 4,
+"cevap": "B",
+"dosya": 65,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T031",
+"soru": 5,
+"cevap": "E",
+"dosya": 65,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T031",
+"soru": 6,
+"cevap": "D",
+"dosya": 65,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 1,
+"cevap": "D",
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 2,
+"cevap": "D",
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 3,
+"cevap": "E",
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 4,
+"cevap": "D",
+"dosya": 66,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 5,
+"cevap": "C",
+"dosya": 66,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 6,
+"cevap": "D",
+"dosya": 66,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T033",
+"soru": 1,
+"cevap": "E",
+"dosya": 67,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T033",
+"soru": 2,
+"cevap": "C",
+"dosya": 67,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T033",
+"soru": 3,
+"cevap": "A",
+"dosya": 67,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T033",
+"soru": 4,
+"cevap": "E",
+"dosya": 67,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T033",
+"soru": 5,
+"cevap": "B",
+"dosya": 67,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T033",
+"soru": 6,
+"cevap": "D",
+"dosya": 67,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T034",
+"soru": 1,
+"cevap": "B",
+"dosya": 68,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T034",
+"soru": 2,
+"cevap": "C",
+"dosya": 68,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T034",
+"soru": 3,
+"cevap": "C",
+"dosya": 68,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T034",
+"soru": 4,
+"cevap": "A",
+"dosya": 68,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T034",
+"soru": 5,
+"cevap": "E",
+"dosya": 68,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T034",
+"soru": 6,
+"cevap": "C",
+"dosya": 68,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T035",
+"soru": 1,
+"cevap": "E",
+"dosya": 69,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T035",
+"soru": 2,
+"cevap": "E",
+"dosya": 69,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T035",
+"soru": 3,
+"cevap": "A",
+"dosya": 69,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T035",
+"soru": 4,
+"cevap": "C",
+"dosya": 69,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T035",
+"soru": 5,
+"cevap": "E",
+"dosya": 69,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T035",
+"soru": 6,
+"cevap": "D",
+"dosya": 69,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T036",
+"soru": 1,
+"cevap": "C",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T036",
+"soru": 2,
+"cevap": "C",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T036",
+"soru": 3,
+"cevap": "C",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T036",
+"soru": 4,
+"cevap": "C",
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T036",
+"soru": 5,
+"cevap": "D",
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T036",
+"soru": 6,
+"cevap": "C",
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T037",
+"soru": 1,
+"cevap": "D",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T037",
+"soru": 2,
+"cevap": "D",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T037",
+"soru": 3,
+"cevap": "B",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T037",
+"soru": 4,
+"cevap": "A",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T037",
+"soru": 5,
+"cevap": "D",
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T037",
+"soru": 6,
+"cevap": "D",
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T038",
+"soru": 1,
+"cevap": "C",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T038",
+"soru": 2,
+"cevap": "C",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T038",
+"soru": 3,
+"cevap": "C",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T038",
+"soru": 4,
+"cevap": "B",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T038",
+"soru": 5,
+"cevap": "D",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T038",
+"soru": 6,
+"cevap": "C",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T039",
+"soru": 1,
+"cevap": "D",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T039",
+"soru": 2,
+"cevap": "E",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T039",
+"soru": 3,
+"cevap": "E",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T039",
+"soru": 4,
+"cevap": "C",
+"dosya": 81,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T039",
+"soru": 5,
+"cevap": "C",
+"dosya": 81,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T040",
+"soru": 1,
+"cevap": "E",
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T040",
+"soru": 2,
+"cevap": "C",
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T040",
+"soru": 3,
+"cevap": "A",
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T040",
+"soru": 4,
+"cevap": "A",
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T041",
+"soru": 1,
+"cevap": "C",
+"dosya": 91,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T041",
+"soru": 2,
+"cevap": "B",
+"dosya": 91,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T041",
+"soru": 3,
+"cevap": "B",
+"dosya": 91,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T041",
+"soru": 4,
+"cevap": "A",
+"dosya": 91,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T041",
+"soru": 5,
+"cevap": "D",
+"dosya": 91,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T041",
+"soru": 6,
+"cevap": "E",
+"dosya": 91,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 1,
+"cevap": "C",
+"dosya": 92,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 2,
+"cevap": "A",
+"dosya": 92,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 3,
+"cevap": "C",
+"dosya": 92,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 4,
+"cevap": "D",
+"dosya": 92,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 5,
+"cevap": "A",
+"dosya": 92,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 6,
+"cevap": "C",
+"dosya": 92,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T043",
+"soru": 1,
+"cevap": "D",
+"dosya": 93,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T043",
+"soru": 2,
+"cevap": "E",
+"dosya": 93,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T043",
+"soru": 3,
+"cevap": "A",
+"dosya": 93,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T043",
+"soru": 4,
+"cevap": "A",
+"dosya": 93,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T043",
+"soru": 5,
+"cevap": "D",
+"dosya": 93,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T044",
+"soru": 1,
+"cevap": "D",
+"dosya": 94,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T044",
+"soru": 2,
+"cevap": "D",
+"dosya": 94,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T044",
+"soru": 3,
+"cevap": "D",
+"dosya": 94,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T044",
+"soru": 4,
+"cevap": "E",
+"dosya": 94,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T045",
+"soru": 1,
+"cevap": "C",
+"dosya": 95,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T045",
+"soru": 2,
+"cevap": "C",
+"dosya": 95,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T045",
+"soru": 3,
+"cevap": "C",
+"dosya": 95,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T045",
+"soru": 4,
+"cevap": "E",
+"dosya": 95,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T046",
+"soru": 1,
+"cevap": "E",
+"dosya": 96,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T046",
+"soru": 2,
+"cevap": "C",
+"dosya": 96,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T046",
+"soru": 3,
+"cevap": "D",
+"dosya": 96,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T046",
+"soru": 4,
+"cevap": "A",
+"dosya": 96,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T047",
+"soru": 1,
+"cevap": "A",
+"dosya": 97,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T047",
+"soru": 2,
+"cevap": "E",
+"dosya": 97,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T047",
+"soru": 3,
+"cevap": "A",
+"dosya": 97,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T047",
+"soru": 4,
+"cevap": "B",
+"dosya": 97,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 1,
+"cevap": "B",
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 2,
+"cevap": "B",
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 3,
+"cevap": "A",
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 4,
+"cevap": "E",
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 5,
+"cevap": "B",
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 6,
+"cevap": "B",
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 7,
+"cevap": "D",
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T048",
+"soru": 8,
+"cevap": "B",
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T049",
+"soru": 1,
+"cevap": "B",
+"dosya": 105,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T049",
+"soru": 2,
+"cevap": "D",
+"dosya": 105,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T049",
+"soru": 3,
+"cevap": "C",
+"dosya": 105,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T049",
+"soru": 4,
+"cevap": "E",
+"dosya": 105,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T049",
+"soru": 5,
+"cevap": "C",
+"dosya": 105,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T050",
+"soru": 1,
+"cevap": "C",
+"dosya": 106,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T050",
+"soru": 2,
+"cevap": "C",
+"dosya": 106,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T050",
+"soru": 3,
+"cevap": "D",
+"dosya": 106,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T050",
+"soru": 4,
+"cevap": "C",
+"dosya": 106,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T050",
+"soru": 5,
+"cevap": "B",
+"dosya": 106,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T050",
+"soru": 6,
+"cevap": "C",
+"dosya": 106,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T051",
+"soru": 1,
+"cevap": "D",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T051",
+"soru": 2,
+"cevap": "B",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T051",
+"soru": 3,
+"cevap": "E",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T051",
+"soru": 4,
+"cevap": "B",
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T051",
+"soru": 5,
+"cevap": "D",
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T051",
+"soru": 6,
+"cevap": "C",
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 1,
+"cevap": "C",
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 2,
+"cevap": "E",
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 3,
+"cevap": "C",
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 4,
+"cevap": "C",
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 5,
+"cevap": "C",
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 6,
+"cevap": "C",
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T053",
+"soru": 1,
+"cevap": "A",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T053",
+"soru": 2,
+"cevap": "B",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T053",
+"soru": 3,
+"cevap": "B",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T053",
+"soru": 4,
+"cevap": "C",
+"dosya": 113,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T053",
+"soru": 5,
+"cevap": "C",
+"dosya": 113,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T054",
+"soru": 1,
+"cevap": "D",
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T054",
+"soru": 2,
+"cevap": "D",
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T054",
+"soru": 3,
+"cevap": "C",
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T054",
+"soru": 4,
+"cevap": "D",
+"dosya": 114,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T054",
+"soru": 5,
+"cevap": "A",
+"dosya": 114,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T055",
+"soru": 1,
+"cevap": "D",
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T055",
+"soru": 2,
+"cevap": "D",
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T055",
+"soru": 3,
+"cevap": "C",
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T055",
+"soru": 4,
+"cevap": "C",
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T055",
+"soru": 5,
+"cevap": "E",
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T055",
+"soru": 6,
+"cevap": "B",
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T056",
+"soru": 1,
+"cevap": "C",
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T056",
+"soru": 2,
+"cevap": "C",
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T056",
+"soru": 3,
+"cevap": "C",
+"dosya": 116,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T056",
+"soru": 4,
+"cevap": "C",
+"dosya": 116,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T057",
+"soru": 1,
+"cevap": "E",
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T057",
+"soru": 2,
+"cevap": "C",
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T057",
+"soru": 3,
+"cevap": "B",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T057",
+"soru": 4,
+"cevap": "A",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T058",
+"soru": 1,
+"cevap": "E",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T058",
+"soru": 2,
+"cevap": "D",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T058",
+"soru": 3,
+"cevap": "C",
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T058",
+"soru": 4,
+"cevap": "D",
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T059",
+"soru": 1,
+"cevap": "E",
+"dosya": 128,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T059",
+"soru": 2,
+"cevap": "B",
+"dosya": 128,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T059",
+"soru": 3,
+"cevap": "C",
+"dosya": 128,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T059",
+"soru": 4,
+"cevap": "B",
+"dosya": 128,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T059",
+"soru": 5,
+"cevap": "B",
+"dosya": 128,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T059",
+"soru": 6,
+"cevap": "D",
+"dosya": 128,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T060",
+"soru": 1,
+"cevap": "B",
+"dosya": 129,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T060",
+"soru": 2,
+"cevap": "D",
+"dosya": 129,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T060",
+"soru": 3,
+"cevap": "A",
+"dosya": 129,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T060",
+"soru": 4,
+"cevap": "C",
+"dosya": 129,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T060",
+"soru": 5,
+"cevap": "D",
+"dosya": 129,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T060",
+"soru": 6,
+"cevap": "C",
+"dosya": 129,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T061",
+"soru": 1,
+"cevap": "A",
+"dosya": 130,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T061",
+"soru": 2,
+"cevap": "B",
+"dosya": 130,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T061",
+"soru": 3,
+"cevap": "B",
+"dosya": 130,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T061",
+"soru": 4,
+"cevap": "C",
+"dosya": 130,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T061",
+"soru": 5,
+"cevap": "D",
+"dosya": 130,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T061",
+"soru": 6,
+"cevap": "B",
+"dosya": 130,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T062",
+"soru": 1,
+"cevap": "E",
+"dosya": 131,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T062",
+"soru": 2,
+"cevap": "B",
+"dosya": 131,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T062",
+"soru": 3,
+"cevap": "B",
+"dosya": 131,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T062",
+"soru": 4,
+"cevap": "B",
+"dosya": 131,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T062",
+"soru": 5,
+"cevap": "C",
+"dosya": 131,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T062",
+"soru": 6,
+"cevap": "C",
+"dosya": 131,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T063",
+"soru": 1,
+"cevap": "C",
+"dosya": 132,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T063",
+"soru": 2,
+"cevap": "D",
+"dosya": 132,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T063",
+"soru": 3,
+"cevap": "B",
+"dosya": 132,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T063",
+"soru": 4,
+"cevap": "D",
+"dosya": 132,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T063",
+"soru": 5,
+"cevap": "E",
+"dosya": 132,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T063",
+"soru": 6,
+"cevap": "C",
+"dosya": 132,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 1,
+"cevap": "B",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 2,
+"cevap": "D",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 3,
+"cevap": "D",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 4,
+"cevap": "C",
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 5,
+"cevap": "C",
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 6,
+"cevap": "B",
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 1,
+"cevap": "E",
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 2,
+"cevap": "E",
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 3,
+"cevap": "C",
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 4,
+"cevap": "B",
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 1,
+"cevap": "E",
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 2,
+"cevap": "E",
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 3,
+"cevap": "B",
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 4,
+"cevap": "B",
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 5,
+"cevap": "D",
+"dosya": 144,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 6,
+"cevap": "D",
+"dosya": 144,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T066",
+"soru": 7,
+"cevap": "D",
+"dosya": 144,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T067",
+"soru": 1,
+"cevap": "C",
+"dosya": 145,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T067",
+"soru": 2,
+"cevap": "B",
+"dosya": 145,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T067",
+"soru": 3,
+"cevap": "D",
+"dosya": 145,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T067",
+"soru": 4,
+"cevap": "A",
+"dosya": 145,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T067",
+"soru": 5,
+"cevap": "C",
+"dosya": 145,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 1,
+"cevap": "A",
+"dosya": 146,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 2,
+"cevap": "E",
+"dosya": 146,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 3,
+"cevap": "E",
+"dosya": 146,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 4,
+"cevap": "E",
+"dosya": 146,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 5,
+"cevap": "D",
+"dosya": 146,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 6,
+"cevap": "E",
+"dosya": 146,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T068",
+"soru": 7,
+"cevap": "D",
+"dosya": 146,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T069",
+"soru": 1,
+"cevap": "B",
+"dosya": 147,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T069",
+"soru": 2,
+"cevap": "E",
+"dosya": 147,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T069",
+"soru": 3,
+"cevap": "C",
+"dosya": 147,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T069",
+"soru": 4,
+"cevap": "A",
+"dosya": 147,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T069",
+"soru": 5,
+"cevap": "B",
+"dosya": 147,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T069",
+"soru": 6,
+"cevap": "C",
+"dosya": 147,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T070",
+"soru": 1,
+"cevap": "C",
+"dosya": 148,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T070",
+"soru": 2,
+"cevap": "A",
+"dosya": 148,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T070",
+"soru": 3,
+"cevap": "C",
+"dosya": 148,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T070",
+"soru": 4,
+"cevap": "E",
+"dosya": 148,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T070",
+"soru": 5,
+"cevap": "D",
+"dosya": 148,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T071",
+"soru": 1,
+"cevap": "C",
+"dosya": 149,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T071",
+"soru": 2,
+"cevap": "C",
+"dosya": 149,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T071",
+"soru": 3,
+"cevap": "E",
+"dosya": 149,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T071",
+"soru": 4,
+"cevap": "E",
+"dosya": 149,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T071",
+"soru": 5,
+"cevap": "A",
+"dosya": 149,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T071",
+"soru": 6,
+"cevap": "C",
+"dosya": 149,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 1,
+"cevap": "E",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 2,
+"cevap": "B",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 3,
+"cevap": "C",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 4,
+"cevap": "D",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 5,
+"cevap": "D",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 6,
+"cevap": "A",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T073",
+"soru": 1,
+"cevap": "D",
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T073",
+"soru": 2,
+"cevap": "C",
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T073",
+"soru": 3,
+"cevap": "B",
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T073",
+"soru": 4,
+"cevap": "D",
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T073",
+"soru": 5,
+"cevap": "B",
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 1,
+"cevap": "C",
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 2,
+"cevap": "C",
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 3,
+"cevap": "C",
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 4,
+"cevap": "C",
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 5,
+"cevap": "A",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 6,
+"cevap": "C",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T074",
+"soru": 7,
+"cevap": "D",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T075",
+"soru": 1,
+"cevap": "D",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T075",
+"soru": 2,
+"cevap": "B",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T075",
+"soru": 3,
+"cevap": "B",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T075",
+"soru": 4,
+"cevap": "D",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T075",
+"soru": 5,
+"cevap": "E",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T075",
+"soru": 6,
+"cevap": "D",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T076",
+"soru": 1,
+"cevap": "E",
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T076",
+"soru": 2,
+"cevap": "D",
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T076",
+"soru": 3,
+"cevap": "B",
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T076",
+"soru": 4,
+"cevap": "D",
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T076",
+"soru": 5,
+"cevap": "D",
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T077",
+"soru": 1,
+"cevap": "B",
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T077",
+"soru": 2,
+"cevap": "E",
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T077",
+"soru": 3,
+"cevap": "C",
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T077",
+"soru": 4,
+"cevap": "B",
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T077",
+"soru": 5,
+"cevap": "C",
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T077",
+"soru": 6,
+"cevap": "D",
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 1,
+"cevap": "E",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 2,
+"cevap": "B",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 3,
+"cevap": "B",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 4,
+"cevap": "B",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 5,
+"cevap": "E",
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 6,
+"cevap": "C",
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 7,
+"cevap": "D",
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T079",
+"soru": 1,
+"cevap": "C",
+"dosya": 181,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T079",
+"soru": 2,
+"cevap": "E",
+"dosya": 181,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T079",
+"soru": 3,
+"cevap": "A",
+"dosya": 181,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T079",
+"soru": 4,
+"cevap": "E",
+"dosya": 181,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T079",
+"soru": 5,
+"cevap": "D",
+"dosya": 181,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T079",
+"soru": 6,
+"cevap": "D",
+"dosya": 181,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 1,
+"cevap": "A",
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 2,
+"cevap": "E",
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 3,
+"cevap": "B",
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 4,
+"cevap": "C",
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 5,
+"cevap": "B",
+"dosya": 182,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 6,
+"cevap": "C",
+"dosya": 182,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 7,
+"cevap": "E",
+"dosya": 182,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 1,
+"cevap": "B",
+"dosya": 183,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 2,
+"cevap": "D",
+"dosya": 183,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 3,
+"cevap": "D",
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 4,
+"cevap": "B",
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 5,
+"cevap": "B",
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 6,
+"cevap": "C",
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "ACL24MG-T082",
+"soru": 1,
+"cevap": "C",
+"dosya": 184,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T082",
+"soru": 2,
+"cevap": "C",
+"dosya": 184,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T082",
+"soru": 3,
+"cevap": "A",
+"dosya": 184,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T082",
+"soru": 4,
+"cevap": "C",
+"dosya": 184,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T083",
+"soru": 1,
+"cevap": "B",
+"dosya": 185,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T083",
+"soru": 2,
+"cevap": "D",
+"dosya": 185,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T083",
+"soru": 3,
+"cevap": "D",
+"dosya": 185,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T083",
+"soru": 4,
+"cevap": "E",
+"dosya": 185,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T083",
+"soru": 5,
+"cevap": "B",
+"dosya": 185,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T084",
+"soru": 1,
+"cevap": "B",
+"dosya": 186,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T084",
+"soru": 2,
+"cevap": "A",
+"dosya": 186,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T084",
+"soru": 3,
+"cevap": "B",
+"dosya": 186,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T084",
+"soru": 4,
+"cevap": "D",
+"dosya": 186,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T084",
+"soru": 5,
+"cevap": "D",
+"dosya": 186,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T085",
+"soru": 1,
+"cevap": "D",
+"dosya": 187,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T085",
+"soru": 2,
+"cevap": "C",
+"dosya": 187,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T085",
+"soru": 3,
+"cevap": "D",
+"dosya": 187,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T085",
+"soru": 4,
+"cevap": "A",
+"dosya": 187,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T085",
+"soru": 5,
+"cevap": "E",
+"dosya": 187,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T086",
+"soru": 1,
+"cevap": "B",
+"dosya": 198,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T086",
+"soru": 2,
+"cevap": "B",
+"dosya": 198,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T086",
+"soru": 3,
+"cevap": "C",
+"dosya": 198,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T086",
+"soru": 4,
+"cevap": "D",
+"dosya": 198,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T086",
+"soru": 5,
+"cevap": "C",
+"dosya": 198,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T086",
+"soru": 6,
+"cevap": "D",
+"dosya": 198,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T087",
+"soru": 1,
+"cevap": "D",
+"dosya": 199,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T087",
+"soru": 2,
+"cevap": "A",
+"dosya": 199,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T087",
+"soru": 3,
+"cevap": "B",
+"dosya": 199,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T087",
+"soru": 4,
+"cevap": "D",
+"dosya": 199,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T087",
+"soru": 5,
+"cevap": "D",
+"dosya": 199,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T087",
+"soru": 6,
+"cevap": "A",
+"dosya": 199,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 1,
+"cevap": "E",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 2,
+"cevap": "B",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 3,
+"cevap": "C",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 4,
+"cevap": "B",
+"dosya": 200,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 5,
+"cevap": "B",
+"dosya": 200,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 6,
+"cevap": "B",
+"dosya": 200,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T089",
+"soru": 1,
+"cevap": "D",
+"dosya": 201,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T089",
+"soru": 2,
+"cevap": "C",
+"dosya": 201,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T089",
+"soru": 3,
+"cevap": "C",
+"dosya": 201,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T089",
+"soru": 4,
+"cevap": "B",
+"dosya": 201,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T089",
+"soru": 5,
+"cevap": "C",
+"dosya": 201,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "ACL24MG-T090",
+"soru": 1,
+"cevap": "B",
+"dosya": 202,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T090",
+"soru": 2,
+"cevap": "E",
+"dosya": 202,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T090",
+"soru": 3,
+"cevap": "A",
+"dosya": 202,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T090",
+"soru": 4,
+"cevap": "D",
+"dosya": 202,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T091",
+"soru": 1,
+"cevap": "B",
+"dosya": 203,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T091",
+"soru": 2,
+"cevap": "D",
+"dosya": 203,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T091",
+"soru": 3,
+"cevap": "D",
+"dosya": 203,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T091",
+"soru": 4,
+"cevap": "D",
+"dosya": 203,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T092",
+"soru": 1,
+"cevap": "D",
+"dosya": 204,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T092",
+"soru": 2,
+"cevap": "B",
+"dosya": 204,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "ACL24MG-T092",
+"soru": 3,
+"cevap": "E",
+"dosya": 204,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "ACL24MG-T092",
+"soru": 4,
+"cevap": "A",
+"dosya": 204,
+"sutun": "R",
+"sutun_sira": 1
+}
+]
+}

@@ -78,7 +78,13 @@ def harita_uret(
             hata.append(f"test {n}: bant A != B")
         bant = norm(a[n])
         hedef = norm(k["icindekiler_adi"])
-        if bant != hedef and p.BANT_ESLER.get(bant) != hedef:
+        # BANT_KONU_KAPISI False: bant konu adi tasimiyor ('PEKISTIRME TESTI',
+        # 'KARMA TEST - N'); konu yalniz icindekiler sayfa araligindan.
+        if (
+            getattr(p, "BANT_KONU_KAPISI", True)
+            and bant != hedef
+            and p.BANT_ESLER.get(bant) != hedef
+        ):
             hata.append(f"test {n}: bant {bant!r} != konu {hedef!r}")
         birim = ortak.birim_kodu(p, n)
         testler.append(
