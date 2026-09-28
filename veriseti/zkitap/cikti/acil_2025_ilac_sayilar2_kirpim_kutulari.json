@@ -1,0 +1,15981 @@
+{
+"kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+"arac": "scripts/kitap/kitap_hat/kutu.py",
+"capa": "kirmizi basili soru numarasi (capa_taramasi.json)",
+"sutun_sinirlari": {
+"tek": {
+"L": [
+8,
+354
+],
+"R": [
+373,
+700
+]
+},
+"cift": {
+"L": [
+10,
+371
+],
+"R": [
+390,
+715
+]
+}
+},
+"kutu_sayisi": 938,
+"yukseklik": {
+"min": 137,
+"medyan": 261,
+"max": 808
+},
+"kutular": [
+{
+"birim": "ACL25S2-T001",
+"soru": 1,
+"dosya": 7,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+450,
+354,
+615
+],
+"capa": [
+453,
+49
+]
+},
+{
+"birim": "ACL25S2-T001",
+"soru": 2,
+"dosya": 7,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+616,
+354,
+766
+],
+"capa": [
+619,
+48
+]
+},
+{
+"birim": "ACL25S2-T001",
+"soru": 3,
+"dosya": 7,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+767,
+354,
+922
+],
+"capa": [
+770,
+48
+]
+},
+{
+"birim": "ACL25S2-T001",
+"soru": 4,
+"dosya": 7,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+452,
+700,
+616
+],
+"capa": [
+460,
+379
+]
+},
+{
+"birim": "ACL25S2-T001",
+"soru": 5,
+"dosya": 7,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+617,
+700,
+766
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T001",
+"soru": 6,
+"dosya": 7,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+767,
+700,
+908
+],
+"capa": [
+770,
+379
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 1,
+"dosya": 8,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 2,
+"dosya": 8,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 3,
+"dosya": 8,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 4,
+"dosya": 8,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+361
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 5,
+"dosya": 8,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+362,
+715,
+623
+],
+"capa": [
+365,
+397
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 6,
+"dosya": 8,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+624,
+715,
+909
+],
+"capa": [
+634,
+396
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 7,
+"dosya": 9,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+111,
+49
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 8,
+"dosya": 9,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+622
+],
+"capa": [
+371,
+49
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 9,
+"dosya": 9,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+632,
+48
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 10,
+"dosya": 9,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+360
+],
+"capa": [
+111,
+380
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 11,
+"dosya": 9,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+621
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T002",
+"soru": 12,
+"dosya": 9,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+380
+]
+},
+{
+"birim": "ACL25S2-T003",
+"soru": 1,
+"dosya": 10,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+575,
+371,
+756
+],
+"capa": [
+583,
+65
+]
+},
+{
+"birim": "ACL25S2-T003",
+"soru": 2,
+"dosya": 10,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+757,
+371,
+922
+],
+"capa": [
+768,
+66
+]
+},
+{
+"birim": "ACL25S2-T003",
+"soru": 3,
+"dosya": 10,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+575,
+715,
+756
+],
+"capa": [
+585,
+396
+]
+},
+{
+"birim": "ACL25S2-T003",
+"soru": 4,
+"dosya": 10,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+757,
+715,
+908
+],
+"capa": [
+766,
+396
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 1,
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+380
+],
+"capa": [
+111,
+49
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 2,
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+381,
+354,
+636
+],
+"capa": [
+391,
+48
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 3,
+"dosya": 11,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+637,
+354,
+922
+],
+"capa": [
+648,
+49
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 4,
+"dosya": 11,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+380
+],
+"capa": [
+113,
+379
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 5,
+"dosya": 11,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+381,
+700,
+639
+],
+"capa": [
+392,
+379
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 6,
+"dosya": 11,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+640,
+700,
+908
+],
+"capa": [
+648,
+379
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 7,
+"dosya": 12,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+387
+],
+"capa": [
+111,
+66
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 8,
+"dosya": 12,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+388,
+371,
+652
+],
+"capa": [
+396,
+66
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 9,
+"dosya": 12,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+653,
+371,
+922
+],
+"capa": [
+662,
+65
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 10,
+"dosya": 12,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+111,
+397
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 11,
+"dosya": 12,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+652
+],
+"capa": [
+371,
+397
+]
+},
+{
+"birim": "ACL25S2-T004",
+"soru": 12,
+"dosya": 12,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+653,
+715,
+908
+],
+"capa": [
+663,
+397
+]
+},
+{
+"birim": "ACL25S2-T005",
+"soru": 1,
+"dosya": 13,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+571,
+354,
+731
+],
+"capa": [
+574,
+49
+]
+},
+{
+"birim": "ACL25S2-T005",
+"soru": 2,
+"dosya": 13,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+732,
+354,
+922
+],
+"capa": [
+735,
+48
+]
+},
+{
+"birim": "ACL25S2-T005",
+"soru": 3,
+"dosya": 13,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+571,
+700,
+731
+],
+"capa": [
+574,
+379
+]
+},
+{
+"birim": "ACL25S2-T005",
+"soru": 4,
+"dosya": 13,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+732,
+700,
+909
+],
+"capa": [
+735,
+379
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 1,
+"dosya": 14,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 2,
+"dosya": 14,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+632
+],
+"capa": [
+364,
+65
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 3,
+"dosya": 14,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+633,
+371,
+922
+],
+"capa": [
+636,
+66
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 4,
+"dosya": 14,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+361
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 5,
+"dosya": 14,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+362,
+715,
+632
+],
+"capa": [
+365,
+396
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 6,
+"dosya": 14,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+633,
+715,
+909
+],
+"capa": [
+636,
+396
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 7,
+"dosya": 15,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 8,
+"dosya": 15,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+648
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 9,
+"dosya": 15,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+649,
+354,
+922
+],
+"capa": [
+652,
+49
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 10,
+"dosya": 15,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+396
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 11,
+"dosya": 15,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+397,
+700,
+648
+],
+"capa": [
+400,
+380
+]
+},
+{
+"birim": "ACL25S2-T006",
+"soru": 12,
+"dosya": 15,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+649,
+700,
+909
+],
+"capa": [
+652,
+380
+]
+},
+{
+"birim": "ACL25S2-T007",
+"soru": 1,
+"dosya": 16,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+610,
+371,
+759
+],
+"capa": [
+613,
+66
+]
+},
+{
+"birim": "ACL25S2-T007",
+"soru": 2,
+"dosya": 16,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+760,
+371,
+922
+],
+"capa": [
+763,
+65
+]
+},
+{
+"birim": "ACL25S2-T007",
+"soru": 3,
+"dosya": 16,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+587,
+715,
+759
+],
+"capa": [
+590,
+392
+]
+},
+{
+"birim": "ACL25S2-T007",
+"soru": 4,
+"dosya": 16,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+760,
+715,
+908
+],
+"capa": [
+763,
+396
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 1,
+"dosya": 17,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 2,
+"dosya": 17,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+622
+],
+"capa": [
+364,
+48
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 3,
+"dosya": 17,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+632,
+49
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 4,
+"dosya": 17,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+362
+],
+"capa": [
+111,
+379
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 5,
+"dosya": 17,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+621
+],
+"capa": [
+372,
+379
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 6,
+"dosya": 17,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+909
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 7,
+"dosya": 18,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 8,
+"dosya": 18,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+622
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 9,
+"dosya": 18,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+632,
+65
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 10,
+"dosya": 18,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+362
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 11,
+"dosya": 18,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+621
+],
+"capa": [
+371,
+397
+]
+},
+{
+"birim": "ACL25S2-T008",
+"soru": 12,
+"dosya": 18,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T009",
+"soru": 1,
+"dosya": 20,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T009",
+"soru": 2,
+"dosya": 20,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+607
+],
+"capa": [
+364,
+65
+]
+},
+{
+"birim": "ACL25S2-T009",
+"soru": 3,
+"dosya": 20,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+608,
+371,
+922
+],
+"capa": [
+611,
+66
+]
+},
+{
+"birim": "ACL25S2-T009",
+"soru": 4,
+"dosya": 20,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+361
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T009",
+"soru": 5,
+"dosya": 20,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+362,
+715,
+607
+],
+"capa": [
+365,
+396
+]
+},
+{
+"birim": "ACL25S2-T009",
+"soru": 6,
+"dosya": 20,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+608,
+715,
+909
+],
+"capa": [
+611,
+396
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 1,
+"dosya": 21,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+372
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 2,
+"dosya": 21,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+373,
+354,
+631
+],
+"capa": [
+376,
+49
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 3,
+"dosya": 21,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+632,
+354,
+922
+],
+"capa": [
+640,
+49
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 4,
+"dosya": 21,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+373
+],
+"capa": [
+113,
+379
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 5,
+"dosya": 21,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+374,
+700,
+629
+],
+"capa": [
+385,
+379
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 6,
+"dosya": 21,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+630,
+700,
+909
+],
+"capa": [
+633,
+379
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 7,
+"dosya": 22,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+380
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 8,
+"dosya": 22,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+381,
+371,
+669
+],
+"capa": [
+384,
+66
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 9,
+"dosya": 22,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+670,
+371,
+922
+],
+"capa": [
+673,
+65
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 10,
+"dosya": 22,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+381
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 11,
+"dosya": 22,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+382,
+715,
+669
+],
+"capa": [
+391,
+397
+]
+},
+{
+"birim": "ACL25S2-T010",
+"soru": 12,
+"dosya": 22,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+670,
+715,
+908
+],
+"capa": [
+673,
+397
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 1,
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+384
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 2,
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+385,
+354,
+670
+],
+"capa": [
+388,
+48
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 3,
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+671,
+354,
+922
+],
+"capa": [
+680,
+49
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 4,
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+385
+],
+"capa": [
+113,
+380
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 5,
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+386,
+700,
+671
+],
+"capa": [
+397,
+380
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 6,
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+672,
+700,
+908
+],
+"capa": [
+683,
+380
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 7,
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+379
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 8,
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+380,
+371,
+637
+],
+"capa": [
+383,
+66
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 9,
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+638,
+371,
+922
+],
+"capa": [
+646,
+65
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 10,
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+100,
+715,
+383
+],
+"capa": [
+103,
+397
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 11,
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+384,
+715,
+635
+],
+"capa": [
+393,
+397
+]
+},
+{
+"birim": "ACL25S2-T011",
+"soru": 12,
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+636,
+715,
+909
+],
+"capa": [
+639,
+397
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 1,
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+379
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 2,
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+380,
+354,
+644
+],
+"capa": [
+383,
+49
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 3,
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+645,
+354,
+922
+],
+"capa": [
+648,
+49
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 4,
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+102,
+700,
+385
+],
+"capa": [
+110,
+380
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 5,
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+386,
+700,
+647
+],
+"capa": [
+394,
+380
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 6,
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+648,
+700,
+908
+],
+"capa": [
+651,
+380
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 7,
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+371
+],
+"capa": [
+111,
+66
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 8,
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+372,
+371,
+621
+],
+"capa": [
+380,
+66
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 9,
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 10,
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+369
+],
+"capa": [
+106,
+397
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 11,
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+370,
+715,
+621
+],
+"capa": [
+373,
+397
+]
+},
+{
+"birim": "ACL25S2-T012",
+"soru": 12,
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 1,
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+363
+],
+"capa": [
+111,
+49
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 2,
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+364,
+354,
+621
+],
+"capa": [
+374,
+48
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 3,
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 4,
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 5,
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+621
+],
+"capa": [
+365,
+379
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 6,
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 7,
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 8,
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 9,
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 10,
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 11,
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T013",
+"soru": 12,
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+909
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 1,
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+379
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 2,
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+380,
+354,
+647
+],
+"capa": [
+383,
+49
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 3,
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+648,
+354,
+922
+],
+"capa": [
+655,
+49
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 4,
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+381
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 5,
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+382,
+700,
+646
+],
+"capa": [
+390,
+379
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 6,
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+647,
+700,
+909
+],
+"capa": [
+650,
+379
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 7,
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+391
+],
+"capa": [
+104,
+65
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 8,
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+392,
+371,
+645
+],
+"capa": [
+400,
+65
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 9,
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+646,
+371,
+922
+],
+"capa": [
+654,
+65
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 10,
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+391
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 11,
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+392,
+715,
+645
+],
+"capa": [
+398,
+396
+]
+},
+{
+"birim": "ACL25S2-T014",
+"soru": 12,
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+646,
+715,
+908
+],
+"capa": [
+654,
+396
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 1,
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+362
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 2,
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+622
+],
+"capa": [
+366,
+49
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 3,
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+630,
+49
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 4,
+"dosya": 31,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+363
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 5,
+"dosya": 31,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+364,
+700,
+621
+],
+"capa": [
+373,
+379
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 6,
+"dosya": 31,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 7,
+"dosya": 32,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+381
+],
+"capa": [
+117,
+65
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 8,
+"dosya": 32,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+382,
+371,
+639
+],
+"capa": [
+390,
+65
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 9,
+"dosya": 32,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+640,
+371,
+922
+],
+"capa": [
+643,
+65
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 10,
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+381
+],
+"capa": [
+111,
+396
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 11,
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+382,
+715,
+641
+],
+"capa": [
+385,
+396
+]
+},
+{
+"birim": "ACL25S2-T015",
+"soru": 12,
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+642,
+715,
+908
+],
+"capa": [
+650,
+396
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 1,
+"dosya": 33,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 2,
+"dosya": 33,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 3,
+"dosya": 33,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 4,
+"dosya": 33,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+362
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 5,
+"dosya": 33,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+622
+],
+"capa": [
+372,
+379
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 6,
+"dosya": 33,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+623,
+700,
+908
+],
+"capa": [
+626,
+379
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 7,
+"dosya": 34,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+375
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 8,
+"dosya": 34,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+376,
+371,
+636
+],
+"capa": [
+386,
+66
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 9,
+"dosya": 34,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+637,
+371,
+922
+],
+"capa": [
+645,
+66
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 10,
+"dosya": 34,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+375
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 11,
+"dosya": 34,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+376,
+715,
+632
+],
+"capa": [
+379,
+397
+]
+},
+{
+"birim": "ACL25S2-T016",
+"soru": 12,
+"dosya": 34,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+633,
+715,
+909
+],
+"capa": [
+638,
+397
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 1,
+"dosya": 35,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+338
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 2,
+"dosya": 35,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+339,
+354,
+640
+],
+"capa": [
+342,
+49
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 3,
+"dosya": 35,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+641,
+354,
+922
+],
+"capa": [
+644,
+49
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 4,
+"dosya": 35,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+497
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 5,
+"dosya": 35,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+498,
+700,
+909
+],
+"capa": [
+501,
+379
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 6,
+"dosya": 36,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+446
+],
+"capa": [
+104,
+67
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 7,
+"dosya": 36,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+447,
+371,
+922
+],
+"capa": [
+450,
+67
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 8,
+"dosya": 36,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+360
+],
+"capa": [
+111,
+396
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 9,
+"dosya": 36,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+636
+],
+"capa": [
+364,
+396
+]
+},
+{
+"birim": "ACL25S2-T017",
+"soru": 10,
+"dosya": 36,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+637,
+715,
+909
+],
+"capa": [
+640,
+397
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 1,
+"dosya": 37,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+495
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 2,
+"dosya": 37,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+496,
+354,
+922
+],
+"capa": [
+499,
+49
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 3,
+"dosya": 37,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+495
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 4,
+"dosya": 37,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+496,
+700,
+908
+],
+"capa": [
+499,
+379
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 5,
+"dosya": 38,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+578
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 6,
+"dosya": 38,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+579,
+371,
+922
+],
+"capa": [
+582,
+66
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 7,
+"dosya": 38,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+535
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T018",
+"soru": 8,
+"dosya": 38,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+536,
+715,
+908
+],
+"capa": [
+539,
+396
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 1,
+"dosya": 39,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+499
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 2,
+"dosya": 39,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+500,
+354,
+922
+],
+"capa": [
+503,
+49
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 3,
+"dosya": 39,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+499
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 4,
+"dosya": 39,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+500,
+700,
+908
+],
+"capa": [
+503,
+379
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 5,
+"dosya": 40,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+601
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 6,
+"dosya": 40,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+602,
+371,
+922
+],
+"capa": [
+605,
+66
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 7,
+"dosya": 40,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+476
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T019",
+"soru": 8,
+"dosya": 40,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+477,
+715,
+908
+],
+"capa": [
+480,
+396
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 1,
+"dosya": 41,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+504
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 2,
+"dosya": 41,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+505,
+354,
+922
+],
+"capa": [
+508,
+48
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 3,
+"dosya": 41,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+621
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 4,
+"dosya": 41,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 5,
+"dosya": 42,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+574
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 6,
+"dosya": 42,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+575,
+371,
+922
+],
+"capa": [
+578,
+66
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 7,
+"dosya": 42,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+574
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T020",
+"soru": 8,
+"dosya": 42,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+575,
+715,
+908
+],
+"capa": [
+578,
+396
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 1,
+"dosya": 43,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+482
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 2,
+"dosya": 43,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+483,
+354,
+922
+],
+"capa": [
+486,
+48
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 3,
+"dosya": 43,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+482
+],
+"capa": [
+111,
+379
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 4,
+"dosya": 43,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+483,
+700,
+908
+],
+"capa": [
+486,
+379
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 5,
+"dosya": 44,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+532
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 6,
+"dosya": 44,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+533,
+371,
+922
+],
+"capa": [
+536,
+66
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 7,
+"dosya": 44,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+532
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T021",
+"soru": 8,
+"dosya": 44,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+533,
+715,
+908
+],
+"capa": [
+536,
+396
+]
+},
+{
+"birim": "ACL25S2-T022",
+"soru": 1,
+"dosya": 46,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+573,
+371,
+738
+],
+"capa": [
+576,
+67
+]
+},
+{
+"birim": "ACL25S2-T022",
+"soru": 2,
+"dosya": 46,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+739,
+371,
+922
+],
+"capa": [
+742,
+65
+]
+},
+{
+"birim": "ACL25S2-T022",
+"soru": 3,
+"dosya": 46,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+573,
+715,
+738
+],
+"capa": [
+576,
+396
+]
+},
+{
+"birim": "ACL25S2-T022",
+"soru": 4,
+"dosya": 46,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+739,
+715,
+908
+],
+"capa": [
+742,
+396
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 1,
+"dosya": 47,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+102,
+354,
+372
+],
+"capa": [
+105,
+49
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 2,
+"dosya": 47,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+373,
+354,
+621
+],
+"capa": [
+376,
+49
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 3,
+"dosya": 47,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 4,
+"dosya": 47,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+372
+],
+"capa": [
+111,
+379
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 5,
+"dosya": 47,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+373,
+700,
+621
+],
+"capa": [
+376,
+379
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 6,
+"dosya": 47,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 7,
+"dosya": 48,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+344
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 8,
+"dosya": 48,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+345,
+371,
+621
+],
+"capa": [
+348,
+66
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 9,
+"dosya": 48,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 10,
+"dosya": 48,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+102,
+715,
+345
+],
+"capa": [
+105,
+397
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 11,
+"dosya": 48,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+346,
+715,
+621
+],
+"capa": [
+349,
+397
+]
+},
+{
+"birim": "ACL25S2-T023",
+"soru": 12,
+"dosya": 48,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T024",
+"soru": 1,
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+498,
+354,
+754
+],
+"capa": [
+502,
+49
+]
+},
+{
+"birim": "ACL25S2-T024",
+"soru": 2,
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+755,
+354,
+922
+],
+"capa": [
+758,
+48
+]
+},
+{
+"birim": "ACL25S2-T024",
+"soru": 3,
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+498,
+700,
+754
+],
+"capa": [
+503,
+379
+]
+},
+{
+"birim": "ACL25S2-T024",
+"soru": 4,
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+755,
+700,
+908
+],
+"capa": [
+758,
+379
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 1,
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+427
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 2,
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+428,
+371,
+699
+],
+"capa": [
+431,
+66
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 3,
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+700,
+371,
+922
+],
+"capa": [
+703,
+66
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 4,
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+397
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 5,
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+398,
+715,
+699
+],
+"capa": [
+401,
+396
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 6,
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+700,
+715,
+909
+],
+"capa": [
+703,
+396
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 7,
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 8,
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+672
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 9,
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+673,
+354,
+922
+],
+"capa": [
+676,
+48
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 10,
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+374
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 11,
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+375,
+700,
+672
+],
+"capa": [
+378,
+380
+]
+},
+{
+"birim": "ACL25S2-T025",
+"soru": 12,
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+673,
+700,
+908
+],
+"capa": [
+676,
+380
+]
+},
+{
+"birim": "ACL25S2-T026",
+"soru": 1,
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+603,
+371,
+755
+],
+"capa": [
+606,
+66
+]
+},
+{
+"birim": "ACL25S2-T026",
+"soru": 2,
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+756,
+371,
+922
+],
+"capa": [
+759,
+66
+]
+},
+{
+"birim": "ACL25S2-T026",
+"soru": 3,
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+605,
+715,
+755
+],
+"capa": [
+613,
+397
+]
+},
+{
+"birim": "ACL25S2-T026",
+"soru": 4,
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+756,
+715,
+909
+],
+"capa": [
+759,
+396
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 1,
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 2,
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+622
+],
+"capa": [
+364,
+48
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 3,
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+630,
+49
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 4,
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+361
+],
+"capa": [
+111,
+379
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 5,
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+621
+],
+"capa": [
+365,
+379
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 6,
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+909
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 7,
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 8,
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 9,
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 10,
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+109,
+397
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 11,
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+621
+],
+"capa": [
+371,
+397
+]
+},
+{
+"birim": "ACL25S2-T027",
+"soru": 12,
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T028",
+"soru": 1,
+"dosya": 55,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+494,
+354,
+697
+],
+"capa": [
+497,
+49
+]
+},
+{
+"birim": "ACL25S2-T028",
+"soru": 2,
+"dosya": 55,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+698,
+354,
+922
+],
+"capa": [
+701,
+48
+]
+},
+{
+"birim": "ACL25S2-T028",
+"soru": 3,
+"dosya": 55,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+494,
+700,
+695
+],
+"capa": [
+497,
+379
+]
+},
+{
+"birim": "ACL25S2-T028",
+"soru": 4,
+"dosya": 55,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+696,
+700,
+909
+],
+"capa": [
+701,
+379
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 1,
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+317
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 2,
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+318,
+371,
+560
+],
+"capa": [
+321,
+66
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 3,
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+561,
+371,
+768
+],
+"capa": [
+564,
+66
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 4,
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 3,
+"kutu": [
+10,
+769,
+371,
+922
+],
+"capa": [
+772,
+65
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 5,
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+337
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 6,
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+338,
+715,
+558
+],
+"capa": [
+344,
+396
+]
+},
+{
+"birim": "ACL25S2-T029",
+"soru": 7,
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+559,
+715,
+908
+],
+"capa": [
+565,
+396
+]
+},
+{
+"birim": "ACL25S2-T030",
+"soru": 1,
+"dosya": 57,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+570,
+354,
+742
+],
+"capa": [
+576,
+49
+]
+},
+{
+"birim": "ACL25S2-T030",
+"soru": 2,
+"dosya": 57,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+743,
+354,
+922
+],
+"capa": [
+746,
+48
+]
+},
+{
+"birim": "ACL25S2-T030",
+"soru": 3,
+"dosya": 57,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+540,
+700,
+742
+],
+"capa": [
+543,
+375
+]
+},
+{
+"birim": "ACL25S2-T030",
+"soru": 4,
+"dosya": 57,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+743,
+700,
+908
+],
+"capa": [
+746,
+379
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 1,
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+401
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 2,
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+402,
+371,
+680
+],
+"capa": [
+405,
+65
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 3,
+"dosya": 58,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+681,
+371,
+922
+],
+"capa": [
+684,
+66
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 4,
+"dosya": 58,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+379
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 5,
+"dosya": 58,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+380,
+715,
+680
+],
+"capa": [
+383,
+396
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 6,
+"dosya": 58,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+681,
+715,
+908
+],
+"capa": [
+684,
+396
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 7,
+"dosya": 59,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 8,
+"dosya": 59,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+643
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 9,
+"dosya": 59,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+644,
+354,
+922
+],
+"capa": [
+647,
+49
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 10,
+"dosya": 59,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+360
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 11,
+"dosya": 59,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+643
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T031",
+"soru": 12,
+"dosya": 59,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+644,
+700,
+908
+],
+"capa": [
+647,
+380
+]
+},
+{
+"birim": "ACL25S2-T032",
+"soru": 1,
+"dosya": 60,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+498,
+371,
+740
+],
+"capa": [
+506,
+67
+]
+},
+{
+"birim": "ACL25S2-T032",
+"soru": 2,
+"dosya": 60,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+741,
+371,
+922
+],
+"capa": [
+749,
+65
+]
+},
+{
+"birim": "ACL25S2-T032",
+"soru": 3,
+"dosya": 60,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+462,
+715,
+740
+],
+"capa": [
+465,
+393
+]
+},
+{
+"birim": "ACL25S2-T032",
+"soru": 4,
+"dosya": 60,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+741,
+715,
+908
+],
+"capa": [
+749,
+396
+]
+},
+{
+"birim": "ACL25S2-T033",
+"soru": 1,
+"dosya": 61,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+348
+],
+"capa": [
+111,
+49
+]
+},
+{
+"birim": "ACL25S2-T033",
+"soru": 2,
+"dosya": 61,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+349,
+354,
+632
+],
+"capa": [
+358,
+49
+]
+},
+{
+"birim": "ACL25S2-T033",
+"soru": 3,
+"dosya": 61,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+633,
+354,
+922
+],
+"capa": [
+641,
+49
+]
+},
+{
+"birim": "ACL25S2-T033",
+"soru": 4,
+"dosya": 61,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+412
+],
+"capa": [
+111,
+379
+]
+},
+{
+"birim": "ACL25S2-T033",
+"soru": 5,
+"dosya": 61,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+413,
+700,
+632
+],
+"capa": [
+416,
+380
+]
+},
+{
+"birim": "ACL25S2-T033",
+"soru": 6,
+"dosya": 61,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+633,
+700,
+909
+],
+"capa": [
+641,
+380
+]
+},
+{
+"birim": "ACL25S2-T034",
+"soru": 1,
+"dosya": 62,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+573,
+371,
+755
+],
+"capa": [
+576,
+66
+]
+},
+{
+"birim": "ACL25S2-T034",
+"soru": 2,
+"dosya": 62,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+756,
+371,
+922
+],
+"capa": [
+759,
+65
+]
+},
+{
+"birim": "ACL25S2-T034",
+"soru": 3,
+"dosya": 62,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+573,
+715,
+755
+],
+"capa": [
+576,
+397
+]
+},
+{
+"birim": "ACL25S2-T034",
+"soru": 4,
+"dosya": 62,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+756,
+715,
+908
+],
+"capa": [
+759,
+396
+]
+},
+{
+"birim": "ACL25S2-T035",
+"soru": 1,
+"dosya": 63,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T035",
+"soru": 2,
+"dosya": 63,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+48
+]
+},
+{
+"birim": "ACL25S2-T035",
+"soru": 3,
+"dosya": 63,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T035",
+"soru": 4,
+"dosya": 63,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T035",
+"soru": 5,
+"dosya": 63,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+621
+],
+"capa": [
+365,
+379
+]
+},
+{
+"birim": "ACL25S2-T035",
+"soru": 6,
+"dosya": 63,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T036",
+"soru": 1,
+"dosya": 64,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+532,
+371,
+718
+],
+"capa": [
+535,
+67
+]
+},
+{
+"birim": "ACL25S2-T036",
+"soru": 2,
+"dosya": 64,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+719,
+371,
+922
+],
+"capa": [
+722,
+65
+]
+},
+{
+"birim": "ACL25S2-T036",
+"soru": 3,
+"dosya": 64,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+532,
+715,
+718
+],
+"capa": [
+535,
+396
+]
+},
+{
+"birim": "ACL25S2-T036",
+"soru": 4,
+"dosya": 64,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+719,
+715,
+908
+],
+"capa": [
+722,
+396
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 1,
+"dosya": 65,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+385
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 2,
+"dosya": 65,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+386,
+354,
+624
+],
+"capa": [
+389,
+49
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 3,
+"dosya": 65,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+625,
+354,
+922
+],
+"capa": [
+628,
+49
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 4,
+"dosya": 65,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+385
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 5,
+"dosya": 65,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+386,
+700,
+621
+],
+"capa": [
+392,
+379
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 6,
+"dosya": 65,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+628,
+379
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 7,
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+99,
+371,
+319
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 8,
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+320,
+371,
+531
+],
+"capa": [
+331,
+66
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 9,
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+532,
+371,
+745
+],
+"capa": [
+535,
+65
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 10,
+"dosya": 66,
+"sutun": "L",
+"sutun_sira": 3,
+"kutu": [
+10,
+746,
+371,
+922
+],
+"capa": [
+749,
+66
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 11,
+"dosya": 66,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+317
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 12,
+"dosya": 66,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+318,
+715,
+638
+],
+"capa": [
+321,
+397
+]
+},
+{
+"birim": "ACL25S2-T037",
+"soru": 13,
+"dosya": 66,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+639,
+715,
+908
+],
+"capa": [
+642,
+397
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 1,
+"dosya": 67,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+394
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 2,
+"dosya": 67,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+395,
+354,
+704
+],
+"capa": [
+398,
+48
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 3,
+"dosya": 67,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+705,
+354,
+922
+],
+"capa": [
+708,
+49
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 4,
+"dosya": 67,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+463
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 5,
+"dosya": 67,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+464,
+700,
+770
+],
+"capa": [
+467,
+379
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 6,
+"dosya": 67,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+771,
+700,
+908
+],
+"capa": [
+777,
+379
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 7,
+"dosya": 68,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 8,
+"dosya": 68,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+645
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 9,
+"dosya": 68,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+646,
+371,
+922
+],
+"capa": [
+649,
+66
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 10,
+"dosya": 68,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+104,
+715,
+360
+],
+"capa": [
+114,
+397
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 11,
+"dosya": 68,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+645
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T038",
+"soru": 12,
+"dosya": 68,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+646,
+715,
+909
+],
+"capa": [
+649,
+397
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 1,
+"dosya": 69,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+415
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 2,
+"dosya": 69,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+416,
+354,
+676
+],
+"capa": [
+419,
+48
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 3,
+"dosya": 69,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+677,
+354,
+922
+],
+"capa": [
+685,
+49
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 4,
+"dosya": 69,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+415
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 5,
+"dosya": 69,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+416,
+700,
+674
+],
+"capa": [
+419,
+379
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 6,
+"dosya": 69,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+675,
+700,
+909
+],
+"capa": [
+678,
+379
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 7,
+"dosya": 70,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+399
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 8,
+"dosya": 70,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+400,
+371,
+724
+],
+"capa": [
+403,
+66
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 9,
+"dosya": 70,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+725,
+371,
+922
+],
+"capa": [
+728,
+65
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 10,
+"dosya": 70,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+490
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 11,
+"dosya": 70,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+491,
+715,
+725
+],
+"capa": [
+494,
+397
+]
+},
+{
+"birim": "ACL25S2-T039",
+"soru": 12,
+"dosya": 70,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+726,
+715,
+908
+],
+"capa": [
+729,
+397
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 1,
+"dosya": 71,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+635
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 2,
+"dosya": 71,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+636,
+354,
+922
+],
+"capa": [
+639,
+48
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 3,
+"dosya": 71,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+513
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 4,
+"dosya": 71,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+514,
+700,
+908
+],
+"capa": [
+517,
+379
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 5,
+"dosya": 72,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+412
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 6,
+"dosya": 72,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+413,
+371,
+922
+],
+"capa": [
+416,
+66
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 7,
+"dosya": 72,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+502
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T040",
+"soru": 8,
+"dosya": 72,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+503,
+715,
+908
+],
+"capa": [
+506,
+396
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 1,
+"dosya": 73,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+668
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 2,
+"dosya": 73,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+669,
+354,
+922
+],
+"capa": [
+672,
+48
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 3,
+"dosya": 73,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+457
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 4,
+"dosya": 73,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+458,
+700,
+908
+],
+"capa": [
+461,
+379
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 5,
+"dosya": 74,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+634
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 6,
+"dosya": 74,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+635,
+371,
+922
+],
+"capa": [
+638,
+66
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 7,
+"dosya": 74,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+563
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T041",
+"soru": 8,
+"dosya": 74,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+564,
+715,
+909
+],
+"capa": [
+567,
+396
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 1,
+"dosya": 75,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+553
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 2,
+"dosya": 75,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+554,
+354,
+922
+],
+"capa": [
+557,
+48
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 3,
+"dosya": 75,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+553
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 4,
+"dosya": 75,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+554,
+700,
+907
+],
+"capa": [
+557,
+379
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 5,
+"dosya": 76,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+452
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 6,
+"dosya": 76,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+453,
+371,
+922
+],
+"capa": [
+456,
+66
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 7,
+"dosya": 76,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+452
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T042",
+"soru": 8,
+"dosya": 76,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+453,
+715,
+909
+],
+"capa": [
+456,
+396
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 1,
+"dosya": 77,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+99,
+354,
+611
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 2,
+"dosya": 77,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+612,
+354,
+922
+],
+"capa": [
+615,
+48
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 3,
+"dosya": 77,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+549
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 4,
+"dosya": 77,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+550,
+700,
+908
+],
+"capa": [
+553,
+379
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 5,
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+364
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 6,
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+365,
+371,
+657
+],
+"capa": [
+368,
+66
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 7,
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+658,
+371,
+922
+],
+"capa": [
+661,
+66
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 8,
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+439
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T043",
+"soru": 9,
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+440,
+715,
+908
+],
+"capa": [
+443,
+396
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 1,
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+390
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 2,
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+391,
+354,
+922
+],
+"capa": [
+394,
+49
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 3,
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+390
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 4,
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+391,
+700,
+909
+],
+"capa": [
+394,
+379
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 5,
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+621
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 6,
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 7,
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+621
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T044",
+"soru": 8,
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T045",
+"soru": 1,
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+496,
+371,
+716
+],
+"capa": [
+499,
+67
+]
+},
+{
+"birim": "ACL25S2-T045",
+"soru": 2,
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+717,
+371,
+922
+],
+"capa": [
+720,
+65
+]
+},
+{
+"birim": "ACL25S2-T045",
+"soru": 3,
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+496,
+715,
+716
+],
+"capa": [
+499,
+397
+]
+},
+{
+"birim": "ACL25S2-T045",
+"soru": 4,
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+717,
+715,
+908
+],
+"capa": [
+720,
+396
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 1,
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+100,
+354,
+302
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 2,
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+303,
+354,
+497
+],
+"capa": [
+306,
+48
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 3,
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+498,
+354,
+738
+],
+"capa": [
+501,
+49
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 4,
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 3,
+"kutu": [
+8,
+739,
+354,
+922
+],
+"capa": [
+742,
+47
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 5,
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+302
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 6,
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+303,
+700,
+498
+],
+"capa": [
+306,
+379
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 7,
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+499,
+700,
+738
+],
+"capa": [
+502,
+379
+]
+},
+{
+"birim": "ACL25S2-T046",
+"soru": 8,
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 3,
+"kutu": [
+373,
+739,
+700,
+908
+],
+"capa": [
+742,
+379
+]
+},
+{
+"birim": "ACL25S2-T047",
+"soru": 1,
+"dosya": 84,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+513,
+371,
+689
+],
+"capa": [
+516,
+67
+]
+},
+{
+"birim": "ACL25S2-T047",
+"soru": 2,
+"dosya": 84,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+690,
+371,
+922
+],
+"capa": [
+693,
+65
+]
+},
+{
+"birim": "ACL25S2-T047",
+"soru": 3,
+"dosya": 84,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+486,
+715,
+689
+],
+"capa": [
+489,
+393
+]
+},
+{
+"birim": "ACL25S2-T047",
+"soru": 4,
+"dosya": 84,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+690,
+715,
+908
+],
+"capa": [
+693,
+396
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 1,
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+293
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 2,
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+294,
+354,
+518
+],
+"capa": [
+297,
+49
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 3,
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+519,
+354,
+725
+],
+"capa": [
+522,
+49
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 4,
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 3,
+"kutu": [
+8,
+726,
+354,
+922
+],
+"capa": [
+729,
+48
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 5,
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+295
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 6,
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+296,
+700,
+518
+],
+"capa": [
+304,
+379
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 7,
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+519,
+700,
+725
+],
+"capa": [
+522,
+379
+]
+},
+{
+"birim": "ACL25S2-T048",
+"soru": 8,
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 3,
+"kutu": [
+373,
+726,
+700,
+908
+],
+"capa": [
+729,
+379
+]
+},
+{
+"birim": "ACL25S2-T049",
+"soru": 1,
+"dosya": 86,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+532,
+371,
+691
+],
+"capa": [
+535,
+66
+]
+},
+{
+"birim": "ACL25S2-T049",
+"soru": 2,
+"dosya": 86,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+692,
+371,
+922
+],
+"capa": [
+695,
+65
+]
+},
+{
+"birim": "ACL25S2-T049",
+"soru": 3,
+"dosya": 86,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+532,
+715,
+693
+],
+"capa": [
+535,
+396
+]
+},
+{
+"birim": "ACL25S2-T049",
+"soru": 4,
+"dosya": 86,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+694,
+715,
+908
+],
+"capa": [
+697,
+396
+]
+},
+{
+"birim": "ACL25S2-T050",
+"soru": 1,
+"dosya": 87,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+102,
+354,
+404
+],
+"capa": [
+105,
+49
+]
+},
+{
+"birim": "ACL25S2-T050",
+"soru": 2,
+"dosya": 87,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+405,
+354,
+668
+],
+"capa": [
+408,
+48
+]
+},
+{
+"birim": "ACL25S2-T050",
+"soru": 3,
+"dosya": 87,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+669,
+354,
+922
+],
+"capa": [
+672,
+49
+]
+},
+{
+"birim": "ACL25S2-T050",
+"soru": 4,
+"dosya": 87,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+407
+],
+"capa": [
+113,
+379
+]
+},
+{
+"birim": "ACL25S2-T050",
+"soru": 5,
+"dosya": 87,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+408,
+700,
+668
+],
+"capa": [
+411,
+379
+]
+},
+{
+"birim": "ACL25S2-T050",
+"soru": 6,
+"dosya": 87,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+669,
+700,
+909
+],
+"capa": [
+672,
+379
+]
+},
+{
+"birim": "ACL25S2-T051",
+"soru": 1,
+"dosya": 88,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+495,
+371,
+655
+],
+"capa": [
+498,
+67
+]
+},
+{
+"birim": "ACL25S2-T051",
+"soru": 2,
+"dosya": 88,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+656,
+371,
+922
+],
+"capa": [
+659,
+65
+]
+},
+{
+"birim": "ACL25S2-T051",
+"soru": 3,
+"dosya": 88,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+495,
+715,
+655
+],
+"capa": [
+498,
+396
+]
+},
+{
+"birim": "ACL25S2-T051",
+"soru": 4,
+"dosya": 88,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+656,
+715,
+908
+],
+"capa": [
+659,
+395
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 1,
+"dosya": 89,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+50
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 2,
+"dosya": 89,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 3,
+"dosya": 89,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 4,
+"dosya": 89,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+360
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 5,
+"dosya": 89,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+621
+],
+"capa": [
+364,
+379
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 6,
+"dosya": 89,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 7,
+"dosya": 90,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+99,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 8,
+"dosya": 90,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 9,
+"dosya": 90,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 10,
+"dosya": 90,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+102,
+715,
+360
+],
+"capa": [
+105,
+397
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 11,
+"dosya": 90,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T052",
+"soru": 12,
+"dosya": 90,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T053",
+"soru": 1,
+"dosya": 91,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+487,
+354,
+697
+],
+"capa": [
+490,
+50
+]
+},
+{
+"birim": "ACL25S2-T053",
+"soru": 2,
+"dosya": 91,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+698,
+354,
+922
+],
+"capa": [
+701,
+48
+]
+},
+{
+"birim": "ACL25S2-T053",
+"soru": 3,
+"dosya": 91,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+487,
+700,
+697
+],
+"capa": [
+490,
+379
+]
+},
+{
+"birim": "ACL25S2-T053",
+"soru": 4,
+"dosya": 91,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+698,
+700,
+908
+],
+"capa": [
+701,
+379
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 1,
+"dosya": 92,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 2,
+"dosya": 92,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 3,
+"dosya": 92,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 4,
+"dosya": 92,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+362
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 5,
+"dosya": 92,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+618
+],
+"capa": [
+373,
+397
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 6,
+"dosya": 92,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+619,
+715,
+909
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 7,
+"dosya": 93,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+324
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 8,
+"dosya": 93,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+325,
+354,
+590
+],
+"capa": [
+328,
+49
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 9,
+"dosya": 93,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+591,
+354,
+922
+],
+"capa": [
+594,
+48
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 10,
+"dosya": 93,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+439
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 11,
+"dosya": 93,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+440,
+700,
+688
+],
+"capa": [
+443,
+380
+]
+},
+{
+"birim": "ACL25S2-T054",
+"soru": 12,
+"dosya": 93,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+689,
+700,
+908
+],
+"capa": [
+692,
+380
+]
+},
+{
+"birim": "ACL25S2-T055",
+"soru": 1,
+"dosya": 94,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+601,
+371,
+777
+],
+"capa": [
+604,
+66
+]
+},
+{
+"birim": "ACL25S2-T055",
+"soru": 2,
+"dosya": 94,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+778,
+371,
+922
+],
+"capa": [
+781,
+65
+]
+},
+{
+"birim": "ACL25S2-T055",
+"soru": 3,
+"dosya": 94,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+601,
+715,
+907
+],
+"capa": [
+604,
+397
+]
+},
+{
+"birim": "ACL25S2-T056",
+"soru": 1,
+"dosya": 95,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+395
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T056",
+"soru": 2,
+"dosya": 95,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+396,
+354,
+688
+],
+"capa": [
+407,
+49
+]
+},
+{
+"birim": "ACL25S2-T056",
+"soru": 3,
+"dosya": 95,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+689,
+354,
+922
+],
+"capa": [
+692,
+49
+]
+},
+{
+"birim": "ACL25S2-T056",
+"soru": 4,
+"dosya": 95,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+394
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T056",
+"soru": 5,
+"dosya": 95,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+395,
+700,
+908
+],
+"capa": [
+398,
+379
+]
+},
+{
+"birim": "ACL25S2-T057",
+"soru": 1,
+"dosya": 96,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+533,
+371,
+738
+],
+"capa": [
+536,
+67
+]
+},
+{
+"birim": "ACL25S2-T057",
+"soru": 2,
+"dosya": 96,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+739,
+371,
+922
+],
+"capa": [
+742,
+65
+]
+},
+{
+"birim": "ACL25S2-T057",
+"soru": 3,
+"dosya": 96,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+533,
+715,
+738
+],
+"capa": [
+536,
+396
+]
+},
+{
+"birim": "ACL25S2-T057",
+"soru": 4,
+"dosya": 96,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+739,
+715,
+909
+],
+"capa": [
+742,
+396
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 1,
+"dosya": 97,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 2,
+"dosya": 97,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 3,
+"dosya": 97,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 4,
+"dosya": 97,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+362
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 5,
+"dosya": 97,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+621
+],
+"capa": [
+366,
+379
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 6,
+"dosya": 97,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 7,
+"dosya": 98,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 8,
+"dosya": 98,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 9,
+"dosya": 98,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 10,
+"dosya": 98,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 11,
+"dosya": 98,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T058",
+"soru": 12,
+"dosya": 98,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 1,
+"dosya": 99,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 2,
+"dosya": 99,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 3,
+"dosya": 99,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 4,
+"dosya": 99,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 5,
+"dosya": 99,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+622
+],
+"capa": [
+365,
+380
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 6,
+"dosya": 99,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+623,
+700,
+909
+],
+"capa": [
+632,
+379
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 7,
+"dosya": 100,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 8,
+"dosya": 100,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 9,
+"dosya": 100,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 10,
+"dosya": 100,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 11,
+"dosya": 100,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T059",
+"soru": 12,
+"dosya": 100,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+909
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 1,
+"dosya": 101,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+100,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 2,
+"dosya": 101,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 3,
+"dosya": 101,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 4,
+"dosya": 101,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 5,
+"dosya": 101,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+621
+],
+"capa": [
+365,
+380
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 6,
+"dosya": 101,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 7,
+"dosya": 102,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 8,
+"dosya": 102,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 9,
+"dosya": 102,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 10,
+"dosya": 102,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 11,
+"dosya": 102,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T060",
+"soru": 12,
+"dosya": 102,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 1,
+"dosya": 103,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+456
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 2,
+"dosya": 103,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+457,
+354,
+651
+],
+"capa": [
+460,
+49
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 3,
+"dosya": 103,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+652,
+354,
+922
+],
+"capa": [
+655,
+49
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 4,
+"dosya": 103,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+460
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 5,
+"dosya": 103,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+461,
+700,
+651
+],
+"capa": [
+464,
+379
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 6,
+"dosya": 103,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+652,
+700,
+908
+],
+"capa": [
+655,
+379
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 7,
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 8,
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+621
+],
+"capa": [
+374,
+66
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 9,
+"dosya": 104,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 10,
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 11,
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T061",
+"soru": 12,
+"dosya": 104,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+909
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 1,
+"dosya": 105,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+99,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 2,
+"dosya": 105,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 3,
+"dosya": 105,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 4,
+"dosya": 105,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 5,
+"dosya": 105,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+621
+],
+"capa": [
+365,
+380
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 6,
+"dosya": 105,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 7,
+"dosya": 106,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 8,
+"dosya": 106,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 9,
+"dosya": 106,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 10,
+"dosya": 106,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 11,
+"dosya": 106,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T062",
+"soru": 12,
+"dosya": 106,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 1,
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 2,
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 3,
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 4,
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 5,
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+621
+],
+"capa": [
+365,
+380
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 6,
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 7,
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+358
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 8,
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+359,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 9,
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 10,
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+99,
+715,
+362
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 11,
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+621
+],
+"capa": [
+374,
+397
+]
+},
+{
+"birim": "ACL25S2-T063",
+"soru": 12,
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+909
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 1,
+"dosya": 109,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+99,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 2,
+"dosya": 109,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 3,
+"dosya": 109,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 4,
+"dosya": 109,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+450
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 5,
+"dosya": 109,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+451,
+700,
+674
+],
+"capa": [
+454,
+379
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 6,
+"dosya": 109,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+675,
+700,
+908
+],
+"capa": [
+678,
+379
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 7,
+"dosya": 110,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 8,
+"dosya": 110,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+621
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 9,
+"dosya": 110,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+65
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 10,
+"dosya": 110,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 11,
+"dosya": 110,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T064",
+"soru": 12,
+"dosya": 110,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+909
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 1,
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+472
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 2,
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+473,
+354,
+922
+],
+"capa": [
+476,
+49
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 3,
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+473
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 4,
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+474,
+700,
+908
+],
+"capa": [
+477,
+378
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 5,
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+496,
+371,
+697
+],
+"capa": [
+499,
+66
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 6,
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+698,
+371,
+922
+],
+"capa": [
+701,
+66
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 7,
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+572
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T065",
+"soru": 8,
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+573,
+715,
+908
+],
+"capa": [
+576,
+396
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 1,
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+322,
+354,
+608
+],
+"capa": [
+325,
+49
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 2,
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+609,
+354,
+922
+],
+"capa": [
+612,
+49
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 3,
+"dosya": 113,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+909
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 4,
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+530
+],
+"capa": [
+104,
+65
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 5,
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+531,
+371,
+922
+],
+"capa": [
+534,
+66
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 6,
+"dosya": 114,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+530
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T066",
+"soru": 7,
+"dosya": 114,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+531,
+715,
+908
+],
+"capa": [
+534,
+396
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 1,
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+509
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 2,
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+510,
+354,
+922
+],
+"capa": [
+513,
+49
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 3,
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+509
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 4,
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+510,
+700,
+909
+],
+"capa": [
+513,
+379
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 5,
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+490
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 6,
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+491,
+371,
+922
+],
+"capa": [
+494,
+66
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 7,
+"dosya": 116,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+490
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T067",
+"soru": 8,
+"dosya": 116,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+491,
+715,
+907
+],
+"capa": [
+494,
+396
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 1,
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+526
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 2,
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+527,
+354,
+922
+],
+"capa": [
+530,
+49
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 3,
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+526
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 4,
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+527,
+700,
+908
+],
+"capa": [
+530,
+378
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 5,
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+470
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 6,
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+471,
+371,
+922
+],
+"capa": [
+474,
+66
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 7,
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+470
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T068",
+"soru": 8,
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+471,
+715,
+908
+],
+"capa": [
+474,
+396
+]
+},
+{
+"birim": "ACL25S2-T069",
+"soru": 1,
+"dosya": 120,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+571,
+371,
+738
+],
+"capa": [
+576,
+66
+]
+},
+{
+"birim": "ACL25S2-T069",
+"soru": 2,
+"dosya": 120,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+739,
+371,
+922
+],
+"capa": [
+742,
+65
+]
+},
+{
+"birim": "ACL25S2-T069",
+"soru": 3,
+"dosya": 120,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+571,
+715,
+740
+],
+"capa": [
+576,
+397
+]
+},
+{
+"birim": "ACL25S2-T069",
+"soru": 4,
+"dosya": 120,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+741,
+715,
+908
+],
+"capa": [
+755,
+396
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 1,
+"dosya": 121,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+99,
+354,
+362
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 2,
+"dosya": 121,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+618
+],
+"capa": [
+371,
+48
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 3,
+"dosya": 121,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+619,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 4,
+"dosya": 121,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+99,
+700,
+362
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 5,
+"dosya": 121,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+618
+],
+"capa": [
+377,
+379
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 6,
+"dosya": 121,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+619,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 7,
+"dosya": 122,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+99,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 8,
+"dosya": 122,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+682
+],
+"capa": [
+377,
+66
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 9,
+"dosya": 122,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+683,
+371,
+922
+],
+"capa": [
+686,
+66
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 10,
+"dosya": 122,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+360
+],
+"capa": [
+117,
+397
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 11,
+"dosya": 122,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+682
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T070",
+"soru": 12,
+"dosya": 122,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+683,
+715,
+908
+],
+"capa": [
+686,
+397
+]
+},
+{
+"birim": "ACL25S2-T071",
+"soru": 1,
+"dosya": 123,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+572,
+354,
+736
+],
+"capa": [
+576,
+50
+]
+},
+{
+"birim": "ACL25S2-T071",
+"soru": 2,
+"dosya": 123,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+737,
+354,
+922
+],
+"capa": [
+742,
+48
+]
+},
+{
+"birim": "ACL25S2-T071",
+"soru": 3,
+"dosya": 123,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+571,
+700,
+738
+],
+"capa": [
+576,
+379
+]
+},
+{
+"birim": "ACL25S2-T071",
+"soru": 4,
+"dosya": 123,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+739,
+700,
+908
+],
+"capa": [
+742,
+379
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 1,
+"dosya": 124,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+100,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 2,
+"dosya": 124,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+618
+],
+"capa": [
+382,
+65
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 3,
+"dosya": 124,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+619,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 4,
+"dosya": 124,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 5,
+"dosya": 124,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+621
+],
+"capa": [
+365,
+397
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 6,
+"dosya": 124,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 7,
+"dosya": 125,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+99,
+354,
+439
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 8,
+"dosya": 125,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+440,
+354,
+696
+],
+"capa": [
+443,
+49
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 9,
+"dosya": 125,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+697,
+354,
+922
+],
+"capa": [
+700,
+48
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 10,
+"dosya": 125,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+437
+],
+"capa": [
+111,
+380
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 11,
+"dosya": 125,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+438,
+700,
+696
+],
+"capa": [
+443,
+380
+]
+},
+{
+"birim": "ACL25S2-T072",
+"soru": 12,
+"dosya": 125,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+697,
+700,
+908
+],
+"capa": [
+700,
+380
+]
+},
+{
+"birim": "ACL25S2-T073",
+"soru": 1,
+"dosya": 126,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+454,
+371,
+694
+],
+"capa": [
+459,
+66
+]
+},
+{
+"birim": "ACL25S2-T073",
+"soru": 2,
+"dosya": 126,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+695,
+371,
+922
+],
+"capa": [
+700,
+66
+]
+},
+{
+"birim": "ACL25S2-T073",
+"soru": 3,
+"dosya": 126,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+458,
+715,
+694
+],
+"capa": [
+482,
+397
+]
+},
+{
+"birim": "ACL25S2-T073",
+"soru": 4,
+"dosya": 126,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+695,
+715,
+908
+],
+"capa": [
+700,
+396
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 1,
+"dosya": 127,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+360
+],
+"capa": [
+127,
+49
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 2,
+"dosya": 127,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+622
+],
+"capa": [
+364,
+48
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 3,
+"dosya": 127,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+636,
+49
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 4,
+"dosya": 127,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+362
+],
+"capa": [
+126,
+379
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 5,
+"dosya": 127,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+621
+],
+"capa": [
+376,
+379
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 6,
+"dosya": 127,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+909
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 7,
+"dosya": 128,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 8,
+"dosya": 128,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+622
+],
+"capa": [
+383,
+66
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 9,
+"dosya": 128,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+636,
+66
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 10,
+"dosya": 128,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 11,
+"dosya": 128,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+620
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T074",
+"soru": 12,
+"dosya": 128,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+621,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T075",
+"soru": 1,
+"dosya": 129,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+529,
+354,
+712
+],
+"capa": [
+544,
+49
+]
+},
+{
+"birim": "ACL25S2-T075",
+"soru": 2,
+"dosya": 129,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+713,
+354,
+922
+],
+"capa": [
+719,
+48
+]
+},
+{
+"birim": "ACL25S2-T075",
+"soru": 3,
+"dosya": 129,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+529,
+700,
+715
+],
+"capa": [
+543,
+379
+]
+},
+{
+"birim": "ACL25S2-T075",
+"soru": 4,
+"dosya": 129,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+716,
+700,
+908
+],
+"capa": [
+719,
+379
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 1,
+"dosya": 130,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+116,
+66
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 2,
+"dosya": 130,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+622
+],
+"capa": [
+377,
+66
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 3,
+"dosya": 130,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+637,
+66
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 4,
+"dosya": 130,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+361
+],
+"capa": [
+116,
+396
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 5,
+"dosya": 130,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+362,
+715,
+618
+],
+"capa": [
+365,
+397
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 6,
+"dosya": 130,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+619,
+715,
+908
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 7,
+"dosya": 131,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 8,
+"dosya": 131,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+648
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 9,
+"dosya": 131,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+649,
+354,
+922
+],
+"capa": [
+652,
+48
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 10,
+"dosya": 131,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+99,
+700,
+360
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 11,
+"dosya": 131,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+647
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T076",
+"soru": 12,
+"dosya": 131,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+648,
+700,
+909
+],
+"capa": [
+651,
+380
+]
+},
+{
+"birim": "ACL25S2-T077",
+"soru": 1,
+"dosya": 132,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+513,
+371,
+700
+],
+"capa": [
+518,
+66
+]
+},
+{
+"birim": "ACL25S2-T077",
+"soru": 2,
+"dosya": 132,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+701,
+371,
+922
+],
+"capa": [
+707,
+65
+]
+},
+{
+"birim": "ACL25S2-T077",
+"soru": 3,
+"dosya": 132,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+513,
+715,
+698
+],
+"capa": [
+518,
+397
+]
+},
+{
+"birim": "ACL25S2-T077",
+"soru": 4,
+"dosya": 132,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+699,
+715,
+908
+],
+"capa": [
+707,
+396
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 1,
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+358
+],
+"capa": [
+116,
+49
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 2,
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+359,
+354,
+618
+],
+"capa": [
+364,
+48
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 3,
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+619,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 4,
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+99,
+700,
+359
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 5,
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+360,
+700,
+622
+],
+"capa": [
+365,
+379
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 6,
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+623,
+700,
+909
+],
+"capa": [
+629,
+379
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 7,
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+99,
+371,
+360
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 8,
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+361,
+371,
+618
+],
+"capa": [
+364,
+66
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 9,
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+619,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 10,
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+99,
+715,
+360
+],
+"capa": [
+104,
+397
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 11,
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+361,
+715,
+618
+],
+"capa": [
+364,
+397
+]
+},
+{
+"birim": "ACL25S2-T078",
+"soru": 12,
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+619,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T079",
+"soru": 1,
+"dosya": 135,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+462,
+354,
+707
+],
+"capa": [
+467,
+50
+]
+},
+{
+"birim": "ACL25S2-T079",
+"soru": 2,
+"dosya": 135,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+708,
+354,
+922
+],
+"capa": [
+713,
+48
+]
+},
+{
+"birim": "ACL25S2-T079",
+"soru": 3,
+"dosya": 135,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+466,
+700,
+707
+],
+"capa": [
+479,
+379
+]
+},
+{
+"birim": "ACL25S2-T079",
+"soru": 4,
+"dosya": 135,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+708,
+700,
+909
+],
+"capa": [
+713,
+379
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 1,
+"dosya": 136,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+99,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 2,
+"dosya": 136,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+618
+],
+"capa": [
+377,
+66
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 3,
+"dosya": 136,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+619,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 4,
+"dosya": 136,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+99,
+715,
+362
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 5,
+"dosya": 136,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+620
+],
+"capa": [
+372,
+397
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 6,
+"dosya": 136,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+621,
+715,
+908
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 7,
+"dosya": 137,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+362
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 8,
+"dosya": 137,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+622
+],
+"capa": [
+377,
+49
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 9,
+"dosya": 137,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+637,
+48
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 10,
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+360
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 11,
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+619
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T080",
+"soru": 12,
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+620,
+700,
+909
+],
+"capa": [
+625,
+380
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 1,
+"dosya": 138,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+414
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 2,
+"dosya": 138,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+415,
+371,
+622
+],
+"capa": [
+433,
+66
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 3,
+"dosya": 138,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+637,
+66
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 4,
+"dosya": 138,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+113,
+396
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 5,
+"dosya": 138,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+618
+],
+"capa": [
+377,
+396
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 6,
+"dosya": 138,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+619,
+715,
+908
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 7,
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+99,
+354,
+358
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 8,
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+359,
+354,
+620
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 9,
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+621,
+354,
+922
+],
+"capa": [
+625,
+48
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 10,
+"dosya": 139,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+362
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 11,
+"dosya": 139,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+620
+],
+"capa": [
+371,
+380
+]
+},
+{
+"birim": "ACL25S2-T081",
+"soru": 12,
+"dosya": 139,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+621,
+700,
+908
+],
+"capa": [
+625,
+380
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 1,
+"dosya": 140,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 2,
+"dosya": 140,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+622
+],
+"capa": [
+375,
+66
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 3,
+"dosya": 140,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+636,
+66
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 4,
+"dosya": 140,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+112,
+396
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 5,
+"dosya": 140,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+622
+],
+"capa": [
+368,
+397
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 6,
+"dosya": 140,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+623,
+715,
+909
+],
+"capa": [
+636,
+396
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 7,
+"dosya": 141,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+362
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 8,
+"dosya": 141,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+618
+],
+"capa": [
+377,
+49
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 9,
+"dosya": 141,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+619,
+354,
+922
+],
+"capa": [
+625,
+48
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 10,
+"dosya": 141,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+99,
+700,
+360
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 11,
+"dosya": 141,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+621
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T082",
+"soru": 12,
+"dosya": 141,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+380
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 1,
+"dosya": 142,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+452
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 2,
+"dosya": 142,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+453,
+371,
+704
+],
+"capa": [
+458,
+66
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 3,
+"dosya": 142,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+705,
+371,
+922
+],
+"capa": [
+710,
+66
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 4,
+"dosya": 142,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+99,
+715,
+393
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 5,
+"dosya": 142,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+394,
+715,
+622
+],
+"capa": [
+400,
+396
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 6,
+"dosya": 142,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+623,
+715,
+908
+],
+"capa": [
+636,
+396
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 7,
+"dosya": 143,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+105,
+354,
+403
+],
+"capa": [
+134,
+49
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 8,
+"dosya": 143,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+404,
+354,
+659
+],
+"capa": [
+417,
+49
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 9,
+"dosya": 143,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+660,
+354,
+922
+],
+"capa": [
+666,
+48
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 10,
+"dosya": 143,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+99,
+700,
+401
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 11,
+"dosya": 143,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+402,
+700,
+662
+],
+"capa": [
+406,
+380
+]
+},
+{
+"birim": "ACL25S2-T083",
+"soru": 12,
+"dosya": 143,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+663,
+700,
+908
+],
+"capa": [
+666,
+380
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 1,
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 2,
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+618
+],
+"capa": [
+387,
+66
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 3,
+"dosya": 144,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+619,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 4,
+"dosya": 144,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+415
+],
+"capa": [
+115,
+396
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 5,
+"dosya": 144,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+416,
+715,
+622
+],
+"capa": [
+426,
+396
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 6,
+"dosya": 144,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+623,
+715,
+909
+],
+"capa": [
+644,
+396
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 7,
+"dosya": 145,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+95,
+354,
+360
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 8,
+"dosya": 145,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+361,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 9,
+"dosya": 145,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+48
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 10,
+"dosya": 145,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+100,
+700,
+393
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 11,
+"dosya": 145,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+394,
+700,
+621
+],
+"capa": [
+409,
+380
+]
+},
+{
+"birim": "ACL25S2-T084",
+"soru": 12,
+"dosya": 145,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+380
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 1,
+"dosya": 146,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+472
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 2,
+"dosya": 146,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+473,
+371,
+922
+],
+"capa": [
+476,
+66
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 3,
+"dosya": 146,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+472
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 4,
+"dosya": 146,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+473,
+715,
+908
+],
+"capa": [
+476,
+396
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 5,
+"dosya": 147,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+428
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 6,
+"dosya": 147,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+429,
+354,
+922
+],
+"capa": [
+432,
+49
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 7,
+"dosya": 147,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+428
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T085",
+"soru": 8,
+"dosya": 147,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+429,
+700,
+909
+],
+"capa": [
+432,
+379
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 1,
+"dosya": 148,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+426
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 2,
+"dosya": 148,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+427,
+371,
+729
+],
+"capa": [
+430,
+66
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 3,
+"dosya": 148,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+730,
+371,
+922
+],
+"capa": [
+733,
+66
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 4,
+"dosya": 148,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+426
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 5,
+"dosya": 148,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+427,
+715,
+908
+],
+"capa": [
+430,
+396
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 6,
+"dosya": 149,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+361
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 7,
+"dosya": 149,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+362,
+354,
+682
+],
+"capa": [
+365,
+49
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 8,
+"dosya": 149,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+683,
+354,
+922
+],
+"capa": [
+695,
+49
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 9,
+"dosya": 149,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+99,
+700,
+360
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T086",
+"soru": 10,
+"dosya": 149,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+908
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 1,
+"dosya": 150,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+99,
+371,
+398
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 2,
+"dosya": 150,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+399,
+371,
+601
+],
+"capa": [
+402,
+66
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 3,
+"dosya": 150,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+602,
+371,
+922
+],
+"capa": [
+605,
+66
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 4,
+"dosya": 150,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+601
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 5,
+"dosya": 150,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+602,
+715,
+908
+],
+"capa": [
+605,
+397
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 6,
+"dosya": 151,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+592
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 7,
+"dosya": 151,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+593,
+354,
+922
+],
+"capa": [
+596,
+49
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 8,
+"dosya": 151,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+651
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T087",
+"soru": 9,
+"dosya": 151,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+652,
+700,
+908
+],
+"capa": [
+655,
+379
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 1,
+"dosya": 152,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+519
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 2,
+"dosya": 152,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+520,
+371,
+922
+],
+"capa": [
+523,
+66
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 3,
+"dosya": 152,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+519
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 4,
+"dosya": 152,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+520,
+715,
+908
+],
+"capa": [
+523,
+395
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 5,
+"dosya": 153,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+400
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 6,
+"dosya": 153,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+401,
+354,
+744
+],
+"capa": [
+404,
+49
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 7,
+"dosya": 153,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+745,
+354,
+922
+],
+"capa": [
+748,
+49
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 8,
+"dosya": 153,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+400
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T088",
+"soru": 9,
+"dosya": 153,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+401,
+700,
+909
+],
+"capa": [
+404,
+380
+]
+},
+{
+"birim": "ACL25S2-T089",
+"soru": 1,
+"dosya": 156,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+525,
+371,
+708
+],
+"capa": [
+529,
+66
+]
+},
+{
+"birim": "ACL25S2-T089",
+"soru": 2,
+"dosya": 156,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+709,
+371,
+922
+],
+"capa": [
+712,
+65
+]
+},
+{
+"birim": "ACL25S2-T089",
+"soru": 3,
+"dosya": 156,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+523,
+715,
+708
+],
+"capa": [
+526,
+397
+]
+},
+{
+"birim": "ACL25S2-T089",
+"soru": 4,
+"dosya": 156,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+709,
+715,
+908
+],
+"capa": [
+712,
+396
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 1,
+"dosya": 157,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+107,
+49
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 2,
+"dosya": 157,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+622
+],
+"capa": [
+368,
+49
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 3,
+"dosya": 157,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+629,
+49
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 4,
+"dosya": 157,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+362
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 5,
+"dosya": 157,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+621
+],
+"capa": [
+368,
+379
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 6,
+"dosya": 157,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+622,
+700,
+908
+],
+"capa": [
+625,
+379
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 7,
+"dosya": 158,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 8,
+"dosya": 158,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+621
+],
+"capa": [
+369,
+66
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 9,
+"dosya": 158,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 10,
+"dosya": 158,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+109,
+397
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 11,
+"dosya": 158,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+622
+],
+"capa": [
+368,
+397
+]
+},
+{
+"birim": "ACL25S2-T090",
+"soru": 12,
+"dosya": 158,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+623,
+715,
+908
+],
+"capa": [
+629,
+397
+]
+},
+{
+"birim": "ACL25S2-T091",
+"soru": 1,
+"dosya": 159,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+459,
+354,
+659
+],
+"capa": [
+462,
+50
+]
+},
+{
+"birim": "ACL25S2-T091",
+"soru": 2,
+"dosya": 159,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+660,
+354,
+922
+],
+"capa": [
+674,
+48
+]
+},
+{
+"birim": "ACL25S2-T091",
+"soru": 3,
+"dosya": 159,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+460,
+700,
+657
+],
+"capa": [
+463,
+379
+]
+},
+{
+"birim": "ACL25S2-T091",
+"soru": 4,
+"dosya": 159,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+658,
+700,
+908
+],
+"capa": [
+661,
+379
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 1,
+"dosya": 160,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+112,
+66
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 2,
+"dosya": 160,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+622
+],
+"capa": [
+372,
+66
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 3,
+"dosya": 160,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+629,
+66
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 4,
+"dosya": 160,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+112,
+396
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 5,
+"dosya": 160,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+624
+],
+"capa": [
+372,
+396
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 6,
+"dosya": 160,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+625,
+715,
+909
+],
+"capa": [
+639,
+396
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 7,
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+117,
+49
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 8,
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+624
+],
+"capa": [
+372,
+49
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 9,
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+625,
+354,
+922
+],
+"capa": [
+632,
+48
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 10,
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+362
+],
+"capa": [
+111,
+380
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 11,
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+623
+],
+"capa": [
+372,
+380
+]
+},
+{
+"birim": "ACL25S2-T092",
+"soru": 12,
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+624,
+700,
+909
+],
+"capa": [
+632,
+380
+]
+},
+{
+"birim": "ACL25S2-T093",
+"soru": 1,
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+468,
+371,
+658
+],
+"capa": [
+472,
+66
+]
+},
+{
+"birim": "ACL25S2-T093",
+"soru": 2,
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+659,
+371,
+922
+],
+"capa": [
+664,
+65
+]
+},
+{
+"birim": "ACL25S2-T093",
+"soru": 3,
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+468,
+715,
+658
+],
+"capa": [
+476,
+397
+]
+},
+{
+"birim": "ACL25S2-T093",
+"soru": 4,
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+659,
+715,
+909
+],
+"capa": [
+671,
+396
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 1,
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+112,
+49
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 2,
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+622
+],
+"capa": [
+372,
+49
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 3,
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+623,
+354,
+922
+],
+"capa": [
+629,
+49
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 4,
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+361
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 5,
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+362,
+700,
+622
+],
+"capa": [
+365,
+379
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 6,
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+623,
+700,
+908
+],
+"capa": [
+638,
+379
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 7,
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 8,
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+623
+],
+"capa": [
+375,
+66
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 9,
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+624,
+371,
+922
+],
+"capa": [
+640,
+66
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 10,
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+120,
+397
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 11,
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+621
+],
+"capa": [
+369,
+397
+]
+},
+{
+"birim": "ACL25S2-T094",
+"soru": 12,
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+397
+]
+},
+{
+"birim": "ACL25S2-T095",
+"soru": 1,
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+526,
+354,
+715
+],
+"capa": [
+530,
+50
+]
+},
+{
+"birim": "ACL25S2-T095",
+"soru": 2,
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+716,
+354,
+922
+],
+"capa": [
+721,
+48
+]
+},
+{
+"birim": "ACL25S2-T095",
+"soru": 3,
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+528,
+700,
+715
+],
+"capa": [
+534,
+380
+]
+},
+{
+"birim": "ACL25S2-T095",
+"soru": 4,
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+716,
+700,
+908
+],
+"capa": [
+733,
+379
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 1,
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+117,
+66
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 2,
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+623
+],
+"capa": [
+385,
+66
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 3,
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+624,
+371,
+922
+],
+"capa": [
+632,
+66
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 4,
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+117,
+396
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 5,
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+622
+],
+"capa": [
+378,
+396
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 6,
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+623,
+715,
+909
+],
+"capa": [
+632,
+396
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 7,
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+116,
+49
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 8,
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+623
+],
+"capa": [
+368,
+49
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 9,
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+624,
+354,
+922
+],
+"capa": [
+637,
+48
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 10,
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+362
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 11,
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+622
+],
+"capa": [
+379,
+380
+]
+},
+{
+"birim": "ACL25S2-T096",
+"soru": 12,
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+623,
+700,
+908
+],
+"capa": [
+638,
+380
+]
+},
+{
+"birim": "ACL25S2-T097",
+"soru": 1,
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+491,
+371,
+725
+],
+"capa": [
+497,
+66
+]
+},
+{
+"birim": "ACL25S2-T097",
+"soru": 2,
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+726,
+371,
+922
+],
+"capa": [
+731,
+65
+]
+},
+{
+"birim": "ACL25S2-T097",
+"soru": 3,
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+491,
+715,
+723
+],
+"capa": [
+496,
+397
+]
+},
+{
+"birim": "ACL25S2-T097",
+"soru": 4,
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+724,
+715,
+909
+],
+"capa": [
+727,
+396
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 1,
+"dosya": 169,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+400
+],
+"capa": [
+109,
+49
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 2,
+"dosya": 169,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+401,
+354,
+697
+],
+"capa": [
+406,
+48
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 3,
+"dosya": 169,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+698,
+354,
+922
+],
+"capa": [
+701,
+49
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 4,
+"dosya": 169,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+100,
+700,
+311
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 5,
+"dosya": 169,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+312,
+700,
+624
+],
+"capa": [
+317,
+379
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 6,
+"dosya": 169,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+625,
+700,
+908
+],
+"capa": [
+628,
+379
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 7,
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+411
+],
+"capa": [
+108,
+66
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 8,
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+412,
+371,
+636
+],
+"capa": [
+418,
+66
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 9,
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+637,
+371,
+922
+],
+"capa": [
+643,
+66
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 10,
+"dosya": 170,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+109,
+397
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 11,
+"dosya": 170,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+634
+],
+"capa": [
+369,
+397
+]
+},
+{
+"birim": "ACL25S2-T098",
+"soru": 12,
+"dosya": 170,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+635,
+715,
+908
+],
+"capa": [
+638,
+397
+]
+},
+{
+"birim": "ACL25S2-T099",
+"soru": 1,
+"dosya": 171,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+520,
+354,
+708
+],
+"capa": [
+532,
+49
+]
+},
+{
+"birim": "ACL25S2-T099",
+"soru": 2,
+"dosya": 171,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+709,
+354,
+922
+],
+"capa": [
+718,
+48
+]
+},
+{
+"birim": "ACL25S2-T099",
+"soru": 3,
+"dosya": 171,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+518,
+700,
+708
+],
+"capa": [
+527,
+379
+]
+},
+{
+"birim": "ACL25S2-T099",
+"soru": 4,
+"dosya": 171,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+709,
+700,
+908
+],
+"capa": [
+722,
+379
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 1,
+"dosya": 172,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 2,
+"dosya": 172,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+622
+],
+"capa": [
+371,
+66
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 3,
+"dosya": 172,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+632,
+66
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 4,
+"dosya": 172,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+107,
+396
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 5,
+"dosya": 172,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+623
+],
+"capa": [
+372,
+397
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 6,
+"dosya": 172,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+624,
+715,
+908
+],
+"capa": [
+640,
+396
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 7,
+"dosya": 173,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+120,
+49
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 8,
+"dosya": 173,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+623
+],
+"capa": [
+377,
+49
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 9,
+"dosya": 173,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+624,
+354,
+922
+],
+"capa": [
+637,
+48
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 10,
+"dosya": 173,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+362
+],
+"capa": [
+116,
+380
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 11,
+"dosya": 173,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+623
+],
+"capa": [
+371,
+380
+]
+},
+{
+"birim": "ACL25S2-T100",
+"soru": 12,
+"dosya": 173,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+624,
+700,
+909
+],
+"capa": [
+637,
+380
+]
+},
+{
+"birim": "ACL25S2-T101",
+"soru": 1,
+"dosya": 174,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+512,
+371,
+708
+],
+"capa": [
+524,
+66
+]
+},
+{
+"birim": "ACL25S2-T101",
+"soru": 2,
+"dosya": 174,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+709,
+371,
+922
+],
+"capa": [
+717,
+66
+]
+},
+{
+"birim": "ACL25S2-T101",
+"soru": 3,
+"dosya": 174,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+514,
+715,
+708
+],
+"capa": [
+522,
+396
+]
+},
+{
+"birim": "ACL25S2-T101",
+"soru": 4,
+"dosya": 174,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+709,
+715,
+908
+],
+"capa": [
+717,
+396
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 1,
+"dosya": 175,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+364
+],
+"capa": [
+112,
+49
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 2,
+"dosya": 175,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+365,
+354,
+625
+],
+"capa": [
+374,
+48
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 3,
+"dosya": 175,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+626,
+354,
+922
+],
+"capa": [
+635,
+49
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 4,
+"dosya": 175,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+362
+],
+"capa": [
+111,
+379
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 5,
+"dosya": 175,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+623
+],
+"capa": [
+372,
+379
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 6,
+"dosya": 175,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+624,
+700,
+908
+],
+"capa": [
+631,
+379
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 7,
+"dosya": 176,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+111,
+66
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 8,
+"dosya": 176,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+622
+],
+"capa": [
+380,
+66
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 9,
+"dosya": 176,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+623,
+371,
+922
+],
+"capa": [
+632,
+66
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 10,
+"dosya": 176,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+364
+],
+"capa": [
+111,
+397
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 11,
+"dosya": 176,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+365,
+715,
+623
+],
+"capa": [
+373,
+397
+]
+},
+{
+"birim": "ACL25S2-T102",
+"soru": 12,
+"dosya": 176,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+624,
+715,
+908
+],
+"capa": [
+636,
+397
+]
+},
+{
+"birim": "ACL25S2-T103",
+"soru": 1,
+"dosya": 177,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+442,
+354,
+641
+],
+"capa": [
+447,
+49
+]
+},
+{
+"birim": "ACL25S2-T103",
+"soru": 2,
+"dosya": 177,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+642,
+354,
+922
+],
+"capa": [
+650,
+48
+]
+},
+{
+"birim": "ACL25S2-T103",
+"soru": 3,
+"dosya": 177,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+442,
+700,
+641
+],
+"capa": [
+447,
+379
+]
+},
+{
+"birim": "ACL25S2-T103",
+"soru": 4,
+"dosya": 177,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+642,
+700,
+908
+],
+"capa": [
+653,
+379
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 1,
+"dosya": 178,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+124,
+66
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 2,
+"dosya": 178,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+624
+],
+"capa": [
+372,
+66
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 3,
+"dosya": 178,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+625,
+371,
+922
+],
+"capa": [
+637,
+66
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 4,
+"dosya": 178,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+109,
+396
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 5,
+"dosya": 178,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+624
+],
+"capa": [
+379,
+397
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 6,
+"dosya": 178,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+625,
+715,
+909
+],
+"capa": [
+636,
+396
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 7,
+"dosya": 179,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+108,
+49
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 8,
+"dosya": 179,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+623
+],
+"capa": [
+367,
+49
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 9,
+"dosya": 179,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+624,
+354,
+922
+],
+"capa": [
+641,
+48
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 10,
+"dosya": 179,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+362
+],
+"capa": [
+116,
+380
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 11,
+"dosya": 179,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+623
+],
+"capa": [
+371,
+380
+]
+},
+{
+"birim": "ACL25S2-T104",
+"soru": 12,
+"dosya": 179,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+624,
+700,
+908
+],
+"capa": [
+638,
+380
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 1,
+"dosya": 180,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+107,
+66
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 2,
+"dosya": 180,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+621
+],
+"capa": [
+368,
+66
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 3,
+"dosya": 180,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 4,
+"dosya": 180,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+362
+],
+"capa": [
+114,
+396
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 5,
+"dosya": 180,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+623
+],
+"capa": [
+368,
+396
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 6,
+"dosya": 180,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+624,
+715,
+908
+],
+"capa": [
+640,
+396
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 7,
+"dosya": 181,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+362
+],
+"capa": [
+111,
+49
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 8,
+"dosya": 181,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+363,
+354,
+621
+],
+"capa": [
+377,
+49
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 9,
+"dosya": 181,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+48
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 10,
+"dosya": 181,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+103,
+700,
+360
+],
+"capa": [
+111,
+380
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 11,
+"dosya": 181,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+620
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T105",
+"soru": 12,
+"dosya": 181,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+621,
+700,
+908
+],
+"capa": [
+625,
+380
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 1,
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+362
+],
+"capa": [
+120,
+66
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 2,
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+623
+],
+"capa": [
+369,
+66
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 3,
+"dosya": 182,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+624,
+371,
+922
+],
+"capa": [
+628,
+66
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 4,
+"dosya": 182,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+429
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 5,
+"dosya": 182,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+430,
+715,
+622
+],
+"capa": [
+445,
+396
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 6,
+"dosya": 182,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+623,
+715,
+908
+],
+"capa": [
+652,
+396
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 7,
+"dosya": 183,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+358
+],
+"capa": [
+111,
+49
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 8,
+"dosya": 183,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+359,
+354,
+621
+],
+"capa": [
+364,
+49
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 9,
+"dosya": 183,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+48
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 10,
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+360
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 11,
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+361,
+700,
+717
+],
+"capa": [
+364,
+380
+]
+},
+{
+"birim": "ACL25S2-T106",
+"soru": 12,
+"dosya": 183,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+718,
+700,
+908
+],
+"capa": [
+721,
+380
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 1,
+"dosya": 184,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 2,
+"dosya": 184,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+621
+],
+"capa": [
+377,
+66
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 3,
+"dosya": 184,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 4,
+"dosya": 184,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+621
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 5,
+"dosya": 184,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+622,
+715,
+908
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 6,
+"dosya": 185,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+523
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 7,
+"dosya": 185,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+524,
+354,
+922
+],
+"capa": [
+528,
+49
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 8,
+"dosya": 185,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+523
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T107",
+"soru": 9,
+"dosya": 185,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+524,
+700,
+908
+],
+"capa": [
+527,
+379
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 1,
+"dosya": 186,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+103,
+371,
+385
+],
+"capa": [
+132,
+66
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 2,
+"dosya": 186,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+386,
+371,
+697
+],
+"capa": [
+389,
+66
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 3,
+"dosya": 186,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+698,
+371,
+922
+],
+"capa": [
+702,
+66
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 4,
+"dosya": 186,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+101,
+715,
+386
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 5,
+"dosya": 186,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+387,
+715,
+908
+],
+"capa": [
+390,
+397
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 6,
+"dosya": 187,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+102,
+354,
+565
+],
+"capa": [
+105,
+49
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 7,
+"dosya": 187,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+566,
+354,
+922
+],
+"capa": [
+569,
+49
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 8,
+"dosya": 187,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+564
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T108",
+"soru": 9,
+"dosya": 187,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+565,
+700,
+908
+],
+"capa": [
+568,
+379
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 1,
+"dosya": 188,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+579
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 2,
+"dosya": 188,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+580,
+371,
+922
+],
+"capa": [
+583,
+66
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 3,
+"dosya": 188,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+103,
+715,
+415
+],
+"capa": [
+110,
+396
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 4,
+"dosya": 188,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+416,
+715,
+909
+],
+"capa": [
+423,
+396
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 5,
+"dosya": 189,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+101,
+354,
+621
+],
+"capa": [
+104,
+49
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 6,
+"dosya": 189,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+622,
+354,
+922
+],
+"capa": [
+625,
+49
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 7,
+"dosya": 189,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+362
+],
+"capa": [
+104,
+379
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 8,
+"dosya": 189,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+363,
+700,
+623
+],
+"capa": [
+368,
+379
+]
+},
+{
+"birim": "ACL25S2-T109",
+"soru": 9,
+"dosya": 189,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+373,
+624,
+700,
+908
+],
+"capa": [
+637,
+379
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 1,
+"dosya": 190,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+10,
+101,
+371,
+362
+],
+"capa": [
+104,
+66
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 2,
+"dosya": 190,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+10,
+363,
+371,
+621
+],
+"capa": [
+368,
+66
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 3,
+"dosya": 190,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+10,
+622,
+371,
+922
+],
+"capa": [
+625,
+66
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 4,
+"dosya": 190,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+390,
+99,
+715,
+362
+],
+"capa": [
+104,
+396
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 5,
+"dosya": 190,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+390,
+363,
+715,
+621
+],
+"capa": [
+387,
+397
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 6,
+"dosya": 190,
+"sutun": "R",
+"sutun_sira": 2,
+"kutu": [
+390,
+622,
+715,
+909
+],
+"capa": [
+625,
+396
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 7,
+"dosya": 191,
+"sutun": "L",
+"sutun_sira": 0,
+"kutu": [
+8,
+103,
+354,
+332
+],
+"capa": [
+112,
+49
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 8,
+"dosya": 191,
+"sutun": "L",
+"sutun_sira": 1,
+"kutu": [
+8,
+333,
+354,
+638
+],
+"capa": [
+336,
+49
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 9,
+"dosya": 191,
+"sutun": "L",
+"sutun_sira": 2,
+"kutu": [
+8,
+639,
+354,
+922
+],
+"capa": [
+642,
+48
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 10,
+"dosya": 191,
+"sutun": "R",
+"sutun_sira": 0,
+"kutu": [
+373,
+101,
+700,
+482
+],
+"capa": [
+104,
+380
+]
+},
+{
+"birim": "ACL25S2-T110",
+"soru": 11,
+"dosya": 191,
+"sutun": "R",
+"sutun_sira": 1,
+"kutu": [
+373,
+483,
+700,
+908
+],
+"capa": [
+486,
+380
+]
+}
+]
+}
