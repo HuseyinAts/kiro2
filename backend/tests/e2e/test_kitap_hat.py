@@ -38,7 +38,7 @@ from scripts.kitap.kitap_hat import migration_uret as mu  # noqa: E402
 from scripts.kitap.kitap_hat import ortak  # noqa: E402
 from scripts.kitap.kitap_hat import tarama as ta  # noqa: E402
 
-PROFILLER = ["acl23ag", "acl23kc", "acl24mg"]
+PROFILLER = ["acl23ag", "acl23kc", "acl24mg", "acl25pl"]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 
 
@@ -161,6 +161,13 @@ def test_bant_farki_durur(k: Kitap) -> None:
         ha.harita_uret(k.p, h, k.capa_taramasi, k.cevap_anahtari)
     for o in ("okuma_a", "okuma_b"):
         h[o]["testler"][0]["konu"] = "BASKA KONU"
+    if not getattr(k.p, "BANT_KONU_KAPISI", True):
+        # Bant konu adi tasimiyor ('PEKISTIRME TESTI'): konu yalniz sayfa
+        # araligindan; bant adi degisince harita degismez.
+        assert (
+            ha.harita_uret(k.p, h, k.capa_taramasi, k.cevap_anahtari)["testler"] != []
+        )
+        return
     with pytest.raises(ValueError, match="konu"):
         ha.harita_uret(k.p, h, k.capa_taramasi, k.cevap_anahtari)
 

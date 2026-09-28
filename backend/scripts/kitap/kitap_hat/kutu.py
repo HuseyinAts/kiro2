@@ -63,6 +63,22 @@ def _ust(y: int, tavan: int, murekkep: np.ndarray) -> int:
     return tavan
 
 
+def _yatay_cizgiler(a: np.ndarray, x0: int, x1: int) -> list[int]:
+    """Sutun genisliginin >= %60'i boyunca koyu (< 200), en fazla 3 satir
+    kalinliginda yatay cizgiler (dolu resim alanlari cizgi degil)."""
+    k = (a[:, x0:x1].max(axis=2) < 200).sum(axis=1) >= 0.6 * (x1 - x0)
+    out, bas = [], None
+    for y in range(len(k) + 1):
+        on = y < len(k) and bool(k[y])
+        if on and bas is None:
+            bas = y
+        elif not on and bas is not None:
+            if y - bas <= 3:
+                out.append(y - 1)
+            bas = None
+    return out
+
+
 def _alt_sinir(p: ModuleType, sayfa: dict, x0: int, x1: int) -> int:
     s = sayfa.get("anahtar")
     if s and min(x1, s[3]) - max(x0, s[2]) > 20:
@@ -91,8 +107,14 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
         capa = sorted(sutun_capa, key=lambda c: c["y"])
         alt_sinir = _alt_sinir(p, tarama["sayfalar"][str(d)], x0, x1)
         ustler = []
+        cizgi = _yatay_cizgiler(a, x0, x1) if getattr(p, "AYRAC_TAVAN", False) else []
         for i, c in enumerate(capa):
             tavan = capa[i - 1]["y"] + 12 if i else p.UST_BANT
+            # Konu sayfasi ayrac cizgisi (ORNEK bolumu ile sorular arasi):
+            # numaranin ustundeki en yakin sutun-genisligi yatay cizgi tavandir.
+            ust_cizgi = [y for y in cizgi if tavan <= y < c["y"]]
+            if ust_cizgi:
+                tavan = max(ust_cizgi) + 2
             ustler.append(min(_ust(c["y"], tavan, mur), c["y"] - UST_PAY))
         for i, c in enumerate(capa):
             alt = ustler[i + 1] - 1 if i + 1 < len(capa) else alt_sinir
@@ -112,7 +134,10 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
         for k in kutular[-len(capa) :]:
             kapsanan[k["kutu"][1] : k["kutu"][3]] = True
         koyu = (a[:, x0:x1].min(axis=2) < 160).sum(axis=1)
-        for y in range(p.UST_BANT, alt_sinir):
+        bas_y = p.UST_BANT
+        if getattr(p, "ARTIK_ILK_KUTUDAN", False):
+            bas_y = ustler[0]
+        for y in range(bas_y, alt_sinir):
             if not kapsanan[y] and koyu[y] > ARTIK_ESIK:
                 artik.append(f"artik murekkep s{d}{s} y{y} ({int(koyu[y])} px)")
                 break

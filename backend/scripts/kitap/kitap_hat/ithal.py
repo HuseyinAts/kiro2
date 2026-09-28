@@ -115,28 +115,28 @@ def uretim_notu(p: ModuleType, ham: dict) -> str:
     )
 
 
+_KAYIT_BAYRAKLARI = (
+    ("sikler_gorsel", "sikler_gorsel"),
+    ("kaynak_kusuru", "kaynak_kusuru"),
+    ("ortme", "okuyucu_diski_ortme"),
+    ("basili_no", "numara_basilmamis"),
+    ("numara_baski_hatasi", "numara_baski_hatasi"),
+    ("modern_ikiz", "modern_kitap_ikizi"),
+    ("mukerrer", "mukerrer_aday"),
+    ("hash_carpismasi", "db_hash_carpismasi"),
+    ("cevap_farki", "diger_kaynak_cevap_farki"),
+    ("sik_sirasi_farki", "diger_kaynak_sik_sirasi_farkli"),
+    ("sinav_yili", "cikmis_soru"),
+)
+
+
 def _bayraklar(r: dict[str, Any], sec: dict[str, str]) -> list[str]:
     b: list[str] = sik_bayraklari(sec)
-    if r.get("sikler_gorsel"):
-        b.append("sikler_gorsel")
-    if r.get("kaynak_kusuru"):
-        b.append("kaynak_kusuru")
-    if r.get("ortme"):
-        b.append("okuyucu_diski_ortme")
-    if r.get("basili_no") is None:
-        b.append("numara_basilmamis")
-    if r.get("modern_ikiz"):
-        b.append("modern_kitap_ikizi")
-    if r.get("mukerrer"):
-        b.append("mukerrer_aday")
-    if r.get("hash_carpismasi"):
-        b.append("db_hash_carpismasi")
-    if r.get("cevap_farki"):
-        b.append("diger_kaynak_cevap_farki")
-    if r.get("sik_sirasi_farki"):
-        b.append("diger_kaynak_sik_sirasi_farkli")
-    if r.get("sinav_yili"):
-        b.append("cikmis_soru")
+    for alan, bayrak in _KAYIT_BAYRAKLARI:
+        # basili_no: bayrak numara YOKSA (None); digerleri alan doluysa.
+        var = r.get(alan) is None if alan == "basili_no" else bool(r.get(alan))
+        if var:
+            b.append(bayrak)
     if OKUNAMAZ in r["govde"] + "".join(sec.values()):
         b.append("okunamaz_isaret")
     if any(v == SIK_OKUNAMADI for v in sec.values()):
@@ -340,12 +340,22 @@ def satirlari_bagla(p: ModuleType, oku: dict[str, Any]) -> list[dict[str, Any]]:
         if c.get("numarasiz")
     }
     satir = []
-    for s in veri["sorular"]:
+    hatali = getattr(p, "BASKI_NUMARA_HATASI", {})
+    for s0 in veri["sorular"]:
+        # Kitapta yanlis numara basilmis (gozle, profilde listeli): sira cevap
+        # seridinden, basili numara oldugu gibi saklanir.
+        baski_hatasi = (
+            hatali.get(s0["dosya"]) is not None
+            and s0["basili_no"] == hatali[s0["dosya"]]
+        )
+        s = {**s0, "numara_baski_hatasi": True} if baski_hatasi else s0
         kod, sira = s["dosya"].rsplit("_", 1)
         sira_i = int(sira)
         k = kutu[(kod, sira_i)]
-        if s["basili_no"] != sira_i and not (
-            s["basili_no"] is None and s["dosya"] in numarasiz
+        if (
+            not baski_hatasi
+            and s["basili_no"] != sira_i
+            and not (s["basili_no"] is None and s["dosya"] in numarasiz)
         ):
             raise ValueError(f"{s['dosya']}: basili {s['basili_no']} != sira {sira_i}")
         t = test[kod]
@@ -481,8 +491,12 @@ def on_kontrol(p: ModuleType, kayitlar: list[dict[str, Any]]) -> list[str]:
             )
         if not pm["kirpim_kutusu"] or not k["question_image_url"]:
             hata.append(f"{k['id']}: kirpim yok")
-        if pm["soru_no_basili"] != pm["birim_ici_sira"] and not (
-            pm["soru_no_basili"] is None and "numara_basilmamis" in pm["bayraklar"]
+        if (
+            pm["soru_no_basili"] != pm["birim_ici_sira"]
+            and not (
+                pm["soru_no_basili"] is None and "numara_basilmamis" in pm["bayraklar"]
+            )
+            and "numara_baski_hatasi" not in pm["bayraklar"]
         ):
             hata.append(f"{k['id']}: basili numara test ici siraya esit degil")
         if pm["basili_sayfa"] != pm["sayfa_dosya_no"] + ofset:

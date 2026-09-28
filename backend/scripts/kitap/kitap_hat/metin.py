@@ -231,7 +231,9 @@ def kapi(p: ModuleType, sorular: list[dict] | None = None) -> list[str]:
     for ad, s in okunan.items():
         sira = int(ad.rsplit("_", 1)[1])
         no = s.get("basili_no")
-        if not (no == sira or (no is None and ad in bos_no)):
+        # Baski hatasi: kitapta yanlis numara basilmis (gozle, profilde listeli).
+        hatali = getattr(p, "BASKI_NUMARA_HATASI", {})
+        if not (no == sira or (no is None and ad in bos_no) or hatali.get(ad) == no):
             hata.append(f"KAPI2 {ad}: basili no {no} != test ici sira {sira}")
         for h in "ABCDE":
             if not str((s.get("sikler") or {}).get(h, "")).strip():
