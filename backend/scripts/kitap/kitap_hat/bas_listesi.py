@@ -43,6 +43,29 @@ def okuma(p: ModuleType, k: str, sayfa: bool = False) -> list[dict]:
     return testler
 
 
+def baski_duzelt(
+    p: ModuleType, sayfa_okuma: list[dict], test_sayfalari: list[int]
+) -> list[dict]:
+    """Profilin SERIT_NUMARA_BASKI_HATASI listesi: {sayfa: (basili, sira)}.
+    Kitapta yanlis basilmis serit numaralari (ornek '6 7 8 10 11 12', 6 iki
+    kez / 9 yok) sayfa okumasinda sira numarasiyla degistirilir; okunan basili
+    dizi profildekiyle AYNI olmali (yoksa exit). Harfler dokunulmaz."""
+    hata = getattr(p, "SERIT_NUMARA_BASKI_HATASI", {})
+    if not hata:
+        return sayfa_okuma
+    by = dict(zip(test_sayfalari, sayfa_okuma, strict=True))
+    out = [dict(t) for t in sayfa_okuma]
+    yeni = dict(zip(test_sayfalari, out, strict=True))
+    for n, (basili, sira) in hata.items():
+        h = by[n]["hucreler"]
+        if tuple(x[0] for x in h) != tuple(basili):
+            raise SystemExit(
+                f"s{n}: okunan numaralar {[x[0] for x in h]} != profil {basili}"
+            )
+        yeni[n]["hucreler"] = [[s, x[1]] for s, x in zip(sira, h, strict=True)]
+    return out
+
+
 def gecis1_olc(
     okuma_a: list[dict], okuma_b: list[dict], testler: list[dict]
 ) -> dict[str, Any]:
@@ -142,8 +165,17 @@ def main() -> None:
     args = ap.parse_args()
     p = ortak.profil(args.profil)
     tarama = ortak.oku(p, "capa_taramasi")
+    sayfa_sira = sorted(
+        int(n) for n, v in tarama["sayfalar"].items() if v["tur"] == "test"
+    )
     if args.komut in ("gecis1", "yaz"):
-        v = gecis1_olc(okuma(p, "A"), okuma(p, "B"), tarama["testler"])
+        # grupla sonrasi okuma_A/B test birimlidir; ham sayfa okumasi _sayfa'da.
+        ham = (serit_dizini(p) / "okuma_A_sayfa.json").exists()
+        v = gecis1_olc(
+            baski_duzelt(p, okuma(p, "A", sayfa=ham), sayfa_sira),
+            baski_duzelt(p, okuma(p, "B", sayfa=ham), sayfa_sira),
+            tarama["testler"],
+        )
         print("A!=B hucre:", v["hucre_farki"])
         print("bant farki:", v["bant_farki"][:30])
         print("capa != hucre (sayfa, capa, hucre, ilk no):", v["capa_farki"])
@@ -163,7 +195,7 @@ def main() -> None:
         f, fs = o / f"okuma_{k}.json", o / f"okuma_{k}_sayfa.json"
         if not fs.exists():
             fs.write_text(f.read_text("utf-8"), "utf-8")
-        out = grupla(okuma(p, k, sayfa=True), tarama)
+        out = grupla(baski_duzelt(p, okuma(p, k, sayfa=True), sayfa_sira), tarama)
         f.write_text(
             json.dumps({"okuyucu": k, "testler": out}, ensure_ascii=False), "utf-8"
         )

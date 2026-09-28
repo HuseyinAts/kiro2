@@ -97,7 +97,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 
 | kitap (sekme basligi) | durum | klasor | png | ayni icerik | DB | ortaklik | kalite | oneri |
 |---|---|---|---|---|---|---|---|---|
-| 2019-2020 Aktif 0'dan Baslayanlara Aktif Kimya | ISLENMEDI | `Aktif Ogrenme 0 Baslayanlara Kimya 2019 2020` | 368 | - | eski hat 520 / aktif 520 | - | - | ISLENEBILIR |
+| 2019-2020 Aktif 0'dan Baslayanlara Aktif Kimya | **ISLENDI** | `Aktif Ogrenme 0 Baslayanlara Kimya 2019 2020` | 368 | - | modern 868 soru (`KIM_AKTIF_2020_0DAN_YONTEM.md`, ortak kitap_hat): 868 yeni satir / aktif 753 (0101 toplu beta onayi; 115 gorunen `[??]` disarida); eski hat 520: modern karsiligi olan 187 satir 0100 ile pasif, 333 aktif | - | 122 test sayfasi, 61 test (9 unite); konu sayfasi Ornek / 'Soru Na' kapsam disi; her sayfada iki kutulu cevap seridi, pembe numara, test siniri iki gecisli; 3 baski numara hatasi; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 | 2019-2020 Aktif AYT Kimya | ISLENMEDI | `Aktif Ogrenme Ayt Kimya 2019 2020` | 416 | - | eski hat 490 / aktif 490 | - | - | ISLENEBILIR |
 | 2022-2023 ALTYAPI Kartlarla TYT Fizik | ISLENMEDI | `Altyapi 2022 2023 Tyt Fizik` | 128 | - | yok | 2022-2023 Kartlarla AYT Fizik %25 | - | AILE: yalniz biri islenmeli (2022-2023 Kartlarla AYT Fizik %25) |
 | 2022-2023 ALTYAPI Kartlarla TYT Kimya | ISLENMEDI | `Altyapi Tyt Kartlarla Kimya` | 176 | - | eski hat 1 / aktif 1 | - | - | ISLENEBILIR |

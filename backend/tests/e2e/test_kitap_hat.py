@@ -46,6 +46,7 @@ PROFILLER = [
     "acl25s1",
     "acl25s2",
     "acl24am",
+    "akt20k0",
 ]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 

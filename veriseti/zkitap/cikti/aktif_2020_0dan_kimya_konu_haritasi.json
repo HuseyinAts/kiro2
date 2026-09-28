@@ -1,0 +1,879 @@
+{
+"kaynak": "2019-2020 Aktif 0'dan Baslayanlara Aktif Kimya",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s6) 9 unite; unite baslangici acilis sayfasinin dosya no'su (gozle: 7, 37, 113, 165, 197, 211, 279, 309, 345); konu = unite (test bandi unite adini tasir; iki bagimsiz okuma)",
+"bolumler": [
+{
+"kod": "KIM-AKT20K0-B01",
+"no": 1,
+"ad": "K\u0130MYA B\u0130L\u0130M\u0130"
+},
+{
+"kod": "KIM-AKT20K0-B02",
+"no": 2,
+"ad": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM"
+},
+{
+"kod": "KIM-AKT20K0-B03",
+"no": 3,
+"ad": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER"
+},
+{
+"kod": "KIM-AKT20K0-B04",
+"no": 4,
+"ad": "MADDEN\u0130N HALLER\u0130"
+},
+{
+"kod": "KIM-AKT20K0-B05",
+"no": 5,
+"ad": "DO\u011eA VE K\u0130MYA"
+},
+{
+"kod": "KIM-AKT20K0-B06",
+"no": 6,
+"ad": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR"
+},
+{
+"kod": "KIM-AKT20K0-B07",
+"no": 7,
+"ad": "KARI\u015eIMLAR"
+},
+{
+"kod": "KIM-AKT20K0-B08",
+"no": 8,
+"ad": "AS\u0130TLER, BAZLAR VE TUZLAR"
+},
+{
+"kod": "KIM-AKT20K0-B09",
+"no": 9,
+"ad": "K\u0130MYA HER YERDE"
+}
+],
+"konular": [
+{
+"kod": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"ad": "Kimya Bilimi",
+"icindekiler_adi": "Kimya Bilimi",
+"sayfalar": [
+7,
+36
+]
+},
+{
+"kod": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"ad": "Atom ve Periyodik Sistem",
+"icindekiler_adi": "Atom ve Periyodik Sistem",
+"sayfalar": [
+37,
+112
+]
+},
+{
+"kod": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"ad": "T\u00fcrler Aras\u0131 Etkile\u015fimler",
+"icindekiler_adi": "T\u00fcrler Aras\u0131 Etkile\u015fimler",
+"sayfalar": [
+113,
+164
+]
+},
+{
+"kod": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"ad": "Maddenin Halleri",
+"icindekiler_adi": "Maddenin Halleri",
+"sayfalar": [
+165,
+196
+]
+},
+{
+"kod": "KIM-AKT20K0-B05-K01",
+"bolum": "KIM-AKT20K0-B05",
+"ad": "Do\u011fa ve Kimya",
+"icindekiler_adi": "Do\u011fa ve Kimya",
+"sayfalar": [
+197,
+210
+]
+},
+{
+"kod": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"ad": "Kimyan\u0131n Temel Kanunlar\u0131 ve Kimyasal Hesaplamalar",
+"icindekiler_adi": "Kimyan\u0131n Temel Kanunlar\u0131 ve Kimyasal Hesaplamalar",
+"sayfalar": [
+211,
+278
+]
+},
+{
+"kod": "KIM-AKT20K0-B07-K01",
+"bolum": "KIM-AKT20K0-B07",
+"ad": "Kar\u0131\u015f\u0131mlar",
+"icindekiler_adi": "Kar\u0131\u015f\u0131mlar",
+"sayfalar": [
+279,
+308
+]
+},
+{
+"kod": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"ad": "Asitler, Bazlar ve Tuzlar",
+"icindekiler_adi": "Asitler, Bazlar ve Tuzlar",
+"sayfalar": [
+309,
+344
+]
+},
+{
+"kod": "KIM-AKT20K0-B09-K01",
+"bolum": "KIM-AKT20K0-B09",
+"ad": "Kimya Her Yerde",
+"icindekiler_adi": "Kimya Her Yerde",
+"sayfalar": [
+345,
+368
+]
+}
+],
+"test_sayisi": 61,
+"testler": [
+{
+"birim": "AKT20K0-T001",
+"test": 1,
+"sayfalar": [
+25,
+26
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T002",
+"test": 2,
+"sayfalar": [
+27,
+28
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T003",
+"test": 3,
+"sayfalar": [
+29,
+30
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T004",
+"test": 4,
+"sayfalar": [
+31,
+32
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T005",
+"test": 5,
+"sayfalar": [
+33,
+34
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T006",
+"test": 6,
+"sayfalar": [
+35,
+36
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-AKT20K0-B01-K01",
+"bolum": "KIM-AKT20K0-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "AKT20K0-T007",
+"test": 7,
+"sayfalar": [
+64,
+65
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT20K0-T008",
+"test": 8,
+"sayfalar": [
+66,
+67
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 18
+},
+{
+"birim": "AKT20K0-T009",
+"test": 9,
+"sayfalar": [
+68,
+69
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T010",
+"test": 10,
+"sayfalar": [
+70,
+71
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 18
+},
+{
+"birim": "AKT20K0-T011",
+"test": 11,
+"sayfalar": [
+72,
+73
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 17
+},
+{
+"birim": "AKT20K0-T012",
+"test": 12,
+"sayfalar": [
+74,
+75
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T013",
+"test": 13,
+"sayfalar": [
+76,
+77
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T014",
+"test": 14,
+"sayfalar": [
+103,
+104
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T015",
+"test": 15,
+"sayfalar": [
+105,
+106
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T016",
+"test": 16,
+"sayfalar": [
+107,
+108
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T017",
+"test": 17,
+"sayfalar": [
+109,
+110
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T018",
+"test": 18,
+"sayfalar": [
+111,
+112
+],
+"bant": "ATOM VE PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-AKT20K0-B02-K01",
+"bolum": "KIM-AKT20K0-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T019",
+"test": 19,
+"sayfalar": [
+149,
+150
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T020",
+"test": 20,
+"sayfalar": [
+151,
+152
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T021",
+"test": 21,
+"sayfalar": [
+153,
+154
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T022",
+"test": 22,
+"sayfalar": [
+155,
+156
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T023",
+"test": 23,
+"sayfalar": [
+157,
+158
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T024",
+"test": 24,
+"sayfalar": [
+159,
+160
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T025",
+"test": 25,
+"sayfalar": [
+161,
+162
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T026",
+"test": 26,
+"sayfalar": [
+163,
+164
+],
+"bant": "T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-AKT20K0-B03-K01",
+"bolum": "KIM-AKT20K0-B03",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T027",
+"test": 27,
+"sayfalar": [
+185,
+186
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T028",
+"test": 28,
+"sayfalar": [
+187,
+188
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T029",
+"test": 29,
+"sayfalar": [
+189,
+190
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T030",
+"test": 30,
+"sayfalar": [
+191,
+192
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T031",
+"test": 31,
+"sayfalar": [
+193,
+194
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T032",
+"test": 32,
+"sayfalar": [
+195,
+196
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-AKT20K0-B04-K01",
+"bolum": "KIM-AKT20K0-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT20K0-T033",
+"test": 33,
+"sayfalar": [
+206,
+207
+],
+"bant": "DO\u011eA VE K\u0130MYA",
+"konu": "KIM-AKT20K0-B05-K01",
+"bolum": "KIM-AKT20K0-B05",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T034",
+"test": 34,
+"sayfalar": [
+208,
+209
+],
+"bant": "DO\u011eA VE K\u0130MYA",
+"konu": "KIM-AKT20K0-B05-K01",
+"bolum": "KIM-AKT20K0-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T035",
+"test": 35,
+"sayfalar": [
+222,
+223
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T036",
+"test": 36,
+"sayfalar": [
+224,
+225
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T037",
+"test": 37,
+"sayfalar": [
+226,
+227
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T038",
+"test": 38,
+"sayfalar": [
+239,
+240
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT20K0-T039",
+"test": 39,
+"sayfalar": [
+241,
+242
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T040",
+"test": 40,
+"sayfalar": [
+243,
+244
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T041",
+"test": 41,
+"sayfalar": [
+245,
+246
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T042",
+"test": 42,
+"sayfalar": [
+255,
+256
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T043",
+"test": 43,
+"sayfalar": [
+257,
+258
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T044",
+"test": 44,
+"sayfalar": [
+271,
+272
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T045",
+"test": 45,
+"sayfalar": [
+273,
+274
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 15
+},
+{
+"birim": "AKT20K0-T046",
+"test": 46,
+"sayfalar": [
+275,
+276
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T047",
+"test": 47,
+"sayfalar": [
+277,
+278
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-AKT20K0-B06-K01",
+"bolum": "KIM-AKT20K0-B06",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T048",
+"test": 48,
+"sayfalar": [
+299,
+300
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-AKT20K0-B07-K01",
+"bolum": "KIM-AKT20K0-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T049",
+"test": 49,
+"sayfalar": [
+301,
+302
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-AKT20K0-B07-K01",
+"bolum": "KIM-AKT20K0-B07",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T050",
+"test": 50,
+"sayfalar": [
+303,
+304
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-AKT20K0-B07-K01",
+"bolum": "KIM-AKT20K0-B07",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT20K0-T051",
+"test": 51,
+"sayfalar": [
+305,
+306
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-AKT20K0-B07-K01",
+"bolum": "KIM-AKT20K0-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T052",
+"test": 52,
+"sayfalar": [
+307,
+308
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-AKT20K0-B07-K01",
+"bolum": "KIM-AKT20K0-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T053",
+"test": 53,
+"sayfalar": [
+333,
+334
+],
+"bant": "AS\u0130TLER, BAZLAR VE TUZLAR",
+"konu": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T054",
+"test": 54,
+"sayfalar": [
+335,
+336
+],
+"bant": "AS\u0130TLER, BAZLAR VE TUZLAR",
+"konu": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"soru_sayisi": 14
+},
+{
+"birim": "AKT20K0-T055",
+"test": 55,
+"sayfalar": [
+337,
+338
+],
+"bant": "AS\u0130TLER, BAZLAR VE TUZLAR",
+"konu": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T056",
+"test": 56,
+"sayfalar": [
+339,
+340
+],
+"bant": "AS\u0130TLER, BAZLAR VE TUZLAR",
+"konu": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "AKT20K0-T057",
+"test": 57,
+"sayfalar": [
+341,
+342
+],
+"bant": "AS\u0130TLER, BAZLAR VE TUZLAR",
+"konu": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T058",
+"test": 58,
+"sayfalar": [
+343,
+344
+],
+"bant": "AS\u0130TLER, BAZLAR VE TUZLAR",
+"konu": "KIM-AKT20K0-B08-K01",
+"bolum": "KIM-AKT20K0-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT20K0-T059",
+"test": 59,
+"sayfalar": [
+363,
+364
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-AKT20K0-B09-K01",
+"bolum": "KIM-AKT20K0-B09",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T060",
+"test": 60,
+"sayfalar": [
+365,
+366
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-AKT20K0-B09-K01",
+"bolum": "KIM-AKT20K0-B09",
+"soru_sayisi": 16
+},
+{
+"birim": "AKT20K0-T061",
+"test": 61,
+"sayfalar": [
+367,
+368
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-AKT20K0-B09-K01",
+"bolum": "KIM-AKT20K0-B09",
+"soru_sayisi": 16
+}
+]
+}

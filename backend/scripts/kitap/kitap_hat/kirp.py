@@ -167,11 +167,19 @@ def sayfa_no_lekesi(p: ModuleType, a: np.ndarray) -> np.ndarray:
     """Profilde LEKE penceresi varsa sayfa numarasi rozetinin doygun lekesi."""
     m = np.zeros(a.shape[:2], bool)
     leke = getattr(p, "LEKE", None)
-    if not leke:
+    sus = getattr(p, "SUS_BOLGELERI", ())
+    if not leke and not sus:
         return m
     ai = a.astype(np.int16)
-    y0, x0, x1 = leke
-    m[y0:, x0:x1] = (ai.max(axis=2) - ai.min(axis=2))[y0:, x0:x1] > LEKE_DOYGUN
+    doygun = (ai.max(axis=2) - ai.min(axis=2)) > LEKE_DOYGUN
+    if leke:
+        y0, x0, x1 = leke
+        m[y0:, x0:x1] = doygun[y0:, x0:x1]
+    # SUS_BOLGELERI: (y0, y1, x0, x1) pencerelerinde doygun (renkli) sayfa susu
+    # (Aktif duzeni: pembe sekmenin koyu kivrimi, sutun sonu mavi ucgenler);
+    # siyah metin doygun degil, dokunulmaz.
+    for y0, y1, x0, x1 in sus:
+        m[y0:y1, x0:x1] |= doygun[y0:y1, x0:x1]
     return m
 
 

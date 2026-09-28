@@ -1,0 +1,2326 @@
+{
+ "kitap": "2019-2020 Aktif 0'dan Baslayanlara Aktif Kimya",
+ "on_kayit_tarihi": "2026-09-28",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3 saglanmadi (KMT345 %4.7, SOS345 %5.9, TRT345 %4.0, ACL20T %4.9, ACL21T %3.7). Dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 17 ayri okuyucu; ayni talimat (yalniz teslim dizini b8_metin_parca2), ayni gruplar ve kirpimlar. Okuma 1 ve okuma 2 okuyuculari TEK toplu dagitimda birlikte kosulur (bagimsizlik dizin ayrimiyla saglanir). Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (bosluk, satir sonu, eksi/tire tipi, carpma noktasi tipi) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret (+, -, carpma, bolme, esitsizlik), us / kok / kesir kapsami, parantez, harf / degisken, eksik/fazla kelime veya satir, yanlis sik, alti cizili kapsam, eksik etiket.",
+ "sonuc": {
+  "soru": 868,
+  "ayni_soru_normalize": 753,
+  "farkli_soru": 115,
+  "hukum_dagilimi": {
+   "ikisi": 11,
+   "yok": 40,
+   "okuma_2": 30,
+   "okuma_1": 34
+  },
+  "ilk_okuma_esasli_hata": 45,
+  "ikinci_okuma_esasli_hata": 41,
+  "not": "Normalizasyon (metin_iki_okuma.norm): NFC, kesme/tirnak tipi, eksi/tire tipi, birlesik ust/alt cizgi, Unicode ust simge -> ^n, bileske halkasi U+2218 -> o, nokta operatoru, uc nokta, kok+ust cizgi -> kok, tek karakterli us/indis parantezi, kokte tek atom parantezi, '/' oncesi tek atom parantezi, ciftlenmis parantez, tablo ayraci+ok, (gorsel)/(sekil), C(n, r) = (n r) ve TUM bosluk. Anlam tasiyan parantez esitlenmez. Her kalan fark hakem tarafindan kirpimdan gozle karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer. Iki okumanin AYNI bicimde atladigi sekil verisi karsilastirmada gorunmez."
+ },
+ "hukumler": [
+  {
+   "dosya": "AKT20K0-T004_09",
+   "esasli_hata": "ikisi",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: sat\u0131r 1 '\u00f6ze' x\u2248638'de bitiyor, tire yok, alt sat\u0131r 'likleri' kelimenin devam\u0131; beyaz dairenin alt yay\u0131 y\u224845-55'te (T036/T041'deki gibi daire, yay\u0131n ~25px \u00fcst\u00fcndeki sat\u0131r\u0131 \u00f6rter) -> sat\u0131r 1 sonu \u00f6rt\u00fcl\u00fc, '\u00f6ze[??]' gerekli (okuma_1 eksik b\u0131rakm\u0131\u015f). Sat\u0131r 2 'a\u015fa\u011f\u0131dakilerden' dairenin \u00f6n\u00fcnde tam bitiyor, sonraki sat\u0131r yeni kelime 'hangisidir' -> '[??]' gereksiz (iki okumada da var)."
+  },
+  {
+   "dosya": "AKT20K0-T005_10",
+   "esasli_hata": "yok",
+   "gerekce": "Tablonun I-III satirlarinda hucrede yalniz piktogram cizimi var, yazi yok; okuma_2'nin '(\u015fekil)' yer tutuculari sozlesmede olmayan bicim varyanti; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T006_05",
+   "esasli_hata": "yok",
+   "gerekce": "I-III tehlike isaretleri salt piktogram (yazi yok); '(\u015fekil)' yer tutucusu bicim farki, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T006_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 6x buyutme + piksel dokumu: 'hangil' tam, ardindan yalniz 4 px genisliginde bir yay (sol yari) ve beyaz daire; e/c/o ayirt edilemez. okuma_2 yarim harfi 'e' diye tamamlamis. Tablo satirlarindaki (\u015fekil) yer tutucusu bicim; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T007_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x: satir 1 sonu 'tan' + yalniz sol yay parcasi kalmis kesik harf, beyaz daire; kesik harf kimliksiz -> 'tan[??]'. okuma_2 'tane' diye harfi tamamlamis."
+  },
+  {
+   "dosya": "AKT20K0-T007_02",
+   "esasli_hata": "yok",
+   "gerekce": "Fark yalniz noktali bosluk (....) nokta sayisi; icerik ayni, bicim varyanti; okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT20K0-T007_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x NEAREST: satir 1 sonunda 'hangisi-' tiresi tam ve net basili, beyaz daire tireden sonra bos alanda; alt satir 'dir?' ile devam ediyor. Satir sonu tirelemesi gorunuyor, murekkep kaybi yok -> 'hangisidir?', [??] gereksiz."
+  },
+  {
+   "dosya": "AKT20K0-T007_15",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST: sat\u0131r sonunda 'seviye-' tirelemesi tam bas\u0131l\u0131, beyaz daire yaz\u0131ya de\u011fmiyor; alt sat\u0131r 'lerine' ile devam. [??] gereksiz."
+  },
+  {
+   "dosya": "AKT20K0-T007_16",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x b\u00fcy\u00fctme + piksel d\u00f6k\u00fcm\u00fc: sat\u0131r 1 sonu 'Is-' ilk harfi y=11-27 aras\u0131 kesintisiz, \u00fcst u\u00e7 \u00e7\u0131k\u0131nt\u0131 y\u00fcksekli\u011finde (k/t ile ayn\u0131; x-y\u00fcksekli\u011fi y=15'ten ba\u015flar); ayn\u0131 k\u0131rp\u0131mdaki 'hangisidir' i'leri de b\u00f6yle birle\u015fik g\u00f6r\u00fcn\u00fcyor -> noktal\u0131 'i' (nokta g\u00f6vdeye kaynam\u0131\u015f), noktas\u0131z '\u0131' de\u011fil."
+  },
+  {
+   "dosya": "AKT20K0-T008_14",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 'ins' sonrasinda beyaz daire kenarinda ezik bir harf parcasi var (x636-637 dikey + y24-25 yatay cubuk, ust yay yok); 16x NEAREST ve piksel dokumunde 'a' olarak kesin taninmiyor; belirsiz oldugundan 'ins[??]n\u0131' korunur, okuma_2'nin ekledi\u011fi 'a' pikselde dogrulanamiyor."
+  },
+  {
+   "dosya": "AKT20K0-T009_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "A sikki X ust simgesi 8x NEAREST + piksel dokumu: yatay cizgi (~145) ve onu kesen soluk dikey cizgi (~233, 11 px) var -> '+'; C'deki '\u2212' ile karsilastirildi."
+  },
+  {
+   "dosya": "AKT20K0-T010_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 1 sonu 6x + piksel dokumu: 'pr' tam; ucuncu harfin yalniz sol yayi ve alt kuyrugu var, sag ust kismi yok ('c' gibi). Ayni satirdaki tam 'o' halkasi kapali. okuma_2 kesik harfi 'o' diye tamamlamis; okuma_1 dogru (bosluk farki sayilmaz)."
+  },
+  {
+   "dosya": "AKT20K0-T010_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "16x + piksel dokumu: ilk iyonun ust sayisinin 2. rakami alt ve ust ilmegi iki yandan kapali, ustteki 8 ile ayni bicim -> 38. okuma_1 '39' yanlis."
+  },
+  {
+   "dosya": "AKT20K0-T010_12",
+   "esasli_hata": "okuma_2",
+   "gerekce": "E alt sayisi 8x NEAREST: ikinci rakamin alt halkasi solda kapali, iki kapali halka = 8; govdedeki X'in 29'undaki 9 ile karsilastirildi (9'un alti acik kuyruklu). Basili: 28."
+  },
+  {
+   "dosya": "AKT20K0-T010_14",
+   "esasli_hata": "yok",
+   "gerekce": "E: X ust 2\u2212 alt 10, Y ust 3\u2212 alt 10; iki okuma ayni icerik, yalniz us/indis yazim sirasi farki (bicim). okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T011_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST: X'in solunda a \u00fcstte, b X ile ayn\u0131 hizada (orta, daha b\u00fcy\u00fck), c altta; d sa\u011f altta. okuma_1 b'yi alt indis yazm\u0131\u015f; okuma_2 dizilimi do\u011fru."
+  },
+  {
+   "dosya": "AKT20K0-T011_11",
+   "esasli_hata": "yok",
+   "gerekce": "K\u0131rp\u0131mda I-III \u00f6nc\u00fclleri solda, a-c sa\u011f s\u00fctunda ayn\u0131 sat\u0131rlarda; iki okuma ayn\u0131 i\u00e7eri\u011fi farkl\u0131 d\u00fczenle vermi\u015f (bi\u00e7im). okuma_1 d\u00fczeni korundu."
+  },
+  {
+   "dosya": "AKT20K0-T011_13",
+   "esasli_hata": "ikisi",
+   "gerekce": "III. oncul 10x + piksel dokumu: K ust simgesinde yalniz '2' var, sagi (x245-252, y93-104) tamamen bos/izsiz; isaret okunamiyor -> '2[??]'. okuma_2 pikselde olmayan '\u2212' yazmis; okuma_1 okunamayan isaret icin [??] koymamis. L ust simgesi '2' + yalniz dikey cubuk (x302-303) -> '2+' (ikisi de ayni)."
+  },
+  {
+   "dosya": "AKT20K0-T013_09",
+   "esasli_hata": "ikisi",
+   "gerekce": "Ikinci Cu sag ust simge konumu 8x + piksel dokumu: yalniz soluk dikey cizgi (~215, 2x kirpimda 10 px), yatay cizgi yok; '+' olarak okunamiyor ama murekkep var -> [??]. okuma_1 '+' kesinlestirmis, okuma_2 isareti atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T014_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekil 6x: uc katman yayi altinda '2 8 7' basili; soru 'yukaridaki gibi' diyerek bu veriye dayaniyor. okuma_1 bu satiri atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T015_06",
+   "esasli_hata": "yok",
+   "gerekce": "')))' yaylar katman semasi cizimidir (sekil); sorunun dayandigi 2 m 4 / 2 8 8 n iki okumada da var. Bicim farki, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T015_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Siklarda elektron katman yaylari cizimi basili (gorsel sik, sikler_gorsel her iki okumada true); soruda sekil var, sekil_var true olmali."
+  },
+  {
+   "dosya": "AKT20K0-T016_01",
+   "esasli_hata": "ikisi",
+   "gerekce": "Piksel dokumu (x600-650, y10-35): 'ha' tam; ucuncu harfin yalniz sol dikey sapi var (x635-637), omuz/sag bacak x639'da beyaz daire kenarinda keskin kesiliyor. Harf r mi n mi pikselde belirlenemez; alt satir 'gisi' ile devam ediyor, tire gorunmuyor. Gorunen kisim 'ha' + [??]; 'har' ve 'han' ikisi de kesik harfi tamamlamis."
+  },
+  {
+   "dosya": "AKT20K0-T016_05",
+   "esasli_hata": "yok",
+   "gerekce": "Kavram haritas\u0131: merkezde AMETAL, kutular \u00fcst\u00fcnde noktas\u0131z I/II/III. Fark \u00f6nc\u00fcl bicimi ve k\u00f6k etiketi; soru 'ametallerle ilgili' dedi\u011finden AMETAL veri ta\u015f\u0131m\u0131yor -> bicim fark\u0131."
+  },
+  {
+   "dosya": "AKT20K0-T017_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: D \u015f\u0131kk\u0131ndaki \u00fc\u00e7 ay\u0131r\u0131c\u0131 taban \u00e7izgisinin en fazla 1 sat\u0131r alt\u0131na iniyor ve zay\u0131f (g\u00f6vdedeki 'gazd\u0131r.' noktas\u0131 gibi); ayn\u0131 sat\u0131rdaki E \u015f\u0131kk\u0131n\u0131n 'L,' 'M,' virg\u00fclleri ve A-C virg\u00fclleri 2-3 sat\u0131r a\u015fa\u011f\u0131 belirgin kuyruklu. D 'L. M. N. K' noktayla bas\u0131lm\u0131\u015f (dizgi hatas\u0131, korunur)."
+  },
+  {
+   "dosya": "AKT20K0-T018_05",
+   "esasli_hata": "yok",
+   "gerekce": "Siklarda katman semasi (yay cizimleri) basili; sema var -> sekil_var true. Yalniz bayrak farki, metin icerigi ayni."
+  },
+  {
+   "dosya": "AKT20K0-T018_07",
+   "esasli_hata": "yok",
+   "gerekce": "Siklar periyodik cetvel kutu semalari (cizim) -> soruda sema var, sekil_var true; icerik farki yok."
+  },
+  {
+   "dosya": "AKT20K0-T018_08",
+   "esasli_hata": "yok",
+   "gerekce": "3x: X: 2 / Y: 2 2 / Z: 2 8 2, rakamlar iki okumada ayni. Fark yalniz katman yaylarinin ')' ile yazilmasi (sekil bicimi); veri eksik degil."
+  },
+  {
+   "dosya": "AKT20K0-T019_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "10x + piksel: NO_3 sag ustunde yuk konumunda 9 px genis x 2 satir yatay cubuk (cok soluk, ~248) - eksi isareti bicimi; SO_3 ustu tamamen bos. okuma_2 '\u2212' yi atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T019_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kirpim ustunde 'Turler Arasi Etkilesimler' semasi: Guclu -> Iyonik, X, Y; Zayif -> Van der Waals, Z. Soru X, Y, Z'nin semadaki yerine dayaniyor; okuma_1 bu veriyi eksik birakmis. 5x buyutmede 'Etkilesimler' s altinda soluk cedilla izi, 'Etkile\u015fimler' kabul."
+  },
+  {
+   "dosya": "AKT20K0-T019_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kirpimda govde ustunde 'X \u2014 Y \u00b7\u00b7\u00b7 X \u2014 Y' semasi, duz bag altinda '1', kesikli bag altinda '2' etiketi basili. Soru '1 ve 2 nolu bag turleri'ne dayaniyor; sema sorunun verisini tasiyor -> govdeye girer. okuma_1 eksik birakmis."
+  },
+  {
+   "dosya": "AKT20K0-T019_12",
+   "esasli_hata": "ikisi",
+   "gerekce": "\u015eekil 'A \u20141\u2014 B \u00b7\u00b7\u00b72\u00b7\u00b7\u00b7 A \u2014 B' soru 1/2 nolu ba\u011flara dayan\u0131yor; okuma_1 atlam\u0131\u015f. 5x: 'degi\u015fmeye' g'de breve yok (kitap dizgisi); okuma_2 'de\u011fi\u015fmeye' yazm\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T020_03",
+   "esasli_hata": "ikisi",
+   "gerekce": "8x b\u00fcy\u00fctme: sat\u0131r i\u00e7i Lewis simgesi X; solda 1, \u00fcstte 2, sa\u011fda 2 (iki nokta \u00fcst \u00fcste), altta 2 nokta. Soru do\u011frudan bu nokta say\u0131s\u0131na dayan\u0131yor; okuma_1 '(\u015fekil)', okuma_2 '(g\u00f6rsel: X Lewis g\u00f6sterimi)' yaz\u0131p noktalar\u0131 d\u00fc\u015f\u00fcrm\u00fc\u015f. T023'teki okuma_1 yaz\u0131m\u0131yla (\u00fcst/alt birle\u015fik iki nokta) '\u00b7X\u0324\u0308:' yaz\u0131ld\u0131."
+  },
+  {
+   "dosya": "AKT20K0-T020_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Govde: '_12' / '_(12)' yalniz yazim; sozlesmeye gore '_(12)'. D sikki yalniz duz metin 'Mg^(2+)', nokta/kose parantez cizimi yok; okuma_2'nin '(g\u00f6rsel \u015f\u0131k)' eki pikselde olmayan ogeyi ekliyor."
+  },
+  {
+   "dosya": "AKT20K0-T020_08",
+   "esasli_hata": "ikisi",
+   "gerekce": "Satir ici Lewis simgesi 8x: X'in ustunde 2, solunda 1, saginda 1, altinda 1 nokta (5 nokta). Soru bu veriye dayaniyor; iki okuma da yer tutucu birakmis. T023'teki ':\u00d6:' yazimina paralel olarak \u00b7\u1e8c\u0323\u00b7 (ust iki nokta, alt bir nokta, yanlarda birer nokta) yazildi."
+  },
+  {
+   "dosya": "AKT20K0-T020_10",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo bicimi farki ('- |' bos hucre, 'I. | _6X' ayrimi) ve (\u015fekil)/(g\u00f6rsel); icerik (_6X, _7Y, _5Z, Lewis cizimleri sekil) iki okumada ayni."
+  },
+  {
+   "dosya": "AKT20K0-T020_11",
+   "esasli_hata": "yok",
+   "gerekce": "Basili (12 alt indis Mg / 9 F); fark yalniz yazim: sozlesmede cok haneli indis _(12). Icerik ayni."
+  },
+  {
+   "dosya": "AKT20K0-T020_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Pikselde satir ici Lewis gosterimi X^(2+) [Y (8 nokta)]^(2\u2212) basili; soru iyon yuklerine dayaniyor, okuma_1 '(\u015fekil)' diyerek yukleri dusurmus. Tablo: bos baslik hucresi sozlesmeye gore '-' (okuma_1 bicimi), okuma_2'nin tablo bicimi yalniz varyant."
+  },
+  {
+   "dosya": "AKT20K0-T020_13",
+   "esasli_hata": "okuma_1",
+   "gerekce": "4x NEAREST: Lewis sutununda Al ust '3+', koseli parantez icinde F (8 nokta), parantez ustu '\u2212'; 2Na ust '+', [O] (8 nokta) ust '2\u2212'; Ca ust '2\u2212' (kitapta boyle basili, yatay cizgi, dikey yok), [Cl] (8 nokta) ust '\u2212'. Soru bu gosterimlerin dogrulugunu soruyor -> tablo verisi; okuma_1 '(\u015fekil)' diyerek atlamis. Bos hucre '-' ve _(13) parantezli indis sozlesmeye gore okuma_1 bicimi; okuma_2 icerikce dogru ama noktalari yazmamis."
+  },
+  {
+   "dosya": "AKT20K0-T020_14",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sat\u0131r i\u00e7i Lewis g\u00f6rseli X^(3+) 3[:Y:]^\u2212 bas\u0131l\u0131; \u00f6nc\u00fcller buna dayan\u0131yor. okuma_1 '(\u015fekil)' yer tutucusuyla veriyi atlam\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T021_05",
+   "esasli_hata": "yok",
+   "gerekce": "Alt indisler 12, 13, 15, 16 iki okumada ayn\u0131; fark yaln\u0131z \u00e7ok haneli indisin parantezle yaz\u0131m\u0131. Kitap s\u00f6zle\u015fmesindeki '^(12)C' \u00f6rne\u011fine uygun okuma_1 bi\u00e7imi '_(12)X' korundu."
+  },
+  {
+   "dosya": "AKT20K0-T021_09",
+   "esasli_hata": "yok",
+   "gerekce": "Pikselde 12 ve 15 alt indisleri; '_12' / '_(12)' yalniz yazim varyanti, sozlesmeye uygun '_(12)', '_(15)' secildi."
+  },
+  {
+   "dosya": "AKT20K0-T021_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kirpimda 11, 12, 13 iki haneli alt indis; sozlesmeye gore _(11) parantezli yazilir. okuma_2 '_11Na' ('_1' + '1Na' olarak ayristirilir) indis hatasi."
+  },
+  {
+   "dosya": "AKT20K0-T021_12",
+   "esasli_hata": "yok",
+   "gerekce": "Alt indis 20: '_(20)Ca' / '_20Ca' yalniz yazim varyanti (cok haneli indis parantezli sozlesme bicimi korundu)."
+  },
+  {
+   "dosya": "AKT20K0-T022_03",
+   "esasli_hata": "yok",
+   "gerekce": "Basili 11Na, 17Cl alt indisli; fark yalniz _(11)/_11 yazimi. Sozlesme bicimi _(11)."
+  },
+  {
+   "dosya": "AKT20K0-T022_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Basili 19 iki haneli alt indis; sozlesme gere\u011fi '_(19)Y'. okuma_2 '_19Y' yazmis: indis kapsami yalniz '1' olur (us/indis hatasi). Rakamlar 8, 19, 7 pikselde net."
+  },
+  {
+   "dosya": "AKT20K0-T022_06",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda (_1H, _6C, _8O, _20Ca) alt indisleri; '_(20)' / '_20' yalniz bicim farki. Sozlesme (cok haneli indis parantezli) geregi okuma_1 bicimi."
+  },
+  {
+   "dosya": "AKT20K0-T022_08",
+   "esasli_hata": "yok",
+   "gerekce": "6x: alt indis 11 bas\u0131l\u0131; _(11)Na / _11Na yaln\u0131z yaz\u0131m bicimi fark\u0131, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T023_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x b\u00fcy\u00fctme: II. \u00f6nc\u00fclde sat\u0131r i\u00e7i Lewis yap\u0131s\u0131: her F'nin \u00fcst\u00fcnde 2, alt\u0131nda 2, d\u0131\u015f yan\u0131nda 2 nokta, F'ler aras\u0131nda 2 nokta. II. yarg\u0131 do\u011frudan bu yap\u0131ya dayan\u0131yor; okuma_2 '(\u015fekil)' yaz\u0131p veriyi d\u00fc\u015f\u00fcrm\u00fc\u015f, okuma_1 ':F\u0324\u0308\u00b7\u00b7F\u0324\u0308:' do\u011fru."
+  },
+  {
+   "dosya": "AKT20K0-T023_03",
+   "esasli_hata": "yok",
+   "gerekce": "III. oncul arasindaki Lewis cizimi (S, H etiketli yapi) sekil; '(\u015fekil)' yer tutucu sozlesmede yok, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T023_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Tablodaki Lewis gosterimleri 4x: ':\u00d6::\u00d6:', 'O::C::O', 'F\u00b7\u00b7F' basili; soru 'hangilerinin Lewis gosterimi yanlistir' bu veriye dayaniyor. okuma_2 '(\u015fekil)' ile veriyi atlamis; okuma_1 pikselle uyumlu."
+  },
+  {
+   "dosya": "AKT20K0-T023_05",
+   "esasli_hata": "yok",
+   "gerekce": "5x + piksel dokumu: Na ile F arasi 2 nokta, F ustu 2, alti 2, sagi 2; H ile Cl arasi 2, Cl ustu 2, alti 2, sagi 2 -> okuma_1 nokta dokumu dogru. okuma_2 Lewis cizimlerini (\u015fekil) birakmis (NH_3 ikisinde de \u015fekil); Lewis cizimi sekil sayildigindan bicim farki."
+  },
+  {
+   "dosya": "AKT20K0-T023_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Ustte ':\u00d6::C::\u00d6:' Lewis gosterimi basili; govde 'yukaridaki gibi' diyerek ona dayaniyor (bag/ortaklanmamis cift sayilari). okuma_2 bu veriyi atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T023_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x buyutme: H\u00b7\u00b7C ardindan 2 sutun x 3 nokta, sonra N: -> 'H\u00b7\u00b7C\u22ee\u22eeN:'. Soru (bag sayisi) bu gosterime dayaniyor; okuma_2 satiri atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T023_10",
+   "esasli_hata": "yok",
+   "gerekce": "Govdede ayri sekil yok ama siklarin tamami Lewis nokta cizimi (sema) -> soruda sema var, sekil_var true. Meta alan farki, metin icerigi ayni."
+  },
+  {
+   "dosya": "AKT20K0-T024_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x + piksel d\u00f6k\u00fcm\u00fc: B'de Pb^(3+) ile SO_3 aras\u0131nda y=186-187, x=141-152 \u00e7ok soluk (247) yatay tire var. okuma_1 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T026_05",
+   "esasli_hata": "ikisi",
+   "gerekce": "K\u0131rp\u0131mda I'de orta CH'nin \u00fcst\u00fcnde dikey ba\u011fla CH_3, III'te C'nin \u00fcst\u00fcnde ve alt\u0131nda birer CH_3 dal\u0131 var; soru dallanmaya dayan\u0131yor. okuma_1 dallar\u0131 d\u00fc\u015f\u00fcr\u00fcp d\u00fcz zincir yazm\u0131\u015f, okuma_2 I ve III'\u00fc '(\u015fekil)' yapm\u0131\u015f. Bas\u0131l\u0131 sat\u0131rlar yukar\u0131dan a\u015fa\u011f\u0131 yaz\u0131ld\u0131; t\u0131rnak/bo\u015fluk bi\u00e7imi okuma_1'den."
+  },
+  {
+   "dosya": "AKT20K0-T029_04",
+   "esasli_hata": "yok",
+   "gerekce": "Yalniz '_12' / '_(12)' yazim farki. 8x + piksel dokumu: C ve O alt indislerinde sag-ust kapali ilmek yok/soluk (C: 175-203, O: 143-164; T046'daki net 8'de 33-53) -> iki okumanin '6' okumasi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T030_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekil altinda 'h_1 = h_2' basili (baslangic yukseklik esitligi), III. oncul bu veriye dayaniyor -> govdeye girer; okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T031_01",
+   "esasli_hata": "yok",
+   "gerekce": "5x: X altinda '(k)', ok, X altinda '(s)' hal simgeleri; 'X(k)' / 'X_(k)' ayni icerik, kitaba ozel hal simgesi sozlesmesi (k) bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T032_08",
+   "esasli_hata": "yok",
+   "gerekce": "Tabloda 'Bagil Nem (%)' ust basligi uc sutunu kapsiyor, sol hucre bos; '- |' yalniz tablo bicimi. Veri iki okumada ayni."
+  },
+  {
+   "dosya": "AKT20K0-T033_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST: 'de\u011ferlend' + 'ime'; d ile i arasinda r yok. Kitabin dizgi hatasi basildigi gibi: 'de\u011ferlendime'."
+  },
+  {
+   "dosya": "AKT20K0-T034_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x NEAREST + piksel dokumu: A'daki virguller taban cizgisinin 3-4 piksel altina kuyruk yapiyor; B '1.3' ve '2.4' ayiricilari tabanda biten kuyruksuz nokta (y413-416), '4,5' ayiricisi kuyruklu virgul; E '2.3' ayiricisi kuyruksuz nokta, '1,4,5' virgulleri kuyruklu. Kitap boyle basmis; okuma_2 virgule duzeltmis."
+  },
+  {
+   "dosya": "AKT20K0-T034_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "7x + piksel d\u00f6k\u00fcm\u00fc: 'olusumu'daki s'nin tam alt\u0131nda y=129-132 soluk (215-237) \u00e7engel izi -> 'olu\u015fumu'. I/II/III kutu alt\u0131nda noktas\u0131z; 'I:' vs 'I.' bicim."
+  },
+  {
+   "dosya": "AKT20K0-T036_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: 'ora' sonras\u0131 x\u2248636-639'da a\u00e7\u0131k tonlu (+) kesik bir dikey sap var, sa\u011f\u0131 beyaz daireyle kesilmi\u015f; harf tan\u0131mlanamaz. okuma_1 'n' ile tamamlam\u0131\u015f (TAMAMLAMA yasak); 'ora[??]' do\u011fru."
+  },
+  {
+   "dosya": "AKT20K0-T037_04",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo basliginin ilk hucresi bos; sozlesme 'Bos hucre -' dedigi icin '- | X (gram) | Y (gram)'. Icerik ayni, bicim farki."
+  },
+  {
+   "dosya": "AKT20K0-T038_14",
+   "esasli_hata": "okuma_1",
+   "gerekce": "A sikki 10x NEAREST: ayiricinin taban cizgisinin altina inen kuyrugu var -> virgul '0,2'."
+  },
+  {
+   "dosya": "AKT20K0-T038_17",
+   "esasli_hata": "okuma_2",
+   "gerekce": "A sikki piksel dokumu: guclu nokta (y100-101) altinda ayni sutunda soluk kuyruk (y104-105, ~196); ayni goruntudeki D '3,5' virgulu de alta dogru soluk kuyruklu. Isaret virgul; okuma_2 '0.5' yazmis."
+  },
+  {
+   "dosya": "AKT20K0-T039_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x: satir 1 sonu 'a\u015fa\u011f\u0131d' + kesik, yarim harf parcasi + beyaz daire; kesik harf kesin okunamiyor -> 'a\u015fa\u011f\u0131d[??]'. okuma_2 'a' ile tamamlamis."
+  },
+  {
+   "dosya": "AKT20K0-T039_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel dokumu: her iki satirda us '23', onunde eksi isareti yok (x350-362,y22 degerleri 246-250 = arka plan bantlamasi, murekkep degil). Iki haneli us sozlesmede '^(23)'; okuma_1 '10^23' (us kapsami yalniz 2)."
+  },
+  {
+   "dosya": "AKT20K0-T039_07",
+   "esasli_hata": "yok",
+   "gerekce": "III. satirda 6,02 \u00b7 10 ust 22 basili; '10^22' / '10^(22)' bicim farki. Sozlesme (bile\u015fik us parantezli) geregi 10^(22)."
+  },
+  {
+   "dosya": "AKT20K0-T039_08",
+   "esasli_hata": "yok",
+   "gerekce": "10^23 / 10^(23) normalize edilen bicim fark\u0131; bas\u0131l\u0131 10^23, okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT20K0-T039_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: '12' ile '8' aras\u0131ndaki i\u015faret taban \u00e7izgisinin 2-3 sat\u0131r alt\u0131na inen kuyruklu (y=19-26) -> virg\u00fcl; '12,8'."
+  },
+  {
+   "dosya": "AKT20K0-T039_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "10x + piksel dokumu: ikinci harfin (S) altinda 1 px bosluktan sonra ayri bir iz (x235-237, y58-59, ~195) var; N, A ve 6 altinda yok (yalniz virgul) -> cedilla, 'N.\u015e.A.'. okuma_1 'N.S.A.' yazmis."
+  },
+  {
+   "dosya": "AKT20K0-T039_16",
+   "esasli_hata": "okuma_2",
+   "gerekce": "D sikki 6x: ayirici asagi kuyruklu -> virgul '0,2'."
+  },
+  {
+   "dosya": "AKT20K0-T040_02",
+   "esasli_hata": "yok",
+   "gerekce": "6x: payda '6,02 \u00b7 10' ussu '23'; '10^23' / '10^(23)' yalniz yazim varyanti, sozlesmedeki bilesik us bicimi kullanildi. Metin icindeki duz '1023' basildigi gibi."
+  },
+  {
+   "dosya": "AKT20K0-T040_07",
+   "esasli_hata": "yok",
+   "gerekce": "Fark yalniz us yazimi: sozlesme cok haneli us 10^(23). Icerik ayni."
+  },
+  {
+   "dosya": "AKT20K0-T041_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x buyutme: payda '6,02 \u00b7 10' ussu '23' (eksi yok); E sikkinda '6,02 . 10^23' taban noktali. Iki haneli us '^(23)' olmali; okuma_1 parantezsiz."
+  },
+  {
+   "dosya": "AKT20K0-T041_02",
+   "esasli_hata": "yok",
+   "gerekce": "N_A = 6 \u00b7 10 ust 23 basili; '10^23' / '10^(23)' bicim farki. Sozlesme geregi 10^(23). 'a\u015fa\u011f\u0131dak[??]' her iki okumada ortak, farkta yok."
+  },
+  {
+   "dosya": "AKT20K0-T041_08",
+   "esasli_hata": "yok",
+   "gerekce": "10^23 / 10^(23) bicim fark\u0131; okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT20K0-T041_12",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: 'N.' sonras\u0131 x\u2248633-639'da tek dikey sap ve ortada hafif kal\u0131nla\u015fma; sa\u011f yar\u0131s\u0131 beyaz daireyle kesik. Harf kesik, kimli\u011fi pikselde kesin de\u011fil -> 'N.[??]'; okuma_2 kesik harfi 'K' diye tamamlam\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T043_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel dokumu: 's' altindaki iz (y434-435) 'e' ve 'd' altinda da ayni sekilde var (yuvarlak harf alti tasmasi/alt cizgi birlesimi), cedilla ayirt edici degil -> 'kesindir'; alti cizili kapsam ayni."
+  },
+  {
+   "dosya": "AKT20K0-T043_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'Tutusma' 8x + piksel dokumu: 's' altinda (satir 60-62) soluk cengel (~202-234) var -> '\u015f'; 'Tutu\u015fma'."
+  },
+  {
+   "dosya": "AKT20K0-T044_11",
+   "esasli_hata": "okuma_2",
+   "gerekce": "B sikki piksel dokumu: 'Yaln\u0131z' sonrasi yalniz iki dikey cubuk (x452-458), sagda baska murekkep yok -> 'Yaln\u0131z II'."
+  },
+  {
+   "dosya": "AKT20K0-T044_12",
+   "esasli_hata": "yok",
+   "gerekce": "Fark yalniz bilesik alt indis yazimi: sozlesme H_(2n). Icerik ayni."
+  },
+  {
+   "dosya": "AKT20K0-T045_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "10x + piksel dokumu: 9 ile 6 arasindaki ayiricinin taban cizgisi altina inen kuyrugu var (y82-84 gri 204-218), 4,8'deki virgul ile ayni sekil -> '9,6'."
+  },
+  {
+   "dosya": "AKT20K0-T045_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST + piksel dokumu: X_2O_3 ile 6HCl arasinda yalniz yatay cubuk (2 satir koyu), ustunde/altinda dikey cizgi izi yok -> '\u2212' basili (kitap dizgisi). okuma_1 '+' yazmis."
+  },
+  {
+   "dosya": "AKT20K0-T046_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST: 'gazlar\u0131' sonras\u0131 i\u015faret taban \u00e7izgisinin alt\u0131na inen virg\u00fcl; okuma_1 nokta yazm\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T046_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x b\u00fcy\u00fctme + d\u00f6k\u00fcm: 'olusan' s'sinin alt\u0131nda (y=252-255) soluk ama s'ye hizal\u0131 \u00e7engel izi var; sat\u0131rdaki di\u011fer harflerde yok. Sayfada tire/ok da soluk bas\u0131l\u0131. 'olu\u015fan'."
+  },
+  {
+   "dosya": "AKT20K0-T046_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel dokumu: son C_3H_? alt indisinde sag-ust dikey (x394-395, y100-101: 33-72) sol kadar koyu, kapali ust ilmek -> '8'. Ilk satirdaki C_3H_6'da ayni bolge acik (140-194) -> '6'. Son formulde '8'."
+  },
+  {
+   "dosya": "AKT20K0-T047_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "C sikki 8x + piksel dokumu: ayirici taban cizgisinde kare nokta (~110), altinda kuyruk yok -> nokta '4.8' (basildigi gibi)."
+  },
+  {
+   "dosya": "AKT20K0-T047_11",
+   "esasli_hata": "okuma_2",
+   "gerekce": "6x + piksel: satir 1 sonunda NaHCO_3 indisinin sagindaki isaret ana satir tabaninda tek nokta (y22-23), altinda kuyruk yok -> '.'. okuma_2 virgul yazmis."
+  },
+  {
+   "dosya": "AKT20K0-T047_13",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel: 'olu?uyor' s harfinin tam altinda satir 60-62'de 2 px soluk cengel izi (~206-222), zemin ~250; N.\u015e.A. \u015e cengeliyle ayni konumda -> 'olu\u015fuyor'. okuma_1 cengeli atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T048_08",
+   "esasli_hata": "yok",
+   "gerekce": "Uc kap icindeki yazilar (100 g su + 40 g tuz, 50+30, 200+70) ve I, II, III etiketleri her iki okumada eksiksiz; yalniz satir/tablo dizilimi farkli. Kisa tablo satiri bicimi secildi."
+  },
+  {
+   "dosya": "AKT20K0-T048_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu: D 'kar\u0131s\u0131m'daki s'nin altinda taban cizgisinden 2 satir asagida soluk ama belirgin cengel izi (gri 195-235, cevre bosluk 249+), C sikkindaki koyu \u015f cengeliyle ayni konumda -> soluk basilmis '\u015f'. 'kar\u0131\u015f\u0131m'."
+  },
+  {
+   "dosya": "AKT20K0-T049_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: A'da Eleme-S\u00fczme (x=160-168) ve S\u00fczme-M\u0131knat\u0131slama (x=243-252) aras\u0131nda y=148-149 soluk (252) tireler var. okuma_1 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T050_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: E \u015f\u0131kk\u0131nda 'Mazot' ile 'su' aras\u0131ndaki bo\u015flukta (x\u2248281-300) hi\u00e7 m\u00fcrekkep yok (D'deki soluk tire '+' d\u00fczeyinde g\u00f6r\u00fcn\u00fcrken burada tamamen beyaz). Bas\u0131l\u0131 olmayan tire eklenmez: 'Mazot su'."
+  },
+  {
+   "dosya": "AKT20K0-T050_11",
+   "esasli_hata": "yok",
+   "gerekce": "Hucrelerde iki madde alt alta, arada ayirici basili degil; ' / ' ile ', ' yalniz bicim varyanti; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT20K0-T051_12",
+   "esasli_hata": "ikisi",
+   "gerekce": "Satir basi 8x + piksel dokumu: buyuk harf boyunda I, ustunde nokta yok (satir 308-320 beyaz) -> basili 'I\u015flemlerinden'. okuma_1 '\u0130', okuma_2 kucuk 'i' yazmis."
+  },
+  {
+   "dosya": "AKT20K0-T052_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "2x: 'Kar\u0131\u015f\u0131m' ve 'Ay\u0131rma Y\u00f6ntemi' altindaki cizgiler pembe baslangicli tablo baslik cetveli (T006/T020 baslik cizgileri gibi), alti cizili vurgu degil. D sikki piksel: 'I' sonrasi tek nokta, kuyruk yok -> 'I. II ve III' (dizgi hatasi korunur). okuma_2 ikisinde de hatali."
+  },
+  {
+   "dosya": "AKT20K0-T053_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "8x: satir 1 sonu 'v' + sagi kesik yay parcasi + beyaz daire; kesik harf tamamlanmaz -> 'v[??]'. okuma_2 'e' diye tamamlamis."
+  },
+  {
+   "dosya": "AKT20K0-T054_01",
+   "esasli_hata": "yok",
+   "gerekce": "Kutu metinleri ve numaralari iki okumada ayni; fark siralama ve kutu no bicimi. Sozlesme: kutu icindeki sayi '[n]'; okuma_1 gorundugu yerde (ust sira 5,1,2; BAZLAR; alt 4,3) yazmis, korundu."
+  },
+  {
+   "dosya": "AKT20K0-T054_13",
+   "esasli_hata": "yok",
+   "gerekce": "Mg(OH) altinda '2(suda)', HNO altinda '3(suda)' birlikte alt konumda basili; '_2(suda)' / '_(2(suda))' ayni icerigin bicim varyanti. Sozlesme (hal simgesi basildigi gibi) ile okuma_1 bicimi."
+  },
+  {
+   "dosya": "AKT20K0-T055_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Kaplar\u0131n \u00fcst\u00fcnde H_3PO_4, NH_3, NaOH etiketleri bas\u0131l\u0131; soru '\u00fczerlerindeki maddeler'e dayan\u0131yor. okuma_1 atlam\u0131\u015f."
+  },
+  {
+   "dosya": "AKT20K0-T055_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Soru 'Yukar\u0131da verilen maddeler'e dayan\u0131yor; maddeler yaln\u0131z \u015fekil etiketinde (N_2O_5, CO_2, CaO; I, II, III). 8x b\u00fcy\u00fctme: N_2O_5 indisi \u00fcstte d\u00fcz \u00e7izgili 5, CO_2 indisi 2. okuma_1 bu veriyi d\u00fc\u015f\u00fcrm\u00fc\u015f; okuma_2 do\u011fru."
+  },
+  {
+   "dosya": "AKT20K0-T057_02",
+   "esasli_hata": "ikisi",
+   "gerekce": "F ve 2OH sonrasinda ust simge yerinde bosluk birakilmis, yalniz cok soluk yatay iz (F: 250-253; OH: y82 x612-619 ~236); isaret (\u2212/+) okunamiyor -> '[??]'; iki okuma da [??] koymamis. 'verilmi\u015f' sonrasi satir sonunda tire gorunmuyor, beyaz daire yakininda, alt satir 'tir?' devam -> 'verilmi\u015f[??]tir' (okuma_2 [??] atlamis)."
+  },
+  {
+   "dosya": "AKT20K0-T057_03",
+   "esasli_hata": "yok",
+   "gerekce": "Tablo satirlarinin solunda '\u2022' basili; okuma_1 basildigi gibi korumus. Veri (X 12, Y 3) iki okumada ayni; susleme farki."
+  },
+  {
+   "dosya": "AKT20K0-T057_09",
+   "esasli_hata": "ikisi",
+   "gerekce": "8x + piksel dokumu: 'CO_2' sonrasi isaret x648-649'da ust uste iki esit guclu nokta (y296-297 ve y300-301), altinda kuyruk yok; goruntu sag kenarda kesik degil (genislik 684) -> ':'. okuma_1 ',' okuma_2 ';' yazmis."
+  },
+  {
+   "dosya": "AKT20K0-T058_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel: 'a' uzerinde k ustu hizasinda 4x2 px koyu (<120) isaret + asagi inen ince iz, a govdesinden ayri -> sapka: 'k\u00e2\u011f'. okuma_1 isareti atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T060_02",
+   "esasli_hata": "yok",
+   "gerekce": "Halka (daire icinde O) sembolu: '(halka)' / '\u232c' yalniz gosterim varyanti; icerik ayni, okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT20K0-T060_11",
+   "esasli_hata": "yok",
+   "gerekce": "Sik tablosunda sutun basliklari A)-E), her sutunda 'I. a', 'II. b', 'III. c' gibi hucreler basili. okuma_1 hucreleri basildigi gibi, okuma_2 I/II/III'u baslik satirina almis; ayni veri, bicim farki. okuma_1 bicimi."
+  },
+  {
+   "dosya": "AKT20K0-T060_13",
+   "esasli_hata": "yok",
+   "gerekce": "\u015e\u0131klar s\u00fctun halinde 'I. a / II. b / III. c' bas\u0131l\u0131, ayr\u0131 I|II|III ba\u015fl\u0131k sat\u0131r\u0131 yok; okuma_1 bas\u0131l\u0131ya daha yak\u0131n. Veri ayn\u0131 -> bicim fark\u0131."
+  },
+  {
+   "dosya": "AKT20K0-T061_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Piksel d\u00f6k\u00fcm\u00fc: III. \u00f6nc\u00fclde 'Y' sonras\u0131 i\u015faret y=225-229, taban \u00e7izgisinin ancak 1 sat\u0131r alt\u0131na iniyor, 'III.' noktas\u0131yla ayn\u0131 bi\u00e7im; II. \u00f6nc\u00fcldeki 'X,' virg\u00fcl\u00fc 3 sat\u0131r a\u015fa\u011f\u0131 kuyruklu. 'Y.' noktayla bas\u0131lm\u0131\u015f (dizgi hatas\u0131 korunur)."
+  },
+  {
+   "dosya": "AKT20K0-T061_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x + piksel dokumu: A satirinda COOK onunde x160-169, y209-212 araliginda cok soluk (253-254) ama B/C/D tirelerinin tam geometrisiyle (10x4 px) ayni yatay iz var -> '\u2212'. okuma_1 tireyi atlamis."
+  },
+  {
+   "dosya": "AKT20K0-T061_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'(OCl)' sonrasi 8x + piksel dokumu: ust simge konumunda yalniz ~247-249 duzeyinde L bicimli iz (kutu kosesi artigi), murekkep yogunlugunda '\u2212' yok -> '(OCl)'."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "AKT20K0-T004_09",
+   "basili_no": 9,
+   "govde": "Karbon temelli bile\u015fiklerin tepkimelerini ve \u00f6ze[??]liklerini inceleyen kimya disiplini a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Organik kimya",
+    "B": "Anorganik kimya",
+    "C": "Biyokimya",
+    "D": "Fizikokimya",
+    "E": "End\u00fcstriyel kimya"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T005_10",
+   "basili_no": 10,
+   "govde": "A\u015fa\u011f\u0131da baz\u0131 g\u00fcvenlik uyar\u0131 i\u015fareti ve anlamlar\u0131 verilmi\u015ftir.\nG\u00fcvenlik uyar\u0131 i\u015fareti | Anlam\u0131\nI. | \u00c7evreye zararl\u0131 madde\nII. | Yan\u0131c\u0131 madde\nIII. | Toksik madde\nBuna g\u00f6re uyar\u0131 i\u015faretlerinden hangilerinin anlam\u0131 do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T006_05",
+   "basili_no": 5,
+   "govde": "Tehlike \u0130\u015fareti | Risk kategorisi\nI. | a. Toksik(zehirli)\nII. | b. Radyoaktif\nIII. | c. Yan\u0131c\u0131\nTehlike i\u015faretleri ve kar\u015f\u0131s\u0131nda belirtilen risk kategorisi a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru e\u015fle\u015ftirilmi\u015ftir?",
+   "sikler": {
+    "A": "I. a\nII. c\nIII. b",
+    "B": "I. b\nII. c\nIII. a",
+    "C": "I. b\nII. a\nIII. c",
+    "D": "I. c\nII. a\nIII. b",
+    "E": "I. c\nII. b\nIII. a"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T006_07",
+   "basili_no": 7,
+   "govde": "Malzeme | Ad\u0131\nI. | Beherglas\nII. | B\u00fcret\nIII. | Erlenmayer\nYukar\u0131daki laboratuvar malzemelerinden hangil[??]rinin ad\u0131 do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T007_01",
+   "basili_no": 1,
+   "govde": "Atomun \u00e7ekirde\u011finde bulunan pozitif y\u00fckl\u00fc tan[??]ciklere ne ad verilir?",
+   "sikler": {
+    "A": "Proton",
+    "B": "N\u00f6tron",
+    "C": "Elektron",
+    "D": "\u0130yon",
+    "E": "Katyon"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T007_02",
+   "basili_no": 2,
+   "govde": "(\u2212) y\u00fckl\u00fc iyonlara ........................ denir.\nBo\u015f b\u0131rak\u0131lan yere a\u015fa\u011f\u0131dakilerden hangisi yaz\u0131lmal\u0131d\u0131r?",
+   "sikler": {
+    "A": "Proton",
+    "B": "Elektron",
+    "C": "Anyon",
+    "D": "Katyon",
+    "E": "N\u00f6tr"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T007_06",
+   "basili_no": 6,
+   "govde": "Elektronlar\u0131n ba\u011f\u0131l y\u00fck\u00fc a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "+2",
+    "B": "+1",
+    "C": "0",
+    "D": "\u22121",
+    "E": "\u22122"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T007_15",
+   "basili_no": 15,
+   "govde": "\u2022 Elektronlar dairesel y\u00f6r\u00fcngelerde hareket ederler.\n\u2022 Elektronun \u0131s\u0131 alarak daha y\u00fcksek enerji seviyelerine ge\u00e7mesi ile olu\u015fan duruma uyar\u0131lm\u0131\u015f hal denir.\nYukar\u0131da ifade edilen g\u00f6r\u00fc\u015fler hangi atom modeline aittir?",
+   "sikler": {
+    "A": "Dalton",
+    "B": "Thomson",
+    "C": "Rutherford",
+    "D": "Bohr",
+    "E": "Modern"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T007_16",
+   "basili_no": 16,
+   "govde": "Rutherford'un var oldu\u011funu d\u00fc\u015f\u00fcnd\u00fc\u011f\u00fc fakat ispatlayamad\u0131\u011f\u0131 n\u00f6tron ad\u0131 verilen atom alt\u0131 tanecikleri bulan bilim insan\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Dalton",
+    "B": "Thomson",
+    "C": "Bohr",
+    "D": "Chadwick",
+    "E": "Democritus"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T008_14",
+   "basili_no": 14,
+   "govde": "\u0130lk bilimsel atom modelini ortaya atan bilim ins[??]n\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Democritus",
+    "B": "Dalton",
+    "C": "Thomson",
+    "D": "Rutherford",
+    "E": "Bohr"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T009_10",
+   "basili_no": 10,
+   "govde": "\u2022 X atomu 3 elektron veriyor.\n\u2022 Y atomu 2 elektron al\u0131yor.\nBuna g\u00f6re X ve Y atomlar\u0131n\u0131n elektron de\u011fi\u015fim[??] leri sonucunda olu\u015fan iyonlar hangisinde do\u011fr[??] verilmi\u015ftir?\nX | Y",
+   "sikler": {
+    "A": "X^(3+) | Y^(2+)",
+    "B": "X^(3+) | Y^(2\u2212)",
+    "C": "X^(3\u2212) | Y^(2+)",
+    "D": "X^(3\u2212) | Y^(2\u2212)",
+    "E": "X^(2+) | Y^(3\u2212)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T010_03",
+   "basili_no": 3,
+   "govde": "X^(2+) iyonunda 36 elektron varsa X^(2+) iyonunun pr[??]ton say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "38",
+    "B": "37",
+    "C": "36",
+    "D": "35",
+    "E": "34"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T010_07",
+   "basili_no": 7,
+   "govde": "^(38)_(19)X^(1+) ve ^(40)_(20)X^(2+) iyonlar\u0131 i\u00e7in,\nI. N\u00f6tron\nII. Elektron\nIII. Proton\ntaneciklerinden hangileri <u>e\u015fittir</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T010_12",
+   "basili_no": 12,
+   "govde": "N\u00f6tron say\u0131lar\u0131 ayn\u0131, atom numaralar\u0131 farkl\u0131 atomlara izoton atom denir.\nBuna g\u00f6re a\u015fa\u011f\u0131dakilerden hangisi ^(29)_(14)X atomunun izotonudur?",
+   "sikler": {
+    "A": "^(14)_7A",
+    "B": "^(28)_(14)B",
+    "C": "^(30)_(15)C",
+    "D": "^(32)_(15)D",
+    "E": "^(63)_(28)E"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T010_14",
+   "basili_no": 14,
+   "govde": "Ayn\u0131 element atomlar\u0131n\u0131n proton say\u0131lar\u0131 e\u015fittir.\nA\u015fa\u011f\u0131dakilerden hangisi ayn\u0131 element atomlar\u0131na aittir?",
+   "sikler": {
+    "A": "^(12)_6X \u2013 ^(13)_7Y",
+    "B": "^(13)_6X \u2013 ^(14)_6Y",
+    "C": "^(17)_8X \u2013 ^(17)_8Y[??]",
+    "D": "^(19)_9X \u2013 ^(39)_(19)Y",
+    "E": "X^(2\u2212)_(10) \u2013 Y^(3\u2212)_(10)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T011_05",
+   "basili_no": 5,
+   "govde": "^(a)b_(c)X_(d) <u>n\u00f6tr</u> atomu i\u00e7in a\u015fa\u011f\u0131daki e\u015fitliklerden hangisinin do\u011frulu\u011fu <u>kesindir</u>?",
+   "sikler": {
+    "A": "a = b",
+    "B": "a = d",
+    "C": "b = d",
+    "D": "c = d",
+    "E": "b = c"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T011_11",
+   "basili_no": 11,
+   "govde": "I. e > p | a. Katyon\nII. e = p | b. Anyon\nIII. e < p | c. N\u00f6tr\nA\u015fa\u011f\u0131da verilen e\u015fle\u015ftirmelerden hangisi do\u011frudur?\n(proton \u2192 p elektron \u2192 e)",
+   "sikler": {
+    "A": "I. c\nII. a\nIII. b",
+    "B": "I. b\nII. c\nIII. a",
+    "C": "I. b\nII. a\nIII. c",
+    "D": "I. a\nII. b\nIII. c",
+    "E": "I. a\nII. c\nIII. b"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T011_13",
+   "basili_no": 13,
+   "govde": "I. _(12)Y^(2+) \u2013 _7Y^(3\u2212)\nII. _(22)Y^(4\u2212) \u2013 _(16)Z^(2\u2212)\nIII. K_(10)^(2[??]) \u2013 L_8^(2+)\nYukar\u0131da verilen taneciklerden hangileri birbirinin izoelektroni\u011fidir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T013_09",
+   "basili_no": 9,
+   "govde": "I. ^(63)_(29)Cu \u2013 ^(65)_(29)Cu^[??]\nII. ^(23)_(11)Na \u2013 ^(24)_(12)Mg\nIII. ^(40)_(20)Ca \u2013 ^(40)_(19)K\nYukar\u0131da verilen madde \u00e7iftlerinden hangilerinin kimyasal \u00f6zellikleri ayn\u0131 de\u011fildir?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T014_01",
+   "basili_no": 1,
+   "govde": "2 8 7\nKatman elektron dizilimi yukar\u0131daki gibi olan n\u00f6tr bir atomun proton say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "2",
+    "B": "7",
+    "C": "8",
+    "D": "17",
+    "E": "18"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T015_06",
+   "basili_no": 6,
+   "govde": "_(14)X ve _(20)Y atomlar\u0131n\u0131n elektron da\u011f\u0131l\u0131mlar\u0131 a\u015fa\u011f\u0131da verilmi\u015ftir.\nX : 2 m 4   Y : 2 8 8 n\nBuna g\u00f6re m+n ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "14",
+    "B": "12",
+    "C": "10",
+    "D": "8",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T015_07",
+   "basili_no": 7,
+   "govde": "X^(3\u2212) iyonun proton say\u0131s\u0131 15 oldu\u011funa g\u00f6re X^(3\u2212) iyonunun elektron da\u011f\u0131l\u0131m\u0131 hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) 2 8 8 2",
+    "B": "(g\u00f6rsel \u015f\u0131k) 2 8 8",
+    "C": "(g\u00f6rsel \u015f\u0131k) 2 8 5",
+    "D": "(g\u00f6rsel \u015f\u0131k) 2 8 2",
+    "E": "(g\u00f6rsel \u015f\u0131k) 2 2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T016_01",
+   "basili_no": 1,
+   "govde": "Periyodik sistem i\u00e7in a\u015fa\u011f\u0131daki yarg\u0131lardan ha[??]gisi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Elementler artan atom numaralar\u0131na g\u00f6re s\u0131ralanm\u0131\u015ft\u0131r.",
+    "B": "Ayn\u0131 gruptaki elementlerin kimyasal \u00f6zellikleri benzerdir.",
+    "C": "Ayn\u0131 periyottaki elementlerin de\u011ferlik elektron say\u0131lar\u0131 ayn\u0131d\u0131r.",
+    "D": "7 tane periyot, 8 tane A grubu vard\u0131r.",
+    "E": "Soy gazlar periyodik cetvelin en son grubudur."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T016_05",
+   "basili_no": 5,
+   "govde": "AMETAL\nI. K\u0131r\u0131lgand\u0131rlar.\nII. Bile\u015fiklerinde pozitif y\u00fckl\u00fc olabilirler.\nIII. Kovalent ba\u011fl\u0131 bile\u015fik olu\u015fturabilirler.\nYukar\u0131da kavram haritas\u0131nda ametallerle ilgili verilen bilgilerden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T017_11",
+   "basili_no": 11,
+   "govde": "Ayn\u0131 periyotta yer alan K, L, M ve N elementleri ile ilgili a\u015fa\u011f\u0131daki bilgiler veriliyor.\n\u2022 K soy gazd\u0131r.\n\u2022 L alkali metaldir.\n\u2022 M bile\u015fiklerinde en d\u00fc\u015f\u00fck \u22123,en y\u00fcksek +5 de\u011ferlik almaktad\u0131r.\n\u2022 N ge\u00e7i\u015f metalidir.\nBuna g\u00f6re K, L, M ve N elementlerinin atom numaralar\u0131n\u0131n art\u0131\u015f\u0131na g\u00f6re s\u0131ralan\u0131\u015f\u0131 hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "K, M, N, L",
+    "B": "K, N, M, L",
+    "C": "L, N, M, K",
+    "D": "L. M. N. K",
+    "E": "N, L, M, K"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T018_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131da verilen iyonlardan hangisinin elektron dizili\u015fi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) _(15)X^(3\u2212) : 2 8 8",
+    "B": "(g\u00f6rsel \u015f\u0131k) _(12)Y^(2+) : 2 8",
+    "C": "(g\u00f6rsel \u015f\u0131k) _(16)Z^(2\u2212) : 2 8 4",
+    "D": "(g\u00f6rsel \u015f\u0131k) _(20)T^(2+) : 2 8 8",
+    "E": "(g\u00f6rsel \u015f\u0131k) _7L^(5+) : 2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T018_07",
+   "basili_no": 7,
+   "govde": "X, Y ve Z elementleri ile ilgili a\u015fa\u011f\u0131daki bilgiler veriliyor.\n\u2022 X ve Y ayn\u0131 gruptad\u0131r.\n\u2022 Y ve Z ayn\u0131 periyottad\u0131r.\nBuna g\u00f6re X, Y ve Z elementlerinin periyodik cetveldeki konumlar\u0131 hangisinde verildi\u011fi gibi olabilir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T018_08",
+   "basili_no": 8,
+   "govde": "X : 2   Y : 2 2   Z : 2 8 2\nYukarda elektron da\u011f\u0131l\u0131mlar\u0131 verilen X, Y ve Z elementleri ile ilgili,\nI. De\u011ferlik elektron say\u0131lar\u0131 ayn\u0131d\u0131r.\nII. Ayn\u0131 grup elementleridir.\nIII. Atom hacimleri Z > Y > X \u015feklindedir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T019_04",
+   "basili_no": 4,
+   "govde": "A\u015fa\u011f\u0131daki kimyasal t\u00fcrlerin s\u0131n\u0131fland\u0131r\u0131lmas\u0131 hangisinde do\u011fru olarak verilmi\u015ftir?\nCu | NO_3^\u2212 | SO_3",
+   "sikler": {
+    "A": "Atom | Molek\u00fcl | \u0130yon",
+    "B": "Atom | \u0130yon | Molek\u00fcl",
+    "C": "Molek\u00fcl | Atom | \u0130yon",
+    "D": "Molek\u00fcl | \u0130yon | Atom",
+    "E": "\u0130yon | Molek\u00fcl | Atom"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T019_06",
+   "basili_no": 6,
+   "govde": "T\u00fcrler Aras\u0131 Etkile\u015fimler\nG\u00fc\u00e7l\u00fc Etkile\u015fimler: \u0130yonik, X, Y\nZay\u0131f Etkile\u015fimler: Van der Waals, Z\nYukar\u0131da g\u00fc\u00e7l\u00fc ve zay\u0131f etkile\u015fimlerin s\u0131n\u0131fland\u0131r\u0131lmas\u0131 verilmi\u015ftir.\nBuna g\u00f6re, X, Y ve Z a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru verilmi\u015ftir?\nX | Y | Z",
+   "sikler": {
+    "A": "Metalik | Hidrojen | Kovalent",
+    "B": "Metalik | Kovalent | London",
+    "C": "Kovalent | Metalik | Hidrojen",
+    "D": "Hidrojen | Metalik | Kovalent",
+    "E": "Kovalent | London | Hidrojen"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T019_08",
+   "basili_no": 8,
+   "govde": "X \u2014 Y \u22ef X \u2014 Y\n1 2\nYukar\u0131da verilen 1 ve 2 nolu ba\u011f t\u00fcrleri ile ilgili,\nI. 1 nolu ba\u011f g\u00fc\u00e7l\u00fc etkile\u015fimdir.\nII. 2 nolu ba\u011f fiziksel ba\u011fd\u0131r.\nIII. 1 nolu ba\u011f\u0131 koparmak i\u00e7in gereken enerji 2 nolu ba\u011f\u0131 koparmak i\u00e7in gereken enerjiden daha b\u00fcy\u00fckt\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T019_12",
+   "basili_no": 12,
+   "govde": "1 2\nA \u2014 B \u22ef A \u2014 B\nYukar\u0131da verilen 1 ve 2 nolu ba\u011flarla ilgili,\nI. 1 nolu ba\u011f\u0131 koparmak i\u00e7in 40 kj/mol den fazla enerji gerekir.\nII. 2 nolu ba\u011f fiziksel ba\u011fd\u0131r.\nIII. 1 nolu ba\u011f koparsa madde kimyasal degi\u015fmeye u\u011frar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_03",
+   "basili_no": 3,
+   "govde": "Lewis g\u00f6sterimi \u00b7X\u0324\u0308: olan bir elementin atom numaras\u0131,\nI. 7\nII. 9\nIII. 17\nhangileri olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve I[??]",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_06",
+   "basili_no": 6,
+   "govde": "_(12)Mg^(2+) iyonunun Lewis g\u00f6sterimi a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "Mg^(2+)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_08",
+   "basili_no": 8,
+   "govde": "3. periyotta oldu\u011fu bilinen X elementinin Lewis g\u00f6sterimi \u00b7\u1e8c\u0323\u00b7 \u015feklindedir.\nBuna g\u00f6re X elementinin atom numaras\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "5",
+    "B": "7",
+    "C": "13",
+    "D": "15",
+    "E": "17"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_10",
+   "basili_no": 10,
+   "govde": "Lewis g\u00f6steriminde elementin sembol\u00fcn\u00fcn etraf\u0131na de\u011ferlik elektron say\u0131s\u0131 kadar nokta yaz\u0131l\u0131r. Fakat \u00f6\u011frencilerimizin bir k\u0131sm\u0131 yanl\u0131\u015fl\u0131kla elementin t\u00fcm elektronlar\u0131n\u0131 kullanarak Lewis g\u00f6sterimi yazmaktad\u0131r.\nBuna g\u00f6re,\n- | Element | Lewis g\u00f6sterimi\nI. | _6X | (\u015fekil)\nII. | _7Y | (\u015fekil)\nIII. | _5Z | (\u015fekil)\nhangilerinin Lewis g\u00f6steriminde yukar\u0131da bahsedilen <u>yanl\u0131\u015fl\u0131k</u> yap\u0131lm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_11",
+   "basili_no": 11,
+   "govde": "MgF_2 bile\u015fi\u011finin Lewis g\u00f6sterimi a\u015fa\u011f\u0131dakileri[??] hangisinde do\u011fru verilmi\u015ftir? (_(12)Mg /_9F)",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_12",
+   "basili_no": 12,
+   "govde": "Lewis g\u00f6sterimi, (g\u00f6rsel: X^(2+) [Y]^(2\u2212) Lewis g\u00f6sterimi) \u015feklinde olan iyonik ba\u011fl\u0131 bile\u015fikteki elementlerin atom numaralar\u0131,\n- | X | Y\nI. | 12 | 6\nII. | 12 | 8\nIII. | 20 | 16\nhangileri olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_13",
+   "basili_no": 13,
+   "govde": "- | Element \u00e7ifti | Lewis g\u00f6sterimi\nI. | _(13)Al \u2212 _9F | Al^(3+) [:F:]^\u2212\nII. | _(11)Na \u2212 _8O | 2Na^+ [:O:]^(2\u2212)\nIII. | _(20)Ca \u2212 _(17)Cl | Ca^(2\u2212) [:Cl:]^\u2212\nYukar\u0131da verilen element \u00e7iftlerinin olu\u015fturaca\u011f\u0131 iyonik bile\u015fiklerin Lewis g\u00f6sterimi hangilerinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T020_14",
+   "basili_no": 14,
+   "govde": "Lewis g\u00f6sterimi, (g\u00f6rsel: X^(3+) 3[Y]^\u2212 Lewis g\u00f6sterimi) \u015feklinde olan bir bile\u015fikle ilgili,\nI. Form\u00fcl\u00fc XY_3 t\u00fcr.\nII. X atomu 3 elektron vermi\u015ftir.\nIII. Y atomu 7A grubundad\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T021_05",
+   "basili_no": 5,
+   "govde": "_(12)X elementi ile a\u015fa\u011f\u0131da atom numaralar\u0131 verilen elementlerden hangisi ile bile\u015fik <u>olu\u015fturamaz</u>?",
+   "sikler": {
+    "A": "_6Y",
+    "B": "_9Z",
+    "C": "_(13)T",
+    "D": "_(15)K",
+    "E": "_(16)L"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T021_09",
+   "basili_no": 9,
+   "govde": "_(12)Mg ve _(15)P elementlerinin olu\u015fturaca\u011f\u0131 bile\u015fi\u011fin form\u00fcl\u00fc ve ba\u011f t\u00fcr\u00fc a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?\nBile\u015fik form\u00fcl\u00fc | Ba\u011f t\u00fcr\u00fc",
+   "sikler": {
+    "A": "MgP | \u0130yonik",
+    "B": "Mg_3P | Kovalent",
+    "C": "Mg_2P_3 | \u0130yonik",
+    "D": "Mg_3P_2 | Kovalent",
+    "E": "Mg_3P_2 | \u0130yonik"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T021_10",
+   "basili_no": 10,
+   "govde": "_(11)Na, _(12)Mg ve _(13)Al elementlerinin _7N ile olu\u015fturacaklar\u0131 bile\u015fiklerin form\u00fclleri a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "Na_3N \u2013 Mg_3N_2 \u2013 AlN_3",
+    "B": "Na_3N \u2013 Mg_3N_2 \u2013 AlN",
+    "C": "NaN_3 \u2013 Mg_2N_3 \u2013 AlN",
+    "D": "NaN \u2013 MgN_3 \u2013 Al_3N",
+    "E": "Na_2N \u2013 Mg_3N \u2013 AlN_3"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T021_12",
+   "basili_no": 12,
+   "govde": "_(20)Ca elementinin CO_3^(2\u2212), PO_4^(3\u2212) ve OH^\u2212 iyonlar\u0131 ile olu\u015fturacaklar\u0131 bile\u015fiklerin form\u00fclleri a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "Ca(CO_3)_2 \u2013 Ca(PO_4)_2 \u2013 Ca(OH)_2",
+    "B": "CaCO_3 \u2013 Ca_2(PO_4)_3 \u2013 Ca(OH)_2",
+    "C": "CaCO_3 \u2013 Ca_3(PO_4)_2 \u2013 Ca(OH)_2",
+    "D": "CaCO_3 \u2013 Ca_2(PO_4)_3 \u2013 Ca_2OH",
+    "E": "Ca_2CO_3 \u2013 CaPO_4 \u2013 CaOH"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T022_03",
+   "basili_no": 3,
+   "govde": "A\u015fa\u011f\u0131dakilerden hangisi apolar kovalent ba\u011f i\u00e7erir? (_(11)Na, _(17)Cl, _1H, _8O, _7N)",
+   "sikler": {
+    "A": "NaCl",
+    "B": "HCl",
+    "C": "F_2",
+    "D": "NH_3",
+    "E": "H_2O"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T022_05",
+   "basili_no": 5,
+   "govde": "_8X, _(19)Y, _7Z elementleri aras\u0131nda olu\u015fan Y_2X, X_2, Z_2X_3 bile\u015fik ve molek\u00fcllerin kimyasal ba\u011flar\u0131 i\u00e7in a\u015fa\u011f\u0131dakilerden hangisi do\u011frudur?\nY_2X | X_2 | Z_2X_3",
+   "sikler": {
+    "A": "\u0130yonik | Polar kovalent | Apolar kovalent",
+    "B": "\u0130yonik | Apolar kovalent | Polar kovalent",
+    "C": "Polar kovalent | Apolar kovalent | \u0130yonik",
+    "D": "Polar kovalent | \u0130yonik | Apolar kovalent",
+    "E": "Apolar kovalent | Polar kovalent | \u0130yonik"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T022_06",
+   "basili_no": 6,
+   "govde": "A\u015fa\u011f\u0131dakilerden hangisi molek\u00fcler yap\u0131l\u0131 <u>de\u011fildir</u>? (_1H, _6C, _8O, _(20)Ca)",
+   "sikler": {
+    "A": "O_2",
+    "B": "CO_2",
+    "C": "CaCO_3",
+    "D": "C_2H_5OH",
+    "E": "H_2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T022_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131dakilerden hangisi hem kovalent ba\u011f hem de iyonik ba\u011f i\u00e7erir?(_1H, _6C, _8O, _(11)Na)",
+   "sikler": {
+    "A": "Na_2O",
+    "B": "CO_2",
+    "C": "H_2O",
+    "D": "CH_3COOH",
+    "E": "NaHCO_3"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_01",
+   "basili_no": 1,
+   "govde": "F_2 molek\u00fcl\u00fcyle ilgili,\nI. Apolar kovalent ba\u011f i\u00e7erir.\nII. Lewis yap\u0131s\u0131 :F\u0324\u0308\u00b7\u00b7F\u0324\u0308: \u015feklindedir.\nIII. Bir \u00e7ift elektron ortak kullan\u0131lm\u0131\u015ft\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur? (_9F)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_03",
+   "basili_no": 3,
+   "govde": "H_2S molek\u00fcl\u00fc ile ilgili,\nI. Polar kovalent ba\u011f i\u00e7erir.\nII. K\u00fck\u00fcrt atomu oktete, hidrojen atomu dublete ula\u015fm\u0131\u015ft\u0131r.\nIII. Lewis g\u00f6sterimi, \u015feklindedir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur? (_1H / _16S)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_04",
+   "basili_no": 4,
+   "govde": "- | Molek\u00fcl | Lewis g\u00f6sterimi\nI. | O_2 | :\u00d6::\u00d6:\nII. | CO_2 | O::C::O\nIII. | F_2 | F\u00b7\u00b7F\nYukar\u0131da verilen molek\u00fcllerden hangilerinin Lewis g\u00f6sterimi <u>yanl\u0131\u015ft\u0131r</u>? (_6C, _8O, _9F)",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_05",
+   "basili_no": 5,
+   "govde": "- | Bile\u015fik | Lewis g\u00f6sterimi\nI. | NaF | Na\u00b7\u00b7F\u0324\u0308:\nII. | HCl | H\u00b7\u00b7C\u0324\u0308l:\nIII. | NH_3 | (\u015fekil)\nYukar\u0131da verilen bile\u015fiklerden hangilerinin Lewis g\u00f6sterimi <u>yanl\u0131\u015ft\u0131r</u>? (_1H / _7N / _9F / _11Na)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_06",
+   "basili_no": 6,
+   "govde": ":\u00d6::C::\u00d6:\nLewis g\u00f6sterimi yukar\u0131daki gibi olan CO_2 molek\u00fcl\u00fc ile ilgili,\nI. Ba\u011flay\u0131c\u0131 elektron \u00e7ifti say\u0131s\u0131 ortaklanmam\u0131\u015f elektron \u00e7ifti say\u0131s\u0131na e\u015fittir.\nII. Molek\u00fcldeki atomlar oktete ula\u015fm\u0131\u015ft\u0131r.\nIII. Apolar kovalent ba\u011f i\u00e7erir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_07",
+   "basili_no": 7,
+   "govde": "Lewis g\u00f6sterimi,\nH\u00b7\u00b7C\u22ee\u22eeN:\n\u015feklinde olan HCN ile ilgili,\nI. C elementi 4 ba\u011f yapm\u0131\u015ft\u0131r.\nII. Hidrojen elementi dublete, azot elementi oktete ula\u015fm\u0131\u015ft\u0131r.\nIII. Molek\u00fclde 4 tane polar kovalent ba\u011f bulunur.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T023_10",
+   "basili_no": 10,
+   "govde": "\u2022 Ba\u011flay\u0131c\u0131 elektron say\u0131s\u0131 4 t\u00fcr.\n\u2022 Ortaklanmam\u0131\u015f elektron say\u0131s\u0131 4 t\u00fcr.\n\u2022 Polar kovalent ba\u011f i\u00e7erir.\nYukar\u0131da \u00f6zellikleri verilen molek\u00fcl a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T024_05",
+   "basili_no": 5,
+   "govde": "Kur\u015fun (III) s\u00fclf\u00fcr bile\u015fi\u011fi suda \u00e7\u00f6z\u00fcnd\u00fc\u011f\u00fcnde \u00e7\u00f6zeltiye verdi\u011fi iyonlar a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "Pb^(3+) \u2212 SO_4^2",
+    "B": "Pb^(3+) \u2212 SO_3^2",
+    "C": "Pb^(3+) \u2212 S^(2\u2212)",
+    "D": "Pb^(2+) \u2212 SO_4^(2\u2212)",
+    "E": "Pb^\u2212 \u2212 S^2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T026_05",
+   "basili_no": 5,
+   "govde": "\"Dallanma artt\u0131k\u00e7a London etkile\u015fimi azal\u0131r. \"\nBuna g\u00f6re,\nCH_3\n|\nI. CH_3 \u2212 CH_2 \u2212 CH \u2212 CH_2 \u2212 CH_3\nII. CH_3 \u2212 CH_2 \u2212 CH_2 \u2212 CH_2 \u2212 CH_2 \u2212 CH_3\nCH_3\n|\nIII. CH_3 \u2212 C \u2212 CH_2 \u2212 CH_3\n|\nCH_3\nyukar\u0131da verilen molek\u00fcllerin kaynama noktalar\u0131 aras\u0131ndaki ili\u015fki hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "I > II > III",
+    "B": "I > III > II",
+    "C": "II > I > III",
+    "D": "II > III > I",
+    "E": "III > I > II"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T029_04",
+   "basili_no": 4,
+   "govde": "A\u015fa\u011f\u0131dakilerden hangisi molek\u00fcler kat\u0131lara \u00f6rnek <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "H_2",
+    "B": "H_2O",
+    "C": "SiO_2",
+    "D": "NH_3",
+    "E": "C_6H_(12)O_6"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T030_12",
+   "basili_no": 12,
+   "govde": "h_1 = h_2\n\u015eekildeki \u00f6zde\u015f kaplarda s\u0131cakl\u0131klar\u0131 ayn\u0131 olan X ve Y s\u0131v\u0131lar\u0131ndan, X s\u0131v\u0131s\u0131n\u0131n molek\u00fcller aras\u0131 \u00e7ekim kuvveti Y s\u0131v\u0131s\u0131ndan fazlad\u0131r.\nBuna g\u00f6re,\nI. X in kaynama noktas\u0131 daha b\u00fcy\u00fckt\u00fcr.\nII. Y s\u0131v\u0131s\u0131n\u0131n buhar bas\u0131nc\u0131 daha d\u00fc\u015f\u00fckt\u00fcr.\nIII. Bir s\u00fcre sonra s\u0131v\u0131 y\u00fckseklikleri h_1 > h_2 dir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T031_01",
+   "basili_no": 1,
+   "govde": "X(k) \u2192 X(s)\nDe\u011fi\u015fimi ger\u00e7ekle\u015firken a\u015fa\u011f\u0131dakilerden hangisi ayn\u0131 kal\u0131r?",
+   "sikler": {
+    "A": "Hacim",
+    "B": "Tanecikler aras\u0131 uzakl\u0131k",
+    "C": "Yo\u011funluk",
+    "D": "Molek\u00fcl yap\u0131s\u0131",
+    "E": "Enerji"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T032_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131daki tabloda ger\u00e7ek s\u0131cakl\u0131k de\u011ferlerinin ba\u011f\u0131l neme ba\u011fl\u0131 olarak hissedilen s\u0131cakl\u0131k de\u011ferleri verilmi\u015ftir.\nHissedilen S\u0131cakl\u0131k De\u011feri (\u00b0C)\n- | Ba\u011f\u0131l Nem (%)\nGer\u00e7ek S\u0131cakl\u0131k (\u00b0C) | %20 ba\u011f\u0131l nem | %40 ba\u011f\u0131l nem | %50 ba\u011f\u0131l nem\n40 | 39 | 48 | 55\n41 | 41 | 51 | 59\n42 | 43 | 54 | 62\n43 | 44 | 58 | 67\n44 | 46 | 61 | 71\n8., 9., 10., ve 11. sorular\u0131 tabloya g\u00f6re cevaplay\u0131n\u0131z.\n42\u00b0C de %40 ba\u011f\u0131l nemde hissedilen s\u0131cakl\u0131k ka\u00e7 \u00b0C dir?",
+   "sikler": {
+    "A": "39",
+    "B": "43",
+    "C": "48",
+    "D": "54",
+    "E": "62"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T033_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131dakilerden hangisi su tasarrufu i\u00e7in yap\u0131lmas\u0131 gerekenlerden biri <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "Meyve ve sebze y\u0131kamada kullan\u0131lan su ile \u00e7i\u00e7ekleri sulama",
+    "B": "Ya\u011fmur sular\u0131n\u0131 toplayarak de\u011ferlendime",
+    "C": "\u00c7ama\u015f\u0131r makinesi tam dolmadan \u00e7al\u0131\u015ft\u0131rmama",
+    "D": "At\u0131k sular\u0131 do\u011frudan akarsu veya denizlere g\u00f6nderme",
+    "E": "Gereksiz yere sifon \u00e7ekmeme"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T034_02",
+   "basili_no": 2,
+   "govde": "1. Okyanuslar\n2. Yeralt\u0131 sular\u0131\n3. Buzullar\n4. Nehirler\n5. Denizler\nYukar\u0131da verilen su kaynaklar\u0131 tatl\u0131 ve tuzlu su olarak a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru s\u0131n\u0131fland\u0131r\u0131lm\u0131\u015ft\u0131r?\nTatl\u0131 su | Tuzlu su",
+   "sikler": {
+    "A": "1,3,5 | 2,4",
+    "B": "1.3 | 2.4,5",
+    "C": "1,5 | 2,3,4",
+    "D": "2,3,4 | 1,5",
+    "E": "2.3 | 1,4,5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T034_05",
+   "basili_no": 5,
+   "govde": "Sert Su\nI. Tad\u0131 yumu\u015fak sulara g\u00f6re daha ac\u0131d\u0131r.\nII. Sabunla k\u00f6p\u00fck olu\u015fumu azd\u0131r.\nIII. \u00c7ama\u015f\u0131rlar\u0131 yumu\u015fak sulara g\u00f6re daha iyi temizler.\nYukar\u0131da kavram haritas\u0131nda verilen bilgilerden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T036_08",
+   "basili_no": 8,
+   "govde": "XY bile\u015fi\u011finde elementlerin k\u00fctlece birle\u015fme ora[??]\nm_X/m_Y = 7/4 t\u00fcr.\nE\u015fit k\u00fctlede X ve Y kullan\u0131larak en fazla 66 gram XY olu\u015fuyor.\nBuna g\u00f6re hangi elementten ka\u00e7 gram artar?\nElement | Miktar",
+   "sikler": {
+    "A": "X | 3",
+    "B": "X | 18",
+    "C": "Y | 3",
+    "D": "Y | 12",
+    "E": "Y | 18"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T037_04",
+   "basili_no": 4,
+   "govde": "XY_3 bile\u015fi\u011finin k\u00fctlece % 75 i X elementidir.\nBuna g\u00f6re,\n- | X (gram) | Y (gram)\nI. | 0,9 | 0,3\nII. | 2,7 | 0,6\nIII. | 1,8 | 0,4\nhangilerinde artan madde olmadan XY_3 olu\u015fur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T038_14",
+   "basili_no": 14,
+   "govde": "N.\u015e.A. 8,96 litre H_2 gaz\u0131n\u0131n mol say\u0131s\u0131 a\u015fa\u011f\u0131dak[??]lerden hangisidir?",
+   "sikler": {
+    "A": "0,2",
+    "B": "0,4",
+    "C": "0.6",
+    "D": "0.8",
+    "E": "4"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T038_17",
+   "basili_no": 17,
+   "govde": "N.\u015e.A. 11,2 litre hacim kaplayan N_2O_5 gaz\u0131 ka\u00e7 tane atom i\u00e7erir? (N_A = Avogadro say\u0131s\u0131)",
+   "sikler": {
+    "A": "0,5",
+    "B": "0,5 \u00b7 N_A",
+    "C": "3,5",
+    "D": "3,5 \u00b7 N_A",
+    "E": "7 \u00b7 N_A"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_01",
+   "basili_no": 1,
+   "govde": "1 tane ^(12)C izotopunun k\u00fctlesinin 1/12 si a\u015fa\u011f\u0131d[??]kilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "1 atom \u2212 gram",
+    "B": "1 molek\u00fcl \u2212 gram",
+    "C": "1 akb",
+    "D": "1 mol",
+    "E": "Avogadro say\u0131s\u0131"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_05",
+   "basili_no": 5,
+   "govde": "1 tane X atomunun k\u00fctlesi 5 \u00b7 10^(23) gramd\u0131r.\nBuna g\u00f6re 1 mol X atomu ka\u00e7 gramd\u0131r?\n(N_A = 6 \u00b7 10^(23))",
+   "sikler": {
+    "A": "15",
+    "B": "30",
+    "C": "30/N_A",
+    "D": "N_A/30",
+    "E": "N_A"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_07",
+   "basili_no": 7,
+   "govde": "I. N.\u015e.A. 2,24 litre SO_3 gaz\u0131\nII. 0,1 mol SO_3 gaz\u0131\nIII. 6,02 \u00b7 10^(22) tane SO_3 gaz\u0131\nYukar\u0131daki SO_3 gazlar\u0131n\u0131n k\u00fctleleri aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru verilmi\u015ftir? (S : 32 O : 16)",
+   "sikler": {
+    "A": "I > II > III",
+    "B": "I = II = III",
+    "C": "I > II = III",
+    "D": "II > I = III",
+    "E": "I = II > III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_08",
+   "basili_no": 8,
+   "govde": "19,6 gram H_2SO_4 bile\u015fi\u011fi i\u00e7in a\u015fa\u011f\u0131dakilerden hangisi <u>yanl\u0131\u015ft\u0131r</u>? (H : 1 O : 16 S : 32)",
+   "sikler": {
+    "A": "0,2 mold\u00fcr.",
+    "B": "0,8 mol O atomu i\u00e7erir.",
+    "C": "6,4 gram S i\u00e7erir.",
+    "D": "0,4 tane H atomu bulunur.",
+    "E": "1.204 \u00b7 10^23 tane S atomu i\u00e7erir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_09",
+   "basili_no": 9,
+   "govde": "0,2 mol XO_2 12,8 gram oldu\u011funa g\u00f6re:\nI. 1 mol X atomu 64 gramd\u0131r.\nII. 0,4 mol oksijen atomu i\u00e7erir.\nIII. 0,6 tane atom i\u00e7erir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur? (O : 16)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_10",
+   "basili_no": 10,
+   "govde": "\u2022 0,5 mol XBr_2 bile\u015fi\u011fi 100 gramd\u0131r.\n\u2022 N.\u015e.A. 6,72 litre N_2Y gaz\u0131 13,2 gramd\u0131r.\nBuna g\u00f6re XY_2 bile\u015fi\u011finin mol k\u00fctlesi a\u015fa\u011f\u0131dak[??]lerden hangisidir?(Br : 80 N : 14)",
+   "sikler": {
+    "A": "16",
+    "B": "40",
+    "C": "56",
+    "D": "72",
+    "E": "92"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T039_16",
+   "basili_no": 16,
+   "govde": "CO ve CO_2 gazlar\u0131 kar\u0131\u015f\u0131m\u0131n\u0131n 0,3 mol\u00fc 10 gram oldu\u011funa g\u00f6re kar\u0131\u015f\u0131mda ka\u00e7 mol CO_2 gaz\u0131 bulunur? (CO : 28 CO_2 : 44)",
+   "sikler": {
+    "A": "0,1",
+    "B": "0,15",
+    "C": "0,18",
+    "D": "0,2",
+    "E": "0,25"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T040_02",
+   "basili_no": 2,
+   "govde": "Bir azot (N) elementinin atom k\u00fctlesi 14, Avogadro say\u0131s\u0131 6,02 \u00b7 1023 oldu\u011funa g\u00f6re 28/(6,02 \u00b7 10^(23)) de\u011feri a\u015fa\u011f\u0131dakilerden hangisine e\u015fittir?",
+   "sikler": {
+    "A": "1 mol azot molek\u00fcl\u00fcn\u00fcn (N_2) k\u00fctlesi",
+    "B": "1 mol azot atomu (N) k\u00fctlesi",
+    "C": "1 tane azot atomunun k\u00fctlesi",
+    "D": "1 tane azot molek\u00fcl\u00fcn\u00fcn k\u00fctlesi",
+    "E": "1 atom \u2212 gram azot k\u00fctlesi"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T040_07",
+   "basili_no": 7,
+   "govde": "1,806 \u00b7 10^(23) tane N_2O_4 molek\u00fcl\u00fc i\u00e7in;\nI. 0,3 mold\u00fcr.\nII. 1,2 mol oksijen atomu i\u00e7erir.\nIII. 92 gramd\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?\n(N : 14 O : 16)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T041_01",
+   "basili_no": 1,
+   "govde": "Bir X_2 molek\u00fcl\u00fcn\u00fcn k\u00fctlesi 71/(6,02 \u00b7 10^(23)) t\u00fcr.\nBuna g\u00f6re, 1 mol X atomu ka\u00e7 gramd\u0131r?",
+   "sikler": {
+    "A": "142",
+    "B": "71",
+    "C": "35,5",
+    "D": "17",
+    "E": "6,02 . 10^(23)"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T041_02",
+   "basili_no": 2,
+   "govde": "X_3H_6 bile\u015fi\u011finin 1 molek\u00fcl\u00fcn\u00fcn k\u00fctlesi 7 \u00b7 10^(\u221223) gramd\u0131r.\nBuna g\u00f6re X elementinin atom k\u00fctlesi a\u015fa\u011f\u0131dak[??]lerden hangisidir? (H : 1 N_A = 6 \u00b7 10^(23))",
+   "sikler": {
+    "A": "7",
+    "B": "12",
+    "C": "14",
+    "D": "36",
+    "E": "42"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T041_08",
+   "basili_no": 8,
+   "govde": "1,204 \u00b7 10^23 tane oksijen atomu i\u00e7eren X_2O bile\u015fi\u011fi 28,8 gram oldu\u011funa g\u00f6re X in atom k\u00fctlesi ka\u00e7t\u0131r? (O : 16)",
+   "sikler": {
+    "A": "32",
+    "B": "64",
+    "C": "128",
+    "D": "140",
+    "E": "144"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T041_12",
+   "basili_no": 12,
+   "govde": "0,2 mol CO ve 2,2 gram X_2O gazlar\u0131 kar\u0131\u015f\u0131m\u0131n\u0131n N.[??] da hacmi 5,6 litredir.\nBuna g\u00f6re, X atomunun mol k\u00fctlesi a\u015fa\u011f\u0131dakilerden hangisidir? (O : 16)",
+   "sikler": {
+    "A": "7",
+    "B": "14",
+    "C": "28",
+    "D": "44",
+    "E": "56"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T043_01",
+   "basili_no": 1,
+   "govde": "Kimyasal bir tepkime i\u00e7in \u00e7izilen yukar\u0131daki grafikte X yerine,\nI. Toplam k\u00fctle\nII. Toplam hacim\nIII. Toplam elektron say\u0131s\u0131\nhangilerinin yaz\u0131labilece\u011fi <u>kesindir</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T043_11",
+   "basili_no": 11,
+   "govde": "Yanma olay\u0131n\u0131n ger\u00e7ekle\u015fmesi i\u00e7in,\nI. Tutu\u015fma s\u0131cakl\u0131\u011f\u0131\nII. Hava\nIII. Yan\u0131c\u0131 madde\nyukar\u0131dakilerden hangilerine ihtiya\u00e7 vard\u0131r?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T044_11",
+   "basili_no": 11,
+   "govde": "8,8 gram C_3H_8 gaz\u0131n\u0131n,\nC_3H_8(g) +5O_2(g) \u2192 3CO_2(g) +4H_2O(g)\ntepkimesine g\u00f6re tamam\u0131 harcan\u0131yor.\nBuna g\u00f6re;\nI. N.K. da 13,44 litre CO_2 gaz\u0131 olu\u015fur.\nII. 0,8 mol H_2O olu\u015fur.\nIII. 6,02 \u00b7 10^23 tane O_2 molek\u00fcl\u00fc kullan\u0131l\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur? (C :12 H :1)",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T044_12",
+   "basili_no": 12,
+   "govde": "C_nH_(2n)O_2 genel form\u00fcl\u00fcne sahip bir bile\u015fi\u011fin molek\u00fcl k\u00fctlesi 88 g/mol d\u00fcr.\nBuna g\u00f6re bile\u015fi\u011fin molek\u00fcl form\u00fcl\u00fc a\u015fa\u011f\u0131dakilerden hangisidir? (C :12 H :1 O :16)",
+   "sikler": {
+    "A": "CH_2O_2",
+    "B": "C_3H_4O_4",
+    "C": "C_3H_6O_2",
+    "D": "C_4H_8O_2",
+    "E": "C_2H_6O_2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T045_04",
+   "basili_no": 4,
+   "govde": "X + O_2 \u2192 XO_2\ntepkimesine g\u00f6re 4,8 gram O_2 harcand\u0131\u011f\u0131nda 9,6 gram XO_2 olu\u015fuyor.\nBuna g\u00f6re X elementinin atom k\u00fctlesi ka\u00e7t\u0131r?\n(O : 16)",
+   "sikler": {
+    "A": "8",
+    "B": "16",
+    "C": "24",
+    "D": "32",
+    "E": "64"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T045_05",
+   "basili_no": 5,
+   "govde": "X_2O_3 \u2212 6HCl \u2192 2XCl_3 + 3H_2O\ntepkimesine g\u00f6re 5,4 gram H_2O olu\u015fmas\u0131 i\u00e7in 10,2 gram X_2O_3 kullan\u0131lmaktad\u0131r.\nBuna g\u00f6re X elementinin atom k\u00fctlesi ka\u00e7t\u0131r?\n(H : 1 O :16)",
+   "sikler": {
+    "A": "102",
+    "B": "78",
+    "C": "51",
+    "D": "27",
+    "E": "13"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T046_05",
+   "basili_no": 5,
+   "govde": "E\u015fit mollerde N_2 ve H_2 gazlar\u0131,\nN_2(g) + 3H_2(g) \u2192 2NH_3(g)\ndenklemine g\u00f6re tam verimle tepkimeye girdi\u011finde 1,2 mol NH_3 gaz\u0131 olu\u015fuyor.\nBuna g\u00f6re ba\u015flang\u0131\u00e7 kar\u0131\u015f\u0131m\u0131 ka\u00e7 mold\u00fcr?",
+   "sikler": {
+    "A": "3,6",
+    "B": "2,4",
+    "C": "1,8",
+    "D": "1,2",
+    "E": "0,9"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T046_10",
+   "basili_no": 10,
+   "govde": "X_2 ve Y_2 elementleri aras\u0131nda olu\u015fan bir tepkimenin mol say\u0131s\u0131 zaman grafi\u011fi \u015fekildeki gibidir.\nBuna g\u00f6re tepkimenin denklemi a\u015fa\u011f\u0131dakilerden hangisi olabilir?",
+   "sikler": {
+    "A": "X_2 + 2Y_2 \u2192 2XY_2",
+    "B": "X_2 + 2Y_2 \u2192 X_2Y_4",
+    "C": "2X_2 + Y_2 \u2192 2X_2Y",
+    "D": "X_2 + 3Y_2 \u2192 2X_2Y_3",
+    "E": "X_2 + Y_2 \u2192 2XY"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T046_12",
+   "basili_no": 12,
+   "govde": "C_3H_6 ve C_2H_2 gazlar\u0131 kar\u0131\u015f\u0131m\u0131 yak\u0131ld\u0131\u011f\u0131nda 0,7 mol CO_2 ve 0,5 mol H_2O olu\u015fmaktad\u0131r.\nBuna g\u00f6re kar\u0131\u015f\u0131mda ka\u00e7 mol C_3H_8 vard\u0131r?",
+   "sikler": {
+    "A": "0,1",
+    "B": "0,2",
+    "C": "0,3",
+    "D": "0,4",
+    "E": "0,5"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T047_02",
+   "basili_no": 2,
+   "govde": "3Mg(k) + 2H_3PO_4(suda) \u2192 Mg_3(PO_4)_2(k) + 3H_2(g)\ndenklemine g\u00f6re N.\u015e.A. 6,72 litre H_2 gaz\u0131 olu\u015fmas\u0131 i\u00e7in ka\u00e7 gram Mg kullan\u0131lmal\u0131d\u0131r?\n(Mg : 24)",
+   "sikler": {
+    "A": "2,4",
+    "B": "3,6",
+    "C": "4.8",
+    "D": "7,2",
+    "E": "9,[??]"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T047_11",
+   "basili_no": 11,
+   "govde": "Saf olmayan 84 gram NaHCO_3.\nNaHCO_3 + HCl \u2192 NaCl + CO_2 + H_2O\ndenklemine g\u00f6re tepkimeye giriyor. Tepkime sonunda N.\u015e.A. 5,6 litre CO_2 gaz\u0131 olu\u015fuyor.\nBuna g\u00f6re NaHCO_3 \u00fcn k\u00fctlece safl\u0131k y\u00fczdesi ka\u00e7t\u0131r?\n(NaHCO_3 : 84)",
+   "sikler": {
+    "A": "20",
+    "B": "25",
+    "C": "50",
+    "D": "75",
+    "E": "80"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T047_13",
+   "basili_no": 13,
+   "govde": "C_2H_6 ve C_4H_8 gazlar\u0131 kar\u0131\u015f\u0131m\u0131n\u0131n 3 mol\u00fc yak\u0131ld\u0131\u011f\u0131nda N.\u015e.A. 224 litre CO_2 gaz\u0131 olu\u015fuyor.\nBuna g\u00f6re kar\u0131\u015f\u0131mda bulunan C_2H_6 gaz\u0131n\u0131n mol say\u0131s\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "0,5",
+    "B": "0,75",
+    "C": "1",
+    "D": "1,5",
+    "E": "2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T048_08",
+   "basili_no": 8,
+   "govde": "100 gram su + 40 gram tuz | 50 gram su + 30 gram tuz | 200 gram su + 70 gram tuz\nI | II | III\nYukar\u0131daki \u00e7\u00f6zeltilerin deri\u015fimleri aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "I > II > III",
+    "B": "II > III > I",
+    "C": "III > I > II",
+    "D": "I > III > II",
+    "E": "II > I > III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T048_12",
+   "basili_no": 12,
+   "govde": "A\u015fa\u011f\u0131daki kar\u0131\u015f\u0131mlardan hangisini ayr\u0131msal dam\u0131tma y\u00f6ntemi ile bile\u015fenlerine ay\u0131rmak en uygundur?",
+   "sikler": {
+    "A": "Kat\u0131 \u2013 kat\u0131 homojen kar\u0131\u015f\u0131m",
+    "B": "Kat\u0131 \u2013 s\u0131v\u0131 heterojen kar\u0131\u015f\u0131m",
+    "C": "S\u0131v\u0131 \u2013 s\u0131v\u0131 heterojen kar\u0131\u015f\u0131m",
+    "D": "S\u0131v\u0131 \u2013 s\u0131v\u0131 homojen kar\u0131\u015f\u0131m",
+    "E": "Kat\u0131 \u2013 gaz heterojen kar\u0131\u015f\u0131m"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T049_12",
+   "basili_no": 12,
+   "govde": "Kum, demir tozu ve toz \u015fekerden olu\u015fan bir kar\u0131\u015f\u0131m\u0131 ay\u0131rmak i\u00e7in s\u0131ras\u0131 ile uygulanmas\u0131 gereken i\u015flemler a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "Eleme \u2013 S\u00fczme \u2013 M\u0131knat\u0131slama",
+    "B": "M\u0131knat\u0131slama \u2013 Eleme \u2013 Suda y\u00fczd\u00fcrme",
+    "C": "M\u0131knat\u0131slama \u2013 Suda \u00e7\u00f6zme \u2013 S\u00fczme \u2013 Buharla\u015ft\u0131rma",
+    "D": "Eleme \u2013 S\u00fczme \u2013 Buharla\u015ft\u0131rma",
+    "E": "Ay\u0131klama \u2013 M\u0131knat\u0131slama \u2013 Suda \u00e7\u00f6zme"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T050_02",
+   "basili_no": 2,
+   "govde": "\u201cS\u0131v\u0131 \u2013 s\u0131v\u0131 heterojen kar\u0131\u015f\u0131mlara em\u00fclsiyon denir.\u201d\nBuna g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisi em\u00fclsiyon <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "Zeytinya\u011f\u0131 \u2013 su",
+    "B": "Civa \u2013 su",
+    "C": "Benzen \u2013 su",
+    "D": "Alkol \u2013 su",
+    "E": "Mazot su"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T050_11",
+   "basili_no": 11,
+   "govde": "\u00c7ama\u015f\u0131r sodas\u0131, \u015feker, kum ve naftalin yeterli miktarda su kar\u0131\u015ft\u0131r\u0131l\u0131yor.\nBu kar\u0131\u015f\u0131ma s\u0131ras\u0131yla,\nI. S\u00fczge\u00e7 ka\u011f\u0131d\u0131ndan ge\u00e7irme\nII. S\u00fcz\u00fcnt\u00fcy\u00fc \u0131s\u0131tarak buharla\u015ft\u0131rma i\u015flemleri ger\u00e7ekle\u015ftiriliyor.\nI. i\u015flem sonunda s\u00fczge\u00e7 ka\u011f\u0131d\u0131nda ve II. i\u015flem sonunda \u0131s\u0131tma kab\u0131nda hangi maddeler elde edilir?\nI. i\u015flem | II. i\u015flem",
+   "sikler": {
+    "A": "\u00c7ama\u015f\u0131r sodas\u0131 / Kum | Naftalin / \u015eeker",
+    "B": "\u00c7ama\u015f\u0131r sodas\u0131 / \u015eeker | Naftalin / Kum",
+    "C": "Naftalin / Kum | \u00c7ama\u015f\u0131r sodas\u0131 / \u015eeker",
+    "D": "Naftalin / \u015eeker | Kum / \u00c7ama\u015f\u0131r sodas\u0131",
+    "E": "Kum / \u015eeker | Naftalin / \u00c7ama\u015f\u0131r sodas\u0131"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T051_12",
+   "basili_no": 12,
+   "govde": "Bir maddeyi \u00e7\u00f6z\u00fcc\u00fc kullanarak bir ortamdan \u00e7ekip \u00e7\u00f6z\u00fcc\u00fc ortam\u0131na alma i\u015flemine ekstraksiyon ya da \u00f6z\u00fctleme denir.\nBuna g\u00f6re;\nI. Tuz ve \u015feker i\u00e7eren sulu \u00e7\u00f6zeltinin so\u011futulup kristallenerek ayr\u0131\u015ft\u0131r\u0131lmas\u0131\nII. Tuzlu peynirin suda bekletilerek tuzunun uzakla\u015ft\u0131r\u0131lmas\u0131\nIII. Aspirin ham maddesinin s\u00f6\u011f\u00fct a\u011fac\u0131ndan elde edilmesi\nI\u015flemlerinden hangilerinde ekstraksiyon y\u00f6ntemi kullan\u0131lm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T052_10",
+   "basili_no": 10,
+   "govde": "Kar\u0131\u015f\u0131m | Ay\u0131rma Y\u00f6ntemi\nI. S\u0131v\u0131 + s\u0131v\u0131 heterojen | S\u00fczme\nII. Kat\u0131 + kat\u0131 heterojen | Ay\u0131klama\nIII. S\u0131v\u0131 + kat\u0131 homojen | Dam\u0131tma\nIV. S\u0131v\u0131 + kat\u0131 heterojen | Aktarma\nYukar\u0131daki kar\u0131\u015f\u0131mlardan hangileri kar\u015f\u0131s\u0131nda verilen y\u00f6ntem ile bile\u015fenlerine ayr\u0131labilir?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve III",
+    "C": "II ve IV",
+    "D": "I. II ve III",
+    "E": "II, III ve IV"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T053_01",
+   "basili_no": 1,
+   "govde": "Suda \u00e7\u00f6z\u00fcnd\u00fc\u011f\u00fcnde ortama H^\u2212 (H_3O^+) iyonu v[??]ren maddelere asit denir.\nBuna g\u00f6re, a\u015fa\u011f\u0131daki bile\u015fiklerden hangisi asit <u>de\u011fildir</u>?",
+   "sikler": {
+    "A": "HF",
+    "B": "NH_3",
+    "C": "HNO_3",
+    "D": "CH_3COOH",
+    "E": "H_2SO_4"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T054_01",
+   "basili_no": 1,
+   "govde": "[5] Mavi turnusol ka\u011f\u0131d\u0131n\u0131n rengini de\u011fi\u015ftirirler.\n[1] Tatlar\u0131 ac\u0131d\u0131r.\n[2] Sulu \u00e7\u00f6zeltileri elektri\u011fi iletir.\nBAZLAR\n[4] A\u015f\u0131nd\u0131r\u0131c\u0131 ve tahri\u015f edicidirler.\n[3] Ele kayganl\u0131k hissi verirler.\nYukar\u0131da bazlar ile ilgili \u00f6zelliklerden hangisi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T054_13",
+   "basili_no": 13,
+   "govde": "Mg(OH)_2(suda) + 2HNO_3(suda) \u2192 X + 2H_2O(s)\ntepkimesinde olu\u015fan X tuzunun form\u00fcl\u00fc a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "MgNO_3",
+    "B": "Mg_2NO_3",
+    "C": "Mg(NO_3)_2",
+    "D": "MgNO_2",
+    "E": "Mg_3N_2"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T055_02",
+   "basili_no": 2,
+   "govde": "H_3PO_4 | NH_3 | NaOH\nYukar\u0131daki saf su bulunan kaplara \u00fczerlerindeki maddeler eklendikten sonra turnusol boyas\u0131 damlat\u0131l\u0131yor.\nBuna g\u00f6re, \u00e7\u00f6zeltilerin alaca\u011f\u0131 renkler a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru verilmi\u015ftir?\nI | II | III",
+   "sikler": {
+    "A": "Mavi | K\u0131rm\u0131z\u0131 | K\u0131rm\u0131z\u0131",
+    "B": "Mavi | Mavi | K\u0131rm\u0131z\u0131",
+    "C": "K\u0131rm\u0131z\u0131 | Mavi | Mavi",
+    "D": "K\u0131rm\u0131z\u0131 | K\u0131rm\u0131z\u0131 | Mavi",
+    "E": "K\u0131rm\u0131z\u0131 | Mavi | K\u0131rm\u0131z\u0131"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T055_06",
+   "basili_no": 6,
+   "govde": "N_2O_5 | CO_2 | CaO\nI | II | III\nY[??]kar\u0131da verilen maddeler suda \u00e7\u00f6z\u00fcnd\u00fc\u011f\u00fcnde olu\u015fan \u00e7\u00f6zeltilerden hangilerinin pH de\u011feri 7 den k\u00fc\u00e7\u00fckt\u00fcr?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T057_02",
+   "basili_no": 2,
+   "govde": "I. NH_3(g)+H_2O(s) \u2192 NH_4^+(suda)+OH^\u2212(suda)\nII. HF(g)+H_2O(s) \u2192 F[??](suda)+H_3O^+(suda)\nIII. Ca(OH)_2(k)+H_2O(s) \u2192 Ca^(2+)(suda)+ 2OH[??](suda)\nIV. HBr(g)+H_2O(s) \u2192 H_3O^+(suda)+ Br^\u2212(suda)\nSuda iyonla\u015fma denklemleri verilen maddelerin asit veya baz \u015feklinde s\u0131n\u0131fland\u0131r\u0131lmalar\u0131 a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru olarak verilmi\u015f[??]tir?\nAsit | Baz",
+   "sikler": {
+    "A": "I ve II | III ve IV",
+    "B": "I ve III | II ve IV",
+    "C": "II ve IV | I ve III",
+    "D": "II ve III | I ve IV",
+    "E": "III ve IV | I ve II"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T057_03",
+   "basili_no": 3,
+   "govde": "Oda ko\u015fullar\u0131nda bulunan e\u015fit hacimde X ve Y \u00e7\u00f6zeltilerinin pH de\u011ferleri a\u015fa\u011f\u0131da verilmi\u015ftir.\n\u00c7\u00f6zelti | pH\n\u2022 X | 12\n\u2022 Y | 3\nBuna g\u00f6re;\nI. Sulu \u00e7\u00f6zeltisi elektrik ak\u0131m\u0131n\u0131 iletir.\nII. HCl sulu \u00e7\u00f6zeltisi ile n\u00f6trle\u015fme tepkimesi verir.\nIII. H^+ iyon say\u0131s\u0131 OH^\u2212 iyonu say\u0131s\u0131ndan fazlad\u0131r.\nyukar\u0131da verilenlerden hangileri X \u00e7\u00f6zeltisi i\u00e7in do\u011fru Y \u00e7\u00f6zeltisi i\u00e7in <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T057_09",
+   "basili_no": 8,
+   "govde": "Fabrika bacalar\u0131ndan \u00e7\u0131kan gazlar atmosferde \u00e7e\u015fitli de\u011fi\u015fimlere u\u011frayarak, bulutlardaki su buhar\u0131 ve di\u011fer maddelerle tepkimeye girip asit ya\u011fmurlar\u0131na neden olur.\nBu olayla ilgili;\nI. Asit ya\u011fmurlar\u0131, bitki \u00e7e\u015fitlili\u011finin artmas\u0131na neden olur.\nII. Asit ya\u011fmurlar\u0131, kire\u00e7 ta\u015f\u0131 i\u00e7eren heykellere zarar verir.\nIII. Asit ya\u011fmurlar\u0131 havadaki asidik oksitlerin (CO_2: SO_3 gibi) artmas\u0131 sonucu olu\u015furlar.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T058_01",
+   "basili_no": 1,
+   "govde": "X maddesinin sulu \u00e7\u00f6zeltisi k\u0131rm\u0131z\u0131 turnusol k\u00e2\u011f[??]d\u0131n\u0131n rengini maviye \u00e7evirmektedir.\nBuna g\u00f6re, X maddesi ile ilgili,\nI. Bazik \u00f6zellik g\u00f6sterir.\nII. Suda \u00e7\u00f6z\u00fcnd\u00fc\u011f\u00fcnde OH^\u2212 iyonu verir.\nIII. Oda ko\u015fullar\u0131nda sulu \u00e7\u00f6zeltisinin pH de\u011feri 7'den k\u00fc\u00e7\u00fckt\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T060_02",
+   "basili_no": 2,
+   "govde": "bile\u015fi\u011finde suda \u00e7\u00f6z\u00fcnen (hidrofil) ve suda \u00e7\u00f6z\u00fcnmeyen (hidrofob) k\u0131s\u0131mlar hangisinde do\u011fru verilmi\u015ftir?\nSuda \u00e7\u00f6z\u00fcnen | Suda \u00e7\u00f6z\u00fcnmeyen",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) C_12H_25\u2212(halka)\u2212 | SO_3Na",
+    "B": "(g\u00f6rsel \u015f\u0131k) \u2212SO_3Na | C_12H_25\u2212(halka)\u2212",
+    "C": "(g\u00f6rsel \u015f\u0131k) C_12H_25\u2212 | \u2212(halka)\u2212SO_3Na",
+    "D": "(g\u00f6rsel \u015f\u0131k) \u2212(halka)\u2212SO_3Na | C_12H_25\u2212",
+    "E": "(g\u00f6rsel \u015f\u0131k) Na | C_12H_25\u2212(halka)\u2212SO_3Na"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T060_11",
+   "basili_no": 11,
+   "govde": "- | G\u0131da Katk\u0131 Maddeleri | Kullan\u0131m Amac\u0131\nI. | Koruyucu | a. G\u0131dan\u0131n homojen ya da homojene yak\u0131n olmas\u0131n\u0131 sa\u011flama\nII. | Tatland\u0131r\u0131c\u0131 | b. Raf \u00f6mr\u00fcn\u00fc uzatma\nIII. | Em\u00fclsiyonla\u015ft\u0131r\u0131c\u0131 | c. G\u0131dan\u0131n tad\u0131n\u0131 g\u00fczelle\u015ftirme\nG\u0131da katk\u0131 maddeleri ve kullan\u0131m amac\u0131 a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru e\u015fle\u015ftirilmi\u015ftir?",
+   "sikler": {
+    "A": "I. a | II. b | III. c",
+    "B": "I. b | II. a | III. c",
+    "C": "I. b | II. c | III. a",
+    "D": "I. c | II. a | III. b",
+    "E": "I. c | II. b | III. a"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T060_13",
+   "basili_no": 13,
+   "govde": "- | \u0130la\u00e7 \u015eekli | \u00d6zelli\u011fi\nI. | Merhem | a. Damar yolu ile verilen ila\u00e7 formu\nII. | \u015eurup | b. \u0130lac\u0131n etken maddesinin ya\u011fda \u00e7\u00f6z\u00fcnmesiyle haz\u0131rlanan yar\u0131 kat\u0131 ila\u00e7 formu\nIII. | \u0130\u011fne | c. \u0130lac\u0131n etken maddesinin ac\u0131 olmas\u0131ndan dolay\u0131 i\u00e7erisine \u015feker kat\u0131larak haz\u0131rlanan s\u0131v\u0131 ila\u00e7 formu\nYukar\u0131da verilen ila\u00e7 \u015fekil ve \u00f6zelliklerinin e\u015fle\u015ftirilmesi hangisinde do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "I. a | II. b | III. c",
+    "B": "I. b | II. c | III. a",
+    "C": "I. b | II. a | III. c",
+    "D": "I. c | II. a | III. b",
+    "E": "I. c | II. b | III. a"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T061_03",
+   "basili_no": 3,
+   "govde": "X: C_17H_35COONa\nY: C_12H_25SO_3Na\nYukar\u0131da form\u00fclleri verilen X ve Y bile\u015fikleri ile ilgili,\nI. Hidrofil ve hidrofob k\u0131s\u0131m i\u00e7erirler.\nII. Sert suda X, Y ye g\u00f6re daha iyi temizlik yapar.\nIII. Y. X e g\u00f6re \u00e7evreye daha fazla zarar verir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T061_05",
+   "basili_no": 5,
+   "govde": "X: Beyaz sabun ba\u015f k\u0131sm\u0131\nY: \u00c7ama\u015f\u0131r suyunun etken maddesi\nBuna g\u00f6re X ve Y a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru g\u00f6sterilmi\u015ftir?\nX | Y",
+   "sikler": {
+    "A": "\u2212 COOK | NaClO",
+    "B": "\u2212 COONa | NaClO",
+    "C": "\u2212 COONa | Ca(ClO)_2",
+    "D": "\u2212 COOK | \u2212 OSO_3Na",
+    "E": "\u2212 C_17H_35 | NaClO"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT20K0-T061_06",
+   "basili_no": 6,
+   "govde": "I. Mikrop \u00f6ld\u00fcr\u00fcc\u00fc olma\nII. A\u011fart\u0131c\u0131 etki g\u00f6sterme\nIII. Hipoklorit iyonu (OCl) i\u00e7erme\nHangileri kire\u00e7 kayma\u011f\u0131 ve \u00e7ama\u015f\u0131r suyunun ortak \u00f6zelliklerindendir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  }
+ ]
+}

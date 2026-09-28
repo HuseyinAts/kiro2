@@ -50,6 +50,14 @@ SERIT_DISI_EN_AZ = 40  # serit sutun icinde basliyorsa seritten onceki kisim tar
 SUTUN_KENAR_PAY = 12  # o dar taramada sutunun sol kenar payi (sayfa susu)
 
 
+def ust_bant(p: ModuleType, a: np.ndarray) -> int:
+    """Ust bandin alt siniri: profil `ust_bant(a)` kancasi (sayfaya gore
+    olcum; Aktif duzeninde testin ilk sayfasi 99, devam sayfasi 85) ya da
+    sabit UST_BANT."""
+    f = getattr(p, "ust_bant", None)
+    return int(f(a)) if f is not None else int(p.UST_BANT)
+
+
 def _satirlar(a: np.ndarray, x0: int, x1: int) -> np.ndarray:
     m: np.ndarray = (a[:, x0:x1].min(axis=2) < MUREKKEP).any(axis=1)
     return m
@@ -169,7 +177,7 @@ def _ustler(
     cizgi = _yatay_cizgiler(a, x0, x1) if getattr(p, "AYRAC_TAVAN", False) else []
     ustler = []
     for i, c in enumerate(capa):
-        tavan = capa[i - 1]["y"] + 12 if i else p.UST_BANT
+        tavan = capa[i - 1]["y"] + 12 if i else ust_bant(p, a)
         # Konu sayfasi ayrac cizgisi (ORNEK bolumu ile sorular arasi):
         # numaranin ustundeki en yakin sutun-genisligi yatay cizgi tavandir.
         ust_cizgi = [y for y in cizgi if tavan <= y < c["y"]]
@@ -250,7 +258,7 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
         for k in kutular[-len(capa) :]:
             kapsanan[k["kutu"][1] : k["kutu"][3]] = True
         koyu = (a[:, x0:x1].min(axis=2) < 160).sum(axis=1)
-        bas_y = p.UST_BANT
+        bas_y = ust_bant(p, a)
         if getattr(p, "ARTIK_ILK_KUTUDAN", False):
             bas_y = ustler[0]
         for y in range(bas_y, alt_sinir):
