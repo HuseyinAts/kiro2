@@ -82,6 +82,10 @@ def okuyucu_maskesi(
     """Kart koordinatli goruntude okuyucu katmani pikselleri (konum + renk)."""
     maske = np.zeros(a.shape[:2], bool)
     renk = _okuyucu_rengi(a)
+    if hasattr(p, "numara_maskesi"):
+        # Renkli (mavi) basili numara diskle ortusebilir; kenar yumusatma
+        # pikselleri 'mor' kuralina girer -- numara rengi korunur.
+        renk &= ~p.numara_maskesi(a.astype(int))
     ai = a.astype(np.int16)
     notr = (ai.max(axis=2) - ai.min(axis=2) < GOLGE_FARK) & (ai.max(axis=2) >= SOL_GRI)
     for gy, gx in merkez:

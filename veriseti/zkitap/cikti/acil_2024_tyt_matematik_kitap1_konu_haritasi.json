@@ -1,0 +1,1239 @@
+{
+"kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "kitap plani (s4-5) sayfa numarasi vermiyor; bolum adlari konu anlatim sayfalarinin sekmesinden (renk bolumu), konu adlari test bandindan (iki bagimsiz okuma, fark 0), konu araligi o konunun ilk test sayfasindan (dosya no) bir sonraki konunun ilk test sayfasina",
+"bolumler": [
+{
+"kod": "MAT-ACL24MG-B01",
+"no": 1,
+"ad": "SAYILAR"
+},
+{
+"kod": "MAT-ACL24MG-B02",
+"no": 2,
+"ad": "RASYONEL SAYI"
+},
+{
+"kod": "MAT-ACL24MG-B03",
+"no": 3,
+"ad": "B\u0130R\u0130NC\u0130 DERECEDEN DENKLEMLER"
+},
+{
+"kod": "MAT-ACL24MG-B04",
+"no": 4,
+"ad": "BAS\u0130T E\u015e\u0130TS\u0130ZL\u0130K"
+},
+{
+"kod": "MAT-ACL24MG-B05",
+"no": 5,
+"ad": "MUTLAK DE\u011eER"
+},
+{
+"kod": "MAT-ACL24MG-B06",
+"no": 6,
+"ad": "\u00dcSL\u00dc SAYILAR"
+},
+{
+"kod": "MAT-ACL24MG-B07",
+"no": 7,
+"ad": "K\u00d6KL\u00dc SAYILAR"
+},
+{
+"kod": "MAT-ACL24MG-B08",
+"no": 8,
+"ad": "\u00c7ARPANLARA AYIRMA"
+},
+{
+"kod": "MAT-ACL24MG-B09",
+"no": 9,
+"ad": "ORAN-ORANTI"
+}
+],
+"konular": [
+{
+"kod": "MAT-ACL24MG-B01-K01",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "Say\u0131 K\u00fcmeleri",
+"icindekiler_adi": "Say\u0131 K\u00fcmeleri",
+"sayfalar": [
+10,
+20
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"icindekiler_adi": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"sayfalar": [
+21,
+32
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K03",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "Basamak Kavram\u0131",
+"icindekiler_adi": "Basamak Kavram\u0131",
+"sayfalar": [
+33,
+39
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K04",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "En K\u00fc\u00e7\u00fck ve En B\u00fcy\u00fck De\u011fer Bulma",
+"icindekiler_adi": "En K\u00fc\u00e7\u00fck ve En B\u00fcy\u00fck De\u011fer Bulma",
+"sayfalar": [
+40,
+43
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K05",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "B\u00f6lme",
+"icindekiler_adi": "B\u00f6lme",
+"sayfalar": [
+44,
+48
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"icindekiler_adi": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"sayfalar": [
+49,
+56
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K07",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "Fakt\u00f6riyel",
+"icindekiler_adi": "Fakt\u00f6riyel",
+"sayfalar": [
+57,
+64
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K08",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"icindekiler_adi": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"sayfalar": [
+65,
+77
+]
+},
+{
+"kod": "MAT-ACL24MG-B01-K09",
+"bolum": "MAT-ACL24MG-B01",
+"ad": "EBOB-EKOK",
+"icindekiler_adi": "EBOB-EKOK",
+"sayfalar": [
+78,
+90
+]
+},
+{
+"kod": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"ad": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"icindekiler_adi": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"sayfalar": [
+91,
+103
+]
+},
+{
+"kod": "MAT-ACL24MG-B03-K01",
+"bolum": "MAT-ACL24MG-B03",
+"ad": "Birinci Dereceden Bir ve \u0130ki Bilinmeyenli Denklemler",
+"icindekiler_adi": "Birinci Dereceden Bir ve \u0130ki Bilinmeyenli Denklemler",
+"sayfalar": [
+104,
+110
+]
+},
+{
+"kod": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"ad": "Birinci Dereceden E\u015fitsizlikler",
+"icindekiler_adi": "Birinci Dereceden E\u015fitsizlikler",
+"sayfalar": [
+111,
+127
+]
+},
+{
+"kod": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"ad": "Mutlak De\u011fer",
+"icindekiler_adi": "Mutlak De\u011fer",
+"sayfalar": [
+128,
+143
+]
+},
+{
+"kod": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"ad": "\u00dcsl\u00fc Say\u0131lar",
+"icindekiler_adi": "\u00dcsl\u00fc Say\u0131lar",
+"sayfalar": [
+144,
+161
+]
+},
+{
+"kod": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"ad": "K\u00f6kl\u00fc Say\u0131lar",
+"icindekiler_adi": "K\u00f6kl\u00fc Say\u0131lar",
+"sayfalar": [
+162,
+180
+]
+},
+{
+"kod": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"ad": "\u00c7arpanlara Ay\u0131rma",
+"icindekiler_adi": "\u00c7arpanlara Ay\u0131rma",
+"sayfalar": [
+181,
+197
+]
+},
+{
+"kod": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"ad": "Oran-Orant\u0131",
+"icindekiler_adi": "Oran-Orant\u0131",
+"sayfalar": [
+198,
+204
+]
+}
+],
+"test_sayisi": 92,
+"testler": [
+{
+"birim": "ACL24MG-T001",
+"test": 1,
+"sayfalar": [
+10
+],
+"bant": "Say\u0131 K\u00fcmeleri",
+"konu": "MAT-ACL24MG-B01-K01",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T002",
+"test": 2,
+"sayfalar": [
+11
+],
+"bant": "Say\u0131 K\u00fcmeleri",
+"konu": "MAT-ACL24MG-B01-K01",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL24MG-T003",
+"test": 3,
+"sayfalar": [
+12
+],
+"bant": "Say\u0131 K\u00fcmeleri",
+"konu": "MAT-ACL24MG-B01-K01",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T004",
+"test": 4,
+"sayfalar": [
+21
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T005",
+"test": 5,
+"sayfalar": [
+22
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T006",
+"test": 6,
+"sayfalar": [
+23
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T007",
+"test": 7,
+"sayfalar": [
+24
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T008",
+"test": 8,
+"sayfalar": [
+25
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T009",
+"test": 9,
+"sayfalar": [
+26
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T010",
+"test": 10,
+"sayfalar": [
+27
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T011",
+"test": 11,
+"sayfalar": [
+28
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T012",
+"test": 12,
+"sayfalar": [
+29
+],
+"bant": "Pozitif-Negatif Say\u0131lar / Tek-\u00c7ift Say\u0131lar / Ard\u0131\u015f\u0131k Say\u0131lar",
+"konu": "MAT-ACL24MG-B01-K02",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T013",
+"test": 13,
+"sayfalar": [
+33
+],
+"bant": "Basamak Kavram\u0131",
+"konu": "MAT-ACL24MG-B01-K03",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T014",
+"test": 14,
+"sayfalar": [
+34
+],
+"bant": "Basamak Kavram\u0131",
+"konu": "MAT-ACL24MG-B01-K03",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T015",
+"test": 15,
+"sayfalar": [
+35
+],
+"bant": "Basamak Kavram\u0131",
+"konu": "MAT-ACL24MG-B01-K03",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T016",
+"test": 16,
+"sayfalar": [
+36
+],
+"bant": "Basamak Kavram\u0131",
+"konu": "MAT-ACL24MG-B01-K03",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T017",
+"test": 17,
+"sayfalar": [
+37
+],
+"bant": "Basamak Kavram\u0131",
+"konu": "MAT-ACL24MG-B01-K03",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T018",
+"test": 18,
+"sayfalar": [
+40
+],
+"bant": "En K\u00fc\u00e7\u00fck ve En B\u00fcy\u00fck De\u011fer Bulma",
+"konu": "MAT-ACL24MG-B01-K04",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T019",
+"test": 19,
+"sayfalar": [
+41
+],
+"bant": "En K\u00fc\u00e7\u00fck ve En B\u00fcy\u00fck De\u011fer Bulma",
+"konu": "MAT-ACL24MG-B01-K04",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T020",
+"test": 20,
+"sayfalar": [
+44
+],
+"bant": "B\u00f6lme",
+"konu": "MAT-ACL24MG-B01-K05",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T021",
+"test": 21,
+"sayfalar": [
+45
+],
+"bant": "B\u00f6lme",
+"konu": "MAT-ACL24MG-B01-K05",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T022",
+"test": 22,
+"sayfalar": [
+49
+],
+"bant": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"konu": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T023",
+"test": 23,
+"sayfalar": [
+50
+],
+"bant": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"konu": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T024",
+"test": 24,
+"sayfalar": [
+51
+],
+"bant": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"konu": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T025",
+"test": 25,
+"sayfalar": [
+52
+],
+"bant": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"konu": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T026",
+"test": 26,
+"sayfalar": [
+53
+],
+"bant": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"konu": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T027",
+"test": 27,
+"sayfalar": [
+54
+],
+"bant": "B\u00f6lme ve B\u00f6l\u00fcnebilme Kurallar\u0131",
+"konu": "MAT-ACL24MG-B01-K06",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T028",
+"test": 28,
+"sayfalar": [
+57
+],
+"bant": "Fakt\u00f6riyel",
+"konu": "MAT-ACL24MG-B01-K07",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T029",
+"test": 29,
+"sayfalar": [
+58
+],
+"bant": "Fakt\u00f6riyel",
+"konu": "MAT-ACL24MG-B01-K07",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T030",
+"test": 30,
+"sayfalar": [
+59
+],
+"bant": "Fakt\u00f6riyel",
+"konu": "MAT-ACL24MG-B01-K07",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T031",
+"test": 31,
+"sayfalar": [
+65
+],
+"bant": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B01-K08",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T032",
+"test": 32,
+"sayfalar": [
+66
+],
+"bant": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B01-K08",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T033",
+"test": 33,
+"sayfalar": [
+67
+],
+"bant": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B01-K08",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T034",
+"test": 34,
+"sayfalar": [
+68
+],
+"bant": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B01-K08",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T035",
+"test": 35,
+"sayfalar": [
+69
+],
+"bant": "Asal Say\u0131lar ve Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B01-K08",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T036",
+"test": 36,
+"sayfalar": [
+78
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL24MG-B01-K09",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T037",
+"test": 37,
+"sayfalar": [
+79
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL24MG-B01-K09",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T038",
+"test": 38,
+"sayfalar": [
+80
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL24MG-B01-K09",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T039",
+"test": 39,
+"sayfalar": [
+81
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL24MG-B01-K09",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T040",
+"test": 40,
+"sayfalar": [
+82
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL24MG-B01-K09",
+"bolum": "MAT-ACL24MG-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T041",
+"test": 41,
+"sayfalar": [
+91
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T042",
+"test": 42,
+"sayfalar": [
+92
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T043",
+"test": 43,
+"sayfalar": [
+93
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T044",
+"test": 44,
+"sayfalar": [
+94
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T045",
+"test": 45,
+"sayfalar": [
+95
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T046",
+"test": 46,
+"sayfalar": [
+96
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T047",
+"test": 47,
+"sayfalar": [
+97
+],
+"bant": "Rasyonel ve Ondal\u0131kl\u0131 Say\u0131lar",
+"konu": "MAT-ACL24MG-B02-K01",
+"bolum": "MAT-ACL24MG-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T048",
+"test": 48,
+"sayfalar": [
+104
+],
+"bant": "Birinci Dereceden Bir ve \u0130ki Bilinmeyenli Denklemler",
+"konu": "MAT-ACL24MG-B03-K01",
+"bolum": "MAT-ACL24MG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL24MG-T049",
+"test": 49,
+"sayfalar": [
+105
+],
+"bant": "Birinci Dereceden Bir ve \u0130ki Bilinmeyenli Denklemler",
+"konu": "MAT-ACL24MG-B03-K01",
+"bolum": "MAT-ACL24MG-B03",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T050",
+"test": 50,
+"sayfalar": [
+106
+],
+"bant": "Birinci Dereceden Bir ve \u0130ki Bilinmeyenli Denklemler",
+"konu": "MAT-ACL24MG-B03-K01",
+"bolum": "MAT-ACL24MG-B03",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T051",
+"test": 51,
+"sayfalar": [
+111
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T052",
+"test": 52,
+"sayfalar": [
+112
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T053",
+"test": 53,
+"sayfalar": [
+113
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T054",
+"test": 54,
+"sayfalar": [
+114
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T055",
+"test": 55,
+"sayfalar": [
+115
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T056",
+"test": 56,
+"sayfalar": [
+116
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T057",
+"test": 57,
+"sayfalar": [
+117
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T058",
+"test": 58,
+"sayfalar": [
+118
+],
+"bant": "Birinci Dereceden E\u015fitsizlikler",
+"konu": "MAT-ACL24MG-B04-K01",
+"bolum": "MAT-ACL24MG-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T059",
+"test": 59,
+"sayfalar": [
+128
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T060",
+"test": 60,
+"sayfalar": [
+129
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T061",
+"test": 61,
+"sayfalar": [
+130
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T062",
+"test": 62,
+"sayfalar": [
+131
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T063",
+"test": 63,
+"sayfalar": [
+132
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T064",
+"test": 64,
+"sayfalar": [
+133
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T065",
+"test": 65,
+"sayfalar": [
+134
+],
+"bant": "Mutlak De\u011fer",
+"konu": "MAT-ACL24MG-B05-K01",
+"bolum": "MAT-ACL24MG-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T066",
+"test": 66,
+"sayfalar": [
+144
+],
+"bant": "\u00dcsl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL24MG-T067",
+"test": 67,
+"sayfalar": [
+145
+],
+"bant": "\u00dcsl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T068",
+"test": 68,
+"sayfalar": [
+146
+],
+"bant": "\u00dcsl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL24MG-T069",
+"test": 69,
+"sayfalar": [
+147
+],
+"bant": "\u00dcsl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T070",
+"test": 70,
+"sayfalar": [
+148
+],
+"bant": "\u00dcsl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T071",
+"test": 71,
+"sayfalar": [
+149
+],
+"bant": "\u00dcsl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B06-K01",
+"bolum": "MAT-ACL24MG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T072",
+"test": 72,
+"sayfalar": [
+162
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T073",
+"test": 73,
+"sayfalar": [
+163
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T074",
+"test": 74,
+"sayfalar": [
+164
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL24MG-T075",
+"test": 75,
+"sayfalar": [
+165
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T076",
+"test": 76,
+"sayfalar": [
+166
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T077",
+"test": 77,
+"sayfalar": [
+167
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T078",
+"test": 78,
+"sayfalar": [
+168
+],
+"bant": "K\u00f6kl\u00fc Say\u0131lar",
+"konu": "MAT-ACL24MG-B07-K01",
+"bolum": "MAT-ACL24MG-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL24MG-T079",
+"test": 79,
+"sayfalar": [
+181
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T080",
+"test": 80,
+"sayfalar": [
+182
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ACL24MG-T081",
+"test": 81,
+"sayfalar": [
+183
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T082",
+"test": 82,
+"sayfalar": [
+184
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T083",
+"test": 83,
+"sayfalar": [
+185
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T084",
+"test": 84,
+"sayfalar": [
+186
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T085",
+"test": 85,
+"sayfalar": [
+187
+],
+"bant": "\u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ACL24MG-B08-K01",
+"bolum": "MAT-ACL24MG-B08",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T086",
+"test": 86,
+"sayfalar": [
+198
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T087",
+"test": 87,
+"sayfalar": [
+199
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T088",
+"test": 88,
+"sayfalar": [
+200
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 6
+},
+{
+"birim": "ACL24MG-T089",
+"test": 89,
+"sayfalar": [
+201
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 5
+},
+{
+"birim": "ACL24MG-T090",
+"test": 90,
+"sayfalar": [
+202
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T091",
+"test": 91,
+"sayfalar": [
+203
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL24MG-T092",
+"test": 92,
+"sayfalar": [
+204
+],
+"bant": "Oran-Orant\u0131",
+"konu": "MAT-ACL24MG-B09-K01",
+"bolum": "MAT-ACL24MG-B09",
+"soru_sayisi": 4
+}
+]
+}

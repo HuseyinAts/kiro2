@@ -1,0 +1,370 @@
+{
+"kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur.",
+"kenar_kapisi_ihlali": 0,
+"ortme_soru": 34,
+"kenar": [],
+"ortme": [
+{
+"birim": "ACL24MG-T005",
+"soru": 1,
+"dosya": 22,
+"simge": [
+319,
+377
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T006",
+"soru": 2,
+"dosya": 23,
+"simge": [
+591,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T011",
+"soru": 2,
+"dosya": 28,
+"simge": [
+481,
+377
+],
+"piksel": 11
+},
+{
+"birim": "ACL24MG-T012",
+"soru": 1,
+"dosya": 29,
+"simge": [
+81,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T013",
+"soru": 2,
+"dosya": 33,
+"simge": [
+477,
+361
+],
+"piksel": 9
+},
+{
+"birim": "ACL24MG-T015",
+"soru": 1,
+"dosya": 35,
+"simge": [
+81,
+361
+],
+"piksel": 4
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 1,
+"dosya": 37,
+"simge": [
+335,
+361
+],
+"piksel": 11
+},
+{
+"birim": "ACL24MG-T017",
+"soru": 2,
+"dosya": 37,
+"simge": [
+606,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 2,
+"dosya": 41,
+"simge": [
+305,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T019",
+"soru": 2,
+"dosya": 41,
+"simge": [
+508,
+361
+],
+"piksel": 7
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 1,
+"dosya": 49,
+"simge": [
+81,
+361
+],
+"piksel": 6
+},
+{
+"birim": "ACL24MG-T022",
+"soru": 3,
+"dosya": 49,
+"simge": [
+681,
+361
+],
+"piksel": 22
+},
+{
+"birim": "ACL24MG-T023",
+"soru": 3,
+"dosya": 50,
+"simge": [
+647,
+377
+],
+"piksel": 12
+},
+{
+"birim": "ACL24MG-T027",
+"soru": 1,
+"dosya": 54,
+"simge": [
+81,
+377
+],
+"piksel": 10
+},
+{
+"birim": "ACL24MG-T029",
+"soru": 2,
+"dosya": 58,
+"simge": [
+385,
+377
+],
+"piksel": 9
+},
+{
+"birim": "ACL24MG-T032",
+"soru": 1,
+"dosya": 66,
+"simge": [
+81,
+377
+],
+"piksel": 14
+},
+{
+"birim": "ACL24MG-T039",
+"soru": 2,
+"dosya": 81,
+"simge": [
+436,
+361
+],
+"piksel": 11
+},
+{
+"birim": "ACL24MG-T042",
+"soru": 1,
+"dosya": 92,
+"simge": [
+81,
+377
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T046",
+"soru": 1,
+"dosya": 96,
+"simge": [
+81,
+377
+],
+"piksel": 6
+},
+{
+"birim": "ACL24MG-T052",
+"soru": 2,
+"dosya": 112,
+"simge": [
+524,
+377
+],
+"piksel": 7
+},
+{
+"birim": "ACL24MG-T056",
+"soru": 1,
+"dosya": 116,
+"simge": [
+81,
+377
+],
+"piksel": 10
+},
+{
+"birim": "ACL24MG-T057",
+"soru": 1,
+"dosya": 117,
+"simge": [
+81,
+361
+],
+"piksel": 15
+},
+{
+"birim": "ACL24MG-T057",
+"soru": 2,
+"dosya": 117,
+"simge": [
+493,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T064",
+"soru": 2,
+"dosya": 133,
+"simge": [
+345,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 1,
+"dosya": 134,
+"simge": [
+81,
+377
+],
+"piksel": 12
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 3,
+"dosya": 134,
+"simge": [
+187,
+462
+],
+"piksel": 359
+},
+{
+"birim": "ACL24MG-T065",
+"soru": 3,
+"dosya": 134,
+"simge": [
+203,
+462
+],
+"piksel": 213
+},
+{
+"birim": "ACL24MG-T072",
+"soru": 1,
+"dosya": 162,
+"simge": [
+84,
+377
+],
+"piksel": 8
+},
+{
+"birim": "ACL24MG-T078",
+"soru": 4,
+"dosya": 168,
+"simge": [
+656,
+377
+],
+"piksel": 12
+},
+{
+"birim": "ACL24MG-T080",
+"soru": 2,
+"dosya": 182,
+"simge": [
+393,
+377
+],
+"piksel": 6
+},
+{
+"birim": "ACL24MG-T081",
+"soru": 2,
+"dosya": 183,
+"simge": [
+731,
+361
+],
+"piksel": 76
+},
+{
+"birim": "ACL24MG-T088",
+"soru": 2,
+"dosya": 200,
+"simge": [
+459,
+377
+],
+"piksel": 7
+},
+{
+"birim": "ACL24MG-T089",
+"soru": 5,
+"dosya": 201,
+"simge": [
+576,
+371
+],
+"piksel": 5
+},
+{
+"birim": "ACL24MG-T091",
+"soru": 1,
+"dosya": 203,
+"simge": [
+81,
+361
+],
+"piksel": 10
+},
+{
+"birim": "ACL24MG-T091",
+"soru": 2,
+"dosya": 203,
+"simge": [
+534,
+361
+],
+"piksel": 4
+},
+{
+"birim": "ACL24MG-T092",
+"soru": 3,
+"dosya": 204,
+"simge": [
+72,
+384
+],
+"piksel": 4
+}
+]
+}
