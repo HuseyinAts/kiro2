@@ -83,16 +83,23 @@ def anahtarli_sayfalar(tar: dict[str, Any], t: dict[str, Any]) -> list[int]:
     return [int(n) for n in t["sayfalar"] if tar["sayfalar"][str(n)]["anahtar"]]
 
 
+SERIT_HUCRE_TARIFI = (
+    'Hucreler "1. C", "2. A" ... bicimindedir (renkli numara + siyah harf), '
+    "bir ya da birden cok satir."
+)
+BANT_TEST_NO_TARIFI = '"Test - " yazisindan sonraki isareti'
+
+
 def talimat(p: ModuleType, n: int) -> str:
     o = serit_dizini(p)
+    hucre = getattr(p, "SERIT_HUCRE_TARIFI", SERIT_HUCRE_TARIFI)
+    test_no = getattr(p, "BANT_TEST_NO_TARIFI", BANT_TEST_NO_TARIFI)
     return f"""# Cevap anahtari okuma talimati ({p.KAYNAK_ADI})
 
 Bu bir OKUMA isidir. Soru COZULMEZ. Tek is: goruntude basili olani yazmak.
 
 Dizin: `{o}\\`
-* `serit_NNN.png` (NNN = 001..{n:03d}): bir testin cevap anahtari. Hucreler
-  "1. C", "2. A" ... bicimindedir (renkli numara + siyah harf), bir ya da
-  birden cok satir.
+* `serit_NNN.png` (NNN = 001..{n:03d}): bir testin cevap anahtari. {hucre}
 * `bant_NNN.png`: ayni testin ilk sayfasinin ust bandi. {p.BANT_TARIFI}
 
 Her NNN icin (yalniz sana verilen ARALIK ve SIRA ile):
@@ -101,8 +108,8 @@ Her NNN icin (yalniz sana verilen ARALIK ve SIRA ile):
    Harf yalniz A, B, C, D, E olabilir. Emin olamadigin harfe `?` yaz
    (tahmin ETME). Hucre sayisini sen say; bir sayi verilmedi.
 2. `bant_NNN.png` dosyasini ac; `konu` alanina {p.BANT_KONU_TARIFI}
-   aynen yaz (Turkce harflerle); `test_no` alanina "Test - " yazisindan
-   sonraki isareti aynen yaz (ornek "I", "IV", "3"). Okunamazsa "".
+   aynen yaz (Turkce harflerle); `test_no` alanina {test_no}
+   aynen yaz (ornek "I", "IV", "3"). Okunamazsa "".
 
 Her dosyayi tek tek ac; bir dosyayi acmadan onun icin cikti yazma.
 
@@ -119,7 +126,24 @@ altina.
 """
 
 
-def _harf_bloblari(p: ModuleType, s: np.ndarray) -> list[tuple[slice, slice]]:
+def _disla(p: ModuleType, s: np.ndarray, x_bas: int) -> np.ndarray:
+    """ANAHTAR_DISLA_X (kart x araligi) serit kirpiminda beyazlatilir: iki
+    kutulu seritlerde aradaki sayfa numarasi harf glifi sayilmasin (Aktif
+    duzeni: numara rakamlari harfle ayni koyulukta)."""
+    disla = getattr(p, "ANAHTAR_DISLA_X", None)
+    if not disla:
+        return s
+    a0, a1 = max(0, disla[0] - x_bas), max(0, disla[1] - x_bas)
+    if a1 <= a0:
+        return s
+    s = s.copy()
+    s[:, a0:a1] = 255
+    return s
+
+
+def _harf_bloblari(
+    p: ModuleType, s: np.ndarray, bolme_x: int | None = None
+) -> list[tuple[slice, slice]]:
     mx, mn = s.max(axis=2), s.min(axis=2)
     siyah = (mn < p.GLIF_HARF_ESIK) & (mx - mn < 45)
     siyah = ndimage.binary_dilation(siyah, np.ones((2, 1), bool))
@@ -159,7 +183,14 @@ def _harf_bloblari(p: ModuleType, s: np.ndarray) -> list[tuple[slice, slice]]:
             satir[-1].append(o)
         else:
             satir.append([o])
-    return [o for r in satir for o in sorted(r, key=lambda o: o[1].start)]
+    sira = [o for r in satir for o in sorted(r, key=lambda o: o[1].start)]
+    if bolme_x is not None:
+        # Iki kutulu serit: okuma sirasi sol kutu (tum satirlari) sonra sag
+        # kutu; satir-once siralama iki satirli kutularda hucreleri karistirir.
+        sira = [o for o in sira if o[1].start < bolme_x] + [
+            o for o in sira if o[1].start >= bolme_x
+        ]
+    return sira
 
 
 def glif(p: ModuleType) -> dict[str, Any]:
@@ -174,10 +205,12 @@ def glif(p: ModuleType) -> dict[str, Any]:
         for n in anahtarli_sayfalar(tar, t):
             y0, y1, x0, x1 = tar["sayfalar"][str(n)]["anahtar"]
             a = ortak.kart(p, d, n)
-            s = a[y0 + 1 : y1, x0 + 1 : x1]
+            s = _disla(p, a[y0 + 1 : y1, x0 + 1 : x1], x0 + 1)
             mx, mn = s.max(axis=2), s.min(axis=2)
             siyah = (mn < p.GLIF_HARF_ESIK) & (mx - mn < 45)
-            for o in _harf_bloblari(p, s):
+            disla = getattr(p, "ANAHTAR_DISLA_X", None)
+            bolme = (disla[0] + disla[1]) // 2 - (x0 + 1) if disla else None
+            for o in _harf_bloblari(p, s, bolme):
                 harf.append(o)
                 siyahlar.append(siyah)
         cells = A[t["test"]]["hucreler"]
