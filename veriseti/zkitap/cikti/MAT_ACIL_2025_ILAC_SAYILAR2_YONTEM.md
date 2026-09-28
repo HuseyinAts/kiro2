@@ -53,3 +53,20 @@ capa acl25s1'den). Kaynak: FERNUS 1920x1080, 192 PNG, kart
   0094 eski hat 43 pasif, 0095 toplu beta 933/938 (5 gorunen `[??]`
   disarida). Round-trip (0092 <-> 0095) temiz.
 * exam_type TYT, subject MATEMATIK.
+
+## 7. Sonradan duzeltme: ortak oncul (onceki kitaplarda tarama, 28 Eyl 2026)
+
+* Bolum 4'teki 'kutu kirpimda yoksa kaynak_kusuru' kurali soruyu yalniz
+  isaretliyordu; `kaynak_kusuru` beta disi degil, 4 soru 0095 ile aktif oldu.
+* Gozle (s112 / s113 sol sutun tepesi): '5. ve 6. sorulari asagidaki
+  bilgilere gore cevaplayiniz.' + olcum tablosu + m tanimi; '1. ve 2.
+  sorulari asagidaki bilgilere gore cevaplayiniz.' + f(t) kupon fonksiyonu.
+  Oncul numarasiz, hicbir kirpimda yok (ilk soru dahil).
+* `ORTAK_ONCUL_YOK` (T065_05, T065_06, T066_01, T066_02) + 0106: bayrak
+  `ortak_oncul_kirpimda_yok`, is_active FALSE (gunluklu, geri alinabilir).
+  Aktif 933 -> 929. Round-trip (0105 <-> 0106) temiz.
+* Tarama: tum `*_metin.json`'da yonerge / not metni ('N ve M. sorulari',
+  'ortak bilgi/oncul') ve tum kitap_hat kitaplarinda geometri (sutunun ilk
+  kutusu ustunde kirpima girmemis murekkep; iki sutunda ayni yukseklikteki
+  tam genislik test basliklari haric). Yeni aday yalniz bu iki sayfa;
+  AKT20K0 / AKT20AY adaylari zaten 0105 / #358 ile kapali.
