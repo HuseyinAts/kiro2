@@ -90,6 +90,41 @@ def test_alt_sinir_alti_serit_sutunla_ortusmuyorsa_serit_hizasi_da_taranir() -> 
     )
 
 
+def test_alt_sinir_alti_serit_sutun_icinde_basliyorsa_oncesi_taranir() -> None:
+    """acl24am s114: serit x araligi sol sutuna tasmis (x0 300) olculdu; sol
+    sutun alt siniri serit ustune cekildi, serit hizasindaki D/E siklari (x < 300)
+    kesildi. Serit satirlarinda sutunun seritten onceki kismi taranir."""
+    a = _kart(200, 700)
+    a[172:178, 300:650] = 0  # (yanlis genis) serit
+    a[174:178, 40:120] = 0  # sol sutunun serit hizasindaki sik satiri
+    assert kutu.alt_sinir_alti(
+        a, 40, 368, 168, serit=[172, 178, 300, 650], serit_pay=4
+    ) == (174, 68)  # sol kenardan SUTUN_KENAR_PAY (12) px atlanir
+    # sutunun sol kenarindaki capraz sayfa susu (acl25pl sag sutun) sayilmaz
+    c = _kart(200, 700)
+    c[172:178, 300:650] = 0
+    for i in range(10):
+        c[168 + i, 38 + i : 46 + i] = 0
+    assert (
+        kutu.alt_sinir_alti(c, 40, 368, 168, serit=[172, 178, 300, 650], serit_pay=4)
+        is None
+    )
+    # seridi saran cerceve (seridin 40 px icinde dikey kenar + ust cizgi) sayilmaz
+    b = _kart(200, 700)
+    b[172:178, 300:650] = 0
+    b[170, 262:300] = 0  # cerceve ust cizgisi seridin solunda 38 px
+    b[170:180, 262] = 0  # cerceve sol kenari
+    assert (
+        kutu.alt_sinir_alti(b, 40, 368, 168, serit=[172, 178, 300, 650], serit_pay=4)
+        is None
+    )
+    # serit sutunun basina yakin baslarsa satirlar atlanir
+    assert (
+        kutu.alt_sinir_alti(a, 280, 368, 168, serit=[172, 178, 300, 650], serit_pay=4)
+        is None
+    )
+
+
 def test_alt_sinir_serit_kismi_ortusme_uyarisi() -> None:
     class P:
         SAYFA_ALTI = 900

@@ -1,0 +1,3693 @@
+{
+ "kaynak": "Acil 2024 AYT Matematik Kitap-1",
+ "nereden": "her test sayfasinin altindaki tek satir cevap seridi (1) C | 2) D ...) + ayni sayfanin ust bandi (konu adi, 'Test - N')",
+ "okuma_a": {
+  "yontem": "3x Lanczos anahtar kirpimi; bagimsiz okuyucu (ileri); hucre sayisi SOYLENMEDI",
+  "testler": [
+   {
+    "test": 1,
+    "konu": "Polinomlar",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 2,
+    "konu": "Polinomlar",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 3,
+    "konu": "Polinomlar",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 4,
+    "konu": "Polinomlar",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 5,
+    "konu": "Polinomlar",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 6,
+    "konu": "Polinomlar",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 7,
+    "konu": "Polinomlar",
+    "test_no": "7",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 8,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 9,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 10,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 11,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 12,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 13,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 14,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "7",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 15,
+    "konu": "Karma\u015f\u0131k Say\u0131lar",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 16,
+    "konu": "Karma\u015f\u0131k Say\u0131lar",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "E"
+     ],
+     [
+      7,
+      "D"
+     ],
+     [
+      8,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 17,
+    "konu": "Karma\u015f\u0131k Say\u0131lar",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ],
+     [
+      7,
+      "A"
+     ],
+     [
+      8,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 18,
+    "konu": "Parabol",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 19,
+    "konu": "Parabol",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 20,
+    "konu": "Parabol",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 21,
+    "konu": "Parabol",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 22,
+    "konu": "Parabol",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 23,
+    "konu": "Parabol",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 24,
+    "konu": "Parabol",
+    "test_no": "7",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 25,
+    "konu": "Parabol",
+    "test_no": "8",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 26,
+    "konu": "Parabol",
+    "test_no": "9",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 27,
+    "konu": "Parabol",
+    "test_no": "10",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 28,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 29,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 30,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 31,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 32,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 33,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 34,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 35,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 36,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 37,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 38,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 39,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 40,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 41,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 42,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 43,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 44,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 45,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 46,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 47,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 48,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 49,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 50,
+    "konu": "III. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 51,
+    "konu": "III. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 52,
+    "konu": "III. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 53,
+    "konu": "IV. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 54,
+    "konu": "IV. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 55,
+    "konu": "IV. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 56,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 57,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 58,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 59,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 60,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 61,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 62,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 63,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 64,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 65,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 66,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 67,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   }
+  ]
+ },
+ "okuma_b": {
+  "yontem": "3x Lanczos anahtar kirpimi; bagimsiz okuyucu (geri), A'yi gormeden",
+  "testler": [
+   {
+    "test": 1,
+    "konu": "Polinomlar",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 2,
+    "konu": "Polinomlar",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 3,
+    "konu": "Polinomlar",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 4,
+    "konu": "Polinomlar",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 5,
+    "konu": "Polinomlar",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 6,
+    "konu": "Polinomlar",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 7,
+    "konu": "Polinomlar",
+    "test_no": "7",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 8,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 9,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 10,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 11,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 12,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 13,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 14,
+    "konu": "\u0130kinci Dereceden Denklemler",
+    "test_no": "7",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 15,
+    "konu": "Karma\u015f\u0131k Say\u0131lar",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 16,
+    "konu": "Karma\u015f\u0131k Say\u0131lar",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "E"
+     ],
+     [
+      7,
+      "D"
+     ],
+     [
+      8,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 17,
+    "konu": "Karma\u015f\u0131k Say\u0131lar",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ],
+     [
+      7,
+      "A"
+     ],
+     [
+      8,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 18,
+    "konu": "Parabol",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 19,
+    "konu": "Parabol",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 20,
+    "konu": "Parabol",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 21,
+    "konu": "Parabol",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 22,
+    "konu": "Parabol",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 23,
+    "konu": "Parabol",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 24,
+    "konu": "Parabol",
+    "test_no": "7",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 25,
+    "konu": "Parabol",
+    "test_no": "8",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 26,
+    "konu": "Parabol",
+    "test_no": "9",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 27,
+    "konu": "Parabol",
+    "test_no": "10",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 28,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 29,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 30,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 31,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 32,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 33,
+    "konu": "Fonksiyonlar\u0131n Uygulamalar\u0131",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 34,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 35,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 36,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 37,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 38,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 39,
+    "konu": "E\u015fitsizlikler",
+    "test_no": "6",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 40,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 41,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 42,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 43,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 44,
+    "konu": "I. B\u00d6L\u00dcM",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 45,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 46,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 47,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 48,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 49,
+    "konu": "II. B\u00d6L\u00dcM",
+    "test_no": "5",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 50,
+    "konu": "III. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 51,
+    "konu": "III. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 52,
+    "konu": "III. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 53,
+    "konu": "IV. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 54,
+    "konu": "IV. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 55,
+    "konu": "IV. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 56,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "E"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 57,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "E"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 58,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "E"
+     ],
+     [
+      3,
+      "D"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 59,
+    "konu": "V. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "C"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "A"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 60,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "A"
+     ],
+     [
+      6,
+      "E"
+     ]
+    ]
+   },
+   {
+    "test": 61,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 62,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "C"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "D"
+     ],
+     [
+      6,
+      "C"
+     ]
+    ]
+   },
+   {
+    "test": 63,
+    "konu": "VI. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "A"
+     ],
+     [
+      2,
+      "D"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "B"
+     ]
+    ]
+   },
+   {
+    "test": 64,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "1",
+    "hucreler": [
+     [
+      1,
+      "B"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "A"
+     ],
+     [
+      4,
+      "C"
+     ],
+     [
+      5,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 65,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "2",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "C"
+     ],
+     [
+      3,
+      "E"
+     ],
+     [
+      4,
+      "B"
+     ],
+     [
+      5,
+      "C"
+     ],
+     [
+      6,
+      "D"
+     ]
+    ]
+   },
+   {
+    "test": 66,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "3",
+    "hucreler": [
+     [
+      1,
+      "D"
+     ],
+     [
+      2,
+      "B"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "D"
+     ],
+     [
+      5,
+      "B"
+     ],
+     [
+      6,
+      "A"
+     ]
+    ]
+   },
+   {
+    "test": 67,
+    "konu": "VII. B\u00d6L\u00dcM",
+    "test_no": "4",
+    "hucreler": [
+     [
+      1,
+      "E"
+     ],
+     [
+      2,
+      "A"
+     ],
+     [
+      3,
+      "B"
+     ],
+     [
+      4,
+      "A"
+     ]
+    ]
+   }
+  ]
+ },
+ "glif": {
+  "yontem": "Anahtar bolgesinde notr koyu harf glifi (min < GLIF_HARF_ESIK, renk farki < 45, dikey 2 px genisletme), satir/sutun sirasiyla hucrelere; 8x9 vektor, en-yakin-komsu birini-disarida-birak. Blob sayisi hucreye esit olmayan test kapsam disi.",
+  "hucre": 329,
+  "uyum": 329,
+  "uyumsuz": [],
+  "goz_teyit": {},
+  "goz_teyit_yontem": "5x nearest anahtar kirpimi, gozle",
+  "kapsam_disi_test": [
+   26,
+   29,
+   55
+  ]
+ },
+ "goz_c": {
+  "yontem": "glif kapsami disindaki testler 5x (nearest) anahtar kirpiminda gozle",
+  "testler": {
+   "26": "EABD",
+   "29": "DEE",
+   "55": "BCEC"
+  }
+ }
+}

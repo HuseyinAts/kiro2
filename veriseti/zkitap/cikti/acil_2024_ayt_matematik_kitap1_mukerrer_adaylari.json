@@ -1,0 +1,465 @@
+{
+ "kaynak": "Acil 2024 AYT Matematik Kitap-1",
+ "arac": "backend/scripts/kitap/kitap_hat/mukerrer.py",
+ "olcu": "govde normal bicimi karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: MATEMATIK/GEOMETRI (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar.",
+ "soru_sayisi": 340,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "ACL24AM-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL24AM-T009_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL24AM-T017_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL24AM-T029_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL24AM-T040_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL24AM-T051_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ACL24AM-T060_06",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 1.0,
+ "db_satiri": 23938,
+ "db_en_yuksek_3gram": 1.0,
+ "aday_sayisi": 12,
+ "guclu_aday_sayisi": 3,
+ "adaylar": [
+  {
+   "dosya": "ACL24AM-T001_06",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "d3fa94a0-eefb-5318-8384-27d6ff6695d1",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": "C",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL24AM-T002_06",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "d5ef3d4b-e42e-552d-af77-fb2d955e1355",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL24AM-T010_05",
+   "govde_3gram": 0.911,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "caa215fb-2c90-5603-997c-f7c853c611df",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL24AM-T031_01",
+   "govde_3gram": 0.894,
+   "ayni_sik_sayisi": 2,
+   "guclu": false,
+   "db_id": "a65e3f44-902f-5d5d-995f-e7248ef29d67",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL24AM-T054_02",
+   "govde_3gram": 0.827,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "396e1392-6c0b-5f84-9d9c-371f2426c4bd",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL24AM-T033_04",
+   "govde_3gram": 0.822,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "f626c064-86eb-57f4-b480-a2d344e272a7",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL24AM-T034_01",
+   "govde_3gram": 0.767,
+   "ayni_sik_sayisi": 2,
+   "guclu": false,
+   "db_id": "09ab86d3-e545-56ac-8bdf-b27f2cecb267",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL24AM-T034_01",
+   "govde_3gram": 0.762,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "258e1408-f144-56ab-9947-91fa3a23bd56",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Polinom",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL24AM-T064_01",
+   "govde_3gram": 0.754,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "8ea03ff2-9f96-5217-b3ab-3a3ee6ec2b92",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Polinom",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "ACL24AM-T034_01",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 2,
+   "guclu": false,
+   "db_id": "4cee3bbc-9d55-59d9-970c-0ae1a81b4a76",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "ACL24AM-T054_02",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "70788685-ab49-58e4-834c-eafea32aed55",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "ACL24AM-T064_01",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "aa7af93f-d906-523d-8275-0fadfc88e492",
+   "db_kaynak": "345 2025 Start Matematik",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  }
+ ],
+ "cevap_farki": [
+  {
+   "dosya": "ACL24AM-T031_01",
+   "db_id": "a65e3f44-902f-5d5d-995f-e7248ef29d67",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.894,
+   "guclu": false,
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T054_02",
+   "db_id": "396e1392-6c0b-5f84-9d9c-371f2426c4bd",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_cevap": "B",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.827,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T033_04",
+   "db_id": "f626c064-86eb-57f4-b480-a2d344e272a7",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_cevap": "B",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.822,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T034_01",
+   "db_id": "09ab86d3-e545-56ac-8bdf-b27f2cecb267",
+   "db_kaynak": "345 2025 AYT Matematik Soru Bankasi",
+   "db_cevap": "B",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.767,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T034_01",
+   "db_id": "258e1408-f144-56ab-9947-91fa3a23bd56",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Polinom",
+   "db_cevap": "E",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.762,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T064_01",
+   "db_id": "8ea03ff2-9f96-5217-b3ab-3a3ee6ec2b92",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Polinom",
+   "db_cevap": "E",
+   "bizim_cevap": "B",
+   "govde_3gram": 0.754,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T034_01",
+   "db_id": "4cee3bbc-9d55-59d9-970c-0ae1a81b4a76",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_cevap": "A",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T054_02",
+   "db_id": "70788685-ab49-58e4-834c-eafea32aed55",
+   "db_kaynak": "345 2025 TYT Matematik Soru Bankasi",
+   "db_cevap": "B",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "ACL24AM-T064_01",
+   "db_id": "aa7af93f-d906-523d-8275-0fadfc88e492",
+   "db_kaynak": "345 2025 Start Matematik",
+   "db_cevap": "C",
+   "bizim_cevap": "B",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  }
+ ],
+ "cevap_farki_sik_sirasi": 1,
+ "cevap_farki_icerik": [
+  [
+   "ACL24AM-T033_04",
+   "f626c064-86eb-57f4-b480-a2d344e272a7"
+  ],
+  [
+   "ACL24AM-T034_01",
+   "09ab86d3-e545-56ac-8bdf-b27f2cecb267"
+  ],
+  [
+   "ACL24AM-T034_01",
+   "258e1408-f144-56ab-9947-91fa3a23bd56"
+  ],
+  [
+   "ACL24AM-T034_01",
+   "4cee3bbc-9d55-59d9-970c-0ae1a81b4a76"
+  ],
+  [
+   "ACL24AM-T054_02",
+   "396e1392-6c0b-5f84-9d9c-371f2426c4bd"
+  ],
+  [
+   "ACL24AM-T054_02",
+   "70788685-ab49-58e4-834c-eafea32aed55"
+  ],
+  [
+   "ACL24AM-T064_01",
+   "8ea03ff2-9f96-5217-b3ab-3a3ee6ec2b92"
+  ],
+  [
+   "ACL24AM-T064_01",
+   "aa7af93f-d906-523d-8275-0fadfc88e492"
+  ]
+ ],
+ "eski_hat_ozet": {
+  "Acil-2024-AYT Matematik Kitap-1": {
+   "satir": 7,
+   "aktif": 7,
+   "modern_karsilik": 3
+  }
+ },
+ "eski_hat": [
+  {
+   "db_id": "f898a30e-7901-5e47-b0a0-c64d2769ecf1",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 17,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "en_yakin_bizim": "ACL24AM-T020_04",
+   "en_yakin_3gram": 0.293,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "de9a0a61-91cb-55c0-91b9-c05b987dfc83",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 27,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL24AM-T002_05",
+   "en_yakin_3gram": 0.229,
+   "ayni_sik_sayisi": 4,
+   "modern_karsilik": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "db_id": "d3fa94a0-eefb-5318-8384-27d6ff6695d1",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 29,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL24AM-T001_06",
+   "en_yakin_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "C"
+  },
+  {
+   "db_id": "d5ef3d4b-e42e-552d-af77-fb2d955e1355",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 30,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "ACL24AM-T002_06",
+   "en_yakin_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "caa215fb-2c90-5603-997c-f7c853c611df",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 55,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "ACL24AM-T010_05",
+   "en_yakin_3gram": 0.911,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "1c04b45b-c2a6-5b87-89ad-f0a497eedf57",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 110,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "en_yakin_bizim": "ACL24AM-T033_03",
+   "en_yakin_3gram": 0.327,
+   "ayni_sik_sayisi": 3,
+   "modern_karsilik": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "db_id": "f8297358-3dca-5942-8e2a-f81809910de8",
+   "db_kaynak": "Acil-2024-AYT Matematik Kitap-1",
+   "basili_sayfa": 156,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "en_yakin_bizim": "ACL24AM-T047_06",
+   "en_yakin_3gram": 0.182,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "B"
+  }
+ ],
+ "farkli_soru_hash": 340
+}

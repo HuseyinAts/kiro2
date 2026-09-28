@@ -1,0 +1,102 @@
+{
+"kaynak": "Acil 2024 AYT Matematik Kitap-1",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
+"kenar_kapisi_ihlali": 0,
+"kesik_kapisi_ihlali": 0,
+"ortme_soru": 9,
+"kenar": [],
+"kesik": [],
+"ortme": [
+{
+"birim": "ACL24AM-T005",
+"soru": 2,
+"dosya": 33,
+"simge": [
+386,
+361
+],
+"piksel": 10
+},
+{
+"birim": "ACL24AM-T010",
+"soru": 1,
+"dosya": 55,
+"simge": [
+321,
+361
+],
+"piksel": 8
+},
+{
+"birim": "ACL24AM-T016",
+"soru": 3,
+"dosya": 68,
+"simge": [
+416,
+377
+],
+"piksel": 7
+},
+{
+"birim": "ACL24AM-T017",
+"soru": 2,
+"dosya": 69,
+"simge": [
+308,
+361
+],
+"piksel": 12
+},
+{
+"birim": "ACL24AM-T021",
+"soru": 1,
+"dosya": 91,
+"simge": [
+456,
+361
+],
+"piksel": 10
+},
+{
+"birim": "ACL24AM-T027",
+"soru": 2,
+"dosya": 97,
+"simge": [
+571,
+361
+],
+"piksel": 10
+},
+{
+"birim": "ACL24AM-T031",
+"soru": 2,
+"dosya": 116,
+"simge": [
+595,
+377
+],
+"piksel": 15
+},
+{
+"birim": "ACL24AM-T037",
+"soru": 1,
+"dosya": 133,
+"simge": [
+89,
+347
+],
+"piksel": 16
+},
+{
+"birim": "ACL24AM-T058",
+"soru": 2,
+"dosya": 202,
+"simge": [
+373,
+377
+],
+"piksel": 4
+}
+]
+}
