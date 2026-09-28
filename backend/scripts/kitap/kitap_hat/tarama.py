@@ -164,6 +164,20 @@ def capalar(
                 "numara_w": int(ilk[1].stop - ilk[1].start),
             }
         )
+    for dn, sut_e, ey, ex in getattr(p, "EK_CAPA", ()):
+        # Okuyucu simgesi KONMAMIS soru (gozle dogrulandi, profilde listeli):
+        # capa basili numaradan.
+        if dn == n:
+            out.append(
+                {
+                    "sutun": sut_e,
+                    "y": int(ey),
+                    "x": int(ex),
+                    "simge": None,
+                    "simgesiz": True,
+                    "numara_w": 0,
+                }
+            )
     out.sort(key=lambda c: (c["sutun"], c["y"]))
     return out, disari
 
@@ -231,20 +245,31 @@ def kapilar(
                 hata.append(
                     f"test {t['test']}: capa {len(t['capalar'])} != anahtar {hucre.get(t['test'])}"
                 )
-    dx0, dx1 = p.NUMARA_DX
     for t in veri["testler"]:
         if not t["capalar"]:
             hata.append(f"test {t['test']}: capa yok")
         for c in t["capalar"]:
-            if c.get("numarasiz"):
-                if (c["dosya"], *c["simge"]) not in set(
-                    getattr(p, "NUMARASIZ_CAPA", ())
-                ):
-                    hata.append(f"profilde olmayan numarasiz capa: {c}")
-                continue
-            if not dx0 <= c["x"] - c["simge"][1] <= dx1:
-                hata.append(f"numara x kaymis: test {t['test']} {c}")
+            h = _capa_hatasi(p, c)
+            if h:
+                hata.append(f"test {t['test']}: {h}")
     return hata
+
+
+def _capa_hatasi(p: ModuleType, c: dict[str, Any]) -> str | None:
+    if c.get("simgesiz"):
+        if (c["dosya"], c["sutun"], c["y"], c["x"]) not in set(
+            getattr(p, "EK_CAPA", ())
+        ):
+            return f"profilde olmayan simgesiz capa: {c}"
+        return None
+    if c.get("numarasiz"):
+        if (c["dosya"], *c["simge"]) not in set(getattr(p, "NUMARASIZ_CAPA", ())):
+            return f"profilde olmayan numarasiz capa: {c}"
+        return None
+    dx0, dx1 = p.NUMARA_DX
+    if not dx0 <= c["x"] - c["simge"][1] <= dx1:
+        return f"numara x kaymis: {c}"
+    return None
 
 
 def main() -> None:

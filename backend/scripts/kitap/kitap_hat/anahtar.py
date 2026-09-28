@@ -140,7 +140,7 @@ def _harf_bloblari(p: ModuleType, s: np.ndarray) -> list[tuple[slice, slice]]:
                 q
                 for q in tum
                 if q[1].stop <= o[1].start
-                and o[1].start - q[1].stop <= 4
+                and o[1].start - q[1].stop <= getattr(p, "HARF_NOKTA_ARALIK", 4)
                 and abs(q[0].stop - o[0].stop) <= 3
             ]
             if onceki and nokta(max(onceki, key=lambda q: q[1].stop)):
