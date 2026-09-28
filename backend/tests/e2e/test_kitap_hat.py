@@ -38,7 +38,7 @@ from scripts.kitap.kitap_hat import migration_uret as mu  # noqa: E402
 from scripts.kitap.kitap_hat import ortak  # noqa: E402
 from scripts.kitap.kitap_hat import tarama as ta  # noqa: E402
 
-PROFILLER = ["acl23ag", "acl23kc", "acl24mg", "acl25pl"]
+PROFILLER = ["acl23ag", "acl23kc", "acl24mg", "acl25pl", "acl25s1"]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 
 
@@ -123,11 +123,14 @@ def test_numara_boslugu_ve_harf_disi_durur(k: Kitap) -> None:
 
 
 def test_glif_teyit_ve_goz_c_mutasyonlari_durur(k: Kitap) -> None:
-    ilk = next(iter(k.s["goz_teyit"]))
-    h = _boz(k.ham_okumalar, lambda h: h["glif"]["goz_teyit"].pop(ilk))
-    assert any("glif uyumsuz" in x for x in an.dogrula(k.p, h))
-    h = _boz(k.ham_okumalar, lambda h: h["glif"]["goz_teyit"].update({ilk: "Z"}))
-    assert any("goz teyidi" in x for x in an.dogrula(k.p, h))
+    # Glif kanali tum hucrelerde okumayla uyumluysa (acl25s1: 911/911) goz
+    # teyidi yoktur; mutasyon yalniz goz_c icin kosar.
+    ilk = next(iter(k.s["goz_teyit"]), None)
+    if ilk is not None:
+        h = _boz(k.ham_okumalar, lambda h: h["glif"]["goz_teyit"].pop(ilk))
+        assert any("glif uyumsuz" in x for x in an.dogrula(k.p, h))
+        h = _boz(k.ham_okumalar, lambda h: h["glif"]["goz_teyit"].update({ilk: "Z"}))
+        assert any("goz teyidi" in x for x in an.dogrula(k.p, h))
     t = str(k.s["glif_disi"][0])
 
     def f(h: dict) -> None:

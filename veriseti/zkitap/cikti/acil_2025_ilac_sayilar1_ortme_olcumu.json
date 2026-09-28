@@ -1,0 +1,262 @@
+{
+"kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-1",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
+"kenar_kapisi_ihlali": 0,
+"kesik_kapisi_ihlali": 0,
+"ortme_soru": 23,
+"kenar": [],
+"kesik": [],
+"ortme": [
+{
+"birim": "ACL25S1-T015",
+"soru": 2,
+"dosya": 31,
+"simge": [
+596,
+362
+],
+"piksel": 5
+},
+{
+"birim": "ACL25S1-T036",
+"soru": 2,
+"dosya": 67,
+"simge": [
+418,
+361
+],
+"piksel": 10
+},
+{
+"birim": "ACL25S1-T041",
+"soru": 1,
+"dosya": 77,
+"simge": [
+107,
+363
+],
+"piksel": 7
+},
+{
+"birim": "ACL25S1-T041",
+"soru": 1,
+"dosya": 77,
+"simge": [
+522,
+362
+],
+"piksel": 9
+},
+{
+"birim": "ACL25S1-T042",
+"soru": 1,
+"dosya": 79,
+"simge": [
+108,
+362
+],
+"piksel": 6
+},
+{
+"birim": "ACL25S1-T042",
+"soru": 5,
+"dosya": 80,
+"simge": [
+107,
+379
+],
+"piksel": 20
+},
+{
+"birim": "ACL25S1-T044",
+"soru": 3,
+"dosya": 84,
+"simge": [
+629,
+379
+],
+"piksel": 11
+},
+{
+"birim": "ACL25S1-T050",
+"soru": 7,
+"dosya": 94,
+"simge": [
+108,
+380
+],
+"piksel": 4
+},
+{
+"birim": "ACL25S1-T051",
+"soru": 4,
+"dosya": 95,
+"simge": [
+689,
+363
+],
+"piksel": 6
+},
+{
+"birim": "ACL25S1-T054",
+"soru": 9,
+"dosya": 102,
+"simge": [
+108,
+381
+],
+"piksel": 4
+},
+{
+"birim": "ACL25S1-T054",
+"soru": 9,
+"dosya": 102,
+"simge": [
+228,
+381
+],
+"piksel": 9
+},
+{
+"birim": "ACL25S1-T056",
+"soru": 2,
+"dosya": 105,
+"simge": [
+573,
+362
+],
+"piksel": 14
+},
+{
+"birim": "ACL25S1-T056",
+"soru": 6,
+"dosya": 106,
+"simge": [
+109,
+380
+],
+"piksel": 5
+},
+{
+"birim": "ACL25S1-T062",
+"soru": 3,
+"dosya": 116,
+"simge": [
+628,
+379
+],
+"piksel": 10
+},
+{
+"birim": "ACL25S1-T066",
+"soru": 3,
+"dosya": 122,
+"simge": [
+629,
+378
+],
+"piksel": 8
+},
+{
+"birim": "ACL25S1-T070",
+"soru": 7,
+"dosya": 130,
+"simge": [
+109,
+381
+],
+"piksel": 6
+},
+{
+"birim": "ACL25S1-T076",
+"soru": 2,
+"dosya": 142,
+"simge": [
+288,
+378
+],
+"piksel": 12
+},
+{
+"birim": "ACL25S1-T077",
+"soru": 1,
+"dosya": 143,
+"simge": [
+770,
+363
+],
+"piksel": 5
+},
+{
+"birim": "ACL25S1-T077",
+"soru": 3,
+"dosya": 143,
+"simge": [
+674,
+363
+],
+"piksel": 6
+},
+{
+"birim": "ACL25S1-T078",
+"soru": 3,
+"dosya": 144,
+"simge": [
+631,
+378
+],
+"piksel": 16
+},
+{
+"birim": "ACL25S1-T082",
+"soru": 3,
+"dosya": 150,
+"simge": [
+633,
+379
+],
+"piksel": 10
+},
+{
+"birim": "ACL25S1-T082",
+"soru": 10,
+"dosya": 151,
+"simge": [
+747,
+363
+],
+"piksel": 16
+},
+{
+"birim": "ACL25S1-T088",
+"soru": 2,
+"dosya": 158,
+"simge": [
+348,
+379
+],
+"piksel": 8
+},
+{
+"birim": "ACL25S1-T093",
+"soru": 9,
+"dosya": 168,
+"simge": [
+110,
+382
+],
+"piksel": 5
+},
+{
+"birim": "ACL25S1-T093",
+"soru": 11,
+"dosya": 168,
+"simge": [
+687,
+381
+],
+"piksel": 14
+}
+]
+}

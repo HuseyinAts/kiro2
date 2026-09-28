@@ -1,0 +1,1219 @@
+{
+"kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-1",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "bolum acilis sayfalari (s7, 43, 83, 109, 141; 'BUNLARI OGREN' bandinda bolum adi, gozle) + bolum kapak sayfalari (s41-42, 81-82, 107-108, 139-140); test bandi konu adi TASIMIYOR -> konu yalniz sayfa araligindan",
+"bolumler": [
+{
+"kod": "MAT-ACL25S1-B01",
+"no": 1,
+"ad": "SAYILAR"
+},
+{
+"kod": "MAT-ACL25S1-B02",
+"no": 2,
+"ad": "ASAL SAYILAR"
+},
+{
+"kod": "MAT-ACL25S1-B03",
+"no": 3,
+"ad": "SAYI BASAMAKLARI"
+},
+{
+"kod": "MAT-ACL25S1-B04",
+"no": 4,
+"ad": "B\u00d6LME \u0130\u015eLEM\u0130"
+},
+{
+"kod": "MAT-ACL25S1-B05",
+"no": 5,
+"ad": "RASYONEL SAYILAR"
+}
+],
+"konular": [
+{
+"kod": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"ad": "Say\u0131lar",
+"icindekiler_adi": "Say\u0131lar",
+"sayfalar": [
+7,
+42
+]
+},
+{
+"kod": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"ad": "Asal Say\u0131lar",
+"icindekiler_adi": "Asal Say\u0131lar",
+"sayfalar": [
+43,
+82
+]
+},
+{
+"kod": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"ad": "Say\u0131 Basamaklar\u0131",
+"icindekiler_adi": "Say\u0131 Basamaklar\u0131",
+"sayfalar": [
+83,
+108
+]
+},
+{
+"kod": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"ad": "B\u00f6lme \u0130\u015flemi",
+"icindekiler_adi": "B\u00f6lme \u0130\u015flemi",
+"sayfalar": [
+109,
+140
+]
+},
+{
+"kod": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"ad": "Rasyonel Say\u0131lar",
+"icindekiler_adi": "Rasyonel Say\u0131lar",
+"sayfalar": [
+141,
+176
+]
+}
+],
+"test_sayisi": 97,
+"testler": [
+{
+"birim": "ACL25S1-T001",
+"test": 1,
+"sayfalar": [
+7
+],
+"bant": "SAYILAR",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T002",
+"test": 2,
+"sayfalar": [
+8,
+9
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T003",
+"test": 3,
+"sayfalar": [
+10
+],
+"bant": "SAYILAR",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T004",
+"test": 4,
+"sayfalar": [
+11,
+12
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T005",
+"test": 5,
+"sayfalar": [
+13
+],
+"bant": "SAYILAR",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T006",
+"test": 6,
+"sayfalar": [
+14,
+15
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "ACL25S1-T007",
+"test": 7,
+"sayfalar": [
+16
+],
+"bant": "SAYILAR",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T008",
+"test": 8,
+"sayfalar": [
+17,
+18
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T009",
+"test": 9,
+"sayfalar": [
+19,
+20
+],
+"bant": "KARMA TEST - 1",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL25S1-T010",
+"test": 10,
+"sayfalar": [
+21,
+22
+],
+"bant": "KARMA TEST - 2",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL25S1-T011",
+"test": 11,
+"sayfalar": [
+23,
+24
+],
+"bant": "KARMA TEST - 3",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 15
+},
+{
+"birim": "ACL25S1-T012",
+"test": 12,
+"sayfalar": [
+25,
+26
+],
+"bant": "KARMA TEST - 4",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T013",
+"test": 13,
+"sayfalar": [
+27,
+28
+],
+"bant": "KARMA TEST - 5",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL25S1-T014",
+"test": 14,
+"sayfalar": [
+29,
+30
+],
+"bant": "KARMA TEST - 6",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL25S1-T015",
+"test": 15,
+"sayfalar": [
+31,
+32
+],
+"bant": "KARMA TEST - 7",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T016",
+"test": 16,
+"sayfalar": [
+33,
+34
+],
+"bant": "KARMA TEST - 8",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL25S1-T017",
+"test": 17,
+"sayfalar": [
+35,
+36
+],
+"bant": "KARMA TEST - 9",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T018",
+"test": 18,
+"sayfalar": [
+37,
+38
+],
+"bant": "KARMA TEST - 10",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T019",
+"test": 19,
+"sayfalar": [
+39,
+40
+],
+"bant": "KARMA TEST - 11",
+"konu": "MAT-ACL25S1-B01-K01",
+"bolum": "MAT-ACL25S1-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T020",
+"test": 20,
+"sayfalar": [
+43
+],
+"bant": "ASAL SAYILAR",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T021",
+"test": 21,
+"sayfalar": [
+44,
+45
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T022",
+"test": 22,
+"sayfalar": [
+46
+],
+"bant": "ASAL \u00c7ARPANLARA AYIRMA",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T023",
+"test": 23,
+"sayfalar": [
+47,
+48
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T024",
+"test": 24,
+"sayfalar": [
+49
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T025",
+"test": 25,
+"sayfalar": [
+50,
+51
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T026",
+"test": 26,
+"sayfalar": [
+52
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T027",
+"test": 27,
+"sayfalar": [
+53,
+54
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T028",
+"test": 28,
+"sayfalar": [
+55
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T029",
+"test": 29,
+"sayfalar": [
+56,
+57
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T030",
+"test": 30,
+"sayfalar": [
+58
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T031",
+"test": 31,
+"sayfalar": [
+59,
+60
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T032",
+"test": 32,
+"sayfalar": [
+61
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T033",
+"test": 33,
+"sayfalar": [
+62,
+63
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T034",
+"test": 34,
+"sayfalar": [
+64
+],
+"bant": "EBOB-EKOK",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T035",
+"test": 35,
+"sayfalar": [
+65,
+66
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T036",
+"test": 36,
+"sayfalar": [
+67,
+68
+],
+"bant": "KARMA TEST - 1",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T037",
+"test": 37,
+"sayfalar": [
+69,
+70
+],
+"bant": "KARMA TEST - 2",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T038",
+"test": 38,
+"sayfalar": [
+71,
+72
+],
+"bant": "KARMA TEST - 3",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T039",
+"test": 39,
+"sayfalar": [
+73,
+74
+],
+"bant": "KARMA TEST - 4",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T040",
+"test": 40,
+"sayfalar": [
+75,
+76
+],
+"bant": "KARMA TEST - 5",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T041",
+"test": 41,
+"sayfalar": [
+77,
+78
+],
+"bant": "KARMA TEST - 6",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T042",
+"test": 42,
+"sayfalar": [
+79,
+80
+],
+"bant": "KARMA TEST - 7",
+"konu": "MAT-ACL25S1-B02-K01",
+"bolum": "MAT-ACL25S1-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T043",
+"test": 43,
+"sayfalar": [
+83
+],
+"bant": "SAYI BASAMAKLARI",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T044",
+"test": 44,
+"sayfalar": [
+84,
+85
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T045",
+"test": 45,
+"sayfalar": [
+86
+],
+"bant": "SAYI BASAMAKLARI",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T046",
+"test": 46,
+"sayfalar": [
+87,
+88
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T047",
+"test": 47,
+"sayfalar": [
+89
+],
+"bant": "SAYI BASAMAKLARI",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T048",
+"test": 48,
+"sayfalar": [
+90,
+91
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T049",
+"test": 49,
+"sayfalar": [
+92
+],
+"bant": "SAYI BASAMAKLARI",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T050",
+"test": 50,
+"sayfalar": [
+93,
+94
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL25S1-T051",
+"test": 51,
+"sayfalar": [
+95,
+96
+],
+"bant": "KARMA TEST - 1",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T052",
+"test": 52,
+"sayfalar": [
+97,
+98
+],
+"bant": "KARMA TEST - 2",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T053",
+"test": 53,
+"sayfalar": [
+99,
+100
+],
+"bant": "KARMA TEST - 3",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T054",
+"test": 54,
+"sayfalar": [
+101,
+102
+],
+"bant": "KARMA TEST - 4",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T055",
+"test": 55,
+"sayfalar": [
+103,
+104
+],
+"bant": "KARMA TEST - 5",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL25S1-T056",
+"test": 56,
+"sayfalar": [
+105,
+106
+],
+"bant": "KARMA TEST - 6",
+"konu": "MAT-ACL25S1-B03-K01",
+"bolum": "MAT-ACL25S1-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL25S1-T057",
+"test": 57,
+"sayfalar": [
+109
+],
+"bant": "B\u00d6LME \u0130\u015eLEM\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T058",
+"test": 58,
+"sayfalar": [
+110,
+111
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T059",
+"test": 59,
+"sayfalar": [
+112
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME KURALLARI",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T060",
+"test": 60,
+"sayfalar": [
+113,
+114
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T061",
+"test": 61,
+"sayfalar": [
+115
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME KURALLARI",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T062",
+"test": 62,
+"sayfalar": [
+116,
+117
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T063",
+"test": 63,
+"sayfalar": [
+118
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME KURALLARI",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T064",
+"test": 64,
+"sayfalar": [
+119,
+120
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T065",
+"test": 65,
+"sayfalar": [
+121
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME KURALLARI",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T066",
+"test": 66,
+"sayfalar": [
+122,
+123
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T067",
+"test": 67,
+"sayfalar": [
+124
+],
+"bant": "B\u00d6L\u00dcNEB\u0130LME KURALLARI",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T068",
+"test": 68,
+"sayfalar": [
+125,
+126
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T069",
+"test": 69,
+"sayfalar": [
+127,
+128
+],
+"bant": "KARMA TEST - 1",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T070",
+"test": 70,
+"sayfalar": [
+129,
+130
+],
+"bant": "KARMA TEST - 2",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T071",
+"test": 71,
+"sayfalar": [
+131,
+132
+],
+"bant": "KARMA TEST - 3",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T072",
+"test": 72,
+"sayfalar": [
+133,
+134
+],
+"bant": "KARMA TEST - 4",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T073",
+"test": 73,
+"sayfalar": [
+135,
+136
+],
+"bant": "KARMA TEST - 5",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "ACL25S1-T074",
+"test": 74,
+"sayfalar": [
+137,
+138
+],
+"bant": "KARMA TEST - 6",
+"konu": "MAT-ACL25S1-B04-K01",
+"bolum": "MAT-ACL25S1-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "ACL25S1-T075",
+"test": 75,
+"sayfalar": [
+141
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T076",
+"test": 76,
+"sayfalar": [
+142
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T077",
+"test": 77,
+"sayfalar": [
+143
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T078",
+"test": 78,
+"sayfalar": [
+144,
+145
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T079",
+"test": 79,
+"sayfalar": [
+146
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 2
+},
+{
+"birim": "ACL25S1-T080",
+"test": 80,
+"sayfalar": [
+147,
+148
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL25S1-T081",
+"test": 81,
+"sayfalar": [
+149
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T082",
+"test": 82,
+"sayfalar": [
+150,
+151
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 14
+},
+{
+"birim": "ACL25S1-T083",
+"test": 83,
+"sayfalar": [
+152
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T084",
+"test": 84,
+"sayfalar": [
+153,
+154
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T085",
+"test": 85,
+"sayfalar": [
+155
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T086",
+"test": 86,
+"sayfalar": [
+156
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T087",
+"test": 87,
+"sayfalar": [
+157
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T088",
+"test": 88,
+"sayfalar": [
+158,
+159
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL25S1-T089",
+"test": 89,
+"sayfalar": [
+160
+],
+"bant": "RASYONEL SAYILAR",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 4
+},
+{
+"birim": "ACL25S1-T090",
+"test": 90,
+"sayfalar": [
+161,
+162
+],
+"bant": "PEK\u0130\u015eT\u0130RME TEST\u0130",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ACL25S1-T091",
+"test": 91,
+"sayfalar": [
+163,
+164
+],
+"bant": "KARMA TEST - 1",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T092",
+"test": 92,
+"sayfalar": [
+165,
+166
+],
+"bant": "KARMA TEST - 2",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T093",
+"test": 93,
+"sayfalar": [
+167,
+168
+],
+"bant": "KARMA TEST - 3",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T094",
+"test": 94,
+"sayfalar": [
+169,
+170
+],
+"bant": "KARMA TEST - 4",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "ACL25S1-T095",
+"test": 95,
+"sayfalar": [
+171,
+172
+],
+"bant": "KARMA TEST - 5",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 16
+},
+{
+"birim": "ACL25S1-T096",
+"test": 96,
+"sayfalar": [
+173,
+174
+],
+"bant": "KARMA TEST - 6",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ACL25S1-T097",
+"test": 97,
+"sayfalar": [
+175,
+176
+],
+"bant": "KARMA TEST - 7",
+"konu": "MAT-ACL25S1-B05-K01",
+"bolum": "MAT-ACL25S1-B05",
+"soru_sayisi": 8
+}
+]
+}
