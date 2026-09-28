@@ -233,6 +233,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "AKT20AY",
         "ithal_araci": "scripts/kitap/kitap_hat/ithal.py",
     },
+    "2023-2024 Aktif Ogrenme Biyoloji": {
+        "onek": "AKT24BY",
+        "ithal_araci": "scripts/kitap/kitap_hat/ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",

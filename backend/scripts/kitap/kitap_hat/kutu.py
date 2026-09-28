@@ -238,7 +238,7 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
             cache.clear()
             cache[d] = beyaz_sayfa(p, kaynak, d, tarama["sayfalar"][str(d)]["glif"])[0]
         a = cache[d]
-        x0, x1 = p.SUTUNLAR[d % 2][s]
+        x0, x1 = p.SUTUNLAR[ortak.parite(p, d)][s]
         mur = _satirlar(a, x0, x1)
         capa = sorted(sutun_capa, key=lambda c: c["y"])
         alt_sinir = _sutun_alt_siniri(

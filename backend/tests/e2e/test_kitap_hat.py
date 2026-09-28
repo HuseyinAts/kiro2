@@ -48,6 +48,7 @@ PROFILLER = [
     "acl24am",
     "akt20k0",
     "akt20ay",
+    "akt24by",
 ]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 

@@ -1,0 +1,198 @@
+{
+ "kaynak": "2023-2024 Aktif Ogrenme Biyoloji",
+ "arac": "backend/scripts/kitap/kitap_hat/mukerrer.py",
+ "olcu": "govde normal bicimi karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: BIYOLOJI (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar.",
+ "soru_sayisi": 528,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "AKT24BY-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T004_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T008_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T012_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T016_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T020_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T024_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T028_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T032_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T036_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "AKT24BY-T040_05",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 0.853,
+ "db_satiri": 2357,
+ "db_en_yuksek_3gram": 0.845,
+ "aday_sayisi": 4,
+ "guclu_aday_sayisi": 0,
+ "adaylar": [
+  {
+   "dosya": "AKT24BY-T008_04",
+   "govde_3gram": 0.845,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "c085e903-f9a8-5dbb-a1fc-ec36afd07165",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_ders": "BIYOLOJI",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "AKT24BY-T030_04",
+   "govde_3gram": 0.772,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "369007d8-a358-58ef-a36d-7064163526e8",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_ders": "BIYOLOJI",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "AKT24BY-T030_04",
+   "govde_3gram": 0.772,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "56d1fab6-915f-5905-8713-d39be2a0e616",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_ders": "BIYOLOJI",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "AKT24BY-T030_04",
+   "govde_3gram": 0.772,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "8bef073a-9680-5f80-8aaf-93e66e490c3d",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_ders": "BIYOLOJI",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  }
+ ],
+ "cevap_farki": [
+  {
+   "dosya": "AKT24BY-T008_04",
+   "db_id": "c085e903-f9a8-5dbb-a1fc-ec36afd07165",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.845,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "AKT24BY-T030_04",
+   "db_id": "369007d8-a358-58ef-a36d-7064163526e8",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.772,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "AKT24BY-T030_04",
+   "db_id": "56d1fab6-915f-5905-8713-d39be2a0e616",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_cevap": "E",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.772,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "AKT24BY-T030_04",
+   "db_id": "8bef073a-9680-5f80-8aaf-93e66e490c3d",
+   "db_kaynak": "345 2025 TYT Biyoloji Soru Bankasi",
+   "db_cevap": "B",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.772,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  }
+ ],
+ "cevap_farki_sik_sirasi": 0,
+ "cevap_farki_icerik": [
+  [
+   "AKT24BY-T008_04",
+   "c085e903-f9a8-5dbb-a1fc-ec36afd07165"
+  ],
+  [
+   "AKT24BY-T030_04",
+   "369007d8-a358-58ef-a36d-7064163526e8"
+  ],
+  [
+   "AKT24BY-T030_04",
+   "56d1fab6-915f-5905-8713-d39be2a0e616"
+  ],
+  [
+   "AKT24BY-T030_04",
+   "8bef073a-9680-5f80-8aaf-93e66e490c3d"
+  ]
+ ],
+ "eski_hat_ozet": {
+  "Aktif Ogrenme 2023 2024 Biyoloji": {
+   "satir": 0,
+   "aktif": 0,
+   "modern_karsilik": 0
+  }
+ },
+ "eski_hat": [],
+ "farkli_soru_hash": 528
+}

@@ -112,3 +112,15 @@ def test_sus_bolgeleri_yalniz_doygun_pikseli_beyazlar() -> None:
     assert not m[20:24, 10:14].any()
     assert not m[40:44, 40:44].any()
     assert not kirp.sayfa_no_lekesi(SimpleNamespace(LEKE=None), a).any()
+
+
+def test_parite_ters_kumesi_yerlesim_paritesini_cevirir() -> None:
+    """Yakalama boslugundan sonra dosya ile basili sayfa paritesi kayan kitap
+    (AKT24BY s251-253): PARITE_TERS'teki dosyada SIMGE_X / SUTUNLAR anahtari ters."""
+    from scripts.kitap.kitap_hat import ortak
+
+    p = SimpleNamespace(PARITE_TERS=frozenset({251, 252}))
+    assert ortak.parite(p, 250) == 0
+    assert ortak.parite(p, 251) == 0
+    assert ortak.parite(p, 252) == 1
+    assert ortak.parite(SimpleNamespace(), 251) == 1
