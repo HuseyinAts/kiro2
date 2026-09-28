@@ -130,8 +130,14 @@ _KAYIT_BAYRAKLARI = (
 )
 
 
-def _bayraklar(r: dict[str, Any], sec: dict[str, str]) -> list[str]:
+def _bayraklar(
+    r: dict[str, Any], sec: dict[str, str], oncul_yok: tuple[str, ...] = ()
+) -> list[str]:
     b: list[str] = sik_bayraklari(sec)
+    if r["dosya"] in oncul_yok:
+        # Soru, kirpimi DISINDA kalan numarasiz ortak grafige / sekle dayanir
+        # (profilde ORTAK_ONCUL_YOK, gozle): ogrenciye gosterilemez.
+        b.append("ortak_oncul_kirpimda_yok")
     for alan, bayrak in _KAYIT_BAYRAKLARI:
         # basili_no: bayrak numara YOKSA (None); digerleri alan doluysa.
         var = r.get(alan) is None if alan == "basili_no" else bool(r.get(alan))
@@ -196,7 +202,7 @@ def kayit_uret(p: ModuleType, r: dict[str, Any], ham: dict) -> dict[str, Any]:
             "konu_adi": r["konu_adi"],
             "test_bandi": r["bant"],
             "kaynak_gorseli": f"{r['dosya']}.png",
-            "bayraklar": _bayraklar(r, sec),
+            "bayraklar": _bayraklar(r, sec, tuple(getattr(p, "ORTAK_ONCUL_YOK", ()))),
             "cevap_kaynagi": CEVAP_KAYNAGI,
             "cevap_okuma_kanali": r["cevap_kanali"],
             "anahtar_dogrulamasi": anahtar_dogrulamasi(p, ham),

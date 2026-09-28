@@ -87,6 +87,20 @@ def test_ust_bant_kancasi() -> None:
     assert kutu.ust_bant(SimpleNamespace(UST_BANT=70, ust_bant=lambda _a: 91), a) == 91
 
 
+def test_ortak_oncul_bayragi_ve_beta_disi() -> None:
+    from scripts.kitap.kitap_hat import beta_olc, ithal
+
+    r = {"dosya": "X-T001_02", "govde": "Tepkimenin derecesi kactir?"}
+    sec = {h: str(i) for i, h in enumerate("ABCDE")}
+    assert "ortak_oncul_kirpimda_yok" in ithal._bayraklar(r, sec, ("X-T001_02",))
+    assert "ortak_oncul_kirpimda_yok" not in ithal._bayraklar(r, sec, ("X-T001_03",))
+    assert "ortak_oncul_kirpimda_yok" in beta_olc.SERVIS_DISI
+    sablon = (
+        Path(__file__).resolve().parents[2] / "scripts/kitap/kitap_hat/sablon/beta.tmpl"
+    ).read_text("ascii")
+    assert "? 'ortak_oncul_kirpimda_yok')" in " ".join(sablon.split())
+
+
 def test_sus_bolgeleri_yalniz_doygun_pikseli_beyazlar() -> None:
     a = np.full((50, 50, 3), 255, np.uint8)
     a[10:14, 10:14] = (160, 30, 70)  # koyu kirmizi kivrim (doygun)

@@ -187,6 +187,16 @@ def _ustler(
     return ustler
 
 
+def _kutu_ust(p: ModuleType, d: int, s: str, ustler: list[int]) -> list[int]:
+    """KUTU_UST {(dosya, sutun, sutun_sira): y}: sorunun ustundeki numarasiz
+    ORTAK bilgi (grafik / tablo, 'x-y. sorulari ... gore') o sorunun kutusuna
+    katilir (gozle, profilde listeli); yoksa kutu artik murekkep kapisi."""
+    for (kd, ks, ki), ky in getattr(p, "KUTU_UST", {}).items():
+        if (kd, ks) == (d, s):
+            ustler[ki] = min(ustler[ki], int(ky))
+    return ustler
+
+
 def _sutun_alt_siniri(
     p: ModuleType,
     sayfa: dict,
@@ -239,7 +249,7 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
             artik=artik,
             uyarilar=uyarilar,
         )
-        ustler = _ustler(p, a, (x0, x1), capa, mur)
+        ustler = _kutu_ust(p, d, s, _ustler(p, a, (x0, x1), capa, mur))
         for i, c in enumerate(capa):
             alt = ustler[i + 1] - 1 if i + 1 < len(capa) else alt_sinir
             cv = cevap[(d, s, i)]

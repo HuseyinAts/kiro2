@@ -49,6 +49,7 @@ SERVIS_DISI = (
     "gorsel_yok_sekilli",
     "gosterilemez_gorsel_sik_kirpimsiz",
     "sik_okunamadi",
+    "ortak_oncul_kirpimda_yok",
 )
 
 

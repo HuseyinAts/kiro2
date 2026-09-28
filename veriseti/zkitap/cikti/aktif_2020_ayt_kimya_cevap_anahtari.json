@@ -1,0 +1,7519 @@
+{
+"kaynak": "2019-2020 Aktif AYT Kimya",
+"arac": "scripts/kitap/kitap_hat/anahtar.py",
+"nereden": "her test sayfasinin altindaki iki acik mavi kutu ('Soru 1/ B' ...; test iki sayfaysa iki serit sayfa sirasiyla) + testin ilk sayfasinin ust bandi",
+"dogrulama": {
+"a_esittir_b_hucre": 937,
+"glif_loo_uyum": 936,
+"glif_goz_teyit": 1,
+"goz_c_hucre": 0,
+"hucre_sayisi_esittir_capa": true
+},
+"toplam_cevap": 937,
+"test_sayisi": 71,
+"harf_dagilimi": {
+"A": 101,
+"B": 164,
+"C": 223,
+"D": 210,
+"E": 239
+},
+"cevaplar": [
+{
+"birim": "AKT20AY-T001",
+"soru": 1,
+"cevap": "D",
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 2,
+"cevap": "D",
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 3,
+"cevap": "E",
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 4,
+"cevap": "A",
+"dosya": 23,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 5,
+"cevap": "C",
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 6,
+"cevap": "A",
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 7,
+"cevap": "A",
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 8,
+"cevap": "C",
+"dosya": 23,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 9,
+"cevap": "E",
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 10,
+"cevap": "C",
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 11,
+"cevap": "C",
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 12,
+"cevap": "E",
+"dosya": 24,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 13,
+"cevap": "C",
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 14,
+"cevap": "B",
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 15,
+"cevap": "D",
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T001",
+"soru": 16,
+"cevap": "D",
+"dosya": 24,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 1,
+"cevap": "C",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 2,
+"cevap": "A",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 3,
+"cevap": "D",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 4,
+"cevap": "A",
+"dosya": 25,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 5,
+"cevap": "A",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 6,
+"cevap": "D",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 7,
+"cevap": "D",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 8,
+"cevap": "E",
+"dosya": 25,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 9,
+"cevap": "B",
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 10,
+"cevap": "B",
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 11,
+"cevap": "E",
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 12,
+"cevap": "D",
+"dosya": 26,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 13,
+"cevap": "A",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 14,
+"cevap": "E",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 15,
+"cevap": "C",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T002",
+"soru": 16,
+"cevap": "B",
+"dosya": 26,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 1,
+"cevap": "E",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 2,
+"cevap": "E",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 3,
+"cevap": "D",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 4,
+"cevap": "A",
+"dosya": 27,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 5,
+"cevap": "D",
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 6,
+"cevap": "A",
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 7,
+"cevap": "B",
+"dosya": 27,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 8,
+"cevap": "C",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 9,
+"cevap": "E",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 10,
+"cevap": "D",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 11,
+"cevap": "A",
+"dosya": 28,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 12,
+"cevap": "C",
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 13,
+"cevap": "D",
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T003",
+"soru": 14,
+"cevap": "E",
+"dosya": 28,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 1,
+"cevap": "C",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 2,
+"cevap": "C",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 3,
+"cevap": "D",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 4,
+"cevap": "E",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 5,
+"cevap": "D",
+"dosya": 29,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 6,
+"cevap": "A",
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 7,
+"cevap": "C",
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 8,
+"cevap": "E",
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 9,
+"cevap": "D",
+"dosya": 29,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 10,
+"cevap": "C",
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 11,
+"cevap": "B",
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 12,
+"cevap": "D",
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 13,
+"cevap": "C",
+"dosya": 30,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 14,
+"cevap": "E",
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 15,
+"cevap": "E",
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 16,
+"cevap": "C",
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T004",
+"soru": 17,
+"cevap": "E",
+"dosya": 30,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 1,
+"cevap": "B",
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 2,
+"cevap": "B",
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 3,
+"cevap": "C",
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 4,
+"cevap": "A",
+"dosya": 31,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 5,
+"cevap": "E",
+"dosya": 31,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 6,
+"cevap": "E",
+"dosya": 31,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 7,
+"cevap": "D",
+"dosya": 31,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 8,
+"cevap": "B",
+"dosya": 32,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 9,
+"cevap": "C",
+"dosya": 32,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 10,
+"cevap": "C",
+"dosya": 32,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 11,
+"cevap": "E",
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 12,
+"cevap": "E",
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 13,
+"cevap": "D",
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T005",
+"soru": 14,
+"cevap": "D",
+"dosya": 32,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 1,
+"cevap": "E",
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 2,
+"cevap": "D",
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 3,
+"cevap": "E",
+"dosya": 49,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 4,
+"cevap": "E",
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 5,
+"cevap": "E",
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 6,
+"cevap": "B",
+"dosya": 49,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 7,
+"cevap": "D",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 8,
+"cevap": "E",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 9,
+"cevap": "C",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 10,
+"cevap": "C",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 11,
+"cevap": "D",
+"dosya": 50,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 12,
+"cevap": "D",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 13,
+"cevap": "D",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 14,
+"cevap": "E",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T006",
+"soru": 15,
+"cevap": "D",
+"dosya": 50,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 1,
+"cevap": "C",
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 2,
+"cevap": "B",
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 3,
+"cevap": "C",
+"dosya": 51,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 4,
+"cevap": "E",
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 5,
+"cevap": "B",
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 6,
+"cevap": "E",
+"dosya": 51,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 7,
+"cevap": "D",
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 8,
+"cevap": "D",
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 9,
+"cevap": "B",
+"dosya": 52,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 10,
+"cevap": "D",
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 11,
+"cevap": "A",
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T007",
+"soru": 12,
+"cevap": "A",
+"dosya": 52,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 1,
+"cevap": "E",
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 2,
+"cevap": "D",
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 3,
+"cevap": "B",
+"dosya": 53,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 4,
+"cevap": "C",
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 5,
+"cevap": "A",
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 6,
+"cevap": "D",
+"dosya": 53,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 7,
+"cevap": "A",
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 8,
+"cevap": "E",
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 9,
+"cevap": "C",
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 10,
+"cevap": "D",
+"dosya": 54,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 11,
+"cevap": "E",
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 12,
+"cevap": "C",
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T008",
+"soru": 13,
+"cevap": "C",
+"dosya": 54,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 1,
+"cevap": "E",
+"dosya": 55,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 2,
+"cevap": "E",
+"dosya": 55,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 3,
+"cevap": "B",
+"dosya": 55,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 4,
+"cevap": "C",
+"dosya": 55,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 5,
+"cevap": "D",
+"dosya": 55,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 6,
+"cevap": "E",
+"dosya": 55,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 7,
+"cevap": "E",
+"dosya": 55,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 8,
+"cevap": "D",
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 9,
+"cevap": "E",
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 10,
+"cevap": "C",
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 11,
+"cevap": "D",
+"dosya": 56,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 12,
+"cevap": "E",
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 13,
+"cevap": "B",
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 14,
+"cevap": "E",
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T009",
+"soru": 15,
+"cevap": "A",
+"dosya": 56,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 1,
+"cevap": "E",
+"dosya": 77,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 2,
+"cevap": "A",
+"dosya": 77,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 3,
+"cevap": "B",
+"dosya": 77,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 4,
+"cevap": "C",
+"dosya": 77,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 5,
+"cevap": "D",
+"dosya": 77,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 6,
+"cevap": "D",
+"dosya": 77,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 7,
+"cevap": "C",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 8,
+"cevap": "E",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 9,
+"cevap": "B",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 10,
+"cevap": "E",
+"dosya": 78,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 11,
+"cevap": "E",
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 12,
+"cevap": "B",
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T010",
+"soru": 13,
+"cevap": "E",
+"dosya": 78,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 1,
+"cevap": "B",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 2,
+"cevap": "A",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 3,
+"cevap": "C",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 4,
+"cevap": "B",
+"dosya": 79,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 5,
+"cevap": "D",
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 6,
+"cevap": "C",
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 7,
+"cevap": "B",
+"dosya": 79,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 8,
+"cevap": "B",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 9,
+"cevap": "E",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 10,
+"cevap": "D",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 11,
+"cevap": "C",
+"dosya": 80,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 12,
+"cevap": "B",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 13,
+"cevap": "E",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 14,
+"cevap": "B",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T011",
+"soru": 15,
+"cevap": "B",
+"dosya": 80,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 1,
+"cevap": "C",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 2,
+"cevap": "B",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 3,
+"cevap": "D",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 4,
+"cevap": "A",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 5,
+"cevap": "A",
+"dosya": 81,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 6,
+"cevap": "D",
+"dosya": 81,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 7,
+"cevap": "C",
+"dosya": 81,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 8,
+"cevap": "D",
+"dosya": 81,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 9,
+"cevap": "E",
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 10,
+"cevap": "D",
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 11,
+"cevap": "E",
+"dosya": 82,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 12,
+"cevap": "D",
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 13,
+"cevap": "D",
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T012",
+"soru": 14,
+"cevap": "B",
+"dosya": 82,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 1,
+"cevap": "C",
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 2,
+"cevap": "D",
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 3,
+"cevap": "A",
+"dosya": 83,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 4,
+"cevap": "B",
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 5,
+"cevap": "A",
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 6,
+"cevap": "D",
+"dosya": 83,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 7,
+"cevap": "E",
+"dosya": 84,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 8,
+"cevap": "D",
+"dosya": 84,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 9,
+"cevap": "D",
+"dosya": 84,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 10,
+"cevap": "E",
+"dosya": 84,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 11,
+"cevap": "B",
+"dosya": 84,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T013",
+"soru": 12,
+"cevap": "B",
+"dosya": 84,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 1,
+"cevap": "C",
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 2,
+"cevap": "B",
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 3,
+"cevap": "C",
+"dosya": 85,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 4,
+"cevap": "D",
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 5,
+"cevap": "D",
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 6,
+"cevap": "D",
+"dosya": 85,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 7,
+"cevap": "E",
+"dosya": 86,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 8,
+"cevap": "C",
+"dosya": 86,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 9,
+"cevap": "D",
+"dosya": 86,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 10,
+"cevap": "E",
+"dosya": 86,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 11,
+"cevap": "D",
+"dosya": 86,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T014",
+"soru": 12,
+"cevap": "A",
+"dosya": 86,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 1,
+"cevap": "E",
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 2,
+"cevap": "A",
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 3,
+"cevap": "E",
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 4,
+"cevap": "D",
+"dosya": 107,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 5,
+"cevap": "D",
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 6,
+"cevap": "A",
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 7,
+"cevap": "D",
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 8,
+"cevap": "B",
+"dosya": 107,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 9,
+"cevap": "B",
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 10,
+"cevap": "B",
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 11,
+"cevap": "D",
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 12,
+"cevap": "C",
+"dosya": 108,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 13,
+"cevap": "A",
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 14,
+"cevap": "D",
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 15,
+"cevap": "B",
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T015",
+"soru": 16,
+"cevap": "C",
+"dosya": 108,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 1,
+"cevap": "E",
+"dosya": 109,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 2,
+"cevap": "C",
+"dosya": 109,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 3,
+"cevap": "B",
+"dosya": 109,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 4,
+"cevap": "E",
+"dosya": 109,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 5,
+"cevap": "A",
+"dosya": 109,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 6,
+"cevap": "D",
+"dosya": 109,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 7,
+"cevap": "C",
+"dosya": 110,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 8,
+"cevap": "D",
+"dosya": 110,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 9,
+"cevap": "D",
+"dosya": 110,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 10,
+"cevap": "D",
+"dosya": 110,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 11,
+"cevap": "C",
+"dosya": 110,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T016",
+"soru": 12,
+"cevap": "D",
+"dosya": 110,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 1,
+"cevap": "D",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 2,
+"cevap": "E",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 3,
+"cevap": "B",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 4,
+"cevap": "B",
+"dosya": 111,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 5,
+"cevap": "E",
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 6,
+"cevap": "C",
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 7,
+"cevap": "C",
+"dosya": 111,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 8,
+"cevap": "E",
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 9,
+"cevap": "D",
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 10,
+"cevap": "E",
+"dosya": 112,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 11,
+"cevap": "E",
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T017",
+"soru": 12,
+"cevap": "E",
+"dosya": 112,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 1,
+"cevap": "C",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 2,
+"cevap": "E",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 3,
+"cevap": "C",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 4,
+"cevap": "D",
+"dosya": 113,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 5,
+"cevap": "D",
+"dosya": 113,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 6,
+"cevap": "D",
+"dosya": 113,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 7,
+"cevap": "B",
+"dosya": 113,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 8,
+"cevap": "D",
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 9,
+"cevap": "D",
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 10,
+"cevap": "C",
+"dosya": 114,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 11,
+"cevap": "C",
+"dosya": 114,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T018",
+"soru": 12,
+"cevap": "B",
+"dosya": 114,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 1,
+"cevap": "A",
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 2,
+"cevap": "E",
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 3,
+"cevap": "C",
+"dosya": 115,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 4,
+"cevap": "E",
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 5,
+"cevap": "C",
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 6,
+"cevap": "E",
+"dosya": 115,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 7,
+"cevap": "E",
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 8,
+"cevap": "C",
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 9,
+"cevap": "E",
+"dosya": 116,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 10,
+"cevap": "D",
+"dosya": 116,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T019",
+"soru": 11,
+"cevap": "E",
+"dosya": 116,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 1,
+"cevap": "E",
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 2,
+"cevap": "D",
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 3,
+"cevap": "D",
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 4,
+"cevap": "B",
+"dosya": 117,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 5,
+"cevap": "B",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 6,
+"cevap": "D",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 7,
+"cevap": "E",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 8,
+"cevap": "C",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 9,
+"cevap": "A",
+"dosya": 117,
+"sutun": "R",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 10,
+"cevap": "C",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 11,
+"cevap": "C",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 12,
+"cevap": "D",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 13,
+"cevap": "B",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 14,
+"cevap": "C",
+"dosya": 118,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 15,
+"cevap": "E",
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 16,
+"cevap": "C",
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T020",
+"soru": 17,
+"cevap": "D",
+"dosya": 118,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 1,
+"cevap": "D",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 2,
+"cevap": "E",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 3,
+"cevap": "D",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 4,
+"cevap": "D",
+"dosya": 133,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 5,
+"cevap": "D",
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 6,
+"cevap": "E",
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 7,
+"cevap": "C",
+"dosya": 133,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 8,
+"cevap": "E",
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 9,
+"cevap": "C",
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 10,
+"cevap": "C",
+"dosya": 134,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 11,
+"cevap": "D",
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 12,
+"cevap": "D",
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 13,
+"cevap": "E",
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T021",
+"soru": 14,
+"cevap": "D",
+"dosya": 134,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 1,
+"cevap": "E",
+"dosya": 135,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 2,
+"cevap": "B",
+"dosya": 135,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 3,
+"cevap": "A",
+"dosya": 135,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 4,
+"cevap": "B",
+"dosya": 135,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 5,
+"cevap": "A",
+"dosya": 135,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 6,
+"cevap": "D",
+"dosya": 135,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 7,
+"cevap": "D",
+"dosya": 135,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 8,
+"cevap": "B",
+"dosya": 135,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 9,
+"cevap": "E",
+"dosya": 136,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 10,
+"cevap": "B",
+"dosya": 136,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 11,
+"cevap": "B",
+"dosya": 136,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 12,
+"cevap": "E",
+"dosya": 136,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T022",
+"soru": 13,
+"cevap": "A",
+"dosya": 136,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 1,
+"cevap": "C",
+"dosya": 137,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 2,
+"cevap": "B",
+"dosya": 137,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 3,
+"cevap": "C",
+"dosya": 137,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 4,
+"cevap": "D",
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 5,
+"cevap": "C",
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 6,
+"cevap": "D",
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 7,
+"cevap": "E",
+"dosya": 137,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 8,
+"cevap": "D",
+"dosya": 138,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 9,
+"cevap": "C",
+"dosya": 138,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 10,
+"cevap": "A",
+"dosya": 138,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 11,
+"cevap": "A",
+"dosya": 138,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 12,
+"cevap": "C",
+"dosya": 138,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T023",
+"soru": 13,
+"cevap": "C",
+"dosya": 138,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 1,
+"cevap": "B",
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 2,
+"cevap": "C",
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 3,
+"cevap": "D",
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 4,
+"cevap": "C",
+"dosya": 139,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 5,
+"cevap": "D",
+"dosya": 139,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 6,
+"cevap": "C",
+"dosya": 139,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 7,
+"cevap": "C",
+"dosya": 139,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 8,
+"cevap": "D",
+"dosya": 140,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 9,
+"cevap": "E",
+"dosya": 140,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 10,
+"cevap": "B",
+"dosya": 140,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 11,
+"cevap": "A",
+"dosya": 140,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 12,
+"cevap": "B",
+"dosya": 140,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T024",
+"soru": 13,
+"cevap": "E",
+"dosya": 140,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 1,
+"cevap": "D",
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 2,
+"cevap": "C",
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 3,
+"cevap": "D",
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 4,
+"cevap": "B",
+"dosya": 161,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 5,
+"cevap": "A",
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 6,
+"cevap": "B",
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 7,
+"cevap": "C",
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 8,
+"cevap": "C",
+"dosya": 161,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 9,
+"cevap": "C",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 10,
+"cevap": "B",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 11,
+"cevap": "E",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 12,
+"cevap": "E",
+"dosya": 162,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 13,
+"cevap": "D",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 14,
+"cevap": "D",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 15,
+"cevap": "E",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 16,
+"cevap": "D",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 17,
+"cevap": "C",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T025",
+"soru": 18,
+"cevap": "A",
+"dosya": 162,
+"sutun": "R",
+"sutun_sira": 5
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 1,
+"cevap": "E",
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 2,
+"cevap": "D",
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 3,
+"cevap": "D",
+"dosya": 163,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 4,
+"cevap": "B",
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 5,
+"cevap": "A",
+"dosya": 163,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 6,
+"cevap": "E",
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 7,
+"cevap": "B",
+"dosya": 164,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 8,
+"cevap": "B",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 9,
+"cevap": "E",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 10,
+"cevap": "D",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T026",
+"soru": 11,
+"cevap": "E",
+"dosya": 164,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 1,
+"cevap": "B",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 2,
+"cevap": "C",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 3,
+"cevap": "D",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 4,
+"cevap": "D",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 5,
+"cevap": "B",
+"dosya": 165,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 6,
+"cevap": "B",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 7,
+"cevap": "D",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 8,
+"cevap": "E",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 9,
+"cevap": "B",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 10,
+"cevap": "D",
+"dosya": 165,
+"sutun": "R",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 11,
+"cevap": "A",
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 12,
+"cevap": "C",
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 13,
+"cevap": "C",
+"dosya": 166,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 14,
+"cevap": "E",
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 15,
+"cevap": "C",
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 16,
+"cevap": "A",
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T027",
+"soru": 17,
+"cevap": "C",
+"dosya": 166,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 1,
+"cevap": "A",
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 2,
+"cevap": "D",
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 3,
+"cevap": "D",
+"dosya": 167,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 4,
+"cevap": "A",
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 5,
+"cevap": "A",
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 6,
+"cevap": "E",
+"dosya": 167,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 7,
+"cevap": "E",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 8,
+"cevap": "E",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 9,
+"cevap": "E",
+"dosya": 168,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 10,
+"cevap": "C",
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 11,
+"cevap": "D",
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T028",
+"soru": 12,
+"cevap": "B",
+"dosya": 168,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 1,
+"cevap": "D",
+"dosya": 169,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 2,
+"cevap": "D",
+"dosya": 169,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 3,
+"cevap": "E",
+"dosya": 169,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 4,
+"cevap": "B",
+"dosya": 169,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 5,
+"cevap": "C",
+"dosya": 169,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 6,
+"cevap": "B",
+"dosya": 169,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 7,
+"cevap": "B",
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 8,
+"cevap": "A",
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 9,
+"cevap": "D",
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 10,
+"cevap": "E",
+"dosya": 170,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 11,
+"cevap": "E",
+"dosya": 170,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T029",
+"soru": 12,
+"cevap": "A",
+"dosya": 170,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 1,
+"cevap": "D",
+"dosya": 197,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 2,
+"cevap": "E",
+"dosya": 197,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 3,
+"cevap": "D",
+"dosya": 197,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 4,
+"cevap": "E",
+"dosya": 197,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 5,
+"cevap": "D",
+"dosya": 197,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 6,
+"cevap": "D",
+"dosya": 197,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 7,
+"cevap": "A",
+"dosya": 198,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 8,
+"cevap": "D",
+"dosya": 198,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 9,
+"cevap": "E",
+"dosya": 198,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 10,
+"cevap": "D",
+"dosya": 198,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 11,
+"cevap": "E",
+"dosya": 198,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T030",
+"soru": 12,
+"cevap": "D",
+"dosya": 198,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 1,
+"cevap": "E",
+"dosya": 199,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 2,
+"cevap": "D",
+"dosya": 199,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 3,
+"cevap": "E",
+"dosya": 199,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 4,
+"cevap": "E",
+"dosya": 199,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 5,
+"cevap": "D",
+"dosya": 199,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 6,
+"cevap": "B",
+"dosya": 199,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 7,
+"cevap": "C",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 8,
+"cevap": "A",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 9,
+"cevap": "C",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 10,
+"cevap": "A",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 11,
+"cevap": "D",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 12,
+"cevap": "A",
+"dosya": 200,
+"sutun": "L",
+"sutun_sira": 5
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 13,
+"cevap": "C",
+"dosya": 200,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 14,
+"cevap": "D",
+"dosya": 200,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T031",
+"soru": 15,
+"cevap": "E",
+"dosya": 200,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 1,
+"cevap": "C",
+"dosya": 201,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 2,
+"cevap": "B",
+"dosya": 201,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 3,
+"cevap": "C",
+"dosya": 201,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 4,
+"cevap": "A",
+"dosya": 201,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 5,
+"cevap": "D",
+"dosya": 201,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 6,
+"cevap": "B",
+"dosya": 201,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 7,
+"cevap": "C",
+"dosya": 202,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 8,
+"cevap": "C",
+"dosya": 202,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 9,
+"cevap": "A",
+"dosya": 202,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 10,
+"cevap": "E",
+"dosya": 202,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T032",
+"soru": 11,
+"cevap": "D",
+"dosya": 202,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 1,
+"cevap": "A",
+"dosya": 203,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 2,
+"cevap": "A",
+"dosya": 203,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 3,
+"cevap": "C",
+"dosya": 203,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 4,
+"cevap": "B",
+"dosya": 203,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 5,
+"cevap": "E",
+"dosya": 203,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 6,
+"cevap": "B",
+"dosya": 203,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 7,
+"cevap": "E",
+"dosya": 204,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 8,
+"cevap": "C",
+"dosya": 204,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 9,
+"cevap": "B",
+"dosya": 204,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 10,
+"cevap": "E",
+"dosya": 204,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 11,
+"cevap": "E",
+"dosya": 204,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T033",
+"soru": 12,
+"cevap": "E",
+"dosya": 204,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 1,
+"cevap": "E",
+"dosya": 205,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 2,
+"cevap": "C",
+"dosya": 205,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 3,
+"cevap": "D",
+"dosya": 205,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 4,
+"cevap": "B",
+"dosya": 205,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 5,
+"cevap": "A",
+"dosya": 205,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 6,
+"cevap": "C",
+"dosya": 206,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 7,
+"cevap": "B",
+"dosya": 206,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 8,
+"cevap": "D",
+"dosya": 206,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 9,
+"cevap": "A",
+"dosya": 206,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 10,
+"cevap": "D",
+"dosya": 206,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T034",
+"soru": 11,
+"cevap": "B",
+"dosya": 206,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 1,
+"cevap": "E",
+"dosya": 207,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 2,
+"cevap": "E",
+"dosya": 207,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 3,
+"cevap": "A",
+"dosya": 207,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 4,
+"cevap": "C",
+"dosya": 207,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 5,
+"cevap": "A",
+"dosya": 207,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 6,
+"cevap": "C",
+"dosya": 207,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 7,
+"cevap": "E",
+"dosya": 208,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 8,
+"cevap": "C",
+"dosya": 208,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 9,
+"cevap": "E",
+"dosya": 208,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 10,
+"cevap": "B",
+"dosya": 208,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 11,
+"cevap": "D",
+"dosya": 208,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T035",
+"soru": 12,
+"cevap": "C",
+"dosya": 208,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 1,
+"cevap": "E",
+"dosya": 231,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 2,
+"cevap": "E",
+"dosya": 231,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 3,
+"cevap": "C",
+"dosya": 231,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 4,
+"cevap": "E",
+"dosya": 231,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 5,
+"cevap": "D",
+"dosya": 231,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 6,
+"cevap": "A",
+"dosya": 231,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 7,
+"cevap": "A",
+"dosya": 231,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 8,
+"cevap": "C",
+"dosya": 231,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 9,
+"cevap": "B",
+"dosya": 232,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 10,
+"cevap": "E",
+"dosya": 232,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 11,
+"cevap": "B",
+"dosya": 232,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 12,
+"cevap": "D",
+"dosya": 232,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 13,
+"cevap": "C",
+"dosya": 232,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T036",
+"soru": 14,
+"cevap": "C",
+"dosya": 232,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 1,
+"cevap": "C",
+"dosya": 233,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 2,
+"cevap": "C",
+"dosya": 233,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 3,
+"cevap": "E",
+"dosya": 233,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 4,
+"cevap": "B",
+"dosya": 233,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 5,
+"cevap": "A",
+"dosya": 233,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 6,
+"cevap": "B",
+"dosya": 233,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 7,
+"cevap": "B",
+"dosya": 234,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 8,
+"cevap": "C",
+"dosya": 234,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 9,
+"cevap": "C",
+"dosya": 234,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 10,
+"cevap": "B",
+"dosya": 234,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 11,
+"cevap": "B",
+"dosya": 234,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 12,
+"cevap": "D",
+"dosya": 234,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 13,
+"cevap": "B",
+"dosya": 234,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 14,
+"cevap": "D",
+"dosya": 234,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T037",
+"soru": 15,
+"cevap": "C",
+"dosya": 234,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 1,
+"cevap": "B",
+"dosya": 235,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 2,
+"cevap": "C",
+"dosya": 235,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 3,
+"cevap": "C",
+"dosya": 235,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 4,
+"cevap": "A",
+"dosya": 235,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 5,
+"cevap": "B",
+"dosya": 235,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 6,
+"cevap": "E",
+"dosya": 235,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 7,
+"cevap": "E",
+"dosya": 236,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 8,
+"cevap": "C",
+"dosya": 236,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 9,
+"cevap": "C",
+"dosya": 236,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 10,
+"cevap": "B",
+"dosya": 236,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 11,
+"cevap": "D",
+"dosya": 236,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 12,
+"cevap": "E",
+"dosya": 236,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 13,
+"cevap": "B",
+"dosya": 236,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T038",
+"soru": 14,
+"cevap": "D",
+"dosya": 236,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 1,
+"cevap": "E",
+"dosya": 237,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 2,
+"cevap": "C",
+"dosya": 237,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 3,
+"cevap": "D",
+"dosya": 237,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 4,
+"cevap": "C",
+"dosya": 237,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 5,
+"cevap": "D",
+"dosya": 237,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 6,
+"cevap": "A",
+"dosya": 237,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 7,
+"cevap": "E",
+"dosya": 238,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 8,
+"cevap": "C",
+"dosya": 238,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 9,
+"cevap": "E",
+"dosya": 238,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 10,
+"cevap": "B",
+"dosya": 238,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 11,
+"cevap": "B",
+"dosya": 238,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T039",
+"soru": 12,
+"cevap": "A",
+"dosya": 238,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 1,
+"cevap": "E",
+"dosya": 239,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 2,
+"cevap": "B",
+"dosya": 239,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 3,
+"cevap": "D",
+"dosya": 239,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 4,
+"cevap": "B",
+"dosya": 239,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 5,
+"cevap": "D",
+"dosya": 239,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 6,
+"cevap": "C",
+"dosya": 240,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 7,
+"cevap": "E",
+"dosya": 240,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 8,
+"cevap": "E",
+"dosya": 240,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 9,
+"cevap": "B",
+"dosya": 240,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 10,
+"cevap": "C",
+"dosya": 240,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T040",
+"soru": 11,
+"cevap": "D",
+"dosya": 240,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 1,
+"cevap": "E",
+"dosya": 241,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 2,
+"cevap": "C",
+"dosya": 241,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 3,
+"cevap": "C",
+"dosya": 241,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 4,
+"cevap": "D",
+"dosya": 241,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 5,
+"cevap": "E",
+"dosya": 241,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 6,
+"cevap": "E",
+"dosya": 241,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 7,
+"cevap": "C",
+"dosya": 241,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 8,
+"cevap": "E",
+"dosya": 242,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 9,
+"cevap": "C",
+"dosya": 242,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 10,
+"cevap": "D",
+"dosya": 242,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 11,
+"cevap": "E",
+"dosya": 242,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 12,
+"cevap": "C",
+"dosya": 242,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 13,
+"cevap": "B",
+"dosya": 242,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T041",
+"soru": 14,
+"cevap": "B",
+"dosya": 242,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 1,
+"cevap": "D",
+"dosya": 243,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 2,
+"cevap": "C",
+"dosya": 243,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 3,
+"cevap": "A",
+"dosya": 243,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 4,
+"cevap": "E",
+"dosya": 243,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 5,
+"cevap": "C",
+"dosya": 243,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 6,
+"cevap": "E",
+"dosya": 243,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 7,
+"cevap": "E",
+"dosya": 243,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 8,
+"cevap": "D",
+"dosya": 244,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 9,
+"cevap": "B",
+"dosya": 244,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 10,
+"cevap": "A",
+"dosya": 244,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 11,
+"cevap": "C",
+"dosya": 244,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 12,
+"cevap": "C",
+"dosya": 244,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 13,
+"cevap": "E",
+"dosya": 244,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T042",
+"soru": 14,
+"cevap": "A",
+"dosya": 244,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 1,
+"cevap": "E",
+"dosya": 277,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 2,
+"cevap": "E",
+"dosya": 277,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 3,
+"cevap": "C",
+"dosya": 277,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 4,
+"cevap": "C",
+"dosya": 277,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 5,
+"cevap": "E",
+"dosya": 277,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 6,
+"cevap": "D",
+"dosya": 277,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 7,
+"cevap": "A",
+"dosya": 277,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 8,
+"cevap": "C",
+"dosya": 277,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 9,
+"cevap": "A",
+"dosya": 278,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 10,
+"cevap": "E",
+"dosya": 278,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 11,
+"cevap": "C",
+"dosya": 278,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 12,
+"cevap": "D",
+"dosya": 278,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 13,
+"cevap": "C",
+"dosya": 278,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 14,
+"cevap": "C",
+"dosya": 278,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T043",
+"soru": 15,
+"cevap": "D",
+"dosya": 278,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 1,
+"cevap": "B",
+"dosya": 279,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 2,
+"cevap": "C",
+"dosya": 279,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 3,
+"cevap": "C",
+"dosya": 279,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 4,
+"cevap": "E",
+"dosya": 279,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 5,
+"cevap": "D",
+"dosya": 279,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 6,
+"cevap": "E",
+"dosya": 279,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 7,
+"cevap": "D",
+"dosya": 279,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 8,
+"cevap": "C",
+"dosya": 280,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 9,
+"cevap": "B",
+"dosya": 280,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 10,
+"cevap": "C",
+"dosya": 280,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 11,
+"cevap": "A",
+"dosya": 280,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 12,
+"cevap": "C",
+"dosya": 280,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T044",
+"soru": 13,
+"cevap": "D",
+"dosya": 280,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 1,
+"cevap": "E",
+"dosya": 281,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 2,
+"cevap": "E",
+"dosya": 281,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 3,
+"cevap": "C",
+"dosya": 281,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 4,
+"cevap": "E",
+"dosya": 281,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 5,
+"cevap": "C",
+"dosya": 281,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 6,
+"cevap": "E",
+"dosya": 282,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 7,
+"cevap": "B",
+"dosya": 282,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 8,
+"cevap": "C",
+"dosya": 282,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 9,
+"cevap": "B",
+"dosya": 282,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 10,
+"cevap": "B",
+"dosya": 282,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 11,
+"cevap": "D",
+"dosya": 282,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T045",
+"soru": 12,
+"cevap": "C",
+"dosya": 282,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 1,
+"cevap": "C",
+"dosya": 283,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 2,
+"cevap": "B",
+"dosya": 283,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 3,
+"cevap": "E",
+"dosya": 283,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 4,
+"cevap": "C",
+"dosya": 283,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 5,
+"cevap": "D",
+"dosya": 283,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 6,
+"cevap": "A",
+"dosya": 284,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 7,
+"cevap": "E",
+"dosya": 284,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 8,
+"cevap": "E",
+"dosya": 284,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 9,
+"cevap": "C",
+"dosya": 284,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T046",
+"soru": 10,
+"cevap": "B",
+"dosya": 284,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 1,
+"cevap": "D",
+"dosya": 285,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 2,
+"cevap": "E",
+"dosya": 285,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 3,
+"cevap": "E",
+"dosya": 285,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 4,
+"cevap": "E",
+"dosya": 285,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 5,
+"cevap": "D",
+"dosya": 286,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 6,
+"cevap": "C",
+"dosya": 286,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 7,
+"cevap": "A",
+"dosya": 286,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 8,
+"cevap": "B",
+"dosya": 286,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T047",
+"soru": 9,
+"cevap": "E",
+"dosya": 286,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 1,
+"cevap": "E",
+"dosya": 287,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 2,
+"cevap": "E",
+"dosya": 287,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 3,
+"cevap": "E",
+"dosya": 287,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 4,
+"cevap": "A",
+"dosya": 287,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 5,
+"cevap": "C",
+"dosya": 287,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 6,
+"cevap": "E",
+"dosya": 288,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 7,
+"cevap": "D",
+"dosya": 288,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 8,
+"cevap": "D",
+"dosya": 288,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 9,
+"cevap": "A",
+"dosya": 288,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T048",
+"soru": 10,
+"cevap": "D",
+"dosya": 288,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 1,
+"cevap": "C",
+"dosya": 289,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 2,
+"cevap": "C",
+"dosya": 289,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 3,
+"cevap": "B",
+"dosya": 289,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 4,
+"cevap": "D",
+"dosya": 289,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 5,
+"cevap": "D",
+"dosya": 289,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 6,
+"cevap": "D",
+"dosya": 289,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 7,
+"cevap": "E",
+"dosya": 290,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 8,
+"cevap": "C",
+"dosya": 290,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 9,
+"cevap": "B",
+"dosya": 290,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 10,
+"cevap": "D",
+"dosya": 290,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 11,
+"cevap": "C",
+"dosya": 290,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T049",
+"soru": 12,
+"cevap": "E",
+"dosya": 290,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 1,
+"cevap": "E",
+"dosya": 291,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 2,
+"cevap": "E",
+"dosya": 291,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 3,
+"cevap": "C",
+"dosya": 291,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 4,
+"cevap": "E",
+"dosya": 291,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 5,
+"cevap": "C",
+"dosya": 291,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 6,
+"cevap": "E",
+"dosya": 291,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 7,
+"cevap": "E",
+"dosya": 292,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 8,
+"cevap": "C",
+"dosya": 292,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 9,
+"cevap": "D",
+"dosya": 292,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 10,
+"cevap": "E",
+"dosya": 292,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 11,
+"cevap": "E",
+"dosya": 292,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T050",
+"soru": 12,
+"cevap": "B",
+"dosya": 292,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 1,
+"cevap": "D",
+"dosya": 293,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 2,
+"cevap": "C",
+"dosya": 293,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 3,
+"cevap": "C",
+"dosya": 293,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 4,
+"cevap": "C",
+"dosya": 293,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 5,
+"cevap": "A",
+"dosya": 293,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 6,
+"cevap": "B",
+"dosya": 293,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 7,
+"cevap": "E",
+"dosya": 293,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 8,
+"cevap": "E",
+"dosya": 293,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 9,
+"cevap": "A",
+"dosya": 293,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 10,
+"cevap": "B",
+"dosya": 294,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 11,
+"cevap": "C",
+"dosya": 294,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 12,
+"cevap": "E",
+"dosya": 294,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 13,
+"cevap": "C",
+"dosya": 294,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 14,
+"cevap": "B",
+"dosya": 294,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T051",
+"soru": 15,
+"cevap": "B",
+"dosya": 294,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 1,
+"cevap": "E",
+"dosya": 311,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 2,
+"cevap": "D",
+"dosya": 311,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 3,
+"cevap": "E",
+"dosya": 311,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 4,
+"cevap": "D",
+"dosya": 311,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 5,
+"cevap": "A",
+"dosya": 311,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 6,
+"cevap": "B",
+"dosya": 311,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 7,
+"cevap": "B",
+"dosya": 311,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 8,
+"cevap": "A",
+"dosya": 311,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 9,
+"cevap": "A",
+"dosya": 312,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 10,
+"cevap": "C",
+"dosya": 312,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 11,
+"cevap": "D",
+"dosya": 312,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 12,
+"cevap": "B",
+"dosya": 312,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 13,
+"cevap": "B",
+"dosya": 312,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T052",
+"soru": 14,
+"cevap": "C",
+"dosya": 312,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 1,
+"cevap": "A",
+"dosya": 313,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 2,
+"cevap": "B",
+"dosya": 313,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 3,
+"cevap": "D",
+"dosya": 313,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 4,
+"cevap": "A",
+"dosya": 313,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 5,
+"cevap": "C",
+"dosya": 313,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 6,
+"cevap": "D",
+"dosya": 313,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 7,
+"cevap": "E",
+"dosya": 314,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 8,
+"cevap": "D",
+"dosya": 314,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 9,
+"cevap": "B",
+"dosya": 314,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 10,
+"cevap": "D",
+"dosya": 314,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 11,
+"cevap": "B",
+"dosya": 314,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T053",
+"soru": 12,
+"cevap": "D",
+"dosya": 314,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 1,
+"cevap": "B",
+"dosya": 315,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 2,
+"cevap": "D",
+"dosya": 315,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 3,
+"cevap": "E",
+"dosya": 315,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 4,
+"cevap": "C",
+"dosya": 315,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 5,
+"cevap": "D",
+"dosya": 315,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 6,
+"cevap": "C",
+"dosya": 315,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 7,
+"cevap": "C",
+"dosya": 315,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 8,
+"cevap": "A",
+"dosya": 316,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 9,
+"cevap": "C",
+"dosya": 316,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 10,
+"cevap": "E",
+"dosya": 316,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 11,
+"cevap": "B",
+"dosya": 316,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 12,
+"cevap": "E",
+"dosya": 316,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 13,
+"cevap": "C",
+"dosya": 316,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T054",
+"soru": 14,
+"cevap": "C",
+"dosya": 316,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 1,
+"cevap": "C",
+"dosya": 317,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 2,
+"cevap": "D",
+"dosya": 317,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 3,
+"cevap": "C",
+"dosya": 317,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 4,
+"cevap": "A",
+"dosya": 317,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 5,
+"cevap": "B",
+"dosya": 317,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 6,
+"cevap": "B",
+"dosya": 317,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 7,
+"cevap": "E",
+"dosya": 318,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 8,
+"cevap": "B",
+"dosya": 318,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 9,
+"cevap": "D",
+"dosya": 318,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 10,
+"cevap": "B",
+"dosya": 318,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 11,
+"cevap": "A",
+"dosya": 318,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 12,
+"cevap": "C",
+"dosya": 318,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T055",
+"soru": 13,
+"cevap": "B",
+"dosya": 318,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 1,
+"cevap": "E",
+"dosya": 355,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 2,
+"cevap": "D",
+"dosya": 355,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 3,
+"cevap": "D",
+"dosya": 355,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 4,
+"cevap": "E",
+"dosya": 355,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 5,
+"cevap": "E",
+"dosya": 355,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 6,
+"cevap": "A",
+"dosya": 355,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 7,
+"cevap": "D",
+"dosya": 355,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 8,
+"cevap": "A",
+"dosya": 356,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 9,
+"cevap": "A",
+"dosya": 356,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 10,
+"cevap": "E",
+"dosya": 356,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 11,
+"cevap": "B",
+"dosya": 356,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 12,
+"cevap": "C",
+"dosya": 356,
+"sutun": "L",
+"sutun_sira": 4
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 13,
+"cevap": "C",
+"dosya": 356,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 14,
+"cevap": "E",
+"dosya": 356,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 15,
+"cevap": "C",
+"dosya": 356,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T056",
+"soru": 16,
+"cevap": "D",
+"dosya": 356,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 1,
+"cevap": "B",
+"dosya": 357,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 2,
+"cevap": "E",
+"dosya": 357,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 3,
+"cevap": "B",
+"dosya": 357,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 4,
+"cevap": "C",
+"dosya": 357,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 5,
+"cevap": "E",
+"dosya": 357,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 6,
+"cevap": "D",
+"dosya": 357,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 7,
+"cevap": "C",
+"dosya": 357,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 8,
+"cevap": "E",
+"dosya": 358,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 9,
+"cevap": "E",
+"dosya": 358,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 10,
+"cevap": "D",
+"dosya": 358,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 11,
+"cevap": "D",
+"dosya": 358,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 12,
+"cevap": "C",
+"dosya": 358,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T057",
+"soru": 13,
+"cevap": "B",
+"dosya": 358,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 1,
+"cevap": "C",
+"dosya": 359,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 2,
+"cevap": "B",
+"dosya": 359,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 3,
+"cevap": "D",
+"dosya": 359,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 4,
+"cevap": "B",
+"dosya": 359,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 5,
+"cevap": "C",
+"dosya": 359,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 6,
+"cevap": "E",
+"dosya": 359,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 7,
+"cevap": "B",
+"dosya": 360,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 8,
+"cevap": "E",
+"dosya": 360,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 9,
+"cevap": "B",
+"dosya": 360,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 10,
+"cevap": "B",
+"dosya": 360,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T058",
+"soru": 11,
+"cevap": "B",
+"dosya": 360,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 1,
+"cevap": "C",
+"dosya": 361,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 2,
+"cevap": "E",
+"dosya": 361,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 3,
+"cevap": "E",
+"dosya": 361,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 4,
+"cevap": "E",
+"dosya": 361,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 5,
+"cevap": "E",
+"dosya": 361,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 6,
+"cevap": "C",
+"dosya": 361,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 7,
+"cevap": "D",
+"dosya": 361,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 8,
+"cevap": "E",
+"dosya": 362,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 9,
+"cevap": "A",
+"dosya": 362,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 10,
+"cevap": "D",
+"dosya": 362,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 11,
+"cevap": "B",
+"dosya": 362,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 12,
+"cevap": "B",
+"dosya": 362,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 13,
+"cevap": "C",
+"dosya": 362,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T059",
+"soru": 14,
+"cevap": "D",
+"dosya": 362,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 1,
+"cevap": "B",
+"dosya": 363,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 2,
+"cevap": "E",
+"dosya": 363,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 3,
+"cevap": "C",
+"dosya": 363,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 4,
+"cevap": "E",
+"dosya": 363,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 5,
+"cevap": "B",
+"dosya": 363,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 6,
+"cevap": "A",
+"dosya": 363,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 7,
+"cevap": "E",
+"dosya": 363,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 8,
+"cevap": "D",
+"dosya": 364,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 9,
+"cevap": "E",
+"dosya": 364,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 10,
+"cevap": "E",
+"dosya": 364,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 11,
+"cevap": "C",
+"dosya": 364,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 12,
+"cevap": "B",
+"dosya": 364,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 13,
+"cevap": "A",
+"dosya": 364,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T060",
+"soru": 14,
+"cevap": "D",
+"dosya": 364,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 1,
+"cevap": "C",
+"dosya": 365,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 2,
+"cevap": "E",
+"dosya": 365,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 3,
+"cevap": "D",
+"dosya": 365,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 4,
+"cevap": "C",
+"dosya": 365,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 5,
+"cevap": "C",
+"dosya": 365,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 6,
+"cevap": "C",
+"dosya": 365,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 7,
+"cevap": "C",
+"dosya": 366,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 8,
+"cevap": "D",
+"dosya": 366,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 9,
+"cevap": "A",
+"dosya": 366,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 10,
+"cevap": "D",
+"dosya": 366,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 11,
+"cevap": "E",
+"dosya": 366,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 12,
+"cevap": "E",
+"dosya": 366,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T061",
+"soru": 13,
+"cevap": "C",
+"dosya": 366,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 1,
+"cevap": "D",
+"dosya": 367,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 2,
+"cevap": "C",
+"dosya": 367,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 3,
+"cevap": "C",
+"dosya": 367,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 4,
+"cevap": "E",
+"dosya": 367,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 5,
+"cevap": "D",
+"dosya": 367,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 6,
+"cevap": "E",
+"dosya": 368,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 7,
+"cevap": "C",
+"dosya": 368,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 8,
+"cevap": "D",
+"dosya": 368,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 9,
+"cevap": "B",
+"dosya": 368,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 10,
+"cevap": "B",
+"dosya": 368,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 11,
+"cevap": "D",
+"dosya": 368,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T062",
+"soru": 12,
+"cevap": "E",
+"dosya": 368,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 1,
+"cevap": "C",
+"dosya": 369,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 2,
+"cevap": "E",
+"dosya": 369,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 3,
+"cevap": "E",
+"dosya": 369,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 4,
+"cevap": "C",
+"dosya": 369,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 5,
+"cevap": "C",
+"dosya": 369,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 6,
+"cevap": "B",
+"dosya": 369,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 7,
+"cevap": "C",
+"dosya": 369,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 8,
+"cevap": "C",
+"dosya": 370,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 9,
+"cevap": "C",
+"dosya": 370,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 10,
+"cevap": "D",
+"dosya": 370,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 11,
+"cevap": "C",
+"dosya": 370,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 12,
+"cevap": "B",
+"dosya": 370,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T063",
+"soru": 13,
+"cevap": "B",
+"dosya": 370,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 1,
+"cevap": "C",
+"dosya": 371,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 2,
+"cevap": "E",
+"dosya": 371,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 3,
+"cevap": "C",
+"dosya": 371,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 4,
+"cevap": "B",
+"dosya": 371,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 5,
+"cevap": "E",
+"dosya": 371,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 6,
+"cevap": "E",
+"dosya": 371,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 7,
+"cevap": "C",
+"dosya": 371,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 8,
+"cevap": "E",
+"dosya": 372,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 9,
+"cevap": "A",
+"dosya": 372,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 10,
+"cevap": "C",
+"dosya": 372,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 11,
+"cevap": "B",
+"dosya": 372,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 12,
+"cevap": "A",
+"dosya": 372,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T064",
+"soru": 13,
+"cevap": "D",
+"dosya": 372,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 1,
+"cevap": "C",
+"dosya": 373,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 2,
+"cevap": "D",
+"dosya": 373,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 3,
+"cevap": "E",
+"dosya": 373,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 4,
+"cevap": "D",
+"dosya": 373,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 5,
+"cevap": "E",
+"dosya": 373,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 6,
+"cevap": "B",
+"dosya": 373,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 7,
+"cevap": "E",
+"dosya": 373,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 8,
+"cevap": "C",
+"dosya": 374,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 9,
+"cevap": "A",
+"dosya": 374,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 10,
+"cevap": "C",
+"dosya": 374,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 11,
+"cevap": "E",
+"dosya": 374,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 12,
+"cevap": "E",
+"dosya": 374,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T065",
+"soru": 13,
+"cevap": "C",
+"dosya": 374,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 1,
+"cevap": "B",
+"dosya": 399,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 2,
+"cevap": "B",
+"dosya": 399,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 3,
+"cevap": "B",
+"dosya": 399,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 4,
+"cevap": "E",
+"dosya": 399,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 5,
+"cevap": "C",
+"dosya": 399,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 6,
+"cevap": "E",
+"dosya": 399,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 7,
+"cevap": "E",
+"dosya": 400,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 8,
+"cevap": "E",
+"dosya": 400,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 9,
+"cevap": "E",
+"dosya": 400,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 10,
+"cevap": "E",
+"dosya": 400,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 11,
+"cevap": "E",
+"dosya": 400,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T066",
+"soru": 12,
+"cevap": "A",
+"dosya": 400,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 1,
+"cevap": "D",
+"dosya": 401,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 2,
+"cevap": "C",
+"dosya": 401,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 3,
+"cevap": "C",
+"dosya": 401,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 4,
+"cevap": "E",
+"dosya": 401,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 5,
+"cevap": "E",
+"dosya": 401,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 6,
+"cevap": "E",
+"dosya": 401,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 7,
+"cevap": "B",
+"dosya": 402,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 8,
+"cevap": "E",
+"dosya": 402,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 9,
+"cevap": "D",
+"dosya": 402,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 10,
+"cevap": "C",
+"dosya": 402,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T067",
+"soru": 11,
+"cevap": "C",
+"dosya": 402,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 1,
+"cevap": "E",
+"dosya": 403,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 2,
+"cevap": "B",
+"dosya": 403,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 3,
+"cevap": "C",
+"dosya": 403,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 4,
+"cevap": "B",
+"dosya": 403,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 5,
+"cevap": "E",
+"dosya": 403,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 6,
+"cevap": "C",
+"dosya": 403,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 7,
+"cevap": "E",
+"dosya": 403,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 8,
+"cevap": "D",
+"dosya": 403,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 9,
+"cevap": "C",
+"dosya": 404,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 10,
+"cevap": "E",
+"dosya": 404,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 11,
+"cevap": "A",
+"dosya": 404,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 12,
+"cevap": "D",
+"dosya": 404,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 13,
+"cevap": "C",
+"dosya": 404,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T068",
+"soru": 14,
+"cevap": "D",
+"dosya": 404,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 1,
+"cevap": "D",
+"dosya": 405,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 2,
+"cevap": "E",
+"dosya": 405,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 3,
+"cevap": "B",
+"dosya": 405,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 4,
+"cevap": "C",
+"dosya": 405,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 5,
+"cevap": "E",
+"dosya": 405,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 6,
+"cevap": "D",
+"dosya": 405,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 7,
+"cevap": "A",
+"dosya": 405,
+"sutun": "R",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 8,
+"cevap": "C",
+"dosya": 406,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 9,
+"cevap": "B",
+"dosya": 406,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 10,
+"cevap": "B",
+"dosya": 406,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 11,
+"cevap": "B",
+"dosya": 406,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 12,
+"cevap": "C",
+"dosya": 406,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 13,
+"cevap": "A",
+"dosya": 406,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T069",
+"soru": 14,
+"cevap": "E",
+"dosya": 406,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 1,
+"cevap": "C",
+"dosya": 413,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 2,
+"cevap": "D",
+"dosya": 413,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 3,
+"cevap": "E",
+"dosya": 413,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 4,
+"cevap": "E",
+"dosya": 413,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 5,
+"cevap": "D",
+"dosya": 413,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 6,
+"cevap": "A",
+"dosya": 413,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 7,
+"cevap": "E",
+"dosya": 413,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 8,
+"cevap": "A",
+"dosya": 414,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 9,
+"cevap": "C",
+"dosya": 414,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 10,
+"cevap": "E",
+"dosya": 414,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 11,
+"cevap": "B",
+"dosya": 414,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 12,
+"cevap": "D",
+"dosya": 414,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T070",
+"soru": 13,
+"cevap": "B",
+"dosya": 414,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 1,
+"cevap": "D",
+"dosya": 415,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 2,
+"cevap": "D",
+"dosya": 415,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 3,
+"cevap": "B",
+"dosya": 415,
+"sutun": "L",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 4,
+"cevap": "E",
+"dosya": 415,
+"sutun": "L",
+"sutun_sira": 3
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 5,
+"cevap": "A",
+"dosya": 415,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 6,
+"cevap": "C",
+"dosya": 415,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 7,
+"cevap": "D",
+"dosya": 415,
+"sutun": "R",
+"sutun_sira": 2
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 8,
+"cevap": "B",
+"dosya": 416,
+"sutun": "L",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 9,
+"cevap": "C",
+"dosya": 416,
+"sutun": "L",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 10,
+"cevap": "D",
+"dosya": 416,
+"sutun": "R",
+"sutun_sira": 0
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 11,
+"cevap": "C",
+"dosya": 416,
+"sutun": "R",
+"sutun_sira": 1
+},
+{
+"birim": "AKT20AY-T071",
+"soru": 12,
+"cevap": "B",
+"dosya": 416,
+"sutun": "R",
+"sutun_sira": 2
+}
+]
+}

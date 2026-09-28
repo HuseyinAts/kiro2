@@ -157,7 +157,12 @@ def anahtar_bolgesi(a: np.ndarray, n: int) -> list[int] | None:
     ilk satir (122 test sayfasinda 907), x = kutularin kapsami (20-715).
     Bolge kutu ustunden SERIT_YUKSEKLIK px (metin y 909-921); aradaki sayfa
     numarasi ANAHTAR_DISLA_X ile glif kanalindan disarida."""
-    z = a[SERIT_Y[0] : SERIT_Y[1]]
+    return serit_kutusu(a, SERIT_Y)
+
+
+def serit_kutusu(a: np.ndarray, serit_y: tuple[int, int]) -> list[int] | None:
+    """anahtar_bolgesi govdesi; serit_y arama penceresi (seri kitaplari ortak)."""
+    z = a[serit_y[0] : serit_y[1]]
     lb = _acik_mavi(z)
     satir = np.where(lb.sum(axis=1) > 200)[0]
     if len(satir) < 20:  # kutu ~56 satir; tekil acik mavi satir serit degil
@@ -165,7 +170,7 @@ def anahtar_bolgesi(a: np.ndarray, n: int) -> list[int] | None:
     xs = np.where(lb[satir[0] : satir[0] + 40].sum(axis=0) > 10)[0]
     if not len(xs):
         return None
-    y0 = int(satir[0]) + SERIT_Y[0] - 1
+    y0 = int(satir[0]) + serit_y[0] - 1
     x0, x1 = int(xs.min()), int(xs.max())
     # Iki satirli serit (cok sorulu sayfa; 2. satir y ~925-932): alt sinir
     # kutudaki son koyu satir + 3 (tek satirda metin 909-921 -> y0 + 20).
@@ -331,6 +336,13 @@ MODERN_IKIZ_KAYNAK = None
 YAYINEVI = "Aktif Ogrenme Yayinlari"
 BEKLENEN_ETIKET = 0
 YONTEM_BELGESI = "KIM_AKTIF_2020_0DAN_YONTEM.md"
+# s196 sag sutun ortak tabloya dayanan 9-11 (tablo yalniz 8. sorunun
+# kirpiminda): 'ortak_oncul_kirpimda_yok', servis disi (0105).
+ORTAK_ONCUL_YOK: tuple[str, ...] = (
+    "AKT20K0-T032_09",
+    "AKT20K0-T032_10",
+    "AKT20K0-T032_11",
+)
 
 SONUC = {
     "sayfa_turu": {"kapak": 6, "konu": 240, "test": 122},
@@ -347,4 +359,11 @@ SONUC = {
     "eski_modern": 187,
     "migration_no": 99,
     "onceki": "0098_acl24am_beta_onay",
+    # AKT20AY'de bulunan hata sinifi (ortak tabloya dayanan sorular): s196
+    # T032_09..11 0105 ile servis disi (ORTAK_ONCUL_YOK), aktif 750/868.
+    "ortak_oncul_duzeltme": {
+        "migration_no": 105,
+        "servis_disi": 3,
+        "beta_sonrasi": "750/868",
+    },
 }
