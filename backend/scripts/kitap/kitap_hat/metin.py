@@ -118,12 +118,16 @@ def talimat(p: ModuleType) -> str:
 # onlara dayaniyorsa' kurali secime birakiyordu; APO19FZ'de iki okuma 327 soruda
 # farkli etiket secti (hakem 221'ini 'yalniz secim farki' buldu). Rakam iceren
 # her etiket + sabit bicim + sirasiz karsilastirma (metin_iki_okuma._SEKIL_SATIRI).
+# ARO23AF: sekil basliklari ('Sekil 1') rakam icerdigi icin gruplar arasi hakem
+# kararlari ayristi (g03/g15 'girer', g05 'girmez') -> basliklar acikca disarida.
 SEKIL_SATIRI_KURALI = (
     "\n## Sekil olculeri (bu kitap) -- MEKANIK KURAL, secim yapma\n"
     "Sekilde (cizim, grafik, devre, tablo DISI) basili ve RAKAM ICEREN her etiketi "
     "govdenin EN SON satirina tek satirda yaz: `\u015eekil: <e1>; <e2>; ...` "
     "(ornek `\u015eekil: 30\u00b0; 2 m; 10 N; h = 3 m; \u22123 m/s; 6\u03a9`). "
-    "Sira onemsiz. Rakam icermeyen etiketler (K, L, P, h, v, F) YAZILMAZ; eksen "
+    "Sira onemsiz. Rakam icermeyen etiketler (K, L, P, h, v, F) YAZILMAZ; "
+    "sekil BASLIKLARI ('\u015eekil 1', '\u015eekil II', 'I. kap') etiket degildir, "
+    "YAZILMAZ; eksen "
     "adlari yazilmaz, eksen uzerindeki sayilar yazilir. Sekilde rakamli etiket yoksa "
     "bu satir YOK. Tablo bu satira degil, tablo kuralina gore govdeye girer. Sekil "
     "olculerini govdenin baska yerine satir olarak EKLEME.\n"

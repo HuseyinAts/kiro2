@@ -36,11 +36,21 @@ def serit_dizini(p: ModuleType) -> Path:
 
 
 def okuma(p: ModuleType, k: str, sayfa: bool = False) -> list[dict]:
+    """Serit okumasi. Tek okuma (APO19FZ sonrasi; ikinci kanal glif): okuma_B
+    yoksa B icin A doner -- A == B kapisi bos gecer, hucre dogrulamasi
+    `anahtar glif` + `ham --etiket-goz` kanalindadir."""
     ad = f"okuma_{k}_sayfa.json" if sayfa else f"okuma_{k}.json"
-    testler: list[dict] = json.loads((serit_dizini(p) / ad).read_text("utf-8"))[
-        "testler"
-    ]
+    yol = serit_dizini(p) / ad
+    if k == "B" and not yol.exists() and not tek_okuma_degil(p):
+        return okuma(p, "A", sayfa)
+    testler: list[dict] = json.loads(yol.read_text("utf-8"))["testler"]
     return testler
+
+
+def tek_okuma_degil(p: ModuleType) -> bool:
+    """okuma_B (ya da sayfa bicimi) diskte varsa iki okumali akis."""
+    o = serit_dizini(p)
+    return (o / "okuma_B.json").exists() or (o / "okuma_B_sayfa.json").exists()
 
 
 def baski_duzelt(
@@ -191,7 +201,7 @@ def main() -> None:
             )
         return
     o = serit_dizini(p)
-    for k in "AB":
+    for k in "AB" if tek_okuma_degil(p) else "A":
         f, fs = o / f"okuma_{k}.json", o / f"okuma_{k}_sayfa.json"
         if not fs.exists():
             fs.write_text(f.read_text("utf-8"), "utf-8")

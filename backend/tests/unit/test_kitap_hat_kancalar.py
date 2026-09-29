@@ -406,3 +406,50 @@ def test_anahtar_numara_baskisi_sira_numarasina_cevrilir() -> None:
     # Profildeki basili deger okumayla uyusmazsa (bayat kayit) durur.
     with pytest.raises(SystemExit):
         anahtar.baski_numara(p, 7, [[1, "A"], [2, "B"], [3, "C"]])
+
+
+def test_aromat_harf_bloku_ilk_tireden_sonra_baslar() -> None:
+    from scripts.kitap.kitap_hat.profiller import aro23af
+
+    # 6 satirlik '1-D': rakam acik gri (maskeye girmez), tire orta satirda koyu,
+    # D'nin sag kenari yalniz orta satirlarda murekkepli (tireye benzer).
+    s = np.full((10, 30, 3), 255, np.uint8)
+    s[2:8, 2] = 190  # '1' acik gri
+    s[5, 5:7] = 60  # tire (orta satir)
+    s[2:8, 9] = 60  # D govdesi
+    s[2, 10:12] = 60
+    s[7, 10:12] = 60
+    s[4:6, 12] = 60  # D sag kenari: yalniz orta satirlar
+    bl = aro23af.harf_bloblari(s)
+    assert len(bl) == 1
+    assert (bl[0][1].start, bl[0][1].stop) == (9, 13)
+
+
+def test_bas_listesi_tek_okumada_b_yerine_a(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import json
+
+    from scripts.kitap.kitap_hat import ortak
+
+    monkeypatch.setattr(ortak, "VERAFILM", tmp_path)
+    p = SimpleNamespace(VERAF="zz")
+    d = tmp_path / "zz_serit"
+    d.mkdir()
+    a = {"testler": [{"test": 1, "konu": "K", "test_no": "1", "hucreler": [[1, "A"]]}]}
+    (d / "okuma_A.json").write_text(json.dumps(a), "utf-8")
+    assert not bas_listesi.tek_okuma_degil(p)
+    assert bas_listesi.okuma(p, "B") == bas_listesi.okuma(p, "A")
+    (d / "okuma_B.json").write_text(json.dumps({"testler": []}), "utf-8")
+    assert bas_listesi.tek_okuma_degil(p)
+    assert bas_listesi.okuma(p, "B") == []
+
+
+def test_bant_esleri_demet_ve_tekil() -> None:
+    from scripts.kitap.kitap_hat import harita
+
+    p = SimpleNamespace(BANT_ESLER={"ELEKTRIK": ("A", "B"), "X": "Y"})
+    assert harita.bant_esleri(p, "ELEKTRIK") == ("A", "B")
+    assert harita.bant_esleri(p, "X") == ("Y",)
+    assert harita.bant_esleri(p, "YOK") == ()
+    assert harita.norm("NEWTON\u2019IN") == harita.norm("NEWTON'IN")
