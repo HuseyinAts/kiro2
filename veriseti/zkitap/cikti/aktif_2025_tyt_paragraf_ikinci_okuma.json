@@ -1,0 +1,885 @@
+{
+ "kitap": "AKTIF 2025 TYT Paragraf Soru Bankasi",
+ "on_kayit_tarihi": "2026-09-29",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3 saglanmadi (KMT345 %4.7, SOS345 %5.9, TRT345 %4.0, ACL20T %4.9, ACL21T %3.7). Dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 12 ayri okuyucu; ayni talimat (yalniz teslim dizini c3_metin_parca2), ayni gruplar ve kirpimlar. Okuma 1 ve okuma 2 okuyuculari TEK toplu dagitimda birlikte kosulur (bagimsizlik dizin ayrimiyla saglanir). Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (bosluk, satir sonu, eksi/tire tipi, carpma noktasi tipi) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret (+, -, carpma, bolme, esitsizlik), us / kok / kesir kapsami, parantez, harf / degisken, eksik/fazla kelime veya satir, yanlis sik, alti cizili kapsam, eksik etiket.",
+ "sonuc": {
+  "soru": 451,
+  "ayni_soru_normalize": 408,
+  "farkli_soru": 43,
+  "hukum_dagilimi": {
+   "okuma_2": 17,
+   "okuma_1": 24,
+   "ikisi": 2
+  },
+  "ilk_okuma_esasli_hata": 26,
+  "ikinci_okuma_esasli_hata": 19,
+  "not": "Normalizasyon (metin_iki_okuma.norm): NFC, kesme/tirnak tipi, eksi/tire tipi, birlesik ust/alt cizgi, Unicode ust simge -> ^n, bileske halkasi U+2218 -> o, nokta operatoru, uc nokta, kok+ust cizgi -> kok, tek karakterli us/indis parantezi, kokte tek atom parantezi, '/' oncesi tek atom parantezi, ciftlenmis parantez, tablo ayraci+ok, (gorsel)/(sekil), C(n, r) = (n r) ve TUM bosluk. Anlam tasiyan parantez esitlenmez. Her kalan fark hakem tarafindan kirpimdan gozle karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer. Iki okumanin AYNI bicimde atladigi sekil verisi karsilastirmada gorunmez."
+ },
+ "hukumler": [
+  {
+   "dosya": "AKT25PR-T001_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "5x NEAREST: 'hisseder. Ataklar.' sonunda nokta var; 'bu durum:' iki nokta (noktali virgul degil). okuma_2 noktayi dusurmus ve ':' yerine ';' yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T001_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "4. satir x432-470 6x buyutme + piksel dokumu: 'o' sonrasi iki harf de x-yuksekliginin ustunden (satir 96) baslayan, ayakli t govdesi; r omzu yok. Basili 'ottaki'; okuma_1 'ortaki' yanlis."
+  },
+  {
+   "dosya": "AKT25PR-T002_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "C \u015f\u0131kk\u0131 4x NEAREST: 'Kar\u015f\u0131la\u015ft\u0131ma' bas\u0131l\u0131 ('\u015f'ten sonra 't\u0131', r yok); kitap dizgi hatas\u0131 bas\u0131ld\u0131\u011f\u0131 gibi kal\u0131r."
+  },
+  {
+   "dosya": "AKT25PR-T002_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 2 sonu 'milli' son harfi 8x NEAREST + piksel dokumu: son i uzerindeki isaret 3-4 px genis (+###), normal i noktasi 2 px (-++-); satir 7'deki (iki okumanin da 'mill\u00ee' yazdigi) isaretle ayni sekil -> 'mill\u00ee'. okuma_1 sapkayi dusurmus."
+  },
+  {
+   "dosya": "AKT25PR-T002_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 5 \"kuskucu oluyor\" sonrasi isaret: piksel dokumunde (x270-300,y122-150) iki ayri nokta (orta ve taban), taban altinda kuyruk yok -> iki nokta (:), noktali virgul degil. okuma_2 \";\" yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T004_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "1. satir 'veya d\u011fer' 6x NEAREST buyutmede 'd' ile '\u011f' arasinda i yok; kitap dizgi hatasi 'd\u011fer' basili, okuma_2 dogru; okuma_1 'di\u011fer' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25PR-T004_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 7 basi 'ede-/bi eserlerin': piksel dokumunde 'bi' uzerindeki isaret 3-4 px genis (+### / +##+), ayni satirdaki normal i noktasi 2 px (##); C sikkindaki 'Edeb\u00ee' isaretiyle ayni bicim -> circumflex 'edeb\u00ee'. okuma_2 'edebi' yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T005_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "A sikki 2. satir 4x NEAREST: basili 'sonras\u0131naki' (d harfi yok, kitap dizgi hatasi); okuma_2 'sonras\u0131ndaki' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25PR-T006_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "4x NEAREST: basili 'vugulamaktad\u0131r' (r yok, dizgi hatasi). okuma_2 'vurgulamaktad\u0131r' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25PR-T007_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "5. satir sonu 6x buyutme: 'M\u00fckemmelli-' + alt satir 'yet\u00e7ilik' = 'M\u00fckemmelliyet\u00e7ilik' (cift l). okuma_2 tek l yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T008_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "4. sat\u0131r 4x: 'rockla s\u0131k\u00e7a' \u2014 'k'dan sonra 'l' dikey \u00e7ubuk, 't' \u00e7engeli yok."
+  },
+  {
+   "dosya": "AKT25PR-T010_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 10, 5x buyutme: 'yans\u0131t\u0131ld\u0131\u011f\u0131n\u0131,' acikca basili (\u2026\u011f\u0131n\u0131). okuma_2 '-n\u0131' ekini dusurmus."
+  },
+  {
+   "dosya": "AKT25PR-T010_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 1 \"merkez?\": 6x/12x buyutme + piksel dokumu; i uzerinde 4 satir yuksek, koyu, egik bir isaret var (ayni satirdaki \"otoritenin\" i noktasi soluk 2x2) -> sapkali \"merkez\u00ee\". okuma_1 duz \"merkezi\" yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T011_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x buyutme: 3. satirda 'pop\u00fclaritenin' (l'den sonra a acikca), 6. satir basi 'min\u00ee' (tahmin-/min\u00ee) i uzerinde sapka var; okuma_2 dogru, okuma_1 ikisinde de yanlis."
+  },
+  {
+   "dosya": "AKT25PR-T013_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 8 'veya zaman kaybetmek': piksel dokumu (x260-340,y228-245) z-a-m-a-n harfleri, n'den sonra bosluk ve k; ek '\u0131' yok. Basili 'zaman'; okuma_1 'zaman\u0131' fazla harf."
+  },
+  {
+   "dosya": "AKT25PR-T014_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6. satir basi 8x + piksel dokumu: 'Bat' sonrasi kisa-uzun-kisa-uzun dort dikey cizgi (\u0131 l \u0131 l) sonra 'ar\u0131n' => 'Bat\u0131l\u0131lar\u0131n'; okuma_1 'Bat\u0131lar\u0131n' bir hece eksik."
+  },
+  {
+   "dosya": "AKT25PR-T014_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "5x NEAREST: kapanis tirnagindan hemen sonra 'da', kesme isareti yok ('\"sepet oyunu\"da'). okuma_2 fazladan kesme eklemis."
+  },
+  {
+   "dosya": "AKT25PR-T014_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "A sikki son satir 6x buyutme: 'tabiat\u0131 taklitle bulmu\u015ftur' (l harfi, 't' capraz cizgisi yok). okuma_1 'taklitte' yanlis."
+  },
+  {
+   "dosya": "AKT25PR-T015_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "4. sat\u0131r 6x: 'izahatsiz' \u2014 sondan ikinci harf noktal\u0131 i. 'de\u011fil,  seyyah\u0131n' aras\u0131 geni\u015f bo\u015fluk: yaln\u0131z bi\u00e7im, okuma_1 bi\u00e7imi korundu."
+  },
+  {
+   "dosya": "AKT25PR-T015_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Satir 3 sonu 'ge-' + satir 4 basi 'zici' (6x buyutme, 'z' net) -> 'gezici'; okuma_2 'ge\u00e7ici' yazmis. 've  mezarl\u0131k' cift bosluk yalniz bosluk farki (basilida genis aralik), tek bosluga normalize edildi."
+  },
+  {
+   "dosya": "AKT25PR-T015_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 7 italik \"Divan-\u00fc L?gati't\": 12x buyutme + piksel dokumu; \"Divan-\u00fc\" u'sunun ustunde iki ayri nokta var, \"L?gati\" u'sunun ustunde tek parca tek isaret -> \"L\u00fbgati't\" (sapka). okuma_1 \"L\u00fcgati't\" yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T015_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "2. satir sonu 'so-' (6x buyutme, tire acik, daire yok) + 3. satir 'runa cevap' -> 'sorusuna'; okuma_2 'soruna' yazarak hece dusurmus."
+  },
+  {
+   "dosya": "AKT25PR-T016_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'B\u00f6ylece evli olan karde\u015f de her hece' satiri: 3x buyutme + piksel dokumu; kelimenin ilk harfi taban cizgisi ustunde yukselen sapli 'h' (ayni satirdaki 'her' h'si ile ayni), alt uzantisi yok; ust paragraftaki 'gece' g'sinde alt uzanti var. Basili dizgi hatasi 'hece' korunur; okuma_1 'gece' duzeltmis."
+  },
+  {
+   "dosya": "AKT25PR-T016_09",
+   "esasli_hata": "okuma_2",
+   "gerekce": "C sikki I. satir sonu 5x: 'yap\u0131lmal\u0131d\u0131r.' sonunda nokta acikca basili; okuma_2 noktayi atlamis."
+  },
+  {
+   "dosya": "AKT25PR-T016_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "5x NEAREST: A siki 'Roman\u0131 i\u00e7eriklerini' - 'Roman' sonrasinda noktasiz \u0131 basili. okuma_1 \u0131'yi dusurmus."
+  },
+  {
+   "dosya": "AKT25PR-T016_14",
+   "esasli_hata": "okuma_1",
+   "gerekce": "1. satir '\u015femsiyeler' sonrasi isaret piksel dokumu (x570-600): 3x3 blok yalniz taban cizgisi uzerinde (satir 31-33), asagi sarkma yok; ayni kirpimdaki virgul (x352, satir 90-93) tabandan 2 px sarkiyor. Basili nokta; okuma_1 virgul yanlis. Cift bosluk bicim farki, tek bosluk yazildi."
+  },
+  {
+   "dosya": "AKT25PR-T018_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "4. sat\u0131r 8x: 'sunduklar\u0131n\u0131' (d\u00fc\u015f\u00fck \u00e7\u00f6z\u00fcn\u00fcrl\u00fckte 'r\u0131' n gibi, ard\u0131ndan 'n\u0131'); okuma_1 son '\u0131'y\u0131 d\u00fc\u015f\u00fcrm\u00fc\u015f."
+  },
+  {
+   "dosya": "AKT25PR-T018_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "E sikki satir 1 sonu 6x buyutme: '\u00f6ge-' / 'leri'; g uzerinde kisa cizgi (breve) yok -> '\u00f6geleri'. okuma_1 '\u00f6\u011feleri' yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T019_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 2 sonu 5x buyutme: harfler b-\u00fc-t-\u00fc-n-\u00fc-d-\u00fc-r acikca okunuyor -> \"b\u00fct\u00fcn\u00fcd\u00fcr\". okuma_1 \"b\u00fct\u00fcnd\u00fcr\" (bir hece eksik) yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T019_17",
+   "esasli_hata": "ikisi",
+   "gerekce": "3. satir 8x NEAREST: harfler P-e-n-n-y-s-y-l-u-v-a-n-i-a acikca (iki y inisi gorunuyor) -> basili 'Pennysyluvania'; okuma_1 'Pennsyluvania' (ilk y eksik), okuma_2 'Pennsylvania' (duzeltilmis) - ikisi de yanlis."
+  },
+  {
+   "dosya": "AKT25PR-T021_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "B sikki 'iklim de\u011fi-' / '\u015fikleri s\u00fcrecini': 3x buyutmede satir sonu 'de\u011fi-' ve alt satir '\u015fikleri' -> 'de\u011fi\u015fikleri' (tek 'ik'). okuma_1 'de\u011fi\u015fiklikleri' fazla hece."
+  },
+  {
+   "dosya": "AKT25PR-T021_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Iki '90\u00b0 den' yeri 5x + piksel dokumu: 90'dan sonra yalniz derece halkasi (ikincisinde daha koyu/egik halka, ortasi bos), ayri kesme isareti yok, sonra bosluk + 'den'; okuma_2 basilmamis kesme eklemis."
+  },
+  {
+   "dosya": "AKT25PR-T023_15",
+   "esasli_hata": "okuma_1",
+   "gerekce": "3x NEAREST: soru kokundeki 'de\u011finilmemi\u015ftir' kelimesinin altinda gri alt cizgi var ('?' haric). okuma_1 alti cizili vurguyu atlamis."
+  },
+  {
+   "dosya": "AKT25PR-T024_12",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Govde 2. satir 6x buyutme: '\u00f6nemsizken aslolan \u015fey' tek kelime basili. okuma_2 'as\u0131l olan' yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T025_05",
+   "esasli_hata": "ikisi",
+   "gerekce": "IV ve V sat\u0131rlar\u0131 8x: son harf noktas\u0131z \u0131, \u00fcst\u00fcnde d\u00fczeltme i\u015fareti yok (ayn\u0131 k\u0131rp\u0131mda 'Edeb\u00ee' \u00ee \u00fcst\u00fcnde ve '\u00e2lem' \u00e2 \u00fcst\u00fcnde i\u015faret g\u00f6r\u00fcn\u00fcyor, 'itibar' i\u00e7indeki i'lerde nokta var). Bas\u0131l\u0131 'itibar\u0131'; okuma_1 'itibari', okuma_2 'itibar\u00ee' ikisi de yanl\u0131\u015f."
+  },
+  {
+   "dosya": "AKT25PR-T025_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 8 sonu 'evlerin-' + satir 9 'de aile ar\u015fivleri de bulunmu\u015ftur' (5x buyutme): 'evlerinde aile'; okuma_1 fazladan 'de' eklemis."
+  },
+  {
+   "dosya": "AKT25PR-T026_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Satir 7 \"gelm?stir\": 8x/10x buyutme + piksel dokumu; s altinda cengel yok (tabanin 1 satir altinda tek soluk piksel, t ile ayni). Karsilastirma: son satir \"belirginlesmistir\"deki iki s harfinde 4 satirlik belirgin cengel var. Basili \"gelmistir\" (kitap dizgi hatasi, oldugu gibi). okuma_1 \"gelmi\u015ftir\" diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25PR-T027_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soru koku 6x buyutme: '\u00e7\u0131kar\u0131lamaz' kelimesinin altinda gri alt cizgi var (? haric); okuma_1 <u> dogru, okuma_2 alti ciziliyi atlamis."
+  },
+  {
+   "dosya": "AKT25PR-T027_10",
+   "esasli_hata": "okuma_2",
+   "gerekce": "E sikki 'd\u0131\u015flanmal\u0131d\u0131r' sonrasi isaret: 8x buyutme + piksel dokumu; iki nokta, alt nokta taban cizgisinde biter, altinda kuyruk pikseli yok -> ':'. A sikkindaki ';' belirgin kuyruklu. okuma_2 ';' yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T028_07",
+   "esasli_hata": "okuma_2",
+   "gerekce": "3. satir sonu ve 6. satir basi 4x: iki yerde de 'sinir bilimin' / 'Sinir bilimin' basili; okuma_2 'biliminin' diye degistirmis. Tirnaklar duz, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25PR-T028_16",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST + piksel dokumu: 'a'dan sonraki glif ust kemeri kesintisiz tek harf (n); ayni kirpimda 'Tanr\u0131'ya' kelimesindeki r+\u0131 ciftinde r kolu ile \u0131 sapi arasinda 3 px bosluk var, burada yok. Basili 'an - duru' (dizgi hatasi); okuma_1 'ar\u0131' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25PR-T029_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Son satirlar italik 'D\u00eev\u00e2nu' piksel dokumu: i uzerindeki isaret 4 satirlik egik sapka, '\u00e2' uzerindeki isaretle ayni bicim (nokta degil). Basili 'D\u00eev\u00e2nu'; okuma_1 duz i yazmis."
+  },
+  {
+   "dosya": "AKT25PR-T029_12",
+   "esasli_hata": "okuma_1",
+   "gerekce": "2. sat\u0131r 4x: 'zorunlu\u011funda' bas\u0131l\u0131 ('lu' sonras\u0131 do\u011frudan '\u011f'); kitap metni bas\u0131ld\u0131\u011f\u0131 gibi."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "AKT25PR-T001_02",
+   "basili_no": 2,
+   "govde": "Ki\u015fide aniden ba\u015flayan ve ilk on dakikada en \u00fcst seviyede \u00e7ok yo\u011fun olarak ya\u015fanan \u00e7arp\u0131nt\u0131, titreme, nefes darl\u0131\u011f\u0131, \u00e7\u0131ld\u0131racakm\u0131\u015f hissi, ba\u015f d\u00f6nmesi, kontrol\u00fcn\u00fc kaybedecekmi\u015f hisleri panik atak rahats\u0131zl\u0131\u011f\u0131na i\u015faret eder. Bu, ki\u015fiye \u00f6ylesine yo\u011fun bir korku ve rahats\u0131zl\u0131k duygusu ya\u015fat\u0131r ki ki\u015fi, k\u00f6t\u00fc bir \u015fey olaca\u011f\u0131 veya sonunun geldi\u011fini hisseder. Ataklar. 15 - 60 dk s\u00fcrer. Ataklar\u0131n s\u0131kl\u0131\u011f\u0131 ve \u015fiddeti \u00f6nemlidir. Ata\u011f\u0131n ne zaman gelece\u011fi bilinemedi\u011finden bu durum: ki\u015finin kayg\u0131s\u0131n\u0131 art\u0131ran, sosyal uyumunu bozan en \u00f6nemli etmenlerden biridir.\nBu par\u00e7an\u0131n anlat\u0131m\u0131yla ilgili olarak a\u015fa\u011f\u0131dakilerden hangisi <u>s\u00f6ylenemez</u>?",
+   "sikler": {
+    "A": "Say\u0131p d\u00f6kmelere yer verilmi\u015ftir.",
+    "B": "Gerek\u00e7eli anlat\u0131m yap\u0131lm\u0131\u015ft\u0131r.",
+    "C": "Al\u0131nt\u0131lamaya ba\u015fvurulmu\u015ftur.",
+    "D": "A\u00e7\u0131klay\u0131c\u0131 anlat\u0131mdan yararlan\u0131lm\u0131\u015ft\u0131r.",
+    "E": "Devrik c\u00fcmlelere yer verilmemi\u015ftir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T001_04",
+   "basili_no": 4,
+   "govde": "\u2022 Kedilerin kedi nanesine kar\u015f\u0131 neden delirdi\u011fi, t\u00fcm\u00fcyle farkl\u0131 bir hik\u00e2ye ve bug\u00fcne kadar tam olarak anla\u015f\u0131lmad\u0131. Ara\u015ft\u0131rmac\u0131lar, kediler ve kedi nanesi aras\u0131ndaki ili\u015fkinin, kedilerin beynindeki \u00f6d\u00fcl merkezinin ottaki maddeler ve molek\u00fcller nedeniyle uyar\u0131lm\u0131\u015f olabilece\u011fini d\u00fc\u015f\u00fcn\u00fcyor.\n\u2022 Yeni yap\u0131lan bilimsel ara\u015ft\u0131rmaya g\u00f6re, her 5 insandan biri so\u011fu\u011fa dayan\u0131kl\u0131 olmalar\u0131n\u0131 sa\u011flayan genetik bir mutasyon ta\u015f\u0131yor. Bu genetik mutasyon, a - actinin - 3 proteinin \u00fcretimini durduruyor ki bu protein, iskelet kas iplikleri a\u00e7\u0131s\u0131ndan \u00f6nemli. Bu protein, sadece h\u0131zl\u0131 \u00e7ekilen beyaz kas ipliklerinde var, yava\u015f \u00e7ekilen k\u0131rm\u0131z\u0131 kas ipliklerinde yok.\nBu iki par\u00e7an\u0131n anlat\u0131m\u0131nda <u>ortak</u> olan a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Didaktik bir anlat\u0131m\u0131n yap\u0131lmas\u0131",
+    "B": "Kar\u015f\u0131la\u015ft\u0131rmalardan yararlan\u0131lmas\u0131",
+    "C": "Betimleyici \u00f6gelere yer verilmesi",
+    "D": "\u00d6znel ifadelerin kullan\u0131lmas\u0131",
+    "E": "G\u00f6zlemlerden yararlan\u0131lmas\u0131"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T002_04",
+   "basili_no": 4,
+   "govde": "Okuyucu; elinde bulunan metnin ne \u00f6l\u00e7\u00fcde de\u011fi\u015fikli\u011fe u\u011frad\u0131\u011f\u0131n\u0131 bilmeden, son bask\u0131daki d\u00fczeltilmi\u015f k\u0131s\u0131mlar\u0131, d\u00fczeltilmemi\u015f yerlerle birlikte de\u011ferlendirecek ve bunu ayn\u0131 edeb\u00ee zevkin yaratt\u0131\u011f\u0131 yan\u0131lmas\u0131na kap\u0131lacakt\u0131r. Mesela, Da\u011flarca'n\u0131n 1950'li y\u0131llardaki poetik tutumunu yans\u0131tan Asu'su ile 1967'nin yeni bir dil ve estetik anlay\u0131\u015f\u0131n \u00fcr\u00fcn\u00fc olan ve eklemelerle epeyce geni\u015fletilmi\u015f Asu'su ayn\u0131 eser de\u011fildir. \u0130kinci bask\u0131, bir yeniden yazmad\u0131r ve Da\u011flarca'ya ra\u011fmen ilki kullan\u0131mdan kald\u0131r\u0131lamam\u0131\u015ft\u0131r.\nBu par\u00e7ada yazar fikrini ifade ederken a\u015fa\u011f\u0131dakilerin hangisinden yararlanm\u0131\u015ft\u0131r?",
+   "sikler": {
+    "A": "A\u00e7\u0131klama - Betimleme",
+    "B": "Tan\u0131k g\u00f6sterme - \u00d6rnekleme",
+    "C": "\u00d6rnekleme - Kar\u015f\u0131la\u015ft\u0131ma",
+    "D": "Betimleme - Tart\u0131\u015fma",
+    "E": "Ki\u015file\u015ftirme - A\u00e7\u0131klama"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T002_06",
+   "basili_no": 6,
+   "govde": "Osmanl\u0131larda Bat\u0131l\u0131la\u015fma hareketiyle beraber Frans\u0131zcadaki \u201chymne national\u201d kar\u015f\u0131l\u0131\u011f\u0131 bir mill\u00ee mar\u015f ihtiyac\u0131, II. Mahmud D\u00f6nemi'nden beri zaman zaman hissedilmi\u015ftir. \u00d6zellikle Avrupa devlet temsilcileriyle yap\u0131lan t\u00f6renlerde g\u00fcndeme gelen bu ihtiyac\u0131n, resm\u00ee bir stat\u00fc olmaks\u0131z\u0131n de\u011fi\u015fik padi\u015fahlar zaman\u0131nda birbirinden farkl\u0131 g\u00fcfte ve bestelerin okunmas\u0131yla giderildi\u011fi bilinmektedir. B\u00f6ylece pek \u00e7ok beste, mill\u00ee mar\u015f gibi s\u00f6ylenmi\u015ftir. II. Me\u015frutiyet'ten sonra baz\u0131 Bat\u0131l\u0131 sanatk\u00e2rlar\u0131n bestelerinin benimsenmesi veya Bat\u0131l\u0131 kompozit\u00f6rlere bir mill\u00ee mar\u015f haz\u0131rlat\u0131lmas\u0131 gibi te\u015febb\u00fcsler olmu\u015fsa da bu durum ger\u00e7ekle\u015fmemi\u015ftir.\nBu par\u00e7an\u0131n anlat\u0131m\u0131nda a\u015fa\u011f\u0131dakilerden hangisi <u>yoktur</u>?",
+   "sikler": {
+    "A": "Kurall\u0131 c\u00fcmleler kullan\u0131lm\u0131\u015ft\u0131r.",
+    "B": "\u0130zlenim olu\u015fturulmaya \u00e7al\u0131\u015f\u0131lm\u0131\u015ft\u0131r.",
+    "C": "A\u00e7\u0131klay\u0131c\u0131 anlat\u0131m \u00f6n plandad\u0131r.",
+    "D": "Dil, g\u00f6ndergesel i\u015flevde kullan\u0131lm\u0131\u015ft\u0131r.",
+    "E": "Nesnel c\u00fcmleler bulunmaktad\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T002_07",
+   "basili_no": 7,
+   "govde": "Benim dilim T\u00fcrk\u00e7e ama \u0130ngilizce, Frans\u0131zca, Almanca, \u0130talyanca gibi hemen her dile ait s\u00f6zl\u00fckten de yararlanmaya \u00e7al\u0131\u015f\u0131yorum. \u00dcstelik y\u0131llar ge\u00e7tik\u00e7e s\u00f6zl\u00fc\u011fe daha az gereksinim duyaca\u011f\u0131ma, daha s\u0131k ba\u015fvuruyorum. \u00c7\u00fcnk\u00fc insan, zamanla daha ku\u015fkucu oluyor: s\u00f6zc\u00fcklerin olmad\u0131k anlamlar\u0131yla kar\u015f\u0131la\u015fabilece\u011finin daha iyi ayr\u0131m\u0131na var\u0131yor. S\u00f6zc\u00fcklere, deyimlere akl\u0131na ilk gelenlerden daha do\u011fru kar\u015f\u0131l\u0131klar bulabilece\u011fini anlamakla kalm\u0131yor; s\u00f6zc\u00fcklerin sat\u0131r aras\u0131nda gezinmekten derin bir zevk almaya da ba\u015fl\u0131yor.\nBu par\u00e7an\u0131n anlat\u0131m\u0131yla ilgili olarak a\u015fa\u011f\u0131dakilerden hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "Birden \u00e7ok duyuya seslenilmi\u015ftir.",
+    "B": "Tan\u0131k g\u00f6sterme vard\u0131r.",
+    "C": "Ki\u015fisel g\u00f6r\u00fc\u015flere yer verilmi\u015ftir.",
+    "D": "Eksiltili c\u00fcmle kullan\u0131lm\u0131\u015ft\u0131r.",
+    "E": "Ki\u015file\u015ftirmeye ba\u015fvurulmu\u015ftur."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T004_04",
+   "basili_no": 4,
+   "govde": "\u0130ster roman, drama, \u015fiir veya d\u011fer bi\u00e7imler olsun, edebiyat\u0131n en \u00f6nemli y\u00f6nlerinden biri de insan do\u011fas\u0131n\u0131 ve t\u00fcm insanlar\u0131 etkileyen ko\u015fullar\u0131 ele almakt\u0131r. Bunlar; ilerleme ihtiyac\u0131, kafa kar\u0131\u015f\u0131kl\u0131\u011f\u0131, ba\u015far\u0131 ve ba\u015far\u0131s\u0131zl\u0131\u011f\u0131n deh\u015feti, yolda\u015flara ve aileye duyulan ihtiya\u00e7, \u015fefkat ve duyguda\u015fl\u0131\u011f\u0131n c\u00f6mertli\u011fi, g\u00fcven ve kusurluluk alg\u0131s\u0131 olabilir. Edebiyat sayesinde kusurlu olman\u0131n her zaman talihsizlik olmad\u0131\u011f\u0131n\u0131 ve her zaman normal olman\u0131n s\u0131k\u0131c\u0131 olabilece\u011fini \u00f6\u011frendik. Hayattan zevk al\u0131nmas\u0131 ve dolu dolu ya\u015fanmas\u0131 gerekli\u011fini \u00f6\u011freniyoruz. K\u0131sacas\u0131 kendi insanl\u0131\u011f\u0131m\u0131zla ba\u011flant\u0131 kurmak i\u00e7in edebiyata ihtiyac\u0131m\u0131z var. Bu ba\u011flamda edebiyat, bizden farkl\u0131 insanlar\u0131 daha iyi anlad\u0131\u011f\u0131m\u0131z i\u00e7in zihnimizi geni\u015fletir.\nBu par\u00e7adan hareketle a\u015fa\u011f\u0131dakilerin hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "Edebiyat, insan\u0131 ve insana dair olan\u0131 sunarak okuyan\u0131n bak\u0131\u015f a\u00e7\u0131s\u0131na zenginlik katar.",
+    "B": "Edebiyat, g\u00fczel sanatlar aras\u0131nda ta\u015f\u0131d\u0131\u011f\u0131 \u00f6zellikler sayesinde en \u00f6ne \u00e7\u0131kar.",
+    "C": "\u0130nsanl\u0131k, var oldu\u011fundan beri edebiyata dair olan her \u015feye meyletmi\u015ftir.",
+    "D": "\u0130nsanlar\u0131 etkileyen her t\u00fcrl\u00fc \u00f6ge, edebiyat ba\u015fta olmak \u00fczere t\u00fcm sanatlar\u0131n dikkatini \u00e7ekmi\u015ftir.",
+    "E": "\u0130nsan\u0131n insana duydu\u011fu \u00f6zlem ve g\u00fcven ihtiyac\u0131 edeb\u00ee eserlerin temelini olu\u015fturmaktad\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T004_06",
+   "basili_no": 6,
+   "govde": "Bir eserin, t\u00fcm \u00e7a\u011flara hitap edip her d\u00f6nemde insanlarda edeb\u00ee bir zevk uyand\u0131rmas\u0131na \u201ckal\u0131c\u0131l\u0131k\u201d denir. Kal\u0131c\u0131l\u0131k, sadece edebiyat de\u011fil di\u011fer sanat dallar\u0131 i\u00e7in de ge\u00e7erli bir kavramd\u0131r. T\u00fcrk edebiyat\u0131 a\u00e7\u0131s\u0131ndan bak\u0131ld\u0131\u011f\u0131nda Fuzuli, Baki ve Yunus Emre gibi sanat\u00e7\u0131lar kal\u0131c\u0131l\u0131\u011f\u0131 yakalam\u0131\u015f isimlerdir. Nitekim bir roman\u0131n veya farkl\u0131 bir eserin sadece kendi yaz\u0131ld\u0131\u011f\u0131 d\u00f6nemde \u00f6nemli olan bir sorunu ele alm\u0131\u015f olmas\u0131, edeb\u00ee eserlerin de\u011feri ve kal\u0131c\u0131l\u0131\u011f\u0131n\u0131 olumsuz y\u00f6nde etkiler. Her siyasi de\u011fi\u015fimde g\u00fc\u00e7l\u00fc tarafta duran ki\u015filere her \u00e7a\u011f\u0131n adam\u0131 denir. Bu olumsuz bir yaftad\u0131r. Oysaki edebiyatta her \u00e7a\u011f\u0131n adam\u0131 yani sanat\u00e7\u0131s\u0131 olmak, bir edebiyat\u00e7\u0131 i\u00e7in en \u00f6nemli hedeftir. \u00c7\u00fcnk\u00fc eser meydana getiren herkes \u00f6ld\u00fckten sonra da kendi eserleri ile isminin ya\u015famas\u0131n\u0131 ister. Klasik eser, i\u015fte her \u00e7a\u011fda okur bulan sanatsal \u00fcr\u00fcnlere denir.\nBu par\u00e7adan hareketle a\u015fa\u011f\u0131dakilerin hangisine ula\u015f\u0131labilir?",
+   "sikler": {
+    "A": "T\u00fcrk edebiyat\u0131n\u0131n \u00f6zellikle bir d\u00f6nemindeki sanat\u00e7\u0131lar, kal\u0131c\u0131l\u0131\u011f\u0131 yakalamay\u0131 ba\u015farm\u0131\u015flard\u0131r.",
+    "B": "Her sanat\u00e7\u0131, ya\u015fad\u0131\u011f\u0131 d\u00f6nemin sorunlar\u0131yla yak\u0131ndan ilgilenmek zorundad\u0131r.",
+    "C": "Edeb\u00ee eserlerin toplumsal olaylara \u00e7\u00f6z\u00fcm bulmak gibi bir g\u00f6revi de bulunmaktad\u0131r.",
+    "D": "Edeb\u00ee eserlerin de\u011ferini belirleyen yeg\u00e2ne \u015fey, hitap etti\u011fi kitlenin se\u00e7kinli\u011fidir.",
+    "E": "Edeb\u00ee eserleri zamans\u0131z yapan unsur, yazar\u0131n\u0131n ya da \u015fairinin d\u00f6neminin d\u0131\u015f\u0131na ta\u015fabilmesidir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T005_06",
+   "basili_no": 6,
+   "govde": "Alg\u0131lanan benzerlik ve farkl\u0131l\u0131klar, \u00f6n yarg\u0131lar\u0131n olu\u015fmas\u0131nda etkilidir. \u0130nsanlar, kendilerine benzeyenleri \u00e7ekici bulup onlardan ho\u015flan\u0131r; benzemeyenleri ise olumsuz de\u011ferlendirir ve onlara mesafeli davran\u0131r. Bu durum, daha \u00e7ok geri kalm\u0131\u015f ve geli\u015fmekte olan toplumlarda g\u00f6r\u00fcl\u00fcr. Kendine sayg\u0131 duymayan, kendi \u00f6rf ve geleneklerine inan\u00e7lar\u0131 zay\u0131f bir toplumda savunucu davran\u0131\u015f ve \u00f6n yarg\u0131lama daha g\u00fc\u00e7l\u00fc olur. Toplumlar geli\u015ftik\u00e7e ve insanlar e\u011fitildik\u00e7e \u00f6n yarg\u0131lar\u0131n olu\u015fmas\u0131nda etkili olan farkl\u0131 olma unsurunun etkisi azal\u0131r.\nBu par\u00e7ada yazar\u0131n as\u0131l anlatmak istedi\u011fi a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "\u0130nsanlar aras\u0131ndaki farkl\u0131l\u0131klar, toplumlar\u0131n olu\u015fmas\u0131ndaki ve olu\u015ftuktan sonras\u0131naki \u00e7e\u015fitlili\u011fin kayna\u011f\u0131d\u0131r.",
+    "B": "Ayn\u0131 k\u00fclt\u00fcre sahip insanlar\u0131n \u00e7o\u011funda olaylara yakla\u015f\u0131m konusunda benzerliklerin g\u00f6r\u00fclmesi ka\u00e7\u0131n\u0131lmazd\u0131r.",
+    "C": "Toplum olarak kendinden olmayana \u00f6n yarg\u0131 geli\u015ftirenler, tarih boyunca bu yakla\u015f\u0131mlar\u0131n\u0131n olumsuzluklar\u0131n\u0131 \u00e7ekmi\u015flerdir.",
+    "D": "\u00d6n yarg\u0131lar\u0131 olu\u015fturan ya da ortadan kald\u0131ran ko\u015fullar aras\u0131nda e\u011fitim ve geli\u015fmi\u015flik seviyesi olduk\u00e7a etkilidir.",
+    "E": "\u0130nsanlar aras\u0131ndaki benzerlik ya da farkl\u0131l\u0131klar, insanlar\u0131 \u00f6zel yapan ya da onlar\u0131n b\u00fct\u00fcn olmas\u0131n\u0131 kolayla\u015ft\u0131ran etkenler olarak bilinmektedir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T006_01",
+   "basili_no": 1,
+   "govde": "\u2022 \u00c7at\u0131\u015fma sonucunda k\u00fcsk\u00fcnl\u00fcklerin, k\u0131rg\u0131nl\u0131klar\u0131n olu\u015fmas\u0131, ili\u015fkilerin bozulmas\u0131 ve i\u015f veriminin d\u00fc\u015fmesi, iyi y\u00f6netilmeyen \u00e7at\u0131\u015fmalar\u0131n sonucudur. Farkl\u0131 ki\u015filer, \u00e7at\u0131\u015fma y\u00f6netiminde farkl\u0131 stratejiler kullan\u0131rlar. Genellikle \u00e7ocukluk y\u0131llar\u0131nda \u00f6\u011frenilen bu stratejilerin otomatik bir bi\u00e7imde i\u015fledi\u011fi g\u00f6r\u00fcl\u00fcr.\n\u2022 Ki\u015filer aras\u0131 \u00e7at\u0131\u015fmalar\u0131n toplumsal hayat\u0131n d\u0131\u015f\u0131na \u00e7\u0131kar\u0131lmas\u0131n\u0131n, d\u00fcnyan\u0131n ekseni etraf\u0131nda d\u00f6nmesinin engellenmesi gibi bir \u015fey oldu\u011fu, ne yaparsak yapal\u0131m mutlaka ki\u015filer aras\u0131 \u00e7at\u0131\u015fmalar\u0131 ya\u015fayaca\u011f\u0131m\u0131z belirtilmektedir. Benzer bi\u00e7imde yazarlar, \u00e7at\u0131\u015fmalar\u0131n ve anla\u015fmazl\u0131klar\u0131n, ki\u015filerin \u00f6nemsedikleri ama\u00e7lar\u0131 ve hedefleri oldu\u011fu zaman ya\u015fand\u0131\u011f\u0131n\u0131 vugulamaktad\u0131r.\nBu iki par\u00e7ayla ilgili olarak a\u015fa\u011f\u0131dakilerden hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "\u0130ki farkl\u0131 konu, ayn\u0131 bak\u0131\u015f a\u00e7\u0131s\u0131yla de\u011ferlendirilmi\u015ftir.",
+    "B": "Ayn\u0131 olgu, farkl\u0131 y\u00f6nleriyle de\u011ferlendirilip ele al\u0131nm\u0131\u015ft\u0131r.",
+    "C": "Ayn\u0131 d\u00fc\u015f\u00fcncenin insanlar \u00fczerindeki etkisine bak\u0131lm\u0131\u015ft\u0131r.",
+    "D": "Farkl\u0131 konular farkl\u0131 bak\u0131\u015f a\u00e7\u0131lar\u0131yla sunulmu\u015ftur.",
+    "E": "Farkl\u0131 kavramlar \u00fczerinden a\u00e7\u0131klamaya gidilmi\u015ftir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T007_02",
+   "basili_no": 2,
+   "govde": "Hayat; iyi ile k\u00f6t\u00fcn\u00fcn, zor ile kolay\u0131n bir kar\u0131\u015f\u0131m\u0131d\u0131r. Her \u015feyin tam, iyi, m\u00fckemmel olmas\u0131n\u0131 beklemek yanl\u0131\u015f bir otomatik d\u00fc\u015f\u00fcncedir. D\u00f6rt d\u00f6rtl\u00fck merakl\u0131s\u0131 insanlar beklenti d\u00fczeylerini y\u00fcksek tutarlar. Ba\u015faramazlarsa felaket duygusu ya\u015farlar. H\u00e2lbuki herkesin hata yapma hakk\u0131 vard\u0131r. M\u00fckemmelliyet\u00e7ilik, ayr\u0131nt\u0131c\u0131l\u0131k otomatik d\u00fc\u015f\u00fcncesine sahip insanlar bu zihinsel \u015fartlanmalar\u0131n\u0131 sorgulamay\u0131 ba\u015far\u0131rlarsa daha mutlu olacaklard\u0131r. Her \u015feyi dert etmek, bu insanlar\u0131n en b\u00fcy\u00fck \u00f6zelli\u011fidir. Sorumluluk duygusu bu insanlar\u0131n di\u011fer \u00f6zelli\u011fidir. Ta\u015f\u0131yamayacak y\u00fckleri y\u00fcklenirler, duygular\u0131n\u0131 bast\u0131r\u0131rlar, daha sonra neden depresyona girdiklerini anlayamazlar.\nBu par\u00e7ada vurgulanan d\u00fc\u015f\u00fcnce a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "M\u00fckemmellik aray\u0131\u015f\u0131nda olan insanlar, t\u00fcm i\u015flerinde planl\u0131 \u00e7al\u0131\u015farak bu aray\u0131\u015flar\u0131nda ba\u015far\u0131ya ula\u015fabilirler.",
+    "B": "Kusursuzluk pe\u015finde ko\u015fan insanlar, kendilerine fazlaca y\u00fcklenirler ve mutsuzlu\u011fa kolayl\u0131kla s\u00fcr\u00fcklenirler.",
+    "C": "Ba\u015far\u0131s\u0131zl\u0131ktan korkan bireyler, sorumluluk duygular\u0131 fazlaca geli\u015fti\u011fi i\u00e7in bazen gereksiz sorumluluklar da alabilmektedirler.",
+    "D": "Ba\u015far\u0131ya odaklanan insanlar, zaman\u0131n ve ko\u015fullar\u0131n getirece\u011fi olumsuzluklara ra\u011fmen sab\u0131rl\u0131 olmay\u0131 bilmektedirler.",
+    "E": "Empati yetene\u011fi y\u00fcksek olan insanlar, ba\u015fkalar\u0131n\u0131n ad\u0131na \u00fcz\u00fclerek kendilerinin mutluluklar\u0131na ket vurmaktad\u0131rlar."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T008_02",
+   "basili_no": 2,
+   "govde": "Rock, 20. yy.\u0131n sonlar\u0131nda ortaya \u00e7\u0131km\u0131\u015f; genellikle elektrogitar, basgitar ve bateri gibi enstr\u00fcmanlarla beraber vokal melodi ta\u015f\u0131yan pop\u00fcler m\u00fczik formudur. Org ve piyano gibi klavyeli enstr\u00fcmanlara da rockla s\u0131k\u00e7a rastlanabilir. Saksafon gibi \u00fcflemeli \u00e7alg\u0131lar, rock\u0131n ilk h\u00e2llerinde olduk\u00e7a s\u0131k kullan\u0131lm\u0131\u015f olsa da yeni rock t\u00fcrlerinde nadiren g\u00f6r\u00fcl\u00fcr. Rock tan\u0131m\u0131, olduk\u00e7a genel bir tan\u0131md\u0131r ve de s\u0131n\u0131rlar\u0131 kesin bir \u015fekilde belirlenmemi\u015ftir. Rock\u0131n bir\u00e7ok t\u00fcr\u00fc vard\u0131r ama en tepede iki t\u00fcr bulunmaktad\u0131r: hard rock ve genel olarak heavy metal.\nBu par\u00e7adan rock ile ilgili a\u015fa\u011f\u0131dakilerden hangisi <u>\u00e7\u0131kar\u0131lamaz</u>?",
+   "sikler": {
+    "A": "Hangi enstr\u00fcmanlar\u0131n kullan\u0131ld\u0131\u011f\u0131",
+    "B": "En belirgin t\u00fcrlerinin ne oldu\u011fu",
+    "C": "Tan\u0131m\u0131n\u0131n ne oldu\u011fu",
+    "D": "Ne zaman ortaya \u00e7\u0131kt\u0131\u011f\u0131",
+    "E": "Hangi \u00fclkede \u00e7ok fazla dinlendi\u011fi"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T010_04",
+   "basili_no": 4,
+   "govde": "Televizyon, g\u00fc\u00e7l\u00fc bir e\u011fitim arac\u0131 oldu\u011fu kadar y\u0131k\u0131c\u0131 etkiler de i\u00e7erir. D\u00fcnyada artan \u015fiddet olaylar\u0131n\u0131n k\u00f6keninde televizyon ve \u00e7izgi filmlerde yer alan sahnelerinin de etkisi oldu\u011fu d\u00fc\u015f\u00fcn\u00fclmektedir. Ara\u015ft\u0131rmalar, televizyondaki \u015fiddet sahnelerini izleyerek b\u00fcy\u00fcyen \u00e7ocuklar\u0131n ac\u0131ya ve ba\u015fkalar\u0131n\u0131n eziyet g\u00f6rmelerine kar\u015f\u0131 duyarl\u0131l\u0131klar\u0131n\u0131n azald\u0131\u011f\u0131n\u0131, \u015fiddetten korkmad\u0131klar\u0131n\u0131 ve daha sald\u0131rgan davrand\u0131klar\u0131n\u0131 ortaya koymaktad\u0131r. \u00c7izgi filmler, 1 ya\u015f\u0131ndaki \u00e7ocu\u011fun bile davran\u0131\u015f\u0131n\u0131 etkilemektedir. \u015eiddetin ger\u00e7ek\u00e7i bi\u00e7imde yans\u0131t\u0131ld\u0131\u011f\u0131n\u0131, s\u0131kl\u0131kla yinelendi\u011fini ve cezaland\u0131r\u0131lmad\u0131\u011f\u0131n\u0131 g\u00f6ren \u00e7ocuklarda sald\u0131rgan davran\u0131\u015flar artmaktad\u0131r.\nBu par\u00e7ada yak\u0131n\u0131lan durumlar aras\u0131nda a\u015fa\u011f\u0131dakilerden hangisi <u>yoktur</u>?",
+   "sikler": {
+    "A": "Televizyonun \u015fiddet artt\u0131r\u0131c\u0131 y\u00f6n\u00fcn\u00fcn de olmas\u0131",
+    "B": "\u00c7ocuklara k\u00fc\u00e7\u00fck ya\u015ftan itibaren \u015fiddet i\u00e7erikli programlar\u0131n izletilmesi",
+    "C": "Televizyonda \u015fiddet i\u00e7eren programlar\u0131n yay\u0131mlalanmas\u0131",
+    "D": "\u00c7ocuklar\u0131n e\u011fitiminde televizyonun geri planda kalmas\u0131",
+    "E": "\u00c7izgi filmlerde bile \u015fiddet sahnelerinin yer almas\u0131"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T010_07",
+   "basili_no": 7,
+   "govde": "Osmanl\u0131 \u0130mparatorlu\u011fu'nda merkez\u00ee otoritenin \u00f6nemli bir aya\u011f\u0131 olan yeni\u00e7eriler, \u00f6zellikle ge\u00e7 d\u00f6nem 16. yy.daki enflasyonist ortam\u0131n al\u0131m g\u00fcc\u00fcn\u00fc d\u00fc\u015f\u00fcr\u00fcc\u00fc etkisi ve ocak i\u00e7indeki disiplinin bozulmas\u0131yla birlikte askerlik d\u0131\u015f\u0131nda ba\u015fka gelir kaynaklar\u0131 da aram\u0131\u015flard\u0131r. Y\u00fczy\u0131llar boyunca imparatorlu\u011fun sosyal ve ekonomik sahalar\u0131na n\u00fcfuz etmi\u015flerdir. Pazarda giderek daha geni\u015f bir yelpazeye yay\u0131lmalar\u0131 ve \u00f6zellikle 18. yy.da yeni\u00e7erilerin localarda g\u00fc\u00e7l\u00fc h\u00e2le gelmesiyle sosyoekonomik a\u00e7\u0131dan geni\u015f ve derin bir n\u00fcfuzlar\u0131 olmu\u015ftur. Nitekim yeni\u00e7erilerin tarihsel s\u00fcrecinin bir devam\u0131 olarak son d\u00f6nem yeni\u00e7erilerin i\u00e7inde de halkla ve pazarla ili\u015fkileri derin ve geni\u015f bir asker\u00ee s\u0131n\u0131f s\u00f6z konusu olmu\u015ftur.\nBu par\u00e7ada yazar, yeni\u00e7erilerin a\u015fa\u011f\u0131daki \u00f6zelliklerinden hangisine <u>de\u011finmemi\u015ftir</u>?",
+   "sikler": {
+    "A": "\u0130mparatorlu\u011fun uzun y\u0131llar boyunca sosyal ve ekonomik yap\u0131s\u0131nda yer almalar\u0131",
+    "B": "Osmanl\u0131 \u0130mparatorlu\u011fu'nun en g\u00fc\u00e7l\u00fc kurumu olmalar\u0131",
+    "C": "16. yy.daki olumsuz sebepler nedeniyle askerlik d\u0131\u015f\u0131na y\u00f6nelmeleri",
+    "D": "18. yy.da localarda epey g\u00fc\u00e7l\u00fc bir yap\u0131ya kavu\u015fmalar\u0131",
+    "E": "Son d\u00f6nemlerinde i\u00e7lerinde n\u00fcfuzlu bir asker\u00ee s\u0131n\u0131flar\u0131n\u0131n olmas\u0131"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T011_11",
+   "basili_no": 11,
+   "govde": "(I) Giyim sekt\u00f6r\u00fcn\u00fcn \u00e7ark\u0131n\u0131n moda ile d\u00f6nd\u00fc\u011f\u00fcn\u00fc s\u00f6yleyebiliriz. (II) Bu da \u015f\u00f6yle ki her sene farkl\u0131 bir giyim tarz\u0131 moda oluyor ve giyim end\u00fcstrisi, bu pop\u00fclaritenin kendisine daha \u00e7ok kazand\u0131raca\u011f\u0131n\u0131 bildi\u011fi i\u00e7in modaya uygun k\u0131yafetler \u00fcretmeye ba\u015fl\u0131yor. (III) K\u00fcresel oranlara bakt\u0131\u011f\u0131m\u0131zda her y\u0131l tahmin\u00ee olarak 92 milyon tekstil \u00fcr\u00fcn\u00fc at\u0131\u011fa d\u00f6n\u00fc\u015f\u00fcyor. (IV) H\u00e2l b\u00f6yle olunca yani bu bitmek bilmez \u00fcretimle insanlar, anl\u0131k zevk ve be\u011fenilerle sat\u0131n ald\u0131klar\u0131 \u00fcr\u00fcnleri bir m\u00fcddet sonra giymemeye ba\u015fl\u0131yor. (V) Hatta baz\u0131lar\u0131, moda olsun olmas\u0131n sadece al\u0131\u015fveri\u015fe yani t\u00fcketime ba\u011f\u0131ml\u0131 oldu\u011fu i\u00e7in ihtiyac\u0131ndan fazla \u00fcr\u00fcn sat\u0131n alabiliyor.\nBu par\u00e7ada numaralanm\u0131\u015f c\u00fcmlelerden hangisi d\u00fc\u015f\u00fcncenin ak\u0131\u015f\u0131n\u0131 bozmaktad\u0131r?",
+   "sikler": {
+    "A": "I",
+    "B": "II",
+    "C": "III",
+    "D": "IV",
+    "E": "V"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T013_03",
+   "basili_no": 3,
+   "govde": "\u0130nsanlar; ele\u015ftirdikleri ki\u015fi, grup, fikir ve olu\u015fumlar\u0131 daha iyiye g\u00f6t\u00fcren, eksikliklerini kapatan, onlara g\u00fc\u00e7 veren arg\u00fcmanlar \u00fcretmekten ziyade birbirini yermek, zay\u0131flatmak, a\u00e7\u0131klar\u0131n\u0131 y\u00fczlerine vurmak, alay etmek, hafife almak amac\u0131yla sivri dilli, \u00fczerinde iyi d\u00fc\u015f\u00fcn\u00fclmemi\u015f ve zaman harcanmam\u0131\u015f, ele\u015ftirilen konunun detaylar\u0131na dair hi\u00e7bir bilgi sahibi olmaks\u0131z\u0131n ele\u015ftiriler yapmay\u0131 se\u00e7iyor. K\u0131saca bir\u00e7ok insan; ele\u015ftirinin en kolay formu olan, kimsenin duymak veya zaman kaybetmek istemeyece\u011fi y\u0131k\u0131c\u0131 ele\u015ftiriler \u00fcretiyor. Bu da egoist bir zek\u00e2 yar\u0131\u015f\u0131na ve \u00fcretici olmayan polemiklere neden oluyor. Bu konudaki en b\u00fcy\u00fck paradoks, bir i\u015fi \u00f6vmenin \u00e7ok kolay olmas\u0131yken ele\u015ftirmenin \u00e7ok zor olmas\u0131d\u0131r. Ancak insanlar zoru se\u00e7mek istemedikleri, sosyal medya gibi ara\u00e7lar da onlara engin bir maske sunabildi\u011fi i\u00e7in ele\u015ftirilerin de \u00f6vg\u00fcler kadar basit ve h\u0131zl\u0131 olmas\u0131 gerekti\u011fi d\u00fc\u015f\u00fcn\u00fcl\u00fcr. Halbuki hay\u0131r! ----.\nBu par\u00e7an\u0131n sonuna d\u00fc\u015f\u00fcncenin ak\u0131\u015f\u0131na g\u00f6re getirilecek olan a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Yap\u0131c\u0131 ele\u015ftiri, bug\u00fcne kadar farkl\u0131 \u015fekillerde tan\u0131mlanm\u0131\u015f olsa da en ge\u00e7erli olan tan\u0131m\u0131; zamanl\u0131, yerinde, a\u00e7\u0131k \u015fekilde sunulan ele\u015ftirilerdir denilebilir",
+    "B": "D\u00fcr\u00fcst olmak gerekirse \u00e7o\u011fu zaman ilk akl\u0131m\u0131za gelen sorun tespitleri, ge\u00e7ersiz ele\u015ftirilere sebep olmaktad\u0131r",
+    "C": "Bir\u00e7ok sefer bir \u015feyleri olumsuz ele\u015ftirdi\u011fimiz zaman, duygusal davranmaya ve mant\u0131k hatalar\u0131na d\u00fc\u015fmeye meyilli oluyoruz",
+    "D": "\u00d6vg\u00fc yerine ele\u015ftiriyi se\u00e7enlerin, daha yo\u011fun bir mesaiye ve zorlu bir zihinsel faaliyete haz\u0131r olmas\u0131 gerekir",
+    "E": "Anl\u0131k ele\u015ftirel fikirlerimiz, genellikle o i\u015fin i\u00e7inde olan ki\u015filerin y\u00fczle\u015ftikleri detaylar\u0131 bilmememizden \u00f6t\u00fcr\u00fc eksik ve yan\u0131lt\u0131c\u0131d\u0131r"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T014_08",
+   "basili_no": 8,
+   "govde": "Barutun \u00e7ok eski bir tarihi vard\u0131r. M\u00d6 1000 y\u0131llar\u0131nda \u00c7inliler, ate\u015fi bir sava\u015f silah\u0131 olarak kullanm\u0131\u015flard\u0131r. Gerek Do\u011fu'da gerekse Bat\u0131'da alev ve ate\u015ften, sava\u015flarda da fazlas\u0131yla baruttan yararlan\u0131lm\u0131\u015ft\u0131r. \u00d6zellikle \u00c7in ordusunda arabalarla ate\u015fler, \u00e7\u00f6mlek ve g\u00fcllelerin i\u00e7inde d\u00fc\u015fman ordusuna at\u0131lm\u0131\u015ft\u0131r. Bat\u0131l\u0131lar\u0131n ate\u015fli silahlar\u0131 Do\u011fululardan \u00f6\u011frendikleri d\u00fc\u015f\u00fcn\u00fclmektedir. Ancak tarih\u00e7i Homeros'un M\u00d6 9. y\u00fczy\u0131lda yazd\u0131\u011f\u0131 eserlerinde ate\u015fli silahlar \u00fczerinde herhangi bir bilgiye rastlanmamaktad\u0131r. O d\u00f6nemlerde yap\u0131lan sava\u015flarda; k\u00f6m\u00fcr, k\u00fck\u00fcrt ve zift gibi yan\u0131c\u0131 maddeler bulunan toprak kaplar\u0131n manc\u0131n\u0131klarla at\u0131ld\u0131\u011f\u0131 kaynaklara g\u00f6re bilinmektedir. Ancak bu yolla olu\u015fturulan yang\u0131nlar, \u00fczerine toprak at\u0131larak kolayl\u0131kla s\u00f6nd\u00fcr\u00fclebilecek nitelikte olan yang\u0131nlard\u0131r. Bunun sonucu olarak daha etkili yan\u0131c\u0131 maddeler aranmaya ba\u015flanm\u0131\u015ft\u0131r. Yanmak i\u00e7in gerekli oksijeni havadan de\u011fil de kendi b\u00fcnyesinden alabilen yan\u0131c\u0131 maddelerin en iyisi olarak patlay\u0131c\u0131 silahlar g\u00f6r\u00fcld\u00fc\u011f\u00fc i\u00e7in zamanla ate\u015fli silahlardan patlay\u0131c\u0131 silahlara ge\u00e7me iste\u011fi ortaya \u00e7\u0131km\u0131\u015ft\u0131r.\nBu par\u00e7an\u0131n anlat\u0131m\u0131 ile ilgili olarak a\u015fa\u011f\u0131dakilerden hangisi <u>s\u00f6ylenemez</u>?",
+   "sikler": {
+    "A": "\u00d6neri nitelikli c\u00fcmleler kullan\u0131lm\u0131\u015ft\u0131r.",
+    "B": "\u00d6rneklemelere yer verilmi\u015ftir.",
+    "C": "Kar\u015f\u0131la\u015ft\u0131rmadan yararlan\u0131lm\u0131\u015ft\u0131r.",
+    "D": "Tarihsel verilerden yararlan\u0131lm\u0131\u015ft\u0131r.",
+    "E": "A\u00e7\u0131klamaya ba\u015fvurulmu\u015ftur."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T014_09",
+   "basili_no": 9,
+   "govde": "Sepet bi\u00e7iminde bir a\u011f ile oynanan bir top oyunu olan basketbol, eskiden g\u00fcn\u00fcm\u00fcze kadar en sevilen sporlar aras\u0131ndad\u0131r. Amerikal\u0131lar\u0131n bulu\u015fu olarak kabul edilen basketbola, \"sepet oyunu\"da denmi\u015ftir. Basketbol, ilk olarak 1891 y\u0131l\u0131nda oynanm\u0131\u015ft\u0131r. Spor kurumu \u00f6\u011fretmenlerinden birinin futboldan ba\u015fka farkl\u0131 bir spor oyunu d\u00fc\u015f\u00fcnmesi ile ortaya \u00e7\u0131kan basketbol, ilk \u00f6nceleri sadece 12 - 13 kural\u0131 olan bir oyunken g\u00fcn ge\u00e7tik\u00e7e geli\u015fmi\u015f, kurallar\u0131nda b\u00fcy\u00fck de\u011fi\u015fiklikler olmu\u015ftur. 1937 y\u0131l\u0131na kadar yeni say\u0131 yap\u0131ld\u0131k\u00e7a oyun alan\u0131n\u0131n ortas\u0131nda hakem at\u0131\u015f\u0131yla oyuna yeniden ba\u015flanm\u0131\u015ft\u0131r. ----. Hatta oyunun da h\u0131zl\u0131 oynanabilmesi i\u00e7in daha da yeni kurallar ortaya konulmu\u015ftur.\nBu par\u00e7ada bo\u015f b\u0131rak\u0131lan yere d\u00fc\u015f\u00fcncenin ak\u0131\u015f\u0131na g\u00f6re a\u015fa\u011f\u0131dakilerden hangisi getirilmelidir?",
+   "sikler": {
+    "A": "Basketbol ma\u00e7lar\u0131n\u0131 eskiden iki hakem y\u00f6netmi\u015ftir",
+    "B": "Basketbolda her tak\u0131m\u0131n d\u00f6rt kez mola alma hakk\u0131 vard\u0131r",
+    "C": "Bu ve bunun gibi daha bir\u00e7ok de\u011fi\u015fikli\u011fe gidilmi\u015ftir",
+    "D": "Basketbol, olimpiyatlarda ilk olarak 1936'da Berlin Olimpiyatlar\u0131'nda yer alm\u0131\u015ft\u0131r",
+    "E": "Bu oyunda, top sepetten i\u00e7eri sokulunca iki puan say\u0131lm\u0131\u015ft\u0131r"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T014_12",
+   "basili_no": 12,
+   "govde": "A\u015fa\u011f\u0131daki par\u00e7alardan hangisi \"Estetik biliminin konusunu ve bilimle ili\u015fkilerini belirlemek zorunlulu\u011fu nas\u0131l ger\u00e7ekle\u015fir?\" sorusuna cevap vermektedir?",
+   "sikler": {
+    "A": "Estetik bilimi ilk kez eski Yunanistan'da ortaya \u00e7\u0131km\u0131\u015fsa da belli ba\u015fl\u0131 bir bilim dal\u0131 olarak devam etmemi\u015ftir. Sokrat, yaz\u0131lar\u0131nda sanat\u0131n idealist ve spirit\u00fcalist bir doktrini yapm\u0131\u015ft\u0131r. Platon da baz\u0131 eserlerinde bu meseleyi tekrarlam\u0131\u015f ve bir filozofun, bir h\u00fck\u00fbmet insan\u0131n\u0131n d\u00fc\u015f\u00fcncelerinde ve milletin terbiyesinde g\u00fczelin alaca\u011f\u0131 yeri g\u00f6stermeye \u00e7al\u0131\u015fm\u0131\u015ft\u0131r. Aristo da g\u00fczellik nazariyelerini tahlil ederek sanat\u0131n esas\u0131n\u0131 tabiat\u0131 taklitle bulmu\u015ftur.",
+    "B": "Bilim olarak esteti\u011fin konusu \u00fczerinde herkesin oy birli\u011fine vard\u0131\u011f\u0131 bir tan\u0131m hi\u00e7bir zaman olmam\u0131\u015ft\u0131r. Toplum ya\u015fam\u0131nda sanat\u0131n artan \u00f6nemi ve rol\u00fc, ger\u00e7e\u011fin estetik \u00f6z\u00fcmsenme alan\u0131n\u0131n alabildi\u011fine geni\u015fleyip yay\u0131lmas\u0131, estetik alan\u0131ndaki e\u011fitim gereksinimleri ve dolay\u0131s\u0131yla b\u00fct\u00fcn bu sorunlara dair kuramsal \u00e7al\u0131\u015fmalar g\u00f6z \u00f6n\u00fcnde tutulunca estetik biliminin konusunu ve onun bilgiyle biti\u015fik alanlarla ili\u015fkilerini iyice belirlemek zorunlulu\u011fu kendili\u011finden ortaya \u00e7\u0131kar.",
+    "C": "D\u00fcnyan\u0131n estetik \u00f6z\u00fcmsemesinin, sanat\u0131n s\u0131n\u0131rlar\u0131n\u0131 a\u015faca\u011f\u0131n\u0131, sanatsal yarat\u0131y\u0131 kapsam\u0131na ald\u0131\u011f\u0131 gibi ger\u00e7eklik kar\u015f\u0131s\u0131nda insan\u0131n koydu\u011fu estetik tavr\u0131n daha ba\u015fka y\u00f6nlerini i\u00e7erece\u011fini kabul eden g\u00f6r\u00fc\u015fler de vard\u0131r. Her durumda sanat, tarih boyunca esteti\u011fin ba\u015fta gelen konusu olmu\u015ftur. Bilimsel \u00f6\u011fretide esteti\u011fin temel ilkelerinin her \u015feyden \u00f6nce, sanatsal prati\u011fin genelle\u015ftirilmesine dayanmas\u0131n\u0131n da nedeni budur.",
+    "D": "Toplumsal geli\u015fim ile beraber, esteti\u011fin konusunda da geli\u015fim kendini g\u00f6stermektedir. Esteti\u011fin konusunun tarih i\u00e7inde de\u011fi\u015fikli\u011fe u\u011framas\u0131, bilimsel ve felsefi evrimle\u015fmede genel bir yasad\u0131r. \u00d6rne\u011fin tar\u0131m k\u00fclt\u00fcr\u00fcnden end\u00fcstri k\u00fclt\u00fcr\u00fcne ge\u00e7i\u015f ile end\u00fcstri esteti\u011finden de s\u00f6z edilir olmu\u015ftur. Ya da \u00e7evre kirlili\u011fi ile g\u00fcndeme gelen \u00e7evre kirlili\u011fini \u00f6nleme \u00e7al\u0131\u015fmalar\u0131, y\u00f6netim ba\u011flam\u0131nda yap\u0131lan organizasyonlar, \u00e7evre esteti\u011fini de beraberinde getirmi\u015ftir.",
+    "E": "Estetik, m\u00fczik, tiyatro, edebiyat veya plastik sanatlar\u0131n par\u00e7asal kuramlar\u0131n verilerinden yola \u00e7\u0131karak yeni genellemelere ve sonu\u00e7lara y\u00f6nelir. Bu par\u00e7asal kuramlar\u0131n her biri farkl\u0131 sanat alanlar\u0131n\u0131n kendi \u00f6zg\u00fcl ve \u00f6zg\u00fcn \u00e7izgilerini incelerken bir sanat alan\u0131n\u0131n niteli\u011fi ile di\u011fer sanat alan\u0131n\u0131n niteli\u011fini birbirine kar\u0131\u015ft\u0131rmaz. Kald\u0131 ki ayn\u0131 sanat alan\u0131 i\u00e7erisinde de\u011fi\u015fik t\u00fcr sanat alanlar\u0131 da yine kendine g\u00f6re birtak\u0131m \u00f6zg\u00fcnl\u00fckler g\u00f6sterir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T015_01",
+   "basili_no": 1,
+   "govde": "Sabah kahvalt\u0131s\u0131ndan sonra otelimden \u00e7\u0131kt\u0131m. Bana \u015fimdilik her \u015feyi kapal\u0131 olan Frankfurt caddelerinde, geli\u015fig\u00fczel dola\u015f\u0131yorum. Seyyah\u0131n yabanc\u0131 kald\u0131r\u0131mlar \u00fczerinde g\u00f6ze \u00e7arpan acayip bir h\u00e2li var: G\u00f6zleri etraftaki izahatsiz e\u015fyay\u0131 kavramak i\u00e7in yataklar\u0131ndan gere\u011finden fazla f\u0131rlam\u0131\u015f; kulaklar\u0131 ise i\u015fittiklerinin manas\u0131n\u0131 se\u00e7ebilmek amac\u0131yla sersemlemi\u015f, ba\u015f\u0131n\u0131n iki yan\u0131nda asabi yapraklar gibi duruyor. Victor Hugo'nun \u0130stanbul'u g\u00f6ren me\u015fhur patlak g\u00f6zl\u00fc adam\u0131 bir karikat\u00fcr de\u011fil,  seyyah\u0131n daima do\u011fru kalacak olan bir portresi gibi duruyor kar\u015f\u0131mda. Frankfurt caddelerinde kendimi bu karikat\u00fcre d\u00f6nm\u00fc\u015f gibi hissediyorum ve etraf\u0131ma bak\u0131yorum.\nBu par\u00e7an\u0131n anlat\u0131m\u0131 ile ilgili a\u015fa\u011f\u0131dakilerden hangisi <u>s\u00f6ylenemez</u>?",
+   "sikler": {
+    "A": "\u00d6yk\u00fclemeye ba\u015fvurulmu\u015ftur.",
+    "B": "Birinci ki\u015fili anlat\u0131m kullan\u0131lm\u0131\u015ft\u0131r.",
+    "C": "Tan\u0131k g\u00f6sterme vard\u0131r.",
+    "D": "Benzetme yap\u0131lm\u0131\u015ft\u0131r.",
+    "E": "\u00d6znel ifadeler kullan\u0131lm\u0131\u015ft\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T015_02",
+   "basili_no": 2,
+   "govde": "Yelkovan ku\u015fu, mart\u0131 b\u00fcy\u00fckl\u00fc\u011f\u00fcnde bir ku\u015ftur. S\u0131rt\u0131 koyu kahverengi, karn\u0131 beyaz olan bu ku\u015fun yan taraflar\u0131nda gri lekeler bulunur. Perde ayakl\u0131lardan olan yelkovan ku\u015fu, g\u00f6\u00e7 eden gezici bir ku\u015ftur. Kulu\u00e7ka zaman\u0131 d\u0131\u015f\u0131nda yaln\u0131z denizlerde ya\u015fayan yelkovan ku\u015fu, kulu\u00e7ka s\u0131ras\u0131nda kayal\u0131k adalarda ortaya \u00e7\u0131kar. K\u00fc\u00e7\u00fck bal\u0131k, s\u00fcm\u00fckl\u00fc b\u00f6cek ve yenge\u00e7 ile beslenen sar\u0131 ve siyah gagal\u0131 \u00e7e\u015fitleri bulunan bir ku\u015ftur. Yelve ku\u015fu ise ser\u00e7egillerden olup ser\u00e7e b\u00fcy\u00fckl\u00fc\u011f\u00fcnde bir ku\u015ftur. A\u011fa\u00e7l\u0131klar, fundal\u0131klar, ormanlar ve mezarl\u0131k gibi tenha yerlerde ya\u015far. T\u00fcyleri zeytin ye\u015fili ile sar\u0131 aras\u0131nda bir renktir. Kanat ve kuyru\u011funun yan taraflar\u0131 ise parlak sar\u0131d\u0131r.\nBu par\u00e7ada s\u00f6z\u00fc edilen ku\u015f t\u00fcrleri i\u00e7in a\u015fa\u011f\u0131dakilerden hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "Ya\u015fam alanlar\u0131 ortak yerlerdir.",
+    "B": "Ayn\u0131 t\u00fcr canl\u0131larla beslenirler.",
+    "C": "V\u00fccutlar\u0131 farkl\u0131 renklerden olu\u015fmaktad\u0131r.",
+    "D": "B\u00fcy\u00fckl\u00fck oranlar\u0131 birbiriyle ayn\u0131d\u0131r.",
+    "E": "Her ikisi de denizlerde ya\u015fayan bir ku\u015f t\u00fcr\u00fcd\u00fcr."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T015_06",
+   "basili_no": 6,
+   "govde": "(I) T\u00fcrk edebiyat\u0131n\u0131n ortak mahsulleri olan destanlar; tip, karakter ve konu bak\u0131m\u0131ndan hen\u00fcz farkl\u0131l\u0131klar\u0131n ya\u015fanmad\u0131\u011f\u0131 d\u00f6nemlere ait tarih\u00ee birlikteli\u011fin izlerini ta\u015f\u0131yan eserler aras\u0131ndad\u0131r. (II) G\u00f6kt\u00fcrk alfabeleri, Uygur metinleri, Manas Destan\u0131 da ayn\u0131 tarih\u00ee birlikteli\u011fin derin izlerini ta\u015f\u0131maktad\u0131r. (III) T\u00fcrklerin \u0130slamiyet'i kabul\u00fc ile ba\u015flayan d\u00f6nemde kaleme al\u0131nan Kutadgu Bilig, Divan-\u00fc L\u00fbgati't T\u00fcrk gibi eserler yeni inan\u00e7 sistemi ve kabullerin \u015fekillendirdi\u011fi eserlerdir. (IV) Asya co\u011frafyas\u0131nda \u0130slamiyet'i tan\u0131tma ve \u0130slami de\u011ferleri anlatma misyonunu \u00fcstlenen T\u00fcrk milleti, do\u011frudan g\u00f6n\u00fcllere hitap eden yeni bir dili de bu eserler arac\u0131l\u0131\u011f\u0131yla ke\u015ffetmi\u015ftir. (V) Daha sonra Hoca Ahmet Yesevi, Mevlana Celaleddin Rumi ve Yunus Emre isimleri ile birlikte an\u0131lan sevgi dili, Anadolu'daki umutsuz insana sunulan en tesirli etken olmu\u015ftur. (VI) Bu sanat\u00e7\u0131lar, b\u00fct\u00fcn Asya co\u011frafyas\u0131n\u0131n ortak de\u011ferlerini ve kabullerini yans\u0131t\u0131c\u0131 niteliktedir.\nBu par\u00e7a iki paragrafa ayr\u0131lmak istense ikinci paragraf hangi c\u00fcmleyle ba\u015flar?",
+   "sikler": {
+    "A": "II",
+    "B": "III",
+    "C": "IV",
+    "D": "V",
+    "E": "VI"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T015_08",
+   "basili_no": 8,
+   "govde": "A\u015fa\u011f\u0131daki par\u00e7alardan hangisi \"Ya\u015fam m\u00fccadelesinde insan\u0131n bozulmas\u0131na, y\u0131k\u0131lmas\u0131na engel olan unsur nedir?\" sorusuna cevap niteli\u011findedir?",
+   "sikler": {
+    "A": "En \u00f6nemli kavramlardan biri \"bendeki bizi\" ke\u015ffetmek. Yani kad\u0131n bir birey, erkek bir birey ama her ikisinin de ke\u015ffetmesi gereken bir \"biz\" var. \u0130\u015fte orada ailede ger\u00e7ekle\u015fir. Bendeki bizi ke\u015ffetti\u011fin zaman oradaki aile k\u00f6k sal\u0131yor.",
+    "B": "\u00c7ocu\u011fun g\u00f6z hizas\u0131na indi\u011fin zaman, ait olma-birey olma dengesini kuruyorsun. \"\u00d6nemsiyorum seni.\" diyorsun, \"Boyun k\u00fc\u00e7\u00fck ama mesele yok, biz e\u015fitiz.\" diyorsun. Yani o hareket, b\u00fct\u00fcn o mesajlar\u0131 veriyor, onun i\u00e7in \u00f6nemli.",
+    "C": "De\u011ferler konusu \u00fczerinde \u0131srarla duruyorum. De\u011ferleri i\u00e7selle\u015ftirdi\u011fi zaman ki\u015fi, bir i\u00e7 disiplin olu\u015fur ve o i\u00e7 disiplin sayesinde kendine g\u00f6re do\u011fru olan\u0131 yapar. Onun i\u00e7in insan\u0131 ayakta tutan \u015fey de\u011ferler sistemidir.",
+    "D": "\"Ben art\u0131k biliyorum.\" dedi\u011fin andan itibaren insanlar g\u00fclmeye ba\u015flar sana. Orada \"Ben ara\u015ft\u0131ran ve sorgulayan bir insan\u0131m.\" demek \u00f6nemlidir. En \u00f6nemli \u00f6\u011frenci, bilen \u00f6\u011frenci de\u011fil; soru soran \u00f6\u011frencidir.",
+    "E": "\u00c7ocuk ilk iki ya\u015fta en \u00e7ok annesinden etkileniyor. Onun ruhsal yap\u0131s\u0131, bak\u0131\u015f tarz\u0131 \u00e7ocu\u011fun ruhunu bi\u00e7imlendiriyor. E\u011fer anne \u00f6zg\u00fcrse o \u00f6zg\u00fcrl\u00fck duygusu \u00e7ocu\u011fa da ge\u00e7iyor. \u00c7ocuk bir birey olarak geli\u015fme \u015fans\u0131 buluyor."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T016_05",
+   "basili_no": 5,
+   "govde": "\u0130ki karde\u015f babalar\u0131ndan kalma bir \u00e7iftlikte \u00e7al\u0131\u015f\u0131yordu. Karde\u015flerden biri evliydi ve be\u015f \u00e7ocu\u011fu vard\u0131. Di\u011fer karde\u015f ise bek\u00e2rd\u0131. Her g\u00fcn\u00fcn sonunda iki karde\u015f \u00fcr\u00fcnlerini ve k\u00e2rlar\u0131n\u0131 e\u015fit olarak b\u00f6l\u00fc\u015f\u00fcrlerdi.\nG\u00fcn\u00fcn birinde bek\u00e2r karde\u015f \u015f\u00f6yle d\u00fc\u015f\u00fcnd\u00fc:\n\u2013 \u00dcr\u00fcn\u00fcm\u00fcz\u00fc ve k\u00e2r\u0131m\u0131z\u0131 e\u015fit olarak b\u00f6l\u00fc\u015fmemiz hi\u00e7 de adaletli de\u011fil. Ben bek\u00e2r\u0131m ve pek fazla ihtiyac\u0131m yok. Karde\u015fimin geni\u015f bir ailesi var. Onun daha fazla ihtiyac\u0131 olur.\nO g\u00fcnden sonra bek\u00e2r olan karde\u015f her gece evinden \u00e7\u0131k\u0131p bir \u00e7uval tah\u0131l\u0131 gizlice erkek karde\u015finin evindeki tah\u0131l deposuna g\u00f6t\u00fcrmeye gitti.\nBu arada evli olan karde\u015f de kendi kendine:\n\u2013 \u00dcr\u00fcn\u00fcm\u00fcz\u00fc ve k\u00e2r\u0131m\u0131z\u0131 e\u015fit olarak b\u00f6l\u00fc\u015fmemiz hi\u00e7 de do\u011fru de\u011fil. Ben evliyim, e\u015fim ve \u00e7ocuklar\u0131m var ve ya\u015fland\u0131\u011f\u0131m zaman onlar bana bakabilirler. Fakat karde\u015fim ya\u015fland\u0131\u011f\u0131 zaman ona bakacak hi\u00e7 kimsesi yok. \u0130leride onun daha fazla ihtiyac\u0131 olacak.\nB\u00f6ylece evli olan karde\u015f de her hece evinden \u00e7\u0131k\u0131p bir \u00e7uval tah\u0131l\u0131 gizlice erkek karde\u015finin tah\u0131l deposuna g\u00f6t\u00fcrmeye ba\u015flad\u0131. \u0130ki karde\u015f de y\u0131llarca ne olup bitti\u011fini bir t\u00fcrl\u00fc anlayamad\u0131lar. \u00c7\u00fcnk\u00fc her ikisinin de deposundaki tah\u0131l\u0131n miktar\u0131 de\u011fi\u015fmiyordu. Sonra, bir gece iki karde\u015f gizlice birbirlerinin deposuna tah\u0131l ta\u015f\u0131rken kar\u015f\u0131la\u015ft\u0131lar. O anda olan biteni anlad\u0131lar. \u00c7uvallar\u0131n\u0131 yere b\u0131rak\u0131p birbirlerini kucaklad\u0131lar.\nBu par\u00e7aya g\u00f6re a\u015fa\u011f\u0131dakilerden hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "Karde\u015fler \u00e7al\u0131\u015f\u0131rken adaletli bir i\u015f b\u00f6l\u00fcm\u00fc yapmal\u0131d\u0131r.",
+    "B": "Dostluk ve karde\u015flik, bencillikten uzak kalmakt\u0131r.",
+    "C": "Beraber \u00e7al\u0131\u015f\u0131lan her i\u015fte ba\u015far\u0131ya ula\u015fmak daha kolayd\u0131r.",
+    "D": "Sab\u0131rl\u0131 davran\u0131ld\u0131\u011f\u0131 zaman sonuca elbet ula\u015f\u0131lmaktad\u0131r.",
+    "E": "Bencillik yapanlar\u0131n en b\u00fcy\u00fck zarar\u0131 yine kendilerinedir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T016_09",
+   "basili_no": 9,
+   "govde": "Gazeteci:\n(I) ----?\n\u00c7a\u011fan Irmak:\nA\u00e7\u0131k\u00e7as\u0131 evet, bazen uyguluyorum. Eskiden bu kadar uygulamazd\u0131m. Ama art\u0131k daha fazla uyguluyorum. Size uygulanaca\u011f\u0131n\u0131 bildi\u011finiz sans\u00fcr kar\u015f\u0131s\u0131nda farkl\u0131 y\u00f6ntemler se\u00e7iyorsunuz, hikayeyi anlatmak ama yine de ayn\u0131 \u015feyi s\u00f6ylemek i\u00e7in. S\u00f6ylemek istedi\u011fin bir c\u00fcmle var, bunu ciddi s\u00f6ylersen kelleni keserler ama mizah katarak s\u00f6ylersen oradan y\u0131rtars\u0131n. Bu Osmanl\u0131dan beri var olan bir \u015feydir. Sen istedi\u011fin kadar otosans\u00fcr uygula, ayn\u0131 c\u00fcmleyi bir \u015fekilde ediyorsun. Kimse senin elinden bu \u00f6zg\u00fcrl\u00fc\u011f\u00fcn\u00fc alam\u0131yor. Mesela \u0130ran sinemas\u0131 muhte\u015fem bir sinemad\u0131r, inan\u0131lmaz g\u00fczel \u015feyler yapm\u0131\u015flard\u0131r. Ama ciddi bir sans\u00fcrle kar\u015f\u0131 kar\u015f\u0131yalar. Bu y\u00fczden \u00f6yle farkl\u0131 anlat\u0131m y\u00f6ntemleri benimsemi\u015fler ki kendilerine, deli gibi \u00f6d\u00fclle d\u00f6n\u00fcyorlar her yerden.\nGazeteci:\n(II) ----?\n\u00c7a\u011fan Irmak:\n\u015eu an sinema i\u00e7in bir iki sene bir durma, dinlenme ve hem kendimi hem etraf\u0131 dinleme s\u00fcreci i\u00e7erisindeyim; \u00f6yle s\u00f6yleyeyim. Bunun d\u0131\u015f\u0131nda proje zaten olursa kendili\u011finden geliyor. Siz zaten masaya oturdu\u011funuzda nas\u0131l bir proje yapay\u0131m, hangi projeyi kuray\u0131m diye d\u00fc\u015f\u00fcnd\u00fc\u011f\u00fcn\u00fcz zaman b\u00fcy\u00fck hata edersiniz. \u00c7\u00fcnk\u00fc o proje zaten kendi kendili\u011finden gelir.\nBu diyalogda bo\u015f b\u0131rak\u0131lan yerlere a\u015fa\u011f\u0131dakilerden hangisi getirilmelidir?",
+   "sikler": {
+    "A": "I. Filmlerinizde otosans\u00fcr uyguluyor musunuz\nII. Yak\u0131nda bize aktarabilece\u011finiz yeni projeleriniz var m\u0131 acaba",
+    "B": "I. \u0130ran sinemas\u0131yla bizim sinemam\u0131z aras\u0131nda benzerlikler var m\u0131\nII. Bir sinema projesi olu\u015ftururken nelere dikkat edersiniz",
+    "C": "I. T\u00fcrk sinemas\u0131 i\u00e7in ne gibi yenilikler yap\u0131lmal\u0131d\u0131r.\nII. Yeni projelerinizde \u00f6n plana ald\u0131\u011f\u0131n\u0131z unsurlar s\u00f6z konusu mu",
+    "D": "I. Filmlerinizde ilgili ne gibi de\u011ferlendirmeler yap\u0131lmakta\nII. Projelerinizle ilgili bize aktarmak istedikleriniz var m\u0131",
+    "E": "I. \u00d6zg\u00fcrl\u00fck kavram\u0131 sizin filmlerinizde yer bulmakta m\u0131d\u0131r\nII. T\u00fcrk sinemas\u0131ndan beklentileriniz tam olarak nelerdir"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T016_11",
+   "basili_no": 11,
+   "govde": "Peyami Safa, romanlar\u0131nda kendini gizleme gere\u011fi neredeyse hi\u00e7 duymam\u0131\u015ft\u0131r. Sanat\u00e7\u0131, \u00f6zellikle ilk eserlerinde kahramanlardan birinin k\u0131l\u0131\u011f\u0131na b\u00fcr\u00fcn\u00fcp eser ki\u015fileri ile okuyucunun aras\u0131na girerek d\u00fc\u015f\u00fcncelerini s\u00f6ylemeye kalk\u0131\u015fm\u0131\u015ft\u0131r.  Bu durumu yans\u0131tan eserlerinin aras\u0131nda S\u00f6zde K\u0131zlar adl\u0131 eseri de bulunmaktad\u0131r. Daha sonra verdi\u011fi olgunluk d\u00f6nemindeki eserlerinde de bu tutumundan vazge\u00e7memi\u015ftir. Hatta yer yer eserlerine kendi hayat\u0131ndan par\u00e7alar katm\u0131\u015f; \u00f6zellikle bu durum, Dokuzuncu Hariciye Ko\u011fu\u015fu adl\u0131 eserinde do\u011frudan do\u011fruya okuyucunun kar\u015f\u0131s\u0131na \u00e7\u0131km\u0131\u015ft\u0131r. Peyami Safa'n\u0131n sanat\u00e7\u0131 ile sanat eseri aras\u0131ndaki bu tutumu, bazen okuyucuyu bireyin i\u00e7 d\u00fcnyas\u0131n\u0131 \u00e7\u00f6zmeye \u00e7al\u0131\u015f\u0131rken kullan\u0131lan i\u00e7 monolog, bilin\u00e7 ak\u0131\u015f\u0131 gibi tekniklerle \u00e7\u00f6z\u00fcm yapmaya zorlarken yormu\u015f ve bunal\u0131m, yaln\u0131zl\u0131k gibi temalar baz\u0131 okuyucular\u0131 sanat\u00e7\u0131n\u0131n eserlerinden uzakla\u015ft\u0131rm\u0131\u015ft\u0131r.\nBu par\u00e7ada s\u00f6z\u00fc edilen sanat\u00e7\u0131n\u0131n ele\u015ftirilme nedeni a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Roman\u0131 i\u00e7eriklerini \u00e7ocuklu\u011fu ile s\u0131n\u0131rl\u0131 tutmas\u0131",
+    "B": "Romanda yer alan kahramanlar\u0131n \u00f6zel hayat\u0131 ile ilgili bilinmeyenlere yer vermesi",
+    "C": "Kendi hayat\u0131n\u0131 \u00f6ne \u00e7\u0131karmaya \u00e7al\u0131\u015fmas\u0131",
+    "D": "Kendi hayat\u0131n\u0131 anlat\u0131rken okuyucuyu bunaltmas\u0131",
+    "E": "Olaylar\u0131 genellikle s\u0131radan konularla s\u0131n\u0131rland\u0131rmas\u0131"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T016_14",
+   "basili_no": 14,
+   "govde": "\u2022 G\u00fcne\u015ften korunma amac\u0131yla kullan\u0131lan \u015femsiyeler. \u00c7in'de en az 2000 y\u0131ld\u0131r kullan\u0131lan \u015femsiyelerdir. Geleneksel olarak bambudan yap\u0131lm\u0131\u015f, sap ve \u00e7\u0131talara sahip bu \u015femsiyelerde \u00e7\u0131talar aras\u0131na gerilen ya\u011fl\u0131 k\u00e2\u011f\u0131t da \u015femsiyenin \u00e7at\u0131s\u0131n\u0131 olu\u015fturuyor. Ayr\u0131ca bu \u015femsiyelerde \u00e7e\u015fitli s\u00fcslemelere de yer veriliyor.\n\u2022 Bug\u00fcn\u00fcn ve yar\u0131n\u0131n d\u00fcnyas\u0131nda ak\u0131ll\u0131 \u015femsiyelerin \u00e7ok fazla yeri var. Bu durumda hava tahmini ile ilgili bilgileri al\u0131p kullan\u0131c\u0131ya iletebilmelerinin b\u00fcy\u00fck etkisi bulunuyor. \u00d6rne\u011fin ya\u011fmur ya da kar olas\u0131l\u0131\u011f\u0131 ortaya \u00e7\u0131kt\u0131\u011f\u0131nda \u015femsiyenin u\u00e7 k\u0131sm\u0131 parlamaya ba\u015fl\u0131yor.\nBu iki par\u00e7a ile ilgili olarak a\u015fa\u011f\u0131dakilerden hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "Ayn\u0131 konuya ili\u015fkin ortak bir fikir olabilece\u011fini ele almaktad\u0131rlar.",
+    "B": "Ayn\u0131 e\u015fyay\u0131 farkl\u0131 y\u00f6nleriyle de\u011ferlendirip ele almaktad\u0131rlar.",
+    "C": "Benzer g\u00f6r\u00fc\u015flerin birbirini destekleyebilece\u011fini vurgulamaktad\u0131rlar.",
+    "D": "Bir unsur ile ilgili ayn\u0131 d\u00fc\u015f\u00fcnceyi peki\u015ftirmeye y\u00f6nelik \u00f6rneklere yer vermektedirler.",
+    "E": "Benzer anlat\u0131m tarzlar\u0131 kullanarak ayn\u0131 e\u015fyan\u0131n benzer y\u00f6nlerini a\u00e7\u0131klamaktad\u0131rlar."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T018_02",
+   "basili_no": 2,
+   "govde": "Do\u011fan\u0131n insan\u0131 kendisine \u00e7eken b\u00fcy\u00fck bir g\u00fcc\u00fc vard\u0131r. Hepimiz, do\u011faya ait insanlar\u0131z. Onun kollar\u0131nda do\u011fduk ve bizlere c\u00f6mert\u00e7e sunduklar\u0131 ile ya\u015f\u0131yoruz. \u0130stedi\u011fi zaman bize c\u00f6mert\u00e7e sunduklar\u0131n\u0131 geri alma g\u00fcc\u00fc o kadar kuvvetli ki bu y\u00f6n\u00fc insan\u0131 \u00fcrk\u00fctm\u00fcyor de\u011fil. Teknolojiden ne harikalar ortaya \u00e7\u0131kar\u0131l\u0131rsa \u00e7\u0131kar\u0131ls\u0131n ancak do\u011faya d\u00f6nd\u00fc\u011f\u00fcm\u00fczde ger\u00e7ekten ya\u015fad\u0131\u011f\u0131m\u0131z\u0131 anlayabiliriz. T\u0131p ne kadar ilerlerse ilerlesin en iyi ila\u00e7, do\u011fan\u0131n kendi iyile\u015ftirme g\u00fcc\u00fc olarak kalacakt\u0131r.\nBu par\u00e7an\u0131n anlat\u0131m\u0131nda a\u015fa\u011f\u0131dakilerden hangisi <u>yoktur</u>?",
+   "sikler": {
+    "A": "Ko\u015ful c\u00fcmlesi",
+    "B": "Ki\u015file\u015ftirme",
+    "C": "Mecazl\u0131 s\u00f6yleyi\u015f",
+    "D": "Nicel veriden yararlanma",
+    "E": "\u00d6znellik"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T018_07",
+   "basili_no": 7,
+   "govde": "D\u00fcnyan\u0131n somut bir g\u00f6r\u00fcnt\u00fcs\u00fc vard\u0131r ve bu g\u00f6r\u00fcnt\u00fc, tekrar\u0131n\u0131 ve mekanikli\u011fini yans\u0131t\u0131r. ----. \u0130\u015fte yarat\u0131c\u0131l\u0131k burada kendini g\u00f6stermeye ba\u015flar. Evrenin ve d\u00fcnyan\u0131n evrim saati, durmay\u0131 de\u011fil y\u00fcr\u00fcmeyi daha do\u011fru bulur. Bunu g\u00f6ren sanat\u00e7\u0131, kendi d\u00fcnyas\u0131n\u0131n i\u00e7inde d\u00fc\u015f g\u00fcc\u00fcn\u00fcn s\u0131n\u0131rlar\u0131n\u0131 zorlayan kurgular olu\u015fturmaya ba\u015flar. Bu; ya\u015fama sevincini, gelece\u011fi kucaklama arzusudur. Somut d\u00fcnyan\u0131n d\u0131\u015f\u0131nda yeni bir d\u00fcnya olu\u015fturabilme arzusudur. Sanat eserlerinde d\u00fc\u015fsel yarat\u0131m ser\u00fcveni, eskiden insanlar\u0131 g\u00fcld\u00fcr\u00fcp k\u0131zd\u0131ran bir unsur gibi g\u00f6r\u00fcn\u00fcyordu ancak g\u00fcn\u00fcm\u00fczde bu \u00e7al\u0131\u015fmalar, fazlas\u0131 ile destekleniyor. Bilim, bu kurgular\u0131n sezdirdikleri ile yola \u00e7\u0131k\u0131yor. \u0130nsanl\u0131k, her g\u00fcn yeni bir bilgi ve bulgu ile kar\u015f\u0131la\u015f\u0131yor. \u0130nsan\u0131n d\u00fc\u015f g\u00fcc\u00fc, kendi d\u00fcnyas\u0131n\u0131 yok etse de yeni d\u00fcnyalar kurma \u00f6zleminin pe\u015finde ko\u015fuyor ve ko\u015fmaya devam edecek gibi g\u00f6r\u00fcn\u00fcyor.\nBu par\u00e7ada bo\u015f b\u0131rak\u0131lan yere d\u00fc\u015f\u00fcncenin ak\u0131\u015f\u0131na g\u00f6re a\u015fa\u011f\u0131dakilerden hangisi getirilebilir?",
+   "sikler": {
+    "A": "Hayat\u0131n bir devinim i\u00e7inde oldu\u011fu, sanat\u00e7\u0131lar\u0131n dikkatini \u00e7eker",
+    "B": "Bu somutluk i\u00e7inde tekd\u00fcze ya\u015famak insanlar\u0131 s\u0131kabilir ve insanlar de\u011fi\u015fiklik arayabilir",
+    "C": "D\u00fc\u015fsel anlat\u0131m, somut ger\u00e7ekli\u011fi soyutla\u015ft\u0131ran bir anlat\u0131md\u0131r",
+    "D": "Ola\u011fan\u00fcst\u00fc \u00f6zelliklere sahip hayal \u00fcr\u00fcnleri, sanat\u00e7\u0131n\u0131n zihninde ger\u00e7eklerle \u00e7at\u0131\u015farak canlanmaya ba\u015flar",
+    "E": "Zaman\u0131n ve mek\u00e2n\u0131n belirsizli\u011fi, ger\u00e7eklikten uzak \u00f6geleri ortaya \u00e7\u0131karabilir"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T019_01",
+   "basili_no": 1,
+   "govde": "(I) K\u00fclt\u00fcr; topluma ait ortak ya\u015fay\u0131\u015f d\u00fczeninin, zaman i\u00e7inde de\u011fi\u015fme, geli\u015fme ve yenilenme \u00f6zellikleri ta\u015f\u0131yan bir b\u00fct\u00fcn\u00fcd\u00fcr. (II) Canl\u0131 ve do\u011fal bir varl\u0131k niteli\u011findedir. (III) Dura\u011fan bir yap\u0131ya de\u011fil, dinamik bir yap\u0131ya sahiptir. (IV) Bir toplumun ya\u015fama d\u00fczenine ba\u011fl\u0131 olarak do\u011fup geli\u015fir, onun i\u00e7in de hayat\u0131n d\u0131\u015f\u0131nda de\u011fil i\u00e7indedir. (V) Toplum varl\u0131\u011f\u0131n\u0131n ak\u0131\u015f\u0131na g\u00f6re \u015fekillenerek t\u0131pk\u0131 co\u011frafya \u015fartlar\u0131na g\u00f6re bi\u00e7imlenen ve durmadan ak\u0131p giden bir \u0131rmak gibi yol al\u0131r \u00e7\u00fcnk\u00fc ki\u015filerin \u00fcst\u00fcne \u00e7\u0131karak topluma h\u00fckmeden kendine has bir d\u00fczeni, kendine has kurallar\u0131 vard\u0131r. (VI) Nesilden nesile devam eden k\u00f6kl\u00fc ve daha eski \u00e2detlere ise \"anane\" denir.\nBu par\u00e7a iki paragrafa ayr\u0131lmak istense ikinci paragraf numaralanm\u0131\u015f c\u00fcmlelerin hangisiyle ba\u015flar?",
+   "sikler": {
+    "A": "II",
+    "B": "III",
+    "C": "IV",
+    "D": "V",
+    "E": "VI"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T019_17",
+   "basili_no": 17,
+   "govde": "I. The Economist dergisinde yay\u0131mlanan bir ara\u015ft\u0131rmaya g\u00f6re 18 ile 21 ya\u015flar\u0131, mutlulu\u011fun en y\u00fcksek ya\u015fand\u0131\u011f\u0131 d\u00f6nemi olu\u015fturuyor. Bu ara\u015ft\u0131rmay\u0131 Pennysyluvania ve Stanford \u00dcniversiteleri taraf\u0131ndan mutluluk ve anlam\u0131 \u00fczerine yakla\u015f\u0131k 10 milyon ki\u015fi ile yap\u0131lan inceleme de do\u011fruluyor.\nII. Kayg\u0131 ve hayal k\u0131r\u0131kl\u0131klar\u0131 ya\u015f art\u0131k\u00e7a zirveye ula\u015fmakta. \u0130nsanlar mutlulu\u011fa daha farkl\u0131 anlamlar y\u00fcklemekte.\nVerilen II. par\u00e7a ile ilgili a\u015fa\u011f\u0131dakilerden hangisi s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "I. par\u00e7adaki durumun tam tersini kastetmi\u015ftir.",
+    "B": "I. par\u00e7adaki durumla tamamen ilgisiz bir konuyu aktarm\u0131\u015ft\u0131r.",
+    "C": "I. par\u00e7adaki durumun sonu\u00e7lar\u0131 s\u0131ralanm\u0131\u015ft\u0131r.",
+    "D": "I. par\u00e7adaki olayla ilgili nesnel sonu\u00e7lara de\u011finmi\u015ftir.",
+    "E": "I. par\u00e7adaki durumu destekleyici bir sonu\u00e7 genellemesi yap\u0131lm\u0131\u015ft\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T021_05",
+   "basili_no": 5,
+   "govde": "A\u015fa\u011f\u0131daki par\u00e7alardan hangisi \"K\u00fcresel \u0131s\u0131nma tam olarak ne \u015fekilde ifade edilebilir?\" sorusuna cevap vermektedir?",
+   "sikler": {
+    "A": "K\u00fcresel \u0131s\u0131nma, insan aktiviteleri sonucunda meydana geldi\u011fi i\u00e7in bu konuda aileye de \u00f6nemli g\u00f6revler d\u00fc\u015fmektedir. Toplumdaki her birey ve ailenin t\u00fcketim zorunlulu\u011fu dikkate al\u0131nd\u0131\u011f\u0131nda sat\u0131n alma, kullanma ve ortaya \u00e7\u0131kan at\u0131klar\u0131n at\u0131lmas\u0131 konusundaki karar ve davran\u0131\u015flar\u0131n \u00e7evre korunmas\u0131nda ve kirletilmesindeki rol\u00fc tart\u0131\u015f\u0131lmaz.",
+    "B": "\u0130klim de\u011fi\u015fikli\u011fine neden olabilecek do\u011fal etmenleri kontrol alt\u0131na almak olduk\u00e7a zordur. Ancak k\u00fcresel iklim de\u011fi\u015fikleri s\u00fcrecini yava\u015flatacak veya durduracak tedbirler vard\u0131r. \u00c7\u00fcnk\u00fc atmosfere sal\u0131nan sera gazlar\u0131n\u0131n azalt\u0131lmas\u0131 ve do\u011fal \u00e7evrenin korunmas\u0131 gibi konular b\u00fcy\u00fck \u00f6l\u00e7\u00fcde insan\u0131n elindedir.",
+    "C": "K\u00fcresel \u0131s\u0131nma, sadece d\u00fcnyan\u0131n her b\u00f6lgesinde s\u0131cakl\u0131\u011f\u0131n giderek artmas\u0131 olay\u0131 de\u011fildir. K\u00fcresel \u0131s\u0131nma d\u00fcnyada kavurucu s\u0131caklar\u0131n ba\u015flamas\u0131yla orman yang\u0131nlar\u0131n\u0131n h\u0131zla yay\u0131lmas\u0131, \u00e7\u00f6lle\u015fmenin artmas\u0131 hatta insan ya\u015fam\u0131n\u0131 bile tehlikeye sokacak d\u00fczeye ula\u015fmas\u0131, su kaynaklar\u0131n\u0131n azalmas\u0131, sel felaketlerinin g\u00f6r\u00fclmesi, a\u015f\u0131r\u0131 erozyon gibi do\u011fa felaketlerinin ya\u015fanmas\u0131 olay\u0131d\u0131r.",
+    "D": "Birle\u015fmi\u015f Milletler \u0130klim De\u011fi\u015fikli\u011fi Paneli raporunda k\u00fcresel iklim de\u011fi\u015fiminin %90 oran\u0131nda insan faaliyetlerinden kaynakland\u0131\u011f\u0131 belirtilmektedir. Bu nedenle insanlar\u0131n mevcut \u00e7evreye zararl\u0131 t\u00fcketim al\u0131\u015fkanl\u0131klar\u0131ndan vazge\u00e7meleri ve g\u00fcnl\u00fck hayatlar\u0131nda enerjiyi daha verimli \u015fekilde kullanmay\u0131 \u00f6\u011frenmeleri gerekmektedir.",
+    "E": "K\u00fcresel \u0131s\u0131nman\u0131n insan aktivitesi sonucu meydana geldi\u011finin anla\u015f\u0131lmas\u0131ndan itibaren bunun \u00f6nlenmesine ili\u015fkin konferanslar ve bilin\u00e7lendirme \u00e7abalar\u0131 1950'li y\u0131llardan itibaren ba\u015flam\u0131\u015ft\u0131r. Birle\u015fmi\u015f Milletler \u00c7evre Program\u0131, d\u00fcnyay\u0131 korumak i\u00e7in herkesin az veya \u00e7ok katk\u0131da bulunaca\u011f\u0131n\u0131 belirtmi\u015ftir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T021_07",
+   "basili_no": 7,
+   "govde": "K\u00fcbitel t\u00fcnel sendromu yak\u0131nmalar\u0131 olan ki\u015filerde belirli hareketlerden ka\u00e7\u0131nma, \u015fik\u00e2yetleri \u00f6nemli \u00f6l\u00e7\u00fcde azaltmaktad\u0131r. Telefonla konu\u015furken zaman zaman telefonu di\u011fer ele almak veya telefonu \"eller serbest\" modunda kullanmak, bilgisayar ya da araba kullan\u0131rken dirsekleri 90\u00b0 den daha fazla b\u00fckmemeye \u00e7al\u0131\u015fmak \u00f6nlemlerden baz\u0131lar\u0131d\u0131r. Geceleri \u015fik\u00e2yetleri ortaya \u00e7\u0131kan hastalarda dirse\u011fi uyku s\u0131ras\u0131nda 90\u00b0 den fazla b\u00fckmeye engel olacak dirseklikler \u00f6nerilebilir. Bu t\u00fcr \u00f6nlemlerle yak\u0131nmalar\u0131 3 hafta i\u00e7inde d\u00fczelmeyen hastalarda ila\u00e7 uygulamalar\u0131 d\u00fc\u015f\u00fcn\u00fclebilir. Gerek g\u00fcnl\u00fck aktivitelerde al\u0131nacak \u00f6nlemlere gerek ila\u00e7 tedavisine yan\u0131t al\u0131namayan hastalarda, EMG ile tan\u0131 kesinle\u015ftirilmi\u015f ise cerrahi tedaviler d\u00fc\u015f\u00fcn\u00fclebilir. Cerrahi tedavilerde dirsek d\u00fczeyinde k\u00fcbitel t\u00fcnel b\u00f6lgesinde s\u0131k\u0131\u015fmaya u\u011frayan ulnar sinirin serbestle\u015ftirilmesi, ge\u00e7i\u015f yolunun de\u011fi\u015ftirilmesi gibi y\u00f6ntemler kullan\u0131lmaktad\u0131r.\nBu par\u00e7adan hareketle k\u00fcbitel t\u00fcnel sendromu ile ilgili a\u015fa\u011f\u0131dakilerden hangisine <u>ula\u015f\u0131lamaz</u>?",
+   "sikler": {
+    "A": "\u0130la\u00e7 ve ameliyat gibi tedavileri de bulunmaktad\u0131r.",
+    "B": "Dirsekle ilgili olan bir rahats\u0131zl\u0131kt\u0131r.",
+    "C": "Baz\u0131 durumlarda olu\u015fturdu\u011fu \u015fik\u00e2yetler kolay kolay yok olmamaktad\u0131r.",
+    "D": "Al\u0131nacak baz\u0131 \u00f6nlemlerle etkileri biraz azalt\u0131labilmektedir.",
+    "E": "En \u00e7ok araba ve bilgisayar kullan\u0131lan mesleklerde ortaya \u00e7\u0131kmaktad\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T023_15",
+   "basili_no": 15,
+   "govde": "15 - 16. sorular\u0131 a\u015fa\u011f\u0131daki par\u00e7aya g\u00f6re cevaplay\u0131n\u0131z.\nKerpi\u00e7 evlerin kendine \u00f6zg\u00fc bir yap\u0131m tarz\u0131 ve esteti\u011fi vard\u0131. Kimi b\u00f6lgelerde dayan\u0131kl\u0131l\u0131k ve estetik bak\u0131m\u0131ndan ba\u011flant\u0131 yerleri ve belli aral\u0131klar\u0131 i\u00e7in ah\u015fap tercih edilirdi. Her baharda \"bahar temizli\u011fi\" s\u0131ras\u0131nda i\u00e7i ve \u00f6n cephesi kire\u00e7le boyan\u0131r, \"gezinti\" denilen balkon duvarlar\u0131 \u00e7i\u00e7ek resimleriyle s\u00fcslenirdi. Kerpi\u00e7 evler, \"Bakarsan ba\u011f, bakmazsan da\u011f olur.\" atas\u00f6z\u00fcn\u00fcn ba\u015fka bir anlamda en canl\u0131 \u00f6rne\u011fiydi. Kerpi\u00e7 yap\u0131lar, i\u00e7inde nefes varsa y\u00fczy\u0131llar boyunca ayakta kalabilirdi. Bak\u0131lmayan ve i\u00e7inde oturulmayan evler en fazla 20-30 y\u0131lda y\u0131k\u0131l\u0131p gider, her \u015fey topra\u011fa kar\u0131\u015f\u0131r, bir 30 y\u0131l sonra da \u00fcst\u00fcnde otlar biten bir tepecik olurdu. Yani kerpi\u00e7, son derece geri d\u00f6n\u00fc\u015f\u00fcme a\u00e7\u0131k ve \u00e7evreci bir malzemeydi.\nBu par\u00e7ada kerpi\u00e7 evlerle ilgili a\u015fa\u011f\u0131dakilerin hangisine <u>de\u011finilmemi\u015ftir</u>?",
+   "sikler": {
+    "A": "Dayan\u0131kl\u0131l\u0131\u011f\u0131 sa\u011flamak i\u00e7in baz\u0131 k\u0131s\u0131mlar\u0131n\u0131n ah\u015fapla desteklendi\u011fine",
+    "B": "\u0130\u00e7inde s\u00fcrd\u00fcr\u00fclen ya\u015fama ba\u011fl\u0131 olarak uzun \u00f6m\u00fcrl\u00fc oldu\u011funa",
+    "C": "Bak\u0131ms\u0131zl\u0131ktan \u00f6mr\u00fc bitenlerin bir m\u00fcddet sonra topra\u011fa kar\u0131\u015ft\u0131\u011f\u0131na",
+    "D": "Malzemesinin yeniden de\u011ferlendirilebilir nitelik ta\u015f\u0131d\u0131\u011f\u0131na",
+    "E": "Bahar mevsiminde t\u00fcm i\u00e7 ve d\u0131\u015f b\u00f6lmelerinin resimlerle s\u00fcslendi\u011fine"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T024_12",
+   "basili_no": 12,
+   "govde": "A\u015fa\u011f\u0131daki par\u00e7alardan hangisi \"Ger\u00e7ek hik\u00e2yede mek\u00e2n ve zaman \u00f6nemsizken aslolan \u015fey, okuyucuya ders vermek olmal\u0131d\u0131r.\" d\u00fc\u015f\u00fcncesine yak\u0131nd\u0131r?",
+   "sikler": {
+    "A": "Usta yazar, betimlemelerini \u00f6ylesine g\u00fczel kullanm\u0131\u015f ki okuyucu s\u00f6z konusu mek\u00e2n\u0131n i\u00e7inde hissediyor kendini. G\u00f6zlem yetene\u011fi olduk\u00e7a y\u00fcksek oldu\u011fu i\u00e7in hi\u00e7bir ayr\u0131nt\u0131y\u0131 ka\u00e7\u0131rmam\u0131\u015f, okuyucu bu ayr\u0131nt\u0131lar\u0131n parlakl\u0131\u011f\u0131yla \u00e2deta ayd\u0131nlan\u0131yor.",
+    "B": "Yazar, sosyal ve toplumsal bozukluklar\u0131 ele ald\u0131\u011f\u0131 hik\u00e2yesinde felsefi bir yakla\u015f\u0131m sergilemi\u015ftir. Bu yakla\u015f\u0131m\u0131yla beraber hik\u00e2yelerinde ince bir yergi ve alay s\u00f6z konusudur. Asl\u0131nda bunu yapmas\u0131ndaki ama\u00e7, yergisini yapt\u0131\u011f\u0131 aksakl\u0131klar\u0131 okuyucunun g\u00f6z\u00fcne sokmakt\u0131r. Bu sebeple yazar\u0131n hik\u00e2yeleri \u00e7ok be\u011fenilmektedir.",
+    "C": "Hik\u00e2yesinde yazar, ya\u015fad\u0131\u011f\u0131 d\u00f6nemin s\u00f6zc\u00fcs\u00fc olmu\u015f \u00e2deta. Okuyucu, \u0131\u015f\u0131nlanarak o anlara birebir \u015fahit oluyor. Mek\u00e2n anlat\u0131mlar\u0131, ait olduklar\u0131 d\u00f6nemin \u00e2deta birer aynas\u0131. Eline bir kahve alan okuyucu, oturdu\u011fu yerden o d\u00f6nemlere \u0131\u015f\u0131nlan\u0131yor; kanl\u0131 canl\u0131 \u015fahidi oluyor t\u00fcm o anlar\u0131n.",
+    "D": "Gen\u00e7 yazar; kendini toplumsal sorunlardan uzak tutmu\u015f, okuyucuyu yok saym\u0131\u015ft\u0131r. Asl\u0131nda hik\u00e2yelerinin bu denli ilgi \u00e7ekmesinin de sebebi san\u0131r\u0131m bu: Kendi kendine tak\u0131lmas\u0131. Ama\u00e7s\u0131z, okuyucudan ba\u011f\u0131ms\u0131z... Kalemini bulundu\u011fu zamana odaklam\u0131\u015f. Kendine ait zamanlar\u0131n bir nevi terc\u00fcmanl\u0131\u011f\u0131n\u0131 yapm\u0131\u015f yazar.",
+    "E": "Ba\u015far\u0131l\u0131 sanat\u00e7\u0131, I ve II. D\u00fcnya sava\u015flar\u0131n\u0131n yaratt\u0131\u011f\u0131 s\u0131k\u0131nt\u0131lar\u0131 t\u00fcm \u00e7\u0131plakl\u0131\u011f\u0131yla vermi\u015f eserinde. \u00c7ekilen ac\u0131lar\u0131n i\u00e7ine \u00e7ekmi\u015f okuyucuyu. O sava\u015flarda cephelere girmi\u015f okuyucu. Hik\u00e2yelerindeki bu canl\u0131l\u0131k ve zamansal yans\u0131t\u0131c\u0131l\u0131\u011f\u0131 da sanat\u00e7\u0131y\u0131 biricik yapm\u0131\u015f i\u015fte."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T025_05",
+   "basili_no": 5,
+   "govde": "I. Bu yans\u0131malar; edeb\u00ee metinlerde kullan\u0131lan dilin anlam\u0131n\u0131, de\u011ferini ve i\u015flevini etkiler.\nII. Edeb\u00ee metinlerde sanat\u00e7\u0131 var olana nispetle yeni bir \u00e2lem kurmakta ve eseri, dilin olanaklar\u0131 ile anlatmaya gayret etmektedir.\nIII. Edeb\u00ee metinlerin bilimsel metinlerden en \u00f6nemli fark\u0131 kurmaca olmas\u0131d\u0131r.\nIV. Bu itibar\u0131 \u00e2lemle beraber edeb\u00ee eserin, d\u0131\u015f d\u00fcnyadaki herhangi bir olay olmad\u0131\u011f\u0131, bu olaylar\u0131n yazardaki yans\u0131malar\u0131 oldu\u011fu g\u00f6r\u00fclmektedir.\nV. Sanat\u00e7\u0131n\u0131n kurdu\u011fu bu yeni \u00e2leme \"itibar\u0131 \u00e2lem\" demek m\u00fcmk\u00fcnd\u00fcr.\nYukar\u0131daki numaralanm\u0131\u015f c\u00fcmleler anlaml\u0131 bir b\u00fct\u00fcn olu\u015fturacak bi\u00e7imde s\u0131raland\u0131\u011f\u0131nda hangisi <u>ba\u015ftan \u00fc\u00e7\u00fcnc\u00fc</u> olur?",
+   "sikler": {
+    "A": "I",
+    "B": "II",
+    "C": "III",
+    "D": "IV",
+    "E": "V"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T025_10",
+   "basili_no": 10,
+   "govde": "(I) Tarihi tan\u0131tmaya yarayan eski ferman, mektup, berat gibi yaz\u0131l\u0131 belgelerin sakland\u0131\u011f\u0131 yere \"ar\u015fiv\" denir. (II) \u0130nsano\u011flu, toplumdaki ya\u015fam\u0131n\u0131n d\u00fczeni i\u00e7in gerekli belgeleri yaz\u0131p saklamay\u0131 \u00f6\u011frendi\u011fi g\u00fcnden bu yana devlet aile ar\u015fivleri de ortaya \u00e7\u0131km\u0131\u015ft\u0131r. (III) \u0130lk devlet ar\u015fivlerine M\u0131s\u0131r'da, Yunanistan tap\u0131naklar\u0131nda, Roma'da rastlanm\u0131\u015ft\u0131r. (IV) Osmanl\u0131 \u0130mparatorlu\u011fu'nun ilk \u00e7a\u011flar\u0131ndan beri devlet belgeleri torbalarla sand\u0131klar i\u00e7inde saklanm\u0131\u015ft\u0131r. (V) Ayr\u0131ca eski Roma evlerinde aile ar\u015fivleri de bulunmu\u015ftur.\nBu par\u00e7adaki numaralanm\u0131\u015f c\u00fcmlelerin hangisi d\u00fc\u015f\u00fcncenin ak\u0131\u015f\u0131n\u0131 bozmaktad\u0131r?",
+   "sikler": {
+    "A": "I",
+    "B": "II",
+    "C": "III",
+    "D": "IV",
+    "E": "V"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T026_09",
+   "basili_no": 9,
+   "govde": "(I) Avrupa'n\u0131n Orta \u00c7a\u011f'daki durumu ve g\u00f6r\u00fcn\u00fcm\u00fcn\u00fc tan\u0131mlayan en temel \u00f6zellik, Hristiyanl\u0131\u011f\u0131n toplum hayat\u0131n\u0131n hemen her alan\u0131na h\u00e2kim olmas\u0131d\u0131r. (II) Orta Do\u011fu'da do\u011fan Hristiyanl\u0131k, uzun s\u00fcre gizli kald\u0131ktan sonra MS IV. yy.da Roma'n\u0131n resm\u00ee dini olmu\u015ftur. (III) Kilise gibi \u00f6rg\u00fctl\u00fc bir kuruma sahip olmas\u0131 sayesinde h\u0131zla yay\u0131lan Hristiyanl\u0131k, \u00f6zellikle Kavimler G\u00f6\u00e7\u00fc'n\u00fcn getirdi\u011fi \u00e7alkant\u0131 ortam\u0131nda Avrupa'da h\u00e2kim din h\u00e2line gelmistir. (IV) Orta \u00c7a\u011f Avrupa's\u0131 sosyal, ekonomik ve k\u00fclt\u00fcrel bak\u0131mlardan da Antik \u00c7a\u011f'dan farkl\u0131d\u0131r. (V) Orta \u00c7a\u011f Avrupa's\u0131nda sosyal ve siyasal yap\u0131da g\u00fc\u00e7l\u00fc imparatorluk ve devletlerin \u00e7\u00f6kmesi \u00fczerine derebeylikler \u00f6ne \u00e7\u0131km\u0131\u015ft\u0131r. (VI) Toplumun s\u0131n\u0131fl\u0131 yap\u0131s\u0131 ve s\u0131n\u0131flar aras\u0131 u\u00e7urum daha da belirginle\u015fmi\u015ftir.\nBu par\u00e7a iki paragrafa ayr\u0131lmak istense ikinci paragraf numaralanm\u0131\u015f c\u00fcmlelerin hangisiyle ba\u015flar?",
+   "sikler": {
+    "A": "II",
+    "B": "III",
+    "C": "IV",
+    "D": "V",
+    "E": "VI"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T027_06",
+   "basili_no": 6,
+   "govde": "Okuma oranlar\u0131 dendi\u011finde sadece kitaplar\u0131 de\u011fil; ki\u015fisel mesajla\u015fmalar\u0131, e - postalar\u0131, oyunlar\u0131, sosyal medyay\u0131 ve ba\u015fka elektronik yay\u0131nlar\u0131 da d\u00fc\u015f\u00fcn\u00fcrsek eskiye oranla \u00e7ok daha fazla \u015fey okunmu\u015f. San Diego'daki Kaliforniya \u00dcniversitesinde yap\u0131lan bir ara\u015ft\u0131rmaya g\u00f6re 2000'lerin sonunda 1980'e k\u0131yasla 3 kat daha fazla \u015fey okunmu\u015f. \u00d6te yandan, her g\u00fcn k\u00e2\u011f\u0131ttan \u00e7ok ekrandan okur h\u00e2le geliyoruz. K\u00e2\u011f\u0131ttan okuma ile ekrandan okuma aras\u0131nda keskin farklar\u0131 belirlemek g\u00fc\u00e7. Kullan\u0131lan k\u00e2\u011f\u0131d\u0131n ya da cihaz\u0131n \u00f6zellikleri, metnin t\u00fcr\u00fc, okuyan\u0131n tercihleri ve elektronik cihaz kullanma al\u0131\u015fkanl\u0131klar\u0131 gibi pek \u00e7ok etken say\u0131labilir. Yine de ara\u015ft\u0131rmac\u0131lar\u0131n b\u00fcy\u00fck b\u00f6l\u00fcm\u00fc; ekran okumalar\u0131n\u0131n bizi do\u011frusal olmayan okumaya, ba\u015fka bir deyi\u015fle g\u00f6z gezdirerek, s\u00f6zc\u00fckleri atlayarak okumaya itti\u011fi g\u00f6r\u00fc\u015f\u00fcndedir.\nBu par\u00e7adan a\u015fa\u011f\u0131dakilerden hangisi <u>\u00e7\u0131kar\u0131lamaz</u>?",
+   "sikler": {
+    "A": "Teknolojik geli\u015fmeler, bas\u0131l\u0131 ve yaz\u0131l\u0131 metinler olu\u015fturan yazarlarda daha nitelikli eserler olu\u015fturma zorunlulu\u011fu yaratmaktad\u0131r.",
+    "B": "Okuma oranlar\u0131 de\u011ferlendirilirken bask\u0131l\u0131 ve yaz\u0131l\u0131 metinlerin yan\u0131nda teknolojinin imk\u00e2nlar\u0131 d\u00e2hilinde olan okumalar da hesaba kat\u0131lmal\u0131d\u0131r.",
+    "C": "Teknolojik imk\u00e2nlar ile birlikte okuman\u0131n da niteli\u011finin de\u011fi\u015febilece\u011fi ger\u00e7e\u011fi ink\u00e2r edilemez.",
+    "D": "Okuma oran\u0131n\u0131n belirli bir d\u00f6nem g\u00f6zle g\u00f6r\u00fcl\u00fcr bir art\u0131\u015f g\u00f6sterdi\u011fi s\u00f6ylenebilir.",
+    "E": "Elektronik ekran okumalar\u0131, okur \u00fczerinde dikkat da\u011f\u0131n\u0131kl\u0131\u011f\u0131na sebep olabilmektedir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T027_10",
+   "basili_no": 10,
+   "govde": "Gazeteci: Normal hayata dair olaylar\u0131n, s\u0131radan ve g\u00fcnl\u00fck bir dille yaz\u0131lmas\u0131na neden kar\u015f\u0131s\u0131n\u0131z?\nSanat\u00e7\u0131: \u015eiir, b\u00f6ylesine basit olamaz da bu y\u00fczden.\nGazeteci: Kafiyesiz bir \u015fiiri de mi onaylam\u0131yorsunuz?\nSanat\u00e7\u0131: Kesinlikle. \u015eiiri \u015fiir yapan t\u00fcm kurallara dikkat edilmeli.\nA\u015fa\u011f\u0131daki yarg\u0131lardan hangisinin bu diyalogdaki sanat\u00e7\u0131n\u0131n sanat anlay\u0131\u015f\u0131yla \u00f6rt\u00fc\u015ft\u00fc\u011f\u00fc s\u00f6ylenebilir?",
+   "sikler": {
+    "A": "Toplum i\u00e7in sanat anlay\u0131\u015f\u0131, \u015fiire h\u00e2kim olmal\u0131d\u0131r; bu anlay\u0131\u015fla yaz\u0131lan \u015fiirlerde de herhangi bir kural tan\u0131nmamal\u0131d\u0131r.",
+    "B": "Halk \u015fiirinin anlat\u0131m ve deneyimlerinden faydalan\u0131ld\u0131\u011f\u0131 zaman \u015fiirde ba\u015far\u0131y\u0131 yakalamamak m\u00fcmk\u00fcn de\u011fildir.",
+    "C": "\u015eiirde her t\u00fcrl\u00fc kurala ve belirli kal\u0131plara kar\u015f\u0131 \u00e7\u0131k\u0131lmal\u0131 ki sanatta \u00f6zg\u00fcrl\u00fck yakalanabilsin.",
+    "D": "\u0130mgeler, \u00f6zg\u00fcn ve yarat\u0131c\u0131d\u0131r; bu imgeler, dilin anlam alan\u0131n\u0131 geni\u015fletip dile yeni olanaklar sunacak bir yap\u0131ya sahiptir.",
+    "E": "\u015eiirde anla\u015fmazl\u0131k, d\u0131\u015flanmal\u0131d\u0131r: k\u00fc\u00e7\u00fck insan tipleri oldu\u011fu gibi \u015fiirde yer alabilmelidir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T028_07",
+   "basili_no": 7,
+   "govde": "(I) Hi\u00e7 yoksa 18. y\u00fczy\u0131ldaki Ayd\u0131nlanma \u00c7a\u011f\u0131'ndan beri insan varl\u0131\u011f\u0131na dair en temel sorulardan biri, \u00f6zg\u00fcr iradeye sahip olup olmad\u0131\u011f\u0131m\u0131zd\u0131r. (II) 20. yy.da kimileri sinir bilimin bu soruya bir yan\u0131t buldu\u011fu kanaatindeydi. (III) Ancak yak\u0131n d\u00f6nemlerde anla\u015f\u0131lm\u0131\u015f oldu\u011fu \u00fczere, durum hi\u00e7 de \u00f6yle de\u011fil. (IV) Sinir bilimin verdi\u011fi bu ka\u00e7amak cevap yine de ahlaki kurallar\u0131m\u0131za, ceza adaleti sistemlerimize, din ve hatta hayat\u0131n anlam\u0131na kadar pek \u00e7ok \u015feye temel te\u015fkil etmekte. (V) Zira hayattaki her olay, mekanik yasalar\u0131n \u00f6ng\u00f6r\u00fclebilir sonu\u00e7lar\u0131ndan ibaretse b\u00fct\u00fcn bunlar\u0131n amac\u0131 sorgulanabilir.\nBu par\u00e7ada numaralanm\u0131\u015f c\u00fcmlelerin <u>hangisinden sonra</u> \"Yayg\u0131n ve y\u00fczeysel bir g\u00f6r\u00fc\u015fe g\u00f6re, se\u00e7imlerimiz \u00f6nceden belirlenmi\u015f ise \u00f6zg\u00fcr iradeye sahip de\u011filizdir; aksi takdirde sahibizdir.\" c\u00fcmlesi getirilebilir?",
+   "sikler": {
+    "A": "I",
+    "B": "II",
+    "C": "III",
+    "D": "IV",
+    "E": "V"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T028_16",
+   "basili_no": 16,
+   "govde": "Yunus'un ya\u015fad\u0131\u011f\u0131 devir; Anadolu'nun i\u00e7ine d\u00f6n\u00fck, umutsuz, bezgin bir d\u00f6nemidir. Mo\u011fol ak\u0131nlar\u0131 kar\u015f\u0131s\u0131nda yenik d\u00fc\u015fen Anadolu Sel\u00e7uklu Devleti, T\u00fcrkmen boylar\u0131n\u0131n ikide bir ayaklanmas\u0131yla t\u00fcmden g\u00fc\u00e7s\u00fcz olmu\u015f; halktan koparak kendi derdinde, kendi ya\u015fant\u0131s\u0131n\u0131 s\u00fcrd\u00fcrme \u00e7abas\u0131na d\u00fc\u015fm\u00fc\u015ft\u00fcr. \u00dcst \u00fcste gelen k\u0131tl\u0131k ve s\u00fcrekli kurakl\u0131klar, bitkin ve ezik halk\u0131n ya\u015fama umudunu k\u0131rm\u0131\u015f; halk, \u201cger\u00e7ek mutlulu\u011fun \u00f6l\u00fcmden sonra var olaca\u011f\u0131n\u0131, bu ge\u00e7ici d\u00fcnyada, an - duru bir g\u00f6n\u00fclle Tanr\u0131'ya y\u00f6nelmeyi\u201d telkin eden mutasavv\u0131f \u015feyhlerin \u00e7evresinde k\u00fcme k\u00fcme toplanm\u0131\u015ft\u0131r. Yunus, bu ortamda bir a\u015fk ve sevgi g\u00fcne\u015fi olarak Anadolu'da do\u011fmu\u015f; umutsuzlara umut vermi\u015f ve Anadolu'nun g\u00f6nl\u00fc ve dili olmu\u015ftur.\nBu par\u00e7ada anlat\u0131lanlarla ilgili olarak a\u015fa\u011f\u0131daki yarg\u0131lardan hangisi <u>\u00e7\u0131kar\u0131lamaz</u>?",
+   "sikler": {
+    "A": "Yunus Emre, Anadolu'nun olumsuz \u015fartlar ta\u015f\u0131d\u0131\u011f\u0131 d\u00f6nemde ya\u015fam\u0131\u015ft\u0131r.",
+    "B": "Yunus'un ya\u015fad\u0131\u011f\u0131 d\u00f6nem, Sel\u00e7uklu Devleti'nin zay\u0131flad\u0131\u011f\u0131 d\u00f6nemdir.",
+    "C": "Yunus Emre'nin ya\u015fad\u0131\u011f\u0131 d\u00f6nemde do\u011fal olumsuzluklar da s\u00f6z konusudur.",
+    "D": "Yunus Emre, olumsuz bir ortamda halk\u0131n moralini canl\u0131 tutmu\u015ftur.",
+    "E": "Yunus Emre, \u015fiirleriyle sadece kendi d\u00f6neminin de\u011fil; sonraki d\u00f6nemlerin de sesi olmu\u015ftur."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T029_08",
+   "basili_no": 8,
+   "govde": "An\u0131t eser, di\u011fer bir deyi\u015fle \u015faheser... An\u0131t kelimesinin T\u00fcrk\u00e7e S\u00f6zl\u00fck\u2019teki anlam\u0131, \"\u00d6nemi ve de\u011feri \u00e7ok olan eser veya ki\u015fi.\" An\u0131t eser tamlamas\u0131nda s\u0131fat olan \"an\u0131t\"\u0131n vurgulu olu\u015fu, sanki eserin \u00f6nemini bir kat daha art\u0131r\u0131yor. \u015eaheser ise T\u00fcrk\u00e7e S\u00f6zl\u00fck\u2019te \"kendi t\u00fcr\u00fcnde m\u00fckemmel olan, \u00fcst\u00fcn ve kal\u0131c\u0131 nitelikte eser, ba\u015fyap\u0131t, ba\u015feser\" \u015feklinde daha doyurucu a\u00e7\u0131klanm\u0131\u015f ama \u015faheser kelimesinde \u015fah ve eser birle\u015fince \u015fah \u00fczerindeki vurgu da kaybolmu\u015f. \u0130ki kelimenin k\u00f6kenleri farkl\u0131... Buna ra\u011fmen her ikisi de ayn\u0131 kavrama i\u015faret ediyor. Bu tan\u0131mlar birle\u015ftirilerek yaz\u0131n\u0131n ba\u015fl\u0131\u011f\u0131nda ge\u00e7en \"an\u0131t eser\"i, \"kendi t\u00fcr\u00fcnde m\u00fckemmel, \u00fcst\u00fcn ve kal\u0131c\u0131 nitelikte \u00f6nemli ve de\u011ferli eser\" olarak a\u00e7\u0131klamak, hi\u00e7 de yanl\u0131\u015f olmayacakt\u0131r. M\u00fckemmellik ve kal\u0131c\u0131l\u0131k, bence tan\u0131m i\u00e7indeki en \u00f6nemli kelimeler. T\u00fcrk dilinin bu nitelikleri ta\u015f\u0131yan eserlerinin s\u0131ralanmas\u0131nda genel kanaat odur ki K\u00f6kt\u00fcrk Yaz\u0131tlar\u0131, Kutadgu Bilig, D\u00eev\u00e2nu Lug\u00e2ti\u2019t - T\u00fcrk, O\u011fuznameler ilk s\u0131ralarda yer al\u0131r.\nBu par\u00e7ay\u0131 yazan ki\u015finin \"dil\"e kar\u015f\u0131 yakla\u015f\u0131m\u0131 a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru bir \u015fekilde ifade edilmi\u015ftir?",
+   "sikler": {
+    "A": "Bilgi ve birikimiyle s\u00f6zc\u00fcklerin anlam inceliklerini b\u00fcy\u00fck bir hassasiyetle tartmaktad\u0131r.",
+    "B": "S\u00f6zc\u00fck se\u00e7iminde ve onlar\u0131 s\u00f6zl\u00fc - yaz\u0131l\u0131 ortamda ifadede k\u00f6kenlerini \u00f6nemsememektedir.",
+    "C": "S\u00f6zc\u00fcklerin anlam de\u011ferlerini ifade ederken g\u00fcncel e\u011filimleri dikkate almaktad\u0131r.",
+    "D": "Dil konusuna yakla\u015f\u0131m\u0131nda teorik y\u00f6nden \u00e7eli\u015fkiler g\u00f6r\u00fclmektedir.",
+    "E": "Kelime se\u00e7iminde alana dair terimleri s\u0131k\u00e7a kulland\u0131\u011f\u0131 i\u00e7in anla\u015f\u0131l\u0131r tav\u0131rdan uzakt\u0131r."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25PR-T029_12",
+   "basili_no": 12,
+   "govde": "Deneme yazarlar\u0131, denemelerde g\u00f6r\u00fc\u015flerini kesin belgelerle kan\u0131tlama zorunlu\u011funda de\u011fildir. Bu \u00f6zelli\u011fi, deneme yazar\u0131n\u0131n bilim ve felsefeye kapal\u0131 oldu\u011fu anlam\u0131na gelmemelidir. G\u00f6r\u00fc\u015flerini a\u00e7\u0131klarken bilimsel verilerden yararlanmayabilir ve bilgileri, teorik olarak vermeyi tercih etmeyebilir. Kendi yazma tarz\u0131n\u0131 uygulamay\u0131 tercih eder. Deneme yazar\u0131, g\u00f6rd\u00fc\u011f\u00fc ger\u00e7e\u011fi ve ula\u015ft\u0131\u011f\u0131 bilgiyi kendi ya\u015fam\u0131na ve \u00e7evresindeki ya\u015fama kendince uygular. Dilini \u00f6zenle kullan\u0131r. Dilin inceliklerine, kulland\u0131\u011f\u0131 s\u00f6zc\u00fcklerin anlamlar\u0131na dikkat eder ve ironiden geni\u015f \u00f6l\u00e7\u00fcde yararlanmak, deneme yazar\u0131n\u0131n tercihleri aras\u0131ndad\u0131r.\nBu par\u00e7adan yola \u00e7\u0131k\u0131ld\u0131\u011f\u0131nda a\u015fa\u011f\u0131dakilerden hangisi deneme yazar\u0131n\u0131n yazma s\u00fcreci i\u00e7inde kendine soraca\u011f\u0131 sorulardan biri <u>olamaz</u>?",
+   "sikler": {
+    "A": "Teorik bilgiye ula\u015fmam gerekiyor mu?",
+    "B": "Yaz\u0131lar\u0131ma ki\u015fisel tarz\u0131m\u0131 yans\u0131tmal\u0131 m\u0131y\u0131m?",
+    "C": "Deneme tarz\u0131n\u0131, roman\u0131n yaz\u0131m\u0131nda da uygulayabilir miyim?",
+    "D": "\u00c7evremdeki ya\u015fam\u0131 \u00f6znel olarak anlatmay\u0131 istiyor muyum?",
+    "E": "\u00dcslubuma \u00f6nem veriyor muyum?"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  }
+ ]
+}

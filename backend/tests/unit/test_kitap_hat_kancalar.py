@@ -158,3 +158,19 @@ def test_kesik_goz_onayi_kapidan_ayirir_ve_bayat_onayi_bildirir() -> None:
     assert [x["soru"] for x in onayli] == [10]
     assert bayat == ["X-T001_01"]
     assert kirp.goz_onayi_ayir(SimpleNamespace(), kesik) == (kesik, [], [])
+
+
+def test_sus_parite_yalniz_kendi_paritesinde_beyazlatir() -> None:
+    """AKT25PR: orta ayrac cift / tek sayfada farkli x'te; tek pencere diger
+    paritenin kirmizi numarasini da silerdi -> SUS_PARITE yerlesim paritesine gore."""
+    a = np.full((50, 60, 3), 255, np.uint8)
+    a[10:20, 10:14] = (0, 130, 150)  # cift ayrac yazisi (camgobegi)
+    a[10:20, 30:34] = (220, 30, 40)  # kirmizi numara (tek ayrac penceresinde)
+    p = SimpleNamespace(
+        LEKE=None, SUS_PARITE={0: ((0, 50, 5, 20),), 1: ((0, 50, 25, 40),)}
+    )
+    cift = kirp.sayfa_no_lekesi(p, a, 18)
+    assert cift[10:20, 10:14].all() and not cift[10:20, 30:34].any()
+    tek = kirp.sayfa_no_lekesi(p, a, 19)
+    assert tek[10:20, 30:34].all() and not tek[10:20, 10:14].any()
+    assert not kirp.sayfa_no_lekesi(p, a).any()  # n verilmezse parite penceresi yok

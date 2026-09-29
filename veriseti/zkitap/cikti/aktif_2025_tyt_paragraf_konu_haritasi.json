@@ -1,0 +1,513 @@
+{
+"kaynak": "AKTIF 2025 TYT Paragraf Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (dosya 9) 5 unite + Deneme Testi; unite baslangici acilis sayfasi (dosya = basili + 5: 10, 22, 28, 36, 46); Deneme Testi 1 dosya 62 (gozle; icindekilerdeki basili 79 yakalamayla tutmuyor); konu = test bandindaki unite adi (iki bagimsiz okuma)",
+"bolumler": [
+{
+"kod": "TUR-AKT25PR-B01",
+"no": 1,
+"ad": "PARAGRAFTA ANLATIM B\u0130\u00c7\u0130MLER\u0130"
+},
+{
+"kod": "TUR-AKT25PR-B02",
+"no": 2,
+"ad": "PARAGRAFTA KONU"
+},
+{
+"kod": "TUR-AKT25PR-B03",
+"no": 3,
+"ad": "PARAGRAFTA ANA D\u00dc\u015e\u00dcNCE"
+},
+{
+"kod": "TUR-AKT25PR-B04",
+"no": 4,
+"ad": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE"
+},
+{
+"kod": "TUR-AKT25PR-B05",
+"no": 5,
+"ad": "PARAGRAFTA YAPI"
+},
+{
+"kod": "TUR-AKT25PR-B06",
+"no": 6,
+"ad": "DENEME TEST\u0130"
+}
+],
+"konular": [
+{
+"kod": "TUR-AKT25PR-B01-K01",
+"bolum": "TUR-AKT25PR-B01",
+"ad": "Paragrafta Anlat\u0131m Bi\u00e7imleri",
+"icindekiler_adi": "Paragrafta Anlat\u0131m Bi\u00e7imleri",
+"sayfalar": [
+10,
+21
+]
+},
+{
+"kod": "TUR-AKT25PR-B02-K01",
+"bolum": "TUR-AKT25PR-B02",
+"ad": "Paragrafta Konu",
+"icindekiler_adi": "Paragrafta Konu",
+"sayfalar": [
+22,
+27
+]
+},
+{
+"kod": "TUR-AKT25PR-B03-K01",
+"bolum": "TUR-AKT25PR-B03",
+"ad": "Paragrafta Ana D\u00fc\u015f\u00fcnce",
+"icindekiler_adi": "Paragrafta Ana D\u00fc\u015f\u00fcnce",
+"sayfalar": [
+28,
+35
+]
+},
+{
+"kod": "TUR-AKT25PR-B04-K01",
+"bolum": "TUR-AKT25PR-B04",
+"ad": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"icindekiler_adi": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"sayfalar": [
+36,
+45
+]
+},
+{
+"kod": "TUR-AKT25PR-B05-K01",
+"bolum": "TUR-AKT25PR-B05",
+"ad": "Paragrafta Yap\u0131",
+"icindekiler_adi": "Paragrafta Yap\u0131",
+"sayfalar": [
+46,
+61
+]
+},
+{
+"kod": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"ad": "Deneme Testi",
+"icindekiler_adi": "Deneme Testi",
+"sayfalar": [
+62,
+144
+]
+}
+],
+"test_sayisi": 30,
+"testler": [
+{
+"birim": "AKT25PR-T001",
+"test": 1,
+"sayfalar": [
+17,
+18
+],
+"bant": "PARAGRAFTA ANLATIM B\u0130\u00c7\u0130MLER\u0130",
+"konu": "TUR-AKT25PR-B01-K01",
+"bolum": "TUR-AKT25PR-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T002",
+"test": 2,
+"sayfalar": [
+19,
+20,
+21
+],
+"bant": "PARAGRAFTA ANLATIM B\u0130\u00c7\u0130MLER\u0130",
+"konu": "TUR-AKT25PR-B01-K01",
+"bolum": "TUR-AKT25PR-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "AKT25PR-T003",
+"test": 3,
+"sayfalar": [
+24,
+25
+],
+"bant": "PARAGRAFTA KONU",
+"konu": "TUR-AKT25PR-B02-K01",
+"bolum": "TUR-AKT25PR-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T004",
+"test": 4,
+"sayfalar": [
+26,
+27
+],
+"bant": "PARAGRAFTA KONU",
+"konu": "TUR-AKT25PR-B02-K01",
+"bolum": "TUR-AKT25PR-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T005",
+"test": 5,
+"sayfalar": [
+30,
+31
+],
+"bant": "PARAGRAFTA ANA D\u00dc\u015e\u00dcNCE",
+"konu": "TUR-AKT25PR-B03-K01",
+"bolum": "TUR-AKT25PR-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T006",
+"test": 6,
+"sayfalar": [
+32,
+33
+],
+"bant": "PARAGRAFTA ANA D\u00dc\u015e\u00dcNCE",
+"konu": "TUR-AKT25PR-B03-K01",
+"bolum": "TUR-AKT25PR-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T007",
+"test": 7,
+"sayfalar": [
+34,
+35
+],
+"bant": "PARAGRAFTA ANA D\u00dc\u015e\u00dcNCE",
+"konu": "TUR-AKT25PR-B03-K01",
+"bolum": "TUR-AKT25PR-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T008",
+"test": 8,
+"sayfalar": [
+39,
+40
+],
+"bant": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+"konu": "TUR-AKT25PR-B04-K01",
+"bolum": "TUR-AKT25PR-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T009",
+"test": 9,
+"sayfalar": [
+41,
+42
+],
+"bant": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+"konu": "TUR-AKT25PR-B04-K01",
+"bolum": "TUR-AKT25PR-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T010",
+"test": 10,
+"sayfalar": [
+43,
+44,
+45
+],
+"bant": "PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE",
+"konu": "TUR-AKT25PR-B04-K01",
+"bolum": "TUR-AKT25PR-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25PR-T011",
+"test": 11,
+"sayfalar": [
+56,
+57
+],
+"bant": "PARAGRAFTA YAPI",
+"konu": "TUR-AKT25PR-B05-K01",
+"bolum": "TUR-AKT25PR-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "AKT25PR-T012",
+"test": 12,
+"sayfalar": [
+58,
+59
+],
+"bant": "PARAGRAFTA YAPI",
+"konu": "TUR-AKT25PR-B05-K01",
+"bolum": "TUR-AKT25PR-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "AKT25PR-T013",
+"test": 13,
+"sayfalar": [
+60,
+61
+],
+"bant": "PARAGRAFTA YAPI",
+"konu": "TUR-AKT25PR-B05-K01",
+"bolum": "TUR-AKT25PR-B05",
+"soru_sayisi": 10
+},
+{
+"birim": "AKT25PR-T014",
+"test": 14,
+"sayfalar": [
+62,
+63,
+64,
+65,
+66
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T015",
+"test": 15,
+"sayfalar": [
+67,
+68,
+69,
+70,
+71
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T016",
+"test": 16,
+"sayfalar": [
+72,
+73,
+74,
+75,
+76
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T017",
+"test": 17,
+"sayfalar": [
+77,
+78,
+79,
+80,
+81
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T018",
+"test": 18,
+"sayfalar": [
+82,
+83,
+84,
+85,
+86
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T019",
+"test": 19,
+"sayfalar": [
+87,
+88,
+89,
+90,
+91
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T020",
+"test": 20,
+"sayfalar": [
+92,
+93,
+94,
+95,
+96
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T021",
+"test": 21,
+"sayfalar": [
+97,
+98,
+99,
+100,
+101
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T022",
+"test": 22,
+"sayfalar": [
+102,
+103,
+104,
+105,
+106
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T023",
+"test": 23,
+"sayfalar": [
+107,
+108,
+109,
+110,
+111
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T024",
+"test": 24,
+"sayfalar": [
+112,
+113,
+114,
+115,
+116
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T025",
+"test": 25,
+"sayfalar": [
+117,
+118,
+119,
+120,
+121
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T026",
+"test": 26,
+"sayfalar": [
+122,
+123,
+124,
+125,
+126
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T027",
+"test": 27,
+"sayfalar": [
+127,
+128,
+129,
+130,
+131
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T028",
+"test": 28,
+"sayfalar": [
+132,
+133,
+134,
+135,
+136
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T029",
+"test": 29,
+"sayfalar": [
+137,
+138,
+139,
+140,
+141
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 20
+},
+{
+"birim": "AKT25PR-T030",
+"test": 30,
+"sayfalar": [
+142,
+143,
+144
+],
+"bant": "DENEME TEST\u0130",
+"konu": "TUR-AKT25PR-B06-K01",
+"bolum": "TUR-AKT25PR-B06",
+"soru_sayisi": 12
+}
+]
+}
