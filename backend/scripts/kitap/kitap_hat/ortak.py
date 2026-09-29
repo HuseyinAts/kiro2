@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
+from collections.abc import Callable
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from types import ModuleType
-from typing import Any
+from typing import Any, TypeVar
 
 import numpy as np
 from PIL import Image
@@ -18,10 +21,29 @@ EKRAN = KOK / "veriseti" / "zkitap" / "screenshots"
 VERAFILM = Path(r"C:\Users\husey\VeraFilm")
 BEKLENEN_BOYUT = (1920, 1080)
 GLIF_RENK = (69, 39, 160)
+T = TypeVar("T")
+R = TypeVar("R")
 
 
 def profil(kod: str) -> ModuleType:
     return importlib.import_module(f"scripts.kitap.kitap_hat.profiller.{kod.lower()}")
+
+
+def profil_kodu(p: ModuleType) -> str:
+    """profil(kod) ile yeniden yuklenebilir ad (surec havuzu isine modul gecmez)."""
+    return p.__name__.rsplit(".", 1)[-1]
+
+
+def paralel(fn: Callable[[T], R], isler: list[T], en_az: int = 8) -> list[R]:
+    """Sayfa basina bagimsiz isler icin surec havuzu; sonuc SIRASI girdiyle ayni.
+
+    Is sayisi azsa ya da KITAP_TEK_CEKIRDEK=1 ise sirali (test / hata ayiklama).
+    Windows spawn: fn modul duzeyinde tanimli olmali, cagiran `__main__` korumali."""
+    if len(isler) < en_az or os.environ.get("KITAP_TEK_CEKIRDEK") == "1":
+        return [fn(x) for x in isler]
+    n = max(1, min(12, (os.cpu_count() or 2) - 2))
+    with ProcessPoolExecutor(n) as ex:
+        return list(ex.map(fn, isler, chunksize=max(1, len(isler) // (n * 4))))
 
 
 def yol(p: ModuleType, ad: str) -> Path:

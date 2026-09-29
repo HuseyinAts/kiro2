@@ -266,9 +266,30 @@ def glif(p: ModuleType) -> dict[str, Any]:
         "kapsam_disi": kapsam_disi,
     }
     (serit_dizini(p) / "glif.json").write_text(json.dumps(sonuc), "utf-8")
+    etiket_montaji(X, etiket, serit_dizini(p) / "glif_etiket.png")
     print("segment", len(X), "LOO uyum", uyum, "uyumsuz", uyumsuz)
     print("kapsam disi", kapsam_disi)
     return sonuc
+
+
+def etiket_montaji(vek: np.ndarray, etiket: list[str], yol: Path, n: int = 24) -> None:
+    """Etiket basina esit aralikli n ornek glif (8x9 vektor, 6x buyutulmus), satir
+    basi harf. Gozle: her satir tek bir harf sekli olmali (sistematik takas yok)."""
+    satirlar = []
+    for h in sorted(set(etiket)):
+        idx = [i for i, e in enumerate(etiket) if e == h]
+        m = min(n, len(idx))
+        sec = [idx[int(k * (len(idx) - 1) / max(1, m - 1))] for k in range(m)]
+        hucre = [np.pad(vek[i].reshape(9, 8), 1, constant_values=0.5) for i in sec]
+        satirlar.append(np.hstack(hucre + [np.full((11, 10), 0.5)] * (n - len(hucre))))
+    if not satirlar:
+        return
+    g = (255 - np.vstack(satirlar) * 255).astype(np.uint8)
+    im = Image.fromarray(g).resize(
+        (g.shape[1] * 6, g.shape[0] * 6), Image.Resampling.NEAREST
+    )
+    im.save(yol)
+    print("etiket montaji", yol, "satir sirasi", sorted(set(etiket)))
 
 
 def ab_karsilastir(p: ModuleType) -> list[str]:
@@ -277,10 +298,13 @@ def ab_karsilastir(p: ModuleType) -> list[str]:
         x["test"]: x
         for x in json.loads((o / "okuma_A.json").read_text("utf-8"))["testler"]
     }
-    B = {
-        x["test"]: x
-        for x in json.loads((o / "okuma_B.json").read_text("utf-8"))["testler"]
-    }
+    b_yol = o / "okuma_B.json"
+    tek = not b_yol.exists()
+    B = (
+        A
+        if tek
+        else {x["test"]: x for x in json.loads(b_yol.read_text("utf-8"))["testler"]}
+    )
     tar = ortak.oku(p, "capa_taramasi")
     out = []
     if sorted(A) != sorted(B) or sorted(A) != [t["test"] for t in tar["testler"]]:
@@ -301,10 +325,16 @@ def ab_karsilastir(p: ModuleType) -> list[str]:
     return out
 
 
-def ham_yaz(p: ModuleType, goz_teyit: dict[str, str], goz_c: dict[str, str]) -> None:
+def ham_yaz(
+    p: ModuleType,
+    goz_teyit: dict[str, str],
+    goz_c: dict[str, str],
+    etiket_goz: bool = False,
+) -> None:
     o = serit_dizini(p)
     A = json.loads((o / "okuma_A.json").read_text("utf-8"))
-    B = json.loads((o / "okuma_B.json").read_text("utf-8"))
+    b_yol = o / "okuma_B.json"
+    B = json.loads(b_yol.read_text("utf-8")) if b_yol.exists() else None
     G = json.loads((o / "glif.json").read_text("utf-8"))
     veri = {
         "kaynak": p.KAYNAK_ADI,
@@ -313,7 +343,11 @@ def ham_yaz(p: ModuleType, goz_teyit: dict[str, str], goz_c: dict[str, str]) -> 
             "yontem": "3x Lanczos anahtar kirpimi; bagimsiz okuyucu (ileri); hucre sayisi SOYLENMEDI",
             "testler": A["testler"],
         },
-        "okuma_b": {
+        # Tek okuma (APO19FZ sonrasi): okuma_b None; bagimsiz ikinci kanal glif
+        # LOO + etiket-sekil gozu (glif_etiket.png).
+        "okuma_b": None
+        if B is None
+        else {
             "yontem": "3x Lanczos anahtar kirpimi; bagimsiz okuyucu (geri), A'yi gormeden",
             "testler": B["testler"],
         },
@@ -329,6 +363,7 @@ def ham_yaz(p: ModuleType, goz_teyit: dict[str, str], goz_c: dict[str, str]) -> 
             "goz_teyit": goz_teyit,
             "goz_teyit_yontem": "5x nearest anahtar kirpimi, gozle",
             "kapsam_disi_test": [x[0] for x in G["kapsam_disi"]],
+            "etiket_goz": etiket_goz,
         },
         "goz_c": {
             "yontem": "glif kapsami disindaki testler 5x (nearest) anahtar kirpiminda gozle",
@@ -339,10 +374,28 @@ def ham_yaz(p: ModuleType, goz_teyit: dict[str, str], goz_c: dict[str, str]) -> 
     print("ham yazildi")
 
 
+def _ikinci_okuma(
+    ham: dict[str, Any], a: dict[int, list]
+) -> tuple[dict[int, list], list[str]]:
+    """Karsilastirilacak ikinci okuma ve tek-okuma kapisi.
+
+    Tek okuma (okuma_b None): ikinci bagimsiz kanal glif. LOO bir hucrenin yanlis
+    okunmasini yakalar (komsu glifler dogru etiketli); ayni harfin HER yerde ayni
+    yanlis okunmasini (sistematik takas) yakalamaz -> etiket basina ornek glifler
+    gozle onaylanmali (glif_etiket.png, `ham --etiket-goz`). Glif kapsami disindaki
+    testler goz_c (5x gozle ikinci okuma) ile kapanir."""
+    if ham["okuma_b"] is not None:
+        return {t["test"]: t["hucreler"] for t in ham["okuma_b"]["testler"]}, []
+    if not ham["glif"].get("etiket_goz"):
+        return a, ["tek okuma: glif etiket-sekil gozu (glif_etiket.png) onaylanmadi"]
+    return a, []
+
+
 def dogrula(p: ModuleType, ham: dict[str, Any]) -> list[str]:
     hata = []
     a = {t["test"]: t["hucreler"] for t in ham["okuma_a"]["testler"]}
-    b = {t["test"]: t["hucreler"] for t in ham["okuma_b"]["testler"]}
+    b, tek_hata = _ikinci_okuma(ham, a)
+    hata += tek_hata
     if set(a) != set(b):
         hata.append("A ve B test kumeleri farkli")
     for t in sorted(a):
@@ -461,6 +514,11 @@ def main() -> None:
     h = alt.add_parser("ham")
     h.add_argument("--goz-teyit", nargs="*", default=[], help="T005#3=C")
     h.add_argument("--goz-c", nargs="*", default=[], help="16=ABCD...")
+    h.add_argument(
+        "--etiket-goz",
+        action="store_true",
+        help="glif_etiket.png gozle incelendi: her satirdaki glifler etiketteki harf",
+    )
     alt.add_parser("yaz")
     a = ap.parse_args()
     p = ortak.profil(a.profil)
@@ -474,7 +532,7 @@ def main() -> None:
         for f in fark:
             print("  ", f)
     elif a.komut == "ham":
-        ham_yaz(p, _anahtar_deger(a.goz_teyit), _anahtar_deger(a.goz_c))
+        ham_yaz(p, _anahtar_deger(a.goz_teyit), _anahtar_deger(a.goz_c), a.etiket_goz)
     else:
         anahtar_yaz(p)
 

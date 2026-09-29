@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import re
+from pathlib import Path
 from types import ModuleType
 from typing import Any
 
@@ -199,16 +200,28 @@ def capalar(
     return out, disari
 
 
+def _sayfa_tara(arg: tuple[str, str, int]) -> tuple[int, dict, Any]:
+    """Bir sayfa: olcum + (test sayfasiysa) capalar; kart bir kez yuklenir (havuz isi)."""
+    kod, d, n = arg
+    p = ortak.profil(kod)
+    a = ortak.kart(p, Path(d), n)
+    v = sayfa_olc(p, a, n)
+    capa = capalar(p, a, n, v["glif"], v["anahtar"]) if v["tur"] == "test" else None
+    return n, v, capa
+
+
 def tara(p: ModuleType) -> dict[str, Any]:
     d = ortak.kaynak_dizin(p)
     sayfalar: dict[int, dict] = {}
-    for f in sorted(d.glob("sayfa_*.png")):
-        n = int(f.stem[-4:])
-        sayfalar[n] = sayfa_olc(p, ortak.kart(p, d, n), n)
     sayfa_capa: dict[int, tuple[list[dict], list[tuple[list[int], str]]]] = {}
-    for n, v in sayfalar.items():
-        if v["tur"] == "test":
-            sayfa_capa[n] = capalar(p, ortak.kart(p, d, n), n, v["glif"], v["anahtar"])
+    isler = [
+        (ortak.profil_kodu(p), str(d), int(f.stem[-4:]))
+        for f in sorted(d.glob("sayfa_*.png"))
+    ]
+    for n, v, capa in ortak.paralel(_sayfa_tara, isler):
+        sayfalar[n] = v
+        if capa is not None:
+            sayfa_capa[n] = capa
     bas = None
     if getattr(p, "TEST_SINIRI", "anahtar") == "bas_listesi":
         # Her sayfanin kendi seridi var, numara sayfalar boyunca surer: test

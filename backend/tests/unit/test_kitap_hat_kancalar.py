@@ -259,3 +259,77 @@ def test_sinav_sinif_konu_duzeyinde() -> None:
     assert ithal.sinav_sinif(p, "FIZ-X-B01-K02") == ("AYT", 11)
     with pytest.raises(KeyError):
         ithal.sinav_sinif(p, "FIZ-X-B09-K01")
+
+
+# --- hiz: pencere renk, surec havuzu, tek okuma, sekil satiri (29 Eyl 2026) ---
+
+
+def test_okuyucu_maskesi_pencere_tam_sayfa_hesabiyla_ayni() -> None:
+    """Renk siniflamasi yalniz disk penceresinde hesaplanir; tam sayfa hesabiyla
+    (eski yol) bit bit ayni olmali (gercek veride 14 kitap / 3590 sayfa: fark 0)."""
+    rng = np.random.default_rng(3)
+    a = rng.integers(0, 256, (120, 140, 3)).astype(np.uint8)
+    a[40:70, 50:80] = (69, 39, 160)  # glif rengi
+    p = SimpleNamespace(
+        BEYAZ_YARICAP=17,
+        numara_maskesi=lambda x: (x[..., 0] > 200) & (x[..., 1] < 80),
+    )
+    merkez = [[55, 65], [10, 10], [115, 135]]
+    yeni = kirp.okuyucu_maskesi(p, a, merkez)
+    renk = kirp._okuyucu_rengi(a) & ~p.numara_maskesi(a.astype(int))
+    ai = a.astype(np.int16)
+    notr = (ai.max(axis=2) - ai.min(axis=2) < kirp.GOLGE_FARK) & (
+        ai.max(axis=2) >= kirp.SOL_GRI
+    )
+    eski = np.zeros(a.shape[:2], bool)
+    for gy, gx in merkez:
+        sl, r, _, dx = kirp._pencere(a.shape, gy, gx, p.BEYAZ_YARICAP + 2)
+        eski[sl] |= (r <= p.BEYAZ_YARICAP) & (renk[sl] | ((dx < -5) & notr[sl]))
+    assert np.array_equal(yeni, eski)
+
+
+def test_paralel_sirayi_korur() -> None:
+    from scripts.kitap.kitap_hat import ortak
+
+    girdi = list(range(-40, 0))
+    assert ortak.paralel(abs, girdi) == [abs(x) for x in girdi]
+    assert ortak.paralel(abs, [-3, -1]) == [3, 1]  # az is: sirali yol
+
+
+def test_tek_okuma_etiket_gozu_olmadan_durur() -> None:
+    ham = {
+        "okuma_a": {"testler": [{"test": 1, "hucreler": [[1, "A"], [2, "C"]]}]},
+        "okuma_b": None,
+        "glif": {
+            "kapsam_disi_test": [],
+            "goz_teyit": {},
+            "uyumsuz": [],
+            "hucre": 2,
+            "uyum": 2,
+        },
+        "goz_c": {"testler": {}},
+    }
+    assert any("etiket" in h for h in anahtar.dogrula(SimpleNamespace(), ham))
+    ham["glif"]["etiket_goz"] = True
+    assert anahtar.dogrula(SimpleNamespace(), ham) == []
+    from scripts.kitap.kitap_hat import ithal
+
+    assert ithal.okuma_on(ham) == "tek_okuma"
+    assert "tek_okuma+glif" in ithal.CEVAP_KANALLARI
+    assert "iki_okuma+glif" in ithal.CEVAP_KANALLARI
+
+
+def test_sekil_satiri_sirasiz_karsilastirilir() -> None:
+    import importlib.util
+
+    yol = Path(__file__).resolve().parents[2] / "scripts/kitap/metin_iki_okuma.py"
+    spec = importlib.util.spec_from_file_location("metin_iki_okuma_s", yol)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    sys.modules["metin_iki_okuma_s"] = m
+    spec.loader.exec_module(m)
+    sekil = "\u015eekil"
+    a = f"Soru kok\u00fc\n{sekil}: 30\u00b0; 2 m; 10 N"
+    assert m.norm(a) == m.norm(f"Soru kok\u00fc\n{sekil}: 10 N;2m; 30\u00b0")
+    assert m.norm(a) != m.norm(f"Soru kok\u00fc\n{sekil}: 30\u00b0; 3 m; 10 N")
+    assert m.norm("K; L") == "K; L"  # Sekil satiri disina dokunmaz

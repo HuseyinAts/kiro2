@@ -109,12 +109,39 @@ def talimat(p: ModuleType) -> str:
     s = s.replace(SABLON_KITAP, p.KITAP_BASLIGI).replace("a2_", f"{p.VERAF}_")
     s = s.replace("ACL21T", p.KOD)
     ek = getattr(p, "TALIMAT_EK", "")
+    if getattr(p, "SEKIL_SATIRI", False):
+        ek += SEKIL_SATIRI_KURALI
     return str(s + ("\n" + ek + "\n" if ek else ""))
 
 
-def hazirla(p: ModuleType) -> None:
+# Profil SEKIL_SATIRI = True: sekil olculeri icin MEKANIK kural. Onceki 'soru
+# onlara dayaniyorsa' kurali secime birakiyordu; APO19FZ'de iki okuma 327 soruda
+# farkli etiket secti (hakem 221'ini 'yalniz secim farki' buldu). Rakam iceren
+# her etiket + sabit bicim + sirasiz karsilastirma (metin_iki_okuma._SEKIL_SATIRI).
+SEKIL_SATIRI_KURALI = (
+    "\n## Sekil olculeri (bu kitap) -- MEKANIK KURAL, secim yapma\n"
+    "Sekilde (cizim, grafik, devre, tablo DISI) basili ve RAKAM ICEREN her etiketi "
+    "govdenin EN SON satirina tek satirda yaz: `\u015eekil: <e1>; <e2>; ...` "
+    "(ornek `\u015eekil: 30\u00b0; 2 m; 10 N; h = 3 m; \u22123 m/s; 6\u03a9`). "
+    "Sira onemsiz. Rakam icermeyen etiketler (K, L, P, h, v, F) YAZILMAZ; eksen "
+    "adlari yazilmaz, eksen uzerindeki sayilar yazilir. Sekilde rakamli etiket yoksa "
+    "bu satir YOK. Tablo bu satira degil, tablo kuralina gore govdeye girer. Sekil "
+    "olculerini govdenin baska yerine satir olarak EKLEME.\n"
+)
+
+
+def _buyut(arg: tuple[str, str]) -> None:
+    """Okuma kirpimi: OLCEK x Lanczos (havuz isi; compress_level 1 piksel ayni)."""
     from PIL import Image
 
+    kaynak, hedef = arg
+    im = Image.open(kaynak)
+    im.resize((im.width * OLCEK, im.height * OLCEK), Image.Resampling.LANCZOS).save(
+        hedef, compress_level=1
+    )
+
+
+def hazirla(p: ModuleType) -> None:
     olcum = ortak.oku(p, "ortme_olcumu")
     kapi_hata = kirpim_kapisi(olcum)
     if kapi_hata:
@@ -126,14 +153,13 @@ def hazirla(p: ModuleType) -> None:
     pd.mkdir(parents=True, exist_ok=True)
     g = gruplar(p)
     ortme = {ortak.dosya_adi(o["birim"], o["soru"]) for o in olcum["ortme"]}
-    n = 0
+    isler = [
+        (str(kirpim_dizini(p) / f"{ad}.png"), str(ok / f"{ad}.png"))
+        for x in g
+        for ad in x["dosyalar"]
+    ]
+    n = len(ortak.paralel(_buyut, isler))
     for x in g:
-        for ad in x["dosyalar"]:
-            im = Image.open(kirpim_dizini(p) / f"{ad}.png")
-            im.resize(
-                (im.width * OLCEK, im.height * OLCEK), Image.Resampling.LANCZOS
-            ).save(ok / f"{ad}.png")
-            n += 1
         (pd / f"liste_{x['no']:02d}.txt").write_text(
             "\n".join(x["dosyalar"]) + "\n", encoding="ascii"
         )

@@ -127,17 +127,24 @@ def okuyucu_maskesi(
     p: ModuleType, a: np.ndarray, merkez: list[list[int]]
 ) -> np.ndarray:
     """Kart koordinatli goruntude okuyucu katmani pikselleri (konum + renk)."""
+    # Renk / notr siniflamasi piksel basinadir (komsuluk yok): yalniz disk
+    # pencerelerinde hesaplanir. Tum sayfada hesap kutu+kirp suresinin %85'iydi
+    # (APO19FZ cProfile: 448 sayfada 153 / 173 sn); cikti bit bit ayni
+    # (tests/unit/test_kitap_hat_kancalar: pencere == tam sayfa).
     maske = np.zeros(a.shape[:2], bool)
-    renk = _okuyucu_rengi(a)
-    if hasattr(p, "numara_maskesi"):
-        # Renkli (mavi) basili numara diskle ortusebilir; kenar yumusatma
-        # pikselleri 'mor' kuralina girer -- numara rengi korunur.
-        renk &= ~p.numara_maskesi(a.astype(int))
-    ai = a.astype(np.int16)
-    notr = (ai.max(axis=2) - ai.min(axis=2) < GOLGE_FARK) & (ai.max(axis=2) >= SOL_GRI)
     for gy, gx in merkez:
         sl, r, _, dx = _pencere(a.shape, gy, gx, p.BEYAZ_YARICAP + 2)
-        maske[sl] |= (r <= p.BEYAZ_YARICAP) & (renk[sl] | ((dx < -5) & notr[sl]))
+        w = a[sl]
+        renk = _okuyucu_rengi(w)
+        if hasattr(p, "numara_maskesi"):
+            # Renkli (mavi) basili numara diskle ortusebilir; kenar yumusatma
+            # pikselleri 'mor' kuralina girer -- numara rengi korunur.
+            renk &= ~p.numara_maskesi(w.astype(int))
+        wi = w.astype(np.int16)
+        notr = (wi.max(axis=2) - wi.min(axis=2) < GOLGE_FARK) & (
+            wi.max(axis=2) >= SOL_GRI
+        )
+        maske[sl] |= (r <= p.BEYAZ_YARICAP) & (renk | ((dx < -5) & notr))
     return maske
 
 
@@ -145,13 +152,14 @@ def ortme_halkalari(
     p: ModuleType, a: np.ndarray, merkez: list[list[int]]
 ) -> list[dict]:
     """Beyazlatmadan ONCE: diskin disindaki halkada kitap murekkebi."""
-    koyu = (a.min(axis=2) < KOYU) & ~_okuyucu_rengi(a)
     h0, h1 = p.HALKA
     out = []
     for gy, gx in merkez:
         sl, r, aci, _ = _pencere(a.shape, gy, gx, h1 + 1)
+        w = a[sl]
+        koyu = (w.min(axis=2) < KOYU) & ~_okuyucu_rengi(w)
         halka = (r >= h0) & (r <= h1) & (np.abs(aci) > np.pi / 4)
-        ys, xs = np.where(halka & koyu[sl])
+        ys, xs = np.where(halka & koyu)
         if len(ys) >= ORTME_ESIK:
             out.append(
                 {
@@ -270,6 +278,28 @@ def _ortme_kayitlari(k: dict, s: int, halkalar: list[dict]) -> list[dict]:
     return out
 
 
+def _sayfa_kirp(
+    arg: tuple[str, str, int, list, list[dict], str],
+) -> tuple[list[dict], list[dict], list[dict]]:
+    """Bir sayfanin kutulari: beyazlat, kenar/kesik olc, ortme, PNG yaz (havuz isi)."""
+    kod, kaynak, s, glif, kutular, cikti = arg
+    p = ortak.profil(kod)
+    a, halkalar = beyaz_sayfa(p, Path(kaynak), s, glif)
+    g = a.min(axis=2)
+    kenar: list[dict] = []
+    kesik: list[dict] = []
+    ortme: list[dict] = []
+    for k in kutular:
+        x0, y0, x1, y1 = k["kutu"]
+        _kenar_kaydet(g, k, s, kenar, kesik)
+        ortme += _ortme_kayitlari(k, s, halkalar)
+        # compress_level 1: piksel ayni, kodlama ~5x hizli (dosya biraz buyuk).
+        Image.fromarray(a[y0:y1, x0:x1]).save(
+            Path(cikti) / f"{k['birim']}_{k['soru']:02d}.png", compress_level=1
+        )
+    return kenar, kesik, ortme
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--profil", required=True)
@@ -297,16 +327,22 @@ def main() -> None:
     kenar: list[dict] = []
     kesik: list[dict] = []
     ortme: list[dict] = []
-    for s in sorted(sayfada):
-        a, halkalar = beyaz_sayfa(p, kaynak, s, tarama["sayfalar"][str(s)]["glif"])
-        g = a.min(axis=2)
-        for k in sayfada[s]:
-            x0, y0, x1, y1 = k["kutu"]
-            _kenar_kaydet(g, k, s, kenar, kesik)
-            ortme += _ortme_kayitlari(k, s, halkalar)
-            Image.fromarray(a[y0:y1, x0:x1]).save(
-                cikti / f"{k['birim']}_{k['soru']:02d}.png"
-            )
+    isler = [
+        (
+            ortak.profil_kodu(p),
+            str(kaynak),
+            s,
+            tarama["sayfalar"][str(s)]["glif"],
+            sayfada[s],
+            str(cikti),
+        )
+        for s in sorted(sayfada)
+    ]
+    # Sayfalar bagimsiz: surec havuzu (sirali birlestirme -> cikti sirasi ayni).
+    for ke, ks, om in ortak.paralel(_sayfa_kirp, isler):
+        kenar += ke
+        kesik += ks
+        ortme += om
     kesik, onayli = _onayli_ayir(p, kesik, "KESIK_GOZ_ONAY", bool(args.ornek))
     kenar, kenar_onayli = _onayli_ayir(p, kenar, "KENAR_GOZ_ONAY", bool(args.ornek))
     n = sum(len(v) for v in sayfada.values())
