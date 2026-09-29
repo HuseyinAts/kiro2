@@ -73,6 +73,17 @@ def dosya_adi(birim: str, soru: int) -> str:
     return f"{birim}_{soru:02d}"
 
 
+def yakalanan(p: ModuleType, test: int, hucreler: list) -> list:
+    """Anahtar hucrelerinden sorusu YAKALANMAMIS olanlari cikarir.
+
+    YAKALANMAYAN_SORU {test: (basili no, ...)}: anahtar (kitap sonu tablo) soruyu
+    listeler ama sorunun sayfasi ekran goruntusu setinde yok (gozle: yerine baska
+    sayfanin kopyasi gelmis). Capa eslemesi kalan hucrelerle yapilir; numaralar
+    basili numaradir (atlanan soru numarasi yeniden kullanilmaz)."""
+    yok = set(getattr(p, "YAKALANMAYAN_SORU", {}).get(test, ()))
+    return [h for h in hucreler if h[0] not in yok]
+
+
 def glifler(p: ModuleType, a: np.ndarray) -> list[list[int]]:
     """Okuyucu simgesi (mor glif) sol-ust koseleri [y, x], yukaridan asagi."""
     r, g, b = a[..., 0], a[..., 1], a[..., 2]

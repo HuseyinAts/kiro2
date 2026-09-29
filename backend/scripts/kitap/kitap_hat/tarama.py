@@ -50,14 +50,15 @@ def beklenen_test_sayfalari(p: ModuleType) -> set[int]:
 
 
 def testleri_bul(
-    sayfalar: dict[int, dict], bas: set[int] | None = None
+    sayfalar: dict[int, dict], bas: set[int] | None = None, serit_sart: bool = True
 ) -> list[list[int]]:
     """Test = ardisik test sayfalari.
 
     bas None (varsayilan, ANAHTAR_KAPSAMI 'test'): test anahtarli sayfada biter.
     bas verilirse (TEST_SINIRI 'bas_listesi': her sayfanin kendi cevap seridi
     var, numaralar sayfalar boyunca surer): test, bas kumesindeki sayfada ya da
-    test disi sayfadan sonra baslar; HER sayfasi anahtarli olmali.
+    test disi sayfadan sonra baslar; HER sayfasi anahtarli olmali -- anahtar
+    kitap sonundaysa (ANAHTAR_HARICI, serit_sart=False) sayfada serit aranmaz.
     """
     testler: list[list[int]] = []
     cur: list[int] = []
@@ -72,7 +73,7 @@ def testleri_bul(
                     raise SystemExit(f"anahtarsiz biten test sayfalari: {cur}")
             continue
         if bas is not None:
-            if not v["anahtar"]:
+            if serit_sart and not v["anahtar"]:
                 raise SystemExit(f"seritsiz test sayfasi: {n}")
             if cur and n in bas:
                 testler.append(cur)
@@ -215,7 +216,7 @@ def tara(p: ModuleType) -> dict[str, Any]:
         # '1.' ile baslayan sayfalar; iki okuma ayni). Dogrulama: anahtar
         # numaralari her testte 1..N.
         bas = set(p.BAS_SAYFALARI)
-    testler = testleri_bul(sayfalar, bas)
+    testler = testleri_bul(sayfalar, bas, not hasattr(p, "ANAHTAR_HARICI"))
     cikti: list[dict[str, Any]] = []
     disari_top = []
     for i, g in enumerate(testler, 1):
@@ -257,7 +258,10 @@ def kapilar(
             f"test sayfalari farkli: fazla {sorted(test_s - bek)[:10]} eksik {sorted(bek - test_s)[:10]}"
         )
     if ham is not None:
-        hucre = {t["test"]: len(t["hucreler"]) for t in ham["okuma_a"]["testler"]}
+        hucre = {
+            t["test"]: len(ortak.yakalanan(p, t["test"], t["hucreler"]))
+            for t in ham["okuma_a"]["testler"]
+        }
         for t in veri["testler"]:
             if len(t["capalar"]) != hucre.get(t["test"]):
                 hata.append(

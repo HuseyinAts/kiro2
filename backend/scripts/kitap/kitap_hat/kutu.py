@@ -121,6 +121,7 @@ def alt_sinir_alti(
     *,
     serit: list[int] | None,
     serit_pay: int,
+    altlik_y: int | None = None,
 ) -> tuple[int, int] | None:
     """Sutunun alt sinirinin ALTINDA kutu icine girmemis koyu satir: (y, px).
 
@@ -142,8 +143,12 @@ def alt_sinir_alti(
     ustune cekildi ve D/E siklari (y 889-900) kesildi; satir atlamak bunu
     gizliyordu. Bu dar taramada sutunun sol kenarindan SUTUN_KENAR_PAY px
     atlanir: acl25pl sag sutun (x0 390) serit hizasinda x 387-401 capraz
-    sayfa susu tasir."""
-    son = a.shape[0]
+    sayfa susu tasir.
+
+    altlik_y (profil SAYFA_ALTLIGI_Y): seritsiz duzende sayfa altligi (sayfa no
+    kutusu, noktalar; tam genislik cizgi YOK) bu satirdan baslar; tarama orada
+    durur (Apotemi: altlik y 887-907, 110 px)."""
+    son = a.shape[0] if altlik_y is None else min(a.shape[0], altlik_y)
     atla_y = son  # serit sutunla ortusuyorsa bu satirdan itibaren dar tarama
     dar_x1 = x1
     if serit:
@@ -223,7 +228,13 @@ def _sutun_alt_siniri(
     if uyari:
         uyarilar.append(f"s{d}{s}: {uyari}")
     kesik = alt_sinir_alti(
-        a, x0, x1, alt_sinir, serit=sayfa.get("anahtar"), serit_pay=int(p.SERIT_PAY)
+        a,
+        x0,
+        x1,
+        alt_sinir,
+        serit=sayfa.get("anahtar"),
+        serit_pay=int(p.SERIT_PAY),
+        altlik_y=getattr(p, "SAYFA_ALTLIGI_Y", None),
     )
     if kesik:
         artik.append(f"alt sinir altinda murekkep s{d}{s} y{kesik[0]} ({kesik[1]} px)")

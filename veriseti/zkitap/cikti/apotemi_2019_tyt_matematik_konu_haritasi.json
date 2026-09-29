@@ -1,0 +1,1680 @@
+{
+"kaynak": "2019-2020 APOTEMI TYT Matematik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "bolum acilis sayfalari (dosya 8, 40, 58, 88, 120, 140, 156, 226, 246, 266, 296: 'BOLUM N' + konu listesi); icindekiler sayfasi yok. Bant yalniz 'BOLUM - M' tasir (BANT_KONU_KAPISI False): konu = bolum, sayfa araligindan",
+"bolumler": [
+{
+"kod": "MAT-APO19MT-B01",
+"no": 1,
+"ad": "TEMEL KAVRAMLAR - SAYI BASAMAKLARI"
+},
+{
+"kod": "MAT-APO19MT-B02",
+"no": 2,
+"ad": "B\u00d6LME - B\u00d6L\u00dcNEB\u0130LME - EBOB - EKOK"
+},
+{
+"kod": "MAT-APO19MT-B03",
+"no": 3,
+"ad": "RASYONEL SAYILAR - MUTLAK DE\u011eER"
+},
+{
+"kod": "MAT-APO19MT-B04",
+"no": 4,
+"ad": "\u00dcSL\u00dc VE K\u00d6KL\u00dc SAYILAR"
+},
+{
+"kod": "MAT-APO19MT-B05",
+"no": 5,
+"ad": "\u00c7ARPANLARA AYIRMA - DENKLEM \u00c7\u00d6ZME"
+},
+{
+"kod": "MAT-APO19MT-B06",
+"no": 6,
+"ad": "ORAN - ORANTI - ORTALAMALAR"
+},
+{
+"kod": "MAT-APO19MT-B07",
+"no": 7,
+"ad": "PROBLEMLER"
+},
+{
+"kod": "MAT-APO19MT-B08",
+"no": 8,
+"ad": "MANTIK - K\u00dcMELER - KARTEZYEN \u00c7ARPIM"
+},
+{
+"kod": "MAT-APO19MT-B09",
+"no": 9,
+"ad": "FONKS\u0130YONLAR"
+},
+{
+"kod": "MAT-APO19MT-B10",
+"no": 10,
+"ad": "PERM\u00dcTASYON - KOMB\u0130NASYON - OLASILIK - \u0130STAT\u0130ST\u0130K"
+},
+{
+"kod": "MAT-APO19MT-B11",
+"no": 11,
+"ad": "POL\u0130NOMLAR - \u0130K\u0130NC\u0130 DERECEDEN DENKLEMLER - KARMA\u015eIK SAYILAR"
+}
+],
+"konular": [
+{
+"kod": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"ad": "Temel Kavramlar, Tek ve \u00c7ift Say\u0131lar, Pozitif ve Negatif Say\u0131lar, Asal Say\u0131lar, Ard\u0131\u015f\u0131k Say\u0131lar, Fakt\u00f6riyel, Say\u0131 Basamaklar\u0131",
+"icindekiler_adi": "Temel Kavramlar, Tek ve \u00c7ift Say\u0131lar, Pozitif ve Negatif Say\u0131lar, Asal Say\u0131lar, Ard\u0131\u015f\u0131k Say\u0131lar, Fakt\u00f6riyel, Say\u0131 Basamaklar\u0131",
+"sayfalar": [
+8,
+39
+]
+},
+{
+"kod": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"ad": "B\u00f6lme - B\u00f6l\u00fcnebilme, Asal \u00c7arpanlara Ay\u0131rma, \u00d6zel Say\u0131 Problemleri, EBOB - EKOK",
+"icindekiler_adi": "B\u00f6lme - B\u00f6l\u00fcnebilme, Asal \u00c7arpanlara Ay\u0131rma, \u00d6zel Say\u0131 Problemleri, EBOB - EKOK",
+"sayfalar": [
+40,
+57
+]
+},
+{
+"kod": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"ad": "Rasyonel Say\u0131lar, S\u0131ralama, 1. Dereceden Denklem ve E\u015fitsizlikler, Mutlak De\u011fer",
+"icindekiler_adi": "Rasyonel Say\u0131lar, S\u0131ralama, 1. Dereceden Denklem ve E\u015fitsizlikler, Mutlak De\u011fer",
+"sayfalar": [
+58,
+87
+]
+},
+{
+"kod": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"ad": "\u00dcsl\u00fc Say\u0131lar, K\u00f6kl\u00fc Say\u0131lar",
+"icindekiler_adi": "\u00dcsl\u00fc Say\u0131lar, K\u00f6kl\u00fc Say\u0131lar",
+"sayfalar": [
+88,
+119
+]
+},
+{
+"kod": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"ad": "\u00c7arpanlara Ay\u0131rma, Denklem \u00c7\u00f6zme",
+"icindekiler_adi": "\u00c7arpanlara Ay\u0131rma, Denklem \u00c7\u00f6zme",
+"sayfalar": [
+120,
+139
+]
+},
+{
+"kod": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"ad": "Oran - Orant\u0131, Orant\u0131 Problemleri, Ortalamalar",
+"icindekiler_adi": "Oran - Orant\u0131, Orant\u0131 Problemleri, Ortalamalar",
+"sayfalar": [
+140,
+155
+]
+},
+{
+"kod": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"ad": "Problemler",
+"icindekiler_adi": "Problemler",
+"sayfalar": [
+156,
+225
+]
+},
+{
+"kod": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"ad": "Mant\u0131k, K\u00fcmeler, K\u00fcme Problemleri, Kartezyen \u00c7arp\u0131m",
+"icindekiler_adi": "Mant\u0131k, K\u00fcmeler, K\u00fcme Problemleri, Kartezyen \u00c7arp\u0131m",
+"sayfalar": [
+226,
+245
+]
+},
+{
+"kod": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"ad": "Fonksiyonlar, Fonksiyon \u00c7e\u015fitleri",
+"icindekiler_adi": "Fonksiyonlar, Fonksiyon \u00c7e\u015fitleri",
+"sayfalar": [
+246,
+265
+]
+},
+{
+"kod": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"ad": "Perm\u00fctasyon, Kombinasyon, Binom, Olas\u0131l\u0131k, \u0130statistik",
+"icindekiler_adi": "Perm\u00fctasyon, Kombinasyon, Binom, Olas\u0131l\u0131k, \u0130statistik",
+"sayfalar": [
+266,
+295
+]
+},
+{
+"kod": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"ad": "Polinomlar, \u0130kinci Dereceden Denklemler, Karma\u015f\u0131k Say\u0131lar",
+"icindekiler_adi": "Polinomlar, \u0130kinci Dereceden Denklemler, Karma\u015f\u0131k Say\u0131lar",
+"sayfalar": [
+296,
+313
+]
+}
+],
+"test_sayisi": 122,
+"testler": [
+{
+"birim": "APO19MT-T001",
+"test": 1,
+"sayfalar": [
+10,
+11
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T002",
+"test": 2,
+"sayfalar": [
+12,
+13
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T003",
+"test": 3,
+"sayfalar": [
+14,
+15
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T004",
+"test": 4,
+"sayfalar": [
+16,
+17
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T005",
+"test": 5,
+"sayfalar": [
+18,
+19
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T006",
+"test": 6,
+"sayfalar": [
+20,
+21
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T007",
+"test": 7,
+"sayfalar": [
+22,
+23
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T008",
+"test": 8,
+"sayfalar": [
+24,
+25
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T009",
+"test": 9,
+"sayfalar": [
+26,
+27
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T010",
+"test": 10,
+"sayfalar": [
+28,
+29
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T011",
+"test": 11,
+"sayfalar": [
+30,
+31
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T012",
+"test": 12,
+"sayfalar": [
+32,
+33
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T013",
+"test": 13,
+"sayfalar": [
+34,
+35
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T014",
+"test": 14,
+"sayfalar": [
+36,
+37
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T015",
+"test": 15,
+"sayfalar": [
+38,
+39
+],
+"bant": "B\u00d6L\u00dcM - 1",
+"konu": "MAT-APO19MT-B01-K01",
+"bolum": "MAT-APO19MT-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T016",
+"test": 16,
+"sayfalar": [
+42,
+43,
+44
+],
+"bant": "B\u00d6L\u00dcM - 2",
+"konu": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19MT-T017",
+"test": 17,
+"sayfalar": [
+45,
+46,
+47
+],
+"bant": "B\u00d6L\u00dcM - 2",
+"konu": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19MT-T018",
+"test": 18,
+"sayfalar": [
+48,
+49,
+50
+],
+"bant": "B\u00d6L\u00dcM - 2",
+"konu": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19MT-T019",
+"test": 19,
+"sayfalar": [
+51,
+52,
+53
+],
+"bant": "B\u00d6L\u00dcM - 2",
+"konu": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19MT-T020",
+"test": 20,
+"sayfalar": [
+54,
+55
+],
+"bant": "B\u00d6L\u00dcM - 2",
+"konu": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T021",
+"test": 21,
+"sayfalar": [
+56,
+57
+],
+"bant": "B\u00d6L\u00dcM - 2",
+"konu": "MAT-APO19MT-B02-K01",
+"bolum": "MAT-APO19MT-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T022",
+"test": 22,
+"sayfalar": [
+60,
+61
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T023",
+"test": 23,
+"sayfalar": [
+62,
+63
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T024",
+"test": 24,
+"sayfalar": [
+64,
+65
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T025",
+"test": 25,
+"sayfalar": [
+66,
+67
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T026",
+"test": 26,
+"sayfalar": [
+68,
+69
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T027",
+"test": 27,
+"sayfalar": [
+70,
+71
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T028",
+"test": 28,
+"sayfalar": [
+72,
+73
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T029",
+"test": 29,
+"sayfalar": [
+74,
+75
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T030",
+"test": 30,
+"sayfalar": [
+76,
+77
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T031",
+"test": 31,
+"sayfalar": [
+78,
+79
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T032",
+"test": 32,
+"sayfalar": [
+80,
+81
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T033",
+"test": 33,
+"sayfalar": [
+82,
+83
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T034",
+"test": 34,
+"sayfalar": [
+84,
+85
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T035",
+"test": 35,
+"sayfalar": [
+86,
+87
+],
+"bant": "B\u00d6L\u00dcM - 3",
+"konu": "MAT-APO19MT-B03-K01",
+"bolum": "MAT-APO19MT-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T036",
+"test": 36,
+"sayfalar": [
+90,
+91,
+92
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19MT-T037",
+"test": 37,
+"sayfalar": [
+93,
+94,
+95
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19MT-T038",
+"test": 38,
+"sayfalar": [
+96,
+97,
+98
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19MT-T039",
+"test": 39,
+"sayfalar": [
+99,
+100,
+101
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19MT-T040",
+"test": 40,
+"sayfalar": [
+102,
+103,
+104
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 17
+},
+{
+"birim": "APO19MT-T041",
+"test": 41,
+"sayfalar": [
+105,
+106,
+107
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 18
+},
+{
+"birim": "APO19MT-T042",
+"test": 42,
+"sayfalar": [
+108,
+109,
+110
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19MT-T043",
+"test": 43,
+"sayfalar": [
+111,
+112,
+113
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 17
+},
+{
+"birim": "APO19MT-T044",
+"test": 44,
+"sayfalar": [
+114,
+115,
+116
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 18
+},
+{
+"birim": "APO19MT-T045",
+"test": 45,
+"sayfalar": [
+117,
+118,
+119
+],
+"bant": "B\u00d6L\u00dcM - 4",
+"konu": "MAT-APO19MT-B04-K01",
+"bolum": "MAT-APO19MT-B04",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19MT-T046",
+"test": 46,
+"sayfalar": [
+122,
+123,
+124
+],
+"bant": "B\u00d6L\u00dcM - 5",
+"konu": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19MT-T047",
+"test": 47,
+"sayfalar": [
+125,
+126,
+127
+],
+"bant": "B\u00d6L\u00dcM - 5",
+"konu": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19MT-T048",
+"test": 48,
+"sayfalar": [
+128,
+129,
+130
+],
+"bant": "B\u00d6L\u00dcM - 5",
+"konu": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19MT-T049",
+"test": 49,
+"sayfalar": [
+131,
+132,
+133
+],
+"bant": "B\u00d6L\u00dcM - 5",
+"konu": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19MT-T050",
+"test": 50,
+"sayfalar": [
+134,
+135,
+136
+],
+"bant": "B\u00d6L\u00dcM - 5",
+"konu": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"soru_sayisi": 14
+},
+{
+"birim": "APO19MT-T051",
+"test": 51,
+"sayfalar": [
+137,
+138,
+139
+],
+"bant": "B\u00d6L\u00dcM - 5",
+"konu": "MAT-APO19MT-B05-K01",
+"bolum": "MAT-APO19MT-B05",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19MT-T052",
+"test": 52,
+"sayfalar": [
+142,
+143
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T053",
+"test": 53,
+"sayfalar": [
+144,
+145
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T054",
+"test": 54,
+"sayfalar": [
+146,
+147
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T055",
+"test": 55,
+"sayfalar": [
+148,
+149
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T056",
+"test": 56,
+"sayfalar": [
+150,
+151
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T057",
+"test": 57,
+"sayfalar": [
+152,
+153
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T058",
+"test": 58,
+"sayfalar": [
+154,
+155
+],
+"bant": "B\u00d6L\u00dcM - 6",
+"konu": "MAT-APO19MT-B06-K01",
+"bolum": "MAT-APO19MT-B06",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T059",
+"test": 59,
+"sayfalar": [
+158,
+159
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T060",
+"test": 60,
+"sayfalar": [
+160,
+161
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "APO19MT-T061",
+"test": 61,
+"sayfalar": [
+162,
+163
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T062",
+"test": 62,
+"sayfalar": [
+164,
+165,
+166
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T063",
+"test": 63,
+"sayfalar": [
+167,
+168,
+169
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T064",
+"test": 64,
+"sayfalar": [
+170,
+171,
+172
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T065",
+"test": 65,
+"sayfalar": [
+173,
+174,
+175
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T066",
+"test": 66,
+"sayfalar": [
+177,
+178,
+179
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T067",
+"test": 67,
+"sayfalar": [
+180,
+181,
+182
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T068",
+"test": 68,
+"sayfalar": [
+183,
+184,
+185
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T069",
+"test": 69,
+"sayfalar": [
+186,
+187,
+188
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T070",
+"test": 70,
+"sayfalar": [
+189,
+190,
+191
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T071",
+"test": 71,
+"sayfalar": [
+192,
+193,
+194
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T072",
+"test": 72,
+"sayfalar": [
+195,
+196,
+197
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T073",
+"test": 73,
+"sayfalar": [
+198,
+199,
+200
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T074",
+"test": 74,
+"sayfalar": [
+201,
+202,
+203
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T075",
+"test": 75,
+"sayfalar": [
+204,
+205,
+206
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T076",
+"test": 76,
+"sayfalar": [
+207,
+208,
+209
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T077",
+"test": 77,
+"sayfalar": [
+210,
+211,
+212
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T078",
+"test": 78,
+"sayfalar": [
+213,
+214,
+215
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T079",
+"test": 79,
+"sayfalar": [
+216,
+217,
+218
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T080",
+"test": 80,
+"sayfalar": [
+219,
+220,
+221
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T081",
+"test": 81,
+"sayfalar": [
+222,
+223
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T082",
+"test": 82,
+"sayfalar": [
+224,
+225
+],
+"bant": "B\u00d6L\u00dcM - 7",
+"konu": "MAT-APO19MT-B07-K01",
+"bolum": "MAT-APO19MT-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T083",
+"test": 83,
+"sayfalar": [
+228,
+229
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T084",
+"test": 84,
+"sayfalar": [
+230,
+231
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T085",
+"test": 85,
+"sayfalar": [
+232,
+233
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T086",
+"test": 86,
+"sayfalar": [
+234,
+235
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T087",
+"test": 87,
+"sayfalar": [
+236,
+237
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T088",
+"test": 88,
+"sayfalar": [
+238,
+239
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T089",
+"test": 89,
+"sayfalar": [
+240,
+241
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T090",
+"test": 90,
+"sayfalar": [
+242,
+243
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T091",
+"test": 91,
+"sayfalar": [
+244,
+245
+],
+"bant": "B\u00d6L\u00dcM - 8",
+"konu": "MAT-APO19MT-B08-K01",
+"bolum": "MAT-APO19MT-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19MT-T092",
+"test": 92,
+"sayfalar": [
+248,
+249
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T093",
+"test": 93,
+"sayfalar": [
+250,
+251
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T094",
+"test": 94,
+"sayfalar": [
+252,
+253
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T095",
+"test": 95,
+"sayfalar": [
+254,
+255
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T096",
+"test": 96,
+"sayfalar": [
+256,
+257
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T097",
+"test": 97,
+"sayfalar": [
+258,
+259
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T098",
+"test": 98,
+"sayfalar": [
+260,
+261
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T099",
+"test": 99,
+"sayfalar": [
+262,
+263
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19MT-T100",
+"test": 100,
+"sayfalar": [
+264,
+265
+],
+"bant": "B\u00d6L\u00dcM - 9",
+"konu": "MAT-APO19MT-B09-K01",
+"bolum": "MAT-APO19MT-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T101",
+"test": 101,
+"sayfalar": [
+268,
+269
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T102",
+"test": 102,
+"sayfalar": [
+270,
+271
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T103",
+"test": 103,
+"sayfalar": [
+272,
+273
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T104",
+"test": 104,
+"sayfalar": [
+274,
+275
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T105",
+"test": 105,
+"sayfalar": [
+276,
+277
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T106",
+"test": 106,
+"sayfalar": [
+278,
+279
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T107",
+"test": 107,
+"sayfalar": [
+280,
+281
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T108",
+"test": 108,
+"sayfalar": [
+282,
+283
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T109",
+"test": 109,
+"sayfalar": [
+284,
+285
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T110",
+"test": 110,
+"sayfalar": [
+286,
+287
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T111",
+"test": 111,
+"sayfalar": [
+288,
+289
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T112",
+"test": 112,
+"sayfalar": [
+290,
+291
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T113",
+"test": 113,
+"sayfalar": [
+292,
+293
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T114",
+"test": 114,
+"sayfalar": [
+294,
+295
+],
+"bant": "B\u00d6L\u00dcM - 10",
+"konu": "MAT-APO19MT-B10-K01",
+"bolum": "MAT-APO19MT-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19MT-T115",
+"test": 115,
+"sayfalar": [
+298,
+299
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T116",
+"test": 116,
+"sayfalar": [
+300,
+301
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T117",
+"test": 117,
+"sayfalar": [
+302,
+303
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T118",
+"test": 118,
+"sayfalar": [
+304,
+305
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T119",
+"test": 119,
+"sayfalar": [
+306,
+307
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T120",
+"test": 120,
+"sayfalar": [
+308,
+309
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19MT-T121",
+"test": 121,
+"sayfalar": [
+310,
+311
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19MT-T122",
+"test": 122,
+"sayfalar": [
+312,
+313
+],
+"bant": "B\u00d6L\u00dcM - 11",
+"konu": "MAT-APO19MT-B11-K01",
+"bolum": "MAT-APO19MT-B11",
+"soru_sayisi": 11
+}
+]
+}
