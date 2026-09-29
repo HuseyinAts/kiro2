@@ -64,7 +64,7 @@ def anahtar_bolgesi(a: np.ndarray, n: int) -> list[int] | None:
     satir = np.where(m.sum(axis=1) > 150)[0]
     if len(satir) == 0:
         return None
-    kol = m[satir].any(axis=0)
+    kol: np.ndarray = np.asarray(m[satir].any(axis=0))
     kos, x = [], 0
     while x < len(kol):
         if kol[x]:
