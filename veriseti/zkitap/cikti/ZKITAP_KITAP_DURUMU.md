@@ -108,7 +108,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 2023-2024 AKTIF Biyoloji | **ISLENDI** | `Aktif Ogrenme 2023 2024 Biyoloji` | 272 | - | modern 528 soru (`BIO_AKTIF_2024_YONTEM.md`, ortak kitap_hat): 528 yeni satir / aktif 480 (0109 toplu beta onayi; 39 gorunen `[??]` + 9 ortak oncul kirpimda yok disarida); eski hat yok | - | YAKALAMA EKSIK: dosya 218-250 ve 254-272 kopya, basili 220-266 (5. unite sonu, 6. unite Ekoloji) yok; 83 test sayfasi, 42 test (5 unite); iki kutulu serit, test siniri iki gecisli; 3 numara baski hatasi; ortak onculler (metin -> govdeye, sekil/grafik -> servis disi); kirpim kesik kapisi 0 | TAMAM (kismi yakalama; eksik sayfalar yeniden yakalanmali) |
 | AKTIF 2025 TYT Dil Bilgisi Soru Bankasi | **ISLENDI** | `Aktif Ogrenme Tyt Dilbilgisi Soru Bankasi 2025` | 224 | - | modern 695 / aktif 661 | - | - | TAMAM (modern ithal) |
 | AKTIF 2025 TYT Fizik Soru Bankasi | **ISLENDI** | `Aktif Ogrenme 2025 Tyt Fizik Soru Bankasi` | 352 | - | modern 655 soru (`FIZ_AKTIF_2025_TYT_YONTEM.md`, ortak kitap_hat): 648 yeni satir / aktif 648 (0112 toplu beta onayi; `[??]` 0); 7 soru baska kaynakta ayni hash ile var (ayni id); eski hat yok | - | 132 test sayfasi, 66 test (13 unite); pembe/kirmizi numara maskesi; sikisik dizgi -> profil BOSLUK 5 + KUTU_UST_KESIN (3) + KESIK_GOZ_ONAY (3); ortak oncul yok; 33 cikmis soru etiketi | TAMAM (modern ithal) |
-| AKTIF 2025 TYT Paragraf Soru Bankasi | ISLENMEDI | `Aktif Ogrenme Tyt Paragraf Soru Bankasi 2025` | 144 | - | eski hat 19 / aktif 19 | - | - | ISLENEBILIR |
+| AKTIF 2025 TYT Paragraf Soru Bankasi | **ISLENDI** | `Aktif Ogrenme Tyt Paragraf Soru Bankasi 2025` | 144 | - | modern 451 soru (`TUR_AKTIF_2025_PARAGRAF_YONTEM.md`, ortak kitap_hat): 451 yeni satir / aktif 451 (0115 toplu beta onayi; `[??]` 0); eski hat 19: modern karsiligi olan 13 satir 0114 ile pasif, 6 aktif | - | 111 test sayfasi, 30 test (13 konu testi + 17 deneme; Deneme 17 yakalamada 12 soru); 20 ortak parca (sutun basi, EK_CAPA + KUTU_UST, parca ikinci soruya metinle); orta ayrac icin yeni SUS_PARITE kancasi; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 
 ### APOTEMI (15 kitap)
 
@@ -480,7 +480,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 62 | `Aktif Ogrenme Ayt Kartlarla Kimya 2022 2023` | 176 | 2022-2023 Kartlarla AYT Kimya |  | ISLENMEDI |
 | 63 | `Aktif Ogrenme Ayt Kimya 2019 2020` | 416 | 2019-2020 Aktif AYT Kimya |  | ISLENMEDI |
 | 64 | `Aktif Ogrenme Tyt Dilbilgisi Soru Bankasi 2025` | 224 | AKTIF 2025 TYT Dil Bilgisi Soru Bankasi |  | ISLENDI |
-| 65 | `Aktif Ogrenme Tyt Paragraf Soru Bankasi 2025` | 144 | AKTIF 2025 TYT Paragraf Soru Bankasi |  | ISLENMEDI |
+| 65 | `Aktif Ogrenme Tyt Paragraf Soru Bankasi 2025` | 144 | AKTIF 2025 TYT Paragraf Soru Bankasi |  | **ISLENDI** |
 | 66 | `Altyapi Tyt Kartlarla Kimya` | 176 | 2022-2023 ALTYAPI Kartlarla TYT Kimya |  | ISLENMEDI |
 | 67 | `Altyapi Tyt Kartlarla Tarih` | 192 | 2022-2023 ALTYAPI Kartlarla TYT Tarih |  | ISLENMEDI |
 | 68 | `Altyapi 2022 2023 Kartlarla Ayt Fizik` | 144 | 2022-2023 Kartlarla AYT Fizik |  | ISLENMEDI |

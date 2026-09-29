@@ -1,0 +1,423 @@
+{
+"kaynak": "AKTIF 2025 TYT Paragraf Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/kirp.py",
+"ne_olculdu": "Beyazlatmadan ONCE her okuyucu diskinin disindaki halkada (yaricap 19-23, sag 90 derece haric) koyu (< 160) kitap murekkebi. Kirpima >= 4 halka pikseli dusen soru 'ortme' tasir. Disk opak; altindaki icerik goruntude yoktur. KENAR: beyazlatilmis kutunun 2 px'lik sol/sag seridinde > 3 koyu piksel. KESIK: ust/alt seridinde > 3 koyu piksel = kutu soruyu kesiyor (alt sinir / serit yanlis).",
+"kenar_kapisi_ihlali": 0,
+"kesik_kapisi_ihlali": 0,
+"ortme_soru": 41,
+"kenar": [],
+"kesik": [],
+"kesik_goz_onayli": [],
+"ortme": [
+{
+"birim": "AKT25PR-T002",
+"soru": 6,
+"dosya": 20,
+"simge": [
+673,
+362
+],
+"piksel": 10
+},
+{
+"birim": "AKT25PR-T004",
+"soru": 2,
+"dosya": 26,
+"simge": [
+521,
+361
+],
+"piksel": 7
+},
+{
+"birim": "AKT25PR-T004",
+"soru": 6,
+"dosya": 27,
+"simge": [
+506,
+378
+],
+"piksel": 17
+},
+{
+"birim": "AKT25PR-T006",
+"soru": 4,
+"dosya": 32,
+"simge": [
+437,
+366
+],
+"piksel": 4
+},
+{
+"birim": "AKT25PR-T007",
+"soru": 2,
+"dosya": 34,
+"simge": [
+744,
+363
+],
+"piksel": 13
+},
+{
+"birim": "AKT25PR-T010",
+"soru": 6,
+"dosya": 44,
+"simge": [
+608,
+362
+],
+"piksel": 14
+},
+{
+"birim": "AKT25PR-T011",
+"soru": 1,
+"dosya": 56,
+"simge": [
+329,
+363
+],
+"piksel": 11
+},
+{
+"birim": "AKT25PR-T011",
+"soru": 8,
+"dosya": 57,
+"simge": [
+396,
+380
+],
+"piksel": 7
+},
+{
+"birim": "AKT25PR-T011",
+"soru": 9,
+"dosya": 57,
+"simge": [
+707,
+380
+],
+"piksel": 14
+},
+{
+"birim": "AKT25PR-T012",
+"soru": 2,
+"dosya": 58,
+"simge": [
+651,
+362
+],
+"piksel": 15
+},
+{
+"birim": "AKT25PR-T014",
+"soru": 14,
+"dosya": 65,
+"simge": [
+569,
+380
+],
+"piksel": 5
+},
+{
+"birim": "AKT25PR-T014",
+"soru": 18,
+"dosya": 66,
+"simge": [
+743,
+363
+],
+"piksel": 12
+},
+{
+"birim": "AKT25PR-T015",
+"soru": 10,
+"dosya": 69,
+"simge": [
+635,
+380
+],
+"piksel": 8
+},
+{
+"birim": "AKT25PR-T015",
+"soru": 14,
+"dosya": 70,
+"simge": [
+593,
+363
+],
+"piksel": 5
+},
+{
+"birim": "AKT25PR-T016",
+"soru": 2,
+"dosya": 72,
+"simge": [
+678,
+363
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T016",
+"soru": 9,
+"dosya": 74,
+"simge": [
+593,
+362
+],
+"piksel": 6
+},
+{
+"birim": "AKT25PR-T016",
+"soru": 18,
+"dosya": 76,
+"simge": [
+758,
+363
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T017",
+"soru": 2,
+"dosya": 77,
+"simge": [
+708,
+380
+],
+"piksel": 19
+},
+{
+"birim": "AKT25PR-T017",
+"soru": 18,
+"dosya": 81,
+"simge": [
+622,
+380
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T018",
+"soru": 6,
+"dosya": 83,
+"simge": [
+666,
+379
+],
+"piksel": 5
+},
+{
+"birim": "AKT25PR-T019",
+"soru": 2,
+"dosya": 87,
+"simge": [
+649,
+379
+],
+"piksel": 13
+},
+{
+"birim": "AKT25PR-T020",
+"soru": 13,
+"dosya": 95,
+"simge": [
+501,
+380
+],
+"piksel": 4
+},
+{
+"birim": "AKT25PR-T020",
+"soru": 17,
+"dosya": 96,
+"simge": [
+533,
+362
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T021",
+"soru": 10,
+"dosya": 99,
+"simge": [
+632,
+381
+],
+"piksel": 4
+},
+{
+"birim": "AKT25PR-T022",
+"soru": 2,
+"dosya": 102,
+"simge": [
+578,
+363
+],
+"piksel": 10
+},
+{
+"birim": "AKT25PR-T022",
+"soru": 18,
+"dosya": 106,
+"simge": [
+696,
+362
+],
+"piksel": 6
+},
+{
+"birim": "AKT25PR-T023",
+"soru": 6,
+"dosya": 108,
+"simge": [
+590,
+363
+],
+"piksel": 14
+},
+{
+"birim": "AKT25PR-T024",
+"soru": 2,
+"dosya": 112,
+"simge": [
+664,
+362
+],
+"piksel": 13
+},
+{
+"birim": "AKT25PR-T024",
+"soru": 9,
+"dosya": 114,
+"simge": [
+414,
+363
+],
+"piksel": 5
+},
+{
+"birim": "AKT25PR-T024",
+"soru": 14,
+"dosya": 115,
+"simge": [
+564,
+380
+],
+"piksel": 8
+},
+{
+"birim": "AKT25PR-T024",
+"soru": 18,
+"dosya": 116,
+"simge": [
+713,
+363
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T025",
+"soru": 2,
+"dosya": 117,
+"simge": [
+664,
+380
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T026",
+"soru": 1,
+"dosya": 122,
+"simge": [
+579,
+363
+],
+"piksel": 4
+},
+{
+"birim": "AKT25PR-T026",
+"soru": 6,
+"dosya": 123,
+"simge": [
+730,
+380
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T027",
+"soru": 6,
+"dosya": 128,
+"simge": [
+621,
+363
+],
+"piksel": 9
+},
+{
+"birim": "AKT25PR-T027",
+"soru": 14,
+"dosya": 130,
+"simge": [
+639,
+364
+],
+"piksel": 13
+},
+{
+"birim": "AKT25PR-T027",
+"soru": 18,
+"dosya": 131,
+"simge": [
+759,
+379
+],
+"piksel": 14
+},
+{
+"birim": "AKT25PR-T028",
+"soru": 6,
+"dosya": 133,
+"simge": [
+505,
+377
+],
+"piksel": 29
+},
+{
+"birim": "AKT25PR-T028",
+"soru": 10,
+"dosya": 134,
+"simge": [
+729,
+363
+],
+"piksel": 10
+},
+{
+"birim": "AKT25PR-T030",
+"soru": 2,
+"dosya": 142,
+"simge": [
+649,
+363
+],
+"piksel": 8
+},
+{
+"birim": "AKT25PR-T030",
+"soru": 10,
+"dosya": 144,
+"simge": [
+543,
+363
+],
+"piksel": 4
+}
+]
+}

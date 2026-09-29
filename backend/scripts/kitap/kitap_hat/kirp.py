@@ -163,11 +163,16 @@ def ortme_halkalari(
     return out
 
 
-def sayfa_no_lekesi(p: ModuleType, a: np.ndarray) -> np.ndarray:
-    """Profilde LEKE penceresi varsa sayfa numarasi rozetinin doygun lekesi."""
+def sayfa_no_lekesi(p: ModuleType, a: np.ndarray, n: int | None = None) -> np.ndarray:
+    """Profilde LEKE penceresi varsa sayfa numarasi rozetinin doygun lekesi.
+    SUS_PARITE {0: pencereler, 1: pencereler}: yerlesim paritesine gore ek SUS
+    pencereleri (orta ayrac ve ustundeki dikey yazi cift / tek sayfada farkli
+    x'te; tek pencere digerinin kirmizi numarasini da beyazlatirdi)."""
     m = np.zeros(a.shape[:2], bool)
     leke = getattr(p, "LEKE", None)
-    sus = getattr(p, "SUS_BOLGELERI", ())
+    sus = tuple(getattr(p, "SUS_BOLGELERI", ()))
+    if n is not None and hasattr(p, "SUS_PARITE"):
+        sus += tuple(p.SUS_PARITE[ortak.parite(p, n)])
     if not leke and not sus:
         return m
     ai = a.astype(np.int16)
@@ -190,7 +195,7 @@ def beyaz_sayfa(
     m = merkezler(p, glif)
     halka = ortme_halkalari(p, a, m)
     a[okuyucu_maskesi(p, a, m)] = 255
-    a[sayfa_no_lekesi(p, a)] = 255
+    a[sayfa_no_lekesi(p, a, n)] = 255
     return a, halka
 
 
