@@ -1,0 +1,2566 @@
+{
+"kaynak": "AROMAT 2023 AYT Matematik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s4): 13 bolum, 64 konu basligi (dosya = basili); konu = test bandindaki alt satir konu adi (icindekiler adiyla kapidan gecer), sayfa araligi icindekiler sayfa numarasindan",
+"bolumler": [
+{
+"kod": "MAT-ARO23AM-B01",
+"no": 1,
+"ad": "1. B\u00d6L\u00dcM B\u00d6LME B\u00d6L\u00dcNEB\u0130LME"
+},
+{
+"kod": "MAT-ARO23AM-B02",
+"no": 2,
+"ad": "2. B\u00d6L\u00dcM POL\u0130NOMLAR"
+},
+{
+"kod": "MAT-ARO23AM-B03",
+"no": 3,
+"ad": "3. B\u00d6L\u00dcM \u0130K\u0130NC\u0130 DERECE DENKLEMLER"
+},
+{
+"kod": "MAT-ARO23AM-B04",
+"no": 4,
+"ad": "4. B\u00d6L\u00dcM PARABOL"
+},
+{
+"kod": "MAT-ARO23AM-B05",
+"no": 5,
+"ad": "5. B\u00d6L\u00dcM FONKS\u0130YONLARDA UYGULAMALAR"
+},
+{
+"kod": "MAT-ARO23AM-B06",
+"no": 6,
+"ad": "6. B\u00d6L\u00dcM E\u015e\u0130TS\u0130ZL\u0130KLER"
+},
+{
+"kod": "MAT-ARO23AM-B07",
+"no": 7,
+"ad": "7. B\u00d6L\u00dcM TR\u0130GONOMETR\u0130"
+},
+{
+"kod": "MAT-ARO23AM-B08",
+"no": 8,
+"ad": "8. B\u00d6L\u00dcM LOGAR\u0130TMA"
+},
+{
+"kod": "MAT-ARO23AM-B09",
+"no": 9,
+"ad": "9. B\u00d6L\u00dcM D\u0130Z\u0130LER"
+},
+{
+"kod": "MAT-ARO23AM-B10",
+"no": 10,
+"ad": "10. B\u00d6L\u00dcM OLASILIK"
+},
+{
+"kod": "MAT-ARO23AM-B11",
+"no": 11,
+"ad": "11. B\u00d6L\u00dcM L\u0130M\u0130T VE S\u00dcREKL\u0130L\u0130K"
+},
+{
+"kod": "MAT-ARO23AM-B12",
+"no": 12,
+"ad": "12. B\u00d6L\u00dcM T\u00dcREV"
+},
+{
+"kod": "MAT-ARO23AM-B13",
+"no": 13,
+"ad": "13. B\u00d6L\u00dcM \u0130NTEGRAL"
+}
+],
+"konular": [
+{
+"kod": "MAT-ARO23AM-B01-K01",
+"bolum": "MAT-ARO23AM-B01",
+"ad": "Asal \u00c7arpanlara Ay\u0131rma",
+"icindekiler_adi": "Asal \u00c7arpanlara Ay\u0131rma",
+"sayfalar": [
+6,
+9
+]
+},
+{
+"kod": "MAT-ARO23AM-B01-K02",
+"bolum": "MAT-ARO23AM-B01",
+"ad": "B\u00f6lme - B\u00f6l\u00fcnebilme",
+"icindekiler_adi": "B\u00f6lme - B\u00f6l\u00fcnebilme",
+"sayfalar": [
+10,
+11
+]
+},
+{
+"kod": "MAT-ARO23AM-B01-K03",
+"bolum": "MAT-ARO23AM-B01",
+"ad": "EBOB - EKOK",
+"icindekiler_adi": "EBOB - EKOK",
+"sayfalar": [
+12,
+15
+]
+},
+{
+"kod": "MAT-ARO23AM-B01-K04",
+"bolum": "MAT-ARO23AM-B01",
+"ad": "Periyodik Durumlar",
+"icindekiler_adi": "Periyodik Durumlar",
+"sayfalar": [
+16,
+19
+]
+},
+{
+"kod": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"ad": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"icindekiler_adi": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"sayfalar": [
+20,
+31
+]
+},
+{
+"kod": "MAT-ARO23AM-B02-K02",
+"bolum": "MAT-ARO23AM-B02",
+"ad": "Polinomlar\u0131n \u00c7arpanlara Ayr\u0131lmas\u0131",
+"icindekiler_adi": "Polinomlar\u0131n \u00c7arpanlara Ayr\u0131lmas\u0131",
+"sayfalar": [
+32,
+37
+]
+},
+{
+"kod": "MAT-ARO23AM-B03-K01",
+"bolum": "MAT-ARO23AM-B03",
+"ad": "K\u00f6klerini Bulma - Diskriminant",
+"icindekiler_adi": "K\u00f6klerini Bulma - Diskriminant",
+"sayfalar": [
+38,
+41
+]
+},
+{
+"kod": "MAT-ARO23AM-B03-K02",
+"bolum": "MAT-ARO23AM-B03",
+"ad": "K\u00f6kleri ile Katsay\u0131lar\u0131 Aras\u0131ndaki \u0130li\u015fki",
+"icindekiler_adi": "K\u00f6kleri ile Katsay\u0131lar\u0131 Aras\u0131ndaki \u0130li\u015fki",
+"sayfalar": [
+42,
+47
+]
+},
+{
+"kod": "MAT-ARO23AM-B03-K03",
+"bolum": "MAT-ARO23AM-B03",
+"ad": "De\u011fi\u015fken De\u011fi\u015ftirme",
+"icindekiler_adi": "De\u011fi\u015fken De\u011fi\u015ftirme",
+"sayfalar": [
+48,
+49
+]
+},
+{
+"kod": "MAT-ARO23AM-B03-K04",
+"bolum": "MAT-ARO23AM-B03",
+"ad": "\u0130kinci Dereceden \u0130ki Bilinmeyenli Denklem Sistemleri",
+"icindekiler_adi": "\u0130kinci Dereceden \u0130ki Bilinmeyenli Denklem Sistemleri",
+"sayfalar": [
+50,
+53
+]
+},
+{
+"kod": "MAT-ARO23AM-B03-K05",
+"bolum": "MAT-ARO23AM-B03",
+"ad": "Karma\u015f\u0131k Say\u0131lar ve Karma\u015f\u0131k K\u00f6kler",
+"icindekiler_adi": "Karma\u015f\u0131k Say\u0131lar ve Karma\u015f\u0131k K\u00f6kler",
+"sayfalar": [
+54,
+59
+]
+},
+{
+"kod": "MAT-ARO23AM-B04-K01",
+"bolum": "MAT-ARO23AM-B04",
+"ad": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"icindekiler_adi": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"sayfalar": [
+60,
+69
+]
+},
+{
+"kod": "MAT-ARO23AM-B04-K02",
+"bolum": "MAT-ARO23AM-B04",
+"ad": "Parabol\u00fcn Denklemini Bulma",
+"icindekiler_adi": "Parabol\u00fcn Denklemini Bulma",
+"sayfalar": [
+70,
+77
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K01",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Fonksiyonlarda \u0130\u015flemler",
+"icindekiler_adi": "Fonksiyonlarda \u0130\u015flemler",
+"sayfalar": [
+78,
+83
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K02",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Par\u00e7al\u0131 Fonksiyon",
+"icindekiler_adi": "Par\u00e7al\u0131 Fonksiyon",
+"sayfalar": [
+84,
+85
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K03",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Bile\u015fke Fonksiyon ve Ters Fonksiyon",
+"icindekiler_adi": "Bile\u015fke Fonksiyon ve Ters Fonksiyon",
+"sayfalar": [
+86,
+89
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K04",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Do\u011frusal Fonksiyon Uygulamalar\u0131",
+"icindekiler_adi": "Do\u011frusal Fonksiyon Uygulamalar\u0131",
+"sayfalar": [
+90,
+91
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K05",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Tek-\u00c7ift Fonksiyonlar ve Simetri \u00d6zellikleri",
+"icindekiler_adi": "Tek-\u00c7ift Fonksiyonlar ve Simetri \u00d6zellikleri",
+"sayfalar": [
+92,
+93
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K06",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Fonksiyonun Eksenleri Kesti\u011fi Noktalar, Pozitif ve Negatif De\u011ferler",
+"icindekiler_adi": "Fonksiyonun Eksenleri Kesti\u011fi Noktalar, Pozitif ve Negatif De\u011ferler",
+"sayfalar": [
+94,
+95
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K07",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "Ortalama De\u011fi\u015fim H\u0131z\u0131, Artan-Azalan Oldu\u011fu Aral\u0131klar, Maksimum Minimum Noktalar",
+"icindekiler_adi": "Ortalama De\u011fi\u015fim H\u0131z\u0131, Artan-Azalan Oldu\u011fu Aral\u0131klar, Maksimum Minimum Noktalar",
+"sayfalar": [
+96,
+101
+]
+},
+{
+"kod": "MAT-ARO23AM-B05-K08",
+"bolum": "MAT-ARO23AM-B05",
+"ad": "D\u00f6n\u00fc\u015f\u00fcmler",
+"icindekiler_adi": "D\u00f6n\u00fc\u015f\u00fcmler",
+"sayfalar": [
+102,
+107
+]
+},
+{
+"kod": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"ad": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"icindekiler_adi": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"sayfalar": [
+108,
+119
+]
+},
+{
+"kod": "MAT-ARO23AM-B06-K02",
+"bolum": "MAT-ARO23AM-B06",
+"ad": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlik Sistemleri",
+"icindekiler_adi": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlik Sistemleri",
+"sayfalar": [
+120,
+123
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K01",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "A\u00e7\u0131 \u00d6l\u00e7me Birimleri - Y\u00f6nl\u00fc A\u00e7\u0131 - Esas \u00d6l\u00e7\u00fc",
+"icindekiler_adi": "A\u00e7\u0131 \u00d6l\u00e7me Birimleri - Y\u00f6nl\u00fc A\u00e7\u0131 - Esas \u00d6l\u00e7\u00fc",
+"sayfalar": [
+124,
+125
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K02",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Dik \u00dc\u00e7gende Trigonometrik Ba\u011f\u0131nt\u0131lar",
+"icindekiler_adi": "Dik \u00dc\u00e7gende Trigonometrik Ba\u011f\u0131nt\u0131lar",
+"sayfalar": [
+126,
+131
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K03",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Birim \u00c7ember - Trigonometrik Fonksiyonlar ve \u0130\u015faretleri",
+"icindekiler_adi": "Birim \u00c7ember - Trigonometrik Fonksiyonlar ve \u0130\u015faretleri",
+"sayfalar": [
+132,
+135
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K04",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Bir A\u00e7\u0131n\u0131n Trigonometrik De\u011ferinin Dar A\u00e7\u0131 Cinsinden Yaz\u0131lmas\u0131-S\u0131ralama",
+"icindekiler_adi": "Bir A\u00e7\u0131n\u0131n Trigonometrik De\u011ferinin Dar A\u00e7\u0131 Cinsinden Yaz\u0131lmas\u0131-S\u0131ralama",
+"sayfalar": [
+136,
+141
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K05",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Cosin\u00fcs ve Sin\u00fcs Teoremi",
+"icindekiler_adi": "Cosin\u00fcs ve Sin\u00fcs Teoremi",
+"sayfalar": [
+142,
+147
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K06",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Trigonometrik Fonksiyonlar\u0131n Grafikleri ve Periyotlar\u0131 - Ters Trigonometrik Fonksiyonlar",
+"icindekiler_adi": "Trigonometrik Fonksiyonlar\u0131n Grafikleri ve Periyotlar\u0131 - Ters Trigonometrik Fonksiyonlar",
+"sayfalar": [
+148,
+153
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K07",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"icindekiler_adi": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"sayfalar": [
+154,
+163
+]
+},
+{
+"kod": "MAT-ARO23AM-B07-K08",
+"bolum": "MAT-ARO23AM-B07",
+"ad": "Trigonometrik Denklemler",
+"icindekiler_adi": "Trigonometrik Denklemler",
+"sayfalar": [
+164,
+169
+]
+},
+{
+"kod": "MAT-ARO23AM-B08-K01",
+"bolum": "MAT-ARO23AM-B08",
+"ad": "\u00dcsl\u00fc \u0130fadeler ve Denklemler",
+"icindekiler_adi": "\u00dcsl\u00fc \u0130fadeler ve Denklemler",
+"sayfalar": [
+170,
+173
+]
+},
+{
+"kod": "MAT-ARO23AM-B08-K02",
+"bolum": "MAT-ARO23AM-B08",
+"ad": "K\u00f6kl\u00fc \u0130fadeler ve Denklemler",
+"icindekiler_adi": "K\u00f6kl\u00fc \u0130fadeler ve Denklemler",
+"sayfalar": [
+174,
+177
+]
+},
+{
+"kod": "MAT-ARO23AM-B08-K03",
+"bolum": "MAT-ARO23AM-B08",
+"ad": "\u00dcstel Fonksiyon ve Logaritma Fonksiyonu",
+"icindekiler_adi": "\u00dcstel Fonksiyon ve Logaritma Fonksiyonu",
+"sayfalar": [
+178,
+183
+]
+},
+{
+"kod": "MAT-ARO23AM-B08-K04",
+"bolum": "MAT-ARO23AM-B08",
+"ad": "Logaritma \u00d6zellikleri",
+"icindekiler_adi": "Logaritma \u00d6zellikleri",
+"sayfalar": [
+184,
+191
+]
+},
+{
+"kod": "MAT-ARO23AM-B08-K05",
+"bolum": "MAT-ARO23AM-B08",
+"ad": "\u00dcstel ve Logaritmik Denklemler",
+"icindekiler_adi": "\u00dcstel ve Logaritmik Denklemler",
+"sayfalar": [
+192,
+193
+]
+},
+{
+"kod": "MAT-ARO23AM-B08-K06",
+"bolum": "MAT-ARO23AM-B08",
+"ad": "\u00dcstel ve Logaritmik E\u015fitsizlikler",
+"icindekiler_adi": "\u00dcstel ve Logaritmik E\u015fitsizlikler",
+"sayfalar": [
+194,
+197
+]
+},
+{
+"kod": "MAT-ARO23AM-B09-K01",
+"bolum": "MAT-ARO23AM-B09",
+"ad": "Genel Terimi veya \u0130ndirgenme Ba\u011f\u0131nt\u0131s\u0131 Verilen Dizilerde \u0130\u015flemler",
+"icindekiler_adi": "Genel Terimi veya \u0130ndirgenme Ba\u011f\u0131nt\u0131s\u0131 Verilen Dizilerde \u0130\u015flemler",
+"sayfalar": [
+198,
+203
+]
+},
+{
+"kod": "MAT-ARO23AM-B09-K02",
+"bolum": "MAT-ARO23AM-B09",
+"ad": "Toplam Sembol\u00fc",
+"icindekiler_adi": "Toplam Sembol\u00fc",
+"sayfalar": [
+204,
+205
+]
+},
+{
+"kod": "MAT-ARO23AM-B09-K03",
+"bolum": "MAT-ARO23AM-B09",
+"ad": "Aritmetik Dizi - Geometrik Dizi",
+"icindekiler_adi": "Aritmetik Dizi - Geometrik Dizi",
+"sayfalar": [
+206,
+215
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K01",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Perm\u00fctasyon",
+"icindekiler_adi": "Perm\u00fctasyon",
+"sayfalar": [
+216,
+219
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K02",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Kombinasyon",
+"icindekiler_adi": "Kombinasyon",
+"sayfalar": [
+220,
+223
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K03",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Olas\u0131l\u0131k",
+"icindekiler_adi": "Olas\u0131l\u0131k",
+"sayfalar": [
+224,
+227
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K04",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Binom A\u00e7\u0131l\u0131m\u0131",
+"icindekiler_adi": "Binom A\u00e7\u0131l\u0131m\u0131",
+"sayfalar": [
+228,
+229
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K05",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Ko\u015fullu Olas\u0131l\u0131k",
+"icindekiler_adi": "Ko\u015fullu Olas\u0131l\u0131k",
+"sayfalar": [
+230,
+233
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K06",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Ba\u011f\u0131ml\u0131 ve Ba\u011f\u0131ms\u0131z Olaylar",
+"icindekiler_adi": "Ba\u011f\u0131ml\u0131 ve Ba\u011f\u0131ms\u0131z Olaylar",
+"sayfalar": [
+234,
+237
+]
+},
+{
+"kod": "MAT-ARO23AM-B10-K07",
+"bolum": "MAT-ARO23AM-B10",
+"ad": "Bile\u015fik Olaylar - Deneysel ve Teorik Olas\u0131l\u0131k",
+"icindekiler_adi": "Bile\u015fik Olaylar - Deneysel ve Teorik Olas\u0131l\u0131k",
+"sayfalar": [
+238,
+243
+]
+},
+{
+"kod": "MAT-ARO23AM-B11-K01",
+"bolum": "MAT-ARO23AM-B11",
+"ad": "Limitin \u00d6zellikleri ve Uygulamalar\u0131",
+"icindekiler_adi": "Limitin \u00d6zellikleri ve Uygulamalar\u0131",
+"sayfalar": [
+244,
+251
+]
+},
+{
+"kod": "MAT-ARO23AM-B11-K02",
+"bolum": "MAT-ARO23AM-B11",
+"ad": "S\u00fcreklilik",
+"icindekiler_adi": "S\u00fcreklilik",
+"sayfalar": [
+252,
+255
+]
+},
+{
+"kod": "MAT-ARO23AM-B11-K03",
+"bolum": "MAT-ARO23AM-B11",
+"ad": "Limitte Belirsizlik Durumu",
+"icindekiler_adi": "Limitte Belirsizlik Durumu",
+"sayfalar": [
+256,
+261
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K01",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Anl\u0131k De\u011fi\u015fim Oran\u0131 ve T\u00fcrev",
+"icindekiler_adi": "Anl\u0131k De\u011fi\u015fim Oran\u0131 ve T\u00fcrev",
+"sayfalar": [
+262,
+269
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K02",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Bir Fonksiyonun Bir Noktada ve Aral\u0131kta T\u00fcrevlenebilirli\u011fi",
+"icindekiler_adi": "Bir Fonksiyonun Bir Noktada ve Aral\u0131kta T\u00fcrevlenebilirli\u011fi",
+"sayfalar": [
+270,
+271
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K03",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "\u0130ki Fonksiyonun Toplam\u0131n\u0131n, Fark\u0131n\u0131n, \u00c7arp\u0131m\u0131n\u0131n ve B\u00f6l\u00fcm\u00fcn\u00fcn T\u00fcrevi",
+"icindekiler_adi": "\u0130ki Fonksiyonun Toplam\u0131n\u0131n, Fark\u0131n\u0131n, \u00c7arp\u0131m\u0131n\u0131n ve B\u00f6l\u00fcm\u00fcn\u00fcn T\u00fcrevi",
+"sayfalar": [
+272,
+277
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K04",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "\u0130ki Fonksiyonun Bile\u015fkesinin T\u00fcrevi",
+"icindekiler_adi": "\u0130ki Fonksiyonun Bile\u015fkesinin T\u00fcrevi",
+"sayfalar": [
+278,
+281
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K05",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Te\u011fet Denklemleri",
+"icindekiler_adi": "Te\u011fet Denklemleri",
+"sayfalar": [
+282,
+287
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K06",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Bir Fonksiyonun Artan veya Azalan Oldu\u011fu Aral\u0131klar",
+"icindekiler_adi": "Bir Fonksiyonun Artan veya Azalan Oldu\u011fu Aral\u0131klar",
+"sayfalar": [
+288,
+291
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K07",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Ekstremum Noktalar",
+"icindekiler_adi": "Ekstremum Noktalar",
+"sayfalar": [
+292,
+295
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K08",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Polinom Fonksiyonlar\u0131n\u0131n Grafikleri",
+"icindekiler_adi": "Polinom Fonksiyonlar\u0131n\u0131n Grafikleri",
+"sayfalar": [
+296,
+299
+]
+},
+{
+"kod": "MAT-ARO23AM-B12-K09",
+"bolum": "MAT-ARO23AM-B12",
+"ad": "Maksimum ve Minimum Problemleri",
+"icindekiler_adi": "Maksimum ve Minimum Problemleri",
+"sayfalar": [
+300,
+305
+]
+},
+{
+"kod": "MAT-ARO23AM-B13-K01",
+"bolum": "MAT-ARO23AM-B13",
+"ad": "Belirsiz \u0130ntegral ve \u0130ntegral Alma Kurallar\u0131",
+"icindekiler_adi": "Belirsiz \u0130ntegral ve \u0130ntegral Alma Kurallar\u0131",
+"sayfalar": [
+306,
+311
+]
+},
+{
+"kod": "MAT-ARO23AM-B13-K02",
+"bolum": "MAT-ARO23AM-B13",
+"ad": "De\u011fi\u015fken De\u011fi\u015ftirme Y\u00f6ntemi",
+"icindekiler_adi": "De\u011fi\u015fken De\u011fi\u015ftirme Y\u00f6ntemi",
+"sayfalar": [
+312,
+315
+]
+},
+{
+"kod": "MAT-ARO23AM-B13-K03",
+"bolum": "MAT-ARO23AM-B13",
+"ad": "Belirli \u0130ntegral",
+"icindekiler_adi": "Belirli \u0130ntegral",
+"sayfalar": [
+316,
+323
+]
+},
+{
+"kod": "MAT-ARO23AM-B13-K04",
+"bolum": "MAT-ARO23AM-B13",
+"ad": "Riemann Toplam\u0131 Yard\u0131m\u0131yla Yakla\u015f\u0131k Alan Hesab\u0131",
+"icindekiler_adi": "Riemann Toplam\u0131 Yard\u0131m\u0131yla Yakla\u015f\u0131k Alan Hesab\u0131",
+"sayfalar": [
+324,
+327
+]
+},
+{
+"kod": "MAT-ARO23AM-B13-K05",
+"bolum": "MAT-ARO23AM-B13",
+"ad": "Belirli \u0130ntegral ile Alan Hesab\u0131",
+"icindekiler_adi": "Belirli \u0130ntegral ile Alan Hesab\u0131",
+"sayfalar": [
+328,
+336
+]
+}
+],
+"test_sayisi": 153,
+"testler": [
+{
+"birim": "ARO23AM-T001",
+"test": 1,
+"sayfalar": [
+6,
+7
+],
+"bant": "Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ARO23AM-B01-K01",
+"bolum": "MAT-ARO23AM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T002",
+"test": 2,
+"sayfalar": [
+8,
+9
+],
+"bant": "Asal \u00c7arpanlara Ay\u0131rma",
+"konu": "MAT-ARO23AM-B01-K01",
+"bolum": "MAT-ARO23AM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T003",
+"test": 3,
+"sayfalar": [
+10,
+11
+],
+"bant": "B\u00f6lme - B\u00f6l\u00fcnebilme",
+"konu": "MAT-ARO23AM-B01-K02",
+"bolum": "MAT-ARO23AM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T004",
+"test": 4,
+"sayfalar": [
+12,
+13
+],
+"bant": "EBOB - EKOK",
+"konu": "MAT-ARO23AM-B01-K03",
+"bolum": "MAT-ARO23AM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T005",
+"test": 5,
+"sayfalar": [
+14,
+15
+],
+"bant": "EBOB - EKOK",
+"konu": "MAT-ARO23AM-B01-K03",
+"bolum": "MAT-ARO23AM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T006",
+"test": 6,
+"sayfalar": [
+16,
+17,
+18
+],
+"bant": "Periyodik Durumlar",
+"konu": "MAT-ARO23AM-B01-K04",
+"bolum": "MAT-ARO23AM-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T007",
+"test": 7,
+"sayfalar": [
+20,
+21
+],
+"bant": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T008",
+"test": 8,
+"sayfalar": [
+22,
+23
+],
+"bant": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T009",
+"test": 9,
+"sayfalar": [
+24,
+25
+],
+"bant": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T010",
+"test": 10,
+"sayfalar": [
+26,
+27
+],
+"bant": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T011",
+"test": 11,
+"sayfalar": [
+28,
+29
+],
+"bant": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T012",
+"test": 12,
+"sayfalar": [
+30,
+31
+],
+"bant": "Polinom Kavram\u0131 ve Polinomlarla \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B02-K01",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T013",
+"test": 13,
+"sayfalar": [
+32,
+33
+],
+"bant": "Polinomlar\u0131n \u00c7arpanlara Ayr\u0131lmas\u0131",
+"konu": "MAT-ARO23AM-B02-K02",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23AM-T014",
+"test": 14,
+"sayfalar": [
+34,
+35,
+36
+],
+"bant": "Polinomlar\u0131n \u00c7arpanlara Ayr\u0131lmas\u0131",
+"konu": "MAT-ARO23AM-B02-K02",
+"bolum": "MAT-ARO23AM-B02",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23AM-T015",
+"test": 15,
+"sayfalar": [
+38,
+39
+],
+"bant": "K\u00f6klerini Bulma - Diskriminant",
+"konu": "MAT-ARO23AM-B03-K01",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T016",
+"test": 16,
+"sayfalar": [
+40,
+41
+],
+"bant": "K\u00f6klerini Bulma - Diskriminant",
+"konu": "MAT-ARO23AM-B03-K01",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T017",
+"test": 17,
+"sayfalar": [
+42,
+43
+],
+"bant": "K\u00f6kleri ile Katsay\u0131lar\u0131 Aras\u0131ndaki \u0130li\u015fki",
+"konu": "MAT-ARO23AM-B03-K02",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T018",
+"test": 18,
+"sayfalar": [
+44,
+45
+],
+"bant": "K\u00f6kleri ile Katsay\u0131lar\u0131 Aras\u0131ndaki \u0130li\u015fki",
+"konu": "MAT-ARO23AM-B03-K02",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T019",
+"test": 19,
+"sayfalar": [
+46,
+47
+],
+"bant": "K\u00f6kleri ile Katsay\u0131lar\u0131 Aras\u0131ndaki \u0130li\u015fki",
+"konu": "MAT-ARO23AM-B03-K02",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T020",
+"test": 20,
+"sayfalar": [
+48,
+49
+],
+"bant": "De\u011fi\u015fken De\u011fi\u015ftirme",
+"konu": "MAT-ARO23AM-B03-K03",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T021",
+"test": 21,
+"sayfalar": [
+50,
+51
+],
+"bant": "\u0130kinci Dereceden \u0130ki Bilinmeyenli Denklem Sistemleri",
+"konu": "MAT-ARO23AM-B03-K04",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T022",
+"test": 22,
+"sayfalar": [
+52,
+53
+],
+"bant": "\u0130kinci Dereceden \u0130ki Bilinmeyenli Denklem Sistemleri",
+"konu": "MAT-ARO23AM-B03-K04",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T023",
+"test": 23,
+"sayfalar": [
+54,
+55
+],
+"bant": "Karma\u015f\u0131k Say\u0131lar ve Karma\u015f\u0131k K\u00f6kler",
+"konu": "MAT-ARO23AM-B03-K05",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T024",
+"test": 24,
+"sayfalar": [
+56,
+57,
+58
+],
+"bant": "Karma\u015f\u0131k Say\u0131lar ve Karma\u015f\u0131k K\u00f6kler",
+"konu": "MAT-ARO23AM-B03-K05",
+"bolum": "MAT-ARO23AM-B03",
+"soru_sayisi": 18
+},
+{
+"birim": "ARO23AM-T025",
+"test": 25,
+"sayfalar": [
+60,
+61
+],
+"bant": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B04-K01",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T026",
+"test": 26,
+"sayfalar": [
+62,
+63
+],
+"bant": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B04-K01",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T027",
+"test": 27,
+"sayfalar": [
+64,
+65
+],
+"bant": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B04-K01",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T028",
+"test": 28,
+"sayfalar": [
+66,
+67
+],
+"bant": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B04-K01",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23AM-T029",
+"test": 29,
+"sayfalar": [
+68,
+69
+],
+"bant": "Parabol\u00fcn \u00c7izimi ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B04-K01",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T030",
+"test": 30,
+"sayfalar": [
+70,
+71
+],
+"bant": "Parabol\u00fcn Denklemini Bulma",
+"konu": "MAT-ARO23AM-B04-K02",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T031",
+"test": 31,
+"sayfalar": [
+72,
+73
+],
+"bant": "Parabol\u00fcn Denklemini Bulma",
+"konu": "MAT-ARO23AM-B04-K02",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T032",
+"test": 32,
+"sayfalar": [
+74,
+75,
+76
+],
+"bant": "Parabol\u00fcn Denklemini Bulma",
+"konu": "MAT-ARO23AM-B04-K02",
+"bolum": "MAT-ARO23AM-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T033",
+"test": 33,
+"sayfalar": [
+78,
+79
+],
+"bant": "Fonksiyonlarda \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B05-K01",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T034",
+"test": 34,
+"sayfalar": [
+80,
+81
+],
+"bant": "Fonksiyonlarda \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B05-K01",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T035",
+"test": 35,
+"sayfalar": [
+82,
+83
+],
+"bant": "Fonksiyonlarda \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B05-K01",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T036",
+"test": 36,
+"sayfalar": [
+84,
+85
+],
+"bant": "Par\u00e7al\u0131 Fonksiyon",
+"konu": "MAT-ARO23AM-B05-K02",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T037",
+"test": 37,
+"sayfalar": [
+86,
+87
+],
+"bant": "Bile\u015fke Fonksiyon ve Ters Fonksiyon",
+"konu": "MAT-ARO23AM-B05-K03",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T038",
+"test": 38,
+"sayfalar": [
+88,
+89
+],
+"bant": "Bile\u015fke Fonksiyon ve Ters Fonksiyon",
+"konu": "MAT-ARO23AM-B05-K03",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T039",
+"test": 39,
+"sayfalar": [
+90,
+91
+],
+"bant": "Do\u011frusal Fonksiyon Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B05-K04",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23AM-T040",
+"test": 40,
+"sayfalar": [
+92,
+93
+],
+"bant": "Tek-\u00c7ift Fonksiyonlar ve Simetri \u00d6zellikleri",
+"konu": "MAT-ARO23AM-B05-K05",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T041",
+"test": 41,
+"sayfalar": [
+94,
+95
+],
+"bant": "Fonksiyonun Eksenleri Kesti\u011fi Noktalar, Pozitif ve Negatif De\u011ferler",
+"konu": "MAT-ARO23AM-B05-K06",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23AM-T042",
+"test": 42,
+"sayfalar": [
+96,
+97
+],
+"bant": "Ortalama De\u011fi\u015fim H\u0131z\u0131, Artan-Azalan Oldu\u011fu Aral\u0131klar, Maksimum-Minimum Noktalar",
+"konu": "MAT-ARO23AM-B05-K07",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T043",
+"test": 43,
+"sayfalar": [
+98,
+99
+],
+"bant": "Ortalama De\u011fi\u015fim H\u0131z\u0131, Artan-Azalan Oldu\u011fu Aral\u0131klar, Maksimum-Minimum Noktalar",
+"konu": "MAT-ARO23AM-B05-K07",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T044",
+"test": 44,
+"sayfalar": [
+100,
+101
+],
+"bant": "Ortalama De\u011fi\u015fim H\u0131z\u0131, Artan-Azalan Oldu\u011fu Aral\u0131klar, Maksimum-Minimum Noktalar",
+"konu": "MAT-ARO23AM-B05-K07",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T045",
+"test": 45,
+"sayfalar": [
+102,
+103
+],
+"bant": "D\u00f6n\u00fc\u015f\u00fcmler",
+"konu": "MAT-ARO23AM-B05-K08",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T046",
+"test": 46,
+"sayfalar": [
+104,
+105,
+106
+],
+"bant": "D\u00f6n\u00fc\u015f\u00fcmler",
+"konu": "MAT-ARO23AM-B05-K08",
+"bolum": "MAT-ARO23AM-B05",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T047",
+"test": 47,
+"sayfalar": [
+108,
+109
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T048",
+"test": 48,
+"sayfalar": [
+110,
+111
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T049",
+"test": 49,
+"sayfalar": [
+112,
+113
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T050",
+"test": 50,
+"sayfalar": [
+114,
+115
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T051",
+"test": 51,
+"sayfalar": [
+116,
+117
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T052",
+"test": 52,
+"sayfalar": [
+118,
+119
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B06-K01",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T053",
+"test": 53,
+"sayfalar": [
+120,
+121,
+122
+],
+"bant": "\u0130kinci Dereceden Bir Bilinmeyenli E\u015fitsizlik Sistemleri",
+"konu": "MAT-ARO23AM-B06-K02",
+"bolum": "MAT-ARO23AM-B06",
+"soru_sayisi": 14
+},
+{
+"birim": "ARO23AM-T054",
+"test": 54,
+"sayfalar": [
+124,
+125
+],
+"bant": "A\u00e7\u0131 \u00d6l\u00e7me Birimleri - Y\u00f6nl\u00fc A\u00e7\u0131 - Esas \u00d6l\u00e7\u00fc",
+"konu": "MAT-ARO23AM-B07-K01",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T055",
+"test": 55,
+"sayfalar": [
+126,
+127
+],
+"bant": "Dik \u00dc\u00e7gende Trigonometrik Ba\u011f\u0131nt\u0131lar",
+"konu": "MAT-ARO23AM-B07-K02",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T056",
+"test": 56,
+"sayfalar": [
+128,
+129
+],
+"bant": "Dik \u00dc\u00e7gende Trigonometrik Ba\u011f\u0131nt\u0131lar",
+"konu": "MAT-ARO23AM-B07-K02",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T057",
+"test": 57,
+"sayfalar": [
+130,
+131
+],
+"bant": "Dik \u00dc\u00e7gende Trigonometrik Ba\u011f\u0131nt\u0131lar",
+"konu": "MAT-ARO23AM-B07-K02",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T058",
+"test": 58,
+"sayfalar": [
+132,
+133
+],
+"bant": "Birim \u00c7ember - Trigonometrik Fonksiyonlar ve \u0130\u015faretleri",
+"konu": "MAT-ARO23AM-B07-K03",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T059",
+"test": 59,
+"sayfalar": [
+134,
+135
+],
+"bant": "Birim \u00c7ember - Trigonometrik Fonksiyonlar ve \u0130\u015faretleri",
+"konu": "MAT-ARO23AM-B07-K03",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T060",
+"test": 60,
+"sayfalar": [
+136,
+137
+],
+"bant": "Bir A\u00e7\u0131n\u0131n Trigonometrik De\u011ferinin Dar A\u00e7\u0131 Cinsinden Yaz\u0131lmas\u0131-S\u0131ralama",
+"konu": "MAT-ARO23AM-B07-K04",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T061",
+"test": 61,
+"sayfalar": [
+138,
+139
+],
+"bant": "Bir A\u00e7\u0131n\u0131n Trigonometrik De\u011ferinin Dar A\u00e7\u0131 Cinsinden Yaz\u0131lmas\u0131-S\u0131ralama",
+"konu": "MAT-ARO23AM-B07-K04",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T062",
+"test": 62,
+"sayfalar": [
+140,
+141
+],
+"bant": "Bir A\u00e7\u0131n\u0131n Trigonometrik De\u011ferinin Dar A\u00e7\u0131 Cinsinden Yaz\u0131lmas\u0131-S\u0131ralama",
+"konu": "MAT-ARO23AM-B07-K04",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T063",
+"test": 63,
+"sayfalar": [
+142,
+143
+],
+"bant": "Cosin\u00fcs ve Sin\u00fcs Teoremi",
+"konu": "MAT-ARO23AM-B07-K05",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T064",
+"test": 64,
+"sayfalar": [
+144,
+145
+],
+"bant": "Cosin\u00fcs ve Sin\u00fcs Teoremi",
+"konu": "MAT-ARO23AM-B07-K05",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T065",
+"test": 65,
+"sayfalar": [
+146,
+147
+],
+"bant": "Cosin\u00fcs ve Sin\u00fcs Teoremi",
+"konu": "MAT-ARO23AM-B07-K05",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23AM-T066",
+"test": 66,
+"sayfalar": [
+148,
+149
+],
+"bant": "Trigonometrik Fonksiyonlar\u0131n Grafikleri ve Periyotlar\u0131 Ters Trigonometrik Fonksiyonlar",
+"konu": "MAT-ARO23AM-B07-K06",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T067",
+"test": 67,
+"sayfalar": [
+150,
+151
+],
+"bant": "Trigonometrik Fonksiyonlar\u0131n Grafikleri ve Periyotlar\u0131 Ters Trigonometrik Fonksiyonlar",
+"konu": "MAT-ARO23AM-B07-K06",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T068",
+"test": 68,
+"sayfalar": [
+152,
+153
+],
+"bant": "Trigonometrik Fonksiyonlar\u0131n Grafikleri ve Periyotlar\u0131 Ters Trigonometrik Fonksiyonlar",
+"konu": "MAT-ARO23AM-B07-K06",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T069",
+"test": 69,
+"sayfalar": [
+154,
+155
+],
+"bant": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"konu": "MAT-ARO23AM-B07-K07",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T070",
+"test": 70,
+"sayfalar": [
+156,
+157
+],
+"bant": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"konu": "MAT-ARO23AM-B07-K07",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T071",
+"test": 71,
+"sayfalar": [
+158,
+159
+],
+"bant": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"konu": "MAT-ARO23AM-B07-K07",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T072",
+"test": 72,
+"sayfalar": [
+160,
+161
+],
+"bant": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"konu": "MAT-ARO23AM-B07-K07",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T073",
+"test": 73,
+"sayfalar": [
+162,
+163
+],
+"bant": "Toplam - Fark ve \u0130ki Kat A\u00e7\u0131 Form\u00fclleri",
+"konu": "MAT-ARO23AM-B07-K07",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T074",
+"test": 74,
+"sayfalar": [
+164,
+165
+],
+"bant": "Trigonometrik Denklemler",
+"konu": "MAT-ARO23AM-B07-K08",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T075",
+"test": 75,
+"sayfalar": [
+166,
+167,
+168
+],
+"bant": "Trigonometrik Denklemler",
+"konu": "MAT-ARO23AM-B07-K08",
+"bolum": "MAT-ARO23AM-B07",
+"soru_sayisi": 19
+},
+{
+"birim": "ARO23AM-T076",
+"test": 76,
+"sayfalar": [
+170,
+171
+],
+"bant": "\u00dcsl\u00fc \u0130fadeler ve Denklemler",
+"konu": "MAT-ARO23AM-B08-K01",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T077",
+"test": 77,
+"sayfalar": [
+172,
+173
+],
+"bant": "\u00dcsl\u00fc \u0130fadeler ve Denklemler",
+"konu": "MAT-ARO23AM-B08-K01",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T078",
+"test": 78,
+"sayfalar": [
+174,
+175
+],
+"bant": "K\u00f6kl\u00fc \u0130fadeler ve Denklemler",
+"konu": "MAT-ARO23AM-B08-K02",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T079",
+"test": 79,
+"sayfalar": [
+176,
+177
+],
+"bant": "K\u00f6kl\u00fc \u0130fadeler ve Denklemler",
+"konu": "MAT-ARO23AM-B08-K02",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T080",
+"test": 80,
+"sayfalar": [
+178,
+179
+],
+"bant": "\u00dcstel Fonksiyon ve Logaritma Fonksiyonu",
+"konu": "MAT-ARO23AM-B08-K03",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T081",
+"test": 81,
+"sayfalar": [
+180,
+181
+],
+"bant": "\u00dcstel Fonksiyon ve Logaritma Fonksiyonu",
+"konu": "MAT-ARO23AM-B08-K03",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T082",
+"test": 82,
+"sayfalar": [
+182,
+183
+],
+"bant": "\u00dcstel Fonksiyon ve Logaritma Fonksiyonu",
+"konu": "MAT-ARO23AM-B08-K03",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T083",
+"test": 83,
+"sayfalar": [
+184,
+185
+],
+"bant": "Logaritma \u00d6zellikleri",
+"konu": "MAT-ARO23AM-B08-K04",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T084",
+"test": 84,
+"sayfalar": [
+186,
+187
+],
+"bant": "Logaritma \u00d6zellikleri",
+"konu": "MAT-ARO23AM-B08-K04",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T085",
+"test": 85,
+"sayfalar": [
+188,
+189
+],
+"bant": "Logaritma \u00d6zellikleri",
+"konu": "MAT-ARO23AM-B08-K04",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T086",
+"test": 86,
+"sayfalar": [
+190,
+191
+],
+"bant": "Logaritma \u00d6zellikleri",
+"konu": "MAT-ARO23AM-B08-K04",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T087",
+"test": 87,
+"sayfalar": [
+192,
+193
+],
+"bant": "\u00dcstel ve Logaritmik Denklemler",
+"konu": "MAT-ARO23AM-B08-K05",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T088",
+"test": 88,
+"sayfalar": [
+194,
+195,
+196
+],
+"bant": "\u00dcstel ve Logaritmik E\u015fitsizlikler",
+"konu": "MAT-ARO23AM-B08-K06",
+"bolum": "MAT-ARO23AM-B08",
+"soru_sayisi": 17
+},
+{
+"birim": "ARO23AM-T089",
+"test": 89,
+"sayfalar": [
+198,
+199
+],
+"bant": "Genel Terimi veya \u0130ndirgenme Ba\u011f\u0131nt\u0131s\u0131 Verilen Dizilerde \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B09-K01",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T090",
+"test": 90,
+"sayfalar": [
+200,
+201
+],
+"bant": "Genel Terimi veya \u0130ndirgenme Ba\u011f\u0131nt\u0131s\u0131 Verilen Dizilerde \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B09-K01",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T091",
+"test": 91,
+"sayfalar": [
+202,
+203
+],
+"bant": "Genel Terimi veya \u0130ndirgenme Ba\u011f\u0131nt\u0131s\u0131 Verilen Dizilerde \u0130\u015flemler",
+"konu": "MAT-ARO23AM-B09-K01",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T092",
+"test": 92,
+"sayfalar": [
+204,
+205
+],
+"bant": "Toplam Sembol\u00fc",
+"konu": "MAT-ARO23AM-B09-K02",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T093",
+"test": 93,
+"sayfalar": [
+206,
+207
+],
+"bant": "Aritmetik Dizi - Geometrik Dizi",
+"konu": "MAT-ARO23AM-B09-K03",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T094",
+"test": 94,
+"sayfalar": [
+208,
+209
+],
+"bant": "Aritmetik Dizi - Geometrik Dizi",
+"konu": "MAT-ARO23AM-B09-K03",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T095",
+"test": 95,
+"sayfalar": [
+210,
+211
+],
+"bant": "Aritmetik Dizi - Geometrik Dizi",
+"konu": "MAT-ARO23AM-B09-K03",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T096",
+"test": 96,
+"sayfalar": [
+212,
+213,
+214
+],
+"bant": "Aritmetik Dizi - Geometrik Dizi",
+"konu": "MAT-ARO23AM-B09-K03",
+"bolum": "MAT-ARO23AM-B09",
+"soru_sayisi": 14
+},
+{
+"birim": "ARO23AM-T097",
+"test": 97,
+"sayfalar": [
+216,
+217
+],
+"bant": "Perm\u00fctasyon",
+"konu": "MAT-ARO23AM-B10-K01",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T098",
+"test": 98,
+"sayfalar": [
+218,
+219
+],
+"bant": "Perm\u00fctasyon",
+"konu": "MAT-ARO23AM-B10-K01",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T099",
+"test": 99,
+"sayfalar": [
+220,
+221
+],
+"bant": "Kombinasyon",
+"konu": "MAT-ARO23AM-B10-K02",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T100",
+"test": 100,
+"sayfalar": [
+222,
+223
+],
+"bant": "Kombinasyon",
+"konu": "MAT-ARO23AM-B10-K02",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T101",
+"test": 101,
+"sayfalar": [
+224,
+225
+],
+"bant": "Olas\u0131l\u0131k",
+"konu": "MAT-ARO23AM-B10-K03",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T102",
+"test": 102,
+"sayfalar": [
+226,
+227
+],
+"bant": "Olas\u0131l\u0131k",
+"konu": "MAT-ARO23AM-B10-K03",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T103",
+"test": 103,
+"sayfalar": [
+228,
+229
+],
+"bant": "Binom A\u00e7\u0131l\u0131m\u0131",
+"konu": "MAT-ARO23AM-B10-K04",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T104",
+"test": 104,
+"sayfalar": [
+230,
+231
+],
+"bant": "Ko\u015fullu Olas\u0131l\u0131k",
+"konu": "MAT-ARO23AM-B10-K05",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T105",
+"test": 105,
+"sayfalar": [
+232,
+233
+],
+"bant": "Ko\u015fullu Olas\u0131l\u0131k",
+"konu": "MAT-ARO23AM-B10-K05",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T106",
+"test": 106,
+"sayfalar": [
+234,
+235
+],
+"bant": "Ba\u011f\u0131ml\u0131 ve Ba\u011f\u0131ms\u0131z Olaylar",
+"konu": "MAT-ARO23AM-B10-K06",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T107",
+"test": 107,
+"sayfalar": [
+236,
+237
+],
+"bant": "Ba\u011f\u0131ml\u0131 ve Ba\u011f\u0131ms\u0131z Olaylar",
+"konu": "MAT-ARO23AM-B10-K06",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T108",
+"test": 108,
+"sayfalar": [
+238,
+239
+],
+"bant": "Bile\u015fik Olaylar - Deneysel ve Teorik Olas\u0131l\u0131k",
+"konu": "MAT-ARO23AM-B10-K07",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T109",
+"test": 109,
+"sayfalar": [
+240,
+241,
+242
+],
+"bant": "Bile\u015fik Olaylar - Deneysel ve Teorik Olas\u0131l\u0131k",
+"konu": "MAT-ARO23AM-B10-K07",
+"bolum": "MAT-ARO23AM-B10",
+"soru_sayisi": 13
+},
+{
+"birim": "ARO23AM-T110",
+"test": 110,
+"sayfalar": [
+244,
+245
+],
+"bant": "Limitin \u00d6zellikleri ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B11-K01",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T111",
+"test": 111,
+"sayfalar": [
+246,
+247
+],
+"bant": "Limitin \u00d6zellikleri ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B11-K01",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T112",
+"test": 112,
+"sayfalar": [
+248,
+249
+],
+"bant": "Limitin \u00d6zellikleri ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B11-K01",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T113",
+"test": 113,
+"sayfalar": [
+250,
+251
+],
+"bant": "Limitin \u00d6zellikleri ve Uygulamalar\u0131",
+"konu": "MAT-ARO23AM-B11-K01",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T114",
+"test": 114,
+"sayfalar": [
+252,
+253
+],
+"bant": "S\u00fcreklilik",
+"konu": "MAT-ARO23AM-B11-K02",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T115",
+"test": 115,
+"sayfalar": [
+254,
+255
+],
+"bant": "S\u00fcreklilik",
+"konu": "MAT-ARO23AM-B11-K02",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T116",
+"test": 116,
+"sayfalar": [
+256,
+257
+],
+"bant": "Limitte Belirsizlik Durumu",
+"konu": "MAT-ARO23AM-B11-K03",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T117",
+"test": 117,
+"sayfalar": [
+258,
+259,
+260
+],
+"bant": "Limitte Belirsizlik Durumu",
+"konu": "MAT-ARO23AM-B11-K03",
+"bolum": "MAT-ARO23AM-B11",
+"soru_sayisi": 16
+},
+{
+"birim": "ARO23AM-T118",
+"test": 118,
+"sayfalar": [
+262,
+263
+],
+"bant": "Anl\u0131k De\u011fi\u015fim Oran\u0131 ve T\u00fcrev",
+"konu": "MAT-ARO23AM-B12-K01",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T119",
+"test": 119,
+"sayfalar": [
+264,
+265
+],
+"bant": "Anl\u0131k De\u011fi\u015fim Oran\u0131 ve T\u00fcrev",
+"konu": "MAT-ARO23AM-B12-K01",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T120",
+"test": 120,
+"sayfalar": [
+266,
+267
+],
+"bant": "Anl\u0131k De\u011fi\u015fim Oran\u0131 ve T\u00fcrev",
+"konu": "MAT-ARO23AM-B12-K01",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T121",
+"test": 121,
+"sayfalar": [
+268,
+269
+],
+"bant": "Anl\u0131k De\u011fi\u015fim Oran\u0131 ve T\u00fcrev",
+"konu": "MAT-ARO23AM-B12-K01",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T122",
+"test": 122,
+"sayfalar": [
+270,
+271
+],
+"bant": "Bir Fonksiyonun Bir Noktada ve Aral\u0131kta T\u00fcrevlenebilirli\u011fi",
+"konu": "MAT-ARO23AM-B12-K02",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T123",
+"test": 123,
+"sayfalar": [
+272,
+273
+],
+"bant": "\u0130ki Fonksiyonun Toplam\u0131n\u0131n, Fark\u0131n\u0131n, \u00c7arp\u0131m\u0131n\u0131n ve B\u00f6l\u00fcm\u00fcn\u00fcn T\u00fcrevi",
+"konu": "MAT-ARO23AM-B12-K03",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T124",
+"test": 124,
+"sayfalar": [
+274,
+275
+],
+"bant": "\u0130ki Fonksiyonun Toplam\u0131n\u0131n, Fark\u0131n\u0131n, \u00c7arp\u0131m\u0131n\u0131n ve B\u00f6l\u00fcm\u00fcn\u00fcn T\u00fcrevi",
+"konu": "MAT-ARO23AM-B12-K03",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T125",
+"test": 125,
+"sayfalar": [
+276,
+277
+],
+"bant": "\u0130ki Fonksiyonun Toplam\u0131n\u0131n, Fark\u0131n\u0131n, \u00c7arp\u0131m\u0131n\u0131n ve B\u00f6l\u00fcm\u00fcn\u00fcn T\u00fcrevi",
+"konu": "MAT-ARO23AM-B12-K03",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T126",
+"test": 126,
+"sayfalar": [
+278,
+279
+],
+"bant": "\u0130ki Fonksiyonun Bile\u015fkesinin T\u00fcrevi",
+"konu": "MAT-ARO23AM-B12-K04",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T127",
+"test": 127,
+"sayfalar": [
+280,
+281
+],
+"bant": "\u0130ki Fonksiyonun Bile\u015fkesinin T\u00fcrevi",
+"konu": "MAT-ARO23AM-B12-K04",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T128",
+"test": 128,
+"sayfalar": [
+282,
+283
+],
+"bant": "Te\u011fet Denklemleri",
+"konu": "MAT-ARO23AM-B12-K05",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T129",
+"test": 129,
+"sayfalar": [
+284,
+285
+],
+"bant": "Te\u011fet Denklemleri",
+"konu": "MAT-ARO23AM-B12-K05",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T130",
+"test": 130,
+"sayfalar": [
+286,
+287
+],
+"bant": "Te\u011fet Denklemleri",
+"konu": "MAT-ARO23AM-B12-K05",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T131",
+"test": 131,
+"sayfalar": [
+288,
+289
+],
+"bant": "Bir Fonksiyonun Artan veya Azalan Oldu\u011fu Aral\u0131klar",
+"konu": "MAT-ARO23AM-B12-K06",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T132",
+"test": 132,
+"sayfalar": [
+290,
+291
+],
+"bant": "Bir Fonksiyonun Artan veya Azalan Oldu\u011fu Aral\u0131klar",
+"konu": "MAT-ARO23AM-B12-K06",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T133",
+"test": 133,
+"sayfalar": [
+292,
+293
+],
+"bant": "Ekstremum Noktalar",
+"konu": "MAT-ARO23AM-B12-K07",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23AM-T134",
+"test": 134,
+"sayfalar": [
+294,
+295
+],
+"bant": "Ekstremum Noktalar",
+"konu": "MAT-ARO23AM-B12-K07",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T135",
+"test": 135,
+"sayfalar": [
+296,
+297
+],
+"bant": "Polinom Fonksiyonlar\u0131n\u0131n Grafikleri",
+"konu": "MAT-ARO23AM-B12-K08",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23AM-T136",
+"test": 136,
+"sayfalar": [
+298,
+299
+],
+"bant": "Polinom Fonksiyonlar\u0131n\u0131n Grafikleri",
+"konu": "MAT-ARO23AM-B12-K08",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23AM-T137",
+"test": 137,
+"sayfalar": [
+300,
+301
+],
+"bant": "Maksimum ve Minimum Problemleri",
+"konu": "MAT-ARO23AM-B12-K09",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23AM-T138",
+"test": 138,
+"sayfalar": [
+302,
+303,
+304
+],
+"bant": "Maksimum ve Minimum Problemleri",
+"konu": "MAT-ARO23AM-B12-K09",
+"bolum": "MAT-ARO23AM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T139",
+"test": 139,
+"sayfalar": [
+306,
+307
+],
+"bant": "Belirsiz \u0130ntegral ve \u0130ntegral Alma Kurallar\u0131",
+"konu": "MAT-ARO23AM-B13-K01",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T140",
+"test": 140,
+"sayfalar": [
+308,
+309
+],
+"bant": "Belirsiz \u0130ntegral ve \u0130ntegral Alma Kurallar\u0131",
+"konu": "MAT-ARO23AM-B13-K01",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T141",
+"test": 141,
+"sayfalar": [
+310,
+311
+],
+"bant": "Belirsiz \u0130ntegral ve \u0130ntegral Alma Kurallar\u0131",
+"konu": "MAT-ARO23AM-B13-K01",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23AM-T142",
+"test": 142,
+"sayfalar": [
+312,
+313
+],
+"bant": "De\u011fi\u015fken De\u011fi\u015ftirme Y\u00f6ntemi",
+"konu": "MAT-ARO23AM-B13-K02",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T143",
+"test": 143,
+"sayfalar": [
+314,
+315
+],
+"bant": "De\u011fi\u015fken De\u011fi\u015ftirme Y\u00f6ntemi",
+"konu": "MAT-ARO23AM-B13-K02",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T144",
+"test": 144,
+"sayfalar": [
+316,
+317
+],
+"bant": "Belirli \u0130ntegral",
+"konu": "MAT-ARO23AM-B13-K03",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23AM-T145",
+"test": 145,
+"sayfalar": [
+318,
+319
+],
+"bant": "Belirli \u0130ntegral",
+"konu": "MAT-ARO23AM-B13-K03",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T146",
+"test": 146,
+"sayfalar": [
+320,
+321
+],
+"bant": "Belirli \u0130ntegral",
+"konu": "MAT-ARO23AM-B13-K03",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T147",
+"test": 147,
+"sayfalar": [
+322,
+323
+],
+"bant": "Belirli \u0130ntegral",
+"konu": "MAT-ARO23AM-B13-K03",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23AM-T148",
+"test": 148,
+"sayfalar": [
+324,
+325
+],
+"bant": "Riemann Toplam\u0131 Yard\u0131m\u0131yla Yakla\u015f\u0131k Alan Hesab\u0131",
+"konu": "MAT-ARO23AM-B13-K04",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T149",
+"test": 149,
+"sayfalar": [
+326,
+327
+],
+"bant": "Riemann Toplam\u0131 Yard\u0131m\u0131yla Yakla\u015f\u0131k Alan Hesab\u0131",
+"konu": "MAT-ARO23AM-B13-K04",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T150",
+"test": 150,
+"sayfalar": [
+328,
+329
+],
+"bant": "Belirli \u0130ntegral ile Alan Hesab\u0131",
+"konu": "MAT-ARO23AM-B13-K05",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T151",
+"test": 151,
+"sayfalar": [
+330,
+331
+],
+"bant": "Belirli \u0130ntegral ile Alan Hesab\u0131",
+"konu": "MAT-ARO23AM-B13-K05",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T152",
+"test": 152,
+"sayfalar": [
+332,
+333
+],
+"bant": "Belirli \u0130ntegral ile Alan Hesab\u0131",
+"konu": "MAT-ARO23AM-B13-K05",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23AM-T153",
+"test": 153,
+"sayfalar": [
+334,
+335,
+336
+],
+"bant": "Belirli \u0130ntegral ile Alan Hesab\u0131",
+"konu": "MAT-ARO23AM-B13-K05",
+"bolum": "MAT-ARO23AM-B13",
+"soru_sayisi": 10
+}
+]
+}
