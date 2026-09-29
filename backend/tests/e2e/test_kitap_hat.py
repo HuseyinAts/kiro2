@@ -53,6 +53,7 @@ PROFILLER = [
     "akt25pr",
     "apo19mt",
     "apo19fz",
+    "apo19km",
 ]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 
@@ -120,6 +121,9 @@ def test_anahtar_toplamlari(k: Kitap) -> None:
 
 
 def test_ab_farki_durur(k: Kitap) -> None:
+    if k.ham_okumalar["okuma_b"] is None:
+        pytest.skip("tek okuma (APO19KM sonrasi): ikinci kanal glif, A != B yok")
+
     def f(h: dict) -> None:
         c = h["okuma_b"]["testler"][0]["hucreler"][0]
         c[1] = "A" if c[1] != "A" else "B"
@@ -130,6 +134,8 @@ def test_ab_farki_durur(k: Kitap) -> None:
 def test_numara_boslugu_ve_harf_disi_durur(k: Kitap) -> None:
     def f(h: dict) -> None:
         for o in ("okuma_a", "okuma_b"):
+            if h[o] is None:  # tek okuma
+                continue
             h[o]["testler"][1]["hucreler"][1][0] = 9
             h[o]["testler"][2]["hucreler"][0][1] = "F"
 
@@ -185,11 +191,19 @@ def test_harita_hamdan_birebir_turer(k: Kitap) -> None:
 
 def test_bant_farki_durur(k: Kitap) -> None:
     h = copy.deepcopy(k.ham_okumalar)
-    h["okuma_b"]["testler"][0]["konu"] = "BASKA KONU"
-    with pytest.raises(ValueError, match="bant A != B"):
-        ha.harita_uret(k.p, h, k.capa_taramasi, k.cevap_anahtari)
+    if h["okuma_b"] is not None:
+        h["okuma_b"]["testler"][0]["konu"] = "BASKA KONU"
+        with pytest.raises(ValueError, match="bant A != B"):
+            ha.harita_uret(k.p, h, k.capa_taramasi, k.cevap_anahtari)
     for o in ("okuma_a", "okuma_b"):
+        if h[o] is None:  # tek okuma: bant yine konu / bolum kapisindan gecer
+            continue
         h[o]["testler"][0]["konu"] = "BASKA KONU"
+    if getattr(k.p, "BANT_BOLUM_KAPISI", False):
+        # Bant unite (bolum) adi tasir (APO19KM): bolum kapisi durdurur.
+        with pytest.raises(ValueError, match="bolum"):
+            ha.harita_uret(k.p, h, k.capa_taramasi, k.cevap_anahtari)
+        return
     if not getattr(k.p, "BANT_KONU_KAPISI", True):
         # Bant konu adi tasimiyor ('PEKISTIRME TESTI'): konu yalniz sayfa
         # araligindan; bant adi degisince harita degismez.

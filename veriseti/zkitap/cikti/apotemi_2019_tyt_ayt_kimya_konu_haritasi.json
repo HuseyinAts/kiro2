@@ -1,0 +1,3295 @@
+{
+"kaynak": "2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s7-9): 19 unite, 116 konu basligi (sayfa no basili, dosya = basili + 1; 10. unitede baslangic test iceriginden); konu icindekiler sayfa araligindan, test bandindaki unite adi bolum adiyla kapidan gecer",
+"bolumler": [
+{
+"kod": "KIM-APO19KM-B01",
+"no": 1,
+"ad": "1. \u00dcN\u0130TE K\u0130MYA B\u0130L\u0130M\u0130"
+},
+{
+"kod": "KIM-APO19KM-B02",
+"no": 2,
+"ad": "2. \u00dcN\u0130TE ATOM VE YAPISI"
+},
+{
+"kod": "KIM-APO19KM-B03",
+"no": 3,
+"ad": "3. \u00dcN\u0130TE PER\u0130YOD\u0130K S\u0130STEM"
+},
+{
+"kod": "KIM-APO19KM-B04",
+"no": 4,
+"ad": "4. \u00dcN\u0130TE K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER"
+},
+{
+"kod": "KIM-APO19KM-B05",
+"no": 5,
+"ad": "5. \u00dcN\u0130TE B\u0130LE\u015e\u0130KLER"
+},
+{
+"kod": "KIM-APO19KM-B06",
+"no": 6,
+"ad": "6. \u00dcN\u0130TE K\u0130MYASAL TEPK\u0130MELER"
+},
+{
+"kod": "KIM-APO19KM-B07",
+"no": 7,
+"ad": "7. \u00dcN\u0130TE DO\u011eA VE K\u0130MYA"
+},
+{
+"kod": "KIM-APO19KM-B08",
+"no": 8,
+"ad": "8. \u00dcN\u0130TE K\u0130MYA HER YERDE"
+},
+{
+"kod": "KIM-APO19KM-B09",
+"no": 9,
+"ad": "9. \u00dcN\u0130TE K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR"
+},
+{
+"kod": "KIM-APO19KM-B10",
+"no": 10,
+"ad": "10. \u00dcN\u0130TE MADDEN\u0130N HALLER\u0130"
+},
+{
+"kod": "KIM-APO19KM-B11",
+"no": 11,
+"ad": "11. \u00dcN\u0130TE KARI\u015eIMLAR"
+},
+{
+"kod": "KIM-APO19KM-B12",
+"no": 12,
+"ad": "12. \u00dcN\u0130TE K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130"
+},
+{
+"kod": "KIM-APO19KM-B13",
+"no": 13,
+"ad": "13. \u00dcN\u0130TE TEPK\u0130MELERDE HIZ"
+},
+{
+"kod": "KIM-APO19KM-B14",
+"no": 14,
+"ad": "14. \u00dcN\u0130TE TEPK\u0130MELERDE DENGE"
+},
+{
+"kod": "KIM-APO19KM-B15",
+"no": 15,
+"ad": "15. \u00dcN\u0130TE SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T \u2013 BAZ DENGES\u0130 / \u00c7\u00d6Z\u00dcNME-\u00c7\u00d6KELME DENGELER\u0130"
+},
+{
+"kod": "KIM-APO19KM-B16",
+"no": 16,
+"ad": "16. \u00dcN\u0130TE K\u0130MYA VE ELEKTR\u0130K"
+},
+{
+"kod": "KIM-APO19KM-B17",
+"no": 17,
+"ad": "17. \u00dcN\u0130TE KARBON K\u0130MYASINA G\u0130R\u0130\u015e"
+},
+{
+"kod": "KIM-APO19KM-B18",
+"no": 18,
+"ad": "18. \u00dcN\u0130TE ORGAN\u0130K B\u0130LE\u015e\u0130KLER"
+},
+{
+"kod": "KIM-APO19KM-B19",
+"no": 19,
+"ad": "19. \u00dcN\u0130TE ENERJ\u0130 KAYNAKLARI VE B\u0130L\u0130MSEL GEL\u0130\u015eMELER"
+}
+],
+"konular": [
+{
+"kod": "KIM-APO19KM-B01-K01",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Kimya Nedir?, Kimya Ne \u0130\u015fe Yarar?",
+"icindekiler_adi": "Kimya Nedir?, Kimya Ne \u0130\u015fe Yarar?",
+"sayfalar": [
+12,
+13
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K02",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Kimyan\u0131n Sembolik Dili, G\u00fcvenli\u011fimiz Ve Kimya",
+"icindekiler_adi": "Kimyan\u0131n Sembolik Dili, G\u00fcvenli\u011fimiz Ve Kimya",
+"sayfalar": [
+14,
+15
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K03",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Madde Ve \u00d6zellikleri",
+"icindekiler_adi": "Madde Ve \u00d6zellikleri",
+"sayfalar": [
+16,
+17
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K04",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Maddenin Ortak Ve Ay\u0131rt Edici \u00d6zellikleri",
+"icindekiler_adi": "Maddenin Ortak Ve Ay\u0131rt Edici \u00d6zellikleri",
+"sayfalar": [
+18,
+21
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K05",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Maddenin Halleri, Is\u0131 Ve Hal De\u011fi\u015fimi",
+"icindekiler_adi": "Maddenin Halleri, Is\u0131 Ve Hal De\u011fi\u015fimi",
+"sayfalar": [
+22,
+23
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K06",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Element, Bile\u015fik Ve Kar\u0131\u015f\u0131m",
+"icindekiler_adi": "Element, Bile\u015fik Ve Kar\u0131\u015f\u0131m",
+"sayfalar": [
+24,
+25
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K07",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Bile\u015fiklerin Adland\u0131r\u0131lmas\u0131",
+"icindekiler_adi": "Bile\u015fiklerin Adland\u0131r\u0131lmas\u0131",
+"sayfalar": [
+26,
+27
+]
+},
+{
+"kod": "KIM-APO19KM-B01-K08",
+"bolum": "KIM-APO19KM-B01",
+"ad": "Kimya Bilimi (Karma Test)",
+"icindekiler_adi": "Kimya Bilimi (Karma Test)",
+"sayfalar": [
+28,
+31
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K01",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atom Modelleri",
+"icindekiler_adi": "Atom Modelleri",
+"sayfalar": [
+32,
+33
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K02",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atom Modelleri, Atom Spektrumlar\u0131",
+"icindekiler_adi": "Atom Modelleri, Atom Spektrumlar\u0131",
+"sayfalar": [
+34,
+35
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K03",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atom Modelleri, Atom Alt\u0131 Taneciklerin Ke\u015ffi",
+"icindekiler_adi": "Atom Modelleri, Atom Alt\u0131 Taneciklerin Ke\u015ffi",
+"sayfalar": [
+36,
+37
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K04",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atomdaki Temel Tanecikler",
+"icindekiler_adi": "Atomdaki Temel Tanecikler",
+"sayfalar": [
+38,
+41
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K05",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atom \u0130le \u0130lgili Terimler",
+"icindekiler_adi": "Atom \u0130le \u0130lgili Terimler",
+"sayfalar": [
+42,
+45
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K06",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Bohr Atom Modeli, Atom Spektrumlar\u0131",
+"icindekiler_adi": "Bohr Atom Modeli, Atom Spektrumlar\u0131",
+"sayfalar": [
+46,
+47
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K07",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atomun Kuantum Modeli",
+"icindekiler_adi": "Atomun Kuantum Modeli",
+"sayfalar": [
+48,
+51
+]
+},
+{
+"kod": "KIM-APO19KM-B02-K08",
+"bolum": "KIM-APO19KM-B02",
+"ad": "Atom Ve Yap\u0131s\u0131",
+"icindekiler_adi": "Atom Ve Yap\u0131s\u0131",
+"sayfalar": [
+52,
+53
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K01",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik Sistemin Tarih\u00e7esi, \u00d6zellikleri, Periyodik Sistemde Yer Bulma",
+"icindekiler_adi": "Periyodik Sistemin Tarih\u00e7esi, \u00d6zellikleri, Periyodik Sistemde Yer Bulma",
+"sayfalar": [
+54,
+55
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K02",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik Sistemin Genel \u00d6zellikleri",
+"icindekiler_adi": "Periyodik Sistemin Genel \u00d6zellikleri",
+"sayfalar": [
+56,
+57
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K03",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik Sistemin Genel \u00d6zellikleri, Periyodik Sistemde Yer Bulma",
+"icindekiler_adi": "Periyodik Sistemin Genel \u00d6zellikleri, Periyodik Sistemde Yer Bulma",
+"sayfalar": [
+58,
+59
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K04",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik \u00d6zellikler",
+"icindekiler_adi": "Periyodik \u00d6zellikler",
+"sayfalar": [
+60,
+61
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K05",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik Sistemde Baz\u0131 Gruplar Ve \u00d6zellikleri",
+"icindekiler_adi": "Periyodik Sistemde Baz\u0131 Gruplar Ve \u00d6zellikleri",
+"sayfalar": [
+62,
+65
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K06",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik Sistem (Karma Test)",
+"icindekiler_adi": "Periyodik Sistem (Karma Test)",
+"sayfalar": [
+66,
+67
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K07",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik \u00d6zellikler (Karma Test)",
+"icindekiler_adi": "Periyodik \u00d6zellikler (Karma Test)",
+"sayfalar": [
+68,
+71
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K08",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Elementleri Tan\u0131yal\u0131m",
+"icindekiler_adi": "Elementleri Tan\u0131yal\u0131m",
+"sayfalar": [
+72,
+73
+]
+},
+{
+"kod": "KIM-APO19KM-B03-K09",
+"bolum": "KIM-APO19KM-B03",
+"ad": "Periyodik Sistem (Karma Test)",
+"icindekiler_adi": "Periyodik Sistem (Karma Test)",
+"sayfalar": [
+74,
+77
+]
+},
+{
+"kod": "KIM-APO19KM-B04-K01",
+"bolum": "KIM-APO19KM-B04",
+"ad": "Kimyasal T\u00fcrlerin S\u0131n\u0131fland\u0131r\u0131lmas\u0131, Lewis Yap\u0131lar\u0131, G\u00fc\u00e7l\u00fc Etkile\u015fimler",
+"icindekiler_adi": "Kimyasal T\u00fcrlerin S\u0131n\u0131fland\u0131r\u0131lmas\u0131, Lewis Yap\u0131lar\u0131, G\u00fc\u00e7l\u00fc Etkile\u015fimler",
+"sayfalar": [
+78,
+79
+]
+},
+{
+"kod": "KIM-APO19KM-B04-K02",
+"bolum": "KIM-APO19KM-B04",
+"ad": "G\u00fc\u00e7l\u00fc Etkile\u015fimler",
+"icindekiler_adi": "G\u00fc\u00e7l\u00fc Etkile\u015fimler",
+"sayfalar": [
+80,
+83
+]
+},
+{
+"kod": "KIM-APO19KM-B04-K03",
+"bolum": "KIM-APO19KM-B04",
+"ad": "Zay\u0131f Etkile\u015fimler",
+"icindekiler_adi": "Zay\u0131f Etkile\u015fimler",
+"sayfalar": [
+84,
+85
+]
+},
+{
+"kod": "KIM-APO19KM-B04-K04",
+"bolum": "KIM-APO19KM-B04",
+"ad": "Kimyasal T\u00fcrler Aras\u0131 Etkile\u015fimler (Karma Test)",
+"icindekiler_adi": "Kimyasal T\u00fcrler Aras\u0131 Etkile\u015fimler (Karma Test)",
+"sayfalar": [
+86,
+91
+]
+},
+{
+"kod": "KIM-APO19KM-B05-K01",
+"bolum": "KIM-APO19KM-B05",
+"ad": "Bile\u015fiklerin Adland\u0131r\u0131lmas\u0131, Bile\u015fik Form\u00fclleri",
+"icindekiler_adi": "Bile\u015fiklerin Adland\u0131r\u0131lmas\u0131, Bile\u015fik Form\u00fclleri",
+"sayfalar": [
+92,
+93
+]
+},
+{
+"kod": "KIM-APO19KM-B05-K02",
+"bolum": "KIM-APO19KM-B05",
+"ad": "Form\u00fcl T\u00fcrleri, Form\u00fcl Yazma, De\u011ferlik Bulma",
+"icindekiler_adi": "Form\u00fcl T\u00fcrleri, Form\u00fcl Yazma, De\u011ferlik Bulma",
+"sayfalar": [
+94,
+95
+]
+},
+{
+"kod": "KIM-APO19KM-B05-K03",
+"bolum": "KIM-APO19KM-B05",
+"ad": "Asitler Ve Bazlar",
+"icindekiler_adi": "Asitler Ve Bazlar",
+"sayfalar": [
+96,
+97
+]
+},
+{
+"kod": "KIM-APO19KM-B05-K04",
+"bolum": "KIM-APO19KM-B05",
+"ad": "Yayg\u0131n Asitler Ve Bazlar",
+"icindekiler_adi": "Yayg\u0131n Asitler Ve Bazlar",
+"sayfalar": [
+98,
+99
+]
+},
+{
+"kod": "KIM-APO19KM-B05-K05",
+"bolum": "KIM-APO19KM-B05",
+"ad": "Tuzlar, Yayg\u0131n Tuzlar",
+"icindekiler_adi": "Tuzlar, Yayg\u0131n Tuzlar",
+"sayfalar": [
+100,
+101
+]
+},
+{
+"kod": "KIM-APO19KM-B05-K06",
+"bolum": "KIM-APO19KM-B05",
+"ad": "Bile\u015fikler (Karma Test)",
+"icindekiler_adi": "Bile\u015fikler (Karma Test)",
+"sayfalar": [
+102,
+103
+]
+},
+{
+"kod": "KIM-APO19KM-B06-K01",
+"bolum": "KIM-APO19KM-B06",
+"ad": "Kimyasal Tepkimelerin \u00d6zellikleri, Denkle\u015ftirme",
+"icindekiler_adi": "Kimyasal Tepkimelerin \u00d6zellikleri, Denkle\u015ftirme",
+"sayfalar": [
+104,
+105
+]
+},
+{
+"kod": "KIM-APO19KM-B06-K02",
+"bolum": "KIM-APO19KM-B06",
+"ad": "Tepkime T\u00fcrleri",
+"icindekiler_adi": "Tepkime T\u00fcrleri",
+"sayfalar": [
+106,
+109
+]
+},
+{
+"kod": "KIM-APO19KM-B06-K03",
+"bolum": "KIM-APO19KM-B06",
+"ad": "Kimyasal Tepkimeler (Karma Test)",
+"icindekiler_adi": "Kimyasal Tepkimeler (Karma Test)",
+"sayfalar": [
+110,
+113
+]
+},
+{
+"kod": "KIM-APO19KM-B07-K01",
+"bolum": "KIM-APO19KM-B07",
+"ad": "Su Ve Hayat",
+"icindekiler_adi": "Su Ve Hayat",
+"sayfalar": [
+114,
+119
+]
+},
+{
+"kod": "KIM-APO19KM-B07-K02",
+"bolum": "KIM-APO19KM-B07",
+"ad": "\u00c7evre Kimyas\u0131",
+"icindekiler_adi": "\u00c7evre Kimyas\u0131",
+"sayfalar": [
+120,
+123
+]
+},
+{
+"kod": "KIM-APO19KM-B08-K01",
+"bolum": "KIM-APO19KM-B08",
+"ad": "Yayg\u0131n G\u00fcnl\u00fck Hayat Kimyasallar\u0131",
+"icindekiler_adi": "Yayg\u0131n G\u00fcnl\u00fck Hayat Kimyasallar\u0131",
+"sayfalar": [
+124,
+131
+]
+},
+{
+"kod": "KIM-APO19KM-B08-K02",
+"bolum": "KIM-APO19KM-B08",
+"ad": "G\u0131dalar",
+"icindekiler_adi": "G\u0131dalar",
+"sayfalar": [
+132,
+133
+]
+},
+{
+"kod": "KIM-APO19KM-B08-K03",
+"bolum": "KIM-APO19KM-B08",
+"ad": "Kimya Her Yerde (Karma Test)",
+"icindekiler_adi": "Kimya Her Yerde (Karma Test)",
+"sayfalar": [
+134,
+135
+]
+},
+{
+"kod": "KIM-APO19KM-B09-K01",
+"bolum": "KIM-APO19KM-B09",
+"ad": "Kimyan\u0131n Temel Kanunlar\u0131",
+"icindekiler_adi": "Kimyan\u0131n Temel Kanunlar\u0131",
+"sayfalar": [
+136,
+141
+]
+},
+{
+"kod": "KIM-APO19KM-B09-K02",
+"bolum": "KIM-APO19KM-B09",
+"ad": "Mol Kavram\u0131",
+"icindekiler_adi": "Mol Kavram\u0131",
+"sayfalar": [
+142,
+145
+]
+},
+{
+"kod": "KIM-APO19KM-B09-K03",
+"bolum": "KIM-APO19KM-B09",
+"ad": "Denklemli Miktar Ge\u00e7i\u015fleri, Art\u0131k Madde Problemleri",
+"icindekiler_adi": "Denklemli Miktar Ge\u00e7i\u015fleri, Art\u0131k Madde Problemleri",
+"sayfalar": [
+146,
+147
+]
+},
+{
+"kod": "KIM-APO19KM-B09-K04",
+"bolum": "KIM-APO19KM-B09",
+"ad": "Form\u00fcl Bulma Problemleri, Verim Problemleri",
+"icindekiler_adi": "Form\u00fcl Bulma Problemleri, Verim Problemleri",
+"sayfalar": [
+148,
+149
+]
+},
+{
+"kod": "KIM-APO19KM-B09-K05",
+"bolum": "KIM-APO19KM-B09",
+"ad": "Kimyan\u0131n Temel Kanunlar\u0131 Ve Kimyasal Hesaplamalar (Karma Test)",
+"icindekiler_adi": "Kimyan\u0131n Temel Kanunlar\u0131 Ve Kimyasal Hesaplamalar (Karma Test)",
+"sayfalar": [
+150,
+155
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K01",
+"bolum": "KIM-APO19KM-B10",
+"ad": "Gazlar\u0131n \u00d6zellikleri, Gazlar\u0131n Nitelenmesinde Kullan\u0131lan Nicelikler",
+"icindekiler_adi": "Gazlar\u0131n \u00d6zellikleri, Gazlar\u0131n Nitelenmesinde Kullan\u0131lan Nicelikler",
+"sayfalar": [
+156,
+157
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K02",
+"bolum": "KIM-APO19KM-B10",
+"ad": "Gaz Kanunlar\u0131",
+"icindekiler_adi": "Gaz Kanunlar\u0131",
+"sayfalar": [
+158,
+159
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K03",
+"bolum": "KIM-APO19KM-B10",
+"ad": "\u0130deal Gaz Denklemi, Genel Gaz Denklemi",
+"icindekiler_adi": "\u0130deal Gaz Denklemi, Genel Gaz Denklemi",
+"sayfalar": [
+160,
+161
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K04",
+"bolum": "KIM-APO19KM-B10",
+"ad": "K\u0131smi Bas\u0131n\u00e7, Gazlar\u0131n Kar\u0131\u015ft\u0131r\u0131lmas\u0131",
+"icindekiler_adi": "K\u0131smi Bas\u0131n\u00e7, Gazlar\u0131n Kar\u0131\u015ft\u0131r\u0131lmas\u0131",
+"sayfalar": [
+162,
+163
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K05",
+"bolum": "KIM-APO19KM-B10",
+"ad": "Gazlarda Yo\u011funluk, Gazlarda Kinetik, Ger\u00e7ek Gazlar",
+"icindekiler_adi": "Gazlarda Yo\u011funluk, Gazlarda Kinetik, Ger\u00e7ek Gazlar",
+"sayfalar": [
+164,
+165
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K06",
+"bolum": "KIM-APO19KM-B10",
+"ad": "S\u0131v\u0131lar",
+"icindekiler_adi": "S\u0131v\u0131lar",
+"sayfalar": [
+166,
+167
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K07",
+"bolum": "KIM-APO19KM-B10",
+"ad": "S\u0131v\u0131 Buhar Bas\u0131nc\u0131, Su \u00dcst\u00fcnde Gaz Toplanmas\u0131",
+"icindekiler_adi": "S\u0131v\u0131 Buhar Bas\u0131nc\u0131, Su \u00dcst\u00fcnde Gaz Toplanmas\u0131",
+"sayfalar": [
+168,
+169
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K08",
+"bolum": "KIM-APO19KM-B10",
+"ad": "Kat\u0131lar",
+"icindekiler_adi": "Kat\u0131lar",
+"sayfalar": [
+170,
+171
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K09",
+"bolum": "KIM-APO19KM-B10",
+"ad": "Hal De\u011fi\u015fimleri",
+"icindekiler_adi": "Hal De\u011fi\u015fimleri",
+"sayfalar": [
+172,
+175
+]
+},
+{
+"kod": "KIM-APO19KM-B10-K10",
+"bolum": "KIM-APO19KM-B10",
+"ad": "Maddenin Halleri (Karma Test)",
+"icindekiler_adi": "Maddenin Halleri (Karma Test)",
+"sayfalar": [
+176,
+179
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K01",
+"bolum": "KIM-APO19KM-B11",
+"ad": "Kar\u0131\u015f\u0131m T\u00fcrleri, \u00c7\u00f6z\u00fcnme S\u00fcreci",
+"icindekiler_adi": "Kar\u0131\u015f\u0131m T\u00fcrleri, \u00c7\u00f6z\u00fcnme S\u00fcreci",
+"sayfalar": [
+180,
+181
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K02",
+"bolum": "KIM-APO19KM-B11",
+"ad": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fck, \u00c7\u00f6z\u00fcn\u00fcrl\u00fc\u011fe Etki Eden Fakt\u00f6rler",
+"icindekiler_adi": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fck, \u00c7\u00f6z\u00fcn\u00fcrl\u00fc\u011fe Etki Eden Fakt\u00f6rler",
+"sayfalar": [
+182,
+183
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K03",
+"bolum": "KIM-APO19KM-B11",
+"ad": "Deri\u015fim Birimleri",
+"icindekiler_adi": "Deri\u015fim Birimleri",
+"sayfalar": [
+184,
+187
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K04",
+"bolum": "KIM-APO19KM-B11",
+"ad": "Deri\u015fme Seyrelme, \u00c7\u00f6zeltilerin Kar\u0131\u015ft\u0131r\u0131lmas\u0131",
+"icindekiler_adi": "Deri\u015fme Seyrelme, \u00c7\u00f6zeltilerin Kar\u0131\u015ft\u0131r\u0131lmas\u0131",
+"sayfalar": [
+188,
+189
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K05",
+"bolum": "KIM-APO19KM-B11",
+"ad": "Koligatif \u00d6zellikler",
+"icindekiler_adi": "Koligatif \u00d6zellikler",
+"sayfalar": [
+190,
+193
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K06",
+"bolum": "KIM-APO19KM-B11",
+"ad": "Kar\u0131\u015f\u0131mlar\u0131n Ayr\u0131lmas\u0131",
+"icindekiler_adi": "Kar\u0131\u015f\u0131mlar\u0131n Ayr\u0131lmas\u0131",
+"sayfalar": [
+194,
+197
+]
+},
+{
+"kod": "KIM-APO19KM-B11-K07",
+"bolum": "KIM-APO19KM-B11",
+"ad": "Kar\u0131\u015f\u0131mlar (Karma Test)",
+"icindekiler_adi": "Kar\u0131\u015f\u0131mlar (Karma Test)",
+"sayfalar": [
+198,
+201
+]
+},
+{
+"kod": "KIM-APO19KM-B12-K01",
+"bolum": "KIM-APO19KM-B12",
+"ad": "Tepkimelerde Is\u0131 De\u011fi\u015fimi",
+"icindekiler_adi": "Tepkimelerde Is\u0131 De\u011fi\u015fimi",
+"sayfalar": [
+202,
+203
+]
+},
+{
+"kod": "KIM-APO19KM-B12-K02",
+"bolum": "KIM-APO19KM-B12",
+"ad": "Olu\u015fum Entalpisi",
+"icindekiler_adi": "Olu\u015fum Entalpisi",
+"sayfalar": [
+204,
+205
+]
+},
+{
+"kod": "KIM-APO19KM-B12-K03",
+"bolum": "KIM-APO19KM-B12",
+"ad": "Ba\u011f Enerjileri",
+"icindekiler_adi": "Ba\u011f Enerjileri",
+"sayfalar": [
+206,
+207
+]
+},
+{
+"kod": "KIM-APO19KM-B12-K04",
+"bolum": "KIM-APO19KM-B12",
+"ad": "Tepkime Is\u0131lar\u0131n\u0131n Toplanabilirli\u011fi",
+"icindekiler_adi": "Tepkime Is\u0131lar\u0131n\u0131n Toplanabilirli\u011fi",
+"sayfalar": [
+208,
+209
+]
+},
+{
+"kod": "KIM-APO19KM-B12-K05",
+"bolum": "KIM-APO19KM-B12",
+"ad": "Kimyasal Tepkimelerde Enerji (Karma Test)",
+"icindekiler_adi": "Kimyasal Tepkimelerde Enerji (Karma Test)",
+"sayfalar": [
+210,
+215
+]
+},
+{
+"kod": "KIM-APO19KM-B13-K01",
+"bolum": "KIM-APO19KM-B13",
+"ad": "Tepkimelerde H\u0131z",
+"icindekiler_adi": "Tepkimelerde H\u0131z",
+"sayfalar": [
+216,
+217
+]
+},
+{
+"kod": "KIM-APO19KM-B13-K02",
+"bolum": "KIM-APO19KM-B13",
+"ad": "Tepkime H\u0131z\u0131n\u0131 Etkileyen Fakt\u00f6rler",
+"icindekiler_adi": "Tepkime H\u0131z\u0131n\u0131 Etkileyen Fakt\u00f6rler",
+"sayfalar": [
+218,
+219
+]
+},
+{
+"kod": "KIM-APO19KM-B13-K03",
+"bolum": "KIM-APO19KM-B13",
+"ad": "Tepkime H\u0131z\u0131n\u0131 Etkileyen Fakt\u00f6rler, Kademeli Tepkimeler",
+"icindekiler_adi": "Tepkime H\u0131z\u0131n\u0131 Etkileyen Fakt\u00f6rler, Kademeli Tepkimeler",
+"sayfalar": [
+220,
+221
+]
+},
+{
+"kod": "KIM-APO19KM-B13-K04",
+"bolum": "KIM-APO19KM-B13",
+"ad": "Tepkime H\u0131zlar\u0131",
+"icindekiler_adi": "Tepkime H\u0131zlar\u0131",
+"sayfalar": [
+222,
+223
+]
+},
+{
+"kod": "KIM-APO19KM-B13-K05",
+"bolum": "KIM-APO19KM-B13",
+"ad": "Tepkimelerde H\u0131z (Karma Test)",
+"icindekiler_adi": "Tepkimelerde H\u0131z (Karma Test)",
+"sayfalar": [
+224,
+229
+]
+},
+{
+"kod": "KIM-APO19KM-B14-K01",
+"bolum": "KIM-APO19KM-B14",
+"ad": "Kimyasal Denge, Basit Denge Hesaplamalar\u0131",
+"icindekiler_adi": "Kimyasal Denge, Basit Denge Hesaplamalar\u0131",
+"sayfalar": [
+230,
+231
+]
+},
+{
+"kod": "KIM-APO19KM-B14-K02",
+"bolum": "KIM-APO19KM-B14",
+"ad": "Denge Hesaplamalar\u0131",
+"icindekiler_adi": "Denge Hesaplamalar\u0131",
+"sayfalar": [
+232,
+233
+]
+},
+{
+"kod": "KIM-APO19KM-B14-K03",
+"bolum": "KIM-APO19KM-B14",
+"ad": "Dengeyi Etkileyen Fakt\u00f6rler",
+"icindekiler_adi": "Dengeyi Etkileyen Fakt\u00f6rler",
+"sayfalar": [
+234,
+235
+]
+},
+{
+"kod": "KIM-APO19KM-B14-K04",
+"bolum": "KIM-APO19KM-B14",
+"ad": "Dengeyi Etkileyen Fakt\u00f6rler, Denge Kesri",
+"icindekiler_adi": "Dengeyi Etkileyen Fakt\u00f6rler, Denge Kesri",
+"sayfalar": [
+236,
+237
+]
+},
+{
+"kod": "KIM-APO19KM-B14-K05",
+"bolum": "KIM-APO19KM-B14",
+"ad": "Tepkimelerde Denge (Karma Test)",
+"icindekiler_adi": "Tepkimelerde Denge (Karma Test)",
+"sayfalar": [
+238,
+243
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K01",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Asit-Baz Tan\u0131mlar\u0131, Suyun Otoiyonizasyonu, Ph-Poh Kavramlar\u0131",
+"icindekiler_adi": "Asit-Baz Tan\u0131mlar\u0131, Suyun Otoiyonizasyonu, Ph-Poh Kavramlar\u0131",
+"sayfalar": [
+244,
+245
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K02",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Kuvvetli Asit-Bazlarda Ph-Poh Hesaplamalar\u0131, N\u00f6tralle\u015fme Tepkimeleri",
+"icindekiler_adi": "Kuvvetli Asit-Bazlarda Ph-Poh Hesaplamalar\u0131, N\u00f6tralle\u015fme Tepkimeleri",
+"sayfalar": [
+246,
+247
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K03",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Zay\u0131f Asit-Bazlarda Ph-Poh Hesaplamalar\u0131",
+"icindekiler_adi": "Zay\u0131f Asit-Bazlarda Ph-Poh Hesaplamalar\u0131",
+"sayfalar": [
+248,
+249
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K04",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Tampon \u00c7\u00f6zeltiler, Hidroliz, Titrasyon",
+"icindekiler_adi": "Tampon \u00c7\u00f6zeltiler, Hidroliz, Titrasyon",
+"sayfalar": [
+250,
+251
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K05",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Sulu \u00c7\u00f6zeltilerde Asit-Baz Dengesi",
+"icindekiler_adi": "Sulu \u00c7\u00f6zeltilerde Asit-Baz Dengesi",
+"sayfalar": [
+252,
+257
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K06",
+"bolum": "KIM-APO19KM-B15",
+"ad": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fck, \u00c7\u00f6z\u00fcn\u00fcrl\u00fck \u00c7arp\u0131m\u0131",
+"icindekiler_adi": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fck, \u00c7\u00f6z\u00fcn\u00fcrl\u00fck \u00c7arp\u0131m\u0131",
+"sayfalar": [
+258,
+259
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K07",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Doymu\u015fluk, Doymam\u0131\u015fl\u0131k, \u00c7\u00f6kelme",
+"icindekiler_adi": "Doymu\u015fluk, Doymam\u0131\u015fl\u0131k, \u00c7\u00f6kelme",
+"sayfalar": [
+260,
+261
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K08",
+"bolum": "KIM-APO19KM-B15",
+"ad": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fc\u011fe Etki Eden Fakt\u00f6rler",
+"icindekiler_adi": "\u00c7\u00f6z\u00fcn\u00fcrl\u00fc\u011fe Etki Eden Fakt\u00f6rler",
+"sayfalar": [
+262,
+263
+]
+},
+{
+"kod": "KIM-APO19KM-B15-K09",
+"bolum": "KIM-APO19KM-B15",
+"ad": "Sulu \u00c7\u00f6zelti Dengeleri (Karma Test)",
+"icindekiler_adi": "Sulu \u00c7\u00f6zelti Dengeleri (Karma Test)",
+"sayfalar": [
+264,
+271
+]
+},
+{
+"kod": "KIM-APO19KM-B16-K01",
+"bolum": "KIM-APO19KM-B16",
+"ad": "Redoks Tepkimelerinin Denkle\u015ftirilmesi",
+"icindekiler_adi": "Redoks Tepkimelerinin Denkle\u015ftirilmesi",
+"sayfalar": [
+272,
+273
+]
+},
+{
+"kod": "KIM-APO19KM-B16-K02",
+"bolum": "KIM-APO19KM-B16",
+"ad": "Yar\u0131 Pil Potansiyelleri, Elektrokimyasal Piller",
+"icindekiler_adi": "Yar\u0131 Pil Potansiyelleri, Elektrokimyasal Piller",
+"sayfalar": [
+274,
+275
+]
+},
+{
+"kod": "KIM-APO19KM-B16-K03",
+"bolum": "KIM-APO19KM-B16",
+"ad": "Pil Gerilimini Etkileyen Fakt\u00f6rler, G\u00fcnl\u00fck Hayatta Kullan\u0131lan Piller",
+"icindekiler_adi": "Pil Gerilimini Etkileyen Fakt\u00f6rler, G\u00fcnl\u00fck Hayatta Kullan\u0131lan Piller",
+"sayfalar": [
+276,
+277
+]
+},
+{
+"kod": "KIM-APO19KM-B16-K04",
+"bolum": "KIM-APO19KM-B16",
+"ad": "Elektroliz, Korozyon",
+"icindekiler_adi": "Elektroliz, Korozyon",
+"sayfalar": [
+278,
+279
+]
+},
+{
+"kod": "KIM-APO19KM-B16-K05",
+"bolum": "KIM-APO19KM-B16",
+"ad": "Kimya Ve Elektrik",
+"icindekiler_adi": "Kimya Ve Elektrik",
+"sayfalar": [
+280,
+285
+]
+},
+{
+"kod": "KIM-APO19KM-B17-K01",
+"bolum": "KIM-APO19KM-B17",
+"ad": "Karbon Kimyas\u0131na Giri\u015f (Anorganik Ve Organik Bile\u015fikler, Karbon Elementi, Do\u011fada Karbon)",
+"icindekiler_adi": "Karbon Kimyas\u0131na Giri\u015f (Anorganik Ve Organik Bile\u015fikler, Karbon Elementi, Do\u011fada Karbon)",
+"sayfalar": [
+286,
+287
+]
+},
+{
+"kod": "KIM-APO19KM-B17-K02",
+"bolum": "KIM-APO19KM-B17",
+"ad": "Anorganik Ve Organik Bile\u015fikler, Karbon Elementi, Do\u011fada Karbon",
+"icindekiler_adi": "Anorganik Ve Organik Bile\u015fikler, Karbon Elementi, Do\u011fada Karbon",
+"sayfalar": [
+288,
+289
+]
+},
+{
+"kod": "KIM-APO19KM-B17-K03",
+"bolum": "KIM-APO19KM-B17",
+"ad": "Lewis Ve Yap\u0131 Form\u00fclleri",
+"icindekiler_adi": "Lewis Ve Yap\u0131 Form\u00fclleri",
+"sayfalar": [
+290,
+291
+]
+},
+{
+"kod": "KIM-APO19KM-B17-K04",
+"bolum": "KIM-APO19KM-B17",
+"ad": "Hibritle\u015fme-Molek\u00fcl Geometrileri",
+"icindekiler_adi": "Hibritle\u015fme-Molek\u00fcl Geometrileri",
+"sayfalar": [
+292,
+293
+]
+},
+{
+"kod": "KIM-APO19KM-B17-K05",
+"bolum": "KIM-APO19KM-B17",
+"ad": "Karbon Kimyas\u0131na Giri\u015f (Karma Test)",
+"icindekiler_adi": "Karbon Kimyas\u0131na Giri\u015f (Karma Test)",
+"sayfalar": [
+294,
+299
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K01",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Alkanlar (Parafinler)",
+"icindekiler_adi": "Alkanlar (Parafinler)",
+"sayfalar": [
+300,
+301
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K02",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Alkenler (Olefinler)",
+"icindekiler_adi": "Alkenler (Olefinler)",
+"sayfalar": [
+302,
+303
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K03",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Alkinler (Asetilen S\u0131n\u0131f\u0131 Bile\u015fikler)",
+"icindekiler_adi": "Alkinler (Asetilen S\u0131n\u0131f\u0131 Bile\u015fikler)",
+"sayfalar": [
+304,
+305
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K04",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Alkan, Alken, Alkin",
+"icindekiler_adi": "Alkan, Alken, Alkin",
+"sayfalar": [
+306,
+307
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K05",
+"bolum": "KIM-APO19KM-B18",
+"ad": "\u0130zomerlik",
+"icindekiler_adi": "\u0130zomerlik",
+"sayfalar": [
+308,
+309
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K06",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Aromatik Bile\u015fikler (Arenler)",
+"icindekiler_adi": "Aromatik Bile\u015fikler (Arenler)",
+"sayfalar": [
+310,
+313
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K07",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Alkoller",
+"icindekiler_adi": "Alkoller",
+"sayfalar": [
+314,
+315
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K08",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Eterler",
+"icindekiler_adi": "Eterler",
+"sayfalar": [
+316,
+317
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K09",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Alkol - Eter",
+"icindekiler_adi": "Alkol - Eter",
+"sayfalar": [
+318,
+319
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K10",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Karbonil Bile\u015fikleri (Aldehitler Ve Ketonlar)",
+"icindekiler_adi": "Karbonil Bile\u015fikleri (Aldehitler Ve Ketonlar)",
+"sayfalar": [
+320,
+323
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K11",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Karboksilik Asitler",
+"icindekiler_adi": "Karboksilik Asitler",
+"sayfalar": [
+324,
+327
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K12",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Esterler",
+"icindekiler_adi": "Esterler",
+"sayfalar": [
+328,
+329
+]
+},
+{
+"kod": "KIM-APO19KM-B18-K13",
+"bolum": "KIM-APO19KM-B18",
+"ad": "Organik Bile\u015fikler",
+"icindekiler_adi": "Organik Bile\u015fikler",
+"sayfalar": [
+330,
+339
+]
+},
+{
+"kod": "KIM-APO19KM-B19-K01",
+"bolum": "KIM-APO19KM-B19",
+"ad": "Fosil Yak\u0131tlar",
+"icindekiler_adi": "Fosil Yak\u0131tlar",
+"sayfalar": [
+340,
+343
+]
+},
+{
+"kod": "KIM-APO19KM-B19-K02",
+"bolum": "KIM-APO19KM-B19",
+"ad": "Alternatif Enerji Kaynaklar\u0131",
+"icindekiler_adi": "Alternatif Enerji Kaynaklar\u0131",
+"sayfalar": [
+344,
+345
+]
+},
+{
+"kod": "KIM-APO19KM-B19-K03",
+"bolum": "KIM-APO19KM-B19",
+"ad": "S\u00fcrd\u00fcr\u00fclebilirlik - Nanoteknoloji",
+"icindekiler_adi": "S\u00fcrd\u00fcr\u00fclebilirlik - Nanoteknoloji",
+"sayfalar": [
+346,
+347
+]
+},
+{
+"kod": "KIM-APO19KM-B19-K04",
+"bolum": "KIM-APO19KM-B19",
+"ad": "Enerji Kaynaklar\u0131 Ve Bilimsel Geli\u015fmeler (Karma Test)",
+"icindekiler_adi": "Enerji Kaynaklar\u0131 Ve Bilimsel Geli\u015fmeler (Karma Test)",
+"sayfalar": [
+348,
+349
+]
+}
+],
+"test_sayisi": 169,
+"testler": [
+{
+"birim": "APO19KM-T001",
+"test": 1,
+"sayfalar": [
+12,
+13
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K01",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T002",
+"test": 2,
+"sayfalar": [
+14,
+15
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K02",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T003",
+"test": 3,
+"sayfalar": [
+16,
+17
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K03",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T004",
+"test": 4,
+"sayfalar": [
+18,
+19
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K04",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T005",
+"test": 5,
+"sayfalar": [
+20,
+21
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K04",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T006",
+"test": 6,
+"sayfalar": [
+22,
+23
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K05",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T007",
+"test": 7,
+"sayfalar": [
+24,
+25
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K06",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T008",
+"test": 8,
+"sayfalar": [
+26,
+27
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K07",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T009",
+"test": 9,
+"sayfalar": [
+28,
+29
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K08",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T010",
+"test": 10,
+"sayfalar": [
+30,
+31
+],
+"bant": "K\u0130MYA B\u0130L\u0130M\u0130",
+"konu": "KIM-APO19KM-B01-K08",
+"bolum": "KIM-APO19KM-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T011",
+"test": 11,
+"sayfalar": [
+32,
+33
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K01",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T012",
+"test": 12,
+"sayfalar": [
+34,
+35
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K02",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T013",
+"test": 13,
+"sayfalar": [
+36,
+37
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K03",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T014",
+"test": 14,
+"sayfalar": [
+38,
+39
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K04",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T015",
+"test": 15,
+"sayfalar": [
+40,
+41
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K04",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T016",
+"test": 16,
+"sayfalar": [
+42,
+43
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K05",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T017",
+"test": 17,
+"sayfalar": [
+44,
+45
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K05",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T018",
+"test": 18,
+"sayfalar": [
+46,
+47
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K06",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T019",
+"test": 19,
+"sayfalar": [
+48,
+49
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K07",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T020",
+"test": 20,
+"sayfalar": [
+50,
+51
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K07",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T021",
+"test": 21,
+"sayfalar": [
+52,
+53
+],
+"bant": "ATOM ve YAPISI",
+"konu": "KIM-APO19KM-B02-K08",
+"bolum": "KIM-APO19KM-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T022",
+"test": 22,
+"sayfalar": [
+54,
+55
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K01",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T023",
+"test": 23,
+"sayfalar": [
+56,
+57
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K02",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T024",
+"test": 24,
+"sayfalar": [
+58,
+59
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K03",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T025",
+"test": 25,
+"sayfalar": [
+60,
+61
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K04",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T026",
+"test": 26,
+"sayfalar": [
+62,
+63
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM\u0130DE BAZI GRUPLAR VE \u00d6ZEL\u0130L\u0130KLER\u0130",
+"konu": "KIM-APO19KM-B03-K05",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T027",
+"test": 27,
+"sayfalar": [
+64,
+65
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K05",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T028",
+"test": 28,
+"sayfalar": [
+66,
+67
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K06",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T029",
+"test": 29,
+"sayfalar": [
+68,
+69
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K07",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T030",
+"test": 30,
+"sayfalar": [
+70,
+71
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K07",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T031",
+"test": 31,
+"sayfalar": [
+72,
+73
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K08",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T032",
+"test": 32,
+"sayfalar": [
+74,
+75
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K09",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T033",
+"test": 33,
+"sayfalar": [
+76,
+77
+],
+"bant": "PER\u0130YOD\u0130K S\u0130STEM",
+"konu": "KIM-APO19KM-B03-K09",
+"bolum": "KIM-APO19KM-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T034",
+"test": 34,
+"sayfalar": [
+78,
+79
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K01",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T035",
+"test": 35,
+"sayfalar": [
+80,
+81
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K02",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T036",
+"test": 36,
+"sayfalar": [
+82,
+83
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K02",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T037",
+"test": 37,
+"sayfalar": [
+84,
+85
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K03",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T038",
+"test": 38,
+"sayfalar": [
+86,
+87
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K04",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T039",
+"test": 39,
+"sayfalar": [
+88,
+89
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K04",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T040",
+"test": 40,
+"sayfalar": [
+90,
+91
+],
+"bant": "K\u0130MYASAL T\u00dcRLER ARASI ETK\u0130LE\u015e\u0130MLER",
+"konu": "KIM-APO19KM-B04-K04",
+"bolum": "KIM-APO19KM-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T041",
+"test": 41,
+"sayfalar": [
+92,
+93
+],
+"bant": "B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B05-K01",
+"bolum": "KIM-APO19KM-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T042",
+"test": 42,
+"sayfalar": [
+94,
+95
+],
+"bant": "B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B05-K02",
+"bolum": "KIM-APO19KM-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T043",
+"test": 43,
+"sayfalar": [
+96,
+97
+],
+"bant": "B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B05-K03",
+"bolum": "KIM-APO19KM-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T044",
+"test": 44,
+"sayfalar": [
+98,
+99
+],
+"bant": "B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B05-K04",
+"bolum": "KIM-APO19KM-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T045",
+"test": 45,
+"sayfalar": [
+100,
+101
+],
+"bant": "B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B05-K05",
+"bolum": "KIM-APO19KM-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T046",
+"test": 46,
+"sayfalar": [
+102,
+103
+],
+"bant": "B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B05-K06",
+"bolum": "KIM-APO19KM-B05",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T047",
+"test": 47,
+"sayfalar": [
+104,
+105
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELER",
+"konu": "KIM-APO19KM-B06-K01",
+"bolum": "KIM-APO19KM-B06",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T048",
+"test": 48,
+"sayfalar": [
+106,
+107
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELER",
+"konu": "KIM-APO19KM-B06-K02",
+"bolum": "KIM-APO19KM-B06",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T049",
+"test": 49,
+"sayfalar": [
+108,
+109
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELER",
+"konu": "KIM-APO19KM-B06-K02",
+"bolum": "KIM-APO19KM-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T050",
+"test": 50,
+"sayfalar": [
+110,
+111
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELER",
+"konu": "KIM-APO19KM-B06-K03",
+"bolum": "KIM-APO19KM-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T051",
+"test": 51,
+"sayfalar": [
+112,
+113
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELER",
+"konu": "KIM-APO19KM-B06-K03",
+"bolum": "KIM-APO19KM-B06",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T052",
+"test": 52,
+"sayfalar": [
+114,
+115
+],
+"bant": "DO\u011eA ve K\u0130MYA",
+"konu": "KIM-APO19KM-B07-K01",
+"bolum": "KIM-APO19KM-B07",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T053",
+"test": 53,
+"sayfalar": [
+116,
+117
+],
+"bant": "DO\u011eA ve K\u0130MYA",
+"konu": "KIM-APO19KM-B07-K01",
+"bolum": "KIM-APO19KM-B07",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T054",
+"test": 54,
+"sayfalar": [
+118,
+119
+],
+"bant": "DO\u011eA ve K\u0130MYA",
+"konu": "KIM-APO19KM-B07-K01",
+"bolum": "KIM-APO19KM-B07",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19KM-T055",
+"test": 55,
+"sayfalar": [
+120,
+121
+],
+"bant": "DO\u011eA ve K\u0130MYA",
+"konu": "KIM-APO19KM-B07-K02",
+"bolum": "KIM-APO19KM-B07",
+"soru_sayisi": 14
+},
+{
+"birim": "APO19KM-T056",
+"test": 56,
+"sayfalar": [
+122,
+123
+],
+"bant": "DO\u011eA ve K\u0130MYA",
+"konu": "KIM-APO19KM-B07-K02",
+"bolum": "KIM-APO19KM-B07",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19KM-T057",
+"test": 57,
+"sayfalar": [
+124,
+125
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-APO19KM-B08-K01",
+"bolum": "KIM-APO19KM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T058",
+"test": 58,
+"sayfalar": [
+126,
+127
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-APO19KM-B08-K01",
+"bolum": "KIM-APO19KM-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T059",
+"test": 59,
+"sayfalar": [
+128,
+129
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-APO19KM-B08-K01",
+"bolum": "KIM-APO19KM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T060",
+"test": 60,
+"sayfalar": [
+130,
+131
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-APO19KM-B08-K01",
+"bolum": "KIM-APO19KM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T061",
+"test": 61,
+"sayfalar": [
+132,
+133
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-APO19KM-B08-K02",
+"bolum": "KIM-APO19KM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T062",
+"test": 62,
+"sayfalar": [
+134,
+135
+],
+"bant": "K\u0130MYA HER YERDE",
+"konu": "KIM-APO19KM-B08-K03",
+"bolum": "KIM-APO19KM-B08",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T063",
+"test": 63,
+"sayfalar": [
+136,
+137
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K01",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T064",
+"test": 64,
+"sayfalar": [
+138,
+139
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K01",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T065",
+"test": 65,
+"sayfalar": [
+140,
+141
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K01",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T066",
+"test": 66,
+"sayfalar": [
+142,
+143
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K02",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T067",
+"test": 67,
+"sayfalar": [
+144,
+145
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K02",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T068",
+"test": 68,
+"sayfalar": [
+146,
+147
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K03",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T069",
+"test": 69,
+"sayfalar": [
+148,
+149
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K04",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T070",
+"test": 70,
+"sayfalar": [
+150,
+151
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K05",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T071",
+"test": 71,
+"sayfalar": [
+152,
+153
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K05",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T072",
+"test": 72,
+"sayfalar": [
+154,
+155
+],
+"bant": "K\u0130MYANIN TEMEL KANUNLARI VE K\u0130MYASAL HESAPLAMALAR",
+"konu": "KIM-APO19KM-B09-K05",
+"bolum": "KIM-APO19KM-B09",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T073",
+"test": 73,
+"sayfalar": [
+156,
+157
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K01",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T074",
+"test": 74,
+"sayfalar": [
+158,
+159
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K02",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T075",
+"test": 75,
+"sayfalar": [
+160,
+161
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K03",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T076",
+"test": 76,
+"sayfalar": [
+162,
+163
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K04",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T077",
+"test": 77,
+"sayfalar": [
+164,
+165
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K05",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T078",
+"test": 78,
+"sayfalar": [
+166,
+167
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K06",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T079",
+"test": 79,
+"sayfalar": [
+168,
+169
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K07",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19KM-T080",
+"test": 80,
+"sayfalar": [
+170,
+171
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K08",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T081",
+"test": 81,
+"sayfalar": [
+172,
+173
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K09",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19KM-T082",
+"test": 82,
+"sayfalar": [
+174,
+175
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K09",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T083",
+"test": 83,
+"sayfalar": [
+176,
+177
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K10",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T084",
+"test": 84,
+"sayfalar": [
+178,
+179
+],
+"bant": "MADDEN\u0130N HALLER\u0130",
+"konu": "KIM-APO19KM-B10-K10",
+"bolum": "KIM-APO19KM-B10",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T085",
+"test": 85,
+"sayfalar": [
+180,
+181
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K01",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T086",
+"test": 86,
+"sayfalar": [
+182,
+183
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K02",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T087",
+"test": 87,
+"sayfalar": [
+184,
+185
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K03",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T088",
+"test": 88,
+"sayfalar": [
+186,
+187
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K03",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T089",
+"test": 89,
+"sayfalar": [
+188,
+189
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K04",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T090",
+"test": 90,
+"sayfalar": [
+190,
+191
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K05",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T091",
+"test": 91,
+"sayfalar": [
+192,
+193
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K05",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T092",
+"test": 92,
+"sayfalar": [
+194,
+195
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K06",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T093",
+"test": 93,
+"sayfalar": [
+196,
+197
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K06",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19KM-T094",
+"test": 94,
+"sayfalar": [
+198,
+199
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K07",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T095",
+"test": 95,
+"sayfalar": [
+200,
+201
+],
+"bant": "KARI\u015eIMLAR",
+"konu": "KIM-APO19KM-B11-K07",
+"bolum": "KIM-APO19KM-B11",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T096",
+"test": 96,
+"sayfalar": [
+202,
+203
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K01",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T097",
+"test": 97,
+"sayfalar": [
+204,
+205
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K02",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T098",
+"test": 98,
+"sayfalar": [
+206,
+207
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K03",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T099",
+"test": 99,
+"sayfalar": [
+208,
+209
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K04",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T100",
+"test": 100,
+"sayfalar": [
+210,
+211
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K05",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T101",
+"test": 101,
+"sayfalar": [
+212,
+213
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K05",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T102",
+"test": 102,
+"sayfalar": [
+214,
+215
+],
+"bant": "K\u0130MYASAL TEPK\u0130MELERDE ENERJ\u0130",
+"konu": "KIM-APO19KM-B12-K05",
+"bolum": "KIM-APO19KM-B12",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T103",
+"test": 103,
+"sayfalar": [
+216,
+217
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K01",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T104",
+"test": 104,
+"sayfalar": [
+218,
+219
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K02",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T105",
+"test": 105,
+"sayfalar": [
+220,
+221
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K03",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T106",
+"test": 106,
+"sayfalar": [
+222,
+223
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K04",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T107",
+"test": 107,
+"sayfalar": [
+224,
+225
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K05",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19KM-T108",
+"test": 108,
+"sayfalar": [
+226,
+227
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K05",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T109",
+"test": 109,
+"sayfalar": [
+228,
+229
+],
+"bant": "TEPK\u0130ME HIZLARI",
+"konu": "KIM-APO19KM-B13-K05",
+"bolum": "KIM-APO19KM-B13",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T110",
+"test": 110,
+"sayfalar": [
+230,
+231
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K01",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T111",
+"test": 111,
+"sayfalar": [
+232,
+233
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K02",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T112",
+"test": 112,
+"sayfalar": [
+234,
+235
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K03",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T113",
+"test": 113,
+"sayfalar": [
+236,
+237
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K04",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19KM-T114",
+"test": 114,
+"sayfalar": [
+238,
+239
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K05",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T115",
+"test": 115,
+"sayfalar": [
+240,
+241
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K05",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T116",
+"test": 116,
+"sayfalar": [
+242,
+243
+],
+"bant": "TEPK\u0130MELERDE DENGE",
+"konu": "KIM-APO19KM-B14-K05",
+"bolum": "KIM-APO19KM-B14",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19KM-T117",
+"test": 117,
+"sayfalar": [
+244,
+245
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K01",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T118",
+"test": 118,
+"sayfalar": [
+246,
+247
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K02",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T119",
+"test": 119,
+"sayfalar": [
+248,
+249
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K03",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T120",
+"test": 120,
+"sayfalar": [
+250,
+251
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K04",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T121",
+"test": 121,
+"sayfalar": [
+252,
+253
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K05",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T122",
+"test": 122,
+"sayfalar": [
+254,
+255
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K05",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T123",
+"test": 123,
+"sayfalar": [
+256,
+257
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K05",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T124",
+"test": 124,
+"sayfalar": [
+258,
+259
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K06",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T125",
+"test": 125,
+"sayfalar": [
+260,
+261
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K07",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T126",
+"test": 126,
+"sayfalar": [
+262,
+263
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K08",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T127",
+"test": 127,
+"sayfalar": [
+264,
+265
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K09",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T128",
+"test": 128,
+"sayfalar": [
+266,
+267
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K09",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T129",
+"test": 129,
+"sayfalar": [
+268,
+269
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K09",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T130",
+"test": 130,
+"sayfalar": [
+270,
+271
+],
+"bant": "SULU \u00c7\u00d6ZELT\u0130LERDE AS\u0130T-BAZ DENGES\u0130 - \u00c7\u00d6Z\u00dcNME \u2013 \u00c7\u00d6KELME TEPK\u0130MELER\u0130",
+"konu": "KIM-APO19KM-B15-K09",
+"bolum": "KIM-APO19KM-B15",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T131",
+"test": 131,
+"sayfalar": [
+272,
+273
+],
+"bant": "K\u0130MYA ve ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K01",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T132",
+"test": 132,
+"sayfalar": [
+274,
+275
+],
+"bant": "K\u0130MYA ve ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K02",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T133",
+"test": 133,
+"sayfalar": [
+276,
+277
+],
+"bant": "K\u0130MYA ve ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K03",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T134",
+"test": 134,
+"sayfalar": [
+278,
+279
+],
+"bant": "K\u0130MYA ve ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K04",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T135",
+"test": 135,
+"sayfalar": [
+280,
+281
+],
+"bant": "K\u0130MYA ve ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K05",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T136",
+"test": 136,
+"sayfalar": [
+282,
+283
+],
+"bant": "K\u0130MYA VE ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K05",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T137",
+"test": 137,
+"sayfalar": [
+284,
+285
+],
+"bant": "K\u0130MYA VE ELEKTR\u0130K",
+"konu": "KIM-APO19KM-B16-K05",
+"bolum": "KIM-APO19KM-B16",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19KM-T138",
+"test": 138,
+"sayfalar": [
+286,
+287
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K01",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T139",
+"test": 139,
+"sayfalar": [
+288,
+289
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K02",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T140",
+"test": 140,
+"sayfalar": [
+290,
+291
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K03",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T141",
+"test": 141,
+"sayfalar": [
+292,
+293
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K04",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T142",
+"test": 142,
+"sayfalar": [
+294,
+295
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K05",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T143",
+"test": 143,
+"sayfalar": [
+296,
+297
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K05",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T144",
+"test": 144,
+"sayfalar": [
+298,
+299
+],
+"bant": "KARBON K\u0130MYASINA G\u0130R\u0130\u015e",
+"konu": "KIM-APO19KM-B17-K05",
+"bolum": "KIM-APO19KM-B17",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T145",
+"test": 145,
+"sayfalar": [
+300,
+301
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K01",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T146",
+"test": 146,
+"sayfalar": [
+302,
+303
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K02",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T147",
+"test": 147,
+"sayfalar": [
+304,
+305
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K03",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T148",
+"test": 148,
+"sayfalar": [
+306,
+307
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K04",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T149",
+"test": 149,
+"sayfalar": [
+308,
+309
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K05",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T150",
+"test": 150,
+"sayfalar": [
+310,
+311
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K06",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T151",
+"test": 151,
+"sayfalar": [
+312,
+313
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K06",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T152",
+"test": 152,
+"sayfalar": [
+314,
+315
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K07",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T153",
+"test": 153,
+"sayfalar": [
+316,
+317
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K08",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T154",
+"test": 154,
+"sayfalar": [
+318,
+319
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K09",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T155",
+"test": 155,
+"sayfalar": [
+320,
+321
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K10",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T156",
+"test": 156,
+"sayfalar": [
+322,
+323
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K10",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T157",
+"test": 157,
+"sayfalar": [
+324,
+325
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K11",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T158",
+"test": 158,
+"sayfalar": [
+326,
+327
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K11",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T159",
+"test": 159,
+"sayfalar": [
+328,
+329
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K12",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T160",
+"test": 160,
+"sayfalar": [
+330,
+331
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K13",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T161",
+"test": 161,
+"sayfalar": [
+332,
+333
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K13",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T162",
+"test": 162,
+"sayfalar": [
+334,
+335
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K13",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T163",
+"test": 163,
+"sayfalar": [
+336,
+337
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K13",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T164",
+"test": 164,
+"sayfalar": [
+338,
+339
+],
+"bant": "ORGAN\u0130K B\u0130LE\u015e\u0130KLER",
+"konu": "KIM-APO19KM-B18-K13",
+"bolum": "KIM-APO19KM-B18",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19KM-T165",
+"test": 165,
+"sayfalar": [
+340,
+341
+],
+"bant": "ENERJ\u0130 KAYNAKLARI VE B\u0130L\u0130MSEL GEL\u0130\u015eMELER",
+"konu": "KIM-APO19KM-B19-K01",
+"bolum": "KIM-APO19KM-B19",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T166",
+"test": 166,
+"sayfalar": [
+342,
+343
+],
+"bant": "ENERJ\u0130 KAYNAKLARI VE B\u0130L\u0130MSEL GEL\u0130\u015eMELER",
+"konu": "KIM-APO19KM-B19-K01",
+"bolum": "KIM-APO19KM-B19",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T167",
+"test": 167,
+"sayfalar": [
+344,
+345
+],
+"bant": "ENERJ\u0130 KAYNAKLARI VE B\u0130L\u0130MSEL GEL\u0130\u015eMELER",
+"konu": "KIM-APO19KM-B19-K02",
+"bolum": "KIM-APO19KM-B19",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19KM-T168",
+"test": 168,
+"sayfalar": [
+346,
+347
+],
+"bant": "ENERJ\u0130 KAYNAKLARI VE B\u0130L\u0130MSEL GEL\u0130\u015eMELER",
+"konu": "KIM-APO19KM-B19-K03",
+"bolum": "KIM-APO19KM-B19",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19KM-T169",
+"test": 169,
+"sayfalar": [
+348,
+349
+],
+"bant": "ENERJ\u0130 KAYNAKLARI VE B\u0130L\u0130MSEL GEL\u0130\u015eMELER",
+"konu": "KIM-APO19KM-B19-K04",
+"bolum": "KIM-APO19KM-B19",
+"soru_sayisi": 12
+}
+]
+}

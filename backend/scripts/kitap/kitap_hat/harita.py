@@ -28,10 +28,28 @@ from scripts.kitap.kitap_hat import ortak
 
 
 def norm(s: str) -> str:
-    s = s.replace("\u0131", "i").replace("\u0130", "I")
+    # Kesme tipi (U+2019 / ASCII) bant okumasinda ayirt edilemez (APO19FZ, ARO23AF).
+    s = s.replace("\u0131", "i").replace("\u0130", "I").replace("\u2019", "'")
     s = unicodedata.normalize("NFKD", s)
     s = "".join(c for c in s if not unicodedata.combining(c)).upper()
     return " ".join(s.replace(" - ", "-").replace(" -", "-").replace("- ", "-").split())
+
+
+def bant_esleri(p: ModuleType, bant: str) -> tuple[str, ...]:
+    """BANT_ESLER {bant: hedef | (hedef, ...)}: bantta icindekiler adindan farkli
+    basilan ad. Deger demet olabilir: ust baslik birden cok konuyu tasir
+    (ARO23AF 'ELEKTRIK' bandi iki konu). Konu yine sayfa araligindan."""
+    v = p.BANT_ESLER.get(bant)
+    if v is None:
+        return ()
+    return (v,) if isinstance(v, str) else tuple(v)
+
+
+def bolum_bant_adi(p: ModuleType, bolum_kodu: str) -> str:
+    """'KIM-X-B03' -> BOLUMLER[3] adinin '<N>. <ETIKET> ' onekinden sonrasi."""
+    ad: str = dict(p.BOLUMLER)[int(bolum_kodu.rsplit("-B", 1)[1])]
+    parca = ad.split(" ", 2)
+    return parca[2] if len(parca) == 3 and parca[0].rstrip(".").isdigit() else ad
 
 
 def konular(p: ModuleType) -> list[dict[str, Any]]:
@@ -88,9 +106,15 @@ def harita_uret(
         if (
             getattr(p, "BANT_KONU_KAPISI", True)
             and bant != hedef
-            and p.BANT_ESLER.get(bant) != hedef
+            and hedef not in bant_esleri(p, bant)
         ):
             hata.append(f"test {n}: bant {bant!r} != konu {hedef!r}")
+        # BANT_BOLUM_KAPISI: bant konu degil bolum (unite) adi tasir; bolum adi
+        # BOLUMLER'deki '<N>. UNITE <AD>' in <AD> kismi.
+        if getattr(p, "BANT_BOLUM_KAPISI", False):
+            bad = norm(bolum_bant_adi(p, k["bolum"]))
+            if bant != bad and bad not in bant_esleri(p, bant):
+                hata.append(f"test {n}: bant {bant!r} != bolum {bad!r}")
         birim = ortak.birim_kodu(p, n)
         testler.append(
             {

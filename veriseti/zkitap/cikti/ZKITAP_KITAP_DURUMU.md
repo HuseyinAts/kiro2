@@ -117,17 +117,17 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 2019-2020 APOTEMI TYT Matematik Soru Bankasi | **ISLENDI** | `2019-2020-Apotemi-Tyt Matematik Soru Bankasi` | 324 | - | modern 1382 soru (`MAT_APOTEMI_2019_TYT_YONTEM.md`, ortak kitap_hat): 1382 yeni satir / aktif 1223 (0118 toplu beta onayi; 159 soru gorunen `[??]` -> beta disi); eski hat 9: modern karsiligi olan 6 satir 0117 ile pasif, 3 aktif | - | 283 test sayfasi, 122 test (11 bolum, 'Deneme - N'); anahtar kitap sonu tablo (yeni ANAHTAR_HARICI kancasi); dosya 176 kopya, Deneme 23 sorulari 5-8 yakalanmamis (YAKALANMAYAN_SORU); gorunmeyen eksi/arti isaretleri `[??]` + kaynak_kusuru; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 | 2019-2020 Apotemi Modern Fizik Konu Anlatimli SB | ISLENMEDI | `Apotemi 2019 2020 Modern Fizik Konu Anlatimli Soru Bankasi` | 256 | - | yok | 2022-2023 Apotemi Modern Fizik %48 (gozle) | - | AILE: yalniz biri islenmeli (2022-2023 Apotemi Modern Fizik %48 gozle) |
 | 2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi | **ISLENDI** | `Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankasi` | 448 | - | modern 2180 soru (`FIZ_APOTEMI_2019_TYT_AYT_YONTEM.md`, ortak kitap_hat): 2180 yeni satir / aktif 2132 (0121 toplu beta onayi; 46 soru gorunen `[??]`, 2 sekil ikizi beta disi); eski hat yok | - | 432 test sayfasi, 216 test (4 bolum, 36 konu); serit cift sayfa altliginda; sinav etiketi konu duzeyinde (TYT 1211 / AYT 969, yeni SINAV_KONU); yeni SERIT_ALTLIKTA / KENAR_GOZ_ONAY kancalari; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
-| 2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi | ISLENMEDI | `Apotemi Tyt Ayt Kimya 2019-2020` | 352 | - | eski hat 345 / aktif 345 | - | - | ISLENEBILIR |
-| 2020-2021 APOTEMI Modern Kimya | ISLENMEDI | `Apotemi 2020 2021 Modern Kimya` | 300 | - | eski hat 59 / aktif 59 | - | - | ISLENEBILIR |
-| 2020-2021 APOTEMI TYT-AYT Geometri Maestro Soru Bankasi | ISLENMEDI | `2020-2021-Apotemi-Tyt Ayt-Geometri Maestro Soru Bankasi` | 320 | - | yok | - | - | ISLENEBILIR |
-| 2021-2022 Apotemi Limit ve Sureklilik | ISLENMEDI | `2021-2022-Apotemi-Limit` | 128 | - | yok | - | - | ISLENEBILIR |
-| 2021-2022 Apotemi Problemler | ISLENMEDI | `2021-2022-Apotemi-Problemler` | 240 | - | yok | - | - | ISLENEBILIR |
-| 2021-2022 Apotemi Trigonometri | ISLENMEDI | `2021-2022-Apotemi-Trigonometri` | 224 | - | yok | - | - | ISLENEBILIR |
-| 2022 Apotemi Integral | ISLENMEDI | `2022-Apotemi-integral` | 224 | - | yok | - | - | ISLENEBILIR |
-| 2022 Apotemi Turev | ISLENMEDI | `2022-Apotemi-Turev` | 224 | - | yok | - | - | ISLENEBILIR |
-| 2022-2023 APOTEMI Fonksiyonlar | ISLENMEDI | `2022-2023-Apotemi-Fonksiyonlar` | 144 | - | yok | - | - | ISLENEBILIR |
+| 2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi | **ISLENDI** | `Apotemi Tyt Ayt Kimya 2019-2020` | 352 | - | modern 1838 soru (`KIM_APOTEMI_2019_TYT_AYT_YONTEM.md`, ortak kitap_hat): 1838 yeni satir / aktif 1803 (0124 toplu beta onayi; 35 soru gorunen `[??]` beta disi); eski hat 345 satirdan modern karsiligi olan 236 pasif (0123) | - | 338 test sayfasi, 169 test (19 unite, 116 konu); serit testin son sayfasi altliginda; tek anahtar okumasi + glif (1838/1839 uyum, 1 goz teyidi); metin grup hatti (is akisi, bariyersiz) | TAMAM (modern ithal) |
+| 2020-2021 APOTEMI Modern Kimya | ISLENMEDI | `Apotemi 2020 2021 Modern Kimya` | 300 | - | eski hat 59 / aktif 59 | - | - | SAHIP KARARI: icindekiler 'CEVAP ANAHTARLARI 301' ama set 300 sayfada biter (anahtar yakalanmamis; yeniden ekran goruntusu gerekir) -- kesif 29 Eyl 2026 |
+| 2020-2021 APOTEMI TYT-AYT Geometri Maestro Soru Bankasi | ISLENMEDI | `2020-2021-Apotemi-Tyt Ayt-Geometri Maestro Soru Bankasi` | 320 | - | yok | - | - | SAHIP KARARI: anahtar tablosu dosya 320'de yalniz Bolum 1-12 (dosya 7-166); Bolum 13-21'in anahtar sayfasi sette yok -- yari kitap islenebilir -- kesif 29 Eyl 2026 |
+| 2021-2022 Apotemi Limit ve Sureklilik | ISLENMEDI | `2021-2022-Apotemi-Limit` | 128 | - | yok | - | - | SAHIP KARARI: basili cevap anahtari YOK (ADIM serisi; icindekilerde anahtar bolumu yok, test sayfalarinda serit yok, cozumler video) -- kesif 29 Eyl 2026 |
+| 2021-2022 Apotemi Problemler | ISLENMEDI | `2021-2022-Apotemi-Problemler` | 240 | - | yok | - | - | SAHIP KARARI: basili cevap anahtari YOK (ADIM serisi; icindekilerde anahtar bolumu yok, test sayfalarinda serit yok, cozumler video) -- kesif 29 Eyl 2026 |
+| 2021-2022 Apotemi Trigonometri | ISLENMEDI | `2021-2022-Apotemi-Trigonometri` | 224 | - | yok | - | - | SAHIP KARARI: basili cevap anahtari YOK (ADIM serisi; icindekilerde anahtar bolumu yok, test sayfalarinda serit yok, cozumler video) -- kesif 29 Eyl 2026 |
+| 2022 Apotemi Integral | ISLENMEDI | `2022-Apotemi-integral` | 224 | - | yok | - | - | SAHIP KARARI: basili cevap anahtari YOK (ADIM serisi; icindekilerde anahtar bolumu yok, test sayfalarinda serit yok, cozumler video) -- kesif 29 Eyl 2026 |
+| 2022 Apotemi Turev | ISLENMEDI | `2022-Apotemi-Turev` | 224 | - | yok | - | - | SAHIP KARARI: basili cevap anahtari YOK (ADIM serisi; icindekilerde anahtar bolumu yok, test sayfalarinda serit yok, cozumler video) -- kesif 29 Eyl 2026 |
+| 2022-2023 APOTEMI Fonksiyonlar | ISLENMEDI | `2022-2023-Apotemi-Fonksiyonlar` | 144 | - | yok | - | - | SAHIP KARARI: basili cevap anahtari YOK (ADIM serisi; icindekilerde anahtar bolumu yok, test sayfalarinda serit yok, cozumler video) -- kesif 29 Eyl 2026 |
 | 2022-2023 Apotemi Modern Fizik | ISLENMEDI | `Apotemi 2022 2023 Modern Fizik` | 256 | - | yok | 2019-2020 Apotemi Modern Fizik Konu Anlatimli SB %48 (gozle) | - | AILE: yalniz biri islenmeli (2019-2020 Apotemi Modern Fizik Konu Anlatimli SB %48 gozle) |
-| APOTEMI 2024 AYT Kimya Soru Bankasi | ISLENMEDI | `Apotemi 2024 Ayt Kimya Soru Bankasi` | 268 | - | eski hat 262 / aktif 262 | - | - | ISLENEBILIR |
+| APOTEMI 2024 AYT Kimya Soru Bankasi | ISLENMEDI | `Apotemi 2024 Ayt Kimya Soru Bankasi` | 268 | - | eski hat 262 / aktif 262 | - | - | SAHIP KARARI: anahtar sayfasi (dosya 267) bos gri; cevaplar her soruda basili pembe isaret (ogretmen baskisi: sik solunda harf + daire) -- yeni kanal gerekir -- kesif 29 Eyl 2026 |
 | Apotemi 2024 AYT Edebiyat Konu Ozeti | ISLENMEDI | `Apotemi Ayt Edebiyat Konu Ozeti` | 208 | - | yok | - | - | ISLENEBILIR |
 
 ### AROMAT (13 kitap)
@@ -491,7 +491,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 73 | `Apotemi 2022 2023 Modern Fizik` | 256 | 2022-2023 Apotemi Modern Fizik |  | ISLENMEDI |
 | 74 | `Apotemi 2024 Ayt Kimya Soru Bankasi` | 268 | APOTEMI 2024 AYT Kimya Soru Bankasi |  | ISLENMEDI |
 | 75 | `Apotemi Ayt Edebiyat Konu Ozeti` | 208 | Apotemi 2024 AYT Edebiyat Konu Ozeti |  | ISLENMEDI |
-| 76 | `Apotemi Tyt Ayt Kimya 2019-2020` | 352 | 2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi |  | ISLENMEDI |
+| 76 | `Apotemi Tyt Ayt Kimya 2019-2020` | 352 | 2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi |  | **ISLENDI** |
 | 77 | `Aramot Tyt 2023 Fen Bilimleri Model Sorular` | 80 | AROMAT 2023 TYT Fen Bilimleri Model Sorular |  | ISLENMEDI |
 | 78 | `Aromat -2023-2024-Matematik Soru Bankasi` | 400 | 2023-2024 AROMAT Matematik Soru Bankasi |  | ISLENMEDI |
 | 79 | `Aromat 2024 Ayt Fen Bilimleri` | 82 | Aromat 2024 AYT Fen Bilimleri Net-30 |  | ISLENMEDI |

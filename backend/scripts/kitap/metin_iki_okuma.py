@@ -32,6 +32,11 @@ PROTOKOL (dar bogaz cozumu)
    ((a+b)/c vs a+b/c) ASLA esitlenmez; yalniz tek atomu saran parantez
    ve ciftlenmis parantez esitlenir.
 3. `hakem-hazirla --hakem N` farklari N hakeme boler; hepsi tek dagitimda.
+   Grup hatti (is akisi, bariyersiz): bir grubun iki okumasi biter bitmez
+   `grup-fark --grup NN` o grubun farklarini `hakem_gNN.json`a yazar ve o
+   grubun hakemi hemen baslar; kitabin geri kalani okunmaya devam eder.
+   Sonda `karsilastir` tum kitabi yeniden karsilastirir (fark.json) ve
+   `duzeltme-yaz --hakem 0` hakem_gNN kararlarini bu kapsamla denetler.
 4. `duzeltme-yaz` kararlari `duzeltme.json`a ve
    `<cikti>_ikinci_okuma.json` 'sonuc'una yazar.
 
@@ -323,6 +328,44 @@ def hakem_hazirla(k: Kitap, n: int) -> None:
     print("kirpim", len(list(k.kirpim.glob("*.png"))))
 
 
+def grup_fark(k: Kitap, nn: str) -> int:
+    """Tek grubun iki okumasini karsilastirir, hakem girdisini hakem_gNN.json'a yazar.
+
+    Is akisi hatti (okuma bitti -> hemen hakem) icin: grup okumalari biter bitmez
+    o grubun hakemi baslar, tum kitabin okunmasi beklenmez. Sonda `karsilastir`
+    tum kitapta ayni farklari yeniden uretir; duzeltme-yaz kapsami ona gore
+    denetler."""
+    ad = f"grup_{nn}.json"
+    A = {
+        s["dosya"]: s for s in json.loads((k.parca1 / ad).read_text("utf-8"))["sorular"]
+    }
+    B = {
+        s["dosya"]: s for s in json.loads((k.parca2 / ad).read_text("utf-8"))["sorular"]
+    }
+    liste = (k.parca1 / f"liste_{nn}.txt").read_text("ascii").split()
+    beklenen = {Path(x).stem for x in liste}
+    if set(A) != set(B) or set(A) != beklenen:
+        raise SystemExit(
+            f"grup {nn} kapsami: {len(A)} / {len(B)} / liste {len(beklenen)}"
+        )
+    out = [
+        {
+            "dosya": a,
+            "farklar": f,
+            "okuma_1": {x: A[a].get(x) for x in ALANLAR},
+            "okuma_2": {x: B[a].get(x) for x in ALANLAR},
+        }
+        for a in sorted(A)
+        if (f := soru_farklari(A[a], B[a]))
+    ]
+    k.hakem.mkdir(exist_ok=True)
+    (k.hakem / f"hakem_g{nn}.json").write_text(
+        json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8"
+    )
+    print("grup", nn, "soru", len(A), "farkli", len(out))
+    return len(out)
+
+
 def _uygula(s: dict[str, Any], ad: str, ek: dict[str, Any]) -> None:
     for eski, yeni in ek.get("govde_degistir", {}).get(ad, []):
         if eski not in s["govde"]:
@@ -356,8 +399,14 @@ def _karar_dogrula(x: dict[str, Any], farklar: list[dict[str, Any]]) -> None:
 def duzeltme_yaz(k: Kitap, n: int) -> None:
     A = oku(k.parca1)
     karar: list[dict[str, Any]] = []
-    for i in range(1, n + 1):
-        karar += json.loads((k.hakem / f"hakem_{i}_karar.json").read_text("utf-8"))
+    # n > 0: hakem-hazirla bolumu (hakem_1..n); n == 0: grup hatti (hakem_gNN).
+    yollar = (
+        [k.hakem / f"hakem_{i}_karar.json" for i in range(1, n + 1)]
+        if n
+        else sorted(k.hakem.glob("hakem_g*_karar.json"))
+    )
+    for y in yollar:
+        karar += json.loads(y.read_text("utf-8"))
     fark = json.loads((k.ak / "fark.json").read_text("utf-8"))
     if sorted(x["dosya"] for x in karar) != sorted(fark):
         raise SystemExit("hakem kapsami != fark")
@@ -465,8 +514,12 @@ def main() -> None:
     alt.add_parser("karsilastir")
     hh = alt.add_parser("hakem-hazirla")
     hh.add_argument("--hakem", type=int, default=8)
+    g = alt.add_parser("grup-fark")
+    g.add_argument("--grup", required=True, help="iki haneli grup no (01, 02 ...)")
     d = alt.add_parser("duzeltme-yaz")
-    d.add_argument("--hakem", type=int, default=8)
+    d.add_argument(
+        "--hakem", type=int, default=8, help="0: grup hatti (hakem_gNN_karar.json)"
+    )
     a = p.parse_args()
     k = Kitap(a.onek, a.cikti, a.veraf, a.beklenen, a.kitap)
     if a.komut == "hazirla":
@@ -475,6 +528,8 @@ def main() -> None:
         karsilastir(k)
     elif a.komut == "hakem-hazirla":
         hakem_hazirla(k, a.hakem)
+    elif a.komut == "grup-fark":
+        grup_fark(k, a.grup)
     else:
         duzeltme_yaz(k, a.hakem)
 
