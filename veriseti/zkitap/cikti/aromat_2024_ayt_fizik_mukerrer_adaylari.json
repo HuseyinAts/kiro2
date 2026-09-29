@@ -1,0 +1,121 @@
+{
+ "kaynak": "2023-2024 AROMAT AYT Fizik Soru Bankasi",
+ "arac": "backend/scripts/kitap/kitap_hat/mukerrer.py",
+ "olcu": "govde normal bicimi karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: FIZIK (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar.",
+ "soru_sayisi": 1167,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "ARO23AF-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T007_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T013_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T019_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T025_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T032_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T038_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T044_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T050_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T056_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T063_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T068_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T075_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T081_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T088_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T094_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T101_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T107_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T113_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T120_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T126_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T131_12",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T138_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "ARO23AF-T144_01",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 0.578,
+ "db_satiri": 8987,
+ "db_en_yuksek_3gram": 0.657,
+ "aday_sayisi": 0,
+ "guclu_aday_sayisi": 0,
+ "adaylar": [],
+ "cevap_farki": [],
+ "cevap_farki_sik_sirasi": 0,
+ "cevap_farki_icerik": [],
+ "eski_hat_ozet": {},
+ "eski_hat": [],
+ "farkli_soru_hash": 1167
+}

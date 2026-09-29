@@ -134,7 +134,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 
 | kitap (sekme basligi) | durum | klasor | png | ayni icerik | DB | ortaklik | kalite | oneri |
 |---|---|---|---|---|---|---|---|---|
-| 2023-2024 AROMAT AYT Fizik Soru Bankasi | ISLENMEDI | `Aromat Ayt 2023 2024 Fizik Soru Bankasi` | 320 | - | yok | - | - | ISLENEBILIR |
+| 2023-2024 AROMAT AYT Fizik Soru Bankasi | **ISLENDI** | `Aromat Ayt 2023 2024 Fizik Soru Bankasi` | 320 | - | modern 1167 soru (`FIZ_AROMAT_2024_AYT_YONTEM.md`, ortak kitap_hat): 1167 yeni satir / aktif 1141 (0127 toplu beta onayi; 26 soru gorunen `[??]` beta disi); eski hat yok | - | 302 test sayfasi, 145 test (12 bolum, 22 konu; iki gecisli test siniri); sayfa basina sag alt anahtar kutusu; iki okuma A == B + glif 1167/1167 (yeni seri harf bolutu) | TAMAM (modern ithal) |
 | 2023-2024 AROMAT Fizik Soru Bankasi | ISLENMEDI | `Aromat Tyt 2023 2024 Fizik Soru Bankasi` | 320 | - | yok | - | - | ISLENEBILIR |
 | 2023-2024 AROMAT Matematik Soru Bankasi | ISLENMEDI | `Aromat -2023-2024-Matematik Soru Bankasi` | 400 | - | eski hat 14 / aktif 14 | - | - | ISLENEBILIR |
 | 2023-2024 AROMAT Paragraf Soru Bankasi | ISLENMEDI | `Aromat Paragraf Soru Bankasi` | 304 | - | eski hat 6 / aktif 6 | - | - | ISLENEBILIR |
@@ -497,7 +497,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 79 | `Aromat 2024 Ayt Fen Bilimleri` | 82 | Aromat 2024 AYT Fen Bilimleri Net-30 |  | ISLENMEDI |
 | 80 | `Aromat 2024 Ayt Fen Bilimleri Model Sorular` | 83 | AROMAT 2024 AYT Fen Bilimleri Model Sorular |  | ISLENMEDI |
 | 81 | `Aromat 2024 Ayt Fen Bilimleri Net 30` | 82 | Aromat 2024 AYT Fen Bilimleri Net-30 |  | kopya -> `Aromat 2024 Ayt Fen Bilimleri` |
-| 82 | `Aromat Ayt 2023 2024 Fizik Soru Bankasi` | 320 | 2023-2024 AROMAT AYT Fizik Soru Bankasi |  | ISLENMEDI |
+| 82 | `Aromat Ayt 2023 2024 Fizik Soru Bankasi` | 320 | 2023-2024 AROMAT AYT Fizik Soru Bankasi |  | **ISLENDI** |
 | 83 | `Aromat Ayt 2024 Fen Bilimleri Model Sorular Net 30` | 82 | AROMAT 2024 AYT Fen Bilimleri Model Sorular |  | kopya -> `Aromat 2024 Ayt Fen Bilimleri Model Sorular` |
 | 84 | `Aromat Ayt 2024 Fen Bilimleri Net 30` | 7 | AROMAT 2024 AYT Fen Bilimleri Model Sorular |  | kopya -> `Aromat 2024 Ayt Fen Bilimleri Model Sorular` |
 | 85 | `Aromat Ayt Edebiyat` | 82 | Aromat 2024 AYT Edebiyat Net-30 |  | ISLENMEDI |
