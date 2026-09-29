@@ -375,7 +375,7 @@ def ham_yaz(
 
 
 def _ikinci_okuma(
-    ham: dict[str, Any], a: dict[int, list]
+    ham: dict[str, Any], a: dict[int, list], p: ModuleType | None = None
 ) -> tuple[dict[int, list], list[str]]:
     """Karsilastirilacak ikinci okuma ve tek-okuma kapisi.
 
@@ -385,16 +385,40 @@ def _ikinci_okuma(
     gozle onaylanmali (glif_etiket.png, `ham --etiket-goz`). Glif kapsami disindaki
     testler goz_c (5x gozle ikinci okuma) ile kapanir."""
     if ham["okuma_b"] is not None:
-        return {t["test"]: t["hucreler"] for t in ham["okuma_b"]["testler"]}, []
+        return {
+            t["test"]: baski_numara(p, t["test"], t["hucreler"]) if p else t["hucreler"]
+            for t in ham["okuma_b"]["testler"]
+        }, []
     if not ham["glif"].get("etiket_goz"):
         return a, ["tek okuma: glif etiket-sekil gozu (glif_etiket.png) onaylanmadi"]
     return a, []
 
 
+def baski_numara(p: ModuleType, test: int, hucreler: list) -> list:
+    """Seritte YANLIS basilmis hucre numarasi (profil ANAHTAR_NUMARA_BASKI
+    {(test, sira): basili}): okuma basildigi gibi kalir; sira numarasina cevrilir.
+    Basili deger okumayla uyusmazsa (bayat kayit) durur."""
+    duz = getattr(p, "ANAHTAR_NUMARA_BASKI", {})
+    out = []
+    for i, (basili, h) in enumerate(hucreler, 1):
+        no = basili
+        if (test, i) in duz:
+            if basili != duz[(test, i)]:
+                raise SystemExit(
+                    f"test {test} hucre {i}: basili {basili} != profil {duz[(test, i)]}"
+                )
+            no = i
+        out.append([no, h])
+    return out
+
+
 def dogrula(p: ModuleType, ham: dict[str, Any]) -> list[str]:
     hata = []
-    a = {t["test"]: t["hucreler"] for t in ham["okuma_a"]["testler"]}
-    b, tek_hata = _ikinci_okuma(ham, a)
+    a = {
+        t["test"]: baski_numara(p, t["test"], t["hucreler"])
+        for t in ham["okuma_a"]["testler"]
+    }
+    b, tek_hata = _ikinci_okuma(ham, a, p)
     hata += tek_hata
     if set(a) != set(b):
         hata.append("A ve B test kumeleri farkli")
@@ -433,7 +457,9 @@ def cevaplar_uret(
     p: ModuleType, ham: dict[str, Any], tarama: dict[str, Any]
 ) -> list[dict[str, Any]]:
     a = {
-        t["test"]: ortak.yakalanan(p, t["test"], t["hucreler"])
+        t["test"]: ortak.yakalanan(
+            p, t["test"], baski_numara(p, t["test"], t["hucreler"])
+        )
         for t in ham["okuma_a"]["testler"]
     }
     out = []

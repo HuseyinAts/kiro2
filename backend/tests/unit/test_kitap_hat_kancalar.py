@@ -333,3 +333,76 @@ def test_sekil_satiri_sirasiz_karsilastirilir() -> None:
     assert m.norm(a) == m.norm(f"Soru kok\u00fc\n{sekil}: 10 N;2m; 30\u00b0")
     assert m.norm(a) != m.norm(f"Soru kok\u00fc\n{sekil}: 30\u00b0; 3 m; 10 N")
     assert m.norm("K; L") == "K; L"  # Sekil satiri disina dokunmaz
+
+
+def _metin_iki_okuma():  # type: ignore[no-untyped-def]
+    import importlib.util
+
+    yol = Path(__file__).resolve().parents[2] / "scripts/kitap/metin_iki_okuma.py"
+    spec = importlib.util.spec_from_file_location("metin_iki_okuma_g", yol)
+    assert spec and spec.loader
+    m = importlib.util.module_from_spec(spec)
+    sys.modules["metin_iki_okuma_g"] = m
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_grup_fark_yalniz_farkli_sorulari_hakeme_yazar(tmp_path: Path) -> None:
+    import json
+
+    m = _metin_iki_okuma()
+    k = SimpleNamespace(
+        parca1=tmp_path / "p1", parca2=tmp_path / "p2", hakem=tmp_path / "h"
+    )
+    k.parca1.mkdir()
+    k.parca2.mkdir()
+    (k.parca1 / "liste_03.txt").write_text("X-T001_01\nX-T001_02\n", "ascii")
+
+    def s(ad: str, govde: str) -> dict:
+        return {
+            "dosya": ad,
+            "basili_no": 1,
+            "govde": govde,
+            "sikler": {h: h for h in "ABCDE"},
+            "sekil_var": False,
+            "sikler_gorsel": False,
+            "etiket": None,
+            "kaynak_kusuru": None,
+        }
+
+    for d, g2 in ((k.parca1, "H_2O"), (k.parca2, "H_2O_2")):
+        (d / "grup_03.json").write_text(
+            json.dumps({"sorular": [s("X-T001_01", "ayni"), s("X-T001_02", g2)]}),
+            "utf-8",
+        )
+    assert m.grup_fark(k, "03") == 1
+    out = json.loads((k.hakem / "hakem_g03.json").read_text("utf-8"))
+    assert [x["dosya"] for x in out] == ["X-T001_02"]
+    assert out[0]["okuma_2"]["govde"] == "H_2O_2"
+    # Kapsam listeyle uyusmazsa durur (eksik okuma hakeme gitmez).
+    (k.parca1 / "liste_03.txt").write_text("X-T001_01\n", "ascii")
+    with pytest.raises(SystemExit):
+        m.grup_fark(k, "03")
+
+
+def test_bolum_bant_adi_etiket_onekini_atar() -> None:
+    from scripts.kitap.kitap_hat import harita
+
+    p = SimpleNamespace(
+        BOLUMLER=(
+            (1, "1. \u00dcN\u0130TE K\u0130MYA B\u0130L\u0130M\u0130"),
+            (2, "Genel"),
+        )
+    )
+    assert harita.bolum_bant_adi(p, "KIM-X-B01") == "K\u0130MYA B\u0130L\u0130M\u0130"
+    assert harita.bolum_bant_adi(p, "KIM-X-B02") == "Genel"
+
+
+def test_anahtar_numara_baskisi_sira_numarasina_cevrilir() -> None:
+    p = SimpleNamespace(ANAHTAR_NUMARA_BASKI={(7, 3): 2})
+    h = [[1, "A"], [2, "B"], [2, "C"], [4, "D"]]
+    assert anahtar.baski_numara(p, 7, h) == [[1, "A"], [2, "B"], [3, "C"], [4, "D"]]
+    assert anahtar.baski_numara(p, 8, h) == h  # baska test: dokunmaz
+    # Profildeki basili deger okumayla uyusmazsa (bayat kayit) durur.
+    with pytest.raises(SystemExit):
+        anahtar.baski_numara(p, 7, [[1, "A"], [2, "B"], [3, "C"]])
