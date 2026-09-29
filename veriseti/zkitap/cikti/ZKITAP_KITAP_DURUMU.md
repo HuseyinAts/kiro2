@@ -114,7 +114,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 
 | kitap (sekme basligi) | durum | klasor | png | ayni icerik | DB | ortaklik | kalite | oneri |
 |---|---|---|---|---|---|---|---|---|
-| 2019-2020 APOTEMI TYT Matematik Soru Bankasi | ISLENMEDI | `2019-2020-Apotemi-Tyt Matematik Soru Bankasi` | 324 | - | eski hat 9 / aktif 9 | - | - | ISLENEBILIR |
+| 2019-2020 APOTEMI TYT Matematik Soru Bankasi | **ISLENDI** | `2019-2020-Apotemi-Tyt Matematik Soru Bankasi` | 324 | - | modern 1382 soru (`MAT_APOTEMI_2019_TYT_YONTEM.md`, ortak kitap_hat): 1382 yeni satir / aktif 1223 (0118 toplu beta onayi; 159 soru gorunen `[??]` -> beta disi); eski hat 9: modern karsiligi olan 6 satir 0117 ile pasif, 3 aktif | - | 283 test sayfasi, 122 test (11 bolum, 'Deneme - N'); anahtar kitap sonu tablo (yeni ANAHTAR_HARICI kancasi); dosya 176 kopya, Deneme 23 sorulari 5-8 yakalanmamis (YAKALANMAYAN_SORU); gorunmeyen eksi/arti isaretleri `[??]` + kaynak_kusuru; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 | 2019-2020 Apotemi Modern Fizik Konu Anlatimli SB | ISLENMEDI | `Apotemi 2019 2020 Modern Fizik Konu Anlatimli Soru Bankasi` | 256 | - | yok | 2022-2023 Apotemi Modern Fizik %48 (gozle) | - | AILE: yalniz biri islenmeli (2022-2023 Apotemi Modern Fizik %48 gozle) |
 | 2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi | ISLENMEDI | `Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankasi` | 448 | - | yok | - | - | ISLENEBILIR |
 | 2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi | ISLENMEDI | `Apotemi Tyt Ayt Kimya 2019-2020` | 352 | - | eski hat 345 / aktif 345 | - | - | ISLENEBILIR |
@@ -420,7 +420,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 2 | `2019-2020-Acil Matematigin ilaci-1` | 382 | 2019-2020 Acil Matematigin Ilaci-1 |  | ISLENMEDI |
 | 3 | `2019-2020-Acil-Matematigin ilaci Tyt Matematik Soru Bankasi` | 20 | 2019-2020 Acil Matematigin Ilaci TYT Matematik Soru Bankasi |  | kopya -> `2023-2024-ACIL-TYT-Matematigin Ilaci` |
 | 4 | `2019-2020-Acil-Matematigin ilaci Tyt Matematik Soru Bankasi` | 319 | 2019-2020 Acil Matematigin Ilaci TYT Matematik Soru Bankasi |  | kopya -> `2023-2024-ACIL-TYT-Matematigin Ilaci` |
-| 5 | `2019-2020-Apotemi-Tyt Matematik Soru Bankasi` | 324 | 2019-2020 APOTEMI TYT Matematik Soru Bankasi |  | ISLENMEDI |
+| 5 | `2019-2020-Apotemi-Tyt Matematik Soru Bankasi` | 324 | 2019-2020 APOTEMI TYT Matematik Soru Bankasi |  | **ISLENDI** |
 | 6 | `2020-2021-ACIL-AYT Matematik Soru Bankasi` | 449 | 2020-2021 ACIL AYT Matematik Soru Bankasi |  | ISLENMEDI |
 | 7 | `2020-2021-ACIL-TYT Matematik Soru Bankasi` | 448 | 2020-2021 ACIL TYT Matematik Soru Bankasi |  | ISLENMEDI |
 | 8 | `2020-2021-Acil-Problemlerin ilaci` | 191 | 2020-2021 Acil Problemlerin Ilaci |  | ISLENMEDI |

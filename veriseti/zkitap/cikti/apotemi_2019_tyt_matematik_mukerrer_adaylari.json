@@ -1,0 +1,639 @@
+{
+ "kaynak": "2019-2020 APOTEMI TYT Matematik Soru Bankasi",
+ "arac": "backend/scripts/kitap/kitap_hat/mukerrer.py",
+ "olcu": "govde normal bicimi karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: MATEMATIK (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar.",
+ "soru_sayisi": 1382,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "APO19MT-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T007_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T012_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T017_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T020_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T025_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T029_07",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T033_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T037_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T040_13",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T043_13",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T046_13",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T050_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T054_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T059_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T064_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T068_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T072_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T077_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T081_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T086_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T091_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T096_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T101_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T106_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T111_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T115_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19MT-T120_03",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [],
+ "kitap_ici_ayni_hash": [],
+ "kitap_ici_yakin": [],
+ "kitap_ici_en_yuksek_3gram": 0.71,
+ "db_satiri": 12275,
+ "db_en_yuksek_3gram": 1.0,
+ "aday_sayisi": 16,
+ "guclu_aday_sayisi": 6,
+ "adaylar": [
+  {
+   "dosya": "APO19MT-T081_04",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "07b0f1f9-46b2-5cfc-9b81-8216d92e4a14",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": "A",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "APO19MT-T102_08",
+   "govde_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "d413a13e-d209-541b-b40d-d3b645674885",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "E"
+  },
+  {
+   "dosya": "APO19MT-T065_12",
+   "govde_3gram": 0.981,
+   "ayni_sik_sayisi": 4,
+   "guclu": true,
+   "db_id": "4452afd9-3774-5f8f-a4e7-d0d0d43b43c9",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "APO19MT-T094_01",
+   "govde_3gram": 0.944,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "8dd18241-8497-560c-bd85-c5a59fb23cad",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "db_dogrusu_bizde": "B",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "B"
+  },
+  {
+   "dosya": "APO19MT-T059_03",
+   "govde_3gram": 0.932,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "90034d49-874c-58b8-870f-e451b4bde0f5",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "APO19MT-T011_07",
+   "govde_3gram": 0.921,
+   "ayni_sik_sayisi": 5,
+   "guclu": true,
+   "db_id": "09bbfb03-8fae-5b8c-a322-622165ae3195",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "APO19MT-T102_09",
+   "govde_3gram": 0.841,
+   "ayni_sik_sayisi": 5,
+   "guclu": false,
+   "db_id": "02367585-5ad3-529c-b593-273daf6e2828",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "D",
+   "sik_sirasi_ayni": true,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "APO19MT-T024_03",
+   "govde_3gram": 0.81,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "3520f111-15c4-5abd-a7d0-0d95acabf249",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "APO19MT-T046_03",
+   "govde_3gram": 0.79,
+   "ayni_sik_sayisi": 4,
+   "guclu": false,
+   "db_id": "db900b52-e900-5f1c-bfdc-907a7e1754ad",
+   "db_kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "APO19MT-T042_12",
+   "govde_3gram": 0.773,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "4da0c3ce-cf86-50be-98c0-219601124e57",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "APO19MT-T042_12",
+   "govde_3gram": 0.773,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "c2aefffe-0ad9-5d0b-80ab-174d002e6771",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "dosya": "APO19MT-T049_15",
+   "govde_3gram": 0.757,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "a4b55d11-8b16-580c-ae4f-67c3e2410513",
+   "db_kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "APO19MT-T024_03",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "4b66d0fe-b991-5454-8bfc-fc546cb0ab6b",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "APO19MT-T024_03",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "5b99db06-0113-5e3b-bc92-34df7aed0e2f",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Say\u0131lar-2",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "A",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "C"
+  },
+  {
+   "dosya": "APO19MT-T049_15",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 1,
+   "guclu": false,
+   "db_id": "17db1983-56c6-5e00-9aaa-93d6176bf4c2",
+   "db_kaynak": "2020-2021 ACIL TYT Matematik Soru Bankasi",
+   "db_ders": "MATEMATIK",
+   "db_aktif": false,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  },
+  {
+   "dosya": "APO19MT-T049_15",
+   "govde_3gram": 0.75,
+   "ayni_sik_sayisi": 0,
+   "guclu": false,
+   "db_id": "e4b6de6c-4453-50f4-b0e1-0959c9dbf9e2",
+   "db_kaynak": "Bilgi Sarmal\u0131-2023-2024-Tyt-Matematik Soru Bankas\u0131",
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "C",
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false,
+   "etiketli": false,
+   "bizim_cevap": "A"
+  }
+ ],
+ "cevap_farki": [
+  {
+   "dosya": "APO19MT-T024_03",
+   "db_id": "3520f111-15c4-5abd-a7d0-0d95acabf249",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.81,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T046_03",
+   "db_id": "db900b52-e900-5f1c-bfdc-907a7e1754ad",
+   "db_kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.79,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T042_12",
+   "db_id": "4da0c3ce-cf86-50be-98c0-219601124e57",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_cevap": "E",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.773,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T042_12",
+   "db_id": "c2aefffe-0ad9-5d0b-80ab-174d002e6771",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_cevap": "E",
+   "bizim_cevap": "D",
+   "govde_3gram": 0.773,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T049_15",
+   "db_id": "a4b55d11-8b16-580c-ae4f-67c3e2410513",
+   "db_kaynak": "2024 ACIL TYT Matematik Geometri Kitap-1",
+   "db_cevap": "D",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.757,
+   "guclu": false,
+   "db_dogrusu_bizde": "E",
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T024_03",
+   "db_id": "4b66d0fe-b991-5454-8bfc-fc546cb0ab6b",
+   "db_kaynak": "ACIL 2025 Matematigin Ilaci Sayilar-2",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T024_03",
+   "db_id": "5b99db06-0113-5e3b-bc92-34df7aed0e2f",
+   "db_kaynak": "AC\u0130L-2025-Matemati\u011fin \u0130lac\u0131 Say\u0131lar-2",
+   "db_cevap": "A",
+   "bizim_cevap": "C",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T049_15",
+   "db_id": "17db1983-56c6-5e00-9aaa-93d6176bf4c2",
+   "db_kaynak": "2020-2021 ACIL TYT Matematik Soru Bankasi",
+   "db_cevap": "C",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  },
+  {
+   "dosya": "APO19MT-T049_15",
+   "db_id": "e4b6de6c-4453-50f4-b0e1-0959c9dbf9e2",
+   "db_kaynak": "Bilgi Sarmal\u0131-2023-2024-Tyt-Matematik Soru Bankas\u0131",
+   "db_cevap": "C",
+   "bizim_cevap": "A",
+   "govde_3gram": 0.75,
+   "guclu": false,
+   "db_dogrusu_bizde": null,
+   "sik_sirasi_ayni": false
+  }
+ ],
+ "cevap_farki_sik_sirasi": 0,
+ "cevap_farki_icerik": [
+  [
+   "APO19MT-T024_03",
+   "3520f111-15c4-5abd-a7d0-0d95acabf249"
+  ],
+  [
+   "APO19MT-T024_03",
+   "4b66d0fe-b991-5454-8bfc-fc546cb0ab6b"
+  ],
+  [
+   "APO19MT-T024_03",
+   "5b99db06-0113-5e3b-bc92-34df7aed0e2f"
+  ],
+  [
+   "APO19MT-T042_12",
+   "4da0c3ce-cf86-50be-98c0-219601124e57"
+  ],
+  [
+   "APO19MT-T042_12",
+   "c2aefffe-0ad9-5d0b-80ab-174d002e6771"
+  ],
+  [
+   "APO19MT-T046_03",
+   "db900b52-e900-5f1c-bfdc-907a7e1754ad"
+  ],
+  [
+   "APO19MT-T049_15",
+   "17db1983-56c6-5e00-9aaa-93d6176bf4c2"
+  ],
+  [
+   "APO19MT-T049_15",
+   "a4b55d11-8b16-580c-ae4f-67c3e2410513"
+  ],
+  [
+   "APO19MT-T049_15",
+   "e4b6de6c-4453-50f4-b0e1-0959c9dbf9e2"
+  ]
+ ],
+ "eski_hat_ozet": {
+  "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131": {
+   "satir": 9,
+   "aktif": 9,
+   "modern_karsilik": 6
+  }
+ },
+ "eski_hat": [
+  {
+   "db_id": "09bbfb03-8fae-5b8c-a322-622165ae3195",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 31,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "en_yakin_bizim": "APO19MT-T011_07",
+   "en_yakin_3gram": 0.921,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "D"
+  },
+  {
+   "db_id": "a624286d-c19d-5a2f-9170-0cbd992d335d",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 118,
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "en_yakin_bizim": "APO19MT-T115_03",
+   "en_yakin_3gram": 0.248,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "db_id": "90034d49-874c-58b8-870f-e451b4bde0f5",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 158,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "en_yakin_bizim": "APO19MT-T059_03",
+   "en_yakin_3gram": 0.932,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "D"
+  },
+  {
+   "db_id": "4452afd9-3774-5f8f-a4e7-d0d0d43b43c9",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 176,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "APO19MT-T065_12",
+   "en_yakin_3gram": 0.981,
+   "ayni_sik_sayisi": 4,
+   "modern_karsilik": true,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "92472184-70ec-51ab-9c0b-5ae27ca9db88",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 177,
+   "db_ders": "GEOMETRI",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "en_yakin_bizim": "APO19MT-T115_03",
+   "en_yakin_3gram": 0.185,
+   "ayni_sik_sayisi": 0,
+   "modern_karsilik": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "db_id": "07b0f1f9-46b2-5cfc-9b81-8216d92e4a14",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 222,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "A",
+   "en_yakin_bizim": "APO19MT-T081_04",
+   "en_yakin_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "A"
+  },
+  {
+   "db_id": "8dd18241-8497-560c-bd85-c5a59fb23cad",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 252,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "B",
+   "en_yakin_bizim": "APO19MT-T094_01",
+   "en_yakin_3gram": 0.944,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "B"
+  },
+  {
+   "db_id": "02367585-5ad3-529c-b593-273daf6e2828",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 271,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "D",
+   "en_yakin_bizim": "APO19MT-T102_09",
+   "en_yakin_3gram": 0.841,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": false,
+   "bizim_cevap": "D"
+  },
+  {
+   "db_id": "d413a13e-d209-541b-b40d-d3b645674885",
+   "db_kaynak": "2019-2020-Apotemi-Tyt Matematik Soru Bankas\u0131",
+   "basili_sayfa": 271,
+   "db_ders": "MATEMATIK",
+   "db_aktif": true,
+   "db_cevap": "E",
+   "en_yakin_bizim": "APO19MT-T102_08",
+   "en_yakin_3gram": 1.0,
+   "ayni_sik_sayisi": 5,
+   "modern_karsilik": true,
+   "bizim_cevap": "E"
+  }
+ ],
+ "farkli_soru_hash": 1382
+}

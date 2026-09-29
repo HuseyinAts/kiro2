@@ -53,8 +53,7 @@ def hazirla(p: ModuleType) -> None:
         # Anahtarli her sayfanin seridi (cogu kitapta yalniz son sayfa);
         # birden cok ise sayfa sirasiyla alt alta.
         parca = []
-        for n in anahtarli_sayfalar(tar, t):
-            y0, y1, x0, x1 = tar["sayfalar"][str(n)]["anahtar"]
+        for n, (y0, y1, x0, x1) in anahtar_parcalari(p, tar, t):
             k = Image.open(d / f"sayfa_{n:04d}.png").convert("RGB").crop(p.KART)
             s = k.crop((max(0, x0 - 6), y0 - 6, min(k.width, x1 + 8), y1 + 6))
             parca.append(
@@ -81,6 +80,21 @@ def hazirla(p: ModuleType) -> None:
 
 def anahtarli_sayfalar(tar: dict[str, Any], t: dict[str, Any]) -> list[int]:
     return [int(n) for n in t["sayfalar"] if tar["sayfalar"][str(n)]["anahtar"]]
+
+
+def anahtar_parcalari(
+    p: ModuleType, tar: dict[str, Any], t: dict[str, Any]
+) -> list[tuple[int, list[int]]]:
+    """Testin anahtar kirpim(lar)i: (dosya, [y0, y1, x0, x1]) sirayla.
+
+    Varsayilan: testin anahtarli sayfalarinin bolgesi (sayfa ici serit).
+    ANAHTAR_HARICI {test: [(dosya, [y0, y1, x0, x1]), ...]}: anahtar kitabin
+    sonunda tablo (Apotemi duzeni: 'DENEME - N  1-D 2-A ...' satirlari);
+    test sayfalarinda serit yoktur."""
+    harici = getattr(p, "ANAHTAR_HARICI", None)
+    if harici is not None:
+        return [(int(n), list(k)) for n, k in harici[t["test"]]]
+    return [(n, tar["sayfalar"][str(n)]["anahtar"]) for n in anahtarli_sayfalar(tar, t)]
 
 
 SERIT_HUCRE_TARIFI = (
@@ -144,6 +158,11 @@ def _disla(p: ModuleType, s: np.ndarray, x_bas: int) -> np.ndarray:
 def _harf_bloblari(
     p: ModuleType, s: np.ndarray, bolme_x: int | None = None
 ) -> list[tuple[slice, slice]]:
+    if hasattr(p, "harf_bloblari"):
+        # Profil kendi hucre duzenini bolutler (Apotemi '1-D' tablo satiri:
+        # tire harfe antialias ile yapisiyor, blob komsulugu calismiyor).
+        ozel: list[tuple[slice, slice]] = p.harf_bloblari(s)
+        return ozel
     mx, mn = s.max(axis=2), s.min(axis=2)
     siyah = (mn < p.GLIF_HARF_ESIK) & (mx - mn < 45)
     siyah = ndimage.binary_dilation(siyah, np.ones((2, 1), bool))
@@ -152,8 +171,11 @@ def _harf_bloblari(
     if getattr(p, "HARF_NOKTA_SONRASI", False):
         # Numara da harfle ayni renkte ('1.C 2.B'): harf = satirda NOKTADAN
         # (en fazla 3x3 blob) hemen sonraki blob.
+        # HARF_NOKTA_W: ayrac genisligi ('.' 3 px; Apotemi '1-D' tiresi ~6 px).
+        nw = getattr(p, "HARF_NOKTA_W", 3)
+
         def nokta(o: tuple[slice, slice]) -> bool:
-            return bool(o[0].stop - o[0].start <= 4 and o[1].stop - o[1].start <= 3)
+            return bool(o[0].stop - o[0].start <= 4 and o[1].stop - o[1].start <= nw)
 
         tum.sort(key=lambda o: (o[0].stop, o[1].start))
         sec = []
@@ -165,7 +187,7 @@ def _harf_bloblari(
                 for q in tum
                 if q[1].stop <= o[1].start
                 and o[1].start - q[1].stop <= getattr(p, "HARF_NOKTA_ARALIK", 4)
-                and abs(q[0].stop - o[0].stop) <= 3
+                and abs(q[0].stop - o[0].stop) <= getattr(p, "HARF_NOKTA_DY", 3)
             ]
             if onceki and nokta(max(onceki, key=lambda q: q[1].stop)):
                 sec.append(o)
@@ -202,8 +224,7 @@ def glif(p: ModuleType) -> dict[str, Any]:
     vek, etiket, yer, kapsam_disi = [], [], [], []
     for t in tar["testler"]:
         harf, siyahlar = [], []
-        for n in anahtarli_sayfalar(tar, t):
-            y0, y1, x0, x1 = tar["sayfalar"][str(n)]["anahtar"]
+        for n, (y0, y1, x0, x1) in anahtar_parcalari(p, tar, t):
             a = ortak.kart(p, d, n)
             s = _disla(p, a[y0 + 1 : y1, x0 + 1 : x1], x0 + 1)
             mx, mn = s.max(axis=2), s.min(axis=2)
@@ -358,7 +379,10 @@ def dogrula(p: ModuleType, ham: dict[str, Any]) -> list[str]:
 def cevaplar_uret(
     p: ModuleType, ham: dict[str, Any], tarama: dict[str, Any]
 ) -> list[dict[str, Any]]:
-    a = {t["test"]: t["hucreler"] for t in ham["okuma_a"]["testler"]}
+    a = {
+        t["test"]: ortak.yakalanan(p, t["test"], t["hucreler"])
+        for t in ham["okuma_a"]["testler"]
+    }
     out = []
     for t in tarama["testler"]:
         capa = t["capalar"]

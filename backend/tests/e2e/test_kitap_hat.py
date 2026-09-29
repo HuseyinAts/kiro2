@@ -51,6 +51,7 @@ PROFILLER = [
     "akt24by",
     "akt25fz",
     "akt25pr",
+    "apo19mt",
 ]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 

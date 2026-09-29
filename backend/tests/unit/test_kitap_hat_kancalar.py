@@ -174,3 +174,57 @@ def test_sus_parite_yalniz_kendi_paritesinde_beyazlatir() -> None:
     tek = kirp.sayfa_no_lekesi(p, a, 19)
     assert tek[10:20, 30:34].all() and not tek[10:20, 10:14].any()
     assert not kirp.sayfa_no_lekesi(p, a).any()  # n verilmezse parite penceresi yok
+
+
+# --- Apotemi duzeni (APO19MT): anahtar kitap sonunda tablo, seritsiz sayfa ---
+
+
+def test_anahtar_harici_tablo_satirlarini_sayfa_seridine_tercih_eder() -> None:
+    tar = {"sayfalar": {"10": {"anahtar": [800, 830, 400, 700]}}}
+    t = {"test": 3, "sayfalar": [10]}
+    p = SimpleNamespace(ANAHTAR_HARICI={3: [(316, (100, 118, 40, 700))]})
+    assert anahtar.anahtar_parcalari(p, tar, t) == [(316, [100, 118, 40, 700])]
+    assert anahtar.anahtar_parcalari(SimpleNamespace(), tar, t) == [
+        (10, [800, 830, 400, 700])
+    ]
+
+
+def test_yakalanmayan_soru_anahtar_hucrelerinden_duser() -> None:
+    from scripts.kitap.kitap_hat import ortak
+
+    h = [[n, "A"] for n in range(1, 11)]
+    p = SimpleNamespace(YAKALANMAYAN_SORU={81: (5, 6, 7, 8)})
+    assert [x[0] for x in ortak.yakalanan(p, 81, h)] == [1, 2, 3, 4, 9, 10]
+    assert ortak.yakalanan(p, 80, h) == h
+    assert ortak.yakalanan(SimpleNamespace(), 81, h) == h
+
+
+def test_harf_bloblari_profil_kancasina_devredilir() -> None:
+    ozel = [(slice(0, 5), slice(3, 8))]
+    p = SimpleNamespace(harf_bloblari=lambda _s: ozel)
+    assert anahtar._harf_bloblari(p, np.zeros((5, 5, 3), np.uint8)) is ozel
+
+
+def test_testleri_bul_harici_anahtarda_serit_aramaz() -> None:
+    from scripts.kitap.kitap_hat import tarama
+
+    s = {
+        1: {"tur": "test", "anahtar": None},
+        2: {"tur": "test", "anahtar": None},
+        3: {"tur": "test", "anahtar": None},
+        4: {"tur": "kapak", "anahtar": None},
+    }
+    with pytest.raises(SystemExit):
+        tarama.testleri_bul(s, {1, 3})
+    assert tarama.testleri_bul(s, {1, 3}, serit_sart=False) == [[1, 2], [3]]
+
+
+def test_sayfa_altligi_alt_sinir_taramasini_durdurur() -> None:
+    a = np.full((120, 100, 3), 255, np.uint8)
+    a[100:104, 10:40] = 0  # sayfa altligi (sayfa no kutusu, 30 px -- cizgi degil)
+    assert kutu.alt_sinir_alti(a, 0, 100, 80, serit=None, serit_pay=0) is not None
+    assert (
+        kutu.alt_sinir_alti(a, 0, 100, 80, serit=None, serit_pay=0, altlik_y=98) is None
+    )
+    a[90:92, 10:40] = 0  # altligin USTUNDE gercek kesik yine yakalanir
+    assert kutu.alt_sinir_alti(a, 0, 100, 80, serit=None, serit_pay=0, altlik_y=98)
