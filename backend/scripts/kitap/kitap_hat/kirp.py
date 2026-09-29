@@ -212,6 +212,21 @@ def _kenar_kaydet(
         kenar.append(kayit)
 
 
+def goz_onayi_ayir(
+    p: object, kesik: list[dict]
+) -> tuple[list[dict], list[dict], list[str]]:
+    """KESIK_GOZ_ONAY (profil, dosya adlari): iki soru arasindaki bos bant 1-3
+    satir oldugu icin alt serit sikkin kuyruguna degiyor ama kirpim gozle tam.
+    Bu kayitlar kapiyi tetiklemez (`kesik_goz_onayli`). Onayli ad olculen
+    kesikler arasinda yoksa `bayat` doner; cagiran kapiyi durdurur (duzeltilmis
+    kutunun onayi sessizce kalmasin). Donus: (kalan kesik, onayli, bayat)."""
+    onay = set(getattr(p, "KESIK_GOZ_ONAY", ()))
+    onayli = [x for x in kesik if ortak.dosya_adi(x["birim"], x["soru"]) in onay]
+    kalan = [x for x in kesik if x not in onayli]
+    bayat = sorted(onay - {ortak.dosya_adi(x["birim"], x["soru"]) for x in onayli})
+    return kalan, onayli, bayat
+
+
 def _ortme_kayitlari(k: dict, s: int, halkalar: list[dict]) -> list[dict]:
     x0, y0, x1, y1 = k["kutu"]
     out = []
@@ -271,6 +286,9 @@ def main() -> None:
             Image.fromarray(a[y0:y1, x0:x1]).save(
                 cikti / f"{k['birim']}_{k['soru']:02d}.png"
             )
+    kesik, onayli, bayat = goz_onayi_ayir(p, kesik)
+    if bayat and not args.ornek:
+        raise SystemExit(f"KESIK_GOZ_ONAY bayat (olculen kesik yok): {bayat}")
     n = sum(len(v) for v in sayfada.values())
     osoru = len({(o["birim"], o["soru"]) for o in ortme})
     print(
@@ -281,6 +299,8 @@ def main() -> None:
         print("   kenar", x)
     for x in kesik[:15]:
         print("   KESIK", x)
+    for x in onayli:
+        print("   kesik (goz onayli)", x)
     if not args.ornek:
         h0, h1 = p.HALKA
         ortak.yaz(
@@ -302,6 +322,7 @@ def main() -> None:
                 "ortme_soru": osoru,
                 "kenar": kenar,
                 "kesik": kesik,
+                "kesik_goz_onayli": onayli,
                 "ortme": ortme,
             },
         )

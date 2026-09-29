@@ -49,6 +49,7 @@ PROFILLER = [
     "akt20k0",
     "akt20ay",
     "akt24by",
+    "akt25fz",
 ]
 VERSIYON = KOK / "backend" / "alembic" / "versions"
 
@@ -144,7 +145,14 @@ def test_glif_teyit_ve_goz_c_mutasyonlari_durur(k: Kitap) -> None:
         assert any("goz teyidi" in x for x in an.dogrula(k.p, h))
     if not k.s["glif_disi"]:
         # Her test glifle bolutlendi (acl25s2): goz_c kaydi yok.
-        assert ilk is not None
+        if ilk is None:
+            # Glif tum hucrelerde uyumlu ve her test glifle bolutlendi (akt25fz
+            # 655/655): teyitsiz bir uyumsuzluk eklemek kapiyi durdurmali.
+            h = _boz(
+                k.ham_okumalar,
+                lambda h: h["glif"]["uyumsuz"].append([[1, 1], "A", "B"]),
+            )
+            assert any("glif uyumsuz" in x for x in an.dogrula(k.p, h))
         return
     t = str(k.s["glif_disi"][0])
 

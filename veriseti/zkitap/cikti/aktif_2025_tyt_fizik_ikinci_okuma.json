@@ -1,0 +1,2746 @@
+{
+ "kitap": "AKTIF 2025 TYT Fizik Soru Bankasi",
+ "on_kayit_tarihi": "2026-09-29",
+ "kural": "Onceki kitaplarin olcusu: esasli ilk okuma hatasi CP95 ust siniri <= %3 saglanmadi (KMT345 %4.7, SOS345 %5.9, TRT345 %4.0, ACL20T %4.9, ACL21T %3.7). Dogrudan TAM ikinci okuma.",
+ "tasarim": "Ilk okumayi gormeyen 14 ayri okuyucu; ayni talimat (yalniz teslim dizini c2_metin_parca2), ayni gruplar ve kirpimlar. Okuma 1 ve okuma 2 okuyuculari TEK toplu dagitimda birlikte kosulur (bagimsizlik dizin ayrimiyla saglanir). Karsilastirma bu dosya yazildiktan SONRA yapilir.",
+ "karsilastirma": "Alan alan (basili_no, govde, sikler, sekil_var, sikler_gorsel, etiket). Bicim farki (bosluk, satir sonu, eksi/tire tipi, carpma noktasi tipi) esasli sayilmaz. Her esasli fark kirpimdan gozle (gerekirse yakinlastirma) karara baglanir; iki okuma da yanlissa goruntu kazanir; karar verilemeyen yer [??].",
+ "esasli_hata_tanimi": "Anlami ya da cozumu degistiren her fark: rakam, isaret (+, -, carpma, bolme, esitsizlik), us / kok / kesir kapsami, parantez, harf / degisken, eksik/fazla kelime veya satir, yanlis sik, alti cizili kapsam, eksik etiket.",
+ "sonuc": {
+  "soru": 655,
+  "ayni_soru_normalize": 519,
+  "farkli_soru": 136,
+  "hukum_dagilimi": {
+   "yok": 70,
+   "ikisi": 4,
+   "okuma_1": 36,
+   "okuma_2": 26
+  },
+  "ilk_okuma_esasli_hata": 40,
+  "ikinci_okuma_esasli_hata": 30,
+  "not": "Normalizasyon (metin_iki_okuma.norm): NFC, kesme/tirnak tipi, eksi/tire tipi, birlesik ust/alt cizgi, Unicode ust simge -> ^n, bileske halkasi U+2218 -> o, nokta operatoru, uc nokta, kok+ust cizgi -> kok, tek karakterli us/indis parantezi, kokte tek atom parantezi, '/' oncesi tek atom parantezi, ciftlenmis parantez, tablo ayraci+ok, (gorsel)/(sekil), C(n, r) = (n r) ve TUM bosluk. Anlam tasiyan parantez esitlenmez. Her kalan fark hakem tarafindan kirpimdan gozle karara baglandi; karar ilk okumanin yerine duzeltme.json ile gecer. Iki okumanin AYNI bicimde atladigi sekil verisi karsilastirmada gorunmez."
+ },
+ "hukumler": [
+  {
+   "dosya": "AKT25FZ-T001_10",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde ustte 'Bat\u0131' ... 'Do\u011fu' cift yonlu ok; kuvvet degerleri iki okumada da var. Fark yalniz yon satirinin bicimi ve salt etiket 'X' (cisim adi govdede zaten geciyor). F_1 isareti 8x/piksel dokumunde ust cubuk koyu, alt cubuk soluk ama mevcut (satir 131-133 gri) -> '=' korunur."
+  },
+  {
+   "dosya": "AKT25FZ-T003_07",
+   "esasli_hata": "ikisi",
+   "gerekce": "Sekilde F_2 etiketindeki isaret: piksel dokumunde F_1 '=' iki cubuk (y=140-141 ve 144-145), F_2 satiri 42 px asagida; beklenen '=' konumu 182-183/186-187 iken yalniz tek cubuk y=184-186 (ortada) -> basili '\u2212'; iki okuma da '=' yazmis (dizgi hatasi basildigi gibi). Bati/Dogu ve K etiketi farki bicim; okuma_1 bicimi korundu. 6x NEAREST."
+  },
+  {
+   "dosya": "AKT25FZ-T003_12",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki K, L, M, A yalniz vektor/cisim etiketi; buyuklukler kareli zeminden okunuyor, yazi veri tasimiyor. Salt etiket govdeye girmez; okuma_1'in 'K \u2190 A \u2192 L / M' satirlari cikarildi."
+  },
+  {
+   "dosya": "AKT25FZ-T004_01",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda sekil ici yalniz z/y/x etiketleri ve uc 'h' olcusu var; esit yukseklik govdede zaten yaziyor, salt etiket -> govdeye girmez. Bicim farki."
+  },
+  {
+   "dosya": "AKT25FZ-T004_04",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpim: sekil ustunde 24 Ayar / 18 Ayar / 14 Ayar, altinda I / II / III. Iki okuma da ayar-bilezik eslesmesini tasiyor; yalniz bicim farki, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T004_06",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda grafik yalniz eksen/dogru etiketleri (K\u00fctle, Hacim, K, L, M) tasiyor, sayisal veri yok; salt etiket, govdeye girmez. okuma_2 govdesi alindi; okuma_1'in etiket satirlari bicim farki."
+  },
+  {
+   "dosya": "AKT25FZ-T004_07",
+   "esasli_hata": "yok",
+   "gerekce": "Grafikte yalniz eksen adlari (Kutle, Hacim) ve dogru etiketleri K, L var; sayisal veri yok. Etiketler dogrulari tanimladigi icin okuma_1 bicimi korundu; eksik birakma veri kaybi degil."
+  },
+  {
+   "dosya": "AKT25FZ-T004_10",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde yalniz K, L, 2r, r etiketleri; yaricaplar govde metninde zaten var (2r ve r), soru sekil yazisina dayanmiyor -> etiketler govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T005_01",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde 4a (dik kenar), 2a (derinlik), a (on kenar) olculeri; iki okuma da uc olcuyu tasiyor. okuma_2'nin ' | ' ile yazimi tablo degil, bicim farki; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T005_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde yalniz 'a' (3 kez) ve '2a' basili; okuma_1'in 'K\u00fcp:' ve 'Silindir:' sozcukleri kirpimda yok (fazla kelime). Olculer iki okumada da var."
+  },
+  {
+   "dosya": "AKT25FZ-T006_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde h, h (dolu ve bos kisim yukseklikleri esit), 5d x3 ve I II III kap etiketleri basili; soru bu yukseklik/ozkutle verisine dayaniyor. okuma_2 h, h ve I II III'u atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T006_06",
+   "esasli_hata": "yok",
+   "gerekce": "Uc grafikte K: 1,2 / 1 2 degerleri, L: 2, M: 3 pikselde okumalarla ayni; soru bu veriye dayaniyor, iki okuma da tasiyor, yalniz dizim farki. Gorsel siklarda katman sirasi (ustten) iki okumada ayni; '/' vs ',' bicim. okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T007_04",
+   "esasli_hata": "yok",
+   "gerekce": "Grafik: K dogrusu (5, 20), L dogrusu (10, 10) noktasina gidiyor; eksenler Kutle (g), Hacim (cm^3). Iki okuma ayni degerleri farkli bicimde yaziyor; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T007_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde yalniz 'Su', 'X' ve I/II/III etiketleri basili; tum veri metinde, etiket govdeye girmez. okuma_1 sekilde BASILI OLMAYAN 'bo\u015f' kelimesini eklemis (I kabinda yazi yok) -> fazla kelime."
+  },
+  {
+   "dosya": "AKT25FZ-T007_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde S, 2S, h, h, I, II etiketleri; hepsi metinde zaten var (S ve 2S, esit yukseklik). Salt etiket, govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T008_04",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil I: on kenar a, yukseklik 3a, derinlik 2a; Sekil II: on kenar 3a, yukseklik a, derinlik 2a. Iki okuma da her sekil icin ayni etiket kumesini (a, 2a, 3a) veriyor, fark yalniz siralama; okuma_1 (ustten alta) korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T008_05",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil I: 3a (yukseklik), 2a, a; Sekil II: a (yukseklik), 2a, 3a. Iki okuma ayni olcu kumelerini farkli siralamayla yazmis; icerik ayni, bicim farki."
+  },
+  {
+   "dosya": "AKT25FZ-T009_02",
+   "esasli_hata": "yok",
+   "gerekce": "Yalniz sekil etiketlerinin sirasi farkli (II, Yatay, I); tum etiketler iki okumada da var. Bicim varyanti, okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T009_06",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil: sol h (K), K, L, M, sag h (M), taban S, 2S, 3S. Iki okuma ayni icerigi farkli sirada yaziyor (M: 3S, h / h, 3S); bicim varyanti, okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T010_01",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde L yaninda 3h, K yaninda h basili; iki okuma da yazmis, yalniz ' | ' ayraci farki (bicim)."
+  },
+  {
+   "dosya": "AKT25FZ-T010_02",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde ustte d, altta 3d sivisi, her birinin yaninda h. \"d h\" / \"d: h\" salt bicim farki; okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T011_01",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Soru kaplarin sivi turu/derinligine dayaniyor. Kirpimda I: Su, h; II: Su, seviyesi III'un 2h noktali cizgisiyle ayni; III: Tuzlu su, 2h; hepsinde S. okuma_2 bunu dogru eslemis; okuma_1 II'nin derinligini (2h) eslememis, veri eksik/belirsiz."
+  },
+  {
+   "dosya": "AKT25FZ-T011_04",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil etiketleri I: h, 2d, F1, S; II: 2h, d, F2, 2S, 3S. Iki okuma ayni etiketleri farkli sirada yazmis; icerik ayni, bicim varyanti."
+  },
+  {
+   "dosya": "AKT25FZ-T011_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde I: S, S (iki kol ustu), X, h, Su; II: 2S, 2S, Y, h, Su. Iki okuma ayni veriyi tasiyor (okuma_1 'X (S)' bicimi), bicim varyanti; okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T016_04",
+   "esasli_hata": "yok",
+   "gerekce": "Kirpimda iki sutunlu (Atmosfer/Balon, alti cizili) tablo, satir basinda I./II./III. Hucre icerikleri iki okumada ayni; okuma_2 numara sutununu ayri hucre ve bos basligi '-' yazmis (tablo sozlesmesine uygun). Bicim farki."
+  },
+  {
+   "dosya": "AKT25FZ-T017_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "1. satir 5x NEAREST: '\u00f6zk\u00fcteli' basili (t'den sonra l yok; dizgi hatasi). 3. satirdaki '\u00f6zk\u00fctleli' dogru basili. okuma_2 ilk kelimeyi duzeltmis."
+  },
+  {
+   "dosya": "AKT25FZ-T020_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte 5T yaninda K, 4T-T arasinda L dogru etiketleri basili; hangi dogrunun K/L oldugu (baslangic sicakliklari) sorunun dayandigi veri. okuma_1 K ve L'yi atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T020_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde kaplarin iki yaninda ust ve alt yarida birer 'h' basili; suyun kap yuksekliginin alt yarisinda oldugu yalniz sekildeki h | h ile veriliyor (govdede yok), soru buna dayaniyor. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T020_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte K egrisi 5T den, L egrisi T den baslayip 2T de birlesiyor; K/L etiketleri sorunun dayandigi eslesmeyi tasiyor. okuma_1 K ve L etiketlerini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T021_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Soru grafikteki maksimuma (+4 \u00b0C) dayaniyor; eksen yazisi 6x NEAREST buyutmede '\u00d6zk\u00fctle (g/m^3)' (c yok), 'S\u0131cakl\u0131k (\u00b0C)', '+4'. okuma_2 dogru; okuma_1 dayanilan veriyi (+4) eksik birakmis."
+  },
+  {
+   "dosya": "AKT25FZ-T022_01",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde dogru uzerinde A, O, B noktalari (soldan saga); soru bu konumlara dayaniyor, okuma_1 bicimi alindi. Eksik birakma sayisal veri tasimiyor."
+  },
+  {
+   "dosya": "AKT25FZ-T022_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST buyutmede ilk satir 'Bir \u015f\u00f6for' basili (o uzerinde nokta, 'o' sonra 'f'); okuma_1 kitabin yazimini '\u015fof\u00f6r' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25FZ-T022_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "8x NEAREST buyutmede kelime '\u015f\u00f6for\u00fc': ilk heceden sonra '\u00f6' iki noktali, 'f'den sonra noktasiz 'o', 'r\u00fc'. Kitap basildigi gibi '\u015f\u00f6for\u00fc'; okuma_1 '\u015fof\u00f6r\u00fc' diye duzeltmis."
+  },
+  {
+   "dosya": "AKT25FZ-T023_01",
+   "esasli_hata": "yok",
+   "gerekce": "Grafik eksen etiketleri (Konum, 0, t...5t, Zaman) bicim farki; soru grafigin seklinden yon degisimini sayiyor, etiket degeri veri tasimiyor. okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T023_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Konum-zaman grafiginde 30, 0, \u221210 ve 1, 2, 3, 4 eksen degerleri basili; yol/yer degistirme bu degerlere dayaniyor. okuma_1 grafik yazisini tamamen atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T023_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte Konum (m), 10 (K), 0, \u221210 (L), eksende 1 ve 2, Zaman (s) basili; V_K/V_L orani bu degerlere dayaniyor. okuma_1 grafik verisini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T023_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafik ekseni: Hiz, Zaman, 0, t, 2t, 3t, 4t, 5t basili; sorunun (hangi anlar) dayandigi zaman degerleri. okuma_1 bunlari hic yazmamis."
+  },
+  {
+   "dosya": "AKT25FZ-T023_06",
+   "esasli_hata": "yok",
+   "gerekce": "Soru hiz-zaman grafigine dayaniyor; eksen yazilari H\u0131z, Zaman, 0, t, 2t, 3t okuma_2'de dogru. Grafik degerleri gorsel, zaman isaretleri siklarda da var; eksik birakma esasli sayilmadi."
+  },
+  {
+   "dosya": "AKT25FZ-T023_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte Hiz ekseni, V, 0, -V, t, K, L, Zaman basili; yargilar (0 - t) araligi ve hiz degerlerine dayaniyor. okuma_1 grafik verisini (V, -V, t) atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T023_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Konum-zaman grafiginde 80, 40 (konum) ve 4, 6, 8 (zaman) degerleri basili; soru bu grafige dayaniyor, okuma_1 grafik verisini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T023_09",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte dusey eksende X, 0, \u2212X isaretleri, dogrular K, L, M, eksen adlari 'Konum (m)', 'Zaman (s)'. Yargilar (surat karsilastirmasi) araclarin X, 0, \u2212X baslangic konumlarina dayaniyor; okuma_1 bu veriyi hic yazmamis."
+  },
+  {
+   "dosya": "AKT25FZ-T024_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Grafikte H\u0131z, V, K, 0, t, Zaman, L, \u2212V basili; yargilar K/L dogrularina ve V/\u2212V, t degerlerine dayaniyor. okuma_2 sekil yazisini tumden atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T024_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Hiz-zaman grafiginde V, K (V'den baslayan), \u2212V, L, t basili; K/L'nin +V/\u2212V ile eslesmesi yargilarin dayandigi veri. okuma_1 atlamis. Eksen etiketi 8x NEAREST buyutmede deger V ile ayni boyda, 'V' kabul."
+  },
+  {
+   "dosya": "AKT25FZ-T024_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte Ivme ekseninde a, 0, \u2212a; zaman ekseninde t, 2t basili; oncullerin (0 \u2212 t)/(t \u2212 2t) araliklari bu isaretlere dayaniyor. okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T024_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafik: Hiz ekseninde 2V, V, 0, -2V; K (V->2V), L (0->V), M (-2V->0), t ve Zaman basili. Yargilar bu degerlere dayaniyor; okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T024_07",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde soldan saga: K altinda 5 m, arada 35 m, L ustunde 10 m; hizlar K 10 m/s, L 5 m/s. Iki okuma da tum degerleri icerir, yalniz sira farki; okuma_1 bicimi + kirpimdaki soldan saga sira (okuma_2) kullanildi."
+  },
+  {
+   "dosya": "AKT25FZ-T024_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde 100 m (tunel), K treni 20 m + 30 m, L treni 30 m + 20 m. Iki okumada tum sayilar var; okuma_2 K/L eslesmesini de veriyor, onu temel aldim."
+  },
+  {
+   "dosya": "AKT25FZ-T024_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde K, L uzerinde 'V', M uzerinde '2V' ok etiketleri; KL arasindaki hiz V yalniz sekilde veriliyor (metinde yok), soru buna dayaniyor; okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T024_11",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde yalniz 'V = 0' ve K, L, M nokta etiketleri; ilk hizin sifir oldugu govdede ('b\u0131rak\u0131lan') ve noktalar metinde zaten var, sayisal olcu yok. Salt etiket, girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T025_06",
+   "esasli_hata": "yok",
+   "gerekce": "Tum kuvvet etiketleri (5 N, 3 N, 4 N, 4 N, 4 N, 3 N, 7 N) iki okumada da var; okuma_1 yonleri okla eklemis (kirpimdaki oklarla uyumlu: K 5N sol 3N sag; L 4N asagi, 4N sola; M 4N,3N sola, 7N saga). Bicim farki, okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T025_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki 5 m/s, 10 m/s, K, L, F_1, F_2, yatay yazilarinin tamami metinde zaten var; salt etiket. okuma_1 (sekil yazisi yok) korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T025_10",
+   "esasli_hata": "yok",
+   "gerekce": "Govde: iki okuma da 4 ve 5 degerini tasiyor, dizim farki (bicim; okuma_1 govdesi korundu). Siklar: her kutuda 'Yatay' yazisi basili; B'de F_2 = 8 N ustte (dusey ok), F_1 = 10 N solda. B'deki alt indis 8x NEAREST buyutmede 2 (ust kivrim acik, alt duz). 'Yatay' salt etiket, eksikligi veri kaybi degil."
+  },
+  {
+   "dosya": "AKT25FZ-T026_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafik: Ivme (m/s^2) ekseninde 4, 2; Kuvvet (N) ekseninde 10, 20. Kutle hesabi bu degerlere dayaniyor; okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T026_03",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil yazilari (F_1 = 40 N, F_2 = 20 N, m = 4 kg) metinde aynen tekrar ediliyor; D\u00fc\u015fey/Yatay salt etiket. Govdeye girmez; okuma_1 alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T026_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Uygulanan kuvvetler F, 2F, 2F yalniz sekilde basili (metinde yok); soru bunlara dayaniyor. okuma_1 atlamis. Sekil yazisi cisim basina kisa satir yazildi."
+  },
+  {
+   "dosya": "AKT25FZ-T026_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte Surtunme kuvveti (N) ekseni 10, 8, 5; Uygulanan Kuvvet (N) ekseni 5 10 15 20 basili; siklar bu degerlere dayaniyor, okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T026_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekil I: 3a yukseklik, a, a taban; Sekil II: ust kenarlar a ve 3a, yan a, taban 3a. Soru iki durumda temas yuzeyinin farkina (olculere) dayaniyor; okuma_1 olculeri yazmamis. Indis 'S' + alt '1' tek bilesik indis: F_(S1) bicimi tutarli kullanildi (okuma_1 karisik, okuma_2 F_S1)."
+  },
+  {
+   "dosya": "AKT25FZ-T027_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Grafikte dogrularin K ve L etiketleri basili; soru m_K/m_L'yi hangi dogrunun K oldugundan cikariyor. okuma_2 K/L etiketlerini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T027_02",
+   "esasli_hata": "yok",
+   "gerekce": "Kure uzerindeki C, B, O, A yalniz nokta etiketi; kutup/ekvator konumu yaziyla aktarilamiyor, yazi veri tasimiyor. Salt etiket govdeye girmez; okuma_1'in etiket satirlari cikarildi."
+  },
+  {
+   "dosya": "AKT25FZ-T027_03",
+   "esasli_hata": "yok",
+   "gerekce": "'Sekil I / Sekil II' resim altyazisi; govde ve oncullerde bunlara atif yok, salt etiket -> govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T027_05",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde Hareket yonu (saga ok), solda F_2 ve F_3, sagda F_1 etiketleri basili. Yon bilgisi oklarla verilmis; etiket yazisi kendi basina ek veri tasimiyor, eksikligi esasli sayilmadi. Soru sekle dayandigi icin etiketli okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T027_06",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde V_(sabit), m, \u03b1 etiketleri; sabit hiz bilgisi metinde var. Salt etiket, okuma_1 alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T027_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sik cizimlerinde kuvvet etiketleri basili: A) F, Fs, G; B) N, G; C) N, F, Fs, G; D) G, Fs; E) N, G, Fs - soru hangi kuvvetlerin gosterildigine dayaniyor, okuma_1 yaziyi atlamis. Govde sekil yazisi (F, Sabit hiz) metinde tekrar ettigi icin girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T027_08",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde yalniz F oku ve K, L, M nokta etiketleri; hepsi metinde zaten adlandirilmis, salt etiket -> govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T027_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde duvara dayali cisim, 'F' ok etiketi ve asagi oklu 'Hareket y\u00f6n\u00fc'. Hareket yonu soru icin gerekli, okuma_1 yazmis; ancak yon bilgisi okta, yazi etiket niteliginde -> bicim/etiket farki."
+  },
+  {
+   "dosya": "AKT25FZ-T027_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde T_2, T_1 (ip etiketleri), F, K, L basili; soru T_1/T_2'nin hangi ip oldugunu sekilden aliyor. okuma_1 sekil yazisini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T028_02",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki V_1, V_2, F, F, x etiketlerinin hepsi metinde var; salt etiket. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T028_03",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki F_1..F_5, A, B, x, 'Hareket yonu' kuvvet oklarinin etiketleri; kuvvet adlari ve A->B hareket govdede zaten var, yon bilgisi cizimde -> salt etiket."
+  },
+  {
+   "dosya": "AKT25FZ-T028_04",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde F = 10 N, X, F_s = 2 N, A, 8 m, B basili (F_s sonrasindaki isaret 6x NEAREST buyutmede bulanik tek gri bant, F = 10 N ile ayni = kabul edildi). Degerler metinde de var; III. yargidaki B noktasi icin etiketler govdeye alindi, okuma_1 eksigi esasli degil."
+  },
+  {
+   "dosya": "AKT25FZ-T028_05",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde ip, m, F_1, V, F_2, F_3 etiketleri; duzenlemesiz etiket listesi veri tasimiyor (yonler gorsel). Salt etiket, okuma_1 alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T028_06",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde K, L, M kutulari ve V, F oklari; bilgi ok yonlerinde (grafik), yazi etiketleri tek basina veri tasimiyor. Salt etiket, govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T028_08",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki m = 2 kg ve V = 4 m/s metinde aynen veriliyor; salt etiket, govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T028_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki 'm = 2 kg', 'h = 4 m', 'yer' degerleri govde metninde aynen var; soru metne dayaniyor, sekil yazisi tekrar/etiket."
+  },
+  {
+   "dosya": "AKT25FZ-T028_10",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki m = 2 kg, 10 m/s, h = 2 m, yer bilgisi govde metninde zaten var; salt etiket, govdeye girmez. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T029_01",
+   "esasli_hata": "yok",
+   "gerekce": "Grafikte 'Kuvvet (N)', 8, 0, 5, 'Konum (m)' basili; ikisi de 8 ve 5'i veriyor, fark yalniz dizim bicimi (okuma_2 0'i ve ' yerine \u2019 kullanmis). okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T029_02",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Grafikte Konum ekseninde +x, 0, \u2212x; zaman ekseninde t basili; oncullar grafigin verdigi hareket bilgisine dayaniyor, eksen degerleri grafigin tek yazili verisi. okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T029_03",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde X (m, F) yolu 2x, Y (2m, 2F) yolu x; yer degistirmeler yalniz sekilde ve W_X/W_Y buna dayaniyor. okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T029_04",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde yalniz I., II., III. numaralari ve ok/F/yatay etiketleri; durumlar gorsel. Salt etiket, okuma_1 alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T029_05",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki 2 kg, F = 12 N, 6 m metinde aynen var; soru sekle dayanmiyor, govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T029_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde V = 10 m/s (iki kez), F = 20 N, A, B ve '8 m' basili; 8 m mesafesi yalniz sekilde verilen soru verisi, okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T029_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde E_K = 20 J, E_L = 32 J, F = 10 N ve K-L arasi mesafe '2 m'. '2 m' govdede gecmiyor ve F'nin isi icin sorunun dayandigi veri; okuma_1 sekil yazisini tamamen atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T029_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde K noktasindaki cismin ustunde '0' (hiz) basili; bu veri yalniz sekilde, soru ona dayaniyor. okuma_1 sekil yazisini atlamis. Bilesik indis sozlesmeye gore W_(KL)/W_(LM) (bicim)."
+  },
+  {
+   "dosya": "AKT25FZ-T030_07",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde yalniz F oku etiketi var, metinde zaten geciyor; salt etiket. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T030_08",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sekilde kutu ustunde 'V = 0' basili (baslangicta durgun oldugu yalniz sekilde veriliyor), F oku, m, \u0394x. V = 0 govdede yok, veri tasiyor; okuma_1 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T030_09",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde m, K, L, alfa etiketleri; K ve L metinde zaten var, alfa soruda kullanilmiyor: salt etiket, govdeye girmez. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T030_10",
+   "esasli_hata": "yok",
+   "gerekce": "Sekildeki F_N, F_D, F_S, yer (yatay) etiketleri; kuvvet yonleri metinde tarif edilmis. Salt etiket, okuma_1 alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T031_01",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde X (serbest dusme) h, Y (egik duzlem) h, yer etiketleri; X/Y hangi duzenekte oldugu sekle dayanir, okuma_1 bicimi korundu. Sayisal veri yok."
+  },
+  {
+   "dosya": "AKT25FZ-T033_01",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde 'A' ustunde tek arti (A+); fark yalniz A^(+) / A^+ yazim bicimi. Sozlesme (tek karakter us x^2) geregi A^+ yazildi."
+  },
+  {
+   "dosya": "AKT25FZ-T033_08",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde h (E sikkinda mgh icin gerekli, iki okumada var) ve yayin yaninda 'Yatay' etiketi; 'Yatay' salt etiket, girmez. Bicim/etiket farki."
+  },
+  {
+   "dosya": "AKT25FZ-T034_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde kurelerin X, Y, Z adlari ve anahtarlarin I, II etiketleri basili; soru hangi kurenin 3r/2r/r oldugu ve I/II anahtar sirasina dayaniyor. okuma_2 X/Y/Z ve I/II'yi atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T035_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekil yazilari (K, L, X, yuk degerleri) metinde zaten var; salt etiket, govdeye girmez. Ayrica okuma_2 sekildeki K yukunu '\u22123q' yazmis: piksel dokumunde yatay cubuk koyu (50-70), ortada soluk dikey cubuk (218-237) var, yani soluk basilmis '+'; metin 6x NEAREST buyutmede acikca '+3q'. okuma_2 hem gereksiz hem yanlis isaretli yuk eklemis."
+  },
+  {
+   "dosya": "AKT25FZ-T035_07",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde X ve Y kureleri arasinda 'd' etiketi; d mesafesi govdede zaten yaziyor, salt etiket -> govdeye girmez."
+  },
+  {
+   "dosya": "AKT25FZ-T036_01",
+   "esasli_hata": "yok",
+   "gerekce": "Fotografin altindaki pembe italik \"Faraday Kafesi\" altyazi; soru buna dayanmiyor (tanim metinde), salt etiket. okuma_2 (altyazisiz) alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T039_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Hangi sekilde hangi kure ciftinin bulundugu (I: K-K, II: L-L, III: K-L, hepsinde d) yalniz sekilde; soru buna dayaniyor. okuma_1 dogru; okuma_2 bu veriyi eksik birakmis."
+  },
+  {
+   "dosya": "AKT25FZ-T040_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "'1 yonunde' sonrasindaki isaret 8x NEAREST ve piksel dokumunde yuvarlak nokta: satir tabaninda 4x4 px, harflerin altina inmiyor, kuyruk yok -> nokta (dizgi hatasi basildigi gibi)."
+  },
+  {
+   "dosya": "AKT25FZ-T042_06",
+   "esasli_hata": "yok",
+   "gerekce": "Grafik eksen degerleri (3, 6, 9, 12 / 1, 2, 3, 4) iki okumada da var; dogru etiketleri X, Y, Z metnin andigi direncleri adlandiriyor -> eklendi; '\u015eekil I' salt sekil basligi, alinmadi. Veri kaybi yok."
+  },
+  {
+   "dosya": "AKT25FZ-T042_08",
+   "esasli_hata": "yok",
+   "gerekce": "Devrede 9\u03a9 seri, 3\u03a9 / 2\u03a9 / R paralel; iki okuma ayni dort degeri yazmis, fark yalniz satir/virgul bicimi."
+  },
+  {
+   "dosya": "AKT25FZ-T042_09",
+   "esasli_hata": "yok",
+   "gerekce": "Ayni uc direnc degeri, yalniz satir/virgul bicimi farkli. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T042_10",
+   "esasli_hata": "yok",
+   "gerekce": "Devrede 3 \u03a9, 1 \u03a9, S, R basili; ikisi de ayni degerleri veriyor, fark yalniz satir/virgul dizimi. okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T043_03",
+   "esasli_hata": "yok",
+   "gerekce": "Devrede 7\u03a9, 4\u03a9, 12\u03a9, 5\u03a9 pikselde okumalarla ayni; iki okuma da yazmis, yalniz satir/virgul dizimi farki."
+  },
+  {
+   "dosya": "AKT25FZ-T043_08",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil etiketleri 8x buyutmede: \"K 2A 1 Ohm L\" ve \"X 2 Ohm Y 1A\"; virgul farki salt bicim, iki okuma ayni veriyi tasiyor. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T048_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Uzakliklar yalniz sekilde: X ve Y tele d, Z 2d. Soru buna dayaniyor. okuma_1 dogru; okuma_2 eksik."
+  },
+  {
+   "dosya": "AKT25FZ-T049_05",
+   "esasli_hata": "okuma_1",
+   "gerekce": "'kaynaklari' sonrasindaki isaret 8x NEAREST ve piksel dokumunde dikey uzun, harf tabaninin 1 px altina iniyor (ayni kitaptaki T040 noktasina gore belirgin kuyruk) -> virgul."
+  },
+  {
+   "dosya": "AKT25FZ-T051_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde isin ile ayna arasinda '30\u00b0' aci degeri basili; sorudaki tek sayisal veri, okuma_2 atlamis. N etiketi salt etiket."
+  },
+  {
+   "dosya": "AKT25FZ-T051_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Soldaki sekilde ayna I ile yatay arasinda basili '30\u00b0' (sorunun dayandigi aci) ve 'Yatay', 'D\u00fcsey' yazilari. Siklarda basili acilar: A 60\u00b0, B 30\u00b0, D 45\u00b0, E 30\u00b0; C'de yalniz dik aci isareti. Siklari ayirt eden yazi; okuma_2 govdedeki 30\u00b0'yi ve sik acilarini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T051_10",
+   "esasli_hata": "yok",
+   "gerekce": "'X'e g\u00f6re kayna\u011f\u0131n g\u00f6r\u00fcn\u00fcm\u00fc' / 'Y'ye g\u00f6re...' Sekil II/III ust basliklari; soru metni Sekil II/III'e zaten adla atif yapiyor, salt etiket -> govdeye girmez. 'noka' dizgi hatasi basili, korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T052_02",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde 30\u00b0, \u03b1, 100\u00b0, \u03b8 acilari basili; 30\u00b0 ve 100\u00b0 metinde yok, yargilar bu acilara dayaniyor. okuma_2 sekil yazisini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T053_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "II duzeneginde iki aci '40\u00b0' basili; II duzeneginin degerlendirilmesi bu acilara dayaniyor ve govdede yok. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T054_02",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde X, Y, Z, T, F, M, Asal eksen ve Z isininda iki alfa; soru isin yollarinin cizimine dayaniyor, etiket yazilari ek veri tasimiyor. okuma_1 in yalniz \"alfa alfa\" satiri salt etiket; okuma_2 alindi."
+  },
+  {
+   "dosya": "AKT25FZ-T054_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Ayna turleri (I, II \u00c7ukur ayna; III T\u00fcmsek ayna), x ve II'deki \u03b1, \u03b1 yalniz sekilde; soru buna dayaniyor. okuma_1 dogru; okuma_2 eksik."
+  },
+  {
+   "dosya": "AKT25FZ-T054_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "E sikki ciziminde aci etiketleri \u03b1 ve 2\u03b1 basili (normal cevresinde); veri tasiyor, okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T055_02",
+   "esasli_hata": "yok",
+   "gerekce": "Sekil I'de bir \u03b1, Sekil II'de normalin iki yaninda \u03b1 \u03b1 basili; sayisal veri degil, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T055_05",
+   "esasli_hata": "okuma_2",
+   "gerekce": "D sikkinda normalin iki yaninda basili '\u03b1 \u03b1' (esit aci bilgisi, sikki tanimlayan yazi); diger siklarda yalniz 'N' etiketi. okuma_2 '\u03b1 \u03b1' yazmamis."
+  },
+  {
+   "dosya": "AKT25FZ-T055_06",
+   "esasli_hata": "ikisi",
+   "gerekce": "Uc panelde N, n, n_X/n_Y/n_Z, \u03b8 (3. panelde \u03b8 \u03b8) ve I basili; soru her panelde ayni \u03b8 gelis acisi ve hangi panelin hangi ortam oldugu verisine dayaniyor. okuma_2 sekil yazisini tumden atlamis; okuma_1 yalniz \u03b8'lari yazip n_X/n_Y/n_Z panel etiketlerini atlamis. Nihai tum panel etiketleri."
+  },
+  {
+   "dosya": "AKT25FZ-T056_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Asal eksen uzerinde K (ayna tepesi), L, M, N sirasiyla basili; secenekler (KL arasi, LM arasi...) bu siraya dayaniyor. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T056_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Asal eksen uzerinde O K L M noktalari ve 'Asal eksen' basili; siklar (OK arasi, K, KL arasi...) bu noktalarin sirasina dayaniyor. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T056_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Kutu icinde buyuk K Y M harfleri basili; soru dogrudan bu harflere dayaniyor (hangi harfler okunur). okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T057_01",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Aynanin tabanla 30\u00b0 acisi yalniz sekilde ('D\u00fczlem ayna', '30\u00b0'); soru buna dayaniyor (metindeki 30\u00b0 sinir acisi ayri). okuma_1 dogru; okuma_2 eksik."
+  },
+  {
+   "dosya": "AKT25FZ-T057_03",
+   "esasli_hata": "yok",
+   "gerekce": "Grafik: dikey eksen 1,5 / 3 / 6, yatay 0 / 2 / 4 / 8, eksen adlari Gorunur derinlik (m), Gercek derinlik (m). Iki okuma ayni degerleri farkli bicimde vermis; bicim varyanti."
+  },
+  {
+   "dosya": "AKT25FZ-T058_03",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde 1, 2, 3, 4 noktalari ve 'Asal eksen' basili; nokta konumlari metinle aktarilamiyor, okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T058_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde asal eksen uzerinde soldan saga K, L, O, M, N, P noktalari (O'da mercek, N'de 'Cisim' oku) ve 'Asal eksen'. Soru noktalarin sirasina dayaniyor (metinde yok); okuma_2 sekil yazisini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T058_09",
+   "esasli_hata": "ikisi",
+   "gerekce": "Sekilde D\u00fczlem ayna, Y (mercek), I_1, I_2 isin etiketleri ve K O L M N, Asal eksen basili; siklar O/L/M/N noktalarina, soru I_1/I_2 isinlarina dayaniyor. okuma_2 hepsini atlamis; okuma_1 I_1, I_2, Y, D\u00fczlem ayna etiketlerini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T059_03",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde 'sapma a\u00e7\u0131s\u0131' ve d etiketleri yargilarda gecen buyuklukleri tanimliyor (Hava, Asal eksen, I ise metinde/soruda zaten var). okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T059_04",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekil altyazilari 'Yakinsak mercek (I)', 'Cukur ayna (II)', 'Iraksak mercek (III)' basili; optik aracin turu govdede yok, soru buna dayaniyor. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T059_08",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekil altlarinda Iraksak mercek (I), Yakinsak mercek (II), Cukur ayna (III) basili; hangi aracin hangisi oldugu yalniz bu yazida, soru buna dayaniyor. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T060_04",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x NEAREST buyutmede alt cizgi 'y'den 'r'ye kadar tum 'yanl\u0131\u015ft\u0131r' kelimesini kapsiyor, '?' disinda. okuma_1 kapsami '<u>yanl\u0131\u015f</u>t\u0131r' diye daraltmis."
+  },
+  {
+   "dosya": "AKT25FZ-T060_06",
+   "esasli_hata": "okuma_2",
+   "gerekce": "Sekilde asal eksen uzerinde soldan saga K L M N P R noktalari ve 'Asal eksen' yazisi; soru L ve K konumuna dayaniyor, nokta sirasi veri. okuma_2 atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T060_07",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Piksel dokumu (esik 235, y=164-166): 'yanl\u0131\u015ft\u0131r' alti cizgisi x=300-393, 'r' harfi 386-394'te biter, '?' 400-404 disarida -> tum kelime alti cizili; okuma_1 kapsami 'yanl\u0131\u015f' ile sinirlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T061_08",
+   "esasli_hata": "yok",
+   "gerekce": "Agac: DALGALAR -> 'Ta\u015f\u0131d\u0131\u011f\u0131 enerjiye g\u00f6re' ve 'I'; 'Ta\u015f\u0131d\u0131\u011f\u0131 enerjiye g\u00f6re' -> 'Elektromanyetik dalgalar', 'II'; 'I' -> 'III', 'Boyuna dalgalar'. Iki okuma da tum kutu yazilarini tasiyor (okuma_1 ebeveyn-cocuk, okuma_2 seviye seviye); bicim farki."
+  },
+  {
+   "dosya": "AKT25FZ-T063_07",
+   "esasli_hata": "ikisi",
+   "gerekce": "Siklar 3x NEAREST: A K ustte L altta 40\u00b0; B K ustte L altta 50\u00b0; C L ustte K altta 40\u00b0; D L ustte K altta 50\u00b0; E K ustte L altta 20\u00b0; her sikta Y. A ile C yalniz K/L yeriyle, A ile B aci ile ayriliyor. okuma_1 sik yazilarini tumden atlamis; okuma_2 acilari yazmis ama K/L'yi atlamis. Govdede okuma_2 X engeli/Y engeli'ni atlamis; ikisi de atmadaki K, L etiketlerini atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T063_11",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde X, Y, Ara kesit ve cok kucuk i, r aci etiketleri; X/Y ve ara kesit metinde var, aci yeri yaziyla aktarilamiyor: salt etiket. okuma_1 korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T064_06",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sag altta pembe italik '(TYT 2022)' parantezleriyle basili; okuma_1 parantezleri atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T065_06",
+   "esasli_hata": "yok",
+   "gerekce": "Sekilde tepe noktasinda X, cukurda Y etiketi; I. yargi X ve Y ye atif yapiyor, etiketler govdeye alindi. Yer bilgisi cizimde, etiket yazisi ek veri tasimadigindan okuma_1 eksigi esasli degil."
+  },
+  {
+   "dosya": "AKT25FZ-T065_11",
+   "esasli_hata": "yok",
+   "gerekce": "8x NEAREST: bosluklar noktali cizgi (5 kisa cizgi) ustunde I / II. '--I--' ile '-I-' yalniz bicim varyanti; okuma_1 bicimi korundu."
+  },
+  {
+   "dosya": "AKT25FZ-T066_10",
+   "esasli_hata": "okuma_1",
+   "gerekce": "Sag altta pembe italik etiket parantezli basili: (TYT 2020). okuma_1 parantezleri atlamis."
+  },
+  {
+   "dosya": "AKT25FZ-T066_11",
+   "esasli_hata": "okuma_1",
+   "gerekce": "6x buyutmede etiket parantezli basili: '(TYT 2021)'; okuma_1 parantezleri atlamis."
+  }
+ ],
+ "duzeltmeler": [
+  {
+   "dosya": "AKT25FZ-T001_10",
+   "basili_no": 10,
+   "govde": "Bat\u0131 \u2194 Do\u011fu\nF_2 = 5 N\nF_1 = 10 N\nF_3 = 5 N\nS\u00fcrt\u00fcnmesiz yatay d\u00fczlemdeki X cismine etki eden kuvvetler \u015fekildeki gibidir.\nBuna g\u00f6re, X cismine etki eden net kuvvetin y\u00f6n\u00fc ve b\u00fcy\u00fckl\u00fc\u011f\u00fc i\u00e7in a\u015fa\u011f\u0131dakilerden hangisi do\u011frudur?",
+   "sikler": {
+    "A": "Do\u011fu, 5 N",
+    "B": "Do\u011fu, 10 N",
+    "C": "Do\u011fu, 15 N",
+    "D": "Bat\u0131, 5 N",
+    "E": "Bat\u0131, 10 N"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T003_07",
+   "basili_no": 7,
+   "govde": "Bat\u0131 \u2194 Do\u011fu\nF_3 = 10 N\nF_1 = 3 N\nF_2 \u2212 5 N\nS\u00fcrt\u00fcnmesiz yatay d\u00fczlemdeki K cismine etki eden kuvvetler \u015fekildeki gibidir.\nBuna g\u00f6re, K cismine etki eden net kuvvetin y\u00f6n\u00fc ve b\u00fcy\u00fckl\u00fc\u011f\u00fc a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "Do\u011fu, 2 N",
+    "B": "Do\u011fu, 8 N",
+    "C": "Bat\u0131, 2 N",
+    "D": "Bat\u0131, 10 N",
+    "E": "Bat\u0131, 18 N"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T003_12",
+   "basili_no": 12,
+   "govde": "E\u015fit b\u00f6lmeli d\u00fczlemde A cismine etki eden K, L ve M kuvvetleri \u015fekildeki gibidir.\n|M| = 5 br oldu\u011funa g\u00f6re, A cismine etki eden bile\u015fke kuvvet ka\u00e7 br'dir?",
+   "sikler": {
+    "A": "5",
+    "B": "10",
+    "C": "15",
+    "D": "20",
+    "E": "25"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T004_01",
+   "basili_no": 1,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan kapta, e\u015fit y\u00fckseklikte x, y ve z s\u0131v\u0131lar\u0131 bulunmaktad\u0131r.\nBuna g\u00f6re, s\u0131v\u0131lar\u0131n k\u00fctleleri m_x, m_y ve m_z aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "m_x = m_y = m_z",
+    "B": "m_x = m_y > m_z",
+    "C": "m_x > m_y > m_z",
+    "D": "m_z = m_y > m_x",
+    "E": "m_z > m_y > m_x"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T004_04",
+   "basili_no": 4,
+   "govde": "24 Ayar (I)\n18 Ayar (II)\n14 Ayar (III)\nAyarlar\u0131 \u015fekildeki gibi olan yukar\u0131daki \u00fc\u00e7 alt\u0131n bilezi\u011fin k\u00fctleleri e\u015fittir.\nBuna g\u00f6re,\nI. En fazla alt\u0131n I. bileziktedir.\nII. En fazla alt\u0131n III. bileziktedir.\nIII. Hacmi en b\u00fcy\u00fck olan III. bileziktir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T004_06",
+   "basili_no": 6,
+   "govde": "Ayn\u0131 s\u0131cakl\u0131ktaki K, L ve M s\u0131v\u0131lar\u0131n\u0131n k\u00fctle - hacim grafi\u011fi yukar\u0131daki gibidir.\nBuna g\u00f6re, s\u0131v\u0131lar\u0131n \u00f6zk\u00fctleleri d_K, d_L ve d_M aras\u0131ndaki ili\u015fki nas\u0131ld\u0131r?",
+   "sikler": {
+    "A": "d_K > d_L > d_M",
+    "B": "d_K = d_L > d_M",
+    "C": "d_L > d_K > d_M",
+    "D": "d_M > dL > d_K",
+    "E": "d_M = d_L = d_K"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T004_07",
+   "basili_no": 7,
+   "govde": "K\u00fctle\nK, L\nHacim\nK\u00fctle - hacim grafi\u011fi yukar\u0131daki gibi olan K ve L s\u0131v\u0131lar\u0131n\u0131n \u00f6zk\u00fctle - k\u00fctle grafi\u011fi a\u015fa\u011f\u0131dakilerden hangisi gibi olabilir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T004_10",
+   "basili_no": 10,
+   "govde": "Ayn\u0131 s\u0131cakl\u0131kta i\u00e7i dolu yar\u0131\u00e7aplar\u0131 2r ve r olan K ve L k\u00fcrelerinin k\u00fctleleri e\u015fittir.\nBuna g\u00f6re, \u00f6zk\u00fctlelerinin oran\u0131 d_K/d_L ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/8",
+    "B": "1/4",
+    "C": "1/2",
+    "D": "2",
+    "E": "8"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T005_01",
+   "basili_no": 1,
+   "govde": "4a\n2a\na\nDikd\u00f6rtgenler prizmas\u0131 \u015feklindeki cisim \u015fekildeki gibi duruyorken, taral\u0131 olan y\u00fczeyi yere gelecek \u015fekilde yat\u0131r\u0131l\u0131rsa, dayan\u0131kl\u0131l\u0131\u011f\u0131 ve ta\u015f\u0131yabilece\u011fi en fazla y\u00fck miktar\u0131 nas\u0131l de\u011fi\u015fir?\nDayan\u0131kl\u0131l\u0131k | Ta\u015f\u0131yaca\u011f\u0131 Y\u00fck",
+   "sikler": {
+    "A": "Azal\u0131r | Artar",
+    "B": "Azal\u0131r | Azal\u0131r",
+    "C": "Artar | Artar",
+    "D": "Artar | Azal\u0131r",
+    "E": "De\u011fi\u015fmez | De\u011fi\u015fmez"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T005_04",
+   "basili_no": 4,
+   "govde": "a\na\na\n2a\nAyn\u0131 maddeden yap\u0131lm\u0131\u015f, e\u015fit s\u0131cakl\u0131ktaki k\u00fcp ile silindirin dayan\u0131kl\u0131klar\u0131 s\u0131ras\u0131yla D_K ve D_S dir.\nBuna g\u00f6re, D_K/D_S oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "1/2",
+    "C": "2",
+    "D": "3/2",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T006_04",
+   "basili_no": 4,
+   "govde": "h\nh\n5d 5d 5d\nI II III\nD\u00fc\u015fey kesiti \u015fekildeki gibi olan kaplar\u0131n bo\u015f k\u0131s\u0131mlar\u0131 d k\u00fctleleri s\u0131v\u0131yla tamamen dolduruluyor. Olu\u015fan t\u00fcrde\u015f kar\u0131\u015f\u0131mlar\u0131n \u00f6zk\u00fctleleri s\u0131ras\u0131yla d_1, d_2 ve d_3 t\u00fcr.\nBuna g\u00f6re, d_1, d_2 ve d_3 aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "d_1 > d_2 > d_3",
+    "B": "d_1 > d_3 > d_2",
+    "C": "d_2 > d_1 > d_3",
+    "D": "d_2 > d_3 > d_1",
+    "E": "d_3 > d_2 > d_1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T006_06",
+   "basili_no": 6,
+   "govde": "K\u00fctle (g) - Hacim (cm^3): K; 1, 2; 1 2\n\u00d6zk\u00fctle (g/cm^3) - Hacim (cm^3): L; 2\n\u00d6zk\u00fctle (g/cm^3) - K\u00fctle (g): M; 3\nK, L ve M s\u0131v\u0131lar\u0131na ait grafikler yukar\u0131daki gibidir.\nK, L ve M s\u0131v\u0131lar\u0131 bir kaba konuldu\u011funda denge durumlar\u0131 nas\u0131l olur?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) M / L / K",
+    "B": "(g\u00f6rsel \u015f\u0131k) L / M / K",
+    "C": "(g\u00f6rsel \u015f\u0131k) M / K / L",
+    "D": "(g\u00f6rsel \u015f\u0131k) K / M / L",
+    "E": "(g\u00f6rsel \u015f\u0131k) K / L / M"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T007_04",
+   "basili_no": 4,
+   "govde": "Ayn\u0131 s\u0131cakl\u0131ktaki K ve L s\u0131v\u0131lar\u0131n\u0131n k\u00fctle - hacim grafikleri \u015fekildeki gibidir.\nK\u00fctle (g) - Hacim (cm^3)\nK: 5 \u2192 20\nL: 10 \u2192 10\nK ve L s\u0131v\u0131lar\u0131ndan e\u015fit hacimde al\u0131nd\u0131\u011f\u0131nda k\u00fctlelerinin oran\u0131 m_K/m_L ka\u00e7 olur?",
+   "sikler": {
+    "A": "1/2",
+    "B": "1",
+    "C": "2",
+    "D": "4",
+    "E": "8"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T007_05",
+   "basili_no": 5,
+   "govde": "\u015eekil I'deki bo\u015f kab\u0131n k\u00fctlesi 10 g'd\u0131r. Bu kap su ile dolduruldu\u011funda 110 g, X s\u0131v\u0131s\u0131 ile dolduruldu\u011funda 210 g gelmektedir.\nBuna g\u00f6re, X s\u0131v\u0131s\u0131n\u0131n \u00f6zk\u00fctlesi ka\u00e7 g/cm^3 t\u00fcr?\n(d_su = 1 g/cm^3)",
+   "sikler": {
+    "A": "1/2",
+    "B": "1",
+    "C": "3/2",
+    "D": "2",
+    "E": "5/2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T007_09",
+   "basili_no": 9,
+   "govde": "Kesitleri S ve 2S olan k\u0131lcal borular I ve II kaplar\u0131na dald\u0131r\u0131ld\u0131\u011f\u0131nda, borulardaki s\u0131v\u0131 y\u00fckseklikleri e\u015fit olmaktad\u0131r.\nY\u00fcksekli\u011fin e\u015fit olma sebebi,\nI. S\u0131v\u0131lar\u0131n cinsinin farkl\u0131 olmas\u0131\nII. Borular\u0131n cinsinin farkl\u0131 olmas\u0131\nIII. S\u0131v\u0131lar\u0131n s\u0131cakl\u0131klar\u0131n\u0131n farkl\u0131 olmas\u0131\nifadelerinde belirtilen olaylardan hangileri olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ya da II",
+    "E": "I ya da II ya da III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T008_04",
+   "basili_no": 4,
+   "govde": "I: 3a, 2a, a\nII: a, 2a, 3a\nD\u00fczg\u00fcn t\u00fcrde\u015f prizmalar\u0131n yere yapt\u0131klar\u0131 bas\u0131n\u00e7lar e\u015fittir.\nCisimlerin a\u011f\u0131rl\u0131klar\u0131 s\u0131ras\u0131yla G_1 ve G_2 oldu\u011funa g\u00f6re, G_1/G_2 oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T008_05",
+   "basili_no": 5,
+   "govde": "I: 3a, 2a, a\nII: a, 2a, 3a\nD\u00fczg\u00fcn t\u00fcrde\u015f prizmalar\u0131n a\u011f\u0131rl\u0131klar\u0131 e\u015fittir.\nBuna g\u00f6re, cisimlerin yere yapt\u0131klar\u0131 bas\u0131n\u00e7lar\u0131n oran\u0131 P_1/P_2 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T009_02",
+   "basili_no": 2,
+   "govde": "10 N\n5 kg\nII\nYatay\nI\nK\u00fcp \u015feklindeki bir cisim I ve II duvarlar\u0131n\u0131n aras\u0131na \u015fekildeki gibi konulmu\u015ftur.\nI ve II duvarlar\u0131na yap\u0131lan bas\u0131n\u00e7lar s\u0131ras\u0131yla P_1 ve P_2 dir.\nBuna g\u00f6re, P_1/P_2 oran\u0131 ka\u00e7t\u0131r? (g = 10 m/s^2)",
+   "sikler": {
+    "A": "5",
+    "B": "4",
+    "C": "3",
+    "D": "2",
+    "E": "1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T009_06",
+   "basili_no": 6,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan kaplarda K, L ve M s\u0131v\u0131lar\u0131 vard\u0131r. Kaplar\u0131n taban\u0131ndaki s\u0131v\u0131 bas\u0131n\u00e7lar\u0131 e\u015fittir.\nK: h, S\nL: 2S\nM: 3S, h\nBuna g\u00f6re, s\u0131v\u0131lar\u0131n \u00f6zk\u00fctleleri d_K, d_L ve d_M aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "d_K = d_L = d_M",
+    "B": "d_K > d_L > d_M",
+    "C": "d_L > d_K > d_M",
+    "D": "d_M > d_L > d_K",
+    "E": "d_M > d_K > d_L"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T010_01",
+   "basili_no": 1,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan kaptaki K ve L s\u0131v\u0131lar\u0131n\u0131n k\u00fctleleri e\u015fittir.\nL 3h\nK h\nX ve Y noktalar\u0131ndaki s\u0131v\u0131 bas\u0131n\u00e7lar\u0131 P_X ve P_Y oldu\u011funa g\u00f6re, P_X/P_Y oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T010_02",
+   "basili_no": 2,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan kapta, e\u015fit hacimli d ve 3d \u00f6zk\u00fctleli s\u0131v\u0131lar vard\u0131r.\nd h\n3d h\nBuna g\u00f6re, s\u0131v\u0131lar t\u00fcrde\u015f olarak kar\u0131\u015ft\u0131r\u0131l\u0131rsa K ve L noktalar\u0131ndaki s\u0131v\u0131 bas\u0131n\u00e7lar\u0131 nas\u0131l de\u011fi\u015fir?\nK | L",
+   "sikler": {
+    "A": "Artar | De\u011fi\u015fmez",
+    "B": "Azal\u0131r | De\u011fi\u015fmez",
+    "C": "Artar | Artar",
+    "D": "Azal\u0131r | Artar",
+    "E": "De\u011fi\u015fmez | Azal\u0131r"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T011_01",
+   "basili_no": 1,
+   "govde": "Bir \u00f6\u011frenci, s\u0131v\u0131 bas\u0131nc\u0131n\u0131n nelere ba\u011fl\u0131 oldu\u011funu anlamak i\u00e7in, d\u00fc\u015fey kesiti \u015fekildeki gibi olan kaplarla, a\u015fa\u011f\u0131daki d\u00fczenekleri haz\u0131rl\u0131yor.\nI: Su, h, S\nII: Su, 2h, S\nIII: Tuzlu su, 2h, S\nKaplar\u0131n taban\u0131ndaki s\u0131v\u0131 bas\u0131nc\u0131n\u0131n III. kapta en fazla, I. kapta en az oldu\u011funu \u00f6l\u00e7\u00fcyor.\nBuna g\u00f6re,\nI. Derinlik artarsa, s\u0131v\u0131 bas\u0131nc\u0131 artar.\nII. S\u0131v\u0131n\u0131n yo\u011funlu\u011fu artarsa, s\u0131v\u0131 bas\u0131nc\u0131 artar.\nIII. Yer\u00e7ekimi ivmesi artarsa, s\u0131v\u0131 bas\u0131nc\u0131 artar.\nyarg\u0131lar\u0131ndan hangileri bu deneyden \u00e7\u0131kar\u0131labilir?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T011_04",
+   "basili_no": 4,
+   "govde": "I: h, 2d, F_1, S\nII: 2h, d, F_2, 2S, 3S\nD\u00fc\u015fey kesiti \u015fekildeki gibi olan kaplara 2d ve d \u00f6zk\u00fctleli s\u0131v\u0131lar \u015fekildeki gibi dolduruluyor. I. kab\u0131n taban\u0131ndaki s\u0131v\u0131 bas\u0131n\u00e7 kuvvetinin b\u00fcy\u00fckl\u00fc\u011f\u00fc F_1, II. kab\u0131n yan y\u00fczeyindeki s\u0131v\u0131 bas\u0131n\u00e7 kuvvetinin b\u00fcy\u00fckl\u00fc\u011f\u00fc F_2 dir.\nBuna g\u00f6re, F_1/F_2 oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T011_09",
+   "basili_no": 9,
+   "govde": "I: X (S), S, h, Su\nII: Y (2S), 2S, h, Su\nA\u011f\u0131rl\u0131klar\u0131 G_X ve G_Y olan X ve Y pistonlar\u0131 \u015eekil I ve \u015eekil II'deki gibi dengededir.\nBuna g\u00f6re, pistonlar\u0131n a\u011f\u0131rl\u0131klar\u0131n\u0131n oran\u0131 G_X/G_Y ka\u00e7t\u0131r? (S : Kesit alan\u0131)",
+   "sikler": {
+    "A": "1/2",
+    "B": "1",
+    "C": "2",
+    "D": "3",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T016_04",
+   "basili_no": 4,
+   "govde": "Yeni ke\u015ffedilmi\u015f bir gezegende \u015fekildeki gibi bir balonla yerden y\u00fcksekte atmosferik \u00f6l\u00e7\u00fcmler yap\u0131lmas\u0131 planlan\u0131yor. Atmosfer s\u0131cakl\u0131\u011f\u0131n\u0131n sabit oldu\u011fu kabul edilen bu gezegende bulunan A, B, C ve D gazlar\u0131n\u0131n sabit s\u0131cakl\u0131k ve bas\u0131n\u00e7taki k\u00fctle-hacim grafi\u011fi a\u015fa\u011f\u0131daki gibidir. Bu gezegenin atmosferi A, B, C veya D gazlar\u0131ndan olu\u015fabilece\u011fi gibi balon da bu gazlarla doldurulabilir.\nBalonun ve \u00fczerindeki \u00f6l\u00e7\u00fcm cihazlar\u0131n\u0131n a\u011f\u0131rl\u0131\u011f\u0131 ihmal edildi\u011fine g\u00f6re;\n- | <u>Atmosfer</u> | <u>Balon</u>\nI. | A | B ve D kar\u0131\u015f\u0131m\u0131\nII. | B | A\nIII. | C ve D kar\u0131\u015f\u0131m\u0131 | C\ndurumlar\u0131ndan hangilerinde balon yerden havalanarak atmosferik \u00f6l\u00e7\u00fcmler yapabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z I",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(TYT 2023)"
+  },
+  {
+   "dosya": "AKT25FZ-T017_08",
+   "basili_no": 8,
+   "govde": "Bir tahta par\u00e7as\u0131 2d \u00f6zk\u00fcteli s\u0131v\u0131 i\u00e7erisinde \u015fekildeki gibi dengededir.\n\u00d6zk\u00fctlesi d olan ve 2d \u00f6zk\u00fctleli s\u0131v\u0131yla homojen olarak kar\u0131\u015fan bir s\u0131v\u0131 kaba ekleniyor.\nBuna g\u00f6re, tahtan\u0131n batan hacmi ve tahtaya etki eden kald\u0131rma kuvveti nas\u0131l de\u011fi\u015fir?\nBatan Hacim | Kald\u0131rma Kuvveti",
+   "sikler": {
+    "A": "Artar | Azal\u0131r",
+    "B": "Azal\u0131r | Azal\u0131r",
+    "C": "Azal\u0131r | De\u011fi\u015fmez",
+    "D": "De\u011fi\u015fmez | Artar",
+    "E": "De\u011fi\u015fmez | Azal\u0131r"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T020_02",
+   "basili_no": 2,
+   "govde": "Is\u0131ca yal\u0131t\u0131lm\u0131\u015f bir ortamda bir araya getirilen K ve L cisimlerinin s\u0131cakl\u0131k - zaman grafi\u011fi \u015fekildeki gibidir.\nS\u0131cakl\u0131k\n5T K\n4T\nL\nT\n0 Zaman\nBuna g\u00f6re, cisimlerin \u0131s\u0131 s\u0131\u011falar\u0131n\u0131n oran\u0131 c_K/c_L ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T020_04",
+   "basili_no": 4,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan K, L ve M kaplar\u0131nda 5T s\u0131cakl\u0131\u011f\u0131nda su vard\u0131r.\nh\nh\nKaplara doluncaya kadar s\u0131ras\u0131yla T_1, T_2 ve T_3 s\u0131cakl\u0131\u011f\u0131nda sular konuldu\u011funda kaplardaki sular\u0131n denge s\u0131cakl\u0131\u011f\u0131 3T oluyor.\nBuna g\u00f6re T_1, T_2 ve T_3 aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "T_1 = T_2 = T_3",
+    "B": "T_1 > T_2 > T_3",
+    "C": "T_2 > T_1 > T_3",
+    "D": "T_2 > T_3 > T_1",
+    "E": "T_3 > T_1 > T_2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T020_05",
+   "basili_no": 5,
+   "govde": "Is\u0131ca yal\u0131t\u0131lm\u0131\u015f bir ortamda bir araya getirilen K ve L cisimlerinin s\u0131cakl\u0131k - zaman grafi\u011fi \u015fekildeki gibidir.\nS\u0131cakl\u0131k\n5T K\n2T\nT L\n0 Zaman\nCisimlerin k\u00fctleleri e\u015fit oldu\u011funa g\u00f6re, \u00f6z\u0131s\u0131lar\u0131n\u0131n oran\u0131 c_K/c_L ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T021_11",
+   "basili_no": 11,
+   "govde": "Suyun \u00f6zk\u00fctle - s\u0131cakl\u0131k grafi\u011fi \u015fekildeki gibidir.\n\u00d6zk\u00fctle (g/m^3)\nS\u0131cakl\u0131k (\u00b0C)\n+4\nSuyun bu \u00f6zel durumu, g\u00fcnl\u00fck hayat\u0131m\u0131zda kar\u015f\u0131la\u015ft\u0131\u011f\u0131m\u0131z,\nI. K\u0131\u015f\u0131n su saatlerinin \u00e7atlamas\u0131\nII. G\u00f6llerin \u00fcstten donmas\u0131\nIII. Suyun oda s\u0131cakl\u0131\u011f\u0131nda buharla\u015fmas\u0131\nolaylar\u0131n\u0131n hangilerinde etkilidir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T022_01",
+   "basili_no": 1,
+   "govde": "A O B\nO noktas\u0131nda duran \u00e7ocu\u011fun A ve B noktalar\u0131na g\u00f6re, konum vekt\u00f6rlerinin y\u00f6n\u00fc a\u015fa\u011f\u0131dakilerden hangisi gibidir?\nA'ya g\u00f6re | B'ye g\u00f6re",
+   "sikler": {
+    "A": "\u2192 | \u2192",
+    "B": "\u2192 | \u2190",
+    "C": "\u2190 | \u2190",
+    "D": "\u2190 | \u2192",
+    "E": "\u2193 | \u2191"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T022_04",
+   "basili_no": 4,
+   "govde": "Bir \u015f\u00f6for yolculu\u011fa ba\u015flamadan \u00f6nce ara\u00e7 ekran\u0131nda bulunan kilometre \u00f6l\u00e7eri s\u0131f\u0131rl\u0131yor. Bir s\u00fcre yolculuk yapt\u0131ktan sonra kilometre ekran\u0131nda 100 km yaz\u0131s\u0131n\u0131 g\u00f6r\u00fcyor.\nBuna g\u00f6re, kilometre ekran\u0131nda g\u00f6r\u00fclen bu say\u0131, arac\u0131n hangi niceli\u011fine aittir?",
+   "sikler": {
+    "A": "H\u0131z",
+    "B": "S\u00fcrat",
+    "C": "Yol",
+    "D": "Yer de\u011fi\u015ftirme",
+    "E": "\u0130vme"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T022_10",
+   "basili_no": 10,
+   "govde": "20 m/s h\u0131zla dura\u011fa yakla\u015fan otob\u00fcs\u00fcn \u015f\u00f6for\u00fc, frene basarak 2 m/s^2 lik sabit ivmeyle otob\u00fcs\u00fc yava\u015flat\u0131yor.\nBuna g\u00f6re, otob\u00fcs ka\u00e7 saniye sonra durur?",
+   "sikler": {
+    "A": "2",
+    "B": "4",
+    "C": "6",
+    "D": "8",
+    "E": "10"
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_01",
+   "basili_no": 1,
+   "govde": "Do\u011frusal yolda hareket eden bir arac\u0131n konum - zaman grafi\u011fi \u015fekildeki gibidir.\nKonum\n0 t 2t 3t 4t 5t Zaman\nBuna g\u00f6re, ara\u00e7 ka\u00e7 kez y\u00f6n de\u011fi\u015ftirmi\u015ftir?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_02",
+   "basili_no": 2,
+   "govde": "Konum (m)\n30, 0, \u221210\nZaman (s)\n1, 2, 3, 4\nDo\u011frusal yolda hareket eden bir arac\u0131n konum - zaman grafi\u011fi \u015fekildeki gibidir.\nBuna g\u00f6re, (0 \u2212 4) saniyeler aral\u0131\u011f\u0131nda arac\u0131n ald\u0131\u011f\u0131 yol ve yer de\u011fi\u015ftirme ka\u00e7 m'dir?\nYol (m) | Yer de\u011fi\u015ftirme (m)",
+   "sikler": {
+    "A": "30 | 30",
+    "B": "40 | 10",
+    "C": "70 | 10",
+    "D": "70 | \u221210",
+    "E": "100 | 40"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_03",
+   "basili_no": 3,
+   "govde": "Do\u011frusal y\u00f6r\u00fcngede hareket eden K ve L ara\u00e7lar\u0131n\u0131n konum - zaman grafikleri \u015fekildeki gibidir.\nKonum (m)\n10 K\n0\n\u221210 L\n1, 2\nZaman (s)\nBuna g\u00f6re, ara\u00e7lar\u0131n s\u00fcratlerinin oran\u0131 V_K/V_L ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/4",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_05",
+   "basili_no": 5,
+   "govde": "Do\u011frusal yolda hareket eden bir arac\u0131n h\u0131z - zaman grafi\u011fi \u015fekildeki gibidir.\nH\u0131z\nZaman\n0, t, 2t, 3t, 4t, 5t\nBuna g\u00f6re, ara\u00e7 hangi anlarda y\u00f6n de\u011fi\u015ftirmi\u015ftir?",
+   "sikler": {
+    "A": "t ve 2t",
+    "B": "t ve 3t",
+    "C": "2t ve 3t",
+    "D": "2t ve 4t",
+    "E": "3t ve 4t"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_06",
+   "basili_no": 6,
+   "govde": "Do\u011frusal y\u00f6r\u00fcngede hareket eden bir arac\u0131n h\u0131z - zaman grafi\u011fi \u015fekildeki gibidir.\nH\u0131z\nZaman\n0, t, 2t, 3t\nBuna g\u00f6re, arac\u0131n konum - zaman grafi\u011fi a\u015fa\u011f\u0131dakilerden hangisi olabilir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_07",
+   "basili_no": 7,
+   "govde": "Do\u011frusal y\u00f6r\u00fcngede ayn\u0131 yerden harekete ge\u00e7en K ve L ara\u00e7lar\u0131n\u0131n h\u0131z - zaman grafikleri \u015fekildeki gibidir.\nH\u0131z\nV K\n0 t\n\u2212V L\nZaman\nBuna g\u00f6re,\nI. Ara\u00e7lar z\u0131t y\u00f6nde hareket etmektedir.\nII. Ara\u00e7lar\u0131n (0 \u2212 t) aral\u0131\u011f\u0131nda ald\u0131klar\u0131 yollar e\u015fittir.\nIII. Ara\u00e7lar\u0131n ivmeleri e\u015fittir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_08",
+   "basili_no": 8,
+   "govde": "Do\u011frusal y\u00f6r\u00fcngede hareket eden bir arac\u0131n konum - zaman grafi\u011fi \u015fekildeki gibidir.\nKonum (m)\n80, 40\n4, 6, 8\nZaman (s)\nBuna g\u00f6re, arac\u0131n h\u0131z - zaman grafi\u011fi a\u015fa\u011f\u0131dakilerden hangisi olabilir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T023_09",
+   "basili_no": 9,
+   "govde": "Do\u011frusal y\u00f6r\u00fcngede hareket eden K, L ve M ara\u00e7lar\u0131n\u0131n konum - zaman grafikleri \u015fekildeki gibidir.\nKonum (m)\nX, 0, \u2212X\nK, L, M\nZaman (s)\nBuna g\u00f6re,\nI. Ara\u00e7lar ayn\u0131 y\u00f6nde hareket etmektedir.\nII. M'nin s\u00fcrati en b\u00fcy\u00fckt\u00fcr.\nIII. K'nin s\u00fcrati artmaktad\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_01",
+   "basili_no": 1,
+   "govde": "H\u0131z\nV\nK\n0 t Zaman\nL\n\u2212V\nDo\u011frusal y\u00f6r\u00fcngede hareket eden K ve L ara\u00e7lar\u0131n\u0131n h\u0131z - zaman grafikleri \u015fekildeki gibidir.\nBuna g\u00f6re,\nI. K ve L'nin ivmeleri e\u015fit b\u00fcy\u00fckl\u00fcktedir.\nII. (0 - t) aral\u0131\u011f\u0131nda K ve L'nin ald\u0131\u011f\u0131 yollar e\u015fittir.\nIII. L arac\u0131n\u0131n yer de\u011fi\u015ftirmesi s\u0131f\u0131rd\u0131r.\nyarg\u0131lar\u0131ndan hangileri <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_02",
+   "basili_no": 2,
+   "govde": "Do\u011frusal bir y\u00f6r\u00fcngede hareket eden K ve L ara\u00e7lar\u0131n\u0131n h\u0131z-zaman grafi\u011fi \u015fekildeki gibidir.\nV\nV K\n0 t\n\u2212V L\nt\nBuna g\u00f6re,\nI. Ara\u00e7lar z\u0131t y\u00f6nde hareket etmektedir.\nII. Ara\u00e7lar\u0131n, ivmeleri e\u015fittir.\nIII. Ara\u00e7lar\u0131n, t s\u00fcrede ald\u0131klar\u0131 yollar e\u015fittir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_05",
+   "basili_no": 5,
+   "govde": "Do\u011frusal y\u00f6r\u00fcngede hareket eden bir arac\u0131n ivme - zaman grafi\u011fi \u015fekildeki gibidir.\n\u0130vme\na, 0, \u2212a\nt, 2t\nZaman\nBuna g\u00f6re,\nI. Ara\u00e7 (0 \u2212 t) aral\u0131\u011f\u0131nda h\u0131zlan\u0131r, (t \u2212 2t) aral\u0131\u011f\u0131nda yava\u015flar.\nII. Ara\u00e7 (0 \u2212 t) aral\u0131\u011f\u0131nda yava\u015flar, (t \u2212 2t) aral\u0131\u011f\u0131nda h\u0131zlan\u0131r.\nIII. Ara\u00e7 t an\u0131nda y\u00f6n de\u011fi\u015ftirir.\nyarg\u0131lar\u0131ndan hangileri do\u011fru olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I,II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_06",
+   "basili_no": 6,
+   "govde": "Do\u011frusal bir yolda hareket eden K, L, M ara\u00e7lar\u0131na ait h\u0131z-zaman grafi\u011fi \u015fekildeki gibidir.\nH\u0131z\n2V K\nV L\n0 t\n\u22122V M\nZaman\nBuna g\u00f6re K, L, M hareketlileriyle ilgili olarak;\nI. K ve M hareketlileri birbirlerine yakla\u015f\u0131r.\nII. L ve M hareketlileri z\u0131t y\u00f6nde hareket eder.\nIII. K ve L hareketlileri M hareketlisini kendilerinden uzakla\u015f\u0131yor g\u00f6r\u00fcr.\nyarg\u0131lar\u0131ndan hangileri <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_07",
+   "basili_no": 7,
+   "govde": "Do\u011frusal yolda s\u0131ras\u0131yla 10 m/s ve 5 m/s h\u0131zlarla hareket eden K ve L ara\u00e7lar\u0131n\u0131n bir t an\u0131ndaki konumlar\u0131 \u015fekildeki gibidir.\nK: 10 m/s\nL: 5 m/s\n5 m\n35 m\n10 m\nBuna g\u00f6re, t an\u0131ndan ka\u00e7 saniye sonra K arac\u0131 L'yi tamamen ge\u00e7er?",
+   "sikler": {
+    "A": "5",
+    "B": "10",
+    "C": "15",
+    "D": "20",
+    "E": "25"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_09",
+   "basili_no": 9,
+   "govde": "100 m\n20 m K\n30 m\n20 m\n30 m L\nSabit h\u0131zlarla \u015fekildeki konumlardan ge\u00e7en K ve L trenlerinin lokomotifleri ayn\u0131 anda t\u00fcnele ula\u015f\u0131yor.\nBuna g\u00f6re, trenlerin t\u00fcneli tamamen terk etme s\u00fcreleri t_K/t_L oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "2/3",
+    "B": "1",
+    "C": "3/2",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_10",
+   "basili_no": 10,
+   "govde": "V K\nV L\n2V M\nKL aras\u0131nda sabit h\u0131zla hareket eden bir ara\u00e7, L noktas\u0131nda d\u00fczg\u00fcn h\u0131zlanarak M noktas\u0131nda 2V h\u0131z\u0131na ula\u015f\u0131yor.\nKL ve LM aras\u0131ndaki hareket s\u00fcresi e\u015fit oldu\u011funa g\u00f6re, KL/LM oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "2/3",
+    "B": "1",
+    "C": "3/2",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T024_11",
+   "basili_no": 11,
+   "govde": "S\u00fcrt\u00fcnmelerin \u00f6nemsenmedi\u011fi bir ortamda K noktas\u0131ndan b\u0131rak\u0131lan cisim KL ve LM yollar\u0131n\u0131 e\u015fit s\u00fcrede al\u0131yor.\nBuna g\u00f6re, KL/LM oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/4",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T025_06",
+   "basili_no": 6,
+   "govde": "K: \u2190 5 N, 3 N \u2192\nL: \u2193 4 N, \u2190 4 N\nM: \u2190 4 N, \u2190 3 N, 7 N \u2192\nS\u00fcrt\u00fcnmesiz yatay d\u00fczlemde duran K, L ve M cisimlerine \u015fekillerde belirtilen kuvvetler etki etmektedir.\nBuna g\u00f6re, hangi cisimler ivmeli hareket yapar?",
+   "sikler": {
+    "A": "Yaln\u0131z K",
+    "B": "K - L",
+    "C": "K - M",
+    "D": "M - L",
+    "E": "K - L - M"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T025_09",
+   "basili_no": 9,
+   "govde": "S\u00fcrt\u00fcnme katsay\u0131s\u0131n\u0131n sabit oldu\u011fu yatay bir d\u00fczlemde bulunan \u00f6zde\u015f K ve L cisimleri F_1 ve F_2 yatay kuvvetleri ile \u015fekildeki gibi \u00e7ekildiklerinde sabit h\u0131zlarla hareket ediyor.\nCisimlerin h\u0131z b\u00fcy\u00fckl\u00fckleri s\u0131ras\u0131 ile 5 m/s ve 10 m/s oldu\u011funa g\u00f6re, F_1 ve F_2 kuvvetlerinin b\u00fcy\u00fckl\u00fckleri i\u00e7in a\u015fa\u011f\u0131dakilerden hangisi do\u011fru olabilir?\nF_1(N) | F_2(N)",
+   "sikler": {
+    "A": "5 | 10",
+    "B": "10 | 20",
+    "C": "20 | 20",
+    "D": "20 | 25",
+    "E": "25 | 50"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T025_10",
+   "basili_no": 10,
+   "govde": "S\u00fcrt\u00fcnmesi \u00f6nemsenmeyen yatay bir yolda durmakta olan bir cisme F_1 ve F_2 b\u00fcy\u00fckl\u00fc\u011f\u00fcndeki kuvvetler yatay olarak etki etti\u011finde cismin h\u0131z-zaman grafi\u011fi \u015fekildeki gibi olmaktad\u0131r.\nH\u0131z(m/s): 4\nZaman(s): 5\nCismin k\u00fctlesi 10 kg oldu\u011funa g\u00f6re, cisim \u00fczerine etki eden kuvvetler a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru g\u00f6sterilmi\u015f olabilir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) F_1 = 10 N, F_2 = 8 N, Yatay",
+    "B": "(g\u00f6rsel \u015f\u0131k) F_2 = 8 N, F_1 = 10 N, Yatay",
+    "C": "(g\u00f6rsel \u015f\u0131k) F_1 = 10 N, F_2 = 8 N, Yatay",
+    "D": "(g\u00f6rsel \u015f\u0131k) F_1 = 10 N, F_2 = 8 N, Yatay",
+    "E": "(g\u00f6rsel \u015f\u0131k) F_1 = 10 N, F_2 = 8 N, Yatay"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T026_02",
+   "basili_no": 2,
+   "govde": "S\u00fcrt\u00fcnmesiz yatay d\u00fczlemde hareket eden cisme ait ivme - kuvvet grafi\u011fi a\u015fa\u011f\u0131daki gibidir.\n\u0130vme (m/s^2)\n4\n2\n10 20\nKuvvet (N)\nBuna g\u00f6re, cismin k\u00fctlesi ka\u00e7 kg'dir?",
+   "sikler": {
+    "A": "2",
+    "B": "3",
+    "C": "4",
+    "D": "5",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T026_03",
+   "basili_no": 3,
+   "govde": "4 kg k\u00fctleli cisme \u015fekilde belirtilen y\u00f6nlerde F_1 = 40 N ve F_2 = 20 N \u015fiddetinde kuvvetler etki etmektedir.\nBuna g\u00f6re, d\u00fc\u015fey duvar\u0131n cisme uygulad\u0131\u011f\u0131 tepki kuvveti N_D ve yatay zeminin cisme uygulad\u0131\u011f\u0131 tepki kuvveti N_Y ka\u00e7 N b\u00fcy\u00fckl\u00fcktedir?\n(S\u00fcrt\u00fcnmeler \u00f6nemsenmiyor. g = 10 m/s^2)\nN_D | N_Y",
+   "sikler": {
+    "A": "20 | 40",
+    "B": "60 | 40",
+    "C": "40 | 80",
+    "D": "20 | 80",
+    "E": "60 | 20"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T026_04",
+   "basili_no": 4,
+   "govde": "X: 2m, F, k\nY: m, 2F, k\nZ: m, 2F, 2k\nYatay d\u00fczlemde X, Y ve Z cisimlerinin k\u00fctleleri s\u0131ras\u0131yla 2m, m, m ve s\u00fcrt\u00fcnme katsay\u0131lar\u0131 k, k ve 2k'd\u0131r.\nCisimler hareket etmedi\u011fine g\u00f6re, X, Y ve Z cisimlerine etki eden s\u00fcrt\u00fcnme kuvvetleri F_X, F_Y ve F_Z aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "F_X = F_Z > F_Y",
+    "B": "F_Z = F_Y > F_X",
+    "C": "F_X = F_Y > F_Z",
+    "D": "F_Z > F_Y > F_X",
+    "E": "F_Z > F_X = F_Y"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T026_05",
+   "basili_no": 5,
+   "govde": "S\u00fcrt\u00fcnme kuvveti (N)\n10\n8\n5\n5 10 15 20\nUygulanan Kuvvet (N)\nYatay zeminde durmakta olan cisme uygulanan yatay kuvvetin s\u00fcrt\u00fcnme kuvvetine ba\u011fl\u0131 grafi\u011fi \u015fekildeki gibidir.\nBu cisimle ilgili verilen bilgilerden hangisi <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Cisme 5 N kuvvet uyguland\u0131\u011f\u0131nda cisim hareket etmez.",
+    "B": "Cisme zemin taraf\u0131ndan uygulanacak en b\u00fcy\u00fck s\u00fcrt\u00fcnme kuvveti 10 N'dur.",
+    "C": "Cisme 15 N kuvvet uyguland\u0131\u011f\u0131nda 8 N s\u00fcrt\u00fcnme kuvveti etki eder.",
+    "D": "Cisme 20 N kuvvet uyguland\u0131\u011f\u0131nda 8 N s\u00fcrt\u00fcnme kuvveti etki eder.",
+    "E": "Cisme 7 N kuvvet uyguland\u0131\u011f\u0131nda 8 N s\u00fcrt\u00fcnme kuvveti etki eder."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T026_07",
+   "basili_no": 7,
+   "govde": "\u015eekil I\n3a\na a\nF_(S1)\nHareket y\u00f6n\u00fc\n\u015eekil II\na 3a\na 3a\nF_(S2)\nHareket y\u00f6n\u00fc\nT\u00fcm y\u00fczeylerinin \u00f6zellikleri ayn\u0131 olan dikd\u00f6rtgenler prizmas\u0131 bi\u00e7imindeki bir cisim ayn\u0131 cins zemin \u00fczerinde \u015fekillerde g\u00f6sterildi\u011fi gibi kayarak hareket etmektedir.\nCisme \u015eekil I'de F_(S1) s\u00fcrt\u00fcnme kuvveti \u015eekil II'de F_(S2) s\u00fcrt\u00fcnme kuvveti etki etti\u011fine g\u00f6re F_(S1)/F_(S2) oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "1/2",
+    "E": "1/3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_01",
+   "basili_no": 1,
+   "govde": "\u0130vme\n3a K\n2a L\na\nF 2F 3F 4F Net kuvvet\nK ve L cisimlerinin kazand\u0131\u011f\u0131 ivmelerin cisimlere etki eden net kuvvete ba\u011fl\u0131 grafi\u011fi \u015fekildeki gibidir.\nCisimlerin k\u00fctleleri m_K ve m_L oldu\u011funa g\u00f6re m_K/m_L oran\u0131 ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/3",
+    "B": "1/2",
+    "C": "1",
+    "D": "2",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_02",
+   "basili_no": 2,
+   "govde": "D\u00fcnya kutuplardan bas\u0131k ekvatordan \u015fi\u015fkin k\u00fcre \u015feklindedir.\nBuna g\u00f6re; D\u00fcnya \u00fczerinde A, B ve C noktalar\u0131nda duran cisimlerle ilgili olarak,\nI. Cisimlerin k\u00fctleleri e\u015fitse C noktas\u0131ndaki cismin a\u011f\u0131rl\u0131\u011f\u0131n\u0131n \u015fiddeti en b\u00fcy\u00fckt\u00fcr.\nII. Cisimlerin a\u011f\u0131rl\u0131klar\u0131 e\u015fit b\u00fcy\u00fckl\u00fckte ise A noktas\u0131ndaki cismin k\u00fctlesi en b\u00fcy\u00fckt\u00fcr.\nIII. Cisimlerin k\u00fctleleri ve a\u011f\u0131rl\u0131klar\u0131 e\u015fit b\u00fcy\u00fckl\u00fcktedir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_03",
+   "basili_no": 3,
+   "govde": "Bir \u00e7ocuk, yatay d\u00fcz bir yolda duran topa vurarak kutuya \u00e7arp\u0131p, kutunun hareket etmesini sa\u011fl\u0131yor.\nBuna g\u00f6re;\nI. \u00c7ocu\u011fun topa uygulad\u0131\u011f\u0131 kuvvet, topun \u00e7ocu\u011fa uygulad\u0131\u011f\u0131 kuvvete e\u015fit b\u00fcy\u00fckl\u00fcktedir.\nII. Topun kutuya uygulad\u0131\u011f\u0131 kuvvet, kutunun topa uygulad\u0131\u011f\u0131 kuvvete e\u015fit b\u00fcy\u00fckl\u00fcktedir.\nIII. \u00c7ocuk topa daha b\u00fcy\u00fck bir kuvvet uygulasayd\u0131, topun \u00e7ocu\u011fa uygulad\u0131\u011f\u0131 kuvvetin b\u00fcy\u00fckl\u00fc\u011f\u00fc de artard\u0131.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_05",
+   "basili_no": 5,
+   "govde": "Hareket y\u00f6n\u00fc\nF_2\nF_3 F_1\nS\u00fcrt\u00fcnmesiz yatay d\u00fczlemde cisim \u015fekilde belirtilen y\u00f6nde sabit h\u0131zl\u0131 hareket etmektedir.\nBuna g\u00f6re,\nI. F_1 kuvvetinin \u015fiddeti F_2 ve F_3 kuvvetlerinin toplam \u015fiddetinden b\u00fcy\u00fckt\u00fcr.\nII. F_2 kuvveti kald\u0131r\u0131l\u0131rsa cisim ayn\u0131 y\u00f6nde ivmeli hareket yapar.\nIII. F_1 kuvveti kald\u0131r\u0131l\u0131rsa cisim hemen y\u00f6n de\u011fi\u015ftirir.\nbilgilerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_06",
+   "basili_no": 6,
+   "govde": "E\u011fik d\u00fczlem \u00fczerinde serbest b\u0131rak\u0131lan cisim sabit b\u00fcy\u00fckl\u00fckte bir h\u0131z ile a\u015fa\u011f\u0131ya do\u011fru kaymaktad\u0131r.\nBuna g\u00f6re,\nI. Cisim dengelenmi\u015f kuvvetlerin etkisindedir.\nII. E\u011fik d\u00fczleme cismin hareket etti\u011fi y\u00f6nde s\u00fcrt\u00fcnme kuvveti etki eder.\nIII. Cisme, hareket y\u00f6n\u00fcn\u00fcn tersinde s\u00fcrt\u00fcnme kuvveti etki eder.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_07",
+   "basili_no": 7,
+   "govde": "S\u00fcrt\u00fcnmeli e\u011fik d\u00fczlemde G a\u011f\u0131rl\u0131\u011f\u0131ndaki cisme \u015fekildeki gibi F kuvveti etki etmektedir.\nCisim sabit h\u0131zla e\u011fik d\u00fczlemden a\u015fa\u011f\u0131ya do\u011fru kayd\u0131\u011f\u0131na g\u00f6re, cisme etki eden kuvvetler a\u015fa\u011f\u0131daki se\u00e7eneklerin hangisinde do\u011fru g\u00f6sterilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) F, F_s, G",
+    "B": "(g\u00f6rsel \u015f\u0131k) N, G",
+    "C": "(g\u00f6rsel \u015f\u0131k) N, F, F_s, G",
+    "D": "(g\u00f6rsel \u015f\u0131k) G, F_s",
+    "E": "(g\u00f6rsel \u015f\u0131k) N, G, F_s"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_08",
+   "basili_no": 8,
+   "govde": "KLM yolu s\u00fcrt\u00fcnmeli ve K - L ve L - M yollar\u0131n\u0131n s\u00fcrt\u00fcnme katsay\u0131lar\u0131 farkl\u0131d\u0131r. K noktas\u0131nda duran cisme F kuvveti yol boyunca etki ediyor ve cisim M noktas\u0131nda tekrar duruyor.\nBuna g\u00f6re, K - L ve L - M yollar\u0131nda etki eden s\u00fcrt\u00fcnme kuvvetlerinin b\u00fcy\u00fckl\u00fckleri F_KL, F_LM ve yol boyunca etki eden F kuvvetinin b\u00fcy\u00fckl\u00fc\u011f\u00fc aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "F_KL = F_LM > F",
+    "B": "F > F_KL = F_LM",
+    "C": "F_LM > F > F_KL",
+    "D": "F_KL = F_LM = F",
+    "E": "F > F_KL > F_LM"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_09",
+   "basili_no": 9,
+   "govde": "F\nHareket y\u00f6n\u00fc\nS\u00fcrt\u00fcnmeli d\u00fc\u015fey bir zeminde hareket eden, a\u011f\u0131rl\u0131\u011f\u0131 G olan cisim \u015fekildeki gibi F kuvvetiyle itiliyor.\nBuna g\u00f6re, cisim \u00fczerine etki eden kuvvetlerin diyagram\u0131 a\u015fa\u011f\u0131dakilerden hangisidir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T027_10",
+   "basili_no": 10,
+   "govde": "Duvara ba\u011fl\u0131 m ve 2m k\u00fctleli K ve L cisimlerine s\u00fcrt\u00fcnmesiz yatay d\u00fczlem \u00fczerinde \u015fekildeki gibi sabit b\u00fcy\u00fckl\u00fckte F kuvveti etki ediyor.\nT_2\nT_1\nF\nK L\nF kuvveti cisimleri harekete ge\u00e7iremedi\u011fine g\u00f6re, F kuvveti ve iplerdeki gerilme kuvvetlerinin b\u00fcy\u00fckl\u00fckleri T_1 ve T_2 aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "F = T_1 = T_2",
+    "B": "T_2 > T_1 > F",
+    "C": "F > T_1 > T_2",
+    "D": "F > T_1 = T_2",
+    "E": "F > T_2 > T_1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_02",
+   "basili_no": 2,
+   "govde": "S\u00fcrt\u00fcnmesiz yatay d\u00fczlemde V_1 h\u0131z\u0131yla hareket eden cisme F kuvveti, x yolu boyunca \u015fekildeki gibi uygulanarak cismin h\u0131z\u0131n\u0131n V_2 olmas\u0131 sa\u011flan\u0131yor.\nBuna g\u00f6re, kuvvetin yapt\u011f\u0131 i\u015f;\nI. F\nII. V_1\nIII. V_2\nIV. x\nniceliklerinden hangilerine ba\u011fl\u0131d\u0131r?",
+   "sikler": {
+    "A": "I ve II",
+    "B": "I ve IV",
+    "C": "I, II ve III",
+    "D": "II, III ve IV",
+    "E": "I, II, III ve IV"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_03",
+   "basili_no": 3,
+   "govde": "Yatay s\u00fcrt\u00fcnmesiz d\u00fczlemde F_1, F_2, F_3, F_4 ve F_5 kuvvetlerinin etkisindeki cisim A noktas\u0131ndan B noktas\u0131na hareket etmektedir.\nCismin hareketi esnas\u0131nda hangi kuvvet i\u015f <u>yapmam\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "F_1",
+    "B": "F_2",
+    "C": "F_3",
+    "D": "F_4",
+    "E": "F_5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_04",
+   "basili_no": 4,
+   "govde": "F = 10 N\nX\nF_s = 2 N\nA\nB\n8 m\nYatay d\u00fczlemde duran X cismine 10 N'luk F kuvveti ile 8 m yol ald\u0131r\u0131l\u0131yor. Hareket s\u00fcresince cisme 2 N'luk s\u00fcrt\u00fcnme kuvveti etki etmektedir.\nBuna g\u00f6re,\nI. F kuvveti 80 J i\u015f yapm\u0131\u015ft\u0131r.\nII. S\u00fcrt\u00fcnme kuvveti 16 J i\u015f yapm\u0131\u015ft\u0131r.\nIII. Cismin B noktas\u0131ndaki kinetik enerjisi 64 Joule'd\u00fcr.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_05",
+   "basili_no": 5,
+   "govde": "m k\u00fctleli cisimlere \u015fekildeki gibi F_1, F_2, ve F_3 kuvvetleri etki etmektedir.\nBuna g\u00f6re F_1, F_2 ve F_3 kuvvetlerinden hangileri i\u015f yapar? (\u0130p esnemiyor.)",
+   "sikler": {
+    "A": "F_1",
+    "B": "F_2",
+    "C": "F_1 ve F_2",
+    "D": "F_1 ve F_3",
+    "E": "F_1, F_2 ve F_3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_06",
+   "basili_no": 6,
+   "govde": "Yatay s\u00fcrt\u00fcnmesiz bir yolda hareket eden K, L ve M cisimlerine sabit F kuvveti \u015fekildeki gibi uygulan\u0131yor.\nBuna g\u00f6re, hangi cisimlerin kinetik enerjisi <u>de\u011fi\u015fmez</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z K",
+    "B": "Yaln\u0131z L",
+    "C": "Yaln\u0131z M",
+    "D": "K ve L",
+    "E": "L ve M"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_08",
+   "basili_no": 8,
+   "govde": "Yatay d\u00fczlemde 4 m/s h\u0131zla hareket eden 2 kg k\u00fctleli cismin kinetik enerjisi ka\u00e7 Joule'd\u00fcr?",
+   "sikler": {
+    "A": "8",
+    "B": "16",
+    "C": "18",
+    "D": "32",
+    "E": "36"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_09",
+   "basili_no": 9,
+   "govde": "Yerden 4 m y\u00fcksekte bulunan 2 kg k\u00fctleli cismin potansiyel enerjisi ka\u00e7 Joule'd\u00fcr? (g = 10 m/s^2)",
+   "sikler": {
+    "A": "60",
+    "B": "70",
+    "C": "80",
+    "D": "90",
+    "E": "100"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T028_10",
+   "basili_no": 10,
+   "govde": "Yerden 2m y\u00fcksekte 10 m/s h\u0131zla yatay hareket eden 2 kg k\u00fctleli dronun mekanik enerjisi ka\u00e7 Joule'd\u00fcr? (g = 10 m/s^2)",
+   "sikler": {
+    "A": "100",
+    "B": "120",
+    "C": "140",
+    "D": "160",
+    "E": "180"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_01",
+   "basili_no": 1,
+   "govde": "Kuvvet (N)\n8\n0 5 Konum (m)\nYatay bir d\u00fczlemde durmakta olan cisme etki eden kuvvet - konum grafi\u011fi \u015fekildeki gibidir.\nBuna g\u00f6re, 5 m yol boyunca kuvvetin yapt\u0131\u011f\u0131 i\u015f ka\u00e7 J'dir?",
+   "sikler": {
+    "A": "40",
+    "B": "50",
+    "C": "60",
+    "D": "70",
+    "E": "80"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_02",
+   "basili_no": 2,
+   "govde": "Yatay bir yolda hareket eden K cismine yola paralel do\u011frultuda kuvvet uyguland\u0131\u011f\u0131nda cismin konum-zaman grafi\u011fi \u015fekildeki gibi oluyor.\nKonum\n+x\n0\n\u2212x\nt\nZaman\nBuna g\u00f6re;\nI. Cismin kinetik enerjisi \u00f6nce azal\u0131p sonra art\u0131yor.\nII. Net kuvvetin yapt\u0131\u011f\u0131 i\u015f s\u0131f\u0131rd\u0131r.\nIII. Yatay yol s\u00fcrt\u00fcnmelidir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_03",
+   "basili_no": 3,
+   "govde": "X m F\n2x\nY 2m 2F\nx\nS\u00fcrt\u00fcnmesiz yatay d\u00fczlemde durmakta olan m ve 2m k\u00fctleli X ve Y cisimlerine \u015fekilde g\u00f6sterildi\u011fi gibi F ve 2F kuvvetleri etki etmektedir.\nBuna g\u00f6re, kuvvetlerin yapt\u0131\u011f\u0131 i\u015fler oran\u0131 W_X/W_Y ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_04",
+   "basili_no": 4,
+   "govde": "E\u011fik d\u00fczlemin alt ucunda duran cisimler \u015fekillerdeki gibi F kuvveti uygulanarak ok y\u00f6n\u00fcnde hareket ettiriliyor.\nBuna g\u00f6re, yukar\u0131da \u015fekillerde belirtilen durumlar\u0131n hangisinde F kuvveti i\u015f yapmaktad\u0131r?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "I ve II",
+    "C": "I ve III",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_05",
+   "basili_no": 5,
+   "govde": "S\u00fcrt\u00fcnmesiz d\u00fczlemde durmakta olan 2 kg k\u00fctleli cisme 12 N'lik kuvvet uygulanarak 6 m yol ald\u0131r\u0131l\u0131yor.\nBuna g\u00f6re,\nI. Kuvvet 72 Joule i\u015f yapm\u0131\u015ft\u0131r.\nII. Cisim 72 Joule enerji kazanm\u0131\u015ft\u0131r.\nIII. Cisim 72 Joule i\u015f yapm\u0131\u015ft\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_06",
+   "basili_no": 6,
+   "govde": "V = 10 m/s\nV = 10 m/s\nF = 20 N\nA\nB\n8 m\n1 kg k\u00fctleli cisim 20 N \u015fiddetindeki kuvvetin etkisinde A noktas\u0131ndan 10 m/s h\u0131zla ge\u00e7erek B noktas\u0131na ayn\u0131 b\u00fcy\u00fckl\u00fckteki h\u0131zla ula\u015f\u0131yor.\nBuna g\u00f6re, yol boyunca yap\u0131lan net i\u015f ka\u00e7 Joule'dir?",
+   "sikler": {
+    "A": "160",
+    "B": "120",
+    "C": "80",
+    "D": "40",
+    "E": "0"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_07",
+   "basili_no": 7,
+   "govde": "E_K = 20 J\nE_L = 32 J\nF = 10 N\nK\nL\n2 m\nYatay d\u00fczlem \u00fczerinde K noktas\u0131ndan 20 J'l\u00fck kinetik enerji ile ge\u00e7en cisme |KL| yolu boyunca F = 10 N'luk kuvvet etki ediyor.\nCismin L noktas\u0131ndaki enerjisi 32 J oldu\u011funa g\u00f6re, yol boyunca s\u00fcrt\u00fcnme kuvvetinin yapt\u0131\u011f\u0131 i\u015f ka\u00e7 Joule'd\u00fcr?",
+   "sikler": {
+    "A": "6",
+    "B": "8",
+    "C": "10",
+    "D": "12",
+    "E": "16"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T029_10",
+   "basili_no": 10,
+   "govde": "0\nV\n2V\nF\nK\nL\nM\nS\u00fcrt\u00fcnmesiz yatay d\u00fczlemde F kuvveti etkisindeki cisim L noktas\u0131ndan V, M noktas\u0131ndan 2V b\u00fcy\u00fckl\u00fc\u011f\u00fcndeki h\u0131z ile ge\u00e7mektedir.\nBuna g\u00f6re, F kuvvetinin, KL aras\u0131nda yapt\u0131\u011f\u0131 i\u015fin, LM aras\u0131nda yapt\u0131\u011f\u0131 i\u015fe oran\u0131 W_(KL)/W_(LM) ka\u00e7t\u0131r?",
+   "sikler": {
+    "A": "1/4",
+    "B": "1/3",
+    "C": "1/2",
+    "D": "1",
+    "E": "3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T030_07",
+   "basili_no": 7,
+   "govde": "Sabit b\u00fcy\u00fckl\u00fckte d\u00fc\u015fey F kuvveti etki eden cisim sabit s\u00fcratle y\u00fckseliyor.\nBuna g\u00f6re;\nI. Cismin mekanik enerjisi de\u011fi\u015fmez.\nII. F kuvveti cismin a\u011f\u0131rl\u0131\u011f\u0131na e\u015fit b\u00fcy\u00fckl\u00fcktedir.\nIII. F kuvvetinin yapt\u0131\u011f\u0131 i\u015f cismin kazand\u0131\u011f\u0131 potansiyel enerjiye e\u015fittir.\nifadelerinden hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T030_08",
+   "basili_no": 8,
+   "govde": "m k\u00fctleli cisme s\u00fcrt\u00fcnmesiz yatay d\u00fczlemde d\u00fczleme paralel bir F kuvveti \u0394t s\u00fcresi boyunca uyguland\u0131\u011f\u0131nda cisim \u0394x kadar yol al\u0131yor.\nV = 0\nF\nm\n\u0394x\nYaln\u0131z kuvvetin yapt\u0131\u011f\u0131 i\u015f bilindi\u011fine g\u00f6re, a\u015fa\u011f\u0131daki fiziksel niceliklerinden hangisi bulunabilir?",
+   "sikler": {
+    "A": "Cismin kinetik enerjisindeki de\u011fi\u015fim",
+    "B": "Cismin k\u00fctlesi",
+    "C": "Cismin hareket s\u00fcresi",
+    "D": "Kuvveti olu\u015fturan sistemin g\u00fcc\u00fc",
+    "E": "Cismin ald\u0131\u011f\u0131 yol"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T030_09",
+   "basili_no": 9,
+   "govde": "m k\u00fctleli bir cisim, d\u00fc\u015fey kesiti \u015fekildeki gibi olan s\u00fcrt\u00fcnmesiz e\u011fik d\u00fczlemin K noktas\u0131ndan serbest b\u0131rak\u0131l\u0131yor.\nCisim K'den L'ye gelinceye kadar\nI. Kinetik enerjisi artar.\nII. Potansiyel enerjisi azal\u0131r.\nIII. Mekanik enerjisi de\u011fi\u015fmez.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T030_10",
+   "basili_no": 10,
+   "govde": "Yatay ve d\u00fcz bir yolda hareket eden bir cisme; hareketiyle ayn\u0131 y\u00f6nde ve do\u011frultuda uygulanan F_D d\u0131\u015f kuvveti, hareket y\u00f6n\u00fcnde dik do\u011frultuda ve yukar\u0131 do\u011fru F_N tepki kuvveti, hareket do\u011frultusunda ve ters y\u00f6nl\u00fc F_S s\u00fcrt\u00fcnme kuvveti \u015fekildeki gibi etkiyor.\nCisim yatay do\u011frultuda belirli bir miktar yer de\u011fi\u015ftirme yapt\u0131\u011f\u0131na g\u00f6re F_D, F_N ve F_S kuvvetlerinden hangileri, fiziksel anlamda i\u015f yapar?",
+   "sikler": {
+    "A": "Yaln\u0131z F_D",
+    "B": "Yaln\u0131z F_N",
+    "C": "F_D ve F_N",
+    "D": "F_D ve F_S",
+    "E": "F_D, F_N ve F_S"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(YGS 2017)"
+  },
+  {
+   "dosya": "AKT25FZ-T031_01",
+   "basili_no": 1,
+   "govde": "X h\nY h\nyer\nS\u00fcrt\u00fcnmelerin \u00f6nemsenmedi\u011fi ortamda yerden e\u015fit y\u00fckseklikteki X ve Y cisimleri bulunduklar\u0131 konumlardan serbest b\u0131rak\u0131l\u0131yor.\nBuna g\u00f6re, X ve Y cisimleri ile ilgili,\nI. Yere ayn\u0131 anda \u00e7arpar.\nII. Yere ayn\u0131 enerji ile \u00e7arpar.\nIII. Yere e\u015fit b\u00fcy\u00fckl\u00fckte h\u0131zla ula\u015f\u0131r.\nyarg\u0131lar\u0131ndan hangileri <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T033_01",
+   "basili_no": 1,
+   "govde": "A^(+++)\nA^(++)\nA^+\nA\nB\nC\nD\nEnerji kimlik belgeleri elektrikli ara\u00e7lar\u0131n verimlili\u011fi hakk\u0131nda bilgi vermektedir. Bir elektrikli alete ait enerji kimlik belgesi \u015fekildeki gibidir.\nBuna g\u00f6re,\nI. A^(+++) etiketli bir cihaz\u0131n verimi en y\u00fcksektir.\nII. D s\u0131n\u0131f\u0131ndaki cihaz verimi en d\u00fc\u015f\u00fck ara\u00e7t\u0131r.\nIII. Enerji tasarrufu i\u00e7in A^(+++) s\u0131n\u0131f\u0131 ara\u00e7lar tercih edilmelidir.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T033_08",
+   "basili_no": 8,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan s\u00fcrt\u00fcnmesiz d\u00fczenekte A noktas\u0131ndan serbest b\u0131rak\u0131lan cisim esnek yay\u0131 en fazla E noktas\u0131na kadar s\u0131k\u0131\u015ft\u0131r\u0131l\u0131yor.\nh\nBu durumla ilgili olarak a\u015fa\u011f\u0131dakilerden hangisi <u>yanl\u0131\u015ft\u0131r</u>? (g: Yer \u00e7ekimi ivmesi, |CD| = |DE|)",
+   "sikler": {
+    "A": "Cisim A noktas\u0131ndan B noktas\u0131na do\u011fru hareket ederken mekanik enerjisi artar.",
+    "B": "Cisim B-C aras\u0131nda hareket ederken kinetik enerjisi de\u011fi\u015fmez.",
+    "C": "Cisim D noktas\u0131nda iken kinetik enerjisi, yayda depolanan potansiyel enerjiden b\u00fcy\u00fckt\u00fcr.",
+    "D": "Cisim geriye d\u00f6nd\u00fc\u011f\u00fcnde tekrar A noktas\u0131na kadar \u00e7\u0131kabilir.",
+    "E": "Cisim E noktas\u0131nda iken yayda mgh kadar esneklik potansiyel enerjisi depolan\u0131r."
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T034_04",
+   "basili_no": 4,
+   "govde": "X 3r\nY 2r\nZ r\nI\nII\nElektrik y\u00fckleri s\u0131ras\u0131yla \u22126q, 11q ve \u221211q olan X, Y ve Z cisimleri \u015fekildeki gibidir. \u00d6nce I. anahtar kapat\u0131l\u0131p a\u00e7\u0131l\u0131yor, sonra II. anahtar kapat\u0131l\u0131p a\u00e7\u0131l\u0131yor.\nBuna g\u00f6re X, Y ve Z k\u00fcrelerinin son y\u00fckleri a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru verilmi\u015ftir?\nX | Y | Z",
+   "sikler": {
+    "A": "3q | \u22126q | q",
+    "B": "6q | 3q | 3q",
+    "C": "3q | 6q | \u22126q",
+    "D": "3q | \u22126q | \u22123q",
+    "E": "\u22126q | 6q | 3q"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T035_02",
+   "basili_no": 2,
+   "govde": "\u00d6zde\u015f K ve L elektroskoplar\u0131 +3q ve \u2212q y\u00fckl\u00fc iken yapraklar\u0131 aras\u0131ndaki a\u00e7\u0131lar \u03b1 ve \u03b2 olmaktad\u0131r. X anahtar\u0131 kapat\u0131l\u0131p a\u00e7\u0131l\u0131yor.\nBuna g\u00f6re, K ve L elektroskoplar\u0131yla ilgili olarak,\nI. Toplam y\u00fck korunmu\u015ftur.\nII. Son durumda L elektroskobunun yapraklar\u0131 aras\u0131ndaki a\u00e7\u0131 \u03b2'd\u0131r.\nIII. Son durumda K elektroskobunun yapraklar\u0131 aras\u0131ndaki a\u00e7\u0131 \u03b2'd\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T035_07",
+   "basili_no": 7,
+   "govde": "Aralar\u0131nda d mesafesi bulunan q_X ve q_Y y\u00fckl\u00fc X ve Y cisimlerinden X, Y'ye F b\u00fcy\u00fckl\u00fc\u011f\u00fcnde kuvvet uygulamaktad\u0131r. Y\u00fckler aras\u0131ndaki mesafe de\u011fi\u015ftirilmeden Y cisminin y\u00fck miktar\u0131 2 kat\u0131na \u00e7\u0131kar\u0131l\u0131yor.\nBuna g\u00f6re;\nI. X cismi Y cismine uygulad\u0131\u011f\u0131 kuvvetin b\u00fcy\u00fckl\u00fc\u011f\u00fc 2F olur.\nII. X cisminin y\u00fck miktar\u0131 de\u011fi\u015fmedi\u011finden X cismine etki eden elektriksel kuvvet de\u011fi\u015fmez.\nIII. Y cismi X cismine 2F b\u00fcy\u00fckl\u00fc\u011f\u00fcnde kuvvet uygular.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T036_01",
+   "basili_no": 1,
+   "govde": "Farday kafesi iletken metalle kaplanm\u0131\u015f ya da iletken a\u011f ile \u00f6r\u00fclm\u00fc\u015f i\u00e7teki hacmi d\u0131\u015far\u0131daki elektrik alanlardan koruyan bir muhafazad\u0131r.\nBuna g\u00f6re, a\u015fa\u011f\u0131dakilerden hangisinde Faraday kafesi <u>kullan\u0131lmam\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yan\u0131c\u0131, patlay\u0131c\u0131 maddelerin depoland\u0131\u011f\u0131 binalarda",
+    "B": "Radyo frekans\u0131 yayan aletlerde",
+    "C": "Telsiz haberle\u015fmesinin yap\u0131ld\u0131\u011f\u0131 binalarda",
+    "D": "MR cihaz\u0131n\u0131n yerle\u015ftirildi\u011fi ortamlarda",
+    "E": "Fotokopi makinelerinde"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T039_06",
+   "basili_no": 6,
+   "govde": "\u0130letken cisimlerin serbest elektronlar\u0131 oldu\u011fundan etki ile elektriklenebilirler. Yal\u0131tkan cisimlerde y\u00fck ak\u0131\u015f\u0131 olmad\u0131\u011f\u0131ndan etki ile elektriklenemezler.\nYar\u0131\u00e7aplar\u0131 ve y\u00fck miktarlar\u0131 e\u015fit olan iletken K k\u00fcresi ile yal\u0131tkan L k\u00fcresi \u015eekil I - II - III'teki gibi yerle\u015ftirildi\u011finde birbirlerine F_1, F_2 ve F_3 b\u00fcy\u00fckl\u00fc\u011f\u00fcnde kuvvetler uyguluyorlar.\n\u015eekil I: K \u2013 K, d\n\u015eekil II: L \u2013 L, d\n\u015eekil III: K \u2013 L, d\nBuna g\u00f6re, cisimlerin birbirine uygulad\u0131\u011f\u0131 kuvvet b\u00fcy\u00fckl\u00fckleri F_1, F_2 ve F_3 aras\u0131ndaki ili\u015fki nas\u0131ld\u0131r?",
+   "sikler": {
+    "A": "F_1 > F_2 > F_3",
+    "B": "F_1 = F_2 = F_3",
+    "C": "F_2 > F_3 > F_1",
+    "D": "F_2 > F_1 > F_3",
+    "E": "F_1 = F_2 > F_3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T040_05",
+   "basili_no": 5,
+   "govde": "Bir t\u00fcp i\u00e7indeki iletken \u00e7\u00f6zeltide 2 saniyede +8 coulomb y\u00fck 1 y\u00f6n\u00fcnde. \u22124 coulomb y\u00fck 2 y\u00f6n\u00fcnde ge\u00e7mektedir.\nBuna g\u00f6re, iletkenden ge\u00e7en ak\u0131m\u0131n y\u00f6n\u00fc ve \u015fiddeti nedir?",
+   "sikler": {
+    "A": "1 y\u00f6n\u00fcnde 2 amper",
+    "B": "2 y\u00f6n\u00fcnde 2 amper",
+    "C": "1 y\u00f6n\u00fcnde 4 amper",
+    "D": "1 y\u00f6n\u00fcnde 6 amper",
+    "E": "2 y\u00f6n\u00fcnde 6 amper"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T042_06",
+   "basili_no": 6,
+   "govde": "Potansiyel fark (volt): 3, 6, 9, 12\nAk\u0131m (A): 1, 2, 3, 4\nX, Y, Z\nX, Y ve Z diren\u00e7lerinin potansiyel fark - ak\u0131m grafi\u011fi \u015eekil I'deki gibidir.\nBuna g\u00f6re X, Y ve Z diren\u00e7leri \u015eekil II'deki gibi ba\u011fland\u0131\u011f\u0131nda K - L noktalar\u0131 aras\u0131ndaki e\u015fde\u011fer diren\u00e7 ka\u00e7 \u03a9'dur?",
+   "sikler": {
+    "A": "2",
+    "B": "3",
+    "C": "4",
+    "D": "5",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T042_08",
+   "basili_no": 8,
+   "govde": "9\u03a9\n3\u03a9\n2\u03a9\nR\n\u015eekildeki devrede X - Y noktalar\u0131 aras\u0131 e\u015fde\u011fer diren\u00e7 10\u03a9 olmaktad\u0131r.\nBuna g\u00f6re, R direnci ka\u00e7 \u03a9'dur?",
+   "sikler": {
+    "A": "10",
+    "B": "8",
+    "C": "6",
+    "D": "4",
+    "E": "2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T042_09",
+   "basili_no": 9,
+   "govde": "6 \u03a9\n2 \u03a9\n3 \u03a9\n\u015eekildeki elektrik devresinde e\u015fde\u011fer diren\u00e7 ka\u00e7 ohm'dur?",
+   "sikler": {
+    "A": "1",
+    "B": "3/2",
+    "C": "2",
+    "D": "5/2",
+    "E": "4"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T042_10",
+   "basili_no": 10,
+   "govde": "\u015eekildeki devre par\u00e7as\u0131nda S anahtar\u0131 kapal\u0131 iken e\u015fde\u011fer diren\u00e7 2 \u03a9'dur.\n3 \u03a9\n1 \u03a9\nS\nR\nS anahtar\u0131 a\u00e7\u0131l\u0131rsa e\u015fde\u011fer diren\u00e7 ka\u00e7 ohm olur?",
+   "sikler": {
+    "A": "4",
+    "B": "3",
+    "C": "5/2",
+    "D": "2",
+    "E": "1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T043_03",
+   "basili_no": 3,
+   "govde": "7\u03a9\n4\u03a9\n12\u03a9\n5\u03a9\n\u015eekildeki devre par\u00e7as\u0131nda 4\u03a9 'luk diren\u00e7ten ge\u00e7en ak\u0131m i_1 = 3 amperdir.\nBuna g\u00f6re, 5\u03a9'luk diren\u00e7ten ge\u00e7en ak\u0131m i_2 ka\u00e7 amperdir?",
+   "sikler": {
+    "A": "2",
+    "B": "3",
+    "C": "4",
+    "D": "5",
+    "E": "6"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T043_08",
+   "basili_no": 8,
+   "govde": "K, L ve X, Y noktalar\u0131 aras\u0131ndaki 1 \u03a9 ve 2 \u03a9 luk diren\u00e7lerden \u015eekil I ve \u015eekil II'deki gibi ak\u0131mlar ge\u00e7mektedir.\n\u015eekil I: K, 2A, 1 \u03a9, L, V_1\n\u015eekil II: X, 2 \u03a9, Y, 1A, V_2\nBuna g\u00f6re,\nI. V_1 ve V_2 voltmetrelerinde okunan de\u011ferler birbirine e\u015fittir.\nII. Diren\u00e7ler ayn\u0131 maddeden yap\u0131lm\u0131\u015ft\u0131r.\nIII. Diren\u00e7lerin \u00fczerinden ayn\u0131 s\u00fcrede e\u015fit miktarda y\u00fck ge\u00e7mektedir.\nifadelerinden hangileri <u>kesinlikle</u> do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T048_01",
+   "basili_no": 1,
+   "govde": "X: d\nY: d\nZ: 2d\nSayfa d\u00fczleminde bulunan iletken d\u00fcz telden \u015fekildeki gibi ak\u0131m ge\u00e7iyor.\nBuna g\u00f6re, telin etraf\u0131nda bulunan X, Y ve Z noktalar\u0131n\u0131n manyetik alan \u015fiddetleri B_X, B_Y ve B_Z aras\u0131ndaki ili\u015fki nedir?",
+   "sikler": {
+    "A": "B_X > B_Y > B_Z",
+    "B": "B_X = B_Y > B_Z",
+    "C": "B_X > B_Z > B_Y",
+    "D": "B_Z > B_X = B_Y",
+    "E": "B_Z > B_Y > B_X"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T049_05",
+   "basili_no": 5,
+   "govde": "\u015eekil I ve II'de noktasal \u0131\u015f\u0131k kaynaklar\u0131, \u015eekil III'te ise paralel \u0131\u015f\u0131k demeti kullan\u0131larak perde \u00f6n\u00fcne saydam olmayan top konulmu\u015ftur.\nBuna g\u00f6re, hangi d\u00fczeneklerde perdede sadece tam g\u00f6lge olu\u015fur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T051_02",
+   "basili_no": 2,
+   "govde": "Bir I \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131 d\u00fczlem aynaya \u015fekildeki gibi geliyor.\n30\u00b0\nBuna g\u00f6re, aynaya gelen ve aynada yans\u0131yan \u0131\u015f\u0131nlar aras\u0131ndaki a\u00e7\u0131 ka\u00e7 derecedir?",
+   "sikler": {
+    "A": "140",
+    "B": "120",
+    "C": "100",
+    "D": "80",
+    "E": "40"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T051_04",
+   "basili_no": 4,
+   "govde": "I konumunda bulunan d\u00fczlem aynaya g\u00f6nderilen K \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131 kendi \u00fczerinden geri d\u00f6nerek yans\u0131maktad\u0131r.\n30\u00b0\nYatay\nD\u00fc\u015fey\nAyna II konumuna getirilerek yatay duruma getirildi\u011finde K \u0131\u015f\u0131n\u0131n\u0131n izledi\u011fi yol a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru g\u00f6sterilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) 60\u00b0",
+    "B": "(g\u00f6rsel \u015f\u0131k) 30\u00b0",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k) 45\u00b0",
+    "E": "(g\u00f6rsel \u015f\u0131k) 30\u00b0"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T051_10",
+   "basili_no": 10,
+   "govde": "X ve Y g\u00f6zlemcileri, karanl\u0131k bir ortamda, \u00f6n\u00fcnde \u015eekil I\u2019deki gibi \u00e7elik bilye bulunan k\u00fcresel beyaz \u0131\u015f\u0131k kayna\u011f\u0131na bak\u0131yor.\nX g\u00f6zlemcisi, kayna\u011f\u0131 \u015eekil II\u2019dekine, Y g\u00f6zlemcisi de \u015eekil III\u2019tekine benzer bi\u00e7imde g\u00f6rd\u00fc\u011f\u00fcne g\u00f6re, X ve Y g\u00f6zlemcileri K, L, M noktalar\u0131n\u0131n hangilerinden bak\u0131yor olabilir?\nX\u2019in bakt\u0131\u011f\u0131 nokta | Y\u2019nin bakt\u0131\u011f\u0131 noka",
+   "sikler": {
+    "A": "L | M",
+    "B": "M | K",
+    "C": "L | K",
+    "D": "K | M",
+    "E": "K | L"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(YGS 2011)"
+  },
+  {
+   "dosya": "AKT25FZ-T052_02",
+   "basili_no": 2,
+   "govde": "K ve L aynalar\u0131yla olu\u015fturulan d\u00fczenekte I \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131 \u015fekildeki yolu izliyor.\n30\u00b0\n\u03b1\n100\u00b0\n\u03b8\nI\u015f\u0131n\u0131n geli\u015f do\u011frultusu de\u011fi\u015ftirilmeden sistem tamamen su i\u00e7erisine dald\u0131r\u0131l\u0131rsa,\nI. \u03b1 a\u00e7\u0131s\u0131 azal\u0131r.\nII. \u03b8 a\u00e7\u0131s\u0131 artar.\nIII. Gelen ve yans\u0131yan \u0131\u015f\u0131nlar aras\u0131ndaki a\u00e7\u0131 de\u011fi\u015fmez.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T053_04",
+   "basili_no": 4,
+   "govde": "Ay ile Yerk\u00fcre aras\u0131ndaki uzakl\u0131\u011f\u0131 \u00f6l\u00e7mek amac\u0131yla Ay\u2019daki bir astronot, Yerk\u00fcre\u2019den g\u00f6nderilen LASER \u0131\u015f\u0131nlar\u0131n\u0131n kendi \u00fczerinden geri yans\u0131mas\u0131n\u0131 sa\u011flayan bir sistemi Ay y\u00fczeyine yerle\u015ftirmek istiyor. Bunun i\u00e7in birka\u00e7 tane d\u00fczlem aynan\u0131n yan\u0131 s\u0131ra odak noktas\u0131 F, merkezi M ile g\u00f6sterilmi\u015f olan \u00e7ukur ve t\u00fcmsek aynalar kullanarak e\u015fit b\u00f6lmeli kareler \u00fczerinde g\u00f6sterilen \u015fekildeki d\u00fczeneklerden birini haz\u0131rlay\u0131p bu d\u00fczene\u011fi Ay y\u00fczeyine yerle\u015ftiriyor.\n40\u00b0\n40\u00b0\nBuna g\u00f6re astronotun Ay y\u00fczeyine yerle\u015ftirdi\u011fi sistem; I, II ve III d\u00fczeneklerinden hangileri olabilir?",
+   "sikler": {
+    "A": "Yaln\u0131 I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "II ve III",
+    "E": "I, II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(TYT 2023)"
+  },
+  {
+   "dosya": "AKT25FZ-T054_02",
+   "basili_no": 2,
+   "govde": "Oda\u011f\u0131 F merkezi M olan \u00e7ukur aynaya gelen X, Y ve Z \u0131\u015f\u0131nlar\u0131n\u0131n yans\u0131mas\u0131 \u015fekildeki gibidir.\nBuna g\u00f6re X, Y ve Z \u0131\u015f\u0131nlar\u0131ndan hangilerinin izledi\u011fi yol do\u011fru g\u00f6sterilmi\u015ftir?",
+   "sikler": {
+    "A": "Yaln\u0131z X",
+    "B": "Yaln\u0131z Y",
+    "C": "Yaln\u0131z Z",
+    "D": "X ve Z",
+    "E": "Y ve Z"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T054_03",
+   "basili_no": 3,
+   "govde": "K, L ve M \u0131\u015f\u0131nlar\u0131n\u0131n k\u00fcresel aynalarda yans\u0131d\u0131ktan sonra izledikleri yollar \u015fekildeki gibidir.\nI: \u00c7ukur ayna, x\nII: \u00c7ukur ayna, \u03b1, \u03b1, x\nIII: T\u00fcmsek ayna, x\nBuna g\u00f6re I, II ve III k\u00fcresel aynalar\u0131ndan hangilerinin odak uzakl\u0131\u011f\u0131 x\u2019ten b\u00fcy\u00fckt\u00fcr?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T054_04",
+   "basili_no": 4,
+   "govde": "T\u00fcmsek aynaya \u015fekildeki gibi gelen \u0131\u015f\u0131n yans\u0131d\u0131ktan sonra kendi \u00fczerinden geri d\u00f6n\u00fcyor.\n|CB| = |BT| oldu\u011funa g\u00f6re, a\u015fa\u011f\u0131da verilenlerden hangisinin izledi\u011fi yol do\u011fru verilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k) \u03b1 2\u03b1"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T055_02",
+   "basili_no": 2,
+   "govde": "Y saydam ortam\u0131ndan X saydam ortam\u0131na do\u011fru gelen tek renkli I \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131 \u015eekil I\u2019deki yolu izliyor.\n\u03b1\n\u03b1 \u03b1\nBuna g\u00f6re, ayn\u0131 \u0131\u015f\u0131n X ortam\u0131ndan Y ortam\u0131na \u015eekil II\u2019deki gibi g\u00f6nderilirse 1, 2, 3, 4, 5 yollar\u0131ndan hangisini izleyerek yoluna devam eder?",
+   "sikler": {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T055_05",
+   "basili_no": 5,
+   "govde": "Bir saydam ortamdan ba\u015fka bir saydam ortama ge\u00e7en \u0131\u015f\u0131nlar\u0131n izledi\u011fi yollar \u00e7izilmi\u015ftir.\nBuna g\u00f6re, hangi \u0131\u015f\u0131n\u0131n izledi\u011fi yol yanl\u0131\u015f \u00e7izilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k) \u03b1 \u03b1",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T055_06",
+   "basili_no": 6,
+   "govde": "Tek renkli bir I \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131 k\u0131rma indisleri n_X, n_Y ve n_Z olan saydam ortamlar\u0131ndan k\u0131rma indisi n olan saydam ortama ilerlerken \u015fekildeki yollar\u0131 izlemektedir.\nN\nn\nn_X\n\u03b8\nI\nN\nn\nn_Y\n\u03b8\nI\nN\nn\nn_Z\n\u03b8 \u03b8\nI\nX, Y ve Z ortamlar\u0131ndan k\u0131rma indisi n olan ortama ge\u00e7i\u015fte s\u0131n\u0131r a\u00e7\u0131lar\u0131 s\u0131ras\u0131 ile \u03b8_X, \u03b8_Y ve \u03b8_Z oldu\u011funa g\u00f6re, bunlar aras\u0131ndaki ili\u015fki a\u015fa\u011f\u0131dakilerden hangisinde do\u011fru olarak verilmi\u015ftir?",
+   "sikler": {
+    "A": "\u03b8_Z > \u03b8_X > \u03b8_Y",
+    "B": "\u03b8_X = \u03b8_Y > \u03b8_Z",
+    "C": "\u03b8_Y > \u03b8_X > \u03b8_Z",
+    "D": "\u03b8_Y > \u03b8_X = \u03b8_Z",
+    "E": "\u03b8_Z > \u03b8_X = \u03b8_Y"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T056_03",
+   "basili_no": 3,
+   "govde": "\u00c7ukur aynan\u0131n asal eksenine paralel olarak gelen k\u0131rm\u0131z\u0131 renkli \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131, asal ekseni L noktas\u0131nda kesiyor.\nK  L  M  N\nAsal eksen\nBuna g\u00f6re, asal eksene paralel olarak gelen mor renkli \u0131\u015f\u0131k, asal ekseni hangi noktadan keser?\n(noktalar aras\u0131 uzakl\u0131klar e\u015fittir.)",
+   "sikler": {
+    "A": "KL aras\u0131",
+    "B": "L",
+    "C": "LM aras\u0131",
+    "D": "M",
+    "E": "MN aras\u0131"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T056_04",
+   "basili_no": 4,
+   "govde": "Hava ortam\u0131nda bulunan ince kenarl\u0131 merce\u011fin asal eksenine paralel olan k\u0131rm\u0131z\u0131 renkli \u0131\u015f\u0131n, \u015fekildeki yolu izliyor.\nO  K  L  M\nAsal eksen\nBuna g\u00f6re, mor renkli \u0131\u015f\u0131n asal ekseni hangi noktadan keser?\n(noktalar aras\u0131 uzakl\u0131klar e\u015fittir.)",
+   "sikler": {
+    "A": "OK aras\u0131",
+    "B": "K",
+    "C": "KL aras\u0131",
+    "D": "L",
+    "E": "LM aras\u0131"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T056_08",
+   "basili_no": 8,
+   "govde": "Beyaz karton \u00fczerine k\u0131rm\u0131z\u0131, ye\u015fil ve mavi renkler kullan\u0131larak bu renklerin ba\u015f harfleri \u015fekildeki gibi yaz\u0131l\u0131yor.\nK Y M\nKarton \u00fczerine k\u0131rm\u0131z\u0131 \u0131\u015f\u0131k alt\u0131nda bak\u0131l\u0131rsa hangi harfler okunabilir?",
+   "sikler": {
+    "A": "K",
+    "B": "Y",
+    "C": "M",
+    "D": "YM",
+    "E": "KY"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T057_01",
+   "basili_no": 1,
+   "govde": "D\u00fc\u015fey kesiti \u015fekildeki gibi olan bir kapta bulunan s\u0131v\u0131n\u0131n i\u00e7erisine d\u00fczlem ayna \u015fekildeki gibi yerle\u015ftiriliyor.\nD\u00fczlem ayna: 30\u00b0\nS\u0131v\u0131dan havaya ge\u00e7i\u015fte s\u0131n\u0131r a\u00e7\u0131s\u0131 30\u00b0 oldu\u011funa g\u00f6re, I \u0131\u015f\u0131n\u0131n\u0131n izleyece\u011fi yol a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru g\u00f6sterilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k)",
+    "B": "(g\u00f6rsel \u015f\u0131k)",
+    "C": "(g\u00f6rsel \u015f\u0131k)",
+    "D": "(g\u00f6rsel \u015f\u0131k)",
+    "E": "(g\u00f6rsel \u015f\u0131k)"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T057_03",
+   "basili_no": 3,
+   "govde": "Az k\u0131r\u0131c\u0131 ortamdan \u00e7ok k\u0131r\u0131c\u0131 ortama normale yak\u0131n do\u011frultuda bakan bir g\u00f6zlemciye g\u00f6re ortam\u0131n g\u00f6r\u00fcnen derinli\u011finin ger\u00e7ek derinli\u011fine ba\u011fl\u0131 de\u011fi\u015fim grafi\u011fi \u015fekildeki gibidir.\nG\u00f6r\u00fcn\u00fcr derinlik (m): 1,5  3  6\nGer\u00e7ek derinlik (m): 0  2  4  8\nBu grafi\u011fe g\u00f6re,\nI. Ger\u00e7ek derinlik artarsa g\u00f6r\u00fcn\u00fcr derinlik de artar.\nII. Ger\u00e7ek derinli\u011fin g\u00f6r\u00fcn\u00fcr derinli\u011fe oran\u0131 de\u011fi\u015fmemektedir.\nIII. G\u00f6r\u00fcn\u00fcr derinlik artarken \u0131\u015f\u0131\u011f\u0131n ortamdaki s\u00fcrati azalmaktad\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T058_03",
+   "basili_no": 3,
+   "govde": "Yak\u0131nsak bir merce\u011fe I \u0131\u015f\u0131n\u0131 \u015fekildeki gibi g\u00f6nderiliyor.\n1  2  3  4\nAsal eksen\nMerce\u011fi ge\u00e7en bu \u0131\u015f\u0131n hangi noktadan <u>ge\u00e7emez</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z 1",
+    "B": "1 ve 2",
+    "C": "3 ve 4",
+    "D": "2 ve 4",
+    "E": "1 ve 3"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T058_08",
+   "basili_no": 8,
+   "govde": "Bir mercek optik merkezi O noktas\u0131nda olacak bi\u00e7imde yatay do\u011frultu \u00fczerine yerle\u015ftiriliyor.\nK  L  O  M  N  P\nAsal eksen\nN noktas\u0131na yerle\u015ftirilen bir cismin g\u00f6r\u00fcnt\u00fcs\u00fc K noktas\u0131nda olu\u015fuyor.\nBuna g\u00f6re, L noktas\u0131na konulan cismin g\u00f6r\u00fcnt\u00fc yeri i\u00e7in ne s\u00f6ylenir? (Noktalar aras\u0131 uzakl\u0131klar e\u015fittir.)",
+   "sikler": {
+    "A": "K ile L aras\u0131nda",
+    "B": "L ile O aras\u0131nda",
+    "C": "M noktas\u0131nda",
+    "D": "N ile P aras\u0131nda",
+    "E": "Sonsuzda"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T058_09",
+   "basili_no": 9,
+   "govde": "X d\u00fczlem aynas\u0131 ile Y yak\u0131nsak merce\u011finden olu\u015fan sistemde aynaya \u015fekildeki gibi gelen ayn\u0131 renkteki \u0131\u015f\u0131nlardan I_1 mercekte k\u0131r\u0131ld\u0131ktan sonra asal eksene paralel olarak gidiyor.\nD\u00fczlem ayna\nY\nI_1\nI_2\nK O L M N\nAsal eksen\nBuna g\u00f6re, I_2 \u0131\u015f\u0131n\u0131 mercekte k\u0131r\u0131ld\u0131ktan sonra asal ekseni nerede keser?",
+   "sikler": {
+    "A": "O noktas\u0131nda",
+    "B": "L noktas\u0131nda",
+    "C": "L ile M aras\u0131nda",
+    "D": "M noktas\u0131nda",
+    "E": "N noktas\u0131nda"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T059_03",
+   "basili_no": 3,
+   "govde": "Camdan yap\u0131lan ince kenarl\u0131 merce\u011fin asal eksenine paralel gelen I \u0131\u015f\u0131k \u0131\u015f\u0131n\u0131n izledi\u011fi yol \u015fekildeki gibidir.\nsapma a\u00e7\u0131s\u0131\nd\nBuna g\u00f6re,\nI. Merce\u011fin k\u0131r\u0131lma indisi daha b\u00fcy\u00fck se\u00e7ilirse sapma a\u00e7\u0131s\u0131 artar.\nII. Hava ortam\u0131 yerine su kullan\u0131l\u0131rsa d uzakl\u0131\u011f\u0131 artar.\nIII. I\u015f\u0131\u011f\u0131n \u015fiddeti art\u0131r\u0131l\u0131rsa d uzakl\u0131\u011f\u0131 azal\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T059_04",
+   "basili_no": 4,
+   "govde": "Odak noktalar\u0131 F olan optik ara\u00e7lar\u0131n \u00f6n\u00fcne K, L ve M cisimleri \u015fekildeki gibi konulmu\u015ftur.\nYak\u0131nsak mercek (I)\n\u00c7ukur ayna (II)\nIraksak mercek (III)\nBu optik ara\u00e7lara bakan g\u00f6zlemciler K, L ve M cisimlerinden hangilerinin g\u00f6r\u00fcnt\u00fcs\u00fcn\u00fc cisimden daha b\u00fcy\u00fck g\u00f6r\u00fcr?",
+   "sikler": {
+    "A": "Yaln\u0131z K",
+    "B": "Yaln\u0131z L",
+    "C": "Yaln\u0131z M",
+    "D": "K ve L",
+    "E": "L ve M"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T059_08",
+   "basili_no": 8,
+   "govde": "Odak noktalar\u0131 F olan optik ara\u00e7lar\u0131n \u00f6n\u00fcne K, L ve M cisimleri I, II ve III'teki gibi konuluyor.\nIraksak mercek (I)\nYak\u0131nsak mercek (II)\n\u00c7ukur ayna (III)\nBu optik ara\u00e7lara bakan g\u00f6zlemciler K, L ve M cisimlerinden hangilerinin g\u00f6r\u00fcnt\u00fcs\u00fcn\u00fc cisimden daha k\u00fc\u00e7\u00fck g\u00f6r\u00fcr?",
+   "sikler": {
+    "A": "Yaln\u0131z K",
+    "B": "Yaln\u0131z L",
+    "C": "Yaln\u0131z M",
+    "D": "K ve L",
+    "E": "L ve M"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T060_04",
+   "basili_no": 4,
+   "govde": "\u00d6zde\u015f birim karelerle \u00f6l\u00e7eklendirilmi\u015f d\u00fczleme konulan yak\u0131nsak bir merce\u011fin asal ekseni \u00fczerinde bulunan K isminin g\u00f6r\u00fcnt\u00fcs\u00fc K' olarak olu\u015fmaktad\u0131r.\nBuna g\u00f6re,\nI. Cisim merce\u011fin odak noktas\u0131nda bulunmaktad\u0131r.\nII. G\u00f6r\u00fcnt\u00fc sanald\u0131r.\nIII. Cisim merce\u011fe do\u011fru hareket ettirilirse g\u00f6r\u00fcnt\u00fcs\u00fc mercekten uzakla\u015f\u0131r.\nyarg\u0131lar\u0131ndan hangileri <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "I ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T060_06",
+   "basili_no": 6,
+   "govde": "Asal eksen \u00fczerinde bulunan L noktas\u0131ndaki cismin mercekteki g\u00f6r\u00fcnt\u00fcs\u00fc K noktas\u0131nda olu\u015fuyor.\nK  L  M  N  P  R\nAsal eksen\nBuna g\u00f6re, merce\u011fin t\u00fcr\u00fc ile g\u00f6r\u00fcnt\u00fcn\u00fcn \u00f6zelli\u011fi i\u00e7in ne s\u00f6ylenebilir?\nMercek t\u00fcr\u00fc | G\u00f6r\u00fcnt\u00fc \u00d6zelli\u011fi",
+   "sikler": {
+    "A": "Yak\u0131nsak | Ger\u00e7ek",
+    "B": "Yak\u0131nsak | Sanal",
+    "C": "Iraksak | Sanal",
+    "D": "Iraksak | Ters",
+    "E": "Yak\u0131nsak | Ters"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(TYT 2021)"
+  },
+  {
+   "dosya": "AKT25FZ-T060_07",
+   "basili_no": 7,
+   "govde": "Odak uzakl\u0131\u011f\u0131 f olan yak\u0131nsak bir merce\u011fin asal eksenine dik olarak konulan bir mum mercekten uzakla\u015ft\u0131r\u0131ld\u0131\u011f\u0131nda g\u00f6r\u00fcnt\u00fcs\u00fc merce\u011fe yakla\u015f\u0131yor.\nBuna g\u00f6re, a\u015fa\u011f\u0131da verilen ifadelerden hangisi <u>kesinlikle</u> <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Mum merce\u011fin 2f noktas\u0131nda bulunmaktad\u0131r.",
+    "B": "Mumun g\u00f6r\u00fcnt\u00fcs\u00fc ters olarak olu\u015fmaktad\u0131r.",
+    "C": "Mumun g\u00f6r\u00fcnt\u00fcs\u00fc k\u00fc\u00e7\u00fclmektedir.",
+    "D": "Mumun merce\u011fe uzakl\u0131\u011f\u0131 f'den k\u00fc\u00e7\u00fckt\u00fcr.",
+    "E": "G\u00f6r\u00fcnt\u00fc ger\u00e7ektir."
+   },
+   "sekil_var": false,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T061_08",
+   "basili_no": 8,
+   "govde": "Dalgalar\u0131n s\u0131n\u0131fland\u0131r\u0131lmas\u0131 ile ilgili a\u015fa\u011f\u0131daki tablo olu\u015fturuluyor.\nDALGALAR\nTa\u015f\u0131d\u0131\u011f\u0131 enerjiye g\u00f6re: Elektromanyetik dalgalar | II\nI: III | Boyuna dalgalar\nBuna g\u00f6re, tablodaki I, II ve III numaral\u0131 bo\u015fluklara a\u015fa\u011f\u0131dakilerden hangileri yaz\u0131lmal\u0131d\u0131r?\nI | II | III",
+   "sikler": {
+    "A": "Mekanik dalgalar | Enine dalgalar | Titre\u015fim do\u011frultusuna g\u00f6re",
+    "B": "Titre\u015fim do\u011frultusuna g\u00f6re | Mekanik dalgalar | Enine dalgalar",
+    "C": "Ses dalgalar\u0131 | Mekanik dalgalar | Enine dalgalar",
+    "D": "Enine dalgalar | Titre\u015fim do\u011frultusuna g\u00f6re | Ses dalgalar\u0131",
+    "E": "Titre\u015fim do\u011frultusuna g\u00f6re | Ses dalgalar\u0131 | Mekanik dalgalar"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T063_07",
+   "basili_no": 7,
+   "govde": "L\nK\nY engeli\n40\u00b0\nX engeli\nDerinli\u011fi her yerde ayn\u0131 olan dalga le\u011feninde \u00fcretilen \u015fekildeki KL atmas\u0131 \u00f6nce X sonra Y engelinden yans\u0131yor.\nBuna g\u00f6re, KL atmas\u0131n\u0131n Y engelinden yans\u0131mas\u0131 a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru g\u00f6sterilmi\u015ftir?",
+   "sikler": {
+    "A": "(g\u00f6rsel \u015f\u0131k) K L 40\u00b0 Y",
+    "B": "(g\u00f6rsel \u015f\u0131k) K L 50\u00b0 Y",
+    "C": "(g\u00f6rsel \u015f\u0131k) L K 40\u00b0 Y",
+    "D": "(g\u00f6rsel \u015f\u0131k) L K 50\u00b0 Y",
+    "E": "(g\u00f6rsel \u015f\u0131k) K Y L 20\u00b0"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": true,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T063_11",
+   "basili_no": 11,
+   "govde": "Do\u011frusal bir su atmas\u0131n\u0131n X ortam\u0131ndan Y ortam\u0131na ge\u00e7i\u015fi \u015fekildeki gibi g\u00f6zlenmektedir.\nBuna g\u00f6re,\nI. X ortam\u0131 derin, Y s\u0131\u011fd\u0131r.\nII. Dalgan\u0131n ara kesitle yapt\u0131\u011f\u0131 i ve r gelme ve k\u0131r\u0131lma a\u00e7\u0131s\u0131d\u0131r.\nIII. Yaln\u0131z Y ortam\u0131n\u0131n derinli\u011fi art\u0131r\u0131l\u0131rsa r a\u00e7\u0131s\u0131 de\u011fi\u015fmez.\nifadelerinden hangileri <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T064_06",
+   "basili_no": 6,
+   "govde": "Bir g\u00f6zlem s\u0131ras\u0131nda a\u00e7\u0131k denizde olu\u015fan dalgalar\u0131n, k\u0131y\u0131ya yakla\u015f\u0131rken \u015fekildeki gibi art arda gelen dalgalar\u0131n dalga cephelerinin s\u0131kla\u015ft\u0131\u011f\u0131 g\u00f6zlemlenmektedir. \u015eekildeki \u00e7izgiler, ayn\u0131 kaynaktan \u00e7\u0131kan su dalgalar\u0131n\u0131n dalga cephelerini temsil etmektedir.\nBuna g\u00f6re dalga cephelerinin s\u0131kla\u015ft\u0131\u011f\u0131 k\u0131y\u0131ya yak\u0131n b\u00f6lgedeki dalgalar\u0131n;\nI. dalga boyu,\nII. frekans,\nIII. s\u00fcrat\nniceliklerinden hangileri \u015fekildeki a\u00e7\u0131k deniz b\u00f6lgesindekine g\u00f6re daha k\u00fc\u00e7\u00fckt\u00fcr?",
+   "sikler": {
+    "A": "Yaln\u0131z II",
+    "B": "Yaln\u0131z III",
+    "C": "I ve II",
+    "D": "I ve III",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(TYT 2022)"
+  },
+  {
+   "dosya": "AKT25FZ-T065_06",
+   "basili_no": 6,
+   "govde": "Bir ses kayna\u011f\u0131ndan yay\u0131lan ses dalgalar\u0131n\u0131n yay\u0131lmas\u0131 s\u0131ras\u0131nda hava molek\u00fcllerinin titre\u015fimleri \u015fekildeki gibi modellenmi\u015ftir.\nX\nY\nBuna g\u00f6re,\nI. X ve Y aras\u0131ndaki uzakl\u0131k dalga boyuna e\u015fittir.\nII. Ses dalgas\u0131, hava molek\u00fcllerini titre\u015ftirerek ilerlemektedir.\nIII. Ses dalgas\u0131 titre\u015febilen maddesel ortamlar\u0131n olmad\u0131\u011f\u0131 yerde yay\u0131lamaz.\nyarg\u0131lar\u0131ndan hangileri <u>yanl\u0131\u015ft\u0131r</u>?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T065_11",
+   "basili_no": 11,
+   "govde": "Bir cismin esnekli\u011fine ve k\u00fctlesine ba\u011fl\u0131 olan frekans\u0131na --I-- denir. Do\u011fal frekanslar\u0131 ayn\u0131 olan kaynaklardan biri titre\u015ftirildi\u011finde di\u011fer ses kayna\u011f\u0131n\u0131n bu etki ile titre\u015fmesine --II-- denir.\nYukar\u0131daki paragrafta I ve II ile belirtilen bo\u015fluklara gelmesi gereken uygun kavramlar a\u015fa\u011f\u0131dakilerin hangisinde do\u011fru olarak verilmi\u015ftir?\nI | II",
+   "sikler": {
+    "A": "Zorla titre\u015fim | Giri\u015fim",
+    "B": "Yans\u0131ma | Periyot",
+    "C": "Do\u011fal frekans | Rezonans",
+    "D": "Do\u011fal frekans | Giri\u015fim",
+    "E": "Rezonans | Dalga boyu"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": null
+  },
+  {
+   "dosya": "AKT25FZ-T066_10",
+   "basili_no": 10,
+   "govde": "Merih bir gitar telini ortas\u0131ndan \u00e7ekip b\u0131rakt\u0131\u011f\u0131nda telin detayl\u0131 hareketini g\u00f6remedi\u011fini ama telin \u015eekil 1\u2019de g\u00f6sterilen dalga bi\u00e7imli bir b\u00f6lgeyi tarad\u0131\u011f\u0131n\u0131 fark eder. Merih bundan sonra \u015eekil 1\u2019deki tele, gitar\u0131n tam ortas\u0131ndaki perdeye temas edecek \u015fekilde hafif\u00e7e bast\u0131r\u0131r ve bu defa telin \u015eekil 2\u2019deki gibi bir b\u00f6lgeyi tarad\u0131\u011f\u0131n\u0131 g\u00f6zlemler.\n\u015eekil 1: L\n\u015eekil 2: L/2\nBuna g\u00f6re teldeki dalgayla ilgili,\nI. Dalga boyu yar\u0131ya d\u00fc\u015fm\u00fc\u015ft\u00fcr.\nII. Frekans 2 kat\u0131na \u00e7\u0131km\u0131\u015ft\u0131r.\nIII. Dalga h\u0131z\u0131 2 kat\u0131na \u00e7\u0131km\u0131\u015ft\u0131r.\nyarg\u0131lar\u0131ndan hangileri do\u011frudur?",
+   "sikler": {
+    "A": "Yaln\u0131z I",
+    "B": "Yaln\u0131z II",
+    "C": "Yaln\u0131z III",
+    "D": "I ve II",
+    "E": "II ve III"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(TYT 2020)"
+  },
+  {
+   "dosya": "AKT25FZ-T066_11",
+   "basili_no": 11,
+   "govde": "Bir ucu duvara sabitlenmi\u015f bir ipin serbest ucu belirli bir kuvvetle gerilerek a\u015fa\u011f\u0131 yukar\u0131 hareket ettirildi\u011finde ip \u00fczerinde frekans\u0131 f_1 ve h\u0131z\u0131 v_1 olan \u015eekil 1\u2019deki dalga olu\u015fturulmu\u015ftur. \u0130pin gerilimini de\u011fi\u015ftirmeden serbest u\u00e7 daha h\u0131zl\u0131 hareket ettirildi\u011finde ise frekans\u0131 f_2 ve h\u0131z\u0131 v_2 olan \u015eekil 2\u2019deki dalga olu\u015fturulmu\u015ftur.\nHer iki \u015fekildeki b\u00f6lmeler e\u015fit uzunlukta oldu\u011funa g\u00f6re a\u015fa\u011f\u0131dakilerin hangisinde f_1-f_2 ve v_1-v_2 aras\u0131ndaki ili\u015fkiler do\u011fru olarak verilmi\u015ftir?",
+   "sikler": {
+    "A": "v_1 = v_2 ; f_1 < f_2",
+    "B": "v_1 > v_2 ; f_1 < f_2",
+    "C": "v_1 > v_2 ; f_1 > f_2",
+    "D": "v_1 < v_2 ; f_1 = f_2",
+    "E": "v_1 = v_2 ; f_1 = f_2"
+   },
+   "sekil_var": true,
+   "sikler_gorsel": false,
+   "etiket": "(TYT 2021)"
+  }
+ ]
+}
