@@ -353,12 +353,17 @@ HUCRE_BOSLUK = 5  # hucreler ('1-D  2-A') arasi en az bos sutun
 
 
 def harf_bloblari(s: np.ndarray) -> list[tuple[slice, slice]]:
+    return hucre_harf_bloblari(s, GLIF_HARF_ESIK)
+
+
+def hucre_harf_bloblari(s: np.ndarray, esik: int) -> list[tuple[slice, slice]]:
     """Anahtar satiri '1-D 2-A ...' (8 px yazi): satir bantlari -> bos sutunla
     ayrilan hucreler -> hucrede ust ucte birde murekkebi olan sutun gruplarinin
     SONUNCUSU harf (tire orta yukseklikte, ust ucte birde murekkep yok; tire
-    harfe antialias ile yapistigi icin blob komsulugu kullanilmaz)."""
+    harfe antialias ile yapistigi icin blob komsulugu kullanilmaz). Apotemi
+    serisinde ortak (APO19FZ: gri yazi soluk sari kutuda, esik profilden)."""
     mx, mn = s.max(axis=2).astype(int), s.min(axis=2).astype(int)
-    siyah = (mn < GLIF_HARF_ESIK) & (mx - mn < 45)
+    siyah = (mn < esik) & (mx - mn < 45)
     satir = siyah.any(axis=1)
     out: list[tuple[slice, slice]] = []
     y = 0

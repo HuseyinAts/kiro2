@@ -249,6 +249,10 @@ KAYNAK_KAYITLARI: dict[str, dict[str, str]] = {
         "onek": "APO19MT",
         "ithal_araci": "scripts/kitap/kitap_hat/ithal.py",
     },
+    "2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi": {
+        "onek": "APO19FZ",
+        "ithal_araci": "scripts/kitap/kitap_hat/ithal.py",
+    },
     "OSYM 2025 TYT": {
         "onek": "OSYM_2025_TYT",
         "ithal_araci": "scripts/osym/kitapcik_ithal.py",

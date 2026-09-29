@@ -1,0 +1,2984 @@
+{
+"kaynak": "2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s6-7): 4 bolum, 36 kalin konu basligi (alt basliklar test bandinda beyaz zeminde); konu = test bandindaki yesil BUYUK HARFLI ad (iki bagimsiz okuma), sayfa araligi icindekiler sayfa numarasindan (dosya = basili)",
+"bolumler": [
+{
+"kod": "FIZ-APO19FZ-B01",
+"no": 1,
+"ad": "1. B\u00d6L\u00dcM"
+},
+{
+"kod": "FIZ-APO19FZ-B02",
+"no": 2,
+"ad": "2. B\u00d6L\u00dcM"
+},
+{
+"kod": "FIZ-APO19FZ-B03",
+"no": 3,
+"ad": "3. B\u00d6L\u00dcM"
+},
+{
+"kod": "FIZ-APO19FZ-B04",
+"no": 4,
+"ad": "4. B\u00d6L\u00dcM"
+}
+],
+"konular": [
+{
+"kod": "FIZ-APO19FZ-B01-K01",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Fizik Bilimine Giri\u015f",
+"icindekiler_adi": "Fizik Bilimine Giri\u015f",
+"sayfalar": [
+11,
+16
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K02",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Madde ve \u00d6zellikleri",
+"icindekiler_adi": "Madde ve \u00d6zellikleri",
+"sayfalar": [
+17,
+26
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "S\u0131v\u0131lar\u0131n Kald\u0131rma Kuvveti",
+"icindekiler_adi": "S\u0131v\u0131lar\u0131n Kald\u0131rma Kuvveti",
+"sayfalar": [
+27,
+38
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Bas\u0131n\u00e7",
+"icindekiler_adi": "Bas\u0131n\u00e7",
+"sayfalar": [
+39,
+58
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Is\u0131 ve S\u0131cakl\u0131k",
+"icindekiler_adi": "Is\u0131 ve S\u0131cakl\u0131k",
+"sayfalar": [
+59,
+76
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K06",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Genle\u015fme",
+"icindekiler_adi": "Genle\u015fme",
+"sayfalar": [
+77,
+82
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Tekrar Testi",
+"icindekiler_adi": "Tekrar Testi",
+"sayfalar": [
+83,
+94
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K08",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Vekt\u00f6rler",
+"icindekiler_adi": "Vekt\u00f6rler",
+"sayfalar": [
+95,
+100
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Kuvvet ve Denge",
+"icindekiler_adi": "Kuvvet ve Denge",
+"sayfalar": [
+101,
+112
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K10",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Tork",
+"icindekiler_adi": "Tork",
+"sayfalar": [
+113,
+120
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "Basit Makineler",
+"icindekiler_adi": "Basit Makineler",
+"sayfalar": [
+121,
+136
+]
+},
+{
+"kod": "FIZ-APO19FZ-B01-K12",
+"bolum": "FIZ-APO19FZ-B01",
+"ad": "A\u011f\u0131rl\u0131k Merkezi",
+"icindekiler_adi": "A\u011f\u0131rl\u0131k Merkezi",
+"sayfalar": [
+137,
+144
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Hareket",
+"icindekiler_adi": "Hareket",
+"sayfalar": [
+145,
+158
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K02",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Ba\u011f\u0131l Hareket",
+"icindekiler_adi": "Ba\u011f\u0131l Hareket",
+"sayfalar": [
+159,
+162
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Newton'un Hareket Yasalar\u0131",
+"icindekiler_adi": "Newton'un Hareket Yasalar\u0131",
+"sayfalar": [
+163,
+176
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K04",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Yery\u00fcz\u00fcnde At\u0131\u015f Hareketleri",
+"icindekiler_adi": "Yery\u00fcz\u00fcnde At\u0131\u015f Hareketleri",
+"sayfalar": [
+177,
+186
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "\u0130\u015f - G\u00fc\u00e7 - Enerji",
+"icindekiler_adi": "\u0130\u015f - G\u00fc\u00e7 - Enerji",
+"sayfalar": [
+187,
+212
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K06",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Tekrar Testi",
+"icindekiler_adi": "Tekrar Testi",
+"sayfalar": [
+213,
+220
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K07",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "\u0130tme ve \u00c7izgisel Momentum",
+"icindekiler_adi": "\u0130tme ve \u00c7izgisel Momentum",
+"sayfalar": [
+221,
+230
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K08",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "D\u00fczg\u00fcn \u00c7embersel Hareket",
+"icindekiler_adi": "D\u00fczg\u00fcn \u00c7embersel Hareket",
+"sayfalar": [
+231,
+234
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K09",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "A\u00e7\u0131sal Momentum",
+"icindekiler_adi": "A\u00e7\u0131sal Momentum",
+"sayfalar": [
+235,
+238
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K10",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Genel \u00c7ekim ve Kepler Kanunlar\u0131",
+"icindekiler_adi": "Genel \u00c7ekim ve Kepler Kanunlar\u0131",
+"sayfalar": [
+239,
+242
+]
+},
+{
+"kod": "FIZ-APO19FZ-B02-K11",
+"bolum": "FIZ-APO19FZ-B02",
+"ad": "Basit Harmonik Hareket",
+"icindekiler_adi": "Basit Harmonik Hareket",
+"sayfalar": [
+243,
+248
+]
+},
+{
+"kod": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"ad": "Elektrostatik",
+"icindekiler_adi": "Elektrostatik",
+"sayfalar": [
+249,
+266
+]
+},
+{
+"kod": "FIZ-APO19FZ-B03-K02",
+"bolum": "FIZ-APO19FZ-B03",
+"ad": "Elektriksel Potansiyel",
+"icindekiler_adi": "Elektriksel Potansiyel",
+"sayfalar": [
+267,
+268
+]
+},
+{
+"kod": "FIZ-APO19FZ-B03-K03",
+"bolum": "FIZ-APO19FZ-B03",
+"ad": "D\u00fczg\u00fcn Elektrik Alan ve S\u0131\u011fa",
+"icindekiler_adi": "D\u00fczg\u00fcn Elektrik Alan ve S\u0131\u011fa",
+"sayfalar": [
+269,
+276
+]
+},
+{
+"kod": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"ad": "Elektrik Ak\u0131m\u0131",
+"icindekiler_adi": "Elektrik Ak\u0131m\u0131",
+"sayfalar": [
+277,
+308
+]
+},
+{
+"kod": "FIZ-APO19FZ-B03-K05",
+"bolum": "FIZ-APO19FZ-B03",
+"ad": "Tekrar Testi",
+"icindekiler_adi": "Tekrar Testi",
+"sayfalar": [
+309,
+314
+]
+},
+{
+"kod": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"ad": "Manyetizma",
+"icindekiler_adi": "Manyetizma",
+"sayfalar": [
+315,
+346
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Optik",
+"icindekiler_adi": "Optik",
+"sayfalar": [
+347,
+380
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Dalgalar",
+"icindekiler_adi": "Dalgalar",
+"sayfalar": [
+381,
+394
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K03",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Tekrar Testi",
+"icindekiler_adi": "Tekrar Testi",
+"sayfalar": [
+395,
+400
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Dalga Mekani\u011fi",
+"icindekiler_adi": "Dalga Mekani\u011fi",
+"sayfalar": [
+401,
+416
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Atom Fizi\u011fine Giri\u015f ve Radyoaktivite",
+"icindekiler_adi": "Atom Fizi\u011fine Giri\u015f ve Radyoaktivite",
+"sayfalar": [
+417,
+434
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K06",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Modern Fizik",
+"icindekiler_adi": "Modern Fizik",
+"sayfalar": [
+435,
+444
+]
+},
+{
+"kod": "FIZ-APO19FZ-B04-K07",
+"bolum": "FIZ-APO19FZ-B04",
+"ad": "Modern Fizi\u011fin Teknolojideki Uygulamalar\u0131",
+"icindekiler_adi": "Modern Fizi\u011fin Teknolojideki Uygulamalar\u0131",
+"sayfalar": [
+445,
+448
+]
+}
+],
+"test_sayisi": 216,
+"testler": [
+{
+"birim": "APO19FZ-T001",
+"test": 1,
+"sayfalar": [
+11,
+12
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-APO19FZ-B01-K01",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T002",
+"test": 2,
+"sayfalar": [
+13,
+14
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-APO19FZ-B01-K01",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T003",
+"test": 3,
+"sayfalar": [
+15,
+16
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-APO19FZ-B01-K01",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T004",
+"test": 4,
+"sayfalar": [
+17,
+18
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-APO19FZ-B01-K02",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T005",
+"test": 5,
+"sayfalar": [
+19,
+20
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-APO19FZ-B01-K02",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T006",
+"test": 6,
+"sayfalar": [
+21,
+22
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-APO19FZ-B01-K02",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T007",
+"test": 7,
+"sayfalar": [
+23,
+24
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-APO19FZ-B01-K02",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T008",
+"test": 8,
+"sayfalar": [
+25,
+26
+],
+"bant": "MADDE VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-APO19FZ-B01-K02",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T009",
+"test": 9,
+"sayfalar": [
+27,
+28
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T010",
+"test": 10,
+"sayfalar": [
+29,
+30
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T011",
+"test": 11,
+"sayfalar": [
+31,
+32
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T012",
+"test": 12,
+"sayfalar": [
+33,
+34
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T013",
+"test": 13,
+"sayfalar": [
+35,
+36
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T014",
+"test": 14,
+"sayfalar": [
+37,
+38
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-APO19FZ-B01-K03",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T015",
+"test": 15,
+"sayfalar": [
+39,
+40
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T016",
+"test": 16,
+"sayfalar": [
+41,
+42
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T017",
+"test": 17,
+"sayfalar": [
+43,
+44
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T018",
+"test": 18,
+"sayfalar": [
+45,
+46
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T019",
+"test": 19,
+"sayfalar": [
+47,
+48
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T020",
+"test": 20,
+"sayfalar": [
+49,
+50
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T021",
+"test": 21,
+"sayfalar": [
+51,
+52
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T022",
+"test": 22,
+"sayfalar": [
+53,
+54
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T023",
+"test": 23,
+"sayfalar": [
+55,
+56
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T024",
+"test": 24,
+"sayfalar": [
+57,
+58
+],
+"bant": "BASIN\u00c7",
+"konu": "FIZ-APO19FZ-B01-K04",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T025",
+"test": 25,
+"sayfalar": [
+59,
+60
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T026",
+"test": 26,
+"sayfalar": [
+61,
+62
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19FZ-T027",
+"test": 27,
+"sayfalar": [
+63,
+64
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T028",
+"test": 28,
+"sayfalar": [
+65,
+66
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T029",
+"test": 29,
+"sayfalar": [
+67,
+68
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T030",
+"test": 30,
+"sayfalar": [
+69,
+70
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T031",
+"test": 31,
+"sayfalar": [
+71,
+72
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T032",
+"test": 32,
+"sayfalar": [
+73,
+74
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T033",
+"test": 33,
+"sayfalar": [
+75,
+76
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-APO19FZ-B01-K05",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T034",
+"test": 34,
+"sayfalar": [
+77,
+78
+],
+"bant": "GENLE\u015eME",
+"konu": "FIZ-APO19FZ-B01-K06",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T035",
+"test": 35,
+"sayfalar": [
+79,
+80
+],
+"bant": "GENLE\u015eME",
+"konu": "FIZ-APO19FZ-B01-K06",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T036",
+"test": 36,
+"sayfalar": [
+81,
+82
+],
+"bant": "GENLE\u015eME",
+"konu": "FIZ-APO19FZ-B01-K06",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T037",
+"test": 37,
+"sayfalar": [
+83,
+84
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T038",
+"test": 38,
+"sayfalar": [
+85,
+86
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T039",
+"test": 39,
+"sayfalar": [
+87,
+88
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T040",
+"test": 40,
+"sayfalar": [
+89,
+90
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T041",
+"test": 41,
+"sayfalar": [
+91,
+92
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T042",
+"test": 42,
+"sayfalar": [
+93,
+94
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B01-K07",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T043",
+"test": 43,
+"sayfalar": [
+95,
+96
+],
+"bant": "VEKT\u00d6RLER",
+"konu": "FIZ-APO19FZ-B01-K08",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T044",
+"test": 44,
+"sayfalar": [
+97,
+98
+],
+"bant": "VEKT\u00d6RLER",
+"konu": "FIZ-APO19FZ-B01-K08",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T045",
+"test": 45,
+"sayfalar": [
+99,
+100
+],
+"bant": "VEKT\u00d6RLER",
+"konu": "FIZ-APO19FZ-B01-K08",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T046",
+"test": 46,
+"sayfalar": [
+101,
+102
+],
+"bant": "KUVVET VE DENGE",
+"konu": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T047",
+"test": 47,
+"sayfalar": [
+103,
+104
+],
+"bant": "KUVVET VE DENGE",
+"konu": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T048",
+"test": 48,
+"sayfalar": [
+105,
+106
+],
+"bant": "KUVVET VE DENGE",
+"konu": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T049",
+"test": 49,
+"sayfalar": [
+107,
+108
+],
+"bant": "KUVVET VE DENGE",
+"konu": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T050",
+"test": 50,
+"sayfalar": [
+109,
+110
+],
+"bant": "KUVVET VE DENGE",
+"konu": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T051",
+"test": 51,
+"sayfalar": [
+111,
+112
+],
+"bant": "KUVVET VE DENGE",
+"konu": "FIZ-APO19FZ-B01-K09",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T052",
+"test": 52,
+"sayfalar": [
+113,
+114
+],
+"bant": "TORK",
+"konu": "FIZ-APO19FZ-B01-K10",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T053",
+"test": 53,
+"sayfalar": [
+115,
+116
+],
+"bant": "TORK",
+"konu": "FIZ-APO19FZ-B01-K10",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T054",
+"test": 54,
+"sayfalar": [
+117,
+118
+],
+"bant": "TORK",
+"konu": "FIZ-APO19FZ-B01-K10",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T055",
+"test": 55,
+"sayfalar": [
+119,
+120
+],
+"bant": "TORK",
+"konu": "FIZ-APO19FZ-B01-K10",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T056",
+"test": 56,
+"sayfalar": [
+121,
+122
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T057",
+"test": 57,
+"sayfalar": [
+123,
+124
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T058",
+"test": 58,
+"sayfalar": [
+125,
+126
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T059",
+"test": 59,
+"sayfalar": [
+127,
+128
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T060",
+"test": 60,
+"sayfalar": [
+129,
+130
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T061",
+"test": 61,
+"sayfalar": [
+131,
+132
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T062",
+"test": 62,
+"sayfalar": [
+133,
+134
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T063",
+"test": 63,
+"sayfalar": [
+135,
+136
+],
+"bant": "BAS\u0130T MAK\u0130NELER",
+"konu": "FIZ-APO19FZ-B01-K11",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T064",
+"test": 64,
+"sayfalar": [
+137,
+138
+],
+"bant": "A\u011eIRLIK MERKEZ\u0130",
+"konu": "FIZ-APO19FZ-B01-K12",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T065",
+"test": 65,
+"sayfalar": [
+139,
+140
+],
+"bant": "A\u011eIRLIK MERKEZ\u0130",
+"konu": "FIZ-APO19FZ-B01-K12",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T066",
+"test": 66,
+"sayfalar": [
+141,
+142
+],
+"bant": "A\u011eIRLIK MERKEZ\u0130",
+"konu": "FIZ-APO19FZ-B01-K12",
+"bolum": "FIZ-APO19FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T067",
+"test": 67,
+"sayfalar": [
+145,
+146
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T068",
+"test": 68,
+"sayfalar": [
+147,
+148
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T069",
+"test": 69,
+"sayfalar": [
+149,
+150
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T070",
+"test": 70,
+"sayfalar": [
+151,
+152
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T071",
+"test": 71,
+"sayfalar": [
+153,
+154
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T072",
+"test": 72,
+"sayfalar": [
+155,
+156
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T073",
+"test": 73,
+"sayfalar": [
+157,
+158
+],
+"bant": "HAREKET",
+"konu": "FIZ-APO19FZ-B02-K01",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T074",
+"test": 74,
+"sayfalar": [
+159,
+160
+],
+"bant": "BA\u011eIL HAREKET",
+"konu": "FIZ-APO19FZ-B02-K02",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T075",
+"test": 75,
+"sayfalar": [
+161,
+162
+],
+"bant": "BA\u011eIL HAREKET",
+"konu": "FIZ-APO19FZ-B02-K02",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T076",
+"test": 76,
+"sayfalar": [
+163,
+164
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T077",
+"test": 77,
+"sayfalar": [
+165,
+166
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T078",
+"test": 78,
+"sayfalar": [
+167,
+168
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T079",
+"test": 79,
+"sayfalar": [
+169,
+170
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T080",
+"test": 80,
+"sayfalar": [
+171,
+172
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T081",
+"test": 81,
+"sayfalar": [
+173,
+174
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T082",
+"test": 82,
+"sayfalar": [
+175,
+176
+],
+"bant": "NEWTON'UN HAREKET YASALARI",
+"konu": "FIZ-APO19FZ-B02-K03",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T083",
+"test": 83,
+"sayfalar": [
+177,
+178
+],
+"bant": "YERY\u00dcZ\u00dcNDE ATI\u015e HAREKETLER\u0130",
+"konu": "FIZ-APO19FZ-B02-K04",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T084",
+"test": 84,
+"sayfalar": [
+179,
+180
+],
+"bant": "YERY\u00dcZ\u00dcNDE ATI\u015e HAREKETLER\u0130",
+"konu": "FIZ-APO19FZ-B02-K04",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T085",
+"test": 85,
+"sayfalar": [
+181,
+182
+],
+"bant": "YERY\u00dcZ\u00dcNDE ATI\u015e HAREKETLER\u0130",
+"konu": "FIZ-APO19FZ-B02-K04",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T086",
+"test": 86,
+"sayfalar": [
+183,
+184
+],
+"bant": "YERY\u00dcZ\u00dcNDE ATI\u015e HAREKETLER\u0130",
+"konu": "FIZ-APO19FZ-B02-K04",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T087",
+"test": 87,
+"sayfalar": [
+185,
+186
+],
+"bant": "YERY\u00dcZ\u00dcNDE ATI\u015e HAREKETLER\u0130",
+"konu": "FIZ-APO19FZ-B02-K04",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T088",
+"test": 88,
+"sayfalar": [
+187,
+188
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T089",
+"test": 89,
+"sayfalar": [
+189,
+190
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T090",
+"test": 90,
+"sayfalar": [
+191,
+192
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T091",
+"test": 91,
+"sayfalar": [
+193,
+194
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T092",
+"test": 92,
+"sayfalar": [
+195,
+196
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T093",
+"test": 93,
+"sayfalar": [
+197,
+198
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T094",
+"test": 94,
+"sayfalar": [
+199,
+200
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T095",
+"test": 95,
+"sayfalar": [
+201,
+202
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T096",
+"test": 96,
+"sayfalar": [
+203,
+204
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T097",
+"test": 97,
+"sayfalar": [
+205,
+206
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T098",
+"test": 98,
+"sayfalar": [
+207,
+208
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T099",
+"test": 99,
+"sayfalar": [
+209,
+210
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T100",
+"test": 100,
+"sayfalar": [
+211,
+212
+],
+"bant": "\u0130\u015e - G\u00dc\u00c7 - ENERJ\u0130",
+"konu": "FIZ-APO19FZ-B02-K05",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 15
+},
+{
+"birim": "APO19FZ-T101",
+"test": 101,
+"sayfalar": [
+213,
+214
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B02-K06",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T102",
+"test": 102,
+"sayfalar": [
+215,
+216
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B02-K06",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T103",
+"test": 103,
+"sayfalar": [
+217,
+218
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B02-K06",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T104",
+"test": 104,
+"sayfalar": [
+219,
+220
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B02-K06",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T105",
+"test": 105,
+"sayfalar": [
+221,
+222
+],
+"bant": "\u0130TME VE \u00c7\u0130ZG\u0130SEL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K07",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T106",
+"test": 106,
+"sayfalar": [
+223,
+224
+],
+"bant": "\u0130TME VE \u00c7\u0130ZG\u0130SEL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K07",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T107",
+"test": 107,
+"sayfalar": [
+225,
+226
+],
+"bant": "\u0130TME VE \u00c7\u0130ZG\u0130SEL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K07",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T108",
+"test": 108,
+"sayfalar": [
+227,
+228
+],
+"bant": "\u0130TME VE \u00c7\u0130ZG\u0130SEL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K07",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T109",
+"test": 109,
+"sayfalar": [
+229,
+230
+],
+"bant": "\u0130TME VE \u00c7\u0130ZG\u0130SEL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K07",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T110",
+"test": 110,
+"sayfalar": [
+231,
+232
+],
+"bant": "D\u00dcZG\u00dcN \u00c7EMBERSEL HAREKET",
+"konu": "FIZ-APO19FZ-B02-K08",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T111",
+"test": 111,
+"sayfalar": [
+233,
+234
+],
+"bant": "D\u00dcZG\u00dcN \u00c7EMBERSEL HAREKET",
+"konu": "FIZ-APO19FZ-B02-K08",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T112",
+"test": 112,
+"sayfalar": [
+235,
+236
+],
+"bant": "A\u00c7ISAL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K09",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T113",
+"test": 113,
+"sayfalar": [
+237,
+238
+],
+"bant": "A\u00c7ISAL MOMENTUM",
+"konu": "FIZ-APO19FZ-B02-K09",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T114",
+"test": 114,
+"sayfalar": [
+239,
+240
+],
+"bant": "GENEL \u00c7EK\u0130M VE KEPLER KANUNLARI",
+"konu": "FIZ-APO19FZ-B02-K10",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T115",
+"test": 115,
+"sayfalar": [
+241,
+242
+],
+"bant": "GENEL \u00c7EK\u0130M VE KEPLER KANUNLARI",
+"konu": "FIZ-APO19FZ-B02-K10",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T116",
+"test": 116,
+"sayfalar": [
+243,
+244
+],
+"bant": "BAS\u0130T HARMON\u0130K HAREKET",
+"konu": "FIZ-APO19FZ-B02-K11",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T117",
+"test": 117,
+"sayfalar": [
+245,
+246
+],
+"bant": "BAS\u0130T HARMON\u0130K HAREKET",
+"konu": "FIZ-APO19FZ-B02-K11",
+"bolum": "FIZ-APO19FZ-B02",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T118",
+"test": 118,
+"sayfalar": [
+249,
+250
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T119",
+"test": 119,
+"sayfalar": [
+251,
+252
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T120",
+"test": 120,
+"sayfalar": [
+253,
+254
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T121",
+"test": 121,
+"sayfalar": [
+255,
+256
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T122",
+"test": 122,
+"sayfalar": [
+257,
+258
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T123",
+"test": 123,
+"sayfalar": [
+259,
+260
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T124",
+"test": 124,
+"sayfalar": [
+261,
+262
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T125",
+"test": 125,
+"sayfalar": [
+263,
+264
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T126",
+"test": 126,
+"sayfalar": [
+265,
+266
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-APO19FZ-B03-K01",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T127",
+"test": 127,
+"sayfalar": [
+267,
+268
+],
+"bant": "ELEKTR\u0130KSEL POTANS\u0130YEL",
+"konu": "FIZ-APO19FZ-B03-K02",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T128",
+"test": 128,
+"sayfalar": [
+269,
+270
+],
+"bant": "D\u00dcZG\u00dcN ELEKTR\u0130K ALAN VE SI\u011eA",
+"konu": "FIZ-APO19FZ-B03-K03",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T129",
+"test": 129,
+"sayfalar": [
+271,
+272
+],
+"bant": "D\u00dcZG\u00dcN ELEKTR\u0130K ALAN VE SI\u011eA",
+"konu": "FIZ-APO19FZ-B03-K03",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T130",
+"test": 130,
+"sayfalar": [
+273,
+274
+],
+"bant": "D\u00dcZG\u00dcN ELEKTR\u0130K ALAN VE SI\u011eA",
+"konu": "FIZ-APO19FZ-B03-K03",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T131",
+"test": 131,
+"sayfalar": [
+275,
+276
+],
+"bant": "D\u00dcZG\u00dcN ELEKTR\u0130K ALAN VE SI\u011eA",
+"konu": "FIZ-APO19FZ-B03-K03",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T132",
+"test": 132,
+"sayfalar": [
+277,
+278
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T133",
+"test": 133,
+"sayfalar": [
+279,
+280
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T134",
+"test": 134,
+"sayfalar": [
+281,
+282
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T135",
+"test": 135,
+"sayfalar": [
+283,
+284
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T136",
+"test": 136,
+"sayfalar": [
+285,
+286
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T137",
+"test": 137,
+"sayfalar": [
+287,
+288
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T138",
+"test": 138,
+"sayfalar": [
+289,
+290
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T139",
+"test": 139,
+"sayfalar": [
+291,
+292
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T140",
+"test": 140,
+"sayfalar": [
+293,
+294
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T141",
+"test": 141,
+"sayfalar": [
+295,
+296
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T142",
+"test": 142,
+"sayfalar": [
+297,
+298
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T143",
+"test": 143,
+"sayfalar": [
+299,
+300
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T144",
+"test": 144,
+"sayfalar": [
+301,
+302
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T145",
+"test": 145,
+"sayfalar": [
+303,
+304
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T146",
+"test": 146,
+"sayfalar": [
+305,
+306
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T147",
+"test": 147,
+"sayfalar": [
+307,
+308
+],
+"bant": "ELEKTR\u0130K AKIMI",
+"konu": "FIZ-APO19FZ-B03-K04",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T148",
+"test": 148,
+"sayfalar": [
+309,
+310
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B03-K05",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T149",
+"test": 149,
+"sayfalar": [
+311,
+312
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B03-K05",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T150",
+"test": 150,
+"sayfalar": [
+313,
+314
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B03-K05",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T151",
+"test": 151,
+"sayfalar": [
+315,
+316
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T152",
+"test": 152,
+"sayfalar": [
+317,
+318
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T153",
+"test": 153,
+"sayfalar": [
+319,
+320
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T154",
+"test": 154,
+"sayfalar": [
+321,
+322
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T155",
+"test": 155,
+"sayfalar": [
+323,
+324
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T156",
+"test": 156,
+"sayfalar": [
+325,
+326
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T157",
+"test": 157,
+"sayfalar": [
+327,
+328
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T158",
+"test": 158,
+"sayfalar": [
+329,
+330
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T159",
+"test": 159,
+"sayfalar": [
+331,
+332
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T160",
+"test": 160,
+"sayfalar": [
+333,
+334
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T161",
+"test": 161,
+"sayfalar": [
+335,
+336
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T162",
+"test": 162,
+"sayfalar": [
+337,
+338
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T163",
+"test": 163,
+"sayfalar": [
+339,
+340
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T164",
+"test": 164,
+"sayfalar": [
+341,
+342
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T165",
+"test": 165,
+"sayfalar": [
+343,
+344
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-APO19FZ-B03-K06",
+"bolum": "FIZ-APO19FZ-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T166",
+"test": 166,
+"sayfalar": [
+347,
+348
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T167",
+"test": 167,
+"sayfalar": [
+349,
+350
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T168",
+"test": 168,
+"sayfalar": [
+351,
+352
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T169",
+"test": 169,
+"sayfalar": [
+353,
+354
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T170",
+"test": 170,
+"sayfalar": [
+355,
+356
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T171",
+"test": 171,
+"sayfalar": [
+357,
+358
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T172",
+"test": 172,
+"sayfalar": [
+359,
+360
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T173",
+"test": 173,
+"sayfalar": [
+361,
+362
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T174",
+"test": 174,
+"sayfalar": [
+363,
+364
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T175",
+"test": 175,
+"sayfalar": [
+365,
+366
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T176",
+"test": 176,
+"sayfalar": [
+367,
+368
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T177",
+"test": 177,
+"sayfalar": [
+369,
+370
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T178",
+"test": 178,
+"sayfalar": [
+371,
+372
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T179",
+"test": 179,
+"sayfalar": [
+373,
+374
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T180",
+"test": 180,
+"sayfalar": [
+375,
+376
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T181",
+"test": 181,
+"sayfalar": [
+377,
+378
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T182",
+"test": 182,
+"sayfalar": [
+379,
+380
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-APO19FZ-B04-K01",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T183",
+"test": 183,
+"sayfalar": [
+381,
+382
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T184",
+"test": 184,
+"sayfalar": [
+383,
+384
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T185",
+"test": 185,
+"sayfalar": [
+385,
+386
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T186",
+"test": 186,
+"sayfalar": [
+387,
+388
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T187",
+"test": 187,
+"sayfalar": [
+389,
+390
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T188",
+"test": 188,
+"sayfalar": [
+391,
+392
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T189",
+"test": 189,
+"sayfalar": [
+393,
+394
+],
+"bant": "DALGALAR",
+"konu": "FIZ-APO19FZ-B04-K02",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T190",
+"test": 190,
+"sayfalar": [
+395,
+396
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B04-K03",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T191",
+"test": 191,
+"sayfalar": [
+397,
+398
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B04-K03",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T192",
+"test": 192,
+"sayfalar": [
+399,
+400
+],
+"bant": "TEKRAR TEST\u0130",
+"konu": "FIZ-APO19FZ-B04-K03",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T193",
+"test": 193,
+"sayfalar": [
+401,
+402
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T194",
+"test": 194,
+"sayfalar": [
+403,
+404
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T195",
+"test": 195,
+"sayfalar": [
+405,
+406
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T196",
+"test": 196,
+"sayfalar": [
+407,
+408
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T197",
+"test": 197,
+"sayfalar": [
+409,
+410
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T198",
+"test": 198,
+"sayfalar": [
+411,
+412
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T199",
+"test": 199,
+"sayfalar": [
+413,
+414
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 14
+},
+{
+"birim": "APO19FZ-T200",
+"test": 200,
+"sayfalar": [
+415,
+416
+],
+"bant": "DALGA MEKAN\u0130\u011e\u0130",
+"konu": "FIZ-APO19FZ-B04-K04",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 16
+},
+{
+"birim": "APO19FZ-T201",
+"test": 201,
+"sayfalar": [
+417,
+418
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 14
+},
+{
+"birim": "APO19FZ-T202",
+"test": 202,
+"sayfalar": [
+419,
+420
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T203",
+"test": 203,
+"sayfalar": [
+421,
+422
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 9
+},
+{
+"birim": "APO19FZ-T204",
+"test": 204,
+"sayfalar": [
+423,
+424
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "APO19FZ-T205",
+"test": 205,
+"sayfalar": [
+425,
+426
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T206",
+"test": 206,
+"sayfalar": [
+427,
+428
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T207",
+"test": 207,
+"sayfalar": [
+429,
+430
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T208",
+"test": 208,
+"sayfalar": [
+431,
+432
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T209",
+"test": 209,
+"sayfalar": [
+433,
+434
+],
+"bant": "ATOM F\u0130Z\u0130\u011e\u0130NE G\u0130R\u0130\u015e VE RADYOAKT\u0130V\u0130TE",
+"konu": "FIZ-APO19FZ-B04-K05",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T210",
+"test": 210,
+"sayfalar": [
+435,
+436
+],
+"bant": "MODERN F\u0130Z\u0130K",
+"konu": "FIZ-APO19FZ-B04-K06",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T211",
+"test": 211,
+"sayfalar": [
+437,
+438
+],
+"bant": "MODERN F\u0130Z\u0130K",
+"konu": "FIZ-APO19FZ-B04-K06",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T212",
+"test": 212,
+"sayfalar": [
+439,
+440
+],
+"bant": "MODERN F\u0130Z\u0130K",
+"konu": "FIZ-APO19FZ-B04-K06",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "APO19FZ-T213",
+"test": 213,
+"sayfalar": [
+441,
+442
+],
+"bant": "MODERN F\u0130Z\u0130K",
+"konu": "FIZ-APO19FZ-B04-K06",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 13
+},
+{
+"birim": "APO19FZ-T214",
+"test": 214,
+"sayfalar": [
+443,
+444
+],
+"bant": "MODERN F\u0130Z\u0130K",
+"konu": "FIZ-APO19FZ-B04-K06",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "APO19FZ-T215",
+"test": 215,
+"sayfalar": [
+445,
+446
+],
+"bant": "MODERN F\u0130Z\u0130\u011e\u0130N TEKNOLOJ\u0130DEK\u0130 UYGULAMALARI",
+"konu": "FIZ-APO19FZ-B04-K07",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 12
+},
+{
+"birim": "APO19FZ-T216",
+"test": 216,
+"sayfalar": [
+447,
+448
+],
+"bant": "MODERN F\u0130Z\u0130\u011e\u0130N TEKNOLOJ\u0130DEK\u0130 UYGULAMALARI",
+"konu": "FIZ-APO19FZ-B04-K07",
+"bolum": "FIZ-APO19FZ-B04",
+"soru_sayisi": 12
+}
+]
+}

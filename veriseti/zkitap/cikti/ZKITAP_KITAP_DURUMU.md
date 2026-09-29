@@ -116,7 +116,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 |---|---|---|---|---|---|---|---|---|
 | 2019-2020 APOTEMI TYT Matematik Soru Bankasi | **ISLENDI** | `2019-2020-Apotemi-Tyt Matematik Soru Bankasi` | 324 | - | modern 1382 soru (`MAT_APOTEMI_2019_TYT_YONTEM.md`, ortak kitap_hat): 1382 yeni satir / aktif 1223 (0118 toplu beta onayi; 159 soru gorunen `[??]` -> beta disi); eski hat 9: modern karsiligi olan 6 satir 0117 ile pasif, 3 aktif | - | 283 test sayfasi, 122 test (11 bolum, 'Deneme - N'); anahtar kitap sonu tablo (yeni ANAHTAR_HARICI kancasi); dosya 176 kopya, Deneme 23 sorulari 5-8 yakalanmamis (YAKALANMAYAN_SORU); gorunmeyen eksi/arti isaretleri `[??]` + kaynak_kusuru; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 | 2019-2020 Apotemi Modern Fizik Konu Anlatimli SB | ISLENMEDI | `Apotemi 2019 2020 Modern Fizik Konu Anlatimli Soru Bankasi` | 256 | - | yok | 2022-2023 Apotemi Modern Fizik %48 (gozle) | - | AILE: yalniz biri islenmeli (2022-2023 Apotemi Modern Fizik %48 gozle) |
-| 2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi | ISLENMEDI | `Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankasi` | 448 | - | yok | - | - | ISLENEBILIR |
+| 2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi | **ISLENDI** | `Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankasi` | 448 | - | modern 2180 soru (`FIZ_APOTEMI_2019_TYT_AYT_YONTEM.md`, ortak kitap_hat): 2180 yeni satir / aktif 2132 (0121 toplu beta onayi; 46 soru gorunen `[??]`, 2 sekil ikizi beta disi); eski hat yok | - | 432 test sayfasi, 216 test (4 bolum, 36 konu); serit cift sayfa altliginda; sinav etiketi konu duzeyinde (TYT 1211 / AYT 969, yeni SINAV_KONU); yeni SERIT_ALTLIKTA / KENAR_GOZ_ONAY kancalari; kirpim kesik kapisi 0 | TAMAM (modern ithal) |
 | 2019-2020 Apotemi TYT-AYT Kimya Soru Bankasi | ISLENMEDI | `Apotemi Tyt Ayt Kimya 2019-2020` | 352 | - | eski hat 345 / aktif 345 | - | - | ISLENEBILIR |
 | 2020-2021 APOTEMI Modern Kimya | ISLENMEDI | `Apotemi 2020 2021 Modern Kimya` | 300 | - | eski hat 59 / aktif 59 | - | - | ISLENEBILIR |
 | 2020-2021 APOTEMI TYT-AYT Geometri Maestro Soru Bankasi | ISLENMEDI | `2020-2021-Apotemi-Tyt Ayt-Geometri Maestro Soru Bankasi` | 320 | - | yok | - | - | ISLENEBILIR |
@@ -486,7 +486,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 68 | `Altyapi 2022 2023 Kartlarla Ayt Fizik` | 144 | 2022-2023 Kartlarla AYT Fizik |  | ISLENMEDI |
 | 69 | `Altyapi 2022 2023 Tyt Fizik` | 128 | 2022-2023 ALTYAPI Kartlarla TYT Fizik |  | ISLENMEDI |
 | 70 | `Apotemi 2019 2020 Modern Fizik Konu Anlatimli Soru Bankasi` | 256 | 2019-2020 Apotemi Modern Fizik Konu Anlatimli SB |  | ISLENMEDI |
-| 71 | `Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankasi` | 448 | 2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi |  | ISLENMEDI |
+| 71 | `Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankasi` | 448 | 2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi |  | **ISLENDI** |
 | 72 | `Apotemi 2020 2021 Modern Kimya` | 300 | 2020-2021 APOTEMI Modern Kimya |  | ISLENMEDI |
 | 73 | `Apotemi 2022 2023 Modern Fizik` | 256 | 2022-2023 Apotemi Modern Fizik |  | ISLENMEDI |
 | 74 | `Apotemi 2024 Ayt Kimya Soru Bankasi` | 268 | APOTEMI 2024 AYT Kimya Soru Bankasi |  | ISLENMEDI |

@@ -39,6 +39,13 @@ _HASH = (
     "EXISTS (SELECT 1 FROM question_bank o WHERE o.soru_hash = qb.soru_hash"
     " AND o.is_active IS TRUE AND o.id <> qb.id)"
 )
+# Kitap ici ayni soru_hash (sekil ikizi: ayni metin + sikler, farkli sekil):
+# uq_qb_soru_hash_active yuzunden grupta yalniz en kucuk id acilir (APO19FZ).
+_KITAP_ICI = (
+    "EXISTS (SELECT 1 FROM question_bank o JOIN question_metadata om ON om.id = o.id"
+    " WHERE o.soru_hash = qb.soru_hash AND o.id <> qb.id"
+    " AND om.source_book = qm.source_book AND o.id::text < qb.id::text)"
+)
 _IKIZ = (
     "EXISTS (SELECT 1 FROM jsonb_array_elements_text(CASE WHEN jsonb_typeof(qm.pipeline_metadata::jsonb"
     " -> 'modern_kitap_ikizi') = 'array' THEN qm.pipeline_metadata::jsonb -> 'modern_kitap_ikizi'"
@@ -76,12 +83,13 @@ def olc(kaynak: str) -> dict[str, int]:
         out["isaret"] = say(_ISARET)
         out["hash_ikizi_aktif"] = say(_HASH)
         out["modern_ikiz_aktif"] = say(_IKIZ)
+        out["kitap_ici_hash"] = say(_KITAP_ICI)
         dis = " OR ".join(
             [
                 f"(qm.pipeline_metadata::jsonb -> 'bayraklar') ? '{b}'"
                 for b in SERVIS_DISI
             ]
-            + [_ISARET, _HASH, _IKIZ]
+            + [_ISARET, _HASH, _IKIZ, _KITAP_ICI]
         )
         out["hedef"] = say(f"qb.is_active IS NOT TRUE AND NOT ({dis})")
     return out
@@ -107,6 +115,12 @@ def main() -> None:
         f"    ogrenciye gorunen alti alanda `[??]` ....... {o['isaret']:4d}  -> DISLANIR",
         f"    aktif satirlarla soru_hash cakismasi ....... {o['hash_ikizi_aktif']:4d}  -> DISLANIR",
         f"    modern_kitap_ikizi, ikizi AKTIF ............ {o['modern_ikiz_aktif']:4d}  -> DISLANIR",
+    ]
+    if o["kitap_ici_hash"]:
+        satir.append(
+            f"    kitap ici ayni soru_hash (ilk id disi) ..... {o['kitap_ici_hash']:4d}  -> DISLANIR"
+        )
+    satir += [
         f"HEDEF: {o['hedef']}/{o['toplam']}",
     ]
     Path(a.cikti).write_text("\n".join(satir) + "\n", "ascii")

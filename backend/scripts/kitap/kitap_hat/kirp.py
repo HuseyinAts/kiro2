@@ -218,18 +218,34 @@ def _kenar_kaydet(
 
 
 def goz_onayi_ayir(
-    p: object, kesik: list[dict]
+    p: object, kesik: list[dict], ad: str = "KESIK_GOZ_ONAY"
 ) -> tuple[list[dict], list[dict], list[str]]:
     """KESIK_GOZ_ONAY (profil, dosya adlari): iki soru arasindaki bos bant 1-3
     satir oldugu icin alt serit sikkin kuyruguna degiyor ama kirpim gozle tam.
     Bu kayitlar kapiyi tetiklemez (`kesik_goz_onayli`). Onayli ad olculen
     kesikler arasinda yoksa `bayat` doner; cagiran kapiyi durdurur (duzeltilmis
-    kutunun onayi sessizce kalmasin). Donus: (kalan kesik, onayli, bayat)."""
-    onay = set(getattr(p, "KESIK_GOZ_ONAY", ()))
+    kutunun onayi sessizce kalmasin). Donus: (kalan kesik, onayli, bayat).
+
+    ad="KENAR_GOZ_ONAY": ayni kural kenar kaydina (icerik sutun sinirina 1 px
+    kala biten soru; sinirin otesi ayrac sekmesi -- APO19FZ T039_05)."""
+    onay = set(getattr(p, ad, ()))
     onayli = [x for x in kesik if ortak.dosya_adi(x["birim"], x["soru"]) in onay]
     kalan = [x for x in kesik if x not in onayli]
     bayat = sorted(onay - {ortak.dosya_adi(x["birim"], x["soru"]) for x in onayli})
     return kalan, onayli, bayat
+
+
+def _onayli_ayir(
+    p: object, kayit: list[dict], ad: str, ornek: bool
+) -> tuple[list[dict], list[dict]]:
+    """goz_onayi_ayir + bayat onay kapisi (ornek kosuda kapi yok)."""
+    kalan, onayli, bayat = goz_onayi_ayir(p, kayit, ad)
+    if bayat and not ornek:
+        raise SystemExit(f"{ad} bayat (olculen kayit yok): {bayat}")
+    if ad != "KESIK_GOZ_ONAY":
+        for x in onayli:
+            print("   kenar (goz onayli)", x)
+    return kalan, onayli
 
 
 def _ortme_kayitlari(k: dict, s: int, halkalar: list[dict]) -> list[dict]:
@@ -291,9 +307,8 @@ def main() -> None:
             Image.fromarray(a[y0:y1, x0:x1]).save(
                 cikti / f"{k['birim']}_{k['soru']:02d}.png"
             )
-    kesik, onayli, bayat = goz_onayi_ayir(p, kesik)
-    if bayat and not args.ornek:
-        raise SystemExit(f"KESIK_GOZ_ONAY bayat (olculen kesik yok): {bayat}")
+    kesik, onayli = _onayli_ayir(p, kesik, "KESIK_GOZ_ONAY", bool(args.ornek))
+    kenar, kenar_onayli = _onayli_ayir(p, kenar, "KENAR_GOZ_ONAY", bool(args.ornek))
     n = sum(len(v) for v in sayfada.values())
     osoru = len({(o["birim"], o["soru"]) for o in ortme})
     print(
@@ -328,6 +343,7 @@ def main() -> None:
                 "kenar": kenar,
                 "kesik": kesik,
                 "kesik_goz_onayli": onayli,
+                **({"kenar_goz_onayli": kenar_onayli} if kenar_onayli else {}),
                 "ortme": ortme,
             },
         )
