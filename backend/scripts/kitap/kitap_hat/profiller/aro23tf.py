@@ -270,7 +270,7 @@ ALAN = "FIZIK"
 SINAV = "TYT"
 SINIF = 9
 HARITA_NEREDEN = (
-    "icindekiler (s6): 12 bolum, 22 konu basligi (dosya = basili); konu = test "
+    "icindekiler: 10 bolum, 10 konu basligi (dosya = basili); konu = test "
     "bandindaki BUYUK HARFLI konu adi (icindekiler adiyla kapidan gecer), sayfa "
     "araligi icindekiler sayfa numarasindan"
 )

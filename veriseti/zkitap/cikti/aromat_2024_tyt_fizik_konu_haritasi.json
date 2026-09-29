@@ -1,7 +1,7 @@
 {
 "kaynak": "2023-2024 AROMAT Fizik Soru Bankasi",
 "arac": "scripts/kitap/kitap_hat/harita.py",
-"nereden": "icindekiler (s6): 12 bolum, 22 konu basligi (dosya = basili); konu = test bandindaki BUYUK HARFLI konu adi (icindekiler adiyla kapidan gecer), sayfa araligi icindekiler sayfa numarasindan",
+"nereden": "icindekiler: 10 bolum, 10 konu basligi (dosya = basili); konu = test bandindaki BUYUK HARFLI konu adi (icindekiler adiyla kapidan gecer), sayfa araligi icindekiler sayfa numarasindan",
 "bolumler": [
 {
 "kod": "FIZ-ARO23TF-B01",

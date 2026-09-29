@@ -5,7 +5,7 @@ Basili sayfa = dosya. ARO23AF ile ayni seri (profil ondan);
 kesif: kitap_hat/kesif.py (_kesif_aro23mt).
 
 SAYFA DUZENI (olculdu; 29 Eyl 2026):
-* 5 bolum, 18 konu; bolum acilis sayfalari (7, 89, 164-165, 282-283, 346-347)
+* 5 bolum, 19 konu; bolum acilis sayfalari (7, 89, 164-165, 282-283, 346-347)
   glifsiz, 'BOLUM NN' + konu listesi -> kapak. Arada test
   sayfalari; sayfa basina 2 sutun x 2 soru (sol sutun 1-2, sag 3-4).
 * Ust bantta lacivert zeminde beyaz BUYUK HARFLE konu adi (icindekiler konu
@@ -335,13 +335,13 @@ def numara_maskesi(a: np.ndarray) -> np.ndarray:
 
 
 # --- harita (icindekiler s6; dosya = basili) ---
-KOK_KOD = "FIZ"
+KOK_KOD = "MAT"
 KOD_ONEKI = "MAT-ARO23MT"
-ALAN = "FIZIK"
+ALAN = "MATEMATIK"
 SINAV = "TYT"
 SINIF = 9
 HARITA_NEREDEN = (
-    "icindekiler (s6): 12 bolum, 22 konu basligi (dosya = basili); konu = test "
+    "icindekiler (s6): 5 bolum, 19 konu basligi (dosya = basili); konu = test "
     "bandindaki BUYUK HARFLI konu adi (icindekiler adiyla kapidan gecer), sayfa "
     "araligi icindekiler sayfa numarasindan"
 )
@@ -415,9 +415,8 @@ SEKIL_SATIRI = True
 TALIMAT_EK = (
     "\n## Bu kitaba ozel\n"
     "Soru numarasi SIYAH kalin basilidir; test iki sayfadir ve numara ikinci "
-    "sayfada surer (5-8). Fizik birimleri ve indisler basildigi gibi: `m/s^2`, "
-    "`F_1`, `v_0`, `10 N`; harfin ustunde vektor oku basiliysa harfi yaz, oku "
-    "`kaynak_kusuru` sayma.\n"
+    "sayfada surer (5-8). Us, kok, kesir ve indisler basildigi gibi: `x^2`, "
+    "`a_1`, `sqrt(3)`, `3/4`.\n"
     "GORUNMEYEN ISARET: ekran goruntusunde ince yatay cizgiler (eksi, kesir "
     "cizgisi parcasi, arti isaretinin yatay kolu) bazen HIC cikmamis olabilir: "
     "yerinde yalniz bosluk vardir. Boyle bir yere isaret TAHMIN ETME, '-' / '+' "
@@ -426,7 +425,7 @@ TALIMAT_EK = (
 )
 
 # --- mukerrer / ithal ---
-DERSLER = ("FIZIK",)
+DERSLER = ("MATEMATIK", "GEOMETRI")
 ESKI_KAYNAKLAR: tuple[str, ...] = ()
 MODERN_IKIZ_KAYNAK = None
 YAYINEVI = "Aromat Yayinlari"
