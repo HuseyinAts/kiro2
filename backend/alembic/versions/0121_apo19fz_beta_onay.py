@@ -1,8 +1,8 @@
-"""@@KAYNAK_ADI@@: yeni ithal beta kapisindan gecer (@@HEDEF@@)
+"""2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi: yeni ithal beta kapisindan gecer (2132/2180)
 
-Revision ID: @@REV@@
-Revises: @@ONCEKI@@
-Create Date: @@TARIH@@
+Revision ID: 0121_apo19fz_beta_onay
+Revises: 0120_apo19fz_eski_hat_pasif
+Create Date: 2026-09-28
 
 SAHIP KARARI
 ------------
@@ -11,7 +11,19 @@ Bireysel insan denetimi yapilmadi; toplu beta sahibi onayi (0073 / 0076 emsali).
 
 KAPI YUKU OLCULDU (yerel DB, agac + ithal + eski hat pasif sonrasi)
 ------------------------------------------------------------------
-@@OLCUM@@
+Kitap 2180 soru; ithalin yazdigi 2180 satirda:
+    quality_review_status 'pending' ............ 2180/2180 (kilit)
+    is_ai_generated=true, review 'PENDING' ..... 2180/2180 (kilit)
+    bayrak sik_bos ...........................    0  -> DISLANIR
+    bayrak gorsel_yok_sekilli ................    0  -> DISLANIR
+    bayrak gosterilemez_gorsel_sik_kirpimsiz .    0  -> DISLANIR
+    bayrak sik_okunamadi .....................    0  -> DISLANIR
+    bayrak ortak_oncul_kirpimda_yok ..........    0  -> DISLANIR
+    ogrenciye gorunen alti alanda `[??]` .......   46  -> DISLANIR
+    aktif satirlarla soru_hash cakismasi .......    0  -> DISLANIR
+    modern_kitap_ikizi, ikizi AKTIF ............    0  -> DISLANIR
+    kitap ici ayni soru_hash (ilk id disi) .....    2  -> DISLANIR
+HEDEF: 2132/2180
 
 DISLAMA (0076 ile ayni kural + ortak oncul)
 -------------------------------------------
@@ -20,17 +32,17 @@ gosterilemez_gorsel_sik_kirpimsiz, sik_okunamadi, ortak_oncul_kirpimda_yok),
 ogrenciye gorunen alti alanda `[??]`, aktif hash ikizi, aktif modern kitap
 ikizi.
 
-KONSENSUS SINYALLERI (@@YONTEM_BELGESI@@)
+KONSENSUS SINYALLERI (FIZ_APOTEMI_2019_TYT_AYT_YONTEM.md)
 -------------------------------------------------
-- anahtar_iki_bagimsiz_okuma_@@HUCRE@@_@@HUCRE@@_hucre: basili cevap anahtari iki
+- anahtar_iki_bagimsiz_okuma_2180_2180_hucre: basili cevap anahtari iki
   bagimsiz gorsel okuma, fark yok.
-- anahtar_glif_ucuncu_kanal_loo: piksel glif LOO @@GLIF_UYUM@@/@@GLIF_HUCRE@@; uyumsuzlar 5x
-  goz teyidi; bolutlenemeyen @@GLIF_DISI@@ test 5x gozle.
+- anahtar_glif_ucuncu_kanal_loo: piksel glif LOO 2180/2180; uyumsuzlar 5x
+  goz teyidi; bolutlenemeyen 0 test 5x gozle.
 - anahtar_hucre_sayisi_numara_capasina_esit: hucre sayisi == okuyucu simgesi +
-  kirmizi numara capasi (@@HUCRE@@).
+  kirmizi numara capasi (2180).
 - transkripsiyon_kapilari_yesil: harness kapilari yesil.
 - metin_tam_ikinci_okuma_gozle_hukum: on kayitli TAM ikinci okuma,
-  @@FARKLI_SORU@@ fark hakemle gozle hukum.
+  455 fark hakemle gozle hukum.
 
 DURUSTLUK
 ---------
@@ -55,15 +67,15 @@ import sqlalchemy as sa
 
 from alembic import op
 
-revision: str = "@@REV@@"
-down_revision: Union[str, None] = "@@ONCEKI@@"
+revision: str = "0121_apo19fz_beta_onay"
+down_revision: Union[str, None] = "0120_apo19fz_eski_hat_pasif"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 _log = logging.getLogger("alembic.runtime.migration")
 
-GUNLUK = "@@KOD_KUCUK@@_beta_onay_gunlugu_@@NO@@"
-KAYNAK = @@KAYNAK_LITERAL@@
+GUNLUK = "apo19fz_beta_onay_gunlugu_0121"
+KAYNAK = "2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi"
 ITHAL_ARACI = "scripts/kitap/kitap_hat/ithal.py"
 
 ORTME_ISARETI = "%[??]%"
@@ -77,7 +89,7 @@ SERVIS_DISI_BAYRAKLAR = (
 )
 
 SINYALLER: tuple[str, ...] = (
-    "anahtar_iki_bagimsiz_okuma_@@HUCRE@@_@@HUCRE@@_hucre",
+    "anahtar_iki_bagimsiz_okuma_2180_2180_hucre",
     "anahtar_glif_ucuncu_kanal_loo",
     "anahtar_hucre_sayisi_numara_capasina_esit",
     "transkripsiyon_kapilari_yesil",
@@ -149,7 +161,29 @@ _META_EKLE = sa.text(
     """
 )
 
-@@SAYAC@@
+_SAYAC_SQL = """
+UPDATE topic_hierarchy t
+   SET total_questions = COALESCE(g.adet, 0), updated_at = now()
+  FROM (SELECT th.id, count(qb.id) AS adet
+          FROM topic_hierarchy th
+          LEFT JOIN question_bank qb
+                 ON qb.primary_topic_id = th.id AND qb.is_active IS TRUE
+         GROUP BY th.id) g
+ WHERE g.id = t.id
+   AND t.total_questions IS DISTINCT FROM COALESCE(g.adet, 0)
+"""
+
+
+def _refresh_safe_for_beta(b) -> None:
+    var = b.execute(
+        sa.text("SELECT to_regprocedure('public.refresh_safe_for_beta()')")
+    ).scalar()
+    if var is None:
+        _log.info("[0121] refresh_safe_for_beta() yok -- atlandi (taze/CI DB)")
+        return
+    b.execute(sa.text("SELECT refresh_safe_for_beta()"))
+    _log.info("[0121] mv_safe_for_beta yenilendi")
+
 
 def _tablolar_var(b) -> bool:
     denetci = sa.inspect(b)
@@ -167,7 +201,7 @@ def _tablolar_var(b) -> bool:
 def upgrade() -> None:
     b = op.get_bind()
     if not _tablolar_var(b):
-        _log.info("[@@NO@@] soru tablolari yok (taze DB?) -- atlandi")
+        _log.info("[0121] soru tablolari yok (taze DB?) -- atlandi")
         return
     var_mi = b.execute(
         sa.text(
@@ -177,7 +211,7 @@ def upgrade() -> None:
         {"k": KAYNAK, "a": ITHAL_ARACI},
     ).first()
     if not var_mi:
-        _log.info("[@@NO@@] %s ithal satiri yok -- atlandi", KAYNAK)
+        _log.info("[0121] %s ithal satiri yok -- atlandi", KAYNAK)
         return
     op.create_table(
         GUNLUK,
@@ -219,7 +253,7 @@ def upgrade() -> None:
         b.execute(
             _META_EKLE, {"idler": idler, "sinyaller": json.dumps(list(SINYALLER))}
         )
-    _log.info("[@@NO@@] beta kapisi: %s satir acildi", len(idler))
+    _log.info("[0121] beta kapisi: %s satir acildi", len(idler))
     b.execute(sa.text(_SAYAC_SQL))
     _refresh_safe_for_beta(b)
 
@@ -227,7 +261,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     b = op.get_bind()
     if not sa.inspect(b).has_table(GUNLUK):
-        _log.info("[@@NO@@] %s yok -- downgrade atlandi", GUNLUK)
+        _log.info("[0121] %s yok -- downgrade atlandi", GUNLUK)
         return
     if not _tablolar_var(b):
         op.drop_table(GUNLUK)
@@ -263,7 +297,7 @@ def downgrade() -> None:
             ),
             {"a": anahtar, "idler": acilan},
         )
-    _log.info("[@@NO@@] geri alindi: %s satir eski haline dondu", len(kayitlar))
+    _log.info("[0121] geri alindi: %s satir eski haline dondu", len(kayitlar))
     b.execute(sa.text(_SAYAC_SQL))
     _refresh_safe_for_beta(b)
     op.drop_table(GUNLUK)

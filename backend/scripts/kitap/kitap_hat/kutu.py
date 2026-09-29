@@ -105,7 +105,12 @@ def _alt_sinir(p: ModuleType, sayfa: dict, x0: int, x1: int) -> tuple[int, str |
         return int(p.SAYFA_ALTI), None
     ortusme = min(x1, s[3]) - max(x0, s[2])
     if ortusme > getattr(p, "SERIT_ORTUSME_EN_AZ", 20):
-        return int(s[0]) - int(p.SERIT_PAY), None
+        sinir = int(s[0]) - int(p.SERIT_PAY)
+        if getattr(p, "SERIT_ALTLIKTA", False):
+            # Serit sayfa altliginda (APO19FZ: cizgi + sayfa no bloku seridin
+            # ustunde, y 879-888): sinir SAYFA_ALTI'ni gecmez.
+            sinir = min(sinir, int(p.SAYFA_ALTI))
+        return sinir, None
     if ortusme > 0:
         return int(
             p.SAYFA_ALTI

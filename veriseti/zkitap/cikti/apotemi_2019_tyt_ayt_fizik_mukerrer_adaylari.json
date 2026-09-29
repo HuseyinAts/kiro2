@@ -1,0 +1,226 @@
+{
+ "kaynak": "2019-2020 Apotemi TYT-AYT Fizik Soru Bankasi",
+ "arac": "backend/scripts/kitap/kitap_hat/mukerrer.py",
+ "olcu": "govde normal bicimi karakter 3-gram Jaccard; GUCLU = 3-gram >= 0.9 VE bes sikkin >= 3'u normal bicimde birebir; kayitta 3-gram >= 0.75. DB: FIZIK (OSYM dahil) + bu kaynak ve eski hat adlarini tasiyan satirlar.",
+ "soru_sayisi": 2180,
+ "osym_etiketli_soru": 0,
+ "osym_etiketli_guclu_aday": [],
+ "pozitif_kontrol": [
+  {
+   "dosya": "APO19FZ-T001_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T005_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T010_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T015_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T021_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T026_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T030_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T035_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T041_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T046_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T051_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T056_10",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T061_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T067_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T072_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T077_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T082_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T086_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T090_12",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T095_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T100_11",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T105_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T110_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T114_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T119_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T124_11",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T129_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T134_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T139_07",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T144_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T149_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T154_08",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T160_05",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T165_12",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T171_06",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T177_02",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T181_11",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T186_04",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T192_03",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T196_09",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T200_15",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T205_07",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T210_01",
+   "bozuk_3gram": 1.0
+  },
+  {
+   "dosya": "APO19FZ-T214_05",
+   "bozuk_3gram": 1.0
+  }
+ ],
+ "db_tam_hash_carpismasi": [],
+ "kitap_ici_ayni_hash": [
+  [
+   "APO19FZ-T185_08",
+   "APO19FZ-T185_09"
+  ],
+  [
+   "APO19FZ-T188_05",
+   "APO19FZ-T188_06"
+  ]
+ ],
+ "kitap_ici_yakin": [
+  {
+   "a": "APO19FZ-T147_03",
+   "b": "APO19FZ-T147_05",
+   "govde_3gram": 1.0
+  },
+  {
+   "a": "APO19FZ-T185_08",
+   "b": "APO19FZ-T185_09",
+   "govde_3gram": 1.0
+  },
+  {
+   "a": "APO19FZ-T188_05",
+   "b": "APO19FZ-T188_06",
+   "govde_3gram": 1.0
+  }
+ ],
+ "kitap_ici_en_yuksek_3gram": 1.0,
+ "db_satiri": 6807,
+ "db_en_yuksek_3gram": 0.703,
+ "aday_sayisi": 0,
+ "guclu_aday_sayisi": 0,
+ "adaylar": [],
+ "cevap_farki": [],
+ "cevap_farki_sik_sirasi": 0,
+ "cevap_farki_icerik": [],
+ "eski_hat_ozet": {},
+ "eski_hat": [],
+ "farkli_soru_hash": 2178
+}

@@ -228,3 +228,34 @@ def test_sayfa_altligi_alt_sinir_taramasini_durdurur() -> None:
     )
     a[90:92, 10:40] = 0  # altligin USTUNDE gercek kesik yine yakalanir
     assert kutu.alt_sinir_alti(a, 0, 100, 80, serit=None, serit_pay=0, altlik_y=98)
+
+
+# --- Apotemi konu testi duzeni (APO19FZ) ---
+
+
+def test_serit_altlikta_alt_siniri_sayfa_altinda_tutar() -> None:
+    sayfa = {"anahtar": [892, 904, 240, 640]}
+    p = SimpleNamespace(SAYFA_ALTI=876, SERIT_PAY=4)
+    assert kutu._alt_sinir(p, sayfa, 28, 361) == (888, None)
+    p.SERIT_ALTLIKTA = True
+    assert kutu._alt_sinir(p, sayfa, 28, 361) == (876, None)
+    p.SAYFA_ALTI = 900  # serit ustu daha yukarida: serit siniri kalir
+    assert kutu._alt_sinir(p, sayfa, 28, 361) == (888, None)
+
+
+def test_kenar_goz_onayi_ayri_listeden_okunur() -> None:
+    kenar = [{"birim": "X-T039", "soru": 5, "sag": 7}]
+    p = SimpleNamespace(KENAR_GOZ_ONAY=("X-T039_05",), KESIK_GOZ_ONAY=())
+    assert kirp.goz_onayi_ayir(p, kenar, "KENAR_GOZ_ONAY") == ([], kenar, [])
+    assert kirp.goz_onayi_ayir(p, kenar) == (kenar, [], [])
+
+
+def test_sinav_sinif_konu_duzeyinde() -> None:
+    from scripts.kitap.kitap_hat import ithal
+
+    p = SimpleNamespace(SINAV="TYT", SINIF=9)
+    assert ithal.sinav_sinif(p, "FIZ-X-B01-K01") == ("TYT", 9)
+    p.SINAV_KONU = {"FIZ-X-B01-K01": ("TYT", 9), "FIZ-X-B01-K02": ("AYT", 11)}
+    assert ithal.sinav_sinif(p, "FIZ-X-B01-K02") == ("AYT", 11)
+    with pytest.raises(KeyError):
+        ithal.sinav_sinif(p, "FIZ-X-B09-K01")

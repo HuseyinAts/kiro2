@@ -150,6 +150,18 @@ def _bayraklar(
     return b
 
 
+def sinav_sinif(p: ModuleType, konu_kodu: str) -> tuple[str, int]:
+    """(exam_type, grade_level). Varsayilan profilin SINAV / SINIF sabiti.
+
+    SINAV_KONU {konu kodu: (sinav, sinif)}: TYT-AYT karma kitapta etiket konu
+    duzeyinde (profil konu listesi; kitapta basili degil, mufredat sinifi)."""
+    ozel = getattr(p, "SINAV_KONU", None)
+    if ozel is None:
+        return p.SINAV, p.SINIF
+    s, c = ozel[konu_kodu]
+    return str(s), int(c)
+
+
 def kayit_uret(p: ModuleType, r: dict[str, Any], ham: dict) -> dict[str, Any]:
     sec = {h: r["sikler"][h] for h in "ABCDE"}
     h = soru_hash(r["govde"], sec)
@@ -158,12 +170,14 @@ def kayit_uret(p: ModuleType, r: dict[str, Any], ham: dict) -> dict[str, Any]:
     kutu = r["kirpim_kutusu"]
     basili_sayfa = int(r["sayfa"]) + int(getattr(p, "SAYFA_OFSETI", 0))
     cikmis = r.get("sinav_yili") is not None
+    sinav, sinif = sinav_sinif(p, r["konu_kodu"])
     return {
         "id": str(uuid.uuid5(uuid.NAMESPACE_OID, h)),
         "soru_hash": h,
         "konu_kodu": r["konu_kodu"],
         "subject_area": p.ALAN,
-        "exam_type": p.SINAV,
+        "exam_type": sinav,
+        "grade_level": sinif,
         "question_text": r["govde"],
         "secenekler": sec,
         "correct_answer": r["cevap"],
@@ -628,7 +642,6 @@ def ithal(p: ModuleType, dsn: str, yaz: bool) -> int:
                     _QM,
                     {
                         **k,
-                        "grade_level": p.SINIF,
                         "source_book": p.KAYNAK_ADI,
                         "pipeline_metadata": json.dumps(
                             k["pipeline_metadata"], ensure_ascii=False
