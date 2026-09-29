@@ -138,7 +138,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 2023-2024 AROMAT Fizik Soru Bankasi | ANAHTAR DUZEYI | `Aromat Tyt 2023 2024 Fizik Soru Bankasi` | 320 | - | yok | profil aro23tf: 147 test / 1137 cevap, konu haritasi, 1137 kirpim kutusu (kitap metni yok) | - | METIN ADIMI YAYINCI YAZILI IZNI BEKLIYOR |
 | 2023-2024 AROMAT Matematik Soru Bankasi | ANAHTAR DUZEYI | `Aromat -2023-2024-Matematik Soru Bankasi` | 400 | - | eski hat 14 / aktif 14 | profil aro23mt: 223 test / 1605 cevap (glif 1601/1601 + goz 4), 19 konu, 1605 kirpim kutusu (kitap metni yok) | - | METIN ADIMI YAYINCI YAZILI IZNI BEKLIYOR |
 | 2023-2024 AROMAT Paragraf Soru Bankasi | ISLENMEDI | `Aromat Paragraf Soru Bankasi` | 304 | - | eski hat 6 / aktif 6 | - | - | ISLENEBILIR |
-| AROMAT 2023 AYT Matematik Soru Bankasi | ISLENMEDI | `Aromat-2023-Ayt-Matematik Soru Bankasi` | 336 | - | eski hat 13 / aktif 13 | - | - | ISLENEBILIR |
+| AROMAT 2023 AYT Matematik Soru Bankasi | ANAHTAR DUZEYI | `Aromat-2023-Ayt-Matematik Soru Bankasi` | 336 | - | eski hat 13 / aktif 13 | profil aro23am: 153 test / 1588 cevap (glif LOO 1588/1588), 13 bolum / 64 konu, 1588 kirpim kutusu (kitap metni yok) | - | METIN ADIMI YAYINCI YAZILI IZNI BEKLIYOR |
 | AROMAT 2023 TYT Fen Bilimleri Model Sorular | ISLENMEDI | `Aramot Tyt 2023 Fen Bilimleri Model Sorular` | 80 | - | eski hat 18 / aktif 18 | - | - | ISLENEBILIR |
 | AROMAT 2023 TYT Matematik Model Sorular | ISLENMEDI | `Aromat-2023-Tyt-Matematik Net 30` | 80 | - | yok | - | - | ISLENEBILIR |
 | AROMAT 2023 TYT Sosyal Bilimler Model Sorular | ISLENMEDI | `Aromat Tyt Sosyal Bilimler Model Sorular 2023` | 80 | - | eski hat 17 / aktif 17 | - | - | ISLENEBILIR |
