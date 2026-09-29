@@ -156,3 +156,35 @@ Sure hedefi: ilk yeni-seri kitabinda Faz 0 <= 30 dk (zaman damgalariyla olculece
   gecer (serit satirlari atlanir), `kirp` KESIK 1: ACL25S1-T042_06 alt 57 px,
   exit 1 -- metin okumasinda bulunan D/E kesigi artik kirpimda duruyor.
   Dogru profille 6 kitapta kenar 0 / kesik 0 (yanlis alarm yok).
+
+## 8. Ikinci tur (29 Eyl 2026): 155 kitap oncesi olcum ve cozumler
+
+Kaynak: APO19MT / APO19FZ oturum zaman damgalari, cProfile (APO19FZ, 448 sayfa),
+`_a21_gecici/{zaman_olc,hakem_analiz,ab_tarihce,tek_okuma_sim2,regres_hat,esdeger_kirp}.py`.
+
+### 8.1 APO19FZ (yeni seri, 2180 soru) uctan uca: ~3 sa 36 dk is + 2 CI turu
+
+| faz | dk | not |
+|---|---|---|
+| kesif + profil + serit + capa | ~30 | serit okuyucu 8 ajan ~7 dk |
+| **kutu + kirp yinelemeleri** | **~60** | 5 tam kosu; kutu ~4 dk + kirp ~5-7 dk / kosu |
+| metin hazirla (x2) | ~6 | |
+| **metin okuma (68 ajan, 20 esz.)** | **~65** | 4 dalga 14/19/15/13 dk; dalga ici en yavas ajan belirler |
+| **hakem (20 ajan)** | **~21** | 455 fark |
+| faz68 + beta sorunu | ~12 | |
+| commit (pre-commit pytest 7 dk) + 2 CI turu | ~75 | 2. tur: CI mypy numpy tip hatasi |
+
+### 8.2 Olculen dar bogazlar ve cozum
+
+| # | dar bogaz | kanit | cozum | sonuc (olculdu) |
+|---|---|---|---|---|
+| 10 | kutu/kirp/tarama/metin-hazirla CPU suresi | cProfile: kutu 174 sn'nin 153'u, kirp 439 sn'nin 354'u `beyaz_sayfa`; okuyucu renk siniflamasi TUM sayfada, sayfa basina 2 kez; tarama her sayfayi 2 kez yukluyor; PNG kodlama tek cekirdek | renk yalniz disk penceresinde (piksel basina islem, cikti ayni); `ortak.paralel` surec havuzu (sayfa basina is, sirali birlestirme); tarama tek yukleme; PNG `compress_level=1` (kayipsiz) | tarama 108 -> ~12 sn, kutu 174 -> ~12 sn, kirp 439 -> 16 sn, metin hazirla 94 -> 22 sn. **Esdegerlik:** 14 kitap / 3590 sayfa `beyaz_sayfa` fark 0; 14 kitapta `kutulari_uret` == kayitli JSON; tarama == sirali HEAD; kirpim + okuma PNG'leri piksel piksel ayni (APO19FZ 2180, APO19MT 1382) |
+| 11 | Anahtar ikinci okumasi (B) bilgi getirmiyor | 16 kitap / 15.154 hucre: A != B **0**; glif tek-hata analizi: 8 kitapta her hucre icin tek yanlis harf glif LOO'da yakalanir, yakalanmayabilecek hucreler zaten `uyumsuz` -> goz teyidi | **Tek okuma** (sahip karari): `okuma_b` None; kapi: glif LOO + `glif_etiket.png` (etiket basina 24 ornek glif; sistematik harf takasina karsi) gozle `ham --etiket-goz`; glif disi testler goz_c | serit okuyucu 8 -> 4 ajan; kalite kaniti yukarida |
+| 12 | Hakeme giden sekil-etiketi farklari | APO19FZ 455 farkin 327'si sekil etiketi (221 'esasli yok'); APO19MT 247'nin 80'i | profil `SEKIL_SATIRI = True`: MEKANIK kural (rakam iceren her etiket, tek `\u015eekil: a; b` satiri) + `norm()` bu satiri sirasiz kume olarak karsilastirir | ilk kitapta olculecek; beklenen hakem yuku ~%50 az |
+| 13 | CI mypy yerelde gorunmuyor -> ikinci CI turu | #364: yerel pre-commit mypy gecti, CI (py3.11, mypy 1.11.2, numpy 2.x stub) 4 hata | `gonder2.ps1` on kosulu: `C:\Users\husey\.venv_mypy_ci` (py3.11 + mypy 1.11.2, CI argumanlari) listedeki .py'lerde; hata varsa commit yok | pozitif kontrol: eski APO19FZ profilinde CI'nin 4 hatasi birebir yerelde cikti |
+| 14 | Metin okuma dalga bariyeri (arac siniri 20 esz. ajan, sonuc ancak tum parti bitince donuyor) | 4 dalga, dalga basina en yavas ajan (19 dk'ya kadar) | kitap icinde cozum yok (arac); Workflow araci boru hatti (biten ajanin yerine hemen yenisi) + sonraki kitabin kalibrasyonunu okuma sirasinda yapmak ~20-30 dk/kitap kazandirir -- **sahip onayi gerekir** (cok ajanli orkestrasyon) | ACIK |
+| 15 | pre-commit tam pytest (~7 dk / commit) | b15 gonder logu: 320 test 437 sn | kitap PR'i basina tek commit hedefi (on kosullar commit oncesi); kancaya dokunulmadi | KABUL |
+
+Beklenen yeni-seri kitap is suresi: ~3,6 sa -> ~2,3 sa (kutu/kirp yinelemeleri
+60 -> ~8 dk, serit 8 -> 4 ajan, hakem ~yari, ikinci CI turu yok). Ayni seride
+(profil hazir) ~1,5 sa. Madde 14 onaylanirsa kitaplar arasi ortusmeyle ~1 sa'e iner.

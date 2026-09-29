@@ -126,7 +126,19 @@ def norm(x: Any) -> str:
     # (2xy)/ -> 2xy/ ; f(1)/ gibi fonksiyon uygulamasina DOKUNMAZ (onunde harf/rakam/parantez yok)
     x = re.sub(r"(?<![A-Za-z0-9\u03b1-\u03c9)])\((" + _ATOM + r")\)(?=/)", r"\1", x)
     x = re.sub(r"\(\(([^()]*)\)(!?)\)", r"(\1)\2", x)  # ((n+2)!) -> (n+2)!
-    return re.sub(r"\|\s*(?=\u2192)", "", x)  # tablo hucre ayraci + ok
+    x = re.sub(r"\|\s*(?=\u2192)", "", x)  # tablo hucre ayraci + ok
+    return _SEKIL_SATIRI.sub(_sekil_sirala, x)
+
+
+# 'Sekil: a; b; c' satiri (metin.SEKIL_SATIRI_KURALI): etiket SIRASI okuyucudan
+# okuyucuya degisir (soldan saga / yukaridan asagiya), icerigi degil -> anahtar
+# sirasiz kume. APO19FZ: 455 farkin 327'si sekil etiketi, 221'i 'esasli yok'.
+_SEKIL_SATIRI = re.compile(r"^\u015eekil:[ \t]*(.*)$", re.M)
+
+
+def _sekil_sirala(m: re.Match[str]) -> str:
+    parca = sorted(re.sub(r"\s+", "", t) for t in m.group(1).split(";") if t.strip())
+    return "\u015eekil: " + "; ".join(parca)
 
 
 def sikistir(x: str) -> str:

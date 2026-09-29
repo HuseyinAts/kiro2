@@ -58,11 +58,20 @@ VARSAYILAN_DSN = (
 )
 ITHAL_ARACI = "scripts/kitap/kitap_hat/ithal.py"
 CEVAP_KAYNAGI = "testin_basili_cevap_anahtari"
-CEVAP_KANALLARI = (
-    "iki_okuma+glif",
-    "iki_okuma+glif_uyumsuz+goz_teyidi(5x)",
-    "iki_okuma+goz(5x)",
+CEVAP_KANALLARI = tuple(
+    f"{o}+{k}"
+    for o in ("iki_okuma", "tek_okuma")
+    for k in ("glif", "glif_uyumsuz+goz_teyidi(5x)", "goz(5x)")
 )
+
+
+def okuma_on(ham: dict) -> str:
+    """Anahtar okumasi: iki bagimsiz okuma (A == B) ya da tek okuma + glif kanali
+    (okuma_b None; APO19FZ sonrasi -- glif LOO her hucreyi okumadan bagimsiz
+    piksel kumesiyle sinar, uyumsuz hucre goze gider)."""
+    return "tek_okuma" if ham.get("okuma_b") is None else "iki_okuma"
+
+
 CAPA_KANALI = "okuyucu_simgesi+kirmizi_basili_numara"
 SIK_OKUNAMADI = "[okunamad\u0131]"
 GORSEL_SIK = "(g\u00f6rsel \u015f\u0131k)"
@@ -95,7 +104,12 @@ def anahtar_dogrulamasi(p: ModuleType, ham: dict) -> str:
     n = sum(len(t["hucreler"]) for t in ham["okuma_a"]["testler"])
     g = ham["glif"]
     return (
-        f"basili_anahtar_iki_okuma_{n}_{n}_hucre_ayni__piksel_glif_loo_{g['uyum']}_{g['hucre']}"
+        (
+            f"basili_anahtar_iki_okuma_{n}_{n}_hucre_ayni"
+            if okuma_on(ham) == "iki_okuma"
+            else f"basili_anahtar_tek_okuma_{n}_hucre"
+        )
+        + f"__piksel_glif_loo_{g['uyum']}_{g['hucre']}"
         f"_uyumsuz_goz__glif_disi_{len(g['kapsam_disi_test'])}_test_goz_5x__"
         f"hucre_sayisi_esittir_numara_capasi_{n}"
     )
@@ -295,13 +309,13 @@ def goz_hucreleri(p: ModuleType, ham: dict, harita: dict) -> dict[tuple[str, int
         if len(dizi) != birimler[birim]["soru_sayisi"]:
             raise ValueError(f"goz testi {no}: {len(dizi)} hucre != soru sayisi")
         for i in range(1, len(dizi) + 1):
-            out[(birim, i)] = "iki_okuma+goz(5x)"
+            out[(birim, i)] = f"{okuma_on(ham)}+goz(5x)"
     for anahtar in ham["glif"].get("goz_teyit", {}):
         t, soru = anahtar.split("#")
         birim = f"{p.KOD}-{t}"
         if birim not in birimler:
             raise ValueError(f"goz teyidi {anahtar}: {birim} haritada yok")
-        out[(birim, int(soru))] = "iki_okuma+glif_uyumsuz+goz_teyidi(5x)"
+        out[(birim, int(soru))] = f"{okuma_on(ham)}+glif_uyumsuz+goz_teyidi(5x)"
     return out
 
 
@@ -413,7 +427,7 @@ def satirlari_bagla(p: ModuleType, oku: dict[str, Any]) -> list[dict[str, Any]]:
                 "test_no": t["test"],
                 "konu_kodu": dugum,
                 "cevap": c["cevap"],
-                "cevap_kanali": goz.get((kod, sira_i), "iki_okuma+glif"),
+                "cevap_kanali": goz.get((kod, sira_i), f"{okuma_on(oku['ham'])}+glif"),
                 "sikler_gorsel": bool(s.get("sikler_gorsel"))
                 or all(v == GORSEL_SIK for v in s["sikler"].values()),
                 "kirpim_kutusu": k["kutu"],

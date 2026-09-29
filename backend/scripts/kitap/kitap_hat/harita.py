@@ -58,7 +58,12 @@ def harita_uret(
 ) -> dict:
     ks = konular(p)
     a = {t["test"]: t["konu"] for t in ham["okuma_a"]["testler"]}
-    b = {t["test"]: t["konu"] for t in ham["okuma_b"]["testler"]}
+    # Tek okuma: bant konusu yine icindekiler kapisindan gecer (BANT_KONU_KAPISI).
+    b = (
+        a
+        if ham["okuma_b"] is None
+        else {t["test"]: t["konu"] for t in ham["okuma_b"]["testler"]}
+    )
     soru: dict[str, int] = {}
     for c in anahtar["cevaplar"]:
         soru[c["birim"]] = soru.get(c["birim"], 0) + 1

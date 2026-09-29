@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import itertools
 from collections import defaultdict
+from pathlib import Path
 from types import ModuleType
 from typing import Any
 
@@ -246,40 +247,29 @@ def _sutun_alt_siniri(
     return alt_sinir
 
 
-def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
-    tarama = ortak.oku(p, "capa_taramasi")
-    anahtar = ortak.oku(p, "cevap_anahtari")
-    cevap = {(c["dosya"], c["sutun"], c["sutun_sira"]): c for c in anahtar["cevaplar"]}
-    kaynak = ortak.kaynak_dizin(p)
-    sutun: dict[tuple[int, str], list[dict]] = defaultdict(list)
-    for t in tarama["testler"]:
-        for c in t["capalar"]:
-            sutun[(c["dosya"], c["sutun"])].append(c)
+def _sayfa_kutu(
+    arg: tuple[str, str, int, dict, list[tuple[str, list[dict]]], dict],
+) -> tuple[list[dict[str, Any]], list[str], list[str]]:
+    """Bir sayfanin sutunlari (havuz isi): beyazlat, sinirlar, kutular, artik."""
+    kod, kaynak, d, sayfa, sutunlar, cevap = arg
+    p = ortak.profil(kod)
+    a = beyaz_sayfa(p, Path(kaynak), d, sayfa["glif"])[0]
     kutular: list[dict[str, Any]] = []
     artik: list[str] = []
     uyarilar: list[str] = []
-    cache: dict[int, np.ndarray] = {}
-    for (d, s), sutun_capa in sorted(sutun.items()):
-        if d not in cache:
-            cache.clear()
-            cache[d] = beyaz_sayfa(p, kaynak, d, tarama["sayfalar"][str(d)]["glif"])[0]
-        a = cache[d]
+    for s, sutun_capa in sutunlar:
         x0, x1 = p.SUTUNLAR[ortak.parite(p, d)][s]
         mur = _satirlar(a, x0, x1)
         capa = sorted(sutun_capa, key=lambda c: c["y"])
         alt_sinir = _sutun_alt_siniri(
-            p,
-            tarama["sayfalar"][str(d)],
-            a,
-            (d, s, x0, x1),
-            artik=artik,
-            uyarilar=uyarilar,
+            p, sayfa, a, (d, s, x0, x1), artik=artik, uyarilar=uyarilar
         )
         ustler = _kutu_ust(p, d, s, _ustler(p, a, (x0, x1), capa, mur))
+        yeni: list[dict[str, Any]] = []
         for i, c in enumerate(capa):
             alt = ustler[i + 1] - 1 if i + 1 < len(capa) else alt_sinir
-            cv = cevap[(d, s, i)]
-            kutular.append(
+            cv = cevap[f"{s}|{i}"]
+            yeni.append(
                 {
                     "birim": cv["birim"],
                     "soru": cv["soru"],
@@ -290,8 +280,9 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
                     "capa": [c["y"], c["x"]],
                 }
             )
+        kutular += yeni
         kapsanan = np.zeros(a.shape[0], bool)
-        for k in kutular[-len(capa) :]:
+        for k in yeni:
             kapsanan[k["kutu"][1] : k["kutu"][3]] = True
         koyu = (a[:, x0:x1].min(axis=2) < 160).sum(axis=1)
         bas_y = ust_bant(p, a)
@@ -301,6 +292,42 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
             if not kapsanan[y] and koyu[y] > ARTIK_ESIK:
                 artik.append(f"artik murekkep s{d}{s} y{y} ({int(koyu[y])} px)")
                 break
+    return kutular, artik, uyarilar
+
+
+def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
+    tarama = ortak.oku(p, "capa_taramasi")
+    anahtar = ortak.oku(p, "cevap_anahtari")
+    kaynak = ortak.kaynak_dizin(p)
+    sutun: dict[tuple[int, str], list[dict]] = defaultdict(list)
+    for t in tarama["testler"]:
+        for c in t["capalar"]:
+            sutun[(c["dosya"], c["sutun"])].append(c)
+    sayfa_sutun: dict[int, list[tuple[str, list[dict]]]] = defaultdict(list)
+    for (d, s), sutun_capa in sorted(sutun.items()):
+        sayfa_sutun[d].append((s, sutun_capa))
+    cevap: dict[int, dict[str, dict]] = defaultdict(dict)
+    for c in anahtar["cevaplar"]:
+        cevap[c["dosya"]][f"{c['sutun']}|{c['sutun_sira']}"] = c
+    isler = [
+        (
+            ortak.profil_kodu(p),
+            str(kaynak),
+            d,
+            tarama["sayfalar"][str(d)],
+            sut,
+            cevap[d],
+        )
+        for d, sut in sorted(sayfa_sutun.items())
+    ]
+    kutular: list[dict[str, Any]] = []
+    artik: list[str] = []
+    uyarilar: list[str] = []
+    # Sayfalar bagimsiz; sonuc sirasi (sayfa, sutun) -- sirali surumle ayni.
+    for k, a_, u in ortak.paralel(_sayfa_kutu, isler):
+        kutular += k
+        artik += a_
+        uyarilar += u
     kutular.sort(key=lambda k: (k["birim"], k["soru"]))
     if uyarilar:
         print(f"uyari {len(uyarilar)} (serit-sutun kismi ortusme; kapi degil):")
