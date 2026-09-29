@@ -1,0 +1,1936 @@
+{
+"kaynak": "2023-2024 AROMAT Fizik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler: 10 bolum, 10 konu basligi (dosya = basili); konu = test bandindaki BUYUK HARFLI konu adi (icindekiler adiyla kapidan gecer), sayfa araligi icindekiler sayfa numarasindan",
+"bolumler": [
+{
+"kod": "FIZ-ARO23TF-B01",
+"no": 1,
+"ad": "B\u00d6L\u00dcM - 1"
+},
+{
+"kod": "FIZ-ARO23TF-B02",
+"no": 2,
+"ad": "B\u00d6L\u00dcM - 2"
+},
+{
+"kod": "FIZ-ARO23TF-B03",
+"no": 3,
+"ad": "B\u00d6L\u00dcM - 3"
+},
+{
+"kod": "FIZ-ARO23TF-B04",
+"no": 4,
+"ad": "B\u00d6L\u00dcM - 4"
+},
+{
+"kod": "FIZ-ARO23TF-B05",
+"no": 5,
+"ad": "B\u00d6L\u00dcM - 5"
+},
+{
+"kod": "FIZ-ARO23TF-B06",
+"no": 6,
+"ad": "B\u00d6L\u00dcM - 6"
+},
+{
+"kod": "FIZ-ARO23TF-B07",
+"no": 7,
+"ad": "B\u00d6L\u00dcM - 7"
+},
+{
+"kod": "FIZ-ARO23TF-B08",
+"no": 8,
+"ad": "B\u00d6L\u00dcM - 8"
+},
+{
+"kod": "FIZ-ARO23TF-B09",
+"no": 9,
+"ad": "B\u00d6L\u00dcM - 9"
+},
+{
+"kod": "FIZ-ARO23TF-B10",
+"no": 10,
+"ad": "B\u00d6L\u00dcM - 10"
+}
+],
+"konular": [
+{
+"kod": "FIZ-ARO23TF-B01-K01",
+"bolum": "FIZ-ARO23TF-B01",
+"ad": "Fizik Bilimine Giri\u015f",
+"icindekiler_adi": "Fizik Bilimine Giri\u015f",
+"sayfalar": [
+7,
+18
+]
+},
+{
+"kod": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"ad": "Madde ve \u00d6zellikleri",
+"icindekiler_adi": "Madde ve \u00d6zellikleri",
+"sayfalar": [
+19,
+38
+]
+},
+{
+"kod": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"ad": "Hareket ve Kuvvet",
+"icindekiler_adi": "Hareket ve Kuvvet",
+"sayfalar": [
+39,
+74
+]
+},
+{
+"kod": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"ad": "Enerji",
+"icindekiler_adi": "Enerji",
+"sayfalar": [
+75,
+98
+]
+},
+{
+"kod": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"ad": "Is\u0131 ve S\u0131cakl\u0131k",
+"icindekiler_adi": "Is\u0131 ve S\u0131cakl\u0131k",
+"sayfalar": [
+99,
+122
+]
+},
+{
+"kod": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"ad": "Elektrostatik",
+"icindekiler_adi": "Elektrostatik",
+"sayfalar": [
+123,
+140
+]
+},
+{
+"kod": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"ad": "Elektrik ve Manyetizma",
+"icindekiler_adi": "Elektrik ve Manyetizma",
+"sayfalar": [
+141,
+176
+]
+},
+{
+"kod": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"ad": "Bas\u0131n\u00e7 ve Kald\u0131rma Kuvveti",
+"icindekiler_adi": "Bas\u0131n\u00e7 ve Kald\u0131rma Kuvveti",
+"sayfalar": [
+177,
+214
+]
+},
+{
+"kod": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"ad": "Dalgalar",
+"icindekiler_adi": "Dalgalar",
+"sayfalar": [
+215,
+252
+]
+},
+{
+"kod": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"ad": "Optik",
+"icindekiler_adi": "Optik",
+"sayfalar": [
+253,
+320
+]
+}
+],
+"test_sayisi": 147,
+"testler": [
+{
+"birim": "ARO23TF-T001",
+"test": 1,
+"sayfalar": [
+8,
+9
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-ARO23TF-B01-K01",
+"bolum": "FIZ-ARO23TF-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T002",
+"test": 2,
+"sayfalar": [
+10,
+11
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-ARO23TF-B01-K01",
+"bolum": "FIZ-ARO23TF-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T003",
+"test": 3,
+"sayfalar": [
+12,
+13
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-ARO23TF-B01-K01",
+"bolum": "FIZ-ARO23TF-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T004",
+"test": 4,
+"sayfalar": [
+14,
+15
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-ARO23TF-B01-K01",
+"bolum": "FIZ-ARO23TF-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T005",
+"test": 5,
+"sayfalar": [
+16,
+17,
+18
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-ARO23TF-B01-K01",
+"bolum": "FIZ-ARO23TF-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23TF-T006",
+"test": 6,
+"sayfalar": [
+20,
+21
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T007",
+"test": 7,
+"sayfalar": [
+22,
+23
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T008",
+"test": 8,
+"sayfalar": [
+24,
+25
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T009",
+"test": 9,
+"sayfalar": [
+26,
+27
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T010",
+"test": 10,
+"sayfalar": [
+28,
+29
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T011",
+"test": 11,
+"sayfalar": [
+30,
+31
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T012",
+"test": 12,
+"sayfalar": [
+32,
+33
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T013",
+"test": 13,
+"sayfalar": [
+34,
+35
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T014",
+"test": 14,
+"sayfalar": [
+36,
+37,
+38
+],
+"bant": "MADDE ve \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-ARO23TF-B02-K01",
+"bolum": "FIZ-ARO23TF-B02",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23TF-T015",
+"test": 15,
+"sayfalar": [
+40,
+41
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T016",
+"test": 16,
+"sayfalar": [
+42,
+43
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T017",
+"test": 17,
+"sayfalar": [
+44,
+45
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T018",
+"test": 18,
+"sayfalar": [
+46,
+47
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T019",
+"test": 19,
+"sayfalar": [
+48,
+49
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T020",
+"test": 20,
+"sayfalar": [
+50,
+51
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T021",
+"test": 21,
+"sayfalar": [
+52,
+53
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T022",
+"test": 22,
+"sayfalar": [
+54,
+55
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T023",
+"test": 23,
+"sayfalar": [
+56,
+57
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T024",
+"test": 24,
+"sayfalar": [
+58,
+59
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T025",
+"test": 25,
+"sayfalar": [
+60,
+61
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23TF-T026",
+"test": 26,
+"sayfalar": [
+62,
+63
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T027",
+"test": 27,
+"sayfalar": [
+64,
+65
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T028",
+"test": 28,
+"sayfalar": [
+66,
+67
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T029",
+"test": 29,
+"sayfalar": [
+68,
+69
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T030",
+"test": 30,
+"sayfalar": [
+70,
+71
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T031",
+"test": 31,
+"sayfalar": [
+72,
+73,
+74
+],
+"bant": "HAREKET ve KUVVET",
+"konu": "FIZ-ARO23TF-B03-K01",
+"bolum": "FIZ-ARO23TF-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23TF-T032",
+"test": 32,
+"sayfalar": [
+76,
+77
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T033",
+"test": 33,
+"sayfalar": [
+78,
+79
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T034",
+"test": 34,
+"sayfalar": [
+80,
+81
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T035",
+"test": 35,
+"sayfalar": [
+82,
+83
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T036",
+"test": 36,
+"sayfalar": [
+84,
+85
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T037",
+"test": 37,
+"sayfalar": [
+86,
+87
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T038",
+"test": 38,
+"sayfalar": [
+88,
+89
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T039",
+"test": 39,
+"sayfalar": [
+90,
+91
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T040",
+"test": 40,
+"sayfalar": [
+92,
+93
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T041",
+"test": 41,
+"sayfalar": [
+94,
+95
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T042",
+"test": 42,
+"sayfalar": [
+96,
+97,
+98
+],
+"bant": "ENERJ\u0130",
+"konu": "FIZ-ARO23TF-B04-K01",
+"bolum": "FIZ-ARO23TF-B04",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23TF-T043",
+"test": 43,
+"sayfalar": [
+100,
+101
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T044",
+"test": 44,
+"sayfalar": [
+102,
+103
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T045",
+"test": 45,
+"sayfalar": [
+104,
+105
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T046",
+"test": 46,
+"sayfalar": [
+106,
+107
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T047",
+"test": 47,
+"sayfalar": [
+108,
+109
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T048",
+"test": 48,
+"sayfalar": [
+110,
+111
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T049",
+"test": 49,
+"sayfalar": [
+112,
+113
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T050",
+"test": 50,
+"sayfalar": [
+114,
+115
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T051",
+"test": 51,
+"sayfalar": [
+116,
+117
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T052",
+"test": 52,
+"sayfalar": [
+118,
+119
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T053",
+"test": 53,
+"sayfalar": [
+120,
+121,
+122
+],
+"bant": "ISI VE SICAKLIK",
+"konu": "FIZ-ARO23TF-B05-K01",
+"bolum": "FIZ-ARO23TF-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23TF-T054",
+"test": 54,
+"sayfalar": [
+124,
+125
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T055",
+"test": 55,
+"sayfalar": [
+126,
+127
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T056",
+"test": 56,
+"sayfalar": [
+128,
+129
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T057",
+"test": 57,
+"sayfalar": [
+130,
+131
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T058",
+"test": 58,
+"sayfalar": [
+132,
+133
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T059",
+"test": 59,
+"sayfalar": [
+134,
+135
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T060",
+"test": 60,
+"sayfalar": [
+136,
+137
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T061",
+"test": 61,
+"sayfalar": [
+138,
+139,
+140
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-ARO23TF-B06-K01",
+"bolum": "FIZ-ARO23TF-B06",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23TF-T062",
+"test": 62,
+"sayfalar": [
+142,
+143
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T063",
+"test": 63,
+"sayfalar": [
+144,
+145
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T064",
+"test": 64,
+"sayfalar": [
+146,
+147
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T065",
+"test": 65,
+"sayfalar": [
+148,
+149
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T066",
+"test": 66,
+"sayfalar": [
+150,
+151
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T067",
+"test": 67,
+"sayfalar": [
+152,
+153
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T068",
+"test": 68,
+"sayfalar": [
+154,
+155
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T069",
+"test": 69,
+"sayfalar": [
+156,
+157
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T070",
+"test": 70,
+"sayfalar": [
+158,
+159
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T071",
+"test": 71,
+"sayfalar": [
+160,
+161
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T072",
+"test": 72,
+"sayfalar": [
+162,
+163
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T073",
+"test": 73,
+"sayfalar": [
+164,
+165
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T074",
+"test": 74,
+"sayfalar": [
+166,
+167
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T075",
+"test": 75,
+"sayfalar": [
+168,
+169
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T076",
+"test": 76,
+"sayfalar": [
+170,
+171
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T077",
+"test": 77,
+"sayfalar": [
+172,
+173
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T078",
+"test": 78,
+"sayfalar": [
+174,
+175,
+176
+],
+"bant": "ELEKTR\u0130K VE MANYET\u0130ZMA",
+"konu": "FIZ-ARO23TF-B07-K01",
+"bolum": "FIZ-ARO23TF-B07",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23TF-T079",
+"test": 79,
+"sayfalar": [
+178,
+179
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T080",
+"test": 80,
+"sayfalar": [
+180,
+181
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T081",
+"test": 81,
+"sayfalar": [
+182,
+183
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T082",
+"test": 82,
+"sayfalar": [
+184,
+185
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T083",
+"test": 83,
+"sayfalar": [
+186,
+187
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T084",
+"test": 84,
+"sayfalar": [
+188,
+189
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T085",
+"test": 85,
+"sayfalar": [
+190,
+191
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23TF-T086",
+"test": 86,
+"sayfalar": [
+192,
+193
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T087",
+"test": 87,
+"sayfalar": [
+194,
+195
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T088",
+"test": 88,
+"sayfalar": [
+196,
+197
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T089",
+"test": 89,
+"sayfalar": [
+198,
+199
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T090",
+"test": 90,
+"sayfalar": [
+200,
+201
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T091",
+"test": 91,
+"sayfalar": [
+202,
+203
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T092",
+"test": 92,
+"sayfalar": [
+204,
+205
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T093",
+"test": 93,
+"sayfalar": [
+206,
+207
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T094",
+"test": 94,
+"sayfalar": [
+208,
+209
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T095",
+"test": 95,
+"sayfalar": [
+210,
+211
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T096",
+"test": 96,
+"sayfalar": [
+212,
+213,
+214
+],
+"bant": "BASIN\u00c7 VE KALDIRMA KUVVET\u0130",
+"konu": "FIZ-ARO23TF-B08-K01",
+"bolum": "FIZ-ARO23TF-B08",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23TF-T097",
+"test": 97,
+"sayfalar": [
+216,
+217
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T098",
+"test": 98,
+"sayfalar": [
+218,
+219
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T099",
+"test": 99,
+"sayfalar": [
+220,
+221
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T100",
+"test": 100,
+"sayfalar": [
+222,
+223
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T101",
+"test": 101,
+"sayfalar": [
+224,
+225
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T102",
+"test": 102,
+"sayfalar": [
+226,
+227
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T103",
+"test": 103,
+"sayfalar": [
+228,
+229
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T104",
+"test": 104,
+"sayfalar": [
+230,
+231
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T105",
+"test": 105,
+"sayfalar": [
+232,
+233
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T106",
+"test": 106,
+"sayfalar": [
+234,
+235
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T107",
+"test": 107,
+"sayfalar": [
+236,
+237
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T108",
+"test": 108,
+"sayfalar": [
+238,
+239
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T109",
+"test": 109,
+"sayfalar": [
+240,
+241
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T110",
+"test": 110,
+"sayfalar": [
+242,
+243
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T111",
+"test": 111,
+"sayfalar": [
+244,
+245
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T112",
+"test": 112,
+"sayfalar": [
+246,
+247
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T113",
+"test": 113,
+"sayfalar": [
+248,
+249
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T114",
+"test": 114,
+"sayfalar": [
+250,
+251,
+252
+],
+"bant": "DALGALAR",
+"konu": "FIZ-ARO23TF-B09-K01",
+"bolum": "FIZ-ARO23TF-B09",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23TF-T115",
+"test": 115,
+"sayfalar": [
+254,
+255
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T116",
+"test": 116,
+"sayfalar": [
+256,
+257
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T117",
+"test": 117,
+"sayfalar": [
+258,
+259
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T118",
+"test": 118,
+"sayfalar": [
+260,
+261
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T119",
+"test": 119,
+"sayfalar": [
+262,
+263
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T120",
+"test": 120,
+"sayfalar": [
+264,
+265
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T121",
+"test": 121,
+"sayfalar": [
+266,
+267
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T122",
+"test": 122,
+"sayfalar": [
+268,
+269
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T123",
+"test": 123,
+"sayfalar": [
+270,
+271
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T124",
+"test": 124,
+"sayfalar": [
+272,
+273
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T125",
+"test": 125,
+"sayfalar": [
+274,
+275
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T126",
+"test": 126,
+"sayfalar": [
+276,
+277
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T127",
+"test": 127,
+"sayfalar": [
+278,
+279
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T128",
+"test": 128,
+"sayfalar": [
+280,
+281
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T129",
+"test": 129,
+"sayfalar": [
+282,
+283
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T130",
+"test": 130,
+"sayfalar": [
+284,
+285
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T131",
+"test": 131,
+"sayfalar": [
+286,
+287
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T132",
+"test": 132,
+"sayfalar": [
+288,
+289
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T133",
+"test": 133,
+"sayfalar": [
+290,
+291
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23TF-T134",
+"test": 134,
+"sayfalar": [
+292,
+293
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T135",
+"test": 135,
+"sayfalar": [
+294,
+295
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T136",
+"test": 136,
+"sayfalar": [
+296,
+297
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T137",
+"test": 137,
+"sayfalar": [
+298,
+299
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T138",
+"test": 138,
+"sayfalar": [
+300,
+301
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T139",
+"test": 139,
+"sayfalar": [
+302,
+303
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T140",
+"test": 140,
+"sayfalar": [
+304,
+305
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T141",
+"test": 141,
+"sayfalar": [
+306,
+307
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T142",
+"test": 142,
+"sayfalar": [
+308,
+309
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T143",
+"test": 143,
+"sayfalar": [
+310,
+311
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T144",
+"test": 144,
+"sayfalar": [
+312,
+313
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T145",
+"test": 145,
+"sayfalar": [
+314,
+315
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23TF-T146",
+"test": 146,
+"sayfalar": [
+316,
+317
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23TF-T147",
+"test": 147,
+"sayfalar": [
+318,
+319,
+320
+],
+"bant": "OPT\u0130K",
+"konu": "FIZ-ARO23TF-B10-K01",
+"bolum": "FIZ-ARO23TF-B10",
+"soru_sayisi": 11
+}
+]
+}

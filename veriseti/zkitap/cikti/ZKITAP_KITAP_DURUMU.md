@@ -135,8 +135,8 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | kitap (sekme basligi) | durum | klasor | png | ayni icerik | DB | ortaklik | kalite | oneri |
 |---|---|---|---|---|---|---|---|---|
 | 2023-2024 AROMAT AYT Fizik Soru Bankasi | **ISLENDI** | `Aromat Ayt 2023 2024 Fizik Soru Bankasi` | 320 | - | modern 1167 soru (`FIZ_AROMAT_2024_AYT_YONTEM.md`, ortak kitap_hat): 1167 yeni satir / aktif 1141 (0127 toplu beta onayi; 26 soru gorunen `[??]` beta disi); eski hat yok | - | 302 test sayfasi, 145 test (12 bolum, 22 konu; iki gecisli test siniri); sayfa basina sag alt anahtar kutusu; iki okuma A == B + glif 1167/1167 (yeni seri harf bolutu) | TAMAM (modern ithal) |
-| 2023-2024 AROMAT Fizik Soru Bankasi | ISLENMEDI | `Aromat Tyt 2023 2024 Fizik Soru Bankasi` | 320 | - | yok | - | - | ISLENEBILIR |
-| 2023-2024 AROMAT Matematik Soru Bankasi | ISLENMEDI | `Aromat -2023-2024-Matematik Soru Bankasi` | 400 | - | eski hat 14 / aktif 14 | - | - | ISLENEBILIR |
+| 2023-2024 AROMAT Fizik Soru Bankasi | ANAHTAR DUZEYI | `Aromat Tyt 2023 2024 Fizik Soru Bankasi` | 320 | - | yok | profil aro23tf: 147 test / 1137 cevap, konu haritasi, 1137 kirpim kutusu (kitap metni yok) | - | METIN ADIMI YAYINCI YAZILI IZNI BEKLIYOR |
+| 2023-2024 AROMAT Matematik Soru Bankasi | ANAHTAR DUZEYI | `Aromat -2023-2024-Matematik Soru Bankasi` | 400 | - | eski hat 14 / aktif 14 | profil aro23mt: 223 test / 1605 cevap (glif 1601/1601 + goz 4), 19 konu, 1605 kirpim kutusu (kitap metni yok) | - | METIN ADIMI YAYINCI YAZILI IZNI BEKLIYOR |
 | 2023-2024 AROMAT Paragraf Soru Bankasi | ISLENMEDI | `Aromat Paragraf Soru Bankasi` | 304 | - | eski hat 6 / aktif 6 | - | - | ISLENEBILIR |
 | AROMAT 2023 AYT Matematik Soru Bankasi | ISLENMEDI | `Aromat-2023-Ayt-Matematik Soru Bankasi` | 336 | - | eski hat 13 / aktif 13 | - | - | ISLENEBILIR |
 | AROMAT 2023 TYT Fen Bilimleri Model Sorular | ISLENMEDI | `Aramot Tyt 2023 Fen Bilimleri Model Sorular` | 80 | - | eski hat 18 / aktif 18 | - | - | ISLENEBILIR |
