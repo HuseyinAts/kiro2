@@ -125,11 +125,13 @@ def gecis1_olc(
 
 def profil_yaz(prof: Path, bas: list[int]) -> None:
     s = prof.read_text("ascii")
+    # BAS_SAYFALARI cok satirli tuple olabilir (ruff format): bloku, bir sonraki
+    # sutun-0 satirina kadar tumuyle degistir.
     s, n1 = re.subn(
-        r"^BAS_SAYFALARI.*$",
-        "BAS_SAYFALARI: tuple[int, ...] = " + repr(tuple(bas)),
+        r"^BAS_SAYFALARI.*?(?=^\S|\Z)",
+        "BAS_SAYFALARI: tuple[int, ...] = " + repr(tuple(bas)) + "\n",
         s,
-        flags=re.M,
+        flags=re.M | re.S,
     )
     s, n2 = re.subn(
         r"^BEKLENEN_TEST = \d+$", f"BEKLENEN_TEST = {len(bas)}", s, flags=re.M

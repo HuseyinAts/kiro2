@@ -60,7 +60,9 @@ ORTME_ESIK = 4
 LEKE_DOYGUN = 60
 
 
-def kenar_olc(g: np.ndarray, kutu: list[int]) -> dict[str, int]:
+def kenar_olc(
+    g: np.ndarray, kutu: list[int], olcum: tuple[int, int] | None = None
+) -> dict[str, int]:
     """Kutunun dort kenarindaki KENAR_KALINLIK piksellik seritte koyu (< KOYU)
     piksel sayisi. g: beyazlatilmis kartin kanal minimumu (2B).
 
@@ -68,14 +70,20 @@ def kenar_olc(g: np.ndarray, kutu: list[int]) -> dict[str, int]:
     murekkebin disindadir; ust, bir onceki sorudan >= BOSLUK bos satirla
     ayrilir; alt ya sonraki kutunun ustu-1 (bos bant) ya da SAYFA_ALTI /
     serit ustudur. Serite murekkep dusmesi = kutu icerigi kesiyor (ya da
-    sinir yanlis olculmus)."""
+    sinir yanlis olculmus).
+
+    olcum: ust/alt seridinin DAR x araligi (ortak.olcum_sinir / profil
+    SUTUN_OLCUM_PAY). Sutunlar arasi dikey ayrac ya da sirt yazisi sutun
+    araligina giriyorsa (BS24FZ x 368 / 373) her kutunun alt seridinde
+    murekkep gorunur; kesik kapisi bos yere doner."""
     x0, y0, x1, y1 = kutu
     k, c = KENAR_KALINLIK, KOSE_PAY
+    ux0, ux1 = olcum if olcum else (x0, x1)
     return {
         "sol": int((g[y0:y1, x0 : x0 + k] < KOYU).sum()),
         "sag": int((g[y0:y1, x1 - k : x1] < KOYU).sum()),
-        "ust": int((g[y0 : y0 + k, x0 + c : x1 - c] < KOYU).sum()),
-        "alt": int((g[y1 - k : y1, x0 + c : x1 - c] < KOYU).sum()),
+        "ust": int((g[y0 : y0 + k, ux0 + c : ux1 - c] < KOYU).sum()),
+        "alt": int((g[y1 - k : y1, ux0 + c : ux1 - c] < KOYU).sum()),
     }
 
 
@@ -208,15 +216,21 @@ def beyaz_sayfa(
 
 
 def _kenar_kaydet(
-    g: np.ndarray, k: dict, s: int, kenar: list[dict], kesik: list[dict]
+    g: np.ndarray,
+    k: dict,
+    s: int,
+    kenar: list[dict],
+    *,
+    kesik: list[dict],
+    olcum: tuple[int, int] | None = None,
 ) -> None:
     """sol/sag ihlali -> `kenar` (sutun siniri murekkebe giriyor; murekkep_x ile);
     ust/alt ihlali -> `kesik` (kutu soruyu kesiyor: alt sinir / serit / bos bant)."""
-    olcum = kenar_olc(g, k["kutu"])
-    if not kenar_ihlali(olcum):
+    sonuc = kenar_olc(g, k["kutu"], olcum)
+    if not kenar_ihlali(sonuc):
         return
-    kayit = {"birim": k["birim"], "soru": k["soru"], "dosya": s, **olcum}
-    if max(olcum["ust"], olcum["alt"]) > KENAR_EN_COK:
+    kayit = {"birim": k["birim"], "soru": k["soru"], "dosya": s, **sonuc}
+    if max(sonuc["ust"], sonuc["alt"]) > KENAR_EN_COK:
         kesik.append(kayit)
     else:
         # Sutun sinirini duzeltmek icin: bu satirlarda murekkebin gercek x
@@ -291,7 +305,14 @@ def _sayfa_kirp(
     ortme: list[dict] = []
     for k in kutular:
         x0, y0, x1, y1 = k["kutu"]
-        _kenar_kaydet(g, k, s, kenar, kesik)
+        _kenar_kaydet(
+            g,
+            k,
+            s,
+            kenar,
+            kesik=kesik,
+            olcum=ortak.olcum_sinir(p, s, k["sutun"], x0, x1),
+        )
         ortme += _ortme_kayitlari(k, s, halkalar)
         # compress_level 1: piksel ayni, kodlama ~5x hizli (dosya biraz buyuk).
         Image.fromarray(a[y0:y1, x0:x1]).save(

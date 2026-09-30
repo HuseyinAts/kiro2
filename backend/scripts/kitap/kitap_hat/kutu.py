@@ -49,6 +49,7 @@ ARTIK_ESIK = 6
 ALTLIK_GENISLIK = 250  # sayfa cizgisi / serit cercevesi: tam genislik satir
 SERIT_DISI_EN_AZ = 40  # serit sutun icinde basliyorsa seritten onceki kisim taranir
 SUTUN_KENAR_PAY = 12  # o dar taramada sutunun sol kenar payi (sayfa susu)
+DIS_PAY = 4  # dislama blogu ile kutu siniri arasinda birakilan bos px
 
 
 def ust_bant(p: ModuleType, a: np.ndarray) -> int:
@@ -62,6 +63,34 @@ def ust_bant(p: ModuleType, a: np.ndarray) -> int:
 def _satirlar(a: np.ndarray, x0: int, x1: int) -> np.ndarray:
     m: np.ndarray = (a[:, x0:x1].min(axis=2) < MUREKKEP).any(axis=1)
     return m
+
+
+def dislama(p: ModuleType, a: np.ndarray, n: int) -> list[tuple[int, int, int, int]]:
+    """Profil `dislama_bolgeleri(a, n)`: SORU OLMAYAN, kutulara girmemesi
+    gereken bloklar [(y0, y1, x0, x1)] -- BS24FZ 'AKILLI NOT' bilgi kutusu.
+    Bloklar hem artik murekkep taramasindan dusulur hem de komsu kutularin
+    sinirlarini kirpar (yoksa blok onceki sorunun kirpimina girer)."""
+    f = getattr(p, "dislama_bolgeleri", None)
+    if f is None:
+        return []
+    return [(int(r[0]), int(r[1]), int(r[2]), int(r[3])) for r in f(a, n)]
+
+
+def _kutu_kirp(
+    kutu_: list[int], capa_y: int, dis: list[tuple[int, int, int, int]]
+) -> list[int]:
+    """Kutunun ust / alt sinirini dislama bloklarina gore kirp."""
+    x0, y0, x1, y1 = kutu_
+    for ry0, ry1, _, _ in dis:
+        if ry0 <= capa_y <= ry1:
+            continue
+        # ry0 dahil, ry1 haric (find_objects dilimi); DIS_PAY: blogun cerceve
+        # kenari kutunun kenar seridine dusmesin (kirp 'kesik' yanlis alarmi).
+        if ry0 > capa_y:
+            y1 = max(capa_y + 1, min(y1, ry0 - DIS_PAY))
+        else:
+            y0 = min(capa_y, max(y0, ry1 + DIS_PAY))
+    return [x0, y0, x1, y1]
 
 
 def _ust(y: int, tavan: int, murekkep: np.ndarray, bosluk: int = BOSLUK) -> int:
@@ -257,14 +286,17 @@ def _sayfa_kutu(
     kutular: list[dict[str, Any]] = []
     artik: list[str] = []
     uyarilar: list[str] = []
+    dis_hepsi = dislama(p, a, d)
     for s, sutun_capa in sutunlar:
         x0, x1 = p.SUTUNLAR[ortak.parite(p, d)][s]
-        mur = _satirlar(a, x0, x1)
+        ox0, ox1 = ortak.olcum_sinir(p, d, s, x0, x1)
+        dis = [r for r in dis_hepsi if r[3] > ox0 and r[2] < ox1]
+        mur = _satirlar(a, ox0, ox1)
         capa = sorted(sutun_capa, key=lambda c: c["y"])
         alt_sinir = _sutun_alt_siniri(
             p, sayfa, a, (d, s, x0, x1), artik=artik, uyarilar=uyarilar
         )
-        ustler = _kutu_ust(p, d, s, _ustler(p, a, (x0, x1), capa, mur))
+        ustler = _kutu_ust(p, d, s, _ustler(p, a, (ox0, ox1), capa, mur))
         yeni: list[dict[str, Any]] = []
         for i, c in enumerate(capa):
             alt = ustler[i + 1] - 1 if i + 1 < len(capa) else alt_sinir
@@ -276,7 +308,7 @@ def _sayfa_kutu(
                     "dosya": d,
                     "sutun": s,
                     "sutun_sira": i,
-                    "kutu": [x0, ustler[i], x1, alt],
+                    "kutu": _kutu_kirp([x0, ustler[i], x1, alt], c["y"], dis),
                     "capa": [c["y"], c["x"]],
                 }
             )
@@ -284,7 +316,9 @@ def _sayfa_kutu(
         kapsanan = np.zeros(a.shape[0], bool)
         for k in yeni:
             kapsanan[k["kutu"][1] : k["kutu"][3]] = True
-        koyu = (a[:, x0:x1].min(axis=2) < 160).sum(axis=1)
+        for ry0, ry1, _, _ in dis:
+            kapsanan[max(0, ry0 - DIS_PAY) : ry1 + DIS_PAY] = True
+        koyu = (a[:, ox0:ox1].min(axis=2) < 160).sum(axis=1)
         bas_y = ust_bant(p, a)
         if getattr(p, "ARTIK_ILK_KUTUDAN", False):
             bas_y = ustler[0]
