@@ -49,7 +49,9 @@ ARTIK_ESIK = 6
 ALTLIK_GENISLIK = 250  # sayfa cizgisi / serit cercevesi: tam genislik satir
 SERIT_DISI_EN_AZ = 40  # serit sutun icinde basliyorsa seritten onceki kisim taranir
 SUTUN_KENAR_PAY = 12  # o dar taramada sutunun sol kenar payi (sayfa susu)
-DIS_PAY = 4  # dislama blogu ile kutu siniri arasinda birakilan bos px
+# Dislama blogu ile kutu siniri arasinda birakilan bos px. 4 fazla: BS24AF
+# dosya 57'de son sik satiri ile 'UNUTMA' kutusu arasi yalniz ~4 px.
+DIS_PAY = 2
 
 
 def ust_bant(p: ModuleType, a: np.ndarray) -> int:
@@ -365,8 +367,8 @@ def kutulari_uret(p: ModuleType) -> tuple[dict[str, Any], list[str]]:
     kutular.sort(key=lambda k: (k["birim"], k["soru"]))
     if uyarilar:
         print(f"uyari {len(uyarilar)} (serit-sutun kismi ortusme; kapi degil):")
-        for u in uyarilar[:20]:
-            print("   ", u)
+        for uy in uyarilar[:20]:
+            print("   ", uy)
     yuk = sorted(k["kutu"][3] - k["kutu"][1] for k in kutular)
     veri = {
         "kaynak": p.KAYNAK_ADI,

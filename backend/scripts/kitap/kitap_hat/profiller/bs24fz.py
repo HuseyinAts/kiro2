@@ -268,8 +268,17 @@ SIMGESIZ_CAPA: tuple[tuple[int, str, int], ...] = ()
 
 # Numara seridi: sutun basina sabit x (olculdu, 322 test sayfasinda sapma yok).
 NUMARA_X = {1: {"L": (64, 69), "R": (383, 387)}, 0: {"L": (69, 73), "R": (388, 392)}}
-NUMARA_UST = {1: 120, 0: 75}  # tek sayfada ust bant daha kalin
 NUMARA_BOY = (6, 14)  # grup yuksekligi
+
+
+def _numara_ust(a: np.ndarray) -> int:
+    """Numara/rozet taramasinin ustu: ust bant varsa (testin ilk sayfasi) bandin
+    alti, yoksa sayfa ustu payi. Pariteye BAGLI DEGIL: BS24AF'de 8. bolum tek
+    sayfalik kapaktan sonra testler cift basili sayfada basliyor, tek basili
+    devam sayfasinda bant yok (numara y ~83)."""
+    return ust_bant(a) - 3
+
+
 _ROZET_X = (35, 135)  # hap, sutun solundan bu aralikta
 _ROZET_BOY = (11, 22)
 _ROZET_EN_AZ_W = 55
@@ -282,12 +291,15 @@ def _numara_capalari(a: np.ndarray, n: int) -> list[dict]:
     """Sutunun sabit x'inde basili soru numarasi (sol komsulugu bos)."""
     from scipy import ndimage
 
-    ust = NUMARA_UST[n % 2]
+    ust = _numara_ust(a)
     out: list[dict] = []
     for sut, (x0, x1) in NUMARA_X[n % 2].items():
         b = a[ust:SAYFA_ALTI, x0 - 12 : x1 + 40]
         koyu = b.max(axis=2) < 150
-        lab, _ = ndimage.label(koyu)
+        # 8-komsuluk: ince dizgide '7'nin yatay cizgisi ile govdesi yalniz
+        # capraz degiyor (BS24AF s15); 4-komsulukta iki parca olur, ikisi de
+        # boy esiginin altinda kalir.
+        lab, _ = ndimage.label(koyu, structure=np.ones((3, 3), bool))
         ham = []
         for s in ndimage.find_objects(lab):
             h = s[0].stop - s[0].start
@@ -315,7 +327,7 @@ def _rozet_capalari(a: np.ndarray, n: int) -> list[dict]:
     """Kaynak rozeti: koyu lacivert dolu hap ('2023 / MSU'), sutun solunda."""
     from scipy import ndimage
 
-    ust = NUMARA_UST[n % 2]
+    ust = _numara_ust(a)
     out: list[dict] = []
     for sut in ("L", "R"):
         x0 = SUTUNLAR[n % 2][sut][0]
@@ -449,20 +461,20 @@ SUTUNLAR = {0: {"L": (40, 366), "R": (360, 715)}, 1: {"L": (36, 360), "R": (356,
 # Ikisi de olcum araligindan dusulur; kutunun kendi x sinirlari degismez.
 SUTUN_OLCUM_PAY = {0: {"L": (20, 0), "R": (20, 0)}, 1: {"R": (20, 30)}}
 UST_BANT = 75  # cift sayfa: ust bant yok, yalniz sayfa ustu payi
-_BANT_UST_Y = 80  # bant ust kenari (olculdu: tek sayfalarda 495-496 px)
-_BANT_ALT_Y = 121  # bant alt kenari (507-529 px); ilk soru numarasi y ~131
+# Bant alt kenari: tam genislik cizgi (BS24FZ y 118-121, 507-529 px; BS24AF
+# y 118-120, 526-554 px). Ust kenar BS24AF'de yok -> yalniz alt kenar aranir.
+_BANT_ALT_ARALIK = (115, 124)
 _BANT_ESIK = 450
 
 
 def ust_bant(a: np.ndarray) -> int:
-    """Testin ILK (tek) sayfasinda ust bant var: 'Test N' dairesi + gri konu
-    kutusu; kenarlari tam genislik cizgi (y 80 ve y 121). Devam (cift)
-    sayfasinda bant yok, ilk soru y ~83'te -> UST_BANT."""
+    """Testin ILK sayfasinda ust bant var: 'Test N' dairesi + gri konu kutusu,
+    alt kenari tam genislik cizgi. Devam sayfasinda bant yok, ilk soru y ~83'te
+    -> UST_BANT. Donus: bant alt kenari + 2 (ilk soru numarasi y ~131)."""
     b = a[:, 30:715]
     say = (b.min(axis=2) < 235).sum(axis=1)
-    if say[_BANT_UST_Y] > _BANT_ESIK and say[_BANT_ALT_Y] > _BANT_ESIK:
-        return _BANT_ALT_Y + 2
-    return UST_BANT
+    ys = [y for y in range(*_BANT_ALT_ARALIK) if say[y] > _BANT_ESIK]
+    return ys[-1] + 2 if ys else UST_BANT
 
 
 # Sag sutun icerigi y 900'e kadar iner (s311 D/E sik sekilleri), 901-907 bos,
