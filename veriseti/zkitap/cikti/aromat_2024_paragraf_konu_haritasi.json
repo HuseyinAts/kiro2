@@ -1,0 +1,1814 @@
+{
+"kaynak": "2023-2024 AROMAT Paragraf Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler (s4): 6 bolum, bolum basina tek konu (dosya = basili); konu = test bandindaki konu adi (icindekiler adiyla kapidan gecer), sayfa araligi icindekiler sayfa numarasindan",
+"bolumler": [
+{
+"kod": "TUR-ARO23PG-B01",
+"no": 1,
+"ad": "1. B\u00d6L\u00dcM S\u00d6ZC\u00dcK VE C\u00dcMLE D\u00dcZEY\u0130NDE ANLAM"
+},
+{
+"kod": "TUR-ARO23PG-B02",
+"no": 2,
+"ad": "2. B\u00d6L\u00dcM PARAGRAFTA ANLATIM B\u0130\u00c7\u0130MLER\u0130 VE D\u00dc\u015e\u00dcNCEY\u0130 GEL\u0130\u015eT\u0130RME YOLLARI"
+},
+{
+"kod": "TUR-ARO23PG-B03",
+"no": 3,
+"ad": "3. B\u00d6L\u00dcM ANA D\u00dc\u015e\u00dcNCE - KONU"
+},
+{
+"kod": "TUR-ARO23PG-B04",
+"no": 4,
+"ad": "4. B\u00d6L\u00dcM PARAGRAFTA YARDIMCI D\u00dc\u015e\u00dcNCE"
+},
+{
+"kod": "TUR-ARO23PG-B05",
+"no": 5,
+"ad": "5. B\u00d6L\u00dcM PARAGRAFTA YAPI"
+},
+{
+"kod": "TUR-ARO23PG-B06",
+"no": 6,
+"ad": "6. B\u00d6L\u00dcM PARAGRAFTA YEN\u0130 NES\u0130L VE \u00c7OKLU SORULAR"
+}
+],
+"konular": [
+{
+"kod": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"ad": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"icindekiler_adi": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"sayfalar": [
+5,
+56
+]
+},
+{
+"kod": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"ad": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"icindekiler_adi": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"sayfalar": [
+57,
+98
+]
+},
+{
+"kod": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"ad": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"icindekiler_adi": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"sayfalar": [
+99,
+158
+]
+},
+{
+"kod": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"ad": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"icindekiler_adi": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"sayfalar": [
+159,
+208
+]
+},
+{
+"kod": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"ad": "Paragrafta Yap\u0131",
+"icindekiler_adi": "Paragrafta Yap\u0131",
+"sayfalar": [
+209,
+258
+]
+},
+{
+"kod": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"ad": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"icindekiler_adi": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"sayfalar": [
+259,
+302
+]
+}
+],
+"test_sayisi": 142,
+"testler": [
+{
+"birim": "ARO23PG-T001",
+"test": 1,
+"sayfalar": [
+6,
+7
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T002",
+"test": 2,
+"sayfalar": [
+8,
+9
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T003",
+"test": 3,
+"sayfalar": [
+10,
+11
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T004",
+"test": 4,
+"sayfalar": [
+12,
+13
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23PG-T005",
+"test": 5,
+"sayfalar": [
+14,
+15
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T006",
+"test": 6,
+"sayfalar": [
+16,
+17
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T007",
+"test": 7,
+"sayfalar": [
+18,
+19
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T008",
+"test": 8,
+"sayfalar": [
+20,
+21
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T009",
+"test": 9,
+"sayfalar": [
+22,
+23
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T010",
+"test": 10,
+"sayfalar": [
+24,
+25
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23PG-T011",
+"test": 11,
+"sayfalar": [
+26,
+27
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T012",
+"test": 12,
+"sayfalar": [
+28,
+29
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T013",
+"test": 13,
+"sayfalar": [
+30,
+31
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T014",
+"test": 14,
+"sayfalar": [
+32,
+33
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23PG-T015",
+"test": 15,
+"sayfalar": [
+34,
+35
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T016",
+"test": 16,
+"sayfalar": [
+36,
+37
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23PG-T017",
+"test": 17,
+"sayfalar": [
+38,
+39
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23PG-T018",
+"test": 18,
+"sayfalar": [
+40,
+41
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23PG-T019",
+"test": 19,
+"sayfalar": [
+42,
+43
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T020",
+"test": 20,
+"sayfalar": [
+44,
+45
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "ARO23PG-T021",
+"test": 21,
+"sayfalar": [
+46,
+47
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T022",
+"test": 22,
+"sayfalar": [
+48,
+49
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T023",
+"test": 23,
+"sayfalar": [
+50,
+51
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T024",
+"test": 24,
+"sayfalar": [
+52,
+53
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T025",
+"test": 25,
+"sayfalar": [
+54,
+55,
+56
+],
+"bant": "S\u00f6zc\u00fck ve C\u00fcmle D\u00fczeyinde Anlam",
+"konu": "TUR-ARO23PG-B01-K01",
+"bolum": "TUR-ARO23PG-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "ARO23PG-T026",
+"test": 26,
+"sayfalar": [
+58,
+59
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T027",
+"test": 27,
+"sayfalar": [
+60,
+61
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T028",
+"test": 28,
+"sayfalar": [
+62,
+63
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T029",
+"test": 29,
+"sayfalar": [
+64,
+65
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T030",
+"test": 30,
+"sayfalar": [
+66,
+67
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T031",
+"test": 31,
+"sayfalar": [
+68,
+69
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T032",
+"test": 32,
+"sayfalar": [
+70,
+71
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T033",
+"test": 33,
+"sayfalar": [
+72,
+73
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T034",
+"test": 34,
+"sayfalar": [
+74,
+75
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T035",
+"test": 35,
+"sayfalar": [
+76,
+77
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T036",
+"test": 36,
+"sayfalar": [
+78,
+79
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T037",
+"test": 37,
+"sayfalar": [
+80,
+81
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T038",
+"test": 38,
+"sayfalar": [
+82,
+83
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T039",
+"test": 39,
+"sayfalar": [
+84,
+85
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T040",
+"test": 40,
+"sayfalar": [
+86,
+87
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T041",
+"test": 41,
+"sayfalar": [
+88,
+89
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T042",
+"test": 42,
+"sayfalar": [
+90,
+91
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T043",
+"test": 43,
+"sayfalar": [
+92,
+93
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T044",
+"test": 44,
+"sayfalar": [
+94,
+95
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T045",
+"test": 45,
+"sayfalar": [
+96,
+97,
+98
+],
+"bant": "Paragrafta Anlat\u0131m Bi\u00e7imleri ve D\u00fc\u015f\u00fcnceyi Geli\u015ftirme Yollar\u0131",
+"konu": "TUR-ARO23PG-B02-K01",
+"bolum": "TUR-ARO23PG-B02",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23PG-T046",
+"test": 46,
+"sayfalar": [
+100,
+101
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T047",
+"test": 47,
+"sayfalar": [
+102,
+103
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T048",
+"test": 48,
+"sayfalar": [
+104,
+105
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T049",
+"test": 49,
+"sayfalar": [
+106,
+107
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T050",
+"test": 50,
+"sayfalar": [
+108,
+109
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T051",
+"test": 51,
+"sayfalar": [
+110,
+111
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T052",
+"test": 52,
+"sayfalar": [
+112,
+113
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T053",
+"test": 53,
+"sayfalar": [
+114,
+115
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T054",
+"test": 54,
+"sayfalar": [
+116,
+117
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T055",
+"test": 55,
+"sayfalar": [
+118,
+119
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T056",
+"test": 56,
+"sayfalar": [
+120,
+121
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T057",
+"test": 57,
+"sayfalar": [
+122,
+123
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T058",
+"test": 58,
+"sayfalar": [
+124,
+125
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T059",
+"test": 59,
+"sayfalar": [
+126,
+127
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T060",
+"test": 60,
+"sayfalar": [
+128,
+129
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T061",
+"test": 61,
+"sayfalar": [
+130,
+131
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T062",
+"test": 62,
+"sayfalar": [
+132,
+133
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T063",
+"test": 63,
+"sayfalar": [
+134,
+135
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T064",
+"test": 64,
+"sayfalar": [
+136,
+137
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T065",
+"test": 65,
+"sayfalar": [
+138,
+139
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T066",
+"test": 66,
+"sayfalar": [
+140,
+141
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T067",
+"test": 67,
+"sayfalar": [
+142,
+143
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T068",
+"test": 68,
+"sayfalar": [
+144,
+145
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T069",
+"test": 69,
+"sayfalar": [
+146,
+147
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T070",
+"test": 70,
+"sayfalar": [
+148,
+149
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T071",
+"test": 71,
+"sayfalar": [
+150,
+151
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T072",
+"test": 72,
+"sayfalar": [
+152,
+153
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T073",
+"test": 73,
+"sayfalar": [
+154,
+155
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T074",
+"test": 74,
+"sayfalar": [
+156,
+157,
+158
+],
+"bant": "Ana D\u00fc\u015f\u00fcnce - Konu",
+"konu": "TUR-ARO23PG-B03-K01",
+"bolum": "TUR-ARO23PG-B03",
+"soru_sayisi": 12
+},
+{
+"birim": "ARO23PG-T075",
+"test": 75,
+"sayfalar": [
+160,
+161
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T076",
+"test": 76,
+"sayfalar": [
+162,
+163
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T077",
+"test": 77,
+"sayfalar": [
+164,
+165
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T078",
+"test": 78,
+"sayfalar": [
+166,
+167
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T079",
+"test": 79,
+"sayfalar": [
+168,
+169
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T080",
+"test": 80,
+"sayfalar": [
+170,
+171
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T081",
+"test": 81,
+"sayfalar": [
+172,
+173
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T082",
+"test": 82,
+"sayfalar": [
+174,
+175
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T083",
+"test": 83,
+"sayfalar": [
+176,
+177
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T084",
+"test": 84,
+"sayfalar": [
+178,
+179
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T085",
+"test": 85,
+"sayfalar": [
+180,
+181
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T086",
+"test": 86,
+"sayfalar": [
+182,
+183
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T087",
+"test": 87,
+"sayfalar": [
+184,
+185
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T088",
+"test": 88,
+"sayfalar": [
+186,
+187
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T089",
+"test": 89,
+"sayfalar": [
+188,
+189
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T090",
+"test": 90,
+"sayfalar": [
+190,
+191
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T091",
+"test": 91,
+"sayfalar": [
+192,
+193
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T092",
+"test": 92,
+"sayfalar": [
+194,
+195
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T093",
+"test": 93,
+"sayfalar": [
+196,
+197
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T094",
+"test": 94,
+"sayfalar": [
+198,
+199
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T095",
+"test": 95,
+"sayfalar": [
+200,
+201
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T096",
+"test": 96,
+"sayfalar": [
+202,
+203
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T097",
+"test": 97,
+"sayfalar": [
+204,
+205
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T098",
+"test": 98,
+"sayfalar": [
+206,
+207,
+208
+],
+"bant": "Paragrafta Yard\u0131mc\u0131 D\u00fc\u015f\u00fcnce",
+"konu": "TUR-ARO23PG-B04-K01",
+"bolum": "TUR-ARO23PG-B04",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23PG-T099",
+"test": 99,
+"sayfalar": [
+210,
+211
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T100",
+"test": 100,
+"sayfalar": [
+212,
+213
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T101",
+"test": 101,
+"sayfalar": [
+214,
+215
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T102",
+"test": 102,
+"sayfalar": [
+216,
+217
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T103",
+"test": 103,
+"sayfalar": [
+218,
+219
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T104",
+"test": 104,
+"sayfalar": [
+220,
+221
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T105",
+"test": 105,
+"sayfalar": [
+222,
+223
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T106",
+"test": 106,
+"sayfalar": [
+224,
+225
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T107",
+"test": 107,
+"sayfalar": [
+226,
+227
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T108",
+"test": 108,
+"sayfalar": [
+228,
+229
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T109",
+"test": 109,
+"sayfalar": [
+230,
+231
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T110",
+"test": 110,
+"sayfalar": [
+232,
+233
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T111",
+"test": 111,
+"sayfalar": [
+234,
+235
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T112",
+"test": 112,
+"sayfalar": [
+236,
+237
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T113",
+"test": 113,
+"sayfalar": [
+238,
+239
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T114",
+"test": 114,
+"sayfalar": [
+240,
+241
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T115",
+"test": 115,
+"sayfalar": [
+242,
+243
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T116",
+"test": 116,
+"sayfalar": [
+244,
+245
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T117",
+"test": 117,
+"sayfalar": [
+246,
+247
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23PG-T118",
+"test": 118,
+"sayfalar": [
+248,
+249
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T119",
+"test": 119,
+"sayfalar": [
+250,
+251
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T120",
+"test": 120,
+"sayfalar": [
+252,
+253
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T121",
+"test": 121,
+"sayfalar": [
+254,
+255
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "ARO23PG-T122",
+"test": 122,
+"sayfalar": [
+256,
+257,
+258
+],
+"bant": "Paragrafta Yap\u0131",
+"konu": "TUR-ARO23PG-B05-K01",
+"bolum": "TUR-ARO23PG-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "ARO23PG-T123",
+"test": 123,
+"sayfalar": [
+260,
+261
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23PG-T124",
+"test": 124,
+"sayfalar": [
+262,
+263
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T125",
+"test": 125,
+"sayfalar": [
+264,
+265
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T126",
+"test": 126,
+"sayfalar": [
+266,
+267
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T127",
+"test": 127,
+"sayfalar": [
+268,
+269
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23PG-T128",
+"test": 128,
+"sayfalar": [
+270,
+271
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T129",
+"test": 129,
+"sayfalar": [
+272,
+273
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T130",
+"test": 130,
+"sayfalar": [
+274,
+275
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23PG-T131",
+"test": 131,
+"sayfalar": [
+276,
+277
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23PG-T132",
+"test": 132,
+"sayfalar": [
+278,
+279
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T133",
+"test": 133,
+"sayfalar": [
+280,
+281
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 7
+},
+{
+"birim": "ARO23PG-T134",
+"test": 134,
+"sayfalar": [
+282,
+283
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T135",
+"test": 135,
+"sayfalar": [
+284,
+285
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 6
+},
+{
+"birim": "ARO23PG-T136",
+"test": 136,
+"sayfalar": [
+286,
+287
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T137",
+"test": 137,
+"sayfalar": [
+288,
+289
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T138",
+"test": 138,
+"sayfalar": [
+290,
+291
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T139",
+"test": 139,
+"sayfalar": [
+292,
+293
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 5
+},
+{
+"birim": "ARO23PG-T140",
+"test": 140,
+"sayfalar": [
+294,
+295
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 4
+},
+{
+"birim": "ARO23PG-T141",
+"test": 141,
+"sayfalar": [
+296,
+297
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 4
+},
+{
+"birim": "ARO23PG-T142",
+"test": 142,
+"sayfalar": [
+298,
+299,
+300,
+301,
+302
+],
+"bant": "Paragrafta Yeni Nesil ve \u00c7oklu Sorular",
+"konu": "TUR-ARO23PG-B06-K01",
+"bolum": "TUR-ARO23PG-B06",
+"soru_sayisi": 13
+}
+]
+}

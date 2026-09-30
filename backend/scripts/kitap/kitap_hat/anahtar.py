@@ -412,23 +412,9 @@ def baski_numara(p: ModuleType, test: int, hucreler: list) -> list:
     return out
 
 
-def dogrula(p: ModuleType, ham: dict[str, Any]) -> list[str]:
-    hata = []
-    a = {
-        t["test"]: baski_numara(p, t["test"], t["hucreler"])
-        for t in ham["okuma_a"]["testler"]
-    }
-    b, tek_hata = _ikinci_okuma(ham, a, p)
-    hata += tek_hata
-    if set(a) != set(b):
-        hata.append("A ve B test kumeleri farkli")
-    for t in sorted(a):
-        if a[t] != b.get(t):
-            hata.append(f"test {t}: A != B")
-        if [n for n, _ in a[t]] != list(range(1, len(a[t]) + 1)):
-            hata.append(f"test {t}: numaralar 1..N degil")
-        if any(h not in HARFLER for _, h in a[t]):
-            hata.append(f"test {t}: A-E disi harf")
+def _glif_kapilari(p: ModuleType, ham: dict[str, Any], a: dict[int, list]) -> list[str]:
+    """Glif kanali kapilari: uyumsuz hucre goz teyidi, kapsam, goz_c."""
+    hata: list[str] = []
     glif_disi = set(ham["glif"]["kapsam_disi_test"])
     teyit = ham["glif"].get("goz_teyit", {})
     uyumsuz = {f"T{u[0][0]:03d}#{u[0][1]}" for u in ham["glif"]["uyumsuz"]}
@@ -450,6 +436,32 @@ def dogrula(p: ModuleType, ham: dict[str, Any]) -> list[str]:
     for t, s in goz.items():
         if s != "".join(h for _, h in a[t]):
             hata.append(f"test {t}: goz_c != okuma")
+    return hata
+
+
+def dogrula(p: ModuleType, ham: dict[str, Any]) -> list[str]:
+    hata = []
+    a = {
+        t["test"]: baski_numara(p, t["test"], t["hucreler"])
+        for t in ham["okuma_a"]["testler"]
+    }
+    b, tek_hata = _ikinci_okuma(ham, a, p)
+    hata += tek_hata
+    if set(a) != set(b):
+        hata.append("A ve B test kumeleri farkli")
+    for t in sorted(a):
+        if a[t] != b.get(t):
+            hata.append(f"test {t}: A != B")
+        if [n for n, _ in a[t]] != list(range(1, len(a[t]) + 1)):
+            hata.append(f"test {t}: numaralar 1..N degil")
+        if any(h not in HARFLER for _, h in a[t]):
+            hata.append(f"test {t}: A-E disi harf")
+    if getattr(p, "GLIF_KAPISI", True):
+        hata += _glif_kapilari(p, ham, a)
+    elif ham["okuma_b"] is None:
+        # Glif kanali bu duzende bolutlenemiyor (kitap sonu tablosu, 1x'te
+        # 7 px yazi): dogrulama IKI bagimsiz okuma (A/B) ile yapilir.
+        hata.append("GLIF_KAPISI False: ikinci bagimsiz okuma (okuma_B) sart")
     return hata
 
 
