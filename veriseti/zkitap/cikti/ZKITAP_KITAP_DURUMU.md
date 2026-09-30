@@ -184,7 +184,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | BILGI SARMAL 2025 TYT Sosyal Bilimler Video Ders Kitabi | ISLENMEDI | `Bilgi Sarmal Tyt Sosyal Bilimler Video Ders Kitabi 2025` | 208 | - | yok | - | - | ISLENEBILIR |
 | BILGI SARMAL 2025 TYT Turkce Video Ders Kitabi | ISLENMEDI | `Bilgi Sarmal Tyt Turkce Video Dets Kitabi 2025` | 256 | - | eski hat 23 / aktif 23 | - | - | ISLENEBILIR |
 | BILGI SARMAL 2025 TYT-AYT Geometri Soru Bankasi | ISLENMEDI | `Bilgi Sarmali-2025-Tyt Ayt-Geometri Soru Bankasi` | 400 | - | yok | 2022-2023 BS TYT-AYT Geometri Soru Bankasi %29 | - | AILE: yalniz biri islenmeli (2022-2023 BS TYT-AYT Geometri Soru Bankasi %29) |
-| BS 2024 AYT Fizik SB | ISLENMEDI | `Bilgi Sarmali Ayt 2024 Fizik Soru Bankasi` | 352 | - | yok | - | - | ISLENEBILIR |
+| BS 2024 AYT Fizik SB | **ANAHTAR DUZEYI** | `Bilgi Sarmali Ayt 2024 Fizik Soru Bankasi` | 352 | - | yok | - | - | BS24AF: 165 test, 1426 soru; cevap anahtari + konu haritasi + kirpim kutusu hazir (kapilar temiz). Metin adimi yayinci yazili iznini bekliyor |
 | BS 2024 AYT Kimya SB | ISLENMEDI | `Bilgi Sarmal 2024 Ayt Kimya Sopru Bankasi` | 368 | - | eski hat 282 / aktif 282 | - | - | ISLENEBILIR |
 | BS 2024 AYT Logaritma Diziler | ISLENMEDI | `Bilgi Sarmali-2024-Ayt-Logaritmik Diziler` | 144 | `Bilgi Sarmali-2024-Ayt-Logaritma Diziler` | eski hat 1 / aktif 1 | - | - | ISLENEBILIR |
 | BS 2024 AYT Matematik Soru Bankasi | ISLENMEDI | `Bilgi Sarmali-2024-Ayt-Matematik Soru Bankasi` | 425 | - | eski hat 12 / aktif 12 | 2023-2024 BS AYT Matematik Soru Bankasi %62; 2022-2023 BS AYT Matematik Soru Bankasi %27 | - | AILE: yalniz biri islenmeli (2023-2024 BS AYT Matematik Soru Bankasi %62; 2022-2023 BS AYT Matematik Soru Bankasi %27) |
@@ -543,7 +543,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 119 | `Bilgi Sarmal Tyt Turkce Video Dets Kitabi 2025` | 256 | BILGI SARMAL 2025 TYT Turkce Video Ders Kitabi |  | ISLENMEDI |
 | 120 | `Bilgi Sarmal Tyt Turkce Soru Bankasi 2024` | 336 | BILGI SARMAL 2024 TYT Turkce Soru Bankasi |  | ISLENMEDI |
 | 121 | `Bilgi Sarmali Ayt Tarih Soru Bankasi 2021 2022` | 288 | 2021-2022 BS AYT Tarih Soru Bankasi |  | ISLENMEDI |
-| 122 | `Bilgi Sarmali Ayt 2024 Fizik Soru Bankasi` | 352 | BS 2024 AYT Fizik SB |  | ISLENMEDI |
+| 122 | `Bilgi Sarmali Ayt 2024 Fizik Soru Bankasi` | 352 | BS 2024 AYT Fizik SB |  | ANAHTAR DUZEYI |
 | 123 | `Bilgi Sarmali Tyt 2024 Fizik Soru Bankasi` | 336 | BILGI SARMAL 2024 TYT Fizik Soru Bankasi |  | ANAHTAR DUZEYI |
 | 124 | `Bilgi Sarmali-2022-2023-Tyt Ayt-Geometri Soru Bankasi` | 402 | 2022-2023 BS TYT-AYT Geometri Soru Bankasi |  | ISLENMEDI |
 | 125 | `Bilgi Sarmali-2022-2023-Tyt-Matematik Soru Bankasi` | 440 | 2022-2023 BS AYT Matematik Soru Bankasi | ! | ISLENMEDI |
