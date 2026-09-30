@@ -87,6 +87,20 @@ def parite(p: ModuleType, n: int) -> int:
     return (n + (n in getattr(p, "PARITE_TERS", ()))) % 2
 
 
+def olcum_sinir(p: ModuleType, d: int, s: str, x0: int, x1: int) -> tuple[int, int]:
+    """Sutun ici murekkep olcumunde kullanilan DAR aralik.
+
+    SUTUN_OLCUM_PAY {parite: {sutun: (sol_pay, sag_pay)}}: sutunlar arasi dikey
+    ayrac / sirt yazisi sutun araligina giriyorsa (BS24FZ: x 368 / 373, 600
+    satir boyunca koyu) her satir 'murekkepli' gorunur; sorular arasi bos bant
+    hic bulunamaz (kutu ustleri tavana coker) ve her kutunun alt seridinde
+    murekkep sayilir (kirp 'kesik' kapisi bos yere doner). Kutunun kendi x
+    sinirlari degismez; yalniz OLCUM daraltilir."""
+    pay = getattr(p, "SUTUN_OLCUM_PAY", {})
+    sol, sag = pay.get(parite(p, d), {}).get(s, (0, 0))
+    return x0 + int(sol), x1 - int(sag)
+
+
 def birim_kodu(p: ModuleType, test: int) -> str:
     return f"{p.KOD}-T{test:03d}"
 

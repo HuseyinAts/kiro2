@@ -93,6 +93,58 @@ def testleri_bul(
     return testler
 
 
+def _capalar_numara(
+    p: ModuleType,
+    a: np.ndarray,
+    n: int,
+    glif: list[list[int]],
+    anahtar: list[int] | None,
+) -> tuple[list[dict], list[tuple[list[int], str]]]:
+    """NUMARA-ONCE mod (CAPA_MODU = 'numara').
+
+    Simge tek basina ayirt edici degilse (Bilgi Sarmal: soru, kaynak rozetli
+    soru ve 'AKILLI NOT' kutusu AYNI simgeyi tasir) capa BASILI NUMARADIR:
+    profil `capa_numaralari(a, n)` ile sutun / y / x listesini verir. Simge
+    yalniz DOGRULAMA: her capanin ustunde ayni sutunda bir simge olmali;
+    hicbir capaya baglanmayan simge bilgi kutusudur (disari: 'kutu_simgesi').
+    """
+    out: list[dict] = []
+    disari: list[tuple[list[int], str]] = []
+    ham = list(p.capa_numaralari(a, n))
+    if anahtar:
+        ham = [c for c in ham if c["y"] < anahtar[0] - p.SERIT_SIMGE_PAY]
+    simge_x = p.SIMGE_X[ortak.parite(p, n)]
+    pay0, pay1 = getattr(p, "SIMGE_PAY", (20, 200))
+    kalan = list(glif)
+    for c in sorted(ham, key=lambda c: (c["sutun"], c["y"])):
+        aday = [
+            g
+            for g in kalan
+            if abs(g[1] - simge_x[c["sutun"]]) <= p.SIMGE_TOLERANS
+            and -pay0 <= c["y"] - g[0] <= pay1
+        ]
+        s = max(aday) if aday else None
+        if s is not None:
+            kalan.remove(s)
+        out.append(
+            {
+                "sutun": c["sutun"],
+                "y": int(c["y"]),
+                "x": int(c["x"]) if c.get("x") is not None else None,
+                "simge": [int(s[0]), int(s[1])] if s else None,
+                **({"tur": c["tur"]} if c.get("tur") else {}),
+                **({} if s else {"simgesiz": True}),
+            }
+        )
+    for g in kalan:
+        if anahtar and g[0] >= anahtar[0] - p.SERIT_SIMGE_PAY:
+            disari.append(([g[0], g[1]], "serit_ustu"))
+            continue
+        disari.append(([g[0], g[1]], "kutu_simgesi (numara/rozet yok)"))
+    out.sort(key=lambda c: (c["sutun"], c["y"]))
+    return out, disari
+
+
 def capalar(
     p: ModuleType,
     a: np.ndarray,
@@ -104,6 +156,8 @@ def capalar(
     ([y, x], neden). Neden, elenme noktasini ve olculen degeri tasir
     (serit_ustu / sutun_disi / blob_yok / dx_disi / gecerli_red) -- profil
     kalibrasyonunda hangi sabitin oynayacagini soyler."""
+    if getattr(p, "CAPA_MODU", "simge") == "numara":
+        return _capalar_numara(p, a, n, glif, anahtar)
     # Basili numara rengi profile gore (varsayilan kirmizi; MOZ duzeni mavi).
     kir = getattr(p, "numara_maskesi", ortak.kirmizi)(a)
     out: list[dict] = []
@@ -280,14 +334,28 @@ def kapilar(
                 hata.append(
                     f"test {t['test']}: capa {len(t['capalar'])} != anahtar {hucre.get(t['test'])}"
                 )
+    kontrol = (
+        _capa_hatasi_numara
+        if getattr(p, "CAPA_MODU", "simge") == "numara"
+        else _capa_hatasi
+    )
     for t in veri["testler"]:
         if not t["capalar"]:
             hata.append(f"test {t['test']}: capa yok")
         for c in t["capalar"]:
-            h = _capa_hatasi(p, c)
+            h = kontrol(p, c)
             if h:
                 hata.append(f"test {t['test']}: {h}")
     return hata
+
+
+def _capa_hatasi_numara(p: ModuleType, c: dict[str, Any]) -> str | None:
+    """Numara-once modda capa basili numaradir; simge yalniz dogrulama."""
+    if c.get("simgesiz") and (c["dosya"], c["sutun"], c["y"]) not in set(
+        getattr(p, "SIMGESIZ_CAPA", ())
+    ):
+        return f"simgesiz capa (profilde yok): {c}"
+    return None
 
 
 def _capa_hatasi(p: ModuleType, c: dict[str, Any]) -> str | None:

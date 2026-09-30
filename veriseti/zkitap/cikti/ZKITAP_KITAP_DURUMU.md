@@ -130,6 +130,12 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | APOTEMI 2024 AYT Kimya Soru Bankasi | ISLENMEDI | `Apotemi 2024 Ayt Kimya Soru Bankasi` | 268 | - | eski hat 262 / aktif 262 | - | - | SAHIP KARARI: anahtar sayfasi (dosya 267) bos gri; cevaplar her soruda basili pembe isaret (ogretmen baskisi: sik solunda harf + daire) -- yeni kanal gerekir -- kesif 29 Eyl 2026 |
 | Apotemi 2024 AYT Edebiyat Konu Ozeti | ISLENMEDI | `Apotemi Ayt Edebiyat Konu Ozeti` | 208 | - | yok | - | - | ISLENEBILIR |
 
+> **Aromat / Apotemi (30 Eyl 2026, sahip karari):** bu iki yayinevinin kalan
+> kitaplari ISLENMEZ. Islenmis olanlar (APO19FZ, APO19KM, ARO23AF tam;
+> ARO23TF, ARO23MT, ARO23AM, ARO23PG anahtar duzeyi) oldugu gibi kalir;
+> anahtar duzeyindekilerin metin adimi yayinci yazili iznini bekler.
+> Kuyruk: diger yayinevlerinden 105 ISLENEBILIR kitap.
+
 ### AROMAT (13 kitap)
 
 | kitap (sekme basligi) | durum | klasor | png | ayni icerik | DB | ortaklik | kalite | oneri |
@@ -165,7 +171,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 2023-2024 BS TYT Tarih Soru Bankasi | ISLENMEDI | `Bilgi Sarmal Tyt Tarih Soru Bankasi 2023 2024` | 272 | - | eski hat 4 / aktif 4 | BILGI SARMAL 2024 TYT Tarih Soru Bankasi %90; 2020-2021 BS TYT Tarih Soru Bankasi %60 | 70 sayfa yuklenmemis (gri) | AILE: yalniz biri islenmeli (BILGI SARMAL 2024 TYT Tarih Soru Bankasi %90; 2020-2021 BS TYT Tarih Soru Bankasi %60) + eksik (gri) sayfalar yeniden yakalanmali |
 | 2023-2024 BS TYT-AYT Dil Bilgisi Soru Bankasi | ISLENMEDI | `Bilgi Sarmal 2023 2024 Tyt Ayt Dil Bilgisi Soru Bankasi 2023 2024` | 320 | `Bilgi Sarmal Tyt Ayt Dil Bilgisi Soru Bankasi 2022 2023`; `Bilgi Sarmal Tyt Ayt Dil Bilgisi Soru Bankasi 2024`; `Bilgi Sarmal Tyt Ayt Dilbilgisi Soru Bankasi` | eski hat 22 / aktif 22 | - | - | ISLENEBILIR |
 | BILGI SARMAL 2023 Yildizlar Yarisiyor Edebiyat Sosyal Bilimler Brans Denemeleri | ISLENMEDI | `Bilgi Sarmal Turk Dili ve Edebiyati Sosyal Bilimler 1` | 128 | - | eski hat 1 / aktif 1 | - | - | ISLENEBILIR |
-| BILGI SARMAL 2024 TYT Fizik Soru Bankasi | ISLENMEDI | `Bilgi Sarmali Tyt 2024 Fizik Soru Bankasi` | 336 | - | yok | - | - | ISLENEBILIR |
+| BILGI SARMAL 2024 TYT Fizik Soru Bankasi | **ANAHTAR DUZEYI** | `Bilgi Sarmali Tyt 2024 Fizik Soru Bankasi` | 336 | - | yok | - | - | BS24FZ: 161 test, 1330 soru; cevap anahtari + konu haritasi + kirpim kutusu hazir (kapilar temiz). Metin adimi yayinci yazili iznini bekliyor |
 | BILGI SARMAL 2024 TYT Kimya Soru Bankasi | ISLENMEDI | `Bilgi Sarmal 2024 Tyt Kimya Soru Bankasi` | 304 | - | eski hat 247 / aktif 247 | - | - | ISLENEBILIR |
 | BILGI SARMAL 2024 TYT Tarih Soru Bankasi | ISLENMEDI | `Bilgi Sarmal Tyt Tarih Soru Bankasi 2024` | 272 | - | eski hat 18 / aktif 18 | 2023-2024 BS TYT Tarih Soru Bankasi %90; 2020-2021 BS TYT Tarih Soru Bankasi %42 | - | AILE: yalniz biri islenmeli (2023-2024 BS TYT Tarih Soru Bankasi %90; 2020-2021 BS TYT Tarih Soru Bankasi %42) |
 | BILGI SARMAL 2024 TYT Turkce Soru Bankasi | ISLENMEDI | `Bilgi Sarmal Tyt Turkce Soru Bankasi 2024` | 336 | - | eski hat 20 / aktif 20 | 2022-2023 BS TYT Turkce Soru Bankasi %62 | - | SAHIP KARARI: 2022-2023 BS TYT Turkce Soru Bankasi ile en az %62 ortak -> atla ya da yalniz farki isle |
@@ -538,7 +544,7 @@ Sutunlar: **durum** (ISLENDI = modern ithal / HAZIR = ithal bekliyor / ISLENMEDI
 | 120 | `Bilgi Sarmal Tyt Turkce Soru Bankasi 2024` | 336 | BILGI SARMAL 2024 TYT Turkce Soru Bankasi |  | ISLENMEDI |
 | 121 | `Bilgi Sarmali Ayt Tarih Soru Bankasi 2021 2022` | 288 | 2021-2022 BS AYT Tarih Soru Bankasi |  | ISLENMEDI |
 | 122 | `Bilgi Sarmali Ayt 2024 Fizik Soru Bankasi` | 352 | BS 2024 AYT Fizik SB |  | ISLENMEDI |
-| 123 | `Bilgi Sarmali Tyt 2024 Fizik Soru Bankasi` | 336 | BILGI SARMAL 2024 TYT Fizik Soru Bankasi |  | ISLENMEDI |
+| 123 | `Bilgi Sarmali Tyt 2024 Fizik Soru Bankasi` | 336 | BILGI SARMAL 2024 TYT Fizik Soru Bankasi |  | ANAHTAR DUZEYI |
 | 124 | `Bilgi Sarmali-2022-2023-Tyt Ayt-Geometri Soru Bankasi` | 402 | 2022-2023 BS TYT-AYT Geometri Soru Bankasi |  | ISLENMEDI |
 | 125 | `Bilgi Sarmali-2022-2023-Tyt-Matematik Soru Bankasi` | 440 | 2022-2023 BS AYT Matematik Soru Bankasi | ! | ISLENMEDI |
 | 126 | `Bilgi Sarmali-2022-2023-Tyt-Problemler Soru Bankasi` | 176 | 2022-2023 BS TYT Problemler Soru Bankasi |  | ISLENMEDI |

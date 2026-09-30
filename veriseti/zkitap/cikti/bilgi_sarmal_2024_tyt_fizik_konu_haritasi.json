@@ -1,0 +1,2599 @@
+{
+"kaynak": "BILGI SARMAL 2024 TYT Fizik Soru Bankasi",
+"arac": "scripts/kitap/kitap_hat/harita.py",
+"nereden": "icindekiler: 5 bolum, 63 konu (s4-s5)",
+"bolumler": [
+{
+"kod": "FIZ-BS24FZ-B01",
+"no": 1,
+"ad": "1. B\u00d6L\u00dcM F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e, MADDE B\u0130LG\u0130S\u0130"
+},
+{
+"kod": "FIZ-BS24FZ-B02",
+"no": 2,
+"ad": "2. B\u00d6L\u00dcM HAREKET - KUVVET - \u0130\u015e G\u00dc\u00c7 - ENERJ\u0130"
+},
+{
+"kod": "FIZ-BS24FZ-B03",
+"no": 3,
+"ad": "3. B\u00d6L\u00dcM ELEKTR\u0130K VE MANYET\u0130ZMA"
+},
+{
+"kod": "FIZ-BS24FZ-B04",
+"no": 4,
+"ad": "4. B\u00d6L\u00dcM OPT\u0130K"
+},
+{
+"kod": "FIZ-BS24FZ-B05",
+"no": 5,
+"ad": "5. B\u00d6L\u00dcM DALGALAR"
+}
+],
+"konular": [
+{
+"kod": "FIZ-BS24FZ-B01-K01",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Fizik Bilimine Giri\u015f",
+"icindekiler_adi": "Fizik Bilimine Giri\u015f",
+"sayfalar": [
+7,
+14
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K02",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "\u00d6zk\u00fctle",
+"icindekiler_adi": "\u00d6zk\u00fctle",
+"sayfalar": [
+15,
+22
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K03",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Dayan\u0131kl\u0131l\u0131k, Adezyon, Kohezyon",
+"icindekiler_adi": "Dayan\u0131kl\u0131l\u0131k, Adezyon, Kohezyon",
+"sayfalar": [
+23,
+30
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K04",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "\u00d6SYM Tipi-1",
+"icindekiler_adi": "\u00d6SYM Tipi-1",
+"sayfalar": [
+31,
+32
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K05",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Kat\u0131 Bas\u0131nc\u0131",
+"icindekiler_adi": "Kat\u0131 Bas\u0131nc\u0131",
+"sayfalar": [
+33,
+40
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K06",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "S\u0131v\u0131 Bas\u0131nc\u0131",
+"icindekiler_adi": "S\u0131v\u0131 Bas\u0131nc\u0131",
+"sayfalar": [
+41,
+48
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K07",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Gaz ve Ak\u0131\u015fkan Bas\u0131nc\u0131",
+"icindekiler_adi": "Gaz ve Ak\u0131\u015fkan Bas\u0131nc\u0131",
+"sayfalar": [
+49,
+56
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K08",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "\u00d6SYM Tipi-2",
+"icindekiler_adi": "\u00d6SYM Tipi-2",
+"sayfalar": [
+57,
+58
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K09",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "S\u0131v\u0131lar\u0131n Kald\u0131rma Kuvveti",
+"icindekiler_adi": "S\u0131v\u0131lar\u0131n Kald\u0131rma Kuvveti",
+"sayfalar": [
+59,
+66
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K10",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Sarmal Test-1",
+"icindekiler_adi": "Sarmal Test-1",
+"sayfalar": [
+67,
+68
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K11",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "\u00d6SYM Tipi-3",
+"icindekiler_adi": "\u00d6SYM Tipi-3",
+"sayfalar": [
+69,
+70
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K12",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Is\u0131 S\u0131cakl\u0131k",
+"icindekiler_adi": "Is\u0131 S\u0131cakl\u0131k",
+"sayfalar": [
+71,
+78
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K13",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Genle\u015fme, Is\u0131 \u0130letimi",
+"icindekiler_adi": "Genle\u015fme, Is\u0131 \u0130letimi",
+"sayfalar": [
+79,
+86
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K14",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Sarmal Test-2",
+"icindekiler_adi": "Sarmal Test-2",
+"sayfalar": [
+87,
+88
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K15",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "\u00d6SYM Tipi-4",
+"icindekiler_adi": "\u00d6SYM Tipi-4",
+"sayfalar": [
+89,
+90
+]
+},
+{
+"kod": "FIZ-BS24FZ-B01-K16",
+"bolum": "FIZ-BS24FZ-B01",
+"ad": "Sim\u00fclasyon Testi",
+"icindekiler_adi": "Sim\u00fclasyon Testi",
+"sayfalar": [
+91,
+94
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "Hareket",
+"icindekiler_adi": "Hareket",
+"sayfalar": [
+95,
+106
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K02",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "Sarmal Test-3",
+"icindekiler_adi": "Sarmal Test-3",
+"sayfalar": [
+107,
+108
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K03",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "\u00d6SYM Tipi-1",
+"icindekiler_adi": "\u00d6SYM Tipi-1",
+"sayfalar": [
+109,
+110
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K04",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "Kuvvet ve \u00d6zellikleri",
+"icindekiler_adi": "Kuvvet ve \u00d6zellikleri",
+"sayfalar": [
+111,
+118
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K05",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "Dinamik",
+"icindekiler_adi": "Dinamik",
+"sayfalar": [
+119,
+126
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K06",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "\u00d6SYM Tipi-2",
+"icindekiler_adi": "\u00d6SYM Tipi-2",
+"sayfalar": [
+127,
+128
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K07",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "\u0130\u015f G\u00fc\u00e7 Enerji",
+"icindekiler_adi": "\u0130\u015f G\u00fc\u00e7 Enerji",
+"sayfalar": [
+129,
+138
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K08",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "Sarmal Test-4",
+"icindekiler_adi": "Sarmal Test-4",
+"sayfalar": [
+139,
+140
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K09",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "\u00d6SYM Tipi-3",
+"icindekiler_adi": "\u00d6SYM Tipi-3",
+"sayfalar": [
+141,
+142
+]
+},
+{
+"kod": "FIZ-BS24FZ-B02-K10",
+"bolum": "FIZ-BS24FZ-B02",
+"ad": "Sim\u00fclasyon Testi",
+"icindekiler_adi": "Sim\u00fclasyon Testi",
+"sayfalar": [
+143,
+146
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K01",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Elektrik Y\u00fckleri",
+"icindekiler_adi": "Elektrik Y\u00fckleri",
+"sayfalar": [
+147,
+152
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K02",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Elektrostatik",
+"icindekiler_adi": "Elektrostatik",
+"sayfalar": [
+153,
+160
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K03",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Coulomb Kuvveti ve Elektrik Alan",
+"icindekiler_adi": "Coulomb Kuvveti ve Elektrik Alan",
+"sayfalar": [
+161,
+166
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K04",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Sarmal Test-5",
+"icindekiler_adi": "Sarmal Test-5",
+"sayfalar": [
+167,
+168
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K05",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "\u00d6SYM Tipi-1",
+"icindekiler_adi": "\u00d6SYM Tipi-1",
+"sayfalar": [
+169,
+170
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Ohm Yasas\u0131",
+"icindekiler_adi": "Ohm Yasas\u0131",
+"sayfalar": [
+171,
+182
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K07",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Piller",
+"icindekiler_adi": "Piller",
+"sayfalar": [
+183,
+186
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K08",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Elektriksel G\u00fc\u00e7 ve Enerji",
+"icindekiler_adi": "Elektriksel G\u00fc\u00e7 ve Enerji",
+"sayfalar": [
+187,
+192
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K09",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Lamba Parlakl\u0131\u011f\u0131",
+"icindekiler_adi": "Lamba Parlakl\u0131\u011f\u0131",
+"sayfalar": [
+193,
+198
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K10",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "\u00d6SYM Tipi-2",
+"icindekiler_adi": "\u00d6SYM Tipi-2",
+"sayfalar": [
+199,
+200
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K11",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Manyetizma",
+"icindekiler_adi": "Manyetizma",
+"sayfalar": [
+201,
+208
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K12",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Sarmal Test-6",
+"icindekiler_adi": "Sarmal Test-6",
+"sayfalar": [
+209,
+210
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K13",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "\u00d6SYM Tipi-3",
+"icindekiler_adi": "\u00d6SYM Tipi-3",
+"sayfalar": [
+211,
+212
+]
+},
+{
+"kod": "FIZ-BS24FZ-B03-K14",
+"bolum": "FIZ-BS24FZ-B03",
+"ad": "Sim\u00fclasyon Testi",
+"icindekiler_adi": "Sim\u00fclasyon Testi",
+"sayfalar": [
+213,
+216
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K01",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Ayd\u0131nlanma",
+"icindekiler_adi": "Ayd\u0131nlanma",
+"sayfalar": [
+217,
+222
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K02",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "G\u00f6lge",
+"icindekiler_adi": "G\u00f6lge",
+"sayfalar": [
+223,
+228
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K03",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "\u00d6SYM Tipi-1",
+"icindekiler_adi": "\u00d6SYM Tipi-1",
+"sayfalar": [
+229,
+230
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K04",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Yans\u0131ma ve D\u00fczlem Ayna",
+"icindekiler_adi": "Yans\u0131ma ve D\u00fczlem Ayna",
+"sayfalar": [
+231,
+238
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K05",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Sarmal Test-7",
+"icindekiler_adi": "Sarmal Test-7",
+"sayfalar": [
+239,
+240
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K06",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "K\u00fcresel Ayna",
+"icindekiler_adi": "K\u00fcresel Ayna",
+"sayfalar": [
+241,
+248
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K07",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "K\u0131r\u0131lma",
+"icindekiler_adi": "K\u0131r\u0131lma",
+"sayfalar": [
+249,
+256
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K08",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Mercekler",
+"icindekiler_adi": "Mercekler",
+"sayfalar": [
+257,
+264
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K09",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "\u00d6SYM Tipi-2",
+"icindekiler_adi": "\u00d6SYM Tipi-2",
+"sayfalar": [
+265,
+266
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K10",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Prizma",
+"icindekiler_adi": "Prizma",
+"sayfalar": [
+267,
+274
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K11",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Renk",
+"icindekiler_adi": "Renk",
+"sayfalar": [
+275,
+282
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K12",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "\u00d6SYM Tipi-3",
+"icindekiler_adi": "\u00d6SYM Tipi-3",
+"sayfalar": [
+283,
+284
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K13",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Sarmal Test-8",
+"icindekiler_adi": "Sarmal Test-8",
+"sayfalar": [
+285,
+286
+]
+},
+{
+"kod": "FIZ-BS24FZ-B04-K14",
+"bolum": "FIZ-BS24FZ-B04",
+"ad": "Sim\u00fclasyon Testi",
+"icindekiler_adi": "Sim\u00fclasyon Testi",
+"sayfalar": [
+287,
+290
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K01",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Dalgalar ve Genel \u00d6zellikleri",
+"icindekiler_adi": "Dalgalar ve Genel \u00d6zellikleri",
+"sayfalar": [
+291,
+296
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K02",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Yay Dalgalar\u0131",
+"icindekiler_adi": "Yay Dalgalar\u0131",
+"sayfalar": [
+297,
+304
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K03",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Sarmal Test-9",
+"icindekiler_adi": "Sarmal Test-9",
+"sayfalar": [
+305,
+306
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K04",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Su Dalgalar\u0131",
+"icindekiler_adi": "Su Dalgalar\u0131",
+"sayfalar": [
+307,
+314
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K05",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Deprem ve Ses Dalgalar\u0131",
+"icindekiler_adi": "Deprem ve Ses Dalgalar\u0131",
+"sayfalar": [
+315,
+322
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K06",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Sarmal Test-10",
+"icindekiler_adi": "Sarmal Test-10",
+"sayfalar": [
+323,
+324
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K07",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "\u00d6SYM Tipi",
+"icindekiler_adi": "\u00d6SYM Tipi",
+"sayfalar": [
+325,
+326
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K08",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "Sim\u00fclasyon Testi",
+"icindekiler_adi": "Sim\u00fclasyon Testi",
+"sayfalar": [
+327,
+328
+]
+},
+{
+"kod": "FIZ-BS24FZ-B05-K09",
+"bolum": "FIZ-BS24FZ-B05",
+"ad": "E\u011filim Kontrol Testi",
+"icindekiler_adi": "E\u011filim Kontrol Testi",
+"sayfalar": [
+329,
+336
+]
+}
+],
+"test_sayisi": 161,
+"testler": [
+{
+"birim": "BS24FZ-T001",
+"test": 1,
+"sayfalar": [
+7,
+8
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-BS24FZ-B01-K01",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "BS24FZ-T002",
+"test": 2,
+"sayfalar": [
+9,
+10
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-BS24FZ-B01-K01",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T003",
+"test": 3,
+"sayfalar": [
+11,
+12
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-BS24FZ-B01-K01",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "BS24FZ-T004",
+"test": 4,
+"sayfalar": [
+13,
+14
+],
+"bant": "F\u0130Z\u0130K B\u0130L\u0130M\u0130NE G\u0130R\u0130\u015e",
+"konu": "FIZ-BS24FZ-B01-K01",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "BS24FZ-T005",
+"test": 5,
+"sayfalar": [
+15,
+16
+],
+"bant": "\u00d6ZK\u00dcTLE",
+"konu": "FIZ-BS24FZ-B01-K02",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 9
+},
+{
+"birim": "BS24FZ-T006",
+"test": 6,
+"sayfalar": [
+17,
+18
+],
+"bant": "\u00d6ZK\u00dcTLE",
+"konu": "FIZ-BS24FZ-B01-K02",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T007",
+"test": 7,
+"sayfalar": [
+19,
+20
+],
+"bant": "\u00d6ZK\u00dcTLE",
+"konu": "FIZ-BS24FZ-B01-K02",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T008",
+"test": 8,
+"sayfalar": [
+21,
+22
+],
+"bant": "\u00d6ZK\u00dcTLE",
+"konu": "FIZ-BS24FZ-B01-K02",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T009",
+"test": 9,
+"sayfalar": [
+23,
+24
+],
+"bant": "DAYANIKLILIK, ADEZYON, KOHEZYON",
+"konu": "FIZ-BS24FZ-B01-K03",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T010",
+"test": 10,
+"sayfalar": [
+25,
+26
+],
+"bant": "DAYANIKLILIK, ADEZYON, KOHEZYON",
+"konu": "FIZ-BS24FZ-B01-K03",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T011",
+"test": 11,
+"sayfalar": [
+27,
+28
+],
+"bant": "DAYANIKLILIK, ADEZYON, KOHEZYON",
+"konu": "FIZ-BS24FZ-B01-K03",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T012",
+"test": 12,
+"sayfalar": [
+29,
+30
+],
+"bant": "DAYANIKLILIK, ADEZYON, KOHEZYON",
+"konu": "FIZ-BS24FZ-B01-K03",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 11
+},
+{
+"birim": "BS24FZ-T013",
+"test": 13,
+"sayfalar": [
+31,
+32
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B01-K04",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T014",
+"test": 14,
+"sayfalar": [
+33,
+34
+],
+"bant": "KATI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K05",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T015",
+"test": 15,
+"sayfalar": [
+35,
+36
+],
+"bant": "KATI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K05",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T016",
+"test": 16,
+"sayfalar": [
+37,
+38
+],
+"bant": "KATI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K05",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T017",
+"test": 17,
+"sayfalar": [
+39,
+40
+],
+"bant": "KATI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K05",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T018",
+"test": 18,
+"sayfalar": [
+41,
+42
+],
+"bant": "SIVI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K06",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T019",
+"test": 19,
+"sayfalar": [
+43,
+44
+],
+"bant": "SIVI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K06",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 7
+},
+{
+"birim": "BS24FZ-T020",
+"test": 20,
+"sayfalar": [
+45,
+46
+],
+"bant": "SIVI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K06",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T021",
+"test": 21,
+"sayfalar": [
+47,
+48
+],
+"bant": "SIVI BASINCI",
+"konu": "FIZ-BS24FZ-B01-K06",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T022",
+"test": 22,
+"sayfalar": [
+49,
+50
+],
+"bant": "GAZ VE AKI\u015eKAN BASINCI",
+"konu": "FIZ-BS24FZ-B01-K07",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T023",
+"test": 23,
+"sayfalar": [
+51,
+52
+],
+"bant": "GAZ VE AKI\u015eKAN BASINCI",
+"konu": "FIZ-BS24FZ-B01-K07",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T024",
+"test": 24,
+"sayfalar": [
+53,
+54
+],
+"bant": "GAZ VE AKI\u015eKAN BASINCI",
+"konu": "FIZ-BS24FZ-B01-K07",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T025",
+"test": 25,
+"sayfalar": [
+55,
+56
+],
+"bant": "GAZ VE AKI\u015eKAN BASINCI",
+"konu": "FIZ-BS24FZ-B01-K07",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T026",
+"test": 26,
+"sayfalar": [
+57,
+58
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B01-K08",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T027",
+"test": 27,
+"sayfalar": [
+59,
+60
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-BS24FZ-B01-K09",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T028",
+"test": 28,
+"sayfalar": [
+61,
+62
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-BS24FZ-B01-K09",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T029",
+"test": 29,
+"sayfalar": [
+63,
+64
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-BS24FZ-B01-K09",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T030",
+"test": 30,
+"sayfalar": [
+65,
+66
+],
+"bant": "SIVILARIN KALDIRMA KUVVET\u0130",
+"konu": "FIZ-BS24FZ-B01-K09",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T031",
+"test": 31,
+"sayfalar": [
+67,
+68
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B01-K10",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T032",
+"test": 32,
+"sayfalar": [
+69,
+70
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B01-K11",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T033",
+"test": 33,
+"sayfalar": [
+71,
+72
+],
+"bant": "ISI SICAKLIK",
+"konu": "FIZ-BS24FZ-B01-K12",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T034",
+"test": 34,
+"sayfalar": [
+73,
+74
+],
+"bant": "ISI SICAKLIK",
+"konu": "FIZ-BS24FZ-B01-K12",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T035",
+"test": 35,
+"sayfalar": [
+75,
+76
+],
+"bant": "ISI SICAKLIK",
+"konu": "FIZ-BS24FZ-B01-K12",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 12
+},
+{
+"birim": "BS24FZ-T036",
+"test": 36,
+"sayfalar": [
+77,
+78
+],
+"bant": "ISI SICAKLIK",
+"konu": "FIZ-BS24FZ-B01-K12",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T037",
+"test": 37,
+"sayfalar": [
+79,
+80
+],
+"bant": "GENLE\u015eME, ISI \u0130LET\u0130M\u0130",
+"konu": "FIZ-BS24FZ-B01-K13",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T038",
+"test": 38,
+"sayfalar": [
+81,
+82
+],
+"bant": "GENLE\u015eME, ISI \u0130LET\u0130M\u0130",
+"konu": "FIZ-BS24FZ-B01-K13",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T039",
+"test": 39,
+"sayfalar": [
+83,
+84
+],
+"bant": "GENLE\u015eME, ISI \u0130LET\u0130M\u0130",
+"konu": "FIZ-BS24FZ-B01-K13",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T040",
+"test": 40,
+"sayfalar": [
+85,
+86
+],
+"bant": "GENLE\u015eME, ISI \u0130LET\u0130M\u0130",
+"konu": "FIZ-BS24FZ-B01-K13",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T041",
+"test": 41,
+"sayfalar": [
+87,
+88
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B01-K14",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T042",
+"test": 42,
+"sayfalar": [
+89,
+90
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B01-K15",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T043",
+"test": 43,
+"sayfalar": [
+91,
+92
+],
+"bant": "S\u0130M\u00dcLASYON TEST\u0130",
+"konu": "FIZ-BS24FZ-B01-K16",
+"bolum": "FIZ-BS24FZ-B01",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T044",
+"test": 44,
+"sayfalar": [
+95,
+96
+],
+"bant": "HAREKET",
+"konu": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T045",
+"test": 45,
+"sayfalar": [
+97,
+98
+],
+"bant": "HAREKET",
+"konu": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T046",
+"test": 46,
+"sayfalar": [
+99,
+100
+],
+"bant": "HAREKET",
+"konu": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T047",
+"test": 47,
+"sayfalar": [
+101,
+102
+],
+"bant": "HAREKET",
+"konu": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T048",
+"test": 48,
+"sayfalar": [
+103,
+104
+],
+"bant": "HAREKET",
+"konu": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T049",
+"test": 49,
+"sayfalar": [
+105,
+106
+],
+"bant": "HAREKET",
+"konu": "FIZ-BS24FZ-B02-K01",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T050",
+"test": 50,
+"sayfalar": [
+107,
+108
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B02-K02",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T051",
+"test": 51,
+"sayfalar": [
+109,
+110
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B02-K03",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T052",
+"test": 52,
+"sayfalar": [
+111,
+112
+],
+"bant": "KUVVET VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B02-K04",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T053",
+"test": 53,
+"sayfalar": [
+113,
+114
+],
+"bant": "KUVVET VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B02-K04",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T054",
+"test": 54,
+"sayfalar": [
+115,
+116
+],
+"bant": "KUVVET VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B02-K04",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T055",
+"test": 55,
+"sayfalar": [
+117,
+118
+],
+"bant": "KUVVET VE \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B02-K04",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T056",
+"test": 56,
+"sayfalar": [
+119,
+120
+],
+"bant": "D\u0130NAM\u0130K",
+"konu": "FIZ-BS24FZ-B02-K05",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T057",
+"test": 57,
+"sayfalar": [
+121,
+122
+],
+"bant": "D\u0130NAM\u0130K",
+"konu": "FIZ-BS24FZ-B02-K05",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 7
+},
+{
+"birim": "BS24FZ-T058",
+"test": 58,
+"sayfalar": [
+123,
+124
+],
+"bant": "D\u0130NAM\u0130K",
+"konu": "FIZ-BS24FZ-B02-K05",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T059",
+"test": 59,
+"sayfalar": [
+125,
+126
+],
+"bant": "D\u0130NAM\u0130K",
+"konu": "FIZ-BS24FZ-B02-K05",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T060",
+"test": 60,
+"sayfalar": [
+127,
+128
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B02-K06",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T061",
+"test": 61,
+"sayfalar": [
+129,
+130
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B02-K07",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T062",
+"test": 62,
+"sayfalar": [
+131,
+132
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B02-K07",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T063",
+"test": 63,
+"sayfalar": [
+133,
+134
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B02-K07",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T064",
+"test": 64,
+"sayfalar": [
+135,
+136
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B02-K07",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T065",
+"test": 65,
+"sayfalar": [
+137,
+138
+],
+"bant": "\u0130\u015e G\u00dc\u00c7 ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B02-K07",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T066",
+"test": 66,
+"sayfalar": [
+139,
+140
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B02-K08",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T067",
+"test": 67,
+"sayfalar": [
+141,
+142
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B02-K09",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T068",
+"test": 68,
+"sayfalar": [
+143,
+144
+],
+"bant": "S\u0130M\u00dcLASYON TEST\u0130",
+"konu": "FIZ-BS24FZ-B02-K10",
+"bolum": "FIZ-BS24FZ-B02",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T069",
+"test": 69,
+"sayfalar": [
+147,
+148
+],
+"bant": "ELEKTR\u0130K Y\u00dcKLER\u0130",
+"konu": "FIZ-BS24FZ-B03-K01",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T070",
+"test": 70,
+"sayfalar": [
+149,
+150
+],
+"bant": "ELEKTR\u0130K Y\u00dcKLER\u0130",
+"konu": "FIZ-BS24FZ-B03-K01",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T071",
+"test": 71,
+"sayfalar": [
+151,
+152
+],
+"bant": "ELEKTR\u0130K Y\u00dcKLER\u0130",
+"konu": "FIZ-BS24FZ-B03-K01",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T072",
+"test": 72,
+"sayfalar": [
+153,
+154
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-BS24FZ-B03-K02",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T073",
+"test": 73,
+"sayfalar": [
+155,
+156
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-BS24FZ-B03-K02",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T074",
+"test": 74,
+"sayfalar": [
+157,
+158
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-BS24FZ-B03-K02",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T075",
+"test": 75,
+"sayfalar": [
+159,
+160
+],
+"bant": "ELEKTROSTAT\u0130K",
+"konu": "FIZ-BS24FZ-B03-K02",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T076",
+"test": 76,
+"sayfalar": [
+161,
+162
+],
+"bant": "COULOMB KUVVET\u0130 VE ELEKTR\u0130K ALAN",
+"konu": "FIZ-BS24FZ-B03-K03",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T077",
+"test": 77,
+"sayfalar": [
+163,
+164
+],
+"bant": "COULOMB KUVVET\u0130 VE ELEKTR\u0130K ALAN",
+"konu": "FIZ-BS24FZ-B03-K03",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T078",
+"test": 78,
+"sayfalar": [
+165,
+166
+],
+"bant": "COULOMB KUVVET\u0130 VE ELEKTR\u0130K ALAN",
+"konu": "FIZ-BS24FZ-B03-K03",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T079",
+"test": 79,
+"sayfalar": [
+167,
+168
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B03-K04",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T080",
+"test": 80,
+"sayfalar": [
+169,
+170
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B03-K05",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 9
+},
+{
+"birim": "BS24FZ-T081",
+"test": 81,
+"sayfalar": [
+171,
+172
+],
+"bant": "OHM YASASI",
+"konu": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T082",
+"test": 82,
+"sayfalar": [
+173,
+174
+],
+"bant": "OHM YASASI",
+"konu": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T083",
+"test": 83,
+"sayfalar": [
+175,
+176
+],
+"bant": "OHM YASASI",
+"konu": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T084",
+"test": 84,
+"sayfalar": [
+177,
+178
+],
+"bant": "OHM YASASI",
+"konu": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T085",
+"test": 85,
+"sayfalar": [
+179,
+180
+],
+"bant": "OHM YASASI",
+"konu": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T086",
+"test": 86,
+"sayfalar": [
+181,
+182
+],
+"bant": "OHM YASASI",
+"konu": "FIZ-BS24FZ-B03-K06",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T087",
+"test": 87,
+"sayfalar": [
+183,
+184
+],
+"bant": "P\u0130LLER",
+"konu": "FIZ-BS24FZ-B03-K07",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T088",
+"test": 88,
+"sayfalar": [
+185,
+186
+],
+"bant": "P\u0130LLER",
+"konu": "FIZ-BS24FZ-B03-K07",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T089",
+"test": 89,
+"sayfalar": [
+187,
+188
+],
+"bant": "ELEKTR\u0130KSEL G\u00dc\u00c7 VE ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B03-K08",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T090",
+"test": 90,
+"sayfalar": [
+189,
+190
+],
+"bant": "ELEKTR\u0130KSEL G\u00dc\u00c7 VE ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B03-K08",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T091",
+"test": 91,
+"sayfalar": [
+191,
+192
+],
+"bant": "ELEKTR\u0130KSEL G\u00dc\u00c7 VE ENERJ\u0130",
+"konu": "FIZ-BS24FZ-B03-K08",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T092",
+"test": 92,
+"sayfalar": [
+193,
+194
+],
+"bant": "LAMBA PARLAKLI\u011eI",
+"konu": "FIZ-BS24FZ-B03-K09",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T093",
+"test": 93,
+"sayfalar": [
+195,
+196
+],
+"bant": "LAMBA PARLAKLI\u011eI",
+"konu": "FIZ-BS24FZ-B03-K09",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T094",
+"test": 94,
+"sayfalar": [
+197,
+198
+],
+"bant": "LAMBA PARLAKLI\u011eI",
+"konu": "FIZ-BS24FZ-B03-K09",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T095",
+"test": 95,
+"sayfalar": [
+199,
+200
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B03-K10",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T096",
+"test": 96,
+"sayfalar": [
+201,
+202
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-BS24FZ-B03-K11",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T097",
+"test": 97,
+"sayfalar": [
+203,
+204
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-BS24FZ-B03-K11",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T098",
+"test": 98,
+"sayfalar": [
+205,
+206
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-BS24FZ-B03-K11",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T099",
+"test": 99,
+"sayfalar": [
+207,
+208
+],
+"bant": "MANYET\u0130ZMA",
+"konu": "FIZ-BS24FZ-B03-K11",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T100",
+"test": 100,
+"sayfalar": [
+209,
+210
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B03-K12",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T101",
+"test": 101,
+"sayfalar": [
+211,
+212
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B03-K13",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T102",
+"test": 102,
+"sayfalar": [
+213,
+214
+],
+"bant": "S\u0130M\u00dcLASYON TEST\u0130",
+"konu": "FIZ-BS24FZ-B03-K14",
+"bolum": "FIZ-BS24FZ-B03",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T103",
+"test": 103,
+"sayfalar": [
+217,
+218
+],
+"bant": "AYDINLANMA",
+"konu": "FIZ-BS24FZ-B04-K01",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T104",
+"test": 104,
+"sayfalar": [
+219,
+220
+],
+"bant": "AYDINLANMA",
+"konu": "FIZ-BS24FZ-B04-K01",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T105",
+"test": 105,
+"sayfalar": [
+221,
+222
+],
+"bant": "AYDINLANMA",
+"konu": "FIZ-BS24FZ-B04-K01",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T106",
+"test": 106,
+"sayfalar": [
+223,
+224
+],
+"bant": "G\u00d6LGE",
+"konu": "FIZ-BS24FZ-B04-K02",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T107",
+"test": 107,
+"sayfalar": [
+225,
+226
+],
+"bant": "G\u00d6LGE",
+"konu": "FIZ-BS24FZ-B04-K02",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T108",
+"test": 108,
+"sayfalar": [
+227,
+228
+],
+"bant": "G\u00d6LGE",
+"konu": "FIZ-BS24FZ-B04-K02",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T109",
+"test": 109,
+"sayfalar": [
+229,
+230
+],
+"bant": "\u00d6SYM tipi-1",
+"konu": "FIZ-BS24FZ-B04-K03",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T110",
+"test": 110,
+"sayfalar": [
+231,
+232
+],
+"bant": "YANSIMA VE D\u00dcZLEM AYNA",
+"konu": "FIZ-BS24FZ-B04-K04",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T111",
+"test": 111,
+"sayfalar": [
+233,
+234
+],
+"bant": "YANSIMA VE D\u00dcZLEM AYNA",
+"konu": "FIZ-BS24FZ-B04-K04",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T112",
+"test": 112,
+"sayfalar": [
+235,
+236
+],
+"bant": "YANSIMA VE D\u00dcZLEM AYNA",
+"konu": "FIZ-BS24FZ-B04-K04",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T113",
+"test": 113,
+"sayfalar": [
+237,
+238
+],
+"bant": "YANSIMA VE D\u00dcZLEM AYNA",
+"konu": "FIZ-BS24FZ-B04-K04",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T114",
+"test": 114,
+"sayfalar": [
+239,
+240
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B04-K05",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T115",
+"test": 115,
+"sayfalar": [
+241,
+242
+],
+"bant": "K\u00dcRESEL AYNA",
+"konu": "FIZ-BS24FZ-B04-K06",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T116",
+"test": 116,
+"sayfalar": [
+243,
+244
+],
+"bant": "K\u00dcRESEL AYNA",
+"konu": "FIZ-BS24FZ-B04-K06",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T117",
+"test": 117,
+"sayfalar": [
+245,
+246
+],
+"bant": "K\u00dcRESEL AYNA",
+"konu": "FIZ-BS24FZ-B04-K06",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T118",
+"test": 118,
+"sayfalar": [
+247,
+248
+],
+"bant": "K\u00dcRESEL AYNA",
+"konu": "FIZ-BS24FZ-B04-K06",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T119",
+"test": 119,
+"sayfalar": [
+249,
+250
+],
+"bant": "KIRILMA",
+"konu": "FIZ-BS24FZ-B04-K07",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T120",
+"test": 120,
+"sayfalar": [
+251,
+252
+],
+"bant": "KIRILMA",
+"konu": "FIZ-BS24FZ-B04-K07",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T121",
+"test": 121,
+"sayfalar": [
+253,
+254
+],
+"bant": "KIRILMA",
+"konu": "FIZ-BS24FZ-B04-K07",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T122",
+"test": 122,
+"sayfalar": [
+255,
+256
+],
+"bant": "KIRILMA",
+"konu": "FIZ-BS24FZ-B04-K07",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T123",
+"test": 123,
+"sayfalar": [
+257,
+258
+],
+"bant": "MERCEKLER",
+"konu": "FIZ-BS24FZ-B04-K08",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T124",
+"test": 124,
+"sayfalar": [
+259,
+260
+],
+"bant": "MERCEKLER",
+"konu": "FIZ-BS24FZ-B04-K08",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T125",
+"test": 125,
+"sayfalar": [
+261,
+262
+],
+"bant": "MERCEKLER",
+"konu": "FIZ-BS24FZ-B04-K08",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T126",
+"test": 126,
+"sayfalar": [
+263,
+264
+],
+"bant": "MERCEKLER",
+"konu": "FIZ-BS24FZ-B04-K08",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T127",
+"test": 127,
+"sayfalar": [
+265,
+266
+],
+"bant": "\u00d6SYM tipi-2",
+"konu": "FIZ-BS24FZ-B04-K09",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T128",
+"test": 128,
+"sayfalar": [
+267,
+268
+],
+"bant": "PR\u0130ZMA",
+"konu": "FIZ-BS24FZ-B04-K10",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T129",
+"test": 129,
+"sayfalar": [
+269,
+270
+],
+"bant": "PR\u0130ZMA",
+"konu": "FIZ-BS24FZ-B04-K10",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T130",
+"test": 130,
+"sayfalar": [
+271,
+272
+],
+"bant": "PR\u0130ZMA",
+"konu": "FIZ-BS24FZ-B04-K10",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T131",
+"test": 131,
+"sayfalar": [
+273,
+274
+],
+"bant": "PR\u0130ZMA",
+"konu": "FIZ-BS24FZ-B04-K10",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T132",
+"test": 132,
+"sayfalar": [
+275,
+276
+],
+"bant": "RENK",
+"konu": "FIZ-BS24FZ-B04-K11",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T133",
+"test": 133,
+"sayfalar": [
+277,
+278
+],
+"bant": "RENK",
+"konu": "FIZ-BS24FZ-B04-K11",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T134",
+"test": 134,
+"sayfalar": [
+279,
+280
+],
+"bant": "RENK",
+"konu": "FIZ-BS24FZ-B04-K11",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T135",
+"test": 135,
+"sayfalar": [
+281,
+282
+],
+"bant": "RENK",
+"konu": "FIZ-BS24FZ-B04-K11",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T136",
+"test": 136,
+"sayfalar": [
+283,
+284
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B04-K12",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T137",
+"test": 137,
+"sayfalar": [
+285,
+286
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B04-K13",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T138",
+"test": 138,
+"sayfalar": [
+287,
+288
+],
+"bant": "S\u0130M\u00dcLASYON TEST\u0130",
+"konu": "FIZ-BS24FZ-B04-K14",
+"bolum": "FIZ-BS24FZ-B04",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T139",
+"test": 139,
+"sayfalar": [
+291,
+292
+],
+"bant": "DALGALAR VE GENEL \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B05-K01",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "BS24FZ-T140",
+"test": 140,
+"sayfalar": [
+293,
+294
+],
+"bant": "DALGALAR VE GENEL \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B05-K01",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "BS24FZ-T141",
+"test": 141,
+"sayfalar": [
+295,
+296
+],
+"bant": "DALGALAR VE GENEL \u00d6ZELL\u0130KLER\u0130",
+"konu": "FIZ-BS24FZ-B05-K01",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "BS24FZ-T142",
+"test": 142,
+"sayfalar": [
+297,
+298
+],
+"bant": "YAY DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K02",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T143",
+"test": 143,
+"sayfalar": [
+299,
+300
+],
+"bant": "YAY DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K02",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T144",
+"test": 144,
+"sayfalar": [
+301,
+302
+],
+"bant": "YAY DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K02",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T145",
+"test": 145,
+"sayfalar": [
+303,
+304
+],
+"bant": "YAY DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K02",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T146",
+"test": 146,
+"sayfalar": [
+305,
+306
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B05-K03",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T147",
+"test": 147,
+"sayfalar": [
+307,
+308
+],
+"bant": "SU DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K04",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T148",
+"test": 148,
+"sayfalar": [
+309,
+310
+],
+"bant": "SU DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K04",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T149",
+"test": 149,
+"sayfalar": [
+311,
+312
+],
+"bant": "SU DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K04",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T150",
+"test": 150,
+"sayfalar": [
+313,
+314
+],
+"bant": "SU DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K04",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 7
+},
+{
+"birim": "BS24FZ-T151",
+"test": 151,
+"sayfalar": [
+315,
+316
+],
+"bant": "DEPREM VE SES DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K05",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T152",
+"test": 152,
+"sayfalar": [
+317,
+318
+],
+"bant": "DEPREM VE SES DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K05",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T153",
+"test": 153,
+"sayfalar": [
+319,
+320
+],
+"bant": "DEPREM VE SES DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K05",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 10
+},
+{
+"birim": "BS24FZ-T154",
+"test": 154,
+"sayfalar": [
+321,
+322
+],
+"bant": "DEPREM VE SES DALGALARI",
+"konu": "FIZ-BS24FZ-B05-K05",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 11
+},
+{
+"birim": "BS24FZ-T155",
+"test": 155,
+"sayfalar": [
+323,
+324
+],
+"bant": "SARMAL TEST",
+"konu": "FIZ-BS24FZ-B05-K06",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T156",
+"test": 156,
+"sayfalar": [
+325,
+326
+],
+"bant": "\u00d6SYM tipi",
+"konu": "FIZ-BS24FZ-B05-K07",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T157",
+"test": 157,
+"sayfalar": [
+327,
+328
+],
+"bant": "S\u0130M\u00dcLASYON TEST\u0130",
+"konu": "FIZ-BS24FZ-B05-K08",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T158",
+"test": 158,
+"sayfalar": [
+329,
+330
+],
+"bant": "\u00d6SYM tipi - E\u011filim Kontrol Testi",
+"konu": "FIZ-BS24FZ-B05-K09",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T159",
+"test": 159,
+"sayfalar": [
+331,
+332
+],
+"bant": "\u00d6SYM tipi - E\u011filim Kontrol Testi",
+"konu": "FIZ-BS24FZ-B05-K09",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T160",
+"test": 160,
+"sayfalar": [
+333,
+334
+],
+"bant": "\u00d6SYM tipi - E\u011filim Kontrol Testi",
+"konu": "FIZ-BS24FZ-B05-K09",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+},
+{
+"birim": "BS24FZ-T161",
+"test": 161,
+"sayfalar": [
+335,
+336
+],
+"bant": "\u00d6SYM tipi - E\u011filim Kontrol Testi",
+"konu": "FIZ-BS24FZ-B05-K09",
+"bolum": "FIZ-BS24FZ-B05",
+"soru_sayisi": 8
+}
+]
+}
